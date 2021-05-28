@@ -32,6 +32,7 @@ import SSO from './pages/Settings/SSO';
 import Create from './pages/Settings/SSO/create';
 import Security from './pages/Settings/Security';
 import Resource from './pages/ResourceGeneral/index';
+import Privileges from './pages/Privileges';
 
 interface LocaleMap {
   [index: string]: any,
@@ -121,6 +122,7 @@ const App = () => {
                     <Route exact path="/resource-general" component={Resource} />
                     <Route exact path="/user-management" component={UserManagement} />
                     <Route exact path="/team-management" component={TeamManagement} />
+                    <Route exact path="/role-management/privileges" component={Privileges} />
                     <Route exact path="/role-management/:type" component={RoleManagement} />
                     <Route exact path="/treenode-management/node-cate" component={NodeCate} />
                     <Route exact path="/treenode-management/node-cate/:ident/types" component={NodeCateField} />

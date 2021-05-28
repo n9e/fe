@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Icon, Row, Col, Tabs, Tree, Button, message } from 'antd';
 import { injectIntl, WrappedComponentProps, FormattedMessage } from 'react-intl';
 import { RouteComponentProps } from 'react-router-dom';
+import { normalizeTreeData } from '@pkgs/Layout/utils';
 import _ from 'lodash';
 import { Tenant } from '@interface';
 import Members from '@cpts/Members';
@@ -16,40 +17,28 @@ import './assets/style.less';
 const { TabPane } = Tabs;
 const { TreeNode } = Tree;
 
-function getOpsTreeNodes(opsTree: any) {
-  return _.map(opsTree, (systemItem) => {
-    return (
-      <TreeNode value={systemItem.system} title={systemItem.system} key={systemItem.system}>
-        {
-          _.map(systemItem.groups, (groupItem) => {
-            return (
-              <TreeNode value={groupItem.title} title={groupItem.title} key={`${systemItem.system}-${groupItem.title}`}>
-                {
-                  _.map(groupItem.ops, (opItem) => {
-                    return <TreeNode value={opItem.en} title={opItem.cn} key={opItem.en} isLeaf/>;
-                  })
-                }
-              </TreeNode>
-            );
-          })
-        }
-      </TreeNode>
-    );
+const renderTreeNodes = (data: any) =>
+  _.map(data, (item: any) => {
+    if (item.children) {
+      return (
+        <TreeNode title={item.cn} key={item.path} dataRef={item}>
+          {renderTreeNodes(item.children)}
+        </TreeNode>
+      );
+    }
+    return <TreeNode key={item.path} {...item} title={item.cn} />;
   });
-}
 
-function index(props: WrappedComponentProps & RouteComponentProps<{type: 'global' | 'locale'}>) {
+function index(props: WrappedComponentProps & RouteComponentProps<{ type: 'global' | 'locale' }>) {
   const [cate, setCate] = useState(props.match.params.type);
   const [selectedItem, setSelectedItem] = useState<Tenant>();
   const [siderListKey, setSiderListKey] = useState(_.uniqueId('siderListKey'));
   const [state, setState] = useState<any>({
-    selected: {
-      global: [],
-      local: [],
-    },
+    treeData: [],
     meta: {},
     operations: [],
     opsTree: [],
+    checkedKeys: [],
   });
 
   if (cate !== props.match.params.type) {
@@ -57,37 +46,52 @@ function index(props: WrappedComponentProps & RouteComponentProps<{type: 'global
     setSelectedItem(undefined);
   }
 
+  const sortBy = (node: any) => {
+    if (node.children) {
+      node.children = _.sortBy(node.children, 'weight')
+      _.map(node.children, ((item: any) => {
+        sortBy(item);
+      }))
+      return node
+    }
+    return node;
+  }
+
   useEffect(() => {
     if (selectedItem) {
-      request(`${api.role}/${selectedItem.id}`).then((res) => {
+      request(`${api.role}/${selectedItem.id}`).then(async (res) => {
         if (res.role) {
-          request(`${api.ops}/${res.role.cate}`).then((ops) => {
-            if (res.role.cate === 'global') {
-              setState({
-                selected: {
-                  global: res.operations,
-                  local: [],
-                },
-                meta: res.role,
-                operations: res.operations,
-                opsTree: ops,
-              });
-            } else if (res.role.cate === 'local') {
-              setState({
-                selected: {
-                  local: res.operations,
-                  global: [],
-                },
-                meta: res.role,
-                operations: res.operations,
-                opsTree: ops,
-              });
-            }
-          });
+          request(`${api.privileges}?typ=${res.role.cate}`).then((ops) => {
+            let treeNodes = [] as any;
+            const treeNodesUnWeight = normalizeTreeData(_.cloneDeep(ops));
+            treeNodes = _.map(treeNodesUnWeight, ((item: any) => sortBy(item)));
+            setState({
+              ...state,
+              meta: res.role,
+              operations: res.operations,
+              treeData: _.sortBy(treeNodes, 'weight')
+            });
+          })
         }
       });
     }
   }, [selectedItem]);
+
+
+  const onExpand = (expandedKeys: any) => {
+    setState({
+      ...state,
+      expandedKeys,
+      autoExpandParent: false,
+    });
+  };
+
+  const onCheck = (checkedKey: any, e: any) => {
+    const checkedKeys = checkedKey.map((item: string) => Number(item));
+    const checked: any[] = [];
+   _.map(e.checkedNodes, (item: any) => (item.props.path ? checked.push(item.props.path) : ''))
+    setState({ ...state, operations: checked, checkedKeys })
+  };
 
   return (
     <Row gutter={20}>
@@ -149,60 +153,51 @@ function index(props: WrappedComponentProps & RouteComponentProps<{type: 'global
             </span>
           </div>
         </div>
-          <Tabs defaultActiveKey="role">
-            <TabPane tab={props.intl.formatMessage({ id: 'role.tab.operations' })} key="role">
-              <div style={{ border: '1px solid #efefef' }}>
-                <Tree
-                  checkable
-                  checkedKeys={state.selected[cate]}
-                  onCheck={(_checkedKeys, event) => {
-                    const { checkedNodes } = event;
-                    let checkedKeys: string[] = [];
-                    _.forEach(checkedNodes, (node) => {
-                      if (node.props.isLeaf) {
-                        checkedKeys.push(node.props.value);
-                      }
-                    });
+        <Tabs defaultActiveKey="role">
+          <TabPane tab={props.intl.formatMessage({ id: 'role.tab.operations' })} key="role">
+            <div style={{ border: '1px solid #efefef' }}>
+              <Tree
+                checkable
+                onExpand={onExpand}
+                expandedKeys={state.expandedKeys}
+                autoExpandParent={state.autoExpandParent}
+                onCheck={onCheck}
+                checkedKeys={state.operations}
+              >
+                {renderTreeNodes(state.treeData)}
+              </Tree>
+            </div>
+            <Button
+              type="primary"
+              style={{ marginTop: 10 }}
+              onClick={() => {
+                if (selectedItem) {
+                  request(`${api.role}/${selectedItem.id}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({
+                      ...state.meta,
+                      operations: state.operations,
+                    }),
+                  }).then(() => {
                     setState({
                       ...state,
-                      selected: { ...state.selected, [cate]: checkedKeys },
+                      operations: state.operations,
                     });
-                  }}
-                >
-                  {getOpsTreeNodes(state.opsTree)}
-                </Tree>
-              </div>
-              <Button
-                type="primary"
-                style={{ marginTop: 10 }}
-                onClick={() => {
-                  if (selectedItem) {
-                    request(`${api.role}/${selectedItem.id}`, {
-                      method: 'PUT',
-                      body: JSON.stringify({
-                        ...state.meta,
-                        operations: state.selected[cate],
-                      }),
-                    }).then(() => {
-                      setState({
-                        ...state,
-                        operations: state.selected[cate],
-                      });
-                      message.success('保存成功！');
-                    });
-                  }
-                }}
-              >
-                <FormattedMessage id="form.save" />
-              </Button>
-            </TabPane>
-            {
-              _.get(selectedItem, 'cate') === 'global' ?
-                <TabPane tab={props.intl.formatMessage({ id: 'role.tab.members' })} key="member">
-                  <Members type="role" id={_.get(selectedItem, 'id')} />
-                </TabPane> : null
-            }
-          </Tabs>
+                    message.success('保存成功！');
+                  });
+                }
+              }}
+            >
+              <FormattedMessage id="form.save" />
+            </Button>
+          </TabPane>
+          {
+            _.get(selectedItem, 'cate') === 'global' ?
+              <TabPane tab={props.intl.formatMessage({ id: 'role.tab.members' })} key="member">
+                <Members type="role" id={_.get(selectedItem, 'id')} />
+              </TabPane> : null
+          }
+        </Tabs>
       </Col>
     </Row>
   );

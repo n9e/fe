@@ -25,6 +25,7 @@ const api = {
   role: getApi('/role'),
   roles: getApi('/roles'),
   ops: getApi('/ops'),
+  privileges: getApi('/privileges'),
   log: getApi('/log'),
   homeStatistics: getApi('/home/statistics'),
   project: getApi('/project'),
