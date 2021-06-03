@@ -248,7 +248,7 @@ function Fields(props: Props) {
           </Card>
         </Col>
         {
-          _.map(groupedExtendFields, (groupValue, groupKey) => {
+          _.map(_.keys(groupedExtendFields), (groupKey) => {
             return (
               <Col span={24} key={groupKey} style={{ marginTop: 10 }}>
                 <Card
@@ -260,7 +260,7 @@ function Fields(props: Props) {
                       <Button type="link" onClick={() => setEdit(true)}>编辑</Button>
                   }>
                   {
-                    _.map(groupValue, (filedObj, index) => {
+                    _.map(groupedExtendFields[groupKey], (filedObj) => {
                       return (
                         <div className="ams-hosts-desc-item" key={filedObj.field_ident}>
                           <div className="ams-hosts-desc-item-title" style={{ marginTop: 10 }}>
@@ -280,7 +280,7 @@ function Fields(props: Props) {
                               />
                             </div> :
                             <div className="ams-hosts-desc-item-show">
-                              {value[index]?.field_value}
+                              {_.find(value, (item) => filedObj.field_ident === item.field_ident)?.field_value}
                             </div>
                           }
                         </div>
