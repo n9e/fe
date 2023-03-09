@@ -52,6 +52,10 @@ const typeOptions = [
     label: 'Constant',
     value: 'constant',
   },
+  {
+    label: 'Datasource',
+    value: 'datasource',
+  },
 ];
 
 const allOptions = [
@@ -115,51 +119,61 @@ function EditItem(props: IProps) {
           </Form.Item>
         </Col>
       </Row>
-      <Form.Item shouldUpdate={(prevValues, curValues) => prevValues?.datasource?.cate !== curValues?.datasource?.cate} noStyle>
+      <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.type !== curValues.type || prevValues?.datasource?.cate !== curValues?.datasource?.cate} noStyle>
         {({ getFieldValue }) => {
-          const datasourceCate = getFieldValue(['datasource', 'cate']) || 'prometheus';
-          return (
-            <Row gutter={16}>
-              <Col span={8}>
-                <Form.Item label={t('common:datasource.type')} name={['datasource', 'cate']} rules={[{ required: true }]} initialValue='prometheus'>
-                  <Select
-                    dropdownMatchSelectWidth={false}
-                    style={{ minWidth: 70 }}
-                    onChange={() => {
-                      form.setFieldsValue({
-                        datasource: {
-                          value: undefined,
-                        },
-                      });
-                    }}
-                  >
-                    {_.map(allOptions, (item) => (
-                      <Select.Option key={item.value} value={item.value}>
-                        {item.label}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-              </Col>
-              <Col span={8}>
-                <ClusterSelect cate={datasourceCate} label={t('common:datasource.id')} name={['datasource', 'value']} defaultDatasourceValue={datasourceValue} />
-              </Col>
-              {datasourceCate === 'elasticsearch' && (
-                <>
-                  <Col span={8}>
-                    <Form.Item shouldUpdate={(prevValues, curValues) => prevValues?.datasource?.value !== curValues?.datasource?.value} noStyle>
-                      {({ getFieldValue }) => {
-                        const datasourceValue = getFieldValue(['datasource', 'value']);
-                        return <IndexSelect name={['config', 'index']} cate={datasourceCate} datasourceValue={datasourceValue} />;
-                      }}
-                    </Form.Item>
-                  </Col>
-                </>
-              )}
-            </Row>
-          );
+          const type = getFieldValue('type');
+          if (type === 'query') {
+            return (
+              <Form.Item shouldUpdate={(prevValues, curValues) => prevValues?.datasource?.cate !== curValues?.datasource?.cate} noStyle>
+                {({ getFieldValue }) => {
+                  const datasourceCate = getFieldValue(['datasource', 'cate']) || 'prometheus';
+                  return (
+                    <Row gutter={16}>
+                      <Col span={8}>
+                        <Form.Item label={t('common:datasource.type')} name={['datasource', 'cate']} rules={[{ required: true }]} initialValue='prometheus'>
+                          <Select
+                            dropdownMatchSelectWidth={false}
+                            style={{ minWidth: 70 }}
+                            onChange={() => {
+                              form.setFieldsValue({
+                                datasource: {
+                                  value: undefined,
+                                },
+                              });
+                            }}
+                          >
+                            {_.map(allOptions, (item) => (
+                              <Select.Option key={item.value} value={item.value}>
+                                {item.label}
+                              </Select.Option>
+                            ))}
+                          </Select>
+                        </Form.Item>
+                      </Col>
+                      <Col span={8}>
+                        <ClusterSelect cate={datasourceCate} label={t('common:datasource.id')} name={['datasource', 'value']} defaultDatasourceValue={datasourceValue} />
+                      </Col>
+                      {datasourceCate === 'elasticsearch' && (
+                        <>
+                          <Col span={8}>
+                            <Form.Item shouldUpdate={(prevValues, curValues) => prevValues?.datasource?.value !== curValues?.datasource?.value} noStyle>
+                              {({ getFieldValue }) => {
+                                const datasourceValue = getFieldValue(['datasource', 'value']);
+                                return <IndexSelect name={['config', 'index']} cate={datasourceCate} datasourceValue={datasourceValue} />;
+                              }}
+                            </Form.Item>
+                          </Col>
+                        </>
+                      )}
+                    </Row>
+                  );
+                }}
+              </Form.Item>
+            );
+          }
         }}
       </Form.Item>
+
       <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.type !== curValues.type || prevValues?.datasource?.cate !== curValues?.datasource?.cate} noStyle>
         {({ getFieldValue }) => {
           const type = getFieldValue('type');
@@ -221,14 +235,26 @@ function EditItem(props: IProps) {
             );
           } else if (type === 'custom') {
             return (
-              <Form.Item label={t('var.custom.defaultValue')} name='definition' rules={[{ required: true }]}>
+              <Form.Item label={t('var.custom.definition')} name='definition' rules={[{ required: true }]}>
                 <Input onBlur={() => handleBlur()} placeholder='1,10' />
               </Form.Item>
             );
           } else if (type === 'constant') {
             return (
-              <Form.Item label={t('var.constant.defaultValue')} name='definition' tooltip={t('var.constant.defaultValue_tip')} rules={[{ required: true }]}>
+              <Form.Item label={t('var.constant.definition')} name='definition' tooltip={t('var.constant.defaultValue_tip')} rules={[{ required: true }]}>
                 <Input onBlur={() => handleBlur()} />
+              </Form.Item>
+            );
+          } else if (type === 'datasource') {
+            return (
+              <Form.Item label={t('var.datasource.definition')} name='definition' rules={[{ required: true }]}>
+                <Select>
+                  {_.map(allOptions, (item) => (
+                    <Select.Option key={item.value} value={item.value}>
+                      {item.label}
+                    </Select.Option>
+                  ))}
+                </Select>
               </Form.Item>
             );
           }

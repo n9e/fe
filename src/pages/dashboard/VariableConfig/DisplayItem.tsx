@@ -96,6 +96,28 @@ export default function DisplayItem(props: IProps) {
             }}
           />
         ) : null}
+        {type === 'datasource' ? (
+          <Select
+            style={{
+              width: '180px',
+            }}
+            maxTagCount='responsive'
+            defaultActiveFirstOption={false}
+            showSearch
+            dropdownMatchSelectWidth={false}
+            value={selected}
+            onChange={(value) => {
+              setSelected(value as any);
+              onChange(value);
+            }}
+          >
+            {_.map(options as any, (item) => (
+              <Select.Option key={item.id} value={item.id}>
+                {item.name}
+              </Select.Option>
+            ))}
+          </Select>
+        ) : null}
       </Input.Group>
     </div>
   );

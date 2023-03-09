@@ -8,9 +8,10 @@ import AliyunSLS from './AliyunSLS';
 import OrganizeFields from '../TransformationsEditor/OrganizeFields';
 import DatasourceSelect from './components/DatasourceSelect';
 
-export default function index({ chartForm, defaultDatasourceValue, type }) {
+export default function index({ chartForm, defaultDatasourceValue, type, variableConfig }) {
   const { t } = useTranslation('dashboard');
   const [mode, setMode] = useState('query');
+
   return (
     <div>
       <Space align='start'>
@@ -26,7 +27,7 @@ export default function index({ chartForm, defaultDatasourceValue, type }) {
             <Radio.Button value='transform'>{t('query.transform')} (beta)</Radio.Button>
           </Radio.Group>
         )}
-        <DatasourceSelect chartForm={chartForm} defaultDatasourceValue={defaultDatasourceValue} />
+        <DatasourceSelect chartForm={chartForm} defaultDatasourceValue={defaultDatasourceValue} variableConfig={variableConfig} />
       </Space>
       <div
         style={{

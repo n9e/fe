@@ -7,10 +7,11 @@ import { CommonStateContext } from '@/App';
 
 const defaultDatasourceCate = 'prometheus';
 
-export default function index({ chartForm, defaultDatasourceValue }) {
+export default function index({ chartForm, defaultDatasourceValue, variableConfig }) {
   const { t } = useTranslation('dashboard');
   const { groupedDatasourceList } = useContext(CommonStateContext);
   const cates = getAuthorizedDatasourceCates();
+  const datasourceVars = _.filter(variableConfig, { type: 'datasource' });
 
   return (
     <Space align='start'>
@@ -96,6 +97,13 @@ export default function index({ chartForm, defaultDatasourceValue }) {
                   style={{ minWidth: 70 }}
                   dropdownMatchSelectWidth={false}
                 >
+                  {_.map(datasourceVars, (item, idx) => {
+                    return (
+                      <Select.Option value={`\${${item.name}}`} key={`${item.name}_${idx}`}>
+                        {`\${${item.name}}`}
+                      </Select.Option>
+                    );
+                  })}
                   {_.map(groupedDatasourceList[cate], (item) => (
                     <Select.Option value={item.id} key={item.id}>
                       {item.name}

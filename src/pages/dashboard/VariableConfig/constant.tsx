@@ -330,6 +330,9 @@ export const replaceExpressionVarsSpecifyRule = (
           } else if (selected === null) {
             // 未选择或填写变量值时替换为空字符串
             newExpression = replaceAllPolyfill(newExpression, placeholder, '');
+          } else if (typeof selected === 'number') {
+            // number 目前只用于数据源变量的数据源ID
+            newExpression = selected as any;
           }
         }
       }

@@ -63,6 +63,9 @@ const en_US = {
       definition: 'Constant value',
       definition_tip: 'Define a hidden constant value',
     },
+    datasource: {
+      definition: 'Datasource type',
+    },
   },
   row: {
     edit_title: 'Edit row',

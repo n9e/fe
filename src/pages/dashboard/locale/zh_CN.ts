@@ -63,6 +63,9 @@ const zh_CN = {
       definition: '常量值',
       definition_tip: '定义一个隐藏的常量值',
     },
+    datasource: {
+      definition: '数据源类型',
+    },
   },
   row: {
     edit_title: '编辑分组',

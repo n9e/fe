@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import _ from 'lodash';
 import queryString from 'query-string';
 import { useLocation } from 'react-router-dom';
@@ -22,6 +22,7 @@ import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { EditOutlined } from '@ant-design/icons';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
+import { CommonStateContext } from '@/App';
 import { convertExpressionToQuery, replaceExpressionVars, getVaraiableSelected, setVaraiableSelected, filterOptionsByReg } from './constant';
 import { IVariable } from './definition';
 import DisplayItem from './DisplayItem';
@@ -48,6 +49,7 @@ function includes(source, target) {
 
 function index(props: IProps) {
   const { t } = useTranslation('dashboard');
+  const { groupedDatasourceList } = useContext(CommonStateContext);
   const query = queryString.parse(useLocation().search);
   const { id, datasourceValue, editable = true, range, onChange, onOpenFire, isPreview = false } = props;
   const [editing, setEditing] = useState<boolean>(false);
@@ -100,6 +102,14 @@ function index(props: IProps) {
             const selected = getVaraiableSelected(item.name, id);
             if (selected === null && query.__variable_value_fixed === undefined) {
               setVaraiableSelected({ name: item.name, value: item.definition, id, urlAttach: true });
+            }
+          } else if (item.type === 'datasource') {
+            const options = item.definition ? (groupedDatasourceList[item.definition] as any) : [];
+            result[idx] = item;
+            result[idx].options = options;
+            const selected = getVaraiableSelected(item.name, id);
+            if (selected === null && query.__variable_value_fixed === undefined) {
+              setVaraiableSelected({ name: item.name, value: options[0]?.id, id, urlAttach: true });
             }
           }
         }

@@ -11,7 +11,7 @@ import { completeBreakpoints, getSerieName } from './utils';
 interface IOptions {
   dashboardId: string;
   datasourceCate: string;
-  datasourceValue: number;
+  datasourceValue: number; // 关联变量时 datasourceValue: string
   id?: string;
   time: IRawTimeRange;
   step: number | null;
@@ -25,7 +25,7 @@ const getDefaultStepByStartAndEnd = (start: number, end: number) => {
 };
 
 export default async function prometheusQuery(options: IOptions) {
-  const { dashboardId, id, time, step, targets, variableConfig, spanNulls, datasourceValue } = options;
+  const { dashboardId, id, time, step, targets, variableConfig, spanNulls } = options;
   if (!time.start) return;
   const parsedRange = parseRange(time);
   let start = moment(parsedRange.start).unix();
@@ -37,7 +37,8 @@ export default async function prometheusQuery(options: IOptions) {
   let exprs: string[] = [];
   let refIds: string[] = [];
   let signalKey = `${id}`;
-  if (targets && datasourceValue) {
+  const datasourceValue = variableConfig ? replaceExpressionVars(options.datasourceValue as any, variableConfig, variableConfig.length, dashboardId) : undefined;
+  if (targets && typeof datasourceValue === 'number') {
     _.forEach(targets, (target) => {
       if (target.time) {
         const parsedRange = parseRange(target.time);

@@ -104,7 +104,7 @@ function FormCpt(props, ref) {
                           id={id}
                         />
                       </div>
-                      <QueryEditor chartForm={chartForm} defaultDatasourceValue={datasourceValue} type={type} />
+                      <QueryEditor chartForm={chartForm} defaultDatasourceValue={datasourceValue} type={type} variableConfig={variableConfigWithOptions} />
                     </div>
                   );
                 }
