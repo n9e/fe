@@ -31,7 +31,7 @@ const zh_CN = {
     no: '否',
     headers: '自定义HTTP标头',
     description: '备注',
-    cluster: '关联集群',
+    cluster: '关联告警引擎',
     es: {
       version: '版本',
       max_shard: '最大并发分片请求数',
