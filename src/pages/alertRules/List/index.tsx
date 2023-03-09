@@ -28,7 +28,7 @@ import SearchInput from '@/components/BaseSearchInput';
 import { getStrategyGroupSubList, updateAlertRules, deleteStrategy } from '@/services/warning';
 import { CommonStateContext } from '@/App';
 import { AlertRuleType, AlertRuleStatus } from '../types';
-import { priorityColor, pageSizeOptionsDefault } from '../constants';
+import { pageSizeOptionsDefault } from '../constants';
 import MoreOperations from './MoreOperations';
 
 interface ListProps {
@@ -45,7 +45,7 @@ export default function List(props: ListProps) {
   const { bgid } = props;
   const { t } = useTranslation('alertRules');
   const history = useHistory();
-  const { groupedDatasourceList } = useContext(CommonStateContext);
+  const { datasourceList } = useContext(CommonStateContext);
   const [filter, setFilter] = useState<Filter>({});
   const [selectRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
   const [selectedRows, setSelectedRows] = useState<AlertRuleType<any>[]>([]);
@@ -71,8 +71,8 @@ export default function List(props: ListProps) {
                   </Tag>
                 );
               }
-              const name = _.find(groupedDatasourceList[record.cate], { id: item })?.name;
-              if (!name) return '-';
+              const name = _.find(datasourceList, { id: item })?.name;
+              if (!name) return '';
               return (
                 <Tag color='purple' key={item}>
                   {name}
@@ -83,13 +83,6 @@ export default function List(props: ListProps) {
         );
       },
     },
-    // {
-    //   title: t('severity'),
-    //   dataIndex: 'severity',
-    //   render: (data) => {
-    //     return <Tag color={priorityColor[data - 1]}>S{data}</Tag>;
-    //   },
-    // },
     {
       title: t('common:table.name'),
       dataIndex: 'name',

@@ -21,6 +21,7 @@ import { Form, Input, InputNumber, Radio, Select, Row, Col, TimePicker, Checkbox
 import { QuestionCircleFilled, MinusCircleOutlined, PlusCircleOutlined, CaretDownOutlined, PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { getTeamInfoList, getNotifiesList } from '@/services/manage';
+import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
 import { debounce, join } from 'lodash';
 import { CommonStateContext } from '@/App';
 
@@ -139,7 +140,7 @@ interface Props {
 const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish }) => {
   const { t, i18n } = useTranslation('alertRules');
   const [form] = Form.useForm();
-  const { groupedDatasourceList } = useContext(CommonStateContext);
+  const { datasourceList } = useContext(CommonStateContext);
   const [contactList, setInitContactList] = useState([]);
   const [notifyGroups, setNotifyGroups] = useState([]);
   const [field, setField] = useState<string>('datasource_ids');
@@ -355,26 +356,7 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish }) => {
               case 'datasource_ids':
                 return (
                   <>
-                    <Form.Item label={changetoText} name='datasource_ids'>
-                      <Select suffixIcon={<CaretDownOutlined />} mode='multiple'>
-                        {_.reduce(
-                          groupedDatasourceList,
-                          (result, value) => {
-                            return _.concat(
-                              result,
-                              _.map(value, (item) => {
-                                return (
-                                  <Option value={item.id} key={item.id}>
-                                    {item.name}
-                                  </Option>
-                                );
-                              }),
-                            );
-                          },
-                          [],
-                        )}
-                      </Select>
-                    </Form.Item>
+                    <DatasourceValueSelect mode='multiple' setFieldsValue={form.setFieldsValue} cate='prometheus' datasourceList={datasourceList || []} />
                   </>
                 );
               case 'severity':
