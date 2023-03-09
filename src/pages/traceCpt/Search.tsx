@@ -195,7 +195,7 @@ export default function Index(props: IProps) {
                 </InputGroupWithFormItem>
                 <InputGroupWithFormItem label={t('common:datasource.id')}>
                   <Select style={{ minWidth: 121 }} value={curPlugin} onChange={handlePluginChange}>
-                    {datasourceList.map((item) => (
+                    {_.map(datasourceList, (item) => (
                       <Select.Option value={item.id} key={item.id}>
                         {item.name}
                       </Select.Option>

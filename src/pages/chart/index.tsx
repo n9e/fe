@@ -88,7 +88,7 @@ export default function Chart() {
             <div className='right'>
               <Space>
                 <div>
-                  <span>{t('datasource.id')}：</span>
+                  <span>{t('common:datasource.id')}：</span>
                   <Select
                     value={curCluster}
                     onChange={(val) => {

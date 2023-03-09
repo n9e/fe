@@ -80,7 +80,7 @@ export default function index() {
 
   useEffect(() => {
     if (datasourceValue) {
-      getTraceDependencies(4).then((res) => {
+      getTraceDependencies(datasourceValue).then((res) => {
         setData(getRadialData(res));
       });
     }
