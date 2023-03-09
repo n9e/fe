@@ -16,8 +16,8 @@
  */
 import { defineConfig } from 'vite';
 import reactRefresh from '@vitejs/plugin-react-refresh';
-import svgr from 'vite-plugin-svgr';
 import { md } from './plugins/md';
+const reactSvgPlugin = require('vite-plugin-react-svg');
 
 const chunk2 = [
   '@codemirror/autocomplete',
@@ -35,7 +35,7 @@ const antdChunk = ['antd'];
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [md(), reactRefresh(), svgr()],
+  plugins: [md(), reactRefresh(), reactSvgPlugin({ defaultExport: 'component' })],
   define: {},
   resolve: {
     alias: [
