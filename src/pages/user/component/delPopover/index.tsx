@@ -15,7 +15,7 @@
  *
  */
 import React, { useState } from 'react';
-import { Button, Popover, message, Space } from 'antd';
+import { Button, Popover, message } from 'antd';
 import { ExclamationCircleFilled, DeleteTwoTone } from '@ant-design/icons';
 import { deleteUser, deleteTeam, deleteMember } from '@/services/manage';
 import { PopoverProps } from '@/store/manageInterface';
@@ -87,12 +87,7 @@ const DelPopover: React.FC<PopoverProps> = (props: PopoverProps) => {
           onClick={() => setVisible(true)}
         />
       ) : (
-        <Button
-          className='oper-name'
-          type='text'
-          danger
-          onClick={() => setVisible(true)}
-        >
+        <Button className='oper-name' type='text' danger onClick={() => setVisible(true)}>
           {t('删除')}
         </Button>
       )}

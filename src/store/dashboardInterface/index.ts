@@ -14,6 +14,8 @@
  * limitations under the License.
  *
  */
+
+import { IDashboard } from '@/pages/dashboard/types';
 export interface Dashboard {
   create_by: string;
   favorite: number;
@@ -23,7 +25,7 @@ export interface Dashboard {
   tags: string;
   update_at: number;
   update_by: string;
-  configs?: string;
+  configs: IDashboard;
   public?: number;
 }
 

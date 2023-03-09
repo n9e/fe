@@ -18,38 +18,40 @@ import React from 'react';
 import { Form, Select, Row, Col, Switch, Radio } from 'antd';
 import { CaretDownOutlined } from '@ant-design/icons';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { Panel } from '../../Components/Collapse';
 import { calcsOptions } from '../../config';
 import { useGlobalState } from '../../../globalState';
 
 export default function GraphStyles({ chartForm }) {
+  const { t, i18n } = useTranslation('dashboard');
   const namePrefix = ['custom'];
   const [tableFields] = useGlobalState('tableFields');
 
   return (
-    <Panel header='图表样式'>
+    <Panel header={t('panel.custom.title')}>
       <>
         <Row gutter={10}>
           <Col span={12}>
-            <Form.Item label='显示表头' name={[...namePrefix, 'showHeader']} valuePropName='checked'>
+            <Form.Item label={t('panel.custom.table.showHeader')} name={[...namePrefix, 'showHeader']} valuePropName='checked'>
               <Switch size='small' />
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label='颜色模式' name={[...namePrefix, 'colorMode']}>
+            <Form.Item label={t('panel.custom.colorMode')} name={[...namePrefix, 'colorMode']}>
               <Radio.Group buttonStyle='solid'>
-                <Radio.Button value='value'>值</Radio.Button>
-                <Radio.Button value='background'>背景</Radio.Button>
+                <Radio.Button value='value'>{t('panel.custom.value')}</Radio.Button>
+                <Radio.Button value='background'>{t('panel.custom.background')}</Radio.Button>
               </Radio.Group>
             </Form.Item>
           </Col>
         </Row>
-        <Form.Item label='取值计算' name={[...namePrefix, 'calc']}>
+        <Form.Item label={t('panel.custom.calc')} name={[...namePrefix, 'calc']}>
           <Select suffixIcon={<CaretDownOutlined />}>
             {_.map(calcsOptions, (item, key) => {
               return (
                 <Select.Option key={key} value={key}>
-                  {item.name}
+                  {i18n.language === 'en_US' ? key : item.name}
                 </Select.Option>
               );
             })}
@@ -57,7 +59,7 @@ export default function GraphStyles({ chartForm }) {
         </Form.Item>
         <Row gutter={10}>
           <Col span={12}>
-            <Form.Item label='显示模式' name={[...namePrefix, 'displayMode']}>
+            <Form.Item label={t('panel.custom.table.displayMode')} name={[...namePrefix, 'displayMode']}>
               <Select
                 suffixIcon={<CaretDownOutlined />}
                 onChange={(val) => {
@@ -68,9 +70,9 @@ export default function GraphStyles({ chartForm }) {
                   }
                 }}
               >
-                <Select.Option value='seriesToRows'>每行展示 serie 的值</Select.Option>
-                <Select.Option value='labelsOfSeriesToRows'>每行展示 labels 的值</Select.Option>
-                <Select.Option value='labelValuesToRows'>每行展示指定聚合维度的值</Select.Option>
+                <Select.Option value='seriesToRows'>{t('panel.custom.table.seriesToRows')}</Select.Option>
+                <Select.Option value='labelsOfSeriesToRows'>{t('panel.custom.table.labelsOfSeriesToRows')}</Select.Option>
+                <Select.Option value='labelValuesToRows'>{t('panel.custom.table.labelValuesToRows')}</Select.Option>
               </Select>
             </Form.Item>
           </Col>
@@ -79,8 +81,8 @@ export default function GraphStyles({ chartForm }) {
               if (getFieldValue([...namePrefix, 'displayMode']) === 'labelsOfSeriesToRows') {
                 return (
                   <Col span={12}>
-                    <Form.Item label='显示列' name={[...namePrefix, 'columns']}>
-                      <Select mode='multiple' placeholder='默认全选' suffixIcon={<CaretDownOutlined />}>
+                    <Form.Item label={t('panel.custom.table.columns')} name={[...namePrefix, 'columns']}>
+                      <Select mode='multiple' placeholder='' suffixIcon={<CaretDownOutlined />}>
                         {_.map(_.concat(tableFields, 'value'), (item) => {
                           return (
                             <Select.Option key={item} value={item}>
@@ -96,7 +98,7 @@ export default function GraphStyles({ chartForm }) {
               if (getFieldValue([...namePrefix, 'displayMode']) === 'labelValuesToRows') {
                 return (
                   <Col span={12}>
-                    <Form.Item label='显示维度' name={[...namePrefix, 'aggrDimension']}>
+                    <Form.Item label={t('panel.custom.table.aggrDimension')} name={[...namePrefix, 'aggrDimension']}>
                       <Select suffixIcon={<CaretDownOutlined />}>
                         {_.map(tableFields, (item) => {
                           return (
@@ -131,7 +133,7 @@ export default function GraphStyles({ chartForm }) {
                   keys = [aggrDimension || 'name'];
                 }
                 return (
-                  <Form.Item label='默认排序列' name={[...namePrefix, 'sortColumn']}>
+                  <Form.Item label={t('panel.custom.table.sortColumn')} name={[...namePrefix, 'sortColumn']}>
                     <Select
                       suffixIcon={<CaretDownOutlined />}
                       allowClear
@@ -159,10 +161,10 @@ export default function GraphStyles({ chartForm }) {
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label='默认排序顺序' name={[...namePrefix, 'sortOrder']}>
+            <Form.Item label={t('panel.custom.table.sortOrder')} name={[...namePrefix, 'sortOrder']}>
               <Select suffixIcon={<CaretDownOutlined />} allowClear>
-                <Select.Option value='ascend'>asc</Select.Option>
-                <Select.Option value='descend'>desc</Select.Option>
+                <Select.Option value='ascend'>Asc</Select.Option>
+                <Select.Option value='descend'>Desc</Select.Option>
               </Select>
             </Form.Item>
           </Col>

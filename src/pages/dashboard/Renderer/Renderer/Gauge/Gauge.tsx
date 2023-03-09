@@ -94,6 +94,8 @@ export default function index(props: Iprops) {
           .innerRadius(radius - thresholdFanWidth)
           .context(context)({
           startAngle: (START_ANGLE + (threshold.start / 100) * (END_ANGLE - START_ANGLE)) * Math.PI + Math.PI / 2,
+          // TODO: fix d3 type
+          // @ts-ignore
           endAngle: (START_ANGLE + (threshold.end / 100) * (END_ANGLE - START_ANGLE)) * Math.PI + Math.PI / 2,
         });
         context.fillStyle = threshold.color;

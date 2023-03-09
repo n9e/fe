@@ -1,15 +1,87 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
-import TimeSeriesForm from './TimeSeriesSource/Form';
-import LogForm from './LogSource/Form';
+import React, { useState, useEffect } from 'react';
+import { message, Spin } from 'antd';
+import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
+import { useHistory, useParams } from 'react-router-dom';
+import PageLayout from '@/components/pageLayout';
+import BreadCrumb from '@/components/BreadCrumb';
+import { getDataSourceDetailById, submitRequest } from './services';
+import From from './Datasources/Form';
+import './index.less';
 
-export default function Form() {
-  const params = useParams<{ cate: string; action: string; type: string }>();
-  if (params.cate === 'timeseries') {
-    return <TimeSeriesForm />;
-  }
-  if (params.cate === 'logging') {
-    return <LogForm />;
-  }
-  return null;
+export default function FormCpt() {
+  const { t } = useTranslation('datasourceManage');
+  const history = useHistory();
+  const params = useParams<{ action: string; type: string; id: string }>();
+  const { action } = params;
+  const id = action === 'edit' ? params.id : undefined;
+  const [type, setType] = useState(action === 'add' ? params.type : '');
+  const [data, setData] = useState<any>();
+  const [submitLoading, setSubmitLoading] = useState(false);
+  const onFinish = async (values: any) => {
+    setSubmitLoading(true);
+    // 转换 http.headers 格式
+    _.set(
+      values,
+      'http.headers',
+      _.transform(
+        values?.http?.headers,
+        (result, item) => {
+          result[item.key] = item.value;
+        },
+        {},
+      ),
+    );
+    return submitRequest({
+      ...values,
+      plugin_type: type,
+      id: data?.id,
+      is_enable: data ? undefined : true,
+      is_test: true,
+    })
+      .then(() => {
+        message.success(action === 'add' ? t('common:success.add') : t('common:success.modify'));
+        setTimeout(() => {
+          history.push({
+            pathname: '/help/source',
+          });
+        }, 2000);
+      })
+      .finally(() => {
+        setSubmitLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    if (action === 'edit' && id !== undefined) {
+      getDataSourceDetailById(id).then((res: any) => {
+        _.set(res, 'http.headers', _.map(res?.http?.headers, (value, key) => ({ key, value })) || []);
+        setData(res);
+        setType(res.plugin_type);
+      });
+    }
+  }, []);
+
+  return (
+    <PageLayout
+      title={
+        <div>
+          {type}
+          <BreadCrumb
+            crumbs={[
+              {
+                text: t('title'),
+                link: '/help/source',
+              },
+              {
+                text: type!,
+              },
+            ]}
+          />
+        </div>
+      }
+    >
+      <div className='srm'>{action === 'edit' && data === undefined ? <Spin spinning={true} /> : <From data={data} onFinish={onFinish} submitLoading={submitLoading} />}</div>
+    </PageLayout>
+  );
 }

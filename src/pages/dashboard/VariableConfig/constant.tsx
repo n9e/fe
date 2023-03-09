@@ -23,6 +23,7 @@ import { favoriteFrom } from '@/store/common';
 import { getLabelNames, getMetricSeries, getLabelValues, getMetric, getQueryResult, getESVariableResult } from '@/services/dashboard';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { IVariable } from './definition';
+import { normalizeESQueryRequestBody } from './utils';
 
 export const CLASS_PATH_VALUE = 'classpath';
 export const CLASS_PATH_PREFIX_VALUE = 'classpath_prefix';
@@ -153,20 +154,16 @@ export const TagFilterReducer = function (state, action) {
 
 // https://grafana.com/docs/grafana/latest/datasources/prometheus/#query-variable 根据文档解析表达式
 // 每一个promtheus接口都接受start和end参数来限制返回值
-export const convertExpressionToQuery = (expression: string, range: IRawTimeRange, item: IVariable, datasourceValue: string) => {
+export const convertExpressionToQuery = (expression: string, range: IRawTimeRange, item: IVariable, datasourceValue: number) => {
   const { type, datasource, config } = item;
   const parsedRange = parseRange(range);
   const start = moment(parsedRange.start).unix();
   const end = moment(parsedRange.end).unix();
+  datasourceValue = datasource?.value || datasourceValue;
   if (datasource?.cate === 'elasticsearch') {
     try {
       const query = JSON.parse(expression);
-      return getESVariableResult({
-        query,
-        cate: datasource.cate,
-        cluster: datasource.name,
-        index: config?.index!,
-      });
+      return getESVariableResult(datasourceValue, config?.index!, normalizeESQueryRequestBody(query));
     } catch (e) {
       return Promise.resolve([]);
     }
@@ -274,12 +271,15 @@ export function getVaraiableSelected(name: string, id: string) {
     if (!v) {
       v = localStorage.getItem(`dashboard_${id}_${name}`);
     }
+    if (v === null) return null; // null 表示没有初始化过，空字符串表示值被设置成空
+    try {
+      v = JSON.parse(v);
+    } catch (e) {}
+    return v || '';
+  } else {
+    if (v === null) v = undefined;
+    return v;
   }
-  if (v === null) return null; // null 表示没有初始化过，空字符串表示值被设置成空
-  try {
-    v = JSON.parse(v);
-  } catch (e) {}
-  return v || '';
 }
 
 export const replaceExpressionVarsSpecifyRule = (

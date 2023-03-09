@@ -1,0 +1,109 @@
+.markdown-wrapper {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
+    margin: 0;
+  }
+  h1 {
+    font-size: 16px;
+    line-height: 24px;
+  }
+  h3 {
+    // font-size: @baseFontSizeTiny;
+  }
+  p {
+    margin-bottom: 0;
+  }
+  img {
+    // width: 90%;
+  }
+  pre {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 12px;
+    background: #f5f6fa;
+    border-radius: 2px;
+    margin-right: 0;
+    code {
+      color: #9254de;
+      // font-size: @baseFontSizeTiny;
+      line-height: 1.2;
+    }
+  }
+  p {
+    // font-size: @baseFontSizeTiny;
+    line-height: 1.2;
+  }
+  table {
+    width: 100%;
+    thead {
+      width: 100%;
+      height: 36px;
+      background: @baseTableHeaderBgColor;
+      th {
+        // font-size: @baseFontSizeTiny;
+        line-height: 1.2;
+        padding: 0 0 0 16px;
+        text-align: left;
+      }
+    }
+    tbody {
+      tr {
+        height: 36px;
+        border-bottom: 1px solid @baseContentBgColor;
+        td {
+          // font-size: @baseFontSizeTiny;
+          line-height: 1.2;
+          padding: 0 0 0 16px;
+          text-align: left;
+        }
+      }
+    }
+  }
+  p + h1,
+  p + h2,
+  p + h3 {
+    margin-top: 24px;
+  }
+  table + h1,
+  table + h2,
+  table + h3 {
+    margin-top: 24px;
+  }
+  pre + h1,
+  pre + h2,
+  pre + h3 {
+    margin-top: 24px;
+  }
+  p + p,
+  p + table,
+  table + p {
+    margin-top: 8px;
+  }
+  h1 + p,
+  h2 + p,
+  h3 + p,
+  h4 + p {
+    margin-top: 12px;
+  }
+  h1 + table,
+  h2 + table,
+  h3 + table,
+  h4 + table {
+    margin-top: 12px;
+  }
+  h1 + pre,
+  h2 + pre,
+  h3 + pre,
+  h4 + pre {
+    margin-top: 12px;
+  }
+  li {
+    line-height: 1.2;
+  }
+  ul {
+    padding-inline-start: 24px;
+  }
+}

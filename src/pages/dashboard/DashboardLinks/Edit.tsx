@@ -18,6 +18,7 @@ import React from 'react';
 import { Modal, Form, Input, Tooltip, Switch, Button, Space } from 'antd';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 import ModalHOC, { ModalWrapProps } from '../Components/ModalHOC';
 import { ILink } from '../types';
 
@@ -27,12 +28,13 @@ interface IProps {
 }
 
 function index(props: ModalWrapProps & IProps) {
+  const { t } = useTranslation('dashboard');
   const { visible, initialValues } = props;
   const [form] = Form.useForm();
   return (
     <Modal
       width={800}
-      title='大盘链接设置'
+      title={t('link.title')}
       style={{ top: 10, padding: 0 }}
       visible={visible}
       closable={false}
@@ -73,11 +75,10 @@ function index(props: ModalWrapProps & IProps) {
                       rules={[
                         {
                           required: true,
-                          message: '链接名称',
                         },
                       ]}
                     >
-                      <Input placeholder='链接名称' style={{ width: 192 }} />
+                      <Input placeholder={t('link.name')} style={{ width: 192 }} />
                     </Form.Item>
                     <Form.Item
                       {...restField}
@@ -85,13 +86,12 @@ function index(props: ModalWrapProps & IProps) {
                       rules={[
                         {
                           required: true,
-                          message: '链接地址',
                         },
                       ]}
                     >
-                      <Input style={{ width: 460 }} placeholder='链接地址' />
+                      <Input style={{ width: 460 }} placeholder={t('link.url')} />
                     </Form.Item>
-                    <Tooltip title='是否新窗口打开'>
+                    <Tooltip title={t('link.isNewBlank')}>
                       <Form.Item {...restField} name={[name, 'targetBlank']} valuePropName='checked'>
                         <Switch />
                       </Form.Item>
@@ -112,7 +112,7 @@ function index(props: ModalWrapProps & IProps) {
                   add({});
                 }}
               >
-                <PlusOutlined /> 新增链接
+                <PlusOutlined /> {t('common:btn.add')}
               </Button>
             </>
           )}

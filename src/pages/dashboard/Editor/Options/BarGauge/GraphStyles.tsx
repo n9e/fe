@@ -18,24 +18,26 @@ import React from 'react';
 import { Form, Select, Row, Col, InputNumber, Input } from 'antd';
 import { CaretDownOutlined } from '@ant-design/icons';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { Panel } from '../../Components/Collapse';
 import { calcsOptions } from '../../config';
 import ColorPicker from '../../../Components/ColorPicker';
 
 export default function GraphStyles() {
+  const { t, i18n } = useTranslation('dashboard');
   const namePrefix = ['custom'];
 
   return (
-    <Panel header='图表样式'>
+    <Panel header={t('panel.custom.title')}>
       <>
         <Row gutter={10}>
           <Col span={12}>
-            <Form.Item label='取值计算' name={[...namePrefix, 'calc']}>
+            <Form.Item label={t('panel.custom.calc')} name={[...namePrefix, 'calc']}>
               <Select suffixIcon={<CaretDownOutlined />}>
                 {_.map(calcsOptions, (item, key) => {
                   return (
                     <Select.Option key={key} value={key}>
-                      {item.name}
+                      {i18n.language === 'en_US' ? key : item.name}
                     </Select.Option>
                   );
                 })}
@@ -43,19 +45,19 @@ export default function GraphStyles() {
             </Form.Item>
           </Col>
           <Col span={8}>
-            <Form.Item label='最大值' name={[...namePrefix, 'maxValue']}>
+            <Form.Item label={t('panel.custom.maxValue')} name={[...namePrefix, 'maxValue']}>
               <InputNumber placeholder='auto' style={{ width: '100%' }} />
             </Form.Item>
           </Col>
           <Col span={3}>
-            <Form.Item label='基础颜色' name={[...namePrefix, 'baseColor']}>
+            <Form.Item label={t('panel.custom.baseColor')} name={[...namePrefix, 'baseColor']}>
               <ColorPicker />
             </Form.Item>
           </Col>
         </Row>
         <Row gutter={10}>
           <Col span={12}>
-            <Form.Item label='序列名宽度'>
+            <Form.Item label={t('panel.custom.serieWidth')}>
               <Input.Group>
                 <Form.Item noStyle name={[...namePrefix, 'serieWidth']}>
                   <InputNumber style={{ width: '100%' }} placeholder='auto' />
@@ -65,11 +67,11 @@ export default function GraphStyles() {
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label='排序' name={[...namePrefix, 'sortOrder']}>
+            <Form.Item label={t('panel.custom.sortOrder')} name={[...namePrefix, 'sortOrder']}>
               <Select>
-                <Select.Option value='none'>none</Select.Option>
-                <Select.Option value='asc'>asc</Select.Option>
-                <Select.Option value='desc'>desc</Select.Option>
+                <Select.Option value='none'>None</Select.Option>
+                <Select.Option value='asc'>Asc</Select.Option>
+                <Select.Option value='desc'>Desc</Select.Option>
               </Select>
             </Form.Item>
           </Col>

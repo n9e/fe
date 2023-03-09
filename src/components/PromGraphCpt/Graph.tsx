@@ -28,9 +28,7 @@ import { QueryStats } from './components/QueryStatsView';
 
 interface IProps {
   url: string;
-  datasourceId?: number;
-  datasourceIdRequired?: boolean;
-  datasourceName?: string;
+  datasourceValue: number;
   promql?: string;
   setQueryStats: (stats: QueryStats) => void;
   setErrorContent: (content: string) => void;
@@ -62,23 +60,8 @@ const getSerieName = (metric: any) => {
 };
 
 export default function Graph(props: IProps) {
-  const {
-    url,
-    datasourceId,
-    datasourceIdRequired,
-    datasourceName,
-    promql,
-    setQueryStats,
-    setErrorContent,
-    contentMaxHeight,
-    range,
-    setRange,
-    step,
-    setStep,
-    graphOperates,
-    refreshFlag,
-  } = props;
-  const [data, setData] = useState([]);
+  const { url, datasourceValue, promql, setQueryStats, setErrorContent, contentMaxHeight, range, setRange, step, setStep, graphOperates, refreshFlag } = props;
+  const [data, setData] = useState<any[]>([]);
   const [highLevelConfig, setHighLevelConfig] = useState({
     shared: true,
     sharedSortDirection: 'desc',
@@ -112,28 +95,19 @@ export default function Graph(props: IProps) {
   };
 
   useEffect(() => {
-    if (datasourceIdRequired ? datasourceId && promql : promql) {
+    if (datasourceValue && promql) {
       const parsedRange = parseRange(range);
       const start = moment(parsedRange.start).unix();
       const end = moment(parsedRange.end).unix();
       let realStep = step;
       if (!step) realStep = Math.max(Math.floor((end - start) / 240), 1);
       const queryStart = Date.now();
-      getPromData(
-        `${url}/api/v1/query_range`,
-        {
-          query: promql,
-          start: moment(parsedRange.start).unix(),
-          end: moment(parsedRange.end).unix(),
-          step: realStep,
-        },
-        datasourceId
-          ? { 'X-Data-Source-Id': datasourceId }
-          : {
-              'X-Cluster': datasourceName || localStorage.getItem('curCluster') || 'DEFAULT',
-              Authorization: `Bearer ${localStorage.getItem('access_token') || ''}`,
-            },
-      )
+      getPromData(`${url}/${datasourceValue}/api/v1/query_range`, {
+        query: promql,
+        start: moment(parsedRange.start).unix(),
+        end: moment(parsedRange.end).unix(),
+        step: realStep,
+      })
         .then((res) => {
           const series = _.map(res?.result, (item) => {
             return {
@@ -156,7 +130,7 @@ export default function Graph(props: IProps) {
           setErrorContent(`Error executing query: ${msg}`);
         });
     }
-  }, [JSON.stringify(range), step, datasourceId, datasourceName, promql, refreshFlag]);
+  }, [JSON.stringify(range), step, datasourceValue, promql, refreshFlag]);
 
   return (
     <div className='prom-graph-graph-container'>

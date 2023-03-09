@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { Table, Divider, Checkbox, Row, Col, Input, Select, Button } from 'antd';
 import { SearchOutlined, CodeOutlined } from '@ant-design/icons';
@@ -25,12 +25,10 @@ import { useTranslation } from 'react-i18next';
 import { useAntdTable } from 'ahooks';
 import request from '@/utils/request';
 import api from '@/utils/api';
-import LeftTree from '@/components/LeftTree';
+import { BusinessGroup } from '@/pages/monObjectManage';
 import PageLayout from '@/components/pageLayout';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store/common';
-import { CommonStoreState } from '@/store/commonInterface';
 import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
+import { CommonStateContext } from '@/App';
 
 interface DataItem {
   id: number;
@@ -52,8 +50,8 @@ const index = (_props: any) => {
   const [query, setQuery] = useState('');
   const [mine, setMine] = useState(true);
   const [days, setDays] = useState(7);
-  const { curBusiItem } = useSelector<RootState, CommonStoreState>((state) => state.common);
-  const { tableProps } = useAntdTable((options) => getTableData(options, curBusiItem.id, query, mine, days), { refreshDeps: [curBusiItem.id, query, mine, days] });
+  const { curBusiId, setCurBusiId } = useContext(CommonStateContext);
+  const { tableProps } = useAntdTable((options) => getTableData(options, curBusiId, query, mine, days), { refreshDeps: [curBusiId, query, mine, days] });
   const columns: ColumnProps<DataItem>[] = [
     {
       title: 'ID',
@@ -97,17 +95,21 @@ const index = (_props: any) => {
   ];
   return (
     <PageLayout
-      hideCluster
       title={
         <>
           <CodeOutlined />
-          {t('执行历史')}
+          {t('task')}
         </>
       }
     >
       <div style={{ display: 'flex' }}>
-        <LeftTree></LeftTree>
-        {curBusiItem.id ? (
+        <BusinessGroup
+          curBusiId={curBusiId}
+          setCurBusiId={(id) => {
+            setCurBusiId(id);
+          }}
+        />
+        {curBusiId ? (
           <div style={{ flex: 1, padding: 10 }}>
             <Row>
               <Col span={16} className='mb10'>
@@ -118,7 +120,6 @@ const index = (_props: any) => {
                   onPressEnter={(e) => {
                     setQuery(e.currentTarget.value);
                   }}
-                  placeholder='搜索标题'
                 />
                 <Select
                   style={{ marginRight: 10 }}
@@ -145,7 +146,6 @@ const index = (_props: any) => {
               <Col span={8} style={{ textAlign: 'right' }}>
                 <Button
                   type='primary'
-                  ghost
                   onClick={() => {
                     history.push('/job-tasks/add');
                   }}
@@ -155,6 +155,7 @@ const index = (_props: any) => {
               </Col>
             </Row>
             <Table
+              size='small'
               rowKey='id'
               columns={columns as any}
               {...(tableProps as any)}
@@ -171,7 +172,7 @@ const index = (_props: any) => {
             />
           </div>
         ) : (
-          <BlankBusinessPlaceholder text={t('执行历史')}></BlankBusinessPlaceholder>
+          <BlankBusinessPlaceholder text={t('task')}></BlankBusinessPlaceholder>
         )}
       </div>
     </PageLayout>

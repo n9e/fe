@@ -14,60 +14,73 @@
  * limitations under the License.
  *
  */
-import React, { useState, useEffect } from 'react';
-import PageLayout from '@/components/pageLayout';
-import { Button, Input, Table, message, Modal } from 'antd';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store/common';
-import { CommonStoreState } from '@/store/commonInterface';
-import { getSubscribeList, deleteSubscribes } from '@/services/subscribe';
-import { ColumnsType } from 'antd/lib/table';
+import React, { useState, useEffect, useContext } from 'react';
+import { Button, Input, Table, message, Modal, Space, Select, Tag } from 'antd';
 import { CopyOutlined, ExclamationCircleOutlined, SearchOutlined } from '@ant-design/icons';
-import { useHistory } from 'react-router-dom';
+import { ColumnsType } from 'antd/lib/table';
+import { useHistory, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import _ from 'lodash';
+import queryString from 'query-string';
+import PageLayout from '@/components/pageLayout';
+import { getSubscribeList, deleteSubscribes } from '@/services/subscribe';
 import { subscribeItem } from '@/store/warningInterface/subscribe';
-import ColorTag from '@/components/ColorTag';
-import LeftTree from '@/components/LeftTree';
+import { BusinessGroup } from '@/pages/monObjectManage';
 import RefreshIcon from '@/components/RefreshIcon';
 import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
+import { CommonStateContext } from '@/App';
 import { pageSizeOptionsDefault } from '../const';
+import './locale';
 import './index.less';
-import { useTranslation } from 'react-i18next';
+
+export { default as Add } from './add';
+export { default as Edit } from './edit';
+
 const { confirm } = Modal;
-import ColumnSelect from '@/components/ColumnSelect';
 const Shield: React.FC = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('alertSubscribes');
   const history = useHistory();
+  const { search } = useLocation();
+  const { id } = queryString.parse(search);
+  const commonState = useContext(CommonStateContext);
+  const bgid = id ? Number(id) : commonState.curBusiId;
+  const { groupedDatasourceList } = commonState;
   const [query, setQuery] = useState<string>('');
-  const { curBusiItem } = useSelector<RootState, CommonStoreState>((state) => state.common);
-  const [bgid, setBgid] = useState(undefined);
-  const [clusters, setClusters] = useState<string[]>([]);
   const [currentShieldDataAll, setCurrentShieldDataAll] = useState<Array<subscribeItem>>([]);
   const [currentShieldData, setCurrentShieldData] = useState<Array<subscribeItem>>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [datasourceIds, setDatasourceIds] = useState<number[]>();
 
   const columns: ColumnsType = [
     {
-      title: t('集群'),
-      dataIndex: 'cluster',
+      title: t('common:datasource.id'),
+      dataIndex: 'datasource_ids',
       render: (data) => {
-        const array = data.split(' ') || [];
-        return (
-          (array.length &&
-            array.map((tag: string, index: number) => {
-              return <ColorTag text={tag} key={index}></ColorTag>;
-            })) || <div></div>
-        );
+        return _.map(data, (item) => {
+          if (item === 0) {
+            return (
+              <Tag color='purple' key={item}>
+                $all
+              </Tag>
+            );
+          }
+          return (
+            <Tag color='purple' key={item}>
+              {_.find(groupedDatasourceList?.prometheus, { id: item })?.name!}
+            </Tag>
+          );
+        });
       },
     },
     {
-      title: t('告警规则'),
+      title: t('rule_name'),
       dataIndex: 'rule_name',
       render: (data) => {
         return <div>{data}</div>;
       },
     },
     {
-      title: t('订阅标签'),
+      title: t('tags'),
       dataIndex: 'tags',
       render: (text: any) => {
         return (
@@ -82,13 +95,15 @@ const Shield: React.FC = () => {
       },
     },
     {
-      title: t('告警接收组'),
+      title: t('user_groups'),
       dataIndex: 'user_groups',
       render: (text: string, record: subscribeItem) => {
         return (
           <>
             {record.user_groups?.map((item) => (
-              <ColorTag text={item.name} key={item.id}></ColorTag>
+              <Tag color='purple' key={item.id}>
+                {item.name}
+              </Tag>
             ))}
           </>
         );
@@ -96,12 +111,12 @@ const Shield: React.FC = () => {
     },
 
     {
-      title: t('编辑人'),
+      title: t('common:table.create_by'),
       ellipsis: true,
       dataIndex: 'update_by',
     },
     {
-      title: t('操作'),
+      title: t('common:table.operations'),
       width: '128px',
       dataIndex: 'operation',
       render: (text: undefined, record: subscribeItem) => {
@@ -115,10 +130,10 @@ const Shield: React.FC = () => {
                   display: 'inline-block',
                 }}
                 onClick={() => {
-                  curBusiItem?.id && history.push(`/alert-subscribes/edit/${record.id}`);
+                  history.push(`/alert-subscribes/edit/${record.id}`);
                 }}
               >
-                {t('编辑')}
+                {t('common:btn.modify')}
               </div>
               <div
                 className='table-operator-area-normal'
@@ -127,10 +142,10 @@ const Shield: React.FC = () => {
                   display: 'inline-block',
                 }}
                 onClick={() => {
-                  curBusiItem?.id && history.push(`/alert-subscribes/edit/${record.id}?mode=clone`);
+                  history.push(`/alert-subscribes/edit/${record.id}?mode=clone`);
                 }}
               >
-                {t('克隆')}
+                {t('common:btn.clone')}
               </div>
               <div
                 className='table-operator-area-warning'
@@ -140,7 +155,7 @@ const Shield: React.FC = () => {
                 }}
                 onClick={() => {
                   confirm({
-                    title: t('确定删除该订阅规则?'),
+                    title: t('common:confirm.delete'),
                     icon: <ExclamationCircleOutlined />,
                     onOk: () => {
                       dismiss(record.id);
@@ -150,7 +165,7 @@ const Shield: React.FC = () => {
                   });
                 }}
               >
-                {t('删除')}
+                {t('common:btn.delete')}
               </div>
             </div>
           </>
@@ -161,19 +176,19 @@ const Shield: React.FC = () => {
 
   useEffect(() => {
     getList();
-  }, [curBusiItem]);
+  }, [bgid]);
 
   useEffect(() => {
     filterData();
-  }, [query, clusters, currentShieldDataAll]);
+  }, [query, datasourceIds, currentShieldDataAll]);
 
   const dismiss = (id: number) => {
-    deleteSubscribes({ ids: [id] }, curBusiItem.id).then((res) => {
+    deleteSubscribes({ ids: [id] }, Number(bgid)).then((res) => {
       refreshList();
       if (res.err) {
         message.success(res.err);
       } else {
-        message.success(t('删除成功'));
+        message.success(t('common:success.delete'));
       }
     });
   };
@@ -187,15 +202,23 @@ const Shield: React.FC = () => {
       const groupFind = item?.user_groups?.find((item) => {
         return item?.name?.indexOf(query) > -1;
       });
-      return (item?.rule_name?.indexOf(query) > -1 || !!tagFind || !!groupFind) && ((clusters && clusters?.indexOf(item.cluster) > -1) || clusters?.length === 0);
+      return (
+        (item?.rule_name?.indexOf(query) > -1 || !!tagFind || !!groupFind) &&
+        (_.some(item.datasource_ids, (id) => {
+          if (id === 0) return true;
+          return _.includes(datasourceIds, id);
+        }) ||
+          datasourceIds?.length === 0 ||
+          !datasourceIds)
+      );
     });
     setCurrentShieldData(res || []);
   };
 
   const getList = async () => {
-    if (curBusiItem.id) {
+    if (bgid) {
       setLoading(true);
-      const { success, dat } = await getSubscribeList({ id: curBusiItem.id });
+      const { success, dat } = await getSubscribeList({ id: Number(bgid) });
       if (success) {
         setCurrentShieldDataAll(dat || []);
         setLoading(false);
@@ -212,57 +235,65 @@ const Shield: React.FC = () => {
     setQuery(val);
   };
 
-  const clusterChange = (data) => {
-    setClusters(data);
-  };
-
-  const busiChange = (data) => {
-    setBgid(data);
-  };
-
   return (
-    <PageLayout title={t('订阅规则')} icon={<CopyOutlined />} hideCluster>
+    <PageLayout title={t('title')} icon={<CopyOutlined />}>
       <div className='shield-content'>
-        <LeftTree
-          busiGroup={{
-            // showNotGroupItem: true,
-            onChange: busiChange,
+        <BusinessGroup
+          curBusiId={bgid}
+          setCurBusiId={(newId) => {
+            history.push(`/alert-subscribes?id=${newId}`);
+            commonState.setCurBusiId(newId);
           }}
-        ></LeftTree>
-        {curBusiItem?.id ? (
+        />
+        {bgid ? (
           <div className='shield-index'>
             <div className='header'>
-              <div className='header-left'>
+              <Space>
                 <RefreshIcon
-                  className='strategy-table-search-left-refresh'
                   onClick={() => {
                     refreshList();
                   }}
                 />
-                <ColumnSelect onClusterChange={(e) => setClusters(e)} />
-                <Input onPressEnter={onSearchQuery} className={'searchInput'} prefix={<SearchOutlined />} placeholder={t('搜索规则、标签、接收组')} />
-              </div>
+                <Select
+                  allowClear
+                  placeholder={t('common:datasource.id')}
+                  style={{ minWidth: 100 }}
+                  dropdownMatchSelectWidth={false}
+                  mode='multiple'
+                  value={datasourceIds}
+                  onChange={(val) => {
+                    setDatasourceIds(val);
+                  }}
+                >
+                  {_.map(groupedDatasourceList?.prometheus, (item) => (
+                    <Select.Option value={item.id} key={item.id}>
+                      {item.name}
+                    </Select.Option>
+                  ))}
+                </Select>
+                <Input style={{ minWidth: 200 }} onPressEnter={onSearchQuery} prefix={<SearchOutlined />} placeholder={t('search_placeholder')} />
+              </Space>
               <div className='header-right'>
                 <Button
                   type='primary'
                   className='add'
-                  ghost
                   onClick={() => {
                     history.push('/alert-subscribes/add');
                   }}
                 >
-                  {t('新增订阅规则')}
+                  {t('common:btn.add')}
                 </Button>
               </div>
             </div>
             <Table
+              size='small'
               rowKey='id'
               pagination={{
                 total: currentShieldData.length,
                 showQuickJumper: true,
                 showSizeChanger: true,
                 showTotal: (total) => {
-                  return `共 ${total} 条数据`;
+                  return t('common:table.total', { total });
                 },
                 pageSizeOptions: pageSizeOptionsDefault,
                 defaultPageSize: 30,
@@ -273,7 +304,7 @@ const Shield: React.FC = () => {
             />
           </div>
         ) : (
-          <BlankBusinessPlaceholder text='订阅规则' />
+          <BlankBusinessPlaceholder text={t('title')} />
         )}
       </div>
     </PageLayout>

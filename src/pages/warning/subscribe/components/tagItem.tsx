@@ -55,7 +55,7 @@ const TagItem: React.FC<Itag> = ({ field, remove, form }) => {
       <Row gutter={[10, 10]} style={{ marginBottom: '10px' }}>
         <Col span={5}>
           <Form.Item style={{ marginBottom: 0 }} name={[field.name, 'key']} fieldKey={[field.name, 'key']} rules={[{ required: true, message: t('key不能为空') }]}>
-            <Input placeholder={t('请输入订阅事件标签key')} />
+            <Input />
           </Form.Item>
         </Col>
         <Col span={3}>

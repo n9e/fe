@@ -15,18 +15,16 @@
  *
  */
 import React from 'react';
-import {
-  Modal, Input, message,
-} from 'antd';
+import { Modal, Input, message } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import clipboard from './clipboard';
 
 interface Props {
-  dataIndex: string,
-  data: any[],
-  hasSelected?: boolean,
+  dataIndex: string;
+  data: any[];
+  hasSelected?: boolean;
 }
 type CopyType = 'all' | 'selected' | 'currentPage';
 type HandleCopyBtnClick = (dataIndex: string, copyType: CopyType) => void;
@@ -35,7 +33,7 @@ const HostCopyTitle = (props: Props) => {
   const { t, i18n } = useTranslation();
   const handleCopyBtnClick: HandleCopyBtnClick = async (dataIndex, copyType) => {
     const { data } = props;
-    let tobeCopy = [];
+    let tobeCopy: any[] = [];
 
     if (copyType === 'all') {
       tobeCopy = _.map(data, (item) => item[dataIndex]);
@@ -61,21 +59,17 @@ const HostCopyTitle = (props: Props) => {
         content: <Input.TextArea defaultValue={tobeCopyStr} />,
       });
     }
-  }
+  };
 
   const { dataIndex } = props;
 
   return (
     <span>
       Host
-      <CopyOutlined
-        className="pointer"
-        style={{ paddingLeft: 5 }}
-        onClick={() => handleCopyBtnClick(dataIndex, 'all')}
-      />
+      <CopyOutlined className='pointer' style={{ paddingLeft: 5 }} onClick={() => handleCopyBtnClick(dataIndex, 'all')} />
     </span>
   );
-}
+};
 
 HostCopyTitle.defaultProps = {
   data: [],

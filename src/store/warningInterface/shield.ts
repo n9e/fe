@@ -23,19 +23,10 @@ export interface shieldItem {
   btime: number;
   id: number;
   group_id?: number;
-  cluster: string;
+  cate: string;
+  datasource_ids: number[];
 }
 
-// export interface shieldDetail {
-//   cause: string;
-//   create_at?: number;
-//   create_by?: string;
-//   etime: number;
-//   id: number;
-//   btime: number;
-//   tags: any[];
-// }
-
 export interface IshieldState {
-  curShieldData: shieldItem
+  curShieldData: shieldItem;
 }

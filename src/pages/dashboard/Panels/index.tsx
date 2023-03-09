@@ -14,20 +14,19 @@
  * limitations under the License.
  *
  */
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useContext } from 'react';
 import _ from 'lodash';
 import semver from 'semver';
 import { v4 as uuidv4 } from 'uuid';
 import { message, Modal } from 'antd';
 import { useLocation } from 'react-router-dom';
 import querystring from 'query-string';
-import { useSelector } from 'react-redux';
 import RGL, { WidthProvider } from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
-import { RootState as AccountRootState, accountStoreState } from '@/store/accountInterface';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { updateDashboardConfigs as updateDashboardConfigsFunc } from '@/services/dashboardV2';
 import { Dashboard } from '@/store/dashboardInterface';
+import { CommonStateContext } from '@/App';
 import {
   buildLayout,
   sortPanelsByGridLayout,
@@ -47,7 +46,7 @@ import './style.less';
 
 interface IProps {
   editable: boolean;
-  curCluster: string;
+  datasourceValue: number;
   dashboard: Dashboard;
   range: IRawTimeRange;
   step: number | null;
@@ -62,10 +61,10 @@ interface IProps {
 const ReactGridLayout = WidthProvider(RGL);
 
 function index(props: IProps) {
-  const { profile } = useSelector<AccountRootState, accountStoreState>((state) => state.account);
+  const { profile } = useContext(CommonStateContext);
   const location = useLocation();
   const { themeMode } = querystring.parse(location.search);
-  const { editable, curCluster, dashboard, range, step, variableConfig, panels, isPreview, setPanels, onShareClick, onUpdated } = props;
+  const { editable, datasourceValue, dashboard, range, step, variableConfig, panels, isPreview, setPanels, onShareClick, onUpdated } = props;
   const layoutInitialized = useRef(false);
   const allowUpdateDashboardConfigs = useRef(false);
   const reactGridLayoutDefaultProps = {
@@ -76,7 +75,7 @@ function index(props: IProps) {
   };
   const updateDashboardConfigs = (dashboardId, options) => {
     const roles = _.get(profile, 'roles', []);
-    const isAuthorized = !_.some(roles, (item) => item === 'Guest');
+    const isAuthorized = !_.some(roles, (item) => item === 'Guest') && !isPreview;
     if (!editable) {
       message.warning('大盘已经被别人修改，为避免相互覆盖，请刷新大盘查看最新配置和数据');
     }
@@ -151,7 +150,7 @@ function index(props: IProps) {
                     values={
                       {
                         ...item,
-                        datasourceName: item.datasourceName || curCluster,
+                        datasourceValue: item.datasourceValue || datasourceValue,
                       } as any
                     }
                     variableConfig={variableConfig}
@@ -290,7 +289,7 @@ function index(props: IProps) {
           });
         }}
         variableConfigWithOptions={variableConfig}
-        cluster={curCluster}
+        datasourceValue={datasourceValue}
         id={editorData.id}
         time={range}
         initialValues={editorData.initialValues}

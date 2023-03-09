@@ -16,19 +16,17 @@
  */
 import React, { useState, useRef, useEffect } from 'react';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { useInterval } from 'ahooks';
 import { v4 as uuidv4 } from 'uuid';
 import { useParams, useLocation } from 'react-router-dom';
-import queryString from 'query-string';
-import { useSelector } from 'react-redux';
 import { Alert } from 'antd';
 import PageLayout from '@/components/pageLayout';
 import { IRawTimeRange, getDefaultValue } from '@/components/TimeRangePicker';
 import { Dashboard } from '@/store/dashboardInterface';
-import { RootState as CommonRootState } from '@/store/common';
-import { CommonStoreState } from '@/store/commonInterface';
-import { getDashboard, updateDashboardConfigs, getDashboardPure } from '@/services/dashboardV2';
+import { getDashboard, updateDashboardConfigs, getDashboardPure, getBuiltinDashboard } from '@/services/dashboardV2';
 import { SetTmpChartData } from '@/services/metric';
+import { getDatasourceList } from '@/services/common';
 import VariableConfig, { IVariable } from '../VariableConfig';
 import { replaceExpressionVars } from '../VariableConfig/constant';
 import { ILink } from '../types';
@@ -40,6 +38,7 @@ import Editor from '../Editor';
 import { defaultCustomValuesMap, defaultOptionsValuesMap } from '../Editor/config';
 import { sortPanelsByGridLayout, panelsMergeToConfigs, updatePanelsInsertNewPanelToGlobal } from '../Panels/utils';
 import { useGlobalState } from '../globalState';
+import { getLocalDatasourceValue, getDatasourceValue } from './utils';
 import './style.less';
 import './dark.antd.less';
 import './dark.less';
@@ -49,28 +48,23 @@ interface URLParam {
 }
 
 export const dashboardTimeCacheKey = 'dashboard-timeRangePicker-value';
+const fetchDashboard = ({ id, builtinParams }) => {
+  if (builtinParams) {
+    return getBuiltinDashboard(builtinParams);
+  }
+  return getDashboard(id);
+};
 
-export default function DetailV2({ isPreview = false }: { isPreview?: boolean }) {
+export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boolean; gobackPath?: string; builtinParams?: any }) {
+  const { isPreview = false, isBuiltin = false, gobackPath, builtinParams } = props;
+  const { t, i18n } = useTranslation('dashboard');
   const [dashboardMeta, setDashboardMeta] = useGlobalState('dashboardMeta');
   const { search } = useLocation();
-  const locationQuery = queryString.parse(search);
-  if (_.get(locationQuery, '__cluster')) {
-    localStorage.setItem('curCluster', _.get(locationQuery, '__cluster'));
-  }
-  const localCluster = localStorage.getItem('curCluster');
   const { id } = useParams<URLParam>();
   const refreshRef = useRef<{ closeRefresh: Function }>();
-  const { clusters } = useSelector<CommonRootState, CommonStoreState>((state) => state.common);
-  const [dashboard, setDashboard] = useState<Dashboard>({
-    create_by: '',
-    favorite: 0,
-    id: 0,
-    name: '',
-    tags: '',
-    update_at: 0,
-    update_by: '',
-  });
-  const [curCluster, setCurCluster] = useState<string>();
+  const [dashboard, setDashboard] = useState<Dashboard>({} as Dashboard);
+  const [datasources, setDatasources] = useState<any[]>([]);
+  const [datasourceValue, setDatasourceValue] = useState<number>();
   const [variableConfig, setVariableConfig] = useState<IVariable[]>();
   const [variableConfigWithOptions, setVariableConfigWithOptions] = useState<IVariable[]>();
   const [dashboardLinks, setDashboardLinks] = useState<ILink[]>();
@@ -90,16 +84,28 @@ export default function DetailV2({ isPreview = false }: { isPreview?: boolean })
   });
   const [forceRenderKey, setForceRender] = useState(_.uniqueId('forceRenderKey_'));
   let updateAtRef = useRef<number>();
-  const refresh = (cbk?: () => void) => {
-    getDashboard(id).then((res) => {
+  const refresh = async (cbk?: () => void) => {
+    let curDatasources = datasources;
+    if (_.isEmpty(datasources)) {
+      curDatasources = await getDatasourceList(['prometheus']);
+      setDatasources(curDatasources);
+    }
+    fetchDashboard({
+      id,
+      builtinParams,
+    }).then((res) => {
       updateAtRef.current = res.update_at;
-      setDashboard(res);
-      if (!curCluster) {
-        const dashboardConfigs: any = JSONParse(res.configs);
-        setCurCluster(dashboardConfigs.datasourceValue || localCluster || clusters[0]);
+      const configs = _.isString(res.configs) ? JSONParse(res.configs) : res.configs;
+      setDashboard({
+        ...res,
+        configs,
+      });
+      if (!datasourceValue) {
+        const dashboardConfigs: any = res.configs;
+        const localDatasourceValue = getLocalDatasourceValue(search);
+        setDatasourceValue(getDatasourceValue(dashboardConfigs, curDatasources) || localDatasourceValue || curDatasources[0]?.id);
       }
-      if (res.configs) {
-        const configs = JSONParse(res.configs);
+      if (configs) {
         // TODO: configs 中可能没有 var 属性会导致 VariableConfig 报错
         const variableConfig = configs.var
           ? configs
@@ -110,7 +116,7 @@ export default function DetailV2({ isPreview = false }: { isPreview?: boolean })
         setVariableConfig(
           _.map(variableConfig.var, (item) => {
             return _.omit(item, 'options'); // 兼容性代码，去除掉已保存的 options
-          }),
+          }) as IVariable[],
         );
         setDashboardLinks(configs.links);
         setPanels(sortPanelsByGridLayout(configs.panels));
@@ -127,7 +133,7 @@ export default function DetailV2({ isPreview = false }: { isPreview?: boolean })
     });
   };
   const handleVariableChange = (value, b, valueWithOptions) => {
-    const dashboardConfigs: any = JSONParse(dashboard.configs);
+    const dashboardConfigs: any = dashboard.configs;
     dashboardConfigs.var = value;
     // 更新变量配置
     b && handleUpdateDashboardConfigs(dashboard.id, { configs: JSON.stringify(dashboardConfigs) });
@@ -160,18 +166,19 @@ export default function DetailV2({ isPreview = false }: { isPreview?: boolean })
     }
   }, 2000);
 
-  if (!curCluster) return null;
+  if (!datasourceValue) return null;
 
   return (
     <PageLayout
       customArea={
         <Title
           isPreview={isPreview}
-          curCluster={curCluster}
-          clusters={clusters}
-          setCurCluster={setCurCluster}
+          isBuiltin={isBuiltin}
+          gobackPath={gobackPath}
+          datasources={datasources}
+          datasourceValue={datasourceValue}
+          setDatasourceValue={setDatasourceValue}
           dashboard={dashboard}
-          setDashboard={setDashboard}
           refresh={() => {
             // 集群修改需要刷新数据
             refresh(() => {
@@ -187,7 +194,6 @@ export default function DetailV2({ isPreview = false }: { isPreview?: boolean })
           }}
           step={step}
           setStep={setStep}
-          refreshRef={refreshRef}
           onAddPanel={(type) => {
             if (type === 'row') {
               const newPanels = updatePanelsInsertNewPanelToGlobal(
@@ -195,7 +201,7 @@ export default function DetailV2({ isPreview = false }: { isPreview?: boolean })
                 {
                   type: 'row',
                   id: uuidv4(),
-                  name: '分组',
+                  name: i18n.language === 'en_US' ? 'Row' : '分组',
                   collapsed: true,
                 },
                 'row',
@@ -239,7 +245,7 @@ export default function DetailV2({ isPreview = false }: { isPreview?: boolean })
                   isPreview={isPreview}
                   onChange={handleVariableChange}
                   value={variableConfig}
-                  cluster={curCluster}
+                  datasourceValue={datasourceValue}
                   range={range}
                   id={id}
                   onOpenFire={stopAutoRefresh}
@@ -250,7 +256,7 @@ export default function DetailV2({ isPreview = false }: { isPreview?: boolean })
               <DashboardLinks
                 value={dashboardLinks}
                 onChange={(v) => {
-                  const dashboardConfigs: any = JSONParse(dashboard.configs);
+                  const dashboardConfigs: any = dashboard.configs;
                   dashboardConfigs.links = v;
                   handleUpdateDashboardConfigs(id, {
                     configs: JSON.stringify(dashboardConfigs),
@@ -267,7 +273,7 @@ export default function DetailV2({ isPreview = false }: { isPreview?: boolean })
               editable={editable}
               panels={panels}
               setPanels={setPanels}
-              curCluster={curCluster}
+              datasourceValue={datasourceValue}
               dashboard={dashboard}
               range={range}
               step={step}
@@ -317,7 +323,7 @@ export default function DetailV2({ isPreview = false }: { isPreview?: boolean })
           });
         }}
         variableConfigWithOptions={variableConfigWithOptions}
-        cluster={curCluster}
+        datasourceValue={datasourceValue}
         id={editorData.id}
         time={range}
         initialValues={editorData.initialValues}

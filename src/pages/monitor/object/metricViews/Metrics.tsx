@@ -16,6 +16,7 @@
  */
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { Input, Card, Row, Col, Space, Button, Tooltip } from 'antd';
 import { SearchOutlined, SyncOutlined } from '@ant-design/icons';
 import TimeRangePicker, { IRawTimeRange } from '@/components/TimeRangePicker';
@@ -26,23 +27,25 @@ import { IMatch } from '../types';
 import { getMatchStr } from './utils';
 
 interface IProps {
+  datasourceValue: number;
   range: IRawTimeRange;
   setRange: (range: IRawTimeRange) => void;
   match: IMatch;
 }
 
 export default function Metrics(props: IProps) {
-  const { range, setRange, match } = props;
+  const { t } = useTranslation('objectExplorer');
+  const { datasourceValue, range, setRange, match } = props;
   const [refreshFlag, setRefreshFlag] = useState(_.uniqueId('refreshFlag_'));
   const [search, setSearch] = useState('');
-  const [metrics, setMetrics] = useState([]);
+  const [metrics, setMetrics] = useState<any[]>([]);
   const [metricsDesc, setMetricsDesc] = useState({});
   const [activeKey, setActiveKey] = useState('all');
-  const [metricPrefixes, setMetricPrefixes] = useState([]);
-  const [selectedMetrics, setSelectedMetrics] = useState([]);
+  const [metricPrefixes, setMetricPrefixes] = useState<any[]>([]);
+  const [selectedMetrics, setSelectedMetrics] = useState<any[]>([]);
   const [step, setStep] = useState<number>();
   const matchStr = getMatchStr(match);
-  const renderMetricList = (metrics = [], metricTabKey: string) => {
+  const renderMetricList = (metrics: any[] = [], metricTabKey: string) => {
     const filtered = _.filter(metrics, (metric) => {
       let flag = true;
       flag = metricTabKey === 'all' ? true : metric.indexOf(metricTabKey) === 0;
@@ -81,7 +84,7 @@ export default function Metrics(props: IProps) {
             })}
           </ul>
         ) : (
-          <div style={{ textAlign: 'center' }}>No data</div>
+          <div style={{ textAlign: 'center' }}>No Data</div>
         )}
       </div>
     );
@@ -89,8 +92,8 @@ export default function Metrics(props: IProps) {
 
   useEffect(() => {
     if (matchStr) {
-      getMetricValues(matchStr, range).then((res) => {
-        const _metrics = _.union(res);
+      getMetricValues(datasourceValue, matchStr, range).then((res) => {
+        const _metrics: any[] = _.union(res);
         const metricPrefixes = _.union(
           _.compact(
             _.map(_metrics, (m) => {
@@ -117,14 +120,14 @@ export default function Metrics(props: IProps) {
     <div className='n9e-metric-views-metrics'>
       <div>
         <div className='n9e-metric-views-metrics-header'>
-          <div className='metric-page-title'>监控指标</div>
+          <div className='metric-page-title'>{t('metrics.title')}</div>
           <Input
             prefix={<SearchOutlined />}
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
             }}
-            placeholder='搜索，空格分隔多个关键字'
+            placeholder={t('metrics.search_placeholder')}
             addonAfter={
               <SyncOutlined
                 style={{ cursor: 'pointer' }}
@@ -187,7 +190,7 @@ export default function Metrics(props: IProps) {
                     disabled={!selectedMetrics.length}
                     style={{ background: '#fff' }}
                   >
-                    清空图表
+                    {t('metrics.clear')}
                   </Button>
                 </Col>
               </Row>
@@ -195,6 +198,7 @@ export default function Metrics(props: IProps) {
                 return (
                   <Graph
                     key={metric}
+                    datasourceValue={datasourceValue}
                     metric={metric}
                     match={match}
                     range={range}
@@ -209,7 +213,7 @@ export default function Metrics(props: IProps) {
               })}
             </>
           ) : (
-            <div style={{ marginTop: 12 }}>暂无指标数据，请选择左侧 Labels</div>
+            <div style={{ marginTop: 12 }}>{t('metrics.noData')}</div>
           )}
         </div>
       </div>

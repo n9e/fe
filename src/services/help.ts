@@ -22,31 +22,3 @@ export const getN9EServers = function () {
     method: RequestMethod.Get,
   });
 };
-
-export const addN9EServers = function (data) {
-  return request('/api/n9e/servers', {
-    method: RequestMethod.Post,
-    data,
-  });
-};
-
-export const deleteN9EServers = function (ids) {
-  return request('/api/n9e/servers', {
-    method: RequestMethod.Delete,
-    data: {
-      ids,
-    },
-  });
-};
-
-export const updateN9EServerCluster = function (
-  id: number,
-  data: {
-    cluster: string;
-  },
-) {
-  return request(`/api/n9e/server/${id}`, {
-    method: RequestMethod.Put,
-    data,
-  });
-};

@@ -1,14 +1,17 @@
 import React from 'react';
 import { Row, Col, Button } from 'antd';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 import PromQueryBuilderModal from '@/components/PromQueryBuilder/PromQueryBuilderModal';
 import PromQLInput, { CMExpressionInputProps } from './index';
+import './locale';
 
-export function PromQLInputWithBuilder(props: CMExpressionInputProps & { cluster: string }) {
+export function PromQLInputWithBuilder(props: CMExpressionInputProps & { datasourceValue: number }) {
+  const { t } = useTranslation('promQLInput');
   return (
     <Row gutter={8}>
       <Col flex='auto'>
-        <PromQLInput {..._.omit(props, 'cluster')} />
+        <PromQLInput {...props} />
       </Col>
       <Col flex='74px'>
         <Button
@@ -19,7 +22,7 @@ export function PromQLInputWithBuilder(props: CMExpressionInputProps & { cluster
                 start: 'now-12h',
                 end: 'now',
               },
-              datasourceValue: props.cluster,
+              datasourceValue: props.datasourceValue,
               value: props.value,
               onChange: (val) => {
                 props.onChange && props.onChange(val);
@@ -27,7 +30,7 @@ export function PromQLInputWithBuilder(props: CMExpressionInputProps & { cluster
             });
           }}
         >
-          新手模式
+          {t('builder_btn')}
         </Button>
       </Col>
     </Row>

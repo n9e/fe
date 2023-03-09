@@ -1,14 +1,15 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useContext } from 'react';
 import { Table, Tag, Tooltip, Space, Input, Dropdown, Menu, Button, Modal, message } from 'antd';
 import { SearchOutlined, DownOutlined, ReloadOutlined, CopyOutlined } from '@ant-design/icons';
 import { useAntdTable } from 'ahooks';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { BusiGroupItem } from '@/store/commonInterface';
-import ColumnSelect from '@/components/ColumnSelect';
 import { getMonObjectList } from '@/services/monObjectManage';
-import { pageSizeOptions } from '@/components/Dantd/components/data-table/config';
 import clipboard from './clipboard';
+import { CommonStateContext } from '@/App';
+
+export const pageSizeOptions = ['10', '20', '50', '100'];
 
 enum OperateType {
   BindTag = 'bindTag',
@@ -47,23 +48,25 @@ const YELLOW_COLOR = '#FF9919';
 const RED_COLOR = '#FF656B';
 
 export default function List(props: IProps) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation('targets');
+  const { groupedDatasourceList } = useContext(CommonStateContext);
   const { curBusiId, setSelectedIdents, selectedRowKeys, setSelectedRowKeys, refreshFlag, setRefreshFlag, setOperateType } = props;
   const isAddTagToQueryInput = useRef(false);
   const [searchVal, setSearchVal] = useState('');
   const [tableQueryContent, setTableQueryContent] = useState<string>('');
-  const [curClusters, setCurClusters] = useState<string[]>([]);
   const columns = [
     {
-      title: '集群',
-      dataIndex: 'cluster',
-      width: 100,
-      fixed: 'left' as const,
+      title: t('datasource'),
+      dataIndex: 'datasource_id',
+      render: (val) => {
+        const datasource = _.find(groupedDatasourceList.prometheus, { id: val });
+        return datasource ? datasource.name : '';
+      },
     },
     {
       title: (
         <span>
-          标识{' '}
+          {t('common:table.ident')}{' '}
           <CopyOutlined
             style={{
               cursor: 'pointer',
@@ -74,11 +77,7 @@ export default function List(props: IProps) {
               const copySucceeded = clipboard(tobeCopyStr);
 
               if (copySucceeded) {
-                if (i18n.language === 'zh') {
-                  message.success(`复制成功${tobeCopy.length}条记录`);
-                } else if (i18n.language === 'en') {
-                  message.success(`Successful copy ${tobeCopy.length} items`);
-                }
+                message.success(t('ident_copy_success', { num: tobeCopy.length }));
               } else {
                 Modal.warning({
                   title: t('host.copy.error'),
@@ -92,7 +91,7 @@ export default function List(props: IProps) {
       dataIndex: 'ident',
     },
     {
-      title: '标签',
+      title: t('common:table.tag'),
       dataIndex: 'tags',
       ellipsis: {
         showTitle: false,
@@ -124,14 +123,14 @@ export default function List(props: IProps) {
       },
     },
     {
-      title: '业务组',
+      title: t('common:business_group'),
       dataIndex: 'group_obj',
       render(groupObj: BusiGroupItem | null) {
-        return groupObj ? groupObj.name : '未归组';
+        return groupObj ? groupObj.name : t('not_grouped');
       },
     },
     {
-      title: '状态',
+      title: t('target_up'),
       width: 100,
       dataIndex: 'target_up',
       sorter: (a, b) => a.target_up - b.target_up,
@@ -163,7 +162,7 @@ export default function List(props: IProps) {
       },
     },
     {
-      title: '单核负载',
+      title: t('load_per_core'),
       width: 100,
       dataIndex: 'load_per_core',
       sorter: (a, b) => a.load_per_core - b.load_per_core,
@@ -188,7 +187,7 @@ export default function List(props: IProps) {
       },
     },
     {
-      title: '内存',
+      title: t('mem_util'),
       width: 100,
       dataIndex: 'mem_util',
       sorter: (a, b) => a.mem_util - b.mem_util,
@@ -213,7 +212,7 @@ export default function List(props: IProps) {
       },
     },
     {
-      title: '根分区',
+      title: t('disk_util'),
       width: 100,
       dataIndex: 'disk_util',
       sorter: (a, b) => a.disk_util - b.disk_util,
@@ -239,7 +238,16 @@ export default function List(props: IProps) {
       },
     },
     {
-      title: '备注',
+      title: t('offset'),
+      width: 100,
+      dataIndex: 'offset',
+      sorter: (a, b) => a.offset - b.offset,
+      render: (val) => {
+        return `${val}ms`;
+      },
+    },
+    {
+      title: t('common:table.note'),
       dataIndex: 'note',
       ellipsis: {
         showTitle: false,
@@ -257,7 +265,6 @@ export default function List(props: IProps) {
     const query = {
       query: tableQueryContent,
       bgid: curBusiId,
-      clusters: _.join(curClusters, ','),
       limit: pageSize,
       p: current,
     };
@@ -269,10 +276,10 @@ export default function List(props: IProps) {
     });
   };
   const showTotal = (total: number) => {
-    return `共 ${total} 条`;
+    return t('common:table.total', { total });
   };
   const { tableProps } = useAntdTable(featchData, {
-    refreshDeps: [JSON.stringify(curClusters), tableQueryContent, curBusiId, refreshFlag],
+    refreshDeps: [tableQueryContent, curBusiId, refreshFlag],
     defaultPageSize: 30,
   });
 
@@ -286,11 +293,10 @@ export default function List(props: IProps) {
               setRefreshFlag(_.uniqueId('refreshFlag_'));
             }}
           />
-          <ColumnSelect noLeftPadding onClusterChange={(e) => setCurClusters(e)} />
           <Input
             className='search-input'
             prefix={<SearchOutlined />}
-            placeholder='模糊搜索表格内容(多个关键词请用空格分隔)'
+            placeholder={t('search_placeholder')}
             value={searchVal}
             onChange={(e) => setSearchVal(e.target.value)}
             onPressEnter={() => {
@@ -309,23 +315,24 @@ export default function List(props: IProps) {
                 setOperateType(key as OperateType);
               }}
             >
-              <Menu.Item key={OperateType.BindTag}>绑定标签</Menu.Item>
-              <Menu.Item key={OperateType.UnbindTag}>解绑标签</Menu.Item>
-              <Menu.Item key={OperateType.UpdateBusi}>修改业务组</Menu.Item>
-              <Menu.Item key={OperateType.RemoveBusi}>移出业务组</Menu.Item>
-              <Menu.Item key={OperateType.UpdateNote}>修改备注</Menu.Item>
-              <Menu.Item key={OperateType.Delete}>批量删除</Menu.Item>
+              <Menu.Item key={OperateType.BindTag}>{t('bind_tag.title')}</Menu.Item>
+              <Menu.Item key={OperateType.UnbindTag}>{t('unbind_tag.title')}</Menu.Item>
+              <Menu.Item key={OperateType.UpdateBusi}>{t('update_busi.title')}</Menu.Item>
+              <Menu.Item key={OperateType.RemoveBusi}>{t('remove_busi.title')}</Menu.Item>
+              <Menu.Item key={OperateType.UpdateNote}>{t('update_note.title')}</Menu.Item>
+              <Menu.Item key={OperateType.Delete}>{t('batch_delete.title')}</Menu.Item>
             </Menu>
           }
         >
           <Button>
-            批量操作 <DownOutlined />
+            {t('common:btn.batch_operations')} <DownOutlined />
           </Button>
         </Dropdown>
       </div>
       <Table
         rowKey='id'
         columns={columns}
+        size='small'
         {...tableProps}
         rowSelection={{
           type: 'checkbox',

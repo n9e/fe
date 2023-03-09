@@ -1,26 +1,32 @@
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 import PageLayout from '@/components/pageLayout';
-import { sourceLogoMap } from '@/components/DataSource/TimeSeriesSource/config';
-import { getDataSourcePluginList } from '@/components/DataSource/TimeSeriesSource/services';
-import SourceCards from '@/components/DataSource/components/SourceCards';
-import TableSource from '@/components/DataSource/components/TableSource';
+import { sourceLogoMap } from './config';
+import { getDataSourcePluginList } from './services';
+import SourceCards from './components/SourceCards';
+import TableSource from './components/TableSource';
 import Detail from './Detail';
+import Form from './Form';
+import './locale';
+
+export { Form };
 
 export default function index() {
-  const [pluginList, setPluginList] = useState();
+  const { t } = useTranslation('datasourceManage');
+  const [pluginList, setPluginList] = useState<any[]>();
   const [detailVisible, setDetailVisible] = useState(false);
   const [detailData, setDetailData] = useState();
 
   useEffect(() => {
-    getDataSourcePluginList({ p: 1, limit: 100 }).then((res) => {
+    getDataSourcePluginList().then((res) => {
       setPluginList(
         _.map(res, (item) => {
           return {
-            name: item.type_name,
+            name: item.plugin_type_name,
             category: item.category,
-            type: item.type,
-            logo: sourceLogoMap[item.type],
+            type: item.plugin_type,
+            logo: sourceLogoMap[item.plugin_type],
           };
         }),
       );
@@ -28,10 +34,10 @@ export default function index() {
   }, []);
 
   return (
-    <PageLayout title='数据源管理'>
+    <PageLayout title={t('title')}>
       <div className='srm'>
         <SourceCards sourceMap={pluginList} urlPrefix='help/source' />
-        <div className='page-title'>已接入的数据源</div>
+        <div className='page-title'>{t('list_title')}</div>
         {pluginList && (
           <TableSource
             pluginList={pluginList}

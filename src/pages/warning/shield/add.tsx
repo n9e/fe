@@ -14,25 +14,54 @@
  * limitations under the License.
  *
  */
-import React, { useState } from 'react';
+import React from 'react';
+import _ from 'lodash';
 import { useLocation } from 'react-router-dom';
+import queryString from 'query-string';
 import PageLayout from '@/components/pageLayout';
 import OperateForm from './components/operateForm';
 import { useTranslation } from 'react-i18next';
 import './index.less';
 
 const AddShield: React.FC = () => {
-  const { t } = useTranslation();
-  const location = useLocation();
-  let tags: any = location.state || {};
-  if (tags) {
-    tags.cate = tags.cate || 'prometheus';
+  const { t } = useTranslation('alertMutes');
+  const { search } = useLocation();
+  const query: any = queryString.parse(search);
+
+  if (query.busiGroup) {
+    query.busiGroup = _.toNumber(query.busiGroup);
+  }
+  if (query.datasource_ids) {
+    if (_.isString(query.datasource_ids)) {
+      query.datasource_ids = [_.toNumber(query.datasource_ids)];
+    } else if (_.isArray(query.datasource_ids)) {
+      query.datasource_ids = query.datasource_ids.map((id: string) => _.toNumber(id));
+    } else {
+      query.datasource_ids = [];
+    }
+  }
+  if (query.tags) {
+    try {
+      if (_.isString(query.tags)) {
+        query.tags = [query.tags];
+      }
+      query.tags = query.tags.map((tag) => {
+        const [key, value] = tag.split('=');
+        return {
+          func: '==',
+          key,
+          value,
+        };
+      });
+    } catch (e) {
+      query.tags = [];
+    }
   }
 
   return (
-    <PageLayout title={t('告警屏蔽')} showBack hideCluster>
+    <PageLayout title={t('title')} showBack>
       <div className='shield-add'>
-        <OperateForm tagsObj={tags ? tags : undefined} />
+        <OperateForm detail={query} />
       </div>
     </PageLayout>
   );

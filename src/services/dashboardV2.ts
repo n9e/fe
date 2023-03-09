@@ -169,9 +169,10 @@ export const getBuiltinDashboards = function () {
   });
 };
 
-export const getBuiltinDashboard = function (name: string) {
-  return request(`/api/n9e/builtin-board/${name}`, {
-    method: RequestMethod.Get,
+export const getBuiltinDashboard = function (data) {
+  return request('/api/n9e/builtin-boards-detail', {
+    method: RequestMethod.Post,
+    data,
   }).then((res) => {
     return res.dat;
   });
@@ -182,5 +183,23 @@ export const getDashboardPure = function (id: string) {
     method: RequestMethod.Get,
   }).then((res) => {
     return res.dat;
+  });
+};
+
+const signals = {};
+
+export const fetchHistoryBatch = (data, signalKey) => {
+  const controller = new AbortController();
+  const { signal } = controller;
+  if (signalKey && signals[signalKey] && signals[signalKey].abort) {
+    signals[signalKey].abort();
+  }
+  signals[signalKey] = controller;
+  return request(`/api/n9e/query-range-batch`, {
+    method: RequestMethod.Post,
+    data,
+    signal,
+  }).finally(() => {
+    delete signals[signalKey];
   });
 };

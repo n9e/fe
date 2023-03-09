@@ -182,21 +182,28 @@ export function describeTextRange(expr: any) {
     if (span) {
       opt.displayZh = isLast ? '最近 ' : '接下来 ';
       opt.displayZh += amount + ' ' + span.displayZh;
+      opt.display = isLast ? 'Last ' : 'Next ';
+      opt.display += amount + ' ' + span.display;
       opt.section = span.section;
     }
   } else {
     opt.displayZh = opt.start + ' ~ ' + opt.end;
+    opt.display = opt.start + ' ~ ' + opt.end;
     opt.invalid = true;
   }
 
   return opt;
 }
 
-export function describeTimeRange(range: IRawTimeRange, dateFormat: string): string {
+export function describeTimeRange(range: IRawTimeRange, dateFormat: string, language?: string): string {
   const option = rangeIndex[range.start.toString() + ' ~ ' + range.end.toString()];
 
   if (option) {
-    return option.displayZh;
+    if (language === 'zh_CN') {
+      return option.displayZh;
+    } else {
+      return option.display;
+    }
   }
 
   if (moment.isMoment(range.start) && moment.isMoment(range.end)) {
@@ -215,7 +222,11 @@ export function describeTimeRange(range: IRawTimeRange, dateFormat: string): str
 
   if (range.end.toString() === 'now') {
     const res = describeTextRange(range.start);
-    return res.displayZh;
+    if (language === 'zh_CN') {
+      return res.displayZh;
+    } else {
+      return res.display;
+    }
   }
 
   return range.start.toString() + ' ~ ' + range.end.toString();

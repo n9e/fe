@@ -21,6 +21,7 @@ export default function index(props: IProps) {
         })}
         style={{
           width: labelWidth,
+          maxWidth: 'unset',
         }}
       >
         {label}

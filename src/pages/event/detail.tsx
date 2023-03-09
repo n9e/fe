@@ -14,36 +14,39 @@
  * limitations under the License.
  *
  */
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
 import moment from 'moment';
 import _ from 'lodash';
-import { useSelector } from 'react-redux';
+import queryString from 'query-string';
 import { Button, Card, message, Space, Spin, Tag, Typography } from 'antd';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import PageLayout from '@/components/pageLayout';
 import { getAlertEventsById, getHistoryEventsById } from '@/services/warning';
 import { priorityColor } from '@/utils/constant';
 import { deleteAlertEventsModal } from '.';
-import { RootState } from '@/store/common';
-import { CommonStoreState } from '@/store/commonInterface';
-import { parseValues } from '@/pages/warning/strategy/components/utils';
+import { parseValues } from '@/pages/alertRules/utils';
+import { CommonStateContext } from '@/App';
 import Preview from './Preview';
 import LogsDetail from './LogsDetail';
 import PrometheusDetail from './Detail/Prometheus';
 import ElasticsearchDetail from './Detail/Elasticsearch';
 import AliyunSLSDetail from './Detail/AliyunSLS';
+import Host from './Detail/Host';
 import './detail.less';
 
 const { Paragraph } = Typography;
 const EventDetailPage: React.FC = () => {
+  const { t } = useTranslation('AlertCurEvents');
   const { busiId, eventId } = useParams<{ busiId: string; eventId: string }>();
-  const { busiGroups } = useSelector<RootState, CommonStoreState>((state) => state.common);
+  const commonState = useContext(CommonStateContext);
+  const { busiGroups, datasourceList } = commonState;
   const handleNavToWarningList = (id) => {
     if (busiGroups.find((item) => item.id === id)) {
       history.push(`/alert-rules?id=${id}`);
     } else {
-      message.error('该业务组已删除或无查看权限');
+      message.error(t('detail.buisness_not_exist'));
     }
   };
   const history = useHistory();
@@ -53,7 +56,7 @@ const EventDetailPage: React.FC = () => {
   const parsedEventDetail = parseValues(eventDetail);
   const descriptionInfo = [
     {
-      label: '规则标题',
+      label: t('detail.rule_name'),
       key: 'rule_name',
       render(content, { rule_id }) {
         return (
@@ -69,7 +72,7 @@ const EventDetailPage: React.FC = () => {
       },
     },
     {
-      label: '业务组',
+      label: t('detail.group_name'),
       key: 'group_name',
       render(content, { group_id }) {
         return (
@@ -79,24 +82,30 @@ const EventDetailPage: React.FC = () => {
         );
       },
     },
-    { label: '规则备注', key: 'rule_note' },
-    { label: '所属集群', key: 'cluster' },
+    { label: t('detail.rule_note'), key: 'rule_note' },
     {
-      label: '告警级别',
+      label: t('detail.datasource_id'),
+      key: 'datasource_id',
+      render(content) {
+        return _.find(datasourceList, (item) => item.id === content)?.name;
+      },
+    },
+    {
+      label: t('detail.severity'),
       key: 'severity',
       render: (severity) => {
         return <Tag color={priorityColor[severity - 1]}>S{severity}</Tag>;
       },
     },
     {
-      label: '事件状态',
+      label: t('detail.is_recovered'),
       key: 'is_recovered',
       render(isRecovered) {
         return <Tag color={isRecovered ? 'green' : 'red'}>{isRecovered ? 'Recovered' : 'Triggered'}</Tag>;
       },
     },
     {
-      label: '事件标签',
+      label: t('detail.tags'),
       key: 'tags',
       render(tags) {
         return tags
@@ -108,16 +117,16 @@ const EventDetailPage: React.FC = () => {
           : '';
       },
     },
-    { label: '对象备注', key: 'target_note' },
+    { label: t('detail.target_note'), key: 'target_note' },
     {
-      label: '触发时间',
+      label: t('detail.trigger_time'),
       key: 'trigger_time',
       render(time) {
         return moment(time * 1000).format('YYYY-MM-DD HH:mm:ss');
       },
     },
     {
-      label: '触发时值',
+      label: t('detail.trigger_value'),
       key: 'trigger_value',
       render(val) {
         return (
@@ -158,24 +167,24 @@ const EventDetailPage: React.FC = () => {
       },
     },
     {
-      label: '恢复时间',
+      label: t('detail.recover_time'),
       key: 'recover_time',
       render(time) {
         return moment((time || 0) * 1000).format('YYYY-MM-DD HH:mm:ss');
       },
     },
     {
-      label: '告警方式',
+      label: t('detail.rule_algo'),
       key: 'rule_algo',
       render(text) {
         if (text) {
-          return '智能告警';
+          return t('detail.rule_algo_anomaly');
         }
-        return '阈值告警';
+        return t('detail.rule_algo_threshold');
       },
     },
     {
-      label: '数据源类型',
+      label: t('detail.cate'),
       key: 'cate',
     },
     ...(eventDetail?.cate === 'prometheus'
@@ -186,36 +195,37 @@ const EventDetailPage: React.FC = () => {
       : [false]),
     ...(eventDetail?.cate === 'elasticsearch' ? ElasticsearchDetail() : [false]),
     ...(eventDetail?.cate === 'aliyun-sls' ? AliyunSLSDetail() : [false]),
+    ...(eventDetail?.cate === 'host' ? Host(t, commonState) : [false]),
     {
-      label: '执行频率',
+      label: t('detail.prom_eval_interval'),
       key: 'prom_eval_interval',
       render(content) {
-        return `${content} 秒`;
+        return `${content} s`;
       },
     },
     {
-      label: '持续时长',
+      label: t('detail.prom_for_duration'),
       key: 'prom_for_duration',
       render(content) {
-        return `${content} 秒`;
+        return `${content} s`;
       },
     },
     {
-      label: '通知媒介',
+      label: t('detail.notify_channels'),
       key: 'notify_channels',
       render(channels) {
         return channels.join(' ');
       },
     },
     {
-      label: '告警接收组',
+      label: t('detail.notify_groups_obj'),
       key: 'notify_groups_obj',
       render(groups) {
         return groups ? groups.map((group) => <Tag color='purple'>{group.name}</Tag>) : '';
       },
     },
     {
-      label: '回调地址',
+      label: t('detail.callbacks'),
       key: 'callbacks',
       render(callbacks) {
         return callbacks
@@ -230,7 +240,7 @@ const EventDetailPage: React.FC = () => {
       },
     },
     {
-      label: '预案链接',
+      label: t('detail.runbook_url'),
       key: 'runbook_url',
       render(url) {
         return (
@@ -242,6 +252,25 @@ const EventDetailPage: React.FC = () => {
     },
   ];
 
+  if (eventDetail?.annotations) {
+    _.forEach(eventDetail.annotations, (value, key) => {
+      descriptionInfo.push({
+        label: key,
+        key,
+        render: () => {
+          if (value.indexOf('http') === 0) {
+            return (
+              <a href={value} target='_blank'>
+                {value}
+              </a>
+            );
+          }
+          return <span>{value}</span>;
+        },
+      });
+    });
+  }
+
   useEffect(() => {
     const requestPromise = isHistory ? getHistoryEventsById(busiId, eventId) : getAlertEventsById(busiId, eventId);
     requestPromise.then((res) => {
@@ -250,51 +279,51 @@ const EventDetailPage: React.FC = () => {
   }, [busiId, eventId]);
 
   return (
-    <PageLayout title='告警详情' showBack backPath='/alert-his-events' hideCluster>
+    <PageLayout title={t('detail.title')} showBack backPath='/alert-his-events'>
       <div className='event-detail-container'>
         <Spin spinning={!eventDetail}>
           <Card
+            size='small'
             className='desc-container'
-            title='告警事件详情'
+            title={t('detail.card_title')}
             actions={[
               <div className='action-btns'>
                 <Space>
                   <Button
                     type='primary'
                     onClick={() => {
-                      history.push('/alert-mutes/add', {
-                        group_id: eventDetail.group_id,
-                        cate: eventDetail.cate,
-                        cluster: eventDetail.cluster,
-                        tags: eventDetail.tags
-                          ? eventDetail.tags.map((tag) => {
-                              const [key, value] = tag.split('=');
-                              return {
-                                func: '==',
-                                key,
-                                value,
-                              };
-                            })
-                          : [],
+                      history.push({
+                        pathname: '/alert-mutes/add',
+                        search: queryString.stringify({
+                          busiGroup: eventDetail.group_id,
+                          prod: eventDetail.rule_prod,
+                          cate: eventDetail.cate,
+                          datasource_ids: [eventDetail.datasource_id],
+                          tags: eventDetail.tags,
+                        }),
                       });
                     }}
                   >
-                    屏蔽
+                    {t('shield')}
                   </Button>
                   {!isHistory && (
                     <Button
                       danger
                       onClick={() => {
                         if (eventDetail.group_id) {
-                          deleteAlertEventsModal(eventDetail.group_id, [Number(eventId)], () => {
-                            history.replace('/alert-cur-events');
-                          });
+                          deleteAlertEventsModal(
+                            [Number(eventId)],
+                            () => {
+                              history.replace('/alert-cur-events');
+                            },
+                            t,
+                          );
                         } else {
                           message.warn('该告警未返回业务组ID');
                         }
                       }}
                     >
-                      删除
+                      {t('common:btn.delete')}
                     </Button>
                   )}
                 </Space>

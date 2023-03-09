@@ -9,8 +9,6 @@ import antdEnUS from 'antd/lib/locale/en_US';
 export interface ModalWrapProps {
   visible: boolean;
   destroy: () => void;
-  onOk: (...args: any[]) => void;
-  onCancel: () => void;
 }
 
 export default function ModalHOC<T>(Component: React.FC<T & ModalWrapProps>) {
@@ -29,9 +27,11 @@ export default function ModalHOC<T>(Component: React.FC<T & ModalWrapProps>) {
       }
     }
 
+    const language = config.language ? config.language : window.localStorage.getItem('language') || 'zh_CN';
+
     function render(props: any) {
       ReactDOM.render(
-        <ConfigProvider locale={config.language === 'en' ? antdEnUS : antdZhCN}>
+        <ConfigProvider locale={language === 'en_US' ? antdEnUS : antdZhCN}>
           <Router>
             <Component {...props} />
           </Router>
@@ -47,4 +47,3 @@ export default function ModalHOC<T>(Component: React.FC<T & ModalWrapProps>) {
     };
   };
 }
-

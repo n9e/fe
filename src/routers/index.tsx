@@ -16,37 +16,26 @@
  */
 import React from 'react';
 import { Switch, Route, useLocation, Redirect } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
 import querystring from 'query-string';
-import { RootState, accountStoreState } from '@/store/accountInterface';
-import NotFound from '@/pages/NotFound';
-import Page403 from '@/pages/NotFound/Page403';
+import NotFound from '@/pages/notFound';
+import Page403 from '@/pages/notFound/Page403';
 import Login from '@/pages/login';
 import Overview from '@/pages/login/overview';
 import LoginCallback from '@/pages/loginCallback';
 import LoginCallbackCAS from '@/pages/loginCallback/cas';
 import LoginCallbackOAuth from '@/pages/loginCallback/oauth';
-import Strategy from '@/pages/warning/strategy';
+import AlertRules, { Add as AlertRuleAdd, Edit as AlertRuleEdit, Detail as AlertRuleDetail } from '@/pages/alertRules';
+import AlertRulesBuiltin from '@/pages/alertRulesBuiltin';
 import Profile from '@/pages/account/profile';
-import Dashboard from '@/pages/dashboard/List';
+import { List as Dashboard, Detail as DashboardDetail, Share as DashboardShare } from '@/pages/dashboard';
 import Chart from '@/pages/chart';
-import DashboardDetail from '@/pages/dashboard/Detail/index';
-import DashboardShare from '@/pages/dashboard/Share/index';
 import Groups from '@/pages/user/groups';
 import Users from '@/pages/user/users';
 import Business from '@/pages/user/business';
-import Explore from '@/pages/metric/explorer';
+import { Metric as MetricExplore, Log as LogExplore } from '@/pages/explorer';
 import ObjectExplore from '@/pages/monitor/object';
-import IndicatorPage from '@/pages/monitor/indicator';
-import StrategyAdd from '@/pages/warning/strategy/add';
-import StrategyEdit from '@/pages/warning/strategy/edit';
-import StrategyBrain from '@/pages/warning/strategy/Jobs';
-import Shield from '@/pages/warning/shield';
-import AddShield from '@/pages/warning/shield/add';
-import ShieldEdit from '@/pages/warning/shield/edit';
-import Subscribe from '@/pages/warning/subscribe';
-import SubscribeAdd from '@/pages/warning/subscribe/add';
-import SubscribeEdit from '@/pages/warning/subscribe/edit';
+import Shield, { Add as AddShield, Edit as ShieldEdit } from '@/pages/warning/shield';
+import Subscribe, { Add as SubscribeAdd, Edit as SubscribeEdit } from '@/pages/warning/subscribe';
 import Event from '@/pages/event';
 import EventDetail from '@/pages/event/detail';
 import historyEvents from '@/pages/historyEvents';
@@ -62,14 +51,15 @@ import TaskAdd from '@/pages/task/add';
 import TaskResult from '@/pages/task/result';
 import TaskDetail from '@/pages/task/detail';
 import Version from '@/pages/help/version';
-import Contact from '@/pages/help/contact';
-import Migrate from '@/pages/help/migrate';
 import Servers from '@/pages/help/servers';
-import Datasource from '@/pages/datasource';
-import DatasourceAdd from '@/pages/datasource/Form';
-import RecordingRule from '@/pages/recordingRules';
-import RecordingRuleAdd from '@/pages/recordingRules/add';
-import RecordingRuleEdit from '@/pages/recordingRules/edit';
+import Datasource, { Form as DatasourceAdd } from '@/pages/datasource';
+import RecordingRule, { Add as RecordingRuleAdd, Edit as RecordingRuleEdit } from '@/pages/recordingRules';
+import TraceExplorer, { Dependencies as TraceDependencies } from '@/pages/traceCpt/Explorer';
+import DashboardBuiltin from '@/pages/dashboardBuiltin';
+import Permissions from '@/pages/permissions';
+import SSOConfigs from '@/pages/help/SSOConfigs';
+import NotificationTpls from '@/pages/help/NotificationTpls';
+import NotificationSettings from '@/pages/help/NotificationSettings';
 import { dynamicPackages, Entry } from '@/utils';
 
 const Packages = dynamicPackages();
@@ -90,25 +80,7 @@ function RouteWithSubRoutes(route) {
 }
 
 export default function Content() {
-  let { profile } = useSelector<RootState, accountStoreState>((state) => state.account);
   const location = useLocation();
-  const dispatch = useDispatch();
-  if (!profile.id && location.pathname != '/login' && !location.pathname.startsWith('/callback')) {
-    if (!location.pathname.startsWith('/dashboards/share/')) {
-      dispatch({ type: 'common/getClusters' });
-    }
-    if (
-      !location.pathname.startsWith('/chart/') &&
-      !location.pathname.startsWith('/dashboards/share/') &&
-      !location.pathname.startsWith('/alert-cur-events/') &&
-      !location.pathname.startsWith('/alert-his-events/') &&
-      !location.pathname.startsWith('/callback')
-    ) {
-      dispatch({ type: 'account/getProfile' });
-      dispatch({ type: 'common/getBusiGroups' });
-    }
-  }
-
   // 大盘在全屏和暗黑主题下需要定义个 dark 样式名
   let themeClassName = '';
   if (location.pathname.indexOf('/dashboard') === 0) {
@@ -127,7 +99,8 @@ export default function Content() {
         <Route path='/callback' component={LoginCallback} exact />
         <Route path='/callback/cas' component={LoginCallbackCAS} exact />
         <Route path='/callback/oauth' component={LoginCallbackOAuth} exact />
-        <Route path='/metric/explorer' component={Explore} exact />
+        <Route path='/metric/explorer' component={MetricExplore} exact />
+        <Route path='/log/explorer' component={LogExplore} exact />
         <Route path='/object/explorer' component={ObjectExplore} exact />
         <Route path='/busi-groups' component={Business} />
         <Route path='/users' component={Users} />
@@ -138,13 +111,16 @@ export default function Content() {
         <Route path='/dashboards/:id' exact component={DashboardDetail} />
         <Route path='/dashboards/share/:id' component={DashboardShare} />
         <Route path='/dashboards' component={Dashboard} />
+        <Route path='/dashboards-built-in' exact component={DashboardBuiltin} />
+        <Route path='/dashboards-built-in/detail' exact component={DashboardDetail} />
         <Route path='/chart/:ids' component={Chart} />
-        <Route path='/indicator' component={IndicatorPage} />
 
-        <Route exact path='/alert-rules/add/:group_id' component={StrategyAdd} />
-        <Route exact path='/alert-rules/edit/:id' component={StrategyEdit} />
-        <Route exact path='/alert-rules/:id?' component={Strategy} />
-        <Route exact path='/alert-rules/brain/:id' component={StrategyBrain} />
+        <Route exact path='/alert-rules/add/:bgid' component={AlertRuleAdd} />
+        <Route exact path='/alert-rules/edit/:id' component={AlertRuleEdit} />
+        <Route exact path='/alert-rules' component={AlertRules} />
+        <Route exact path='/alert-rules-built-in' component={AlertRulesBuiltin} />
+        <Route exact path='/alert-rules-built-in/detail' component={AlertRuleDetail} />
+        {/* <Route exact path='/alert-rules/brain/:id' component={StrategyBrain} /> */}
         <Route exact path='/alert-mutes' component={Shield} />
         <Route exact path='/alert-mutes/add/:from?' component={AddShield} />
         <Route exact path='/alert-mutes/edit/:id' component={ShieldEdit} />
@@ -174,12 +150,18 @@ export default function Content() {
         <Route exact path='/job-tasks/:id/detail' component={TaskDetail} />
 
         <Route exact path='/help/version' component={Version} />
-        <Route exact path='/help/contact' component={Contact} />
-        <Route exact path='/help/migrate' component={Migrate} />
         <Route exact path='/help/servers' component={Servers} />
         <Route exact path='/help/source' component={Datasource} />
-        <Route exact path='/help/source/:action/:cate/:type' component={DatasourceAdd} />
-        <Route exact path='/help/source/:action/:cate/:type/:id' component={DatasourceAdd} />
+        <Route exact path='/help/source/:action/:type' component={DatasourceAdd} />
+        <Route exact path='/help/source/:action/:type/:id' component={DatasourceAdd} />
+        <Route exact path='/help/sso' component={SSOConfigs} />
+        <Route exact path='/help/notification-tpls' component={NotificationTpls} />
+        <Route exact path='/help/notification-settings' component={NotificationSettings} />
+
+        <Route exact path='/trace/explorer' component={TraceExplorer} />
+        <Route exact path='/trace/dependencies' component={TraceDependencies} />
+
+        <Route exact path='/permissions' component={Permissions} />
 
         {lazyRoutes.map((route, i) => (
           <RouteWithSubRoutes key={i} {...route} />

@@ -1,8 +1,6 @@
 import React, { ReactNode, useState, isValidElement } from 'react';
-import { Button } from 'antd';
-import { ReloadOutlined } from '@ant-design/icons';
-import './index.less';
 import { copy2ClipBoard } from '@/utils';
+import './index.less';
 interface Props {
   children: ReactNode;
 }

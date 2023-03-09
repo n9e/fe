@@ -16,13 +16,14 @@
  */
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
-import { Modal, Input, Tabs, Form, Table, Button, Alert, message } from 'antd';
-import Icon, { SearchOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
+import { Modal, Input, Tabs, Form, Button, Alert, message } from 'antd';
+import Icon from '@ant-design/icons';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
-import { getBuiltinDashboards, getBuiltinDashboard, createDashboard } from '@/services/dashboardV2';
+import { getBuiltinDashboards, createDashboard } from '@/services/dashboardV2';
 import { getValidImportData, convertDashboardGrafanaToN9E, JSONParse } from './utils';
 
-type ModalType = 'BuiltIn' | 'Import' | 'ImportGrafana';
+type ModalType = 'Import' | 'ImportGrafana';
 interface IProps {
   busiId: number;
   type: ModalType;
@@ -53,36 +54,16 @@ const BetaSvg = () => (
 const BetaIcon = (props) => <Icon component={BetaSvg} {...props} />;
 
 function Import(props: IProps & ModalWrapProps) {
+  const { t } = useTranslation('dashboard');
   const { visible, destroy, busiId, type, refreshList } = props;
   const [modalType, setModalType] = useState(type);
-  const [buildinList, setBuildinList] = useState([]);
-  const [searchVal, setSearchVal] = useState('');
-  const filteredBuildinList = _.filter(buildinList, (item) => {
-    if (searchVal) {
-      return _.includes(item.name, searchVal);
-    }
-    return true;
-  });
-
-  useEffect(() => {
-    getBuiltinDashboards().then((res) => {
-      setBuildinList(
-        _.map(res, (item) => {
-          return {
-            name: item,
-          };
-        }),
-      );
-    });
-  }, []);
 
   return (
     <Modal
       className='dashboard-import-modal'
       title={
         <Tabs activeKey={modalType} onChange={(e: ModalType) => setModalType(e)} className='custom-import-alert-title'>
-          <TabPane tab='导入内置大盘模块' key='BuiltIn'></TabPane>
-          <TabPane tab='导入大盘JSON' key='Import'></TabPane>
+          <TabPane tab={t('batch.import')} key='Import'></TabPane>
           <TabPane
             tab={
               <div
@@ -90,7 +71,7 @@ function Import(props: IProps & ModalWrapProps) {
                   position: 'relative',
                 }}
               >
-                导入Grafana大盘JSON
+                {t('batch.import_grafana')}
                 <BetaIcon
                   style={{
                     fontSize: 24,
@@ -112,49 +93,6 @@ function Import(props: IProps & ModalWrapProps) {
       }}
       footer={null}
     >
-      {modalType === 'BuiltIn' ? (
-        <>
-          <Input
-            prefix={<SearchOutlined />}
-            placeholder='请输入要查询的大盘名称'
-            value={searchVal}
-            onChange={(e) => {
-              setSearchVal(e.target.value);
-            }}
-          />
-          <Table
-            style={{ marginTop: 10 }}
-            rowKey='name'
-            size='small'
-            dataSource={filteredBuildinList}
-            columns={[
-              {
-                title: '大盘名称',
-                dataIndex: 'name',
-              },
-              {
-                title: '操作',
-                render: (record) => {
-                  return (
-                    <a
-                      onClick={() => {
-                        getBuiltinDashboard(record.name).then((res) => {
-                          createDashboard(busiId, getValidImportData(res)).then(() => {
-                            message.success('导入成功');
-                          });
-                        });
-                      }}
-                    >
-                      导入
-                    </a>
-                  );
-                },
-              },
-            ]}
-            pagination={filteredBuildinList.length < 5 ? false : { pageSize: 5 }}
-          />
-        </>
-      ) : null}
       {modalType === 'Import' ? (
         <Form
           layout='vertical'
@@ -164,27 +102,26 @@ function Import(props: IProps & ModalWrapProps) {
               ...data,
               configs: data.configs,
             }).then(() => {
-              message.success('导入成功');
+              message.success('common:success.import');
               refreshList();
               destroy();
             });
           }}
         >
           <Form.Item
-            label='大盘JSON'
+            label={t('batch.label')}
             name='import'
             rules={[
               {
                 required: true,
-                message: '请输入大盘JSON',
               },
             ]}
           >
-            <Input.TextArea className='code-area' placeholder='请输入大盘 JSON' rows={16} />
+            <Input.TextArea className='code-area' rows={16} />
           </Form.Item>
           <Form.Item>
             <Button type='primary' htmlType='submit'>
-              导入
+              {t('common:btn.import')}
             </Button>
           </Form.Item>
         </Form>
@@ -199,30 +136,29 @@ function Import(props: IProps & ModalWrapProps) {
               tags: '',
               configs: JSON.stringify(data.configs),
             }).then(() => {
-              message.success('导入成功');
+              message.success('common:success.import');
               refreshList();
               destroy();
             });
           }}
         >
           <div style={{ marginBottom: 10 }}>
-            <Alert message='目前只支持导入 v8+ 版本的大盘配置，导入完的图表只支持夜莺目前支持的图表类型和功能' type='info' />
+            <Alert message={t('batch.import_grafana_tip')} type='info' />
           </div>
           <Form.Item
-            label='大盘JSON'
+            label={t('batch.label')}
             name='import'
             rules={[
               {
                 required: true,
-                message: '请输入大盘JSON',
               },
             ]}
           >
-            <Input.TextArea className='code-area' placeholder='请输入大盘 JSON' rows={16} />
+            <Input.TextArea className='code-area' rows={16} />
           </Form.Item>
           <Form.Item>
             <Button type='primary' htmlType='submit'>
-              导入
+              {t('common:btn.import')}
             </Button>
           </Form.Item>
         </Form>

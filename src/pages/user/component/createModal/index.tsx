@@ -36,7 +36,7 @@ import { ModalProps, User, Team, UserType, ActionType, Contacts } from '@/store/
 import { useTranslation } from 'react-i18next';
 
 const CreateModal: React.FC<ModalProps> = (props: ModalProps) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('user');
   const { visible, userType, onClose, action, userId, teamId, onSearch, width } = props;
   const [selectedUser, setSelectedUser] = useState<string[]>();
   const userRef = useRef(null as any);
@@ -61,14 +61,14 @@ const CreateModal: React.FC<ModalProps> = (props: ModalProps) => {
 
       if (action === ActionType.CreateUser) {
         createUser(params).then((_) => {
-          message.success(t('用户创建成功'));
+          message.success(t('common:success.add'));
           onClose(true);
         });
       }
 
       if (action === ActionType.EditUser && userId) {
         changeUserInfo(userId, params).then((_) => {
-          message.success(t('用户信息修改成功'));
+          message.success(t('common:success.modify'));
           onClose(true);
         });
       }
@@ -81,7 +81,7 @@ const CreateModal: React.FC<ModalProps> = (props: ModalProps) => {
 
       if (action === ActionType.CreateTeam) {
         createTeam(params).then((_) => {
-          message.success(t('团队创建成功'));
+          message.success(t('common:success.add'));
           onClose(true);
 
           if (val === 'search') {
@@ -92,7 +92,7 @@ const CreateModal: React.FC<ModalProps> = (props: ModalProps) => {
 
       if (action === ActionType.EditTeam && teamId) {
         changeTeamInfo(teamId, params).then((_) => {
-          message.success(t('团队信息修改成功'));
+          message.success(t('common:success.modify'));
           onClose('updateName');
         });
       }
@@ -103,7 +103,7 @@ const CreateModal: React.FC<ModalProps> = (props: ModalProps) => {
       const values = await form.validateFields();
       let params = { ...values };
       changeUserPassword(userId, params).then((_) => {
-        message.success(t('密码重置成功'));
+        message.success(t('account:password.resetSuccess'));
         onClose();
       });
     }
@@ -113,7 +113,7 @@ const CreateModal: React.FC<ModalProps> = (props: ModalProps) => {
         ids: selectedUser,
       };
       addTeamUser(teamId, params).then((_) => {
-        message.success(t('添加成功'));
+        message.success(t('common:success.add'));
         onClose('updateMember');
       });
     }
@@ -134,7 +134,7 @@ const CreateModal: React.FC<ModalProps> = (props: ModalProps) => {
 
       if (action === ActionType.CreateBusiness) {
         createBusinessTeam(params).then((res) => {
-          message.success(t('业务组创建成功'));
+          message.success(t('common:success.add'));
           onClose('create');
           onSearch(res);
         });
@@ -142,7 +142,7 @@ const CreateModal: React.FC<ModalProps> = (props: ModalProps) => {
 
       if (action === ActionType.EditBusiness && teamId) {
         changeBusinessTeam(teamId, params).then((_) => {
-          message.success(t('业务组信息修改成功'));
+          message.success(t('common:success.modify'));
           onClose('update');
         });
       }
@@ -154,7 +154,7 @@ const CreateModal: React.FC<ModalProps> = (props: ModalProps) => {
           busi_group_id: teamId,
         }));
         addBusinessMember(teamId, params).then((_) => {
-          message.success(t('业务组成员添加成功'));
+          message.success(t('common:success.add'));
           onClose('addMember');
         });
       }
@@ -163,37 +163,37 @@ const CreateModal: React.FC<ModalProps> = (props: ModalProps) => {
 
   const actionLabel = () => {
     if (action === ActionType.CreateUser) {
-      return t('创建用户');
+      return t('user.create');
     }
     if (action === ActionType.CreateTeam) {
-      return t('创建团队');
+      return t('team.create');
     }
     if (action === ActionType.CreateBusiness) {
-      return t('创建业务组');
+      return t('business.create');
     }
     if (action === ActionType.AddBusinessMember) {
-      return t('添加业务组成员');
+      return t('business.add_team');
     }
     if (action === ActionType.EditBusiness) {
-      return t('编辑业务组');
+      return t('business.edit');
     }
     if (action === ActionType.EditUser) {
-      return t('编辑用户信息');
+      return t('user.edit');
     }
     if (action === ActionType.EditTeam) {
-      return t('编辑团队信息');
+      return t('team.edit');
     }
     if (action === ActionType.Reset) {
-      return t('重置密码');
+      return t('account:password.reset');
     }
     if (action === ActionType.Disable) {
-      return t('禁用');
+      return t('disbale');
     }
     if (action === ActionType.Undisable) {
-      return t('启用');
+      return t('enable');
     }
     if (action === ActionType.AddUser) {
-      return t('添加成员');
+      return t('team.add_user');
     }
   };
 
@@ -206,14 +206,14 @@ const CreateModal: React.FC<ModalProps> = (props: ModalProps) => {
       destroyOnClose={true}
       footer={[
         <Button key='back' onClick={onClose}>
-          {t('取消')}
+          {t('common:btn.cancel')}
         </Button>,
         <Button key='submit' type='primary' onClick={() => onOk()}>
-          {t('确定')}
+          {t('common:btn.ok')}
         </Button>,
         action === ActionType.CreateTeam && (
           <Button type='primary' onClick={() => onOk('search')}>
-            {t('确定并搜索')}
+            {t('ok_and_search')}
           </Button>
         ),
       ]}

@@ -3,15 +3,18 @@ import { Form, Row, Col, Input, Button } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import moment from 'moment';
+import { useTranslation } from 'react-i18next';
 import TimeRangePicker, { isMathString } from '@/components/TimeRangePicker';
 import Resolution from '@/components/Resolution';
-import PromQLInput, { PromQLInputWithBuilder } from '@/components/PromQLInput';
+import { PromQLInputWithBuilder } from '@/components/PromQLInput';
 import Collapse, { Panel } from '../Components/Collapse';
 import getFirstUnusedLetter from '../../Renderer/utils/getFirstUnusedLetter';
 
 const alphabet = 'ABCDEFGHIGKLMNOPQRSTUVWXYZ'.split('');
 
-export default function Prometheus({ chartForm }) {
+export default function Prometheus({ chartForm, defaultDatasourceValue }) {
+  const { t } = useTranslation('dashboard');
+
   return (
     <Form.List name='targets'>
       {(fields, { add, remove }, { errors }) => {
@@ -46,28 +49,25 @@ export default function Prometheus({ chartForm }) {
                       <div />
                     </Form.Item>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                      <Form.Item
-                        label='PromQL'
-                        {...field}
-                        name={[field.name, 'expr']}
-                        validateTrigger={['onBlur']}
-                        rules={[
-                          {
-                            required: true,
-                            message: '请输入PromQL',
-                          },
-                        ]}
-                        style={{ flex: 1 }}
-                      >
-                        <PromQLInputWithBuilder
-                          validateTrigger={['onBlur']}
-                          url='/api/n9e/prometheus'
-                          headers={{
-                            'X-Cluster': localStorage.getItem('curCluster') || 'DEFAULT',
-                            Authorization: `Bearer ${localStorage.getItem('access_token') || ''}`,
-                          }}
-                          cluster={localStorage.getItem('curCluster') || 'DEFAULT'}
-                        />
+                      <Form.Item shouldUpdate={(prevValues, curValues) => _.isEqual(prevValues.datasourceValue, curValues.datasourceValue)} noStyle>
+                        {({ getFieldValue }) => {
+                          return (
+                            <Form.Item
+                              label='PromQL'
+                              {...field}
+                              name={[field.name, 'expr']}
+                              validateTrigger={['onBlur']}
+                              rules={[
+                                {
+                                  required: true,
+                                },
+                              ]}
+                              style={{ flex: 1 }}
+                            >
+                              <PromQLInputWithBuilder validateTrigger={['onBlur']} datasourceValue={getFieldValue('datasourceValue') || defaultDatasourceValue} />
+                            </Form.Item>
+                          );
+                        }}
                       </Form.Item>
                     </div>
                     <Row gutter={10}>
@@ -87,12 +87,12 @@ export default function Prometheus({ chartForm }) {
                       </Col>
                       <Col flex='116px'>
                         <Form.Item
-                          label='时间选择'
+                          label={t('query.prometheus.time')}
                           {...field}
                           name={[field.name, 'time']}
                           tooltip={{
                             getPopupContainer: () => document.body,
-                            title: '可指定时间范围，默认为大盘全局时间范围',
+                            title: t('query.prometheus.time_tip'),
                           }}
                           normalize={(val) => {
                             return {
@@ -122,7 +122,7 @@ export default function Prometheus({ chartForm }) {
                           name={[field.name, 'step']}
                           tooltip={{
                             getPopupContainer: () => document.body,
-                            title: '可指定 step，默认为大盘全局 step',
+                            title: t('query.prometheus.step_tip'),
                           }}
                         >
                           <Resolution />

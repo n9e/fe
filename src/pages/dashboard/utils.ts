@@ -18,7 +18,7 @@ import _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import moment from 'moment';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
-import { IDashboard } from './types';
+import { IDashboard, IVariable } from './types';
 import { defaultValues } from './Editor/config';
 
 export function JSONParse(str) {
@@ -122,7 +122,7 @@ function convertOptionsGrafanaToN9E(panel: any) {
     thresholds: {
       mode: config.thresholds?.mode, // mode 目前是不支持的
       style: config.custom?.thresholdsStyle?.mode || 'line', // 目前只有固定的 line 风格，但是这个只用于折线图
-      steps: _.map(config.thresholds?.steps, (step, idx) => {
+      steps: _.map(config.thresholds?.steps, (step, idx: number) => {
         return {
           ...step,
           type: step.value === null && idx === 0 ? 'base' : undefined, // 没有值并且是第一个，就是 base
@@ -304,7 +304,7 @@ export function convertDashboardGrafanaToN9E(data) {
     configs: {
       version: '2.0.0',
       links: convertLinksGrafanaToN9E(data.links),
-      var: convertVariablesGrafanaToN9E(data.templating),
+      var: convertVariablesGrafanaToN9E(data.templating) as IVariable[],
       panels: convertPanlesGrafanaToN9E(data.panels),
     },
   };

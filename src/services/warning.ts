@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  */
+import _ from 'lodash';
 import request from '@/utils/request';
 import { RequestMethod, IBasePagingParams } from '@/store/common';
 import type { MetricListRes, strategyGroup, strategyStatus, TagKeysRes, TagValuesRes } from '@/store/warningInterface';
@@ -134,18 +135,9 @@ export const getWarningStrategy = function (id): Promise<any> {
   });
 };
 
-// export const addOrEditStrategy = function (data: object, strategyId?: string) {
-//   let url = `/api/n9e/alert-rules`;
-//   if (strategyId) url = `/api/n9e/alert-rule/${strategyId}`;
-//   return request(url, {
-//     method: strategyId ? RequestMethod.Put : RequestMethod.Post,
-//     data: strategyId ? data[0] : data,
-//   });
-// };
-
-export const addOrEditStrategy = function (data: any[], busiId: number, method: string) {
+export const addStrategy = function (data: any[], busiId: number) {
   return request(`/api/n9e/busi-group/${busiId}/alert-rules`, {
-    method: method,
+    method: 'POST',
     data: data,
   });
 };
@@ -170,13 +162,10 @@ export const batchDeleteStrategy = function (ruleId, ids: Array<number>) {
   });
 };
 
-export const prometheusQuery = function (data, cluster): Promise<any> {
-  return request(`/api/n9e/prometheus/api/v1/query`, {
+export const prometheusQuery = function (data, datasourceValue): Promise<any> {
+  return request(`/api/n9e/proxy/${datasourceValue}/api/v1/query`, {
     method: RequestMethod.Get,
     params: data,
-    headers: {
-      'X-Cluster': cluster,
-    },
   });
 };
 
@@ -239,7 +228,7 @@ export function getHistoryEventsById(busiId, eventId) {
 /**
  * 批量删除(忽略)告警历史
  */
-export const deleteAlertEvents = function (busiId, ids: Array<number | string>) {
+export const deleteAlertEvents = function (ids: Array<number | string>) {
   return request(`/api/n9e/alert-cur-events`, {
     method: RequestMethod.Delete,
     data: {
@@ -407,14 +396,16 @@ export function getBrainLicense() {
   });
 }
 
-export function getDsQuery(params) {
-  return request('/api/n9e-plus/ds-query', {
+export function getDsQuery(datasourceValue: number, requestBody) {
+  return request(`/api/n9e/proxy/${datasourceValue}/_msearch`, {
     method: RequestMethod.Post,
-    data: params,
+    data: requestBody,
     headers: {
-      'X-Cluster': 'Default',
+      'Content-Type': 'application/json',
     },
-    silence: true,
+  }).then((res) => {
+    const dat = _.get(res, 'responses');
+    return dat;
   });
 }
 
@@ -429,24 +420,14 @@ export function getLogQuery(params) {
   });
 }
 
-export function getIndices(params) {
-  return request('/api/n9e-plus/indices', {
-    method: RequestMethod.Post,
-    data: params,
-    headers: {
-      'X-Cluster': 'Default',
+export function getIndices(datasourceValue: number) {
+  return request(`/api/n9e/proxy/${datasourceValue}/_cat/indices`, {
+    method: RequestMethod.Get,
+    params: {
+      format: 'json',
     },
-  });
-}
-
-export function getFields(params) {
-  return request('/api/n9e-plus/fields', {
-    method: RequestMethod.Post,
-    data: params,
-    headers: {
-      'X-Cluster': 'Default',
-    },
-    silence: true,
+  }).then((res) => {
+    return _.compact(_.map(res, 'index'));
   });
 }
 

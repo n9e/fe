@@ -18,6 +18,7 @@ import React, { useState } from 'react';
 import { Space, Modal, Button, Mentions } from 'antd';
 import { CaretRightOutlined, CaretDownOutlined, HolderOutlined, SettingOutlined, DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { AddPanelIcon } from '../config';
 import { useGlobalState } from '../globalState';
 import { IVariable, replaceExpressionVars } from '../VariableConfig';
@@ -39,6 +40,7 @@ function replaceFieldWithVariable(value: string, dashboardId?: string, variableC
 }
 
 export default function Row(props: IProps) {
+  const { t } = useTranslation('dashboard');
   const { name, row, onToggle, onAddClick, onEditClick, onDeleteClick } = props;
   const [editVisble, setEditVisble] = useState(false);
   const [newName, setNewName] = useState<string>();
@@ -76,7 +78,7 @@ export default function Row(props: IProps) {
         {row.collapsed === false && <HolderOutlined className='dashboards-panels-item-drag-handle' />}
       </Space>
       <Modal
-        title='编辑分组'
+        title={t('row.edit_title')}
         visible={editVisble}
         onCancel={() => {
           setEditVisble(false);
@@ -90,7 +92,7 @@ export default function Row(props: IProps) {
         }}
       >
         <div>
-          分组名称
+          {t('row.name')}
           <Mentions
             prefix='$'
             split=''
@@ -129,7 +131,7 @@ export default function Row(props: IProps) {
               setDeleteVisible(false);
             }}
           >
-            取消
+            {t('row.cancel')}
           </Button>,
           <Button
             key='ok'
@@ -139,7 +141,7 @@ export default function Row(props: IProps) {
               setDeleteVisible(false);
             }}
           >
-            仅删除分组
+            {t('row.ok2')}
           </Button>,
           <Button
             key='all'
@@ -150,15 +152,15 @@ export default function Row(props: IProps) {
               setDeleteVisible(false);
             }}
           >
-            删除分组和图表
+            {t('row.ok')}
           </Button>,
         ]}
       >
         <div>
           <h3 style={{ fontSize: 16 }}>
-            <InfoCircleOutlined style={{ color: '#faad14', marginRight: 10, fontSize: 22, position: 'relative', top: 4 }} /> 删除分组
+            <InfoCircleOutlined style={{ color: '#faad14', marginRight: 10, fontSize: 22, position: 'relative', top: 4 }} /> {t('row.delete_title')}
           </h3>
-          <div style={{ marginLeft: 38, fontSize: 14 }}>确定删除该分组吗？</div>
+          <div style={{ marginLeft: 38, fontSize: 14 }}>{t('row.delete_confirm')}</div>
         </div>
       </Modal>
     </div>

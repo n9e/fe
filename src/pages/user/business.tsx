@@ -14,63 +14,54 @@
  * limitations under the License.
  *
  */
-import React, { useEffect, useState, useRef } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useContext, useEffect, useState } from 'react';
 import PageLayout from '@/components/pageLayout';
-import { Button, Table, Input, Switch, message, List, Row, Col, Pagination, Modal } from 'antd';
-import { DeleteTwoTone, EditOutlined, DeleteOutlined, SearchOutlined, UserOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { Button, Table, Input, message, List, Row, Col, Modal } from 'antd';
+import { EditOutlined, DeleteOutlined, SearchOutlined, UserOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import UserInfoModal from './component/createModal';
-import { RootState, accountStoreState } from '@/store/accountInterface';
-import { changeStatus, deleteBusinessTeamMember, getBusinessTeamList, getBusinessTeamInfo, deleteBusinessTeam } from '@/services/manage';
-import { User, Team, UserType, ActionType, TeamInfo } from '@/store/manageInterface';
-import './index.less';
+import { deleteBusinessTeamMember, getBusinessTeamList, getBusinessTeamInfo, deleteBusinessTeam } from '@/services/manage';
+import { Team, ActionType } from '@/store/manageInterface';
+import { CommonStateContext } from '@/App';
 import { ColumnsType } from 'antd/lib/table';
-import '@/components/BlankBusinessPlaceholder/index.less';
 import { useTranslation } from 'react-i18next';
-const { confirm } = Modal;
 import { useQuery } from '@/utils';
+import '@/components/BlankBusinessPlaceholder/index.less';
+import './index.less';
 
+const { confirm } = Modal;
 export const PAGE_SIZE = 200;
 
 const Resource: React.FC = () => {
-  const { t } = useTranslation();
+  const { setBusiGroups } = useContext(CommonStateContext);
+  const { t } = useTranslation('user');
   const urlQuery = useQuery();
   const id = urlQuery.get('id');
   const [visible, setVisible] = useState<boolean>(false);
   const [action, setAction] = useState<ActionType>();
   const [teamId, setTeamId] = useState<string>(id || '');
-  const [memberId, setMemberId] = useState<string>('');
   const [memberList, setMemberList] = useState<{ user_group: any }[]>([]);
-  const [memberTotal, setMemberTotal] = useState<number>(0);
-  const [allMemberList, setAllMemberList] = useState<User[]>([]);
   const [teamInfo, setTeamInfo] = useState<{ name: string; id: number }>();
   const [teamList, setTeamList] = useState<Team[]>([]);
-  const [query, setQuery] = useState<string>('');
   const [memberLoading, setMemberLoading] = useState<boolean>(false);
-  const [searchValue, setSearchValue] = useState<string>('');
   const [searchMemberValue, setSearchMemberValue] = useState<string>('');
-  const userRef = useRef(null as any);
-  let { profile } = useSelector<RootState, accountStoreState>((state) => state.account);
-  const dispatch = useDispatch();
   const teamMemberColumns: ColumnsType<any> = [
     {
-      title: t('团队名称'),
+      title: t('team.name'),
       dataIndex: ['user_group', 'name'],
       ellipsis: true,
     },
     {
-      title: t('团队备注'),
+      title: t('common:table.note'),
       dataIndex: ['user_group', 'note'],
       ellipsis: true,
       render: (text: string, record) => record['user_group'].note || '-',
     },
     {
-      title: t('权限'),
+      title: t('business.perm_flag'),
       dataIndex: 'perm_flag',
     },
     {
-      title: t('操作'),
+      title: t('common:table.operations'),
       width: '100px',
       render: (text: string, record) => (
         <a
@@ -87,10 +78,10 @@ const Resource: React.FC = () => {
               },
             ];
             confirm({
-              title: t('是否删除该团队'),
+              title: t('common:confirm.delete'),
               onOk: () => {
                 deleteBusinessTeamMember(teamId, params).then((_) => {
-                  message.success(t('团队删除成功'));
+                  message.success(t('common:success.delete'));
                   handleClose('deleteMember');
                 });
               },
@@ -98,7 +89,7 @@ const Resource: React.FC = () => {
             });
           }}
         >
-          {t('删除')}
+          {t('common:btn.delete')}
         </a>
       ),
     },
@@ -119,7 +110,7 @@ const Resource: React.FC = () => {
   // 获取业务组列表
   const getTeamList = (search?: string, isDelete?: boolean) => {
     let params = {
-      query: search === undefined ? searchValue : search,
+      query: search,
       limit: PAGE_SIZE,
     };
     getBusinessTeamList(params).then((data) => {
@@ -127,6 +118,7 @@ const Resource: React.FC = () => {
       if ((!teamId || isDelete) && data.dat.length > 0) {
         setTeamId(data.dat[0].id);
       }
+      setBusiGroups(data.dat || []);
     });
   };
 
@@ -134,24 +126,13 @@ const Resource: React.FC = () => {
   const getTeamInfoDetail = (id: string) => {
     setMemberLoading(true);
     getBusinessTeamInfo(id).then((data) => {
-      dispatch({
-        type: 'common/saveData',
-        prop: 'curBusiItem',
-        data: data,
-      });
       setTeamInfo(data);
       setMemberList(data.user_groups);
       setMemberLoading(false);
     });
   };
 
-  const handleClick = (type: ActionType, id?: string, memberId?: string) => {
-    if (memberId) {
-      setMemberId(memberId);
-    } else {
-      setMemberId('');
-    }
-
+  const handleClick = (type: ActionType) => {
     setAction(type);
     setVisible(true);
   };
@@ -161,7 +142,6 @@ const Resource: React.FC = () => {
     setVisible(false);
     if (['create', 'delete', 'update'].includes(action)) {
       getList(action);
-      dispatch({ type: 'common/getBusiGroups' });
     }
     if (teamId && ['update', 'addMember', 'deleteMember'].includes(action)) {
       getTeamInfoDetail(teamId);
@@ -169,12 +149,12 @@ const Resource: React.FC = () => {
   };
 
   return (
-    <PageLayout title={t('业务组管理')} icon={<UserOutlined />} hideCluster>
+    <PageLayout title={t('business.title')} icon={<UserOutlined />}>
       <div className='user-manage-content'>
         <div style={{ display: 'flex', height: '100%' }}>
           <div className='left-tree-area'>
             <div className='sub-title'>
-              {t('业务组列表')}
+              {t('business.list')}
               <Button
                 style={{
                   height: '30px',
@@ -185,19 +165,17 @@ const Resource: React.FC = () => {
                   handleClick(ActionType.CreateBusiness);
                 }}
               >
-                {t('新建业务组')}
+                {t('common:btn.add')}
               </Button>
             </div>
             <div style={{ display: 'flex', margin: '5px 0px 12px' }}>
               <Input
                 prefix={<SearchOutlined />}
-                placeholder={t('搜索业务组名称')}
-                onPressEnter={(e) => {
-                  // @ts-ignore
+                placeholder={t('business.search_placeholder')}
+                onPressEnter={(e: any) => {
                   getTeamList(e.target.value);
                 }}
-                onBlur={(e) => {
-                  // @ts-ignore
+                onBlur={(e: any) => {
                   getTeamList(e.target.value);
                 }}
               />
@@ -232,12 +210,11 @@ const Resource: React.FC = () => {
                 >
                   {teamInfo && teamInfo.name}
                   <EditOutlined
-                    title={t('刷新')}
                     style={{
                       marginLeft: '8px',
                       fontSize: '14px',
                     }}
-                    onClick={() => handleClick(ActionType.EditBusiness, teamId)}
+                    onClick={() => handleClick(ActionType.EditBusiness)}
                   ></EditOutlined>
                   <DeleteOutlined
                     style={{
@@ -246,10 +223,10 @@ const Resource: React.FC = () => {
                     }}
                     onClick={() => {
                       confirm({
-                        title: t('是否删除该业务组'),
+                        title: t('common:confirm.delete'),
                         onOk: () => {
                           deleteBusinessTeam(teamId).then((_) => {
-                            message.success(t('业务组删除成功'));
+                            message.success(t('common:success.delete'));
                             handleClose('delete');
                           });
                         },
@@ -264,7 +241,7 @@ const Resource: React.FC = () => {
                     color: '#666',
                   }}
                 >
-                  {t('备注')}：{t('告警规则，告警事件，监控对象，自愈脚本等都归属业务组，是一个在系统里可以自闭环的组织')}
+                  {t('common:table.note')}：{t('business.note_content')}
                 </Col>
               </Row>
               <Row justify='space-between' align='middle'>
@@ -274,21 +251,21 @@ const Resource: React.FC = () => {
                     value={searchMemberValue}
                     className={'searchInput'}
                     onChange={(e) => setSearchMemberValue(e.target.value)}
-                    placeholder={t('搜索团队名称')}
+                    placeholder={t('business.team_search_placeholder')}
                   />
                 </Col>
                 <Button
                   type='primary'
-                  ghost
                   onClick={() => {
-                    handleClick(ActionType.AddBusinessMember, teamId);
+                    handleClick(ActionType.AddBusinessMember);
                   }}
                 >
-                  {t('添加团队')}
+                  {t('business.add_team')}
                 </Button>
               </Row>
 
               <Table
+                size='small'
                 rowKey='id'
                 columns={teamMemberColumns}
                 dataSource={memberList && memberList.length > 0 ? memberList.filter((item) => item.user_group && item.user_group.name.indexOf(searchMemberValue) !== -1) : []}
@@ -298,11 +275,11 @@ const Resource: React.FC = () => {
           ) : (
             <div className='blank-busi-holder'>
               <p style={{ textAlign: 'left', fontWeight: 'bold' }}>
-                <InfoCircleOutlined style={{ color: '#1473ff' }} /> {t('提示信息')}
+                <InfoCircleOutlined style={{ color: '#1473ff' }} /> {t('Tips')}
               </p>
               <p>
-                业务组（监控对象、监控大盘、告警规则、自愈脚本都要归属某个业务组）为空，请先&nbsp;
-                <a onClick={() => handleClick(ActionType.CreateBusiness)}>创建业务组</a>
+                {t('business.empty')}&nbsp;
+                <a onClick={() => handleClick(ActionType.CreateBusiness)}>{t('business.create')}</a>
               </p>
             </div>
           )}

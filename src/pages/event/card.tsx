@@ -1,11 +1,13 @@
-import React, { useEffect, useState, useLayoutEffect, useRef, useImperativeHandle } from 'react';
+import React, { useEffect, useState, useLayoutEffect, useRef, useImperativeHandle, useContext } from 'react';
 import { Button, Row, Col, Drawer, Tag, Table } from 'antd';
 import { useHistory } from 'react-router';
 import { ReactNode } from 'react-markdown/lib/react-markdown';
-import { throttle } from 'lodash';
+import _, { throttle } from 'lodash';
 import moment from 'moment';
+import queryString from 'query-string';
 import { useTranslation } from 'react-i18next';
 import { getAlertCards, getCardDetail } from '@/services/warning';
+import { CommonStateContext } from '@/App';
 import { SeverityColor, deleteAlertEventsModal } from './index';
 import CardLeft from './cardLeft';
 import './index.less';
@@ -34,8 +36,9 @@ function containerWidthToColumn(width: number): number {
 }
 
 function Card(props: Props, ref) {
-  const { t } = useTranslation();
+  const { t } = useTranslation('AlertCurEvents');
   const { filter, header } = props;
+  const { groupedDatasourceList } = useContext(CommonStateContext);
   const Ref = useRef<HTMLDivElement>(null);
   const history = useHistory();
   const [span, setSpan] = useState<number>(4);
@@ -75,12 +78,31 @@ function Card(props: Props, ref) {
 
   const columns = [
     {
-      title: t('集群'),
-      dataIndex: 'cluster',
-      width: 120,
+      title: t('common:datasource.type'),
+      dataIndex: 'cate',
     },
     {
-      title: t('规则标题&事件标签'),
+      title: t('common:datasource.name'),
+      dataIndex: 'datasource_id',
+      render: (value, record) => {
+        if (value === 0) {
+          return (
+            <Tag color='purple' key={value}>
+              $all
+            </Tag>
+          );
+        }
+        const name = _.find(groupedDatasourceList[record.cate], { id: value })?.name;
+        if (!name) return null;
+        return (
+          <Tag color='purple' key={value}>
+            {_.find(groupedDatasourceList[record.cate], { id: value })?.name}
+          </Tag>
+        );
+      },
+    },
+    {
+      title: t('rule_name'),
       dataIndex: 'rule_name',
       render(title, { id, tags }) {
         const content =
@@ -105,7 +127,7 @@ function Card(props: Props, ref) {
       },
     },
     {
-      title: t('触发时间'),
+      title: t('trigger_time'),
       dataIndex: 'trigger_time',
       width: 120,
       render(value) {
@@ -113,7 +135,7 @@ function Card(props: Props, ref) {
       },
     },
     {
-      title: t('操作'),
+      title: t('common:table.operations'),
       dataIndex: 'operate',
       width: 120,
       render(value, record) {
@@ -123,36 +145,36 @@ function Card(props: Props, ref) {
               size='small'
               type='link'
               onClick={() => {
-                history.push('/alert-mutes/add', {
-                  group_id: record.group_id,
-                  cluster: record.cluster,
-                  tags: record.tags
-                    ? record.tags.map((tag) => {
-                        const [key, value] = tag.split('=');
-                        return {
-                          func: '==',
-                          key,
-                          value,
-                        };
-                      })
-                    : [],
+                history.push({
+                  pathname: '/alert-mutes/add',
+                  search: queryString.stringify({
+                    busiGroup: record.group_id,
+                    prod: record.rule_prod,
+                    cate: record.cate,
+                    datasource_ids: [record.datasource_id],
+                    tags: record.tags,
+                  }),
                 });
               }}
             >
-              屏蔽
+              {t('shield')}
             </Button>
             <Button
               size='small'
               type='link'
               danger
               onClick={() =>
-                deleteAlertEventsModal(undefined, [record.id], () => {
-                  setSelectedRowKeys(selectedRowKeys.filter((key) => key !== record.id));
-                  fetchCardDetail(openedCard!);
-                })
+                deleteAlertEventsModal(
+                  [record.id],
+                  () => {
+                    setSelectedRowKeys(selectedRowKeys.filter((key) => key !== record.id));
+                    fetchCardDetail(openedCard!);
+                  },
+                  t,
+                )
               }
             >
-              删除
+              {t('common:btn.delete')}
             </Button>
           </>
         );
@@ -173,7 +195,7 @@ function Card(props: Props, ref) {
   }));
 
   return (
-    <div style={{ display: 'flex', height: '100%' }} ref={Ref}>
+    <div className='event-content cur-events' style={{ display: 'flex', height: '100%' }} ref={Ref}>
       <CardLeft onRefreshRule={setRule} />
       <div style={{ background: '#fff', flex: 1, padding: 16 }}>
         {header}
@@ -196,13 +218,17 @@ function Card(props: Props, ref) {
               danger
               disabled={selectedRowKeys.length === 0}
               onClick={() =>
-                deleteAlertEventsModal(undefined, selectedRowKeys, () => {
-                  setSelectedRowKeys([]);
-                  fetchCardDetail(openedCard!);
-                })
+                deleteAlertEventsModal(
+                  selectedRowKeys,
+                  () => {
+                    setSelectedRowKeys([]);
+                    fetchCardDetail(openedCard!);
+                  },
+                  t,
+                )
               }
             >
-              批量删除
+              {t('common:btn.batch_delete')}
             </Button>
           </div>
         }
@@ -212,6 +238,7 @@ function Card(props: Props, ref) {
         width={960}
       >
         <Table
+          size='small'
           rowKey={'id'}
           className='card-event-drawer'
           rowClassName={(record: { severity: number }, index) => {

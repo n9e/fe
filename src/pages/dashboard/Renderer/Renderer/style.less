@@ -11,7 +11,10 @@
     }
     .renderer-header-loading {
       .renderer-header-more {
-        display: inline;
+        display: inline-block;
+        &:hover {
+          background-color: rgba(0,0,0,0.04);
+        }
       }
     }
   }
@@ -59,6 +62,9 @@
   width: 34px;
   text-align: center;
   .renderer-header-more {
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
     display: none;
   }
 }

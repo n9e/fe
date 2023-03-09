@@ -62,14 +62,14 @@ export const normalDatasourceCates = [
     value: 'prometheus',
     label: 'Prometheus',
   },
-];
-
-export const datasourceCates = [
-  ...normalDatasourceCates,
   {
     value: 'elasticsearch',
     label: 'Elasticsearch',
   },
+];
+
+export const datasourceCates = [
+  ...normalDatasourceCates,
   {
     value: 'aliyun-sls',
     label: '阿里云SLS',

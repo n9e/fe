@@ -1,9 +1,12 @@
 import React from 'react';
 import _ from 'lodash';
+import License from './License';
+export { getAuthorizedDatasourceCates } from './utils';
+export { License };
 
 interface IProps {
-  var?: string;
-  children: React.ReactNode | Function;
+  var?: string; // 变量名，多个用逗号分隔
+  children: React.ReactNode | ((isShow: boolean[]) => React.ReactNode);
 }
 
 export default function index(props: IProps) {
@@ -14,18 +17,18 @@ export default function index(props: IProps) {
     } else {
       vars = [props.var];
     }
-    const result = _.some(vars, (item) => {
+    const result = _.map(vars, (item) => {
       return import.meta.env[item] === 'true';
     });
-    if (result) {
+    if (_.some(result, (item) => item === true)) {
       if (typeof props.children === 'function') {
-        return <div>{props.children(true)}</div>;
+        return <div>{props.children(result)}</div>;
       }
       return <div>{props.children}</div>;
     }
   }
   if (typeof props.children === 'function') {
-    return <div>{props.children(false)}</div>;
+    return <div>{props.children([false])}</div>;
   }
   return null;
 }

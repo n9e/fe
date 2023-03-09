@@ -17,6 +17,7 @@
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import classNames from 'classnames';
+import { useTranslation } from 'react-i18next';
 import { Card, Space, Dropdown, Menu, Tag, Popover, Divider } from 'antd';
 import { ShareAltOutlined, SyncOutlined, CloseCircleOutlined, DownOutlined, PlusCircleOutlined, SettingOutlined, LineChartOutlined } from '@ant-design/icons';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
@@ -32,6 +33,7 @@ import HexbinGraphStandardOptions from './graphStandardOptions/Hexbin';
 import { HexbinIcon } from './config';
 
 interface IProps {
+  datasourceValue: number;
   metric: string;
   match: IMatch;
   range: IRawTimeRange;
@@ -40,7 +42,8 @@ interface IProps {
 }
 
 export default function Graph(props: IProps) {
-  const { metric, match, range, step, onClose } = props;
+  const { t, i18n } = useTranslation('objectExplorer');
+  const { datasourceValue, metric, match, range, step, onClose } = props;
   const newGroups = _.map(
     _.filter(match.dimensionLabels, (item) => !_.isEmpty(item.value)),
     'label',
@@ -110,13 +113,13 @@ export default function Graph(props: IProps) {
 
   useEffect(() => {
     const matchStr = getMatchStr(match);
-    getLabels(`${metric}${matchStr}`, range).then((res) => {
+    getLabels(datasourceValue, `${metric}${matchStr}`, range).then((res) => {
       setLabels(res);
     });
   }, [refreshFlag, JSON.stringify(match), JSON.stringify(range)]);
 
   useEffect(() => {
-    getQueryRange({
+    getQueryRange(datasourceValue, {
       metric,
       match: getMatchStr(match),
       range,
@@ -174,7 +177,7 @@ export default function Graph(props: IProps) {
           <a className='a-icon'>
             <ShareAltOutlined
               onClick={() => {
-                const curCluster = localStorage.getItem('curCluster');
+                const curCluster = localStorage.getItem('datasourceValue_prometheus');
                 const dataProps = {
                   type: 'timeseries',
                   version: '2.0.0',
@@ -221,7 +224,7 @@ export default function Graph(props: IProps) {
       <div>
         <Space size={'large'}>
           <div>
-            计算函数：
+            {t('graph.function')}：
             <Dropdown
               overlay={
                 <Menu onClick={(e) => setCalcFunc(e.key === 'clear' ? '' : e.key)} selectedKeys={[calcFunc]}>
@@ -235,12 +238,12 @@ export default function Graph(props: IProps) {
               }
             >
               <a className='ant-dropdown-link' onClick={(e) => e.preventDefault()}>
-                {calcFunc || '无'} <DownOutlined />
+                {calcFunc || t('graph.none')} <DownOutlined />
               </a>
             </Dropdown>
           </div>
           <div>
-            环比：
+            {t('graph.offset')}：
             {comparison.map((ag) => (
               <Tag
                 key={ag}
@@ -276,7 +279,7 @@ export default function Graph(props: IProps) {
             </Dropdown>
           </div>
           <div>
-            聚合函数：
+            {t('graph.aggregation')}：
             <Dropdown
               overlay={
                 <Menu onClick={(e) => setAggrFunc(e.key)} selectedKeys={[aggrFunc]}>
@@ -294,7 +297,7 @@ export default function Graph(props: IProps) {
           </div>
           {aggrFunc ? (
             <div className='graph-config-inner-item'>
-              聚合维度：
+              {t('graph.aggregation_by')}：
               {aggrGroups.map((ag) => (
                 <Tag
                   key={ag}
@@ -336,18 +339,18 @@ export default function Graph(props: IProps) {
           ) : null}
           {chartType === 'hexbin' && (
             <div>
-              取值计算：
+              {t('graph.calc')}：：
               <Dropdown
                 overlay={
                   <Menu onClick={(e) => setReduceFunc(e.key)} selectedKeys={[reduceFunc]}>
                     {_.map(calcsOptions, (val, key) => {
-                      return <Menu.Item key={key}>{val.name}</Menu.Item>;
+                      return <Menu.Item key={key}>{i18n.language === 'en_US' ? key : val.name}</Menu.Item>;
                     })}
                   </Menu>
                 }
               >
                 <a className='ant-dropdown-link' onClick={(e) => e.preventDefault()}>
-                  {calcsOptions[reduceFunc]?.name} <DownOutlined />
+                  {i18n.language === 'en_US' ? reduceFunc : calcsOptions[reduceFunc]?.name} <DownOutlined />
                 </a>
               </Dropdown>
             </div>

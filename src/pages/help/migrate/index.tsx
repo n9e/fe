@@ -30,7 +30,6 @@ export default function Migrate() {
           <RetweetOutlined /> 管理员迁移
         </>
       }
-      hideCluster
     >
       <div>
         <div style={{ padding: 20 }}>

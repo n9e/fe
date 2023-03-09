@@ -18,14 +18,16 @@ import React from 'react';
 import { Form, Input, InputNumber, Button } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { Panel } from '../../Components/Collapse';
 import ColorPicker from '../../../Components/ColorPicker';
 
 export default function index() {
+  const { t } = useTranslation('dashboard');
   const namePrefix = ['options', 'thresholds'];
 
   return (
-    <Panel header='阈值'>
+    <Panel header={t('panel.options.thresholds.title')}>
       <Form.List name={[...namePrefix, 'steps']}>
         {(fields, { add, remove }) => (
           <>
@@ -75,7 +77,7 @@ export default function index() {
                 );
               }}
             >
-              添加
+              {t('panel.options.thresholds.btn')}
             </Button>
           </>
         )}

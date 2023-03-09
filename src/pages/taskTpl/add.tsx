@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React from 'react';
+import React, { useContext } from 'react';
 import { Button, Card, message } from 'antd';
 import { RollbackOutlined } from '@ant-design/icons';
 import _ from 'lodash';
@@ -23,17 +23,15 @@ import { useTranslation } from 'react-i18next';
 import PageLayout from '@/components/pageLayout';
 import request from '@/utils/request';
 import api from '@/utils/api';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store/common';
-import { CommonStoreState } from '@/store/commonInterface';
 import TplForm from './tplForm';
+import { CommonStateContext } from '@/App';
 
 const Add = (props: any) => {
   const history = useHistory();
-  const { curBusiItem } = useSelector<RootState, CommonStoreState>((state) => state.common);
+  const { curBusiId } = useContext(CommonStateContext);
   const { t } = useTranslation();
   const handleSubmit = (values: any) => {
-    request(`${api.tasktpls(curBusiItem.id)}`, {
+    request(`${api.tasktpls(curBusiId)}`, {
       method: 'POST',
       body: JSON.stringify(values),
     }).then(() => {
@@ -45,30 +43,30 @@ const Add = (props: any) => {
   };
 
   return (
-    <PageLayout hideCluster title={
-      <>
-        <RollbackOutlined className='back' onClick={() => history.push('/job-tpls')} />
-        自愈脚本
-      </>
-    }>
+    <PageLayout
+      title={
+        <>
+          <RollbackOutlined className='back' onClick={() => history.push('/job-tpls')} />
+          {t('tpl')}
+        </>
+      }
+    >
       <div style={{ padding: 10 }}>
-        <Card
-          title="创建自愈脚本"
-        >
-        <TplForm
-          onSubmit={handleSubmit}
-          footer={
-            <div>
-              <Button type="primary" htmlType="submit" style={{ marginRight: 8 }}> 
-                {t('form.submit')}
-              </Button>
-            </div>
-          }
-        />
+        <Card title={t('common:btn.create')}>
+          <TplForm
+            onSubmit={handleSubmit}
+            footer={
+              <div>
+                <Button type='primary' htmlType='submit' style={{ marginRight: 8 }}>
+                  {t('btn.submit')}
+                </Button>
+              </div>
+            }
+          />
         </Card>
       </div>
     </PageLayout>
-  )
-}
+  );
+};
 
 export default Add;

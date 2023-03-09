@@ -17,33 +17,41 @@ export default function PrometheusDetail(props: IProps) {
   return [
     {
       label: 'PromQL',
-      key: 'prom_ql',
-      render(promql) {
+      key: 'rule_config',
+      render(ruleConfig) {
+        const { queries } = ruleConfig;
         return (
-          <Row className='promql-row'>
-            <Col span={20}>
-              <PromQLInput value={promql} url='/api/n9e/prometheus' readonly />
-            </Col>
-            <Col span={4}>
-              <Button
-                className='run-btn'
-                type='link'
-                onClick={() => {
-                  history.push({
-                    pathname: '/metric/explorer',
-                    search: queryString.stringify({
-                      promql,
-                      mode: 'graph',
-                      start: moment.unix(eventDetail.trigger_time).subtract(30, 'minutes').unix(),
-                      end: moment.unix(eventDetail.trigger_time).add(30, 'minutes').unix(),
-                    }),
-                  });
-                }}
-              >
-                <PlayCircleOutlined className='run-con' />
-              </Button>
-            </Col>
-          </Row>
+          <div style={{ width: '100%' }}>
+            {_.map(queries, (query) => {
+              const { prom_ql } = query;
+              return (
+                <Row className='promql-row' key={prom_ql}>
+                  <Col span={20}>
+                    <PromQLInput value={prom_ql} url='/api/n9e/prometheus' readonly />
+                  </Col>
+                  <Col span={4}>
+                    <Button
+                      className='run-btn'
+                      type='link'
+                      onClick={() => {
+                        history.push({
+                          pathname: '/metric/explorer',
+                          search: queryString.stringify({
+                            prom_ql,
+                            mode: 'graph',
+                            start: moment.unix(eventDetail.trigger_time).subtract(30, 'minutes').unix(),
+                            end: moment.unix(eventDetail.trigger_time).add(30, 'minutes').unix(),
+                          }),
+                        });
+                      }}
+                    >
+                      <PlayCircleOutlined className='run-con' />
+                    </Button>
+                  </Col>
+                </Row>
+              );
+            })}
+          </div>
         );
       },
     },

@@ -5,7 +5,7 @@ import { getMetric } from '@/services/dashboard';
 import FormItem from '../components/FormItem';
 
 interface IProps {
-  datasourceValue: string;
+  datasourceValue: number;
   params: {
     start: number;
     end: number;

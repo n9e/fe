@@ -14,55 +14,152 @@
  * limitations under the License.
  *
  */
-import React from 'react';
-import './App.less';
-import 'antd/dist/antd.less';
-import './global.variable.less';
-import { Provider } from 'react-redux';
+import React, { useEffect, useState, createContext, useRef } from 'react';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 // Modal 会被注入的代码所使用，请不要删除
 import { ConfigProvider, Empty, Modal } from 'antd';
-import HeaderMenu from './components/menu';
-import Content from './routers';
-import store from '@/store';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import zhCN from 'antd/lib/locale/zh_CN';
-import en from 'antd/lib/locale/en_US';
+import enUS from 'antd/lib/locale/en_US';
+import 'antd/dist/antd.less';
 import { useTranslation } from 'react-i18next';
+import _ from 'lodash';
 import TaskOutput from '@/pages/taskOutput';
 import TaskHostOutput from '@/pages/taskOutput/host';
+import { getAuthorizedDatasourceCates } from '@/components/AdvancedWrap';
+import { GetProfile } from '@/services/account';
+import { getBusiGroups, getDatasourceList } from '@/services/common';
+import HeaderMenu from './components/menu';
+import Content from './routers';
+
+import './App.less';
+import './global.variable.less';
+
+interface IProfile {
+  admin?: boolean;
+  nickname: string;
+  role: string;
+  roles: string[];
+  username: string;
+  email: string;
+  phone: string;
+  id: number;
+  portrait: string;
+  contacts: { string?: string };
+}
+
+export interface ICommonState {
+  datasourceCateOptions: {
+    label: string;
+    value: string;
+  }[];
+  groupedDatasourceList: {
+    [index: string]: {
+      name: string;
+      id: number;
+    }[];
+  };
+  datasourceList: {
+    name: string;
+    id: number;
+  }[];
+  setDatasourceList: (list: { name: string; id: number }[]) => void;
+  busiGroups: {
+    name: string;
+    id: number;
+  }[];
+  setBusiGroups: (groups: { name: string; id: number }[]) => void;
+  curBusiId: number;
+  setCurBusiId: (id: number) => void;
+  profile: IProfile;
+  setProfile: (profile: IProfile) => void;
+}
+
+// 可以匿名访问的路由 TODO: job-task output 应该也可以匿名访问
+const anonymousRoutes = [
+  '/login',
+  '/callback',
+  // '/chart', // TODO: 分享的页面是需要获取数据源列表的
+  '/dashboards/share/',
+];
+// 判断是否是匿名访问的路由
+const anonymous = _.some(anonymousRoutes, (route) => location.pathname.startsWith(route));
+// 初始化数据 context
+export const CommonStateContext = createContext({} as ICommonState);
 
 function App() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
+  const initialized = useRef(false);
+  const [commonState, setCommonState] = useState<ICommonState>({
+    datasourceCateOptions: getAuthorizedDatasourceCates(),
+    groupedDatasourceList: {},
+    datasourceList: [],
+    setDatasourceList: (datasourceList) => {
+      setCommonState((state) => ({ ...state, datasourceList, groupedDatasourceList: _.groupBy(datasourceList, 'plugin_type') }));
+    },
+    busiGroups: [],
+    setBusiGroups: (busiGroups) => {
+      setCommonState((state) => ({ ...state, busiGroups }));
+    },
+    curBusiId: window.localStorage.getItem('curBusiId') ? Number(window.localStorage.getItem('curBusiId')) : 0,
+    setCurBusiId: (id: number) => {
+      window.localStorage.setItem('curBusiId', String(id));
+      setCommonState((state) => ({ ...state, curBusiId: id }));
+    },
+    profile: {} as IProfile,
+    setProfile: (profile: IProfile) => {
+      setCommonState((state) => ({ ...state, profile }));
+    },
+  });
+
+  useEffect(() => {
+    try {
+      (async () => {
+        // 非匿名访问，需要初始化一些公共数据
+        if (!anonymous) {
+          const { dat: profile } = await GetProfile();
+          const { dat: busiGroups } = await getBusiGroups();
+          const datasourceList = await getDatasourceList();
+          const defaultBusiId = commonState.curBusiId || busiGroups[0]?.id;
+          window.localStorage.setItem('curBusiId', String(defaultBusiId));
+          initialized.current = true;
+          setCommonState((state) => {
+            return {
+              ...state,
+              profile,
+              busiGroups,
+              groupedDatasourceList: _.groupBy(datasourceList, 'plugin_type'),
+              datasourceList: datasourceList,
+              curBusiId: defaultBusiId,
+            };
+          });
+        }
+      })();
+    } catch (error) {
+      console.error(error);
+    }
+  }, []);
+
+  // 初始化中不渲染任何内容
+  if (!initialized.current && !anonymous) {
+    return null;
+  }
+
   return (
     <div className='App'>
-      <ConfigProvider
-        locale={i18n.language == 'en' ? en : zhCN}
-        // getPopupContainer={(node: HTMLElement) => {
-        //   if (node) {
-        //     return node.parentNode as HTMLElement;
-        //   }
-        //   return document.body;
-        // }}
-        // renderEmpty={() => (
-        //   <div style={{ padding: 20 }}>
-        //     <img src='/image/empty.png' width='64' />
-        //     <div className='ant-empty-description'>{t('无数据')}</div>
-        //   </div>
-        // )}
-      >
-        <Provider store={store as any}>
+      <CommonStateContext.Provider value={commonState}>
+        <ConfigProvider locale={i18n.language == 'en_US' ? enUS : zhCN}>
           <Router>
             <Switch>
               <Route exact path='/job-task/:busiId/output/:taskId/:outputType' component={TaskOutput} />
               <Route exact path='/job-task/:busiId/output/:taskId/:host/:outputType' component={TaskHostOutput} />
               <>
-                <HeaderMenu></HeaderMenu>
-                <Content></Content>
+                <HeaderMenu />
+                <Content />
               </>
             </Switch>
           </Router>
-        </Provider>
-      </ConfigProvider>
+        </ConfigProvider>
+      </CommonStateContext.Provider>
     </div>
   );
 }

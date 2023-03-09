@@ -23,9 +23,7 @@ import { QueryStats } from './components/QueryStatsView';
 
 interface IProps {
   url: string;
-  datasourceId?: number;
-  datasourceIdRequired?: boolean;
-  datasourceName?: string;
+  datasourceValue: number;
   promql?: string;
   setQueryStats: (stats: QueryStats) => void;
   setErrorContent: (content: string) => void;
@@ -75,7 +73,7 @@ function getListItemValue(resultType, record) {
 }
 
 export default function Table(props: IProps) {
-  const { url, datasourceId, datasourceIdRequired, datasourceName, promql, setQueryStats, setErrorContent, contentMaxHeight, timestamp, setTimestamp, refreshFlag } = props;
+  const { url, datasourceValue, promql, setQueryStats, setErrorContent, contentMaxHeight, timestamp, setTimestamp, refreshFlag } = props;
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<{
     resultType: ResultType;
@@ -86,24 +84,13 @@ export default function Table(props: IProps) {
   });
 
   useEffect(() => {
-    if (datasourceIdRequired ? datasourceId && promql : promql) {
+    if (datasourceValue && promql) {
       const queryStart = Date.now();
       setIsLoading(true);
-      getPromData(
-        `${url}/api/v1/query`,
-        {
-          time: timestamp || moment().unix(),
-          query: promql,
-        },
-        datasourceIdRequired
-          ? {
-              'X-Data-Source-Id': datasourceId,
-            }
-          : {
-              'X-Cluster': datasourceName || localStorage.getItem('curCluster') || 'DEFAULT',
-              Authorization: `Bearer ${localStorage.getItem('access_token') || ''}`,
-            },
-      )
+      getPromData(`${url}/${datasourceValue}/api/v1/query`, {
+        time: timestamp || moment().unix(),
+        query: promql,
+      })
         .then((res) => {
           const { resultType } = res;
           let { result } = res;
@@ -148,7 +135,7 @@ export default function Table(props: IProps) {
           setIsLoading(false);
         });
     }
-  }, [timestamp, datasourceId, datasourceName, promql, refreshFlag]);
+  }, [timestamp, datasourceValue, promql, refreshFlag]);
 
   return (
     <div className='prom-graph-table-container'>

@@ -32,18 +32,18 @@ interface IProps {
   mode: string;
   visible: boolean;
   setVisible: (visible: boolean) => void;
-  initialValues: IPanel | null;
+  initialValues: IPanel;
   variableConfigWithOptions?: IVariable[];
-  cluster: string;
+  datasourceValue: number;
   id: string;
   time: IRawTimeRange;
   onOK: (formData: any, mode: string) => void;
 }
 
 function index(props: IProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation('dashboard');
   const formRef = useRef<any>();
-  const { mode, visible, setVisible, variableConfigWithOptions, cluster, id, time } = props;
+  const { mode, visible, setVisible, variableConfigWithOptions, datasourceValue, id, time } = props;
   const [initialValues, setInitialValues] = useState<IPanel>(_.cloneDeep(props.initialValues));
   const [range, setRange] = useState<IRawTimeRange>(time);
   const [step, setStep] = useState<number | null>(null);
@@ -88,7 +88,7 @@ function index(props: IProps) {
       width='100%'
       title={
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          <div>{initialValues ? t('编辑图表') : t('新建图表')}</div>
+          <div>{initialValues ? t('panel.title.add') : t('panel.title.edit')}</div>
           <Space style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', fontSize: 12, lineHeight: '20px' }}>
             <Select
               dropdownMatchSelectWidth={false}
@@ -108,7 +108,7 @@ function index(props: IProps) {
               {_.map(visualizations, (item) => {
                 return (
                   <Select.Option value={item.type} key={item.type}>
-                    {item.name}
+                    {i18n.language === 'en_US' ? item.type : item.name}
                   </Select.Option>
                 );
               })}
@@ -141,7 +141,7 @@ function index(props: IProps) {
             setVisible(false);
           }}
         >
-          取消
+          {t('common:btn.cancel')}
         </Button>,
         <Button
           key='ok'
@@ -150,7 +150,7 @@ function index(props: IProps) {
             handleAddChart();
           }}
         >
-          确认
+          {t('common:btn.save')}
         </Button>,
       ]}
       onCancel={() => {
@@ -165,7 +165,7 @@ function index(props: IProps) {
           ref={formRef}
           initialValues={normalizeInitialValues(initialValues)}
           variableConfigWithOptions={variableConfigWithOptions}
-          cluster={cluster}
+          datasourceValue={datasourceValue}
           range={range}
           id={id}
           step={step}

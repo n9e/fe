@@ -18,6 +18,7 @@ import React from 'react';
 import { Form, Input, InputNumber, Button, Select, Row, Col, Tooltip } from 'antd';
 import { DeleteOutlined, InfoCircleOutlined, CaretDownOutlined } from '@ant-design/icons';
 import _ from 'lodash';
+import { useTranslation, Trans } from 'react-i18next';
 import { Panel } from '../../Components/Collapse';
 import ColorPicker from '../../../Components/ColorPicker';
 
@@ -27,10 +28,11 @@ interface IProps {
 }
 
 export default function index(props: IProps) {
+  const { t } = useTranslation('dashboard');
   const { preNamePrefix = [], namePrefix = ['options', 'valueMappings'] } = props;
 
   return (
-    <Panel header='值映射'>
+    <Panel header={t('panel.options.valueMappings.title')}>
       <Form.List name={namePrefix}>
         {(fields, { add, remove }) => (
           <>
@@ -45,7 +47,7 @@ export default function index(props: IProps) {
                 });
               }}
             >
-              添加
+              {t('panel.options.valueMappings.btn')}
             </Button>
             {_.isEmpty(fields) ? null : (
               <Row gutter={10}>
@@ -55,19 +57,18 @@ export default function index(props: IProps) {
                       width: 300,
                     }}
                     title={
-                      <div>
-                        <div>范围值说明: from &gt;= value &lt;= to</div>
-                        <div>范围值默认值: from=-Infinity; to=Infinity </div>
-                        <div>特殊值Null说明: 匹配值为 null 或 undefined 或 no data</div>
-                      </div>
+                      <Trans ns='dashboard' i18nKey='panel.options.valueMappings.type_tip'>
+                        <div></div>
+                        <div></div>
+                      </Trans>
                     }
                   >
-                    条件 <InfoCircleOutlined />
+                    {t('panel.options.valueMappings.type')} <InfoCircleOutlined />
                   </Tooltip>
                 </Col>
-                <Col flex='210'>显示文字</Col>
-                <Col flex='45'>颜色</Col>
-                <Col flex='50'>操作</Col>
+                <Col flex='210'>{t('panel.options.valueMappings.text')}</Col>
+                <Col flex='45'>{t('panel.options.valueMappings.color')}</Col>
+                <Col flex='50'>{t('panel.options.valueMappings.operations')}</Col>
               </Row>
             )}
 
@@ -79,9 +80,9 @@ export default function index(props: IProps) {
                       <Col flex='80px'>
                         <Form.Item noStyle {...restField} name={[name, 'type']}>
                           <Select suffixIcon={<CaretDownOutlined />} style={{ width: 80 }}>
-                            <Select.Option value='special'>固定值</Select.Option>
-                            <Select.Option value='range'>范围值</Select.Option>
-                            <Select.Option value='specialValue'>特殊值</Select.Option>
+                            <Select.Option value='special'>{t('panel.options.valueMappings.type_map.special')}</Select.Option>
+                            <Select.Option value='range'>{t('panel.options.valueMappings.type_map.range')}</Select.Option>
+                            <Select.Option value='specialValue'>{t('panel.options.valueMappings.type_map.specialValue')}</Select.Option>
                           </Select>
                         </Form.Item>
                       </Col>
@@ -130,7 +131,7 @@ export default function index(props: IProps) {
                   </Col>
                   <Col flex='210'>
                     <Form.Item noStyle {...restField} name={[name, 'result', 'text']}>
-                      <Input placeholder='可选' />
+                      <Input placeholder={t('panel.options.valueMappings.text_placeholder')} />
                     </Form.Item>
                   </Col>
                   <Col flex='45'>

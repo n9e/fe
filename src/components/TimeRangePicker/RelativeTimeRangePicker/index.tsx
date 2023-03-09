@@ -20,6 +20,7 @@ import { DownOutlined, UpOutlined, SearchOutlined, CloseCircleOutlined } from '@
 import classNames from 'classnames';
 import moment from 'moment';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { isValid, describeTimeRange, valueAsString, isMathString } from '../utils';
 import { IRawTimeRange, ITimeRangePickerProps } from '../types';
 import { rangeOptions, momentLocaleZhCN } from '../config';
@@ -58,6 +59,7 @@ const setHistoryCache = (range, dateFormat) => {
 };
 
 export default function index(props: ITimeRangePickerProps) {
+  const { t, i18n } = useTranslation('timeRangePicker');
   const historyCache = getHistoryCache();
   const { value, onChange = () => {}, dateFormat = 'YYYY-MM-DD HH:mm', placeholder = '请选择时间', allowClear = false, onClear = () => {}, extraFooter } = props;
   const [visible, setVisible] = useState(false);
@@ -73,8 +75,8 @@ export default function index(props: ITimeRangePickerProps) {
   });
   const renderSinglePicker = (key: 'start' | 'end') => {
     const labelMap = {
-      start: '开始时间',
-      end: '结束时间',
+      start: t('start'),
+      end: t('end'),
     };
     const val = moment(range ? range[key] : undefined, true);
     return (
@@ -120,7 +122,7 @@ export default function index(props: ITimeRangePickerProps) {
             }}
           />
         </Input.Group>
-        <div className='flashcat-timeRangePicker-single-status'>{rangeStatus[key] === 'invalid' ? '时间格式错误' : undefined}</div>
+        <div className='flashcat-timeRangePicker-single-status'>{rangeStatus[key] === 'invalid' ? t('invalid') : undefined}</div>
       </div>
     );
   };
@@ -128,7 +130,7 @@ export default function index(props: ITimeRangePickerProps) {
   useEffect(() => {
     if (value) {
       setRange(value);
-      setLabel(describeTimeRange(value, dateFormat));
+      setLabel(describeTimeRange(value, dateFormat, i18n.language));
     }
   }, [JSON.stringify(value), visible]);
 
@@ -145,7 +147,7 @@ export default function index(props: ITimeRangePickerProps) {
                     {renderSinglePicker('start')}
                     {renderSinglePicker('end')}
                     <div className='flashcat-timeRangePicker-absolute-history'>
-                      <span>最近使用的时间范围</span>
+                      <span>{t('history')}</span>
                       <ul style={{ marginTop: 8 }}>
                         {_.map(historyCache, (range, idx) => {
                           return (
@@ -162,7 +164,7 @@ export default function index(props: ITimeRangePickerProps) {
                                 setVisible(false);
                               }}
                             >
-                              {describeTimeRange(range, dateFormat)}
+                              {describeTimeRange(range, dateFormat, i18n.language)}
                             </li>
                           );
                         })}
@@ -173,7 +175,7 @@ export default function index(props: ITimeRangePickerProps) {
                 <Col span={9}>
                   <div className='flashcat-timeRangePicker-ranges'>
                     <Input
-                      placeholder='搜索快捷选项'
+                      placeholder={t('quickSearchPlaceholder')}
                       prefix={<SearchOutlined />}
                       value={searchValue}
                       onChange={(e) => {
@@ -182,7 +184,13 @@ export default function index(props: ITimeRangePickerProps) {
                     />
                     <ul>
                       {_.map(
-                        _.filter(validOptions, (item) => item.displayZh.indexOf(searchValue) > -1),
+                        _.filter(rangeOptions, (item) => {
+                          if (i18n.language === 'zh_CN') {
+                            return item.displayZh.indexOf(searchValue) > -1;
+                          } else {
+                            return item.display.indexOf(searchValue) > -1;
+                          }
+                        }),
                         (item) => {
                           return (
                             <li
@@ -201,7 +209,7 @@ export default function index(props: ITimeRangePickerProps) {
                                 setHistoryCache(newValue, dateFormat);
                               }}
                             >
-                              {item.displayZh}
+                              {i18n.language === 'zh_CN' ? item.displayZh : item.display}
                             </li>
                           );
                         },
@@ -221,7 +229,7 @@ export default function index(props: ITimeRangePickerProps) {
                   }
                 }}
               >
-                确定
+                {t('ok')}
               </Button>
               {extraFooter && extraFooter(setVisible)}
             </div>

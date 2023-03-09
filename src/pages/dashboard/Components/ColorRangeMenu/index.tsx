@@ -31,7 +31,7 @@ export default function index(props: IProps) {
     <Menu prefixCls='ant-dropdown-menu' onClick={onClick} selectedKeys={selectedKeys} className='color-scales'>
       {_.map(colors, (item) => {
         return (
-          <Menu.Item key={item.value} className='color-scales-menu-item'>
+          <Menu.Item key={item.label} className='color-scales-menu-item'>
             <span className='color-scales-menu-colors'>
               {_.map(item.value, (color) => {
                 return (

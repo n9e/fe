@@ -14,24 +14,21 @@
  * limitations under the License.
  *
  */
-import React, { useState, useEffect, useCallback } from 'react';
-import { useSelector } from 'react-redux';
-import { Button, Input, Table, Switch, Tag, Select, Modal } from 'antd';
-const { Option } = Select;
+import React, { useState, useEffect, useCallback, useContext } from 'react';
+import { Input, Table, Switch, Tag, Select, Modal } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { ColumnType } from 'antd/lib/table';
+import dayjs from 'dayjs';
+import { debounce } from 'lodash';
 import { strategyItem, strategyStatus } from '@/store/warningInterface';
-import { CommonStoreState } from '@/store/commonInterface';
-import { RootState } from '@/store/common';
 import { getStrategyGroupSubList, updateAlertRules } from '@/services/warning';
 import { priorityColor } from '@/utils/constant';
-import ColorTag from '@/components/ColorTag';
 import { pageSizeOptionsDefault } from '@/pages/warning/const';
-import dayjs from 'dayjs';
 import { getBusinessTeamList } from '@/services/manage';
-import { debounce } from 'lodash';
-import { number } from 'echarts';
+import { CommonStateContext } from '@/App';
+
+const { Option } = Select;
 interface props {
   visible: boolean;
   ruleModalClose: Function;
@@ -40,17 +37,16 @@ interface props {
 
 const ruleModal: React.FC<props> = ({ visible, ruleModalClose, subscribe }) => {
   const { t } = useTranslation();
-  const { curBusiItem } = useSelector<RootState, CommonStoreState>((state) => state.common);
-  // const { busiGroups } = useSelector<RootState, CommonStoreState>((state) => state.common);
+  const { curBusiId } = useContext(CommonStateContext);
   const [busiGroups, setBusiGroups] = useState<{ id: number; name: string }[]>([]);
   const [currentStrategyDataAll, setCurrentStrategyDataAll] = useState([]);
   const [currentStrategyData, setCurrentStrategyData] = useState([]);
-  const [bgid, setBgid] = useState(curBusiItem.id);
+  const [bgid, setBgid] = useState(curBusiId);
   const [query, setQuery] = useState<string>('');
 
   useEffect(() => {
-    setBgid(curBusiItem.id);
-  }, [curBusiItem]);
+    setBgid(curBusiId);
+  }, [curBusiId]);
 
   useEffect(() => {
     getAlertRules();
@@ -66,7 +62,6 @@ const ruleModal: React.FC<props> = ({ visible, ruleModalClose, subscribe }) => {
 
   // 获取业务组列表
   const getTeamList = (query: string) => {
-    console.log(111);
     let params = {
       all: 1,
       query,
@@ -105,8 +100,8 @@ const ruleModal: React.FC<props> = ({ visible, ruleModalClose, subscribe }) => {
 
   const columns: ColumnType<strategyItem>[] = [
     {
-      title: t('集群'),
-      dataIndex: 'cluster',
+      title: t('数据源'),
+      dataIndex: 'datasource_ids',
       render: (data) => {
         return <div>{data}</div>;
       },
@@ -148,7 +143,11 @@ const ruleModal: React.FC<props> = ({ visible, ruleModalClose, subscribe }) => {
                 } & { name: string },
                 index: number,
               ) => {
-                return <ColorTag text={user.nickname || user.username || user.name} key={index}></ColorTag>;
+                return (
+                  <Tag color='purple' key={index}>
+                    {user.nickname || user.username || user.name}
+                  </Tag>
+                );
               },
             )) || <div></div>
         );
@@ -162,7 +161,11 @@ const ruleModal: React.FC<props> = ({ visible, ruleModalClose, subscribe }) => {
         return (
           (array.length &&
             array.map((tag: string, index: number) => {
-              return <ColorTag text={tag} key={index}></ColorTag>;
+              return (
+                <Tag color='purple' key={index}>
+                  {tag}
+                </Tag>
+              );
             })) || <div></div>
         );
       },
@@ -182,15 +185,17 @@ const ruleModal: React.FC<props> = ({ visible, ruleModalClose, subscribe }) => {
           size='small'
           onChange={() => {
             const { id, disabled } = record;
-            // updateAlertRules({
-            //   ids: [id],
-            //   fields: {
-            //     disabled: !disabled ? 1 : 0
-            //   }
-            // }, curBusiItem.id
-            // ).then(() => {
-            //   refreshList();
-            // });
+            updateAlertRules(
+              {
+                ids: [id],
+                fields: {
+                  disabled: !disabled ? 1 : 0,
+                },
+              },
+              curBusiId,
+            ).then(() => {
+              getAlertRules();
+            });
           }}
         />
       ),
@@ -258,6 +263,7 @@ const ruleModal: React.FC<props> = ({ visible, ruleModalClose, subscribe }) => {
         </div>
         <div className='rule_modal_table'>
           <Table
+            size='small'
             rowKey='id'
             pagination={{
               total: currentStrategyData.length,

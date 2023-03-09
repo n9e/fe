@@ -9,7 +9,7 @@ import LabelValueSelect from './LabelValueSelect';
 import { PromVisualQueryLabelFilter } from '../types';
 
 interface IProps {
-  datasourceValue: string;
+  datasourceValue: number;
   metric?: string;
   params: {
     start: number;

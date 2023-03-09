@@ -14,62 +14,60 @@
  * limitations under the License.
  *
  */
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import PageLayout from '@/components/pageLayout';
+import React, { useContext, useState } from 'react';
 import { AlertOutlined, SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import DataTable from '@/components/Dantd/components/data-table';
 import moment from 'moment';
-import { Input, Tag, Select, Button, message } from 'antd';
-import DateRangePicker, { RelativeRange } from '@/components/DateRangePicker';
+import _ from 'lodash';
+import { useAntdTable } from 'ahooks';
+import { Input, Tag, Button, Space, Table, Select, message } from 'antd';
 import { Link } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '@/store/common';
-import { eventStoreState } from '@/store/eventInterface';
-import ColumnSelect from '@/components/ColumnSelect';
+import PageLayout from '@/components/pageLayout';
 import AdvancedWrap from '@/components/AdvancedWrap';
-import ClusterSelect from './ClusterSelect';
-import { SeverityColor } from '../event';
+import RefreshIcon from '@/components/RefreshIcon';
+import { Pure as DatasourceSelect } from '@/components/DatasourceSelect';
+import { hoursOptions } from '@/pages/event/constants';
+import { CommonStateContext } from '@/App';
 import exportEvents, { downloadFile } from './exportEvents';
+import { getEvents } from './services';
 import '../event/index.less';
+import './locale';
 
 const Event: React.FC = () => {
-  const { t } = useTranslation();
-  const dispatch = useDispatch();
-  const tableRef = useRef({
-    handleReload() {},
+  const { t } = useTranslation('AlertHisEvents');
+  const { groupedDatasourceList } = useContext(CommonStateContext);
+  const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
+  const [filter, setFilter] = useState<{
+    hours: number;
+    cate?: string;
+    datasourceIds: number[];
+    bgid?: number;
+    severity?: number;
+    eventType?: number;
+    queryContent: string;
+    rule_prods: string[];
+  }>({
+    hours: 6,
+    datasourceIds: [],
+    queryContent: '',
+    rule_prods: [],
   });
-  const { hisHourRange, hisQueryContent } = useSelector<RootState, eventStoreState>((state) => state.event);
-  const [hisSeverity, setHisSeverity] = useState<number>();
-  const [hisEventType, setHisEventType] = useState<number>();
-  const [curClusterItems, setCurClusterItems] = useState<string[]>([]);
-  const isAddTagToQueryInput = useRef(false);
-  const [curBusiId, setCurBusiId] = useState<number>(-1);
-  const [cate, setCate] = useState<string>();
-  const DateRangeItems: RelativeRange[] = useMemo(
-    () => [
-      { num: 6, unit: 'hours', description: t('hours') },
-      { num: 12, unit: 'hours', description: t('hours') },
-      { num: 1, unit: 'day', description: t('天') },
-      { num: 2, unit: 'days', description: t('天') },
-      { num: 3, unit: 'days', description: t('天') },
-      { num: 7, unit: 'days', description: t('天') },
-      { num: 14, unit: 'days', description: t('天') },
-      { num: 30, unit: 'days', description: t('天') },
-      { num: 60, unit: 'days', description: t('天') },
-      { num: 90, unit: 'days', description: t('天') },
-    ],
-    [],
-  );
-
   const columns = [
     {
-      title: t('集群'),
-      dataIndex: 'cluster',
-      width: 120,
+      title: t('common:datasource.type'),
+      dataIndex: 'cate',
+      width: 100,
     },
     {
-      title: t('规则标题&事件标签'),
+      title: t('common:datasource.id'),
+      dataIndex: 'datasource_id',
+      width: 100,
+      render: (value, record) => {
+        return _.find(groupedDatasourceList?.[record.cate], { id: value })?.name || '-';
+      },
+    },
+    {
+      title: t('rule_name'),
       dataIndex: 'rule_name',
       render(title, { id, tags }) {
         const content =
@@ -79,9 +77,11 @@ const Event: React.FC = () => {
               color='purple'
               key={item}
               onClick={(e) => {
-                if (!hisQueryContent.includes(item)) {
-                  isAddTagToQueryInput.current = true;
-                  saveData('hisQueryContent', hisQueryContent ? `${hisQueryContent.trim()} ${item}` : item);
+                if (!filter.queryContent.includes(item)) {
+                  setFilter({
+                    ...filter,
+                    queryContent: filter.queryContent ? `${filter.queryContent.trim()} ${item}` : item,
+                  });
                 }
               }}
             >
@@ -109,7 +109,7 @@ const Event: React.FC = () => {
     },
 
     {
-      title: t('计算时间'),
+      title: t('last_eval_time'),
       dataIndex: 'last_eval_time',
       width: 120,
       render(value) {
@@ -117,146 +117,156 @@ const Event: React.FC = () => {
       },
     },
   ];
-
   const [exportBtnLoadding, setExportBtnLoadding] = useState(false);
+  const filterObj = Object.assign(
+    { hours: filter.hours },
+    filter.datasourceIds.length ? { datasource_ids: _.join(filter.datasourceIds, ',') } : {},
+    filter.severity !== undefined ? { severity: filter.severity } : {},
+    filter.queryContent ? { query: filter.queryContent } : {},
+    filter.eventType !== undefined ? { is_recovered: filter.eventType } : {},
+    { bgid: filter.bgid },
+    filter.rule_prods.length ? { rule_prods: _.join(filter.rule_prods, ',') } : {},
+  );
 
   function renderLeftHeader() {
     return (
       <div className='table-operate-box'>
-        <div className='left'>
-          <DateRangePicker
-            showRight={false}
-            leftList={DateRangeItems}
-            value={hisHourRange}
-            onChange={(range: RelativeRange) => {
-              if (range.num !== hisHourRange.num || range.unit !== hisHourRange.unit) {
-                saveData('hisHourRange', range);
-              }
+        <Space>
+          <RefreshIcon
+            onClick={() => {
+              setRefreshFlag(_.uniqueId('refresh_'));
             }}
           />
-          <AdvancedWrap var='VITE_IS_ALERT_ES_DS'>
-            <Select
-              value={cate}
-              onChange={(val) => {
-                setCate(val);
-              }}
-              style={{ marginLeft: 8, width: 120 }}
-              placeholder='数据源类型'
-              allowClear
-            >
-              <Select.Option value='prometheus'>Prometheus</Select.Option>
-              <Select.Option value='elasticsearch'>Elasticsearch</Select.Option>
-              <Select.Option value='aliyun-sls'>阿里云 SLS</Select.Option>
-            </Select>
+          <Select
+            style={{ minWidth: 80 }}
+            value={filter.hours}
+            onChange={(val) => {
+              setFilter({
+                ...filter,
+                hours: val,
+              });
+            }}
+          >
+            {hoursOptions.map((item) => {
+              return <Select.Option value={item.value}>{t(`hours.${item.value}`)}</Select.Option>;
+            })}
+          </Select>
+          <Select
+            allowClear
+            placeholder={t('prod')}
+            style={{ minWidth: 80 }}
+            value={filter.rule_prods}
+            mode='multiple'
+            onChange={(val) => {
+              setFilter({
+                ...filter,
+                rule_prods: val,
+              });
+            }}
+            dropdownMatchSelectWidth={false}
+          >
+            <Select.Option value='host'>Host</Select.Option>
+            <Select.Option value='metric'>Metric</Select.Option>
+          </Select>
+          <AdvancedWrap var='VITE_IS_ALERT_ES'>
+            {(isShow) => {
+              return (
+                <DatasourceSelect
+                  datasourceCate={filter.cate}
+                  onDatasourceCateChange={(val) => {
+                    setFilter({
+                      ...filter,
+                      cate: val,
+                    });
+                  }}
+                  datasourceValue={filter.datasourceIds}
+                  datasourceValueMode='multiple'
+                  onDatasourceValueChange={(val: number[]) => {
+                    setFilter({
+                      ...filter,
+                      datasourceIds: val,
+                    });
+                  }}
+                  filterCates={(cates) => {
+                    return _.filter(cates, (item) => {
+                      if (item.value === 'elasticsearch') {
+                        return isShow[0];
+                      }
+                      return true;
+                    });
+                  }}
+                />
+              );
+            }}
           </AdvancedWrap>
-          <ClusterSelect cate={cate} onClusterChange={(e) => setCurClusterItems(e)} />
-          <ColumnSelect
-            onSeverityChange={(e) => setHisSeverity(e)}
-            onEventTypeChange={(e) => setHisEventType(e)}
-            onBusiGroupChange={(e) => setCurBusiId(typeof e === 'number' ? e : -1)}
-          />
+
           <Input
             className='search-input'
             prefix={<SearchOutlined />}
-            placeholder='模糊搜索规则和标签(多个关键词请用空格分隔)'
-            value={hisQueryContent}
-            onChange={(e) => saveData('hisQueryContent', e.target.value)}
-            onPressEnter={(e) => tableRef.current.handleReload()}
+            placeholder={t('search_placeholder')}
+            value={filter.queryContent}
+            onChange={(e) => {
+              setFilter({
+                ...filter,
+                queryContent: e.target.value,
+              });
+            }}
+            onPressEnter={(e) => {
+              setRefreshFlag(_.uniqueId('refresh_'));
+            }}
           />
           <Button
-            style={{ marginLeft: 8 }}
             loading={exportBtnLoadding}
             onClick={() => {
               setExportBtnLoadding(true);
-              exportEvents(
-                Object.assign(
-                  { p: 1, limit: 1000000 },
-                  { hours: hisHourRange.unit !== 'hours' ? hisHourRange.num * 24 : hisHourRange.num },
-                  curClusterItems.length ? { clusters: curClusterItems.join(',') } : {},
-                  hisSeverity !== undefined ? { severity: hisSeverity } : {},
-                  hisQueryContent ? { query: hisQueryContent } : {},
-                  hisEventType !== undefined ? { is_recovered: hisEventType } : {},
-                  { bgid: curBusiId },
-                  { cate },
-                ),
-                (err, csv) => {
-                  if (err) {
-                    message.error('导出失败！');
-                  } else {
-                    downloadFile(csv, `告警事件_${moment().format('YYYY-MM-DD_HH-mm-ss')}.csv`);
-                  }
-                  setExportBtnLoadding(false);
-                },
-              );
+              exportEvents({ ...filterObj, limit: 1000000, p: 1 }, (err, csv) => {
+                if (err) {
+                  message.error(t('export_failed'));
+                } else {
+                  downloadFile(csv, `events_${moment().format('YYYY-MM-DD_HH-mm-ss')}.csv`);
+                }
+                setExportBtnLoadding(false);
+              });
             }}
           >
-            导出
+            {t('export')}
           </Button>
-        </div>
+        </Space>
       </div>
     );
   }
 
-  function saveData(prop, data) {
-    dispatch({
-      type: 'event/saveData',
-      prop,
-      data,
+  const fetchData = ({ current, pageSize }) => {
+    return getEvents({
+      p: current,
+      limit: pageSize,
+      ...filterObj,
+    }).then((res) => {
+      return {
+        total: res.dat.total,
+        list: res.dat.list,
+      };
     });
-  }
+  };
 
-  useEffect(() => {
-    if (isAddTagToQueryInput.current) {
-      tableRef.current.handleReload();
-      isAddTagToQueryInput.current = false;
-    }
-  }, [hisQueryContent]);
-
-  useEffect(() => {
-    tableRef.current.handleReload();
-  }, [curClusterItems, hisSeverity, hisHourRange, hisEventType, curBusiId, cate]);
+  const { tableProps } = useAntdTable(fetchData, {
+    refreshDeps: [refreshFlag, JSON.stringify(filterObj)],
+  });
 
   return (
-    <PageLayout icon={<AlertOutlined />} title={t('历史告警')} hideCluster>
+    <PageLayout icon={<AlertOutlined />} title={t('title')}>
       <div className='event-content'>
         <div className='table-area'>
-          <DataTable
-            ref={tableRef}
-            antProps={{
-              rowKey: 'id',
-              rowClassName: (record: { severity: number; is_recovered: number }, index) => {
-                return SeverityColor[record.is_recovered ? 3 : record.severity - 1] + '-left-border';
-              },
-              // scroll: { x: 'max-content' },
-            }}
-            url={`/api/n9e/alert-his-events/list`}
-            customQueryCallback={(data) =>
-              Object.assign(
-                data,
-                { hours: hisHourRange.unit !== 'hours' ? hisHourRange.num * 24 : hisHourRange.num },
-                curClusterItems.length ? { clusters: curClusterItems.join(',') } : {},
-                hisSeverity !== undefined ? { severity: hisSeverity } : {},
-                hisQueryContent ? { query: hisQueryContent } : {},
-                hisEventType !== undefined ? { is_recovered: hisEventType } : {},
-                { bgid: curBusiId },
-                { cate },
-              )
-            }
-            pageParams={{
-              curPageName: 'p',
-              pageSizeName: 'limit',
+          {renderLeftHeader()}
+          <Table
+            size='small'
+            columns={columns}
+            {...tableProps}
+            pagination={{
+              ...tableProps.pagination,
               pageSize: 30,
               pageSizeOptions: ['30', '100', '200', '500'],
             }}
-            apiCallback={({ dat: { list: data, total } }) => ({
-              data,
-              total,
-            })}
-            columns={columns}
-            reloadBtnType='btn'
-            reloadBtnPos='left'
-            filterType='flex'
-            leftHeader={renderLeftHeader()}
           />
         </div>
       </div>

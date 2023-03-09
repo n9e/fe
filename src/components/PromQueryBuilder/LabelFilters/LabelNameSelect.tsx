@@ -11,7 +11,7 @@ interface IProps {
     value: string;
     op: string;
   }[];
-  datasourceValue: string;
+  datasourceValue: number;
   params: {
     start: number;
     end: number;

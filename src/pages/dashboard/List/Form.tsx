@@ -17,16 +17,17 @@
 import React, { useEffect } from 'react';
 import _ from 'lodash';
 import { Form, Modal, Input, Select, message } from 'antd';
+import { useTranslation } from 'react-i18next';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { updateDashboard, createDashboard, updateDashboardConfigs, getDashboard } from '@/services/dashboardV2';
 import { JSONParse } from '../utils';
+import '../locale';
 
 interface IProps {
-  mode: 'crate' | 'edit';
+  mode: 'create' | 'edit';
   initialValues?: any;
   busiId: number;
   refreshList: () => void;
-  clusters: string[];
 }
 
 const layout = {
@@ -37,13 +38,10 @@ const layout = {
     span: 16,
   },
 };
-const titleMap = {
-  crate: '创建新监控大盘',
-  edit: '编辑监控大盘',
-};
 
 function FormCpt(props: IProps & ModalWrapProps) {
-  const { mode, initialValues = {}, visible, busiId, refreshList, destroy, clusters } = props;
+  const { t } = useTranslation('dashboard');
+  const { mode, initialValues = {}, visible, busiId, refreshList, destroy } = props;
   const [form] = Form.useForm();
   const handleOk = async () => {
     try {
@@ -56,8 +54,8 @@ function FormCpt(props: IProps & ModalWrapProps) {
           ident: values.ident,
           tags: _.join(values.tags, ' '),
         });
-        message.success('编辑大盘成功');
-      } else if (mode === 'crate') {
+        message.success(t('common:success.edit'));
+      } else if (mode === 'create') {
         result = await createDashboard(busiId, {
           name: values.name,
           ident: values.ident,
@@ -68,7 +66,7 @@ function FormCpt(props: IProps & ModalWrapProps) {
             version: '2.0.0',
           }),
         });
-        message.success('新建大盘成功');
+        message.success(t('common:success.create'));
       }
       if (result) {
         const configs = JSONParse(result.configs);
@@ -99,7 +97,7 @@ function FormCpt(props: IProps & ModalWrapProps) {
 
   return (
     <Modal
-      title={titleMap[mode]}
+      title={t(`${mode}_title`)}
       visible={visible}
       onOk={handleOk}
       onCancel={() => {
@@ -109,7 +107,7 @@ function FormCpt(props: IProps & ModalWrapProps) {
     >
       <Form {...layout} form={form} preserve={false} initialValues={initialValues}>
         <Form.Item
-          label='大盘名称'
+          label={t('name')}
           name='name'
           labelCol={{
             span: 5,
@@ -120,14 +118,13 @@ function FormCpt(props: IProps & ModalWrapProps) {
           rules={[
             {
               required: true,
-              message: '请输入大盘名称',
             },
           ]}
         >
           <Input />
         </Form.Item>
         <Form.Item
-          label='英文标识'
+          label={t('ident')}
           name='ident'
           labelCol={{
             span: 5,
@@ -138,7 +135,7 @@ function FormCpt(props: IProps & ModalWrapProps) {
           rules={[
             {
               pattern: /^[a-zA-Z0-9\-]*$/,
-              message: '请输入英文字母、数字、中划线',
+              message: t('ident_msg'),
             },
           ]}
         >
@@ -151,7 +148,7 @@ function FormCpt(props: IProps & ModalWrapProps) {
           wrapperCol={{
             span: 24,
           }}
-          label='分类标签'
+          label={t('tags')}
           name='tags'
         >
           <Select
@@ -159,10 +156,9 @@ function FormCpt(props: IProps & ModalWrapProps) {
             dropdownStyle={{
               display: 'none',
             }}
-            placeholder={'请输入分类标签(请用回车分割)'}
           />
         </Form.Item>
-        <Form.Item
+        {/* <Form.Item
           labelCol={{
             span: 5,
           }}
@@ -173,7 +169,7 @@ function FormCpt(props: IProps & ModalWrapProps) {
           name='datasourceValue'
         >
           <Select>
-            {_.map(clusters, (item) => {
+            {_.map([], (item) => {
               return (
                 <Select.Option key={item} value={item}>
                   {item}
@@ -181,7 +177,7 @@ function FormCpt(props: IProps & ModalWrapProps) {
               );
             })}
           </Select>
-        </Form.Item>
+        </Form.Item> */}
         <Form.Item name='id' hidden>
           <Input />
         </Form.Item>

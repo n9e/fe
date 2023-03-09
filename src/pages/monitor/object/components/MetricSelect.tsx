@@ -90,7 +90,7 @@ export default (props) => {
         return a[0];
       })
       .filter((m) => m);
-    const metricPrefixesUnique = Array.from(new Set(metricPrefixes));
+    const metricPrefixesUnique: any[] = Array.from(new Set(metricPrefixes));
     const tabPanes = _.map(metricPrefixesUnique, (val) => {
       return (
         <TabPane tab={val} key={val}>

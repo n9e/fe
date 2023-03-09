@@ -1,24 +1,15 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useState, useMemo, useContext } from 'react';
+import _ from 'lodash';
 import { useHistory, useParams } from 'react-router-dom';
-import { Card, Form, Input, InputNumber, Select, Button, Modal, message, Space, Tooltip, Tag, notification } from 'antd';
-import { QuestionCircleFilled, CaretDownOutlined } from '@ant-design/icons';
+import { Form, Input, InputNumber, Select, Button, Modal, message, Space, Tooltip, Tag, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { RootState } from '@/store/common';
-import { CommonStoreState } from '@/store/commonInterface';
 import { prometheusQuery } from '@/services/warning';
 import { addOrEditRecordingRule, editRecordingRule, deleteRecordingRule } from '@/services/recording';
 import PromQLInput from '@/components/PromQLInput';
-import { ClusterAll } from '../../warning/strategy/components/operateForm';
-const { Option } = Select;
-const layout = {
-  labelCol: {
-    span: 3,
-  },
-  wrapperCol: {
-    span: 21,
-  },
-};
+import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
+import { CommonStateContext } from '@/App';
+
+const DATASOURCE_ALL = 0;
 
 interface Props {
   detail?: any;
@@ -34,68 +25,58 @@ function isTagValid(tag) {
   };
 }
 
-// 渲染标签
-function tagRender(content) {
-  const { isCorrectFormat, isLengthAllowed } = isTagValid(content.value);
-  return isCorrectFormat && isLengthAllowed ? (
-    <Tag
-      closable={content.closable}
-      onClose={content.onClose}
-      // style={{ marginTop: '2px' }}
-    >
-      {content.value}
-    </Tag>
-  ) : (
-    <Tooltip title={isCorrectFormat ? '标签长度应小于等于 64 位' : '标签格式应为 key=value。且 key 以字母或下划线开头，由字母、数字和下划线组成。'}>
-      <Tag color='error' closable={content.closable} onClose={content.onClose} style={{ marginTop: '2px' }}>
-        {content.value}
-      </Tag>
-    </Tooltip>
-  );
-}
-
-// 校验所有标签格式
-function isValidFormat() {
-  return {
-    validator(_, value) {
-      const isInvalid =
-        value &&
-        value.some((tag) => {
-          const { isCorrectFormat, isLengthAllowed } = isTagValid(tag);
-          if (!isCorrectFormat || !isLengthAllowed) {
-            return true;
-          }
-        });
-      return isInvalid ? Promise.reject(new Error('标签格式不正确，请检查！')) : Promise.resolve();
-    },
-  };
+function getFirstDatasourceId(datasourceIds = [], datasourceList: { id: number }[] = []) {
+  return _.isEqual(datasourceIds, [DATASOURCE_ALL]) && datasourceList.length > 0 ? datasourceList[0]?.id : datasourceIds[0];
 }
 
 const operateForm: React.FC<Props> = ({ type, detail = {} }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('recordingRules');
   const history = useHistory(); // 创建的时候默认选中的值
   const [form] = Form.useForm();
-  const { clusters: clusterList } = useSelector<RootState, CommonStoreState>((state) => state.common);
-  const [initVal, setInitVal] = useState<any>({});
+  const { groupedDatasourceList, curBusiId } = useContext(CommonStateContext);
   const [refresh, setRefresh] = useState(true);
-  const [curClusters, setCurClusters] = useState<any>(clusterList[0]);
-  const { curBusiItem } = useSelector<RootState, CommonStoreState>((state) => state.common);
   const params: any = useParams();
   const strategyId = useMemo(() => {
     return params.id;
   }, [params]);
 
-  useEffect(() => {
-    const data = {
-      ...detail,
+  // 渲染标签
+  function tagRender(content) {
+    const { isCorrectFormat, isLengthAllowed } = isTagValid(content.value);
+    return isCorrectFormat && isLengthAllowed ? (
+      <Tag closable={content.closable} onClose={content.onClose}>
+        {content.value}
+      </Tag>
+    ) : (
+      <Tooltip title={isCorrectFormat ? t('append_tags_msg1') : t('append_tags_msg2')}>
+        <Tag color='error' closable={content.closable} onClose={content.onClose} style={{ marginTop: '2px' }}>
+          {content.value}
+        </Tag>
+      </Tooltip>
+    );
+  }
+
+  // 校验所有标签格式
+  function isValidFormat() {
+    return {
+      validator(_, value) {
+        const isInvalid =
+          value &&
+          value.some((tag) => {
+            const { isCorrectFormat, isLengthAllowed } = isTagValid(tag);
+            if (!isCorrectFormat || !isLengthAllowed) {
+              return true;
+            }
+          });
+        return isInvalid ? Promise.reject(new Error(t('append_tags_msg'))) : Promise.resolve();
+      },
     };
-    setInitVal(data);
-  }, [JSON.stringify(detail)]);
+  }
 
   const addSubmit = () => {
     form.validateFields().then(async (values) => {
-      const cluster = values.cluster.includes(ClusterAll) && clusterList.length > 0 ? clusterList[0] : values.cluster[0] || '';
-      const res = await prometheusQuery({ query: values.prom_ql }, cluster);
+      const datasourceId = getFirstDatasourceId(values.datasource_ids, groupedDatasourceList?.prometheus);
+      const res = await prometheusQuery({ query: values.prom_ql }, datasourceId);
       if (res.error) {
         notification.error({
           message: res.error,
@@ -105,30 +86,30 @@ const operateForm: React.FC<Props> = ({ type, detail = {} }) => {
 
       const d = {
         ...values,
-        cluster: values.cluster.join(' '),
+        cluster: '0',
       };
       let reqBody,
         method = 'Post';
       if (type === 1) {
         reqBody = d;
         method = 'Put';
-        const res = await editRecordingRule(reqBody, curBusiItem.id, strategyId);
+        const res = await editRecordingRule(reqBody, curBusiId, strategyId);
         if (res.err) {
           message.error(res.error);
         } else {
-          message.success(t('编辑成功！'));
+          message.success(t('common:success.edit'));
           history.push('/recording-rules');
         }
       } else {
         reqBody = [d];
-        const { dat } = await addOrEditRecordingRule(reqBody, curBusiItem.id, method);
+        const { dat } = await addOrEditRecordingRule(reqBody, curBusiId, method);
         let errorNum = 0;
         const msg = Object.keys(dat).map((key) => {
           dat[key] && errorNum++;
           return dat[key];
         });
         if (!errorNum) {
-          message.success(`${type === 2 ? t('记录规则克隆成功') : t('记录规则创建成功')}`);
+          message.success(`${type === 2 ? t('common:success.clone') : t('common:success.add')}`);
           history.push('/recording-rules');
         } else {
           message.error(t(msg));
@@ -137,141 +118,84 @@ const operateForm: React.FC<Props> = ({ type, detail = {} }) => {
     });
   };
 
-  const handleClusterChange = (v: string[]) => {
-    if (v.includes(ClusterAll)) {
-      form.setFieldsValue({ cluster: [ClusterAll] });
-    }
-  };
-
   return (
     <div className='operate_con'>
       <Form
-        {...layout}
         form={form}
         className='strategy-form'
-        layout={refresh ? 'horizontal' : 'horizontal'}
+        layout='vertical'
         initialValues={{
           prom_eval_interval: 30,
           ...detail,
-          cluster: detail.cluster ? detail.cluster.split(' ') : clusterList || ['Default'], // 生效集群
+          datasource_ids: detail.datasource_ids || [DATASOURCE_ALL],
         }}
       >
         <Space direction='vertical' style={{ width: '100%' }}>
-          <Card title={t('基本配置')}>
-            <Form.Item required label={t('指标名称：')}>
-              <Space>
-                <Form.Item
-                  style={{ marginBottom: 0, width: 500 }}
-                  name='name'
-                  rules={[
-                    {
-                      required: true,
-                      message: t('指标名称不能为空'),
-                    },
-                    { pattern: new RegExp(/^[0-9a-zA-Z_:]{1,}$/, 'g'), message: '指标名称非法' },
-                  ]}
-                >
-                  <Input placeholder={t('请输入指标名称')} />
-                </Form.Item>
-                <Tooltip title={t('promql周期性计算，会生成新的指标，这里填写新的指标的名字')}>
-                  <QuestionCircleFilled />
-                </Tooltip>
-              </Space>
-            </Form.Item>
-            <Form.Item
-              label={t('规则备注：')}
-              name='note'
-              rules={[
-                {
-                  required: false,
-                },
-              ]}
-            >
-              <Input placeholder={t('请输入规则备注')} />
-            </Form.Item>
-            <Form.Item
-              label={t('生效集群')}
-              name='cluster'
-              rules={[
-                {
-                  required: true,
-                  message: t('生效集群不能为空'),
-                },
-              ]}
-            >
-              <Select suffixIcon={<CaretDownOutlined />} mode='multiple' onChange={handleClusterChange}>
-                <Option value={ClusterAll} key={ClusterAll}>
-                  {ClusterAll}
-                </Option>
-                {clusterList?.map((item) => (
-                  <Option value={item} key={item}>
-                    {item}
-                  </Option>
-                ))}
-              </Select>
-            </Form.Item>
+          <Form.Item
+            required
+            label={t('name')}
+            tooltip={t('name_tip')}
+            name='name'
+            rules={[
+              {
+                required: true,
+              },
+              { pattern: new RegExp(/^[0-9a-zA-Z_:]{1,}$/, 'g'), message: 'name_msg' },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item label={t('note')} name='note'>
+            <Input />
+          </Form.Item>
+          <DatasourceValueSelect mode='multiple' setFieldsValue={form.setFieldsValue} cate='prometheus' datasourceList={groupedDatasourceList?.prometheus || []} />
 
-            <Form.Item noStyle shouldUpdate={(prevValues, curValues) => prevValues.cluster !== curValues.cluster}>
-              {({ getFieldValue, validateFields }) => {
-                return (
-                  <Form.Item label='PromQL' className={'Promeql-content'} required>
-                    <Form.Item name='prom_ql' validateTrigger={['onBlur']} trigger='onChange' rules={[{ required: true, message: t('请输入PromQL') }]}>
-                      <PromQLInput
-                        url='/api/n9e/prometheus'
-                        headers={{
-                          'X-Cluster': form.getFieldValue('cluster').includes(ClusterAll) && clusterList.length > 0 ? clusterList[0] : form.getFieldValue('cluster')[0] || '',
-                          Authorization: `Bearer ${localStorage.getItem('access_token') || ''}`,
-                        }}
-                        onChange={(val) => {
-                          if (val) {
-                            validateFields(['prom_ql']);
-                          }
-                        }}
-                      />
-                    </Form.Item>
-                  </Form.Item>
-                );
-              }}
-            </Form.Item>
-
-            <Form.Item required label={t('执行频率')}>
-              <Space>
-                <Form.Item
-                  style={{ marginBottom: 0 }}
-                  name='prom_eval_interval'
-                  initialValue={30}
-                  wrapperCol={{ span: 10 }}
-                  rules={[
-                    {
-                      required: true,
-                      message: t('执行频率不能为空'),
-                    },
-                  ]}
-                >
-                  <InputNumber
-                    min={1}
-                    onChange={() => {
-                      setRefresh(!refresh);
+          <Form.Item noStyle shouldUpdate={(prevValues, curValues) => prevValues.datasource_ids !== curValues.datasource_ids}>
+            {({ getFieldValue, validateFields }) => {
+              const datasourceIds = getFieldValue('datasource_ids');
+              return (
+                <Form.Item label='PromQL' name='prom_ql' validateTrigger={['onBlur']} trigger='onChange' rules={[{ required: true }]}>
+                  <PromQLInput
+                    datasourceValue={getFirstDatasourceId(datasourceIds, groupedDatasourceList?.prometheus)}
+                    onChange={(val) => {
+                      if (val) {
+                        validateFields(['prom_ql']);
+                      }
                     }}
                   />
                 </Form.Item>
-                秒
-                <Tooltip title={t(`promql 执行频率，每隔 ${form.getFieldValue('prom_eval_interval')} 秒查询时序库，查到的结果重新命名写回时序库`)}>
-                  <QuestionCircleFilled />
-                </Tooltip>
-              </Space>
-            </Form.Item>
-            <Form.Item label='附加标签' name='append_tags' rules={[{ required: false, message: '请填写至少一项标签！' }, isValidFormat]}>
-              <Select mode='tags' tokenSeparators={[' ']} open={false} placeholder={'标签格式为 key=value ，使用回车或空格分隔'} tagRender={tagRender} />
-            </Form.Item>
-          </Card>
-          <Form.Item
-            style={{
-              marginTop: 20,
+              );
             }}
-          >
+          </Form.Item>
+
+          <Form.Item required label={t('prom_eval_interval')} tooltip={t('prom_eval_interval_tip', { num: form.getFieldValue('prom_eval_interval') })}>
+            <Space>
+              <Form.Item
+                style={{ marginBottom: 0 }}
+                name='prom_eval_interval'
+                initialValue={30}
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
+              >
+                <InputNumber
+                  min={1}
+                  onChange={() => {
+                    setRefresh(!refresh);
+                  }}
+                />
+              </Form.Item>
+              s
+            </Space>
+          </Form.Item>
+          <Form.Item label={t('append_tags')} name='append_tags' rules={[isValidFormat]}>
+            <Select mode='tags' tokenSeparators={[' ']} open={false} placeholder={t('append_tags_placeholder')} tagRender={tagRender} />
+          </Form.Item>
+          <Form.Item>
             <Button type='primary' onClick={addSubmit} style={{ marginRight: '8px' }}>
-              {type === 1 ? t('编辑') : type === 2 ? t('克隆') : t('创建')}
+              {type === 1 ? t('common:btn.edit') : type === 2 ? t('common:btn.clone') : t('common:btn.add')}
             </Button>
             {type === 1 && (
               <Button
@@ -279,10 +203,10 @@ const operateForm: React.FC<Props> = ({ type, detail = {} }) => {
                 style={{ marginRight: '8px' }}
                 onClick={() => {
                   Modal.confirm({
-                    title: t('是否删除该记录规则?'),
+                    title: t('common:confirm.delete'),
                     onOk: () => {
-                      deleteRecordingRule([detail.id], curBusiItem.id).then(() => {
-                        message.success(t('删除成功'));
+                      deleteRecordingRule([detail.id], curBusiId).then(() => {
+                        message.success(t('common:success.delete'));
                         history.push('/recording-rules');
                       });
                     },
@@ -291,7 +215,7 @@ const operateForm: React.FC<Props> = ({ type, detail = {} }) => {
                   });
                 }}
               >
-                {t('删除')}
+                {t('common:btn.delete')}
               </Button>
             )}
 
@@ -300,7 +224,7 @@ const operateForm: React.FC<Props> = ({ type, detail = {} }) => {
                 history.push('/recording-rules');
               }}
             >
-              {t('取消')}
+              {t('common:btn.cancel')}
             </Button>
           </Form.Item>
         </Space>

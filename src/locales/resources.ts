@@ -14,15 +14,17 @@
  * limitations under the License.
  *
  */
-import en from './en.json';
-import zh from './zh.json';
+import * as datasource from './datasource';
+import * as common from './common';
 
 const resources = {
-  en: {
-    translation: en,
+  en_US: {
+    common: common.en_US,
+    datasource: datasource.en_US,
   },
-  zh: {
-    translation: zh,
+  zh_CN: {
+    common: common.zh_CN,
+    datasource: datasource.zh_CN,
   },
 };
 

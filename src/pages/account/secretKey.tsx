@@ -64,12 +64,7 @@ export default function SecretKey() {
   ];
   return (
     <>
-      <Table
-        columns={columns}
-        dataSource={data}
-        pagination={false}
-        rowKey={(record) => record.token}
-      />
+      <Table size='small' columns={columns} dataSource={data} pagination={false} rowKey={(record) => record.token} />
       {data.length < 2 && (
         <Button
           onClick={createSecret}

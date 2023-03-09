@@ -9,7 +9,7 @@ import LabelNameSelect from '../LabelFilters/LabelNameSelect';
 
 interface IProps {
   metric?: string;
-  datasourceValue: string;
+  datasourceValue: number;
   params: {
     start: number;
     end: number;
@@ -52,7 +52,7 @@ function renderOperationParamEditor(
           onChange(val);
         }}
       >
-        {_.map(paramDef.options, (option) => {
+        {_.map(paramDef.options, (option: any) => {
           return (
             <Select.Option key={option.value} value={option.value}>
               {option.label}
@@ -103,7 +103,7 @@ export default function Operation(props: IProps) {
   const { metric, datasourceValue, params, query, onChange, operation, index } = props;
   const { operations } = query;
   const addOperationOptions = getOperationDefinitions();
-  const operationDef = _.find(addOperationOptions, { id: operation.id });
+  const operationDef = _.find(addOperationOptions, { id: operation.id })!;
   const operationElements: React.ReactNode[] = [];
 
   for (let paramIndex = 0; paramIndex < operation.params.length; paramIndex++) {

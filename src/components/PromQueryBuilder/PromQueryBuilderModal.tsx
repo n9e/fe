@@ -6,7 +6,7 @@ import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import PromQueryBuilder, { PromVisualQuery, renderQuery, buildPromVisualQueryFromPromQL } from './index';
 
 interface IProps {
-  datasourceValue: string;
+  datasourceValue: number;
   range: IRawTimeRange;
   value?: string;
   onChange: (value: string) => void;

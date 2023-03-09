@@ -22,6 +22,7 @@ import { createPortal } from 'react-dom';
 import { Input, Tabs, Button, Alert, Checkbox } from 'antd';
 import { GlobalOutlined } from '@ant-design/icons';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import PromQueryBuilderModal from '@/components/PromQueryBuilder/PromQueryBuilderModal';
 import PromQLInput from '../PromQLInput';
@@ -29,13 +30,12 @@ import Table from './Table';
 import Graph from './Graph';
 import QueryStatsView, { QueryStats } from './components/QueryStatsView';
 import MetricsExplorer from './components/MetricsExplorer';
+import './locale';
 import './style.less';
 
 interface IProps {
   url?: string;
-  datasourceId?: number;
-  datasourceIdRequired?: boolean; // 如果不指定 datasourceId 则使用 X-Cluster 作为集群 key，否则 X-Data-Source-Id
-  datasourceName?: string;
+  datasourceValue: number;
   contentMaxHeight?: number;
   type?: 'table' | 'graph';
   onTypeChange?: (type: 'table' | 'graph') => void;
@@ -54,11 +54,10 @@ interface IProps {
 const TabPane = Tabs.TabPane;
 
 export default function index(props: IProps) {
+  const { t } = useTranslation('promGraphCpt');
   const {
-    url = '/api/v1/datasource/prometheus',
-    datasourceId,
-    datasourceIdRequired,
-    datasourceName,
+    url = '/api/n9e/proxy',
+    datasourceValue,
     promQL,
     contentMaxHeight = 300,
     type = 'table',
@@ -142,22 +141,13 @@ export default function index(props: IProps) {
             <PromQLInput
               ref={promQLInputRef}
               url={url}
-              headers={
-                datasourceIdRequired
-                  ? {
-                      'X-Data-Source-Id': _.toString(datasourceId),
-                    }
-                  : {
-                      'X-Cluster': datasourceName || localStorage.getItem('curCluster') || 'DEFAULT',
-                      Authorization: `Bearer ${localStorage.getItem('access_token') || ''}`,
-                    }
-              }
               value={value}
               onChange={setValue}
               executeQuery={(val) => {
                 setPromql(val);
               }}
               completeEnabled={completeEnabled}
+              datasourceValue={datasourceValue}
             />
             <span className='ant-input-suffix'>
               <GlobalOutlined
@@ -180,13 +170,13 @@ export default function index(props: IProps) {
               onClick={() => {
                 PromQueryBuilderModal({
                   range,
-                  datasourceValue: datasourceName || localStorage.getItem('curCluster') || 'DEFAULT',
+                  datasourceValue,
                   value,
                   onChange: setValue,
                 });
               }}
             >
-              新手模式
+              {t('builder_btn')}
             </Button>
           </span>
           <span
@@ -204,7 +194,7 @@ export default function index(props: IProps) {
                 setPromql(value);
               }}
             >
-              查询
+              {t('query_btn')}
             </Button>
           </span>
         </Input.Group>
@@ -227,9 +217,7 @@ export default function index(props: IProps) {
           <Table
             url={url}
             contentMaxHeight={contentMaxHeight}
-            datasourceId={datasourceId}
-            datasourceIdRequired={datasourceIdRequired}
-            datasourceName={datasourceName}
+            datasourceValue={datasourceValue}
             promql={promql}
             setQueryStats={setQueryStats}
             setErrorContent={setErrorContent}
@@ -244,9 +232,7 @@ export default function index(props: IProps) {
           <Graph
             url={url}
             contentMaxHeight={contentMaxHeight}
-            datasourceId={datasourceId}
-            datasourceIdRequired={datasourceIdRequired}
-            datasourceName={datasourceName}
+            datasourceValue={datasourceValue}
             promql={promql}
             setQueryStats={setQueryStats}
             setErrorContent={setErrorContent}
@@ -264,8 +250,7 @@ export default function index(props: IProps) {
       </Tabs>
       <MetricsExplorer
         url={url}
-        datasourceId={datasourceId}
-        datasourceIdRequired={datasourceIdRequired}
+        datasourceValue={datasourceValue}
         show={metricsExplorerVisible}
         updateShow={setMetricsExplorerVisible}
         insertAtCursor={(val) => {

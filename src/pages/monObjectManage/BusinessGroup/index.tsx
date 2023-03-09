@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Resizable } from 're-resizable';
 import _ from 'lodash';
 import classNames from 'classnames';
 import { useHistory } from 'react-router-dom';
 import { Input } from 'antd';
 import { LeftOutlined, RightOutlined, SettingOutlined, SearchOutlined } from '@ant-design/icons';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '@/store/common';
-import { CommonStoreState } from '@/store/commonInterface';
+import { useTranslation } from 'react-i18next';
 import { getBusiGroups } from '@/services/common';
+import { CommonStateContext } from '@/App';
+import './style.less';
 
 interface IProps {
   curBusiId?: number;
@@ -18,17 +18,17 @@ interface IProps {
 }
 
 export default function index(props: IProps) {
-  const { title = '业务组', renderHeadExtra, curBusiId, setCurBusiId } = props;
+  const { t } = useTranslation();
+  const { title = t('business_group'), renderHeadExtra, curBusiId, setCurBusiId } = props;
   const history = useHistory();
   const [collapse, setCollapse] = useState(localStorage.getItem('leftlist') === '1');
   const [width, setWidth] = useState(_.toNumber(localStorage.getItem('leftwidth') || 200));
+  const { busiGroups } = useContext(CommonStateContext);
   const [businessGroupData, setBusinessGroupData] = useState<{ id: number; name: string }[]>([]);
 
   useEffect(() => {
-    getBusiGroups('').then((res) => {
-      setBusinessGroupData(res.dat || []);
-    });
-  }, []);
+    setBusinessGroupData(busiGroups);
+  }, [busiGroups]);
 
   return (
     <Resizable
@@ -62,7 +62,7 @@ export default function index(props: IProps) {
           {renderHeadExtra && renderHeadExtra()}
           <div className='left-area-group-title'>
             {title}
-            {title === '业务组' && <SettingOutlined onClick={() => history.push(`/busi-groups`)} />}
+            {title === t('business_group') && <SettingOutlined onClick={() => history.push(`/busi-groups`)} />}
           </div>
           <Input
             className='left-area-group-search'
@@ -74,7 +74,6 @@ export default function index(props: IProps) {
                 setBusinessGroupData(res.dat || []);
               });
             }}
-            placeholder={'请输入业务组名称进行筛选'}
           />
           <div className='radio-list'>
             {_.map(businessGroupData, (item) => {
@@ -87,6 +86,7 @@ export default function index(props: IProps) {
                   key={item.id}
                   onClick={() => {
                     if (item.id !== curBusiId) {
+                      localStorage.setItem('curBusiId', _.toString(item.id));
                       setCurBusiId && setCurBusiId(item.id, item);
                     }
                   }}

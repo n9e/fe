@@ -17,6 +17,7 @@
 import React, { useState } from 'react';
 import { Modal, Input } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { download, copyToClipBoard } from '@/utils';
 
@@ -25,11 +26,12 @@ interface IProps {
 }
 
 function Export(props: IProps & ModalWrapProps) {
+  const { t } = useTranslation('dashboard');
   const { visible, destroy } = props;
   const [data, setData] = useState(props.data);
   return (
     <Modal
-      title='导出大盘'
+      title={t('common:btn.export')}
       visible={visible}
       onCancel={() => {
         destroy();
@@ -46,7 +48,7 @@ function Export(props: IProps & ModalWrapProps) {
         </a>
         <a style={{ float: 'right' }} onClick={() => copyToClipBoard(data, (val) => val)}>
           <CopyOutlined />
-          复制JSON内容到剪贴板
+          {t('export.copy')}
         </a>
       </p>
       <Input.TextArea

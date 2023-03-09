@@ -26,11 +26,12 @@ export interface subscribeItem {
   btime: number;
   id: number;
   group_id?: number;
-  cluster: string;
+  datasource_ids: number[];
   redefine_severity?: number;
   redefine_channels?: number;
   user_group_ids?: string;
   new_channels: string;
+  prod: string;
 }
 
 interface IuserItem {
@@ -54,5 +55,5 @@ interface IuserItem {
 // }
 
 export interface IState {
-  curShieldData: subscribeItem
+  curShieldData: subscribeItem;
 }

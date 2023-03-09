@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { Table, Divider, Popconfirm, Tag, Row, Col, Input, Button, Dropdown, Menu, message } from 'antd';
 import { DownOutlined, PlusOutlined, SearchOutlined, CodeOutlined } from '@ant-design/icons';
@@ -25,15 +25,13 @@ import { useAntdTable } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import request from '@/utils/request';
 import api from '@/utils/api';
-import LeftTree from '@/components/LeftTree';
+import { BusinessGroup } from '@/pages/monObjectManage';
 import PageLayout from '@/components/pageLayout';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store/common';
-import { CommonStoreState } from '@/store/commonInterface';
 import { Tpl } from './interface';
 import BindTags from './bindTags';
 import UnBindTags from './unBindTags';
 import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
+import { CommonStateContext } from '@/App';
 
 function getTableData(options: any, busiGroup: number | undefined, query: string) {
   if (busiGroup) {
@@ -46,10 +44,10 @@ function getTableData(options: any, busiGroup: number | undefined, query: string
 
 const index = (_props: any) => {
   const { t, i18n } = useTranslation();
-  const searchRef = useRef<Input>(null);
+  const searchRef = useRef<any>(null);
   const [query, setQuery] = useState('');
-  const { curBusiItem } = useSelector<RootState, CommonStoreState>((state) => state.common);
-  const busiId = curBusiItem.id;
+  const { curBusiId, setCurBusiId } = useContext(CommonStateContext);
+  const busiId = curBusiId;
   const [selectedIds, setSelectedIds] = useState([] as any[]);
   const { tableProps, refresh } = useAntdTable<any, any>((options) => getTableData(options, busiId, query), { refreshDeps: [busiId, query] });
 
@@ -148,17 +146,17 @@ const index = (_props: any) => {
           <span>
             <Link to={{ pathname: `/job-tpls/add/task`, search: `tpl=${record.id}` }}>{t('task.create')}</Link>
             <Divider type='vertical' />
-            <Link to={{ pathname: `/job-tpls/${record.id}/modify` }}>{t('table.modify')}</Link>
+            <Link to={{ pathname: `/job-tpls/${record.id}/modify` }}>{t('common:btn.modify')}</Link>
             <Divider type='vertical' />
-            <Link to={{ pathname: `/job-tpls/${record.id}/clone` }}>{t('table.clone')}</Link>
+            <Link to={{ pathname: `/job-tpls/${record.id}/clone` }}>{t('common:btn.clone')}</Link>
             <Divider type='vertical' />
             <Popconfirm
-              title={<div style={{ width: 100 }}>{t('table.delete.sure')}</div>}
+              title={<div style={{ width: 100 }}>{t('common:confirm.delete')}</div>}
               onConfirm={() => {
                 handleDelBtnClick(record.id);
               }}
             >
-              <a style={{ color: 'red' }}>{t('table.delete')}</a>
+              <a style={{ color: 'red' }}>{t('common:btn.delete')}</a>
             </Popconfirm>
           </span>
         );
@@ -167,18 +165,22 @@ const index = (_props: any) => {
   ];
   return (
     <PageLayout
-      hideCluster
       title={
         <>
           <CodeOutlined />
-          {t('自愈脚本')}
+          {t('tpl')}
         </>
       }
     >
       <div style={{ display: 'flex' }}>
-        <LeftTree></LeftTree>
+        <BusinessGroup
+          curBusiId={curBusiId}
+          setCurBusiId={(id) => {
+            setCurBusiId(id);
+          }}
+        />
         {busiId ? (
-          <div style={{ flex: 1, padding: 20 }}>
+          <div style={{ flex: 1, padding: 10 }}>
             <Row>
               <Col span={14} className='mb10'>
                 <Input
@@ -189,12 +191,11 @@ const index = (_props: any) => {
                   onPressEnter={(e) => {
                     setQuery(e.currentTarget.value);
                   }}
-                  placeholder='搜索标题、标签'
                 />
               </Col>
               <Col span={10} className='textAlignRight'>
                 <Link to={{ pathname: `/job-tpls/add` }}>
-                  <Button icon={<PlusOutlined />} style={{ marginRight: 10 }} type='primary' ghost>
+                  <Button style={{ marginRight: 10 }} type='primary'>
                     {t('tpl.create')}
                   </Button>
                 </Link>
@@ -226,11 +227,12 @@ const index = (_props: any) => {
                     </Menu>
                   }
                 >
-                  <Button icon={<DownOutlined />}>{t('table.batch.operations')}</Button>
+                  <Button icon={<DownOutlined />}>{t('btn.batch_operations')}</Button>
                 </Dropdown>
               </Col>
             </Row>
             <Table
+              size='small'
               rowKey='id'
               columns={columns}
               {...(tableProps as any)}
@@ -253,7 +255,7 @@ const index = (_props: any) => {
             />
           </div>
         ) : (
-          <BlankBusinessPlaceholder text='自愈脚本' />
+          <BlankBusinessPlaceholder text={t('tpl')} />
         )}
       </div>
     </PageLayout>

@@ -14,27 +14,21 @@
  * limitations under the License.
  *
  */
-import FcMenu, { IMenuProps } from '@fc-components/menu';
-import React, { FC, useState, useEffect } from 'react';
+import { FloatFcMenu } from '@fc-components/menu';
+import React, { FC, useState, useEffect, useContext } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { Menu, Button } from 'antd';
-import Icon, { AimOutlined, AlertOutlined, LineChartOutlined, CodeOutlined } from '@ant-design/icons';
+import Icon, { AimOutlined } from '@ant-design/icons';
 import _ from 'lodash';
+import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import querystring from 'query-string';
-import { dynamicPackages, Entry } from '@/utils';
 import { getMenuPerm } from '@/services/common';
-import { RootState as AccountRootState, accountStoreState } from '@/store/accountInterface';
+import { CommonStateContext } from '@/App';
 import IconFont from '../IconFont';
+import menuIcon from './configs';
 import './menu.less';
+import './locale';
 
-const { SubMenu } = Menu;
-const Packages = dynamicPackages();
-let lazyMenu = Packages.reduce((result: any, module: Entry) => {
-  const menu = module.menu;
-  return menu ? (result = result.concat(menu)) : result;
-}, []);
 const getDefaultOpenKey = (menus: any, pathname) => {
   const currentSubMenu = _.find(menus, (subMenus: any) => {
     return _.some(
@@ -48,55 +42,29 @@ const getDefaultOpenKey = (menus: any, pathname) => {
     return currentSubMenu.key;
   }
 };
-const defaultSelectedKey = (menus: any, pathname) => {
-  let key;
-  _.forEach(menus, (subMenus: any) => {
-    _.forEach(subMenus.children, (menu: any) => {
-      if (menu && pathname.indexOf(menu.key) !== -1) {
-        key = menu.key;
-      }
-    });
-  });
-  return key;
-};
 
-const SideMenu: FC = () => {
-  const { t, i18n } = useTranslation();
-  const [defaultSelectedKeys, setDefaultSelectedKeys] = useState<string[]>();
+const getMenuList = (t) => {
   const menuList = [
     {
-      key: 'targets',
-      icon: <AimOutlined />,
-      label: t('监控对象'),
+      key: 'dashboard',
+      icon: <IconFont type='icon-Menu_Dashboard' />,
+      activeIcon: <Icon component={menuIcon.Dashboard as any} />,
+      label: t('仪表盘'),
       children: [
-        {
-          key: '/targets',
-          label: t('对象列表'),
-        },
-      ],
-    },
-    {
-      key: 'monitor',
-      icon: <LineChartOutlined />,
-      label: t('监控看图'),
-      children: [
-        {
-          key: '/metric/explorer',
-          label: t('即时查询'),
-        },
-        {
-          key: '/object/explorer',
-          label: t('快捷视图'),
-        },
         {
           key: '/dashboards',
           label: t('监控大盘'),
+        },
+        {
+          key: '/dashboards-built-in',
+          label: t('内置大盘'),
         },
       ],
     },
     {
       key: 'alarm',
-      icon: <AlertOutlined />,
+      icon: <IconFont type='icon-Menu_AlarmManagement' />,
+      activeIcon: <Icon component={menuIcon.AlarmManagement as any} />,
       label: t('告警管理'),
       children: [
         {
@@ -104,8 +72,8 @@ const SideMenu: FC = () => {
           label: t('告警规则'),
         },
         {
-          key: '/recording-rules',
-          label: t('记录规则'),
+          key: '/alert-rules-built-in',
+          label: t('内置规则'),
         },
         {
           key: '/alert-mutes',
@@ -126,8 +94,69 @@ const SideMenu: FC = () => {
       ],
     },
     {
+      key: 'metric',
+      icon: <IconFont type='icon-IndexManagement1' />,
+      activeIcon: <Icon component={menuIcon.IndexManagement as any} />,
+      label: t('时序指标'),
+      children: [
+        {
+          key: '/metric/explorer',
+          label: t('即时查询'),
+        },
+        {
+          key: '/object/explorer',
+          label: t('快捷视图'),
+        },
+        {
+          key: '/recording-rules',
+          label: t('记录规则'),
+        },
+      ],
+    },
+    {
+      key: 'log',
+      icon: <IconFont type='icon-Menu_LogAnalysis' />,
+      activeIcon: <Icon component={menuIcon.LogAnalysis as any} />,
+      label: t('日志分析'),
+      children: [
+        {
+          key: '/log/explorer',
+          label: t('即时查询'),
+        },
+      ],
+    },
+    {
+      key: 'trace',
+      icon: <IconFont type='icon-Menu_LinkAnalysis' />,
+      activeIcon: <Icon component={menuIcon.LinkAnalysis as any} />,
+      label: t('链路追踪'),
+      children: [
+        {
+          key: '/trace/explorer',
+          label: t('即时查询'),
+        },
+        {
+          key: '/trace/dependencies',
+          label: t('拓扑分析'),
+        },
+      ],
+    },
+    {
+      key: 'targets',
+      icon: <AimOutlined />,
+      label: t('基础设施'),
+      children: [
+        {
+          key: '/targets',
+          label: t('监控机器'),
+        },
+      ],
+    },
+
+    {
       key: 'job',
-      icon: <CodeOutlined />,
+      icon: <IconFont type='icon-Menu_AlarmSelfhealing' />,
+      activeIcon: <Icon component={menuIcon.AlarmSelfhealing as any} />,
       label: t('告警自愈'),
       children: [
         {
@@ -142,8 +171,8 @@ const SideMenu: FC = () => {
     },
     {
       key: 'manage',
-      // icon: <UserOutlined />,
-      icon: <IconFont type='icon-renyuanzuzhi-weixuanzhongyangshi' />,
+      icon: <IconFont type='icon-Menu_PersonnelOrganization' />,
+      activeIcon: <Icon component={menuIcon.PersonnelOrganization as any} />,
       label: t('人员组织'),
       children: [
         {
@@ -158,42 +187,53 @@ const SideMenu: FC = () => {
           key: '/busi-groups',
           label: t('业务组管理'),
         },
+        {
+          key: '/permissions',
+          label: t('权限管理'),
+        },
       ],
     },
     {
       key: 'help',
-      // icon: <Icon component={SystemInfoSvg as any} />,
-      icon: <IconFont type='icon-xitongxinxi-weixuanzhongyangshi' />,
+      icon: <IconFont type='icon-Menu_SystemInformation' />,
+      activeIcon: <Icon component={menuIcon.SystemInformation as any} />,
       label: t('系统信息'),
       children: [
         {
           key: '/help/version',
           label: t('系统版本'),
         },
-        // {
-        //   key: '/help/contact',
-        //   label:t('联系我们'),
-        // },
-        {
-          key: '/help/migrate',
-          label: t('管理员迁移'),
-        },
         {
           key: '/help/servers',
           label: t('告警引擎'),
         },
-        ...[
-          import.meta.env.VITE_IS_DS_SETTING
-            ? {
-                key: '/help/source',
-                label: t('数据源管理'),
-              }
-            : {},
-        ],
+        {
+          key: '/help/source',
+          label: t('数据源'),
+        },
+        {
+          key: '/help/sso',
+          label: t('单点登录'),
+        },
+        {
+          key: '/help/notification-tpls',
+          label: t('通知模板'),
+        },
+        {
+          key: '/help/notification-settings',
+          label: t('通知设置'),
+        },
       ],
     },
   ];
+  return menuList;
+};
 
+const SideMenu: FC = () => {
+  const { t, i18n } = useTranslation('menu');
+  const { profile } = useContext(CommonStateContext);
+  const [defaultSelectedKeys, setDefaultSelectedKeys] = useState<string[]>();
+  const menuList = getMenuList(t);
   const [menus, setMenus] = useState(menuList);
 
   useEffect(() => {
@@ -216,12 +256,7 @@ const SideMenu: FC = () => {
   const history = useHistory();
   const location = useLocation();
   const { pathname } = location;
-  let { profile } = useSelector<AccountRootState, accountStoreState>((state) => state.account);
-  const [collapsed, setCollapsed] = useState<'0' | '1' | '2' | string | null>(localStorage.getItem('menuCollapsed'));
-  // full => '0'
-  // semi => '1'
-  // skim => '2'
-  const [selectedKeys, setSelectedKeys] = useState<string[]>([defaultSelectedKey(menus, pathname)]);
+  const [collapsed, setCollapsed] = useState<'0' | '1' | '2' | string | null>(localStorage.getItem('menuCollapsed') || '0');
   const [openKeys, setOpenKeys] = useState<string[]>(collapsed ? [] : [getDefaultOpenKey(menus, pathname)]);
 
   const switchCollapsed = () => {
@@ -238,15 +273,6 @@ const SideMenu: FC = () => {
     }, 500);
   };
   const handleClick = (key) => {
-    if (location.pathname === key) return;
-    setSelectedKeys([key as string]);
-    // 写两个key as string 感觉有点傻
-    if (key === 'changeLanguage') {
-      let language = i18n.language == 'en' ? 'zh' : 'en';
-      i18n.changeLanguage(language);
-      localStorage.setItem('language', language);
-    }
-
     if ((key as string).startsWith('/')) {
       history.push(key as string);
     }
@@ -273,28 +299,35 @@ const SideMenu: FC = () => {
   };
 
   useEffect(() => {
-    setSelectedKeys([defaultSelectedKey(menus, pathname)]);
     if (!collapsed) {
       setOpenKeys(_.union([...openKeys, getDefaultOpenKey(menus, pathname)]));
     }
   }, [pathname, collapsed]);
 
   useEffect(() => {
-    if (profile.roles.length > 0) {
-      if (profile.roles.indexOf('Admin') === -1) {
+    if (profile?.roles?.length > 0) {
+      if (profile?.roles.indexOf('Admin') === -1) {
         getMenuPerm().then((res) => {
           const { dat } = res;
-          const newMenus = [...menuList];
-          newMenus.forEach((menu) => {
-            menu.children = menu.children.filter((item) => item && dat.includes(item.key));
-          });
+          // 过滤掉没有权限的菜单
+          const newMenus: any = _.filter(
+            _.map(menuList, (menu) => {
+              return {
+                ...menu,
+                children: _.filter(menu.children, (item) => item && dat.includes(item.key)),
+              };
+            }),
+            (item) => {
+              return item.children && item.children.length > 0;
+            },
+          );
           setMenus(newMenus);
         });
       } else {
         setMenus(menuList);
       }
     }
-  }, [profile.roles]);
+  }, [profile?.roles, i18n.language]);
 
   return hideSideMenu() ? null : (
     <div
@@ -303,17 +336,33 @@ const SideMenu: FC = () => {
         flexDirection: 'column',
         padding: '10px 0 10px 10px',
       }}
+      className={classNames({
+        'menu-container': true,
+        'menu-container-en': i18n.language === 'en_US' && collapsed === '0',
+      })}
     >
       {collapsed !== '2' && (
-        <div className={`home ${collapsed === '1' ? 'collapse' : ''}`}>
+        <div
+          className={classNames({
+            home: true,
+            collapse: collapsed === '1',
+          })}
+        >
           <div className='name' onClick={() => history.push('/metric/explorer')} key='overview'>
             <img src={collapsed === '1' ? '/image/logo.svg' : '/image/logo-l.svg'} alt='' className='logo' />
           </div>
         </div>
       )}
-      {defaultSelectedKeys && (
-        <FcMenu items={menus} onClick={handleClick} collapsed={collapsed} switchCollapsed={switchCollapsed} defaultSelectedKeys={defaultSelectedKeys} activeMode='click' />
-      )}
+      <FloatFcMenu
+        fullModeWidth={i18n.language === 'en_US' ? 180 : undefined}
+        items={menus}
+        selectedKeys={defaultSelectedKeys}
+        onClick={handleClick}
+        collapsed={collapsed}
+        switchCollapsed={switchCollapsed}
+        quickIcon={<IconFont type='icon-Menu_Search' />}
+        quickActiveIcon={<Icon component={menuIcon.Menu_Search as any} />}
+      />
     </div>
   );
 };

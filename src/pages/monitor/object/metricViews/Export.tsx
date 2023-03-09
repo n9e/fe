@@ -26,14 +26,9 @@ interface IProps {
   data: any;
 }
 
-const titleMap = {
-  add: '新建快捷视图',
-  edit: '编辑快捷视图',
-};
-
 function Export(props: ModalWrapProps & IProps) {
   const { visible, destroy, data } = props;
-  const { t } = useTranslation();
+  const { t } = useTranslation('objectExplorer');
   let str = data;
   try {
     str = JSON.stringify(JSON.parse(data), null, 4);
@@ -43,7 +38,7 @@ function Export(props: ModalWrapProps & IProps) {
 
   return (
     <Modal
-      title='导出配置'
+      title={t('export_title')}
       visible={visible}
       onCancel={() => {
         destroy();
@@ -61,7 +56,7 @@ function Export(props: ModalWrapProps & IProps) {
           </a>
           <a style={{ float: 'right' }} onClick={() => copyToClipBoard(data, t)}>
             <CopyOutlined />
-            复制JSON内容到剪贴板
+            {t('copy')}
           </a>
         </div>
         <Input.TextArea value={str} rows={10} />

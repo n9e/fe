@@ -13,7 +13,7 @@ export { renderQuery } from './RawQuery';
 export { buildPromVisualQueryFromPromQL } from './utils/buildPromVisualQueryFromPromQL';
 
 interface IProps {
-  datasourceValue: string;
+  datasourceValue: number;
   params: {
     start: number;
     end: number;

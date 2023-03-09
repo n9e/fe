@@ -1,13 +1,13 @@
 import React from 'react';
-import { Form, Row, Col, Input, Button, Space, Switch, Radio, Tooltip } from 'antd';
-import { DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { Form, Row, Col, Button, Space, Switch, Radio } from 'antd';
+import { DeleteOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import Collapse, { Panel } from '../Components/Collapse';
 import getFirstUnusedLetter from '../../Renderer/utils/getFirstUnusedLetter';
-import ProjectSelect from '@/pages/metric/explorer/AliyunSLS/ProjectSelect';
-import LogstoreSelect from '@/pages/metric/explorer/AliyunSLS/LogstoreSelect';
-import Query from '@/pages/metric/explorer/AliyunSLS/Query';
-import AdvancedSettings from '@/pages/metric/explorer/AliyunSLS/AdvancedSettings';
+import ProjectSelect from '@/pages/explorer/AliyunSLS/ProjectSelect';
+import LogstoreSelect from '@/pages/explorer/AliyunSLS/LogstoreSelect';
+import Query from '@/pages/explorer/AliyunSLS/Query';
+import AdvancedSettings from '@/pages/explorer/AliyunSLS/AdvancedSettings';
 import { alphabet } from './config';
 
 export default function AliyunSLS({ chartForm }) {

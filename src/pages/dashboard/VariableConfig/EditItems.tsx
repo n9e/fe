@@ -19,12 +19,13 @@ import { Modal, Table, Space, Button } from 'antd';
 import { ArrowDownOutlined, ArrowUpOutlined, CopyOutlined, DeleteOutlined } from '@ant-design/icons';
 import { arrayMoveImmutable } from 'array-move';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import EditItem from './EditItem';
 import { IVariable } from './definition';
 
 interface IProps {
-  cluster: string;
+  datasourceValue: number;
   id: string;
   visible: boolean;
   setVisible: (visible: boolean) => void;
@@ -33,26 +34,22 @@ interface IProps {
   onChange: (v?: IVariable[]) => void;
 }
 
-const titleMap = {
-  list: '大盘变量',
-  add: '添加大盘变量',
-  edit: '编辑大盘变量',
-};
-
 export default function EditItems(props: IProps) {
-  const { visible, setVisible, onChange, value, range, id, cluster } = props;
+  const { t } = useTranslation('dashboard');
+  const { visible, setVisible, onChange, value, range, id, datasourceValue } = props;
   const [data, setData] = useState<IVariable[]>(value || []);
   const [record, setRecord] = useState<IVariable>({
     name: '',
     type: 'query',
     definition: '',
+    value: '',
   });
   const [recordIndex, setRecordIndex] = useState<number>(-1);
   const [mode, setMode] = useState<'list' | 'add' | 'edit'>('list');
 
   return (
     <Modal
-      title={titleMap[mode]}
+      title={t(`var.title.${mode}`)}
       width={1000}
       visible={visible}
       onOk={() => {
@@ -74,7 +71,7 @@ export default function EditItems(props: IProps) {
           dataSource={data}
           columns={[
             {
-              title: '变量名',
+              title: t('var.name'),
               dataIndex: 'name',
               render: (text, record, idx) => {
                 return (
@@ -91,11 +88,11 @@ export default function EditItems(props: IProps) {
               },
             },
             {
-              title: '变量类型',
+              title: t('var.type'),
               dataIndex: 'type',
             },
             {
-              title: '变量定义',
+              title: t('var.definition'),
               dataIndex: 'definition',
               render: (text, record) => {
                 if (record.type === 'textbox') {
@@ -105,7 +102,7 @@ export default function EditItems(props: IProps) {
               },
             },
             {
-              title: '操作',
+              title: t('common:operations'),
               width: 200,
               render: (_text, record, idx) => {
                 return (
@@ -180,17 +177,18 @@ export default function EditItems(props: IProps) {
                     name: '',
                     type: 'query',
                     definition: '',
+                    value: '',
                   });
                 }}
               >
-                添加变量
+                {t('var.btn')}
               </Button>
             );
           }}
         />
       ) : (
         <EditItem
-          cluster={cluster}
+          datasourceValue={datasourceValue}
           id={id}
           range={range}
           index={recordIndex}

@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import { Range } from '@/components/DateRangePicker';
+import { IRawTimeRange } from '@/components/TimeRangePicker';
 export interface IGridPos {
   h: number;
   w: number;
@@ -28,7 +28,7 @@ export interface ITarget {
   refId: string;
   expr: string; // promQL
   legendFormat: string;
-  time?: Range; // 固定时间范围
+  time?: IRawTimeRange; // 固定时间范围
   step?: number; // 固定时间间隔
   query?: {
     index: string;
@@ -37,9 +37,10 @@ export interface ITarget {
       func: string;
     }[];
   };
+  legend?: string;
 }
 
-export type IType = 'row' | 'timeseries' | 'stat' | 'table' | 'pie' | 'hexbin' | 'barGauge';
+export type IType = 'row' | 'timeseries' | 'stat' | 'table' | 'pie' | 'hexbin' | 'barGauge' | 'text';
 
 export interface IValueMapping {
   match: {
@@ -197,7 +198,7 @@ export interface IPanel {
   description: string;
   layout: IGridPos;
   datasourceCate?: string; // 5.11.0 新增支持配置数据源类型，默认是 prometheus
-  datasourceName?: number;
+  datasourceValue?: number; // 6.x 开始 datasourceName 已经废弃，datasourceValue 即 datasourceId
   targets: ITarget[];
   type: IType;
   options: IOptions;

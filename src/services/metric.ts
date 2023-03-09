@@ -169,12 +169,12 @@ export const getHistogram = function (data: {
     reverse: boolean;
     power_sql: boolean;
   }[];
-}): Promise<{
-  dat: {
+}): Promise<
+  {
     metric: string;
     values: [number, number][];
-  }[];
-}> {
+  }[]
+> {
   return request('/api/n9e-plus/histogram', {
     method: RequestMethod.Post,
     data,
@@ -194,12 +194,12 @@ export const getDsQuery = function (data: {
     reverse: boolean;
     power_sql: boolean;
   }[];
-}): Promise<{
-  dat: {
+}): Promise<
+  {
     metric: string;
     values: [number, number][];
-  }[];
-}> {
+  }[]
+> {
   return request('/api/n9e-plus/ds-query', {
     method: RequestMethod.Post,
     data,

@@ -15,10 +15,7 @@
  *
  */
 import React, { useMemo, useEffect, useState } from 'react';
-import { useParams, useLocation, useHistory } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store/common';
-import { CommonStoreState } from '@/store/commonInterface';
+import { useParams, useLocation } from 'react-router-dom';
 import { subscribeItem } from '@/store/warningInterface/subscribe';
 import PageLayout from '@/components/pageLayout';
 import OperateForm from './components/operateForm';
@@ -34,8 +31,6 @@ function useQuery() {
 
 const EditSubscribe: React.FC = () => {
   const { t } = useTranslation();
-  const history = useHistory();
-  const { curBusiItem } = useSelector<RootState, CommonStoreState>((state) => state.common);
   const [curSubscribeData, setCurSubscribeData] = useState<subscribeItem>();
   const query = useQuery();
   const isClone = query.get('mode');

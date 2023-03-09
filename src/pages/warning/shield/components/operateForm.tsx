@@ -14,43 +14,39 @@
  * limitations under the License.
  *
  */
-import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { Form, Input, Card, Select, Col, Button, Row, message, DatePicker, Tooltip, Spin, Space } from 'antd';
-import { QuestionCircleFilled, PlusCircleOutlined, CaretDownOutlined } from '@ant-design/icons';
+import React, { useState, useEffect, useMemo, useRef, useContext } from 'react';
+import { Form, Input, Card, Select, Col, Button, Row, message, DatePicker, Tooltip, Spin, Space, Radio, TimePicker } from 'antd';
+import { QuestionCircleFilled, PlusCircleOutlined, CaretDownOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import moment from 'moment';
+import AdvancedWrap from '@/components/AdvancedWrap';
 import { addShield, editShield } from '@/services/shield';
 import { getBusiGroups } from '@/services/common';
 import { shieldItem } from '@/store/warningInterface';
-import { RootState } from '@/store/common';
-import { CommonStoreState } from '@/store/commonInterface';
-import AdvancedWrap from '@/components/AdvancedWrap';
+import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
+import { CommonStateContext } from '@/App';
+import { getAuthorizedDatasourceCates } from '@/components/AdvancedWrap';
+import { daysOfWeek } from '@/pages/alertRules/constants';
+import ProdSelect from '@/pages/alertRules/Form/components/ProdSelect';
 import TagItem from './tagItem';
 import { timeLensDefault } from '../../const';
-import CateSelect from './CateSelect';
-import ClusterSelect from './ClusterSelect';
+import { getDefaultValuesByProd } from './utils';
 import '../index.less';
 
 const { Option } = Select;
 const { TextArea } = Input;
 
-interface ItagsObj {
-  tags: any[];
-  cluster: string;
-}
 interface Props {
   detail?: shieldItem;
-  tagsObj?: ItagsObj;
   type?: number; // 1:创建; 2:克隆 3:编辑
 }
 
-const OperateForm: React.FC<Props> = ({ detail = {}, type, tagsObj = {} }: any) => {
+const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
+  const { t } = useTranslation('alertMutes');
   const btimeDefault = new Date().getTime();
   const etimeDefault = new Date().getTime() + 1 * 60 * 60 * 1000; // 默认时长1h
-  const { t } = useTranslation();
   const layout = {
     labelCol: {
       span: 24,
@@ -70,7 +66,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type, tagsObj = {} }: any) 
   const [form] = Form.useForm(null as any);
   const history = useHistory();
   const [timeLen, setTimeLen] = useState('1h');
-  const { curBusiItem, busiGroups } = useSelector<RootState, CommonStoreState>((state) => state.common);
+  const { curBusiId, busiGroups, groupedDatasourceList } = useContext(CommonStateContext);
   const [filteredBusiGroups, setFilteredBusiGroups] = useState(busiGroups);
 
   useEffect(() => {
@@ -88,38 +84,18 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type, tagsObj = {} }: any) 
       const m = moment.duration(etime - btime).minutes();
       const s = moment.duration(etime - btime).seconds();
     }
-    if (curBusiItem) {
-      form.setFieldsValue({ busiGroup: curBusiItem.id });
-    } else if (filteredBusiGroups.length > 0) {
-      form.setFieldsValue({ busiGroup: filteredBusiGroups[0].id });
-    } else {
-      message.warning('无可用业务组');
-      history.push('/alert-mutes');
+    if (!detail.busiGroup) {
+      if (curBusiId) {
+        form.setFieldsValue({ busiGroup: curBusiId });
+      } else if (filteredBusiGroups.length > 0) {
+        form.setFieldsValue({ busiGroup: filteredBusiGroups[0].id });
+      } else {
+        message.warning('无可用业务组');
+        history.push('/alert-mutes');
+      }
     }
     return () => {};
   }, [form]);
-
-  useEffect(() => {
-    // 只有add 的时候才传入tagsObj
-    if (tagsObj?.tags && tagsObj?.tags.length > 0) {
-      const tags = tagsObj?.tags?.map((item) => {
-        return {
-          ...item,
-          value: item.func === 'in' ? item.value.split(' ') : item.value,
-        };
-      });
-      form.setFieldsValue({
-        tags: tags || [{}],
-        cluster: [tagsObj.cluster],
-        busiGroup: tagsObj.group_id,
-      });
-    }
-    if (tagsObj?.cate) {
-      form.setFieldsValue({
-        cate: tagsObj?.cate,
-      });
-    }
-  }, [tagsObj]);
 
   useEffect(() => {
     timeChange();
@@ -153,20 +129,27 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type, tagsObj = {} }: any) 
     });
     const params = {
       ...values,
-      cluster: values.cluster.join(' '),
       btime: moment(values.btime).unix(),
       etime: moment(values.etime).unix(),
       tags,
+      periodic_mutes: _.map(values.periodic_mutes, (item) => {
+        return {
+          enable_days_of_week: _.join(item.enable_days_of_week, ' '),
+          enable_stime: moment(item.enable_stime).format('HH:mm'),
+          enable_etime: moment(item.enable_etime).format('HH:mm'),
+        };
+      }),
+      cluster: '0',
     };
     const curBusiItemId = form.getFieldValue('busiGroup');
     if (type == 1) {
       editShield(params, curBusiItemId, detail.id).then((_) => {
-        message.success(t('编辑告警屏蔽成功'));
+        message.success(t('common:success.edit'));
         history.push('/alert-mutes');
       });
     } else {
       addShield(params, curBusiItemId).then((_) => {
-        message.success(t('新建告警屏蔽成功'));
+        message.success(t('common:success.add'));
         history.push('/alert-mutes');
       });
     }
@@ -216,26 +199,41 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type, tagsObj = {} }: any) 
       onFinish={onFinish}
       initialValues={{
         ...detail,
+        prod: detail.prod || 'host',
         btime: detail?.btime ? moment(detail.btime * 1000) : moment(btimeDefault),
         etime: detail?.etime ? moment(detail.etime * 1000) : moment(etimeDefault),
-        cluster: detail.cluster ? detail.cluster.split(' ') : ['$all'], // 生效集群
+        mute_time_type: detail?.mute_time_type || 0,
+        periodic_mutes: detail?.periodic_mutes
+          ? _.map(detail?.periodic_mutes, (item) => {
+              return {
+                enable_days_of_week: _.split(item.enable_days_of_week, ' '),
+                enable_stime: moment(item.enable_stime, 'HH:mm'),
+                enable_etime: moment(item.enable_etime, 'HH:mm'),
+              };
+            })
+          : [
+              {
+                enable_days_of_week: ['1', '2', '3', '4', '5', '6', '0'],
+                enable_stime: moment('00:00', 'HH:mm'),
+                enable_etime: moment('23:59', 'HH:mm'),
+              },
+            ],
       }}
     >
       <Card>
         <Form.Item
-          label={t('规则备注：')}
+          label={t('note')}
           name='note'
           rules={[
             {
               required: true,
-              message: t('规则备注不能为空'),
             },
           ]}
         >
-          <Input placeholder={t('请输入规则备注')} />
+          <Input />
         </Form.Item>
 
-        <Form.Item label={t('业务组：')} name='busiGroup'>
+        <Form.Item label={t('common:business_group')} name='busiGroup'>
           <Select showSearch filterOption={false} suffixIcon={<CaretDownOutlined />} onSearch={debounceFetcher} notFoundContent={fetching ? <Spin size='small' /> : null}>
             {_.map(filteredBusiGroups, (item) => (
               <Option value={item.id} key={item.id}>
@@ -244,81 +242,207 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type, tagsObj = {} }: any) 
             ))}
           </Select>
         </Form.Item>
-
-        <AdvancedWrap var='VITE_IS_ALERT_ES_DS'>
-          {(visible) => {
-            return <CateSelect form={form} visible={visible} />;
+        <ProdSelect
+          label={t('prod')}
+          onChange={(e) => {
+            form.setFieldsValue(getDefaultValuesByProd(e.target.value));
           }}
-        </AdvancedWrap>
-        <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.cate !== curValues.cate} noStyle>
+        />
+        <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.prod !== curValues.prod} noStyle>
           {({ getFieldValue }) => {
-            return <ClusterSelect form={form} cate={getFieldValue('cate')} />;
+            const prod = getFieldValue('prod');
+            if (prod !== 'host') {
+              return (
+                <Row gutter={10}>
+                  <Col span={12}>
+                    <AdvancedWrap var='VITE_IS_ALERT_ES'>
+                      {(isShow) => {
+                        return (
+                          <Form.Item label={t('common:datasource.type')} name='cate' initialValue='prometheus'>
+                            <Select>
+                              {_.map(
+                                _.filter(getAuthorizedDatasourceCates(), (item) => {
+                                  if (item.value === 'elasticsearch') {
+                                    return isShow[0];
+                                  }
+                                  return true;
+                                }),
+                                (item) => {
+                                  return (
+                                    <Select.Option value={item.value} key={item.value}>
+                                      {item.label}
+                                    </Select.Option>
+                                  );
+                                },
+                              )}
+                            </Select>
+                          </Form.Item>
+                        );
+                      }}
+                    </AdvancedWrap>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.cate !== curValues.cate} noStyle>
+                      {({ getFieldValue, setFieldsValue }) => {
+                        const cate = getFieldValue('cate');
+                        return <DatasourceValueSelect mode='multiple' setFieldsValue={setFieldsValue} cate={cate} datasourceList={groupedDatasourceList[cate] || []} />;
+                      }}
+                    </Form.Item>
+                  </Col>
+                </Row>
+              );
+            }
+          }}
+        </Form.Item>
+        <Form.Item label={t('mute_type.label')} name='mute_time_type'>
+          <Radio.Group>
+            <Radio value={0}>{t('mute_type.0')}</Radio>
+            <Radio value={1}>{t('mute_type.1')}</Radio>
+          </Radio.Group>
+        </Form.Item>
+        <Form.Item shouldUpdate>
+          {({ getFieldValue }) => {
+            const mute_type = getFieldValue('mute_time_type');
+            return (
+              <>
+                <div style={{ display: mute_type === 0 ? 'block' : 'none' }}>
+                  <Row gutter={10}>
+                    <Col span={8}>
+                      <Form.Item label={t('btime')} name='btime'>
+                        <DatePicker showTime onChange={timeChange} />
+                      </Form.Item>
+                    </Col>
+                    <Col span={8}>
+                      <Form.Item label={t('duration')}>
+                        <Select suffixIcon={<CaretDownOutlined />} onChange={timeLenChange} value={timeLen}>
+                          {timeLensDefault.map((item: any, index: number) => (
+                            <Option key={index} value={item.value}>
+                              {item.value}
+                            </Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+                    </Col>
+                    <Col span={8}>
+                      <Form.Item label={t('etime')} name='etime'>
+                        <DatePicker showTime onChange={timeChange} />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                </div>
+                <div style={{ display: mute_type === 1 ? 'block' : 'none' }}>
+                  <Form.List name='periodic_mutes'>
+                    {(fields, { add, remove }) => (
+                      <>
+                        <Space>
+                          <div style={{ width: 450 }}>
+                            <Space align='baseline'>
+                              {t('mute_type.days_of_week')}
+                              <PlusCircleOutlined className='control-icon-normal' onClick={() => add()} />
+                            </Space>
+                          </div>
+                          <div style={{ width: 110 }}>{t('mute_type.start')}</div>
+                          <div style={{ width: 110 }}>{t('mute_type.end')}</div>
+                        </Space>
+                        {fields.map(({ key, name, ...restField }) => (
+                          <Space
+                            key={key}
+                            style={{
+                              display: 'flex',
+                              marginBottom: 8,
+                            }}
+                            align='baseline'
+                          >
+                            <Form.Item
+                              {...restField}
+                              name={[name, 'enable_days_of_week']}
+                              style={{ width: 450 }}
+                              rules={[
+                                {
+                                  required: true,
+                                  message: t('mute_type.days_of_week_msg'),
+                                },
+                              ]}
+                            >
+                              <Select mode='tags'>
+                                {daysOfWeek.map((item) => {
+                                  return (
+                                    <Select.Option key={item} value={String(item)}>
+                                      {t(`common:time.weekdays.${item}`)}
+                                    </Select.Option>
+                                  );
+                                })}
+                              </Select>
+                            </Form.Item>
+                            <Form.Item
+                              {...restField}
+                              name={[name, 'enable_stime']}
+                              style={{ width: 110 }}
+                              rules={[
+                                {
+                                  required: true,
+                                  message: t('mute_type.start_msg'),
+                                },
+                              ]}
+                            >
+                              <TimePicker format='HH:mm' />
+                            </Form.Item>
+                            <Form.Item
+                              {...restField}
+                              name={[name, 'enable_etime']}
+                              style={{ width: 110 }}
+                              rules={[
+                                {
+                                  required: true,
+                                  message: t('mute_type.end_msg'),
+                                },
+                              ]}
+                            >
+                              <TimePicker format='HH:mm' />
+                            </Form.Item>
+                            <MinusCircleOutlined onClick={() => remove(name)} />
+                          </Space>
+                        ))}
+                      </>
+                    )}
+                  </Form.List>
+                </div>
+              </>
+            );
           }}
         </Form.Item>
 
-        <Row gutter={10}>
-          <Col span={8}>
-            <Form.Item label={t('屏蔽开始时间：')} name='btime'>
-              <DatePicker showTime onChange={timeChange} />
-            </Form.Item>
-          </Col>
-          <Col span={8}>
-            <Form.Item label={t('屏蔽时长：')}>
-              <Select suffixIcon={<CaretDownOutlined />} placeholder={t('请选择屏蔽时长')} onChange={timeLenChange} value={timeLen}>
-                {timeLensDefault.map((item: any, index: number) => (
-                  <Option key={index} value={item.value}>
-                    {item.value}
-                  </Option>
-                ))}
-              </Select>
-            </Form.Item>
-          </Col>
-          <Col span={8}>
-            <Form.Item label={t('屏蔽结束时间：')} name='etime'>
-              <DatePicker showTime onChange={timeChange} />
-            </Form.Item>
-          </Col>
-        </Row>
-        <Row gutter={[10, 10]} style={{ marginBottom: '8px' }}>
-          <Col span={5}>
-            {t('屏蔽事件标签Key：')}
-            <Tooltip title={t(`这里的标签是指告警事件的标签，通过如下标签匹配规则过滤告警事件`)}>
-              <QuestionCircleFilled />
-            </Tooltip>
-          </Col>
-          <Col span={3}>{t('运算符：')}</Col>
-          <Col span={16}>{t('标签Value：')}</Col>
-        </Row>
         <Form.List name='tags' initialValue={[{}]}>
           {(fields, { add, remove }) => (
             <>
+              <Row gutter={[10, 10]} style={{ marginBottom: '8px' }}>
+                <Col span={5}>
+                  <Space align='baseline'>
+                    {t('tag.key.label')}
+                    <Tooltip title={t(`tag.key.tip`)}>
+                      <QuestionCircleFilled />
+                    </Tooltip>
+                    <PlusCircleOutlined className='control-icon-normal' onClick={() => add()} />
+                  </Space>
+                </Col>
+                <Col span={3}>{t('tag.func.label')}</Col>
+                <Col span={16}>{t('tag.value.label')}</Col>
+              </Row>
               {fields.map((field, index) => (
                 <TagItem field={field} key={index} remove={remove} form={form} />
               ))}
-              <Form.Item>
-                <PlusCircleOutlined className='control-icon-normal' onClick={() => add()} />
-              </Form.Item>
             </>
           )}
         </Form.List>
-        <Form.Item
-          label={t('屏蔽原因')}
-          name='cause'
-          rules={[
-            {
-              required: true,
-              message: t('请填写屏蔽原因'),
-            },
-          ]}
-        >
+        <Form.Item label={t('cause')} name='cause'>
           <TextArea rows={3} />
         </Form.Item>
         <Form.Item {...tailLayout}>
           <Space>
             <Button type='primary' htmlType='submit'>
-              {type === 1 ? t('编辑') : type === 2 ? t('克隆') : t('创建')}
+              {type === 1 ? t('common:btn.edit') : type === 2 ? t('common:btn.clone') : t('common:btn.create')}
             </Button>
-            <Button onClick={() => window.history.back()}>{t('取消')}</Button>
+            <Button onClick={() => window.history.back()}>{t('common:btn.cancel')}</Button>
           </Space>
         </Form.Item>
       </Card>

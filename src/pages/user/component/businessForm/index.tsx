@@ -15,17 +15,16 @@
  *
  */
 import React, { useEffect, useState, useImperativeHandle, ReactNode, useCallback } from 'react';
-import { Form, Input, Select, Switch, Row, Tag, Space, Button } from 'antd';
-import { layout } from '../../const';
+import { Form, Input, Select, Switch, Tag, Space, Button } from 'antd';
 import { MinusCircleOutlined, PlusOutlined, CaretDownOutlined } from '@ant-design/icons';
 import { getBusinessTeamInfo, getTeamInfoList } from '@/services/manage';
-import { TeamProps, Team, TeamInfo, ActionType } from '@/store/manageInterface';
-import { useTranslation } from 'react-i18next';
+import { TeamProps, Team, ActionType } from '@/store/manageInterface';
+import { useTranslation, Trans } from 'react-i18next';
 import { debounce } from 'lodash';
 
 const { Option } = Select;
 const TeamForm = React.forwardRef<ReactNode, TeamProps>((props, ref) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('user');
   const { businessId, action } = props;
   const [form] = Form.useForm();
   const [userTeam, setUserTeam] = useState<Team[]>([]);
@@ -77,26 +76,25 @@ const TeamForm = React.forwardRef<ReactNode, TeamProps>((props, ref) => {
   const debounceFetcher = useCallback(debounce(getList, 800), []);
 
   return !loading ? (
-    <Form {...layout} form={form} initialValues={initialValues} preserve={false} layout={refresh ? 'horizontal' : 'horizontal'}>
+    <Form layout='vertical' form={form} initialValues={initialValues} preserve={false}>
       {action !== ActionType.AddBusinessMember && (
         <>
           <Form.Item
-            label={t('业务组名称')}
+            label={t('business.name')}
             name='name'
             rules={[
               {
                 required: true,
-                message: t('业务组名称不能为空！'),
               },
             ]}
           >
             <Input />
           </Form.Item>
           <Form.Item
-            label={t('作为标签使用')}
+            label={t('business.label_enable')}
             name='label_enable'
             valuePropName='checked'
-            tooltip={{ title: '系统会自动把业务组的英文标识作为标签附到该业务组下辖监控对象的时序数据上', getPopupContainer: () => document.body }}
+            tooltip={{ title: t('business.label_enable_tip'), getPopupContainer: () => document.body }}
           >
             <Switch />
           </Form.Item>
@@ -106,7 +104,7 @@ const TeamForm = React.forwardRef<ReactNode, TeamProps>((props, ref) => {
               return (
                 getFieldValue('label_enable') && (
                   <Form.Item
-                    label={t('英文标识')}
+                    label={t('business.label_value')}
                     name='label_value'
                     rules={[
                       {
@@ -115,9 +113,17 @@ const TeamForm = React.forwardRef<ReactNode, TeamProps>((props, ref) => {
                     ]}
                     tooltip={{
                       title: (
-                        <span>
-                          尽量用英文，不能与其他业务组标识重复，系统会自动生成 <Tag color='purple'>busigroup={form.getFieldValue('label_value')}</Tag> 的标签
-                        </span>
+                        <Trans
+                          ns='user'
+                          i18nKey='business.label_value_tip'
+                          values={{
+                            val: form.getFieldValue('label_value'),
+                          }}
+                        >
+                          <span>
+                            尽量用英文，不能与其他业务组标识重复，系统会自动生成 <Tag color='purple'>busigroup={form.getFieldValue('label_value')}</Tag> 的标签
+                          </span>
+                        </Trans>
                       ),
                       getPopupContainer: () => document.body,
                     }}
@@ -136,25 +142,13 @@ const TeamForm = React.forwardRef<ReactNode, TeamProps>((props, ref) => {
       )}
 
       {(action === ActionType.CreateBusiness || action === ActionType.AddBusinessMember) && (
-        <Form.Item
-          label={t('团队')}
-          required
-          // tooltip={{
-          //   title: '默认可读勾选可写',
-          // }}
-        >
+        <Form.Item label={t('business.team_name')} required>
           <Form.List name='members'>
             {(fields, { add, remove }) => (
               <>
                 {fields.map(({ key, name, fieldKey, ...restField }) => (
                   <Space key={key} style={{ display: 'flex', marginBottom: 8 }} align='baseline'>
-                    <Form.Item
-                      style={{ width: 450 }}
-                      {...restField}
-                      name={[name, 'user_group_id']}
-                      fieldKey={[fieldKey, 'user_group_id']}
-                      rules={[{ required: true, message: t('业务组团队不能为空！') }]}
-                    >
+                    <Form.Item style={{ width: 450 }} {...restField} name={[name, 'user_group_id']} rules={[{ required: true, message: t('业务组团队不能为空！') }]}>
                       <Select
                         suffixIcon={<CaretDownOutlined />}
                         style={{ width: '100%' }}
@@ -170,15 +164,15 @@ const TeamForm = React.forwardRef<ReactNode, TeamProps>((props, ref) => {
                         ))}
                       </Select>
                     </Form.Item>
-                    <Form.Item {...restField} name={[name, 'perm_flag']} fieldKey={[fieldKey, 'perm_flag']} valuePropName='checked'>
-                      <Switch checkedChildren='读写' unCheckedChildren='只读' />
+                    <Form.Item {...restField} name={[name, 'perm_flag']} valuePropName='checked'>
+                      <Switch checkedChildren={t('business.perm_flag_1')} unCheckedChildren={t('business.perm_flag_0')} />
                     </Form.Item>
                     <MinusCircleOutlined onClick={() => remove(name)} />
                   </Space>
                 ))}
                 <Form.Item>
                   <Button type='dashed' onClick={() => add()} block icon={<PlusOutlined />}>
-                    添加团队
+                    {t('business.add_team')}
                   </Button>
                 </Form.Item>
               </>

@@ -1,0 +1,46 @@
+const zh_CN = {
+  title: '数据源管理',
+  list_title: '已接入的数据源',
+  name: '数据源名称',
+  id: '数据源ID',
+  description: '备注',
+  type: '数据源类型',
+  enable: '启用',
+  disable: '禁用',
+  confirm: {
+    enable: '确定启用该数据源吗？',
+    disable: '确定禁用该数据源吗？',
+  },
+  success: {
+    enable: '启用成功',
+    disable: '禁用成功',
+  },
+  rename_title: '修改数据源名称',
+  type_btn_add: '添加',
+  form: {
+    other: '其他',
+    name: '名称',
+    name_msg: '请输入字母/数字/下划线，必须以字母开头',
+    name_msg2: '最少输入三位',
+    timeout: '超时(单位:ms)',
+    auth: '授权',
+    username: '用户名',
+    password: '密码',
+    skip_ssl_verify: '跳过SSL验证',
+    yes: '是',
+    no: '否',
+    headers: '自定义HTTP标头',
+    description: '备注',
+    cluster: '关联集群',
+    es: {
+      version: '版本',
+      max_shard: '最大并发分片请求数',
+      min_interval: '最小时间间隔(s)',
+      min_interval_tip: '按时间间隔自动分组的下限。建议设置为写入频率，例如，如果数据每分钟写入一次，则为1m。',
+    },
+    jaeger: {
+      version: '版本',
+    },
+  },
+};
+export default zh_CN;

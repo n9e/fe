@@ -15,10 +15,7 @@
  *
  */
 import React from 'react';
-import { useParams, useLocation, useHistory } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store/common';
-import { IshieldState } from '@/store/warningInterface/shield';
+import { useLocation } from 'react-router-dom';
 import PageLayout from '@/components/pageLayout';
 import OperateForm from './components/operateForm';
 import { useTranslation } from 'react-i18next';
@@ -31,18 +28,14 @@ function useQuery() {
 }
 
 const EditShield: React.FC = () => {
-  const { t } = useTranslation();
-  const history = useHistory();
-  const { curShieldData } = useSelector<RootState, IshieldState>((state) => state.shield);
-  if (!curShieldData.id) {
-    history.push(`/alert-mutes`);
-  }
+  const { t } = useTranslation('alertMutes');
+  const { state } = useLocation<any>();
   const query = useQuery();
   const isClone = query.get('mode');
 
   return (
-    <PageLayout title={t('告警屏蔽')} showBack hideCluster>
-      <div className='shield-add'>{curShieldData.id && <OperateForm detail={curShieldData} type={!isClone ? 1 : 2} />}</div>
+    <PageLayout title={t('title')} showBack>
+      <div className='shield-add'>{state.id && <OperateForm detail={state} type={!isClone ? 1 : 2} />}</div>
     </PageLayout>
   );
 };

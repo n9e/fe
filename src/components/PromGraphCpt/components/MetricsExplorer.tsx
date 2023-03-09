@@ -21,14 +21,13 @@ import { getPromData } from '../services';
 
 interface MetricsExplorer {
   url: string;
-  datasourceId?: number;
-  datasourceIdRequired?: boolean;
+  datasourceValue: number;
   show: boolean;
   updateShow(show: boolean): void;
   insertAtCursor(query: string): void;
 }
 
-const MetricsExplorer: React.FC<MetricsExplorer> = ({ url, datasourceId, datasourceIdRequired, show, updateShow, insertAtCursor }) => {
+const MetricsExplorer: React.FC<MetricsExplorer> = ({ url, datasourceValue, show, updateShow, insertAtCursor }) => {
   const [metrics, setMetrics] = useState<string[]>([]);
   const [filteredMetrics, setFilteredMetrics] = useState<string[]>(metrics);
 
@@ -38,13 +37,13 @@ const MetricsExplorer: React.FC<MetricsExplorer> = ({ url, datasourceId, datasou
   }
 
   useEffect(() => {
-    if (show) {
-      getPromData(`${url}/api/v1/label/__name__/values`, {}, datasourceIdRequired ? { 'X-Data-Source-Id': datasourceId } : {}).then((res) => {
+    if (show && datasourceValue) {
+      getPromData(`${url}/${datasourceValue}/api/v1/label/__name__/values`, {}).then((res) => {
         setMetrics(res);
         setFilteredMetrics(res);
       });
     }
-  }, [show]);
+  }, [show, datasourceValue]);
 
   return (
     <Modal className='prom-graph-metrics-explorer-modal' width={540} visible={show} title='Metrics Explorer' footer={null} onCancel={() => updateShow(false)} getContainer={false}>

@@ -19,9 +19,10 @@ import _ from 'lodash';
 import queryString from 'query-string';
 import { useLocation } from 'react-router-dom';
 import classNames from 'classnames';
+import { useTranslation } from 'react-i18next';
 import { EditOutlined } from '@ant-design/icons';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
-import { convertExpressionToQuery, replaceExpressionVars, getVaraiableSelected, setVaraiableSelected, stringToRegex, filterOptionsByReg } from './constant';
+import { convertExpressionToQuery, replaceExpressionVars, getVaraiableSelected, setVaraiableSelected, filterOptionsByReg } from './constant';
 import { IVariable } from './definition';
 import DisplayItem from './DisplayItem';
 import EditItems from './EditItems';
@@ -29,7 +30,7 @@ import './index.less';
 
 interface IProps {
   id: string;
-  cluster: string; // 集群变动后需要重新获取数据
+  datasourceValue: number;
   editable?: boolean;
   value?: IVariable[];
   range: IRawTimeRange;
@@ -46,8 +47,9 @@ function includes(source, target) {
 }
 
 function index(props: IProps) {
+  const { t } = useTranslation('dashboard');
   const query = queryString.parse(useLocation().search);
-  const { id, cluster, editable = true, range, onChange, onOpenFire, isPreview = false } = props;
+  const { id, datasourceValue, editable = true, range, onChange, onOpenFire, isPreview = false } = props;
   const [editing, setEditing] = useState<boolean>(false);
   const [data, setData] = useState<IVariable[]>([]);
   const dataWithoutConstant = _.filter(data, (item) => item.type !== 'constant');
@@ -62,56 +64,57 @@ function index(props: IProps) {
   useEffect(() => {
     if (value) {
       let result: IVariable[] = [];
-      try {
-        (async () => {
-          for (let idx = 0; idx < value.length; idx++) {
-            const item = _.cloneDeep(value[idx]);
-            if ((item.type === 'query' || item.type === 'custom') && item.definition) {
-              const definition = idx > 0 ? replaceExpressionVars(item.definition, result, idx, id) : item.definition;
-              const options = await convertExpressionToQuery(definition, range, item, cluster);
-              const regFilterOptions = filterOptionsByReg(options, item.reg, result, idx, id);
-              result[idx] = item;
-              result[idx].fullDefinition = definition;
-              result[idx].options = item.type === 'query' ? _.sortBy(regFilterOptions) : regFilterOptions;
-              // 当大盘变量值为空时，设置默认值
-              // 如果已选项不在待选项里也视做空值处理
-              const selected = getVaraiableSelected(item.name, id);
-              if (query.__variable_value_fixed === undefined) {
-                if (selected === null || (selected && !_.isEmpty(regFilterOptions) && !includes(regFilterOptions, selected))) {
-                  const head = regFilterOptions?.[0];
-                  const defaultVal = item.multi ? (head ? [head] : []) : head;
-                  setVaraiableSelected({ name: item.name, value: defaultVal, id, urlAttach: true });
-                }
-              }
-            } else if (item.type === 'textbox') {
-              result[idx] = item;
-              const selected = getVaraiableSelected(item.name, id);
-              if (selected === null && query.__variable_value_fixed === undefined) {
-                setVaraiableSelected({ name: item.name, value: item.defaultValue, id, urlAttach: true });
-              }
-            } else if (item.type === 'constant') {
-              result[idx] = item;
-              const selected = getVaraiableSelected(item.name, id);
-              if (selected === null && query.__variable_value_fixed === undefined) {
-                setVaraiableSelected({ name: item.name, value: item.definition, id, urlAttach: true });
+      (async () => {
+        for (let idx = 0; idx < value.length; idx++) {
+          const item = _.cloneDeep(value[idx]);
+          if ((item.type === 'query' || item.type === 'custom') && item.definition) {
+            const definition = idx > 0 ? replaceExpressionVars(item.definition, result, idx, id) : item.definition;
+            let options = [];
+            try {
+              options = await convertExpressionToQuery(definition, range, item, datasourceValue);
+            } catch (error) {
+              console.error(error);
+            }
+            const regFilterOptions = filterOptionsByReg(options, item.reg, result, idx, id);
+            result[idx] = item;
+            result[idx].fullDefinition = definition;
+            result[idx].options = item.type === 'query' ? _.sortBy(regFilterOptions) : regFilterOptions;
+            // 当大盘变量值为空时，设置默认值
+            // 如果已选项不在待选项里也视做空值处理
+            const selected = getVaraiableSelected(item.name, id);
+            if (query.__variable_value_fixed === undefined) {
+              if (selected === null || (selected && !_.isEmpty(regFilterOptions) && !includes(regFilterOptions, selected))) {
+                const head = regFilterOptions?.[0];
+                const defaultVal = item.multi ? (head ? [head] : []) : head;
+                setVaraiableSelected({ name: item.name, value: defaultVal, id, urlAttach: true });
               }
             }
+          } else if (item.type === 'textbox') {
+            result[idx] = item;
+            const selected = getVaraiableSelected(item.name, id);
+            if (selected === null && query.__variable_value_fixed === undefined) {
+              setVaraiableSelected({ name: item.name, value: item.defaultValue!, id, urlAttach: true });
+            }
+          } else if (item.type === 'constant') {
+            result[idx] = item;
+            const selected = getVaraiableSelected(item.name, id);
+            if (selected === null && query.__variable_value_fixed === undefined) {
+              setVaraiableSelected({ name: item.name, value: item.definition, id, urlAttach: true });
+            }
           }
-          // 设置变量默认值，优先从 url 中获取，其次是 localStorage
-          result = _.map(_.compact(result), (item) => {
-            return {
-              ...item,
-              value: getVaraiableSelected(item?.name, id),
-            };
-          });
-          setData(result);
-          onChange(value, false, result);
-        })();
-      } catch (e) {
-        console.log(e);
-      }
+        }
+        // 设置变量默认值，优先从 url 中获取，其次是 localStorage
+        result = _.map(_.compact(result), (item) => {
+          return {
+            ...item,
+            value: getVaraiableSelected(item?.name, id),
+          };
+        });
+        setData(result);
+        onChange(value, false, result);
+      })();
     }
-  }, [JSON.stringify(value), cluster, refreshFlag]);
+  }, [JSON.stringify(value), datasourceValue, refreshFlag]);
 
   return (
     <div className='tag-area'>
@@ -164,12 +167,12 @@ function index(props: IProps) {
               onOpenFire && onOpenFire();
             }}
           >
-            添加大盘变量
+            {t('var.btn')}
           </div>
         )}
       </div>
       <EditItems
-        cluster={cluster}
+        datasourceValue={datasourceValue}
         visible={editing}
         setVisible={setEditing}
         value={value}

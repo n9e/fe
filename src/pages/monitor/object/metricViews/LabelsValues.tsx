@@ -16,6 +16,7 @@
  */
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 import { Select, Input, Tooltip, Button } from 'antd';
 import { SearchOutlined, ClearOutlined, DownOutlined, UpOutlined } from '@ant-design/icons';
@@ -25,13 +26,15 @@ import { IMatch } from '../types';
 import { getFiltersStr, getDynamicLabelsStr } from './utils';
 
 interface IProps {
+  datasourceValue: number;
   range: IRawTimeRange;
   value: IMatch;
   onChange: (value: IMatch) => void;
 }
 
 export default function LabelsValues(props: IProps) {
-  const { value, range, onChange } = props;
+  const { t } = useTranslation('objectExplorer');
+  const { datasourceValue, value, range, onChange } = props;
   const { id, refreshFlag, filters, dynamicLabels, dimensionLabels } = value;
   const [labelValues, setLabelValues] = useState<{ [key: string]: string[] }>({});
   const [dimensionLabelsValues, setDimensionLabelsValues] = useState<{ [key: string]: string[] }>({});
@@ -45,7 +48,7 @@ export default function LabelsValues(props: IProps) {
 
   useEffect(() => {
     const dynamicLabelsRequests = _.map(dynamicLabels, (item) => {
-      return getLabelValues(item.label, range, filtersStr ? `{${filtersStr}}` : '');
+      return getLabelValues(datasourceValue, item.label, range, filtersStr ? `{${filtersStr}}` : '');
     });
     Promise.all(dynamicLabelsRequests).then((res) => {
       const _labelValues = {};
@@ -54,12 +57,12 @@ export default function LabelsValues(props: IProps) {
       });
       setLabelValues(_labelValues);
     });
-  }, [filtersStr]);
+  }, [filtersStr, datasourceValue]);
 
   useEffect(() => {
     const matchStr = _.join(_.compact(_.concat(filtersStr, dynamicLabelsStr)), ',');
     const dimensionLabelsRequests = _.map(dimensionLabels, (item) => {
-      return getLabelValues(item.label, range, matchStr ? `{${matchStr}}` : '');
+      return getLabelValues(datasourceValue, item.label, range, matchStr ? `{${matchStr}}` : '');
     });
     Promise.all(dimensionLabelsRequests).then((res) => {
       const _labelValues = {};
@@ -82,7 +85,7 @@ export default function LabelsValues(props: IProps) {
         });
       }
     });
-  }, [filtersStr, dynamicLabelsStr, id, refreshFlag]);
+  }, [filtersStr, dynamicLabelsStr, id, refreshFlag, datasourceValue]);
 
   return (
     <div className='n9e-metric-views-labels-values'>
@@ -98,7 +101,7 @@ export default function LabelsValues(props: IProps) {
               });
             }}
           >
-            前置过滤条件 {expaned.filters ? <UpOutlined /> : <DownOutlined />}
+            {t('list.filters')} {expaned.filters ? <UpOutlined /> : <DownOutlined />}
           </div>
           {expaned.filters && <div className='n9e-metric-views-filters'>{filtersStr ? filtersStr : '暂无数据'}</div>}
         </div>
@@ -115,12 +118,12 @@ export default function LabelsValues(props: IProps) {
               });
             }}
           >
-            动态过滤条件 {expaned.dynamicLabels ? <UpOutlined /> : <DownOutlined />}
+            {t('list.dynamicLabels')} {expaned.dynamicLabels ? <UpOutlined /> : <DownOutlined />}
           </div>
           {expaned.dynamicLabels && (
             <div className='n9e-metric-views-dynamicLabels'>
               {_.isEmpty(dynamicLabels) ? (
-                <div style={{ marginBottom: 10 }}>暂无数据</div>
+                <div style={{ marginBottom: 10 }}>No Data</div>
               ) : (
                 _.map(dynamicLabels, (item) => {
                   return (
@@ -218,7 +221,7 @@ export default function LabelsValues(props: IProps) {
                     });
                   }}
                 >
-                  全选
+                  {t('list.allSelect')}
                 </a>
               </div>
             </div>
@@ -235,7 +238,7 @@ export default function LabelsValues(props: IProps) {
                     });
                   }}
                 />
-                <Tooltip title='清空已选的值' placement='right' getTooltipContainer={() => document.body}>
+                <Tooltip title={t('list.clear')} placement='right' getTooltipContainer={() => document.body}>
                   <Button
                     icon={<ClearOutlined />}
                     onClick={() => {
@@ -258,7 +261,7 @@ export default function LabelsValues(props: IProps) {
 
               <div className='n9e-metric-views-dimensionLabel-content'>
                 {_.isEmpty(dimensionLabelValues) ? (
-                  '暂无数据'
+                  'No Data'
                 ) : (
                   <div>
                     {_.map(

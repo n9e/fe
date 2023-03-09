@@ -4,12 +4,12 @@ import _ from 'lodash';
 import { arrayMoveImmutable } from 'array-move';
 import { SortableContainer } from 'react-sortable-hoc';
 import { getOperationDefinitions } from './utils';
-import { PromVisualQuery } from '../types';
+import { PromVisualQuery, QueryBuilderOperationDef } from '../types';
 import Operation from './Operation';
 
 interface IProps {
   metric?: string;
-  datasourceValue: string;
+  datasourceValue: number;
   params: {
     start: number;
     end: number;
@@ -64,7 +64,7 @@ export default function index(props: IProps) {
           })}
           onChange={(val) => {
             const id = _.last(val);
-            const operationDef = _.find(addOperationOptions, { id });
+            const operationDef = _.find(addOperationOptions, { id }) as QueryBuilderOperationDef;
             if (!operationDef) {
               return;
             }

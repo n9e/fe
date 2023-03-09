@@ -16,6 +16,7 @@
  */
 import React from 'react';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { Button, Space, Dropdown, Menu } from 'antd';
 import { DownOutlined, EditOutlined } from '@ant-design/icons';
 import Edit from './Edit';
@@ -28,6 +29,7 @@ interface IProps {
 }
 
 export default function index(props: IProps) {
+  const { t } = useTranslation('dashboard');
   const { editable = true, value } = props;
   return (
     <Space align='baseline'>
@@ -35,7 +37,7 @@ export default function index(props: IProps) {
         overlay={
           <Menu>
             {_.isEmpty(value) ? (
-              <div style={{ textAlign: 'center' }}>暂无数据</div>
+              <div style={{ textAlign: 'center' }}>{t('common:nodata')}</div>
             ) : (
               _.map(value, (item, idx) => {
                 return (
@@ -51,7 +53,7 @@ export default function index(props: IProps) {
         }
       >
         <Button>
-          大盘链接 <DownOutlined />
+          {t('link.title')} <DownOutlined />
         </Button>
       </Dropdown>
       {editable && (

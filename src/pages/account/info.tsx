@@ -14,24 +14,24 @@
  * limitations under the License.
  *
  */
-import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useState, useEffect, useContext } from 'react';
 import { Form, Input, Button, Modal, Row, Col, message, Space, Select } from 'antd';
-import { getNotifyChannels } from '@/services/manage';
-import { RootState, accountStoreState } from '@/store/accountInterface';
-import { ContactsItem } from '@/store/manageInterface';
 import { MinusCircleOutlined, PlusCircleOutlined, CaretDownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import { getNotifyChannels } from '@/services/manage';
+import { ContactsItem } from '@/store/manageInterface';
+import { CommonStateContext } from '@/App';
+import { UpdateProfile } from '@/services/account';
+
 const { Option } = Select;
 export default function Info() {
-  const { t } = useTranslation();
+  const { t } = useTranslation('account');
   const [form] = Form.useForm();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [contactsList, setContactsList] = useState<ContactsItem[]>([]);
-  let { profile } = useSelector<RootState, accountStoreState>((state) => state.account);
+  const { profile, setProfile } = useContext(CommonStateContext);
   const [selectAvatar, setSelectAvatar] = useState<string>(profile.portrait || '/image/avatar1.png');
   const [customAvatar, setCustomAvatar] = useState('');
-  const dispatch = useDispatch();
   useEffect(() => {
     const { id, nickname, email, phone, contacts, portrait } = profile;
     form.setFieldsValue({
@@ -40,7 +40,7 @@ export default function Info() {
       phone,
       contacts,
     });
-    if (portrait.startsWith('http')) {
+    if (portrait?.startsWith('http')) {
       setCustomAvatar(portrait);
     }
   }, [profile]);
@@ -52,27 +52,29 @@ export default function Info() {
 
   const handleSubmit = async () => {
     try {
+      console.log(111);
       await form.validateFields();
+      console.log(222);
       updateProfile();
     } catch (err) {
-      console.log(t('输入有误'), err);
+      console.log(err);
     }
   };
 
   const handleOk = () => {
     if (customAvatar) {
       if (!customAvatar.startsWith('http')) {
-        message.error(t('自定义头像需以http开头'));
+        message.error(t('pictureMsg'));
         return;
       }
 
       fetch(customAvatar, { mode: 'no-cors' })
-        .then((res) => {
+        .then(() => {
           setIsModalVisible(false);
           handleSubmit();
         })
         .catch((err) => {
-          message.error(t('自定义头像') + err);
+          message.error(err);
         });
     } else {
       setIsModalVisible(false);
@@ -110,18 +112,19 @@ export default function Info() {
       }
     }
 
-    dispatch({
-      type: 'account/updateProfile',
-      data: {
-        ...profile,
-        portrait: customAvatar || selectAvatar,
-        nickname,
-        email,
-        phone,
-        contacts,
-      },
+    const newData = {
+      ...profile,
+      portrait: customAvatar || selectAvatar,
+      nickname,
+      email,
+      phone,
+      contacts,
+    };
+
+    UpdateProfile(newData).then(() => {
+      setProfile(newData);
+      message.success(t('common:modifiedSuccessfully'));
     });
-    message.success(t('信息保存成功'));
   };
 
   const avatarList = new Array(8).fill(0).map((_, i) => i + 1);
@@ -148,25 +151,25 @@ export default function Info() {
             >
               <Col span={4}>
                 <div>
-                  <label>{t('用户名')}：</label>
+                  <label>{t('profile.username')}：</label>
                   <span>{profile.username}</span>
                 </div>
               </Col>
               <Col span={4}>
                 <div>
-                  <label>{t('角色')}：</label>
-                  <span>{profile.roles.join(', ')}</span>
+                  <label>{t('profile.role')}：</label>
+                  <span>{profile.roles?.join(', ')}</span>
                 </div>
               </Col>
             </Row>
-            <Form.Item label={<span>{t('显示名')}：</span>} name='nickname'>
-              <Input placeholder={t('请输入显示名')} />
+            <Form.Item label={<span>{t('profile.nickname')}：</span>} name='nickname'>
+              <Input />
             </Form.Item>
-            <Form.Item label={<span>{t('邮箱')}：</span>} name='email'>
-              <Input placeholder={t('请输入邮箱')} />
+            <Form.Item label={<span>{t('profile.email')}：</span>} name='email'>
+              <Input />
             </Form.Item>
-            <Form.Item label={<span>{t('手机')}：</span>} name='phone'>
-              <Input placeholder={t('请输入手机号')} />
+            <Form.Item label={<span>{t('profile.phone')}：</span>} name='phone'>
+              <Input />
             </Form.Item>
 
             {profile.contacts &&
@@ -175,21 +178,21 @@ export default function Info() {
                 .map((key, i) => {
                   let contact = contactsList.find((item) => item.key === key);
                   return (
-                    <>
+                    <div key={i}>
                       {contact ? (
                         <Form.Item label={contact.label + '：'} name={['contacts', key]} key={i}>
-                          <Input placeholder={`${t('请输入')}${key}`} />
+                          <Input />
                         </Form.Item>
                       ) : null}
-                    </>
+                    </div>
                   );
                 })}
 
-            <Form.Item label={t('更多联系方式')}>
+            <Form.Item label={t('profile.moreContact')}>
               <Form.List name='moreContacts'>
                 {(fields, { add, remove }) => (
                   <>
-                    {fields.map(({ key, name, fieldKey, ...restField }) => (
+                    {fields.map(({ key, name, ...restField }) => (
                       <Space
                         key={key}
                         style={{
@@ -203,15 +206,13 @@ export default function Info() {
                           }}
                           {...restField}
                           name={[name, 'key']}
-                          fieldKey={[fieldKey, 'key']}
                           rules={[
                             {
                               required: true,
-                              message: t('联系方式不能为空'),
                             },
                           ]}
                         >
-                          <Select suffixIcon={<CaretDownOutlined />} placeholder={t('请选择联系方式')}>
+                          <Select suffixIcon={<CaretDownOutlined />} placeholder={t('profile.moreContactPlaceholder')}>
                             {contactsList.map((item, index) => (
                               <Option value={item.key} key={index}>
                                 {item.label}
@@ -225,15 +226,13 @@ export default function Info() {
                             width: '330px',
                           }}
                           name={[name, 'value']}
-                          fieldKey={[fieldKey, 'value']}
                           rules={[
                             {
                               required: true,
-                              message: t('值不能为空'),
                             },
                           ]}
                         >
-                          <Input placeholder={t('请输入值')} />
+                          <Input />
                         </Form.Item>
                         <MinusCircleOutlined className='control-icon-normal' onClick={() => remove(name)} />
                       </Space>
@@ -246,7 +245,7 @@ export default function Info() {
 
             <Form.Item>
               <Button type='primary' onClick={handleSubmit}>
-                {t('确认修改')}
+                {t('save')}
               </Button>
             </Form.Item>
           </Col>
@@ -254,13 +253,13 @@ export default function Info() {
             <div className='avatar'>
               <img src={profile.portrait || '/image/avatar1.png'} />
               <Button type='primary' className='update-avatar' onClick={() => setIsModalVisible(true)}>
-                {t('更换头像')}
+                {t('editPicture')}
               </Button>
             </div>
           </Col>
         </Row>
       </Form>
-      <Modal title={t('更换头像')} visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} wrapClassName='avatar-modal'>
+      <Modal title={t('editPicture')} visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} wrapClassName='avatar-modal'>
         <div className='avatar-content'>
           {avatarList.map((i) => {
             return (
@@ -270,7 +269,7 @@ export default function Info() {
             );
           })}
         </div>
-        <Input addonBefore={<span>{t('头像URL')}:</span>} onChange={(e) => setCustomAvatar(e.target.value)} value={customAvatar} />
+        <Input addonBefore={<span>{t('pictureURL')}:</span>} onChange={(e) => setCustomAvatar(e.target.value)} value={customAvatar} />
       </Modal>
     </>
   );

@@ -1,0 +1,17 @@
+.builtin-container {
+  .cate-list-item {
+    padding: 8px;
+    .cate-list-item-extra {
+      display: none;
+      font-size: 14px;
+    }
+    &:hover {
+      .cate-list-item-extra {
+        display: block;
+      }
+    }
+  }
+  .cate-list-item.is-last-favorite {
+    border-bottom: 1px solid #f0f0f0 !important;
+  }
+}

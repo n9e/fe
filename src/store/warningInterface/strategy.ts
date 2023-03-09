@@ -99,7 +99,6 @@ export interface strategyItem {
     promql: string;
   };
   alert_duration: number;
-  // status: strategyStatus;
   disabled: strategyStatus;
   append_tags: string;
   enable_stime: string;
@@ -107,7 +106,6 @@ export interface strategyItem {
   enable_days_of_week: string;
   recovery_duration: number;
   recovery_notify: notifyType;
-  // priority: strategyPriority;
   severity: strategyPriority;
   notify_channels: string;
   notify_groups: string;
@@ -119,8 +117,9 @@ export interface strategyItem {
   create_by: string;
   update_at: number;
   update_by: string;
-  // notify_groups_detail: Array<strategyGroupItem>;
   notify_groups_obj: Array<strategyGroupItem>;
+  cate: string;
+  datasource_ids: number[];
 }
 
 export enum strategyFrom {

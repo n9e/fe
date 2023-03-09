@@ -2,16 +2,19 @@ import React from 'react';
 import { Form, Row, Col, Input, Button, InputNumber } from 'antd';
 import { DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 import Collapse, { Panel } from '../Components/Collapse';
 import getFirstUnusedLetter from '../../Renderer/utils/getFirstUnusedLetter';
-import IndexSelect from '@/pages/warning/strategy/components/ElasticsearchSettings/IndexSelect';
-import Values from '@/pages/warning/strategy/components/ElasticsearchSettings/Values';
-import GroupBy from '@/pages/warning/strategy/components/ElasticsearchSettings/GroupBy';
-import Time from '@/pages/warning/strategy/components/ElasticsearchSettings/Time';
+import IndexSelect from '@/pages/alertRules/Form/Rule/Rule/Log/ElasticsearchSettings/IndexSelect';
+import Values from '@/pages/alertRules/Form/Rule/Rule/Log/ElasticsearchSettings/Values';
+import GroupBy from '@/pages/alertRules/Form/Rule/Rule/Log/ElasticsearchSettings/GroupBy';
+import Time from '@/pages/alertRules/Form/Rule/Rule/Log/ElasticsearchSettings/Time';
 
 const alphabet = 'ABCDEFGHIGKLMNOPQRSTUVWXYZ'.split('');
 
 export default function Prometheus({ chartForm }) {
+  const { t } = useTranslation('dashboard');
+
   return (
     <Form.List name='targets'>
       {(fields, { add, remove }, { errors }) => {
@@ -46,10 +49,16 @@ export default function Prometheus({ chartForm }) {
                     <Form.Item noStyle {...field} name={[field.name, 'refId']} hidden />
                     <Row gutter={10}>
                       <Col span={12}>
-                        <Form.Item shouldUpdate={(prevValues, curValues) => _.isEqual(prevValues.datasourceName, curValues.datasourceName)} noStyle>
+                        <Form.Item shouldUpdate={(prevValues, curValues) => _.isEqual(prevValues.datasourceValue, curValues.datasourceValue)} noStyle>
                           {({ getFieldValue }) => {
-                            const datasourceName = getFieldValue('datasourceName') ? [getFieldValue('datasourceName')] : [];
-                            return <IndexSelect prefixField={field} prefixName={[field.name]} cate={getFieldValue('datasourceCate')} cluster={datasourceName} />;
+                            return (
+                              <IndexSelect
+                                prefixField={field}
+                                prefixName={[field.name]}
+                                cate={getFieldValue('datasourceCate')}
+                                datasourceValue={getFieldValue('datasourceValue')}
+                              />
+                            );
                           }}
                         </Form.Item>
                       </Col>
@@ -57,7 +66,7 @@ export default function Prometheus({ chartForm }) {
                         <Form.Item
                           label={
                             <span>
-                              过滤条件{' '}
+                              {t('datasource:es.filter')}{' '}
                               <a href='https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax ' target='_blank'>
                                 <QuestionCircleOutlined />
                               </a>
@@ -72,20 +81,19 @@ export default function Prometheus({ chartForm }) {
                     </Row>
                     <Form.Item
                       shouldUpdate={(prevValues, curValues) => {
-                        return !_.isEqual(prevValues.datasourceName, curValues.datasourceName);
+                        return !_.isEqual(prevValues.datasourceValue, curValues.datasourceValue);
                       }}
                       noStyle
                     >
                       {({ getFieldValue }) => {
-                        const datasourceName = getFieldValue('datasourceName') ? [getFieldValue('datasourceName')] : [];
+                        const datasourceValue = getFieldValue('datasourceValue');
                         return (
                           <>
                             <Values
                               prefixField={field}
                               prefixFields={['targets']}
                               prefixNameField={[field.name]}
-                              cate={getFieldValue('datasourceCate')}
-                              cluster={datasourceName}
+                              datasourceValue={datasourceValue}
                               index={getFieldValue([...prefixName, 'query', 'index'])}
                               valueRefVisible={false}
                             />
@@ -105,11 +113,10 @@ export default function Prometheus({ chartForm }) {
                                 }
                                 return (
                                   <GroupBy
+                                    parentNames={['targets']}
                                     prefixField={field}
-                                    prefixFields={['targets']}
-                                    prefixNameField={[field.name, 'query']}
-                                    cate={getFieldValue('datasourceCate')}
-                                    cluster={datasourceName}
+                                    prefixFieldNames={[field.name, 'query']}
+                                    datasourceValue={datasourceValue}
                                     index={getFieldValue([...prefixName, 'query', 'index'])}
                                   />
                                 );
@@ -134,12 +141,12 @@ export default function Prometheus({ chartForm }) {
                           return (
                             <Row gutter={10}>
                               <Col span={12}>
-                                <Form.Item label='日期字段' {...field} name={[field.name, 'query', 'date_field']}>
-                                  <Input placeholder='日期字段 key' />
+                                <Form.Item label={t('datasource:es.date_field')} {...field} name={[field.name, 'query', 'date_field']}>
+                                  <Input />
                                 </Form.Item>
                               </Col>
                               <Col span={12}>
-                                <Form.Item label='日志条数' {...field} name={[field.name, 'query', 'limit']}>
+                                <Form.Item label={t('datasource:es.raw.limit')} {...field} name={[field.name, 'query', 'limit']}>
                                   <InputNumber style={{ width: '100%' }} />
                                 </Form.Item>
                               </Col>

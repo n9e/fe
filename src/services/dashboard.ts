@@ -14,11 +14,10 @@
  * limitations under the License.
  *
  */
+import _ from 'lodash';
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
-import { N9EAPI } from '../../config/constant';
 
-interface DashboardQuery {}
 // 大盘列表
 export const getDashboard = function () {
   return request(`/api/n9e/dashboards`, {
@@ -199,53 +198,38 @@ export const getTemplateContent = function (type: 'alert_rule' | 'dashboard', na
   });
 };
 
-export const getLabelNames = function (data, datasourceValue: string) {
-  return request(`/api/n9e/prometheus/api/v1/labels`, {
+export const getLabelNames = function (data, datasourceValue: number) {
+  return request(`/api/n9e/proxy/${datasourceValue}/api/v1/labels`, {
     method: RequestMethod.Get,
     params: { ...data },
-    headers: {
-      'X-Cluster': datasourceValue,
-    },
   });
 };
 
-export const getLabelValues = function (label, data, datasourceValue: string) {
-  return request(`/api/n9e/prometheus/api/v1/label/${label}/values`, {
+export const getLabelValues = function (label, data, datasourceValue: number) {
+  return request(`/api/n9e/proxy/${datasourceValue}/api/v1/label/${label}/values`, {
     method: RequestMethod.Get,
     params: { ...data },
-    headers: {
-      'X-Cluster': datasourceValue,
-    },
   });
 };
 
-export const getMetricSeries = function (data, datasourceValue: string) {
-  return request(`/api/n9e/prometheus/api/v1/series`, {
+export const getMetricSeries = function (data, datasourceValue: number) {
+  return request(`/api/n9e/proxy/${datasourceValue}/api/v1/series`, {
     method: RequestMethod.Get,
     params: { ...data },
-    headers: {
-      'X-Cluster': datasourceValue,
-    },
   });
 };
 
-export const getMetric = function (data = {}, datasourceValue: string) {
-  return request(`/api/n9e/prometheus/api/v1/label/__name__/values`, {
+export const getMetric = function (data = {}, datasourceValue: number) {
+  return request(`/api/n9e/proxy/${datasourceValue}/api/v1/label/__name__/values`, {
     method: RequestMethod.Get,
     params: { ...data },
-    headers: {
-      'X-Cluster': datasourceValue,
-    },
   });
 };
 
-export const getQueryResult = function (data, datasourceValue: string) {
-  return request(`/api/n9e/prometheus/api/v1/query`, {
+export const getQueryResult = function (data, datasourceValue: number) {
+  return request(`/api/n9e/proxy/${datasourceValue}/api/v1/query`, {
     method: RequestMethod.Get,
     params: { ...data },
-    headers: {
-      'X-Cluster': datasourceValue,
-    },
   });
 };
 
@@ -270,11 +254,15 @@ export const migrateDashboard = function (id: number, data: { name: string; tags
   });
 };
 
-//
-
-export const getESVariableResult = function (data: { cate: string; cluster: string; index: string; query: any }) {
-  return request('/api/n9e-plus/es-variable', {
+export function getESVariableResult(datasourceValue: number, index, requestBody) {
+  return request(`/api/n9e/proxy/${datasourceValue}/${index}/_search`, {
     method: RequestMethod.Post,
-    data,
-  }).then((res) => res.dat);
-};
+    data: JSON.stringify(requestBody),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  }).then((res) => {
+    const dat = _.map(_.get(res, 'aggregations.A.buckets'), 'key');
+    return dat;
+  });
+}

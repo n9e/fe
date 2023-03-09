@@ -58,7 +58,7 @@ export default function Stat(props: IProps) {
   const { values, series, themeMode } = props;
   const { custom, options, overrides } = values;
   const { showHeader, calc, aggrDimension, displayMode, columns, sortColumn, sortOrder, colorMode = 'value' } = custom;
-  const [calculatedValues, setCalculatedValues] = useState([]);
+  const [calculatedValues, setCalculatedValues] = useState<any[]>([]);
   const [sortObj, setSortObj] = useState({
     sortColumn,
     sortOrder,
@@ -144,7 +144,7 @@ export default function Stat(props: IProps) {
       title: 'name',
       dataIndex: 'name',
       key: 'name',
-      width: _.get(size, 'width') - 200,
+      width: size?.width! - 200,
       sorter: (a, b) => {
         return localeCompare(a.name, b.name);
       },
@@ -189,13 +189,14 @@ export default function Stat(props: IProps) {
   ];
 
   if (displayMode === 'labelsOfSeriesToRows') {
-    const columnsKeys = _.isEmpty(columns) ? _.concat(getColumnsKeys(calculatedValues), 'value') : columns;
+    const allColumns = _.concat(getColumnsKeys(calculatedValues), 'value');
+    const columnsKeys: any[] = _.isEmpty(columns) ? _.concat(getColumnsKeys(calculatedValues), 'value') : columns;
     tableColumns = _.map(columnsKeys, (key, idx) => {
       return {
         title: key,
         dataIndex: key,
         key: key,
-        width: idx < columnsKeys.length - 1 ? _.get(size, 'width') / columnsKeys.length : undefined,
+        width: idx < columnsKeys.length - 1 ? size?.width! / columnsKeys.length : undefined,
         sorter: (a, b) => {
           if (key === 'value') {
             return a.stat - b.stat;
@@ -245,7 +246,7 @@ export default function Stat(props: IProps) {
         title: aggrDimension,
         dataIndex: aggrDimension,
         key: aggrDimension,
-        width: _.get(size, 'width') / (groupNames.length + 1),
+        width: size?.width! / (groupNames.length + 1),
         sorter: (a, b) => {
           return localeCompare(a[aggrDimension], b[aggrDimension]);
         },
@@ -262,7 +263,7 @@ export default function Stat(props: IProps) {
         title: result[name]?.name,
         dataIndex: name,
         key: name,
-        width: idx < groupNames.length - 1 ? _.get(size, 'width') / (groupNames.length + 1) : undefined,
+        width: idx < groupNames.length - 1 ? size?.width! / (groupNames.length + 1) : undefined,
         sorter: (a, b) => {
           return _.get(a[name], 'stat') - _.get(b[name], 'stat');
         },
@@ -307,8 +308,8 @@ export default function Stat(props: IProps) {
     tableColumns = transformColumns(tableColumns, values.transformations);
   }
 
-  const headerHeight = showHeader ? 40 : 0;
-  const height = _.get(size, 'height') - headerHeight;
+  const headerHeight = showHeader ? 44 : 0;
+  const height = size?.height! - headerHeight;
   const realHeight = isNaN(height) ? 0 : height;
 
   const { components, resizableColumns, tableWidth, resetColumns } = useAntdResizableHeader({
@@ -320,6 +321,7 @@ export default function Stat(props: IProps) {
       <div className='renderer-table-container-box'>
         <Table
           rowKey='id'
+          size='small'
           getPopupContainer={() => document.body}
           showSorterTooltip={false}
           showHeader={showHeader}

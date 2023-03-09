@@ -59,8 +59,8 @@ export default function AlgoGraph({ rid, tags, range, step }) {
 
       newSeries.push({
         name: 'lower_upper_bound',
-        data: _.map(lower.data, (dataItem, idx) => {
-          return [...dataItem, upper.data[idx][1]];
+        data: _.map(lower?.data, (dataItem, idx) => {
+          return [...dataItem, upper?.data[idx][1]];
         }),
         color: '#ccc',
         opacity: 0.5,

@@ -1,29 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Select } from 'antd';
+import { Select } from 'antd';
 import { CaretDownOutlined } from '@ant-design/icons';
-import { getCommonClusters, getCommonESClusters } from '@/services/common';
+import { getDatasourceList } from '@/services/common';
 
 export default function index({ cate, onClusterChange }) {
-  const [clusterList, setClusterList] = useState([]);
+  const [datasourceList, setDatasourceList] = useState<{ name: string; id: number }[]>([]);
 
   useEffect(() => {
-    if (cate === 'elasticsearch') {
-      getCommonESClusters()
-        .then(({ dat }) => {
-          setClusterList(dat);
-        })
-        .catch(() => {
-          setClusterList([]);
-        });
-    } else {
-      getCommonClusters()
-        .then(({ dat }) => {
-          setClusterList(dat);
-        })
-        .catch(() => {
-          setClusterList([]);
-        });
-    }
+    getDatasourceList([cate])
+      .then((res) => {
+        setDatasourceList(res);
+      })
+      .catch(() => {
+        setDatasourceList([]);
+      });
   }, [cate]);
 
   return (
@@ -35,9 +25,9 @@ export default function index({ cate, onClusterChange }) {
       style={{ minWidth: 80, marginLeft: 8 }}
       dropdownMatchSelectWidth={false}
     >
-      {clusterList?.map((item) => (
-        <Select.Option value={item} key={item}>
-          {item}
+      {datasourceList?.map((item) => (
+        <Select.Option value={item.name} key={item.id}>
+          {item.name}
         </Select.Option>
       ))}
     </Select>

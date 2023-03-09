@@ -15,19 +15,18 @@
  *
  */
 import _ from 'lodash';
-import moment from 'moment';
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
-import { IRawTimeRange, parseRange, timeRangeUnix } from '@/components/TimeRangePicker';
+import { IRawTimeRange, timeRangeUnix } from '@/components/TimeRangePicker';
 
-export const getLabelValues = function (label: string, range: IRawTimeRange, match?: string) {
+export const getLabelValues = function (datasourceValue: number, label: string, range: IRawTimeRange, match?: string) {
   const params = {
     ...timeRangeUnix(range),
   };
   if (match) {
     params['match[]'] = match;
   }
-  return request(`/api/n9e/prometheus/api/v1/label/${label}/values`, {
+  return request(`/api/n9e/proxy/${datasourceValue}/api/v1/label/${label}/values`, {
     method: RequestMethod.Get,
     params,
   }).then((res) => {
@@ -35,14 +34,14 @@ export const getLabelValues = function (label: string, range: IRawTimeRange, mat
   });
 };
 
-export const getLabels = function (match: string, range: IRawTimeRange) {
+export const getLabels = function (datasourceValue: number, match: string, range: IRawTimeRange) {
   const params = {
     ...timeRangeUnix(range),
   };
   if (match) {
     params['match[]'] = match;
   }
-  return request(`/api/n9e/prometheus/api/v1/labels`, {
+  return request(`/api/n9e/proxy/${datasourceValue}/api/v1/labels`, {
     method: RequestMethod.Get,
     params,
   }).then((res) => {
@@ -50,8 +49,8 @@ export const getLabels = function (match: string, range: IRawTimeRange) {
   });
 };
 
-export const getMetricValues = function (match: string, range: IRawTimeRange) {
-  return request('/api/n9e/prometheus/api/v1/label/__name__/values', {
+export const getMetricValues = function (datasourceValue: number, match: string, range: IRawTimeRange) {
+  return request(`/api/n9e/proxy/${datasourceValue}/api/v1/label/__name__/values`, {
     method: RequestMethod.Get,
     params: {
       ...timeRangeUnix(range),
@@ -106,16 +105,19 @@ export const getExprs = (params) => {
   return exprs;
 };
 
-export const getQueryRange = function (params: {
-  metric: string;
-  match: string;
-  range: IRawTimeRange;
-  step?: number;
-  calcFunc: string;
-  comparison: string[];
-  aggrFunc: string;
-  aggrGroups: string[];
-}) {
+export const getQueryRange = function (
+  datasourceValue: number,
+  params: {
+    metric: string;
+    match: string;
+    range: IRawTimeRange;
+    step?: number;
+    calcFunc: string;
+    comparison: string[];
+    aggrFunc: string;
+    aggrGroups: string[];
+  },
+) {
   const { metric, match, range, step, calcFunc, comparison, aggrFunc, aggrGroups } = params;
   let { start, end } = timeRangeUnix(range);
   let _step = step;
@@ -129,7 +131,7 @@ export const getQueryRange = function (params: {
     aggrGroups,
   });
   const requests = _.map(exprs, (expr) => {
-    return request('/api/n9e/prometheus/api/v1/query_range', {
+    return request(`/api/n9e/proxy/${datasourceValue}/api/v1/query_range`, {
       method: RequestMethod.Get,
       params: {
         start: start - (start % _step!),

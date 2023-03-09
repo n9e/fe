@@ -7,7 +7,7 @@ import { PromVisualQueryBinary, PromVisualQuery } from '../types';
 
 interface IProps {
   nestedQuery: PromVisualQueryBinary<PromVisualQuery>;
-  datasourceValue: string;
+  datasourceValue: number;
   params: {
     start: number;
     end: number;

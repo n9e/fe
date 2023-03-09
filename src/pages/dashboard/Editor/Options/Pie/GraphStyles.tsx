@@ -15,26 +15,28 @@
  *
  */
 import React from 'react';
-import { Form, Radio, Select, Row, Col, InputNumber, Switch } from 'antd';
+import { Form, Select, Row, Col, InputNumber, Switch } from 'antd';
 import { CaretDownOutlined } from '@ant-design/icons';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { Panel } from '../../Components/Collapse';
 import { calcsOptions, legendPostion } from '../../config';
 
 export default function GraphStyles() {
+  const { t, i18n } = useTranslation('dashboard');
   const namePrefix = ['custom'];
 
   return (
-    <Panel header='图表样式'>
+    <Panel header={t('panel.custom.title')}>
       <>
         <Row gutter={10}>
           <Col span={12}>
-            <Form.Item label='取值计算' name={[...namePrefix, 'calc']}>
+            <Form.Item label={t('panel.custom.calc')} name={[...namePrefix, 'calc']}>
               <Select suffixIcon={<CaretDownOutlined />}>
                 {_.map(calcsOptions, (item, key) => {
                   return (
                     <Select.Option key={key} value={key}>
-                      {item.name}
+                      {i18n.language === 'en_US' ? key : item.name}
                     </Select.Option>
                   );
                 })}
@@ -42,7 +44,7 @@ export default function GraphStyles() {
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label='图例位置' name={[...namePrefix, 'legengPosition']}>
+            <Form.Item label={t('panel.custom.pie.legengPosition')} name={[...namePrefix, 'legengPosition']}>
               <Select suffixIcon={<CaretDownOutlined />}>
                 {legendPostion.map((item) => {
                   return (
@@ -55,17 +57,17 @@ export default function GraphStyles() {
             </Form.Item>
           </Col>
           <Col span={9}>
-            <Form.Item label='最多展示块数' name={[...namePrefix, 'max']} tooltip='超过的块数则合并展示为其他'>
+            <Form.Item label={t('panel.custom.pie.max')} name={[...namePrefix, 'max']} tooltip={t('panel.custom.pie.max_tip')}>
               <InputNumber style={{ width: '100%' }} />
             </Form.Item>
           </Col>
           <Col span={3}>
-            <Form.Item label='环图模式' name={[...namePrefix, 'donut']} valuePropName='checked'>
+            <Form.Item label={t('panel.custom.pie.donut')} name={[...namePrefix, 'donut']} valuePropName='checked'>
               <Switch />
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label='label是否包含名称' name={[...namePrefix, 'labelWithName']} valuePropName='checked'>
+            <Form.Item label={t('panel.custom.pie.labelWithName')} name={[...namePrefix, 'labelWithName']} valuePropName='checked'>
               <Switch />
             </Form.Item>
           </Col>

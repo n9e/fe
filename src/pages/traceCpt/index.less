@@ -1,0 +1,233 @@
+.tracing {
+  h2 {
+    margin-bottom: 0px;
+  }
+  &-search {
+    .ant-form-item {
+      margin-bottom: 8px;
+    }
+    .ellipse-when-overflow {
+      .ant-select-selection-item {
+        white-space: initial;
+      }
+    }
+    &-chart {
+      height: 200px;
+      border: 1px solid #e5e5e5;
+      border-bottom: none;
+      border-radius: 4px 4px 0 0;
+    }
+    &-result {
+      &--headerOverview {
+        background: #f6f6f6;
+        border: 1px solid #e5e5e5;
+        border-radius: 0 0 4px 4px;
+        height: 52px;
+        line-height: 52px;
+        padding: 0 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      &-item {
+        background: #f6f6f6;
+        border: 1px solid #e5e5e5;
+        border-radius: 4px 4px 0 0;
+        height: 112px;
+        border: 1px solid #e5e5e5;
+        margin-top: 16px;
+        &-title {
+          height: 36px;
+          line-height: 36px;
+          display: flex;
+          justify-content: space-between;
+          position: relative;
+          .duration-bar {
+            position: absolute;
+            background-color: #ebe8f2;
+            height: 100%;
+          }
+          .label {
+            font-size: 14px;
+            font-weight: bold;
+          }
+          .duration {
+            z-index: 1;
+            margin-right: 16px;
+          }
+        }
+        &-content {
+          border-top: 1px solid #e5e5e5;
+          border-bottom: 1px solid #e5e5e5;
+          background: #fff;
+          height: 76px;
+          padding: 16px;
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          .service-tag {
+            border-left-width: 6px;
+          }
+        }
+      }
+    }
+  }
+  &-detail {
+    border: 1px solid #dedede;
+    &-header {
+      .title {
+        background: #f6f6f6;
+        border-bottom: 1px solid #dedede;
+        border-radius: 2px 2px 0 0;
+        height: 36px;
+        line-height: 36px;
+        padding-left: 16px;
+        display: flex;
+        align-items: center;
+      }
+    }
+  }
+}
+
+.GraphTick {
+  stroke: #aaa;
+  stroke-width: 1px;
+}
+
+.Scrubber--handleExpansion {
+  cursor: col-resize;
+  fill-opacity: 0;
+  fill: #44f;
+}
+
+.Scrubber.isDragging .Scrubber--handleExpansion,
+.Scrubber--handles:hover > .Scrubber--handleExpansion {
+  fill-opacity: 1;
+}
+
+.Scrubber--handle {
+  cursor: col-resize;
+  fill: #555;
+}
+
+.Scrubber.isDragging .Scrubber--handle,
+.Scrubber--handles:hover > .Scrubber--handle {
+  fill: #44f;
+}
+
+.Scrubber--line {
+  pointer-events: none;
+  stroke: #555;
+}
+
+.Scrubber.isDragging > .Scrubber--line,
+.Scrubber--handles:hover + .Scrubber--line {
+  stroke: #44f;
+}
+
+.LabeledList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.LabeledList--item {
+  display: inline-block;
+}
+
+.LabeledList--label {
+  color: #999;
+  margin-right: 0.25rem;
+}
+
+.CanvasSpanGraph {
+  background: #fafafa;
+  height: 60px;
+  position: absolute;
+  width: 100%;
+}
+.TickLabels--label {
+  color: #717171;
+  position: absolute;
+  user-select: none;
+}
+.TickLabels {
+  position: relative;
+  height: 1rem;
+}
+.TimelineHeaderRow {
+  background: #ececec;
+  border-bottom: 1px solid #ccc;
+  height: 38px;
+  line-height: 38px;
+  width: 100%;
+  position: relative;
+  z-index: 2;
+}
+
+.TimelineHeaderRow--title {
+  flex: 1;
+  overflow: hidden;
+  margin: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-left: 11px;
+}
+
+.Ticks {
+  pointer-events: none;
+}
+
+.Ticks--tick {
+  position: absolute;
+  height: 100%;
+  width: 1px;
+  background: #d8d8d8;
+}
+
+.Ticks--tick:last-child {
+  width: 0;
+}
+
+.Ticks--tickLabel {
+  left: 0.25rem;
+  position: absolute;
+}
+
+.Ticks--tickLabel.isEndAnchor {
+  left: initial;
+  right: 0.25rem;
+}
+
+.ub-relative {
+  position: relative;
+}
+.flex-row {
+  display: flex;
+  flex: 0 1 auto;
+  flex-direction: row;
+}
+
+.VirtualizedTraceView--rowsWrapper {
+  width: 100%;
+}
+
+.VirtualizedTraceView--row {
+  width: 100%;
+}
+
+.u-width-100 {
+  width: 100%;
+}
+
+.ub-flex {
+  display: flex;
+}
+.ub-items-center {
+  align-items: center;
+}
+.ub-flex-auto {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+}

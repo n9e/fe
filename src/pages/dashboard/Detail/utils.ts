@@ -1,0 +1,26 @@
+import queryString from 'query-string';
+import _ from 'lodash';
+
+export const getLocalDatasourceValue = (search: string) => {
+  const locationQuery = queryString.parse(search);
+  if (_.get(locationQuery, '__datasourceValue_prometheus')) {
+    localStorage.setItem('datasourceValue_prometheus', _.toString(_.get(locationQuery, '__datasourceValue_prometheus')));
+  }
+  const localDatasourceValue = localStorage.getItem('datasourceValue_prometheus');
+  if (localDatasourceValue) {
+    return _.toNumber(localDatasourceValue);
+  }
+  return localDatasourceValue;
+};
+
+/**
+ * 获取数据源值，v6 开始使用数据源 ID，v5 使用数据源名称
+ * 这里需要把数据源名称转换为数据源 ID
+ */
+export const getDatasourceValue = (dashboardConfigs, datasources) => {
+  if (dashboardConfigs.datasourceValue && dashboardConfigs.version === '2.0.0') {
+    console.warn('v6 版本的监控大盘将不再支持 v5 版本的数据源');
+    dashboardConfigs.datasourceValue = _.find(datasources, { name: dashboardConfigs.datasourceValue })?.id;
+  }
+  return dashboardConfigs.datasourceValue;
+};

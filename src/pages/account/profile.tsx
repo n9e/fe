@@ -16,19 +16,20 @@
  */
 import React from 'react';
 import { Tabs } from 'antd';
-import ChangePassword from './changePassword';
-import Info from './info';
-import SecretKey from './secretKey';
-import './profile.less';
-import PageLayout from '@/components/pageLayout';
 import { useParams, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import PageLayout from '@/components/pageLayout';
+import ChangePassword from './changePassword';
+import Info from './info';
+import './profile.less';
+import './locale';
+
 const { TabPane } = Tabs;
 interface Param {
   tab: string;
 }
 export default function Profile() {
-  const { t } = useTranslation();
+  const { t } = useTranslation('account');
   const { tab } = useParams<Param>();
   const history = useHistory();
 
@@ -37,17 +38,14 @@ export default function Profile() {
   };
 
   return (
-    <PageLayout title={t('个人中心')} hideCluster>
+    <PageLayout title={t('title')}>
       <Tabs activeKey={tab} className='profile' onChange={handleChange}>
-        <TabPane tab={t('personalInfo')} key='info'>
+        <TabPane tab={t('profile.title')} key='info'>
           <Info />
         </TabPane>
-        <TabPane tab={t('修改密码')} key='pwd'>
+        <TabPane tab={t('password.title')} key='pwd'>
           <ChangePassword />
         </TabPane>
-        {/* <TabPane tab={t('秘钥管理')} key='secret'>
-          <SecretKey />
-        </TabPane> */}
       </Tabs>
     </PageLayout>
   );

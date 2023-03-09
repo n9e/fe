@@ -15,11 +15,10 @@
  *
  */
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Select, Col, Button, Row, message } from 'antd';
-const { Option } = Select;
-const { TextArea } = Input;
+import { Form, Input, Select, Col, Row } from 'antd';
 import { MinusCircleOutlined, CaretDownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+const { Option } = Select;
 interface Itag {
   field: any;
   remove: Function;
@@ -27,7 +26,7 @@ interface Itag {
 }
 
 const TagItem: React.FC<Itag> = ({ field, remove, form }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('alertMutes');
   const [valuePlaceholder, setValuePlaceholder] = useState<string>('');
   const [funcCur, setfuncCur] = useState('==');
 
@@ -39,9 +38,9 @@ const TagItem: React.FC<Itag> = ({ field, remove, form }) => {
   const funcChange = (val) => {
     let text = '';
     if (val === 'in') {
-      text = '可以输入多个值，用回车分割';
+      text = t('tag.value.placeholder1');
     } else if (val === '=~') {
-      text = '请输入正则表达式匹配标签value';
+      text = t('tag.value.placeholder2');
     }
     setfuncCur(val);
     setValuePlaceholder(text);
@@ -50,8 +49,8 @@ const TagItem: React.FC<Itag> = ({ field, remove, form }) => {
     <>
       <Row gutter={[10, 10]} style={{ marginBottom: '10px' }}>
         <Col span={5}>
-          <Form.Item style={{ marginBottom: 0 }} name={[field.name, 'key']} fieldKey={[field.name, 'key']} rules={[{ required: true, message: t('key不能为空') }]}>
-            <Input placeholder={t('请输入屏蔽事件标签key')} />
+          <Form.Item style={{ marginBottom: 0 }} name={[field.name, 'key']} fieldKey={[field.name, 'key']} rules={[{ required: true, message: t('tag.key.msg') }]}>
+            <Input />
           </Form.Item>
         </Col>
         <Col span={3}>
@@ -67,7 +66,7 @@ const TagItem: React.FC<Itag> = ({ field, remove, form }) => {
           </Form.Item>
         </Col>
         <Col span={15}>
-          <Form.Item style={{ marginBottom: 0 }} name={[field.name, 'value']} fieldKey={[field.name, 'value']} rules={[{ required: true, message: t('value不能为空') }]}>
+          <Form.Item style={{ marginBottom: 0 }} name={[field.name, 'value']} fieldKey={[field.name, 'value']} rules={[{ required: true, message: t('tag.value.msg') }]}>
             {['not in', 'in'].includes(funcCur) ? (
               <Select mode='tags' open={false} style={{ width: '100%' }} placeholder={t(valuePlaceholder)} tokenSeparators={[' ']}></Select>
             ) : (

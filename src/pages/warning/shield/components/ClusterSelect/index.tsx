@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Select } from 'antd';
 import { CaretDownOutlined } from '@ant-design/icons';
-import { getCommonClusters, getCommonESClusters, getCommonSLSClusters } from '@/services/common';
+import { getDatasourceList } from '@/services/common';
 export const ClusterAll = '$all';
 
 export default function index({ form, cate }) {
-  const [clusterList, setClusterList] = useState([]);
+  const [datasourceList, setDatasourceList] = useState<{ name: string; id: number }[]>([]);
   const handleClusterChange = (v: string[]) => {
     if (v.includes(ClusterAll)) {
       form.setFieldsValue({ cluster: [ClusterAll] });
@@ -13,33 +13,13 @@ export default function index({ form, cate }) {
   };
 
   useEffect(() => {
-    if (cate === 'elasticsearch') {
-      getCommonESClusters()
-        .then(({ dat }) => {
-          setClusterList(dat);
-        })
-        .catch(() => {
-          setClusterList([]);
-        });
-    }
-    if (cate === 'aliyun-sls') {
-      getCommonSLSClusters()
-        .then(({ dat }) => {
-          setClusterList(dat);
-        })
-        .catch(() => {
-          setClusterList([]);
-        });
-    }
-    if (cate === 'prometheus') {
-      getCommonClusters()
-        .then(({ dat }) => {
-          setClusterList(dat);
-        })
-        .catch(() => {
-          setClusterList([]);
-        });
-    }
+    getDatasourceList([cate])
+      .then((res) => {
+        setDatasourceList(res);
+      })
+      .catch(() => {
+        setDatasourceList([]);
+      });
   }, [cate]);
 
   return (
@@ -57,9 +37,9 @@ export default function index({ form, cate }) {
         <Select.Option value={ClusterAll} key={ClusterAll}>
           {ClusterAll}
         </Select.Option>
-        {clusterList?.map((item) => (
-          <Select.Option value={item} key={item}>
-            {item}
+        {datasourceList?.map((item) => (
+          <Select.Option value={item.name} key={item.id}>
+            {item.name}
           </Select.Option>
         ))}
       </Select>

@@ -14,28 +14,24 @@
  * limitations under the License.
  *
  */
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import semver from 'semver';
-import { Button, Dropdown, Radio, Menu, Tooltip, Space } from 'antd';
-import { AreaChartOutlined, DownOutlined, FieldNumberOutlined, LineChartOutlined } from '@ant-design/icons';
+import { Space, Select, Alert } from 'antd';
+import { FieldNumberOutlined } from '@ant-design/icons';
 import { useParams } from 'react-router';
 import _ from 'lodash';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { GetTmpChartData } from '@/services/metric';
 import { TimeRangePickerWithRefresh, IRawTimeRange } from '@/components/TimeRangePicker';
 import Resolution from '@/components/Resolution';
-import Graph from '@/components/Graph';
-import { ChartType } from '@/components/D3Charts/src/interface';
-import { HighLevelConfigType } from '@/components/Graph/Graph/index';
-import { CommonStoreState } from '@/store/commonInterface';
-import { RootState } from '@/store/common';
+import { CommonStateContext } from '@/App';
 import Renderer from '../dashboard/Renderer/Renderer';
 import { getStepByTimeAndStep } from '../dashboard/utils';
+import './locale';
 import './index.less';
 
 export default function Chart() {
-  const { t } = useTranslation();
+  const { t } = useTranslation('shareChart');
   const { ids } =
     useParams<{
       ids: string;
@@ -44,7 +40,6 @@ export default function Chart() {
     Array<{
       ref: any;
       dataProps: any;
-      highLevelConfig: HighLevelConfigType;
     }>
   >([]);
   const [range, setRange] = useState<IRawTimeRange>({
@@ -52,9 +47,15 @@ export default function Chart() {
     end: 'now',
   });
   const [step, setStep] = useState<number | null>(null);
-  const [chartType, setChartType] = useState<ChartType>(ChartType.Line);
-  const { clusters } = useSelector<RootState, CommonStoreState>((state) => state.common);
-  const [curCluster, setCurCluster] = useState<string>('');
+  const { groupedDatasourceList } = useContext(CommonStateContext);
+  const clusters = groupedDatasourceList.prometheus || [];
+  const [curCluster, setCurCluster] = useState<number>();
+
+  useEffect(() => {
+    if (!curCluster && clusters[0]?.id) {
+      setCurCluster(clusters[0].id);
+    }
+  }, [clusters]);
 
   useEffect(() => {
     initChart();
@@ -68,32 +69,15 @@ export default function Chart() {
           return { ...JSON.parse(item.configs), ref: React.createRef() };
         });
       const curCluster = data[0].curCluster;
-      setChartType(data[0].dataProps.chartType || ChartType.Line);
       setStep(data[0].dataProps.step);
       setRange(data[0].dataProps.range);
       // TODO: 处理当前选中集群不在集群列表的情况
-      setCurCluster(curCluster);
-      localStorage.setItem('curCluster', curCluster);
+      if (curCluster) {
+        setCurCluster(_.toNumber(curCluster));
+      }
       setChartData(data);
     });
   };
-
-  const clusterMenu = (
-    <Menu selectedKeys={[curCluster]}>
-      {clusters.map((cluster) => (
-        <Menu.Item
-          key={cluster}
-          onClick={(_) => {
-            setCurCluster(cluster);
-            localStorage.setItem('curCluster', cluster);
-            chartData.forEach((item) => item.ref.current.refresh());
-          }}
-        >
-          {cluster}
-        </Menu.Item>
-      ))}
-    </Menu>
-  );
 
   return (
     <div className='chart-container'>
@@ -104,30 +88,22 @@ export default function Chart() {
             <div className='right'>
               <Space>
                 <div>
-                  <span>集群：</span>
-                  <Dropdown overlay={clusterMenu}>
-                    <Button>
-                      {curCluster} <DownOutlined />
-                    </Button>
-                  </Dropdown>
-                </div>
-                <TimeRangePickerWithRefresh refreshTooltip={`刷新间隔小于 step(${getStepByTimeAndStep(range, step)}s) 将不会更新数据`} onChange={setRange} value={range} />
-                <Resolution onChange={(v) => setStep(v)} initialValue={step} />
-                {!semver.valid(chartData[0].dataProps?.version) && (
-                  <Radio.Group
-                    options={[
-                      { label: <LineChartOutlined />, value: ChartType.Line },
-                      { label: <AreaChartOutlined />, value: ChartType.StackArea },
-                    ]}
-                    onChange={(e) => {
-                      e.preventDefault();
-                      setChartType(e.target.value);
+                  <span>{t('datasource.id')}：</span>
+                  <Select
+                    value={curCluster}
+                    onChange={(val) => {
+                      setCurCluster(val);
                     }}
-                    value={chartType}
-                    optionType='button'
-                    buttonStyle='solid'
-                  />
-                )}
+                  >
+                    {clusters.map((cluster) => (
+                      <Select.Option key={cluster.id} value={cluster.id}>
+                        {cluster.name}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </div>
+                <TimeRangePickerWithRefresh refreshTooltip={t('refresh_tip', { num: getStepByTimeAndStep(range, step) })} onChange={setRange} value={range} />
+                <Resolution onChange={(v) => setStep(v)} initialValue={step} />
               </Space>
             </div>
           </div>
@@ -146,36 +122,14 @@ export default function Chart() {
                           displayMode: 'table',
                         },
                       },
-                      datasourceName: item.dataProps?.datasourceName || curCluster,
+                      datasourceValue: item.dataProps?.datasourceName || curCluster,
                     })}
                     isPreview
                   />
                 </div>
               );
             }
-            const newItem = {
-              ...item.dataProps,
-              range,
-              step,
-              chartType,
-              title: (
-                <Tooltip
-                  placement='bottomLeft'
-                  title={() => (
-                    <div>
-                      {item.dataProps.promqls?.map((promql) => {
-                        return <div>{promql.current ? promql.current : promql}</div>;
-                      })}
-                    </div>
-                  )}
-                >
-                  <Button size='small' type='link'>
-                    promql 语句
-                  </Button>
-                </Tooltip>
-              ),
-            };
-            return <Graph ref={item.ref} key={index} data={{ ...newItem }} graphConfigInnerVisible={false} isShowShare={false} highLevelConfig={item.highLevelConfig || {}} />;
+            return <Alert type='warning' message='v6 版本不再支持 < v5.4.0 的配置，请重新生成临时图' />;
           })}
         </>
       ) : (

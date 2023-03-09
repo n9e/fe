@@ -5,7 +5,7 @@ import { getLabelValues } from '@/services/dashboard';
 
 interface IProps {
   label: string;
-  datasourceValue: string;
+  datasourceValue: number;
   params: {
     start: number;
     end: number;

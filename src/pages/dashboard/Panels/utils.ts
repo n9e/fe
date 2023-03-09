@@ -15,8 +15,7 @@
  *
  */
 import _ from 'lodash';
-import { IPanel } from '../types';
-import { JSONParse } from '../utils';
+import { IPanel, IDashboard } from '../types';
 
 export function buildLayout(panels: IPanel[]) {
   return _.map(panels, (item: IPanel) => {
@@ -82,7 +81,7 @@ export function getNextRow(panels: IPanel[], rowId: string): IPanel | undefined 
 
 export function getRowPanelsMaxY(panels: IPanel[], rowId: string) {
   const rowPanels = getRowPanels(panels, rowId);
-  const rowPanel = _.find(panels, { id: rowId });
+  const rowPanel = _.find(panels, { id: rowId })!;
   let maxY = rowPanel.layout.y + rowPanel.layout.h;
   _.forEach(rowPanels, (panel) => {
     if (panel.layout.y + panel.layout.h > maxY) {
@@ -112,7 +111,7 @@ export function getRowCollapsedPanels(panels: IPanel[], row: IPanel) {
       newPanels[panelIndex].layout.y += pushDownAmount;
     }
     newPanels = _.unionBy(newPanels, 'id');
-    const curRow = _.find(newPanels, { id: row.id });
+    const curRow = _.find(newPanels, { id: row.id })!;
     curRow.panels = [];
   }
   return newPanels;
@@ -124,7 +123,7 @@ export function getRowUnCollapsedPanels(panels: IPanel[], row: IPanel) {
     newPanels = _.filter(newPanels, (panel) => {
       return !_.find(curRowPanels, { id: panel.id });
     });
-    const curRow = _.find(newPanels, { id: row.id });
+    const curRow = _.find(newPanels, { id: row.id })!;
     curRow.panels = curRowPanels;
   }
   return newPanels;
@@ -141,7 +140,7 @@ export function handleRowToggle(collapsed, panels: IPanel[], row: IPanel): IPane
   } else {
     newPanels = getRowUnCollapsedPanels(newPanels, row);
   }
-  const curRow = _.find(newPanels, { id: row.id });
+  const curRow = _.find(newPanels, { id: row.id })!;
   curRow.collapsed = collapsed;
   return newPanels;
 }
@@ -216,8 +215,8 @@ export function updatePanelsInsertNewPanelToRow(panels: IPanel[], rowId: string,
   return _.concat(newPanel, newPanels);
 }
 
-export function panelsMergeToConfigs(configs: string | undefined, panels: any[]) {
-  const parsedConfigs = JSONParse(configs);
+export function panelsMergeToConfigs(configs: IDashboard, panels: any[]) {
+  const parsedConfigs = configs;
   parsedConfigs.panels = panels;
   return JSON.stringify(parsedConfigs);
 }

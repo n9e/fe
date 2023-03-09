@@ -71,7 +71,7 @@ export default function index(props: IProps) {
   const displayMode = options.legend?.displayMode || 'table';
   const placement = options.legend?.placement || 'bottom';
   const hasLegend = displayMode !== 'hidden';
-  const [legendData, setLegendData] = useState([]);
+  const [legendData, setLegendData] = useState<any[]>([]);
   const [isExpanded, setIsExpanded] = useState(false);
   let _chartHeight = hasLegend ? `calc(100% - ${legendEleSize?.height! + 16}px)` : '100%';
   let _tableHeight = hasLegend ? '30%' : '0px';

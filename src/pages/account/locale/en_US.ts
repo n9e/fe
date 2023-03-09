@@ -1,0 +1,32 @@
+const en_US = {
+  title: 'Profile',
+  save: 'Save',
+  password: {
+    name: 'Password',
+    title: 'Change password',
+    reset: 'Reset password',
+    resetSuccess: 'Password reset successfully',
+    old: 'Old password',
+    oldMsg: 'Please enter old password',
+    new: 'New password',
+    newMsg: 'Please enter new password',
+    confirm: 'Confirm new password',
+    confirmMsg: 'Please enter new password again',
+    changeSuccess: 'Password changed successfully',
+    notMatch: 'Password not match',
+  },
+  profile: {
+    title: 'Profile',
+    username: 'Username',
+    nickname: 'Nickname',
+    role: 'Role',
+    email: 'Email',
+    phone: 'Phone',
+    moreContact: 'More contact',
+    moreContactPlaceholder: 'Please select contact method',
+  },
+  editPicture: 'Edit',
+  pictureURL: 'URL',
+  pictureMsg: 'The address needs to start with http',
+};
+export default en_US;

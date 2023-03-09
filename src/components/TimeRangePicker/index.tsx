@@ -26,6 +26,10 @@ import { parseRange, parse, valueAsString, isMathString, timeRangeUnix, describe
 import { ITimeRangePickerProps } from './types';
 import { mapOptionToRelativeTimeRange, mapRelativeTimeRangeToOption } from './RelativeTimeRangePicker/utils';
 import RelativeTimeRangePicker from './RelativeTimeRangePicker';
+import AutoRefresh from './AutoRefresh';
+import './locale';
+
+export { AutoRefresh };
 
 export default function index(props: ITimeRangePickerProps) {
   const { localKey, dateFormat = 'YYYY-MM-DD HH:mm', onChange } = props;

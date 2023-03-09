@@ -14,57 +14,8 @@
  * limitations under the License.
  *
  */
-import React, { useState } from 'react';
-import { Collapse, Row } from 'antd';
-import moment from 'moment';
-import PromQueryBuilder from '@/components/PromQueryBuilder';
-import { PromQLInputWithBuilder } from '@/components/PromQLInput';
-
-const { Panel } = Collapse;
+import React from 'react';
 
 export default function Demo() {
-  const [query, setQuery] = useState({
-    labels: [
-      {
-        label: '',
-        value: '',
-        op: '=',
-      },
-    ] as any,
-    operations: [] as any,
-  });
-  const [promQL, setPromQL] = useState<string | undefined>();
-  return (
-    <div>
-      <Collapse defaultActiveKey={['1', '2']}>
-        <Panel header='Prom query builder' key='1'>
-          <Row style={{ marginBottom: 20 }}>
-            <PromQueryBuilder
-              datasourceValue='VM1'
-              params={{
-                start: moment().subtract(1, 'hours').unix(),
-                end: moment().unix(),
-              }}
-              value={query}
-              onChange={(val) => {
-                setQuery(val);
-              }}
-            />
-          </Row>
-        </Panel>
-        <Panel header='PromQL' key='2'>
-          <PromQLInputWithBuilder
-            url='/api/n9e/prometheus'
-            headers={{
-              'X-Cluster': localStorage.getItem('curCluster') || 'DEFAULT',
-              Authorization: `Bearer ${localStorage.getItem('access_token') || ''}`,
-            }}
-            cluster={localStorage.getItem('curCluster') || 'DEFAULT'}
-            value={promQL}
-            onChange={setPromQL}
-          />
-        </Panel>
-      </Collapse>
-    </div>
-  );
+  return null;
 }

@@ -18,6 +18,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import _ from 'lodash';
 import classNames from 'classnames';
 import { useInViewport } from 'ahooks';
+import { useTranslation } from 'react-i18next';
 import { Dropdown, Menu, Tooltip } from 'antd';
 import { InfoCircleOutlined, MoreOutlined, LinkOutlined, SettingOutlined, ShareAltOutlined, DeleteOutlined, CopyOutlined, SyncOutlined } from '@ant-design/icons';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
@@ -38,6 +39,7 @@ import { getStepByTimeAndStep } from '../../utils';
 import './style.less';
 
 interface IProps {
+  datasourceValue?: number; // 全局数据源，如 values.datasourceValue 未设置则用全局数据源
   themeMode?: 'dark';
   dashboardId: string;
   id?: string;
@@ -60,7 +62,8 @@ function replaceFieldWithVariable(dashboardId, value: string, variableConfig?: I
 }
 
 function index(props: IProps) {
-  const { themeMode, dashboardId, id, step, variableConfig, isPreview, onCloneClick, onShareClick, onEditClick, onDeleteClick } = props;
+  const { t } = useTranslation('dashboard');
+  const { datasourceValue, themeMode, dashboardId, id, step, variableConfig, isPreview, onCloneClick, onShareClick, onEditClick, onDeleteClick } = props;
   const [time, setTime] = useState(props.time);
   const [visible, setVisible] = useState(false);
   const values = _.cloneDeep(props.values);
@@ -76,7 +79,7 @@ function index(props: IProps) {
     variableConfig,
     inViewPort: isPreview || inViewPort,
     datasourceCate: values.datasourceCate || 'prometheus',
-    datasourceName: values.datasourceName,
+    datasourceValue: values.datasourceValue || datasourceValue,
     spanNulls: values.custom?.spanNulls,
   });
   const name = replaceFieldWithVariable(dashboardId, values.name, variableConfig);
@@ -178,10 +181,10 @@ function index(props: IProps) {
                         }}
                         key='0'
                       >
-                        <Tooltip title={`刷新间隔小于 step(${getStepByTimeAndStep(time, step)}s) 将不会更新数据`} placement='left'>
+                        <Tooltip title={t('refresh_tip', { num: getStepByTimeAndStep(time, step) })} placement='left'>
                           <div>
                             <SyncOutlined style={{ marginRight: 8 }} />
-                            刷新
+                            {t('refresh_btn')}
                           </div>
                         </Tooltip>
                       </Menu.Item>
@@ -193,7 +196,7 @@ function index(props: IProps) {
                         key='1'
                       >
                         <SettingOutlined style={{ marginRight: 8 }} />
-                        编辑
+                        {t('common:btn.edit')}
                       </Menu.Item>
                       <Menu.Item
                         onClick={() => {
@@ -203,7 +206,7 @@ function index(props: IProps) {
                         key='2'
                       >
                         <CopyOutlined style={{ marginRight: 8 }} />
-                        克隆
+                        {t('common:btn.clone')}
                       </Menu.Item>
                       <Menu.Item
                         onClick={() => {
@@ -213,7 +216,7 @@ function index(props: IProps) {
                         key='3'
                       >
                         <ShareAltOutlined style={{ marginRight: 8 }} />
-                        分享
+                        {t('share_btn')}
                       </Menu.Item>
                       <Menu.Item
                         onClick={() => {
@@ -223,7 +226,7 @@ function index(props: IProps) {
                         key='4'
                       >
                         <DeleteOutlined style={{ marginRight: 8 }} />
-                        删除
+                        {t('common:btn.delete')}
                       </Menu.Item>
                     </Menu>
                   }
@@ -236,7 +239,7 @@ function index(props: IProps) {
         </div>
         <div className='renderer-body' style={{ height: values.name ? `calc(100% - 47px)` : '100%' }}>
           {_.isEmpty(series) && values.type !== 'text' ? (
-            <div className='renderer-body-content-empty'>暂无数据</div>
+            <div className='renderer-body-content-empty'>No Data</div>
           ) : (
             <>{RendererCptMap[values.type] ? RendererCptMap[values.type]() : <div className='unknown-type'>{`无效的图表类型 ${values.type}`}</div>}</>
           )}

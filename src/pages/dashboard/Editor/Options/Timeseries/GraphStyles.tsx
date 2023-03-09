@@ -17,19 +17,21 @@
 import React from 'react';
 import { Form, Radio, Slider, Space, Select } from 'antd';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { Panel } from '../../Components/Collapse';
 
 export default function GraphStyles() {
+  const { t } = useTranslation('dashboard');
   const namePrefix = ['custom'];
 
   return (
-    <Panel header='图表样式'>
+    <Panel header={t('panel.custom.title')}>
       <>
         <Space>
-          <Form.Item label='绘制模式' name={[...namePrefix, 'drawStyle']}>
+          <Form.Item label={t('panel.custom.timeseries.drawStyle')} name={[...namePrefix, 'drawStyle']}>
             <Radio.Group buttonStyle='solid'>
-              <Radio.Button value='lines'>lines</Radio.Button>
-              <Radio.Button value='bars'>bars</Radio.Button>
+              <Radio.Button value='lines'>Lines</Radio.Button>
+              <Radio.Button value='bars'>Bars</Radio.Button>
             </Radio.Group>
           </Form.Item>
           <Form.Item noStyle shouldUpdate={(prevValues, curValues) => _.get(prevValues, [...namePrefix, 'drawStyle']) !== _.get(curValues, [...namePrefix, 'drawStyle'])}>
@@ -39,10 +41,10 @@ export default function GraphStyles() {
                 return (
                   <>
                     {drawStyle === 'lines' ? (
-                      <Form.Item label='线插值' name={[...namePrefix, 'lineInterpolation']}>
+                      <Form.Item label={t('panel.custom.timeseries.lineInterpolation')} name={[...namePrefix, 'lineInterpolation']}>
                         <Radio.Group buttonStyle='solid'>
-                          <Radio.Button value='linear'>linear</Radio.Button>
-                          <Radio.Button value='smooth'>smooth</Radio.Button>
+                          <Radio.Button value='linear'>Linear</Radio.Button>
+                          <Radio.Button value='smooth'>Smooth</Radio.Button>
                         </Radio.Group>
                       </Form.Item>
                     ) : null}
@@ -52,30 +54,30 @@ export default function GraphStyles() {
               return null;
             }}
           </Form.Item>
-          <Form.Item label='连接空值' name={[...namePrefix, 'spanNulls']} initialValue={false}>
+          <Form.Item label={t('panel.custom.timeseries.spanNulls')} name={[...namePrefix, 'spanNulls']} initialValue={false}>
             <Radio.Group buttonStyle='solid'>
-              <Radio.Button value={true}>开启</Radio.Button>
-              <Radio.Button value={false}>关闭</Radio.Button>
+              <Radio.Button value={true}>{t('panel.custom.timeseries.spanNulls_1')}</Radio.Button>
+              <Radio.Button value={false}>{t('panel.custom.timeseries.spanNulls_0')}</Radio.Button>
             </Radio.Group>
           </Form.Item>
         </Space>
-        <Form.Item label='曲线宽度' name={[...namePrefix, 'lineWidth']}>
+        <Form.Item label={t('panel.custom.timeseries.lineWidth')} name={[...namePrefix, 'lineWidth']}>
           <Slider min={0} max={10} step={1} />
         </Form.Item>
-        <Form.Item label='透明度' name={[...namePrefix, 'fillOpacity']}>
+        <Form.Item label={t('panel.custom.timeseries.fillOpacity')} name={[...namePrefix, 'fillOpacity']}>
           <Slider min={0} max={1} step={0.01} />
         </Form.Item>
         <Space>
-          <Form.Item label='渐变' name={[...namePrefix, 'gradientMode']}>
+          <Form.Item label={t('panel.custom.timeseries.gradientMode')} name={[...namePrefix, 'gradientMode']}>
             <Radio.Group buttonStyle='solid'>
-              <Radio.Button value='opacity'>开启</Radio.Button>
-              <Radio.Button value='none'>关闭</Radio.Button>
+              <Radio.Button value='opacity'>{t('panel.custom.timeseries.gradientMode_opacity')}</Radio.Button>
+              <Radio.Button value='none'>{t('panel.custom.timeseries.gradientMode_none')}</Radio.Button>
             </Radio.Group>
           </Form.Item>
-          <Form.Item label='堆叠' name={[...namePrefix, 'stack']}>
+          <Form.Item label={t('panel.custom.timeseries.stack')} name={[...namePrefix, 'stack']}>
             <Radio.Group buttonStyle='solid'>
-              <Radio.Button value='noraml'>开启</Radio.Button>
-              <Radio.Button value='off'>关闭</Radio.Button>
+              <Radio.Button value='noraml'>{t('panel.custom.timeseries.stack_noraml')}</Radio.Button>
+              <Radio.Button value='off'>{t('panel.custom.timeseries.stack_off')}</Radio.Button>
             </Radio.Group>
           </Form.Item>
 

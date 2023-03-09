@@ -36,7 +36,7 @@ export { PromQLInputWithBuilder } from './PromQLInputWithBuilder';
 const promqlExtension = new PromQLExtension();
 
 export interface CMExpressionInputProps {
-  url: string;
+  url?: string;
   readonly?: boolean;
   headers?: { [index: string]: string };
   value?: string;
@@ -45,11 +45,12 @@ export interface CMExpressionInputProps {
   validateTrigger?: string[];
   completeEnabled?: boolean;
   trigger?: ('onBlur' | 'onEnter')[]; // 触发 onChang 的事件
+  datasourceValue?: number;
 }
 
 const ExpressionInput = (
   {
-    url,
+    url = '/api/n9e/proxy',
     headers,
     value,
     onChange,
@@ -58,6 +59,7 @@ const ExpressionInput = (
     validateTrigger = ['onChange', 'onBlur'],
     completeEnabled = true,
     trigger = ['onBlur', 'onEnter'],
+    datasourceValue,
   }: CMExpressionInputProps,
   ref,
 ) => {
@@ -78,7 +80,7 @@ const ExpressionInput = (
         completeEnabled
           ? {
               remote: {
-                url,
+                url: `${url}/${datasourceValue}`,
                 fetchFn: (resource, options = {}) => {
                   const params = options.body?.toString();
                   const search = params ? `?${params}` : '';

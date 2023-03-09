@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { Button, Spin, Divider, Card, Breadcrumb } from 'antd';
 import { RollbackOutlined } from '@ant-design/icons';
@@ -24,16 +24,14 @@ import { useTranslation } from 'react-i18next';
 import PageLayout from '@/components/pageLayout';
 import request from '@/utils/request';
 import api from '@/utils/api';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store/common';
-import { CommonStoreState } from '@/store/commonInterface';
 import Editor from './editor';
 import { Tpl } from './interface';
+import { CommonStateContext } from '@/App';
 
 const Detail = (props: any) => {
   const history = useHistory();
   const id = _.get(props, 'match.params.id');
-  const { curBusiItem } = useSelector<RootState, CommonStoreState>((state) => state.common);
+  const { curBusiId } = useContext(CommonStateContext);
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState({} as Tpl);
@@ -41,7 +39,7 @@ const Detail = (props: any) => {
   useEffect(() => {
     if (id) {
       setLoading(true);
-      request(`${api.tasktpl(curBusiItem.id)}/${id}`)
+      request(`${api.tasktpl(curBusiId)}/${id}`)
         .then((data) => {
           const { dat } = data;
           setData({
@@ -54,20 +52,19 @@ const Detail = (props: any) => {
           setLoading(false);
         });
     }
-  }, [id, curBusiItem.id]);
+  }, [id, curBusiId]);
 
   return (
     <PageLayout
-      hideCluster
       title={
         <>
           <RollbackOutlined className='back' onClick={() => history.push('/job-tpls')} />
-          自愈脚本
+          {t('tpl')}
         </>
       }
     >
       <div style={{ padding: 10 }}>
-        <Card title='自愈脚本详情'>
+        <Card title={t('common:btn.detail')}>
           <Spin spinning={loading}>
             <div className='job-task-table'>
               <div className='ant-table ant-table-default ant-table-bordered'>

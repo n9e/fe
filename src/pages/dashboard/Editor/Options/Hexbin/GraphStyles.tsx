@@ -18,51 +18,50 @@ import React from 'react';
 import { Form, Radio, Select, Row, Col, InputNumber, Switch } from 'antd';
 import { CaretDownOutlined } from '@ant-design/icons';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { Panel } from '../../Components/Collapse';
 import { calcsOptions } from '../../config';
-import ColorRangeMenu from '../../../Components/ColorRangeMenu';
 import { colors } from '../../../Components/ColorRangeMenu/config';
 import '../../../Components/ColorRangeMenu/style.less';
 
-const colSpans = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-
 export default function GraphStyles() {
+  const { t, i18n } = useTranslation('dashboard');
   const namePrefix = ['custom'];
 
   return (
-    <Panel header='图表样式'>
+    <Panel header={t('panel.custom.title')}>
       <>
         <Row gutter={10}>
           <Col span={12}>
-            <Form.Item label='显示内容' name={[...namePrefix, 'textMode']}>
+            <Form.Item label={t('panel.custom.textMode')} name={[...namePrefix, 'textMode']}>
               <Radio.Group buttonStyle='solid'>
-                <Radio.Button value='valueAndName'>名称和值</Radio.Button>
-                <Radio.Button value='name'>名称</Radio.Button>
-                <Radio.Button value='value'>值</Radio.Button>
+                <Radio.Button value='valueAndName'>{t('panel.custom.valueAndName')}</Radio.Button>
+                <Radio.Button value='name'>{t('panel.custom.name')}</Radio.Button>
+                <Radio.Button value='value'>{t('panel.custom.value')}</Radio.Button>
               </Radio.Group>
             </Form.Item>
           </Col>
         </Row>
         <Row gutter={10}>
-          <Col span={10}>
-            <Form.Item label='取值计算' name={[...namePrefix, 'calc']}>
+          <Col span={8}>
+            <Form.Item label={t('panel.custom.calc')} name={[...namePrefix, 'calc']}>
               <Select suffixIcon={<CaretDownOutlined />}>
                 {_.map(calcsOptions, (item, key) => {
                   return (
                     <Select.Option key={key} value={key}>
-                      {item.name}
+                      {i18n.language === 'en_US' ? key : item.name}
                     </Select.Option>
                   );
                 })}
               </Select>
             </Form.Item>
           </Col>
-          <Col span={10}>
-            <Form.Item label='颜色' name={[...namePrefix, 'colorRange']}>
+          <Col span={8}>
+            <Form.Item label={t('panel.custom.colorRange')} name={[...namePrefix, 'colorRange']}>
               <Select suffixIcon={<CaretDownOutlined />} dropdownClassName='color-scales' optionLabelProp='label'>
                 {_.map(colors, (item) => {
                   return (
-                    <Select.Option key={item.value} label={item.label} value={_.join(item.value, ',')}>
+                    <Select.Option key={item.label} label={item.label} value={_.join(item.value, ',')}>
                       <span className='color-scales-menu-colors'>
                         {_.map(item.value, (color) => {
                           return (
@@ -82,15 +81,15 @@ export default function GraphStyles() {
               </Select>
             </Form.Item>
           </Col>
-          <Col span={4}>
-            <Form.Item label='反转颜色' name={[...namePrefix, 'reverseColorOrder']} valuePropName='checked'>
+          <Col span={8}>
+            <Form.Item label={t('panel.custom.reverseColorOrder')} name={[...namePrefix, 'reverseColorOrder']} valuePropName='checked'>
               <Switch />
             </Form.Item>
           </Col>
         </Row>
         <Row gutter={10}>
           <Col span={8}>
-            <Form.Item label='自动 min/max 值' tooltip='默认自动从 series 里面取 min max 值' name={[...namePrefix, 'colorDomainAuto']} valuePropName='checked'>
+            <Form.Item label={t('panel.custom.colorDomainAuto')} tooltip={t('panel.custom.colorDomainAuto_tip')} name={[...namePrefix, 'colorDomainAuto']} valuePropName='checked'>
               <Switch />
             </Form.Item>
           </Col>

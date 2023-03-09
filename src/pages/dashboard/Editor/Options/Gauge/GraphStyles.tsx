@@ -15,39 +15,36 @@
  *
  */
 import React from 'react';
-import { Form, Radio, Select, Row, Col, InputNumber } from 'antd';
+import { Form, Radio, Select, Row, Col } from 'antd';
 import { CaretDownOutlined } from '@ant-design/icons';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { Panel } from '../../Components/Collapse';
 import { calcsOptions } from '../../config';
-import { useGlobalState } from '../../../globalState';
-
-const colSpans = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 export default function GraphStyles() {
+  const { t, i18n } = useTranslation('dashboard');
   const namePrefix = ['custom'];
-  const [statFields] = useGlobalState('statFields');
-  const fields = _.compact(_.concat(statFields, 'Value'));
 
   return (
-    <Panel header='图表样式'>
+    <Panel header={t('panel.custom.title')}>
       <>
         <Row gutter={10}>
           <Col span={12}>
-            <Form.Item label='显示内容' name={[...namePrefix, 'textMode']}>
+            <Form.Item label={t('panel.custom.textMode')} name={[...namePrefix, 'textMode']}>
               <Radio.Group buttonStyle='solid'>
-                <Radio.Button value='valueAndName'>名称和值</Radio.Button>
-                <Radio.Button value='value'>值</Radio.Button>
+                <Radio.Button value='valueAndName'>{t('panel.custom.valueAndName')}</Radio.Button>
+                <Radio.Button value='value'>{t('panel.custom.value')}</Radio.Button>
               </Radio.Group>
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label='取值计算' name={[...namePrefix, 'calc']}>
+            <Form.Item label={t('panel.custom.calc')} name={[...namePrefix, 'calc']}>
               <Select suffixIcon={<CaretDownOutlined />}>
                 {_.map(calcsOptions, (item, key) => {
                   return (
                     <Select.Option key={key} value={key}>
-                      {item.name}
+                      {i18n.language === 'en_US' ? key : item.name}
                     </Select.Option>
                   );
                 })}

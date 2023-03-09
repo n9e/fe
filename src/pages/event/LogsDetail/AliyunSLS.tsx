@@ -5,7 +5,7 @@ import _ from 'lodash';
 import TimeRangePicker, { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { getEventLogQuery } from '@/services/warning';
 import ModalHOC, { ModalWrapProps } from '@/pages/dashboard/Components/ModalHOC';
-import RawTable from '@/pages/metric/explorer/AliyunSLS/RawTable';
+import RawTable from '@/pages/explorer/AliyunSLS/RawTable';
 import './style.less';
 
 interface IProps {

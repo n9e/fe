@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Button, Spin, Card, message } from 'antd';
 import { RollbackOutlined } from '@ant-design/icons';
@@ -23,20 +23,18 @@ import { useTranslation } from 'react-i18next';
 import PageLayout from '@/components/pageLayout';
 import request from '@/utils/request';
 import api from '@/utils/api';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store/common';
-import { CommonStoreState } from '@/store/commonInterface';
 import TplForm from './tplForm';
+import { CommonStateContext } from '@/App';
 
 const Modify = (props: any) => {
   const history = useHistory();
   const id = _.get(props, 'match.params.id');
-  const { curBusiItem } = useSelector<RootState, CommonStoreState>((state) => state.common);
+  const { curBusiId } = useContext(CommonStateContext);
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<any>({});
   const handleSubmit = (values: any) => {
-    request(`${api.tasktpl(curBusiItem.id)}/${id}`, {
+    request(`${api.tasktpl(curBusiId)}/${id}`, {
       method: 'PUT',
       body: JSON.stringify(values),
     }).then(() => {
@@ -50,48 +48,49 @@ const Modify = (props: any) => {
   useEffect(() => {
     if (id) {
       setLoading(true);
-      request(`${api.tasktpl(curBusiItem.id)}/${id}`).then((data) => {
-        const { dat } = data;
-        setData({
-          ...dat.tpl,
-          hosts: dat.hosts,
-          grp: dat.grp,
+      request(`${api.tasktpl(curBusiId)}/${id}`)
+        .then((data) => {
+          const { dat } = data;
+          setData({
+            ...dat.tpl,
+            hosts: dat.hosts,
+            grp: dat.grp,
+          });
+        })
+        .finally(() => {
+          setLoading(false);
         });
-      }).finally(() => {
-        setLoading(false);
-      });
     }
-  }, [id, curBusiItem.id]);
+  }, [id, curBusiId]);
 
   return (
-    <PageLayout hideCluster title={
-      <>
-        <RollbackOutlined className='back' onClick={() => history.push('/job-tpls')} />
-        自愈脚本
-      </>
-    }>
+    <PageLayout
+      title={
+        <>
+          <RollbackOutlined className='back' onClick={() => history.push('/job-tpls')} />
+          {t('tpl')}
+        </>
+      }
+    >
       <div style={{ padding: 10 }}>
-        <Card
-          title="修改自愈脚本"
-        >
-        <Spin spinning={loading}>
-          {
-            data.title ?
-            <TplForm
-              onSubmit={handleSubmit}
-              initialValues={data}
-              footer={
-                <Button type="primary" htmlType="submit">
-                  {t('form.submit')}
-                </Button>
-              }
-            /> : null
-          }
-        </Spin>
+        <Card title={t('common:btn.modify')}>
+          <Spin spinning={loading}>
+            {data.title ? (
+              <TplForm
+                onSubmit={handleSubmit}
+                initialValues={data}
+                footer={
+                  <Button type='primary' htmlType='submit'>
+                    {t('btn.submit')}
+                  </Button>
+                }
+              />
+            ) : null}
+          </Spin>
         </Card>
       </div>
     </PageLayout>
-  )
-}
+  );
+};
 
 export default Modify;

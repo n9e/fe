@@ -1,6 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
-import { severityMap } from '@/pages/warning/strategy/components/ElasticsearchSettings/Rules';
+
+export const severityMap = ['一级告警', '二级告警', '三级告警'];
 
 export default function ElasticsearchDetail() {
   return [

@@ -1,0 +1,36 @@
+.alert-rule-host-condition-tips {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  text-align: center;
+  background-color: #f2f2f2;
+  color: #6c53b1;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: -16px;
+    left: 16px;
+    height: 16px;
+    border-left: 1px dashed #d8d8d8;
+  }
+}
+
+.alert-rule-triggers-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.alert-rule-trigger-container {
+  background-color: rgb(250, 250, 250);
+  padding: 10px;
+  position: relative;
+}
+.alert-rule-trigger-remove {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  cursor: pointer;
+}

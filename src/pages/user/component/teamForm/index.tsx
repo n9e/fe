@@ -14,19 +14,13 @@
  * limitations under the License.
  *
  */
-import React, {
-  useEffect,
-  useState,
-  useImperativeHandle,
-  ReactNode,
-} from 'react';
+import React, { useEffect, useState, useImperativeHandle, ReactNode } from 'react';
 import { Form, Input } from 'antd';
-import { layout } from '../../const';
 import { getTeamInfo } from '@/services/manage';
 import { TeamProps, Team, TeamInfo } from '@/store/manageInterface';
 import { useTranslation } from 'react-i18next';
 const TeamForm = React.forwardRef<ReactNode, TeamProps>((props, ref) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('user');
   const { teamId } = props;
   const [form] = Form.useForm();
   const [initialValues, setInitialValues] = useState<Team>();
@@ -50,25 +44,19 @@ const TeamForm = React.forwardRef<ReactNode, TeamProps>((props, ref) => {
   };
 
   return !loading ? (
-    <Form
-      {...layout}
-      form={form}
-      initialValues={initialValues}
-      preserve={false}
-    >
+    <Form layout='vertical' form={form} initialValues={initialValues} preserve={false}>
       <Form.Item
-        label={t('团队名称')}
+        label={t('common:table.name')}
         name='name'
         rules={[
           {
             required: true,
-            message: t('团队名称不能为空！'),
           },
         ]}
       >
         <Input />
       </Form.Item>
-      <Form.Item label={t('备注')} name='note'>
+      <Form.Item label={t('common:table.note')} name='note'>
         <Input />
       </Form.Item>
     </Form>

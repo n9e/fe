@@ -14,68 +14,82 @@
  * limitations under the License.
  *
  */
-import React, { useState, useEffect } from 'react';
-import { Button, Input, Table, Tooltip, message, Modal, Switch } from 'antd';
+import React, { useState, useEffect, useContext } from 'react';
+import { Button, Input, Table, Tooltip, message, Modal, Switch, Space, Tag } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { CloseCircleOutlined, ExclamationCircleOutlined, SearchOutlined } from '@ant-design/icons';
-import { useSelector, useDispatch } from 'react-redux';
 import dayjs from 'dayjs';
+import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
+import queryString from 'query-string';
+import AdvancedWrap from '@/components/AdvancedWrap';
 import PageLayout from '@/components/pageLayout';
-import { RootState } from '@/store/common';
 import { getShieldList, deleteShields, updateShields } from '@/services/shield';
-import { CommonStoreState } from '@/store/commonInterface';
 import { shieldItem, strategyStatus } from '@/store/warningInterface';
-import LeftTree from '@/components/LeftTree';
+import { BusinessGroup } from '@/pages/monObjectManage';
 import RefreshIcon from '@/components/RefreshIcon';
 import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
-import ColumnSelect from '@/components/ColumnSelect';
-import ColorTag from '@/components/ColorTag';
+import { Pure as DatasourceSelect } from '@/components/DatasourceSelect';
+import { CommonStateContext } from '@/App';
 import { pageSizeOptionsDefault } from '../const';
+import './locale';
 import './index.less';
+
+export { default as Add } from './add';
+export { default as Edit } from './edit';
 
 const { confirm } = Modal;
 
 const Shield: React.FC = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('alertMutes');
   const history = useHistory();
-  const dispatch = useDispatch();
+  const { search } = useLocation();
+  const { id } = queryString.parse(search);
+  const commonState = useContext(CommonStateContext);
+  const bgid = id ? Number(id) : commonState.curBusiId;
+  const { groupedDatasourceList } = commonState;
   const [query, setQuery] = useState<string>('');
-  const { curBusiItem } = useSelector<RootState, CommonStoreState>((state) => state.common);
-  const [bgid, setBgid] = useState(undefined);
-  const [clusters, setClusters] = useState<string[]>([]);
   const [currentShieldDataAll, setCurrentShieldDataAll] = useState<Array<shieldItem>>([]);
   const [currentShieldData, setCurrentShieldData] = useState<Array<shieldItem>>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [cate, setCate] = useState<string>();
+  const [datasourceIds, setDatasourceIds] = useState<number[]>();
 
   const columns: ColumnsType = [
     {
-      title: t('集群'),
-      dataIndex: 'cluster',
-      render: (data) => {
-        const array = data.split(' ') || [];
-        return (
-          (array.length &&
-            array.map((tag: string, index: number) => {
-              return <ColorTag text={tag} key={index}></ColorTag>;
-            })) || <div></div>
-        );
+      title: t('common:datasource.type'),
+      dataIndex: 'cate',
+    },
+    {
+      title: t('common:datasource.id'),
+      dataIndex: 'datasource_ids',
+      render: (data, record: any) => {
+        return _.map(data, (item) => {
+          if (item === 0) {
+            return (
+              <Tag color='purple' key={item}>
+                $all
+              </Tag>
+            );
+          }
+          return (
+            <Tag color='purple' key={item}>
+              {_.find(groupedDatasourceList[record.cate], { id: item })?.name!}
+            </Tag>
+          );
+        });
       },
     },
     {
-      title: t('规则备注'),
+      title: t('note'),
       dataIndex: 'note',
       render: (data, record: any) => {
         return (
           <div
             className='table-active-text'
             onClick={() => {
-              dispatch({
-                type: 'shield/setCurShieldData',
-                data: record,
-              });
-              handleClickEdit(record.id);
+              history.push(`/alert-mutes/edit/${record.id}`, record);
             }}
           >
             {data}
@@ -84,7 +98,7 @@ const Shield: React.FC = () => {
       },
     },
     {
-      title: t('标签'),
+      title: t('common:table.tag'),
       dataIndex: 'tags',
       render: (text: any) => {
         return (
@@ -101,7 +115,7 @@ const Shield: React.FC = () => {
       },
     },
     {
-      title: t('屏蔽原因'),
+      title: t('cause'),
       dataIndex: 'cause',
       render: (text: string, record: shieldItem) => {
         return (
@@ -124,25 +138,19 @@ const Shield: React.FC = () => {
       },
     },
     {
-      title: t('屏蔽时间'),
+      title: t('time'),
       dataIndex: 'btime',
       render: (text: number, record: shieldItem) => {
         return (
           <div className='shield-time'>
-            <div>
-              {t('开始:')}
-              {dayjs(record?.btime * 1000).format('YYYY-MM-DD HH:mm:ss')}
-            </div>
-            <div>
-              {t('结束:')}
-              {dayjs(record?.etime * 1000).format('YYYY-MM-DD HH:mm:ss')}
-            </div>
+            <div>{dayjs(record?.btime * 1000).format('YYYY-MM-DD HH:mm:ss')}</div>
+            <div>{dayjs(record?.etime * 1000).format('YYYY-MM-DD HH:mm:ss')}</div>
           </div>
         );
       },
     },
     {
-      title: t('启用'),
+      title: t('common:table.enabled'),
       dataIndex: 'disabled',
       render: (disabled, record) => (
         <Switch
@@ -158,7 +166,7 @@ const Shield: React.FC = () => {
                   disabled: !disabled ? 1 : 0,
                 },
               },
-              curBusiItem.id,
+              Number(bgid),
             ).then(() => {
               refreshList();
             });
@@ -167,7 +175,7 @@ const Shield: React.FC = () => {
       ),
     },
     {
-      title: t('操作'),
+      title: t('common:table.operations'),
       width: '98px',
       dataIndex: 'operation',
       render: (text: undefined, record: shieldItem) => {
@@ -181,14 +189,13 @@ const Shield: React.FC = () => {
                   display: 'inline-block',
                 }}
                 onClick={() => {
-                  dispatch({
-                    type: 'shield/setCurShieldData',
-                    data: record,
+                  history.push(`/alert-mutes/edit/${record.id}?mode=clone`, {
+                    ...record,
+                    datasource_ids: record.datasource_ids || undefined,
                   });
-                  curBusiItem?.id && history.push(`/alert-mutes/edit/${record.id}?mode=clone`);
                 }}
               >
-                {t('克隆')}
+                {t('common:btn.clone')}
               </div>
               <div
                 className='table-operator-area-warning'
@@ -198,7 +205,7 @@ const Shield: React.FC = () => {
                 }}
                 onClick={() => {
                   confirm({
-                    title: t('确定删除该告警屏蔽?'),
+                    title: t('common:confirm.delete'),
                     icon: <ExclamationCircleOutlined />,
                     onOk: () => {
                       dismiss(record.id);
@@ -208,7 +215,7 @@ const Shield: React.FC = () => {
                   });
                 }}
               >
-                {t('删除')}
+                {t('common:btn.delete')}
               </div>
             </div>
           </>
@@ -219,19 +226,19 @@ const Shield: React.FC = () => {
 
   useEffect(() => {
     getList();
-  }, [curBusiItem]);
+  }, [bgid]);
 
   useEffect(() => {
     filterData();
-  }, [query, clusters, currentShieldDataAll]);
+  }, [query, cate, datasourceIds, currentShieldDataAll]);
 
   const dismiss = (id: number) => {
-    deleteShields({ ids: [id] }, curBusiItem.id).then((res) => {
+    deleteShields({ ids: [id] }, Number(bgid)).then((res) => {
       refreshList();
       if (res.err) {
         message.success(res.err);
       } else {
-        message.success(t('删除成功'));
+        message.success(t('common:success.delete'));
       }
     });
   };
@@ -242,15 +249,24 @@ const Shield: React.FC = () => {
       const tagFind = item.tags.find((tag) => {
         return tag.key.indexOf(query) > -1 || tag.value.indexOf(query) > -1 || tag.func.indexOf(query) > -1;
       });
-      return (item.cause.indexOf(query) > -1 || !!tagFind) && ((clusters && clusters?.indexOf(item.cluster) > -1) || clusters?.length === 0);
+      return (
+        (item.cause.indexOf(query) > -1 || !!tagFind) &&
+        ((cate && cate === item.cate) || !cate) &&
+        (_.some(item.datasource_ids, (id) => {
+          if (id === 0) return true;
+          return _.includes(datasourceIds, id);
+        }) ||
+          datasourceIds?.length === 0 ||
+          !datasourceIds)
+      );
     });
     setCurrentShieldData(res || []);
   };
 
   const getList = async () => {
-    if (curBusiItem.id) {
+    if (bgid) {
       setLoading(true);
-      const { success, dat } = await getShieldList({ id: curBusiItem.id });
+      const { success, dat } = await getShieldList({ id: Number(bgid) });
       if (success) {
         setCurrentShieldDataAll(dat || []);
         setLoading(false);
@@ -262,65 +278,78 @@ const Shield: React.FC = () => {
     getList();
   };
 
-  const handleClickEdit = (id, isClone = false) => {
-    curBusiItem?.id && history.push(`/alert-mutes/edit/${id}${isClone ? '?mode=clone' : ''}`);
-  };
-
   const onSearchQuery = (e) => {
     let val = e.target.value;
     setQuery(val);
   };
 
-  const clusterChange = (data) => {
-    setClusters(data);
-  };
-
-  const busiChange = (data) => {
-    setBgid(data);
-  };
-
   return (
-    <PageLayout title={t('屏蔽规则')} icon={<CloseCircleOutlined />} hideCluster>
+    <PageLayout title={t('title')} icon={<CloseCircleOutlined />}>
       <div className='shield-content'>
-        <LeftTree
-          busiGroup={{
-            onChange: busiChange,
+        <BusinessGroup
+          curBusiId={bgid}
+          setCurBusiId={(newId) => {
+            history.push(`/alert-mutes?id=${newId}`);
+            commonState.setCurBusiId(newId);
           }}
-        ></LeftTree>
-        {curBusiItem?.id ? (
-          <div className='shield-index'>
+        />
+        {bgid ? (
+          <div className='shield-index' style={{ height: '100%', overflowY: 'auto' }}>
             <div className='header'>
-              <div className='header-left'>
+              <Space>
                 <RefreshIcon
-                  className='strategy-table-search-left-refresh'
                   onClick={() => {
                     refreshList();
                   }}
                 />
-                <ColumnSelect onClusterChange={(e) => setClusters(e)} />
-                <Input onPressEnter={onSearchQuery} className={'searchInput'} prefix={<SearchOutlined />} placeholder={t('搜索标签、屏蔽原因')} />
-              </div>
+                <AdvancedWrap var='VITE_IS_ALERT_ES'>
+                  {(isShow) => {
+                    return (
+                      <DatasourceSelect
+                        datasourceCate={cate}
+                        onDatasourceCateChange={(val) => {
+                          setCate(val);
+                        }}
+                        datasourceValue={datasourceIds}
+                        datasourceValueMode='multiple'
+                        onDatasourceValueChange={(val: number[]) => {
+                          setDatasourceIds(val);
+                        }}
+                        filterCates={(cates) => {
+                          return _.filter(cates, (item) => {
+                            if (item.value === 'elasticsearch') {
+                              return isShow[0];
+                            }
+                            return true;
+                          });
+                        }}
+                      />
+                    );
+                  }}
+                </AdvancedWrap>
+                <Input onPressEnter={onSearchQuery} prefix={<SearchOutlined />} placeholder={t('search_placeholder')} />
+              </Space>
               <div className='header-right'>
                 <Button
                   type='primary'
                   className='add'
-                  ghost
                   onClick={() => {
                     history.push('/alert-mutes/add');
                   }}
                 >
-                  {t('新增屏蔽规则')}
+                  {t('common:btn.add')}
                 </Button>
               </div>
             </div>
             <Table
+              size='small'
               rowKey='id'
               pagination={{
                 total: currentShieldData.length,
                 showQuickJumper: true,
                 showSizeChanger: true,
                 showTotal: (total) => {
-                  return `共 ${total} 条数据`;
+                  return t('common:table.total', { total });
                 },
                 pageSizeOptions: pageSizeOptionsDefault,
                 defaultPageSize: 30,

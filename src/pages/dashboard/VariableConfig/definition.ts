@@ -28,10 +28,11 @@ export interface IVariable {
   datasource?: {
     // v5.14.3 新增 datasource 储存数据源类型和名称
     cate: 'prometheus' | 'elasticsearch';
-    name: string;
+    value: number; // v6 之后改为用 datasourceId
   };
   config?: {
     // v5.14.3 新增 config 字段，用于存储一些非常规的配置
     index: string; // elasticsearch 源的索引配置
   };
+  value: string | string[];
 }

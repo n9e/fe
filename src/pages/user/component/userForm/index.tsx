@@ -15,8 +15,7 @@
  *
  */
 import React, { useEffect, useState, useImperativeHandle, ReactNode } from 'react';
-import { Form, Input, Select, Space, Button } from 'antd';
-import { layout } from '../../const';
+import { Form, Input, Select, Space } from 'antd';
 import { getUserInfo, getNotifyChannels, getRoles } from '@/services/manage';
 import { UserAndPasswordFormProps, Contacts, ContactsItem, User } from '@/store/manageInterface';
 import { MinusCircleOutlined, PlusCircleOutlined, CaretDownOutlined } from '@ant-design/icons';
@@ -75,33 +74,31 @@ const UserForm = React.forwardRef<ReactNode, UserAndPasswordFormProps>((props, r
   };
 
   return !loading ? (
-    <Form {...layout} form={form} initialValues={initialValues} preserve={false}>
+    <Form layout='vertical' form={form} initialValues={initialValues} preserve={false}>
       {!userId && (
         <Form.Item
-          label={t('用户名')}
+          label={t('account:profile.username')}
           name='username'
           rules={[
             {
               required: true,
-              message: t('用户名不能为空！'),
             },
           ]}
         >
           <Input />
         </Form.Item>
       )}
-      <Form.Item label={t('显示名')} name='nickname'>
+      <Form.Item label={t('account:profile.nickname')} name='nickname'>
         <Input />
       </Form.Item>
       {!userId && (
         <>
           <Form.Item
             name='password'
-            label={t('密码')}
+            label={t('account:password.name')}
             rules={[
               {
                 required: true,
-                message: t('请输入密码!'),
               },
             ]}
             hasFeedback
@@ -111,13 +108,12 @@ const UserForm = React.forwardRef<ReactNode, UserAndPasswordFormProps>((props, r
 
           <Form.Item
             name='confirm'
-            label={t('确认密码')}
+            label={t('account:password.confirm')}
             dependencies={['password']}
             hasFeedback
             rules={[
               {
                 required: true,
-                message: t('请确认密码!'),
               },
               ({ getFieldValue }) => ({
                 validator(_, value) {
@@ -125,7 +121,7 @@ const UserForm = React.forwardRef<ReactNode, UserAndPasswordFormProps>((props, r
                     return Promise.resolve();
                   }
 
-                  return Promise.reject(new Error('密码不一致!'));
+                  return Promise.reject(new Error(t('account:password.notMatch')));
                 },
               }),
             ]}
@@ -135,12 +131,11 @@ const UserForm = React.forwardRef<ReactNode, UserAndPasswordFormProps>((props, r
         </>
       )}
       <Form.Item
-        label={t('角色')}
+        label={t('account:profile.role')}
         name='roles'
         rules={[
           {
             required: true,
-            message: t('角色不能为空！'),
           },
         ]}
       >
@@ -155,13 +150,13 @@ const UserForm = React.forwardRef<ReactNode, UserAndPasswordFormProps>((props, r
           ))}
         </Select>
       </Form.Item>
-      <Form.Item label={t('邮箱')} name='email'>
+      <Form.Item label={t('account:profile.email')} name='email'>
         <Input />
       </Form.Item>
-      <Form.Item label={t('手机')} name='phone'>
+      <Form.Item label={t('account:profile.phone')} name='phone'>
         <Input />
       </Form.Item>
-      <Form.Item label={t('更多联系方式')}>
+      <Form.Item label={t('account:profile.moreContact')}>
         <Form.List name='contacts'>
           {(fields, { add, remove }) => (
             <>
@@ -179,15 +174,14 @@ const UserForm = React.forwardRef<ReactNode, UserAndPasswordFormProps>((props, r
                     }}
                     {...restField}
                     name={[name, 'key']}
-                    fieldKey={[fieldKey, 'key']}
                     rules={[
                       {
                         required: true,
-                        message: t('联系方式不能为空'),
+                        message: 'is required',
                       },
                     ]}
                   >
-                    <Select suffixIcon={<CaretDownOutlined />} placeholder={t('请选择联系方式')}>
+                    <Select suffixIcon={<CaretDownOutlined />} placeholder={t('account:profile.moreContactPlaceholder')}>
                       {contactsList.map((item, index) => (
                         <Option value={item.key} key={index}>
                           {item.label}
@@ -201,15 +195,14 @@ const UserForm = React.forwardRef<ReactNode, UserAndPasswordFormProps>((props, r
                       width: '170px',
                     }}
                     name={[name, 'value']}
-                    fieldKey={[fieldKey, 'value']}
                     rules={[
                       {
                         required: true,
-                        message: t('值不能为空'),
+                        message: 'is required',
                       },
                     ]}
                   >
-                    <Input placeholder={t('请输入值')} />
+                    <Input />
                   </Form.Item>
                   <MinusCircleOutlined className='control-icon-normal' onClick={() => remove(name)} />
                 </Space>

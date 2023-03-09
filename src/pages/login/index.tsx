@@ -15,11 +15,10 @@
  *
  */
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, Radio, message } from 'antd';
+import { Form, Input, Button, message } from 'antd';
 import { useHistory, useLocation } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import { getSsoConfig, getRedirectURL, getRedirectURLCAS, getRedirectURLOAuth } from '@/services/login';
+import { getSsoConfig, getRedirectURL, getRedirectURLCAS, getRedirectURLOAuth, authLogin } from '@/services/login';
 import './login.less';
 
 import { useTranslation } from 'react-i18next';
@@ -34,7 +33,6 @@ export default function Login() {
   const history = useHistory();
   const location = useLocation();
   const redirect = location.search && new URLSearchParams(location.search).get('redirect');
-  const dispatch = useDispatch();
   const [displayName, setDis] = useState<DisplayName>({
     oidc: 'OIDC',
     cas: 'CAS',
@@ -64,15 +62,15 @@ export default function Login() {
 
   const login = async () => {
     let { username, password } = form.getFieldsValue();
-    const err = await dispatch({
-      type: 'account/login',
-      username,
-      password,
+    authLogin(username, password).then((res) => {
+      const { dat, err } = res;
+      const { access_token, refresh_token } = dat;
+      localStorage.setItem('access_token', access_token);
+      localStorage.setItem('refresh_token', refresh_token);
+      if (!err) {
+        window.location.href = redirect || '/metric/explorer';
+      }
     });
-
-    if (!err) {
-      history.push(redirect || '/metric/explorer');
-    }
   };
 
   return (

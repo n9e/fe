@@ -1,43 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Select } from 'antd';
-import { getCommonESClusters, getCommonClusters, getCommonSLSClusters } from '@/services/common';
+import _ from 'lodash';
+import { getDatasourceList } from '@/services/common';
 
-export default function index(props: { cate: string; defaultDatasourceName?: string; name?: string | string[]; label?: React.ReactNode }) {
-  const { cate, defaultDatasourceName, name = 'datasourceName', label } = props;
-  const [clusterList, setClusterList] = useState([]);
+interface IProps {
+  cate: string;
+  defaultDatasourceValue?: number; // 只是给 prometheus 用的
+  name?: string | string[];
+  label?: React.ReactNode;
+}
+
+export default function index(props: IProps) {
+  const { cate, defaultDatasourceValue, name = 'datasourceValue', label } = props;
+  const [datasourceList, setDatasourceList] = useState<{ name: string; id: number }[]>([]);
 
   useEffect(() => {
-    if (cate === 'elasticsearch' || cate === 'elasticsearch-log') {
-      getCommonESClusters()
-        .then(({ dat }) => {
-          setClusterList(dat);
-        })
-        .catch(() => {
-          setClusterList([]);
-        });
-    } else if (cate === 'aliyun-sls') {
-      getCommonSLSClusters()
-        .then(({ dat }) => {
-          setClusterList(dat);
-        })
-        .catch(() => {
-          setClusterList([]);
-        });
-    } else {
-      getCommonClusters()
-        .then(({ dat }) => {
-          setClusterList(dat);
-        })
-        .catch(() => {
-          setClusterList([]);
-        });
-    }
+    getDatasourceList([cate]).then((res) => {
+      setDatasourceList(res);
+    });
   }, [cate]);
 
   return (
     <Form.Item
       label={label}
       name={name}
+      tooltip='Prometheus 数据源默认关联全局的数据源值'
       rules={[
         {
           required: cate !== 'prometheus',
@@ -45,10 +32,15 @@ export default function index(props: { cate: string; defaultDatasourceName?: str
         },
       ]}
     >
-      <Select allowClear placeholder={cate !== 'prometheus' ? '选择数据源' : defaultDatasourceName} style={{ minWidth: 70 }} dropdownMatchSelectWidth={false}>
-        {clusterList?.map((item) => (
-          <Select.Option value={item} key={item}>
-            {item}
+      <Select
+        allowClear
+        placeholder={cate !== 'prometheus' ? '选择数据源' : _.find(datasourceList, { id: defaultDatasourceValue })?.name}
+        style={{ minWidth: 70 }}
+        dropdownMatchSelectWidth={false}
+      >
+        {datasourceList?.map((item) => (
+          <Select.Option value={item.id} key={item.id}>
+            {item.name}
           </Select.Option>
         ))}
       </Select>

@@ -14,20 +14,17 @@
  * limitations under the License.
  *
  */
-import React, { useState, ReactNode } from 'react';
-import './index.less';
+import React, { ReactNode, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
 import Icon, { RollbackOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { RootState as AccountRootState, accountStoreState } from '@/store/accountInterface';
-import { RootState as CommonRootState } from '@/store/common';
-import { CommonStoreState } from '@/store/commonInterface';
-import { Menu, Dropdown, Button } from 'antd';
+import { Menu, Dropdown } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { Logout } from '@/services/login';
-import AdvancedWrap from '@/components/AdvancedWrap';
-import License from '@/pages/warning/strategy/license';
+import AdvancedWrap, { License } from '@/components/AdvancedWrap';
+import { CommonStateContext } from '@/App';
+import './index.less';
+
 interface IPageLayoutProps {
   icon?: ReactNode;
   title?: String | JSX.Element;
@@ -37,28 +34,13 @@ interface IPageLayoutProps {
   customArea?: ReactNode;
   showBack?: Boolean;
   backPath?: string;
-  hideCluster?: Boolean;
-  onChangeCluster?: (string) => void;
   docFn?: Function;
 }
 
-const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introIcon, children, customArea, showBack, backPath, onChangeCluster, hideCluster = true, docFn }) => {
+const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introIcon, children, customArea, showBack, backPath, docFn }) => {
   const { t, i18n } = useTranslation();
   const history = useHistory();
-  const dispatch = useDispatch();
-  let { profile } = useSelector<AccountRootState, accountStoreState>((state) => state.account);
-  const { clusters } = useSelector<CommonRootState, CommonStoreState>((state) => state.common);
-  const localCluster = localStorage.getItem('curCluster');
-  const [curCluster, setCurCluster] = useState<string>(localCluster || clusters[0]);
-  if (!localCluster && clusters.length > 0) {
-    setCurCluster(clusters[0]);
-    localStorage.setItem('curCluster', clusters[0]);
-    dispatch({
-      type: 'common/saveData',
-      prop: 'curCluster',
-      data: clusters[0],
-    });
-  }
+  const { profile } = useContext(CommonStateContext);
 
   const menu = (
     <Menu>
@@ -71,47 +53,15 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
       </Menu.Item>
       <Menu.Item
         onClick={() => {
-          Logout().then((res) => {
+          Logout().then(() => {
             localStorage.removeItem('access_token');
             localStorage.removeItem('refresh_token');
-            dispatch({
-              type: 'common/saveData',
-              prop: 'clusters',
-              data: [],
-            });
-            dispatch({
-              type: 'common/saveData',
-              prop: 'busiGroups',
-              data: [],
-            });
             history.push('/login');
           });
         }}
       >
         {t('退出')}
       </Menu.Item>
-    </Menu>
-  );
-
-  const clusterMenu = (
-    <Menu selectedKeys={[curCluster]}>
-      {clusters.map((cluster) => (
-        <Menu.Item
-          key={cluster}
-          onClick={(_) => {
-            setCurCluster(cluster);
-            onChangeCluster && onChangeCluster(cluster);
-            localStorage.setItem('curCluster', cluster);
-            dispatch({
-              type: 'common/saveData',
-              prop: 'curCluster',
-              data: cluster,
-            });
-          }}
-        >
-          {cluster}
-        </Menu.Item>
-      ))}
     </Menu>
   );
 
@@ -143,19 +93,18 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
               {title}
             </div>
 
-            {/* <div className={'page-header-right-area'}>{rightArea}</div> */}
             <div className={'page-header-right-area'}>
               {introIcon}
               {docFn && (
                 <a onClick={() => docFn()} style={{ marginRight: 20 }}>
-                  文档
+                  {t('docs')}
                 </a>
               )}
               {/* 整合版本关闭文档链接 */}
               {import.meta.env.VITE_IS_COMMON_DS !== 'true' && (
                 <div style={{ marginRight: 32, position: 'relative' }}>
                   <a target='_blank' href='http://n9e.flashcat.cloud'>
-                    文档
+                    {t('docs')}
                   </a>
                   <Icon
                     style={{ fontSize: 16, position: 'absolute', top: -16, right: -28 }}
@@ -173,31 +122,23 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                 </div>
               )}
 
-              {!hideCluster && (
-                <div style={{ marginRight: 20 }}>
-                  集群：
-                  <Dropdown overlay={clusterMenu}>
-                    <Button>
-                      {curCluster} <DownOutlined />
-                    </Button>
-                  </Dropdown>
-                </div>
-              )}
-              <AdvancedWrap var='VITE_IS_ALERT_AI,VITE_IS_ALERT_ES_DS'>
+              {rightArea}
+
+              <AdvancedWrap var='VITE_IS_ALERT_AI,VITE_IS_SLS_DS'>
                 <License />
               </AdvancedWrap>
 
               {/* 文案完善了再打开 */}
-              {/* <span
+              <span
                 className='language'
                 onClick={() => {
-                  let language = i18n.language == 'en' ? 'zh' : 'en';
+                  let language = i18n.language == 'en_US' ? 'zh_CN' : 'en_US';
                   i18n.changeLanguage(language);
                   localStorage.setItem('language', language);
                 }}
               >
-                {i18n.language == 'zh' ? 'En' : '中'}
-              </span> */}
+                {i18n.language == 'zh_CN' ? 'EN' : '中'}
+              </span>
               <Dropdown overlay={menu} trigger={['click']}>
                 <span className='avator'>
                   <img src={profile.portrait || '/image/avatar1.png'} alt='' />

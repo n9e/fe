@@ -14,7 +14,6 @@
  * limitations under the License.
  *
  */
-import { RelativeRange } from '@/components/DateRangePicker';
 
 export enum warningPriority {
   First = 1,
@@ -72,10 +71,10 @@ export interface eventStoreState {
   currentEdit: warningEventItem | null;
   alertings: { ['index']?: number };
   severity: number | undefined;
-  hourRange: RelativeRange;
+  hourRange: any;
   queryContent: string;
   hisSeverity: number | undefined;
   hisEventType: 0 | 1 | undefined;
-  hisHourRange: RelativeRange;
+  hisHourRange: any;
   hisQueryContent: string;
 }

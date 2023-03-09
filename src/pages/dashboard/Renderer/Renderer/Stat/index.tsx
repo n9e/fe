@@ -131,7 +131,7 @@ export default function Stat(props: IProps) {
     if (bodyWrapRef.current) {
       if (calculatedValues.length === 1 && colorMode === 'background') {
         const head = _.head(calculatedValues);
-        const color = head.color ? head.color : statHexPalette[0];
+        const color = head?.color ? head.color : statHexPalette[0];
         const colorObject = d3.color(color);
         bodyWrapRef.current.style.border = `1px solid ${colorObject + ''}`;
         bodyWrapRef.current.style.backgroundColor = colorObject + '';

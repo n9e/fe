@@ -17,20 +17,22 @@
 import React from 'react';
 import { Form, Radio, Row, Col } from 'antd';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { Panel } from '../../Components/Collapse';
 
 export default function index() {
+  const { t } = useTranslation('dashboard');
   const namePrefix = ['options', 'legend'];
 
   return (
     <Panel header='Legend'>
       <Row>
         <Col span={12}>
-          <Form.Item label='显示模式' name={[...namePrefix, 'displayMode']}>
+          <Form.Item label={t('panel.options.legend.displayMode.label')} name={[...namePrefix, 'displayMode']}>
             <Radio.Group buttonStyle='solid'>
-              <Radio.Button value='table'>表格</Radio.Button>
-              <Radio.Button value='list'>列表</Radio.Button>
-              <Radio.Button value='hidden'>关闭</Radio.Button>
+              <Radio.Button value='table'>{t('panel.options.legend.displayMode.table')}</Radio.Button>
+              <Radio.Button value='list'>{t('panel.options.legend.displayMode.list')}</Radio.Button>
+              <Radio.Button value='hidden'>{t('panel.options.legend.displayMode.hidden')}</Radio.Button>
             </Radio.Group>
           </Form.Item>
         </Col>
@@ -39,10 +41,10 @@ export default function index() {
             {({ getFieldValue }) => {
               if (getFieldValue([...namePrefix, 'displayMode']) === 'list') {
                 return (
-                  <Form.Item label='位置' name={[...namePrefix, 'placement']}>
+                  <Form.Item label={t('panel.options.legend.placement')} name={[...namePrefix, 'placement']}>
                     <Radio.Group buttonStyle='solid'>
-                      <Radio.Button value='bottom'>bottom</Radio.Button>
-                      <Radio.Button value='right'>right</Radio.Button>
+                      <Radio.Button value='bottom'>Bottom</Radio.Button>
+                      <Radio.Button value='right'>Right</Radio.Button>
                     </Radio.Group>
                   </Form.Item>
                 );

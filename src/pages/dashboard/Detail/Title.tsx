@@ -18,8 +18,9 @@ import React, { useState, useRef } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import querystring from 'query-string';
 import _ from 'lodash';
-import { Input, Button, Space, Dropdown, Menu, Switch } from 'antd';
-import { RollbackOutlined, EditOutlined, DownOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
+import { Input, Button, Space, Dropdown, Menu, Switch, Select } from 'antd';
+import { RollbackOutlined } from '@ant-design/icons';
 import { updateDashboard } from '@/services/dashboardV2';
 import Resolution from '@/components/Resolution';
 import { TimeRangePickerWithRefresh, IRawTimeRange } from '@/components/TimeRangePicker';
@@ -29,77 +30,34 @@ import { getStepByTimeAndStep } from '../utils';
 import { dashboardTimeCacheKey } from './Detail';
 
 interface IProps {
-  curCluster: string;
-  clusters: string[];
-  setCurCluster: (cluster: string) => void;
+  datasources: any[];
+  datasourceValue: number;
+  setDatasourceValue: (val: number) => void;
   dashboard: any;
-  setDashboard: (dashboard: any) => void;
   refresh: (bool?: boolean) => void;
   range: IRawTimeRange;
   setRange: (range: IRawTimeRange) => void;
   step: number | null;
   setStep: (step: number | null) => void;
-  refreshRef: any;
   onAddPanel: (type: string) => void;
   isPreview: boolean;
+  isBuiltin: boolean;
+  gobackPath?: string;
 }
 
 export default function Title(props: IProps) {
-  const { curCluster, clusters, setCurCluster, dashboard, setDashboard, refresh, range, setRange, step, setStep, refreshRef, onAddPanel, isPreview } = props;
-  const { id, name } = dashboard;
+  const { t, i18n } = useTranslation('dashboard');
+  const { datasources, datasourceValue, setDatasourceValue, dashboard, refresh, range, setRange, step, setStep, onAddPanel, isPreview, isBuiltin } = props;
   const history = useHistory();
   const location = useLocation();
   const query = querystring.parse(location.search);
   const { viewMode, themeMode } = query;
-  const [titleEditing, setTitleEditing] = useState(false);
-  const titleRef = useRef<any>(null);
-  const handleModifyTitle = async (newName) => {
-    updateDashboard(id, { ...dashboard, name: newName }).then(() => {
-      setDashboard({ ...dashboard, name: newName });
-      setTitleEditing(false);
-    });
-  };
 
   return (
     <div className='dashboard-detail-header'>
       <div className='dashboard-detail-header-left'>
-        {!isPreview && <RollbackOutlined className='back' onClick={() => history.push('/dashboards')} />}
-        {titleEditing ? (
-          <Input
-            ref={titleRef}
-            defaultValue={name}
-            onPressEnter={(e: any) => {
-              handleModifyTitle(e.target.value);
-            }}
-          />
-        ) : (
-          <div className='title'>{dashboard.name}</div>
-        )}
-        {/* {!titleEditing ? (
-          !isPreview ? (
-            <EditOutlined
-              className='edit'
-              onClick={() => {
-                setTitleEditing(!titleEditing);
-              }}
-            />
-          ) : null
-        ) : (
-          <>
-            <Button size='small' style={{ marginRight: 5, marginLeft: 5 }} onClick={() => setTitleEditing(false)}>
-              取消
-            </Button>
-            <Button
-              size='small'
-              type='primary'
-              onClick={() => {
-                handleModifyTitle(titleRef.current.state.value);
-              }}
-            >
-              保存
-            </Button>
-          </>
-        )} */}
+        {isPreview && !isBuiltin ? null : <RollbackOutlined className='back' onClick={() => history.push(props.gobackPath || '/dashboards')} />}
+        <div className='title'>{dashboard.name}</div>
       </div>
       <div className='dashboard-detail-header-right'>
         <Space>
@@ -117,7 +75,7 @@ export default function Title(props: IProps) {
                             onAddPanel(item.type);
                           }}
                         >
-                          {item.name}
+                          {i18n.language === 'en_US' ? item.type : item.name}
                         </Menu.Item>
                       );
                     })}
@@ -125,44 +83,41 @@ export default function Title(props: IProps) {
                 }
               >
                 <Button type='primary' icon={<AddPanelIcon />}>
-                  添加图表
+                  {t('add_panel')}
                 </Button>
               </Dropdown>
             )}
           </div>
           <div style={{ display: 'flex', alignItems: 'center' }}>
-            集群：
-            {isPreview ? (
-              curCluster
+            {t('cluster')}：
+            {isPreview && !isBuiltin ? (
+              datasourceValue
             ) : (
-              <Dropdown
-                overlay={
-                  <Menu selectedKeys={[curCluster]}>
-                    {clusters.map((cluster) => (
-                      <Menu.Item
-                        key={cluster}
-                        onClick={(_) => {
-                          setCurCluster(cluster);
-                          localStorage.setItem('curCluster', cluster);
-                          refresh();
-                        }}
-                      >
-                        {cluster}
-                      </Menu.Item>
-                    ))}
-                  </Menu>
-                }
-              >
-                <Button>
-                  {curCluster} <DownOutlined />
-                </Button>
-              </Dropdown>
+              <>
+                <Select
+                  dropdownMatchSelectWidth={false}
+                  value={datasourceValue}
+                  onChange={(val) => {
+                    setDatasourceValue(val);
+                    localStorage.setItem('datasourceValue_prometheus', _.toString(val));
+                    refresh();
+                  }}
+                >
+                  {_.map(datasources, (item) => {
+                    return (
+                      <Select.Option key={item.id} value={item.id}>
+                        {item.name}
+                      </Select.Option>
+                    );
+                  })}
+                </Select>
+              </>
             )}
           </div>
           <TimeRangePickerWithRefresh
             localKey={dashboardTimeCacheKey}
             dateFormat='YYYY-MM-DD HH:mm:ss'
-            refreshTooltip={`刷新间隔小于 step(${getStepByTimeAndStep(range, step)}s) 将不会更新数据`}
+            refreshTooltip={t('refresh_tip', { num: getStepByTimeAndStep(range, step) })}
             value={range}
             onChange={setRange}
           />
@@ -184,7 +139,7 @@ export default function Title(props: IProps) {
                 }, 500);
               }}
             >
-              {viewMode === 'fullscreen' ? '关闭全屏' : '全屏'}
+              {viewMode === 'fullscreen' ? t('exit_full_screen') : t('full_screen')}
             </Button>
           )}
           {viewMode === 'fullscreen' && (

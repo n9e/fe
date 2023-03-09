@@ -95,7 +95,7 @@ export function format(value: number, options = defaultOptions) {
   const expArray = autoDetect.match(autoDetectRegex);
 
   if (expArray) {
-    const expVal = Math.floor(parseInt(_.get(expArray, '[2]')) / 3) * 3;
+    const expVal = Math.floor(parseInt(_.get(expArray, '[2]')! as string) / 3) * 3;
     const map = _.find(valueMap, { exp: expVal });
 
     if (!map) {

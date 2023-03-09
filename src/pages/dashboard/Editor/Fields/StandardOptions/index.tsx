@@ -18,6 +18,7 @@ import React from 'react';
 import { Form, Select, InputNumber, Row, Col, Tooltip, Input } from 'antd';
 import { InfoCircleOutlined, CaretDownOutlined } from '@ant-design/icons';
 import _ from 'lodash';
+import { useTranslation, Trans } from 'react-i18next';
 import { Panel } from '../../Components/Collapse';
 
 interface IProps {
@@ -28,10 +29,11 @@ interface IProps {
 const { Option, OptGroup } = Select;
 
 export default function index(props: IProps) {
+  const { t } = useTranslation('dashboard');
   const { preNamePrefix = [], namePrefix = ['options', 'standardOptions'] } = props;
 
   return (
-    <Panel header='高级设置'>
+    <Panel header={t('panel.standardOptions.title')}>
       <>
         <Form.Item shouldUpdate>
           {({ getFieldValue }) => {
@@ -42,20 +44,20 @@ export default function index(props: IProps) {
                   <Form.Item
                     label={
                       <div>
-                        单位{' '}
+                        {t('panel.standardOptions.unit')}{' '}
                         <Tooltip
                           overlayInnerStyle={{
                             width: 500,
                           }}
                           getTooltipContainer={() => document.body}
                           title={
-                            <div>
+                            <Trans ns='dashboard' i18nKey='panel.standardOptions.unit_tip'>
                               <div>默认会做 SI Prefixes 处理，如不想默认的处理可选择 none 关闭</div>
                               <div>Data(SI): 基数为 1000, 单位为 B、kB、MB、GB、TB、PB、EB、ZB、YB</div>
                               <div>Data(IEC): 基数为 1024, 单位为 B、KiB、MiB、GiB、TiB、PiB、EiB、ZiB、YiB</div>
                               <div>bits: b</div>
                               <div>bytes: B</div>
-                            </div>
+                            </Trans>
                           }
                         >
                           <InfoCircleOutlined />
@@ -74,11 +76,11 @@ export default function index(props: IProps) {
                         <Option value='bitsIEC'>bits(IEC)</Option>
                         <Option value='bytesIEC'>bytes(IEC)</Option>
                       </OptGroup>
-                      <OptGroup label='百分比'>
-                        <Option value='percent'>百分比(0-100)</Option>
-                        <Option value='percentUnit'>百分比(0.0-1.0)</Option>
+                      <OptGroup label='Percent'>
+                        <Option value='percent'>percent(0-100)</Option>
+                        <Option value='percentUnit'>percent(0.0-1.0)</Option>
                       </OptGroup>
-                      <OptGroup label='时间'>
+                      <OptGroup label='Time'>
                         <Option value='seconds'>seconds</Option>
                         <Option value='milliseconds'>milliseconds</Option>
                         <Option value='humantimeSeconds'>humanize(seconds)</Option>
@@ -91,7 +93,7 @@ export default function index(props: IProps) {
                 </Col>
                 {unit.indexOf('datetime') > -1 && (
                   <Col span={12}>
-                    <Form.Item label='时间格式化' name={[...preNamePrefix, ...namePrefix, 'dateFormat']}>
+                    <Form.Item label={t('panel.standardOptions.datetime')} name={[...preNamePrefix, ...namePrefix, 'dateFormat']}>
                       <Input style={{ width: '100%' }} placeholder='YYYY-MM-DD HH:mm:ss' />
                     </Form.Item>
                   </Col>
@@ -102,17 +104,17 @@ export default function index(props: IProps) {
         </Form.Item>
         <Row gutter={10}>
           <Col span={8}>
-            <Form.Item label='最小值' name={[...preNamePrefix, ...namePrefix, 'min']}>
+            <Form.Item label={t('panel.standardOptions.min')} name={[...preNamePrefix, ...namePrefix, 'min']}>
               <InputNumber placeholder='auto' style={{ width: '100%' }} />
             </Form.Item>
           </Col>
           <Col span={8}>
-            <Form.Item label='最大值' name={[...preNamePrefix, ...namePrefix, 'max']}>
+            <Form.Item label={t('panel.standardOptions.max')} name={[...preNamePrefix, ...namePrefix, 'max']}>
               <InputNumber placeholder='auto' style={{ width: '100%' }} />
             </Form.Item>
           </Col>
           <Col span={8}>
-            <Form.Item label='小数点' name={[...preNamePrefix, ...namePrefix, 'decimals']}>
+            <Form.Item label={t('panel.standardOptions.decimals')} name={[...preNamePrefix, ...namePrefix, 'decimals']}>
               <InputNumber placeholder='auto' style={{ width: '100%' }} />
             </Form.Item>
           </Col>

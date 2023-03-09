@@ -14,21 +14,22 @@
  * limitations under the License.
  *
  */
-import React, { useEffect, useState, useCallback } from 'react';
-import { Modal, Tag, Form, Input, Alert, Select, Tooltip, message } from 'antd';
+import React, { useEffect, useState, useCallback, useContext } from 'react';
+import { Modal, Tag, Form, Input, Alert, Select, Tooltip } from 'antd';
 import { DatabaseOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _, { debounce } from 'lodash';
 import classNames from 'classnames';
-import { useDispatch, useSelector } from 'react-redux';
 import { bindTags, unbindTags, moveTargetBusi, updateTargetNote, deleteTargets, getTargetTags } from '@/services/monObjectManage';
-import { RootState } from '@/store/common';
-import { CommonStoreState } from '@/store/commonInterface';
 import PageLayout from '@/components/pageLayout';
 import { getBusiGroups } from '@/services/common';
+import { CommonStateContext } from '@/App';
 import List from './List';
 import BusinessGroup from './BusinessGroup';
+import './locale';
 import './index.less';
+
+export { BusinessGroup };
 
 enum OperateType {
   BindTag = 'bindTag',
@@ -49,139 +50,139 @@ interface OperateionModalProps {
 
 const { TextArea } = Input;
 
-// 绑定标签弹窗内容
-const bindTagDetail = () => {
-  // 校验单个标签格式是否正确
-  function isTagValid(tag) {
-    const contentRegExp = /^[a-zA-Z_][\w]*={1}[^=]+$/;
-    return {
-      isCorrectFormat: contentRegExp.test(tag.toString()),
-      isLengthAllowed: tag.toString().length <= 64,
-    };
-  }
-
-  // 渲染标签
-  function tagRender(content) {
-    const { isCorrectFormat, isLengthAllowed } = isTagValid(content.value);
-    return isCorrectFormat && isLengthAllowed ? (
-      <Tag closable={content.closable} onClose={content.onClose}>
-        {content.value}
-      </Tag>
-    ) : (
-      <Tooltip title={isCorrectFormat ? '标签长度应小于等于 64 位' : '标签格式应为 key=value。且 key 以字母或下划线开头，由字母、数字和下划线组成。'}>
-        <Tag color='error' closable={content.closable} onClose={content.onClose} style={{ marginTop: '2px' }}>
-          {content.value}
-        </Tag>
-      </Tooltip>
-    );
-  }
-
-  // 校验所有标签格式
-  function isValidFormat() {
-    return {
-      validator(_, value) {
-        const isInvalid = value.some((tag) => {
-          const { isCorrectFormat, isLengthAllowed } = isTagValid(tag);
-          if (!isCorrectFormat || !isLengthAllowed) {
-            return true;
-          }
-        });
-        return isInvalid ? Promise.reject(new Error('标签格式不正确，请检查！')) : Promise.resolve();
-      },
-    };
-  }
-
-  return {
-    operateTitle: '绑定标签',
-    requestFunc: bindTags,
-    isFormItem: true,
-    render() {
-      return (
-        <Form.Item label='标签' name='tags' rules={[{ required: true, message: '请填写至少一项标签！' }, isValidFormat]}>
-          <Select mode='tags' tokenSeparators={[' ']} open={false} placeholder={'标签格式为 key=value ，使用回车或空格分隔'} tagRender={tagRender} />
-        </Form.Item>
-      );
-    },
-  };
-};
-
-// 解绑标签弹窗内容
-const unbindTagDetail = (tagsList) => {
-  return {
-    operateTitle: '解绑标签',
-    requestFunc: unbindTags,
-    isFormItem: true,
-    render() {
-      return (
-        <Form.Item label='标签' name='tags' rules={[{ required: true, message: '请选择至少一项标签！' }]}>
-          <Select mode='multiple' showArrow={true} placeholder='请选择要解绑的标签' options={tagsList.map((tag) => ({ label: tag, value: tag }))} />
-        </Form.Item>
-      );
-    },
-  };
-};
-
-// 移出业务组弹窗内容
-const removeBusiDetail = () => {
-  return {
-    operateTitle: '移出业务组',
-    requestFunc: moveTargetBusi,
-    isFormItem: false,
-    render() {
-      return <Alert message='提示信息：移出所属业务组，该业务组的管理人员将不再有权限操作这些监控对象！您可能需要提前清空这批监控对象的标签和备注信息！' type='error' />;
-    },
-  };
-};
-
-// 修改备注弹窗内容
-const updateNoteDetail = () => {
-  return {
-    operateTitle: '修改备注',
-    requestFunc: updateTargetNote,
-    isFormItem: true,
-    render() {
-      return (
-        <Form.Item label='备注信息' name='note'>
-          <Input maxLength={64} placeholder='内容如果为空，表示清空备注信息' />
-        </Form.Item>
-      );
-    },
-  };
-};
-
-// 批量删除弹窗内容
-const deleteDetail = () => {
-  return {
-    operateTitle: '批量删除',
-    requestFunc: deleteTargets,
-    isFormItem: false,
-    render() {
-      return <Alert message='提示信息：该操作会把监控对象从系统内中彻底删除，非常危险，慎重操作！' type='error' />;
-    },
-  };
-};
-
 const OperationModal: React.FC<OperateionModalProps> = ({ operateType, setOperateType, idents, reloadList }) => {
-  const { busiGroups } = useSelector<RootState, CommonStoreState>((state) => state.common);
+  const { t } = useTranslation('targets');
+  const { busiGroups } = useContext(CommonStateContext);
   const [form] = Form.useForm();
   const [confirmLoading, setConfirmLoading] = useState<boolean>(false);
   const [identList, setIdentList] = useState<string[]>(idents);
   const [tagsList, setTagsList] = useState<string[]>([]);
   const detailProp = operateType === OperateType.UnbindTag ? tagsList : busiGroups;
 
+  // 绑定标签弹窗内容
+  const bindTagDetail = () => {
+    // 校验单个标签格式是否正确
+    function isTagValid(tag) {
+      const contentRegExp = /^[a-zA-Z_][\w]*={1}[^=]+$/;
+      return {
+        isCorrectFormat: contentRegExp.test(tag.toString()),
+        isLengthAllowed: tag.toString().length <= 64,
+      };
+    }
+
+    // 渲染标签
+    function tagRender(content) {
+      const { isCorrectFormat, isLengthAllowed } = isTagValid(content.value);
+      return isCorrectFormat && isLengthAllowed ? (
+        <Tag closable={content.closable} onClose={content.onClose}>
+          {content.value}
+        </Tag>
+      ) : (
+        <Tooltip title={isCorrectFormat ? t('bind_tag.render_tip1') : t('bind_tag.render_tip2')}>
+          <Tag color='error' closable={content.closable} onClose={content.onClose} style={{ marginTop: '2px' }}>
+            {content.value}
+          </Tag>
+        </Tooltip>
+      );
+    }
+
+    // 校验所有标签格式
+    function isValidFormat() {
+      return {
+        validator(_, value) {
+          const isInvalid = value.some((tag) => {
+            const { isCorrectFormat, isLengthAllowed } = isTagValid(tag);
+            if (!isCorrectFormat || !isLengthAllowed) {
+              return true;
+            }
+          });
+          return isInvalid ? Promise.reject(new Error(t('bind_tag.msg2'))) : Promise.resolve();
+        },
+      };
+    }
+
+    return {
+      operateTitle: t('bind_tag.title'),
+      requestFunc: bindTags,
+      isFormItem: true,
+      render() {
+        return (
+          <Form.Item label={t('common:table.tag')} name='tags' rules={[{ required: true, message: t('bind_tag.msg1') }, isValidFormat]}>
+            <Select mode='tags' tokenSeparators={[' ']} open={false} placeholder={t('bind_tag.placeholder')} tagRender={tagRender} />
+          </Form.Item>
+        );
+      },
+    };
+  };
+
+  // 解绑标签弹窗内容
+  const unbindTagDetail = (tagsList) => {
+    return {
+      operateTitle: t('unbind_tag.title'),
+      requestFunc: unbindTags,
+      isFormItem: true,
+      render() {
+        return (
+          <Form.Item label={t('common:table.tag')} name='tags' rules={[{ required: true, message: t('unbind_tag.msg') }]}>
+            <Select mode='multiple' showArrow={true} placeholder={t('unbind_tag.placeholder')} options={tagsList.map((tag) => ({ label: tag, value: tag }))} />
+          </Form.Item>
+        );
+      },
+    };
+  };
+
+  // 移出业务组弹窗内容
+  const removeBusiDetail = () => {
+    return {
+      operateTitle: t('remove_busi.title'),
+      requestFunc: moveTargetBusi,
+      isFormItem: false,
+      render() {
+        return <Alert message={t('remove_busi.msg')} type='error' />;
+      },
+    };
+  };
+
+  // 修改备注弹窗内容
+  const updateNoteDetail = () => {
+    return {
+      operateTitle: t('update_note.title'),
+      requestFunc: updateTargetNote,
+      isFormItem: true,
+      render() {
+        return (
+          <Form.Item label={t('common:table.note')} name='note'>
+            <Input maxLength={64} placeholder={t('update_note.placeholder')} />
+          </Form.Item>
+        );
+      },
+    };
+  };
+
+  // 批量删除弹窗内容
+  const deleteDetail = () => {
+    return {
+      operateTitle: t('batch_delete.title'),
+      requestFunc: deleteTargets,
+      isFormItem: false,
+      render() {
+        return <Alert message={t('batch_delete.msg')} type='error' />;
+      },
+    };
+  };
+
   // 修改业务组弹窗内容
   const updateBusiDetail = (busiGroups) => {
     return {
-      operateTitle: '修改业务组',
+      operateTitle: t('update_busi.title'),
       requestFunc: moveTargetBusi,
       isFormItem: true,
       render() {
         return (
-          <Form.Item label='归属业务组' name='bgid' rules={[{ required: true, message: '请选择归属业务组！' }]}>
+          <Form.Item label={t('update_busi.label')} name='bgid' rules={[{ required: true }]}>
             <Select
               showSearch
               style={{ width: '100%' }}
-              placeholder='请选择归属业务组'
               options={filteredBusiGroups.map(({ id, name }) => ({
                 label: name,
                 value: id,
@@ -247,7 +248,6 @@ const OperationModal: React.FC<OperateionModalProps> = ({ operateType, setOperat
       data.idents = data.idents.split('\n');
       requestFunc(data)
         .then(() => {
-          message.success(`${operateTitle}成功！`);
           setOperateType(OperateType.None);
           reloadList();
           form.resetFields();
@@ -304,7 +304,7 @@ const OperationModal: React.FC<OperateionModalProps> = ({ operateType, setOperat
       okButtonProps={{
         danger: operateType === OperateType.RemoveBusi || operateType === OperateType.Delete,
       }}
-      okText={operateType === OperateType.RemoveBusi ? '移出' : operateType === OperateType.Delete ? '删除' : '确定'}
+      okText={operateType === OperateType.RemoveBusi ? t('remove_busi.btn') : operateType === OperateType.Delete ? t('batch_delete.btn') : t('common:btn.ok')}
       onOk={submitForm}
       onCancel={() => {
         setOperateType(OperateType.None);
@@ -313,8 +313,8 @@ const OperationModal: React.FC<OperateionModalProps> = ({ operateType, setOperat
     >
       {/* 基础展示表单项 */}
       <Form form={form} labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}>
-        <Form.Item label='监控对象' name='idents' rules={[{ required: true, message: '请填写监控对象指标' }]}>
-          <TextArea autoSize={{ minRows: 3, maxRows: 10 }} placeholder='请填写监控对象的指标，一行一个' onBlur={formatValue} />
+        <Form.Item label={t('targets')} name='idents' rules={[{ required: true }]}>
+          <TextArea autoSize={{ minRows: 3, maxRows: 10 }} placeholder={t('targets_placeholder')} onBlur={formatValue} />
         </Form.Item>
         {isFormItem && render()}
       </Form>
@@ -324,33 +324,27 @@ const OperationModal: React.FC<OperateionModalProps> = ({ operateType, setOperat
 };
 
 const MonObjectManage: React.FC = () => {
-  const dispatch = useDispatch();
-  const { curBusiItem } = useSelector<RootState, CommonStoreState>((state) => state.common);
-  const { t } = useTranslation();
+  const { t } = useTranslation('targets');
+  const commonState = useContext(CommonStateContext);
+  const [curBusiId, setCurBusiId] = useState<number>(commonState.curBusiId);
   const [operateType, setOperateType] = useState<OperateType>(OperateType.None);
-  const [curBusiId, setCurBusiId] = useState<number>(curBusiItem?.id || -1);
   const [selectedRowKeys, setSelectedRowKeys] = useState<(string | number)[]>([]);
   const [selectedIdents, setSelectedIdents] = useState<string[]>([]);
   const [refreshFlag, setRefreshFlag] = useState(_.uniqueId('refreshFlag_'));
 
   return (
-    <PageLayout icon={<DatabaseOutlined />} title={t('对象列表')} hideCluster>
+    <PageLayout icon={<DatabaseOutlined />} title={t('title')}>
       <div className='object-manage-page-content'>
         <BusinessGroup
           curBusiId={curBusiId}
-          setCurBusiId={(id, item) => {
+          setCurBusiId={(id) => {
+            commonState.setCurBusiId(id);
             setCurBusiId(id);
-            dispatch({
-              type: 'common/saveData',
-              prop: 'curBusiItem',
-              data: item,
-            });
-            localStorage.setItem('curBusiItem', JSON.stringify(item));
           }}
           renderHeadExtra={() => {
             return (
               <div>
-                <div className='left-area-group-title'>预留筛选</div>
+                <div className='left-area-group-title'>{t('default_filter')}</div>
                 <div
                   className={classNames({
                     'n9e-metric-views-list-content-item': true,
@@ -360,7 +354,7 @@ const MonObjectManage: React.FC = () => {
                     setCurBusiId(0);
                   }}
                 >
-                  未归组对象
+                  {t('ungrouped_targets')}
                 </div>
                 <div
                   className={classNames({
@@ -371,7 +365,7 @@ const MonObjectManage: React.FC = () => {
                     setCurBusiId(-1);
                   }}
                 >
-                  全部对象
+                  {t('all_targets')}
                 </div>
               </div>
             );

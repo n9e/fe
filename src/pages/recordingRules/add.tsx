@@ -5,9 +5,9 @@ import OperateForm from './components/operateForm';
 import './index.less';
 
 const StrategyAdd: React.FC = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('recordingRules');
   return (
-    <PageLayout title={t('记录规则')} showBack hideCluster>
+    <PageLayout title={t('title')} showBack>
       <OperateForm />
     </PageLayout>
   );

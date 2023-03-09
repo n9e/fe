@@ -14,8 +14,6 @@
  * limitations under the License.
  *
  */
-import dayjs from 'dayjs';
-import { Range } from '@/components/DateRangePicker';
 export enum ChartType {
   Line = 'line',
   Pie = 'pie',
@@ -91,7 +89,7 @@ export interface TagForVariable extends Tag {
 }
 
 export interface ChartComponentProps {
-  range: Range;
+  range: any;
   limit: number;
   metric: string | string[];
   idents?: string[];

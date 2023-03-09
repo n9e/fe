@@ -14,69 +14,69 @@
  * limitations under the License.
  *
  */
-import React, { useState } from 'react';
-import { Form, Input, Button, Radio, message } from 'antd';
+import React from 'react';
+import { Form, Input, Button, message } from 'antd';
 import { UpdatePwd } from '@/services/login';
 import { useTranslation } from 'react-i18next';
+
 export default function ChangePassword() {
-  const { t } = useTranslation();
+  const { t } = useTranslation('account');
   const [form] = Form.useForm();
 
   const handleSubmit = async () => {
     try {
       await form.validateFields();
       modifyPassword();
-    } catch {
-      console.log(t('输入有误'));
+    } catch (e) {
+      console.log(e);
     }
   };
 
   const modifyPassword = () => {
     const { oldpass, newpass } = form.getFieldsValue();
-    UpdatePwd(oldpass, newpass).then((res) => {
-      console.log(res);
-      message.success(t('修改密码成功'));
+    UpdatePwd(oldpass, newpass).then(() => {
+      message.success(t('changeSuccess'));
     });
   };
 
   return (
     <Form form={form} layout='vertical' requiredMark={true}>
       <Form.Item
-        label={<span>{t('旧密码')}:</span>}
+        label={<span>{t('password.old')}:</span>}
         required
         name='oldpass'
         rules={[
           {
             required: true,
-            message: t('请输入旧密码'),
+            message: t('password.oldMsg'),
           },
         ]}
       >
-        <Input placeholder={t('请输入旧密码')} type='password' />
+        <Input placeholder={t('password.oldMsg')} type='password' />
       </Form.Item>
       <Form.Item
-        label={<span>{t('新密码')}:</span>}
+        label={<span>{t('password.new')}:</span>}
         required
         name='newpass'
         hasFeedback
         rules={[
           {
             required: true,
-            message: t('请输入新密码'),
+            message: t('password.newMsg'),
           },
         ]}
       >
-        <Input placeholder={t('请输入新密码')} type='password' />
+        <Input placeholder={t('password.newMsg')} type='password' />
       </Form.Item>
       <Form.Item
-        label={<span>{t('确认密码')}: </span>}
+        label={<span>{t('password.confirm')}: </span>}
         required
         name='newpassagain'
         hasFeedback
         rules={[
           {
             required: true,
-            message: t('再次输入新密码'),
+            message: t('password.confirmMsg'),
           },
           ({ getFieldValue }) => ({
             validator(_, value) {
@@ -84,17 +84,17 @@ export default function ChangePassword() {
                 return Promise.resolve();
               }
 
-              return Promise.reject(new Error('密码不一致!'));
+              return Promise.reject(new Error(t('password.notMatch')));
             },
           }),
         ]}
       >
-        <Input placeholder={t('再次输入新密码')} type='password' />
+        <Input placeholder={t('password.confirmMsg')} type='password' />
       </Form.Item>
 
       <Form.Item>
         <Button type='primary' onClick={handleSubmit}>
-          {t('确认修改')}
+          {t('save')}
         </Button>
       </Form.Item>
     </Form>

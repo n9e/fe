@@ -1,22 +1,20 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import { Button, Modal, message, Dropdown, Table, Switch } from 'antd';
+import React, { useEffect, useState, useMemo, useContext } from 'react';
+import { Button, Modal, message, Dropdown, Table, Switch, Select, Space, Tag } from 'antd';
 import { useHistory } from 'react-router-dom';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { ColumnType } from 'antd/lib/table';
 import dayjs from 'dayjs';
+import _ from 'lodash';
 import RefreshIcon from '@/components/RefreshIcon';
-import ColorTag from '@/components/ColorTag';
 import { DownOutlined } from '@ant-design/icons';
-import ImportAndDownloadModal, { ModalStatus } from '@/components/ImportAndDownloadModal';
-import ColumnSelect from '@/components/ColumnSelect';
 import { getRecordingRuleSubList, updateRecordingRules } from '@/services/recording';
 import SearchInput from '@/components/BaseSearchInput';
-import { RootState } from '@/store/common';
-import { CommonStoreState } from '@/store/commonInterface';
 import { strategyItem, strategyStatus } from '@/store/warningInterface';
-import { addOrEditRecordingRule, deleteRecordingRule } from '@/services/recording';
+import { deleteRecordingRule } from '@/services/recording';
 import EditModal from './components/editModal';
+import { CommonStateContext } from '@/App';
+import Import from './components/Import';
+import Export from './components/Export';
 
 interface Props {
   bgid?: number;
@@ -27,7 +25,7 @@ const pageSizeOptionsDefault = ['30', '50', '100', '300'];
 const exportIgnoreAttrsObj = {
   id: undefined,
   group_id: undefined,
-  cluster: undefined,
+  datasource_ids: undefined,
   create_at: undefined,
   create_by: undefined,
   update_at: undefined,
@@ -36,21 +34,17 @@ const exportIgnoreAttrsObj = {
 
 const PageTable: React.FC<Props> = ({ bgid }) => {
   const [severity] = useState<number>();
-  const [clusters, setClusters] = useState<string[]>([]);
-  const { t } = useTranslation();
+  const { t } = useTranslation('recordingRules');
   const history = useHistory();
-  const [modalType, setModalType] = useState<ModalStatus>(ModalStatus.None);
   const [selectRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
   const [selectedRows, setSelectedRows] = useState<strategyItem[]>([]);
-  const [exportData, setExportData] = useState<string>('');
-  const { curBusiItem } = useSelector<RootState, CommonStoreState>((state) => state.common);
-
+  const { curBusiId, groupedDatasourceList } = useContext(CommonStateContext);
   const [query, setQuery] = useState<string>('');
   const [isModalVisible, setisModalVisible] = useState<boolean>(false);
-
   const [currentStrategyDataAll, setCurrentStrategyDataAll] = useState([]);
   const [currentStrategyData, setCurrentStrategyData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [datasourceIds, setDatasourceIds] = useState<number[]>();
 
   useEffect(() => {
     getRecordingRules();
@@ -58,44 +52,42 @@ const PageTable: React.FC<Props> = ({ bgid }) => {
 
   useEffect(() => {
     filterData();
-  }, [query, clusters, currentStrategyDataAll]);
+  }, [query, datasourceIds, currentStrategyDataAll]);
 
   const getRecordingRules = async () => {
     if (!bgid) {
       return;
     }
     setLoading(true);
-    const { success, dat } = await getRecordingRuleSubList(curBusiItem.id);
+    const { success, dat } = await getRecordingRuleSubList(curBusiId);
     if (success) {
       setCurrentStrategyDataAll(dat.filter((item) => !severity || item.severity === severity) || []);
       setLoading(false);
     }
   };
-  const pareArray = (paArr, chArr) => {
-    for (let i = 0; i < chArr.length; i++) {
-      if (paArr.includes(chArr[i])) {
-        return true;
-      }
-    }
-    return false;
-  };
+
   const filterData = () => {
     const data = JSON.parse(JSON.stringify(currentStrategyDataAll));
     const res = data.filter((item) => {
       const lowerCaseQuery = query.toLowerCase();
       return (
         (item.name.toLowerCase().indexOf(lowerCaseQuery) > -1 || item.append_tags.join(' ').toLowerCase().indexOf(lowerCaseQuery) > -1) &&
-        ((clusters && pareArray(item.cluster, clusters)) || clusters?.length === 0)
+        (_.some(item.datasource_ids, (id) => {
+          if (id === 0) return true;
+          return _.includes(datasourceIds, id);
+        }) ||
+          datasourceIds?.length === 0 ||
+          !datasourceIds)
       );
     });
     setCurrentStrategyData(res || []);
   };
   const goToAddWarningStrategy = () => {
-    curBusiItem?.id && history.push(`/recording-rules/add/${curBusiItem.id}`);
+    history.push(`/recording-rules/add/${curBusiId}`);
   };
 
   const handleClickEdit = (id, isClone = false) => {
-    curBusiItem?.id && history.push(`/recording-rules/edit/${id}${isClone ? '?mode=clone' : ''}`);
+    history.push(`/recording-rules/edit/${id}${isClone ? '?mode=clone' : ''}`);
   };
 
   const refreshList = () => {
@@ -104,20 +96,23 @@ const PageTable: React.FC<Props> = ({ bgid }) => {
 
   const columns: ColumnType<strategyItem>[] = [
     {
-      title: t('集群'),
-      dataIndex: 'cluster',
-      render: (data) => {
-        const array = data.split(' ') || [];
-        return (
-          (array.length &&
-            array.map((tag: string, index: number) => {
-              return <ColorTag text={tag} key={index}></ColorTag>;
-            })) || <div></div>
-        );
+      title: t('common:datasource.name'),
+      dataIndex: 'datasource_ids',
+      render: (data, record) => {
+        return _.map(data, (item) => {
+          if (item === 0) {
+            return (
+              <Tag color='purple' key={item}>
+                $all
+              </Tag>
+            );
+          }
+          return <Tag key={item}>{_.find(groupedDatasourceList.prometheus, { id: item })?.name!}</Tag>;
+        });
       },
     },
     {
-      title: t('名称'),
+      title: t('name'),
       dataIndex: 'name',
       render: (data, record) => {
         return (
@@ -133,32 +128,36 @@ const PageTable: React.FC<Props> = ({ bgid }) => {
       },
     },
     {
-      title: t('计算周期'),
+      title: t('prom_eval_interval'),
       dataIndex: 'prom_eval_interval',
-      render: (data, record) => {
+      render: (data) => {
         return data + 's';
       },
     },
     {
-      title: t('附加标签'),
+      title: t('append_tags'),
       dataIndex: 'append_tags',
       render: (data) => {
         const array = data || [];
         return (
           (array.length &&
             array.map((tag: string, index: number) => {
-              return <ColorTag text={tag} key={index}></ColorTag>;
+              return (
+                <Tag color='purple' key={index}>
+                  {tag}
+                </Tag>
+              );
             })) || <div></div>
         );
       },
     },
     {
-      title: t('更新时间'),
+      title: t('common:table.update_at'),
       dataIndex: 'update_at',
       render: (text: string) => dayjs(Number(text) * 1000).format('YYYY-MM-DD HH:mm:ss'),
     },
     {
-      title: t('启用'),
+      title: t('disabled'),
       dataIndex: 'disabled',
       render: (disabled, record) => (
         <Switch
@@ -173,7 +172,7 @@ const PageTable: React.FC<Props> = ({ bgid }) => {
                   disabled: !disabled ? 1 : 0,
                 },
               },
-              curBusiItem.id,
+              curBusiId,
             ).then(() => {
               refreshList();
             });
@@ -182,7 +181,7 @@ const PageTable: React.FC<Props> = ({ bgid }) => {
       ),
     },
     {
-      title: t('操作'),
+      title: t('common:table.operations'),
       dataIndex: 'operator',
       render: (data, record) => {
         return (
@@ -193,16 +192,16 @@ const PageTable: React.FC<Props> = ({ bgid }) => {
                 handleClickEdit(record.id, true);
               }}
             >
-              {t('克隆')}
+              {t('common:btn.clone')}
             </div>
             <div
               className='table-operator-area-warning'
               onClick={() => {
                 confirm({
-                  title: t('是否删除该记录规则?'),
+                  title: t('common:confirm.delete'),
                   onOk: () => {
-                    deleteRecordingRule([record.id], curBusiItem.id).then(() => {
-                      message.success(t('删除成功'));
+                    deleteRecordingRule([record.id], curBusiId).then(() => {
+                      message.success(t('common:success.delete'));
                       refreshList();
                     });
                   },
@@ -211,7 +210,7 @@ const PageTable: React.FC<Props> = ({ bgid }) => {
                 });
               }}
             >
-              {t('删除')}
+              {t('common:btn.delete')}
             </div>
           </div>
         );
@@ -228,19 +227,20 @@ const PageTable: React.FC<Props> = ({ bgid }) => {
       }
     });
   };
-  const openModel = (title, item) => {
-    if (selectRowKeys.length == 0) {
-      message.warning(t('请先选择策略'));
-      return;
-    }
-    setisModalVisible(true);
-  };
 
   const menu = useMemo(() => {
     return (
       <ul className='ant-dropdown-menu'>
-        <li className='ant-dropdown-menu-item' onClick={() => setModalType(ModalStatus.Import)}>
-          <span>{t('导入记录规则')}</span>
+        <li
+          className='ant-dropdown-menu-item'
+          onClick={() => {
+            Import({
+              busiId: curBusiId,
+              refreshList,
+            });
+          }}
+        >
+          <span>{t('batch.import.title')}</span>
         </li>
         <li
           className='ant-dropdown-menu-item'
@@ -249,24 +249,25 @@ const PageTable: React.FC<Props> = ({ bgid }) => {
               const exportData = selectedRows.map((item) => {
                 return { ...item, ...exportIgnoreAttrsObj };
               });
-              setExportData(JSON.stringify(exportData, null, 2));
-              setModalType(ModalStatus.Export);
+              Export({
+                data: JSON.stringify(exportData, null, 2),
+              });
             } else {
-              message.warning(t('未选择任何规则'));
+              message.warning(t('batch.must_select_one'));
             }
           }}
         >
-          <span>{t('导出记录规则')}</span>
+          <span>{t('batch.export.title')}</span>
         </li>
         <li
           className='ant-dropdown-menu-item'
           onClick={() => {
             if (selectRowKeys.length) {
               confirm({
-                title: t('是否批量删除记录规则?'),
+                title: t('common:confirm.delete'),
                 onOk: () => {
-                  deleteRecordingRule(selectRowKeys as number[], curBusiItem.id).then(() => {
-                    message.success(t('删除成功'));
+                  deleteRecordingRule(selectRowKeys as number[], curBusiId).then(() => {
+                    message.success(t('common:success.delete'));
                     refreshList();
                   });
                 },
@@ -274,28 +275,27 @@ const PageTable: React.FC<Props> = ({ bgid }) => {
                 onCancel() {},
               });
             } else {
-              message.warning(t('未选择任何规则'));
+              message.warning(t('batch.must_select_one'));
             }
           }}
         >
-          <span>{t('批量删除规则')}</span>
+          <span>{t('batch.delete')}</span>
         </li>
         <li
           className='ant-dropdown-menu-item'
           onClick={() => {
-            openModel(t('批量更新规则'), 1);
+            if (selectRowKeys.length == 0) {
+              message.warning(t('batch.must_select_one'));
+              return;
+            }
+            setisModalVisible(true);
           }}
         >
-          <span>{t('批量更新规则')}</span>
+          <span>{t('batch.update.title')}</span>
         </li>
       </ul>
     );
   }, [selectRowKeys, t]);
-
-  const handleImportStrategy = async (d) => {
-    const { dat } = await addOrEditRecordingRule(d, curBusiItem.id, 'Post');
-    return dat || {};
-  };
 
   const editModalFinish = async (isOk, fieldsData?) => {
     if (isOk) {
@@ -304,10 +304,10 @@ const PageTable: React.FC<Props> = ({ bgid }) => {
           ids: selectRowKeys,
           fields: fieldsData,
         },
-        curBusiItem.id,
+        curBusiId,
       );
       if (!res.err) {
-        message.success('修改成功！');
+        message.success(t('common:success.edit'));
         refreshList();
         setisModalVisible(false);
       } else {
@@ -321,24 +321,39 @@ const PageTable: React.FC<Props> = ({ bgid }) => {
   return (
     <div className='strategy-table-content'>
       <div className='strategy-table-search table-handle'>
-        <div className='strategy-table-search-left'>
+        <Space>
           <RefreshIcon
-            className='strategy-table-search-left-refresh'
             onClick={() => {
               refreshList();
             }}
           />
-          <ColumnSelect noLeftPadding noRightPadding={false} onClusterChange={(e) => setClusters(e)} />
-          <SearchInput className={'searchInput'} placeholder={t('搜索名称或标签')} onSearch={setQuery} allowClear />
-        </div>
+          <Select
+            allowClear
+            placeholder={t('common:datasource.name')}
+            style={{ minWidth: 100 }}
+            dropdownMatchSelectWidth={false}
+            mode='multiple'
+            value={datasourceIds}
+            onChange={(val) => {
+              setDatasourceIds(val);
+            }}
+          >
+            {_.map(groupedDatasourceList?.prometheus, (item) => (
+              <Select.Option value={item.id} key={item.id}>
+                {item.name}
+              </Select.Option>
+            ))}
+          </Select>
+          <SearchInput placeholder={t('search_placeholder')} onSearch={setQuery} allowClear />
+        </Space>
         <div className='strategy-table-search-right'>
           <Button type='primary' onClick={goToAddWarningStrategy} className='strategy-table-search-right-create'>
-            {t('新增记录规则')}
+            {t('common:btn.add')}
           </Button>
           <div className={'table-more-options'}>
             <Dropdown overlay={menu} trigger={['click']}>
               <Button onClick={(e) => e.stopPropagation()}>
-                {t('更多操作')}
+                {t('common:btn.more')}
                 <DownOutlined
                   style={{
                     marginLeft: 2,
@@ -351,13 +366,14 @@ const PageTable: React.FC<Props> = ({ bgid }) => {
       </div>
 
       <Table
+        size='small'
         rowKey='id'
         pagination={{
           total: currentStrategyData.length,
           showQuickJumper: true,
           showSizeChanger: true,
           showTotal: (total) => {
-            return `共 ${total} 条数据`;
+            return t('common:table.total', { total });
           },
           pageSizeOptions: pageSizeOptionsDefault,
           defaultPageSize: 30,
@@ -372,18 +388,6 @@ const PageTable: React.FC<Props> = ({ bgid }) => {
           },
         }}
         columns={columns}
-      />
-      <ImportAndDownloadModal
-        status={modalType}
-        onClose={() => {
-          setModalType(ModalStatus.None);
-        }}
-        onSuccess={() => {
-          getRecordingRules();
-        }}
-        onSubmit={handleImportStrategy}
-        title={t('记录规则')}
-        exportData={exportData}
       />
       {isModalVisible && <EditModal isModalVisible={isModalVisible} editModalFinish={editModalFinish} />}
     </div>

@@ -18,15 +18,15 @@ import React from 'react';
 import { Form, Input, Row, Col, Select, Switch, Button, Space } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
-import AdvancedWrap from '@/components/AdvancedWrap';
-import IndexSelect from '@/pages/warning/strategy/components/ElasticsearchSettings/IndexSelect';
+import IndexSelect from '@/pages/alertRules/Form/Rule/Rule/Log/ElasticsearchSettings/IndexSelect';
 import ClusterSelect from '@/pages/dashboard/Editor/QueryEditor/components/ClusterSelect';
 import { IVariable } from './definition';
 import { convertExpressionToQuery, replaceExpressionVars, filterOptionsByReg, setVaraiableSelected } from './constant';
 
 interface IProps {
-  cluster: string;
+  datasourceValue: number;
   id: string;
   range: IRawTimeRange;
   index: number;
@@ -54,13 +54,11 @@ const typeOptions = [
   },
 ];
 
-const prometheusOption = {
-  value: 'prometheus',
-  label: 'Prometheus',
-};
-
 const allOptions = [
-  prometheusOption,
+  {
+    value: 'prometheus',
+    label: 'Prometheus',
+  },
   {
     value: 'elasticsearch',
     label: 'Elasticsearch',
@@ -68,7 +66,8 @@ const allOptions = [
 ];
 
 function EditItem(props: IProps) {
-  const { cluster, data, range, id, index, onOk, onCancel } = props;
+  const { t } = useTranslation('dashboard');
+  const { datasourceValue, data, range, id, index, onOk, onCancel } = props;
   const [form] = Form.useForm();
   // TODO: 不太清楚这里的逻辑是干嘛的，后面找时间看下
   const handleBlur = (val?: string) => {
@@ -77,7 +76,7 @@ function EditItem(props: IProps) {
     if ((!reg || new RegExp('^/(.*?)/(g?i?m?y?)$').test(reg)) && expression && data) {
       const formData = form.getFieldsValue();
       var newExpression = replaceExpressionVars(expression, formData, index, id);
-      convertExpressionToQuery(newExpression, range, data, cluster).then((res) => {
+      convertExpressionToQuery(newExpression, range, data, datasourceValue).then((res) => {
         const regFilterRes = filterOptionsByReg(res, reg, formData, index, id);
         if (regFilterRes.length > 0) {
           setVaraiableSelected({ name: formData.var[index].name, value: regFilterRes[0], id });
@@ -90,19 +89,12 @@ function EditItem(props: IProps) {
     <Form layout='vertical' autoComplete='off' preserve={false} form={form} initialValues={data}>
       <Row gutter={16}>
         <Col span={12}>
-          <Form.Item
-            label='变量名'
-            name='name'
-            rules={[
-              { required: true, message: '请输入变量名' },
-              { pattern: /^[0-9a-zA-Z_]+$/, message: '仅支持数字和字符下划线' },
-            ]}
-          >
+          <Form.Item label={t('var.name')} name='name' rules={[{ required: true }, { pattern: /^[0-9a-zA-Z_]+$/, message: t('var.name_msg') }]}>
             <Input />
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item label='变量类型' name='type' rules={[{ required: true, message: '请输入变量类型' }]}>
+          <Form.Item label={t('var.type')} name='type' rules={[{ required: true }]}>
             <Select
               style={{ width: '100%' }}
               onChange={() => {
@@ -123,61 +115,71 @@ function EditItem(props: IProps) {
           </Form.Item>
         </Col>
       </Row>
-      <AdvancedWrap
-        var='VITE_IS_QUERY_ES_DS'
-        children={(isES) => {
+      <Form.Item shouldUpdate={(prevValues, curValues) => prevValues?.datasource?.cate !== curValues?.datasource?.cate} noStyle>
+        {({ getFieldValue }) => {
+          const datasourceCate = getFieldValue(['datasource', 'cate']) || 'prometheus';
           return (
-            <Form.Item shouldUpdate={(prevValues, curValues) => prevValues?.datasource?.cate !== curValues?.datasource?.cate} noStyle>
-              {({ getFieldValue }) => {
-                const datasourceCate = getFieldValue(['datasource', 'cate']);
-                return (
-                  <Row gutter={16}>
-                    <Col span={datasourceCate === 'elasticsearch' ? 8 : 24}>
-                      <Form.Item label='数据源' name={['datasource', 'cate']} rules={[{ required: true, message: '请选择数据源' }]} initialValue='prometheus'>
-                        <Select dropdownMatchSelectWidth={false} style={{ minWidth: 70 }}>
-                          {_.map(isES ? allOptions : [prometheusOption], (item) => (
-                            <Select.Option key={item.value} value={item.value}>
-                              {item.label}
-                            </Select.Option>
-                          ))}
-                        </Select>
-                      </Form.Item>
-                    </Col>
-                    {datasourceCate === 'elasticsearch' && (
-                      <>
-                        <Col span={8}>
-                          <ClusterSelect cate={datasourceCate} label='关联数据源' name={['datasource', 'name']} />
-                        </Col>
-                        <Col span={8}>
-                          <Form.Item shouldUpdate={(prevValues, curValues) => prevValues?.datasource?.name !== curValues?.datasource?.name} noStyle>
-                            {({ getFieldValue }) => {
-                              const datasourceName = getFieldValue(['datasource', 'name']);
-                              return <IndexSelect name={['config', 'index']} cate={datasourceCate} cluster={datasourceName ? [datasourceName] : []} />;
-                            }}
-                          </Form.Item>
-                        </Col>
-                      </>
-                    )}
-                  </Row>
-                );
-              }}
-            </Form.Item>
+            <Row gutter={16}>
+              <Col span={8}>
+                <Form.Item label={t('common:datasource.type')} name={['datasource', 'cate']} rules={[{ required: true }]} initialValue='prometheus'>
+                  <Select
+                    dropdownMatchSelectWidth={false}
+                    style={{ minWidth: 70 }}
+                    onChange={() => {
+                      form.setFieldsValue({
+                        datasource: {
+                          value: undefined,
+                        },
+                      });
+                    }}
+                  >
+                    {_.map(allOptions, (item) => (
+                      <Select.Option key={item.value} value={item.value}>
+                        {item.label}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <ClusterSelect cate={datasourceCate} label={t('common:datasource.id')} name={['datasource', 'value']} defaultDatasourceValue={datasourceValue} />
+              </Col>
+              {datasourceCate === 'elasticsearch' && (
+                <>
+                  <Col span={8}>
+                    <Form.Item shouldUpdate={(prevValues, curValues) => prevValues?.datasource?.value !== curValues?.datasource?.value} noStyle>
+                      {({ getFieldValue }) => {
+                        const datasourceValue = getFieldValue(['datasource', 'value']);
+                        return <IndexSelect name={['config', 'index']} cate={datasourceCate} datasourceValue={datasourceValue} />;
+                      }}
+                    </Form.Item>
+                  </Col>
+                </>
+              )}
+            </Row>
           );
         }}
-      />
-      <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.type !== curValues.type} noStyle>
+      </Form.Item>
+      <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.type !== curValues.type || prevValues?.datasource?.cate !== curValues?.datasource?.cate} noStyle>
         {({ getFieldValue }) => {
           const type = getFieldValue('type');
+          const datasourceCate = getFieldValue(['datasource', 'cate']) || 'prometheus';
           if (type === 'query') {
             return (
               <>
                 <Form.Item
                   label={
                     <span>
-                      变量定义{' '}
+                      {t('var.definition')}{' '}
                       <QuestionCircleOutlined
                         style={{ marginLeft: 5 }}
-                        onClick={() => window.open('https://grafana.com/docs/grafana/latest/datasources/prometheus/#query-variable', '_blank')}
+                        onClick={() => {
+                          if (datasourceCate === 'prometheus') {
+                            window.open('https://grafana.com/docs/grafana/latest/datasources/prometheus/#query-variable', '_blank');
+                          } else if (datasourceCate === 'elasticsearch') {
+                            window.open('https://grafana.com/docs/grafana/latest/datasources/elasticsearch/template-variables', '_blank');
+                          }
+                        }}
                       />
                     </span>
                   }
@@ -206,26 +208,26 @@ function EditItem(props: IProps) {
                 >
                   <Input onBlur={(e) => handleBlur(e.target.value)} />
                 </Form.Item>
-                <Form.Item label='正则' name='reg' tooltip='可选，可通过正则来过滤可选项，或提取值' rules={[{ pattern: new RegExp('^/(.*?)/(g?i?m?y?)$'), message: '格式不对' }]}>
+                <Form.Item label={t('var.reg')} name='reg' tooltip={t('var.reg_tip')} rules={[{ pattern: new RegExp('^/(.*?)/(g?i?m?y?)$'), message: 'invalid regex' }]}>
                   <Input placeholder='/*.hna/' onBlur={() => handleBlur()} />
                 </Form.Item>
               </>
             );
           } else if (type === 'textbox') {
             return (
-              <Form.Item label='默认值' name='defaultValue'>
+              <Form.Item label={t('var.textbox.defaultValue')} name='defaultValue'>
                 <Input onBlur={() => handleBlur()} />
               </Form.Item>
             );
           } else if (type === 'custom') {
             return (
-              <Form.Item label='逗号分割的自定义值' name='definition' rules={[{ required: true, message: '请输入自定义值' }]}>
+              <Form.Item label={t('var.custom.defaultValue')} name='definition' rules={[{ required: true }]}>
                 <Input onBlur={() => handleBlur()} placeholder='1,10' />
               </Form.Item>
             );
           } else if (type === 'constant') {
             return (
-              <Form.Item label='常量值' name='definition' tooltip='定义一个隐藏的常量值' rules={[{ required: true, message: '请输入常量值' }]}>
+              <Form.Item label={t('var.constant.defaultValue')} name='definition' tooltip={t('var.constant.defaultValue_tip')} rules={[{ required: true }]}>
                 <Input onBlur={() => handleBlur()} />
               </Form.Item>
             );
@@ -238,18 +240,18 @@ function EditItem(props: IProps) {
           if (type === 'query' || type === 'custom') {
             return (
               <Row gutter={16}>
-                <Col flex='70px'>
-                  <Form.Item label='多选' name='multi' valuePropName='checked'>
+                <Col flex='120px'>
+                  <Form.Item label={t('var.multi')} name='multi' valuePropName='checked'>
                     <Switch />
                   </Form.Item>
                 </Col>
-                <Col flex='70px'>
+                <Col flex='120px'>
                   <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.multi !== curValues.multi} noStyle>
                     {({ getFieldValue }) => {
                       const multi = getFieldValue('multi');
                       if (multi) {
                         return (
-                          <Form.Item label='包含全选' name='allOption' valuePropName='checked'>
+                          <Form.Item label={t('var.allOption')} name='allOption' valuePropName='checked'>
                             <Switch />
                           </Form.Item>
                         );
@@ -264,7 +266,7 @@ function EditItem(props: IProps) {
                       const allOption = getFieldValue('allOption');
                       if (multi && allOption) {
                         return (
-                          <Form.Item label='自定义全选值' name='allValue'>
+                          <Form.Item label={t('var.allValue')} name='allValue'>
                             <Input placeholder='.*' />
                           </Form.Item>
                         );
@@ -287,9 +289,9 @@ function EditItem(props: IProps) {
               });
             }}
           >
-            保存
+            {t('common:btn.save')}
           </Button>
-          <Button onClick={onCancel}>取消</Button>
+          <Button onClick={onCancel}>{t('common:btn.cancel')}</Button>
         </Space>
       </Form.Item>
     </Form>

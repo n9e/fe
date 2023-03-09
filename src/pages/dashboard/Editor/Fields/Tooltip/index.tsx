@@ -17,19 +17,21 @@
 import React from 'react';
 import { Form, Radio, Row, Col } from 'antd';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { Panel } from '../../Components/Collapse';
 
 export default function index() {
+  const { t } = useTranslation('dashboard');
   const namePrefix = ['options', 'tooltip'];
 
   return (
     <Panel header='Tooltip'>
       <Row gutter={10}>
         <Col span={12}>
-          <Form.Item label='模式' name={[...namePrefix, 'mode']}>
+          <Form.Item label={t('panel.options.tooltip.mode')} name={[...namePrefix, 'mode']}>
             <Radio.Group buttonStyle='solid'>
-              <Radio.Button value='single'>single</Radio.Button>
-              <Radio.Button value='all'>all</Radio.Button>
+              <Radio.Button value='single'>Single</Radio.Button>
+              <Radio.Button value='all'>All</Radio.Button>
             </Radio.Group>
           </Form.Item>
         </Col>
@@ -38,11 +40,11 @@ export default function index() {
             {({ getFieldValue }) => {
               if (getFieldValue([...namePrefix, 'mode']) === 'all') {
                 return (
-                  <Form.Item label='排序' name={[...namePrefix, 'sort']}>
+                  <Form.Item label={t('panel.options.tooltip.sort')} name={[...namePrefix, 'sort']}>
                     <Radio.Group buttonStyle='solid'>
-                      <Radio.Button value='none'>none</Radio.Button>
-                      <Radio.Button value='asc'>asc</Radio.Button>
-                      <Radio.Button value='desc'>desc</Radio.Button>
+                      <Radio.Button value='none'>None</Radio.Button>
+                      <Radio.Button value='asc'>ASC</Radio.Button>
+                      <Radio.Button value='desc'>DESC</Radio.Button>
                     </Radio.Group>
                   </Form.Item>
                 );

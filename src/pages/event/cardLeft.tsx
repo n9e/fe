@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Input, Form, Modal, Switch, message } from 'antd';
 import { EditOutlined, DeleteOutlined, PlusSquareOutlined, SearchOutlined } from '@ant-design/icons';
-import { useSelector } from 'react-redux';
 import { getAggrAlerts, AddAggrAlerts, updateAggrAlerts, deleteAggrAlerts } from '@/services/warning';
-import { RootState as AccountRootState, accountStoreState } from '@/store/accountInterface';
+import { CommonStateContext } from '@/App';
 import './index.less';
 interface Props {
   onRefreshRule: (rule: string) => void;
@@ -21,6 +21,7 @@ export interface CardAlertType {
 
 export default function CardLeft(props: Props) {
   const { onRefreshRule } = props;
+  const { t } = useTranslation('AlertCurEvents');
   const [form] = Form.useForm();
   const [alertList, setAlertList] = useState<CardAlertType[]>();
   const [visible, setVisible] = useState(false);
@@ -28,7 +29,7 @@ export default function CardLeft(props: Props) {
   const localSelectId = localStorage.getItem('selectedAlertRule');
   const [activeId, setActiveId] = useState<number>(localSelectId ? Number(localSelectId) : 0);
   const [search, setSearch] = useState('');
-  const { profile } = useSelector<AccountRootState, accountStoreState>((state) => state.account);
+  const { profile } = useContext(CommonStateContext);
 
   useEffect(() => {
     getList(true).then((res) => {
@@ -90,10 +91,10 @@ export default function CardLeft(props: Props) {
 
   const handleDelete = (alert) => {
     Modal.confirm({
-      title: `确定要删除聚合策略 ${alert.name} 吗？`,
+      title: t('common:confirm_delete'),
       onOk: async () => {
         await deleteAggrAlerts([alert.id]);
-        message.success('删除成功');
+        message.success(t('common:success_delete'));
         getList(true);
       },
       onCancel: () => {},
@@ -101,9 +102,9 @@ export default function CardLeft(props: Props) {
   };
 
   return (
-    <div className='left-area' style={{ width: 240, background: '#fff' }}>
+    <div className='left-area' style={{ width: 240, background: '#fff', marginRight: 10 }}>
       <div className='event-page-title'>
-        <span>聚合规则</span>
+        <span>{t('aggregate_rule')}</span>
         <a onClick={() => setVisible(true)}>
           <PlusSquareOutlined />
         </a>
@@ -126,7 +127,7 @@ export default function CardLeft(props: Props) {
 
             {alert.cate === 1 || profile.admin ? (
               <div>
-                {alert.cate === 0 && <div className='default-holder'>公开</div>}
+                {alert.cate === 0 && <div className='default-holder'>{t('public')}</div>}
                 <div className='icon-area'>
                   <EditOutlined
                     onClick={() => {
@@ -148,12 +149,12 @@ export default function CardLeft(props: Props) {
                 </div>
               </div>
             ) : (
-              <div className='default-holder'>公开</div>
+              <div className='default-holder'>{t('public')}</div>
             )}
           </div>
         ))}
 
-      <Modal title={(editForm ? '编辑' : '新增') + '聚合规则'} visible={visible} onOk={handleOk} onCancel={handleCancel} destroyOnClose>
+      <Modal title={editForm ? t('common:btn.edit') : t('common:btn.add')} visible={visible} onOk={handleOk} onCancel={handleCancel} destroyOnClose>
         <Form
           form={form}
           layout='vertical'
@@ -162,43 +163,17 @@ export default function CardLeft(props: Props) {
             cate: false,
           }}
         >
-          <Form.Item
-            label='Name'
-            name='name'
-            rules={[
-              () => ({
-                validator(_, value) {
-                  if (!value || value.length === 0) {
-                    return Promise.reject(new Error('请输入聚合规则名称'));
-                  }
-                  return Promise.resolve();
-                },
-              }),
-            ]}
-          >
+          <Form.Item label={t('aggregate_rule_name')} name='name' rules={[{ required: true }]}>
             <Input />
           </Form.Item>
           <Form.Item name='id' hidden>
             <Input />
           </Form.Item>
-          <Form.Item
-            label='Rule'
-            name='rule'
-            rules={[
-              () => ({
-                validator(_, value) {
-                  if (!value || value.length === 0) {
-                    return Promise.reject(new Error('请输入Rule'));
-                  }
-                  return Promise.resolve();
-                },
-              }),
-            ]}
-          >
+          <Form.Item label={t('aggregate_rule')} name='rule' rules={[{ required: true }]}>
             <Input />
           </Form.Item>
           {profile.admin && (
-            <Form.Item label='是否公开' name='cate' rules={[{ required: true }]} valuePropName='checked'>
+            <Form.Item label={t('isPublic')} name='cate' rules={[{ required: true }]} valuePropName='checked'>
               <Switch />
             </Form.Item>
           )}

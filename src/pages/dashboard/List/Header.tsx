@@ -17,10 +17,8 @@
 import React from 'react';
 import { Input, Button, Dropdown, Modal, Space, message } from 'antd';
 import { SearchOutlined, DownOutlined } from '@ant-design/icons';
-import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { removeDashboards } from '@/services/dashboardV2';
-import { RootState as CommonRootState } from '@/store/common';
-import { CommonStoreState } from '@/store/commonInterface';
 import RefreshIcon from '@/components/RefreshIcon';
 import FormCpt from './Form';
 import Import from './Import';
@@ -34,7 +32,7 @@ interface IProps {
 }
 
 export default function Header(props: IProps) {
-  const { clusters } = useSelector<CommonRootState, CommonStoreState>((state) => state.common);
+  const { t } = useTranslation('dashboard');
   const { busiId, selectRowKeys, refreshList, searchVal, onSearchChange } = props;
 
   return (
@@ -54,7 +52,7 @@ export default function Header(props: IProps) {
                 onSearchChange(e.target.value);
               }}
               prefix={<SearchOutlined />}
-              placeholder='大盘名称、分类标签'
+              placeholder={t('search_placeholder')}
             />
           </div>
         </Space>
@@ -63,15 +61,13 @@ export default function Header(props: IProps) {
             type='primary'
             onClick={() => {
               FormCpt({
-                mode: 'crate',
+                mode: 'create',
                 busiId,
                 refreshList,
-                clusters,
               });
             }}
-            ghost
           >
-            新建大盘
+            {t('common:btn.add')}
           </Button>
           <div className={'table-more-options'}>
             <Dropdown
@@ -82,22 +78,22 @@ export default function Header(props: IProps) {
                     onClick={() => {
                       Import({
                         busiId,
-                        type: 'BuiltIn',
+                        type: 'Import',
                         refreshList,
                       });
                     }}
                   >
-                    <span>导入监控大盘</span>
+                    <span>{t('common:btn.batch_import')}</span>
                   </li>
                   <li
                     className='ant-dropdown-menu-item'
                     onClick={() => {
                       if (selectRowKeys.length) {
                         Modal.confirm({
-                          title: '是否批量删除大盘?',
+                          title: t('common:confirm.delete'),
                           onOk: async () => {
                             removeDashboards(selectRowKeys).then(() => {
-                              message.success('批量删除大盘成功');
+                              message.success(t('common:success.delete'));
                             });
                             // TODO: 删除完后立马刷新数据有时候不是实时的，这里暂时间隔0.5s后再刷新列表
                             setTimeout(() => {
@@ -110,14 +106,14 @@ export default function Header(props: IProps) {
                       }
                     }}
                   >
-                    <span>批量删除大盘</span>
+                    <span>{t('common:btn.batch_delete')}</span>
                   </li>
                 </ul>
               }
               trigger={['click']}
             >
               <Button onClick={(e) => e.stopPropagation()}>
-                更多操作
+                {t('common:btn.more')}
                 <DownOutlined
                   style={{
                     marginLeft: 2,

@@ -1,9 +1,8 @@
 import _ from 'lodash';
 import moment from 'moment';
-import { formatPickerDate } from '@/components/DateRangePicker';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { replaceExpressionVars } from '../../VariableConfig/constant';
-import { fetchHistoryBatch } from '@/components/Graph/api';
+import { fetchHistoryBatch } from '@/services/dashboardV2';
 import { ITarget } from '../../types';
 import { IVariable } from '../../VariableConfig/definition';
 import replaceExpressionBracket from '../utils/replaceExpressionBracket';
@@ -12,7 +11,7 @@ import { completeBreakpoints, getSerieName } from './utils';
 interface IOptions {
   dashboardId: string;
   datasourceCate: string;
-  datasourceName: string;
+  datasourceValue: number;
   id?: string;
   time: IRawTimeRange;
   step: number | null;
@@ -26,7 +25,7 @@ const getDefaultStepByStartAndEnd = (start: number, end: number) => {
 };
 
 export default async function prometheusQuery(options: IOptions) {
-  const { dashboardId, id, time, step, targets, variableConfig, spanNulls, datasourceName } = options;
+  const { dashboardId, id, time, step, targets, variableConfig, spanNulls, datasourceValue } = options;
   if (!time.start) return;
   const parsedRange = parseRange(time);
   let start = moment(parsedRange.start).unix();
@@ -38,19 +37,12 @@ export default async function prometheusQuery(options: IOptions) {
   let exprs: string[] = [];
   let refIds: string[] = [];
   let signalKey = `${id}`;
-  if (targets) {
+  if (targets && datasourceValue) {
     _.forEach(targets, (target) => {
       if (target.time) {
-        // TODO: 兼容旧版本
-        if (target.time.unit) {
-          const { start: _start, end: _end } = formatPickerDate(target.time);
-          start = _start;
-          end = _end;
-        } else {
-          const parsedRange = parseRange(target.time);
-          start = moment(parsedRange.start).unix();
-          end = moment(parsedRange.end).unix();
-        }
+        const parsedRange = parseRange(target.time);
+        start = moment(parsedRange.start).unix();
+        end = moment(parsedRange.end).unix();
         _step = getDefaultStepByStartAndEnd(start, end);
         if (target.step) {
           _step = target.step;
@@ -73,7 +65,7 @@ export default async function prometheusQuery(options: IOptions) {
         signalKey += `-${target.expr}`;
       }
     });
-    const res = await fetchHistoryBatch({ queries: batchParams }, signalKey, datasourceName);
+    const res = await fetchHistoryBatch({ queries: batchParams, datasource_id: datasourceValue }, signalKey);
     const dat = res.dat || [];
     for (let i = 0; i < dat?.length; i++) {
       var item = {

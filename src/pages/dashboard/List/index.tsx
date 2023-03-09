@@ -17,21 +17,20 @@
 /**
  * 大盘列表页面
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useHistory, Link } from 'react-router-dom';
 import { Table, Tag, Modal, Switch, message } from 'antd';
 import { FundViewOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import _ from 'lodash';
-import { useSelector } from 'react-redux';
 import queryString from 'query-string';
+import { useTranslation } from 'react-i18next';
 import { Dashboard as DashboardType } from '@/store/dashboardInterface';
 import { getDashboards, cloneDashboard, removeDashboards, getDashboard, updateDashboardPublic } from '@/services/dashboardV2';
 import PageLayout from '@/components/pageLayout';
-import LeftTree from '@/components/LeftTree';
 import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
-import { RootState as CommonRootState } from '@/store/common';
-import { CommonStoreState } from '@/store/commonInterface';
+import { CommonStateContext } from '@/App';
+import { BusinessGroup } from '@/pages/monObjectManage';
 import Header from './Header';
 import FormCpt from './Form';
 import Export from './Export';
@@ -41,10 +40,11 @@ import './style.less';
 const DASHBOARD_PAGESIZE_KEY = 'dashboard-pagesize';
 
 export default function index() {
-  const { clusters } = useSelector<CommonRootState, CommonStoreState>((state) => state.common);
+  const { t } = useTranslation('dashboard');
+  const commonState = useContext(CommonStateContext);
+  const { curBusiId: busiId } = commonState;
   const history = useHistory();
-  const [busiId, setBusiId] = useState<number>();
-  const [list, setList] = useState([]);
+  const [list, setList] = useState<any[]>([]);
   const [selectRowKeys, setSelectRowKeys] = useState<number[]>([]);
   const [refreshKey, setRefreshKey] = useState(_.uniqueId('refreshKey_'));
   const [searchVal, setsearchVal] = useState<string>('');
@@ -66,9 +66,14 @@ export default function index() {
   });
 
   return (
-    <PageLayout title='监控大盘' icon={<FundViewOutlined />} hideCluster={true}>
+    <PageLayout title={t('title')} icon={<FundViewOutlined />}>
       <div style={{ display: 'flex' }}>
-        <LeftTree busiGroup={{ onChange: (id) => setBusiId(id) }}></LeftTree>
+        <BusinessGroup
+          curBusiId={busiId}
+          setCurBusiId={(id) => {
+            commonState.setCurBusiId(id);
+          }}
+        />
         {busiId ? (
           <div className='dashboards-v2'>
             <Header
@@ -84,7 +89,7 @@ export default function index() {
               dataSource={data}
               columns={[
                 {
-                  title: '大盘名称',
+                  title: t('name'),
                   dataIndex: 'name',
                   className: 'name-column',
                   render: (text: string, record: DashboardType) => {
@@ -96,15 +101,15 @@ export default function index() {
                   },
                 },
                 {
-                  title: '分类标签',
+                  title: t('tags'),
                   dataIndex: 'tags',
                   className: 'tags-column',
-                  render: (text: string[]) => (
+                  render: (text: string) => (
                     <>
                       {_.map(_.split(text, ' '), (tag, index) => {
                         return tag ? (
                           <Tag
-                            color='blue'
+                            color='purple'
                             key={index}
                             style={{
                               cursor: 'pointer',
@@ -128,18 +133,18 @@ export default function index() {
                   ),
                 },
                 {
-                  title: '更新时间',
+                  title: t('common:table.update_at'),
                   width: 120,
                   dataIndex: 'update_at',
                   render: (text: number) => moment.unix(text).format('YYYY-MM-DD HH:mm:ss'),
                 },
                 {
-                  title: '发布人',
+                  title: t('common:table.create_by'),
                   width: 70,
                   dataIndex: 'create_by',
                 },
                 {
-                  title: '公开',
+                  title: t('public.name'),
                   width: 120,
                   dataIndex: 'public',
                   render: (text: number, record: DashboardType) => {
@@ -149,10 +154,10 @@ export default function index() {
                           checked={text === 1}
                           onChange={() => {
                             Modal.confirm({
-                              title: `确定${record.public ? '取消分享' : '分享'}大盘：${record.name}吗?`,
+                              title: record.public ? t('public.1.confirm') : t('public.0.confirm'),
                               onOk: async () => {
                                 await updateDashboardPublic(record.id, { public: record.public ? 0 : 1 });
-                                message.success(`${record.public ? '取消分享' : '分享'}大盘成功`);
+                                message.success(record.public ? t('public.1.success') : t('public.0.success'));
                                 setRefreshKey(_.uniqueId('refreshKey_'));
                               },
                             });
@@ -170,7 +175,7 @@ export default function index() {
                             }}
                             style={{ marginLeft: 10 }}
                           >
-                            查看
+                            {t('common:btn.view')}
                           </Link>
                         )}
                       </div>
@@ -178,7 +183,7 @@ export default function index() {
                   },
                 },
                 {
-                  title: '操作',
+                  title: t('common:table.operations'),
                   width: '180px',
                   render: (text: string, record: DashboardType) => (
                     <div className='table-operator-area'>
@@ -195,20 +200,19 @@ export default function index() {
                             refreshList: () => {
                               setRefreshKey(_.uniqueId('refreshKey_'));
                             },
-                            clusters,
                           });
                         }}
                       >
-                        编辑
+                        {t('common:btn.modify')}
                       </div>
                       <div
                         className='table-operator-area-normal'
                         onClick={async () => {
                           Modal.confirm({
-                            title: `是否克隆大盘${record.name}?`,
+                            title: t('common:confirm.clone'),
                             onOk: async () => {
                               await cloneDashboard(busiId as number, record.id);
-                              message.success('克隆大盘成功');
+                              message.success(t('common:success.clone'));
                               setRefreshKey(_.uniqueId('refreshKey_'));
                             },
 
@@ -216,7 +220,7 @@ export default function index() {
                           });
                         }}
                       >
-                        克隆
+                        {t('common:btn.clone')}
                       </div>
                       <div
                         className='table-operator-area-normal'
@@ -227,16 +231,16 @@ export default function index() {
                           });
                         }}
                       >
-                        导出
+                        {t('common:btn.export')}
                       </div>
                       <div
                         className='table-operator-area-warning'
                         onClick={async () => {
                           Modal.confirm({
-                            title: `是否删除大盘：${record.name}?`,
+                            title: t('common:confirm.delete'),
                             onOk: async () => {
                               await removeDashboards([record.id]);
-                              message.success('删除大盘成功');
+                              message.success(t('common:success.delete'));
                               setRefreshKey(_.uniqueId('refreshKey_'));
                             },
 
@@ -244,13 +248,14 @@ export default function index() {
                           });
                         }}
                       >
-                        删除
+                        {t('common:btn.delete')}
                       </div>
                     </div>
                   ),
                 },
               ]}
               rowKey='id'
+              size='small'
               rowSelection={{
                 selectedRowKeys: selectRowKeys,
                 onChange: (selectedRowKeys: number[]) => {

@@ -14,8 +14,10 @@
  * limitations under the License.
  *
  */
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
+import { Select } from 'antd';
 import { LineChartOutlined } from '@ant-design/icons';
 import PageLayout from '@/components/pageLayout';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
@@ -23,27 +25,68 @@ import { IMatch } from './types';
 import List from './metricViews/List';
 import LabelsValues from './metricViews/LabelsValues';
 import Metrics from './metricViews/Metrics';
+import './locale';
 import './style.less';
+import { CommonStateContext } from '@/App';
+
+const getDefaultDatasourceValue = (datasources) => {
+  const localeDatasourceValue = localStorage.getItem('datasourceValue_prometheus');
+  if (localeDatasourceValue) {
+    return _.toNumber(localeDatasourceValue);
+  } else {
+    return datasources[0]?.id;
+  }
+};
 
 export default function index() {
+  const { t } = useTranslation('objectExplorer');
   const [match, setMatch] = useState<IMatch>();
   const [range, setRange] = useState<IRawTimeRange>({
     start: 'now-1h',
     end: 'now',
   });
   const [rerenderFlag, setRerenderFlag] = useState(_.uniqueId('rerenderFlag_'));
+  const { groupedDatasourceList } = useContext(CommonStateContext);
+  const datasources = groupedDatasourceList.prometheus;
+  const [datasourceValue, setDatasourceValue] = useState<number>(getDefaultDatasourceValue(datasources));
+
+  if (!datasourceValue) return null;
 
   return (
     <PageLayout
-      title='快捷视图'
+      title={t('title')}
       icon={<LineChartOutlined />}
-      hideCluster={false}
-      onChangeCluster={() => {
-        setRerenderFlag(_.uniqueId('rerenderFlag_'));
-      }}
+      rightArea={
+        <div
+          style={{
+            marginRight: 20,
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          {t('common:datasource.name')}：
+          <Select
+            dropdownMatchSelectWidth={false}
+            value={datasourceValue}
+            onChange={(val) => {
+              setDatasourceValue(val);
+              localStorage.setItem('datasourceValue_prometheus', _.toString(val));
+            }}
+          >
+            {_.map(datasources, (item) => {
+              return (
+                <Select.Option key={item.id} value={item.id}>
+                  {item.name}
+                </Select.Option>
+              );
+            })}
+          </Select>
+        </div>
+      }
     >
       <div className='n9e-metric-views' key={rerenderFlag}>
         <List
+          datasourceValue={datasourceValue}
           onSelect={(record: IMatch) => {
             setMatch(record);
           }}
@@ -52,13 +95,14 @@ export default function index() {
         {match ? (
           <>
             <LabelsValues
+              datasourceValue={datasourceValue}
               range={range}
               value={match}
               onChange={(val) => {
                 setMatch(val);
               }}
             />
-            <Metrics range={range} setRange={setRange} match={match} />
+            <Metrics datasourceValue={datasourceValue} range={range} setRange={setRange} match={match} />
           </>
         ) : null}
       </div>

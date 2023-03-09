@@ -15,14 +15,16 @@
  *
  */
 import React from 'react';
-import { Form, Space, Input, Select } from 'antd';
+import { Form, Space, Select } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined, CaretDownOutlined } from '@ant-design/icons';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { Panel } from '../../Components/Collapse';
 import ValueMappings from '../ValueMappings';
 import StandardOptions from '../StandardOptions';
 
 export default function index({ targets }) {
+  const { t } = useTranslation('dashboard');
   const namePrefix = ['overrides'];
 
   return (
@@ -53,7 +55,7 @@ export default function index({ targets }) {
                 </Space>
               }
             >
-              <Form.Item label='查询条件名称' {...restField} name={[name, 'matcher', 'value']}>
+              <Form.Item label={t('panel.overrides.matcher')} {...restField} name={[name, 'matcher', 'value']}>
                 <Select suffixIcon={<CaretDownOutlined />} allowClear>
                   {_.map(targets, (target) => {
                     return (

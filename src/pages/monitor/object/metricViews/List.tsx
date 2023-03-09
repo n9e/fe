@@ -14,30 +14,32 @@
  * limitations under the License.
  *
  */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import _ from 'lodash';
 import classNames from 'classnames';
+import { useTranslation } from 'react-i18next';
 import { Input, message, Modal, Tooltip } from 'antd';
 import { PlusSquareOutlined, SearchOutlined, EditOutlined, DeleteOutlined, ExportOutlined } from '@ant-design/icons';
-import { useSelector } from 'react-redux';
-import { RootState as AccountRootState, accountStoreState } from '@/store/accountInterface';
 import { getList, deleteMetricView } from '@/services/metricViews';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
+import { CommonStateContext } from '@/App';
 import { IMatch } from '../types';
 import Form from './Form';
 import Export from './Export';
 
 interface IProps {
+  datasourceValue: number;
   range: IRawTimeRange;
   onSelect: (item: IMatch) => void;
 }
 
 export default function List(props: IProps) {
-  const [list, setList] = useState([]);
+  const { t } = useTranslation('objectExplorer');
+  const [list, setList] = useState<any[]>([]);
   const [active, setActive] = useState<number>();
   const [search, setSearch] = useState('');
   const [refreshFlag, setRefreshFlag] = useState(_.uniqueId('refreshFlag_'));
-  const { profile } = useSelector<AccountRootState, accountStoreState>((state) => state.account);
+  const { profile } = useContext(CommonStateContext);
   useEffect(() => {
     const defaultMetricViewId = localStorage.getItem('metric-view-id') !== null ? Number(localStorage.getItem('metric-view-id')) : null;
     getList().then((res) => {
@@ -64,16 +66,17 @@ export default function List(props: IProps) {
         });
       }
     });
-  }, [refreshFlag]);
+  }, [refreshFlag, props.datasourceValue]);
 
   return (
     <div className='n9e-metric-views-list'>
       <div className='n9e-metric-views-list-header'>
-        <div className='metric-page-title'>快捷视图列表</div>
+        <div className='metric-page-title'>{t('list.title')}</div>
         <a>
           <PlusSquareOutlined
             onClick={() => {
               Form({
+                datasourceValue: props.datasourceValue,
                 admin: profile.admin,
                 action: 'add',
                 range: props.range,
@@ -95,7 +98,7 @@ export default function List(props: IProps) {
       />
       <div className='n9e-metric-views-list-content'>
         {_.isEmpty(list)
-          ? '暂无数据'
+          ? 'No Data'
           : _.map(
               _.filter(list, (item) => {
                 if (search) {
@@ -139,7 +142,7 @@ export default function List(props: IProps) {
                       <span>
                         {item.cate === 0 && (
                           <span className='n9e-metric-views-list-content-item-cate' style={{ color: '#ccc' }}>
-                            公开
+                            {t('list.public')}
                           </span>
                         )}
                         <div className='n9e-metric-views-list-content-item-opes'>
@@ -161,6 +164,7 @@ export default function List(props: IProps) {
                                 ...configs,
                               };
                               Form({
+                                datasourceValue: props.datasourceValue,
                                 admin: profile.admin,
                                 action: 'edit',
                                 range: props.range,
@@ -176,19 +180,19 @@ export default function List(props: IProps) {
                             onClick={(e) => {
                               e.stopPropagation();
                               Modal.confirm({
-                                title: '是否要删除？',
+                                title: t('common:confirm.delete'),
                                 onOk: () => {
                                   deleteMetricView({
                                     ids: [item.id],
                                   }).then(() => {
-                                    message.success('删除成功');
+                                    message.success(t('common:success.delete'));
                                     setRefreshFlag(_.uniqueId('refreshFlag_'));
                                   });
                                 },
                               });
                             }}
                           />
-                          <Tooltip title='导出配置' placement='right'>
+                          <Tooltip title={t('title.export')} placement='right'>
                             <ExportOutlined
                               onClick={() => {
                                 Export({
@@ -200,7 +204,7 @@ export default function List(props: IProps) {
                         </div>
                       </span>
                     ) : (
-                      <span style={{ color: '#ccc' }}>公开</span>
+                      <span style={{ color: '#ccc' }}>{t('title.public')}</span>
                     )}
                   </div>
                 );

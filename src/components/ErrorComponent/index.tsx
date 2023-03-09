@@ -15,7 +15,6 @@
  *
  */
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 
 class ErrorComponent extends React.Component<
   any,

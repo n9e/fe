@@ -1,0 +1,32 @@
+const zh_CN = {
+  title: '个人中心',
+  save: '确认修改',
+  password: {
+    name: '密码',
+    title: '修改密码',
+    reset: '重置密码',
+    resetSuccess: '重置密码成功',
+    old: '旧密码',
+    oldMsg: '请输入旧密码',
+    new: '新密码',
+    newMsg: '请输入新密码',
+    confirm: '确认密码',
+    confirmMsg: '请再次输入新密码',
+    changeSuccess: '修改密码成功',
+    notMatch: '密码不一致',
+  },
+  profile: {
+    title: '个人信息',
+    username: '用户名',
+    nickname: '显示名',
+    role: '角色',
+    email: '邮箱',
+    phone: '手机号',
+    moreContact: '更多联系方式',
+    moreContactPlaceholder: '请选择联系方式',
+  },
+  editPicture: '修改头像',
+  pictureURL: '头像地址',
+  pictureMsg: '头像地址需要以http开头',
+};
+export default zh_CN;

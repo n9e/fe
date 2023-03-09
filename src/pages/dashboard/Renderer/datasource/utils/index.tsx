@@ -5,7 +5,7 @@ import _ from 'lodash';
  * 会导致视觉上该时间点有数据存在的假象
  * 目前先前端处理补全断点
  */
-export function completeBreakpoints(step, data) {
+export function completeBreakpoints(step: number | undefined, data: any[]) {
   const result: any[] = [];
   _.forEach(data, (item, idx) => {
     if (idx > 0) {

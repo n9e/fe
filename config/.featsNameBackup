@@ -1,5 +1,4 @@
-VITE_IS_COMMON_DS = true; // clusters use other common datasource
-VITE_IS_ALERT_ES_DS = true; // alert rule ES datasource
+VITE_IS_COMMON_DS = true; // use other common datasource
+VITE_IS_SLS_DS = true; // SLS datasource
 VITE_IS_ALERT_AI = true; // alert rule AI algo
-VITE_IS_QUERY_ES_DS = true;
-VITE_IS_DS_SETTING = true; // datasource setting
+VITE_IS_ALERT_ES = true; // alert rule ES

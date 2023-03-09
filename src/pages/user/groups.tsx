@@ -14,36 +14,25 @@
  * limitations under the License.
  *
  */
-import React, { useEffect, useState, useRef } from 'react';
-import { useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import PageLayout from '@/components/pageLayout';
-import { Button, Table, Input, Switch, message, List, Row, Col, Pagination, Modal } from 'antd';
-import { DeleteTwoTone, EditOutlined, DeleteOutlined, SearchOutlined, UserOutlined, SmallDashOutlined, InfoCircleOutlined } from '@ant-design/icons';
-import BaseTable, { IBaseTableProps } from '@/components/BaseTable';
+import { Button, Table, Input, message, List, Row, Col, Modal } from 'antd';
+import { EditOutlined, DeleteOutlined, SearchOutlined, UserOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import UserInfoModal from './component/createModal';
-import DelPopover from './component/delPopover';
-import { RootState, accountStoreState } from '@/store/accountInterface';
-import { getUserInfoList, getTeamInfoList, getTeamInfo, changeStatus, deleteUser, deleteTeam, deleteMember } from '@/services/manage';
+import { getTeamInfoList, getTeamInfo, deleteTeam, deleteMember } from '@/services/manage';
 import { User, Team, UserType, ActionType, TeamInfo } from '@/store/manageInterface';
-import './index.less';
 import { ColumnsType } from 'antd/lib/table';
-import { color } from 'echarts';
 import { useTranslation } from 'react-i18next';
-const { confirm } = Modal;
+import './index.less';
+import './locale';
 
+const { confirm } = Modal;
 export const PAGE_SIZE = 20;
 
 const Resource: React.FC = () => {
-  const { t } = useTranslation();
-  const { type } =
-    useParams<{
-      type: string;
-    }>();
-  const [activeKey, setActiveKey] = useState<UserType>(UserType.Team);
+  const { t } = useTranslation('user');
   const [visible, setVisible] = useState<boolean>(false);
   const [action, setAction] = useState<ActionType>();
-  const [userId, setUserId] = useState<string>('');
   const [teamId, setTeamId] = useState<string>('');
   const [memberId, setMemberId] = useState<string>('');
   const [memberList, setMemberList] = useState<User[]>([]);
@@ -53,27 +42,25 @@ const Resource: React.FC = () => {
   const [memberLoading, setMemberLoading] = useState<boolean>(false);
   const [searchValue, setSearchValue] = useState<string>('');
   const [searchMemberValue, setSearchMemberValue] = useState<string>('');
-  const userRef = useRef(null as any);
-  let { profile } = useSelector<RootState, accountStoreState>((state) => state.account);
   const userColumn: ColumnsType<User> = [
     {
-      title: t('用户名'),
+      title: t('account:profile.username'),
       dataIndex: 'username',
       ellipsis: true,
     },
     {
-      title: t('显示名'),
+      title: t('account:profile.nickname'),
       dataIndex: 'nickname',
       ellipsis: true,
       render: (text: string, record) => record.nickname || '-',
     },
     {
-      title: t('邮箱'),
+      title: t('account:profile.email'),
       dataIndex: 'email',
       render: (text: string, record) => record.email || '-',
     },
     {
-      title: t('手机'),
+      title: t('account:profile.phone'),
       dataIndex: 'phone',
       render: (text: string, record) => record.phone || '-',
     },
@@ -82,17 +69,9 @@ const Resource: React.FC = () => {
   const teamMemberColumns: ColumnsType<User> = [
     ...userColumn,
     {
-      title: t('操作'),
+      title: t('common:table.operations'),
       width: '100px',
-      render: (
-        text: string,
-        record, // <DelPopover
-      ) => (
-        //   teamId={teamId}
-        //   memberId={record.id}
-        //   userType='member'
-        //   onClose={() => handleClose()}
-        // ></DelPopover>
+      render: (text: string, record) => (
         <a
           style={{
             color: 'red',
@@ -102,10 +81,10 @@ const Resource: React.FC = () => {
               ids: [record.id],
             };
             confirm({
-              title: t('是否删除该成员'),
+              title: t('common:confirm.delete'),
               onOk: () => {
                 deleteMember(teamId, params).then((_) => {
-                  message.success(t('成员删除成功'));
+                  message.success(t('common:success.delete'));
                   handleClose('updateMember');
                 });
               },
@@ -113,7 +92,7 @@ const Resource: React.FC = () => {
             });
           }}
         >
-          {t('删除')}
+          {t('common:btn.delete')}
         </a>
       ),
     },
@@ -210,12 +189,12 @@ const Resource: React.FC = () => {
   };
 
   return (
-    <PageLayout title={t('团队管理')} icon={<UserOutlined />} hideCluster>
+    <PageLayout title={t('team.title')} icon={<UserOutlined />}>
       <div className='user-manage-content'>
         <div style={{ display: 'flex', height: '100%' }}>
           <div className='left-tree-area'>
             <div className='sub-title'>
-              {t('团队列表')}
+              {t('team.list')}
               <Button
                 style={{
                   height: '30px',
@@ -226,7 +205,7 @@ const Resource: React.FC = () => {
                   handleClick(ActionType.CreateTeam);
                 }}
               >
-                {t('新建团队')}
+                {t('common:btn.add')}
               </Button>
             </div>
             <div style={{ display: 'flex', margin: '5px 0px 12px' }}>
@@ -236,7 +215,6 @@ const Resource: React.FC = () => {
                 onChange={(e) => {
                   setSearchValue(e.target.value);
                 }}
-                placeholder={t('搜索团队名称')}
                 onPressEnter={(e) => {
                   // @ts-ignore
                   getTeamList(e.target.value);
@@ -277,7 +255,6 @@ const Resource: React.FC = () => {
                 >
                   {teamInfo && teamInfo.name}
                   <EditOutlined
-                    title={t('刷新')}
                     style={{
                       marginLeft: '8px',
                       fontSize: '14px',
@@ -291,10 +268,10 @@ const Resource: React.FC = () => {
                     }}
                     onClick={() => {
                       confirm({
-                        title: t('是否删除该团队'),
+                        title: t('common:confirm.delete'),
                         onOk: () => {
                           deleteTeam(teamId).then((_) => {
-                            message.success(t('团队删除成功'));
+                            message.success(t('common:success.delete'));
                             handleClose(true);
                           });
                         },
@@ -309,7 +286,7 @@ const Resource: React.FC = () => {
                     color: '#666',
                   }}
                 >
-                  {t('备注')}：{teamInfo && teamInfo.note ? teamInfo.note : '-'}
+                  {t('common:table.note')}：{teamInfo && teamInfo.note ? teamInfo.note : '-'}
                 </Col>
               </Row>
               <Row justify='space-between' align='middle'>
@@ -319,31 +296,30 @@ const Resource: React.FC = () => {
                     value={searchMemberValue}
                     className={'searchInput'}
                     onChange={(e) => setSearchMemberValue(e.target.value)}
-                    placeholder={t('用户名、显示名、邮箱或手机')}
+                    placeholder={t('team.search_placeholder')}
                     onPressEnter={(e) => handleSearch('member', searchMemberValue)}
                   />
                 </Col>
                 <Button
                   type='primary'
-                  ghost
                   onClick={() => {
                     handleClick(ActionType.AddUser, teamId);
                   }}
                 >
-                  {t('添加成员')}
+                  {t('team.add_member')}
                 </Button>
               </Row>
 
-              <Table rowKey='id' columns={teamMemberColumns} dataSource={memberList} loading={memberLoading} />
+              <Table size='small' rowKey='id' columns={teamMemberColumns} dataSource={memberList} loading={memberLoading} />
             </div>
           ) : (
             <div className='blank-busi-holder'>
               <p style={{ textAlign: 'left', fontWeight: 'bold' }}>
-                <InfoCircleOutlined style={{ color: '#1473ff' }} /> {t('提示信息')}
+                <InfoCircleOutlined style={{ color: '#1473ff' }} /> Tips
               </p>
               <p>
-                没有与您相关的团队，请先&nbsp;
-                <a onClick={() => handleClick(ActionType.CreateTeam)}>创建团队</a>
+                {t('team.empty')}&nbsp;
+                <a onClick={() => handleClick(ActionType.CreateTeam)}>{t('team.create')}</a>
               </p>
             </div>
           )}
@@ -352,13 +328,13 @@ const Resource: React.FC = () => {
           visible={visible}
           action={action as ActionType}
           width={500}
-          userType={activeKey}
+          userType={UserType.Team}
           onClose={handleClose}
           onSearch={(val) => {
             setSearchValue(val);
             handleSearch('team', val);
           }}
-          userId={userId}
+          userId={undefined}
           teamId={teamId}
           memberId={memberId}
         />

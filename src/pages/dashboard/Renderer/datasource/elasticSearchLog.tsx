@@ -23,7 +23,7 @@ export default async function elasticSearchLogQuery(options: IOptions) {
   let series: any[] = [];
   if (targets && datasourceName) {
     _.forEach(targets, (target) => {
-      const query = target.query || {};
+      const query: any = target.query || {};
       batchParams.push({
         index: query.index,
         filter: query.filter,

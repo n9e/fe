@@ -72,3 +72,10 @@ export function deleteTargets(data) {
     data,
   });
 }
+
+export function getTargetList(data) {
+  return request(`/api/n9e/target/list`, {
+    method: RequestMethod.Post,
+    data,
+  });
+}

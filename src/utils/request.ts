@@ -1,24 +1,29 @@
 /** Request 网络请求工具 更详细的 api 文档: https://github.com/umijs/umi-request */
 import { extend } from 'umi-request';
 import { notification } from 'antd';
+import _ from 'lodash';
 import { UpdateAccessToken } from '@/services/login';
 
 /** 异常处理程序，所有的error都被这里处理，页面无法感知具体error */
 const errorHandler = (error: Error): Response => {
-  // 忽略 AbortError 类型的报错
-  // @ts-ignore
-  if (!(error.name === 'AbortError') && !error.silence) {
-    notification.error({
-      message: error.message,
-    });
+  // 忽略掉 setting getter-only property "data" 的错误
+  // 这是 umi-request 的一个 bug，当触发 abort 时 catch callback 里面不能 set data
+  if (error.name !== 'AbortError' && error.message !== 'setting getter-only property "data"') {
+    // @ts-ignore
+    if (!error.silence) {
+      notification.error({
+        message: error.message,
+      });
+    }
+    // @ts-ignore
+    if (error.silence) {
+      // TODO: 兼容 n9e，暂时认定只有开启 silence 的场景才需要传递 error 详情
+      throw error;
+    } else {
+      throw new Error(error.message);
+    }
   }
-  // @ts-ignore
-  if (error.silence) {
-    // TODO: 兼容 n9e，暂时认定只有开启 silence 的场景才需要传递 error 详情
-    throw error;
-  } else {
-    throw new Error(error.message);
-  }
+  throw error;
 };
 
 /** 配置request请求时的默认参数 */
@@ -48,13 +53,17 @@ request.interceptors.request.use((url, options) => {
 request.interceptors.response.use(
   async (response, options) => {
     const { status } = response;
-
     if (status === 200) {
       return response
         .clone()
         .json()
         .then((data) => {
-          if (response.url.includes('/api/v1/') || response.url.includes('/api/v2') || response.url.includes('/api/n9e-plus/datasource')) {
+          if (
+            response.url.includes('/api/v1/') ||
+            response.url.includes('/api/v2') ||
+            response.url.includes('/api/n9e-plus/datasource') ||
+            response.url.includes('/api/n9e/proxy')
+          ) {
             if (status === 200 && !data.error) {
               return { ...data, success: true };
             } else if (data.error) {
@@ -101,11 +110,6 @@ request.interceptors.response.use(
         .then((data) => {
           if (!data.error) {
             return { ...data, success: true };
-            // if (data.data || data.dat) {
-            //   return { ...data, success: true };
-            // } else {
-            //   return { success: true };
-            // }
           } else if (data.error) {
             throw {
               name: data.error.name,
@@ -115,6 +119,15 @@ request.interceptors.response.use(
               response,
             };
           }
+        });
+    }
+
+    if (status === 502) {
+      return response
+        .clone()
+        .text()
+        .then((data) => {
+          throw new Error(data);
         });
     }
     if (status === 401) {
@@ -142,8 +155,6 @@ request.interceptors.response.use(
             })
           : (location.href = `/login${location.pathname != '/' ? '?redirect=' + location.pathname + location.search : ''}`);
       }
-      // } else if (status === 404) {
-      //   location.href = '/404';
     } else if (status === 403 && (response.url.includes('/api/v1') || response.url.includes('/api/v2'))) {
       return response
         .clone()
@@ -173,11 +184,13 @@ request.interceptors.response.use(
                 return data;
               }
             }
-            if (response.url.includes('/api/v1') || response.url.includes('/api/v2')) {
+            if (response.url.includes('/api/v1') || response.url.includes('/api/v2') || response.url.includes('/api/n9e/proxy')) {
+              // TODO: 后端服务异常后可能返回的错误数据也不是一个正常的结构，后面得考虑下怎么处理
+              const name = _.isString(data.error) ? data.error : data.error?.name ? data.error.name : JSON.stringify(data);
+              const message = _.isString(data.error) ? data.error : data.error?.message ? data.error.message : JSON.stringify(data);
               throw {
-                // TODO: 后端服务异常后可能返回的错误数据也不是一个正常的结构，后面得考虑下怎么处理
-                name: data.error ? data.error.name : JSON.stringify(data),
-                message: data.error ? data.error.message : JSON.stringify(data),
+                name,
+                message,
                 silence: options.silence,
                 data,
                 response,

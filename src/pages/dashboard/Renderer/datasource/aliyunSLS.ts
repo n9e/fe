@@ -25,7 +25,7 @@ export default async function elasticSearchQuery(options: IOptions) {
   let series: any[] = [];
   if (targets && datasourceName) {
     _.forEach(targets, (target) => {
-      const query = target.query || {};
+      const query: any = target.query || {};
       const mode = query.mode;
       if (query.keys.valueKey) {
         query.keys.valueKey = _.join(query.keys.valueKey, ' ');

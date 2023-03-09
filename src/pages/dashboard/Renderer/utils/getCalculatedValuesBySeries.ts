@@ -25,7 +25,7 @@ const getValueAndToNumber = (value: any[]) => {
 
 export const getSerieTextObj = (value: number | string | null | undefined, standardOptions?: any, valueMappings?: IValueMapping[], thresholds?: IThresholds) => {
   const { unit, decimals, dateFormat } = standardOptions || {};
-  const matchedValueMapping = _.find(valueMappings, (item) => {
+  const matchedValueMapping = _.find(valueMappings, (item: any) => {
     const { type, match } = item;
     if (value === null || value === '' || value === undefined) {
       if (type === 'specialValue') {
@@ -88,10 +88,10 @@ const getCalculatedValuesBySeries = (series: any[], calc: string, { unit, decima
       last: () => _.get(_.last(serie.data), 1),
       firstNotNull: () => _.get(_.first(_.filter(serie.data, (item) => item[1] !== null)), 1),
       first: () => _.get(_.first(serie.data), 1),
-      min: () => getValueAndToNumber(_.minBy(serie.data, (item) => _.toNumber(item[1]))),
-      max: () => getValueAndToNumber(_.maxBy(serie.data, (item) => _.toNumber(item[1]))),
-      avg: () => _.meanBy(serie.data, (item) => _.toNumber(item[1])),
-      sum: () => _.sumBy(serie.data, (item) => _.toNumber(item[1])),
+      min: () => getValueAndToNumber(_.minBy(serie.data, (item: any) => _.toNumber(item[1]))),
+      max: () => getValueAndToNumber(_.maxBy(serie.data, (item: any) => _.toNumber(item[1]))),
+      avg: () => _.meanBy(serie.data, (item: any) => _.toNumber(item[1])),
+      sum: () => _.sumBy(serie.data, (item: any) => _.toNumber(item[1])),
       count: () => _.size(serie.data),
     };
     const stat = results[calc] ? results[calc]() : NaN;
@@ -113,11 +113,11 @@ const getCalculatedValuesBySeries = (series: any[], calc: string, { unit, decima
 export const getLegendValues = (series: any[], { unit, decimals, dateFormat }, hexPalette: string[]) => {
   const values = _.map(series, (serie, idx) => {
     const results = {
-      max: getValueAndToNumber(_.maxBy(serie.data, (item) => _.toNumber(item[1]))),
-      min: getValueAndToNumber(_.minBy(serie.data, (item) => _.toNumber(item[1]))),
-      avg: _.meanBy(serie.data, (item) => _.toNumber(item[1])),
-      sum: _.sumBy(serie.data, (item) => _.toNumber(item[1])),
-      last: getValueAndToNumber(_.last(serie.data)),
+      max: getValueAndToNumber(_.maxBy(serie.data, (item: any) => _.toNumber(item[1]))),
+      min: getValueAndToNumber(_.minBy(serie.data, (item: any) => _.toNumber(item[1]))),
+      avg: _.meanBy(serie.data, (item: any) => _.toNumber(item[1])),
+      sum: _.sumBy(serie.data, (item: any) => _.toNumber(item[1])),
+      last: getValueAndToNumber(_.last(serie.data) as any),
     };
     return {
       id: serie.id,

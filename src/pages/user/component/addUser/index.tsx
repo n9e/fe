@@ -15,17 +15,17 @@
  *
  */
 import React, { useEffect, useState } from 'react';
-import { Tag, Input } from 'antd';
+import { Tag, Input, Table } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
-import BaseTable from '@/components/BaseTable';
+import { ColumnsType } from 'antd/lib/table';
+import { useTranslation } from 'react-i18next';
+import { useAntdTable } from 'ahooks';
 import { getTeamInfo, getUserInfoList } from '@/services/manage';
 import { TeamProps, User, Team } from '@/store/manageInterface';
-import { ColumnsType } from 'antd/lib/table';
 import './index.less';
-import { useTranslation } from 'react-i18next';
 
 const AddUser: React.FC<TeamProps> = (props: TeamProps) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('user');
   const { teamId, onSelect } = props;
   const [teamInfo, setTeamInfo] = useState<Team>();
   const [selectedUser, setSelectedUser] = useState<React.Key[]>([]);
@@ -33,23 +33,23 @@ const AddUser: React.FC<TeamProps> = (props: TeamProps) => {
   const [query, setQuery] = useState('');
   const userColumn: ColumnsType<User> = [
     {
-      title: t('用户名'),
+      title: t('account:profile.username'),
       dataIndex: 'username',
       ellipsis: true,
     },
     {
-      title: t('显示名'),
+      title: t('account:profile.nickname'),
       dataIndex: 'nickname',
       ellipsis: true,
       render: (text: string, record) => record.nickname || '-',
     },
     {
-      title: t('邮箱'),
+      title: t('account:profile.email'),
       dataIndex: 'email',
       render: (text: string, record) => record.email || '-',
     },
     {
-      title: t('手机'),
+      title: t('account:profile.phone'),
       dataIndex: 'phone',
       render: (text: string, record) => record.phone || '-',
     },
@@ -78,10 +78,31 @@ const AddUser: React.FC<TeamProps> = (props: TeamProps) => {
     setSelectedUserRows(newRows);
   };
 
+  const getTableData = ({ current, pageSize }): Promise<any> => {
+    const params = {
+      p: current,
+      limit: pageSize,
+    };
+
+    return getUserInfoList({
+      ...params,
+      query,
+    }).then((res) => {
+      return {
+        total: res.dat.total,
+        list: res.dat.list,
+      };
+    });
+  };
+  const { tableProps } = useAntdTable(getTableData, {
+    defaultPageSize: 5,
+    refreshDeps: [query],
+  });
+
   return (
     <div>
       <div>
-        <span>{t('团队名称')}：</span>
+        <span>{t('team.name')}：</span>
         {teamInfo && teamInfo.name}
       </div>
       <div
@@ -89,13 +110,7 @@ const AddUser: React.FC<TeamProps> = (props: TeamProps) => {
           margin: '20px 0 16px',
         }}
       >
-        {selectedUser.length > 0 && (
-          <span>
-            {t('已选择')}
-            {selectedUser.length}
-            {t('项')}：
-          </span>
-        )}
+        {selectedUser.length > 0 && <span>{t('team.add_member_selected', { num: selectedUser.length })}</span>}
         {selectedUserRows.map((item, index) => {
           return (
             <Tag
@@ -114,26 +129,29 @@ const AddUser: React.FC<TeamProps> = (props: TeamProps) => {
       <Input
         className={'searchInput'}
         prefix={<SearchOutlined />}
-        placeholder={t('用户名、邮箱或电话')}
+        placeholder={t('user.search_placeholder')}
         onPressEnter={(e) => {
           setQuery((e.target as HTMLInputElement).value);
         }}
       />
-      <BaseTable
-        fetchHandle={getUserInfoList}
-        columns={userColumn}
+      <Table
+        size='small'
         rowKey='id'
-        needPagination={true}
-        pageSize={5}
-        fetchParams={{
-          query,
-        }}
+        columns={userColumn}
+        {...tableProps}
         rowSelection={{
           preserveSelectedRowKeys: true,
           selectedRowKeys: selectedUser,
           onChange: onSelectChange,
         }}
-      ></BaseTable>
+        pagination={{
+          ...tableProps.pagination,
+          size: 'small',
+          pageSize: 5,
+          showTotal: (total) => `Total ${total} items`,
+          showSizeChanger: true,
+        }}
+      />
     </div>
   );
 };

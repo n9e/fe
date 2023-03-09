@@ -18,6 +18,7 @@ import React, { useEffect, useState, useImperativeHandle, forwardRef } from 'rea
 import { Form, Row, Col, Button, Space, Switch, Tooltip, Mentions } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { defaultValues, defaultCustomValuesMap } from './config';
 import Options from './Options';
 import Collapse, { Panel } from './Components/Collapse';
@@ -26,8 +27,9 @@ import Renderer from '../Renderer/Renderer';
 import QueryEditor from './QueryEditor';
 
 function FormCpt(props, ref) {
+  const { t } = useTranslation('dashboard');
   const [chartForm] = Form.useForm();
-  const { initialValues, cluster, range, id, step } = props;
+  const { initialValues, datasourceValue, range, id, step } = props;
   const [variableConfigWithOptions, setVariableConfigWithOptions] = useState<IVariable[]>(props.variableConfigWithOptions);
 
   defaultValues.custom = defaultCustomValuesMap[initialValues?.type || defaultValues.type];
@@ -49,7 +51,7 @@ function FormCpt(props, ref) {
   }, [JSON.stringify(props.variableConfigWithOptions)]);
 
   return (
-    <Form layout='vertical' form={chartForm} initialValues={_.merge({}, defaultValues, initialValues)}>
+    <Form layout='vertical' preserve={false} form={chartForm} initialValues={_.merge({}, defaultValues, initialValues)}>
       <Form.Item name='type' hidden />
       <Form.Item name='id' hidden />
       <Form.Item name='layout' hidden />
@@ -70,7 +72,17 @@ function FormCpt(props, ref) {
             <div style={{ marginBottom: 10, height: 300 }}>
               <Form.Item shouldUpdate noStyle>
                 {({ getFieldsValue }) => {
-                  return <Renderer dashboardId={id} time={range} step={step} values={getFieldsValue()} variableConfig={variableConfigWithOptions} isPreview />;
+                  return (
+                    <Renderer
+                      datasourceValue={datasourceValue}
+                      dashboardId={id}
+                      time={range}
+                      step={step}
+                      values={getFieldsValue()}
+                      variableConfig={variableConfigWithOptions}
+                      isPreview
+                    />
+                  );
                 }}
               </Form.Item>
             </div>
@@ -87,12 +99,12 @@ function FormCpt(props, ref) {
                           }}
                           value={variableConfigWithOptions}
                           editable={false}
-                          cluster={cluster}
+                          datasourceValue={datasourceValue}
                           range={range}
                           id={id}
                         />
                       </div>
-                      <QueryEditor chartForm={chartForm} defaultDatasourceName={cluster} type={type} />
+                      <QueryEditor chartForm={chartForm} defaultDatasourceValue={datasourceValue} type={type} />
                     </div>
                   );
                 }
@@ -101,9 +113,9 @@ function FormCpt(props, ref) {
           </Col>
           <Col flex='600px' style={{ overflowY: 'auto' }}>
             <Collapse>
-              <Panel header='面板配置'>
+              <Panel header={t('panel.base.title')}>
                 <>
-                  <Form.Item label={'标题'} name='name'>
+                  <Form.Item label={t('panel.base.name')} name='name'>
                     <Mentions prefix='$' split=''>
                       {_.map(variableConfigWithOptions, (item) => {
                         return (
@@ -114,7 +126,7 @@ function FormCpt(props, ref) {
                       })}
                     </Mentions>
                   </Form.Item>
-                  <Form.Item label={'下钻链接'}>
+                  <Form.Item label={t('panel.base.link.label')}>
                     <Form.List name={'links'}>
                       {(fields, { add, remove }) => (
                         <>
@@ -124,7 +136,7 @@ function FormCpt(props, ref) {
                               add({});
                             }}
                           >
-                            添加
+                            {t('panel.base.link.btn')}
                           </Button>
                           {fields.map(({ key, name, ...restField }) => {
                             return (
@@ -140,11 +152,10 @@ function FormCpt(props, ref) {
                                   rules={[
                                     {
                                       required: true,
-                                      message: '链接名称',
                                     },
                                   ]}
                                 >
-                                  <Mentions prefix='$' split='' placeholder='链接名称'>
+                                  <Mentions prefix='$' split='' placeholder={t('panel.base.link.name')}>
                                     {_.map(variableConfigWithOptions, (item) => {
                                       return (
                                         <Mentions.Option key={item.name} value={item.name}>
@@ -160,11 +171,10 @@ function FormCpt(props, ref) {
                                   rules={[
                                     {
                                       required: true,
-                                      message: '链接地址',
                                     },
                                   ]}
                                 >
-                                  <Mentions prefix='$' split='' style={{ width: 260 }} placeholder='链接地址'>
+                                  <Mentions prefix='$' split='' style={{ width: 260 }} placeholder={t('panel.base.link.url')}>
                                     {_.map(variableConfigWithOptions, (item) => {
                                       return (
                                         <Mentions.Option key={item.name} value={item.name}>
@@ -174,7 +184,7 @@ function FormCpt(props, ref) {
                                     })}
                                   </Mentions>
                                 </Form.Item>
-                                <Tooltip title='是否新窗口打开'>
+                                <Tooltip title={t('panel.base.link.isNewBlank')}>
                                   <Form.Item {...restField} name={[name, 'targetBlank']} valuePropName='checked'>
                                     <Switch />
                                   </Form.Item>
@@ -191,8 +201,8 @@ function FormCpt(props, ref) {
                         </>
                       )}
                     </Form.List>
-                    <Form.Item label='备注' name='description'>
-                      <Mentions prefix='$' split='' rows={3} placeholder='支持 markdown'>
+                    <Form.Item label={t('panel.base.description')} name='description'>
+                      <Mentions prefix='$' split='' rows={3}>
                         {_.map(variableConfigWithOptions, (item) => {
                           return (
                             <Mentions.Option key={item.name} value={item.name}>
