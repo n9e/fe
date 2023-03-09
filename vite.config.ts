@@ -16,6 +16,7 @@
  */
 import { defineConfig } from 'vite';
 import reactRefresh from '@vitejs/plugin-react-refresh';
+import svgr from 'vite-plugin-svgr';
 import { md } from './plugins/md';
 const reactSvgPlugin = require('vite-plugin-react-svg');
 
@@ -35,7 +36,7 @@ const antdChunk = ['antd'];
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [md(), reactRefresh(), reactSvgPlugin({ defaultExport: 'component' })],
+  plugins: [md(), reactRefresh(), svgr()],
   define: {},
   resolve: {
     alias: [
