@@ -22,6 +22,7 @@ import { useTranslation } from 'react-i18next';
 import { generateID } from '@/utils';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { DatasourceCateEnum } from '@/utils/constant';
+import { getDefaultDatasourceValue, setDefaultDatasourceValue } from '@/utils';
 import { CommonStateContext } from '@/App';
 import Elasticsearch from './Elasticsearch';
 import AliyunSLS, { setDefaultValues } from './AliyunSLS';
@@ -53,27 +54,6 @@ export function getUrlParamsByName(name) {
   return '';
 }
 
-export const getDefaultDatasourceName = (datasourceCate, datasourceList) => {
-  const localPrometheus = localStorage.getItem('datasourceValue_prometheus');
-  const localElasticsearch = localStorage.getItem('datasourceValue_elasticsearch');
-  const localAliyunSLS = localStorage.getItem('datasourceValue_aliyunsls');
-  if (datasourceCate === 'prometheus') return localPrometheus ? _.toNumber(localPrometheus) : _.get(datasourceList, [datasourceCate, 0, 'id']);
-  if (datasourceCate === 'elasticsearch') return localElasticsearch ? _.toNumber(localElasticsearch) : _.get(datasourceList, [datasourceCate, 0, 'id']);
-  if (datasourceCate === 'aliyun-sls') return localAliyunSLS ? _.toNumber(localAliyunSLS) : _.get(datasourceList, [datasourceCate, 0, 'id']);
-};
-
-export const setDefaultDatasourceValue = (datasourceCate, value) => {
-  if (datasourceCate === 'prometheus') {
-    localStorage.setItem('datasourceValue_prometheus', value);
-  }
-  if (datasourceCate === 'elasticsearch') {
-    localStorage.setItem('datasourceValue_elasticsearch', value);
-  }
-  if (datasourceCate === 'aliyun-sls') {
-    localStorage.setItem('datasourceValue_aliyunsls', value);
-  }
-};
-
 const Panel = ({ defaultPromQL, removePanel, id, cateOptions, type, defaultCate }: IPanelProps) => {
   const { t } = useTranslation('explorer');
   const { groupedDatasourceList } = useContext(CommonStateContext);
@@ -94,7 +74,7 @@ const Panel = ({ defaultPromQL, removePanel, id, cateOptions, type, defaultCate 
         form={form}
         initialValues={{
           datasourceCate: datasourceCate,
-          datasourceValue: getDefaultDatasourceName(datasourceCate, groupedDatasourceList),
+          datasourceValue: getDefaultDatasourceValue(datasourceCate, groupedDatasourceList),
         }}
       >
         <Space align='start'>
@@ -108,7 +88,7 @@ const Panel = ({ defaultPromQL, removePanel, id, cateOptions, type, defaultCate 
                     setDatasourceCate(val);
                   }
                   form.setFieldsValue({
-                    datasourceValue: getDefaultDatasourceName(val, groupedDatasourceList),
+                    datasourceValue: getDefaultDatasourceValue(val, groupedDatasourceList),
                   });
                 }}
               >

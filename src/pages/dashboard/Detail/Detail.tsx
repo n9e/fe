@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useInterval } from 'ahooks';
@@ -26,7 +26,7 @@ import { IRawTimeRange, getDefaultValue } from '@/components/TimeRangePicker';
 import { Dashboard } from '@/store/dashboardInterface';
 import { getDashboard, updateDashboardConfigs, getDashboardPure, getBuiltinDashboard } from '@/services/dashboardV2';
 import { SetTmpChartData } from '@/services/metric';
-import { getDatasourceList } from '@/services/common';
+import { CommonStateContext } from '@/App';
 import VariableConfig, { IVariable } from '../VariableConfig';
 import { replaceExpressionVars } from '../VariableConfig/constant';
 import { ILink } from '../types';
@@ -58,12 +58,13 @@ const fetchDashboard = ({ id, builtinParams }) => {
 export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boolean; gobackPath?: string; builtinParams?: any }) {
   const { isPreview = false, isBuiltin = false, gobackPath, builtinParams } = props;
   const { t, i18n } = useTranslation('dashboard');
+  const { groupedDatasourceList } = useContext(CommonStateContext);
+  const datasources = groupedDatasourceList.prometheus;
   const [dashboardMeta, setDashboardMeta] = useGlobalState('dashboardMeta');
   const { search } = useLocation();
   const { id } = useParams<URLParam>();
   const refreshRef = useRef<{ closeRefresh: Function }>();
   const [dashboard, setDashboard] = useState<Dashboard>({} as Dashboard);
-  const [datasources, setDatasources] = useState<any[]>([]);
   const [datasourceValue, setDatasourceValue] = useState<number>();
   const [variableConfig, setVariableConfig] = useState<IVariable[]>();
   const [variableConfigWithOptions, setVariableConfigWithOptions] = useState<IVariable[]>();
@@ -86,10 +87,6 @@ export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boole
   let updateAtRef = useRef<number>();
   const refresh = async (cbk?: () => void) => {
     let curDatasources = datasources;
-    if (_.isEmpty(datasources)) {
-      curDatasources = await getDatasourceList(['prometheus']);
-      setDatasources(curDatasources);
-    }
     fetchDashboard({
       id,
       builtinParams,
@@ -102,7 +99,7 @@ export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boole
       });
       if (!datasourceValue) {
         const dashboardConfigs: any = res.configs;
-        const localDatasourceValue = getLocalDatasourceValue(search);
+        const localDatasourceValue = getLocalDatasourceValue(search, groupedDatasourceList);
         setDatasourceValue(getDatasourceValue(dashboardConfigs, curDatasources) || localDatasourceValue || curDatasources[0]?.id);
       }
       if (configs) {

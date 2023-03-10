@@ -1,15 +1,13 @@
 import queryString from 'query-string';
 import _ from 'lodash';
+import { getDefaultDatasourceValue, setDefaultDatasourceValue } from '@/utils';
 
-export const getLocalDatasourceValue = (search: string) => {
+export const getLocalDatasourceValue = (search: string, groupedDatasourceList) => {
   const locationQuery = queryString.parse(search);
   if (_.get(locationQuery, '__datasourceValue_prometheus')) {
-    localStorage.setItem('datasourceValue_prometheus', _.toString(_.get(locationQuery, '__datasourceValue_prometheus')));
+    setDefaultDatasourceValue('prometheus', _.toString(_.get(locationQuery, '__datasourceValue_prometheus')));
   }
-  const localDatasourceValue = localStorage.getItem('datasourceValue_prometheus');
-  if (localDatasourceValue) {
-    return _.toNumber(localDatasourceValue);
-  }
+  const localDatasourceValue = getDefaultDatasourceValue('prometheus', groupedDatasourceList);
   return localDatasourceValue;
 };
 

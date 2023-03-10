@@ -18,6 +18,7 @@ import { message } from 'antd';
 import React, { ReactNode, Component } from 'react';
 import { IStore } from '@/store/common';
 import { useLocation } from 'react-router-dom';
+export { getDefaultDatasourceValue, setDefaultDatasourceValue } from './datasource';
 
 export const isPromise = (obj) => {
   return !!obj && (typeof obj === 'object' || typeof obj === 'function') && typeof obj.then === 'function';

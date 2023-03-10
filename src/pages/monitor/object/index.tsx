@@ -21,22 +21,14 @@ import { Select } from 'antd';
 import { LineChartOutlined } from '@ant-design/icons';
 import PageLayout from '@/components/pageLayout';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
+import { CommonStateContext } from '@/App';
+import { getDefaultDatasourceValue, setDefaultDatasourceValue } from '@/utils';
 import { IMatch } from './types';
 import List from './metricViews/List';
 import LabelsValues from './metricViews/LabelsValues';
 import Metrics from './metricViews/Metrics';
 import './locale';
 import './style.less';
-import { CommonStateContext } from '@/App';
-
-const getDefaultDatasourceValue = (datasources) => {
-  const localeDatasourceValue = localStorage.getItem('datasourceValue_prometheus');
-  if (localeDatasourceValue) {
-    return _.toNumber(localeDatasourceValue);
-  } else {
-    return datasources[0]?.id;
-  }
-};
 
 export default function index() {
   const { t } = useTranslation('objectExplorer');
@@ -48,7 +40,7 @@ export default function index() {
   const [rerenderFlag, setRerenderFlag] = useState(_.uniqueId('rerenderFlag_'));
   const { groupedDatasourceList } = useContext(CommonStateContext);
   const datasources = groupedDatasourceList.prometheus;
-  const [datasourceValue, setDatasourceValue] = useState<number>(getDefaultDatasourceValue(datasources));
+  const [datasourceValue, setDatasourceValue] = useState<number>(getDefaultDatasourceValue('prometheus', groupedDatasourceList));
 
   if (!datasourceValue) return null;
 
@@ -70,7 +62,8 @@ export default function index() {
             value={datasourceValue}
             onChange={(val) => {
               setDatasourceValue(val);
-              localStorage.setItem('datasourceValue_prometheus', _.toString(val));
+              setDefaultDatasourceValue('prometheus', _.toString(val));
+              setRerenderFlag(_.uniqueId('rerenderFlag_'));
             }}
           >
             {_.map(datasources, (item) => {
