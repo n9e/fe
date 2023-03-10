@@ -36,7 +36,7 @@ const TableSource = (props: IPropsType) => {
     init();
   }, [refresh]);
 
-  const init = (searchName?: string) => {
+  const init = () => {
     setLoading(true);
     getDataSourceList()
       .then((res) => {
@@ -52,7 +52,6 @@ const TableSource = (props: IPropsType) => {
     {
       title: t('name'),
       dataIndex: 'name',
-      sorter: true,
       render: (text, record) => {
         return (
           <Rename
@@ -77,14 +76,6 @@ const TableSource = (props: IPropsType) => {
       title: t('type'),
       width: 300,
       dataIndex: 'plugin_type',
-      sorter: true,
-      filters: pluginList?.map((el) => {
-        let temp = {
-          text: el.name,
-          value: el.type,
-        };
-        return temp;
-      }),
     },
     {
       title: t('common:table.operations'),
