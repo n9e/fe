@@ -209,7 +209,7 @@ export default function index() {
                   },
                 },
                 {
-                  title: t('common:operations'),
+                  title: t('common:table.operations'),
                   width: 120,
                   render: (record) => {
                     return (
