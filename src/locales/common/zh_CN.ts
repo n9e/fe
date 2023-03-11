@@ -71,6 +71,7 @@ const zh_CN = {
     import: '导入失败',
   },
   time: {
+    millisecond: '毫秒',
     second: '秒',
     minute: '分钟',
     hour: '小时',

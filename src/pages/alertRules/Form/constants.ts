@@ -13,7 +13,7 @@ export const defaultRuleConfig = {
       {
         type: 'target_miss',
         severity: 3,
-        duration: 1,
+        duration: 30,
       },
     ],
   },

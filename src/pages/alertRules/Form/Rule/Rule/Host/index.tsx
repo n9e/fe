@@ -130,8 +130,10 @@ export default function index() {
                           onChange={(val) => {
                             const triggers = form.getFieldValue(['rule_config', 'triggers']);
                             const trigger = triggers[field.name];
-                            if (val === 'offset') {
+                            if (val === 'target_miss') {
                               trigger.duration = 30;
+                            } else if (val === 'offset') {
+                              trigger.duration = 500;
                             } else {
                               trigger.duration = 1;
                             }
@@ -160,7 +162,7 @@ export default function index() {
                           return (
                             <Space align='baseline'>
                               <span>
-                                {type === 'pct_target_miss' ? t('host.trigger.pct_target_miss_text') : type === 'offset' ? t('common:time.second') : t('common:time.minute')}
+                                {type === 'pct_target_miss' ? t('host.trigger.pct_target_miss_text') : type === 'offset' ? t('common:time.millisecond') : t('common:time.second')}
                               </span>
                               {type === 'pct_target_miss' && (
                                 <>

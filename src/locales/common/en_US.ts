@@ -71,6 +71,7 @@ const en_US = {
     import: 'Import Failed',
   },
   time: {
+    millisecond: 'Millisecond',
     second: 'Second',
     minute: 'Minute',
     hour: 'Hour',
