@@ -1,6 +1,6 @@
 const zh_CN = {
   title: '对象列表',
-  default_filter: '预留筛选',
+  default_filter: '预置筛选',
   ungrouped_targets: '未归组对象',
   all_targets: '全部对象',
   datasource: '数据源',
