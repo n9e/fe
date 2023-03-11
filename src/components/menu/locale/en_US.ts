@@ -26,7 +26,7 @@ const en_US = {
   团队管理: 'Teams',
   业务组管理: 'Business Groups',
   权限管理: 'Permission',
-  系统信息: 'Configuration',
+  系统配置: 'Configuration',
   系统版本: 'Version',
   告警引擎: 'Alert Engines',
   数据源: 'Data Sources',

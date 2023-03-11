@@ -25,10 +25,10 @@ import AdvancedWrap from '@/components/AdvancedWrap';
 import { Pure as DatasourceSelect } from '@/components/DatasourceSelect';
 import RefreshIcon from '@/components/RefreshIcon';
 import SearchInput from '@/components/BaseSearchInput';
+import usePagination from '@/components/usePagination';
 import { getStrategyGroupSubList, updateAlertRules, deleteStrategy } from '@/services/warning';
 import { CommonStateContext } from '@/App';
 import { AlertRuleType, AlertRuleStatus } from '../types';
-import { pageSizeOptionsDefault } from '../constants';
 import MoreOperations from './MoreOperations';
 
 interface ListProps {
@@ -46,6 +46,7 @@ export default function List(props: ListProps) {
   const { t } = useTranslation('alertRules');
   const history = useHistory();
   const { datasourceList } = useContext(CommonStateContext);
+  const pagination = usePagination({ PAGESIZE_KEY: 'alert-rules-pagesize' });
   const [filter, setFilter] = useState<Filter>({});
   const [selectRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
   const [selectedRows, setSelectedRows] = useState<AlertRuleType<any>[]>([]);
@@ -327,16 +328,7 @@ export default function List(props: ListProps) {
       <Table
         size='small'
         rowKey='id'
-        pagination={{
-          total: filteredData.length,
-          showQuickJumper: true,
-          showSizeChanger: true,
-          showTotal: (total) => {
-            return `共 ${total} 条数据`;
-          },
-          pageSizeOptions: pageSizeOptionsDefault,
-          defaultPageSize: 30,
-        }}
+        pagination={pagination}
         loading={loading}
         dataSource={filteredData}
         rowSelection={{

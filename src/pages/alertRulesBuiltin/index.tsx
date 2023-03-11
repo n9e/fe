@@ -8,6 +8,7 @@ import { SafetyCertificateOutlined, SearchOutlined, StarOutlined, StarFilled } f
 import PageLayout from '@/components/pageLayout';
 import Export from '@/pages/dashboard/List/Export';
 import { CommonStateContext } from '@/App';
+import usePagination from '@/components/usePagination';
 import { RuleCateType, RuleType } from './types';
 import { getRuleCates, postBuiltinCateFavorite, deleteBuiltinCateFavorite } from './services';
 import Import from './Import';
@@ -17,6 +18,7 @@ import './style.less';
 export default function index() {
   const { t } = useTranslation('alertRulesBuiltin');
   const { busiGroups } = useContext(CommonStateContext);
+  const pagination = usePagination({ PAGESIZE_KEY: 'alert-rules-builtin-pagesize' });
   const [data, setData] = useState<RuleCateType[]>([]);
   const [active, setActive] = useState<RuleCateType>();
   const [cateSearch, setCateSearch] = useState<string>('');
@@ -238,6 +240,7 @@ export default function index() {
                   },
                 },
               ]}
+              pagination={pagination}
             />
           </div>
         </div>

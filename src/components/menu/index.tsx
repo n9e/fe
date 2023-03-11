@@ -197,31 +197,31 @@ const getMenuList = (t) => {
       key: 'help',
       icon: <IconFont type='icon-Menu_SystemInformation' />,
       activeIcon: <Icon component={menuIcon.SystemInformation as any} />,
-      label: t('系统信息'),
+      label: t('系统配置'),
       children: [
-        {
-          key: '/help/version',
-          label: t('系统版本'),
-        },
-        {
-          key: '/help/servers',
-          label: t('告警引擎'),
-        },
         {
           key: '/help/source',
           label: t('数据源'),
         },
         {
-          key: '/help/sso',
-          label: t('单点登录'),
+          key: '/help/notification-settings',
+          label: t('通知设置'),
         },
         {
           key: '/help/notification-tpls',
           label: t('通知模板'),
         },
         {
-          key: '/help/notification-settings',
-          label: t('通知设置'),
+          key: '/help/sso',
+          label: t('单点登录'),
+        },
+        {
+          key: '/help/servers',
+          label: t('告警引擎'),
+        },
+        {
+          key: '/help/version',
+          label: t('系统版本'),
         },
       ],
     },

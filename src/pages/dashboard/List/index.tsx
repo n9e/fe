@@ -31,13 +31,12 @@ import PageLayout from '@/components/pageLayout';
 import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
 import { CommonStateContext } from '@/App';
 import { BusinessGroup } from '@/pages/monObjectManage';
+import usePagination from '@/components/usePagination';
 import Header from './Header';
 import FormCpt from './Form';
 import Export from './Export';
 import { exportDataStringify } from './utils';
 import './style.less';
-
-const DASHBOARD_PAGESIZE_KEY = 'dashboard-pagesize';
 
 export default function index() {
   const { t } = useTranslation('dashboard');
@@ -48,7 +47,7 @@ export default function index() {
   const [selectRowKeys, setSelectRowKeys] = useState<number[]>([]);
   const [refreshKey, setRefreshKey] = useState(_.uniqueId('refreshKey_'));
   const [searchVal, setsearchVal] = useState<string>('');
-  const [pageSize, setPageSize] = useState<number>(_.toNumber(localStorage.getItem(DASHBOARD_PAGESIZE_KEY)) || 10);
+  const pagination = usePagination({ PAGESIZE_KEY: 'dashboard-pagesize' });
 
   useEffect(() => {
     if (busiId) {
@@ -262,15 +261,7 @@ export default function index() {
                   setSelectRowKeys(selectedRowKeys);
                 },
               }}
-              pagination={{
-                showSizeChanger: true,
-                pageSize,
-                pageSizeOptions: ['10', '20', '50', '100'],
-                onShowSizeChange: (_current, size) => {
-                  setPageSize(size);
-                  localStorage.setItem(DASHBOARD_PAGESIZE_KEY, size.toString());
-                },
-              }}
+              pagination={pagination}
             />
           </div>
         ) : (

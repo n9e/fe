@@ -7,6 +7,7 @@ import { List, Input, Button, Table, Space, Tag } from 'antd';
 import { SafetyCertificateOutlined, SearchOutlined, StarFilled, StarOutlined } from '@ant-design/icons';
 import PageLayout from '@/components/pageLayout';
 import Export from '@/pages/dashboard/List/Export';
+import usePagination from '@/components/usePagination';
 import { CommonStateContext } from '@/App';
 import { BoardCateType, BoardType } from './types';
 import { getDashboardCates, getDashboardDetail, postBuiltinCateFavorite, deleteBuiltinCateFavorite } from './services';
@@ -22,6 +23,7 @@ export default function index() {
   const [cateSearch, setCateSearch] = useState<string>('');
   const [boardSearch, setBoardSearch] = useState<string>('');
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
+  const pagination = usePagination({ PAGESIZE_KEY: 'dashboard-builtin-pagesize' });
   const allBoards = useRef<BoardType[]>([]);
   const selectedRows = useRef<BoardType[]>([]);
   const datasource = active ? active.boards : allBoards.current;
@@ -161,6 +163,7 @@ export default function index() {
             <Table
               size='small'
               rowKey='name'
+              pagination={pagination}
               dataSource={filteredDatasource}
               rowSelection={{
                 selectedRowKeys,

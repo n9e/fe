@@ -103,7 +103,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
               {/* 整合版本关闭文档链接 */}
               {import.meta.env.VITE_IS_COMMON_DS !== 'true' && (
                 <div style={{ marginRight: 32, position: 'relative' }}>
-                  <a target='_blank' href='http://n9e.flashcat.cloud'>
+                  <a target='_blank' href='https://flashcat.cloud/docs/'>
                     {t('docs')}
                   </a>
                   <Icon
