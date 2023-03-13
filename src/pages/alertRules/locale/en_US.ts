@@ -66,7 +66,9 @@ const en_US = {
         offset: 'Offset',
       },
       than: 'than',
-      pct_target_miss_text: 'mins, The proportion of lost connection exceeds',
+      pct_target_miss_text: 's, The proportion of lost connection exceeds',
+      second: 's',
+      millisecond: 'ms',
     },
     prom_eval_interval_tip: 'promql 执行频率，每隔 {{num}} 秒查询时序库，查到的结果重新命名写回时序库',
     prom_for_duration_tip:

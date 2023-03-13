@@ -111,7 +111,7 @@ export default function index() {
                       add({
                         type: 'target_miss',
                         severity: 3,
-                        duration: 1,
+                        duration: 30,
                       })
                     }
                   />
@@ -135,7 +135,7 @@ export default function index() {
                             } else if (val === 'offset') {
                               trigger.duration = 500;
                             } else {
-                              trigger.duration = 1;
+                              trigger.duration = 30;
                             }
                             console.log(triggers);
                             form.setFieldsValue({
@@ -162,7 +162,7 @@ export default function index() {
                           return (
                             <Space align='baseline'>
                               <span>
-                                {type === 'pct_target_miss' ? t('host.trigger.pct_target_miss_text') : type === 'offset' ? t('common:time.millisecond') : t('common:time.second')}
+                                {type === 'pct_target_miss' ? t('host.trigger.pct_target_miss_text') : type === 'offset' ? t('host.trigger.millisecond') : t('host.trigger.second')}
                               </span>
                               {type === 'pct_target_miss' && (
                                 <>

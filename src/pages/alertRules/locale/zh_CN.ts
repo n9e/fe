@@ -66,7 +66,9 @@ const zh_CN = {
         offset: '机器时间偏移',
       },
       than: '超过',
-      pct_target_miss_text: '分钟，失联比例超过',
+      pct_target_miss_text: '秒，失联比例超过',
+      second: '秒',
+      millisecond: '毫秒',
     },
     prom_eval_interval_tip: 'promql 执行频率，每隔 {{num}} 秒查询时序库，查到的结果重新命名写回时序库',
     prom_for_duration_tip:
