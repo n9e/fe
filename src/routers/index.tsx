@@ -24,8 +24,8 @@ import Overview from '@/pages/login/overview';
 import LoginCallback from '@/pages/loginCallback';
 import LoginCallbackCAS from '@/pages/loginCallback/cas';
 import LoginCallbackOAuth from '@/pages/loginCallback/oauth';
-import AlertRules, { Add as AlertRuleAdd, Edit as AlertRuleEdit, Detail as AlertRuleDetail } from '@/pages/alertRules';
-import AlertRulesBuiltin from '@/pages/alertRulesBuiltin';
+import AlertRules, { Add as AlertRuleAdd, Edit as AlertRuleEdit } from '@/pages/alertRules';
+import AlertRulesBuiltin, { Detail as AlertRulesBuiltinDetail } from '@/pages/alertRulesBuiltin';
 import Profile from '@/pages/account/profile';
 import { List as Dashboard, Detail as DashboardDetail, Share as DashboardShare } from '@/pages/dashboard';
 import Chart from '@/pages/chart';
@@ -119,7 +119,7 @@ export default function Content() {
         <Route exact path='/alert-rules/edit/:id' component={AlertRuleEdit} />
         <Route exact path='/alert-rules' component={AlertRules} />
         <Route exact path='/alert-rules-built-in' component={AlertRulesBuiltin} />
-        <Route exact path='/alert-rules-built-in/detail' component={AlertRuleDetail} />
+        <Route exact path='/alert-rules-built-in/detail' component={AlertRulesBuiltinDetail} />
         {/* <Route exact path='/alert-rules/brain/:id' component={StrategyBrain} /> */}
         <Route exact path='/alert-mutes' component={Shield} />
         <Route exact path='/alert-mutes/add/:from?' component={AddShield} />

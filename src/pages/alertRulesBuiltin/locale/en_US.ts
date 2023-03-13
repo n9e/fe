@@ -5,5 +5,6 @@ const en_US = {
   append_tags: 'Tags',
   json_label: 'JSON',
   json_msg: 'JSON format error, please check',
+  detail_no_result: 'The built-in rule for the query does not exist',
 };
 export default en_US;

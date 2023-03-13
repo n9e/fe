@@ -26,11 +26,10 @@ import { CommonStateContext } from '@/App';
 import List from './List';
 import Add from './Add';
 import Edit from './Edit';
-import Detail from './Detail';
 import './locale';
 import './style.less';
 
-export { Add, Edit, Detail };
+export { Add, Edit };
 
 export default function index() {
   const commonState = useContext(CommonStateContext);

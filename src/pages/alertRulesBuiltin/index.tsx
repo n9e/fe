@@ -12,8 +12,11 @@ import usePagination from '@/components/usePagination';
 import { RuleCateType, RuleType } from './types';
 import { getRuleCates, postBuiltinCateFavorite, deleteBuiltinCateFavorite } from './services';
 import Import from './Import';
+import Detail from './Detail';
 import './locale';
 import './style.less';
+
+export { Detail };
 
 export default function index() {
   const { t } = useTranslation('alertRulesBuiltin');
@@ -48,7 +51,10 @@ export default function index() {
       allRules.current = _.reduce(
         res,
         (result, item) => {
-          return _.concat(result, item.alert_rules);
+          return _.concat(
+            result,
+            _.map(item.alert_rules, (rule) => ({ ...rule, __cate__: item.name })),
+          );
         },
         [] as RuleType[],
       );
@@ -211,7 +217,7 @@ export default function index() {
                         <Link
                           to={{
                             pathname: '/alert-rules-built-in/detail',
-                            state: record,
+                            search: `?cate=${record?.__cate__}&name=${record?.name}`,
                           }}
                         >
                           {t('common:btn.view')}
