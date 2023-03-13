@@ -4,6 +4,12 @@
   display: flex;
   padding: @basePadding;
   box-sizing: border-box;
+  .ant-table table {
+    border-collapse: collapse !important;
+    thead {
+      border-left: 10px solid #f0f0f0 !important;
+    }
+  }
   &.cur-events {
     .dantd-data-table-header-loadbtn-left {
       margin-right: 0px;

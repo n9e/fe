@@ -25,6 +25,7 @@ import { useAntdTable } from 'ahooks';
 import { CommonStateContext } from '@/App';
 import { getEvents } from './services';
 import { deleteAlertEventsModal } from './index';
+import { SeverityColor } from './index';
 
 interface IProps {
   filterObj: any;
@@ -161,18 +162,23 @@ export default function TableCpt(props: IProps) {
   });
 
   return (
-    <div style={{ padding: 10 }}>
-      <div style={{ background: '#fff', padding: 16, display: 'flex' }}>{header}</div>
-      <Table
-        size='small'
-        columns={columns}
-        {...tableProps}
-        pagination={{
-          ...tableProps.pagination,
-          pageSize: 30,
-          pageSizeOptions: ['30', '100', '200', '500'],
-        }}
-      />
+    <div className='event-content'>
+      <div style={{ padding: 16, width: '100%', overflowY: 'auto' }}>
+        <div style={{ display: 'flex' }}>{header}</div>
+        <Table
+          size='small'
+          columns={columns}
+          {...tableProps}
+          rowClassName={(record: { severity: number; is_recovered: number }) => {
+            return SeverityColor[record.is_recovered ? 3 : record.severity - 1] + '-left-border';
+          }}
+          pagination={{
+            ...tableProps.pagination,
+            pageSize: 30,
+            pageSizeOptions: ['30', '100', '200', '500'],
+          }}
+        />
+      </div>
     </div>
   );
 }

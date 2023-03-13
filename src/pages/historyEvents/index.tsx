@@ -30,6 +30,7 @@ import { hoursOptions } from '@/pages/event/constants';
 import { CommonStateContext } from '@/App';
 import exportEvents, { downloadFile } from './exportEvents';
 import { getEvents } from './services';
+import { SeverityColor } from '../event';
 import '../event/index.less';
 import './locale';
 
@@ -262,6 +263,9 @@ const Event: React.FC = () => {
             size='small'
             columns={columns}
             {...tableProps}
+            rowClassName={(record: { severity: number; is_recovered: number }) => {
+              return SeverityColor[record.is_recovered ? 3 : record.severity - 1] + '-left-border';
+            }}
             pagination={{
               ...tableProps.pagination,
               pageSize: 30,
