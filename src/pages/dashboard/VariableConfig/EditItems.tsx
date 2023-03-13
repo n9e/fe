@@ -69,10 +69,12 @@ export default function EditItems(props: IProps) {
           }}
           size='small'
           dataSource={data}
+          tableLayout='fixed'
           columns={[
             {
               title: t('var.name'),
               dataIndex: 'name',
+              width: 150,
               render: (text, record, idx) => {
                 return (
                   <a
@@ -90,6 +92,7 @@ export default function EditItems(props: IProps) {
             {
               title: t('var.type'),
               dataIndex: 'type',
+              width: 100,
             },
             {
               title: t('var.definition'),
@@ -103,7 +106,7 @@ export default function EditItems(props: IProps) {
             },
             {
               title: t('common:operations'),
-              width: 200,
+              width: 150,
               render: (_text, record, idx) => {
                 return (
                   <Space>
