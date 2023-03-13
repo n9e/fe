@@ -19,14 +19,12 @@ import { initReactI18next } from 'react-i18next';
 import resources from './locales/resources';
 
 i18n.use(initReactI18next).init({
-  ns: ['common', 'account'],
   defaultNS: 'common',
   resources,
   lng: localStorage.getItem('language') || 'zh_CN',
   interpolation: {
     escapeValue: false,
   },
-  // debug: true,
 });
 
 export { i18n as i18nInit };

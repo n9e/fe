@@ -130,7 +130,7 @@ export default function index(props: ITimeRangePickerProps) {
   useEffect(() => {
     if (value) {
       setRange(value);
-      setLabel(describeTimeRange(value, dateFormat, i18n.language));
+      setLabel(describeTimeRange(value, dateFormat));
     }
   }, [JSON.stringify(value), visible]);
 
@@ -164,7 +164,7 @@ export default function index(props: ITimeRangePickerProps) {
                                 setVisible(false);
                               }}
                             >
-                              {describeTimeRange(range, dateFormat, i18n.language)}
+                              {describeTimeRange(range, dateFormat)}
                             </li>
                           );
                         })}
@@ -185,11 +185,8 @@ export default function index(props: ITimeRangePickerProps) {
                     <ul>
                       {_.map(
                         _.filter(rangeOptions, (item) => {
-                          if (i18n.language === 'zh_CN') {
-                            return item.displayZh.indexOf(searchValue) > -1;
-                          } else {
-                            return item.display.indexOf(searchValue) > -1;
-                          }
+                          const display = t(`rangeOptions.${item.display}`);
+                          return display.indexOf(searchValue) > -1;
                         }),
                         (item) => {
                           return (
@@ -209,7 +206,7 @@ export default function index(props: ITimeRangePickerProps) {
                                 setHistoryCache(newValue, dateFormat);
                               }}
                             >
-                              {i18n.language === 'zh_CN' ? item.displayZh : item.display}
+                              {t(`rangeOptions.${item.display}`)}
                             </li>
                           );
                         },

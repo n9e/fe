@@ -50,7 +50,6 @@ export interface ITimeOption {
   start: string;
   end: string;
   display: string;
-  displayZh: string;
 }
 
 export interface IRawTimeRange {
