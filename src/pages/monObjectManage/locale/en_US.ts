@@ -7,12 +7,19 @@ const en_US = {
   search_placeholder: 'Multiple keywords are separated by spaces',
   ident_copy_success: '{{num}} records successfully copied',
   not_grouped: 'Ungrouped',
+  tags: 'Tags',
+  group_obj: 'Business group',
   target_up: 'Status',
-  load_per_core: 'Load per core',
   mem_util: 'Memory',
-  disk_util: 'Disk',
+  cpu_util: 'CPU',
+  cpu_num: 'Cores',
   offset: 'Offset',
-
+  os: 'OS',
+  arch: 'CPU Arch',
+  note: 'Note',
+  organize_columns: {
+    title: 'Organize Columns',
+  },
   targets: 'Hosts',
   targets_placeholder: 'Please fill in the hosts, one per line',
   bind_tag: {

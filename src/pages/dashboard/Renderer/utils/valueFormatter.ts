@@ -19,7 +19,7 @@ import moment from 'moment';
 import { utilValMap } from '../config';
 import * as byteConverter from './byteConverter';
 
-function timeFormatter(val, type: 'seconds' | 'milliseconds', decimals) {
+export function timeFormatter(val, type: 'seconds' | 'milliseconds', decimals) {
   if (typeof val !== 'number')
     return {
       value: val,
@@ -28,27 +28,27 @@ function timeFormatter(val, type: 'seconds' | 'milliseconds', decimals) {
     };
   const timeMap = [
     {
-      unit: 'year',
+      unit: 'years',
       value: 31104000,
     },
     {
-      unit: 'month',
+      unit: 'months',
       value: 2592000,
     },
     {
-      unit: 'week',
+      unit: 'weeks',
       value: 604800,
     },
     {
-      unit: 'day',
+      unit: 'days',
       value: 86400,
     },
     {
-      unit: 'hour',
+      unit: 'hours',
       value: 3600,
     },
     {
-      unit: 'min',
+      unit: 'mins',
       value: 60,
     },
   ];
@@ -76,7 +76,7 @@ function timeFormatter(val, type: 'seconds' | 'milliseconds', decimals) {
   return {
     value: _.round(newVal, decimals),
     unit,
-    text: _.round(newVal, decimals) + unit,
+    text: _.round(newVal, decimals) + ' ' + unit,
   };
 }
 

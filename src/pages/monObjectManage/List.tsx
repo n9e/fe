@@ -1,13 +1,16 @@
-import React, { useState, useRef, useContext } from 'react';
+import React, { useState, useRef } from 'react';
 import { Table, Tag, Tooltip, Space, Input, Dropdown, Menu, Button, Modal, message } from 'antd';
+import { ColumnsType } from 'antd/es/table';
 import { SearchOutlined, DownOutlined, ReloadOutlined, CopyOutlined } from '@ant-design/icons';
 import { useAntdTable } from 'ahooks';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { BusiGroupItem } from '@/store/commonInterface';
 import { getMonObjectList } from '@/services/monObjectManage';
+import { timeFormatter } from '@/pages/dashboard/Renderer/utils/valueFormatter';
 import clipboard from './clipboard';
-import { CommonStateContext } from '@/App';
+import OrganizeColumns from './OrganizeColumns';
+import { getDefaultColumnsConfigs, setDefaultColumnsConfigs } from './utils';
 
 export const pageSizeOptions = ['10', '20', '50', '100'];
 
@@ -49,20 +52,12 @@ const RED_COLOR = '#FF656B';
 
 export default function List(props: IProps) {
   const { t } = useTranslation('targets');
-  const { groupedDatasourceList } = useContext(CommonStateContext);
   const { curBusiId, setSelectedIdents, selectedRowKeys, setSelectedRowKeys, refreshFlag, setRefreshFlag, setOperateType } = props;
   const isAddTagToQueryInput = useRef(false);
   const [searchVal, setSearchVal] = useState('');
   const [tableQueryContent, setTableQueryContent] = useState<string>('');
-  const columns = [
-    {
-      title: t('datasource'),
-      dataIndex: 'datasource_id',
-      render: (val) => {
-        const datasource = _.find(groupedDatasourceList.prometheus, { id: val });
-        return datasource ? datasource.name : '';
-      },
-    },
+  const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs());
+  const columns: ColumnsType<any> = [
     {
       title: (
         <span>
@@ -90,177 +85,207 @@ export default function List(props: IProps) {
       ),
       dataIndex: 'ident',
     },
-    {
-      title: t('common:table.tag'),
-      dataIndex: 'tags',
-      ellipsis: {
-        showTitle: false,
-      },
-      render(tagArr) {
-        const content =
-          tagArr &&
-          tagArr.map((item) => (
-            <Tag
-              color='purple'
-              key={item}
-              onClick={(e) => {
-                if (!tableQueryContent.includes(item)) {
-                  isAddTagToQueryInput.current = true;
-                  setTableQueryContent(tableQueryContent ? `${tableQueryContent.trim()} ${item}` : item);
-                }
-              }}
-            >
-              {item}
-            </Tag>
-          ));
-        return (
-          tagArr && (
-            <Tooltip title={content} placement='topLeft' getPopupContainer={() => document.body} overlayClassName='mon-manage-table-tooltip'>
-              {content}
-            </Tooltip>
-          )
-        );
-      },
-    },
-    {
-      title: t('common:business_group'),
-      dataIndex: 'group_obj',
-      render(groupObj: BusiGroupItem | null) {
-        return groupObj ? groupObj.name : t('not_grouped');
-      },
-    },
-    {
-      title: t('target_up'),
-      width: 100,
-      dataIndex: 'target_up',
-      sorter: (a, b) => a.target_up - b.target_up,
-      render(text) {
-        if (text > 0) {
-          return (
-            <div
-              className='table-td-fullBG'
-              style={{
-                backgroundColor: GREEN_COLOR,
-              }}
-            >
-              UP
-            </div>
-          );
-        } else if (text < 1) {
-          return (
-            <div
-              className='table-td-fullBG'
-              style={{
-                backgroundColor: RED_COLOR,
-              }}
-            >
-              DOWN
-            </div>
-          );
-        }
-        return null;
-      },
-    },
-    {
-      title: t('load_per_core'),
-      width: 100,
-      dataIndex: 'load_per_core',
-      sorter: (a, b) => a.load_per_core - b.load_per_core,
-      render(text) {
-        let backgroundColor = GREEN_COLOR;
-        if (text > 2) {
-          backgroundColor = YELLOW_COLOR;
-        }
-        if (text > 4) {
-          backgroundColor = RED_COLOR;
-        }
-        return (
-          <div
-            className='table-td-fullBG'
-            style={{
-              backgroundColor: backgroundColor,
-            }}
-          >
-            {_.floor(text, 1)}
-          </div>
-        );
-      },
-    },
-    {
-      title: t('mem_util'),
-      width: 100,
-      dataIndex: 'mem_util',
-      sorter: (a, b) => a.mem_util - b.mem_util,
-      render(text) {
-        let backgroundColor = GREEN_COLOR;
-        if (text > 70) {
-          backgroundColor = YELLOW_COLOR;
-        }
-        if (text > 85) {
-          backgroundColor = RED_COLOR;
-        }
-        return (
-          <div
-            className='table-td-fullBG'
-            style={{
-              backgroundColor: backgroundColor,
-            }}
-          >
-            {_.floor(text, 1)}%
-          </div>
-        );
-      },
-    },
-    {
-      title: t('disk_util'),
-      width: 100,
-      dataIndex: 'disk_util',
-      sorter: (a, b) => a.disk_util - b.disk_util,
-      render(text) {
-        if (text === undefined) return '';
-        let backgroundColor = GREEN_COLOR;
-        if (text > 85) {
-          backgroundColor = YELLOW_COLOR;
-        }
-        if (text > 95) {
-          backgroundColor = RED_COLOR;
-        }
-        return (
-          <div
-            className='table-td-fullBG'
-            style={{
-              backgroundColor: backgroundColor,
-            }}
-          >
-            {_.floor(text, 1)}%
-          </div>
-        );
-      },
-    },
-    {
-      title: t('offset'),
-      width: 100,
-      dataIndex: 'offset',
-      sorter: (a, b) => a.offset - b.offset,
-      render: (val) => {
-        return `${val}ms`;
-      },
-    },
-    {
-      title: t('common:table.note'),
-      dataIndex: 'note',
-      ellipsis: {
-        showTitle: false,
-      },
-      render(note) {
-        return (
-          <Tooltip title={note} placement='topLeft' getPopupContainer={() => document.body}>
-            {note}
-          </Tooltip>
-        );
-      },
-    },
   ];
+
+  _.forEach(columnsConfigs, (item) => {
+    if (!item.visible) return;
+    if (item.name === 'tags') {
+      columns.push({
+        title: t('tags'),
+        dataIndex: 'tags',
+        ellipsis: {
+          showTitle: false,
+        },
+        render(tagArr) {
+          const content =
+            tagArr &&
+            tagArr.map((item) => (
+              <Tag
+                color='purple'
+                key={item}
+                onClick={(e) => {
+                  if (!tableQueryContent.includes(item)) {
+                    isAddTagToQueryInput.current = true;
+                    setTableQueryContent(tableQueryContent ? `${tableQueryContent.trim()} ${item}` : item);
+                  }
+                }}
+              >
+                {item}
+              </Tag>
+            ));
+          return (
+            tagArr && (
+              <Tooltip title={content} placement='topLeft' getPopupContainer={() => document.body} overlayClassName='mon-manage-table-tooltip'>
+                {content}
+              </Tooltip>
+            )
+          );
+        },
+      });
+    }
+    if (item.name === 'group_obj') {
+      columns.push({
+        title: t('group_obj'),
+        dataIndex: 'group_obj',
+        render(groupObj: BusiGroupItem | null) {
+          return groupObj ? groupObj.name : t('not_grouped');
+        },
+      });
+    }
+    if (item.name === 'target_up') {
+      columns.push({
+        title: t('target_up'),
+        width: 100,
+        dataIndex: 'target_up',
+        sorter: (a, b) => a.target_up - b.target_up,
+        render(text) {
+          if (text > 0) {
+            return (
+              <div
+                className='table-td-fullBG'
+                style={{
+                  backgroundColor: GREEN_COLOR,
+                }}
+              >
+                UP
+              </div>
+            );
+          } else if (text < 1) {
+            return (
+              <div
+                className='table-td-fullBG'
+                style={{
+                  backgroundColor: RED_COLOR,
+                }}
+              >
+                DOWN
+              </div>
+            );
+          }
+          return null;
+        },
+      });
+    }
+    if (item.name === 'mem_util') {
+      columns.push({
+        title: t('mem_util'),
+        width: 100,
+        dataIndex: 'mem_util',
+        sorter: (a, b) => a.mem_util - b.mem_util,
+        render(text, reocrd) {
+          if (reocrd.cpu_num === -1) return 'unknown';
+          let backgroundColor = GREEN_COLOR;
+          if (text > 70) {
+            backgroundColor = YELLOW_COLOR;
+          }
+          if (text > 85) {
+            backgroundColor = RED_COLOR;
+          }
+          return (
+            <div
+              className='table-td-fullBG'
+              style={{
+                backgroundColor: backgroundColor,
+              }}
+            >
+              {_.floor(text, 1)}%
+            </div>
+          );
+        },
+      });
+    }
+    if (item.name === 'cpu_util') {
+      columns.push({
+        title: t('cpu_util'),
+        width: 100,
+        dataIndex: 'cpu_util',
+        sorter: (a, b) => a.cpu_util - b.cpu_util,
+        render(text, reocrd) {
+          if (reocrd.cpu_num === -1) return 'unknown';
+          let backgroundColor = GREEN_COLOR;
+          if (text > 70) {
+            backgroundColor = YELLOW_COLOR;
+          }
+          if (text > 85) {
+            backgroundColor = RED_COLOR;
+          }
+          return (
+            <div
+              className='table-td-fullBG'
+              style={{
+                backgroundColor: backgroundColor,
+              }}
+            >
+              {_.floor(text, 1)}%
+            </div>
+          );
+        },
+      });
+    }
+    if (item.name === 'cpu_num') {
+      columns.push({
+        title: t('cpu_num'),
+        width: 100,
+        dataIndex: 'cpu_num',
+        sorter: (a, b) => a.cpu_num - b.cpu_num,
+        render: (val, reocrd) => {
+          if (reocrd.cpu_num === -1) return 'unknown';
+          return val;
+        },
+      });
+    }
+    if (item.name === 'offset') {
+      columns.push({
+        title: t('offset'),
+        width: 100,
+        dataIndex: 'offset',
+        sorter: (a, b) => a.offset - b.offset,
+        render: (val, reocrd) => {
+          if (reocrd.cpu_num === -1) return 'unknown';
+          return timeFormatter(val, 'milliseconds', 2)?.text;
+        },
+      });
+    }
+    if (item.name === 'os') {
+      columns.push({
+        title: t('os'),
+        width: 100,
+        dataIndex: 'os',
+        render: (val, reocrd) => {
+          if (reocrd.cpu_num === -1) return 'unknown';
+          return val;
+        },
+      });
+    }
+    if (item.name === 'arch') {
+      columns.push({
+        title: t('arch'),
+        width: 100,
+        dataIndex: 'arch',
+        render: (val, reocrd) => {
+          if (reocrd.cpu_num === -1) return 'unknown';
+          return val;
+        },
+      });
+    }
+    if (item.name === 'note') {
+      columns.push({
+        title: t('common:table.note'),
+        dataIndex: 'note',
+        ellipsis: {
+          showTitle: false,
+        },
+        render(note) {
+          return (
+            <Tooltip title={note} placement='topLeft' getPopupContainer={() => document.body}>
+              {note}
+            </Tooltip>
+          );
+        },
+      });
+    }
+  });
+
   const featchData = ({ current, pageSize }): Promise<any> => {
     const query = {
       query: tableQueryContent,
@@ -275,9 +300,11 @@ export default function List(props: IProps) {
       };
     });
   };
+
   const showTotal = (total: number) => {
     return t('common:table.total', { total });
   };
+
   const { tableProps } = useAntdTable(featchData, {
     refreshDeps: [tableQueryContent, curBusiId, refreshFlag],
     defaultPageSize: 30,
@@ -307,27 +334,42 @@ export default function List(props: IProps) {
             }}
           />
         </Space>
-        <Dropdown
-          trigger={['click']}
-          overlay={
-            <Menu
-              onClick={({ key }) => {
-                setOperateType(key as OperateType);
-              }}
-            >
-              <Menu.Item key={OperateType.BindTag}>{t('bind_tag.title')}</Menu.Item>
-              <Menu.Item key={OperateType.UnbindTag}>{t('unbind_tag.title')}</Menu.Item>
-              <Menu.Item key={OperateType.UpdateBusi}>{t('update_busi.title')}</Menu.Item>
-              <Menu.Item key={OperateType.RemoveBusi}>{t('remove_busi.title')}</Menu.Item>
-              <Menu.Item key={OperateType.UpdateNote}>{t('update_note.title')}</Menu.Item>
-              <Menu.Item key={OperateType.Delete}>{t('batch_delete.title')}</Menu.Item>
-            </Menu>
-          }
-        >
-          <Button>
-            {t('common:btn.batch_operations')} <DownOutlined />
+        <Space>
+          <Button
+            onClick={() => {
+              OrganizeColumns({
+                value: columnsConfigs,
+                onChange: (val) => {
+                  setColumnsConfigs(val);
+                  setDefaultColumnsConfigs(val);
+                },
+              });
+            }}
+          >
+            {t('organize_columns.title')}
           </Button>
-        </Dropdown>
+          <Dropdown
+            trigger={['click']}
+            overlay={
+              <Menu
+                onClick={({ key }) => {
+                  setOperateType(key as OperateType);
+                }}
+              >
+                <Menu.Item key={OperateType.BindTag}>{t('bind_tag.title')}</Menu.Item>
+                <Menu.Item key={OperateType.UnbindTag}>{t('unbind_tag.title')}</Menu.Item>
+                <Menu.Item key={OperateType.UpdateBusi}>{t('update_busi.title')}</Menu.Item>
+                <Menu.Item key={OperateType.RemoveBusi}>{t('remove_busi.title')}</Menu.Item>
+                <Menu.Item key={OperateType.UpdateNote}>{t('update_note.title')}</Menu.Item>
+                <Menu.Item key={OperateType.Delete}>{t('batch_delete.title')}</Menu.Item>
+              </Menu>
+            }
+          >
+            <Button>
+              {t('common:btn.batch_operations')} <DownOutlined />
+            </Button>
+          </Dropdown>
+        </Space>
       </div>
       <Table
         rowKey='id'

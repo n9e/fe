@@ -7,12 +7,19 @@ const zh_CN = {
   search_placeholder: '模糊搜索表格内容(多个关键词请用空格分隔)',
   ident_copy_success: '复制成功 {{num}} 条记录',
   not_grouped: '未归组',
+  tags: '标签',
+  group_obj: '业务组',
   target_up: '状态',
-  load_per_core: '单核负载',
   mem_util: '内存',
-  disk_util: '根分区',
+  cpu_util: 'CPU',
+  cpu_num: '核数',
   offset: '时间偏移',
-
+  os: '操作系统',
+  arch: 'CPU架构',
+  note: '备注',
+  organize_columns: {
+    title: '显示列',
+  },
   targets: '监控对象',
   targets_placeholder: '请填写监控对象的指标，一行一个',
   bind_tag: {
