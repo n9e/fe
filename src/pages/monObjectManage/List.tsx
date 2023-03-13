@@ -52,7 +52,7 @@ const RED_COLOR = '#FF656B';
 
 export default function List(props: IProps) {
   const { t } = useTranslation('targets');
-  const { curBusiId, setSelectedIdents, selectedRowKeys, setSelectedRowKeys, refreshFlag, setRefreshFlag, setOperateType } = props;
+  const { curBusiId, selectedIdents, setSelectedIdents, selectedRowKeys, setSelectedRowKeys, refreshFlag, setRefreshFlag, setOperateType } = props;
   const isAddTagToQueryInput = useRef(false);
   const [searchVal, setSearchVal] = useState('');
   const [tableQueryContent, setTableQueryContent] = useState<string>('');
@@ -60,28 +60,56 @@ export default function List(props: IProps) {
   const columns: ColumnsType<any> = [
     {
       title: (
-        <span>
-          {t('common:table.ident')}{' '}
-          <CopyOutlined
-            style={{
-              cursor: 'pointer',
-            }}
-            onClick={() => {
-              const tobeCopy = _.map(tableProps.dataSource, (item) => item.ident);
-              const tobeCopyStr = _.join(tobeCopy, '\n');
-              const copySucceeded = clipboard(tobeCopyStr);
+        <Space>
+          {t('common:table.ident')}
+          <Dropdown
+            trigger={['click']}
+            overlay={
+              <Menu
+                onClick={async ({ key }) => {
+                  let tobeCopy = _.map(tableProps.dataSource, (item) => item.ident);
+                  if (key === 'all') {
+                    try {
+                      const result = await featchData({ current: 1, pageSize: tableProps.pagination.total });
+                      tobeCopy = _.map(result.list, (item) => item.ident);
+                    } catch (error) {
+                      console.error(error);
+                    }
+                  } else if (key === 'selected') {
+                    tobeCopy = selectedIdents;
+                  }
 
-              if (copySucceeded) {
-                message.success(t('ident_copy_success', { num: tobeCopy.length }));
-              } else {
-                Modal.warning({
-                  title: t('host.copy.error'),
-                  content: <Input.TextArea defaultValue={tobeCopyStr} />,
-                });
-              }
-            }}
-          />
-        </span>
+                  if (_.isEmpty(tobeCopy)) {
+                    message.warn(t('copy.no_data'));
+                    return;
+                  }
+
+                  const tobeCopyStr = _.join(tobeCopy, '\n');
+                  const copySucceeded = clipboard(tobeCopyStr);
+
+                  if (copySucceeded) {
+                    message.success(t('ident_copy_success', { num: tobeCopy.length }));
+                  } else {
+                    Modal.warning({
+                      title: t('host.copy.error'),
+                      content: <Input.TextArea defaultValue={tobeCopyStr} />,
+                    });
+                  }
+                }}
+              >
+                <Menu.Item key='current_page'>{t('copy.current_page')}</Menu.Item>
+                <Menu.Item key='all'>{t('copy.all')}</Menu.Item>
+                <Menu.Item key='selected'>{t('copy.selected')}</Menu.Item>
+              </Menu>
+            }
+          >
+            <CopyOutlined
+              style={{
+                cursor: 'pointer',
+              }}
+            />
+          </Dropdown>
+        </Space>
       ),
       dataIndex: 'ident',
     },
@@ -240,9 +268,25 @@ export default function List(props: IProps) {
         width: 100,
         dataIndex: 'offset',
         sorter: (a, b) => a.offset - b.offset,
-        render: (val, reocrd) => {
+        render(text, reocrd) {
           if (reocrd.cpu_num === -1) return 'unknown';
-          return timeFormatter(val, 'milliseconds', 2)?.text;
+          let backgroundColor = RED_COLOR;
+          if (text < 2000) {
+            backgroundColor = YELLOW_COLOR;
+          }
+          if (text < 1000) {
+            backgroundColor = GREEN_COLOR;
+          }
+          return (
+            <div
+              className='table-td-fullBG'
+              style={{
+                backgroundColor: backgroundColor,
+              }}
+            >
+              {timeFormatter(text, 'milliseconds', 2)?.text}
+            </div>
+          );
         },
       });
     }

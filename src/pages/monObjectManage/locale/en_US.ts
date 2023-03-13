@@ -22,6 +22,12 @@ const en_US = {
   },
   targets: 'Hosts',
   targets_placeholder: 'Please fill in the hosts, one per line',
+  copy: {
+    current_page: 'Copy current page',
+    all: 'Copy all',
+    selected: 'Copy selected',
+    no_data: 'No data to copy',
+  },
   bind_tag: {
     title: 'Bind tag',
     placeholder: 'Tag format is key=value, separated by enter or space',

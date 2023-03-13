@@ -22,6 +22,12 @@ const zh_CN = {
   },
   targets: '监控对象',
   targets_placeholder: '请填写监控对象的指标，一行一个',
+  copy: {
+    current_page: '复制当前页',
+    all: '复制全部',
+    selected: '复制所选',
+    no_data: '没有可复制的数据',
+  },
   bind_tag: {
     title: '绑定标签',
     placeholder: '标签格式为 key=value ，使用回车或空格分隔',
