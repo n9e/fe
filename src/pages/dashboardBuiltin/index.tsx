@@ -12,8 +12,11 @@ import { CommonStateContext } from '@/App';
 import { BoardCateType, BoardType } from './types';
 import { getDashboardCates, getDashboardDetail, postBuiltinCateFavorite, deleteBuiltinCateFavorite } from './services';
 import Import from './Import';
+import Detail from './Detail';
 import './locale';
 import './style.less';
+
+export { Detail };
 
 export default function index() {
   const { t } = useTranslation('dashboardBuiltin');
@@ -47,7 +50,10 @@ export default function index() {
       allBoards.current = _.reduce(
         res,
         (result, item) => {
-          return _.concat(result, item.boards);
+          return _.concat(
+            result,
+            _.map(item.boards, (board) => ({ ...board, __cate__: item.name })),
+          );
         },
         [] as BoardType[],
       );
@@ -220,11 +226,7 @@ export default function index() {
                         <Link
                           to={{
                             pathname: '/dashboards-built-in/detail',
-                            search: '__variable_value_fixed=true',
-                            state: {
-                              ...record,
-                              isBuiltin: true,
-                            },
+                            search: `__variable_value_fixed=true&__built-in-cate=${record?.__cate__}&__built-in-name=${record?.name}`,
                           }}
                         >
                           {t('common:btn.view')}

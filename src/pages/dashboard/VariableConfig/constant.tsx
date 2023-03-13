@@ -297,7 +297,7 @@ export const replaceExpressionVarsSpecifyRule = (
   const { expression, formData, limit, id } = params;
   const { regex, getPlaceholder } = rule;
   let newExpression = expression;
-  const vars = newExpression ? newExpression.match(new RegExp(regex, 'g')) : [];
+  const vars = newExpression && typeof newExpression.match === 'function' ? newExpression.match(new RegExp(regex, 'g')) : [];
   if (vars && vars.length > 0) {
     for (let i = 0; i < limit; i++) {
       if (formData[i]) {

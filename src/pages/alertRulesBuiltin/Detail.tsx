@@ -24,7 +24,7 @@ import queryString from 'query-string';
 import _ from 'lodash';
 import PageLayout from '@/components/pageLayout';
 import Form from '@/pages/alertRules/Form';
-import { getRuleCates } from '@/pages/alertRulesBuiltin/services';
+import { getRuleCates } from './services';
 
 export default function Edit() {
   const { t } = useTranslation('alertRules');
