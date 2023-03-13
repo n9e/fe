@@ -17,7 +17,7 @@
 
 import React from 'react';
 import { MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
-import { Button, Form, InputNumber, Space, Select, Card, Radio } from 'antd';
+import { Form, InputNumber, Space, Select, Card } from 'antd';
 import { useTranslation } from 'react-i18next';
 import Severity from '@/pages/alertRules/Form/components/Severity';
 import Inhibit from '@/pages/alertRules/Form/components/Inhibit';
@@ -26,7 +26,7 @@ import ValuesSelect from './ValuesSelect';
 import Preview from './Preview';
 import './style.less';
 
-const queryKeyOptions = [{ value: 'all_hosts' }, { value: 'datasource_ids' }, { value: 'group_ids' }, { value: 'tags' }, { value: 'hosts' }];
+const queryKeyOptions = [{ value: 'all_hosts' }, { value: 'group_ids' }, { value: 'tags' }, { value: 'hosts' }];
 const triggerTypeOptions = [{ value: 'target_miss' }, { value: 'pct_target_miss' }, { value: 'offset' }];
 
 export default function index() {
@@ -45,7 +45,7 @@ export default function index() {
                   <PlusCircleOutlined
                     onClick={() =>
                       add({
-                        key: 'datasource_ids',
+                        key: 'group_ids',
                         op: '==',
                         values: [],
                       })
