@@ -15,7 +15,7 @@
  *
  */
 import React, { useEffect, useState } from 'react';
-import { Select, Input } from 'antd';
+import { Select, Input, Tooltip } from 'antd';
 import _ from 'lodash';
 import { IVariable } from './definition';
 
@@ -63,6 +63,21 @@ export default function DisplayItem(props: IProps) {
             dropdownMatchSelectWidth={false}
             value={selected}
             dropdownClassName='overflow-586'
+            maxTagPlaceholder={(omittedValues) => {
+              return (
+                <Tooltip
+                  title={
+                    <div>
+                      {omittedValues.map((item) => {
+                        return <div key={item.key}>{item.value}</div>;
+                      })}
+                    </div>
+                  }
+                >
+                  <div>+{omittedValues.length}...</div>
+                </Tooltip>
+              );
+            }}
           >
             {allOption && (
               <Select.Option key={'all'} value={'all'}>
