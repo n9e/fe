@@ -15,6 +15,7 @@ const en_US = {
     filter: 'Filter',
     time_label: 'Time',
     date_field: 'Date Field',
+    date_field_msg: 'Date Field is required',
     interval: 'Interval',
     value: 'Metric',
     terms: {

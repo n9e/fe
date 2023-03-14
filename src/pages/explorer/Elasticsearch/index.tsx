@@ -275,6 +275,7 @@ export default function index(props: IProps) {
                 rules={[
                   {
                     required: true,
+                    message: t('datasource:es.date_field_msg'),
                   },
                 ]}
               >

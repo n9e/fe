@@ -15,6 +15,7 @@ const zh_CN = {
     filter: '过滤条件',
     time_label: '时间颗粒度',
     date_field: '日期字段',
+    date_field_msg: '日期字段不能为空',
     interval: '时间间隔',
     value: '数值提取',
     terms: {
