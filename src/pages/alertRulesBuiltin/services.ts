@@ -28,7 +28,7 @@ export const getRuleCates = function (): Promise<RuleCateType[]> {
 };
 
 export const createRule = function (id: number, data: RuleType[]) {
-  return request(`/api/n9e/busi-group/${id}/alert-rules`, {
+  return request(`/api/n9e/busi-group/${id}/alert-rules/import`, {
     method: RequestMethod.Post,
     data,
     silence: true,
