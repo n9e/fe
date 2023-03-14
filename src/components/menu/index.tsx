@@ -29,20 +29,6 @@ import menuIcon from './configs';
 import './menu.less';
 import './locale';
 
-const getDefaultOpenKey = (menus: any, pathname) => {
-  const currentSubMenu = _.find(menus, (subMenus: any) => {
-    return _.some(
-      subMenus.children.filter((i) => !!i),
-      (menu) => {
-        return pathname.indexOf(menu.key) !== -1;
-      },
-    );
-  });
-  if (currentSubMenu) {
-    return currentSubMenu.key;
-  }
-};
-
 const getMenuList = (t) => {
   const menuList = [
     {
@@ -235,30 +221,10 @@ const SideMenu: FC = () => {
   const [defaultSelectedKeys, setDefaultSelectedKeys] = useState<string[]>();
   const menuList = getMenuList(t);
   const [menus, setMenus] = useState(menuList);
-
-  useEffect(() => {
-    setDefaultSelectedKeys([]);
-    for (const item of menuList) {
-      if (item && item.key.startsWith('/') && window.location.pathname.includes(item.key)) {
-        setDefaultSelectedKeys([item?.key]);
-        break;
-      } else if (item?.children && item.children.length > 0) {
-        for (const i of item.children) {
-          if (i && window.location.pathname.includes(i.key!)) {
-            setDefaultSelectedKeys([item?.key, i.key!]);
-            break;
-          }
-        }
-      }
-    }
-  }, []);
-
   const history = useHistory();
   const location = useLocation();
   const { pathname } = location;
   const [collapsed, setCollapsed] = useState<'0' | '1' | '2' | string | null>(localStorage.getItem('menuCollapsed') || '0');
-  const [openKeys, setOpenKeys] = useState<string[]>(collapsed ? [] : [getDefaultOpenKey(menus, pathname)]);
-
   const switchCollapsed = () => {
     if (!isNaN(Number(collapsed))) {
       const newColl = (Number(collapsed) === 2 ? -1 : Number(collapsed)) + 1 + '';
@@ -299,10 +265,21 @@ const SideMenu: FC = () => {
   };
 
   useEffect(() => {
-    if (!collapsed) {
-      setOpenKeys(_.union([...openKeys, getDefaultOpenKey(menus, pathname)]));
+    setDefaultSelectedKeys([]);
+    for (const item of menuList) {
+      if (item && item.key.startsWith('/') && pathname.includes(item.key)) {
+        setDefaultSelectedKeys([item?.key]);
+        break;
+      } else if (item?.children && item.children.length > 0) {
+        for (const i of item.children) {
+          if (i && pathname.includes(i.key!)) {
+            setDefaultSelectedKeys([item?.key, i.key!]);
+            break;
+          }
+        }
+      }
     }
-  }, [pathname, collapsed]);
+  }, [pathname]);
 
   useEffect(() => {
     if (profile?.roles?.length > 0) {
