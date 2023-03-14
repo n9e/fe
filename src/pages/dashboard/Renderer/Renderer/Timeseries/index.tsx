@@ -33,20 +33,20 @@ import { ColumnProps } from 'antd/lib/table';
 import { useTranslation } from 'react-i18next';
 
 interface ColData {
-    value: number
-    unit?: string
-    text: string
+  value: number;
+  unit?: string;
+  text: string;
 }
 
 interface DataItem {
-    id: string;
-    name: string;
-    min: ColData;
-    max: ColData;
-    avg: ColData;
-    last: ColData;
-    sum: ColData;
-    disabled: boolean;
+  id: string;
+  name: string;
+  min: ColData;
+  max: ColData;
+  avg: ColData;
+  last: ColData;
+  sum: ColData;
+  disabled: boolean;
 }
 
 interface IProps {
@@ -90,7 +90,7 @@ export default function index(props: IProps) {
   const legendEleSize = useSize(legendEleRef);
   const displayMode = options.legend?.displayMode || 'table';
   const placement = options.legend?.placement || 'bottom';
-  const legendColumns = options.legend?.columns && options.legend?.columns.length > 0 ? options.legend?.columns : ['max', 'min', 'avg', 'sum', 'last']
+  const legendColumns = options.legend?.columns && options.legend?.columns.length > 0 ? options.legend?.columns : ['max', 'min', 'avg', 'sum', 'last'];
   const hasLegend = displayMode !== 'hidden';
   const [legendData, setLegendData] = useState<any[]>([]);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -262,51 +262,54 @@ export default function index(props: IProps) {
     }
   }, [placement]);
 
-  let tableColumn:ColumnProps<DataItem>[] = [
+  let tableColumn: ColumnProps<DataItem>[] = [
+    {
+      title: `Series (${series.length})`,
+      dataIndex: 'name',
+      ellipsis: {
+        showTitle: false,
+      },
+      render: (_text, record: any) => {
+        return (
+          <Tooltip
+            placement='topLeft'
+            title={
+              <div>
+                <div>{_.get(record, 'metric.__name__')}</div>
+                <div>{record.offset && record.offset !== 'current' ? `offfset ${record.offset}` : ''}</div>
+                {_.map(_.omit(record.metric, '__name__'), (val, key) => {
+                  return (
+                    <div key={key}>
+                      {key}={val}
+                    </div>
+                  );
+                })}
+              </div>
+            }
+            getTooltipContainer={() => document.body}
+          >
+            <span className='renderer-timeseries-legend-color-symbol' style={{ backgroundColor: record.color }} />
+            {record.offset && record.offset !== 'current' ? <span style={{ paddingRight: 5 }}>offfset {record.offset}</span> : ''}
+            <span>{_text}</span>
+          </Tooltip>
+        );
+      },
+    },
+  ];
+  legendColumns.forEach((column) => {
+    tableColumn = [
+      ...tableColumn,
       {
-          title: `Series (${series.length})`,
-          dataIndex: 'name',
-          ellipsis: {
-              showTitle: false,
-          },
-          render: (_text, record: any) => {
-              return (
-                      <Tooltip
-                          placement='topLeft'
-                          title={
-                            <div>
-                                <div>{_.get(record, 'metric.__name__')}</div>
-                                <div>{record.offset && record.offset !== 'current' ? `offfset ${record.offset}` : ''}</div>
-                                {_.map(_.omit(record.metric, '__name__'), (val, key) => {
-                                    return (
-                                            <div key={key}>
-                                                {key}={val}
-                                            </div>
-                                            );
-                                })}
-                            </div>
-                          }
-                          getTooltipContainer={() => document.body}
-                          >
-                          <span className='renderer-timeseries-legend-color-symbol' style={{ backgroundColor: record.color }} />
-                          {record.offset && record.offset !== 'current' ? <span style={{ paddingRight: 5 }}>offfset {record.offset}</span> : ''}
-                          <span>{_text}</span>
-                      </Tooltip>
-                      );
-              },
-      }]
-    legendColumns.forEach(column => {
-        tableColumn = [...tableColumn,
-                      {
-                          title: t(`panel.options.legend.${column}`),
-                          dataIndex: column,
-                          width: 100,
-                          sorter: (a, b) => a[column].value - b[column].value,
-                          render: (text) => {
-                              return text.text;
-                              },
-                      }]
-    })
+        title: t(`panel.options.legend.${column}`),
+        dataIndex: column,
+        width: 100,
+        sorter: (a, b) => a[column].value - b[column].value,
+        render: (text) => {
+          return text.text;
+        },
+      },
+    ];
+  });
 
   return (
     <div
