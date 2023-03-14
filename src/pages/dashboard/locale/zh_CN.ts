@@ -102,6 +102,12 @@ const zh_CN = {
           hidden: '隐藏',
         },
         placement: '位置',
+        max: '最大值',
+        min: '最小值',
+        avg: '平均值',
+        sum: '汇总值',
+        last: '当前值',
+        columns: '显示列',
       },
       thresholds: {
         title: '阈值',

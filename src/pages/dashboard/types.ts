@@ -82,6 +82,7 @@ export interface IOptions {
     calcs: string[];
     displayMode: 'list' | 'table' | 'hidden';
     placement: 'right' | 'bottom';
+    columns?:[]
   };
   tooltip?: {
     mode: 'single' | 'all';
