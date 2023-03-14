@@ -20,7 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { Modal, Input, Form, Table, Button, Divider, message } from 'antd';
 import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
-import { addStrategy } from '@/services/warning';
+import { importStrategy } from '@/services/warning';
 
 interface IProps {
   busiId: number;
@@ -48,7 +48,7 @@ function Import(props: IProps & ModalWrapProps) {
         onFinish={async (vals) => {
           try {
             const importData = JSON.parse(vals.import);
-            const { dat } = await addStrategy(importData, busiId);
+            const { dat } = await importStrategy(importData, busiId);
             const dataSource = _.map(dat, (val, key) => {
               return {
                 name: key,
