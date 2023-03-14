@@ -121,33 +121,31 @@ function index(props: IProps) {
     >
       <div className='renderer-body-wrap' ref={bodyWrapRef}>
         <div className='renderer-header graph-header dashboards-panels-item-drag-handle'>
-          <div className='renderer-header-desc'>
-            {tipsVisible ? (
-              <Tooltip
-                placement='leftTop'
-                overlayInnerStyle={{
-                  maxWidth: 300,
-                }}
-                getPopupContainer={() => ref.current!}
-                title={
-                  <Space direction='vertical'>
-                    {description ? <Markdown content={description} /> : null}
-                    {_.map(values.links, (link, i) => {
-                      return (
-                        <div key={i}>
-                          <a href={replaceFieldWithVariable(dashboardId, link.url, variableConfig)} target={link.targetBlank ? '_blank' : '_self'}>
-                            {replaceFieldWithVariable(dashboardId, link.title, variableConfig)}
-                          </a>
-                        </div>
-                      );
-                    })}
-                  </Space>
-                }
-              >
-                <span>{description ? <InfoCircleOutlined /> : <LinkOutlined />}</span>
-              </Tooltip>
-            ) : null}
-          </div>
+          {tipsVisible ? (
+            <Tooltip
+              placement='leftTop'
+              overlayInnerStyle={{
+                maxWidth: 300,
+              }}
+              getPopupContainer={() => ref.current!}
+              title={
+                <Space direction='vertical'>
+                  {description ? <Markdown content={description} /> : null}
+                  {_.map(values.links, (link, i) => {
+                    return (
+                      <div key={i}>
+                        <a href={replaceFieldWithVariable(dashboardId, link.url, variableConfig)} target={link.targetBlank ? '_blank' : '_self'}>
+                          {replaceFieldWithVariable(dashboardId, link.title, variableConfig)}
+                        </a>
+                      </div>
+                    );
+                  })}
+                </Space>
+              }
+            >
+              <div className='renderer-header-desc'>{description ? <InfoCircleOutlined /> : <LinkOutlined />}</div>
+            </Tooltip>
+          ) : null}
           <div className='renderer-header-content'>
             <Tooltip title={name} getPopupContainer={() => ref.current!}>
               <div className='renderer-header-title'>{name}</div>

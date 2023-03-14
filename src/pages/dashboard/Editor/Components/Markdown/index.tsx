@@ -35,7 +35,7 @@ const Markdown: React.FC<IMarkDownPros> = ({ content, style = {} }) => {
         rehypePlugins={[rehypeRaw]}
         components={{
           h1: ({ node, ...props }) => (
-            <h2
+            <h1
               {...props}
               style={{
                 color: style.color,
@@ -53,7 +53,7 @@ const Markdown: React.FC<IMarkDownPros> = ({ content, style = {} }) => {
             />
           ),
           h3: ({ node, ...props }) => (
-            <h2
+            <h3
               {...props}
               style={{
                 color: style.color,
@@ -62,7 +62,7 @@ const Markdown: React.FC<IMarkDownPros> = ({ content, style = {} }) => {
             />
           ),
           h4: ({ node, ...props }) => (
-            <h2
+            <h4
               {...props}
               style={{
                 color: style.color,
@@ -71,7 +71,7 @@ const Markdown: React.FC<IMarkDownPros> = ({ content, style = {} }) => {
             />
           ),
           h5: ({ node, ...props }) => (
-            <h2
+            <h5
               {...props}
               style={{
                 color: style.color,
@@ -80,7 +80,7 @@ const Markdown: React.FC<IMarkDownPros> = ({ content, style = {} }) => {
             />
           ),
           h6: ({ node, ...props }) => (
-            <h2
+            <h6
               {...props}
               style={{
                 color: style.color,
