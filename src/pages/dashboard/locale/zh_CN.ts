@@ -82,8 +82,9 @@ const zh_CN = {
       edit: '编辑图表',
     },
     base: {
-      name: '面板配置',
-      title: '标题',
+      title: '面板配置',
+      name: '标题',
+      name_tip: '表格类型的图表必须设置标题，否则面板编辑会跟表格表头冲突',
       link: {
         label: '链接',
         btn: '添加',

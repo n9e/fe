@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import Color from 'color';
 import { IPanel, ITextStyles } from '../../../types';
 import Markdown from '../../../Editor/Components/Markdown';
@@ -23,6 +23,7 @@ export default function index(props: IProps) {
       content={content}
       style={{
         height: '100%',
+        overflow: 'auto',
         padding: 10,
         fontSize: textSize,
         color: textColor,

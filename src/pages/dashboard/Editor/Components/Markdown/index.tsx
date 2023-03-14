@@ -26,10 +26,72 @@ interface IMarkDownPros {
 }
 
 // https://github.com/vitejs/vite/issues/3592 bug solve 记录
-const Markdown: React.FC<IMarkDownPros> = ({ content, style = {} }) => (
-  <div className='markdown-wrapper' style={style}>
-    <ReactMarkdown remarkPlugins={[gfm]} children={content} rehypePlugins={[rehypeRaw]} />
-  </div>
-);
+const Markdown: React.FC<IMarkDownPros> = ({ content, style = {} }) => {
+  return (
+    <div className='markdown-wrapper' style={style}>
+      <ReactMarkdown
+        remarkPlugins={[gfm]}
+        children={content}
+        rehypePlugins={[rehypeRaw]}
+        components={{
+          h1: ({ node, ...props }) => (
+            <h2
+              {...props}
+              style={{
+                color: style.color,
+                ...props.style,
+              }}
+            />
+          ),
+          h2: ({ node, ...props }) => (
+            <h2
+              {...props}
+              style={{
+                color: style.color,
+                ...props.style,
+              }}
+            />
+          ),
+          h3: ({ node, ...props }) => (
+            <h2
+              {...props}
+              style={{
+                color: style.color,
+                ...props.style,
+              }}
+            />
+          ),
+          h4: ({ node, ...props }) => (
+            <h2
+              {...props}
+              style={{
+                color: style.color,
+                ...props.style,
+              }}
+            />
+          ),
+          h5: ({ node, ...props }) => (
+            <h2
+              {...props}
+              style={{
+                color: style.color,
+                ...props.style,
+              }}
+            />
+          ),
+          h6: ({ node, ...props }) => (
+            <h2
+              {...props}
+              style={{
+                color: style.color,
+                ...props.style,
+              }}
+            />
+          ),
+        }}
+      />
+    </div>
+  );
+};
 
 export default Markdown;

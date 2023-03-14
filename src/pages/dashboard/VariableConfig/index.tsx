@@ -85,7 +85,7 @@ function index(props: IProps) {
             // 如果已选项不在待选项里也视做空值处理
             const selected = getVaraiableSelected(item.name, id);
             if (query.__variable_value_fixed === undefined) {
-              if (selected === null || (selected && !_.isEmpty(regFilterOptions) && !includes(regFilterOptions, selected))) {
+              if (selected === null) {
                 const head = regFilterOptions?.[0];
                 const defaultVal = item.multi ? (head ? [head] : []) : head;
                 setVaraiableSelected({ name: item.name, value: defaultVal, id, urlAttach: true });

@@ -84,6 +84,7 @@ const en_US = {
     base: {
       title: 'Panel options',
       name: 'Title',
+      name_tip: 'The table type panel must set the title',
       link: {
         label: 'Links',
         btn: 'Add',

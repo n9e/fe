@@ -238,6 +238,7 @@ function index(props: IProps) {
                       id: item.id,
                       initialValues: {
                         type: 'timeseries',
+                        name: 'Panel Title',
                         targets: [
                           {
                             refId: 'A',

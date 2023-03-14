@@ -119,7 +119,7 @@ export default function BarGauge(props: IProps) {
   if (sortOrder && sortOrder !== 'none') {
     calculatedValues = _.orderBy(calculatedValues, ['stat'], [sortOrder]);
   }
-  const curMaxValue = maxValue !== undefined ? maxValue : _.maxBy(calculatedValues, 'stat')?.stat || 0;
+  const curMaxValue = maxValue !== undefined && maxValue !== null ? maxValue : _.maxBy(calculatedValues, 'stat')?.stat || 0;
 
   return (
     <div className='renderer-bar-gauge-container'>

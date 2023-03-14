@@ -19,7 +19,7 @@ import _ from 'lodash';
 import classNames from 'classnames';
 import { useInViewport } from 'ahooks';
 import { useTranslation } from 'react-i18next';
-import { Dropdown, Menu, Tooltip } from 'antd';
+import { Dropdown, Menu, Tooltip, Space } from 'antd';
 import { InfoCircleOutlined, MoreOutlined, LinkOutlined, SettingOutlined, ShareAltOutlined, DeleteOutlined, CopyOutlined, SyncOutlined } from '@ant-design/icons';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import Timeseries from './Timeseries';
@@ -124,14 +124,14 @@ function index(props: IProps) {
           <div className='renderer-header-desc'>
             {tipsVisible ? (
               <Tooltip
-                placement='top'
+                placement='leftTop'
                 overlayInnerStyle={{
-                  width: 300,
+                  maxWidth: 300,
                 }}
                 getPopupContainer={() => ref.current!}
                 title={
-                  <div>
-                    <Markdown content={description} />
+                  <Space direction='vertical'>
+                    {description ? <Markdown content={description} /> : null}
                     {_.map(values.links, (link, i) => {
                       return (
                         <div key={i}>
@@ -141,10 +141,10 @@ function index(props: IProps) {
                         </div>
                       );
                     })}
-                  </div>
+                  </Space>
                 }
               >
-                <div className='renderer-header-desc'>{description ? <InfoCircleOutlined /> : <LinkOutlined />}</div>
+                <span>{description ? <InfoCircleOutlined /> : <LinkOutlined />}</span>
               </Tooltip>
             ) : null}
           </div>

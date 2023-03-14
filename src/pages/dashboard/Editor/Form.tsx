@@ -115,16 +115,32 @@ function FormCpt(props, ref) {
             <Collapse>
               <Panel header={t('panel.base.title')}>
                 <>
-                  <Form.Item label={t('panel.base.name')} name='name'>
-                    <Mentions prefix='$' split=''>
-                      {_.map(variableConfigWithOptions, (item) => {
-                        return (
-                          <Mentions.Option key={item.name} value={item.name}>
-                            {item.name}
-                          </Mentions.Option>
-                        );
-                      })}
-                    </Mentions>
+                  <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.type !== curValues.type} noStyle>
+                    {({ getFieldValue }) => {
+                      const type = getFieldValue('type');
+                      return (
+                        <Form.Item
+                          label={t('panel.base.name')}
+                          name='name'
+                          tooltip={t('panel.base.name_tip')}
+                          rules={[
+                            {
+                              required: type === 'table',
+                            },
+                          ]}
+                        >
+                          <Mentions prefix='$' split=''>
+                            {_.map(variableConfigWithOptions, (item) => {
+                              return (
+                                <Mentions.Option key={item.name} value={item.name}>
+                                  {item.name}
+                                </Mentions.Option>
+                              );
+                            })}
+                          </Mentions>
+                        </Form.Item>
+                      );
+                    }}
                   </Form.Item>
                   <Form.Item label={t('panel.base.link.label')}>
                     <Form.List name={'links'}>

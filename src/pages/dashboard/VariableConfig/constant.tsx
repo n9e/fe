@@ -233,11 +233,8 @@ function attachVariable2Url(key, value, id: string, vars?: IVariable[]) {
   const query = queryString.parse(search);
   const varsValue = getVarsValue(id, vars);
   const newQuery = {};
-  _.forEach(_.merge({}, varsValue, query, { [key]: value }), (value, key) => {
-    const val = typeof value === 'string' ? value : JSON.stringify(value);
-    if (key !== '__variable_value_fixed') {
-      newQuery[key] = val;
-    }
+  _.forEach(_.assign({}, varsValue, query, { [key]: value }), (value, key) => {
+    newQuery[key] = _.isEmpty(value) ? undefined : value;
   });
   const newurl = `${protocol}//${host}${pathname}?${queryString.stringify(newQuery)}`;
   window.history.replaceState({ path: newurl }, '', newurl);
@@ -258,23 +255,26 @@ export function setVaraiableSelected({
   vars?: IVariable[];
 }) {
   if (value === undefined) return;
-  localStorage.setItem(`dashboard_${id}_${name}`, JSON.stringify(value));
-  urlAttach && attachVariable2Url(name, JSON.stringify(value), id, vars);
+  localStorage.setItem(`dashboard_${id}_${name}`, typeof value === 'string' ? value : JSON.stringify(value));
+  urlAttach && attachVariable2Url(name, value, id, vars);
 }
 
 export function getVaraiableSelected(name: string, id: string) {
   const { search } = window.location;
-  var searchObj = new URLSearchParams(search);
-  let v: any = searchObj.get(name);
+  const searchObj = queryString.parse(search);
+  let v: any = searchObj[name];
   // 如果存在 __variable_value_fixed 参数，表示变量值是固定的，不需要从 localStorage 中获取
-  if (!searchObj.has('__variable_value_fixed')) {
+  if (!searchObj['__variable_value_fixed']) {
     if (!v) {
       v = localStorage.getItem(`dashboard_${id}_${name}`);
+      try {
+        const parsed = JSON.parse(v);
+        if (Array.isArray(parsed)) {
+          v = parsed;
+        }
+      } catch (e) {}
     }
     if (v === null) return null; // null 表示没有初始化过，空字符串表示值被设置成空
-    try {
-      v = JSON.parse(v);
-    } catch (e) {}
     return v || '';
   } else {
     if (v === null) v = undefined;
@@ -297,7 +297,7 @@ export const replaceExpressionVarsSpecifyRule = (
   const { expression, formData, limit, id } = params;
   const { regex, getPlaceholder } = rule;
   let newExpression = expression;
-  const vars = newExpression && typeof newExpression.match === 'function' ? newExpression.match(new RegExp(regex, 'g')) : [];
+  const vars: any[] | null = newExpression && typeof newExpression.match === 'function' ? newExpression.match(new RegExp(regex, 'g')) : [];
   if (vars && vars.length > 0) {
     for (let i = 0; i < limit; i++) {
       if (formData[i]) {
@@ -307,7 +307,10 @@ export const replaceExpressionVarsSpecifyRule = (
 
         if (vars.includes(placeholder)) {
           if (Array.isArray(selected)) {
-            if (selected.includes('all') && options) {
+            const realSelected = _.size(selected) === 1 ? selected[0] : `(${(selected as string[]).join('|')})`;
+            newExpression = replaceAllPolyfill(newExpression, placeholder, realSelected);
+          } else if (typeof selected === 'string') {
+            if (selected === 'all') {
               if (allValue) {
                 newExpression = replaceAllPolyfill(newExpression, placeholder, allValue);
               } else {
@@ -317,13 +320,6 @@ export const replaceExpressionVarsSpecifyRule = (
                   `(${(options as string[]).filter((i) => !reg || !stringToRegex(reg) || (stringToRegex(reg) as RegExp).test(i)).join('|')})`,
                 );
               }
-            } else {
-              const realSelected = _.size(selected) === 1 ? selected[0] : `(${(selected as string[]).join('|')})`;
-              newExpression = replaceAllPolyfill(newExpression, placeholder, realSelected);
-            }
-          } else if (typeof selected === 'string') {
-            if (selected === 'all' && allValue) {
-              newExpression = replaceAllPolyfill(newExpression, placeholder, allValue);
             } else {
               newExpression = replaceAllPolyfill(newExpression, placeholder, selected as string);
             }

@@ -217,6 +217,7 @@ export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boole
                 visible: true,
                 id,
                 initialValues: {
+                  name: 'Panel Title',
                   type,
                   targets: [
                     {
