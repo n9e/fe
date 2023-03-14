@@ -48,6 +48,11 @@ const zh_CN = {
     name: '数据源',
     type: '数据源类型',
     id: '关联数据源',
+    empty_modal: {
+      title: '请联系管理员去配置数据源',
+      btn1: '前往配置',
+      btn2: '知道了',
+    },
   },
   confirm: {
     delete: '确认删除吗？',

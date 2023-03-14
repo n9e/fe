@@ -59,7 +59,7 @@ export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boole
   const { isPreview = false, isBuiltin = false, gobackPath, builtinParams } = props;
   const { t, i18n } = useTranslation('dashboard');
   const { groupedDatasourceList } = useContext(CommonStateContext);
-  const datasources = groupedDatasourceList.prometheus;
+  const datasources = groupedDatasourceList.prometheus || [];
   const [dashboardMeta, setDashboardMeta] = useGlobalState('dashboardMeta');
   const { search } = useLocation();
   const { id } = useParams<URLParam>();
@@ -163,7 +163,12 @@ export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boole
     }
   }, 2000);
 
-  if (!datasourceValue) return null;
+  if (!datasourceValue)
+    return (
+      <PageLayout>
+        <div>{t('detail.datasource_empty')}</div>
+      </PageLayout>
+    );
 
   return (
     <PageLayout

@@ -173,16 +173,16 @@ const EventDetailPage: React.FC = () => {
         return moment((time || 0) * 1000).format('YYYY-MM-DD HH:mm:ss');
       },
     },
-    {
-      label: t('detail.rule_algo'),
-      key: 'rule_algo',
-      render(text) {
-        if (text) {
-          return t('detail.rule_algo_anomaly');
-        }
-        return t('detail.rule_algo_threshold');
-      },
-    },
+    // {
+    //   label: t('detail.rule_algo'),
+    //   key: 'rule_algo',
+    //   render(text) {
+    //     if (text) {
+    //       return t('detail.rule_algo_anomaly');
+    //     }
+    //     return t('detail.rule_algo_threshold');
+    //   },
+    // },
     {
       label: t('detail.cate'),
       key: 'cate',

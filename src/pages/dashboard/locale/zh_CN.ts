@@ -246,5 +246,8 @@ const zh_CN = {
       step_tip: '可指定 step，默认为大盘全局 step',
     },
   },
+  detail: {
+    datasource_empty: '没有数据源信息，请先配置数据源',
+  },
 };
 export default zh_CN;

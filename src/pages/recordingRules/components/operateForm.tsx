@@ -75,7 +75,7 @@ const operateForm: React.FC<Props> = ({ type, detail = {} }) => {
 
   const addSubmit = () => {
     form.validateFields().then(async (values) => {
-      const datasourceId = getFirstDatasourceId(values.datasource_ids, groupedDatasourceList?.prometheus);
+      const datasourceId = getFirstDatasourceId(values.datasource_ids, groupedDatasourceList?.prometheus || []);
       const res = await prometheusQuery({ query: values.prom_ql }, datasourceId);
       if (res.error) {
         notification.error({

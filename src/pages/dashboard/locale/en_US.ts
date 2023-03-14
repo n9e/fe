@@ -236,5 +236,8 @@ const en_US = {
       step_tip: 'Default is the global step of the dashboard',
     },
   },
+  detail: {
+    datasource_empty: 'Please configure the data source first',
+  },
 };
 export default en_US;

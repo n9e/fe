@@ -87,7 +87,7 @@ const anonymous = _.some(anonymousRoutes, (route) => location.pathname.startsWit
 export const CommonStateContext = createContext({} as ICommonState);
 
 function App() {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const initialized = useRef(false);
   const [commonState, setCommonState] = useState<ICommonState>({
     datasourceCateOptions: getAuthorizedDatasourceCates(),
@@ -119,7 +119,7 @@ function App() {
           const { dat: profile } = await GetProfile();
           const { dat: busiGroups } = await getBusiGroups();
           const datasourceList = await getDatasourceList();
-          const defaultBusiId = commonState.curBusiId || busiGroups[0]?.id;
+          const defaultBusiId = commonState.curBusiId || busiGroups?.[0]?.id;
           window.localStorage.setItem('curBusiId', String(defaultBusiId));
           initialized.current = true;
           setCommonState((state) => {
@@ -132,6 +132,18 @@ function App() {
               curBusiId: defaultBusiId,
             };
           });
+          if (_.isEmpty(datasourceList) && !_.startsWith(location.pathname, '/help/source')) {
+            Modal.warning({
+              title: t('common:datasource.empty_modal.title'),
+              okText: _.includes(profile.roles, 'Admin') ? t('common:datasource.empty_modal.btn1') : t('common:datasource.empty_modal.btn2'),
+              onOk: () => {
+                if (_.includes(profile.roles, 'Admin')) {
+                  history.pushState(null, '', '/help/source');
+                  window.location.reload();
+                }
+              },
+            });
+          }
         }
       })();
     } catch (error) {

@@ -48,6 +48,11 @@ const en_US = {
     name: 'Datasource',
     type: 'Datasource Type',
     id: 'Datasource',
+    empty_modal: {
+      title: 'Please contact the administrator to configure the datasource',
+      btn1: 'Go to configure',
+      btn2: 'OK',
+    },
   },
   confirm: {
     delete: 'Are you sure to delete?',
