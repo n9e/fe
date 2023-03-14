@@ -272,7 +272,7 @@ const SideMenu: FC = () => {
         break;
       } else if (item?.children && item.children.length > 0) {
         for (const i of item.children) {
-          if (i && pathname.includes(i.key!)) {
+          if (i && (pathname === i.key || pathname.startsWith(i.key + '/'))) {
             setDefaultSelectedKeys([item?.key, i.key!]);
             break;
           }
