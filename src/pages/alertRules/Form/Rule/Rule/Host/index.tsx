@@ -60,7 +60,19 @@ export default function index() {
                   <Space align='baseline'>
                     {idx > 0 && <div className='alert-rule-host-condition-tips'>且</div>}
                     <Form.Item {...field} name={[field.name, 'key']} rules={[{ required: true, message: 'Missing key' }]}>
-                      <Select style={{ minWidth: idx > 0 ? 100 : 142 }}>
+                      <Select
+                        style={{ minWidth: idx > 0 ? 100 : 142 }}
+                        onChange={() => {
+                          const queries = form.getFieldValue(['rule_config', 'queries']);
+                          const query = queries[field.name];
+                          query.values = [];
+                          form.setFieldsValue({
+                            rule_config: {
+                              queries,
+                            },
+                          });
+                        }}
+                      >
                         {queryKeyOptions.map((item) => (
                           <Select.Option key={item.value} value={item.value}>
                             {t(`host.query.key.${item.value}`)}
