@@ -103,6 +103,12 @@ const en_US = {
           hidden: 'Hidden',
         },
         placement: 'Placement',
+        max: 'Max',
+        min: 'Min',
+        avg: 'Avg',
+        sum: 'Sum',
+        last: 'Last',
+        columns: 'Columns',
       },
       thresholds: {
         title: 'Thresholds',
