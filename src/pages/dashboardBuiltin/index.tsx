@@ -226,7 +226,7 @@ export default function index() {
                         <Link
                           to={{
                             pathname: '/dashboards-built-in/detail',
-                            search: `__variable_value_fixed=true&__built-in-cate=${record?.__cate__}&__built-in-name=${record?.name}`,
+                            search: `__variable_value_fixed=true&__built-in-cate=${active?.name || record?.__cate__}&__built-in-name=${record?.name}`,
                           }}
                         >
                           {t('common:btn.view')}

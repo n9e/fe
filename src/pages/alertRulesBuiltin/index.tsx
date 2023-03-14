@@ -217,7 +217,7 @@ export default function index() {
                         <Link
                           to={{
                             pathname: '/alert-rules-built-in/detail',
-                            search: `?cate=${record?.__cate__}&name=${record?.name}`,
+                            search: `?cate=${active?.name || record?.__cate__}&name=${record?.name}`,
                           }}
                         >
                           {t('common:btn.view')}
