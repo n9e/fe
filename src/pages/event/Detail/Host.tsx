@@ -57,8 +57,8 @@ export default function HostDetail(t, commonState) {
                     {type === 'pct_target_miss'
                       ? t('alertRules:host.trigger.pct_target_miss_text')
                       : type === 'offset'
-                      ? t('alertRules:host.trigger.ms')
-                      : t('alertRules:host.trigger.mins')}
+                      ? t('alertRules:host.trigger.millisecond')
+                      : t('alertRules:host.trigger.second')}
                   </span>
                   {type === 'pct_target_miss' && trigger.percent}, {t('detail.host.trigger')} {t(`common:severity.${trigger?.severity}`)}
                 </div>
