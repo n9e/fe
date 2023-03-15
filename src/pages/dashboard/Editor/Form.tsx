@@ -89,7 +89,7 @@ function FormCpt(props, ref) {
             <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.type !== curValues.type} noStyle>
               {({ getFieldValue }) => {
                 const type = getFieldValue('type');
-                if (type !== 'text') {
+                if (type !== 'text' && type !== 'iframe') {
                   return (
                     <div style={{ height: 'calc(100% - 310px)', overflowY: 'auto' }}>
                       <div style={{ marginBottom: 10 }}>

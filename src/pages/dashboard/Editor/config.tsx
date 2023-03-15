@@ -50,6 +50,10 @@ export const visualizations = [
     type: 'gauge',
     name: '仪表盘',
   },
+  {
+    type: 'iframe',
+    name: '内嵌文档(iframe)',
+  },
 ];
 
 export const IRefreshMap = {

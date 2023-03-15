@@ -30,6 +30,7 @@ import Hexbin from './Hexbin';
 import BarGauge from './BarGauge';
 import Text from './Text';
 import Gauge from './Gauge';
+import Iframe from './Iframe';
 import { IVariable } from '../../VariableConfig/definition';
 import { replaceExpressionVars } from '../../VariableConfig/constant';
 import Markdown from '../../Editor/Components/Markdown';
@@ -109,6 +110,7 @@ function index(props: IProps) {
     barGauge: () => <BarGauge {...subProps} themeMode={themeMode} />,
     text: () => <Text {...subProps} />,
     gauge: () => <Gauge {...subProps} themeMode={themeMode} />,
+    iframe: () => <Iframe {...subProps} />,
   };
 
   return (
@@ -250,7 +252,7 @@ function index(props: IProps) {
           </div>
         </div>
         <div className='renderer-body' style={{ height: values.name ? `calc(100% - 47px)` : '100%' }}>
-          {_.isEmpty(series) && values.type !== 'text' ? (
+          {_.isEmpty(series) && values.type !== 'text' && values.type !== 'iframe' ? (
             <div className='renderer-body-content-empty'>No Data</div>
           ) : (
             <>{RendererCptMap[values.type] ? RendererCptMap[values.type]() : <div className='unknown-type'>{`无效的图表类型 ${values.type}`}</div>}</>

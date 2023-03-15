@@ -227,6 +227,9 @@ const en_US = {
         stack_noraml: 'Normal',
         stack_off: 'Off',
       },
+      iframe: {
+        src: 'Src',
+      },
     },
   },
   export: {

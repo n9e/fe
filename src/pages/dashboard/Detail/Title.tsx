@@ -14,14 +14,13 @@
  * limitations under the License.
  *
  */
-import React, { useState, useRef } from 'react';
+import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import querystring from 'query-string';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Input, Button, Space, Dropdown, Menu, Switch, Select } from 'antd';
+import { Button, Space, Dropdown, Menu, Switch, Select } from 'antd';
 import { RollbackOutlined } from '@ant-design/icons';
-import { updateDashboard } from '@/services/dashboardV2';
 import Resolution from '@/components/Resolution';
 import { TimeRangePickerWithRefresh, IRawTimeRange } from '@/components/TimeRangePicker';
 import { AddPanelIcon } from '../config';

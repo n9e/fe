@@ -40,7 +40,7 @@ export interface ITarget {
   legend?: string;
 }
 
-export type IType = 'row' | 'timeseries' | 'stat' | 'table' | 'pie' | 'hexbin' | 'barGauge' | 'text';
+export type IType = 'row' | 'timeseries' | 'stat' | 'table' | 'pie' | 'hexbin' | 'barGauge' | 'text' | 'gauge' | 'iframe';
 
 export interface IValueMapping {
   match: {
@@ -174,6 +174,11 @@ export interface ITextStyles {
   justifyContent: 'unset' | 'flexStart' | 'center' | 'flexEnd';
   alignItems: 'unset' | 'flexStart' | 'center' | 'flexEnd';
   content: string;
+}
+
+export interface IIframeStyles {
+  version: string;
+  src: string;
 }
 
 export interface IRow {

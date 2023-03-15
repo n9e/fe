@@ -237,6 +237,9 @@ const zh_CN = {
         stack_noraml: '开启',
         stack_off: '关闭',
       },
+      iframe: {
+        src: 'iframe 地址',
+      },
     },
   },
   export: {
