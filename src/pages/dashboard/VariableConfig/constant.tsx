@@ -20,7 +20,7 @@ import _ from 'lodash';
 import queryString from 'query-string';
 import { resourceGroupItem } from '@/store/businessInterface';
 import { favoriteFrom } from '@/store/common';
-import { getLabelNames, getMetricSeries, getLabelValues, getMetric, getQueryResult, getESVariableResult } from '@/services/dashboard';
+import { getLabelNames, getMetricSeries, getLabelValues, getMetric, getQueryResult, getESVariableResult } from '@/services/dashboardV2';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { IVariable } from './definition';
 import { normalizeESQueryRequestBody } from './utils';

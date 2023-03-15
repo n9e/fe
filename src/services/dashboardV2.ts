@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  */
+import _ from 'lodash';
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 
@@ -111,63 +112,7 @@ export const migrateDashboard = function (id: number, data: { name: string; tags
   });
 };
 
-// 一下是非大盘相关的接口
-
-// 告警策略 or 大盘 内置模版
-export const getTemplate = function (type: 'alert_rule' | 'dashboard') {
-  return request(`/api/n9e/tpl/list?tpl_type=${type}`, {
-    method: RequestMethod.Get,
-  });
-};
-
-export const getTemplateContent = function (type: 'alert_rule' | 'dashboard', name: string) {
-  return request(`/api/n9e/tpl/content?tpl_type=${type}&tpl_name=${name}`, {
-    method: RequestMethod.Get,
-  });
-};
-
-export const getLabelNames = function (data) {
-  return request(`/api/n9e/prometheus/api/v1/labels`, {
-    method: RequestMethod.Get,
-    params: { ...data },
-  });
-};
-
-export const getLabelValues = function (label, data) {
-  return request(`/api/n9e/prometheus/api/v1/label/${label}/values`, {
-    method: RequestMethod.Get,
-    params: { ...data },
-  });
-};
-
-export const getMetricSeries = function (data) {
-  return request(`/api/n9e/prometheus/api/v1/series`, {
-    method: RequestMethod.Get,
-    params: { ...data },
-  });
-};
-
-export const getMetric = function (data = {}) {
-  return request(`/api/n9e/prometheus/api/v1/label/__name__/values`, {
-    method: RequestMethod.Get,
-    params: { ...data },
-  });
-};
-
-export const getQueryResult = function (data) {
-  return request(`/api/n9e/prometheus/api/v1/query`, {
-    method: RequestMethod.Get,
-    params: { ...data },
-  });
-};
-
-export const getBuiltinDashboards = function () {
-  return request('/api/n9e/dashboards/builtin/list', {
-    method: RequestMethod.Get,
-  }).then((res) => {
-    return res.dat;
-  });
-};
+// 以下是非大盘相关的接口
 
 export const getBuiltinDashboard = function (data) {
   return request('/api/n9e/builtin-boards-detail', {
@@ -199,7 +144,62 @@ export const fetchHistoryBatch = (data, signalKey) => {
     method: RequestMethod.Post,
     data,
     signal,
+    silence: true,
   }).finally(() => {
     delete signals[signalKey];
   });
 };
+
+export const getLabelNames = function (data, datasourceValue: number) {
+  return request(`/api/n9e/proxy/${datasourceValue}/api/v1/labels`, {
+    method: RequestMethod.Get,
+    params: { ...data },
+    silence: true,
+  });
+};
+
+export const getLabelValues = function (label, data, datasourceValue: number) {
+  return request(`/api/n9e/proxy/${datasourceValue}/api/v1/label/${label}/values`, {
+    method: RequestMethod.Get,
+    params: { ...data },
+    silence: true,
+  });
+};
+
+export const getMetricSeries = function (data, datasourceValue: number) {
+  return request(`/api/n9e/proxy/${datasourceValue}/api/v1/series`, {
+    method: RequestMethod.Get,
+    params: { ...data },
+    silence: true,
+  });
+};
+
+export const getMetric = function (data = {}, datasourceValue: number) {
+  return request(`/api/n9e/proxy/${datasourceValue}/api/v1/label/__name__/values`, {
+    method: RequestMethod.Get,
+    params: { ...data },
+    silence: true,
+  });
+};
+
+export const getQueryResult = function (data, datasourceValue: number) {
+  return request(`/api/n9e/proxy/${datasourceValue}/api/v1/query`, {
+    method: RequestMethod.Get,
+    params: { ...data },
+    silence: true,
+  });
+};
+
+export function getESVariableResult(datasourceValue: number, index, requestBody) {
+  return request(`/api/n9e/proxy/${datasourceValue}/${index}/_search`, {
+    method: RequestMethod.Post,
+    data: JSON.stringify(requestBody),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    silence: true,
+  }).then((res) => {
+    const dat = _.map(_.get(res, 'aggregations.A.buckets'), 'key');
+    return dat;
+  });
+}

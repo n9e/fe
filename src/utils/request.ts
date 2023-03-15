@@ -127,7 +127,17 @@ request.interceptors.response.use(
         .clone()
         .text()
         .then((data) => {
-          throw new Error(data);
+          if (response.url.includes('/api/n9e/proxy')) {
+            throw {
+              name: data,
+              message: data,
+              silence: options.silence,
+              data,
+              response,
+            };
+          } else {
+            throw new Error(data);
+          }
         });
     }
     if (status === 401) {

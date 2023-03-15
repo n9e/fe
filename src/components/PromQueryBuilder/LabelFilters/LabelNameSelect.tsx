@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AutoComplete } from 'antd';
 import _ from 'lodash';
-import { getLabelNames } from '@/services/dashboard';
+import { getLabelNames } from '@/services/dashboardV2';
 import { getMatchByLabels } from './utils';
 
 interface IProps {

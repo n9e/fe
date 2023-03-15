@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AutoComplete } from 'antd';
 import _ from 'lodash';
-import { getMetric } from '@/services/dashboard';
+import { getMetric } from '@/services/dashboardV2';
 import FormItem from '../components/FormItem';
 
 interface IProps {

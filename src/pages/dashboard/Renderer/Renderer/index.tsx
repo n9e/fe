@@ -20,7 +20,7 @@ import classNames from 'classnames';
 import { useInViewport } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import { Dropdown, Menu, Tooltip, Space } from 'antd';
-import { InfoCircleOutlined, MoreOutlined, LinkOutlined, SettingOutlined, ShareAltOutlined, DeleteOutlined, CopyOutlined, SyncOutlined } from '@ant-design/icons';
+import { InfoCircleOutlined, MoreOutlined, LinkOutlined, SettingOutlined, ShareAltOutlined, DeleteOutlined, CopyOutlined, SyncOutlined, WarningOutlined } from '@ant-design/icons';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import Timeseries from './Timeseries';
 import Stat from './Stat';
@@ -70,7 +70,7 @@ function index(props: IProps) {
   const ref = useRef<HTMLDivElement>(null);
   const bodyWrapRef = useRef<HTMLDivElement>(null);
   const [inViewPort] = useInViewport(ref);
-  const { series, loading } = useQuery({
+  const { series, error, loading } = useQuery({
     id,
     dashboardId,
     time,
@@ -84,7 +84,7 @@ function index(props: IProps) {
   });
   const name = replaceFieldWithVariable(dashboardId, values.name, variableConfig);
   const description = replaceFieldWithVariable(dashboardId, values.description, variableConfig);
-  const tipsVisible = description || !_.isEmpty(values.links);
+  const tipsVisible = !error && (description || !_.isEmpty(values.links));
 
   useEffect(() => {
     setTime(props.time);
@@ -146,6 +146,20 @@ function index(props: IProps) {
               <div className='renderer-header-desc'>{description ? <InfoCircleOutlined /> : <LinkOutlined />}</div>
             </Tooltip>
           ) : null}
+          {error && (
+            <Tooltip
+              title={error}
+              placement='leftTop'
+              overlayInnerStyle={{
+                maxWidth: 300,
+              }}
+              getPopupContainer={() => ref.current!}
+            >
+              <div className='renderer-header-error'>
+                <InfoCircleOutlined style={{ color: 'red' }} />
+              </div>
+            </Tooltip>
+          )}
           <div className='renderer-header-content'>
             <Tooltip title={name} getPopupContainer={() => ref.current!}>
               <div className='renderer-header-title'>{name}</div>

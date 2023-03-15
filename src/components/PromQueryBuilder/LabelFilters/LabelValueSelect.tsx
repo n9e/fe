@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AutoComplete } from 'antd';
 import _ from 'lodash';
-import { getLabelValues } from '@/services/dashboard';
+import { getLabelValues } from '@/services/dashboardV2';
 
 interface IProps {
   label: string;

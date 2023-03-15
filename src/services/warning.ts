@@ -411,6 +411,7 @@ export function getDsQuery(datasourceValue: number, requestBody) {
     headers: {
       'Content-Type': 'application/json',
     },
+    silence: true,
   }).then((res) => {
     const dat = _.get(res, 'responses');
     return dat;

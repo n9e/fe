@@ -16,7 +16,6 @@
  */
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
-import { N9EAPI } from '../../config/constant';
 
 // 获取节点key
 export const GetTagPairs = function (data: object) {
@@ -127,6 +126,7 @@ export const getSLSLogs = function (data: {
   return request('/api/n9e-plus/logs-query', {
     method: RequestMethod.Post,
     data,
+    silence: true,
   }).then((res) => res.dat);
 };
 
@@ -203,5 +203,6 @@ export const getDsQuery = function (data: {
   return request('/api/n9e-plus/ds-query', {
     method: RequestMethod.Post,
     data,
+    silence: true,
   }).then((res) => res.dat);
 };

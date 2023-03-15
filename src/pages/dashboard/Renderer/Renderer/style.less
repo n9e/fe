@@ -31,13 +31,13 @@
 }
 .renderer-header {
   padding: 0;
-  height: 46px;
-  line-height: 46px;
+  height: 34px;
+  line-height: 34px;
   display: flex;
   border: 0 none !important;
   background-color: unset;
 }
-.renderer-header-desc {
+.renderer-header-desc,.renderer-header-error {
   width: 34px;
   text-align: center;
   cursor: pointer;
@@ -45,6 +45,11 @@
   .anticon-info-circle,
   .anticon-link {
     display: none;
+  }
+}
+.renderer-header-error {
+  .anticon-info-circle {
+    display: inline;
   }
 }
 .renderer-header-content {

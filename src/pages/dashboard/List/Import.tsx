@@ -14,13 +14,13 @@
  * limitations under the License.
  *
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Modal, Input, Tabs, Form, Button, Alert, message } from 'antd';
 import Icon from '@ant-design/icons';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
-import { getBuiltinDashboards, createDashboard } from '@/services/dashboardV2';
+import { createDashboard } from '@/services/dashboardV2';
 import { getValidImportData, convertDashboardGrafanaToN9E, JSONParse } from './utils';
 
 type ModalType = 'Import' | 'ImportGrafana';
