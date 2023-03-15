@@ -61,8 +61,10 @@ export default function usePrometheus(props: IProps) {
       fetchQueryMap[datasourceCate](props)
         .then((res: any[]) => {
           setSeries(res);
+          setError('');
         })
         .catch((e) => {
+          setSeries([]);
           setError(e.message);
         })
         .finally(() => {

@@ -37,7 +37,7 @@ export default async function prometheusQuery(options: IOptions) {
   let exprs: string[] = [];
   let refIds: string[] = [];
   let signalKey = `${id}`;
-  const datasourceValue = variableConfig ? replaceExpressionVars(options.datasourceValue as any, variableConfig, variableConfig.length, dashboardId) : undefined;
+  const datasourceValue = variableConfig ? replaceExpressionVars(options.datasourceValue as any, variableConfig, variableConfig.length, dashboardId) : options.datasourceValue;
   if (targets && typeof datasourceValue === 'number') {
     _.forEach(targets, (target) => {
       if (target.time) {
@@ -89,6 +89,7 @@ export default async function prometheusQuery(options: IOptions) {
       }
       return Promise.resolve(series);
     } catch (e) {
+      console.error(e);
       return Promise.reject(e);
     }
   }

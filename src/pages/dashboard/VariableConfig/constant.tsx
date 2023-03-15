@@ -14,143 +14,14 @@
  * limitations under the License.
  *
  */
-import React, { createContext } from 'react';
+import React from 'react';
 import moment from 'moment';
 import _ from 'lodash';
 import queryString from 'query-string';
-import { resourceGroupItem } from '@/store/businessInterface';
-import { favoriteFrom } from '@/store/common';
 import { getLabelNames, getMetricSeries, getLabelValues, getMetric, getQueryResult, getESVariableResult } from '@/services/dashboardV2';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { IVariable } from './definition';
 import { normalizeESQueryRequestBody } from './utils';
-
-export const CLASS_PATH_VALUE = 'classpath';
-export const CLASS_PATH_PREFIX_VALUE = 'classpath_prefix';
-export const DEFAULT_VALUE = '*';
-export const DEFAULT_NAME = 'var';
-export const TagFilterStore = createContext<any>({});
-export const INIT_DATA = 'init_data';
-export const ADD_ITEM = 'add_item';
-export const UPDATE_ITEM = 'update_item';
-export const DELETE_ITEM = 'delete_item';
-export const DEFAULT_CLASSPATH_DATA: resourceGroupItem = {
-  path: '*',
-  id: -1,
-  isFavorite: false,
-  create_at: 0,
-  create_by: 0,
-  update_at: 0,
-  update_by: 0,
-  isBelongIn: favoriteFrom.Common,
-  note: '',
-  preset: 0,
-};
-
-const filterErrorList = (list: Array<any>) => {
-  let duplicateList: number[] = [];
-  let nonNameList: number[] = [];
-  let invalidList: number[] = [];
-  let requireList: number[] = [];
-  let duplicateKeyList: number[] = [];
-  let hasClassPath = false;
-  const newMap = new Map<string, number[]>();
-  const keyMap = new Map<string, number[]>();
-  list.forEach((filterItem, index) => {
-    const { tagName, key, value } = filterItem;
-    const mapData = newMap.get(tagName);
-    if (typeof mapData === 'undefined') {
-      newMap.set(tagName, [index]);
-    } else {
-      newMap.set(tagName, [...mapData, index]);
-    }
-    const mapData1 = keyMap.get(key);
-    if (typeof mapData1 === 'undefined') {
-      keyMap.set(key, [index]);
-    } else {
-      keyMap.set(key, [...mapData1, index]);
-    }
-
-    if (tagName === '') {
-      nonNameList.push(index);
-    }
-    if (key === CLASS_PATH_VALUE || key === CLASS_PATH_PREFIX_VALUE) {
-      hasClassPath = true;
-    }
-    if (!/^\w+$/g.test(tagName)) {
-      invalidList.push(index);
-    }
-    if (key === '' || value === '') {
-      requireList.push(index);
-    }
-  });
-  for (let i of newMap.values()) {
-    if (Array.isArray(i) && i.length > 1) {
-      duplicateList = duplicateList.concat(i);
-    }
-  }
-  for (let i of keyMap.values()) {
-    if (Array.isArray(i) && i.length > 1) {
-      duplicateKeyList = duplicateKeyList.concat(i);
-    }
-  }
-  return {
-    duplicateList,
-    duplicateKeyList,
-    nonNameList,
-    invalidList,
-    hasClassPath,
-    requireList,
-  };
-};
-
-export const TagFilterReducer = function (state, action) {
-  switch (action.type) {
-    case INIT_DATA: {
-      return {
-        ...state,
-        ...action.data,
-        hasInit: true,
-      };
-    }
-    case ADD_ITEM: {
-      const newList = [
-        ...state.tagList,
-        {
-          tagName: DEFAULT_NAME,
-          key: '',
-          value: DEFAULT_VALUE,
-          prefix: false,
-        },
-      ];
-      return {
-        ...state,
-        tagList: newList,
-        ...filterErrorList(newList),
-      };
-    }
-    case UPDATE_ITEM: {
-      const newList = state.tagList;
-      newList[action.index] = action.data;
-      return {
-        ...state,
-        tagList: newList,
-        ...filterErrorList(newList),
-      };
-    }
-    case DELETE_ITEM: {
-      state.tagList.splice(action.index, 1);
-      return {
-        ...state,
-        tagList: state.tagList,
-        ...filterErrorList(state.tagList),
-      };
-    }
-    default: {
-      return state;
-    }
-  }
-};
 
 // https://grafana.com/docs/grafana/latest/datasources/prometheus/#query-variable 根据文档解析表达式
 // 每一个promtheus接口都接受start和end参数来限制返回值
@@ -234,7 +105,7 @@ function attachVariable2Url(key, value, id: string, vars?: IVariable[]) {
   const varsValue = getVarsValue(id, vars);
   const newQuery = {};
   _.forEach(_.assign({}, varsValue, query, { [key]: value }), (value, key) => {
-    newQuery[key] = _.isEmpty(value) ? undefined : value;
+    newQuery[key] = _.isEmpty(value) && !_.isNumber(value) ? undefined : value;
   });
   const newurl = `${protocol}//${host}${pathname}?${queryString.stringify(newQuery)}`;
   window.history.replaceState({ path: newurl }, '', newurl);
@@ -267,17 +138,25 @@ export function getVaraiableSelected(name: string, id: string) {
   if (!searchObj['__variable_value_fixed']) {
     if (!v) {
       v = localStorage.getItem(`dashboard_${id}_${name}`);
-      try {
-        const parsed = JSON.parse(v);
-        if (Array.isArray(parsed)) {
-          v = parsed;
-        }
-      } catch (e) {}
+      if (v) {
+        try {
+          const parsed = JSON.parse(v);
+          if (Array.isArray(parsed)) {
+            v = parsed;
+          }
+        } catch (e) {}
+      }
     }
     if (v === null) return null; // null 表示没有初始化过，空字符串表示值被设置成空
-    return v || '';
+    if (!_.isNaN(_.toNumber(v))) {
+      return _.toNumber(v);
+    }
+    return v;
   } else {
-    if (v === null) v = undefined;
+    if (v === null) return undefined;
+    if (!_.isNaN(_.toNumber(v))) {
+      return _.toNumber(v);
+    }
     return v;
   }
 }

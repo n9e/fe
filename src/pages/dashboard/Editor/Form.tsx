@@ -168,6 +168,7 @@ function FormCpt(props, ref) {
                                   rules={[
                                     {
                                       required: true,
+                                      message: t('panel.base.link.name_msg'),
                                     },
                                   ]}
                                 >
@@ -187,6 +188,7 @@ function FormCpt(props, ref) {
                                   rules={[
                                     {
                                       required: true,
+                                      message: t('panel.base.link.url_msg'),
                                     },
                                   ]}
                                 >
