@@ -61,3 +61,19 @@ export const putNotifyContacts = function (data: ChannelType[]) {
     data,
   });
 };
+
+export const getNotifyConfig = function (ckey: 'smtp_config' | 'ibex_server'): Promise<string> {
+  return request('/api/n9e/notify-config', {
+    method: RequestMethod.Get,
+    params: { ckey },
+  }).then((res) => {
+    return res.dat;
+  });
+};
+
+export const putNotifyConfig = function (data: { ckey: 'smtp_config' | 'ibex_server'; cvalue: string }) {
+  return request(`/api/n9e/notify-config`, {
+    method: RequestMethod.Put,
+    data,
+  });
+};

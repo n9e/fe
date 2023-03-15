@@ -12,7 +12,6 @@ export default function Script() {
 
   useEffect(() => {
     getNotifyScript().then((res) => {
-      console.log(res);
       form.setFieldsValue(res);
     });
   }, []);

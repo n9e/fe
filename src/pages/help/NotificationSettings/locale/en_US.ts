@@ -34,5 +34,11 @@ const en_US = {
     add_title: 'Add Contact',
     edit_title: 'Edit Contact',
   },
+  smtp: {
+    title: 'SMTP',
+  },
+  ibex: {
+    title: 'Ibex',
+  },
 };
 export default en_US;
