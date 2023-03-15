@@ -75,12 +75,7 @@ export interface ICommonState {
 }
 
 // 可以匿名访问的路由 TODO: job-task output 应该也可以匿名访问
-const anonymousRoutes = [
-  '/login',
-  '/callback',
-  // '/chart', // TODO: 分享的页面是需要获取数据源列表的
-  '/dashboards/share/',
-];
+const anonymousRoutes = ['/login', '/callback', '/chart', '/dashboards/share/'];
 // 判断是否是匿名访问的路由
 const anonymous = _.some(anonymousRoutes, (route) => location.pathname.startsWith(route));
 // 初始化数据 context

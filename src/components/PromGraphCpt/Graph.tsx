@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import moment from 'moment';
 import _ from 'lodash';
 import { Space, InputNumber, Radio, Button, Popover } from 'antd';
@@ -23,6 +23,7 @@ import TimeRangePicker, { IRawTimeRange, parseRange } from '@/components/TimeRan
 import LineGraphStandardOptions from './components/GraphStandardOptions';
 import Timeseries from '@/pages/dashboard/Renderer/Renderer/Timeseries';
 import { completeBreakpoints } from '@/pages/dashboard/Renderer/datasource/utils';
+import { CommonStateContext } from '@/App';
 import { getPromData, setTmpChartData } from './services';
 import { QueryStats } from './components/QueryStatsView';
 
@@ -60,6 +61,7 @@ const getSerieName = (metric: any) => {
 };
 
 export default function Graph(props: IProps) {
+  const { datasourceList } = useContext(CommonStateContext);
   const { url, datasourceValue, promql, setQueryStats, setErrorContent, contentMaxHeight, range, setRange, step, setStep, graphOperates, refreshFlag } = props;
   const [data, setData] = useState<any[]>([]);
   const [highLevelConfig, setHighLevelConfig] = useState({
@@ -177,7 +179,6 @@ export default function Graph(props: IProps) {
                 icon={
                   <ShareAltOutlined
                     onClick={() => {
-                      const curCluster = localStorage.getItem('curCluster');
                       const dataProps = {
                         type: 'timeseries',
                         version: '2.0.0',
@@ -190,11 +191,13 @@ export default function Graph(props: IProps) {
                             expr: promql,
                           },
                         ],
+                        datasourceCate: 'prometheus',
+                        datasourceName: _.find(datasourceList, { id: datasourceValue })?.name,
+                        datasourceValue,
                       };
                       setTmpChartData([
                         {
                           configs: JSON.stringify({
-                            curCluster,
                             dataProps,
                           }),
                         },
