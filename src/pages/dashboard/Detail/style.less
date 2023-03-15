@@ -8,7 +8,7 @@
   display: flex;
   height: 51px;
   justify-content: space-between;
-  padding: 9px 20px;
+  padding: 10px 10px;
   &-left {
     display: flex;
     align-items: center;
@@ -42,11 +42,14 @@
   }
 }
 
+.dashboard-detail-container {
+  padding: 0 !important;
+}
+
 .dashboard-detail-content {
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 10px 0px;
   background-color: #f9f9f9 !important; // 覆盖 pageLayout 上面约定的样式
   box-shadow: unset !important;
   .variable-area {
@@ -62,7 +65,7 @@
   .dashboard-detail-content-header {
     display: flex;
     justify-content: space-between;
-    padding: 5px 10px;
+    padding: 0px 10px;
     background-color: unset !important;
   }
   .dashboards-panels {

@@ -38,7 +38,7 @@ import Editor from '../Editor';
 import { defaultCustomValuesMap, defaultOptionsValuesMap } from '../Editor/config';
 import { sortPanelsByGridLayout, panelsMergeToConfigs, updatePanelsInsertNewPanelToGlobal } from '../Panels/utils';
 import { useGlobalState } from '../globalState';
-import { getLocalDatasourceValue, getDatasourceValue } from './utils';
+import { getLocalDatasourceValue, getDatasourceValue, getLocalStep, setLocalStep } from './utils';
 import './style.less';
 import './dark.antd.less';
 import './dark.less';
@@ -76,7 +76,7 @@ export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boole
       end: 'now',
     }),
   );
-  const [step, setStep] = useState<number | null>(null);
+  const [step, setStep] = useState<number | null>(getLocalStep(id));
   const [editable, setEditable] = useState(true);
   const [editorData, setEditorData] = useState({
     visible: false,
@@ -195,7 +195,10 @@ export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boole
             setRange(v);
           }}
           step={step}
-          setStep={setStep}
+          setStep={(val) => {
+            setStep(val);
+            setLocalStep(id, val);
+          }}
           onAddPanel={(type) => {
             if (type === 'row') {
               const newPanels = updatePanelsInsertNewPanelToGlobal(
@@ -234,7 +237,7 @@ export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boole
         />
       }
     >
-      <div>
+      <div className='dashboard-detail-container'>
         <div className='dashboard-detail-content'>
           {!editable && (
             <div style={{ padding: '5px 10px' }}>

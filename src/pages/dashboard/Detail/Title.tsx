@@ -120,7 +120,7 @@ export default function Title(props: IProps) {
             value={range}
             onChange={setRange}
           />
-          <Resolution onChange={(v) => setStep(v)} initialValue={step} />
+          <Resolution onChange={(v) => setStep(v)} value={step} />
           {!isPreview && (
             <Button
               onClick={() => {

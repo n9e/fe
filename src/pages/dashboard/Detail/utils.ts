@@ -22,3 +22,16 @@ export const getDatasourceValue = (dashboardConfigs, datasources) => {
   }
   return dashboardConfigs.datasourceValue;
 };
+
+export const getLocalStep = (id) => {
+  const localStep = localStorage.getItem(`dashboard_${id}_step`);
+  return localStep ? _.toNumber(localStep) : null;
+};
+
+export const setLocalStep = (id, step) => {
+  if (step) {
+    localStorage.setItem(`dashboard_${id}_step`, step);
+  } else {
+    localStorage.removeItem(`dashboard_${id}_step`);
+  }
+};
