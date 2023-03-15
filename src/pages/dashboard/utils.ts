@@ -40,6 +40,53 @@ export function getStepByTimeAndStep(time: IRawTimeRange, step: number | null) {
   return Math.max(Math.floor((end - start) / 240), 1);
 }
 
+const grafanaBuiltinColors = [
+  { color: '#FFA6B0', name: 'super-light-red' },
+  { color: '#FF7383', name: 'light-red' },
+  { color: '#F2495C', name: 'red' },
+  { color: '#E02F44', name: 'semi-dark-red' },
+  { color: '#C4162A', name: 'dark-red' },
+  { color: '#FFCB7D', name: 'super-light-orange' },
+  { color: '#FFB357', name: 'light-orange' },
+  { color: '#FF9830', name: 'orange' },
+  { color: '#FF780A', name: 'semi-dark-orange' },
+  { color: '#FA6400', name: 'dark-orange' },
+  { color: '#FFF899', name: 'super-light-yellow' },
+  { color: '#FFEE52', name: 'light-yellow' },
+  { color: '#FADE2A', name: 'yellow' },
+  { color: '#F2CC0C', name: 'semi-dark-yellow' },
+  { color: '#E0B400', name: 'dark-yellow' },
+  { color: '#C8F2C2', name: 'super-light-green' },
+  { color: '#96D98D', name: 'light-green' },
+  { color: '#73BF69', name: 'green' },
+  { color: '#56A64B', name: 'semi-dark-green' },
+  { color: '#37872D', name: 'dark-green' },
+  { color: '#C0D8FF', name: 'super-light-blue' },
+  { color: '#8AB8FF', name: 'light-blue' },
+  { color: '#5794F2', name: 'blue' },
+  { color: '#3274D9', name: 'semi-dark-blue' },
+  { color: '#1F60C4', name: 'dark-blue' },
+  { color: '#DEB6F2', name: 'super-light-purple' },
+  { color: '#CA95E5', name: 'light-purple' },
+  { color: '#B877D9', name: 'purple' },
+  { color: '#A352CC', name: 'semi-dark-purple' },
+  { color: '#8F3BB8', name: 'dark-purple' },
+];
+
+function convertThresholdsGrafanaToN9E(config: any) {
+  return {
+    mode: config.thresholds?.mode, // mode 目前是不支持的
+    style: config.custom?.thresholdsStyle?.mode || 'line', // 目前只有固定的 line 风格，但是这个只用于折线图
+    steps: _.map(config.thresholds?.steps, (step, idx: number) => {
+      return {
+        ...step,
+        color: _.find(grafanaBuiltinColors, { name: step.color })?.color || step.color, // grafana 的 color 是 name，需要转换成 hex
+        type: step.value === null && idx === 0 ? 'base' : undefined, // 没有值并且是第一个，就是 base
+      };
+    }),
+  };
+}
+
 function convertVariablesGrafanaToN9E(templates: any) {
   return _.chain(templates.list)
     .filter((item) => {
@@ -118,25 +165,15 @@ function convertOptionsGrafanaToN9E(panel: any) {
   };
   // 这里有 default 和 overrides 区别，目前 n9e 暂不支持 overrides
   return {
-    valueMappings: config?.mappings, // TODO: 待验证
-    thresholds: {
-      mode: config.thresholds?.mode, // mode 目前是不支持的
-      style: config.custom?.thresholdsStyle?.mode || 'line', // 目前只有固定的 line 风格，但是这个只用于折线图
-      steps: _.map(config.thresholds?.steps, (step, idx: number) => {
-        return {
-          ...step,
-          type: step.value === null && idx === 0 ? 'base' : undefined, // 没有值并且是第一个，就是 base
-        };
-      }),
-    },
+    valueMappings: config?.mappings,
+    thresholds: convertThresholdsGrafanaToN9E(config),
     standardOptions: {
       util: unitMap[config.unit] ? unitMap[config.unit] : 'none',
       min: config.min,
       max: config.max,
-      decimals: config.decimals, // TODO: 待验证
+      decimals: config.decimals,
     },
     legend: {
-      // TODO: 待验证
       displayMode: options?.legend?.displayMode === 'hidden' ? 'hidden' : 'list',
       placement: options?.legend?.placement,
     },

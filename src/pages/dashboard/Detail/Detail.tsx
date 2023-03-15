@@ -271,6 +271,7 @@ export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boole
           </div>
           {variableConfigWithOptions && (
             <Panels
+              id={id}
               isPreview={isPreview}
               key={forceRenderKey}
               editable={editable}

@@ -45,6 +45,7 @@ import Editor from '../Editor';
 import './style.less';
 
 interface IProps {
+  id: string;
   editable: boolean;
   datasourceValue: number;
   dashboard: Dashboard;
@@ -143,7 +144,7 @@ function index(props: IProps) {
                   <Renderer
                     isPreview={isPreview}
                     themeMode={themeMode as 'dark'}
-                    dashboardId={_.toString(dashboard.id)}
+                    dashboardId={_.toString(props.id)}
                     id={item.id}
                     time={range}
                     step={step}

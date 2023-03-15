@@ -16,7 +16,6 @@
  */
 import _ from 'lodash';
 import valueFormatter from './valueFormatter';
-import { statHexPalette } from '../../config';
 import { IValueMapping, IThresholds } from '../../types';
 
 const getValueAndToNumber = (value: any[]) => {
@@ -24,7 +23,8 @@ const getValueAndToNumber = (value: any[]) => {
 };
 
 export const getSerieTextObj = (value: number | string | null | undefined, standardOptions?: any, valueMappings?: IValueMapping[], thresholds?: IThresholds) => {
-  const { unit, decimals, dateFormat } = standardOptions || {};
+  const { decimals, dateFormat } = standardOptions || {};
+  const unit = standardOptions?.unit || standardOptions?.util; // TODO: 兼容之前写错的 util
   const matchedValueMapping = _.find(valueMappings, (item: any) => {
     const { type, match } = item;
     if (value === null || value === '' || value === undefined) {
