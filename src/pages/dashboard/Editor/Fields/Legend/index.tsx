@@ -24,7 +24,7 @@ import { CaretDownOutlined } from '@ant-design/icons';
 export default function index() {
   const { t } = useTranslation('dashboard');
   const namePrefix = ['options', 'legend'];
-  const tableColumn = ['max', 'min', 'avg', 'sum', 'last']
+  const tableColumn = ['max', 'min', 'avg', 'sum', 'last'];
 
   return (
     <Panel header='Legend'>
@@ -51,17 +51,19 @@ export default function index() {
                   </Form.Item>
                 );
               } else if (getFieldValue([...namePrefix, 'displayMode']) === 'table') {
-                  return (
-                      <Form.Item label={t('panel.options.legend.columns')} name={[...namePrefix, 'columns']}>
-                          <Select mode='multiple' placeholder='' suffixIcon={<CaretDownOutlined />} >
-                              {_.map(tableColumn,(item) => {
-                                  return (<Select.Option key={item} value={item}>
-                                      {t(`panel.options.legend.${item}`)}
-                                  </Select.Option>);
-                              }) }
-                          </Select>
-                      </Form.Item>
-                  );
+                return (
+                  <Form.Item label={t('panel.options.legend.columns')} name={[...namePrefix, 'columns']}>
+                    <Select mode='multiple' placeholder='' suffixIcon={<CaretDownOutlined />}>
+                      {_.map(tableColumn, (item) => {
+                        return (
+                          <Select.Option key={item} value={item}>
+                            {t(`panel.options.legend.${item}`)}
+                          </Select.Option>
+                        );
+                      })}
+                    </Select>
+                  </Form.Item>
+                );
               }
               return null;
             }}
