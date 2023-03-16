@@ -87,8 +87,8 @@ request.interceptors.response.use(
               return { ...data, success: true };
             } else {
               throw {
-                name: data.err || data.error,
-                message: data.err || data.error,
+                name: processError(data),
+                message: processError(data),
                 silence: options.silence,
                 data,
                 response,
@@ -100,8 +100,8 @@ request.interceptors.response.use(
               return { ...data, success: true };
             } else {
               throw {
-                name: data.err || data.error,
-                message: data.err || data.error,
+                name: processError(data),
+                message: processError(data),
                 silence: options.silence,
                 data,
                 response,
