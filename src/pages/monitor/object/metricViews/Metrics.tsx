@@ -168,7 +168,7 @@ export default function Metrics(props: IProps) {
                       onChange={(v) => {
                         setStep(v === null ? undefined : v);
                       }}
-                      initialValue={step}
+                      value={step}
                     />
                     <Button
                       style={{ padding: '4px 8px' }}

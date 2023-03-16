@@ -44,10 +44,10 @@ export default async function prometheusQuery(options: IOptions) {
         const parsedRange = parseRange(target.time);
         start = moment(parsedRange.start).unix();
         end = moment(parsedRange.end).unix();
-        _step = getDefaultStepByStartAndEnd(start, end);
-        if (target.step) {
-          _step = target.step;
-        }
+        if (!step) _step = getDefaultStepByStartAndEnd(start, end);
+      }
+      if (target.step) {
+        _step = target.step;
       }
 
       start = start - (start % _step!);

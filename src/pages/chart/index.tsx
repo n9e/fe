@@ -85,7 +85,7 @@ export default function Chart() {
                   {t('common:datasource.id')}：{datasourceName.current}
                 </span>
                 <TimeRangePickerWithRefresh refreshTooltip={t('refresh_tip', { num: getStepByTimeAndStep(range, step) })} onChange={setRange} value={range} />
-                <Resolution onChange={(v) => setStep(v)} initialValue={step} />
+                <Resolution onChange={(v) => setStep(v)} value={step} />
               </Space>
             </div>
           </div>

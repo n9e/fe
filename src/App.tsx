@@ -127,18 +127,19 @@ function App() {
               curBusiId: defaultBusiId,
             };
           });
-          if (_.isEmpty(datasourceList) && !_.startsWith(location.pathname, '/help/source')) {
-            Modal.warning({
-              title: t('common:datasource.empty_modal.title'),
-              okText: _.includes(profile.roles, 'Admin') ? t('common:datasource.empty_modal.btn1') : t('common:datasource.empty_modal.btn2'),
-              onOk: () => {
-                if (_.includes(profile.roles, 'Admin')) {
-                  history.pushState(null, '', '/help/source');
-                  window.location.reload();
-                }
-              },
-            });
-          }
+          // TODO: 暂时关闭数据源为空的提示，后面再优化下
+          // if (_.isEmpty(datasourceList) && !_.startsWith(location.pathname, '/help/source')) {
+          //   Modal.warning({
+          //     title: t('common:datasource.empty_modal.title'),
+          //     okText: _.includes(profile.roles, 'Admin') ? t('common:datasource.empty_modal.btn1') : t('common:datasource.empty_modal.btn2'),
+          //     onOk: () => {
+          //       if (_.includes(profile.roles, 'Admin')) {
+          //         history.pushState(null, '', '/help/source');
+          //         window.location.reload();
+          //       }
+          //     },
+          //   });
+          // }
         }
       })();
     } catch (error) {

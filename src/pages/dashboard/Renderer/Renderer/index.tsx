@@ -251,7 +251,7 @@ function index(props: IProps) {
             )}
           </div>
         </div>
-        <div className='renderer-body' style={{ height: values.name ? `calc(100% - 47px)` : '100%' }}>
+        <div className='renderer-body' style={{ height: values.name ? `calc(100% - 34px)` : '100%' }}>
           {_.isEmpty(series) && values.type !== 'text' && values.type !== 'iframe' ? (
             <div className='renderer-body-content-empty'>No Data</div>
           ) : (

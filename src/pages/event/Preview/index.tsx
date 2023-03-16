@@ -29,7 +29,7 @@ export default function index({ data, triggerTime, onClick }) {
           onChange={setRange}
           refreshTooltip={data.cate === 'prometheus' ? `刷新间隔小于 step(${getStepByTimeAndStep(range, step)}s) 将不会更新数据` : undefined}
         />
-        {data.cate === 'prometheus' && <Resolution value={step} onChange={(v) => setStep(v)} initialValue={step} />}
+        {data.cate === 'prometheus' && <Resolution value={step} onChange={(v) => setStep(v)} />}
       </Space>
       {data.rule_algo && <AlgoGraph rid={data.rule_id} tags={data.tags} range={range} step={step} />}
       {data.cate === 'elasticsearch' && <ElasticsearchGraph eventId={data.id} range={range} triggerTime={triggerTime} onClick={onClick} />}

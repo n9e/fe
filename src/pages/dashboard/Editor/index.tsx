@@ -120,7 +120,7 @@ function index(props: IProps) {
                 setRange(val);
               }}
             />
-            <Resolution onChange={(v) => setStep(v)} initialValue={step} />
+            <Resolution onChange={(v) => setStep(v)} value={step} />
             <CloseOutlined
               style={{ fontSize: 18 }}
               onClick={() => {

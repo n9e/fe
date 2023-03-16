@@ -15,11 +15,10 @@
  *
  */
 import React, { useState, useEffect } from 'react';
-import './index.less';
 import { AutoComplete } from 'antd';
+import './index.less';
 
 interface Props {
-  initialValue?: number | null;
   value?: number | null;
   onChange?: (num: number | null) => void;
 }
@@ -30,9 +29,9 @@ const options = [15, 30, 60, 120, 300].map((num) => ({
 }));
 
 export default function Resolution(props: Props) {
-  const { onChange, value, initialValue } = props;
-  const [inputContent, setInputContent] = useState<string>(String(initialValue || ''));
-  const [setp, setStep] = useState<number | null>(initialValue || null);
+  const { onChange, value } = props;
+  const [inputContent, setInputContent] = useState<string>(String(value || ''));
+  const [setp, setStep] = useState<number | null>(value || null);
 
   useEffect(() => {
     setInputContent(String(value || ''));
