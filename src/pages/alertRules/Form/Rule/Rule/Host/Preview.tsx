@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { Modal, Table, Button, Tag } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { getTargetList } from '@/services/monObjectManage';
+import { getTargetList } from '@/services/targets';
 
 interface IProps {
   queries: any[];

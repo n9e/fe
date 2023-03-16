@@ -25,7 +25,7 @@ import { useTranslation } from 'react-i18next';
 import { useAntdTable } from 'ahooks';
 import request from '@/utils/request';
 import api from '@/utils/api';
-import { BusinessGroup } from '@/pages/monObjectManage';
+import { BusinessGroup } from '@/pages/targets';
 import PageLayout from '@/components/pageLayout';
 import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
 import { CommonStateContext } from '@/App';

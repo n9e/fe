@@ -20,7 +20,7 @@ import { useTranslation } from 'react-i18next';
 import queryString from 'query-string';
 import { SettingOutlined } from '@ant-design/icons';
 import PageLayout from '@/components/pageLayout';
-import { BusinessGroup } from '@/pages/monObjectManage';
+import { BusinessGroup } from '@/pages/targets';
 import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
 import { CommonStateContext } from '@/App';
 import List from './List';

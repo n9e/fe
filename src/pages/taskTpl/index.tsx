@@ -25,7 +25,7 @@ import { useAntdTable } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import request from '@/utils/request';
 import api from '@/utils/api';
-import { BusinessGroup } from '@/pages/monObjectManage';
+import { BusinessGroup } from '@/pages/targets';
 import PageLayout from '@/components/pageLayout';
 import { Tpl } from './interface';
 import BindTags from './bindTags';

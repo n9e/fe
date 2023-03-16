@@ -27,7 +27,7 @@ import AdvancedWrap from '@/components/AdvancedWrap';
 import PageLayout from '@/components/pageLayout';
 import { getShieldList, deleteShields, updateShields } from '@/services/shield';
 import { shieldItem, strategyStatus } from '@/store/warningInterface';
-import { BusinessGroup } from '@/pages/monObjectManage';
+import { BusinessGroup } from '@/pages/targets';
 import RefreshIcon from '@/components/RefreshIcon';
 import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
 import { Pure as DatasourceSelect } from '@/components/DatasourceSelect';

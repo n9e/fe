@@ -20,7 +20,7 @@ import { DatabaseOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _, { debounce } from 'lodash';
 import classNames from 'classnames';
-import { bindTags, unbindTags, moveTargetBusi, updateTargetNote, deleteTargets, getTargetTags } from '@/services/monObjectManage';
+import { bindTags, unbindTags, moveTargetBusi, updateTargetNote, deleteTargets, getTargetTags } from '@/services/targets';
 import PageLayout from '@/components/pageLayout';
 import { getBusiGroups } from '@/services/common';
 import { CommonStateContext } from '@/App';
@@ -323,7 +323,7 @@ const OperationModal: React.FC<OperateionModalProps> = ({ operateType, setOperat
   );
 };
 
-const MonObjectManage: React.FC = () => {
+const Targets: React.FC = () => {
   const { t } = useTranslation('targets');
   const commonState = useContext(CommonStateContext);
   const [curBusiId, setCurBusiId] = useState<number>(commonState.curBusiId);
@@ -402,4 +402,4 @@ const MonObjectManage: React.FC = () => {
   );
 };
 
-export default MonObjectManage;
+export default Targets;

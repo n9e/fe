@@ -30,7 +30,7 @@ import { getDashboards, cloneDashboard, removeDashboards, getDashboard, updateDa
 import PageLayout from '@/components/pageLayout';
 import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
 import { CommonStateContext } from '@/App';
-import { BusinessGroup } from '@/pages/monObjectManage';
+import { BusinessGroup } from '@/pages/targets';
 import usePagination from '@/components/usePagination';
 import Header from './Header';
 import FormCpt from './Form';

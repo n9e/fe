@@ -25,7 +25,7 @@ import queryString from 'query-string';
 import PageLayout from '@/components/pageLayout';
 import { getSubscribeList, deleteSubscribes } from '@/services/subscribe';
 import { subscribeItem } from '@/store/warningInterface/subscribe';
-import { BusinessGroup } from '@/pages/monObjectManage';
+import { BusinessGroup } from '@/pages/targets';
 import RefreshIcon from '@/components/RefreshIcon';
 import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
 import { CommonStateContext } from '@/App';

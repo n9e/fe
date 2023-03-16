@@ -6,7 +6,7 @@ import { useAntdTable } from 'ahooks';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { BusiGroupItem } from '@/store/commonInterface';
-import { getMonObjectList } from '@/services/monObjectManage';
+import { getMonObjectList } from '@/services/targets';
 import { timeFormatter } from '@/pages/dashboard/Renderer/utils/valueFormatter';
 import clipboard from './clipboard';
 import OrganizeColumns from './OrganizeColumns';

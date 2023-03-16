@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { Select, Form } from 'antd';
 import { CommonStateContext } from '@/App';
 import { getBusiGroups } from '@/services/common';
-import { getTargetTags, getMonObjectList } from '@/services/monObjectManage';
+import { getTargetTags, getMonObjectList } from '@/services/targets';
 
 interface IProps {
   queryKey: string;

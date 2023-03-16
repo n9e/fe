@@ -5,7 +5,7 @@ import PageLayout from '@/components/pageLayout';
 import { SettingOutlined } from '@ant-design/icons';
 import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
 import { useQuery } from '@/utils';
-import { BusinessGroup } from '@/pages/monObjectManage';
+import { BusinessGroup } from '@/pages/targets';
 import { CommonStateContext } from '@/App';
 import PageTable from './PageTable';
 import Edit from './edit';
