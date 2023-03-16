@@ -74,6 +74,7 @@ function index(props: IProps) {
             let options = [];
             try {
               options = await convertExpressionToQuery(definition, range, item, datasourceValue);
+              options = _.sortBy(options);
             } catch (error) {
               console.error(error);
             }

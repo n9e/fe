@@ -138,6 +138,7 @@ export function getVaraiableSelected(name: string, id: string) {
   if (!searchObj['__variable_value_fixed']) {
     if (!v) {
       v = localStorage.getItem(`dashboard_${id}_${name}`);
+
       if (v) {
         try {
           const parsed = JSON.parse(v);
@@ -148,12 +149,18 @@ export function getVaraiableSelected(name: string, id: string) {
       }
     }
     if (v === null) return null; // null 表示没有初始化过，空字符串表示值被设置成空
+    if (_.isArray(v) && v.length === 0) {
+      return [];
+    }
     if (!_.isNaN(_.toNumber(v))) {
       return _.toNumber(v);
     }
     return v;
   } else {
     if (v === null) return undefined;
+    if (_.isArray(v) && v.length === 0) {
+      return [];
+    }
     if (!_.isNaN(_.toNumber(v))) {
       return _.toNumber(v);
     }
