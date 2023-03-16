@@ -128,7 +128,7 @@ export default function Table(props: IProps) {
           });
         })
         .catch((err) => {
-          const msg = _.get(err, 'data.error');
+          const msg = _.get(err, 'message');
           setErrorContent(`Error executing query: ${msg}`);
         })
         .finally(() => {

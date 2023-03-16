@@ -88,7 +88,7 @@ export default function index(props: { query: PromVisualQuery }) {
   if (!promql) return null;
   return (
     <div className='prom-query-builder-rawquery-container'>
-      <PromQLInput url='/api/v1/datasource/prometheus' value={promql} readonly />
+      <PromQLInput value={promql} readonly />
     </div>
   );
 }

@@ -26,10 +26,27 @@ const errorHandler = (error: Error): Response => {
   throw error;
 };
 
+/** 处理后端返回的错误信息 */
+const processError = (res: any): string => {
+  if (res?.error) {
+    return _.isString(res?.error) ? res.error : JSON.stringify(res?.error);
+  }
+  if (res?.err) {
+    return _.isString(res?.err) ? res.err : JSON.stringify(res?.err);
+  }
+  if (res?.errors) {
+    return _.isString(res?.errors) ? res.errors : JSON.stringify(res?.errors);
+  }
+  if (res?.message) {
+    return _.isString(res?.message) ? res.message : JSON.stringify(res?.message);
+  }
+  return JSON.stringify(res);
+};
+
 /** 配置request请求时的默认参数 */
 const request = extend({
-  errorHandler, // 默认错误处理
-  credentials: 'include', // 默认请求是否带上cookie
+  errorHandler,
+  credentials: 'include',
 });
 
 request.interceptors.request.use((url, options) => {
@@ -37,9 +54,6 @@ request.interceptors.request.use((url, options) => {
     ...options.headers,
   };
   headers['Authorization'] = `Bearer ${localStorage.getItem('access_token') || ''}`;
-  if (!headers['X-Cluster']) {
-    headers['X-Cluster'] = localStorage.getItem('curCluster') || '';
-  }
   headers['X-Language'] = localStorage.getItem('language') === 'en_US' ? 'en' : 'zh';
   return {
     url,
@@ -58,97 +72,45 @@ request.interceptors.response.use(
         .clone()
         .json()
         .then((data) => {
+          const { url } = response;
+          // TODO: 糟糕的逻辑，后端返回的数据结构不统一，需要兼容
+          // /n9e/datasource/ 返回的数据结构是 { error: '', data: [] }
+          // proxy/prometheus 返回的数据结构是 { status: 'success', data: {} }
+          // proxy/elasticsearch 返回的数据结构是 { ...data }
+          // proxy/jeager 返回的数据结构是 { data: [], errors: [] }
           if (
-            response.url.includes('/api/v1/') ||
-            response.url.includes('/api/v2') ||
-            response.url.includes('/api/n9e-plus/datasource') ||
-            response.url.includes('/api/n9e/proxy')
+            _.some(['/api/v1', '/api/v2', '/api/n9e/datasource', '/api/n9e/proxy'], (item) => {
+              return url.includes(item);
+            })
           ) {
-            if (status === 200 && !data.error) {
-              return { ...data, success: true };
-            } else if (data.error) {
-              if (response.url.indexOf('/api/n9e/prometheus/api/v1') > -1 || response.url.indexOf('/api/v1/datasource/prometheus') > -1) {
-                return data;
-              } else {
-                // @ts-ignore
-                throw new Error(data.error.message, { cause: options.silence });
-              }
-            }
-          } else {
-            if (data.err === '' || data.status === 'success' || data.error === '') {
-              if (data.data || data.dat) {
-                if (data.dat && Object.prototype.toString.call(data.dat.list) === '[object Null]') {
-                  data.dat.list = [];
-                }
-              }
+            if (!data.error) {
               return { ...data, success: true };
             } else {
-              if (options.silence) {
-                throw {
-                  name: data.err,
-                  message: data.err,
-                  silence: true,
-                  data,
-                  response,
-                };
-              } else {
-                throw new Error(data.err);
-              }
+              throw {
+                name: data.err || data.error,
+                message: data.err || data.error,
+                silence: options.silence,
+                data,
+                response,
+              };
+            }
+          } else {
+            // n9e 和 n9e-plus 大部分接口返回的数据结构是 { err: '', dat: {} }
+            if (data.err === '' || data.status === 'success' || data.error === '') {
+              return { ...data, success: true };
+            } else {
+              throw {
+                name: data.err || data.error,
+                message: data.err || data.error,
+                silence: options.silence,
+                data,
+                response,
+              };
             }
           }
         });
-    }
-    // 屏蔽日志侧拉板接口报错
-    if (status === 500 && response.url.indexOf('/api/v1/dimensions/log/aggregation') > -1) {
-      return;
-    }
-    // 兼容异常处理
-    if (status === 500 && (response.url.includes('/api/v1') || response.url.includes('/api/v2'))) {
-      return response
-        .clone()
-        .json()
-        .then((data) => {
-          if (!data.error) {
-            return { ...data, success: true };
-          } else if (data.error) {
-            throw {
-              name: data.error.name,
-              message: data.error.message,
-              silence: options.silence,
-              data,
-              response,
-            };
-          }
-        });
-    }
-
-    if (status === 502) {
-      return response
-        .clone()
-        .text()
-        .then((data) => {
-          if (response.url.includes('/api/n9e/proxy')) {
-            throw {
-              name: data,
-              message: data,
-              silence: options.silence,
-              data,
-              response,
-            };
-          } else {
-            throw new Error(data);
-          }
-        });
-    }
-    if (status === 401) {
-      if (response.url.indexOf('/api/n9e/prometheus/api/v1') > -1 || response.url.indexOf('/api/v1/datasource/prometheus') > -1) {
-        return response
-          .clone()
-          .json()
-          .then((data) => {
-            throw new Error(data.err ? data.err : data);
-          });
-      } else if (response.url.indexOf('/api/n9e/auth/refresh') > 0) {
+    } else if (status === 401) {
+      if (response.url.indexOf('/api/n9e/auth/refresh') > 0) {
         location.href = `/login${location.pathname != '/' ? '?redirect=' + location.pathname + location.search : ''}`;
       } else {
         localStorage.getItem('refresh_token')
@@ -165,7 +127,7 @@ request.interceptors.response.use(
             })
           : (location.href = `/login${location.pathname != '/' ? '?redirect=' + location.pathname + location.search : ''}`);
       }
-    } else if (status === 403 && (response.url.includes('/api/v1') || response.url.includes('/api/v2'))) {
+    } else if (status === 403) {
       return response
         .clone()
         .json()
@@ -174,42 +136,30 @@ request.interceptors.response.use(
           if (data.error && data.error.message) throw new Error(data.error.message);
         });
     } else {
-      const contentType = response.headers.get('content-type');
-      const isPlainText = contentType?.indexOf('text/plain; charset=utf-8') !== -1;
-      if (isPlainText) {
-        return response
-          .clone()
-          .text()
-          .then((data) => {
-            throw new Error(data);
-          });
-      } else {
-        return response
-          .clone()
-          .json()
-          .then((data) => {
-            // 兼容 n9e 中的 prometheus api
-            if (options.silence === undefined) {
-              if (response.url.indexOf('/api/n9e/prometheus/api/v1') > -1 || response.url.indexOf('/api/v1/datasource/prometheus') > -1) {
-                return data;
-              }
-            }
-            if (response.url.includes('/api/v1') || response.url.includes('/api/v2') || response.url.includes('/api/n9e/proxy')) {
-              // TODO: 后端服务异常后可能返回的错误数据也不是一个正常的结构，后面得考虑下怎么处理
-              const name = _.isString(data.error) ? data.error : data.error?.name ? data.error.name : JSON.stringify(data);
-              const message = _.isString(data.error) ? data.error : data.error?.message ? data.error.message : JSON.stringify(data);
-              throw {
-                name,
-                message,
-                silence: options.silence,
-                data,
-                response,
-              };
-            } else {
-              throw new Error(data.err ? data.err : data);
-            }
-          });
-      }
+      return response
+        .clone()
+        .text()
+        .then((data) => {
+          let errObj = {};
+          try {
+            const parsed = JSON.parse(data);
+            const errMessage = processError(parsed);
+            errObj = {
+              name: errMessage,
+              message: errMessage,
+              data: parsed,
+            };
+          } catch (error) {
+            errObj = {
+              name: data,
+              message: data,
+            };
+          }
+          throw {
+            ...errObj,
+            silence: options.silence,
+          };
+        });
     }
   },
   {

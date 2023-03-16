@@ -27,7 +27,7 @@ export default function PrometheusDetail(props: IProps) {
               return (
                 <Row className='promql-row' key={prom_ql}>
                   <Col span={20}>
-                    <PromQLInput value={prom_ql} url='/api/n9e/prometheus' readonly />
+                    <PromQLInput value={prom_ql} readonly />
                   </Col>
                   <Col span={4}>
                     <Button
