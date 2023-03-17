@@ -18,15 +18,15 @@ export default function index(props: IProps) {
   const { custom } = values;
   const { src } = custom as IIframeStyles;
   const rangeTime = parseRange(time);
-  const form = moment(rangeTime.start).valueOf();
+  const from = moment(rangeTime.start).valueOf();
   const fromDateSeconds = moment(rangeTime.start).unix();
   const fromDateISO = moment(rangeTime.start).toISOString();
-  const toDateSeconds = moment(rangeTime.end).valueOf();
-  const to = moment(rangeTime.end).unix();
+  const to = moment(rangeTime.end).valueOf();
+  const toDateSeconds = moment(rangeTime.end).unix();
   const toDateISO = moment(rangeTime.end).toISOString();
   const optionsList = [
     ...(dashboardMeta.variableConfigWithOptions ? dashboardMeta.variableConfigWithOptions : []),
-    { name: '__from', value: form },
+    { name: '__from', value: from },
     { name: '__from_date_seconds', value: fromDateSeconds },
     { name: '__from_date_iso', value: fromDateISO },
     { name: '__from_date', value: fromDateISO },
