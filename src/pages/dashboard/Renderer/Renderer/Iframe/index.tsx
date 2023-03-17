@@ -18,18 +18,22 @@ export default function index(props: IProps) {
   const { custom } = values;
   const { src } = custom as IIframeStyles;
   const rangeTime = parseRange(time);
-  const start = moment(rangeTime.start).unix();
-  const startms = start * 1000;
-  const end = moment(rangeTime.end).unix();
-  const endms = end * 1000;
+  const form = moment(rangeTime.start).valueOf();
+  const fromDateSeconds = moment(rangeTime.start).unix();
+  const fromDateISO = moment(rangeTime.start).toISOString();
+  const toDateSeconds = moment(rangeTime.end).valueOf();
+  const to = moment(rangeTime.end).unix();
+  const toDateISO = moment(rangeTime.end).toISOString();
   const optionsList = [
     ...(dashboardMeta.variableConfigWithOptions ? dashboardMeta.variableConfigWithOptions : []),
-    // 时间戳秒
-    { name: '_start', value: start },
-    // 时间戳毫秒
-    { name: '_startms', value: startms },
-    { name: '_end', value: end },
-    { name: '_endms', value: endms },
+    { name: '__from', value: form },
+    { name: '__from_date_seconds', value: fromDateSeconds },
+    { name: '__from_date_iso', value: fromDateISO },
+    { name: '__from_date', value: fromDateISO },
+    { name: '__to', value: to },
+    { name: '__to_date_seconds', value: toDateSeconds },
+    { name: '__to_date_iso', value: toDateISO },
+    { name: '__to_date', value: toDateISO },
   ];
   const content = replaceFieldWithVariable(src, dashboardMeta.dashboardId, optionsList);
 
