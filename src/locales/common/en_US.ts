@@ -1,5 +1,4 @@
 const en_US = {
-  docs: 'Docs',
   business_group: 'Business Group',
   search_placeholder: 'Search',
   nodata: 'No Data',

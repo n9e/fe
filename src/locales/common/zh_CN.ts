@@ -1,5 +1,4 @@
 const zh_CN = {
-  docs: '文档',
   business_group: '业务组',
   search_placeholder: '搜索',
   nodata: '暂无数据',

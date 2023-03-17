@@ -24,6 +24,7 @@ import { Logout } from '@/services/login';
 import AdvancedWrap, { License } from '@/components/AdvancedWrap';
 import { CommonStateContext } from '@/App';
 import './index.less';
+import './locale';
 
 interface IPageLayoutProps {
   icon?: ReactNode;
@@ -38,7 +39,7 @@ interface IPageLayoutProps {
 }
 
 const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introIcon, children, customArea, showBack, backPath, docFn }) => {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation('pageLayout');
   const history = useHistory();
   const { profile } = useContext(CommonStateContext);
 
@@ -49,18 +50,19 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
           history.push('/account/profile/info');
         }}
       >
-        {t('个人信息')}
+        {t('profile')}
       </Menu.Item>
       <Menu.Item
         onClick={() => {
           Logout().then(() => {
             localStorage.removeItem('access_token');
             localStorage.removeItem('refresh_token');
+            localStorage.removeItem('curBusiId');
             history.push('/login');
           });
         }}
       >
-        {t('退出')}
+        {t('logout')}
       </Menu.Item>
     </Menu>
   );
