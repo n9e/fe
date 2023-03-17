@@ -102,7 +102,7 @@ function Import(props: IProps & ModalWrapProps) {
               ...data,
               configs: data.configs,
             }).then(() => {
-              message.success('common:success.import');
+              message.success(t('common:success.import'));
               refreshList();
               destroy();
             });
@@ -136,7 +136,7 @@ function Import(props: IProps & ModalWrapProps) {
               tags: '',
               configs: JSON.stringify(data.configs),
             }).then(() => {
-              message.success('common:success.import');
+              message.success(t('common:success.import'));
               refreshList();
               destroy();
             });
