@@ -187,7 +187,7 @@ export const replaceExpressionVarsSpecifyRule = (
   if (vars && vars.length > 0) {
     for (let i = 0; i < limit; i++) {
       if (formData[i]) {
-        const { name, options, reg, allValue } = formData[i];
+        const { name, options, reg, value, allValue } = formData[i];
         const placeholder = getPlaceholder(name);
         const selected = getVaraiableSelected(name, id);
 
@@ -210,8 +210,8 @@ export const replaceExpressionVarsSpecifyRule = (
               newExpression = replaceAllPolyfill(newExpression, placeholder, selected as string);
             }
           } else if (selected === null) {
-            // 未选择或填写变量值时替换为空字符串
-            newExpression = replaceAllPolyfill(newExpression, placeholder, '');
+            // 未选择或填写变量值时替换为传入的value
+            newExpression = replaceAllPolyfill(newExpression, placeholder, value ? value : '');
           } else if (typeof selected === 'number') {
             // number 目前只用于数据源变量的数据源ID
             newExpression = selected as any;
