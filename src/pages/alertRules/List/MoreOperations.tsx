@@ -48,76 +48,75 @@ export default function MoreOperations(props: MoreOperationsProps) {
   const { bgid, selectRowKeys, selectedRows, getAlertRules } = props;
   const [isModalVisible, setisModalVisible] = useState<boolean>(false);
 
-  const menu = useMemo(() => {
-    return (
-      <ul className='ant-dropdown-menu'>
-        <li
-          className='ant-dropdown-menu-item'
-          onClick={() => {
-            Import({
-              busiId: bgid,
-              refreshList: getAlertRules,
-            });
-          }}
-        >
-          <span>{t('batch.import.title')}</span>
-        </li>
-        <li
-          className='ant-dropdown-menu-item'
-          onClick={() => {
-            if (selectedRows.length) {
-              const exportData = selectedRows.map((item) => {
-                return { ...item, ...exportIgnoreAttrsObj };
-              });
-              Export({
-                data: JSON.stringify(exportData, null, 2),
-              });
-            } else {
-              message.warning(t('batch.not_select'));
-            }
-          }}
-        >
-          <span>{t('batch.export.title')}</span>
-        </li>
-        <li
-          className='ant-dropdown-menu-item'
-          onClick={() => {
-            if (selectRowKeys.length) {
-              Modal.confirm({
-                title: t('batch.delete_confirm'),
-                onOk: () => {
-                  deleteStrategy(selectRowKeys as number[], bgid).then(() => {
-                    message.success(t('batch.delete.success'));
-                    getAlertRules();
-                  });
-                },
-              });
-            } else {
-              message.warning(t('batch.not_select'));
-            }
-          }}
-        >
-          <span>{t('batch.delete')}</span>
-        </li>
-        <li
-          className='ant-dropdown-menu-item'
-          onClick={() => {
-            if (selectRowKeys.length == 0) {
-              message.warning(t('batch.not_select'));
-              return;
-            }
-            setisModalVisible(true);
-          }}
-        >
-          <span>{t('batch.update.title')}</span>
-        </li>
-      </ul>
-    );
-  }, [selectRowKeys, t]);
-
   return (
     <>
-      <Dropdown overlay={menu} trigger={['click']}>
+      <Dropdown
+        overlay={
+          <ul className='ant-dropdown-menu'>
+            <li
+              className='ant-dropdown-menu-item'
+              onClick={() => {
+                Import({
+                  busiId: bgid,
+                  refreshList: getAlertRules,
+                });
+              }}
+            >
+              <span>{t('batch.import.title')}</span>
+            </li>
+            <li
+              className='ant-dropdown-menu-item'
+              onClick={() => {
+                if (selectedRows.length) {
+                  const exportData = selectedRows.map((item) => {
+                    return { ...item, ...exportIgnoreAttrsObj };
+                  });
+                  Export({
+                    data: JSON.stringify(exportData, null, 2),
+                  });
+                } else {
+                  message.warning(t('batch.not_select'));
+                }
+              }}
+            >
+              <span>{t('batch.export.title')}</span>
+            </li>
+            <li
+              className='ant-dropdown-menu-item'
+              onClick={() => {
+                if (selectRowKeys.length) {
+                  Modal.confirm({
+                    title: t('batch.delete_confirm'),
+                    onOk: () => {
+                      deleteStrategy(selectRowKeys as number[], bgid).then(() => {
+                        message.success(t('batch.delete.success'));
+                        getAlertRules();
+                      });
+                    },
+                  });
+                } else {
+                  message.warning(t('batch.not_select'));
+                }
+              }}
+            >
+              <span>{t('batch.delete')}</span>
+            </li>
+            <li
+              className='ant-dropdown-menu-item'
+              onClick={() => {
+                if (selectRowKeys.length == 0) {
+                  message.warning(t('batch.not_select'));
+                  return;
+                }
+                setisModalVisible(true);
+              }}
+            >
+              <span>{t('batch.update.title')}</span>
+            </li>
+          </ul>
+        }
+        trigger={['click']}
+      >
         <Button onClick={(e) => e.stopPropagation()}>
           {t('common:btn.more')}
           <DownOutlined
