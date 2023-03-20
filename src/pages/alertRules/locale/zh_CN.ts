@@ -41,7 +41,7 @@ const zh_CN = {
   callbacks: '回调地址',
   annotations: '附加信息',
   annotationsOptions: {
-    preview_link: '预览链接',
+    plan_link: '预案链接',
     dashboard_link: '仪表盘链接',
     desc: '描述',
   },

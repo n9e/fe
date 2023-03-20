@@ -156,7 +156,7 @@ export default function index({ disabled }) {
                     <AutoComplete
                       options={[
                         {
-                          value: t('annotationsOptions.preview_link'),
+                          value: t('annotationsOptions.plan_link'),
                         },
                         {
                           value: t('annotationsOptions.dashboard_link'),

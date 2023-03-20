@@ -41,7 +41,7 @@ const en_US = {
   callbacks: 'Callbacks',
   annotations: 'Annotations',
   annotationsOptions: {
-    preview_link: 'Preview Link',
+    plan_link: 'Plan Link',
     dashboard_link: 'Dashboard Link',
     desc: 'Description',
   },
