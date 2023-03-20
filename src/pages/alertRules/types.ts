@@ -24,6 +24,7 @@ export interface AlertRuleType<T> {
   notify_max_number: number;
   callbacks: string[];
   annotations: any;
+  prod: string;
 }
 
 export enum AlertRuleStatus {

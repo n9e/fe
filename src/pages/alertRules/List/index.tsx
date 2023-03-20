@@ -19,7 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { useHistory, Link } from 'react-router-dom';
 import _ from 'lodash';
 import moment from 'moment';
-import { Table, Tag, Switch, Modal, Space, Button, Row, Col, message } from 'antd';
+import { Table, Tag, Switch, Modal, Space, Button, Row, Col, Radio, message, Select } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import AdvancedWrap from '@/components/AdvancedWrap';
 import { Pure as DatasourceSelect } from '@/components/DatasourceSelect';
@@ -30,6 +30,7 @@ import { getStrategyGroupSubList, updateAlertRules, deleteStrategy } from '@/ser
 import { CommonStateContext } from '@/App';
 import { AlertRuleType, AlertRuleStatus } from '../types';
 import MoreOperations from './MoreOperations';
+import { ruleTypeOptions } from '../Form/constants';
 
 interface ListProps {
   bgid?: number;
@@ -39,6 +40,7 @@ interface Filter {
   cate?: string;
   datasourceIds?: number[];
   search?: string;
+  prod?: string;
 }
 
 export default function List(props: ListProps) {
@@ -222,11 +224,12 @@ export default function List(props: ListProps) {
 
   const filterData = () => {
     return data.filter((item) => {
-      const { cate, datasourceIds, search } = filter;
+      const { cate, datasourceIds, search, prod } = filter;
       const lowerCaseQuery = search?.toLowerCase() || '';
       return (
         (item.name.toLowerCase().indexOf(lowerCaseQuery) > -1 || item.append_tags.join(' ').toLowerCase().indexOf(lowerCaseQuery) > -1) &&
         ((cate && cate === item.cate) || !cate) &&
+        ((prod && prod === item.prod) || !prod) &&
         (_.some(item.datasource_ids, (id) => {
           if (id === 0) return true;
           return _.includes(datasourceIds, id);
@@ -267,6 +270,50 @@ export default function List(props: ListProps) {
                 getAlertRules();
               }}
             />
+            <AdvancedWrap var='VITE_IS_ALERT_AI,VITE_IS_ALERT_ES'>
+              {(isShow) => {
+                let options = ruleTypeOptions;
+                if (isShow[0]) {
+                  options = [
+                    ...ruleTypeOptions,
+                    {
+                      label: 'Anomaly',
+                      value: 'anomaly',
+                    },
+                  ];
+                } else if (isShow[1]) {
+                  options = [
+                    ...ruleTypeOptions,
+                    {
+                      label: 'Log',
+                      value: 'logging',
+                    },
+                  ];
+                }
+                return (
+                  <Select
+                    style={{ width: 90 }}
+                    placeholder={t('prod')}
+                    allowClear
+                    value={filter.prod}
+                    onChange={(val) => {
+                      setFilter({
+                        ...filter,
+                        prod: val,
+                      });
+                    }}
+                  >
+                    {options.map((item) => {
+                      return (
+                        <Select.Option value={item.value} key={item.value}>
+                          {item.label}
+                        </Select.Option>
+                      );
+                    })}
+                  </Select>
+                );
+              }}
+            </AdvancedWrap>
             <AdvancedWrap var='VITE_IS_ALERT_ES'>
               {(isShow) => {
                 return (

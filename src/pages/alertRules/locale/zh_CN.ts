@@ -1,6 +1,7 @@
 const zh_CN = {
   title: '告警规则',
   search_placeholder: '搜索名称或标签',
+  prod: '监控类型',
   severity: '级别',
   notify_groups: '告警接收组',
   basic_configs: '基础配置',
