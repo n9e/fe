@@ -1,9 +1,11 @@
 /**
- * 获取所有的语言包，然后生成一个完整的 json 文件
+ * 在当前目录生成一个完整的语言文件 n9e_locale.json, 用于翻译其他语言
  * 语言包来源于
  * 1. src/locales/*\/zh_CN.ts
  * 2. src/components/*\/locale/zh_CN.ts
  * 3. src/pages/*\/locale/zh_CN.ts
+ * 4. src/pages/help/*\/locale/zh_CN.ts
+ * 5. src/pages/warning/*\/locale/zh_CN.ts
  */
 
 import fs from 'fs';
@@ -17,6 +19,8 @@ const targets = [
   path.resolve(__dirname, '../src/locales/*/zh_CN.ts'),
   path.resolve(__dirname, '../src/components/*/locale/zh_CN.ts'),
   path.resolve(__dirname, '../src/pages/*/locale/zh_CN.ts'),
+  path.resolve(__dirname, '../src/pages/help/*/locale/zh_CN.ts'),
+  path.resolve(__dirname, '../src/pages/warning/*/locale/zh_CN.ts'),
 ];
 const allfiles: string[] = [];
 
@@ -33,7 +37,10 @@ for await (const file of allfiles) {
   let localeName = arr[arr.length - 2];
   if (localeName === 'locale') {
     localeName = arr[arr.length - 3];
-    const module = arr[arr.length - 4];
+    let module = arr[arr.length - 4];
+    if (module === 'help' || module === 'warning') {
+      module = arr[arr.length - 5];
+    }
     allLocales[module] = allLocales[module] || {};
     allLocales[module][localeName] = content.default;
   } else {
