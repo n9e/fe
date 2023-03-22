@@ -50,7 +50,7 @@ export default function Title(props: IProps) {
   const history = useHistory();
   const location = useLocation();
   const query = querystring.parse(location.search);
-  const { viewMode, themeMode } = query;
+  const { viewMode, themeMode, __datasourceName } = query;
 
   return (
     <div className='dashboard-detail-header'>
@@ -90,7 +90,7 @@ export default function Title(props: IProps) {
           <div style={{ display: 'flex', alignItems: 'center' }}>
             {t('cluster')}：
             {isPreview && !isBuiltin ? (
-              datasourceValue
+              __datasourceName
             ) : (
               <>
                 <Select

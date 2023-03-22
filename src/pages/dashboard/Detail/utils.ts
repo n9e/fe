@@ -4,8 +4,10 @@ import { getDefaultDatasourceValue, setDefaultDatasourceValue } from '@/utils';
 
 export const getLocalDatasourceValue = (search: string, groupedDatasourceList) => {
   const locationQuery = queryString.parse(search);
-  if (_.get(locationQuery, '__datasourceValue_prometheus')) {
-    setDefaultDatasourceValue('prometheus', _.toString(_.get(locationQuery, '__datasourceValue_prometheus')));
+  const urlValue = _.get(locationQuery, '__datasourceValue');
+  if (urlValue) {
+    setDefaultDatasourceValue('prometheus', _.toString(urlValue));
+    return _.toNumber(urlValue);
   }
   const localDatasourceValue = getDefaultDatasourceValue('prometheus', groupedDatasourceList);
   return localDatasourceValue;

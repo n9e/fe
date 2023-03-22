@@ -32,6 +32,7 @@ import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
 import { CommonStateContext } from '@/App';
 import { BusinessGroup } from '@/pages/targets';
 import usePagination from '@/components/usePagination';
+import { getDefaultDatasourceValue } from '@/utils';
 import Header from './Header';
 import FormCpt from './Form';
 import Export from './Export';
@@ -168,7 +169,8 @@ export default function index() {
                             to={{
                               pathname: `/dashboards/share/${record.id}`,
                               search: queryString.stringify({
-                                __cluster: localStorage.getItem('curCluster'),
+                                __datasourceValue: getDefaultDatasourceValue('prometheus', commonState.groupedDatasourceList),
+                                __datasourceName: _.find(commonState.datasourceList, { id: getDefaultDatasourceValue('prometheus', commonState.groupedDatasourceList) })?.name,
                                 viewMode: 'fullscreen',
                               }),
                             }}

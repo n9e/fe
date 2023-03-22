@@ -98,7 +98,7 @@ export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boole
         configs,
       });
       if (!datasourceValue) {
-        const dashboardConfigs: any = res.configs;
+        const dashboardConfigs: any = configs;
         const localDatasourceValue = getLocalDatasourceValue(search, groupedDatasourceList);
         setDatasourceValue(getDatasourceValue(dashboardConfigs, curDatasources) || localDatasourceValue || curDatasources[0]?.id);
       }
