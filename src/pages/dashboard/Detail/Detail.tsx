@@ -138,7 +138,7 @@ export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boole
     if (valueWithOptions) {
       setVariableConfigWithOptions(valueWithOptions);
       setDashboardMeta({
-        dashboardId: _.toString(dashboard.id),
+        dashboardId: _.toString(id),
         variableConfigWithOptions: valueWithOptions,
       });
     }
