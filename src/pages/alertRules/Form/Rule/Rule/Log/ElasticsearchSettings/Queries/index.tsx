@@ -76,13 +76,7 @@ export default function index(props: IProps) {
                           label={
                             <span>
                               {t('datasource:es.index')}{' '}
-                              <Tooltip
-                                title={
-                                  <div>
-                                    <Trans ns='alertRules' i18nKey='datasource:es.index_tip'></Trans>
-                                  </div>
-                                }
-                              >
+                              <Tooltip title={<Trans ns='datasource' i18nKey='datasource:es.index_tip' components={{ 1: <br /> }} />}>
                                 <QuestionCircleOutlined />
                               </Tooltip>
                             </span>

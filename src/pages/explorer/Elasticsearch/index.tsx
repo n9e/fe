@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import { Space, Form, Input, AutoComplete, Tooltip, Button, Table, Empty, Spin, InputNumber, Select } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
 import { QuestionCircleOutlined, DownOutlined, RightOutlined } from '@ant-design/icons';
@@ -204,7 +204,7 @@ export default function index(props: IProps) {
             }}
           >
             {t('datasource:es.index')}{' '}
-            <Tooltip title={t('datasource:es.index_tip')}>
+            <Tooltip title={<Trans ns='datasource' i18nKey='datasource:es.index_tip' components={{ 1: <br /> }} />}>
               <QuestionCircleOutlined />
             </Tooltip>
           </span>

@@ -73,11 +73,11 @@ export default function index({ prefixField = {}, prefixFields = [], prefixNameF
               const targetQueryValues = getFieldValue([...prefixFields, ...prefixNameField, 'query', 'values']);
               // 当提取日志原文时不可再添加 func
               if (_.get(targetQueryValues, [0, 'func']) === 'rawData') {
-                return <div style={{ marginBottom: 8 }}>{t('es.value')}</div>;
+                return <div style={{ marginBottom: 8 }}>{t('datasource:es.value')}</div>;
               }
               return (
                 <div style={{ marginBottom: 8 }}>
-                  {t('es.value')}{' '}
+                  {t('datasource:es.value')}{' '}
                   <PlusCircleOutlined
                     style={{ cursor: 'pointer' }}
                     onClick={() => {

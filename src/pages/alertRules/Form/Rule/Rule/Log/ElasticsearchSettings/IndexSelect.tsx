@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Form, AutoComplete } from 'antd';
 import _ from 'lodash';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import { getIndices } from '@/services/warning';
 
 interface IProps {
@@ -33,14 +33,14 @@ export default function IndexSelect({ prefixField = {}, prefixName = [], cate, d
 
   return (
     <Form.Item
-      label={t('es.index')}
-      tooltip={<div>{t('es.index_tip')}</div>}
+      label={t('datasource:es.index')}
+      tooltip={<Trans ns='datasource' i18nKey='datasource:es.index_tip' components={{ 1: <br /> }} />}
       {...prefixField}
       name={name || [...prefixName, 'query', 'index']}
       rules={[
         {
           required: true,
-          message: t('es.index_msg'),
+          message: t('datasource:es.index_msg'),
         },
       ]}
       validateTrigger='onBlur'
