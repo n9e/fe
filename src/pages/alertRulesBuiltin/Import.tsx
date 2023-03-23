@@ -17,18 +17,22 @@
 import React from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Modal, Input, Form, Button, Select, message } from 'antd';
+import { Modal, Input, Form, Button, Select, Row, Col, Switch, message } from 'antd';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
+import { getAuthorizedDatasourceCates } from '@/components/AdvancedWrap';
+import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
 import { createRule } from './services';
 
 interface IProps {
   data: any;
   busiGroups: any;
+  groupedDatasourceList: any;
 }
 
 function Import(props: IProps & ModalWrapProps) {
   const { t } = useTranslation('alertRulesBuiltin');
-  const { visible, destroy, data, busiGroups } = props;
+  const { visible, destroy, data, busiGroups, groupedDatasourceList } = props;
+  const datasourceCates = _.filter(getAuthorizedDatasourceCates(), (item) => item.type === 'metric');
 
   return (
     <Modal
@@ -44,6 +48,9 @@ function Import(props: IProps & ModalWrapProps) {
         layout='vertical'
         initialValues={{
           import: data,
+          cate: 'prometheus',
+          datasource_ids: [0],
+          enabled: false,
         }}
         onFinish={(vals) => {
           let data: any[] = [];
@@ -53,7 +60,13 @@ function Import(props: IProps & ModalWrapProps) {
               data = [data];
             }
             data = _.map(data, (item) => {
-              return _.omit(item, ['id', 'group_id', 'create_at', 'create_by', 'update_at', 'update_by']);
+              const record = _.omit(item, ['id', 'group_id', 'create_at', 'create_by', 'update_at', 'update_by']);
+              return {
+                ...record,
+                cate: vals.cate,
+                datasource_ids: vals.datasource_ids,
+                disabled: vals.enabled ? 0 : 1,
+              };
             });
           } catch (e) {
             message.error(t('json_msg'));
@@ -104,6 +117,34 @@ function Import(props: IProps & ModalWrapProps) {
             })}
           </Select>
         </Form.Item>
+        <Row gutter={10}>
+          <Col span={8}>
+            <Form.Item label={t('common:datasource.type')} name='cate'>
+              <Select>
+                {_.map(datasourceCates, (item) => {
+                  return (
+                    <Select.Option key={item.value} value={item.value}>
+                      {item.label}
+                    </Select.Option>
+                  );
+                })}
+              </Select>
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.cate !== curValues.cate} noStyle>
+              {({ getFieldValue, setFieldsValue }) => {
+                const cate = getFieldValue('cate');
+                return <DatasourceValueSelect mode='multiple' setFieldsValue={setFieldsValue} cate={cate} datasourceList={groupedDatasourceList[cate] || []} />;
+              }}
+            </Form.Item>
+          </Col>
+          <Col span={4}>
+            <Form.Item label={t('common:table.enabled')} name='enabled' valuePropName='checked'>
+              <Switch />
+            </Form.Item>
+          </Col>
+        </Row>
         <Form.Item
           label={t('json_label')}
           name='import'

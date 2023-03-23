@@ -20,7 +20,7 @@ export { Detail };
 
 export default function index() {
   const { t } = useTranslation('alertRulesBuiltin');
-  const { busiGroups } = useContext(CommonStateContext);
+  const { busiGroups, groupedDatasourceList } = useContext(CommonStateContext);
   const pagination = usePagination({ PAGESIZE_KEY: 'alert-rules-builtin-pagesize' });
   const [data, setData] = useState<RuleCateType[]>([]);
   const [active, setActive] = useState<RuleCateType>();
@@ -143,6 +143,7 @@ export default function index() {
                     Import({
                       data: JSON.stringify(selectedRows.current, null, 4),
                       busiGroups,
+                      groupedDatasourceList,
                     });
                   }}
                 >
@@ -227,6 +228,7 @@ export default function index() {
                             Import({
                               data: JSON.stringify(record, null, 4),
                               busiGroups,
+                              groupedDatasourceList,
                             });
                           }}
                         >
