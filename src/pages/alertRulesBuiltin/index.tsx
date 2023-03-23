@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
-import { List, Input, Button, Table, Space, Tag } from 'antd';
+import { List, Input, Button, Table, Space, Tag, Select } from 'antd';
 import { SafetyCertificateOutlined, SearchOutlined, StarOutlined, StarFilled } from '@ant-design/icons';
 import PageLayout from '@/components/pageLayout';
 import Export from '@/pages/dashboard/List/Export';
@@ -18,18 +18,32 @@ import './style.less';
 
 export { Detail };
 
+function processRules(cate: string, alertRules: { [key: string]: RuleType[] }) {
+  return _.reduce(
+    alertRules,
+    (subResult, rules, group) => {
+      return _.concat(
+        subResult,
+        _.map(rules, (rule) => ({ ...rule, __cate__: cate, __group__: group })),
+      );
+    },
+    [],
+  );
+}
+
 export default function index() {
   const { t } = useTranslation('alertRulesBuiltin');
   const { busiGroups, groupedDatasourceList } = useContext(CommonStateContext);
   const pagination = usePagination({ PAGESIZE_KEY: 'alert-rules-builtin-pagesize' });
   const [data, setData] = useState<RuleCateType[]>([]);
   const [active, setActive] = useState<RuleCateType>();
+  const [group, setGroup] = useState<string>();
   const [cateSearch, setCateSearch] = useState<string>('');
   const [ruleSearch, setRuleSearch] = useState<string>('');
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
   const allRules = useRef<RuleType[]>([]);
   const selectedRows = useRef<RuleType[]>([]);
-  const curRules = active ? active.alert_rules : allRules.current;
+  const curRules = active ? processRules(active.name, active.alert_rules) : allRules.current;
   const filteredCates = _.orderBy(
     _.filter(data, (item) => {
       return _.upperCase(item.name).indexOf(_.upperCase(cateSearch)) > -1;
@@ -39,11 +53,15 @@ export default function index() {
   );
   const filteredRules = _.filter(curRules, (item) => {
     if (!item) return false;
+    let isMatch = true;
     const search = _.trim(ruleSearch);
     if (search) {
-      return _.includes(item.name.toLowerCase(), search.toLowerCase()) || _.some(item.append_tags, (tag) => _.includes(tag.toLowerCase(), search.toLowerCase()));
+      isMatch = _.includes(item.name.toLowerCase(), search.toLowerCase()) || _.some(item.append_tags, (tag) => _.includes(tag.toLowerCase(), search.toLowerCase()));
     }
-    return true;
+    if (group) {
+      isMatch = isMatch && item.__group__ === group;
+    }
+    return isMatch;
   });
 
   const fetchData = () => {
@@ -51,10 +69,8 @@ export default function index() {
       allRules.current = _.reduce(
         res,
         (result, item) => {
-          return _.concat(
-            result,
-            _.map(item.alert_rules, (rule) => ({ ...rule, __cate__: item.name })),
-          );
+          const rules = processRules(item.name, item.alert_rules);
+          return _.concat(result, rules);
         },
         [] as RuleType[],
       );
@@ -96,7 +112,10 @@ export default function index() {
                 <List.Item
                   key={item.name}
                   className={classNames('cate-list-item', { 'is-active': active?.name === item.name, 'is-last-favorite': item.favorite && !filteredCates[idx + 1]?.favorite })}
-                  onClick={() => setActive(item)}
+                  onClick={() => {
+                    setActive(item);
+                    setGroup(undefined);
+                  }}
                   extra={
                     <span
                       className='cate-list-item-extra'
@@ -127,16 +146,34 @@ export default function index() {
           </div>
           <div className='resource-table-content'>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Input
-                prefix={<SearchOutlined />}
-                value={ruleSearch}
-                onChange={(e) => {
-                  setRuleSearch(e.target.value);
-                }}
-                placeholder={t('common:search_placeholder')}
-                style={{ width: 300 }}
-                allowClear
-              />
+              <Space>
+                <Input
+                  prefix={<SearchOutlined />}
+                  value={ruleSearch}
+                  onChange={(e) => {
+                    setRuleSearch(e.target.value);
+                  }}
+                  placeholder={t('common:search_placeholder')}
+                  style={{ width: 300 }}
+                  allowClear
+                />
+                <Select
+                  style={{ width: 200 }}
+                  placeholder={t('group')}
+                  value={group}
+                  onChange={(val) => {
+                    setGroup(val);
+                  }}
+                >
+                  {_.map(_.groupBy(curRules, '__group__'), (_rules, group) => {
+                    return (
+                      <Select.Option key={group} value={group}>
+                        {group}
+                      </Select.Option>
+                    );
+                  })}
+                </Select>
+              </Space>
               <Space>
                 <Button
                   onClick={() => {
@@ -162,7 +199,7 @@ export default function index() {
             </div>
             <Table
               size='small'
-              rowKey='name'
+              rowKey={(record) => `${record.__cate__}-${record.__group__}-${record.name}`}
               dataSource={filteredRules}
               rowSelection={{
                 selectedRowKeys,

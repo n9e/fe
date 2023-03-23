@@ -1,6 +1,7 @@
 const en_US = {
   title: 'Built-in Alert Rules',
   cate: 'Categories',
+  group: 'Group',
   name: 'Name',
   append_tags: 'Tags',
   json_label: 'JSON',

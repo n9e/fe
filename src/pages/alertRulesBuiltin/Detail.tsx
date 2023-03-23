@@ -38,7 +38,14 @@ export default function Edit() {
       .then((res) => {
         const cateObj = _.find(res, (item) => item.name === query.cate);
         if (cateObj) {
-          const ruleObj = _.find(cateObj.alert_rules, (item) => item.name === query.name);
+          let ruleObj;
+          _.forEach(cateObj.alert_rules, (rules) => {
+            _.forEach(rules, (rule) => {
+              if (rule.name === query.name) {
+                ruleObj = rule;
+              }
+            });
+          });
           if (ruleObj) {
             setInitialValues(ruleObj);
           }
