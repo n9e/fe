@@ -32,6 +32,10 @@ const en_US = {
     headers: 'Custom HTTP headers',
     description: 'Description',
     cluster: 'Cluster',
+    cluster_confirm:
+      'Your data source is not associated with an alerting engine cluster. It will not be able to be used for alerting. Do you want to associate an alerting engine cluster?',
+    cluster_confirm_ok: 'No association',
+    cluster_confirm_cancel: 'Associate',
     es: {
       version: 'Version',
       max_shard: 'Max concurrent Shard Requests',

@@ -32,6 +32,9 @@ const zh_CN = {
     headers: '自定义HTTP标头',
     description: '备注',
     cluster: '关联告警引擎集群',
+    cluster_confirm: '发现您的数据源没有关联告警引擎集群，将无法用来做告警，是否去关联下告警引擎集群？',
+    cluster_confirm_ok: '不做关联',
+    cluster_confirm_cancel: '去做关联',
     es: {
       version: '版本',
       max_shard: '最大并发分片请求数',
