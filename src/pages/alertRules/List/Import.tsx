@@ -14,23 +14,27 @@
  * limitations under the License.
  *
  */
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Modal, Input, Form, Table, Button, Divider, message } from 'antd';
+import { Modal, Input, Form, Table, Button, Divider, message, Select, Row, Col, Switch } from 'antd';
 import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { importStrategy } from '@/services/warning';
+import { getAuthorizedDatasourceCates } from '@/components/AdvancedWrap';
+import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
 
 interface IProps {
   busiId: number;
   refreshList: () => void;
+  groupedDatasourceList: any;
 }
 
 function Import(props: IProps & ModalWrapProps) {
   const { t } = useTranslation('alertRules');
-  const { visible, destroy, busiId, refreshList } = props;
+  const { visible, destroy, busiId, refreshList, groupedDatasourceList } = props;
   const [importResult, setImportResult] = useState<{ name: string; msg: string }[]>();
+  const datasourceCates = _.filter(getAuthorizedDatasourceCates(), (item) => item.type === 'metric');
 
   return (
     <Modal
@@ -47,7 +51,14 @@ function Import(props: IProps & ModalWrapProps) {
         layout='vertical'
         onFinish={async (vals) => {
           try {
-            const importData = JSON.parse(vals.import);
+            const importData = _.map(JSON.parse(vals.import), (item) => {
+              return {
+                ...item,
+                cate: vals.cate,
+                datasource_ids: vals.datasource_ids,
+                disabled: vals.enabled ? 0 : 1,
+              };
+            });
             const { dat } = await importStrategy(importData, busiId);
             const dataSource = _.map(dat, (val, key) => {
               return {
@@ -65,7 +76,40 @@ function Import(props: IProps & ModalWrapProps) {
             message.error(t('common:error.import') + error);
           }
         }}
+        initialValues={{
+          cate: 'prometheus',
+          datasource_ids: [0],
+          enabled: false,
+        }}
       >
+        <Row gutter={10}>
+          <Col span={8}>
+            <Form.Item label={t('common:datasource.type')} name='cate'>
+              <Select>
+                {_.map(datasourceCates, (item) => {
+                  return (
+                    <Select.Option key={item.value} value={item.value}>
+                      {item.label}
+                    </Select.Option>
+                  );
+                })}
+              </Select>
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.cate !== curValues.cate} noStyle>
+              {({ getFieldValue, setFieldsValue }) => {
+                const cate = getFieldValue('cate');
+                return <DatasourceValueSelect mode='multiple' setFieldsValue={setFieldsValue} cate={cate} datasourceList={groupedDatasourceList[cate] || []} />;
+              }}
+            </Form.Item>
+          </Col>
+          <Col span={4}>
+            <Form.Item label={t('common:table.enabled')} name='enabled' valuePropName='checked'>
+              <Switch />
+            </Form.Item>
+          </Col>
+        </Row>
         <Form.Item
           label={`${t('batch.import.name')} JSON`}
           name='import'

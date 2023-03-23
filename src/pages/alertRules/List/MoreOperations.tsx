@@ -14,11 +14,12 @@
  * limitations under the License.
  *
  */
-import React, { useMemo, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Dropdown, Button, Modal, message } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { deleteStrategy, updateAlertRules } from '@/services/warning';
+import { CommonStateContext } from '@/App';
 import Import from './Import';
 import Export from './Export';
 import EditModal from './EditModal';
@@ -47,6 +48,7 @@ export default function MoreOperations(props: MoreOperationsProps) {
   const { t } = useTranslation('alertRules');
   const { bgid, selectRowKeys, selectedRows, getAlertRules } = props;
   const [isModalVisible, setisModalVisible] = useState<boolean>(false);
+  const { groupedDatasourceList } = useContext(CommonStateContext);
 
   return (
     <>
@@ -59,6 +61,7 @@ export default function MoreOperations(props: MoreOperationsProps) {
                 Import({
                   busiId: bgid,
                   refreshList: getAlertRules,
+                  groupedDatasourceList,
                 });
               }}
             >
