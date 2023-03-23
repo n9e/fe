@@ -28,6 +28,7 @@ import SearchInput from '@/components/BaseSearchInput';
 import usePagination from '@/components/usePagination';
 import { getStrategyGroupSubList, updateAlertRules, deleteStrategy } from '@/services/warning';
 import { CommonStateContext } from '@/App';
+import { priorityColor } from '@/utils/constant';
 import { AlertRuleType, AlertRuleStatus } from '../types';
 import MoreOperations from './MoreOperations';
 import { ruleTypeOptions } from '../Form/constants';
@@ -87,12 +88,25 @@ export default function List(props: ListProps) {
       },
     },
     {
+      title: t('severity'),
+      dataIndex: 'severities',
+      render: (data) => {
+        return _.map(data, (severity) => {
+          return (
+            <Tag key={severity} color={priorityColor[severity - 1]}>
+              S{severity}
+            </Tag>
+          );
+        });
+      },
+    },
+    {
       title: t('common:table.name'),
       dataIndex: 'name',
       render: (data, record) => {
         return (
           <Link
-            className='table-active-text'
+            className='table-text'
             to={{
               pathname: `/alert-rules/edit/${record.id}`,
             }}
@@ -148,7 +162,9 @@ export default function List(props: ListProps) {
       title: t('common:table.update_at'),
       dataIndex: 'update_at',
       width: 120,
-      render: (text: string) => moment.unix(Number(text)).format('YYYY-MM-DD HH:mm:ss'),
+      render: (text: string) => {
+        return <div className='table-text'>{moment.unix(Number(text)).format('YYYY-MM-DD HH:mm:ss')}</div>;
+      },
     },
     {
       title: t('common:table.enabled'),
