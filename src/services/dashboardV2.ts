@@ -133,7 +133,7 @@ export const getDashboardPure = function (id: string) {
 
 const signals = {};
 
-export const fetchHistoryBatch = (data, signalKey) => {
+export const fetchHistoryRangeBatch = (data, signalKey) => {
   const controller = new AbortController();
   const { signal } = controller;
   if (signalKey && signals[signalKey] && signals[signalKey].abort) {
@@ -141,6 +141,23 @@ export const fetchHistoryBatch = (data, signalKey) => {
   }
   signals[signalKey] = controller;
   return request(`/api/n9e/query-range-batch`, {
+    method: RequestMethod.Post,
+    data,
+    signal,
+    silence: true,
+  }).finally(() => {
+    delete signals[signalKey];
+  });
+};
+
+export const fetchHistoryInstantBatch = (data, signalKey) => {
+  const controller = new AbortController();
+  const { signal } = controller;
+  if (signalKey && signals[signalKey] && signals[signalKey].abort) {
+    signals[signalKey].abort();
+  }
+  signals[signalKey] = controller;
+  return request(`/api/n9e/query-instant-batch`, {
     method: RequestMethod.Post,
     data,
     signal,

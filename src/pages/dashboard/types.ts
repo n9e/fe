@@ -38,6 +38,7 @@ export interface ITarget {
     }[];
   };
   legend?: string;
+  instant?: boolean;
 }
 
 export type IType = 'row' | 'timeseries' | 'stat' | 'table' | 'pie' | 'hexbin' | 'barGauge' | 'text' | 'gauge' | 'iframe';
