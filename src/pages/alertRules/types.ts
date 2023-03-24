@@ -25,6 +25,7 @@ export interface AlertRuleType<T> {
   callbacks: string[];
   annotations: any;
   prod: string;
+  severities: number[];
 }
 
 export enum AlertRuleStatus {

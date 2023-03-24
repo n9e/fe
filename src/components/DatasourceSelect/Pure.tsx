@@ -50,6 +50,7 @@ export default function Pure(props: IProps) {
         onChange={(val) => {
           if (onDatasourceValueChange) onDatasourceValueChange(val);
         }}
+        maxTagCount='responsive'
       >
         {_.map(datasourceCate ? groupedDatasourceList[datasourceCate] : [], (item) => (
           <Select.Option value={item.id} key={item.id}>

@@ -42,6 +42,7 @@ interface Filter {
   datasourceIds?: number[];
   search?: string;
   prod?: string;
+  severities?: number[];
 }
 
 export default function List(props: ListProps) {
@@ -240,12 +241,16 @@ export default function List(props: ListProps) {
 
   const filterData = () => {
     return data.filter((item) => {
-      const { cate, datasourceIds, search, prod } = filter;
+      const { cate, datasourceIds, search, prod, severities } = filter;
       const lowerCaseQuery = search?.toLowerCase() || '';
       return (
         (item.name.toLowerCase().indexOf(lowerCaseQuery) > -1 || item.append_tags.join(' ').toLowerCase().indexOf(lowerCaseQuery) > -1) &&
         ((cate && cate === item.cate) || !cate) &&
         ((prod && prod === item.prod) || !prod) &&
+        _.some(item.severities, (severity) => {
+          if (_.isEmpty(severities)) return true;
+          return _.includes(severities, severity);
+        }) &&
         (_.some(item.datasource_ids, (id) => {
           if (id === 0) return true;
           return _.includes(datasourceIds, id);
@@ -279,7 +284,7 @@ export default function List(props: ListProps) {
   return (
     <div className='alert-rules-list-container' style={{ height: '100%', overflowY: 'auto' }}>
       <Row justify='space-between'>
-        <Col span={16}>
+        <Col span={20}>
           <Space>
             <RefreshIcon
               onClick={() => {
@@ -361,6 +366,23 @@ export default function List(props: ListProps) {
                 );
               }}
             </AdvancedWrap>
+            <Select
+              mode='multiple'
+              placeholder={t('severity')}
+              style={{ width: 120 }}
+              maxTagCount='responsive'
+              value={filter.severities}
+              onChange={(val) => {
+                setFilter({
+                  ...filter,
+                  severities: val,
+                });
+              }}
+            >
+              <Select.Option value={1}>S1</Select.Option>
+              <Select.Option value={2}>S2</Select.Option>
+              <Select.Option value={3}>S3</Select.Option>
+            </Select>
             <SearchInput
               placeholder={t('search_placeholder')}
               onSearch={(val) => {

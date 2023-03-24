@@ -186,7 +186,7 @@ const Event: React.FC = () => {
           />
         </Space>
         <Col
-          flex='200px'
+          flex='100px'
           style={{
             display: 'flex',
             justifyContent: 'flex-end',
