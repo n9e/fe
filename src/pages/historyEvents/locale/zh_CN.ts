@@ -15,6 +15,8 @@ const zh_CN = {
     1440: '最近 60 天',
     2160: '最近 90 天',
   },
+  severity: '告警级别',
+  eventType: '事件类别',
   export: '导出',
   export_failed: '导出失败',
   prod: '监控类型',

@@ -52,19 +52,17 @@ export function deleteAlertEventsModal(ids: number[], onSuccess = () => {}, t) {
 const Event: React.FC = () => {
   const { t } = useTranslation('AlertCurEvents');
   const [view, setView] = useState<'card' | 'list'>('card');
-  const { busiGroups } = useContext(CommonStateContext);
+  const { busiGroups, datasourceList } = useContext(CommonStateContext);
   const [filter, setFilter] = useState<{
     hours: number;
-    cate: string;
+    cate?: string;
     datasourceIds: number[];
     bgid?: number;
     severity?: number;
-    eventType?: number;
     queryContent: string;
     rule_prods: string[];
   }>({
     hours: 6,
-    cate: '',
     datasourceIds: [],
     queryContent: '',
     rule_prods: [],
@@ -117,6 +115,27 @@ const Event: React.FC = () => {
           </Select>
           <Select
             allowClear
+            mode='multiple'
+            placeholder={t('common:datasource.id')}
+            style={{ minWidth: 100 }}
+            maxTagCount='responsive'
+            dropdownMatchSelectWidth={false}
+            value={filter.datasourceIds}
+            onChange={(val) => {
+              setFilter({
+                ...filter,
+                datasourceIds: val,
+              });
+            }}
+          >
+            {_.map(datasourceList, (item) => (
+              <Select.Option value={item.id} key={item.id}>
+                {item.name}
+              </Select.Option>
+            ))}
+          </Select>
+          <Select
+            allowClear
             placeholder={t('common:business_group')}
             style={{ minWidth: 80 }}
             value={filter.bgid}
@@ -148,24 +167,9 @@ const Event: React.FC = () => {
               });
             }}
           >
-            <Select.Option value={1}>{t('common:severity.1')}</Select.Option>
-            <Select.Option value={2}>{t('common:severity.2')}</Select.Option>
-            <Select.Option value={3}>{t('common:severity.3')}</Select.Option>
-          </Select>
-          <Select
-            allowClear
-            style={{ minWidth: 80 }}
-            placeholder={t('eventType')}
-            value={filter.eventType}
-            onChange={(val) => {
-              setFilter({
-                ...filter,
-                eventType: val,
-              });
-            }}
-          >
-            <Select.Option value={0}>Triggered</Select.Option>
-            <Select.Option value={1}>Recovered</Select.Option>
+            <Select.Option value={1}>S1</Select.Option>
+            <Select.Option value={2}>S2</Select.Option>
+            <Select.Option value={3}>S3</Select.Option>
           </Select>
           <Input
             className='search-input'
@@ -224,7 +228,7 @@ const Event: React.FC = () => {
 
   const filterObj = Object.assign(
     { hours: filter.hours },
-    filter.datasourceIds.length ? { datasourceIds: filter.datasourceIds } : {},
+    filter.datasourceIds.length ? { datasource_ids: filter.datasourceIds } : {},
     filter.severity ? { severity: filter.severity } : {},
     filter.queryContent ? { query: filter.queryContent } : {},
     { bgid: filter.bgid },

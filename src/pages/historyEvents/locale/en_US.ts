@@ -15,6 +15,8 @@ const en_US = {
     1440: 'Last 60 Days',
     2160: 'Last 90 Days',
   },
+  severity: 'Severity',
+  eventType: 'Event Type',
   export: 'Export',
   export_failed: 'Export Failed',
   prod: 'Type',

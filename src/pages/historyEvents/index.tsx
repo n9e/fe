@@ -23,9 +23,7 @@ import { useAntdTable } from 'ahooks';
 import { Input, Tag, Button, Space, Table, Select, message } from 'antd';
 import { Link } from 'react-router-dom';
 import PageLayout from '@/components/pageLayout';
-import AdvancedWrap from '@/components/AdvancedWrap';
 import RefreshIcon from '@/components/RefreshIcon';
-import { Pure as DatasourceSelect } from '@/components/DatasourceSelect';
 import { hoursOptions } from '@/pages/event/constants';
 import { CommonStateContext } from '@/App';
 import exportEvents, { downloadFile } from './exportEvents';
@@ -36,11 +34,10 @@ import './locale';
 
 const Event: React.FC = () => {
   const { t } = useTranslation('AlertHisEvents');
-  const { groupedDatasourceList } = useContext(CommonStateContext);
+  const { groupedDatasourceList, busiGroups, datasourceList } = useContext(CommonStateContext);
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
   const [filter, setFilter] = useState<{
     hours: number;
-    cate?: string;
     datasourceIds: number[];
     bgid?: number;
     severity?: number;
@@ -169,38 +166,74 @@ const Event: React.FC = () => {
             <Select.Option value='host'>Host</Select.Option>
             <Select.Option value='metric'>Metric</Select.Option>
           </Select>
-          <AdvancedWrap var='VITE_IS_ALERT_ES'>
-            {(isShow) => {
-              return (
-                <DatasourceSelect
-                  datasourceCate={filter.cate}
-                  onDatasourceCateChange={(val) => {
-                    setFilter({
-                      ...filter,
-                      cate: val,
-                    });
-                  }}
-                  datasourceValue={filter.datasourceIds}
-                  datasourceValueMode='multiple'
-                  onDatasourceValueChange={(val: number[]) => {
-                    setFilter({
-                      ...filter,
-                      datasourceIds: val,
-                    });
-                  }}
-                  filterCates={(cates) => {
-                    return _.filter(cates, (item) => {
-                      if (item.value === 'elasticsearch') {
-                        return isShow[0];
-                      }
-                      return true;
-                    });
-                  }}
-                />
-              );
+          <Select
+            allowClear
+            mode='multiple'
+            placeholder={t('common:datasource.id')}
+            style={{ minWidth: 100 }}
+            maxTagCount='responsive'
+            dropdownMatchSelectWidth={false}
+            value={filter.datasourceIds}
+            onChange={(val) => {
+              setFilter({
+                ...filter,
+                datasourceIds: val,
+              });
             }}
-          </AdvancedWrap>
-
+          >
+            {_.map(datasourceList, (item) => (
+              <Select.Option value={item.id} key={item.id}>
+                {item.name}
+              </Select.Option>
+            ))}
+          </Select>
+          <Select
+            style={{ minWidth: 120 }}
+            placeholder={t('common:business_group')}
+            allowClear
+            value={filter.bgid}
+            onChange={(val) => {
+              setFilter({
+                ...filter,
+                bgid: val,
+              });
+            }}
+          >
+            {_.map(busiGroups, (item) => {
+              return <Select.Option value={item.id}>{item.name}</Select.Option>;
+            })}
+          </Select>
+          <Select
+            style={{ minWidth: 60 }}
+            placeholder={t('severity')}
+            allowClear
+            value={filter.severity}
+            onChange={(val) => {
+              setFilter({
+                ...filter,
+                severity: val,
+              });
+            }}
+          >
+            <Select.Option value={1}>S1</Select.Option>
+            <Select.Option value={2}>S2</Select.Option>
+            <Select.Option value={3}>S3</Select.Option>
+          </Select>
+          <Select
+            style={{ minWidth: 60 }}
+            placeholder={t('eventType')}
+            allowClear
+            value={filter.eventType}
+            onChange={(val) => {
+              setFilter({
+                ...filter,
+                eventType: val,
+              });
+            }}
+          >
+            <Select.Option value={0}>Triggered</Select.Option>
+            <Select.Option value={1}>Recovered</Select.Option>
+          </Select>
           <Input
             className='search-input'
             prefix={<SearchOutlined />}
