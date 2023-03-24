@@ -114,7 +114,7 @@ export default function index() {
                   className={classNames('cate-list-item', { 'is-active': active?.name === item.name, 'is-last-favorite': item.favorite && !filteredCates[idx + 1]?.favorite })}
                   onClick={() => {
                     setActive(item);
-                    setGroup(undefined);
+                    setGroup(_.map(_.groupBy(processRules(item.name, item.alert_rules), '__group__'), (v, k) => k)[0]);
                   }}
                   extra={
                     <span
@@ -147,16 +147,6 @@ export default function index() {
           <div className='resource-table-content'>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <Space>
-                <Input
-                  prefix={<SearchOutlined />}
-                  value={ruleSearch}
-                  onChange={(e) => {
-                    setRuleSearch(e.target.value);
-                  }}
-                  placeholder={t('common:search_placeholder')}
-                  style={{ width: 300 }}
-                  allowClear
-                />
                 <Select
                   style={{ width: 200 }}
                   placeholder={t('group')}
@@ -173,6 +163,16 @@ export default function index() {
                     );
                   })}
                 </Select>
+                <Input
+                  prefix={<SearchOutlined />}
+                  value={ruleSearch}
+                  onChange={(e) => {
+                    setRuleSearch(e.target.value);
+                  }}
+                  placeholder={t('common:search_placeholder')}
+                  style={{ width: 300 }}
+                  allowClear
+                />
               </Space>
               <Space>
                 <Button
