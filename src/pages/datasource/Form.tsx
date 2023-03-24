@@ -87,14 +87,20 @@ export default function FormCpt() {
         ) : (
           <From
             data={data}
-            onFinish={(values) => {
+            onFinish={(values, clusterInstance) => {
               if (type === 'prometheus' && !values.cluster_name) {
+                console.log('clustrInstance', clusterInstance);
                 Modal.confirm({
                   title: t('form.cluster_confirm'),
                   okText: t('form.cluster_confirm_ok'),
                   cancelText: t('form.cluster_confirm_cancel'),
                   onOk: () => {
                     onFinish(values);
+                  },
+                  onCancel: () => {
+                    if (clusterInstance && clusterInstance.focus) {
+                      clusterInstance.focus();
+                    }
                   },
                 });
               } else {
