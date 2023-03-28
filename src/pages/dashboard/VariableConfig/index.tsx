@@ -109,8 +109,14 @@ function index(props: IProps) {
             result[idx] = item;
             result[idx].options = options;
             const selected = getVaraiableSelected(item.name, id);
-            if (selected === null && query.__variable_value_fixed === undefined) {
-              setVaraiableSelected({ name: item.name, value: options[0]?.id, id, urlAttach: true });
+            if (selected === null) {
+              if (item.defaultValue) {
+                setVaraiableSelected({ name: item.name, value: item.defaultValue, id, urlAttach: true });
+              } else {
+                if (query.__variable_value_fixed === undefined) {
+                  setVaraiableSelected({ name: item.name, value: options[0]?.id, id, urlAttach: true });
+                }
+              }
             }
           }
         }

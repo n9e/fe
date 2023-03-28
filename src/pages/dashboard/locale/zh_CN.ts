@@ -65,6 +65,7 @@ const zh_CN = {
     },
     datasource: {
       definition: '数据源类型',
+      defaultValue: '默认值',
     },
   },
   row: {

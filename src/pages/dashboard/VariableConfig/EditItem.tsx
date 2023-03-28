@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React from 'react';
+import React, { useContext } from 'react';
 import { Form, Input, Row, Col, Select, Switch, Button, Space } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
@@ -22,6 +22,7 @@ import { useTranslation } from 'react-i18next';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import IndexSelect from '@/pages/alertRules/Form/Rule/Rule/Log/ElasticsearchSettings/IndexSelect';
 import ClusterSelect from '@/pages/dashboard/Editor/QueryEditor/components/ClusterSelect';
+import { CommonStateContext } from '@/App';
 import { IVariable } from './definition';
 import { convertExpressionToQuery, replaceExpressionVars, filterOptionsByReg, setVaraiableSelected } from './constant';
 
@@ -73,6 +74,7 @@ function EditItem(props: IProps) {
   const { t } = useTranslation('dashboard');
   const { datasourceValue, data, range, id, index, onOk, onCancel } = props;
   const [form] = Form.useForm();
+  const { groupedDatasourceList } = useContext(CommonStateContext);
   // TODO: 不太清楚这里的逻辑是干嘛的，后面找时间看下
   const handleBlur = (val?: string) => {
     const reg = data.reg;
@@ -247,15 +249,33 @@ function EditItem(props: IProps) {
             );
           } else if (type === 'datasource') {
             return (
-              <Form.Item label={t('var.datasource.definition')} name='definition' rules={[{ required: true }]}>
-                <Select>
-                  {_.map(allOptions, (item) => (
-                    <Select.Option key={item.value} value={item.value}>
-                      {item.label}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
+              <>
+                <Form.Item label={t('var.datasource.definition')} name='definition' rules={[{ required: true }]}>
+                  <Select>
+                    {_.map(allOptions, (item) => (
+                      <Select.Option key={item.value} value={item.value}>
+                        {item.label}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+                <Form.Item shouldUpdate={(prevValues, curValues) => prevValues?.definition !== curValues?.definition} noStyle>
+                  {({ getFieldValue }) => {
+                    const definition = getFieldValue('definition');
+                    return (
+                      <Form.Item label={t('var.datasource.defaultValue')} name='defaultValue'>
+                        <Select>
+                          {_.map(groupedDatasourceList[definition], (item) => (
+                            <Select.Option key={item.id} value={item.id}>
+                              {item.name}
+                            </Select.Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+                    );
+                  }}
+                </Form.Item>
+              </>
             );
           }
         }}

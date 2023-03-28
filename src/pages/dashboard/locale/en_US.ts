@@ -65,6 +65,7 @@ const en_US = {
     },
     datasource: {
       definition: 'Datasource type',
+      defaultValue: 'Default value',
     },
   },
   row: {
