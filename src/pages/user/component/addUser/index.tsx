@@ -147,7 +147,7 @@ const AddUser: React.FC<TeamProps> = (props: TeamProps) => {
         pagination={{
           ...tableProps.pagination,
           size: 'small',
-          pageSize: 5,
+          pageSizeOptions: ['5', '10', '20', '50', '100'],
           showTotal: (total) => `Total ${total} items`,
           showSizeChanger: true,
         }}
