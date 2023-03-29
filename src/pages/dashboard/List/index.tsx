@@ -94,9 +94,14 @@ export default function index() {
                   className: 'name-column',
                   render: (text: string, record: DashboardType) => {
                     return (
-                      <div className='table-active-text' onClick={() => history.push(`/dashboards/${record.ident || record.id}`)}>
+                      <Link
+                        className='table-active-text'
+                        to={{
+                          pathname: `/dashboards/${record.ident || record.id}`,
+                        }}
+                      >
                         {text}
-                      </div>
+                      </Link>
                     );
                   },
                 },

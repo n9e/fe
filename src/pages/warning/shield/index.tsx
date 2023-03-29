@@ -21,7 +21,7 @@ import { CloseCircleOutlined, ExclamationCircleOutlined, SearchOutlined } from '
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory, useLocation, Link } from 'react-router-dom';
 import queryString from 'query-string';
 import AdvancedWrap from '@/components/AdvancedWrap';
 import PageLayout from '@/components/pageLayout';
@@ -86,14 +86,14 @@ const Shield: React.FC = () => {
       dataIndex: 'note',
       render: (data, record: any) => {
         return (
-          <div
-            className='table-active-text'
-            onClick={() => {
-              history.push(`/alert-mutes/edit/${record.id}`, record);
+          <Link
+            to={{
+              pathname: `/alert-mutes/edit/${record.id}`,
+              state: record,
             }}
           >
             {data}
-          </div>
+          </Link>
         );
       },
     },
