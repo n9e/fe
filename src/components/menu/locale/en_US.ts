@@ -1,7 +1,7 @@
 const en_US = {
   仪表盘: 'Dashboard',
-  监控大盘: 'Dashboard',
-  内置大盘: 'Built-in',
+  监控仪表盘: 'Dashboard',
+  内置仪表盘: 'Built-in',
   时序指标: 'Metrics',
   即时查询: 'Explorer',
   快捷视图: 'Quick View',

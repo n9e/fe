@@ -1,10 +1,10 @@
 const zh_CN = {
-  title: '监控大盘',
-  name: '大盘名称',
+  title: '监控仪表盘',
+  name: '仪表盘名称',
   tags: '分类标签',
   ident: '英文标识',
   ident_msg: '请输入英文字母、数字、中划线',
-  search_placeholder: '大盘名称、分类标签',
+  search_placeholder: '仪表盘名称、分类标签',
   refresh_tip: '刷新间隔小于 step({{num}}s) 将不会更新数据',
   refresh_btn: '刷新',
   share_btn: '分享',
@@ -19,20 +19,20 @@ const zh_CN = {
       success: '取消公开成功',
     },
   },
-  create_title: '创建大盘',
-  edit_title: '编辑大盘',
+  create_title: '创建仪表盘',
+  edit_title: '编辑仪表盘',
   add_panel: '添加图表',
-  cluster: '集群', // TODO: 监控大盘暂时使用
+  cluster: '集群', // TODO: 监控仪表盘暂时使用
   full_screen: '全屏',
   exit_full_screen: '退出全屏',
   batch: {
-    import: '导入大盘 JSON',
-    label: '大盘 JSON',
-    import_grafana: '导入 Grafana 大盘 JSON',
-    import_grafana_tip: '目前只支持导入 v8+ 版本的大盘配置，导入完的图表只支持夜莺目前支持的图表类型和功能',
+    import: '导入仪表盘 JSON',
+    label: '仪表盘 JSON',
+    import_grafana: '导入 Grafana 仪表盘 JSON',
+    import_grafana_tip: '目前只支持导入 v8+ 版本的仪表盘配置，导入完的图表只支持夜莺目前支持的图表类型和功能',
   },
   link: {
-    title: '大盘链接',
+    title: '仪表盘链接',
     name: '链接名称',
     url: '链接地址',
     isNewBlank: '是否新窗口打开',
@@ -255,8 +255,8 @@ const zh_CN = {
     datasource_msg: '请选择数据源',
     prometheus: {
       time: '时间选择',
-      time_tip: '可指定时间范围，默认为大盘全局时间范围',
-      step_tip: '可指定 step，默认为大盘全局 step',
+      time_tip: '可指定时间范围，默认为仪表盘全局时间范围',
+      step_tip: '可指定 step，默认为仪表盘全局 step',
     },
   },
   detail: {

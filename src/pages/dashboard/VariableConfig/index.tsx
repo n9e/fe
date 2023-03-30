@@ -82,7 +82,7 @@ function index(props: IProps) {
             result[idx] = item;
             result[idx].fullDefinition = definition;
             result[idx].options = item.type === 'query' ? _.sortBy(regFilterOptions) : regFilterOptions;
-            // 当大盘变量值为空时，设置默认值
+            // 当仪表盘变量值为空时，设置默认值
             // 如果已选项不在待选项里也视做空值处理
             const selected = getVaraiableSelected(item.name, id);
             if (query.__variable_value_fixed === undefined) {

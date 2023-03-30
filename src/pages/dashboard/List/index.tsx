@@ -15,7 +15,7 @@
  *
  */
 /**
- * 大盘列表页面
+ * 仪表盘列表页面
  */
 import React, { useState, useEffect, useContext } from 'react';
 import { useHistory, Link } from 'react-router-dom';
@@ -272,7 +272,7 @@ export default function index() {
             />
           </div>
         ) : (
-          <BlankBusinessPlaceholder text='监控大盘' />
+          <BlankBusinessPlaceholder text='监控仪表盘' />
         )}
       </div>
     </PageLayout>

@@ -132,7 +132,7 @@ export default function Title(props: IProps) {
                   pathname: location.pathname,
                   search: querystring.stringify(newQuery),
                 });
-                // TODO: 解决大盘 layout resize 问题
+                // TODO: 解决仪表盘 layout resize 问题
                 setTimeout(() => {
                   window.dispatchEvent(new Event('resize'));
                 }, 500);

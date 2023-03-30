@@ -18,7 +18,7 @@ import _ from 'lodash';
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 
-// 大盘列表
+// 仪表盘列表
 export const getDashboards = function (id: number | string) {
   return request(`/api/n9e/busi-group/${id}/boards`, {
     method: RequestMethod.Get,
@@ -33,7 +33,7 @@ interface Dashboard {
   tags: string;
   configs?: string;
 }
-// 创建大盘
+// 创建仪表盘
 export const createDashboard = function (id: number, data: Dashboard) {
   return request(`/api/n9e/busi-group/${id}/boards`, {
     method: RequestMethod.Post,
@@ -43,14 +43,14 @@ export const createDashboard = function (id: number, data: Dashboard) {
   });
 };
 
-// 克隆大盘
+// 克隆仪表盘
 export const cloneDashboard = function (busiId: number, id: number) {
   return request(`/api/n9e/busi-group/${busiId}/board/${id}/clone`, {
     method: RequestMethod.Post,
   });
 };
 
-// 删除大盘
+// 删除仪表盘
 export const removeDashboards = function (ids: number[]) {
   return request(`/api/n9e/boards`, {
     method: RequestMethod.Delete,
@@ -60,8 +60,8 @@ export const removeDashboards = function (ids: number[]) {
   });
 };
 
-// 导出大盘
-// 大盘迁移页面需要
+// 导出仪表盘
+// 仪表盘迁移页面需要
 export const exportDashboard = function (busiId: number | string, ids: number[]) {
   return request(`/api/n9e/busi-group/${busiId}/dashboards/export`, {
     method: RequestMethod.Post,
@@ -71,7 +71,7 @@ export const exportDashboard = function (busiId: number | string, ids: number[])
   });
 };
 
-// 获取大盘详情
+// 获取仪表盘详情
 export const getDashboard = function (id: string | number) {
   return request(`/api/n9e/board/${id}`, {
     method: RequestMethod.Get,
@@ -80,7 +80,7 @@ export const getDashboard = function (id: string | number) {
   });
 };
 
-// 更新大盘 - 只能更新 name 和 tags
+// 更新仪表盘 - 只能更新 name 和 tags
 export const updateDashboard = function (id: string | number, data: { name: string; ident?: string; tags: string }) {
   return request(`/api/n9e/board/${id}`, {
     method: RequestMethod.Put,
@@ -88,7 +88,7 @@ export const updateDashboard = function (id: string | number, data: { name: stri
   }).then((res) => res.dat);
 };
 
-// 更新大盘 - 只能更新 configs
+// 更新仪表盘 - 只能更新 configs
 export const updateDashboardConfigs = function (id: string | number, data: { configs: string }) {
   return request(`/api/n9e/board/${id}/configs`, {
     method: RequestMethod.Put,
@@ -96,7 +96,7 @@ export const updateDashboardConfigs = function (id: string | number, data: { con
   });
 };
 
-// 更新大盘 - 只能更新 public
+// 更新仪表盘 - 只能更新 public
 export const updateDashboardPublic = function (id: string | number, data: { public: number }) {
   return request(`/api/n9e/board/${id}/public`, {
     method: RequestMethod.Put,
@@ -112,7 +112,7 @@ export const migrateDashboard = function (id: number, data: { name: string; tags
   });
 };
 
-// 以下是非大盘相关的接口
+// 以下是非仪表盘相关的接口
 
 export const getBuiltinDashboard = function (data) {
   return request('/api/n9e/builtin-boards-detail', {

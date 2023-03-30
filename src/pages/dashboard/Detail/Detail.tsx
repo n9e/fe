@@ -241,7 +241,7 @@ export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boole
         <div className='dashboard-detail-content'>
           {!editable && (
             <div style={{ padding: '5px 10px' }}>
-              <Alert type='warning' message='大盘已经被别人修改，为避免相互覆盖，请刷新大盘查看最新配置和数据' />
+              <Alert type='warning' message='仪表盘已经被别人修改，为避免相互覆盖，请刷新仪表盘查看最新配置和数据' />
             </div>
           )}
           <div className='dashboard-detail-content-header'>

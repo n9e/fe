@@ -39,11 +39,11 @@ const getMenuList = (t) => {
       children: [
         {
           key: '/dashboards',
-          label: t('监控大盘'),
+          label: t('监控仪表盘'),
         },
         {
           key: '/dashboards-built-in',
-          label: t('内置大盘'),
+          label: t('内置仪表盘'),
         },
       ],
     },

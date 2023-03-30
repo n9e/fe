@@ -104,7 +104,7 @@ export function normalizePanel(structure) {
   return structureClone;
 }
 
-// 将旧的大盘结构转换为新的大盘结构
+// 将旧的仪表盘结构转换为新的仪表盘结构
 export function convertDashboardV1ToV2(oldStructure) {
   const oldConfigs = JSONParse(oldStructure.configs);
   const chartGroups = _.sortBy(oldStructure.chart_groups, ['weight']);
@@ -147,7 +147,7 @@ export function convertDashboardV1ToV2(oldStructure) {
     tags: _.isArray(oldStructure.tags) ? _.join(oldStructure.tags, ' ') : oldStructure.tags, // tags 从数组改成空格分隔
     configs: JSON.stringify({
       ...oldConfigs, // 原来的 configs 里面还包含 var 等其他字段在
-      version: '2.0.0', // 新大盘添加版本信息
+      version: '2.0.0', // 新仪表盘添加版本信息
       panels,
     }),
   };

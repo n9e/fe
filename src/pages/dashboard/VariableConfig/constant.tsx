@@ -111,7 +111,7 @@ function attachVariable2Url(key, value, id: string, vars?: IVariable[]) {
   window.history.replaceState({ path: newurl }, '', newurl);
 }
 
-// TODO: 现在通过 localStorage 来维护变量值，并且是通过大盘 id 和变量名作为 key，这个 key 可能会重复，后续需要把变量名改成 uuid
+// TODO: 现在通过 localStorage 来维护变量值，并且是通过仪表盘 id 和变量名作为 key，这个 key 可能会重复，后续需要把变量名改成 uuid
 export function setVaraiableSelected({
   name,
   value,
