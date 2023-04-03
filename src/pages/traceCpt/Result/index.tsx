@@ -51,7 +51,7 @@ export default function TraceResult(props: IProps) {
     getTraceSearch(search)
       .then((res) => {
         try {
-          setTraces(res.map(transformTraceData));
+          setTraces(sortTraces(res.map(transformTraceData), sort || 'MOST_RECENT'));
         } catch (e) {
           console.log(e);
         }
