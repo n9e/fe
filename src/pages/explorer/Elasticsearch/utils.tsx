@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import flatten from './flatten';
 
 function localeCompareFunc(a, b) {
   return a.localeCompare(b);
@@ -16,9 +17,10 @@ export function getColumnsFromFields(selectedFields: string[], dateField?: strin
           return (
             <dl className='event-logs-row'>
               {_.map(text, (val, key) => {
+                const value = _.isArray(val) ? _.join(val, ',') : val;
                 return (
                   <React.Fragment key={key}>
-                    <dt>{key}:</dt> <dd>{_.join(val, ',')}</dd>
+                    <dt>{key}:</dt> <dd>{value}</dd>
                   </React.Fragment>
                 );
               })}
@@ -33,7 +35,8 @@ export function getColumnsFromFields(selectedFields: string[], dateField?: strin
         title: item,
         dataIndex: 'fields',
         render: (fields) => {
-          return _.join(fields[item], ',');
+          const value = _.isArray(fields[item]) ? _.join(fields[item], ',') : fields[item];
+          return value;
         },
         sorter: (a, b) => localeCompareFunc(_.join(_.get(a, `fields[${item}]`, '')), _.join(_.get(b, `fields[${item}]`, ''))),
       };
@@ -126,7 +129,7 @@ export function normalizeLogsQueryRequestBody(params: any) {
     ],
     script_fields: {},
     aggs: {},
-    fields: ['*'],
+    // fields: ['*'],
   };
   return `${JSON.stringify(header)}\n${JSON.stringify(body)}\n`;
 }
@@ -190,3 +193,32 @@ export function normalizeTimeseriesQueryRequestBody(params: any) {
   };
   return `${JSON.stringify(header)}\n${JSON.stringify(body)}\n`;
 }
+
+export const flattenHits = (hits: any[]): { docs: Array<Record<string, any>>; propNames: string[] } => {
+  const docs: any[] = [];
+  let propNames: string[] = [];
+
+  for (const hit of hits) {
+    const flattened = hit._source ? flatten(hit._source) : {};
+    const doc = {
+      _id: hit._id,
+      _type: hit._type,
+      _index: hit._index,
+      sort: hit.sort,
+      highlight: hit.highlight,
+      _source: { ...flattened },
+      fields: { ...flattened },
+    };
+
+    for (const propName of Object.keys(doc)) {
+      if (propNames.indexOf(propName) === -1) {
+        propNames.push(propName);
+      }
+    }
+
+    docs.push(doc);
+  }
+
+  propNames.sort();
+  return { docs, propNames };
+};
