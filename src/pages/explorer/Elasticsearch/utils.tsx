@@ -34,6 +34,7 @@ export function getColumnsFromFields(selectedFields: string[], dateField?: strin
       return {
         title: item,
         dataIndex: 'fields',
+        key: item,
         render: (fields) => {
           const value = _.isArray(fields[item]) ? _.join(fields[item], ',') : fields[item];
           return value;
@@ -46,13 +47,14 @@ export function getColumnsFromFields(selectedFields: string[], dateField?: strin
     columns.unshift({
       title: 'Time',
       dataIndex: 'fields',
+      key: 'time',
       width: 200,
       render: (fields) => {
         return fields[dateField];
       },
-      sorter: (a, b) => {
-        return localeCompareFunc(_.join(_.get(a, `fields[${dateField}]`, '')), _.join(_.get(b, `fields[${dateField}]`, '')));
-      },
+      defaultSortOrder: 'descend',
+      sortDirections: ['ascend', 'descend', 'ascend'],
+      sorter: true,
     });
   }
   return columns;
@@ -95,7 +97,6 @@ export function normalizeLogsQueryRequestBody(params: any) {
   };
   const body = {
     size: params.limit,
-    from: params.page,
     query: {
       bool: {
         filter: [
@@ -122,7 +123,7 @@ export function normalizeLogsQueryRequestBody(params: any) {
     sort: [
       {
         [params.date_field]: {
-          order: 'desc',
+          order: params.order || 'desc',
           unmapped_type: 'boolean',
         },
       },

@@ -25,7 +25,7 @@ interface IProps {
   form: FormInstance;
 }
 
-const LOGS_LIMIT = 50;
+const LOGS_LIMIT = 500;
 const TIME_FORMAT = 'YYYY.MM.DD HH:mm:ss';
 
 export default function index(props: IProps) {
@@ -51,7 +51,7 @@ export default function index(props: IProps) {
   const [interval, setInterval] = useState(1);
   const [intervalUnit, setIntervalUnit] = useState<'second' | 'min' | 'hour'>('min');
   const totalRef = useRef(0);
-  const pageRef = useRef(1);
+  const sortOrder = useRef('desc');
   const timesRef =
     useRef<{
       start: number;
@@ -74,16 +74,14 @@ export default function index(props: IProps) {
       });
     }
   };
-  const fetchData = (page) => {
+  const fetchData = () => {
     form.validateFields().then((values) => {
       const { start, end } = parseRange(values.query.range);
       timesRef.current = {
         start: moment(start).valueOf(),
         end: moment(end).valueOf(),
       };
-      if (page === 1) {
-        setLoading(true);
-      }
+      setLoading(true);
       getLogsQuery(
         values.datasourceValue,
         normalizeLogsQueryRequestBody({
@@ -92,7 +90,7 @@ export default function index(props: IProps) {
           filter: values.query.filter,
           date_field: values.query.date_field,
           limit: LOGS_LIMIT,
-          page,
+          order: sortOrder.current,
         }),
       )
         .then((res) => {
@@ -104,18 +102,14 @@ export default function index(props: IProps) {
             };
           });
           totalRef.current = res.total;
-          setData(page === 1 ? newData : [...data, ...newData]);
-          if (page === 1) {
-            const tableEleNodes = document.querySelectorAll(`.event-logs-table .ant-table-body`)[0];
-            tableEleNodes?.scrollTo(0, 0);
-          }
+          setData(newData);
+          const tableEleNodes = document.querySelectorAll(`.event-logs-table .ant-table-body`)[0];
+          tableEleNodes?.scrollTo(0, 0);
         })
         .finally(() => {
           setLoading(false);
         });
-      if (page === 1) {
-        fetchSeries(values);
-      }
+      fetchSeries(values);
     });
   };
 
@@ -154,7 +148,7 @@ export default function index(props: IProps) {
       });
 
       onIndexChange(params.get('index_name'));
-      fetchData(1);
+      fetchData();
     }
   }, [params.get('data_source_id')]);
 
@@ -297,7 +291,7 @@ export default function index(props: IProps) {
               <Button
                 type='primary'
                 onClick={() => {
-                  fetchData(1);
+                  fetchData();
                 }}
               >
                 {t('query_btn')}
@@ -366,8 +360,7 @@ export default function index(props: IProps) {
                       setIsMore(false);
                       return false;
                     }
-                    fetchData(pageRef.current + 1);
-                    pageRef.current = pageRef.current + 1;
+                    fetchData();
                   }
                 }}
               >
@@ -422,6 +415,12 @@ export default function index(props: IProps) {
                         }
                       : undefined
                   }
+                  onChange={(pagination, filters, sorter: any, extra) => {
+                    if (sorter.columnKey === 'time') {
+                      sortOrder.current = sorter.order === 'ascend' ? 'asc' : 'desc';
+                      fetchData();
+                    }
+                  }}
                 />
               </div>
             </div>
