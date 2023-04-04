@@ -14,7 +14,7 @@ const zh_CN = {
     add_member: '添加成员',
     empty: '没有与您相关的团队，请先',
     name: '团队名称',
-    add_member_selected: '已选择 {num} 项',
+    add_member_selected: '已选择 {{num}} 项',
   },
   business: {
     title: '业务组管理',
