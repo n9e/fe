@@ -72,13 +72,30 @@ interface Mappings {
   };
 }
 
-export function mappingsToFields(mappings: Mappings) {
+const typeMap: Record<string, string> = {
+  float: 'number',
+  double: 'number',
+  integer: 'number',
+  long: 'number',
+  date: 'date',
+  date_nanos: 'date',
+  string: 'string',
+  text: 'string',
+  scaled_float: 'number',
+  nested: 'nested',
+  histogram: 'number',
+};
+
+export function mappingsToFields(mappings: Mappings, type?: string) {
   const fields: string[] = [];
   _.forEach(mappings, (item: any) => {
     function loop(mappings, prefix = '') {
-      _.forEach(mappings?.properties, (item, key) => {
+      // mappings?.doc?.properties 为了兼容 6.x 版本接口
+      _.forEach(mappings?.doc?.properties || mappings?.properties, (item, key) => {
         if (item.type) {
-          fields.push(`${prefix}${key}`);
+          if (typeMap[item.type] === type || !type) {
+            fields.push(`${prefix}${key}`);
+          }
         } else {
           loop(item, `${key}.`);
         }
@@ -95,7 +112,7 @@ export function normalizeLogsQueryRequestBody(params: any) {
     ignore_unavailable: true,
     index: params.index,
   };
-  const body = {
+  const body: any = {
     size: params.limit,
     query: {
       bool: {
@@ -107,14 +124,6 @@ export function normalizeLogsQueryRequestBody(params: any) {
                 lte: params.end,
                 format: 'epoch_millis',
               },
-            },
-          },
-        ],
-        must: [
-          {
-            query_string: {
-              analyze_wildcard: true,
-              query: params.filter || '*',
             },
           },
         ],
@@ -130,8 +139,15 @@ export function normalizeLogsQueryRequestBody(params: any) {
     ],
     script_fields: {},
     aggs: {},
-    // fields: ['*'],
   };
+  if (params.filter) {
+    body.query.bool.filter.push({
+      query_string: {
+        analyze_wildcard: true,
+        query: params.filter || '*',
+      },
+    });
+  }
   return `${JSON.stringify(header)}\n${JSON.stringify(body)}\n`;
 }
 
@@ -141,7 +157,7 @@ export function normalizeTimeseriesQueryRequestBody(params: any) {
     ignore_unavailable: true,
     index: params.index,
   };
-  const body = {
+  const body: any = {
     size: params.limit,
     query: {
       bool: {
@@ -156,24 +172,8 @@ export function normalizeTimeseriesQueryRequestBody(params: any) {
             },
           },
         ],
-        must: [
-          {
-            query_string: {
-              analyze_wildcard: true,
-              query: params.filter || '*',
-            },
-          },
-        ],
       },
     },
-    sort: [
-      {
-        [params.date_field]: {
-          order: 'desc',
-          unmapped_type: 'boolean',
-        },
-      },
-    ],
     script_fields: {},
     _source: false,
     aggs: {
@@ -186,12 +186,20 @@ export function normalizeTimeseriesQueryRequestBody(params: any) {
             max: params.end,
           },
           format: 'epoch_millis',
-          fixed_interval: params.interval,
+          interval: params.interval,
         },
         aggs: {},
       },
     },
   };
+  if (params.filter) {
+    body.query.bool.filter.push({
+      query_string: {
+        analyze_wildcard: true,
+        query: params.filter || '*',
+      },
+    });
+  }
   return `${JSON.stringify(header)}\n${JSON.stringify(body)}\n`;
 }
 

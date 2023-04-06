@@ -36,7 +36,7 @@ export default function index({ prefixField = {}, prefixFields = [], prefixNameF
   const [fieldsOptions, setFieldsOptions] = useState<any[]>([]);
   const { run } = useDebounceFn(
     () => {
-      getFields(datasourceValue, index).then((res) => {
+      getFields(datasourceValue, index, 'number').then((res) => {
         setFieldsOptions(
           _.map(res, (item) => {
             return {

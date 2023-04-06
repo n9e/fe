@@ -31,14 +31,13 @@ export function getIndices(datasourceValue: number) {
   });
 }
 
-export function getFields(datasourceValue: number, index?: string) {
+export function getFields(datasourceValue: number, index?: string, type?: string) {
   const url = index ? `/${index}/_mapping` : '/_mapping';
   return request(`/api/n9e/proxy/${datasourceValue}${url}?pretty=true`, {
     method: RequestMethod.Get,
     silence: true,
   }).then((res) => {
-    const fields = mappingsToFields(res);
-    return fields;
+    return mappingsToFields(res, type);
   });
 }
 

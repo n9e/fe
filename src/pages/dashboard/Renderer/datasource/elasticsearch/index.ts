@@ -8,6 +8,7 @@ import { IVariable } from '../../../VariableConfig/definition';
 import { replaceExpressionVars } from '../../../VariableConfig/constant';
 import { getSeriesQuery, getLogsQuery } from './queryBuilder';
 import { processResponseToSeries } from './processResponse';
+import { flattenHits } from '@/pages/explorer/Elasticsearch/utils';
 
 interface IOptions {
   dashboardId: string;
@@ -103,11 +104,12 @@ export default async function elasticSearchQuery(options: IOptions) {
       });
       const res = await getDsQuery(datasourceValue, payload);
       _.forEach(res, (item) => {
-        _.forEach(item?.hits?.hits, (hit: any) => {
+        const { docs } = flattenHits(item?.hits?.hits);
+        _.forEach(docs, (doc: any) => {
           series.push({
-            id: hit._id,
-            name: hit._index,
-            metric: hit.fields,
+            id: doc._id,
+            name: doc._index,
+            metric: doc.fields,
             data: [],
           });
         });

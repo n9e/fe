@@ -79,12 +79,7 @@ export default function Prometheus({ chartForm }) {
                         </Form.Item>
                       </Col>
                     </Row>
-                    <Form.Item
-                      shouldUpdate={(prevValues, curValues) => {
-                        return !_.isEqual(prevValues.datasourceValue, curValues.datasourceValue);
-                      }}
-                      noStyle
-                    >
+                    <Form.Item shouldUpdate noStyle>
                       {({ getFieldValue }) => {
                         const datasourceValue = getFieldValue('datasourceValue');
                         return (

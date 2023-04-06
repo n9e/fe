@@ -26,15 +26,9 @@ export function getLogsQuery(target: ElasticsearchQuery) {
           unmapped_type: 'boolean',
         },
       },
-      {
-        _doc: {
-          order: 'desc',
-        },
-      },
     ],
     script_fields: {},
-    _source: false,
-    fields: ['*'],
+    aggs: {},
   };
   if (target.filter && target.filter !== '') {
     queryObj.query.bool.filter = [
@@ -108,7 +102,7 @@ export function getSeriesQuery(target: ElasticsearchQuery) {
             max: target.end,
           },
           format: 'epoch_millis',
-          fixed_interval: '60s',
+          interval: target.interval,
         };
         break;
       }

@@ -45,6 +45,7 @@ export default function index(props: IProps) {
   const [data, setData] = useState<any[]>([]);
   const [series, setSeries] = useState<any[]>([]);
   const [displayTimes, setDisplayTimes] = useState('');
+  const [dateFields, setDateFields] = useState<string[]>([]);
   const [fields, setFields] = useState<string[]>([]);
   const [selectedFields, setSelectedFields] = useState<string[]>([]);
   const [isMore, setIsMore] = useState(true);
@@ -160,6 +161,9 @@ export default function index(props: IProps) {
     (val) => {
       if (datasourceValue && val) {
         getFields(datasourceValue, val).then((res) => {
+          setFields(res);
+        });
+        getFields(datasourceValue, val, 'date').then((res) => {
           const dateFiled = form.getFieldValue(['query', 'date_field']);
           if (!_.includes(res, dateFiled)) {
             if (_.includes(res, '@timestamp')) {
@@ -176,7 +180,7 @@ export default function index(props: IProps) {
               });
             }
           }
-          setFields(res);
+          setDateFields(res);
         });
       }
     },
@@ -274,7 +278,7 @@ export default function index(props: IProps) {
                 ]}
               >
                 <Select dropdownMatchSelectWidth={false} style={{ width: 150 }} showSearch>
-                  {_.map(_.sortBy(_.concat(fields, selectedFields)), (item) => {
+                  {_.map(dateFields, (item) => {
                     return (
                       <Select.Option key={item} value={item}>
                         {item}
