@@ -247,10 +247,12 @@ export default function List(props: ListProps) {
         (item.name.toLowerCase().indexOf(lowerCaseQuery) > -1 || item.append_tags.join(' ').toLowerCase().indexOf(lowerCaseQuery) > -1) &&
         ((cate && cate === item.cate) || !cate) &&
         ((prod && prod === item.prod) || !prod) &&
-        _.some(item.severities, (severity) => {
-          if (_.isEmpty(severities)) return true;
-          return _.includes(severities, severity);
-        }) &&
+        ((item.severities &&
+          _.some(item.severities, (severity) => {
+            if (_.isEmpty(severities)) return true;
+            return _.includes(severities, severity);
+          })) ||
+          !item.severities) &&
         (_.some(item.datasource_ids, (id) => {
           if (id === 0) return true;
           return _.includes(datasourceIds, id);
@@ -296,15 +298,16 @@ export default function List(props: ListProps) {
                 let options = ruleTypeOptions;
                 if (isShow[0]) {
                   options = [
-                    ...ruleTypeOptions,
+                    ...options,
                     {
                       label: 'Anomaly',
                       value: 'anomaly',
                     },
                   ];
-                } else if (isShow[1]) {
+                }
+                if (isShow[1]) {
                   options = [
-                    ...ruleTypeOptions,
+                    ...options,
                     {
                       label: 'Log',
                       value: 'logging',

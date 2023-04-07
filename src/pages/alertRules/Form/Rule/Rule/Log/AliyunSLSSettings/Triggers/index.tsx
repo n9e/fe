@@ -22,7 +22,7 @@ export default function index(props: IProps) {
         <Card
           title={
             <Space>
-              <span>{t('log_es.trigger.title')}</span>
+              <span>{t('datasource:es.alert.trigger.title')}</span>
               <PlusCircleOutlined
                 onClick={() =>
                   add({

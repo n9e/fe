@@ -85,22 +85,6 @@ const zh_CN = {
       '通常持续时长大于执行频率，在持续时长内按照执行频率多次执行PromQL查询，每次都触发才生成告警；如果持续时长置为0，表示只要有一次PromQL查询触发阈值，就生成告警',
   },
 
-  log_es: {
-    query: {
-      title: '统计查询',
-      preview: '机器预览',
-    },
-    trigger: {
-      title: '告警条件',
-      builder: '简单模式',
-      code: '表达式模式',
-      label: '关联 Label',
-    },
-    prom_eval_interval_tip: '每隔 {{num}} 秒，去查询后端存储',
-    prom_for_duration_tip:
-      '通常持续时长大于执行频率，在持续时长内按照执行频率多次执行查询，每次都触发才生成告警；如果持续时长置为0，表示只要有一次查询的数据满足告警条件，就生成告警',
-  },
-
   batch: {
     not_select: '请先选择策略',
     delete: '删除告警规则',

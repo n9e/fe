@@ -85,22 +85,6 @@ const en_US = {
       'Usually the duration is greater than the execution frequency. During the duration, PromQL query is executed multiple times according to the execution frequency, and an alert is generated only if it is triggered every time. If the duration is set to 0, an alert is generated as long as the threshold is triggered once during the PromQL query.',
   },
 
-  log_es: {
-    query: {
-      title: 'Queries',
-      preview: 'Preview',
-    },
-    trigger: {
-      title: 'Trigger',
-      builder: 'Builder',
-      code: 'Code',
-      label: 'Label',
-    },
-    prom_eval_interval_tip: 'Every {{num}} seconds, to query the backend storage',
-    prom_for_duration_tip:
-      'Usually the duration is greater than the execution frequency. During the duration, PromQL query is executed multiple times according to the execution frequency, and an alert is generated only if it is triggered every time. If the duration is set to 0, an alert is generated as long as the threshold is triggered once during the PromQL query.',
-  },
-
   batch: {
     not_select: 'Please select some rules first',
     delete: 'Delete Alert Rules',

@@ -73,10 +73,10 @@ export default function index() {
 
       <IntervalAndDuration
         intervalTip={(num) => {
-          return t('log_es.prom_eval_interval_tip', { num });
+          return t('datasource:es.alert.prom_eval_interval_tip', { num });
         }}
         durationTip={(num) => {
-          return t('log_es.prom_for_duration_tip', { num });
+          return t('datasource:es.alert.prom_for_duration_tip', { num });
         }}
       />
     </div>

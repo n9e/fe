@@ -89,7 +89,7 @@ export default function GraphPreview({ form, datasourceValue }: IProps) {
                 lineHeight: '32px',
               }}
             >
-              {t('log_es.query.preview')}
+              {t('datasource:es.alert.query.preview')}
             </div>
             <div>
               <TimeRangePicker value={range} onChange={setRange} />
@@ -136,7 +136,7 @@ export default function GraphPreview({ form, datasourceValue }: IProps) {
             }
           }}
         >
-          {t('log_es.query.preview')}
+          {t('datasource:es.alert.query.preview')}
         </Button>
       </Popover>
     </div>

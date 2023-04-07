@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useDebounceFn } from 'ahooks';
+import _ from 'lodash';
 import { Form, Row, Col, Select, AutoComplete } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { getFields } from '@/pages/explorer/Elasticsearch/services';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
-import _ from 'lodash';
 
 interface IProps {
   prefixField?: any;
@@ -33,7 +33,7 @@ export default function Value(props: IProps) {
   const [search, setSearch] = useState('');
   const { run } = useDebounceFn(
     () => {
-      getFields(datasourceValue, index).then((res) => {
+      getFields(datasourceValue, index, 'number').then((res) => {
         setFieldsOptions(
           _.map(res, (item) => {
             return {

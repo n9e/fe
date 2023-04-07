@@ -22,8 +22,8 @@ export default function Trigger(props: IProps) {
     <div style={{ backgroundColor: '#fafafa', padding: 10 }}>
       <Form.Item {...prefixField} name={[...prefixName, 'mode']}>
         <Radio.Group buttonStyle='solid' size='small'>
-          <Radio.Button value={0}>{t('log_es.trigger.builder')}</Radio.Button>
-          <Radio.Button value={1}>{t('log_es.trigger.code')}</Radio.Button>
+          <Radio.Button value={0}>{t('datasource:es.alert.trigger.builder')}</Radio.Button>
+          <Radio.Button value={1}>{t('datasource:es.alert.trigger.code')}</Radio.Button>
         </Radio.Group>
       </Form.Item>
       <Form.Item shouldUpdate noStyle>
@@ -41,7 +41,7 @@ export default function Trigger(props: IProps) {
         {(fields, { add, remove }) => (
           <div>
             <div style={{ marginBottom: 8 }}>
-              {t('log_es.trigger.label')}:{' '}
+              {t('datasource:es.alert.trigger.label')}:{' '}
               <PlusCircleOutlined
                 onClick={() => {
                   add({
