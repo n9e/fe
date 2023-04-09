@@ -36,7 +36,7 @@ export function exportDataStringify(data: any) {
 }
 
 /**
- * 获取导入数据结构的版本，老版本为 undefined, 新版本暂时为语义化的 2.0.0
+ * 获取导入数据结构的版本，老版本为 undefined, 新版本暂时为语义化的 3.0.0
  */
 export function getImportDataVersionIsValid(data: any): string | undefined {
   let dataClone = _.cloneDeep(data);
@@ -46,7 +46,7 @@ export function getImportDataVersionIsValid(data: any): string | undefined {
   if (!version) {
     // 历史某个版本没有设置版本号
     if (_.get(configs, 'panels')) {
-      version = '2.0.0';
+      version = '3.0.0';
     } else {
       return undefined;
     }

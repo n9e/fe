@@ -21,7 +21,6 @@ import _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import { useTranslation } from 'react-i18next';
 import TimeRangePicker, { IRawTimeRange } from '@/components/TimeRangePicker';
-import Resolution from '@/components/Resolution';
 import { visualizations, defaultValues, defaultCustomValuesMap, defaultOptionsValuesMap } from './config';
 import { IVariable } from '../VariableConfig';
 import FormCpt from './Form';
@@ -34,8 +33,8 @@ interface IProps {
   setVisible: (visible: boolean) => void;
   initialValues: IPanel;
   variableConfigWithOptions?: IVariable[];
-  datasourceValue: number;
-  id: string;
+  id: string; // panel id
+  dashboardId: string;
   time: IRawTimeRange;
   onOK: (formData: any, mode: string) => void;
 }
@@ -43,10 +42,9 @@ interface IProps {
 function index(props: IProps) {
   const { t, i18n } = useTranslation('dashboard');
   const formRef = useRef<any>();
-  const { mode, visible, setVisible, variableConfigWithOptions, datasourceValue, id, time } = props;
+  const { mode, visible, setVisible, variableConfigWithOptions, id, dashboardId, time } = props;
   const [initialValues, setInitialValues] = useState<IPanel>(_.cloneDeep(props.initialValues));
   const [range, setRange] = useState<IRawTimeRange>(time);
-  const [step, setStep] = useState<number | null>(null);
   const handleAddChart = async () => {
     if (formRef.current && formRef.current.getFormInstance) {
       const formInstance = formRef.current.getFormInstance();
@@ -56,7 +54,7 @@ function index(props: IProps) {
           _.set(values, 'custom.colorRange', _.split(values.custom.colorRange, ','));
         }
         let formData = Object.assign(values, {
-          version: '2.0.0',
+          version: '3.0.0',
         });
         if (values && values.id) {
           formData.id = values.id;
@@ -120,7 +118,6 @@ function index(props: IProps) {
                 setRange(val);
               }}
             />
-            <Resolution onChange={(v) => setStep(v)} value={step} />
             <CloseOutlined
               style={{ fontSize: 18 }}
               onClick={() => {
@@ -165,10 +162,9 @@ function index(props: IProps) {
           ref={formRef}
           initialValues={normalizeInitialValues(initialValues)}
           variableConfigWithOptions={variableConfigWithOptions}
-          datasourceValue={datasourceValue}
           range={range}
           id={id}
-          step={step}
+          dashboardId={dashboardId}
           key={initialValues.type} // 每次切换图表类型，都重新渲染
         />
       )}

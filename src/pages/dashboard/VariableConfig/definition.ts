@@ -25,10 +25,11 @@ export interface IVariable {
   options?: string[];
   type?: 'query' | 'textbox' | 'custom' | 'constant' | 'datasource';
   defaultValue?: string; // textbox 的默认值
-  datasource?: {
+  datasource: {
     // v5.14.3 新增 datasource 储存数据源类型和名称
+    // v6 必须有 datasource 字段
     cate: 'prometheus' | 'elasticsearch';
-    value: number; // v6 之后改为用 datasourceId
+    value?: number; // v6 之后改为用 datasourceId
   };
   config?: {
     // v5.14.3 新增 config 字段，用于存储一些非常规的配置

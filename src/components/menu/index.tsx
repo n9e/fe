@@ -206,6 +206,10 @@ const getMenuList = (t) => {
           label: t('告警引擎'),
         },
         {
+          key: '/help/migrate',
+          label: t('仪表盘迁移'),
+        },
+        {
           key: '/help/version',
           label: t('系统版本'),
         },

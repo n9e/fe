@@ -45,12 +45,10 @@ import Editor from '../Editor';
 import './style.less';
 
 interface IProps {
-  id: string;
+  dashboardId: string;
   editable: boolean;
-  datasourceValue: number;
   dashboard: Dashboard;
   range: IRawTimeRange;
-  step: number | null;
   variableConfig: any;
   panels: any[];
   isPreview: boolean;
@@ -65,7 +63,7 @@ function index(props: IProps) {
   const { profile } = useContext(CommonStateContext);
   const location = useLocation();
   const { themeMode } = querystring.parse(location.search);
-  const { editable, datasourceValue, dashboard, range, step, variableConfig, panels, isPreview, setPanels, onShareClick, onUpdated } = props;
+  const { editable, dashboard, range, variableConfig, panels, isPreview, setPanels, onShareClick, onUpdated } = props;
   const layoutInitialized = useRef(false);
   const allowUpdateDashboardConfigs = useRef(false);
   const reactGridLayoutDefaultProps = {
@@ -144,16 +142,10 @@ function index(props: IProps) {
                   <Renderer
                     isPreview={isPreview}
                     themeMode={themeMode as 'dark'}
-                    dashboardId={_.toString(props.id)}
+                    dashboardId={_.toString(props.dashboardId)}
                     id={item.id}
                     time={range}
-                    step={step}
-                    values={
-                      {
-                        ...item,
-                        datasourceValue: item.datasourceValue || datasourceValue,
-                      } as any
-                    }
+                    values={item}
                     variableConfig={variableConfig}
                     onCloneClick={() => {
                       const newPanels = updatePanelsInsertNewPanel(panels, {
@@ -291,8 +283,8 @@ function index(props: IProps) {
           });
         }}
         variableConfigWithOptions={variableConfig}
-        datasourceValue={datasourceValue}
         id={editorData.id}
+        dashboardId={_.toString(props.dashboardId)}
         time={range}
         initialValues={editorData.initialValues}
         onOK={(values, mode) => {

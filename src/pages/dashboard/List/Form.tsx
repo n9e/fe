@@ -63,7 +63,7 @@ function FormCpt(props: IProps & ModalWrapProps) {
           configs: JSON.stringify({
             var: [],
             panels: [],
-            version: '2.0.0',
+            version: '3.0.0',
           }),
         });
         message.success(t('common:success.create'));

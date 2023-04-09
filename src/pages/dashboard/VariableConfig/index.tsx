@@ -31,7 +31,6 @@ import './index.less';
 
 interface IProps {
   id: string;
-  datasourceValue: number;
   editable?: boolean;
   value?: IVariable[];
   range: IRawTimeRange;
@@ -40,18 +39,11 @@ interface IProps {
   isPreview?: boolean;
 }
 
-function includes(source, target) {
-  if (_.isArray(target)) {
-    return _.intersection(source, target);
-  }
-  return _.includes(source, target);
-}
-
 function index(props: IProps) {
   const { t } = useTranslation('dashboard');
   const { groupedDatasourceList } = useContext(CommonStateContext);
   const query = queryString.parse(useLocation().search);
-  const { id, datasourceValue, editable = true, range, onChange, onOpenFire, isPreview = false } = props;
+  const { id, editable = true, range, onChange, onOpenFire, isPreview = false } = props;
   const [editing, setEditing] = useState<boolean>(false);
   const [data, setData] = useState<IVariable[]>([]);
   const dataWithoutConstant = _.filter(data, (item) => item.type !== 'constant');
@@ -73,7 +65,7 @@ function index(props: IProps) {
             const definition = idx > 0 ? replaceExpressionVars(item.definition, result, idx, id) : item.definition;
             let options = [];
             try {
-              options = await convertExpressionToQuery(definition, range, item, datasourceValue);
+              options = await convertExpressionToQuery(definition, range, item);
               options = _.sortBy(options);
             } catch (error) {
               console.error(error);
@@ -131,7 +123,7 @@ function index(props: IProps) {
         onChange(value, false, result);
       })();
     }
-  }, [JSON.stringify(value), datasourceValue, refreshFlag]);
+  }, [JSON.stringify(value), refreshFlag]);
 
   return (
     <div className='tag-area'>
@@ -189,7 +181,6 @@ function index(props: IProps) {
         )}
       </div>
       <EditItems
-        datasourceValue={datasourceValue}
         visible={editing}
         setVisible={setEditing}
         value={value}

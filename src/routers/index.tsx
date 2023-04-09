@@ -60,6 +60,7 @@ import Permissions from '@/pages/permissions';
 import SSOConfigs from '@/pages/help/SSOConfigs';
 import NotificationTpls from '@/pages/help/NotificationTpls';
 import NotificationSettings from '@/pages/help/NotificationSettings';
+import MigrateDashboards from '@/pages/help/migrate';
 import { dynamicPackages, Entry } from '@/utils';
 
 const Packages = dynamicPackages();
@@ -157,6 +158,7 @@ export default function Content() {
         <Route exact path='/help/sso' component={SSOConfigs} />
         <Route exact path='/help/notification-tpls' component={NotificationTpls} />
         <Route exact path='/help/notification-settings' component={NotificationSettings} />
+        <Route exact path='/help/migrate' component={MigrateDashboards} />
 
         <Route exact path='/trace/explorer' component={TraceExplorer} />
         <Route exact path='/trace/dependencies' component={TraceDependencies} />

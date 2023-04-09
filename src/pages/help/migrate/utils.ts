@@ -52,7 +52,7 @@ export function convertPanelV1ToV2(oldStructure) {
   const yplotlinesColors = ['yellow', 'red'];
   const links = structure.link ? [structure.link] : [];
   structure = {
-    version: '2.0.0',
+    version: '3.0.0',
     name: structure.name,
     type: 'timeseries',
     layout: structure.layout,
@@ -147,7 +147,7 @@ export function convertDashboardV1ToV2(oldStructure) {
     tags: _.isArray(oldStructure.tags) ? _.join(oldStructure.tags, ' ') : oldStructure.tags, // tags 从数组改成空格分隔
     configs: JSON.stringify({
       ...oldConfigs, // 原来的 configs 里面还包含 var 等其他字段在
-      version: '2.0.0', // 新仪表盘添加版本信息
+      version: '3.0.0', // 新仪表盘添加版本信息
       panels,
     }),
   };

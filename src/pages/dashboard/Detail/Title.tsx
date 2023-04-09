@@ -19,25 +19,17 @@ import { useHistory, useLocation } from 'react-router-dom';
 import querystring from 'query-string';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Button, Space, Dropdown, Menu, Switch, Select } from 'antd';
+import { Button, Space, Dropdown, Menu, Switch } from 'antd';
 import { RollbackOutlined } from '@ant-design/icons';
-import Resolution from '@/components/Resolution';
 import { TimeRangePickerWithRefresh, IRawTimeRange } from '@/components/TimeRangePicker';
 import { AddPanelIcon } from '../config';
 import { visualizations } from '../Editor/config';
-import { getStepByTimeAndStep } from '../utils';
 import { dashboardTimeCacheKey } from './Detail';
 
 interface IProps {
-  datasources: any[];
-  datasourceValue: number;
-  setDatasourceValue: (val: number) => void;
   dashboard: any;
-  refresh: (bool?: boolean) => void;
   range: IRawTimeRange;
   setRange: (range: IRawTimeRange) => void;
-  step: number | null;
-  setStep: (step: number | null) => void;
   onAddPanel: (type: string) => void;
   isPreview: boolean;
   isBuiltin: boolean;
@@ -46,11 +38,11 @@ interface IProps {
 
 export default function Title(props: IProps) {
   const { t, i18n } = useTranslation('dashboard');
-  const { datasources, datasourceValue, setDatasourceValue, dashboard, refresh, range, setRange, step, setStep, onAddPanel, isPreview, isBuiltin } = props;
+  const { dashboard, range, setRange, onAddPanel, isPreview, isBuiltin } = props;
   const history = useHistory();
   const location = useLocation();
   const query = querystring.parse(location.search);
-  const { viewMode, themeMode, __datasourceName } = query;
+  const { viewMode, themeMode } = query;
 
   return (
     <div className='dashboard-detail-header'>
@@ -87,40 +79,13 @@ export default function Title(props: IProps) {
               </Dropdown>
             )}
           </div>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            {t('cluster')}：
-            {isPreview && !isBuiltin ? (
-              __datasourceName
-            ) : (
-              <>
-                <Select
-                  dropdownMatchSelectWidth={false}
-                  value={datasourceValue}
-                  onChange={(val) => {
-                    setDatasourceValue(val);
-                    localStorage.setItem('datasourceValue_prometheus', _.toString(val));
-                    refresh();
-                  }}
-                >
-                  {_.map(datasources, (item) => {
-                    return (
-                      <Select.Option key={item.id} value={item.id}>
-                        {item.name}
-                      </Select.Option>
-                    );
-                  })}
-                </Select>
-              </>
-            )}
-          </div>
           <TimeRangePickerWithRefresh
             localKey={dashboardTimeCacheKey}
             dateFormat='YYYY-MM-DD HH:mm:ss'
-            refreshTooltip={t('refresh_tip', { num: getStepByTimeAndStep(range, step) })}
+            // refreshTooltip={t('refresh_tip', { num: getStepByTimeAndStep(range, step) })}
             value={range}
             onChange={setRange}
           />
-          <Resolution onChange={(v) => setStep(v)} value={step} />
           {!isPreview && (
             <Button
               onClick={() => {

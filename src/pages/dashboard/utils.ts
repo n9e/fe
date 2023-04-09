@@ -90,7 +90,7 @@ function convertThresholdsGrafanaToN9E(config: any) {
 function convertVariablesGrafanaToN9E(templates: any) {
   return _.chain(templates.list)
     .filter((item) => {
-      // 2.0.0 版本只支持 query / custom / textbox / constant 类型的变量
+      // 3.0.0 版本只支持 query / custom / textbox / constant 类型的变量
       return item.type === 'query' || item.type === 'custom' || item.type === 'textbox' || item.type === 'constant';
     })
     .map((item) => {
@@ -132,7 +132,7 @@ function convertVariablesGrafanaToN9E(templates: any) {
 function convertLinksGrafanaToN9E(links: any) {
   return _.chain(links)
     .filter((item) => {
-      // 2.0.0 版本只支持 link 类型的链接设置
+      // 3.0.0 版本只支持 link 类型的链接设置
       return item.type === 'link';
     })
     .map((item) => {
@@ -188,7 +188,7 @@ function convertTimeseriesGrafanaToN9E(panel: any) {
   const fillOpacity = _.get(panel, 'fieldConfig.defaults.custom.fillOpacity');
   const stack = _.get(panel, 'fieldConfig.defaults.custom.stacking.mode');
   return {
-    version: '2.0.0',
+    version: '3.0.0',
     drawStyle: panel.type === 'barchart' ? 'bars' : 'lines',
     lineInterpolation: lineInterpolation === 'smooth' ? 'smooth' : 'linear',
     fillOpacity: fillOpacity ? fillOpacity / 100 : 0.5,
@@ -198,7 +198,7 @@ function convertTimeseriesGrafanaToN9E(panel: any) {
 
 function convertPieGrafanaToN9E(panel: any) {
   return {
-    version: '2.0.0',
+    version: '3.0.0',
     calc: _.get(panel, 'options.reduceOptions.calcs[0]'),
     legengPosition: 'hidden',
   };
@@ -206,7 +206,7 @@ function convertPieGrafanaToN9E(panel: any) {
 
 function convertStatGrafanaToN9E(panel: any) {
   return {
-    version: '2.0.0',
+    version: '3.0.0',
     textMode: 'value',
     calc: _.get(panel, 'options.reduceOptions.calcs[0]'),
     colorMode: 'value',
@@ -215,7 +215,7 @@ function convertStatGrafanaToN9E(panel: any) {
 
 function convertGaugeGrafanaToN9E(panel: any) {
   return {
-    version: '2.0.0',
+    version: '3.0.0',
     textMode: 'value',
     calc: _.get(panel, 'options.reduceOptions.calcs[0]'),
     colorMode: 'value',
@@ -224,14 +224,14 @@ function convertGaugeGrafanaToN9E(panel: any) {
 
 function convertBarGaugeGrafanaToN9E(panel: any) {
   return {
-    version: '2.0.0',
+    version: '3.0.0',
     calc: _.get(panel, 'options.reduceOptions.calcs[0]'),
   };
 }
 
 function convertTextGrafanaToN9E(panel: any) {
   return {
-    version: '2.0.0',
+    version: '3.0.0',
     content: _.get(panel, 'options.content'),
   };
 }
@@ -289,7 +289,7 @@ function convertPanlesGrafanaToN9E(panels: any) {
       const uid = uuidv4();
       if (item.type === 'row') {
         return {
-          version: '2.0.0',
+          version: '3.0.0',
           id: uid,
           type: 'row',
           name: item.title,
@@ -302,7 +302,7 @@ function convertPanlesGrafanaToN9E(panels: any) {
         };
       }
       return {
-        version: '2.0.0',
+        version: '3.0.0',
         id: uid,
         type: chartsMap[item.type] ? chartsMap[item.type].type : 'unknown',
         name: item.title,
@@ -339,7 +339,7 @@ export function convertDashboardGrafanaToN9E(data) {
   } = {
     name: data.title,
     configs: {
-      version: '2.0.0',
+      version: '3.0.0',
       links: convertLinksGrafanaToN9E(data.links),
       var: convertVariablesGrafanaToN9E(data.templating) as IVariable[],
       panels: convertPanlesGrafanaToN9E(data.panels),

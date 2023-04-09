@@ -47,7 +47,6 @@ export default function Chart() {
     start: 'now-1h',
     end: 'now',
   });
-  const [step, setStep] = useState<number | null>(null);
   const datasourceCate = useRef<string>();
   const datasourceName = useRef<string>();
 
@@ -64,7 +63,6 @@ export default function Chart() {
         });
       datasourceCate.current = _.find(datasourceCates, { value: data[0].dataProps.datasourceCate })?.label;
       datasourceName.current = data[0].dataProps.datasourceName;
-      setStep(data[0].dataProps.step);
       setRange(data[0].dataProps.range);
       setChartData(data);
     });
@@ -84,8 +82,11 @@ export default function Chart() {
                 <span>
                   {t('common:datasource.id')}：{datasourceName.current}
                 </span>
-                <TimeRangePickerWithRefresh refreshTooltip={t('refresh_tip', { num: getStepByTimeAndStep(range, step) })} onChange={setRange} value={range} />
-                <Resolution onChange={(v) => setStep(v)} value={step} />
+                <TimeRangePickerWithRefresh
+                  // refreshTooltip={t('refresh_tip', { num: getStepByTimeAndStep(range, step) })}
+                  onChange={setRange}
+                  value={range}
+                />
               </Space>
             </div>
           </div>
@@ -97,7 +98,6 @@ export default function Chart() {
                     dashboardId={item.id}
                     key={index}
                     time={range}
-                    step={step}
                     values={_.merge({}, item.dataProps, {
                       options: {
                         legend: {

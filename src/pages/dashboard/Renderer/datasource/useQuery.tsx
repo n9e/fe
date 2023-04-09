@@ -33,7 +33,6 @@ interface IProps {
   datasourceCate: string;
   datasourceValue?: number;
   time: IRawTimeRange;
-  step: number | null;
   targets: ITarget[];
   variableConfig?: IVariable[];
   inViewPort?: boolean;
@@ -41,7 +40,7 @@ interface IProps {
 }
 
 export default function usePrometheus(props: IProps) {
-  const { dashboardId, datasourceCate, time, step, targets, variableConfig, inViewPort, spanNulls, datasourceValue } = props;
+  const { dashboardId, datasourceCate, time, targets, variableConfig, inViewPort, spanNulls, datasourceValue } = props;
   const [series, setSeries] = useState<any[]>([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -83,7 +82,7 @@ export default function usePrometheus(props: IProps) {
     } else {
       flag.current = false;
     }
-  }, [JSON.stringify(targets), JSON.stringify(time), step, JSON.stringify(variableConfig), JSON.stringify(cachedVariableValues), spanNulls, datasourceValue]);
+  }, [JSON.stringify(targets), JSON.stringify(time), JSON.stringify(variableConfig), JSON.stringify(cachedVariableValues), spanNulls, datasourceValue]);
 
   useEffect(() => {
     // 如果图表在可视区域内并且没有请求过数据，则请求数据

@@ -8,7 +8,7 @@ import AliyunSLS from './AliyunSLS';
 import OrganizeFields from '../TransformationsEditor/OrganizeFields';
 import DatasourceSelect from './components/DatasourceSelect';
 
-export default function index({ chartForm, defaultDatasourceValue, type, variableConfig }) {
+export default function index({ chartForm, type, variableConfig, dashboardId }) {
   const { t } = useTranslation('dashboard');
   const [mode, setMode] = useState('query');
 
@@ -27,7 +27,7 @@ export default function index({ chartForm, defaultDatasourceValue, type, variabl
             <Radio.Button value='transform'>{t('query.transform')} (beta)</Radio.Button>
           </Radio.Group>
         )}
-        <DatasourceSelect chartForm={chartForm} defaultDatasourceValue={defaultDatasourceValue} variableConfig={variableConfig} />
+        <DatasourceSelect chartForm={chartForm} variableConfig={variableConfig} />
       </Space>
       <div
         style={{
@@ -38,10 +38,10 @@ export default function index({ chartForm, defaultDatasourceValue, type, variabl
           {({ getFieldValue }) => {
             const cate = getFieldValue('datasourceCate') || 'prometheus';
             if (cate === 'prometheus') {
-              return <Prometheus chartForm={chartForm} defaultDatasourceValue={defaultDatasourceValue} />;
+              return <Prometheus chartForm={chartForm} variableConfig={variableConfig} dashboardId={dashboardId} />;
             }
             if (cate === 'elasticsearch') {
-              return <Elasticsearch chartForm={chartForm} />;
+              return <Elasticsearch chartForm={chartForm} variableConfig={variableConfig} />;
             }
             if (cate === 'aliyun-sls') {
               return <AliyunSLS chartForm={chartForm} />;

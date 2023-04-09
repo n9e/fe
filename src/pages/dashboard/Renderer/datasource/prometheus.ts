@@ -9,12 +9,11 @@ import replaceExpressionBracket from '../utils/replaceExpressionBracket';
 import { completeBreakpoints, getSerieName } from './utils';
 
 interface IOptions {
+  id?: string; // panelId
   dashboardId: string;
   datasourceCate: string;
   datasourceValue: number; // 关联变量时 datasourceValue: string
-  id?: string;
   time: IRawTimeRange;
-  step: number | null;
   targets: ITarget[];
   variableConfig?: IVariable[];
   spanNulls?: boolean;
@@ -25,13 +24,12 @@ const getDefaultStepByStartAndEnd = (start: number, end: number) => {
 };
 
 export default async function prometheusQuery(options: IOptions) {
-  const { dashboardId, id, time, step, targets, variableConfig, spanNulls } = options;
+  const { dashboardId, id, time, targets, variableConfig, spanNulls } = options;
   if (!time.start) return Promise.resolve([]);
   const parsedRange = parseRange(time);
   let start = moment(parsedRange.start).unix();
   let end = moment(parsedRange.end).unix();
-  let _step: any = step;
-  if (!step) _step = getDefaultStepByStartAndEnd(start, end);
+  let _step: any = getDefaultStepByStartAndEnd(start, end);
   const series: any[] = [];
   let batchQueryParams: any[] = [];
   let batchInstantParams: any[] = [];
@@ -45,12 +43,11 @@ export default async function prometheusQuery(options: IOptions) {
         const parsedRange = parseRange(target.time);
         start = moment(parsedRange.start).unix();
         end = moment(parsedRange.end).unix();
-        if (!step) _step = getDefaultStepByStartAndEnd(start, end);
+        _step = getDefaultStepByStartAndEnd(start, end);
       }
       if (target.step) {
         _step = target.step;
       }
-
       // TODO: 消除毛刺？
       start = start - (start % _step!);
       end = end - (end % _step!);

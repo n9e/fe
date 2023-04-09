@@ -12,7 +12,7 @@ import Time from '@/pages/alertRules/Form/Rule/Rule/Log/ElasticsearchSettings/Ti
 
 const alphabet = 'ABCDEFGHIGKLMNOPQRSTUVWXYZ'.split('');
 
-export default function Prometheus({ chartForm }) {
+export default function Prometheus({ chartForm, variableConfig }) {
   const { t } = useTranslation('dashboard');
 
   return (

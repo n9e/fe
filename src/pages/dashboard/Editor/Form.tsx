@@ -26,11 +26,19 @@ import VariableConfig, { IVariable } from '../VariableConfig';
 import Renderer from '../Renderer/Renderer';
 import QueryEditor from './QueryEditor';
 
-function FormCpt(props, ref) {
+interface IProps {
+  initialValues: any;
+  variableConfigWithOptions?: IVariable[];
+  range: any;
+  id: string;
+  dashboardId: string;
+}
+
+function FormCpt(props: IProps, ref) {
   const { t } = useTranslation('dashboard');
   const [chartForm] = Form.useForm();
-  const { initialValues, datasourceValue, range, id, step } = props;
-  const [variableConfigWithOptions, setVariableConfigWithOptions] = useState<IVariable[]>(props.variableConfigWithOptions);
+  const { initialValues, range, id, dashboardId } = props;
+  const [variableConfigWithOptions, setVariableConfigWithOptions] = useState<IVariable[] | undefined>(props.variableConfigWithOptions);
 
   defaultValues.custom = defaultCustomValuesMap[initialValues?.type || defaultValues.type];
 
@@ -72,17 +80,7 @@ function FormCpt(props, ref) {
             <div style={{ marginBottom: 10, height: 300 }}>
               <Form.Item shouldUpdate noStyle>
                 {({ getFieldsValue }) => {
-                  return (
-                    <Renderer
-                      datasourceValue={datasourceValue}
-                      dashboardId={id}
-                      time={range}
-                      step={step}
-                      values={getFieldsValue()}
-                      variableConfig={variableConfigWithOptions}
-                      isPreview
-                    />
-                  );
+                  return <Renderer dashboardId={dashboardId} time={range} values={getFieldsValue()} variableConfig={variableConfigWithOptions} isPreview />;
                 }}
               </Form.Item>
             </div>
@@ -99,12 +97,11 @@ function FormCpt(props, ref) {
                           }}
                           value={variableConfigWithOptions}
                           editable={false}
-                          datasourceValue={datasourceValue}
                           range={range}
                           id={id}
                         />
                       </div>
-                      <QueryEditor chartForm={chartForm} defaultDatasourceValue={datasourceValue} type={type} variableConfig={variableConfigWithOptions} />
+                      <QueryEditor chartForm={chartForm} type={type} variableConfig={variableConfigWithOptions} dashboardId={dashboardId} />
                     </div>
                   );
                 }

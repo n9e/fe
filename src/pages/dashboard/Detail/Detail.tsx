@@ -19,7 +19,7 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useInterval } from 'ahooks';
 import { v4 as uuidv4 } from 'uuid';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Alert } from 'antd';
 import PageLayout from '@/components/pageLayout';
 import { IRawTimeRange, getDefaultValue } from '@/components/TimeRangePicker';
@@ -38,7 +38,6 @@ import Editor from '../Editor';
 import { defaultCustomValuesMap, defaultOptionsValuesMap } from '../Editor/config';
 import { sortPanelsByGridLayout, panelsMergeToConfigs, updatePanelsInsertNewPanelToGlobal } from '../Panels/utils';
 import { useGlobalState } from '../globalState';
-import { getLocalDatasourceValue, getDatasourceValue, getLocalStep, setLocalStep } from './utils';
 import './style.less';
 import './dark.antd.less';
 import './dark.less';
@@ -58,14 +57,11 @@ const fetchDashboard = ({ id, builtinParams }) => {
 export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boolean; gobackPath?: string; builtinParams?: any }) {
   const { isPreview = false, isBuiltin = false, gobackPath, builtinParams } = props;
   const { t, i18n } = useTranslation('dashboard');
-  const { groupedDatasourceList, datasourceList } = useContext(CommonStateContext);
-  const datasources = groupedDatasourceList.prometheus || [];
+  const { datasourceList } = useContext(CommonStateContext);
   const [dashboardMeta, setDashboardMeta] = useGlobalState('dashboardMeta');
-  const { search } = useLocation();
   const { id } = useParams<URLParam>();
   const refreshRef = useRef<{ closeRefresh: Function }>();
   const [dashboard, setDashboard] = useState<Dashboard>({} as Dashboard);
-  const [datasourceValue, setDatasourceValue] = useState<number>();
   const [variableConfig, setVariableConfig] = useState<IVariable[]>();
   const [variableConfigWithOptions, setVariableConfigWithOptions] = useState<IVariable[]>();
   const [dashboardLinks, setDashboardLinks] = useState<ILink[]>();
@@ -76,17 +72,14 @@ export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boole
       end: 'now',
     }),
   );
-  const [step, setStep] = useState<number | null>(getLocalStep(id));
   const [editable, setEditable] = useState(true);
   const [editorData, setEditorData] = useState({
     visible: false,
     id: '',
     initialValues: {} as any,
   });
-  const [forceRenderKey, setForceRender] = useState(_.uniqueId('forceRenderKey_'));
   let updateAtRef = useRef<number>();
   const refresh = async (cbk?: () => void) => {
-    let curDatasources = datasources;
     fetchDashboard({
       id,
       builtinParams,
@@ -97,11 +90,6 @@ export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boole
         ...res,
         configs,
       });
-      if (!datasourceValue) {
-        const dashboardConfigs: any = configs;
-        const localDatasourceValue = getLocalDatasourceValue(search, groupedDatasourceList);
-        setDatasourceValue(getDatasourceValue(dashboardConfigs, curDatasources) || localDatasourceValue || curDatasources[0]?.id);
-      }
       if (configs) {
         // TODO: configs 中可能没有 var 属性会导致 VariableConfig 报错
         const variableConfig = configs.var
@@ -163,13 +151,6 @@ export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boole
     }
   }, 2000);
 
-  if (!datasourceValue)
-    return (
-      <PageLayout>
-        <div>{t('detail.datasource_empty')}</div>
-      </PageLayout>
-    );
-
   return (
     <PageLayout
       customArea={
@@ -177,27 +158,10 @@ export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boole
           isPreview={isPreview}
           isBuiltin={isBuiltin}
           gobackPath={gobackPath}
-          datasources={datasources}
-          datasourceValue={datasourceValue}
-          setDatasourceValue={setDatasourceValue}
           dashboard={dashboard}
-          refresh={() => {
-            // 集群修改需要刷新数据
-            refresh(() => {
-              // TODO: cluster 和 vars 目前没办法做到同步，暂时用定时器处理
-              setTimeout(() => {
-                setForceRender(_.uniqueId('forceRenderKey_'));
-              }, 500);
-            });
-          }}
           range={range}
           setRange={(v) => {
             setRange(v);
-          }}
-          step={step}
-          setStep={(val) => {
-            setStep(val);
-            setLocalStep(id, val);
           }}
           onAddPanel={(type) => {
             if (type === 'row') {
@@ -218,7 +182,7 @@ export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boole
             } else {
               setEditorData({
                 visible: true,
-                id,
+                id: uuidv4(),
                 initialValues: {
                   name: 'Panel Title',
                   type,
@@ -246,17 +210,7 @@ export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boole
           )}
           <div className='dashboard-detail-content-header'>
             <div className='variable-area'>
-              {variableConfig && (
-                <VariableConfig
-                  isPreview={isPreview}
-                  onChange={handleVariableChange}
-                  value={variableConfig}
-                  datasourceValue={datasourceValue}
-                  range={range}
-                  id={id}
-                  onOpenFire={stopAutoRefresh}
-                />
-              )}
+              {variableConfig && <VariableConfig isPreview={isPreview} onChange={handleVariableChange} value={variableConfig} range={range} id={id} onOpenFire={stopAutoRefresh} />}
             </div>
             {!isPreview && (
               <DashboardLinks
@@ -274,21 +228,16 @@ export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boole
           </div>
           {variableConfigWithOptions && (
             <Panels
-              id={id}
+              dashboardId={id}
               isPreview={isPreview}
-              key={forceRenderKey}
               editable={editable}
               panels={panels}
               setPanels={setPanels}
-              datasourceValue={datasourceValue}
               dashboard={dashboard}
               range={range}
-              step={step}
               variableConfig={variableConfigWithOptions}
               onShareClick={(panel) => {
-                const curDatasourceValue = panel.datasourceValue
-                  ? replaceExpressionVars(panel.datasourceValue, variableConfigWithOptions, variableConfigWithOptions.length, id)
-                  : datasourceValue;
+                const curDatasourceValue = replaceExpressionVars(panel.datasourceValue, variableConfigWithOptions, variableConfigWithOptions.length, id);
                 const serielData = {
                   dataProps: {
                     ...panel,
@@ -304,7 +253,6 @@ export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boole
                         expr: realExpr,
                       };
                     }),
-                    step,
                     range,
                   },
                 };
@@ -335,8 +283,8 @@ export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boole
           });
         }}
         variableConfigWithOptions={variableConfigWithOptions}
-        datasourceValue={datasourceValue}
         id={editorData.id}
+        dashboardId={id}
         time={range}
         initialValues={editorData.initialValues}
         onOK={(values) => {
