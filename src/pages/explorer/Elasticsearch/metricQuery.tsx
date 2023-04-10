@@ -35,7 +35,7 @@ export default async function metricQuery(options: IOptions) {
         __name__: 'doc_count',
       },
       data: _.map(res, (item) => {
-        return [item.key, item.doc_count];
+        return [item.key / 1000, item.doc_count];
       }),
     },
   ];
