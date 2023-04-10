@@ -17,6 +17,7 @@
 import _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import semver from 'semver';
+import { updateDashboardConfigs } from '@/services/dashboardV2';
 import { defaultCustomValuesMap } from '../../dashboard/Editor/config';
 
 const alphabet = 'ABCDEFGHIGKLMNOPQRSTUVWXYZ'.split('');
@@ -151,4 +152,46 @@ export function convertDashboardV1ToV2(oldStructure) {
       panels,
     }),
   };
+}
+
+export function convertDashboardV2ToV3(board, { name, datasourceDefaultValue }) {
+  const datasourceCate = 'prometheus';
+  const varName = `\${${name}}`;
+  const configs = typeof board.configs === 'string' ? JSON.parse(board.configs) : board.configs;
+  configs.version = '3.0.0';
+  configs.var = configs.var || [];
+  configs.panels = configs.panels || [];
+  configs.var = _.map(configs.var, (item) => {
+    if (!item.type || item.type === 'query') {
+      return {
+        ...item,
+        type: 'query',
+        datasource: {
+          cate: item.datasource?.cate || datasourceCate,
+          value: item.datasource?.value || varName,
+        },
+      };
+    }
+    return item;
+  });
+  configs.var.unshift({
+    name: name,
+    type: 'datasource',
+    definition: datasourceCate,
+    defaultValue: datasourceDefaultValue,
+  });
+  configs.panels = _.map(configs.panels, (panel) => {
+    if (panel.type !== 'row') {
+      return {
+        ...panel,
+        datasourceCate: panel.datasourceCate || datasourceCate,
+        datasourceValue: panel.datasourceValue || varName,
+      };
+    }
+    return panel;
+  });
+
+  return updateDashboardConfigs(board.id, {
+    configs: JSON.stringify(configs),
+  });
 }

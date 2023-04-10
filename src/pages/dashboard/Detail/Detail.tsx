@@ -16,17 +16,19 @@
  */
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import _ from 'lodash';
+import semver from 'semver';
 import { useTranslation } from 'react-i18next';
 import { useInterval } from 'ahooks';
 import { v4 as uuidv4 } from 'uuid';
-import { useParams } from 'react-router-dom';
-import { Alert } from 'antd';
+import { useParams, useHistory } from 'react-router-dom';
+import { Alert, Modal, Button } from 'antd';
 import PageLayout from '@/components/pageLayout';
 import { IRawTimeRange, getDefaultValue } from '@/components/TimeRangePicker';
 import { Dashboard } from '@/store/dashboardInterface';
 import { getDashboard, updateDashboardConfigs, getDashboardPure, getBuiltinDashboard } from '@/services/dashboardV2';
 import { SetTmpChartData } from '@/services/metric';
 import { CommonStateContext } from '@/App';
+import MigrationModal from '@/pages/help/migrate/MigrationModal';
 import VariableConfig, { IVariable } from '../VariableConfig';
 import { replaceExpressionVars } from '../VariableConfig/constant';
 import { ILink } from '../types';
@@ -57,6 +59,7 @@ const fetchDashboard = ({ id, builtinParams }) => {
 export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boolean; gobackPath?: string; builtinParams?: any }) {
   const { isPreview = false, isBuiltin = false, gobackPath, builtinParams } = props;
   const { t, i18n } = useTranslation('dashboard');
+  const history = useHistory();
   const { datasourceList } = useContext(CommonStateContext);
   const [dashboardMeta, setDashboardMeta] = useGlobalState('dashboardMeta');
   const { id } = useParams<URLParam>();
@@ -78,6 +81,8 @@ export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boole
     id: '',
     initialValues: {} as any,
   });
+  const [migrationVisible, setMigrationVisible] = useState(false);
+  const [migrationModalOpen, setMigrationModalOpen] = useState(false);
   let updateAtRef = useRef<number>();
   const refresh = async (cbk?: () => void) => {
     fetchDashboard({
@@ -86,6 +91,9 @@ export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boole
     }).then((res) => {
       updateAtRef.current = res.update_at;
       const configs = _.isString(res.configs) ? JSONParse(res.configs) : res.configs;
+      if (semver.lt(configs.version, '3.0.0')) {
+        setMigrationVisible(true);
+      }
       setDashboard({
         ...res,
         configs,
@@ -293,6 +301,62 @@ export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boole
           handleUpdateDashboardConfigs(dashboard.id, {
             configs: panelsMergeToConfigs(dashboard.configs, newPanels),
           });
+        }}
+      />
+      {/*迁移*/}
+      <Modal
+        title='迁移大盘'
+        visible={migrationVisible}
+        onCancel={() => {
+          setMigrationVisible(false);
+        }}
+        footer={[
+          <Button
+            key='cancel'
+            danger
+            onClick={() => {
+              setMigrationVisible(false);
+              handleUpdateDashboardConfigs(dashboard.id, {
+                configs: JSON.stringify({
+                  ...dashboard.configs,
+                  version: '3.0.0',
+                }),
+              });
+            }}
+          >
+            关闭并不再提示
+          </Button>,
+          <Button
+            key='batchMigrate'
+            type='primary'
+            ghost
+            onClick={() => {
+              history.push('/help/migrate');
+            }}
+          >
+            前往批量迁移大盘
+          </Button>,
+          <Button
+            key='migrate'
+            type='primary'
+            onClick={() => {
+              setMigrationVisible(false);
+              setMigrationModalOpen(true);
+            }}
+          >
+            迁移当前大盘
+          </Button>,
+        ]}
+      >
+        v6 版本将不再支持全局 Prometheus 集群切换，新版本可通过图表关联数据源变量来实现该能力。 <br />
+        迁移工具会创建数据源变量以及关联所有未关联数据源的图表。
+      </Modal>
+      <MigrationModal
+        visible={migrationModalOpen}
+        setVisible={setMigrationModalOpen}
+        boards={[dashboard]}
+        onOk={() => {
+          refresh();
         }}
       />
     </PageLayout>
