@@ -97,7 +97,7 @@ const replaceAllPolyfill = (str, substr, newSubstr): string => {
 function getVarsValue(id: string, vars?: IVariable[]) {
   const varsValue = {};
   _.forEach(vars, (item) => {
-    varsValue[item.name] = getVaraiableSelected(item.name, id);
+    varsValue[item.name] = getVaraiableSelected(item.name, item.type, id);
   });
   return varsValue;
 }
@@ -133,7 +133,7 @@ export function setVaraiableSelected({
   urlAttach && attachVariable2Url(name, value, id, vars);
 }
 
-export function getVaraiableSelected(name: string, id: string) {
+export function getVaraiableSelected(name: string, type: string, id: string) {
   const { search } = window.location;
   const searchObj = queryString.parse(search);
   let v: any = searchObj[name];
@@ -155,7 +155,7 @@ export function getVaraiableSelected(name: string, id: string) {
     if (_.isArray(v) && v.length === 0) {
       return [];
     }
-    if (!_.isNaN(_.toNumber(v))) {
+    if (type === 'datasource' && !_.isNaN(_.toNumber(v))) {
       return _.toNumber(v);
     }
     return v;
@@ -164,7 +164,7 @@ export function getVaraiableSelected(name: string, id: string) {
     if (_.isArray(v) && v.length === 0) {
       return [];
     }
-    if (!_.isNaN(_.toNumber(v))) {
+    if (type === 'datasource' && !_.isNaN(_.toNumber(v))) {
       return _.toNumber(v);
     }
     return v;
@@ -190,9 +190,9 @@ export const replaceExpressionVarsSpecifyRule = (
   if (vars && vars.length > 0) {
     for (let i = 0; i < limit; i++) {
       if (formData[i]) {
-        const { name, options, reg, value, allValue } = formData[i];
+        const { name, options, reg, value, allValue, type } = formData[i];
         const placeholder = getPlaceholder(name);
-        const selected = getVaraiableSelected(name, id);
+        const selected = getVaraiableSelected(name, type, id);
 
         if (vars.includes(placeholder)) {
           if (Array.isArray(selected)) {

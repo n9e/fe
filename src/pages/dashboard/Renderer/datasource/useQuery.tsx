@@ -45,7 +45,7 @@ export default function usePrometheus(props: IProps) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const cachedVariableValues = _.map(variableConfig, (item) => {
-    return getVaraiableSelected(item.name, dashboardId);
+    return getVaraiableSelected(item.name, item.type, dashboardId);
   });
   const flag = useRef(false);
   const fetchQueryMap = {

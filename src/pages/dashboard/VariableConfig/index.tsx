@@ -76,7 +76,7 @@ function index(props: IProps) {
             result[idx].options = item.type === 'query' ? _.sortBy(regFilterOptions) : regFilterOptions;
             // 当仪表盘变量值为空时，设置默认值
             // 如果已选项不在待选项里也视做空值处理
-            const selected = getVaraiableSelected(item.name, id);
+            const selected = getVaraiableSelected(item.name, item.type, id);
             if (query.__variable_value_fixed === undefined) {
               if (selected === null) {
                 const head = regFilterOptions?.[0];
@@ -86,13 +86,13 @@ function index(props: IProps) {
             }
           } else if (item.type === 'textbox') {
             result[idx] = item;
-            const selected = getVaraiableSelected(item.name, id);
+            const selected = getVaraiableSelected(item.name, item.type, id);
             if (selected === null && query.__variable_value_fixed === undefined) {
               setVaraiableSelected({ name: item.name, value: item.defaultValue!, id, urlAttach: true });
             }
           } else if (item.type === 'constant') {
             result[idx] = item;
-            const selected = getVaraiableSelected(item.name, id);
+            const selected = getVaraiableSelected(item.name, item.type, id);
             if (selected === null && query.__variable_value_fixed === undefined) {
               setVaraiableSelected({ name: item.name, value: item.definition, id, urlAttach: true });
             }
@@ -100,7 +100,7 @@ function index(props: IProps) {
             const options = item.definition ? (groupedDatasourceList[item.definition] as any) : [];
             result[idx] = item;
             result[idx].options = options;
-            const selected = getVaraiableSelected(item.name, id);
+            const selected = getVaraiableSelected(item.name, item.type, id);
             if (selected === null) {
               if (item.defaultValue) {
                 setVaraiableSelected({ name: item.name, value: item.defaultValue, id, urlAttach: true });
@@ -116,7 +116,7 @@ function index(props: IProps) {
         result = _.map(_.compact(result), (item) => {
           return {
             ...item,
-            value: getVaraiableSelected(item?.name, id),
+            value: getVaraiableSelected(item?.name, item?.type, id),
           };
         });
         setData(result);
