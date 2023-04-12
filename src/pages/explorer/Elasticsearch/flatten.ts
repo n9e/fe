@@ -27,6 +27,10 @@ export default function flatten(target: object, opts?: { delimiter?: any; maxDep
         return step(value, newKey);
       }
 
+      if (isobject && Object.keys(value).length === 0) {
+        output[newKey] = '{}';
+        return;
+      }
       output[newKey] = value;
     });
   }
