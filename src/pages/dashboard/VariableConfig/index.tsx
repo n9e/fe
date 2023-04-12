@@ -61,7 +61,7 @@ function index(props: IProps) {
       (async () => {
         for (let idx = 0; idx < value.length; idx++) {
           const item = _.cloneDeep(value[idx]);
-          if ((item.type === 'query' || item.type === 'custom') && item.definition) {
+          if (item.type === 'query' && item.definition) {
             const definition = idx > 0 ? replaceExpressionVars(item.definition, result, idx, id) : item.definition;
             let options = [];
             try {
@@ -83,6 +83,13 @@ function index(props: IProps) {
                 const defaultVal = item.multi ? (head ? [head] : []) : head;
                 setVaraiableSelected({ name: item.name, value: defaultVal, id, urlAttach: true });
               }
+            }
+          } else if (item.type === 'custom') {
+            result[idx] = item;
+            result[idx].options = _.map(_.compact(_.split(item.definition, ',')), _.trim);
+            const selected = getVaraiableSelected(item.name, item.type, id);
+            if (selected === null && query.__variable_value_fixed === undefined) {
+              setVaraiableSelected({ name: item.name, value: item.defaultValue!, id, urlAttach: true });
             }
           } else if (item.type === 'textbox') {
             result[idx] = item;
