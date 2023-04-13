@@ -28,5 +28,6 @@ const en_US = {
   webhooks: 'New Webhooks',
   webhooks_msg: 'Webhook is required',
   prod: 'Type',
+  subscribe_btn: 'Subscribe',
 };
 export default en_US;

@@ -17,16 +17,18 @@
 import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { Input, Table, Switch, Tag, Select, Modal } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ColumnType } from 'antd/lib/table';
-import dayjs from 'dayjs';
+import moment from 'moment';
 import { debounce } from 'lodash';
+import _ from 'lodash';
 import { strategyItem, strategyStatus } from '@/store/warningInterface';
 import { getStrategyGroupSubList, updateAlertRules } from '@/services/warning';
 import { priorityColor } from '@/utils/constant';
-import { pageSizeOptionsDefault } from '@/pages/warning/const';
 import { getBusinessTeamList } from '@/services/manage';
 import { CommonStateContext } from '@/App';
+import usePagination from '@/components/usePagination';
 
 const { Option } = Select;
 interface props {
@@ -36,8 +38,9 @@ interface props {
 }
 
 const ruleModal: React.FC<props> = ({ visible, ruleModalClose, subscribe }) => {
-  const { t } = useTranslation();
-  const { curBusiId } = useContext(CommonStateContext);
+  const { t } = useTranslation('alertSubscribes');
+  const pagination = usePagination({ PAGESIZE_KEY: 'alert-rules-pagesize' });
+  const { curBusiId, datasourceList } = useContext(CommonStateContext);
   const [busiGroups, setBusiGroups] = useState<{ id: number; name: string }[]>([]);
   const [currentStrategyDataAll, setCurrentStrategyDataAll] = useState([]);
   const [currentStrategyData, setCurrentStrategyData] = useState([]);
@@ -100,37 +103,67 @@ const ruleModal: React.FC<props> = ({ visible, ruleModalClose, subscribe }) => {
 
   const columns: ColumnType<strategyItem>[] = [
     {
-      title: t('数据源'),
+      title: t('common:datasource.type'),
+      dataIndex: 'cate',
+    },
+    {
+      title: t('common:datasource.name'),
       dataIndex: 'datasource_ids',
-      render: (data) => {
-        return <div>{data}</div>;
-      },
-    },
-    {
-      title: t('级别'),
-      dataIndex: 'severity',
-      render: (data) => {
-        return <Tag color={priorityColor[data - 1]}>S{data}</Tag>;
-      },
-    },
-    {
-      title: t('名称'),
-      dataIndex: 'name',
-      render: (data, record) => {
+      render: (value, record) => {
+        if (!record.datasource_ids) return '-';
         return (
-          <div
-            className='table-active-text'
-            onClick={() => {
-              // handleClickEdit(record.id);
-            }}
-          >
-            {data}
+          <div>
+            {_.map(record.datasource_ids, (item) => {
+              if (item === 0) {
+                return (
+                  <Tag color='purple' key={item}>
+                    $all
+                  </Tag>
+                );
+              }
+              const name = _.find(datasourceList, { id: item })?.name;
+              if (!name) return '';
+              return (
+                <Tag color='purple' key={item}>
+                  {name}
+                </Tag>
+              );
+            })}
           </div>
         );
       },
     },
     {
-      title: t('告警接收者'),
+      title: t('alertRules:severity'),
+      dataIndex: 'severities',
+      render: (data) => {
+        return _.map(data, (severity) => {
+          return (
+            <Tag key={severity} color={priorityColor[severity - 1]}>
+              S{severity}
+            </Tag>
+          );
+        });
+      },
+    },
+    {
+      title: t('common:table.name'),
+      dataIndex: 'name',
+      render: (data, record) => {
+        return (
+          <Link
+            className='table-text'
+            to={{
+              pathname: `/alert-rules/edit/${record.id}`,
+            }}
+          >
+            {data}
+          </Link>
+        );
+      },
+    },
+    {
+      title: t('alertRules:notify_groups'),
       dataIndex: 'notify_groups_obj',
       render: (data, record) => {
         return (
@@ -154,7 +187,7 @@ const ruleModal: React.FC<props> = ({ visible, ruleModalClose, subscribe }) => {
       },
     },
     {
-      title: t('附加标签'),
+      title: t('alertRules:append_tags'),
       dataIndex: 'append_tags',
       render: (data) => {
         const array = data || [];
@@ -171,12 +204,15 @@ const ruleModal: React.FC<props> = ({ visible, ruleModalClose, subscribe }) => {
       },
     },
     {
-      title: t('更新时间'),
+      title: t('common:table.update_at'),
       dataIndex: 'update_at',
-      render: (text: string) => dayjs(Number(text) * 1000).format('YYYY-MM-DD HH:mm:ss'),
+      width: 120,
+      render: (text: string) => {
+        return <div className='table-text'>{moment.unix(Number(text)).format('YYYY-MM-DD HH:mm:ss')}</div>;
+      },
     },
     {
-      title: t('启用'),
+      title: t('common:table.enabled'),
       dataIndex: 'disabled',
       render: (disabled, record) => (
         <Switch
@@ -201,7 +237,7 @@ const ruleModal: React.FC<props> = ({ visible, ruleModalClose, subscribe }) => {
       ),
     },
     {
-      title: t('操作'),
+      title: t('common:table.operations'),
       dataIndex: 'operator',
       fixed: 'right',
       width: 100,
@@ -214,7 +250,7 @@ const ruleModal: React.FC<props> = ({ visible, ruleModalClose, subscribe }) => {
                 handleSubscribe(record);
               }}
             >
-              {t('订阅')}
+              {t('subscribe_btn')}
             </div>
           </div>
         );
@@ -233,7 +269,7 @@ const ruleModal: React.FC<props> = ({ visible, ruleModalClose, subscribe }) => {
   return (
     <>
       <Modal
-        title={t('订阅告警规则')}
+        title={t('sub_rule_name')}
         footer=''
         forceRender
         visible={visible}
@@ -262,22 +298,7 @@ const ruleModal: React.FC<props> = ({ visible, ruleModalClose, subscribe }) => {
           <Input style={{ marginLeft: 10, width: '280px' }} onPressEnter={onSearchQuery} prefix={<SearchOutlined />} placeholder={t('规则名称、附加标签')} />
         </div>
         <div className='rule_modal_table'>
-          <Table
-            size='small'
-            rowKey='id'
-            pagination={{
-              total: currentStrategyData.length,
-              showQuickJumper: true,
-              showSizeChanger: true,
-              showTotal: (total) => {
-                return `共 ${total} 条数据`;
-              },
-              pageSizeOptions: pageSizeOptionsDefault,
-              defaultPageSize: 30,
-            }}
-            dataSource={currentStrategyData}
-            columns={columns}
-          />
+          <Table size='small' rowKey='id' pagination={pagination} dataSource={currentStrategyData} columns={columns} />
         </div>
       </Modal>
     </>
