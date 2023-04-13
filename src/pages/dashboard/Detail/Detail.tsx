@@ -91,7 +91,7 @@ export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boole
     }).then((res) => {
       updateAtRef.current = res.update_at;
       const configs = _.isString(res.configs) ? JSONParse(res.configs) : res.configs;
-      if (semver.lt(configs.version, '3.0.0')) {
+      if (semver.lt(configs.version, '3.0.0') && !builtinParams) {
         setMigrationVisible(true);
       }
       setDashboard({
