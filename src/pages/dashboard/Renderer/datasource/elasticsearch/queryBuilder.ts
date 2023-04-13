@@ -112,7 +112,7 @@ export function getSeriesQuery(target: ElasticsearchQuery) {
           field: aggDef.field,
           size: aggDef.size || 10,
           order: {
-            _key: 'desc',
+            [aggDef.orderBy || '_key']: aggDef.order || 'desc',
           },
           min_doc_count: aggDef.min_value || 1,
         };

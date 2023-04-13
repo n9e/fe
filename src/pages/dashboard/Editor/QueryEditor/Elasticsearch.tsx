@@ -108,6 +108,7 @@ export default function Prometheus({ chartForm, variableConfig }) {
                                 }
                                 return (
                                   <GroupBy
+                                    backgroundVisible={false}
                                     parentNames={['targets']}
                                     prefixField={field}
                                     prefixFieldNames={[field.name, 'query']}

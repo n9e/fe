@@ -12,6 +12,8 @@ export interface ElasticsearchQuery {
     field?: string;
     min_value?: number;
     size?: number;
+    order?: string;
+    orderBy?: string;
   }[];
   start: number;
   end: number;

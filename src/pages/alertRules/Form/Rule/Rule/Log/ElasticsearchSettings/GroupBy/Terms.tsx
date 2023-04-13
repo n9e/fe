@@ -6,7 +6,7 @@ import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import _ from 'lodash';
 import { groupByCates, groupByCatesMap } from './configs';
 
-export default function Terms({ prefixField, fieldsOptions }) {
+export default function Terms({ prefixField, fieldsOptions, values }) {
   const { t } = useTranslation('alertRules');
   const [expanded, setExpanded] = useState(false);
   const [search, setSearch] = useState('');
@@ -45,20 +45,46 @@ export default function Terms({ prefixField, fieldsOptions }) {
           {expanded && (
             <>
               <Col span={6}>
-                <Input.Group>
-                  <span className='ant-input-group-addon'>{t('datasource:es.terms.size')}</span>
+                <InputGroupWithFormItem label={t('datasource:es.terms.size')}>
                   <Form.Item {...prefixField} name={[prefixField.name, 'size']} noStyle>
                     <InputNumber style={{ width: '100%' }} />
                   </Form.Item>
-                </Input.Group>
+                </InputGroupWithFormItem>
               </Col>
               <Col span={6}>
-                <Input.Group>
-                  <span className='ant-input-group-addon'>{t('datasource:es.terms.min_value')}</span>
+                <InputGroupWithFormItem label={t('datasource:es.terms.min_value')}>
                   <Form.Item {...prefixField} name={[prefixField.name, 'min_value']} noStyle>
                     <InputNumber style={{ width: '100%' }} />
                   </Form.Item>
-                </Input.Group>
+                </InputGroupWithFormItem>
+              </Col>
+              <Col span={6}>
+                <InputGroupWithFormItem label='Order'>
+                  <Form.Item {...prefixField} name={[prefixField.name, 'order']}>
+                    <Select>
+                      <Select.Option value='desc'>Descend</Select.Option>
+                      <Select.Option value='asc'>Ascend</Select.Option>
+                    </Select>
+                  </Form.Item>
+                </InputGroupWithFormItem>
+              </Col>
+              <Col span={6}>
+                <InputGroupWithFormItem label='OrderBy'>
+                  <Form.Item {...prefixField} name={[prefixField.name, 'orderBy']}>
+                    <Select>
+                      <Select.Option value='_key'>Term value</Select.Option>
+                      <Select.Option value='_count'>Count</Select.Option>
+                      {_.map(values, (item) => {
+                        const key = `${item.func} ${item.field}`;
+                        return (
+                          <Select.Option key={item.ref} value={key}>
+                            {key}
+                          </Select.Option>
+                        );
+                      })}
+                    </Select>
+                  </Form.Item>
+                </InputGroupWithFormItem>
               </Col>
             </>
           )}

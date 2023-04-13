@@ -95,7 +95,7 @@ export default function index({ prefixField = {}, prefixFields = [], prefixNameF
 
           {fields.map((field, index) => {
             return (
-              <div key={field.key} style={{ marginBottom: 16 }}>
+              <div key={field.key} style={{ marginBottom: 0 }}>
                 <Form.Item {...field} name={[field.name, 'ref']} hidden />
                 <Form.Item shouldUpdate noStyle>
                   {({ getFieldValue, setFields }) => {
@@ -107,7 +107,7 @@ export default function index({ prefixField = {}, prefixFields = [], prefixNameF
                             <Col span={func === 'count' ? 24 : 12}>
                               <Input.Group>
                                 {valueRefVisible && <span className='ant-input-group-addon'>{alphabet[index]}</span>}
-                                <Form.Item {...field} name={[field.name, 'func']} noStyle>
+                                <Form.Item {...field} name={[field.name, 'func']}>
                                   <Select
                                     style={{ width: '100%' }}
                                     onChange={(val) => {

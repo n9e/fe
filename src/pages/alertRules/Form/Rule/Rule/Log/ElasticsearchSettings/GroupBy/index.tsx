@@ -71,6 +71,8 @@ export default function index({ prefixField = {}, prefixFieldNames = [], parentN
                 <Form.Item shouldUpdate noStyle>
                   {({ getFieldValue }) => {
                     const cate = getFieldValue([...parentNames, ...prefixFieldNames, 'group_by', field.name, 'cate']);
+                    const values = getFieldValue([...parentNames, ...prefixFieldNames, 'values']);
+                    const valuesWithoutCount = _.filter(values, (item) => item.func !== 'count');
                     return (
                       <Row gutter={10} align='top'>
                         <Col flex='auto'>
@@ -85,7 +87,7 @@ export default function index({ prefixField = {}, prefixFieldNames = [], parentN
                             }
                           >
                             {cate === 'filters' && <Filters prefixField={field} />}
-                            {cate === 'terms' && <Terms prefixField={field} fieldsOptions={fieldsOptions} />}
+                            {cate === 'terms' && <Terms prefixField={field} fieldsOptions={fieldsOptions} values={valuesWithoutCount} />}
                             {cate === 'histgram' && <Histgram prefixField={field} />}
                           </div>
                         </Col>
