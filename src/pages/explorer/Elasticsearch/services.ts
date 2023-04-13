@@ -27,7 +27,7 @@ export function getIndices(datasourceValue: number) {
       format: 'json',
     },
   }).then((res) => {
-    return _.compact(_.map(res, 'index'));
+    return _.sortBy(_.compact(_.map(res, 'index')));
   });
 }
 
