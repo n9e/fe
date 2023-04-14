@@ -67,7 +67,7 @@ export default function MigrationModal(props: MigrationModalProps) {
         <div style={{ marginBottom: 10 }}>数据源变量设置</div>
         <div>
           <InputGroupWithFormItem label='变量名称'>
-            <Form.Item name='name' rules={[{ required: true, message: '请填写变量名称' }]}>
+            <Form.Item name='name' rules={[{ required: true, message: '请填写变量名称' }]} initialValue='datasource'>
               <Input />
             </Form.Item>
           </InputGroupWithFormItem>
