@@ -47,6 +47,7 @@ const en_US = {
     name: 'Datasource',
     type: 'Datasource Type',
     id: 'Datasource',
+    id_required: 'Please select a datasource',
     empty_modal: {
       title: 'Please contact the administrator to configure the datasource',
       btn1: 'Go to configure',

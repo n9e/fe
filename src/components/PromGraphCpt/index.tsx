@@ -49,6 +49,7 @@ interface IProps {
     enabled: boolean;
   };
   headerExtra?: HTMLDivElement | null;
+  executeQuery?: (promQL?: string) => void;
 }
 
 const TabPane = Tabs.TabPane;
@@ -71,6 +72,7 @@ export default function index(props: IProps) {
       enabled: false,
     },
     headerExtra,
+    executeQuery,
   } = props;
   const [value, setValue] = useState<string | undefined>(promQL); // for promQLInput
   const [promql, setPromql] = useState<string | undefined>(promQL);
@@ -145,6 +147,7 @@ export default function index(props: IProps) {
               onChange={setValue}
               executeQuery={(val) => {
                 setPromql(val);
+                executeQuery && executeQuery(val);
               }}
               completeEnabled={completeEnabled}
               datasourceValue={datasourceValue}
@@ -192,6 +195,7 @@ export default function index(props: IProps) {
               onClick={() => {
                 setRefreshFlag(_.uniqueId('refreshFlag_'));
                 setPromql(value);
+                executeQuery && executeQuery(value);
               }}
             >
               {t('query_btn')}

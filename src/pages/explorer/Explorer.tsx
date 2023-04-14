@@ -120,6 +120,7 @@ const Panel = ({ defaultPromQL, removePanel, id, cateOptions, type, defaultCate 
                     rules={[
                       {
                         required: true,
+                        message: t('common:datasource.id_required'),
                       },
                     ]}
                   >
@@ -152,7 +153,7 @@ const Panel = ({ defaultPromQL, removePanel, id, cateOptions, type, defaultCate 
             } else if (datasourceCate === DatasourceCateEnum.aliyunSLS) {
               return <AliyunSLS datasourceCate={DatasourceCateEnum.aliyunSLS} datasourceName={datasourceValue} headerExtra={headerExtraRef.current} form={form} />;
             } else if (datasourceCate === DatasourceCateEnum.prometheus) {
-              return <Prometheus key={datasourceValue} defaultPromQL={defaultPromQL} headerExtra={headerExtraRef.current} datasourceValue={datasourceValue} />;
+              return <Prometheus key={datasourceValue} defaultPromQL={defaultPromQL} headerExtra={headerExtraRef.current} datasourceValue={datasourceValue} form={form} />;
             }
           }}
         </Form.Item>
