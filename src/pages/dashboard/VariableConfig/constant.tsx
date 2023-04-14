@@ -215,6 +215,9 @@ export const replaceExpressionVarsSpecifyRule = (
           } else if (selected === null) {
             // 未选择或填写变量值时替换为传入的value
             newExpression = replaceAllPolyfill(newExpression, placeholder, value ? value : '');
+            if (type === 'datasource') {
+              newExpression = !_.isNaN(_.toNumber(newExpression)) ? (_.toNumber(newExpression) as any) : newExpression;
+            }
           } else if (typeof selected === 'number') {
             // number 目前只用于数据源变量的数据源ID
             newExpression = selected as any;

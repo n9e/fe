@@ -63,9 +63,16 @@ function index(props: IProps) {
           const item = _.cloneDeep(value[idx]);
           if (item.type === 'query' && item.definition) {
             const definition = idx > 0 ? replaceExpressionVars(item.definition, result, idx, id) : item.definition;
+
             let options = [];
             try {
-              options = await convertExpressionToQuery(definition, range, item);
+              options = await convertExpressionToQuery(definition, range, {
+                ...item,
+                datasource: {
+                  ...(item?.datasource || {}),
+                  value: result.length ? (replaceExpressionVars(item?.datasource?.value as any, result, result.length, id) as any) : item?.datasource?.value,
+                },
+              });
               options = _.sortBy(options);
             } catch (error) {
               console.error(error);

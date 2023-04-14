@@ -9,10 +9,11 @@ import IndexSelect from '@/pages/alertRules/Form/Rule/Rule/Log/ElasticsearchSett
 import Values from '@/pages/alertRules/Form/Rule/Rule/Log/ElasticsearchSettings/Values';
 import GroupBy from '@/pages/alertRules/Form/Rule/Rule/Log/ElasticsearchSettings/GroupBy';
 import Time from '@/pages/alertRules/Form/Rule/Rule/Log/ElasticsearchSettings/Time';
+import { replaceExpressionVars } from '../../VariableConfig/constant';
 
 const alphabet = 'ABCDEFGHIGKLMNOPQRSTUVWXYZ'.split('');
 
-export default function Prometheus({ chartForm, variableConfig }) {
+export default function Elasticsearch({ chartForm, variableConfig, dashboardId }) {
   const { t } = useTranslation('dashboard');
 
   return (
@@ -51,14 +52,9 @@ export default function Prometheus({ chartForm, variableConfig }) {
                       <Col span={12}>
                         <Form.Item shouldUpdate={(prevValues, curValues) => _.isEqual(prevValues.datasourceValue, curValues.datasourceValue)} noStyle>
                           {({ getFieldValue }) => {
-                            return (
-                              <IndexSelect
-                                prefixField={field}
-                                prefixName={[field.name]}
-                                cate={getFieldValue('datasourceCate')}
-                                datasourceValue={getFieldValue('datasourceValue')}
-                              />
-                            );
+                            let datasourceValue = getFieldValue('datasourceValue');
+                            datasourceValue = replaceExpressionVars(datasourceValue as any, variableConfig, variableConfig.length, dashboardId);
+                            return <IndexSelect prefixField={field} prefixName={[field.name]} cate={getFieldValue('datasourceCate')} datasourceValue={datasourceValue} />;
                           }}
                         </Form.Item>
                       </Col>
@@ -81,7 +77,8 @@ export default function Prometheus({ chartForm, variableConfig }) {
                     </Row>
                     <Form.Item shouldUpdate noStyle>
                       {({ getFieldValue }) => {
-                        const datasourceValue = getFieldValue('datasourceValue');
+                        let datasourceValue = getFieldValue('datasourceValue');
+                        datasourceValue = replaceExpressionVars(datasourceValue as any, variableConfig, variableConfig.length, dashboardId);
                         return (
                           <>
                             <Values
@@ -137,7 +134,17 @@ export default function Prometheus({ chartForm, variableConfig }) {
                           return (
                             <Row gutter={10}>
                               <Col span={12}>
-                                <Form.Item label={t('datasource:es.date_field')} {...field} name={[field.name, 'query', 'date_field']}>
+                                <Form.Item
+                                  label={t('datasource:es.date_field')}
+                                  {...field}
+                                  name={[field.name, 'query', 'date_field']}
+                                  rules={[
+                                    {
+                                      required: true,
+                                      message: t('datasource:es.date_field_msg'),
+                                    },
+                                  ]}
+                                >
                                   <Input />
                                 </Form.Item>
                               </Col>

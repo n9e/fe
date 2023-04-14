@@ -202,6 +202,7 @@ export default function EditItems(props: IProps) {
           index={recordIndex}
           datasourceVars={datasourceVars}
           data={record}
+          vars={data}
           onOk={(val) => {
             let newData = data;
             if (mode === 'add') {

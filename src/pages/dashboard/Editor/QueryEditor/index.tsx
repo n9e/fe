@@ -41,7 +41,7 @@ export default function index({ chartForm, type, variableConfig, dashboardId }) 
               return <Prometheus chartForm={chartForm} variableConfig={variableConfig} dashboardId={dashboardId} />;
             }
             if (cate === 'elasticsearch') {
-              return <Elasticsearch chartForm={chartForm} variableConfig={variableConfig} />;
+              return <Elasticsearch chartForm={chartForm} variableConfig={variableConfig} dashboardId={dashboardId} />;
             }
             if (cate === 'aliyun-sls') {
               return <AliyunSLS chartForm={chartForm} />;

@@ -31,6 +31,7 @@ interface IProps {
   range: IRawTimeRange;
   index: number;
   data: IVariable;
+  vars: IVariable[];
   datasourceVars: IVariable[];
   onOk: (val: IVariable) => void;
   onCancel: () => void;
@@ -72,7 +73,7 @@ const allOptions = [
 
 function EditItem(props: IProps) {
   const { t } = useTranslation('dashboard');
-  const { data, range, id, index, datasourceVars, onOk, onCancel } = props;
+  const { data, vars, range, id, index, datasourceVars, onOk, onCancel } = props;
   const [form] = Form.useForm();
   const { groupedDatasourceList } = useContext(CommonStateContext);
   // TODO: 不太清楚这里的逻辑是干嘛的，后面找时间看下
@@ -160,7 +161,8 @@ function EditItem(props: IProps) {
                           <Col span={8}>
                             <Form.Item shouldUpdate={(prevValues, curValues) => prevValues?.datasource?.value !== curValues?.datasource?.value} noStyle>
                               {({ getFieldValue }) => {
-                                const datasourceValue = getFieldValue(['datasource', 'value']);
+                                let datasourceValue = getFieldValue(['datasource', 'value']);
+                                datasourceValue = replaceExpressionVars(datasourceValue as any, vars, vars.length, id);
                                 return <IndexSelect name={['config', 'index']} cate={datasourceCate} datasourceValue={datasourceValue} />;
                               }}
                             </Form.Item>

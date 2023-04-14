@@ -32,7 +32,7 @@ function isRawDataQuery(target: ITarget) {
 }
 
 export default async function elasticSearchQuery(options: IOptions) {
-  const { dashboardId, time, targets, datasourceCate, datasourceValue, variableConfig } = options;
+  const { dashboardId, time, targets, datasourceCate, variableConfig } = options;
   if (!time.start) return;
   const parsedRange = parseRange(time);
   let start = moment(parsedRange.start).valueOf();
@@ -44,6 +44,9 @@ export default async function elasticSearchQuery(options: IOptions) {
     const query: any = target.query || {};
     return !query.index || !query.date_field;
   });
+  const datasourceValue = variableConfig
+    ? (replaceExpressionVars(options.datasourceValue as any, variableConfig, variableConfig.length, dashboardId) as any)
+    : options.datasourceValue;
   if (targets && datasourceValue && !isInvalid) {
     _.forEach(targets, (target) => {
       const query: any = target.query || {};
