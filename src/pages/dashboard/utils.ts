@@ -91,7 +91,7 @@ function convertVariablesGrafanaToN9E(templates: any) {
   return _.chain(templates.list)
     .filter((item) => {
       // 3.0.0 版本只支持 query / custom / textbox / constant 类型的变量
-      return item.type === 'query' || item.type === 'custom' || item.type === 'textbox' || item.type === 'constant';
+      return item.type === 'query' || item.type === 'custom' || item.type === 'textbox' || item.type === 'constant' || item.type === 'datasource';
     })
     .map((item) => {
       if (item.type === 'query') {
@@ -116,6 +116,12 @@ function convertVariablesGrafanaToN9E(templates: any) {
       } else if (item.type === 'constant') {
         return {
           type: 'constant',
+          name: item.name,
+          definition: item.query,
+        };
+      } else if (item.type === 'datasource') {
+        return {
+          type: 'datasource',
           name: item.name,
           definition: item.query,
         };
@@ -327,6 +333,8 @@ function convertPanlesGrafanaToN9E(panels: any) {
           .value(),
         options: convertOptionsGrafanaToN9E(item),
         custom: chartsMap[item.type] ? chartsMap[item.type].fn(item) : {},
+        datasourceCate: item.datasource?.type,
+        datasourceValue: item.datasource?.uid,
       };
     })
     .value();
