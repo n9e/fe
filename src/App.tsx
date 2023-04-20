@@ -27,7 +27,7 @@ import TaskOutput from '@/pages/taskOutput';
 import TaskHostOutput from '@/pages/taskOutput/host';
 import { getAuthorizedDatasourceCates } from '@/components/AdvancedWrap';
 import { GetProfile } from '@/services/account';
-import { getBusiGroups, getDatasourceList } from '@/services/common';
+import { getBusiGroups, getDatasourceList, getDatasourceBriefList } from '@/services/common';
 import HeaderMenu from './components/menu';
 import Content from './routers';
 
@@ -140,6 +140,16 @@ function App() {
           //     },
           //   });
           // }
+        } else {
+          const datasourceList = await getDatasourceBriefList();
+          initialized.current = true;
+          setCommonState((state) => {
+            return {
+              ...state,
+              groupedDatasourceList: _.groupBy(datasourceList, 'plugin_type'),
+              datasourceList: datasourceList,
+            };
+          });
         }
       })();
     } catch (error) {
@@ -148,7 +158,7 @@ function App() {
   }, []);
 
   // 初始化中不渲染任何内容
-  if (!initialized.current && !anonymous) {
+  if (!initialized.current) {
     return null;
   }
 

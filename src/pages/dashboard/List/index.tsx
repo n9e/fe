@@ -18,7 +18,7 @@
  * 仪表盘列表页面
  */
 import React, { useState, useEffect, useContext } from 'react';
-import { useHistory, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Table, Tag, Modal, Switch, message } from 'antd';
 import { FundViewOutlined } from '@ant-design/icons';
 import moment from 'moment';
@@ -32,7 +32,6 @@ import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
 import { CommonStateContext } from '@/App';
 import { BusinessGroup } from '@/pages/targets';
 import usePagination from '@/components/usePagination';
-import { getDefaultDatasourceValue } from '@/utils';
 import Header from './Header';
 import FormCpt from './Form';
 import Export from './Export';
@@ -43,7 +42,6 @@ export default function index() {
   const { t } = useTranslation('dashboard');
   const commonState = useContext(CommonStateContext);
   const { curBusiId: busiId } = commonState;
-  const history = useHistory();
   const [list, setList] = useState<any[]>([]);
   const [selectRowKeys, setSelectRowKeys] = useState<number[]>([]);
   const [refreshKey, setRefreshKey] = useState(_.uniqueId('refreshKey_'));
@@ -174,8 +172,6 @@ export default function index() {
                             to={{
                               pathname: `/dashboards/share/${record.id}`,
                               search: queryString.stringify({
-                                __datasourceValue: getDefaultDatasourceValue('prometheus', commonState.groupedDatasourceList),
-                                __datasourceName: _.find(commonState.datasourceList, { id: getDefaultDatasourceValue('prometheus', commonState.groupedDatasourceList) })?.name,
                                 viewMode: 'fullscreen',
                               }),
                             }}
