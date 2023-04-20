@@ -59,11 +59,19 @@ function FormCpt(props: IProps, ref) {
   }, [JSON.stringify(props.variableConfigWithOptions)]);
 
   return (
-    <Form layout='vertical' preserve={false} form={chartForm} initialValues={_.merge({}, defaultValues, initialValues)}>
-      <Form.Item name='type' hidden />
-      <Form.Item name='id' hidden />
-      <Form.Item name='layout' hidden />
-      <Form.Item name='version' hidden />
+    <Form layout='vertical' preserve={true} form={chartForm} initialValues={_.merge({}, defaultValues, initialValues)}>
+      <Form.Item name='type' hidden>
+        <div />
+      </Form.Item>
+      <Form.Item name='id' hidden>
+        <div />
+      </Form.Item>
+      <Form.Item name='layout' hidden>
+        <div />
+      </Form.Item>
+      <Form.Item name='version' hidden>
+        <div />
+      </Form.Item>
       <div
         style={{
           height: 'calc(100vh - 173px)',
