@@ -39,6 +39,13 @@ interface IProps {
   isPreview?: boolean;
 }
 
+function includes(source, target) {
+  if (_.isArray(target)) {
+    return _.intersection(source, target);
+  }
+  return _.includes(source, target);
+}
+
 function index(props: IProps) {
   const { t } = useTranslation('dashboard');
   const { groupedDatasourceList } = useContext(CommonStateContext);
@@ -85,7 +92,7 @@ function index(props: IProps) {
             // 如果已选项不在待选项里也视做空值处理
             const selected = getVaraiableSelected(item.name, item.type, id);
             if (query.__variable_value_fixed === undefined) {
-              if (selected === null) {
+              if (selected === null || (selected && !_.isEmpty(regFilterOptions) && !includes(regFilterOptions, selected))) {
                 const head = regFilterOptions?.[0];
                 const defaultVal = item.multi ? (item.allOption ? ['all'] : head ? [head] : []) : head;
                 setVaraiableSelected({ name: item.name, value: defaultVal, id, urlAttach: true });
