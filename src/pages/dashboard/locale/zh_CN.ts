@@ -47,6 +47,7 @@ const zh_CN = {
     name: '变量名称',
     name_msg: '仅支持数字和字符下划线',
     type: '变量类型',
+    hide: '隐藏变量',
     definition: '变量定义',
     reg: '正则',
     reg_tip: '可选，可通过正则来过滤可选项，或提取值',
@@ -61,7 +62,7 @@ const zh_CN = {
     },
     constant: {
       definition: '常量值',
-      definition_tip: '定义一个隐藏的常量值',
+      defaultValue_tip: '定义一个隐藏的常量值',
     },
     datasource: {
       definition: '数据源类型',

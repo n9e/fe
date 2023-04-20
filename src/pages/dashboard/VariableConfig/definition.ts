@@ -36,4 +36,5 @@ export interface IVariable {
     index: string; // elasticsearch 源的索引配置
   };
   value: string | string[];
+  hide?: boolean; // v6 新增，用于隐藏变量
 }
