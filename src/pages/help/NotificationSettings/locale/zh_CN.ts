@@ -39,7 +39,7 @@ const zh_CN = {
     title: 'SMTP 设置',
   },
   ibex: {
-    title: '告警自愈',
+    title: '自愈配置',
   },
 };
 export default zh_CN;

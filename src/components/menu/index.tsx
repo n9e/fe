@@ -153,6 +153,10 @@ const getMenuList = (t) => {
           key: '/job-tasks',
           label: t('执行历史'),
         },
+        {
+          key: '/ibex-settings',
+          label: t('自愈配置'),
+        },
       ],
     },
     {

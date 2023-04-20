@@ -61,6 +61,7 @@ import SSOConfigs from '@/pages/help/SSOConfigs';
 import NotificationTpls from '@/pages/help/NotificationTpls';
 import NotificationSettings from '@/pages/help/NotificationSettings';
 import MigrateDashboards from '@/pages/help/migrate';
+import IBEX from '@/pages/help/NotificationSettings/IBEX';
 import { dynamicPackages, Entry } from '@/utils';
 
 const Packages = dynamicPackages();
@@ -149,6 +150,7 @@ export default function Content() {
         <Route exact path='/job-tasks/add' component={TaskAdd} />
         <Route exact path='/job-tasks/:id/result' component={TaskResult} />
         <Route exact path='/job-tasks/:id/detail' component={TaskDetail} />
+        <Route exact path='/ibex-settings' component={IBEX} />
 
         <Route exact path='/help/version' component={Version} />
         <Route exact path='/help/servers' component={Servers} />

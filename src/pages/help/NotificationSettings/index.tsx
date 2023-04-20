@@ -9,7 +9,6 @@ import Script from './Script';
 import Channels from './Channels';
 import Contacts from './Contacts';
 import SMTP from './SMTP';
-import IBEX from './IBEX';
 import './style.less';
 import './locale';
 
@@ -52,9 +51,6 @@ export default function index() {
             </Tabs.TabPane>
             <Tabs.TabPane tab={t('smtp.title')} key='smtp'>
               <SMTP />
-            </Tabs.TabPane>
-            <Tabs.TabPane tab={t('ibex.title')} key='ibex'>
-              <IBEX />
             </Tabs.TabPane>
           </Tabs>
         </div>
