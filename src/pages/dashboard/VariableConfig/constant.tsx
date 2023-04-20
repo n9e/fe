@@ -129,7 +129,7 @@ export function setVaraiableSelected({
   vars?: IVariable[];
 }) {
   if (value === undefined) return;
-  localStorage.setItem(`dashboard_${id}_${name}`, typeof value === 'string' ? value : JSON.stringify(value));
+  localStorage.setItem(`dashboard_v6_${id}_${name}`, typeof value === 'string' ? value : JSON.stringify(value));
   urlAttach && attachVariable2Url(name, value, id, vars);
 }
 
@@ -140,7 +140,7 @@ export function getVaraiableSelected(name: string, type: string, id: string) {
   // 如果存在 __variable_value_fixed 参数，表示变量值是固定的，不需要从 localStorage 中获取
   if (!searchObj['__variable_value_fixed']) {
     if (!v) {
-      v = localStorage.getItem(`dashboard_${id}_${name}`);
+      v = localStorage.getItem(`dashboard_v6_${id}_${name}`);
 
       if (v) {
         try {
