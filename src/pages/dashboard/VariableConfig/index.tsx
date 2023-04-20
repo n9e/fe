@@ -87,7 +87,7 @@ function index(props: IProps) {
             if (query.__variable_value_fixed === undefined) {
               if (selected === null) {
                 const head = regFilterOptions?.[0];
-                const defaultVal = item.multi ? (head ? [head] : []) : head;
+                const defaultVal = item.multi ? (item.allOption ? ['all'] : head ? [head] : []) : head;
                 setVaraiableSelected({ name: item.name, value: defaultVal, id, urlAttach: true });
               }
             }
