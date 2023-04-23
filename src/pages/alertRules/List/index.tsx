@@ -19,7 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { useHistory, Link } from 'react-router-dom';
 import _ from 'lodash';
 import moment from 'moment';
-import { Table, Tag, Switch, Modal, Space, Button, Row, Col, message } from 'antd';
+import { Table, Tag, Switch, Modal, Space, Button, Row, Col, Radio, message, Select } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import AdvancedWrap from '@/components/AdvancedWrap';
 import { Pure as DatasourceSelect } from '@/components/DatasourceSelect';
@@ -28,8 +28,10 @@ import SearchInput from '@/components/BaseSearchInput';
 import usePagination from '@/components/usePagination';
 import { getStrategyGroupSubList, updateAlertRules, deleteStrategy } from '@/services/warning';
 import { CommonStateContext } from '@/App';
+import { priorityColor } from '@/utils/constant';
 import { AlertRuleType, AlertRuleStatus } from '../types';
 import MoreOperations from './MoreOperations';
+import { ruleTypeOptions } from '../Form/constants';
 
 interface ListProps {
   bgid?: number;
@@ -39,6 +41,8 @@ interface Filter {
   cate?: string;
   datasourceIds?: number[];
   search?: string;
+  prod?: string;
+  severities?: number[];
 }
 
 export default function List(props: ListProps) {
@@ -85,12 +89,25 @@ export default function List(props: ListProps) {
       },
     },
     {
+      title: t('severity'),
+      dataIndex: 'severities',
+      render: (data) => {
+        return _.map(data, (severity) => {
+          return (
+            <Tag key={severity} color={priorityColor[severity - 1]}>
+              S{severity}
+            </Tag>
+          );
+        });
+      },
+    },
+    {
       title: t('common:table.name'),
       dataIndex: 'name',
       render: (data, record) => {
         return (
           <Link
-            className='table-active-text'
+            className='table-text'
             to={{
               pathname: `/alert-rules/edit/${record.id}`,
             }}
@@ -146,7 +163,9 @@ export default function List(props: ListProps) {
       title: t('common:table.update_at'),
       dataIndex: 'update_at',
       width: 120,
-      render: (text: string) => moment.unix(Number(text)).format('YYYY-MM-DD HH:mm:ss'),
+      render: (text: string) => {
+        return <div className='table-text'>{moment.unix(Number(text)).format('YYYY-MM-DD HH:mm:ss')}</div>;
+      },
     },
     {
       title: t('common:table.enabled'),
@@ -222,11 +241,18 @@ export default function List(props: ListProps) {
 
   const filterData = () => {
     return data.filter((item) => {
-      const { cate, datasourceIds, search } = filter;
+      const { cate, datasourceIds, search, prod, severities } = filter;
       const lowerCaseQuery = search?.toLowerCase() || '';
       return (
         (item.name.toLowerCase().indexOf(lowerCaseQuery) > -1 || item.append_tags.join(' ').toLowerCase().indexOf(lowerCaseQuery) > -1) &&
         ((cate && cate === item.cate) || !cate) &&
+        ((prod && prod === item.prod) || !prod) &&
+        ((item.severities &&
+          _.some(item.severities, (severity) => {
+            if (_.isEmpty(severities)) return true;
+            return _.includes(severities, severity);
+          })) ||
+          !item.severities) &&
         (_.some(item.datasource_ids, (id) => {
           if (id === 0) return true;
           return _.includes(datasourceIds, id);
@@ -260,13 +286,58 @@ export default function List(props: ListProps) {
   return (
     <div className='alert-rules-list-container' style={{ height: '100%', overflowY: 'auto' }}>
       <Row justify='space-between'>
-        <Col span={16}>
+        <Col span={20}>
           <Space>
             <RefreshIcon
               onClick={() => {
                 getAlertRules();
               }}
             />
+            <AdvancedWrap var='VITE_IS_ALERT_AI,VITE_IS_ALERT_ES'>
+              {(isShow) => {
+                let options = ruleTypeOptions;
+                if (isShow[0]) {
+                  options = [
+                    ...options,
+                    {
+                      label: 'Anomaly',
+                      value: 'anomaly',
+                    },
+                  ];
+                }
+                if (isShow[1]) {
+                  options = [
+                    ...options,
+                    {
+                      label: 'Log',
+                      value: 'logging',
+                    },
+                  ];
+                }
+                return (
+                  <Select
+                    style={{ width: 90 }}
+                    placeholder={t('prod')}
+                    allowClear
+                    value={filter.prod}
+                    onChange={(val) => {
+                      setFilter({
+                        ...filter,
+                        prod: val,
+                      });
+                    }}
+                  >
+                    {options.map((item) => {
+                      return (
+                        <Select.Option value={item.value} key={item.value}>
+                          {item.label}
+                        </Select.Option>
+                      );
+                    })}
+                  </Select>
+                );
+              }}
+            </AdvancedWrap>
             <AdvancedWrap var='VITE_IS_ALERT_ES'>
               {(isShow) => {
                 return (
@@ -298,6 +369,23 @@ export default function List(props: ListProps) {
                 );
               }}
             </AdvancedWrap>
+            <Select
+              mode='multiple'
+              placeholder={t('severity')}
+              style={{ width: 120 }}
+              maxTagCount='responsive'
+              value={filter.severities}
+              onChange={(val) => {
+                setFilter({
+                  ...filter,
+                  severities: val,
+                });
+              }}
+            >
+              <Select.Option value={1}>S1</Select.Option>
+              <Select.Option value={2}>S2</Select.Option>
+              <Select.Option value={3}>S3</Select.Option>
+            </Select>
             <SearchInput
               placeholder={t('search_placeholder')}
               onSearch={(val) => {

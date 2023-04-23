@@ -28,6 +28,9 @@
     "strictFunctionTypes": false,
     "strictNullChecks": true
   },
+  "ts-node": {
+    "esm": true
+  },
   "include": ["./src"],
   "exclude": ["./src/store/miniDva/*", "./src/Packages/", "src/components/Dantd/**/*", "./node_modules/**/*"]
 }

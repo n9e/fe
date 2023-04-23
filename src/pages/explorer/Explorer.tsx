@@ -120,6 +120,7 @@ const Panel = ({ defaultPromQL, removePanel, id, cateOptions, type, defaultCate 
                     rules={[
                       {
                         required: true,
+                        message: t('common:datasource.id_required'),
                       },
                     ]}
                   >
@@ -148,11 +149,11 @@ const Panel = ({ defaultPromQL, removePanel, id, cateOptions, type, defaultCate 
             const datasourceCate = getFieldValue('datasourceCate');
             const datasourceValue = getFieldValue('datasourceValue');
             if (datasourceCate === DatasourceCateEnum.elasticsearch) {
-              return <Elasticsearch datasourceValue={datasourceValue} form={form} />;
+              return <Elasticsearch key={datasourceValue} datasourceValue={datasourceValue} form={form} />;
             } else if (datasourceCate === DatasourceCateEnum.aliyunSLS) {
               return <AliyunSLS datasourceCate={DatasourceCateEnum.aliyunSLS} datasourceName={datasourceValue} headerExtra={headerExtraRef.current} form={form} />;
             } else if (datasourceCate === DatasourceCateEnum.prometheus) {
-              return <Prometheus defaultPromQL={defaultPromQL} headerExtra={headerExtraRef.current} datasourceValue={datasourceValue} />;
+              return <Prometheus key={datasourceValue} defaultPromQL={defaultPromQL} headerExtra={headerExtraRef.current} datasourceValue={datasourceValue} form={form} />;
             }
           }}
         </Form.Item>

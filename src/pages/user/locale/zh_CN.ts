@@ -14,7 +14,7 @@ const zh_CN = {
     add_member: '添加成员',
     empty: '没有与您相关的团队，请先',
     name: '团队名称',
-    add_member_selected: '已选择 {num} 项',
+    add_member_selected: '已选择 {{num}} 项',
   },
   business: {
     title: '业务组管理',
@@ -26,7 +26,7 @@ const zh_CN = {
     add_team: '添加团队',
     perm_flag: '权限',
     note_content: '告警规则，告警事件，监控对象，自愈脚本等都归属业务组，是一个在系统里可以自闭环的组织',
-    empty: '业务组（监控对象、监控大盘、告警规则、自愈脚本都要归属某个业务组）为空，请先',
+    empty: '业务组（监控对象、监控仪表盘、告警规则、自愈脚本都要归属某个业务组）为空，请先',
     name: '业务组名称',
     label_enable: '作为标签使用',
     label_enable_tip: '系统会自动把业务组的英文标识作为标签附到该业务组下辖监控对象的时序数据上',

@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React from 'react';
+import React, { useContext } from 'react';
 import { Form, Input, Row, Col, Select, Switch, Button, Space } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
@@ -22,15 +22,17 @@ import { useTranslation } from 'react-i18next';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import IndexSelect from '@/pages/alertRules/Form/Rule/Rule/Log/ElasticsearchSettings/IndexSelect';
 import ClusterSelect from '@/pages/dashboard/Editor/QueryEditor/components/ClusterSelect';
+import { CommonStateContext } from '@/App';
 import { IVariable } from './definition';
 import { convertExpressionToQuery, replaceExpressionVars, filterOptionsByReg, setVaraiableSelected } from './constant';
 
 interface IProps {
-  datasourceValue: number;
   id: string;
   range: IRawTimeRange;
   index: number;
   data: IVariable;
+  vars: IVariable[];
+  datasourceVars: IVariable[];
   onOk: (val: IVariable) => void;
   onCancel: () => void;
 }
@@ -71,8 +73,9 @@ const allOptions = [
 
 function EditItem(props: IProps) {
   const { t } = useTranslation('dashboard');
-  const { datasourceValue, data, range, id, index, onOk, onCancel } = props;
+  const { data, vars, range, id, index, datasourceVars, onOk, onCancel } = props;
   const [form] = Form.useForm();
+  const { groupedDatasourceList } = useContext(CommonStateContext);
   // TODO: 不太清楚这里的逻辑是干嘛的，后面找时间看下
   const handleBlur = (val?: string) => {
     const reg = data.reg;
@@ -80,7 +83,7 @@ function EditItem(props: IProps) {
     if ((!reg || new RegExp('^/(.*?)/(g?i?m?y?)$').test(reg)) && expression && data) {
       const formData = form.getFieldsValue();
       var newExpression = replaceExpressionVars(expression, formData, index, id);
-      convertExpressionToQuery(newExpression, range, data, datasourceValue).then((res) => {
+      convertExpressionToQuery(newExpression, range, data).then((res) => {
         const regFilterRes = filterOptionsByReg(res, reg, formData, index, id);
         if (regFilterRes.length > 0) {
           setVaraiableSelected({ name: formData.var[index].name, value: regFilterRes[0], id });
@@ -92,12 +95,12 @@ function EditItem(props: IProps) {
   return (
     <Form layout='vertical' autoComplete='off' preserve={false} form={form} initialValues={data}>
       <Row gutter={16}>
-        <Col span={12}>
+        <Col span={8}>
           <Form.Item label={t('var.name')} name='name' rules={[{ required: true }, { pattern: /^[0-9a-zA-Z_]+$/, message: t('var.name_msg') }]}>
             <Input />
           </Form.Item>
         </Col>
-        <Col span={12}>
+        <Col span={8}>
           <Form.Item label={t('var.type')} name='type' rules={[{ required: true }]}>
             <Select
               style={{ width: '100%' }}
@@ -118,6 +121,20 @@ function EditItem(props: IProps) {
             </Select>
           </Form.Item>
         </Col>
+        <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.type !== curValues.type} noStyle>
+          {({ getFieldValue }) => {
+            const type = getFieldValue('type');
+            if (type !== 'constant') {
+              return (
+                <Col span={8}>
+                  <Form.Item label={t('var.hide')} name='hide' valuePropName='checked'>
+                    <Switch />
+                  </Form.Item>
+                </Col>
+              );
+            }
+          }}
+        </Form.Item>
       </Row>
       <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.type !== curValues.type || prevValues?.datasource?.cate !== curValues?.datasource?.cate} noStyle>
         {({ getFieldValue }) => {
@@ -151,14 +168,15 @@ function EditItem(props: IProps) {
                         </Form.Item>
                       </Col>
                       <Col span={8}>
-                        <ClusterSelect cate={datasourceCate} label={t('common:datasource.id')} name={['datasource', 'value']} defaultDatasourceValue={datasourceValue} />
+                        <ClusterSelect cate={datasourceCate} label={t('common:datasource.id')} name={['datasource', 'value']} datasourceVars={datasourceVars} />
                       </Col>
                       {datasourceCate === 'elasticsearch' && (
                         <>
                           <Col span={8}>
                             <Form.Item shouldUpdate={(prevValues, curValues) => prevValues?.datasource?.value !== curValues?.datasource?.value} noStyle>
                               {({ getFieldValue }) => {
-                                const datasourceValue = getFieldValue(['datasource', 'value']);
+                                let datasourceValue = getFieldValue(['datasource', 'value']);
+                                datasourceValue = replaceExpressionVars(datasourceValue as any, vars, vars.length, id);
                                 return <IndexSelect name={['config', 'index']} cate={datasourceCate} datasourceValue={datasourceValue} />;
                               }}
                             </Form.Item>
@@ -247,15 +265,33 @@ function EditItem(props: IProps) {
             );
           } else if (type === 'datasource') {
             return (
-              <Form.Item label={t('var.datasource.definition')} name='definition' rules={[{ required: true }]}>
-                <Select>
-                  {_.map(allOptions, (item) => (
-                    <Select.Option key={item.value} value={item.value}>
-                      {item.label}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
+              <>
+                <Form.Item label={t('var.datasource.definition')} name='definition' rules={[{ required: true }]}>
+                  <Select>
+                    {_.map(allOptions, (item) => (
+                      <Select.Option key={item.value} value={item.value}>
+                        {item.label}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+                <Form.Item shouldUpdate={(prevValues, curValues) => prevValues?.definition !== curValues?.definition} noStyle>
+                  {({ getFieldValue }) => {
+                    const definition = getFieldValue('definition');
+                    return (
+                      <Form.Item label={t('var.datasource.defaultValue')} name='defaultValue'>
+                        <Select>
+                          {_.map(groupedDatasourceList[definition], (item) => (
+                            <Select.Option key={item.id} value={item.id}>
+                              {item.name}
+                            </Select.Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+                    );
+                  }}
+                </Form.Item>
+              </>
             );
           }
         }}

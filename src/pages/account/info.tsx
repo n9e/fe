@@ -18,6 +18,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Form, Input, Button, Modal, Row, Col, message, Space, Select } from 'antd';
 import { MinusCircleOutlined, PlusCircleOutlined, CaretDownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import _ from 'lodash';
 import { getNotifyChannels } from '@/services/manage';
 import { ContactsItem } from '@/store/manageInterface';
 import { CommonStateContext } from '@/App';
@@ -91,7 +92,7 @@ export default function Info() {
     let { contacts } = form.getFieldsValue();
 
     if (moreContacts && moreContacts.length > 0) {
-      moreContacts.forEach((item) => {
+      _.forEach(moreContacts, (item) => {
         const { key, value } = item;
 
         if (key && value) {
@@ -213,7 +214,7 @@ export default function Info() {
                           ]}
                         >
                           <Select suffixIcon={<CaretDownOutlined />} placeholder={t('profile.moreContactPlaceholder')}>
-                            {contactsList.map((item, index) => (
+                            {_.map(contactsList, (item, index) => (
                               <Option value={item.key} key={index}>
                                 {item.label}
                               </Option>

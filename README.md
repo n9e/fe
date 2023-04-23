@@ -1,19 +1,19 @@
 # n9e-fe
+
 This is the web project for N9E
 
 ## Usage
-The built pub folder can work in the [n9e](https://github.com/didi/nightingale).
+
+The built pub folder can work in the [n9e](https://github.com/ccfos/nightingale/).
 
 you can deploy the front-end code independently, just replace the pub with the new release.
-
 
 ## Dependencies
 
 ```
-node: v16.13.0
-npm: 8.1.0
+node: v16.x
+npm: 8.x
 ```
-The lower version maybe works, I am not sure.
 
 ## Installation
 
@@ -26,18 +26,17 @@ npm install
 ```
 npm run dev
 ```
-The back-end api proxy config is https://github.com/n9e/fe-v5/blob/master/vite.config.ts#L45
+
+The back-end api proxy config is https://github.com/n9e/fe/blob/main/vite.config.ts#L49
+
 ## Build
 
 ```
 npm run build
 ```
 
-## Branch and Version
-
-The **rc version** is on v5.0.0-rc branch
-
 ## Nginx Server
+
 ```
 server {
     listen       8765;
@@ -53,7 +52,7 @@ server {
         try_files $uri /index.html;
     }
    location /api/ {
-        proxy_pass http://n9e.api.server;   # e.g. 127.0.0.1:18000 
+        proxy_pass http://n9e.api.server;   # e.g. 127.0.0.1:18000
     }
 }
 ```
@@ -61,6 +60,5 @@ server {
 ## Notice
 
 - `vite.config.js` and `tsconfig.json` should both configure to make sure alias works
-- Add `"css.validate": false` in vscode setting.json to ignore the css warning 
-
-
+- Add `"css.validate": false` in vscode setting.json to ignore the css warning
+- Install the Prettier plugin in vscode and set the format on save

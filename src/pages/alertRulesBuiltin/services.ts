@@ -20,7 +20,7 @@ import { RequestMethod } from '@/store/common';
 import { RuleCateType, RuleType } from './types';
 
 export const getRuleCates = function (): Promise<RuleCateType[]> {
-  return request('/api/n9e/alert-rules/builtin/alerts-cates', {
+  return request('/api/n9e/alert-rules/builtin/list', {
     method: RequestMethod.Get,
   }).then((res) => {
     return res.dat;

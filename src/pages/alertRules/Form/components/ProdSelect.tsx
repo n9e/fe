@@ -15,15 +15,16 @@ export default function ProdSelect({ label, onChange = () => {} }: IProps) {
         let options = ruleTypeOptions;
         if (isShow[0]) {
           options = [
-            ...ruleTypeOptions,
+            ...options,
             {
               label: 'Anomaly',
               value: 'anomaly',
             },
           ];
-        } else if (isShow[1]) {
+        }
+        if (isShow[1]) {
           options = [
-            ...ruleTypeOptions,
+            ...options,
             {
               label: 'Log',
               value: 'logging',

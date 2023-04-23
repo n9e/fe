@@ -20,6 +20,8 @@ import { getUserInfo, getNotifyChannels, getRoles } from '@/services/manage';
 import { UserAndPasswordFormProps, Contacts, ContactsItem, User } from '@/store/manageInterface';
 import { MinusCircleOutlined, PlusCircleOutlined, CaretDownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import _ from 'lodash';
+
 const { Option } = Select;
 const UserForm = React.forwardRef<ReactNode, UserAndPasswordFormProps>((props, ref) => {
   const { t } = useTranslation();
@@ -182,7 +184,7 @@ const UserForm = React.forwardRef<ReactNode, UserAndPasswordFormProps>((props, r
                     ]}
                   >
                     <Select suffixIcon={<CaretDownOutlined />} placeholder={t('account:profile.moreContactPlaceholder')}>
-                      {contactsList.map((item, index) => (
+                      {_.map(contactsList, (item, index) => (
                         <Option value={item.key} key={index}>
                           {item.label}
                         </Option>

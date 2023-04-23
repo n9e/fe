@@ -5,13 +5,13 @@ import { getDatasourceList } from '@/services/common';
 
 interface IProps {
   cate: string;
-  defaultDatasourceValue?: number; // 只是给 prometheus 用的
   name?: string | string[];
   label?: React.ReactNode;
+  datasourceVars?: any[];
 }
 
 export default function index(props: IProps) {
-  const { cate, defaultDatasourceValue, name = 'datasourceValue', label } = props;
+  const { cate, name = 'datasourceValue', label, datasourceVars } = props;
   const [datasourceList, setDatasourceList] = useState<{ name: string; id: number }[]>([]);
 
   useEffect(() => {
@@ -27,17 +27,19 @@ export default function index(props: IProps) {
       tooltip='Prometheus 数据源默认关联全局的数据源值'
       rules={[
         {
-          required: cate !== 'prometheus',
+          required: true,
           message: '请选择数据源',
         },
       ]}
     >
-      <Select
-        allowClear
-        placeholder={cate !== 'prometheus' ? '选择数据源' : _.find(datasourceList, { id: defaultDatasourceValue })?.name}
-        style={{ minWidth: 70 }}
-        dropdownMatchSelectWidth={false}
-      >
+      <Select allowClear placeholder='选择数据源' style={{ minWidth: 70 }} dropdownMatchSelectWidth={false}>
+        {_.map(datasourceVars, (item, idx) => {
+          return (
+            <Select.Option value={`\${${item.name}}`} key={`${item.name}_${idx}`}>
+              {`\${${item.name}}`}
+            </Select.Option>
+          );
+        })}
         {datasourceList?.map((item) => (
           <Select.Option value={item.id} key={item.id}>
             {item.name}

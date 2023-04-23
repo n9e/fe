@@ -36,7 +36,7 @@ export default function index({ prefixField = {}, prefixFields = [], prefixNameF
   const [fieldsOptions, setFieldsOptions] = useState<any[]>([]);
   const { run } = useDebounceFn(
     () => {
-      getFields(datasourceValue, index).then((res) => {
+      getFields(datasourceValue, index, 'number').then((res) => {
         setFieldsOptions(
           _.map(res, (item) => {
             return {
@@ -73,11 +73,11 @@ export default function index({ prefixField = {}, prefixFields = [], prefixNameF
               const targetQueryValues = getFieldValue([...prefixFields, ...prefixNameField, 'query', 'values']);
               // 当提取日志原文时不可再添加 func
               if (_.get(targetQueryValues, [0, 'func']) === 'rawData') {
-                return <div style={{ marginBottom: 8 }}>{t('es.value')}</div>;
+                return <div style={{ marginBottom: 8 }}>{t('datasource:es.value')}</div>;
               }
               return (
                 <div style={{ marginBottom: 8 }}>
-                  {t('es.value')}{' '}
+                  {t('datasource:es.value')}{' '}
                   <PlusCircleOutlined
                     style={{ cursor: 'pointer' }}
                     onClick={() => {
@@ -95,7 +95,7 @@ export default function index({ prefixField = {}, prefixFields = [], prefixNameF
 
           {fields.map((field, index) => {
             return (
-              <div key={field.key} style={{ marginBottom: 16 }}>
+              <div key={field.key} style={{ marginBottom: 0 }}>
                 <Form.Item {...field} name={[field.name, 'ref']} hidden />
                 <Form.Item shouldUpdate noStyle>
                   {({ getFieldValue, setFields }) => {
@@ -107,7 +107,7 @@ export default function index({ prefixField = {}, prefixFields = [], prefixNameF
                             <Col span={func === 'count' ? 24 : 12}>
                               <Input.Group>
                                 {valueRefVisible && <span className='ant-input-group-addon'>{alphabet[index]}</span>}
-                                <Form.Item {...field} name={[field.name, 'func']} noStyle>
+                                <Form.Item {...field} name={[field.name, 'func']}>
                                   <Select
                                     style={{ width: '100%' }}
                                     onChange={(val) => {

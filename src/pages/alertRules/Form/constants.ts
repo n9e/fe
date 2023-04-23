@@ -73,18 +73,18 @@ export const defaultValues = {
   datasource_ids: [],
   prom_eval_interval: 30,
   prom_for_duration: 60,
-  prod: 'host',
-  cate: 'host',
+  prod: 'metric',
+  cate: 'prometheus',
   enable_status: true,
 };
 
 export const ruleTypeOptions = [
   {
-    label: 'Host',
-    value: 'host',
-  },
-  {
     label: 'Metric',
     value: 'metric',
+  },
+  {
+    label: 'Host',
+    value: 'host',
   },
 ];

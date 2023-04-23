@@ -8,6 +8,7 @@ import { IVariable } from '../../../VariableConfig/definition';
 import { replaceExpressionVars } from '../../../VariableConfig/constant';
 import { getSeriesQuery, getLogsQuery } from './queryBuilder';
 import { processResponseToSeries } from './processResponse';
+import { flattenHits } from '@/pages/explorer/Elasticsearch/utils';
 
 interface IOptions {
   dashboardId: string;
@@ -31,7 +32,7 @@ function isRawDataQuery(target: ITarget) {
 }
 
 export default async function elasticSearchQuery(options: IOptions) {
-  const { dashboardId, time, targets, datasourceCate, datasourceValue, variableConfig } = options;
+  const { dashboardId, time, targets, datasourceCate, variableConfig } = options;
   if (!time.start) return;
   const parsedRange = parseRange(time);
   let start = moment(parsedRange.start).valueOf();
@@ -43,6 +44,9 @@ export default async function elasticSearchQuery(options: IOptions) {
     const query: any = target.query || {};
     return !query.index || !query.date_field;
   });
+  const datasourceValue = variableConfig
+    ? (replaceExpressionVars(options.datasourceValue as any, variableConfig, variableConfig.length, dashboardId) as any)
+    : options.datasourceValue;
   if (targets && datasourceValue && !isInvalid) {
     _.forEach(targets, (target) => {
       const query: any = target.query || {};
@@ -103,11 +107,12 @@ export default async function elasticSearchQuery(options: IOptions) {
       });
       const res = await getDsQuery(datasourceValue, payload);
       _.forEach(res, (item) => {
-        _.forEach(item?.hits?.hits, (hit: any) => {
+        const { docs } = flattenHits(item?.hits?.hits);
+        _.forEach(docs, (doc: any) => {
           series.push({
-            id: hit._id,
-            name: hit._index,
-            metric: hit.fields,
+            id: doc._id,
+            name: doc._index,
+            metric: doc.fields,
             data: [],
           });
         });

@@ -102,7 +102,7 @@ export default function Header(props: IProps) {
                           },
                         });
                       } else {
-                        message.warning('未选择任何大盘');
+                        message.warning('未选择任何仪表盘');
                       }
                     }}
                   >

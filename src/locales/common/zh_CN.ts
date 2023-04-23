@@ -1,5 +1,4 @@
 const zh_CN = {
-  docs: '文档',
   business_group: '业务组',
   search_placeholder: '搜索',
   nodata: '暂无数据',
@@ -48,6 +47,7 @@ const zh_CN = {
     name: '数据源',
     type: '数据源类型',
     id: '关联数据源',
+    id_required: '请选择数据源',
     empty_modal: {
       title: '请联系管理员去配置数据源',
       btn1: '前往配置',

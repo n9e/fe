@@ -11,3 +11,4 @@ src/Packages/*
 stats.html
 build.sh
 .env.advanced
+scripts/n9e_locale.json

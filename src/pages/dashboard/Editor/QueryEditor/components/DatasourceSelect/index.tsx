@@ -7,7 +7,7 @@ import { CommonStateContext } from '@/App';
 
 const defaultDatasourceCate = 'prometheus';
 
-export default function index({ chartForm, defaultDatasourceValue, variableConfig }) {
+export default function index({ chartForm, variableConfig }) {
   const { t } = useTranslation('dashboard');
   const { groupedDatasourceList } = useContext(CommonStateContext);
   const cates = getAuthorizedDatasourceCates();
@@ -86,17 +86,12 @@ export default function index({ chartForm, defaultDatasourceValue, variableConfi
                 name='datasourceValue'
                 rules={[
                   {
-                    required: cate !== 'prometheus',
+                    required: true,
                     message: t('query.datasource_msg'),
                   },
                 ]}
               >
-                <Select
-                  allowClear
-                  placeholder={cate !== 'prometheus' ? t('query.datasource_placeholder') : _.find(groupedDatasourceList.prometheus, { id: defaultDatasourceValue })?.name}
-                  style={{ minWidth: 70 }}
-                  dropdownMatchSelectWidth={false}
-                >
+                <Select allowClear placeholder={t('query.datasource_placeholder')} style={{ minWidth: 70 }} dropdownMatchSelectWidth={false}>
                   {_.map(datasourceVars, (item, idx) => {
                     return (
                       <Select.Option value={`\${${item.name}}`} key={`${item.name}_${idx}`}>

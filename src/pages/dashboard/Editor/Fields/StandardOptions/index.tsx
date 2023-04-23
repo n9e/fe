@@ -93,7 +93,7 @@ export default function index(props: IProps) {
                 </Col>
                 {unit.indexOf('datetime') > -1 && (
                   <Col span={12}>
-                    <Form.Item label={t('panel.standardOptions.datetime')} name={[...preNamePrefix, ...namePrefix, 'dateFormat']}>
+                    <Form.Item label={t('panel.standardOptions.datetime')} name={[...namePrefix, 'dateFormat']}>
                       <Input style={{ width: '100%' }} placeholder='YYYY-MM-DD HH:mm:ss' />
                     </Form.Item>
                   </Col>
@@ -104,17 +104,17 @@ export default function index(props: IProps) {
         </Form.Item>
         <Row gutter={10}>
           <Col span={8}>
-            <Form.Item label={t('panel.standardOptions.min')} name={[...preNamePrefix, ...namePrefix, 'min']}>
+            <Form.Item label={t('panel.standardOptions.min')} name={[...namePrefix, 'min']}>
               <InputNumber placeholder='auto' style={{ width: '100%' }} />
             </Form.Item>
           </Col>
           <Col span={8}>
-            <Form.Item label={t('panel.standardOptions.max')} name={[...preNamePrefix, ...namePrefix, 'max']}>
+            <Form.Item label={t('panel.standardOptions.max')} name={[...namePrefix, 'max']}>
               <InputNumber placeholder='auto' style={{ width: '100%' }} />
             </Form.Item>
           </Col>
           <Col span={8}>
-            <Form.Item label={t('panel.standardOptions.decimals')} name={[...preNamePrefix, ...namePrefix, 'decimals']}>
+            <Form.Item label={t('panel.standardOptions.decimals')} name={[...namePrefix, 'decimals']}>
               <InputNumber placeholder='auto' style={{ width: '100%' }} />
             </Form.Item>
           </Col>

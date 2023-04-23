@@ -48,7 +48,7 @@ export default function Metrics(props: IProps) {
   const renderMetricList = (metrics: any[] = [], metricTabKey: string) => {
     const filtered = _.filter(metrics, (metric) => {
       let flag = true;
-      flag = metricTabKey === 'all' ? true : metric.indexOf(metricTabKey) === 0;
+      flag = metricTabKey === 'all' ? true : metric.indexOf(`${metricTabKey}_`) === 0;
       if (flag && search) {
         try {
           const reg = new RegExp(search, 'gi');

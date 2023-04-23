@@ -17,6 +17,7 @@
 import _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import semver from 'semver';
+import { updateDashboardConfigs } from '@/services/dashboardV2';
 import { defaultCustomValuesMap } from '../../dashboard/Editor/config';
 
 const alphabet = 'ABCDEFGHIGKLMNOPQRSTUVWXYZ'.split('');
@@ -52,7 +53,7 @@ export function convertPanelV1ToV2(oldStructure) {
   const yplotlinesColors = ['yellow', 'red'];
   const links = structure.link ? [structure.link] : [];
   structure = {
-    version: '2.0.0',
+    version: '3.0.0',
     name: structure.name,
     type: 'timeseries',
     layout: structure.layout,
@@ -104,7 +105,7 @@ export function normalizePanel(structure) {
   return structureClone;
 }
 
-// 将旧的大盘结构转换为新的大盘结构
+// 将旧的仪表盘结构转换为新的仪表盘结构
 export function convertDashboardV1ToV2(oldStructure) {
   const oldConfigs = JSONParse(oldStructure.configs);
   const chartGroups = _.sortBy(oldStructure.chart_groups, ['weight']);
@@ -147,8 +148,50 @@ export function convertDashboardV1ToV2(oldStructure) {
     tags: _.isArray(oldStructure.tags) ? _.join(oldStructure.tags, ' ') : oldStructure.tags, // tags 从数组改成空格分隔
     configs: JSON.stringify({
       ...oldConfigs, // 原来的 configs 里面还包含 var 等其他字段在
-      version: '2.0.0', // 新大盘添加版本信息
+      version: '3.0.0', // 新仪表盘添加版本信息
       panels,
     }),
   };
+}
+
+export function convertDashboardV2ToV3(board, { name, datasourceDefaultValue }) {
+  const datasourceCate = 'prometheus';
+  const varName = `\${${name}}`;
+  const configs = typeof board.configs === 'string' ? JSON.parse(board.configs) : board.configs;
+  configs.version = '3.0.0';
+  configs.var = configs.var || [];
+  configs.panels = configs.panels || [];
+  configs.var = _.map(configs.var, (item) => {
+    if (!item.type || item.type === 'query') {
+      return {
+        ...item,
+        type: 'query',
+        datasource: {
+          cate: item.datasource?.cate || datasourceCate,
+          value: item.datasource?.value || varName,
+        },
+      };
+    }
+    return item;
+  });
+  configs.var.unshift({
+    name: name,
+    type: 'datasource',
+    definition: datasourceCate,
+    defaultValue: datasourceDefaultValue,
+  });
+  configs.panels = _.map(configs.panels, (panel) => {
+    if (panel.type !== 'row') {
+      return {
+        ...panel,
+        datasourceCate: panel.datasourceCate || datasourceCate,
+        datasourceValue: panel.datasourceValue || varName,
+      };
+    }
+    return panel;
+  });
+
+  return updateDashboardConfigs(board.id, {
+    configs: JSON.stringify(configs),
+  });
 }

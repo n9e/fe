@@ -3,7 +3,7 @@ import { Button, Modal, message, Dropdown, Table, Switch, Select, Space, Tag } f
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ColumnType } from 'antd/lib/table';
-import dayjs from 'dayjs';
+import moment from 'moment';
 import _ from 'lodash';
 import RefreshIcon from '@/components/RefreshIcon';
 import { DownOutlined } from '@ant-design/icons';
@@ -154,7 +154,7 @@ const PageTable: React.FC<Props> = ({ bgid }) => {
     {
       title: t('common:table.update_at'),
       dataIndex: 'update_at',
-      render: (text: string) => dayjs(Number(text) * 1000).format('YYYY-MM-DD HH:mm:ss'),
+      render: (text: number) => moment.unix(text).format('YYYY-MM-DD HH:mm:ss'),
     },
     {
       title: t('disabled'),

@@ -1,6 +1,7 @@
 const zh_CN = {
   title: '告警规则',
   search_placeholder: '搜索名称或标签',
+  prod: '监控类型',
   severity: '级别',
   notify_groups: '告警接收组',
   basic_configs: '基础配置',
@@ -41,7 +42,7 @@ const zh_CN = {
   callbacks: '回调地址',
   annotations: '附加信息',
   annotationsOptions: {
-    preview_link: '预览链接',
+    plan_link: '预案链接',
     dashboard_link: '仪表盘链接',
     desc: '描述',
   },
@@ -82,22 +83,6 @@ const zh_CN = {
     prom_eval_interval_tip: 'promql 执行频率，每隔 {{num}} 秒查询时序库，查到的结果重新命名写回时序库',
     prom_for_duration_tip:
       '通常持续时长大于执行频率，在持续时长内按照执行频率多次执行PromQL查询，每次都触发才生成告警；如果持续时长置为0，表示只要有一次PromQL查询触发阈值，就生成告警',
-  },
-
-  log_es: {
-    query: {
-      title: '统计查询',
-      preview: '机器预览',
-    },
-    trigger: {
-      title: '告警条件',
-      builder: '简单模式',
-      code: '表达式模式',
-      label: '关联 Label',
-    },
-    prom_eval_interval_tip: '每隔 {{num}} 秒，去查询后端存储',
-    prom_for_duration_tip:
-      '通常持续时长大于执行频率，在持续时长内按照执行频率多次执行查询，每次都触发才生成告警；如果持续时长置为0，表示只要有一次查询的数据满足告警条件，就生成告警',
   },
 
   batch: {

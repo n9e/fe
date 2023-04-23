@@ -56,7 +56,7 @@ const TeamForm = React.forwardRef<ReactNode, TeamProps>((props, ref) => {
         label_value: data.label_value,
         members: data.user_groups.map((item) => ({
           perm_flag: item.perm_flag === 'rw',
-          user_group_id: item.user_group.id,
+          user_group_id: item.user_group?.id,
         })),
       });
       setLoading(false);

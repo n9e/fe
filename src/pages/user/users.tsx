@@ -27,11 +27,11 @@ import UserInfoModal from './component/createModal';
 import { getUserInfoList, deleteUser } from '@/services/manage';
 import { User, UserType, ActionType } from '@/store/manageInterface';
 import { CommonStateContext } from '@/App';
+import usePagination from '@/components/usePagination';
 import './index.less';
 import './locale';
 
 const { confirm } = Modal;
-export const PAGE_SIZE = 20;
 
 const Resource: React.FC = () => {
   const { t } = useTranslation('user');
@@ -41,6 +41,7 @@ const Resource: React.FC = () => {
   const [memberId, setMemberId] = useState<string>('');
   const [query, setQuery] = useState<string>('');
   const { profile } = useContext(CommonStateContext);
+  const pagination = usePagination({ PAGESIZE_KEY: 'users' });
   const userColumn: ColumnsType<User> = [
     {
       title: t('account:profile.username'),
@@ -165,7 +166,7 @@ const Resource: React.FC = () => {
     });
   };
   const { tableProps } = useAntdTable(getTableData, {
-    defaultPageSize: PAGE_SIZE,
+    defaultPageSize: pagination.pageSize,
     refreshDeps: [query, refreshFlag],
   });
 
@@ -194,9 +195,7 @@ const Resource: React.FC = () => {
             {...tableProps}
             pagination={{
               ...tableProps.pagination,
-              pageSize: PAGE_SIZE,
-              showTotal: (total) => `Total ${total} items`,
-              showSizeChanger: true,
+              ...pagination,
             }}
           />
         </div>

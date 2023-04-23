@@ -1,6 +1,7 @@
 const en_US = {
   title: 'Alert Rules',
   search_placeholder: 'Search by name or tags',
+  prod: 'Type',
   severity: 'Severity',
   notify_groups: 'Notify Groups',
   basic_configs: 'Basic Configs',
@@ -41,7 +42,7 @@ const en_US = {
   callbacks: 'Callbacks',
   annotations: 'Annotations',
   annotationsOptions: {
-    preview_link: 'Preview Link',
+    plan_link: 'Plan Link',
     dashboard_link: 'Dashboard Link',
     desc: 'Description',
   },
@@ -80,22 +81,6 @@ const en_US = {
       title: 'Queries',
     },
     prom_eval_interval_tip: 'PromQL query is executed every {{num}} seconds to query the time-series database',
-    prom_for_duration_tip:
-      'Usually the duration is greater than the execution frequency. During the duration, PromQL query is executed multiple times according to the execution frequency, and an alert is generated only if it is triggered every time. If the duration is set to 0, an alert is generated as long as the threshold is triggered once during the PromQL query.',
-  },
-
-  log_es: {
-    query: {
-      title: 'Queries',
-      preview: 'Preview',
-    },
-    trigger: {
-      title: 'Trigger',
-      builder: 'Builder',
-      code: 'Code',
-      label: 'Label',
-    },
-    prom_eval_interval_tip: 'Every {{num}} seconds, to query the backend storage',
     prom_for_duration_tip:
       'Usually the duration is greater than the execution frequency. During the duration, PromQL query is executed multiple times according to the execution frequency, and an alert is generated only if it is triggered every time. If the duration is set to 0, an alert is generated as long as the threshold is triggered once during the PromQL query.',
   },

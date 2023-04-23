@@ -27,12 +27,14 @@ interface IProps {
 
 export default function DisplayItem(props: IProps) {
   const { expression, value, onChange } = props;
-  const { name, multi, allOption, options, type } = expression;
+  const { name, multi, allOption, options, type, hide } = expression;
   const [selected, setSelected] = useState<string | string[]>(value);
 
   useEffect(() => {
     setSelected(value);
   }, [JSON.stringify(value)]);
+
+  if (type === 'constant' || hide) return null;
 
   return (
     <div className='tag-content-close-item'>

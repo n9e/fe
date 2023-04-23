@@ -18,7 +18,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Button, Input, Table, message, Modal, Space, Select, Tag } from 'antd';
 import { CopyOutlined, ExclamationCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/lib/table';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory, useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import queryString from 'query-string';
@@ -29,6 +29,7 @@ import { BusinessGroup } from '@/pages/targets';
 import RefreshIcon from '@/components/RefreshIcon';
 import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
 import { CommonStateContext } from '@/App';
+import { priorityColor } from '@/utils/constant';
 import { pageSizeOptionsDefault } from '../const';
 import './locale';
 import './index.less';
@@ -109,7 +110,17 @@ const Shield: React.FC = () => {
         );
       },
     },
-
+    {
+      title: t('redefine_severity'),
+      dataIndex: 'redefine_severity',
+      render: (text: number) => {
+        return (
+          <Tag key={text} color={priorityColor[text - 1]}>
+            S{text}
+          </Tag>
+        );
+      },
+    },
     {
       title: t('common:table.create_by'),
       ellipsis: true,
@@ -122,19 +133,14 @@ const Shield: React.FC = () => {
       render: (text: undefined, record: subscribeItem) => {
         return (
           <>
-            <div className='table-operator-area'>
-              <div
-                className='table-operator-area-normal'
-                style={{
-                  cursor: 'pointer',
-                  display: 'inline-block',
-                }}
-                onClick={() => {
-                  history.push(`/alert-subscribes/edit/${record.id}`);
+            <Space>
+              <Link
+                to={{
+                  pathname: `/alert-subscribes/edit/${record.id}`,
                 }}
               >
                 {t('common:btn.modify')}
-              </div>
+              </Link>
               <div
                 className='table-operator-area-normal'
                 style={{
@@ -149,10 +155,6 @@ const Shield: React.FC = () => {
               </div>
               <div
                 className='table-operator-area-warning'
-                style={{
-                  cursor: 'pointer',
-                  display: 'inline-block',
-                }}
                 onClick={() => {
                   confirm({
                     title: t('common:confirm.delete'),
@@ -167,7 +169,7 @@ const Shield: React.FC = () => {
               >
                 {t('common:btn.delete')}
               </div>
-            </div>
+            </Space>
           </>
         );
       },

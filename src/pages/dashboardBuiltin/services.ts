@@ -44,7 +44,7 @@ export const getIntegrationsIcon = function (): Promise<BoardCateIconType[]> {
   });
 };
 
-// 创建大盘
+// 创建仪表盘
 export const createDashboard = function (id: number, data: any) {
   return request(`/api/n9e/busi-group/${id}/boards`, {
     method: RequestMethod.Post,

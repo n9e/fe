@@ -38,7 +38,7 @@ const en_US = {
     title: 'SMTP',
   },
   ibex: {
-    title: 'Ibex',
+    title: 'Ibex Settings',
   },
 };
 export default en_US;

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import { Space, Form, Input, AutoComplete, Tooltip, Button, Table, Empty, Spin, InputNumber, Select } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
 import { QuestionCircleOutlined, DownOutlined, RightOutlined } from '@ant-design/icons';
@@ -25,7 +25,7 @@ interface IProps {
   form: FormInstance;
 }
 
-const LOGS_LIMIT = 50;
+const LOGS_LIMIT = 500;
 const TIME_FORMAT = 'YYYY.MM.DD HH:mm:ss';
 
 export default function index(props: IProps) {
@@ -45,13 +45,14 @@ export default function index(props: IProps) {
   const [data, setData] = useState<any[]>([]);
   const [series, setSeries] = useState<any[]>([]);
   const [displayTimes, setDisplayTimes] = useState('');
+  const [dateFields, setDateFields] = useState<string[]>([]);
   const [fields, setFields] = useState<string[]>([]);
   const [selectedFields, setSelectedFields] = useState<string[]>([]);
   const [isMore, setIsMore] = useState(true);
   const [interval, setInterval] = useState(1);
   const [intervalUnit, setIntervalUnit] = useState<'second' | 'min' | 'hour'>('min');
   const totalRef = useRef(0);
-  const pageRef = useRef(1);
+  const sortOrder = useRef('desc');
   const timesRef =
     useRef<{
       start: number;
@@ -74,16 +75,14 @@ export default function index(props: IProps) {
       });
     }
   };
-  const fetchData = (page) => {
+  const fetchData = () => {
     form.validateFields().then((values) => {
       const { start, end } = parseRange(values.query.range);
       timesRef.current = {
         start: moment(start).valueOf(),
         end: moment(end).valueOf(),
       };
-      if (page === 1) {
-        setLoading(true);
-      }
+      setLoading(true);
       getLogsQuery(
         values.datasourceValue,
         normalizeLogsQueryRequestBody({
@@ -92,7 +91,7 @@ export default function index(props: IProps) {
           filter: values.query.filter,
           date_field: values.query.date_field,
           limit: LOGS_LIMIT,
-          page,
+          order: sortOrder.current,
         }),
       )
         .then((res) => {
@@ -104,18 +103,14 @@ export default function index(props: IProps) {
             };
           });
           totalRef.current = res.total;
-          setData(page === 1 ? newData : [...data, ...newData]);
-          if (page === 1) {
-            const tableEleNodes = document.querySelectorAll(`.event-logs-table .ant-table-body`)[0];
-            tableEleNodes?.scrollTo(0, 0);
-          }
+          setData(newData);
+          const tableEleNodes = document.querySelectorAll(`.event-logs-table .ant-table-body`)[0];
+          tableEleNodes?.scrollTo(0, 0);
         })
         .finally(() => {
           setLoading(false);
         });
-      if (page === 1) {
-        fetchSeries(values);
-      }
+      fetchSeries(values);
     });
   };
 
@@ -154,7 +149,7 @@ export default function index(props: IProps) {
       });
 
       onIndexChange(params.get('index_name'));
-      fetchData(1);
+      fetchData();
     }
   }, [params.get('data_source_id')]);
 
@@ -166,6 +161,9 @@ export default function index(props: IProps) {
     (val) => {
       if (datasourceValue && val) {
         getFields(datasourceValue, val).then((res) => {
+          setFields(res);
+        });
+        getFields(datasourceValue, val, 'date').then((res) => {
           const dateFiled = form.getFieldValue(['query', 'date_field']);
           if (!_.includes(res, dateFiled)) {
             if (_.includes(res, '@timestamp')) {
@@ -182,7 +180,7 @@ export default function index(props: IProps) {
               });
             }
           }
-          setFields(res);
+          setDateFields(res);
         });
       }
     },
@@ -204,7 +202,7 @@ export default function index(props: IProps) {
             }}
           >
             {t('datasource:es.index')}{' '}
-            <Tooltip title={t('datasource:es.index_tip')}>
+            <Tooltip title={<Trans ns='datasource' i18nKey='datasource:es.index_tip' components={{ 1: <br /> }} />}>
               <QuestionCircleOutlined />
             </Tooltip>
           </span>
@@ -280,7 +278,7 @@ export default function index(props: IProps) {
                 ]}
               >
                 <Select dropdownMatchSelectWidth={false} style={{ width: 150 }} showSearch>
-                  {_.map(_.sortBy(_.concat(fields, selectedFields)), (item) => {
+                  {_.map(dateFields, (item) => {
                     return (
                       <Select.Option key={item} value={item}>
                         {item}
@@ -297,7 +295,7 @@ export default function index(props: IProps) {
               <Button
                 type='primary'
                 onClick={() => {
-                  fetchData(1);
+                  fetchData();
                 }}
               >
                 {t('query_btn')}
@@ -366,8 +364,7 @@ export default function index(props: IProps) {
                       setIsMore(false);
                       return false;
                     }
-                    fetchData(pageRef.current + 1);
-                    pageRef.current = pageRef.current + 1;
+                    fetchData();
                   }
                 }}
               >
@@ -413,7 +410,7 @@ export default function index(props: IProps) {
                     expandIcon: ({ expanded, onExpand, record }) =>
                       expanded ? <DownOutlined onClick={(e) => onExpand(record, e)} /> : <RightOutlined onClick={(e) => onExpand(record, e)} />,
                   }}
-                  scroll={{ x: _.isEmpty(selectedFields) ? undefined : 'max-content', y: !isMore ? 312 - 35 : 312 }}
+                  scroll={{ x: _.isEmpty(selectedFields) ? undefined : 'max-content', y: !isMore ? 302 - 35 : 302 }}
                   pagination={false}
                   footer={
                     !isMore
@@ -422,6 +419,12 @@ export default function index(props: IProps) {
                         }
                       : undefined
                   }
+                  onChange={(pagination, filters, sorter: any, extra) => {
+                    if (sorter.columnKey === 'time') {
+                      sortOrder.current = sorter.order === 'ascend' ? 'asc' : 'desc';
+                      fetchData();
+                    }
+                  }}
                 />
               </div>
             </div>

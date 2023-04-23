@@ -1,7 +1,7 @@
 const en_US = {
   仪表盘: 'Dashboard',
-  监控大盘: 'Dashboard',
-  内置大盘: 'Built-in',
+  监控仪表盘: 'Dashboard',
+  内置仪表盘: 'Built-in',
   时序指标: 'Metrics',
   即时查询: 'Explorer',
   快捷视图: 'Quick View',
@@ -20,6 +20,7 @@ const en_US = {
   历史告警: 'Historical',
   告警自愈: 'Self-healing',
   自愈脚本: 'Self-healing',
+  自愈配置: 'Ibex Settings',
   执行历史: 'Execution History',
   人员组织: 'Personnel Orgs',
   用户管理: 'Users',

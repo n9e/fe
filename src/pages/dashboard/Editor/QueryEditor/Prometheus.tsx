@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Row, Col, Input, Button } from 'antd';
+import { Form, Row, Col, Input, Button, Switch } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import moment from 'moment';
@@ -9,10 +9,11 @@ import Resolution from '@/components/Resolution';
 import { PromQLInputWithBuilder } from '@/components/PromQLInput';
 import Collapse, { Panel } from '../Components/Collapse';
 import getFirstUnusedLetter from '../../Renderer/utils/getFirstUnusedLetter';
+import { replaceExpressionVars } from '../../VariableConfig/constant';
 
 const alphabet = 'ABCDEFGHIGKLMNOPQRSTUVWXYZ'.split('');
 
-export default function Prometheus({ chartForm, defaultDatasourceValue }) {
+export default function Prometheus({ chartForm, variableConfig, dashboardId }) {
   const { t } = useTranslation('dashboard');
 
   return (
@@ -51,6 +52,8 @@ export default function Prometheus({ chartForm, defaultDatasourceValue }) {
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                       <Form.Item shouldUpdate={(prevValues, curValues) => _.isEqual(prevValues.datasourceValue, curValues.datasourceValue)} noStyle>
                         {({ getFieldValue }) => {
+                          let datasourceValue = getFieldValue('datasourceValue');
+                          datasourceValue = variableConfig ? replaceExpressionVars(datasourceValue, variableConfig, variableConfig.length, dashboardId) : datasourceValue;
                           return (
                             <Form.Item
                               label='PromQL'
@@ -64,7 +67,7 @@ export default function Prometheus({ chartForm, defaultDatasourceValue }) {
                               ]}
                               style={{ flex: 1 }}
                             >
-                              <PromQLInputWithBuilder validateTrigger={['onBlur']} datasourceValue={getFieldValue('datasourceValue') || defaultDatasourceValue} />
+                              <PromQLInputWithBuilder validateTrigger={['onBlur']} datasourceValue={datasourceValue} />
                             </Form.Item>
                           );
                         }}
@@ -126,6 +129,11 @@ export default function Prometheus({ chartForm, defaultDatasourceValue }) {
                           }}
                         >
                           <Resolution />
+                        </Form.Item>
+                      </Col>
+                      <Col flex='72px'>
+                        <Form.Item label='Instant' {...field} name={[field.name, 'instant']} valuePropName='checked'>
+                          <Switch />
                         </Form.Item>
                       </Col>
                     </Row>

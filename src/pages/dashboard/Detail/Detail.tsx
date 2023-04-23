@@ -16,17 +16,19 @@
  */
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import _ from 'lodash';
+import semver from 'semver';
 import { useTranslation } from 'react-i18next';
 import { useInterval } from 'ahooks';
 import { v4 as uuidv4 } from 'uuid';
-import { useParams, useLocation } from 'react-router-dom';
-import { Alert } from 'antd';
+import { useParams, useHistory } from 'react-router-dom';
+import { Alert, Modal, Button } from 'antd';
 import PageLayout from '@/components/pageLayout';
 import { IRawTimeRange, getDefaultValue } from '@/components/TimeRangePicker';
 import { Dashboard } from '@/store/dashboardInterface';
 import { getDashboard, updateDashboardConfigs, getDashboardPure, getBuiltinDashboard } from '@/services/dashboardV2';
 import { SetTmpChartData } from '@/services/metric';
 import { CommonStateContext } from '@/App';
+import MigrationModal from '@/pages/help/migrate/MigrationModal';
 import VariableConfig, { IVariable } from '../VariableConfig';
 import { replaceExpressionVars } from '../VariableConfig/constant';
 import { ILink } from '../types';
@@ -38,7 +40,6 @@ import Editor from '../Editor';
 import { defaultCustomValuesMap, defaultOptionsValuesMap } from '../Editor/config';
 import { sortPanelsByGridLayout, panelsMergeToConfigs, updatePanelsInsertNewPanelToGlobal } from '../Panels/utils';
 import { useGlobalState } from '../globalState';
-import { getLocalDatasourceValue, getDatasourceValue, getLocalStep, setLocalStep } from './utils';
 import './style.less';
 import './dark.antd.less';
 import './dark.less';
@@ -58,14 +59,12 @@ const fetchDashboard = ({ id, builtinParams }) => {
 export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boolean; gobackPath?: string; builtinParams?: any }) {
   const { isPreview = false, isBuiltin = false, gobackPath, builtinParams } = props;
   const { t, i18n } = useTranslation('dashboard');
-  const { groupedDatasourceList, datasourceList } = useContext(CommonStateContext);
-  const datasources = groupedDatasourceList.prometheus || [];
+  const history = useHistory();
+  const { datasourceList } = useContext(CommonStateContext);
   const [dashboardMeta, setDashboardMeta] = useGlobalState('dashboardMeta');
-  const { search } = useLocation();
   const { id } = useParams<URLParam>();
   const refreshRef = useRef<{ closeRefresh: Function }>();
   const [dashboard, setDashboard] = useState<Dashboard>({} as Dashboard);
-  const [datasourceValue, setDatasourceValue] = useState<number>();
   const [variableConfig, setVariableConfig] = useState<IVariable[]>();
   const [variableConfigWithOptions, setVariableConfigWithOptions] = useState<IVariable[]>();
   const [dashboardLinks, setDashboardLinks] = useState<ILink[]>();
@@ -76,32 +75,29 @@ export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boole
       end: 'now',
     }),
   );
-  const [step, setStep] = useState<number | null>(getLocalStep(id));
   const [editable, setEditable] = useState(true);
   const [editorData, setEditorData] = useState({
     visible: false,
     id: '',
     initialValues: {} as any,
   });
-  const [forceRenderKey, setForceRender] = useState(_.uniqueId('forceRenderKey_'));
+  const [migrationVisible, setMigrationVisible] = useState(false);
+  const [migrationModalOpen, setMigrationModalOpen] = useState(false);
   let updateAtRef = useRef<number>();
   const refresh = async (cbk?: () => void) => {
-    let curDatasources = datasources;
     fetchDashboard({
       id,
       builtinParams,
     }).then((res) => {
       updateAtRef.current = res.update_at;
       const configs = _.isString(res.configs) ? JSONParse(res.configs) : res.configs;
+      if (semver.lt(configs.version, '3.0.0') && !builtinParams) {
+        setMigrationVisible(true);
+      }
       setDashboard({
         ...res,
         configs,
       });
-      if (!datasourceValue) {
-        const dashboardConfigs: any = res.configs;
-        const localDatasourceValue = getLocalDatasourceValue(search, groupedDatasourceList);
-        setDatasourceValue(getDatasourceValue(dashboardConfigs, curDatasources) || localDatasourceValue || curDatasources[0]?.id);
-      }
       if (configs) {
         // TODO: configs 中可能没有 var 属性会导致 VariableConfig 报错
         const variableConfig = configs.var
@@ -138,7 +134,7 @@ export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boole
     if (valueWithOptions) {
       setVariableConfigWithOptions(valueWithOptions);
       setDashboardMeta({
-        dashboardId: _.toString(dashboard.id),
+        dashboardId: _.toString(id),
         variableConfigWithOptions: valueWithOptions,
       });
     }
@@ -163,13 +159,6 @@ export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boole
     }
   }, 2000);
 
-  if (!datasourceValue)
-    return (
-      <PageLayout>
-        <div>{t('detail.datasource_empty')}</div>
-      </PageLayout>
-    );
-
   return (
     <PageLayout
       customArea={
@@ -177,27 +166,10 @@ export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boole
           isPreview={isPreview}
           isBuiltin={isBuiltin}
           gobackPath={gobackPath}
-          datasources={datasources}
-          datasourceValue={datasourceValue}
-          setDatasourceValue={setDatasourceValue}
           dashboard={dashboard}
-          refresh={() => {
-            // 集群修改需要刷新数据
-            refresh(() => {
-              // TODO: cluster 和 vars 目前没办法做到同步，暂时用定时器处理
-              setTimeout(() => {
-                setForceRender(_.uniqueId('forceRenderKey_'));
-              }, 500);
-            });
-          }}
           range={range}
           setRange={(v) => {
             setRange(v);
-          }}
-          step={step}
-          setStep={(val) => {
-            setStep(val);
-            setLocalStep(id, val);
           }}
           onAddPanel={(type) => {
             if (type === 'row') {
@@ -218,7 +190,7 @@ export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boole
             } else {
               setEditorData({
                 visible: true,
-                id,
+                id: uuidv4(),
                 initialValues: {
                   name: 'Panel Title',
                   type,
@@ -241,22 +213,12 @@ export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boole
         <div className='dashboard-detail-content'>
           {!editable && (
             <div style={{ padding: '5px 10px' }}>
-              <Alert type='warning' message='大盘已经被别人修改，为避免相互覆盖，请刷新大盘查看最新配置和数据' />
+              <Alert type='warning' message='仪表盘已经被别人修改，为避免相互覆盖，请刷新仪表盘查看最新配置和数据' />
             </div>
           )}
           <div className='dashboard-detail-content-header'>
             <div className='variable-area'>
-              {variableConfig && (
-                <VariableConfig
-                  isPreview={isPreview}
-                  onChange={handleVariableChange}
-                  value={variableConfig}
-                  datasourceValue={datasourceValue}
-                  range={range}
-                  id={id}
-                  onOpenFire={stopAutoRefresh}
-                />
-              )}
+              {variableConfig && <VariableConfig isPreview={isPreview} onChange={handleVariableChange} value={variableConfig} range={range} id={id} onOpenFire={stopAutoRefresh} />}
             </div>
             {!isPreview && (
               <DashboardLinks
@@ -274,21 +236,16 @@ export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boole
           </div>
           {variableConfigWithOptions && (
             <Panels
-              id={id}
+              dashboardId={id}
               isPreview={isPreview}
-              key={forceRenderKey}
               editable={editable}
               panels={panels}
               setPanels={setPanels}
-              datasourceValue={datasourceValue}
               dashboard={dashboard}
               range={range}
-              step={step}
               variableConfig={variableConfigWithOptions}
               onShareClick={(panel) => {
-                const curDatasourceValue = panel.datasourceValue
-                  ? replaceExpressionVars(panel.datasourceValue, variableConfigWithOptions, variableConfigWithOptions.length, id)
-                  : datasourceValue;
+                const curDatasourceValue = replaceExpressionVars(panel.datasourceValue, variableConfigWithOptions, variableConfigWithOptions.length, id);
                 const serielData = {
                   dataProps: {
                     ...panel,
@@ -304,7 +261,6 @@ export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boole
                         expr: realExpr,
                       };
                     }),
-                    step,
                     range,
                   },
                 };
@@ -335,8 +291,8 @@ export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boole
           });
         }}
         variableConfigWithOptions={variableConfigWithOptions}
-        datasourceValue={datasourceValue}
         id={editorData.id}
+        dashboardId={id}
         time={range}
         initialValues={editorData.initialValues}
         onOK={(values) => {
@@ -345,6 +301,62 @@ export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boole
           handleUpdateDashboardConfigs(dashboard.id, {
             configs: panelsMergeToConfigs(dashboard.configs, newPanels),
           });
+        }}
+      />
+      {/*迁移*/}
+      <Modal
+        title='迁移大盘'
+        visible={migrationVisible}
+        onCancel={() => {
+          setMigrationVisible(false);
+        }}
+        footer={[
+          <Button
+            key='cancel'
+            danger
+            onClick={() => {
+              setMigrationVisible(false);
+              handleUpdateDashboardConfigs(dashboard.id, {
+                configs: JSON.stringify({
+                  ...dashboard.configs,
+                  version: '3.0.0',
+                }),
+              });
+            }}
+          >
+            关闭并不再提示
+          </Button>,
+          <Button
+            key='batchMigrate'
+            type='primary'
+            ghost
+            onClick={() => {
+              history.push('/help/migrate');
+            }}
+          >
+            前往批量迁移大盘
+          </Button>,
+          <Button
+            key='migrate'
+            type='primary'
+            onClick={() => {
+              setMigrationVisible(false);
+              setMigrationModalOpen(true);
+            }}
+          >
+            迁移当前大盘
+          </Button>,
+        ]}
+      >
+        v6 版本将不再支持全局 Prometheus 集群切换，新版本可通过图表关联数据源变量来实现该能力。 <br />
+        迁移工具会创建数据源变量以及关联所有未关联数据源的图表。
+      </Modal>
+      <MigrationModal
+        visible={migrationModalOpen}
+        setVisible={setMigrationModalOpen}
+        boards={[dashboard]}
+        onOk={() => {
+          refresh();
         }}
       />
     </PageLayout>

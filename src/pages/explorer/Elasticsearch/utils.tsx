@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import flatten from './flatten';
 
 function localeCompareFunc(a, b) {
   return a.localeCompare(b);
@@ -16,9 +17,10 @@ export function getColumnsFromFields(selectedFields: string[], dateField?: strin
           return (
             <dl className='event-logs-row'>
               {_.map(text, (val, key) => {
+                const value = _.isArray(val) ? _.join(val, ',') : val;
                 return (
                   <React.Fragment key={key}>
-                    <dt>{key}:</dt> <dd>{_.join(val, ',')}</dd>
+                    <dt>{key}:</dt> <dd>{value}</dd>
                   </React.Fragment>
                 );
               })}
@@ -32,8 +34,10 @@ export function getColumnsFromFields(selectedFields: string[], dateField?: strin
       return {
         title: item,
         dataIndex: 'fields',
+        key: item,
         render: (fields) => {
-          return _.join(fields[item], ',');
+          const value = _.isArray(fields[item]) ? _.join(fields[item], ',') : fields[item];
+          return value;
         },
         sorter: (a, b) => localeCompareFunc(_.join(_.get(a, `fields[${item}]`, '')), _.join(_.get(b, `fields[${item}]`, ''))),
       };
@@ -43,13 +47,14 @@ export function getColumnsFromFields(selectedFields: string[], dateField?: strin
     columns.unshift({
       title: 'Time',
       dataIndex: 'fields',
+      key: 'time',
       width: 200,
       render: (fields) => {
         return fields[dateField];
       },
-      sorter: (a, b) => {
-        return localeCompareFunc(_.join(_.get(a, `fields[${dateField}]`, '')), _.join(_.get(b, `fields[${dateField}]`, '')));
-      },
+      defaultSortOrder: 'descend',
+      sortDirections: ['ascend', 'descend', 'ascend'],
+      sorter: true,
     });
   }
   return columns;
@@ -67,13 +72,30 @@ interface Mappings {
   };
 }
 
-export function mappingsToFields(mappings: Mappings) {
+const typeMap: Record<string, string> = {
+  float: 'number',
+  double: 'number',
+  integer: 'number',
+  long: 'number',
+  date: 'date',
+  date_nanos: 'date',
+  string: 'string',
+  text: 'string',
+  scaled_float: 'number',
+  nested: 'nested',
+  histogram: 'number',
+};
+
+export function mappingsToFields(mappings: Mappings, type?: string) {
   const fields: string[] = [];
   _.forEach(mappings, (item: any) => {
     function loop(mappings, prefix = '') {
-      _.forEach(mappings?.properties, (item, key) => {
+      // mappings?.doc?.properties 为了兼容 6.x 版本接口
+      _.forEach(mappings?.doc?.properties || mappings?.properties, (item, key) => {
         if (item.type) {
-          fields.push(`${prefix}${key}`);
+          if (typeMap[item.type] === type || !type) {
+            fields.push(`${prefix}${key}`);
+          }
         } else {
           loop(item, `${key}.`);
         }
@@ -90,9 +112,8 @@ export function normalizeLogsQueryRequestBody(params: any) {
     ignore_unavailable: true,
     index: params.index,
   };
-  const body = {
+  const body: any = {
     size: params.limit,
-    from: params.page,
     query: {
       bool: {
         filter: [
@@ -106,28 +127,27 @@ export function normalizeLogsQueryRequestBody(params: any) {
             },
           },
         ],
-        must: [
-          {
-            query_string: {
-              analyze_wildcard: true,
-              query: params.filter || '*',
-            },
-          },
-        ],
       },
     },
     sort: [
       {
         [params.date_field]: {
-          order: 'desc',
+          order: params.order || 'desc',
           unmapped_type: 'boolean',
         },
       },
     ],
     script_fields: {},
     aggs: {},
-    fields: ['*'],
   };
+  if (params.filter) {
+    body.query.bool.filter.push({
+      query_string: {
+        analyze_wildcard: true,
+        query: params.filter || '*',
+      },
+    });
+  }
   return `${JSON.stringify(header)}\n${JSON.stringify(body)}\n`;
 }
 
@@ -137,7 +157,7 @@ export function normalizeTimeseriesQueryRequestBody(params: any) {
     ignore_unavailable: true,
     index: params.index,
   };
-  const body = {
+  const body: any = {
     size: params.limit,
     query: {
       bool: {
@@ -152,24 +172,8 @@ export function normalizeTimeseriesQueryRequestBody(params: any) {
             },
           },
         ],
-        must: [
-          {
-            query_string: {
-              analyze_wildcard: true,
-              query: params.filter || '*',
-            },
-          },
-        ],
       },
     },
-    sort: [
-      {
-        [params.date_field]: {
-          order: 'desc',
-          unmapped_type: 'boolean',
-        },
-      },
-    ],
     script_fields: {},
     _source: false,
     aggs: {
@@ -182,11 +186,48 @@ export function normalizeTimeseriesQueryRequestBody(params: any) {
             max: params.end,
           },
           format: 'epoch_millis',
-          fixed_interval: params.interval,
+          interval: params.interval,
         },
         aggs: {},
       },
     },
   };
+  if (params.filter) {
+    body.query.bool.filter.push({
+      query_string: {
+        analyze_wildcard: true,
+        query: params.filter || '*',
+      },
+    });
+  }
   return `${JSON.stringify(header)}\n${JSON.stringify(body)}\n`;
 }
+
+export const flattenHits = (hits: any[]): { docs: Array<Record<string, any>>; propNames: string[] } => {
+  const docs: any[] = [];
+  let propNames: string[] = [];
+
+  for (const hit of hits) {
+    const flattened = hit._source ? flatten(hit._source) : {};
+    const doc = {
+      _id: hit._id,
+      _type: hit._type,
+      _index: hit._index,
+      sort: hit.sort,
+      highlight: hit.highlight,
+      _source: { ...flattened },
+      fields: { ...flattened },
+    };
+
+    for (const propName of Object.keys(doc)) {
+      if (propNames.indexOf(propName) === -1) {
+        propNames.push(propName);
+      }
+    }
+
+    docs.push(doc);
+  }
+
+  propNames.sort();
+  return { docs, propNames };
+};

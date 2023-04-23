@@ -25,7 +25,6 @@ import EditItem from './EditItem';
 import { IVariable } from './definition';
 
 interface IProps {
-  datasourceValue: number;
   id: string;
   visible: boolean;
   setVisible: (visible: boolean) => void;
@@ -36,13 +35,17 @@ interface IProps {
 
 export default function EditItems(props: IProps) {
   const { t } = useTranslation('dashboard');
-  const { visible, setVisible, onChange, value, range, id, datasourceValue } = props;
+  const { visible, setVisible, onChange, value, range, id } = props;
+  const datasourceVars = _.filter(value, { type: 'datasource' });
   const [data, setData] = useState<IVariable[]>(value || []);
   const [record, setRecord] = useState<IVariable>({
     name: '',
     type: 'query',
     definition: '',
     value: '',
+    datasource: {
+      cate: 'prometheus',
+    },
   });
   const [recordIndex, setRecordIndex] = useState<number>(-1);
   const [mode, setMode] = useState<'list' | 'add' | 'edit'>('list');
@@ -181,6 +184,9 @@ export default function EditItems(props: IProps) {
                     type: 'query',
                     definition: '',
                     value: '',
+                    datasource: {
+                      cate: 'prometheus',
+                    },
                   });
                 }}
               >
@@ -191,11 +197,12 @@ export default function EditItems(props: IProps) {
         />
       ) : (
         <EditItem
-          datasourceValue={datasourceValue}
           id={id}
           range={range}
           index={recordIndex}
+          datasourceVars={datasourceVars}
           data={record}
+          vars={data}
           onOk={(val) => {
             let newData = data;
             if (mode === 'add') {

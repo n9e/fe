@@ -6,16 +6,25 @@ export default function index({ prefixField = {}, prefixNameField = [] }: any) {
   const { t } = useTranslation('datasource');
   return (
     <>
-      <div style={{ marginBottom: 8 }}>{t('es.time_label')}</div>
+      <div style={{ marginBottom: 8 }}>{t('datasource:es.time_label')}</div>
       <Row gutter={10}>
         <Col span={12}>
-          <Form.Item {...prefixField} name={[...prefixNameField, 'query', 'date_field']}>
-            <Input placeholder={t('es.date_field')} />
+          <Form.Item
+            {...prefixField}
+            name={[...prefixNameField, 'query', 'date_field']}
+            rules={[
+              {
+                required: true,
+                message: t('datasource:es.date_field_msg'),
+              },
+            ]}
+          >
+            <Input placeholder={t('datasource:es.date_field')} />
           </Form.Item>
         </Col>
         <Col span={12}>
           <Input.Group>
-            <span className='ant-input-group-addon'>{t('es.interval')}</span>
+            <span className='ant-input-group-addon'>{t('datasource:es.interval')}</span>
             <Form.Item {...prefixField} name={[...prefixNameField, 'query', 'interval']} noStyle>
               <InputNumber style={{ width: '100%' }} />
             </Form.Item>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Form, Input, Select } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -15,6 +15,7 @@ export default function FormCpt({ data, onFinish, submitLoading }: any) {
   const { t } = useTranslation('datasourceManage');
   const [form] = Form.useForm();
   const [clusters, setClusters] = useState<any[]>([]);
+  const clusterRef = useRef<any>();
 
   useEffect(() => {
     getServerClusters().then((res) => {
@@ -23,7 +24,15 @@ export default function FormCpt({ data, onFinish, submitLoading }: any) {
   }, []);
 
   return (
-    <Form form={form} layout='vertical' onFinish={onFinish} initialValues={data} className='settings-source-form'>
+    <Form
+      form={form}
+      layout='vertical'
+      onFinish={(values) => {
+        onFinish(values, clusterRef.current);
+      }}
+      initialValues={data}
+      className='settings-source-form'
+    >
       <Name />
       <HTTP />
       <BasicAuth />
@@ -36,7 +45,7 @@ export default function FormCpt({ data, onFinish, submitLoading }: any) {
         <Input />
       </Form.Item>
       <Form.Item label={t('form.cluster')} name='cluster_name'>
-        <Select>
+        <Select ref={clusterRef}>
           {_.map(clusters, (item) => {
             return (
               <Select.Option key={item} value={item}>

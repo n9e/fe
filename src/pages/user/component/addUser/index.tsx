@@ -110,7 +110,7 @@ const AddUser: React.FC<TeamProps> = (props: TeamProps) => {
           margin: '20px 0 16px',
         }}
       >
-        {selectedUser.length > 0 && <span>{t('team.add_member_selected', { num: selectedUser.length })}</span>}
+        {selectedUser.length > 0 && <span>{t('team.add_member_selected', { num: selectedUser.length })} </span>}
         {selectedUserRows.map((item, index) => {
           return (
             <Tag
@@ -147,7 +147,7 @@ const AddUser: React.FC<TeamProps> = (props: TeamProps) => {
         pagination={{
           ...tableProps.pagination,
           size: 'small',
-          pageSize: 5,
+          pageSizeOptions: ['5', '10', '20', '50', '100'],
           showTotal: (total) => `Total ${total} items`,
           showSizeChanger: true,
         }}

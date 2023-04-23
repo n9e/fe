@@ -3,6 +3,7 @@ import { useLocation, useHistory } from 'react-router-dom';
 import queryString from 'query-string';
 import moment from 'moment';
 import _ from 'lodash';
+import { FormInstance } from 'antd/lib/form/Form';
 import PromGraph from '@/components/PromGraphCpt';
 import { IRawTimeRange, timeRangeUnix, isMathString } from '@/components/TimeRangePicker';
 
@@ -11,10 +12,11 @@ interface IProps {
   defaultPromQL: string;
   headerExtra: HTMLDivElement | null;
   datasourceValue: number;
+  form: FormInstance;
 }
 
 export default function Prometheus(props: IProps) {
-  const { headerExtra, datasourceValue } = props;
+  const { headerExtra, datasourceValue, form } = props;
   const history = useHistory();
   const { search } = useLocation();
   const query = queryString.parse(search);
@@ -56,6 +58,9 @@ export default function Prometheus(props: IProps) {
       graphOperates={{ enabled: true }}
       globalOperates={{ enabled: true }}
       headerExtra={headerExtra}
+      executeQuery={() => {
+        form.validateFields();
+      }}
     />
   );
 }

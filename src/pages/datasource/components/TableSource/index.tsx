@@ -3,6 +3,7 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { message, Table, Modal, Button, Space, Popconfirm } from 'antd';
 import { CommonStateContext } from '@/App';
+import usePagination from '@/components/usePagination';
 import Rename from '../Rename';
 import { deleteDataSourceById, getDataSourceList, updateDataSourceStatus } from '../../services';
 
@@ -31,6 +32,7 @@ const TableSource = (props: IPropsType) => {
   const [tableData, setTableData] = useState<any>([]);
   const [refresh, setRefresh] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const pagination = usePagination({ PAGESIZE_KEY: 'datasource' });
 
   useEffect(() => {
     init();
@@ -125,7 +127,7 @@ const TableSource = (props: IPropsType) => {
     },
   ];
 
-  return <Table size='small' className='datasource-list' rowKey='id' dataSource={tableData} columns={defaultColumns} loading={loading} />;
+  return <Table size='small' className='datasource-list' rowKey='id' dataSource={tableData} columns={defaultColumns} loading={loading} pagination={pagination} />;
 };
 
 export default TableSource;

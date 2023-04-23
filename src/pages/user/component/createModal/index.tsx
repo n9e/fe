@@ -193,7 +193,7 @@ const CreateModal: React.FC<ModalProps> = (props: ModalProps) => {
       return t('enable');
     }
     if (action === ActionType.AddUser) {
-      return t('team.add_user');
+      return t('team.add_member');
     }
   };
 

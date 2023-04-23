@@ -181,7 +181,7 @@ export default function Graph(props: IProps) {
               onClick={() => {
                 const dataProps = {
                   type: 'timeseries',
-                  version: '2.0.0',
+                  version: '3.0.0',
                   name: metric,
                   step,
                   range,

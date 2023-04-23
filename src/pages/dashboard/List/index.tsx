@@ -15,10 +15,10 @@
  *
  */
 /**
- * 大盘列表页面
+ * 仪表盘列表页面
  */
 import React, { useState, useEffect, useContext } from 'react';
-import { useHistory, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Table, Tag, Modal, Switch, message } from 'antd';
 import { FundViewOutlined } from '@ant-design/icons';
 import moment from 'moment';
@@ -42,7 +42,6 @@ export default function index() {
   const { t } = useTranslation('dashboard');
   const commonState = useContext(CommonStateContext);
   const { curBusiId: busiId } = commonState;
-  const history = useHistory();
   const [list, setList] = useState<any[]>([]);
   const [selectRowKeys, setSelectRowKeys] = useState<number[]>([]);
   const [refreshKey, setRefreshKey] = useState(_.uniqueId('refreshKey_'));
@@ -93,9 +92,14 @@ export default function index() {
                   className: 'name-column',
                   render: (text: string, record: DashboardType) => {
                     return (
-                      <div className='table-active-text' onClick={() => history.push(`/dashboards/${record.ident || record.id}`)}>
+                      <Link
+                        className='table-active-text'
+                        to={{
+                          pathname: `/dashboards/${record.ident || record.id}`,
+                        }}
+                      >
                         {text}
-                      </div>
+                      </Link>
                     );
                   },
                 },
@@ -168,7 +172,6 @@ export default function index() {
                             to={{
                               pathname: `/dashboards/share/${record.id}`,
                               search: queryString.stringify({
-                                __cluster: localStorage.getItem('curCluster'),
                                 viewMode: 'fullscreen',
                               }),
                             }}
@@ -265,7 +268,7 @@ export default function index() {
             />
           </div>
         ) : (
-          <BlankBusinessPlaceholder text='监控大盘' />
+          <BlankBusinessPlaceholder text='监控仪表盘' />
         )}
       </div>
     </PageLayout>

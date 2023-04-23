@@ -18,7 +18,7 @@
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 import _ from 'lodash';
-import { mappingsToFields } from './utils';
+import { mappingsToFields, flattenHits } from './utils';
 
 export function getIndices(datasourceValue: number) {
   return request(`/api/n9e/proxy/${datasourceValue}/_cat/indices`, {
@@ -27,18 +27,17 @@ export function getIndices(datasourceValue: number) {
       format: 'json',
     },
   }).then((res) => {
-    return _.compact(_.map(res, 'index'));
+    return _.sortBy(_.compact(_.map(res, 'index')));
   });
 }
 
-export function getFields(datasourceValue: number, index?: string) {
+export function getFields(datasourceValue: number, index?: string, type?: string) {
   const url = index ? `/${index}/_mapping` : '/_mapping';
   return request(`/api/n9e/proxy/${datasourceValue}${url}?pretty=true`, {
     method: RequestMethod.Get,
     silence: true,
   }).then((res) => {
-    const fields = mappingsToFields(res);
-    return fields;
+    return mappingsToFields(res, type);
   });
 }
 
@@ -51,9 +50,10 @@ export function getLogsQuery(datasourceValue: number, requestBody) {
     },
   }).then((res) => {
     const dat = _.get(res, 'responses[0].hits');
+    const { docs } = flattenHits(dat.hits);
     return {
       total: dat.total.value,
-      list: dat.hits,
+      list: docs,
     };
   });
 }

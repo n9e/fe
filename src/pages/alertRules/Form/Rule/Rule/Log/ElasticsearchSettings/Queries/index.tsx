@@ -8,6 +8,7 @@ import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import GraphPreview from '../GraphPreview';
 import Value from './Value';
 import GroupBy from '../GroupBy';
+import DateField from './DateField';
 
 interface IProps {
   datasourceValue: number;
@@ -43,7 +44,7 @@ export default function index(props: IProps) {
         <Card
           title={
             <Space>
-              <span>{t('datasource:es.title')}</span>
+              <span>{t('datasource:es.alert.query.title')}</span>
               <PlusCircleOutlined
                 onClick={() =>
                   add({
@@ -76,13 +77,7 @@ export default function index(props: IProps) {
                           label={
                             <span>
                               {t('datasource:es.index')}{' '}
-                              <Tooltip
-                                title={
-                                  <div>
-                                    <Trans ns='alertRules' i18nKey='datasource:es.index_tip'></Trans>
-                                  </div>
-                                }
-                              >
+                              <Tooltip title={<Trans ns='datasource' i18nKey='datasource:es.index_tip' components={{ 1: <br /> }} />}>
                                 <QuestionCircleOutlined />
                               </Tooltip>
                             </span>
@@ -94,6 +89,7 @@ export default function index(props: IProps) {
                             rules={[
                               {
                                 required: true,
+                                message: t('datasource:es.index_msg'),
                               },
                             ]}
                           >
@@ -131,11 +127,12 @@ export default function index(props: IProps) {
                         </InputGroupWithFormItem>
                       </Col>
                       <Col span={5}>
-                        <InputGroupWithFormItem label={t('datasource:es.date_field')} labelWidth={80}>
-                          <Form.Item {...field} name={[field.name, 'date_field']}>
-                            <Input />
-                          </Form.Item>
-                        </InputGroupWithFormItem>
+                        <Form.Item shouldUpdate noStyle>
+                          {({ getFieldValue }) => {
+                            const index = getFieldValue([...names, field.name, 'index']);
+                            return <DateField datasourceValue={datasourceValue} index={index} prefixField={field} prefixNames={names} />;
+                          }}
+                        </Form.Item>
                       </Col>
                       <Col span={5}>
                         <Input.Group>

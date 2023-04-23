@@ -39,11 +39,11 @@ const getMenuList = (t) => {
       children: [
         {
           key: '/dashboards',
-          label: t('监控大盘'),
+          label: t('监控仪表盘'),
         },
         {
           key: '/dashboards-built-in',
-          label: t('内置大盘'),
+          label: t('内置仪表盘'),
         },
       ],
     },
@@ -153,6 +153,10 @@ const getMenuList = (t) => {
           key: '/job-tasks',
           label: t('执行历史'),
         },
+        {
+          key: '/ibex-settings',
+          label: t('自愈配置'),
+        },
       ],
     },
     {
@@ -204,6 +208,10 @@ const getMenuList = (t) => {
         {
           key: '/help/servers',
           label: t('告警引擎'),
+        },
+        {
+          key: '/help/migrate',
+          label: t('仪表盘迁移'),
         },
         {
           key: '/help/version',

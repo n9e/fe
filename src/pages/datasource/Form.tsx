@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { message, Spin } from 'antd';
+import { message, Spin, Modal } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
@@ -81,7 +81,36 @@ export default function FormCpt() {
         </div>
       }
     >
-      <div className='srm'>{action === 'edit' && data === undefined ? <Spin spinning={true} /> : <From data={data} onFinish={onFinish} submitLoading={submitLoading} />}</div>
+      <div className='srm'>
+        {action === 'edit' && data === undefined ? (
+          <Spin spinning={true} />
+        ) : (
+          <From
+            data={data}
+            onFinish={(values, clusterInstance) => {
+              if (type === 'prometheus' && !values.cluster_name) {
+                console.log('clustrInstance', clusterInstance);
+                Modal.confirm({
+                  title: t('form.cluster_confirm'),
+                  okText: t('form.cluster_confirm_ok'),
+                  cancelText: t('form.cluster_confirm_cancel'),
+                  onOk: () => {
+                    onFinish(values);
+                  },
+                  onCancel: () => {
+                    if (clusterInstance && clusterInstance.focus) {
+                      clusterInstance.focus();
+                    }
+                  },
+                });
+              } else {
+                onFinish(values);
+              }
+            }}
+            submitLoading={submitLoading}
+          />
+        )}
+      </div>
     </PageLayout>
   );
 }

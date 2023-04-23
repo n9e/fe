@@ -18,10 +18,10 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Button, Input, Table, Tooltip, message, Modal, Switch, Space, Tag } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { CloseCircleOutlined, ExclamationCircleOutlined, SearchOutlined } from '@ant-design/icons';
-import dayjs from 'dayjs';
+import moment from 'moment';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory, useLocation, Link } from 'react-router-dom';
 import queryString from 'query-string';
 import AdvancedWrap from '@/components/AdvancedWrap';
 import PageLayout from '@/components/pageLayout';
@@ -86,14 +86,14 @@ const Shield: React.FC = () => {
       dataIndex: 'note',
       render: (data, record: any) => {
         return (
-          <div
-            className='table-active-text'
-            onClick={() => {
-              history.push(`/alert-mutes/edit/${record.id}`, record);
+          <Link
+            to={{
+              pathname: `/alert-mutes/edit/${record.id}`,
+              state: record,
             }}
           >
             {data}
-          </div>
+          </Link>
         );
       },
     },
@@ -143,8 +143,8 @@ const Shield: React.FC = () => {
       render: (text: number, record: shieldItem) => {
         return (
           <div className='shield-time'>
-            <div>{dayjs(record?.btime * 1000).format('YYYY-MM-DD HH:mm:ss')}</div>
-            <div>{dayjs(record?.etime * 1000).format('YYYY-MM-DD HH:mm:ss')}</div>
+            <div>{moment.unix(record?.btime).format('YYYY-MM-DD HH:mm:ss')}</div>
+            <div>{moment.unix(record?.etime).format('YYYY-MM-DD HH:mm:ss')}</div>
           </div>
         );
       },

@@ -26,11 +26,19 @@ import VariableConfig, { IVariable } from '../VariableConfig';
 import Renderer from '../Renderer/Renderer';
 import QueryEditor from './QueryEditor';
 
-function FormCpt(props, ref) {
+interface IProps {
+  initialValues: any;
+  variableConfigWithOptions?: IVariable[];
+  range: any;
+  id: string;
+  dashboardId: string;
+}
+
+function FormCpt(props: IProps, ref) {
   const { t } = useTranslation('dashboard');
   const [chartForm] = Form.useForm();
-  const { initialValues, datasourceValue, range, id, step } = props;
-  const [variableConfigWithOptions, setVariableConfigWithOptions] = useState<IVariable[]>(props.variableConfigWithOptions);
+  const { initialValues, range, id, dashboardId } = props;
+  const [variableConfigWithOptions, setVariableConfigWithOptions] = useState<IVariable[] | undefined>(props.variableConfigWithOptions);
 
   defaultValues.custom = defaultCustomValuesMap[initialValues?.type || defaultValues.type];
 
@@ -51,11 +59,19 @@ function FormCpt(props, ref) {
   }, [JSON.stringify(props.variableConfigWithOptions)]);
 
   return (
-    <Form layout='vertical' preserve={false} form={chartForm} initialValues={_.merge({}, defaultValues, initialValues)}>
-      <Form.Item name='type' hidden />
-      <Form.Item name='id' hidden />
-      <Form.Item name='layout' hidden />
-      <Form.Item name='version' hidden />
+    <Form layout='vertical' preserve={true} form={chartForm} initialValues={_.merge({}, defaultValues, initialValues)}>
+      <Form.Item name='type' hidden>
+        <div />
+      </Form.Item>
+      <Form.Item name='id' hidden>
+        <div />
+      </Form.Item>
+      <Form.Item name='layout' hidden>
+        <div />
+      </Form.Item>
+      <Form.Item name='version' hidden>
+        <div />
+      </Form.Item>
       <div
         style={{
           height: 'calc(100vh - 173px)',
@@ -72,17 +88,7 @@ function FormCpt(props, ref) {
             <div style={{ marginBottom: 10, height: 300 }}>
               <Form.Item shouldUpdate noStyle>
                 {({ getFieldsValue }) => {
-                  return (
-                    <Renderer
-                      datasourceValue={datasourceValue}
-                      dashboardId={id}
-                      time={range}
-                      step={step}
-                      values={getFieldsValue()}
-                      variableConfig={variableConfigWithOptions}
-                      isPreview
-                    />
-                  );
+                  return <Renderer dashboardId={dashboardId} time={range} values={getFieldsValue()} variableConfig={variableConfigWithOptions} isPreview />;
                 }}
               </Form.Item>
             </div>
@@ -99,12 +105,11 @@ function FormCpt(props, ref) {
                           }}
                           value={variableConfigWithOptions}
                           editable={false}
-                          datasourceValue={datasourceValue}
                           range={range}
                           id={id}
                         />
                       </div>
-                      <QueryEditor chartForm={chartForm} defaultDatasourceValue={datasourceValue} type={type} variableConfig={variableConfigWithOptions} />
+                      <QueryEditor chartForm={chartForm} type={type} variableConfig={variableConfigWithOptions} dashboardId={dashboardId} />
                     </div>
                   );
                 }

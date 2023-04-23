@@ -28,5 +28,6 @@ const zh_CN = {
   webhooks: '新回调地址',
   webhooks_msg: '回调地址不能为空',
   prod: '监控类型',
+  subscribe_btn: '订阅',
 };
 export default zh_CN;

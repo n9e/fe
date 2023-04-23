@@ -50,6 +50,20 @@ export function getDatasourceList(pluginTypes?: string[]): Promise<{ name: strin
     });
 }
 
+// 匿名获取数据源列表
+export function getDatasourceBriefList(): Promise<{ name: string; id: number }[]> {
+  const url = '/api/n9e/datasource/brief';
+  return request(url, {
+    method: RequestMethod.Get,
+  })
+    .then((res) => {
+      return res.dat || [];
+    })
+    .catch(() => {
+      return [];
+    });
+}
+
 export function getBusiGroups(query = '', limit: number = 200) {
   return request(`/api/n9e/busi-groups`, {
     method: RequestMethod.Get,

@@ -31,7 +31,6 @@ import './index.less';
 
 interface IProps {
   id: string;
-  datasourceValue: number;
   editable?: boolean;
   value?: IVariable[];
   range: IRawTimeRange;
@@ -51,7 +50,7 @@ function index(props: IProps) {
   const { t } = useTranslation('dashboard');
   const { groupedDatasourceList } = useContext(CommonStateContext);
   const query = queryString.parse(useLocation().search);
-  const { id, datasourceValue, editable = true, range, onChange, onOpenFire, isPreview = false } = props;
+  const { id, editable = true, range, onChange, onOpenFire, isPreview = false } = props;
   const [editing, setEditing] = useState<boolean>(false);
   const [data, setData] = useState<IVariable[]>([]);
   const dataWithoutConstant = _.filter(data, (item) => item.type !== 'constant');
@@ -69,11 +68,18 @@ function index(props: IProps) {
       (async () => {
         for (let idx = 0; idx < value.length; idx++) {
           const item = _.cloneDeep(value[idx]);
-          if ((item.type === 'query' || item.type === 'custom') && item.definition) {
+          if (item.type === 'query' && item.definition) {
             const definition = idx > 0 ? replaceExpressionVars(item.definition, result, idx, id) : item.definition;
+
             let options = [];
             try {
-              options = await convertExpressionToQuery(definition, range, item, datasourceValue);
+              options = await convertExpressionToQuery(definition, range, {
+                ...item,
+                datasource: {
+                  ...(item?.datasource || {}),
+                  value: result.length ? (replaceExpressionVars(item?.datasource?.value as any, result, result.length, id) as any) : item?.datasource?.value,
+                },
+              });
               options = _.sortBy(options);
             } catch (error) {
               console.error(error);
@@ -82,25 +88,32 @@ function index(props: IProps) {
             result[idx] = item;
             result[idx].fullDefinition = definition;
             result[idx].options = item.type === 'query' ? _.sortBy(regFilterOptions) : regFilterOptions;
-            // 当大盘变量值为空时，设置默认值
+            // 当仪表盘变量值为空时，设置默认值
             // 如果已选项不在待选项里也视做空值处理
-            const selected = getVaraiableSelected(item.name, id);
+            const selected = getVaraiableSelected(item.name, item.type, id);
             if (query.__variable_value_fixed === undefined) {
-              if (selected === null) {
+              if (selected === null || (selected && !_.isEmpty(regFilterOptions) && !includes(regFilterOptions, selected))) {
                 const head = regFilterOptions?.[0];
-                const defaultVal = item.multi ? (head ? [head] : []) : head;
+                const defaultVal = item.multi ? (item.allOption ? ['all'] : head ? [head] : []) : head;
                 setVaraiableSelected({ name: item.name, value: defaultVal, id, urlAttach: true });
               }
             }
+          } else if (item.type === 'custom') {
+            result[idx] = item;
+            result[idx].options = _.map(_.compact(_.split(item.definition, ',')), _.trim);
+            const selected = getVaraiableSelected(item.name, item.type, id);
+            if (selected === null && query.__variable_value_fixed === undefined) {
+              setVaraiableSelected({ name: item.name, value: item.defaultValue!, id, urlAttach: true });
+            }
           } else if (item.type === 'textbox') {
             result[idx] = item;
-            const selected = getVaraiableSelected(item.name, id);
+            const selected = getVaraiableSelected(item.name, item.type, id);
             if (selected === null && query.__variable_value_fixed === undefined) {
               setVaraiableSelected({ name: item.name, value: item.defaultValue!, id, urlAttach: true });
             }
           } else if (item.type === 'constant') {
             result[idx] = item;
-            const selected = getVaraiableSelected(item.name, id);
+            const selected = getVaraiableSelected(item.name, item.type, id);
             if (selected === null && query.__variable_value_fixed === undefined) {
               setVaraiableSelected({ name: item.name, value: item.definition, id, urlAttach: true });
             }
@@ -108,9 +121,15 @@ function index(props: IProps) {
             const options = item.definition ? (groupedDatasourceList[item.definition] as any) : [];
             result[idx] = item;
             result[idx].options = options;
-            const selected = getVaraiableSelected(item.name, id);
-            if (selected === null && query.__variable_value_fixed === undefined) {
-              setVaraiableSelected({ name: item.name, value: options[0]?.id, id, urlAttach: true });
+            const selected = getVaraiableSelected(item.name, item.type, id);
+            if (selected === null) {
+              if (item.defaultValue) {
+                setVaraiableSelected({ name: item.name, value: item.defaultValue, id, urlAttach: true });
+              } else {
+                if (query.__variable_value_fixed === undefined) {
+                  setVaraiableSelected({ name: item.name, value: options[0]?.id, id, urlAttach: true });
+                }
+              }
             }
           }
         }
@@ -118,14 +137,14 @@ function index(props: IProps) {
         result = _.map(_.compact(result), (item) => {
           return {
             ...item,
-            value: getVaraiableSelected(item?.name, id),
+            value: getVaraiableSelected(item?.name, item?.type, id),
           };
         });
         setData(result);
         onChange(value, false, result);
       })();
     }
-  }, [JSON.stringify(value), datasourceValue, refreshFlag]);
+  }, [JSON.stringify(value), refreshFlag]);
 
   return (
     <div className='tag-area'>
@@ -183,7 +202,6 @@ function index(props: IProps) {
         )}
       </div>
       <EditItems
-        datasourceValue={datasourceValue}
         visible={editing}
         setVisible={setEditing}
         value={value}

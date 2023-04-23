@@ -134,7 +134,9 @@ export default function List(props: IProps) {
                 onClick={(e) => {
                   if (!tableQueryContent.includes(item)) {
                     isAddTagToQueryInput.current = true;
-                    setTableQueryContent(tableQueryContent ? `${tableQueryContent.trim()} ${item}` : item);
+                    const val = tableQueryContent ? `${tableQueryContent.trim()} ${item}` : item;
+                    setTableQueryContent(val);
+                    setSearchVal(val);
                   }
                 }}
               >
