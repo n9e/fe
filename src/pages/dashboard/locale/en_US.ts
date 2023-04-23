@@ -180,6 +180,7 @@ const en_US = {
         max_tip: 'Exceeded blocks are merged and displayed as other',
         donut: 'Donut',
         labelWithName: 'Label with name',
+        labelClosePercent: 'Label close percent',
       },
       table: {
         displayMode: 'Display mode',

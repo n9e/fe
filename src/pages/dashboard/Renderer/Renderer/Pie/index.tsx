@@ -30,7 +30,7 @@ interface IProps {
 export default function Pie(props: IProps) {
   const { values, series, themeMode } = props;
   const { custom, options } = values;
-  const { calc, legengPosition, max, labelWithName, donut = false } = custom;
+  const { calc, legengPosition, max, labelWithName, labelClosePercent, donut = false } = custom;
   const calculatedValues = getCalculatedValuesBySeries(
     series,
     calc,
@@ -47,9 +47,9 @@ export default function Pie(props: IProps) {
     max && sortedValues.length > max
       ? sortedValues
           .slice(0, max)
-          .map((i) => ({ name: i.name, value: i.stat }))
-          .concat({ name: '其他', value: sortedValues.slice(max).reduce((previousValue, currentValue) => currentValue.stat + previousValue, 0) })
-      : sortedValues.map((i) => ({ name: i.name, value: i.stat }));
+          .map((i) => ({ name: i.name, value: i.value, unit: i.unit }))
+          .concat({ name: '其他', value: sortedValues.slice(max).reduce((previousValue, currentValue) => currentValue.value + previousValue, 0), unit: sortedValues[0].unit })
+      : sortedValues.map((i) => ({ name: i.name, value: i.value, unit: i.unit }));
   return (
     <div className='renderer-pie-container'>
       <G2PieChart
@@ -58,6 +58,7 @@ export default function Pie(props: IProps) {
         positon={legengPosition !== 'hidden' ? legengPosition : undefined}
         hidden={legengPosition === 'hidden'}
         labelWithName={labelWithName}
+        labelClosePercent={labelClosePercent}
         donut={donut}
       />
     </div>
