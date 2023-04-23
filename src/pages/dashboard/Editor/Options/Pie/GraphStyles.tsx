@@ -72,7 +72,7 @@ export default function GraphStyles() {
             </Form.Item>
           </Col>
           <Col span={6}>
-            <Form.Item label={t('panel.custom.pie.labelClosePercent')} name={[...namePrefix, 'labelClosePercent']} valuePropName='checked'>
+            <Form.Item label={t('panel.custom.pie.labelWithValue')} name={[...namePrefix, 'labelWithValue']} valuePropName='checked'>
               <Switch />
             </Form.Item>
           </Col>

@@ -30,7 +30,7 @@ interface IProps {
 export default function Pie(props: IProps) {
   const { values, series, themeMode } = props;
   const { custom, options } = values;
-  const { calc, legengPosition, max, labelWithName, labelClosePercent, donut = false } = custom;
+  const { calc, legengPosition, max, labelWithName, labelWithValue, donut = false } = custom;
   const calculatedValues = getCalculatedValuesBySeries(
     series,
     calc,
@@ -58,7 +58,7 @@ export default function Pie(props: IProps) {
         positon={legengPosition !== 'hidden' ? legengPosition : undefined}
         hidden={legengPosition === 'hidden'}
         labelWithName={labelWithName}
-        labelClosePercent={labelClosePercent}
+        labelWithValue={labelWithValue}
         donut={donut}
       />
     </div>

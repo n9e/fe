@@ -188,7 +188,7 @@ const zh_CN = {
         max_tip: '超过的块数则合并展示为其他',
         donut: '环图模式',
         labelWithName: 'label是否包含名称',
-        labelClosePercent: 'label关闭百分比',
+        labelWithValue: 'label显示指标值',
       },
       table: {
         displayMode: '显示模式',

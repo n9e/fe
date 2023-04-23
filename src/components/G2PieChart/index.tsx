@@ -36,7 +36,7 @@ interface Props {
   positon: 'top' | 'left' | 'right' | 'bottom';
   hidden: boolean;
   labelWithName: boolean;
-  labelClosePercent: boolean;
+  labelWithValue: boolean;
   themeMode?: 'dark';
   donut?: boolean;
 }
@@ -58,7 +58,7 @@ function renderStatistic(containerWidth, text, style) {
 }
 
 const DemoPie = (props: Props) => {
-  const { data, positon, hidden, labelWithName, labelClosePercent, themeMode, donut } = props;
+  const { data, positon, hidden, labelWithName, labelWithValue, themeMode, donut } = props;
 
   const config: PieConfig = {
     padding: [16, 8, 16, 8],
@@ -71,8 +71,8 @@ const DemoPie = (props: Props) => {
     label: {
       type: 'spider',
       content: (record) => {
-        return `${labelWithName ? `${record.name}: ` : ''}${labelClosePercent ? `${record.value}` : `${(record.percent * 100).toFixed(0)}%`}${
-          record.unit && labelClosePercent ? `${record.unit}: ` : ''
+        return `${labelWithName ? `${record.name}: ` : ''}${labelWithValue ? `${record.value}` : `${(record.percent * 100).toFixed(0)}%`}${
+          record.unit && labelWithValue ? `${record.unit}: ` : ''
         }`;
       },
       style: {
