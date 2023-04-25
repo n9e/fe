@@ -4,6 +4,7 @@ import { useHistory } from 'react-router';
 import { ReactNode } from 'react-markdown/lib/react-markdown';
 import _, { throttle } from 'lodash';
 import moment from 'moment';
+import { useDebounceFn } from 'ahooks';
 import queryString from 'query-string';
 import { useTranslation } from 'react-i18next';
 import { getAlertCards, getCardDetail } from '@/services/warning';
@@ -14,6 +15,7 @@ import './index.less';
 interface Props {
   filter: any;
   header: ReactNode;
+  refreshFlag: string;
 }
 
 interface CardType {
@@ -37,7 +39,7 @@ function containerWidthToColumn(width: number): number {
 
 function Card(props: Props, ref) {
   const { t } = useTranslation('AlertCurEvents');
-  const { filter, header } = props;
+  const { filter, header, refreshFlag } = props;
   const { groupedDatasourceList } = useContext(CommonStateContext);
   const Ref = useRef<HTMLDivElement>(null);
   const history = useHistory();
@@ -51,14 +53,19 @@ function Card(props: Props, ref) {
 
   useEffect(() => {
     reloadCard();
-  }, [filter, rule]);
+  }, [filter, rule, refreshFlag]);
 
-  const reloadCard = () => {
-    if (!rule) return;
-    getAlertCards({ ...filter, rule: rule.trim() }).then((res) => {
-      setCardList(res.dat);
-    });
-  };
+  const { run: reloadCard } = useDebounceFn(
+    () => {
+      if (!rule) return;
+      getAlertCards({ ...filter, rule: rule.trim() }).then((res) => {
+        setCardList(res.dat);
+      });
+    },
+    {
+      wait: 500,
+    },
+  );
 
   useLayoutEffect(() => {
     function updateSize() {
