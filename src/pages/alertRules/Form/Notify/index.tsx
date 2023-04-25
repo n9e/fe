@@ -57,8 +57,8 @@ export default function index({ disabled }) {
         </Checkbox.Group>
       </Form.Item>
       <Form.Item label={t('notify_groups')} name='notify_groups'>
-        <Select mode='multiple' showSearch>
-          {notifyGroups.map((item) => {
+        <Select mode='multiple' showSearch optionFilterProp='children'>
+          {_.map(notifyGroups, (item) => {
             // id to string 兼容 v5
             return (
               <Select.Option value={_.toString(item.id)} key={item.id}>
