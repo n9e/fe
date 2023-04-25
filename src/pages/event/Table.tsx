@@ -159,6 +159,7 @@ export default function TableCpt(props: IProps) {
   };
   const { tableProps } = useAntdTable(fetchData, {
     refreshDeps: [refreshFlag, JSON.stringify(filterObj), props.refreshFlag],
+    defaultPageSize: 30,
   });
 
   return (
@@ -174,7 +175,6 @@ export default function TableCpt(props: IProps) {
           }}
           pagination={{
             ...tableProps.pagination,
-            pageSize: 30,
             pageSizeOptions: ['30', '100', '200', '500'],
           }}
         />
