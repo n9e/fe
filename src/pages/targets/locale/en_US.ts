@@ -16,6 +16,8 @@ const en_US = {
   offset: 'Offset',
   os: 'OS',
   arch: 'CPU Arch',
+  unixtime: 'Unixtime',
+  remoteAddr: 'Remote Addr',
   note: 'Note',
   organize_columns: {
     title: 'Organize Columns',
