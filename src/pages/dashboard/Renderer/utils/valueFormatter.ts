@@ -88,6 +88,7 @@ const valueFormatter = ({ unit, decimals = 3, dateFormat = 'YYYY-MM-DD HH:mm:ss'
       text: '',
     };
   }
+  if (decimals === null) decimals = 3;
   if (typeof val !== 'number') {
     val = _.toNumber(val);
   }
