@@ -28,7 +28,7 @@ export default function Script() {
           </Space>
         </div>
         <Form.Item label={t('script.timeout')} name='timeout'>
-          <InputNumber style={{ width: '100%' }} />
+          <InputNumber style={{ width: '100%' }} defaultValue={5} />
         </Form.Item>
         <Form.Item name='type'>
           <Radio.Group optionType='button'>

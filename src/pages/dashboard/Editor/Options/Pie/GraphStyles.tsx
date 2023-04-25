@@ -66,8 +66,13 @@ export default function GraphStyles() {
               <Switch />
             </Form.Item>
           </Col>
-          <Col span={12}>
+          <Col span={6}>
             <Form.Item label={t('panel.custom.pie.labelWithName')} name={[...namePrefix, 'labelWithName']} valuePropName='checked'>
+              <Switch />
+            </Form.Item>
+          </Col>
+          <Col span={6}>
+            <Form.Item label={t('panel.custom.pie.labelWithValue')} name={[...namePrefix, 'labelWithValue']} valuePropName='checked'>
               <Switch />
             </Form.Item>
           </Col>

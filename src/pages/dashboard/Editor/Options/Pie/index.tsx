@@ -16,11 +16,13 @@
  */
 import React from 'react';
 import GraphStyles from './GraphStyles';
+import StandardOptions from '../../Fields/StandardOptions';
 
 export default function Pie() {
   return (
     <>
       <GraphStyles />
+      <StandardOptions />
     </>
   );
 }

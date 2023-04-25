@@ -52,7 +52,7 @@ export default function Webhooks() {
                         <Input />
                       </Form.Item>
                       <Form.Item {...field} label={t('webhooks.timeout')} name={[field.name, 'timeout']}>
-                        <InputNumber style={{ width: '100%' }} />
+                        <InputNumber style={{ width: '100%' }} defaultValue={5} />
                       </Form.Item>
                       <Row gutter={10}>
                         <Col span={12}>
