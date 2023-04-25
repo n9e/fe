@@ -12,7 +12,7 @@ export const defaultRuleConfig = {
     triggers: [
       {
         type: 'target_miss',
-        severity: 3,
+        severity: 2,
         duration: 30,
       },
     ],
@@ -21,7 +21,7 @@ export const defaultRuleConfig = {
     queries: [
       {
         prom_ql: '',
-        severity: 3,
+        severity: 2,
       },
     ],
   },
@@ -46,13 +46,13 @@ export const defaultRuleConfig = {
             logicalOperator: '&&',
           },
         ],
-        severity: 1,
+        severity: 2,
       },
     ],
   },
   anomaly: {
     algorithm: 'holtwinters',
-    severity: 3,
+    severity: 2,
   },
 };
 
@@ -69,7 +69,7 @@ export const defaultValues = {
   recover_duration: 0,
   notify_repeat_step: 60,
   notify_max_number: 0,
-  rule_config: defaultRuleConfig.host,
+  rule_config: defaultRuleConfig.metric,
   datasource_ids: [],
   prom_eval_interval: 30,
   prom_for_duration: 60,
