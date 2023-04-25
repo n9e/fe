@@ -79,6 +79,7 @@ export function format(value: number, options = defaultOptions) {
       value: '',
       unit: '',
       text: '',
+      stat: '',
     };
   const baseUtil = options.base ? baseUtilMap[options.base] : ''; // 支持
   if ((options.type === 'si' && Math.abs(value) < 1000) || (options.type === 'iec' && Math.abs(value) < 1024)) {
@@ -86,6 +87,7 @@ export function format(value: number, options = defaultOptions) {
       value: _.round(value, options.decimals),
       unit: baseUtil,
       text: _.round(value, options.decimals) + baseUtil,
+      stat: value,
     };
   }
 
@@ -103,6 +105,7 @@ export function format(value: number, options = defaultOptions) {
         value: NaN,
         unit: '',
         text: NaN,
+        stat: NaN,
       };
     }
     const unit = _.get(map, options.type);
@@ -114,12 +117,14 @@ export function format(value: number, options = defaultOptions) {
       value: newValue,
       unit: unit + baseUtil,
       text: newValue + unit + baseUtil,
+      stat: value,
     };
   }
   return {
     value: _.round(value, options.decimals),
     unit: '',
     text: _.round(value, options.decimals),
+    stat: value,
   };
 }
 
