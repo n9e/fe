@@ -27,7 +27,7 @@ interface IProps {
 
 export default function DisplayItem(props: IProps) {
   const { expression, value, onChange } = props;
-  const { name, multi, allOption, options, type, hide } = expression;
+  const { name, label, multi, allOption, options, type, hide } = expression;
   const [selected, setSelected] = useState<string | string[]>(value);
 
   useEffect(() => {
@@ -39,7 +39,7 @@ export default function DisplayItem(props: IProps) {
   return (
     <div className='tag-content-close-item'>
       <Input.Group>
-        <span className='ant-input-group-addon'>{name}</span>
+        <span className='ant-input-group-addon'>{label || name}</span>
         {type === 'query' || type === 'custom' ? (
           <Select
             mode={multi ? 'tags' : undefined}

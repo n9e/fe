@@ -95,12 +95,17 @@ function EditItem(props: IProps) {
   return (
     <Form layout='vertical' autoComplete='off' preserve={false} form={form} initialValues={data}>
       <Row gutter={16}>
-        <Col span={8}>
+        <Col span={6}>
           <Form.Item label={t('var.name')} name='name' rules={[{ required: true }, { pattern: /^[0-9a-zA-Z_]+$/, message: t('var.name_msg') }]}>
             <Input />
           </Form.Item>
         </Col>
-        <Col span={8}>
+        <Col span={6}>
+          <Form.Item label={t('var.label')} name='label'>
+            <Input />
+          </Form.Item>
+        </Col>
+        <Col span={6}>
           <Form.Item label={t('var.type')} name='type' rules={[{ required: true }]}>
             <Select
               style={{ width: '100%' }}
@@ -126,7 +131,7 @@ function EditItem(props: IProps) {
             const type = getFieldValue('type');
             if (type !== 'constant') {
               return (
-                <Col span={8}>
+                <Col span={6}>
                   <Form.Item label={t('var.hide')} name='hide' valuePropName='checked'>
                     <Switch />
                   </Form.Item>

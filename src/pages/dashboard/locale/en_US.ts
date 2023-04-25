@@ -46,6 +46,7 @@ const en_US = {
     },
     name: 'Name',
     name_msg: 'Only support number and character underline',
+    label: 'Label',
     type: 'Type',
     hide: 'Hide',
     definition: 'Definition',

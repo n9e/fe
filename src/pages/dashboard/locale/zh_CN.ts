@@ -46,6 +46,7 @@ const zh_CN = {
     },
     name: '变量名称',
     name_msg: '仅支持数字和字符下划线',
+    label: '显示名称',
     type: '变量类型',
     hide: '隐藏变量',
     definition: '变量定义',
