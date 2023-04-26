@@ -158,6 +158,10 @@ export function getVaraiableSelected(name: string, type: string, id: string) {
     if (type === 'datasource' && !_.isNaN(_.toNumber(v))) {
       return _.toNumber(v);
     }
+    // all 是变量全选的特殊值
+    if (v === 'all') {
+      return ['all'];
+    }
     return v;
   } else {
     if (v === null) return undefined;
@@ -195,23 +199,21 @@ export const replaceExpressionVarsSpecifyRule = (
         const selected = getVaraiableSelected(name, type, id);
 
         if (vars.includes(placeholder)) {
-          if (Array.isArray(selected)) {
+          if (_.isEqual(selected, ['all'])) {
+            if (allValue) {
+              newExpression = replaceAllPolyfill(newExpression, placeholder, allValue);
+            } else {
+              newExpression = replaceAllPolyfill(
+                newExpression,
+                placeholder,
+                `(${(options as string[]).filter((i) => !reg || !stringToRegex(reg) || (stringToRegex(reg) as RegExp).test(i)).join('|')})`,
+              );
+            }
+          } else if (Array.isArray(selected)) {
             const realSelected = _.size(selected) === 1 ? selected[0] : `(${(selected as string[]).join('|')})`;
             newExpression = replaceAllPolyfill(newExpression, placeholder, realSelected);
           } else if (typeof selected === 'string') {
-            if (selected === 'all') {
-              if (allValue) {
-                newExpression = replaceAllPolyfill(newExpression, placeholder, allValue);
-              } else {
-                newExpression = replaceAllPolyfill(
-                  newExpression,
-                  placeholder,
-                  `(${(options as string[]).filter((i) => !reg || !stringToRegex(reg) || (stringToRegex(reg) as RegExp).test(i)).join('|')})`,
-                );
-              }
-            } else {
-              newExpression = replaceAllPolyfill(newExpression, placeholder, selected as string);
-            }
+            newExpression = replaceAllPolyfill(newExpression, placeholder, selected as string);
           } else if (selected === null) {
             // 未选择或填写变量值时替换为传入的value
             newExpression = replaceAllPolyfill(newExpression, placeholder, value ? value : '');
