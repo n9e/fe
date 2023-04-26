@@ -25,6 +25,7 @@ export function timeFormatter(val, type: 'seconds' | 'milliseconds', decimals) {
       value: val,
       unit: '',
       text: val,
+      stat: val,
     };
   const timeMap = [
     {
@@ -77,6 +78,7 @@ export function timeFormatter(val, type: 'seconds' | 'milliseconds', decimals) {
     value: _.round(newVal, decimals),
     unit,
     text: _.round(newVal, decimals) + ' ' + unit,
+    stat: val,
   };
 }
 
@@ -86,6 +88,7 @@ const valueFormatter = ({ unit, decimals = 3, dateFormat = 'YYYY-MM-DD HH:mm:ss'
       value: '',
       unit: '',
       text: '',
+      stat: '',
     };
   }
   if (decimals === null) decimals = 3;
@@ -107,6 +110,7 @@ const valueFormatter = ({ unit, decimals = 3, dateFormat = 'YYYY-MM-DD HH:mm:ss'
         value: _.round(val, decimals),
         unit: '',
         text: _.round(val, decimals),
+        stat: val,
       };
     }
     if (unit === 'percent') {
@@ -114,6 +118,7 @@ const valueFormatter = ({ unit, decimals = 3, dateFormat = 'YYYY-MM-DD HH:mm:ss'
         value: _.round(val, decimals),
         unit: '%',
         text: _.round(val, decimals) + '%',
+        stat: val,
       };
     }
     if (unit === 'percentUnit') {
@@ -121,6 +126,7 @@ const valueFormatter = ({ unit, decimals = 3, dateFormat = 'YYYY-MM-DD HH:mm:ss'
         value: _.round(val * 100, decimals),
         unit: '%',
         text: _.round(val * 100, decimals) + '%',
+        stat: val,
       };
     }
     if (unit === 'humantimeSeconds') {
@@ -128,6 +134,7 @@ const valueFormatter = ({ unit, decimals = 3, dateFormat = 'YYYY-MM-DD HH:mm:ss'
         value: moment.duration(val, 'seconds').humanize(),
         unit: '',
         text: moment.duration(val, 'seconds').humanize(),
+        stat: val,
       };
     }
     if (unit === 'humantimeMilliseconds') {
@@ -135,6 +142,7 @@ const valueFormatter = ({ unit, decimals = 3, dateFormat = 'YYYY-MM-DD HH:mm:ss'
         value: moment.duration(val, 'milliseconds').humanize(),
         unit: '',
         text: moment.duration(val, 'milliseconds').humanize(),
+        stat: val,
       };
     }
     if (unit === 'seconds') {
@@ -148,6 +156,7 @@ const valueFormatter = ({ unit, decimals = 3, dateFormat = 'YYYY-MM-DD HH:mm:ss'
         value: moment.unix(val).format(dateFormat),
         unit: '',
         text: moment.unix(val).format(dateFormat),
+        stat: val,
       };
     }
     if (unit === 'datetimeMilliseconds') {
@@ -155,12 +164,14 @@ const valueFormatter = ({ unit, decimals = 3, dateFormat = 'YYYY-MM-DD HH:mm:ss'
         value: moment(val).format(dateFormat),
         unit: '',
         text: moment(val).format(dateFormat),
+        stat: val,
       };
     }
     return {
       value: _.round(val, decimals),
       unit: '',
       text: _.round(val, decimals),
+      stat: val,
     };
   }
   // 默认返回 SI 不带基础单位
