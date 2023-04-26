@@ -19,6 +19,7 @@ import _ from 'lodash';
 import G2PieChart from '@/components/G2PieChart';
 import { IPanel } from '../../../types';
 import getCalculatedValuesBySeries from '../../utils/getCalculatedValuesBySeries';
+import valueFormatter from '../../utils/valueFormatter';
 import './style.less';
 
 interface IProps {
@@ -43,13 +44,23 @@ export default function Pie(props: IProps) {
   );
 
   const sortedValues = calculatedValues.sort((a, b) => b.value - a.value);
-  const data =
-    max && sortedValues.length > max
-      ? sortedValues
-          .slice(0, max)
-          .map((i) => ({ name: i.name, value: i.value, unit: i.unit }))
-          .concat({ name: '其他', value: sortedValues.slice(max).reduce((previousValue, currentValue) => currentValue.value + previousValue, 0), unit: sortedValues[0].unit })
-      : sortedValues.map((i) => ({ name: i.name, value: i.value, unit: i.unit }));
+  let data: { name: any; value: any; unit: string }[];
+  // 其他必须先使用原值计算，然后将汇总值再格式化, 防止格式化后value计算错误
+  if (max && sortedValues.length > max) {
+    data = sortedValues.slice(0, max).map((i) => ({ name: i.name, value: i.value, unit: i.unit }));
+    // 计算其他
+    const other = valueFormatter(
+      {
+        unit: options?.standardOptions?.util,
+        decimals: options?.standardOptions?.decimals,
+        dateFormat: options?.standardOptions?.dateFormat,
+      },
+      sortedValues.slice(max).reduce((previousValue, currentValue) => currentValue.stat + previousValue, 0),
+    );
+    data = data.concat({ name: '其他', value: other.value, unit: other.unit });
+  } else {
+    data = sortedValues.map((i) => ({ name: i.name, value: i.value, unit: i.unit }));
+  }
   return (
     <div className='renderer-pie-container'>
       <G2PieChart
