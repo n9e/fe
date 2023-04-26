@@ -37,6 +37,7 @@ interface Props {
   hidden: boolean;
   labelWithName: boolean;
   labelWithValue: boolean;
+  dataFormatter: Function;
   themeMode?: 'dark';
   donut?: boolean;
 }
@@ -58,7 +59,7 @@ function renderStatistic(containerWidth, text, style) {
 }
 
 const DemoPie = (props: Props) => {
-  const { data, positon, hidden, labelWithName, labelWithValue, themeMode, donut } = props;
+  const { data, positon, hidden, labelWithName, labelWithValue, themeMode, donut, dataFormatter } = props;
 
   const config: PieConfig = {
     padding: [16, 8, 16, 8],
@@ -71,9 +72,7 @@ const DemoPie = (props: Props) => {
     label: {
       type: 'spider',
       content: (record) => {
-        return `${labelWithName ? `${record.name}: ` : ''}${labelWithValue ? `${record.value}` : `${(record.percent * 100).toFixed(0)}%`}${
-          record.unit && labelWithValue ? `${record.unit}: ` : ''
-        }`;
+        return `${labelWithName ? `${record.name}: ` : ''}${labelWithValue ? dataFormatter(record.value) : `${(record.percent * 100).toFixed(0)}%`}`;
       },
       style: {
         fontSize: 12,
@@ -104,8 +103,8 @@ const DemoPie = (props: Props) => {
         customHtml: (container, _view, datum, data) => {
           const { width } = container.getBoundingClientRect();
           let text_num = datum ? `${datum.value}` : `${data?.reduce((r, d) => r + d.value, 0)}`;
-          // 解决计算精度丢失问题, 数据精度使用传入数据的精度
-          const text = Number.parseFloat(_.toNumber(text_num).toFixed(12));
+          // 解决计算精度丢失问题, 数据精度使用传入数据的精度, 使用父级组件的dataFormatter
+          const text = dataFormatter(Number.parseFloat(_.toNumber(text_num).toFixed(12)));
           return renderStatistic(width, text, {
             fontSize: 36,
           });
@@ -123,7 +122,7 @@ const DemoPie = (props: Props) => {
     tooltip: {
       fields: ['name', 'value', 'unit'],
       formatter: (datum) => {
-        return { name: datum.name, value: `${datum.value}${datum.unit ? datum.unit : ''}` };
+        return { name: datum.name, value: dataFormatter(datum.value) };
       },
     },
     legend: hidden
