@@ -37,6 +37,7 @@ interface Props {
   hidden: boolean;
   labelWithName: boolean;
   labelWithValue: boolean;
+  dataFormatter: Function;
   themeMode?: 'dark';
   donut?: boolean;
 }
@@ -58,7 +59,7 @@ function renderStatistic(containerWidth, text, style) {
 }
 
 const DemoPie = (props: Props) => {
-  const { data, positon, hidden, labelWithName, labelWithValue, themeMode, donut } = props;
+  const { data, positon, hidden, labelWithName, labelWithValue, themeMode, donut, dataFormatter } = props;
 
   const config: PieConfig = {
     padding: [16, 8, 16, 8],
@@ -103,10 +104,11 @@ const DemoPie = (props: Props) => {
         },
         customHtml: (container, _view, datum, data) => {
           const { width } = container.getBoundingClientRect();
-          let text_num = datum ? `${datum.value}` : `${data?.reduce((r, d) => r + d.value, 0)}`;
-          // 解决计算精度丢失问题, 数据精度使用传入数据的精度
-          const text = Number.parseFloat(_.toNumber(text_num).toFixed(12));
-          return renderStatistic(width, text, {
+          let text_num = datum ? `${datum.value}` : `${data?.reduce((r, d) => r + d.stat, 0)}`;
+          // 解决计算精度丢失问题, 数据精度使用传入数据的精度, 使用父级组件的dataFormatter
+          const text = dataFormatter(Number.parseFloat(_.toNumber(text_num).toFixed(12)));
+          const result = `${text.value}${text.unit}`;
+          return renderStatistic(width, result, {
             fontSize: 36,
           });
         },

@@ -32,6 +32,17 @@ export default function Pie(props: IProps) {
   const { values, series, themeMode } = props;
   const { custom, options } = values;
   const { calc, legengPosition, max, labelWithName, labelWithValue, donut = false } = custom;
+  const dataFormatter = (text: number) => {
+    return valueFormatter(
+      {
+        unit: options?.standardOptions?.util,
+        decimals: options?.standardOptions?.decimals,
+        dateFormat: options?.standardOptions?.dateFormat,
+      },
+      text,
+    );
+  };
+
   const calculatedValues = getCalculatedValuesBySeries(
     series,
     calc,
@@ -44,23 +55,18 @@ export default function Pie(props: IProps) {
   );
 
   const sortedValues = calculatedValues.sort((a, b) => b.value - a.value);
-  let data: { name: any; value: any; unit: string }[];
+  let data: { name: any; value: any; unit: string; stat: number }[];
   // 其他必须先使用原值计算，然后将汇总值再格式化, 防止格式化后value计算错误
   if (max && sortedValues.length > max) {
-    data = sortedValues.slice(0, max).map((i) => ({ name: i.name, value: i.value, unit: i.unit }));
+    data = sortedValues.slice(0, max).map((i) => ({ name: i.name, value: i.value, unit: i.unit, stat: i.stat }));
+    const otherStat = sortedValues.slice(max).reduce((previousValue, currentValue) => currentValue.stat + previousValue, 0);
     // 计算其他
-    const other = valueFormatter(
-      {
-        unit: options?.standardOptions?.util,
-        decimals: options?.standardOptions?.decimals,
-        dateFormat: options?.standardOptions?.dateFormat,
-      },
-      sortedValues.slice(max).reduce((previousValue, currentValue) => currentValue.stat + previousValue, 0),
-    );
-    data = data.concat({ name: '其他', value: other.value, unit: other.unit });
+    const other = dataFormatter(otherStat);
+    data = data.concat({ name: '其他', value: other.value, unit: other.unit, stat: otherStat });
   } else {
-    data = sortedValues.map((i) => ({ name: i.name, value: i.value, unit: i.unit }));
+    data = sortedValues.map((i) => ({ name: i.name, value: i.value, unit: i.unit, stat: i.stat }));
   }
+
   return (
     <div className='renderer-pie-container'>
       <G2PieChart
@@ -70,6 +76,7 @@ export default function Pie(props: IProps) {
         hidden={legengPosition === 'hidden'}
         labelWithName={labelWithName}
         labelWithValue={labelWithValue}
+        dataFormatter={dataFormatter}
         donut={donut}
       />
     </div>
