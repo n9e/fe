@@ -54,7 +54,7 @@ export default function Pie(props: IProps) {
     options?.valueMappings,
   );
 
-  const sortedValues = calculatedValues.sort((a, b) => b.value - a.value);
+  const sortedValues = calculatedValues.sort((a, b) => b.stat - a.stat);
   let data: { name: any; value: any; unit: string; stat: number }[];
   // 其他必须先使用原值计算，然后将汇总值再格式化, 防止格式化后value计算错误
   if (max && sortedValues.length > max) {
