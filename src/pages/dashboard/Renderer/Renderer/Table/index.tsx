@@ -38,6 +38,9 @@ interface IProps {
   themeMode?: 'dark';
 }
 
+const DEFAULT_LIGTH_COLOR = '#ffffff';
+const DEFAULT_DARK_COLOR = '#2c9d3d';
+
 const getColumnsKeys = (data: any[]) => {
   const keys = _.reduce(
     data,
@@ -165,7 +168,7 @@ export default function Stat(props: IProps) {
         let textObj = {
           value: text,
           unit: '',
-          color: record.color || (themeMode === 'dark' ? '#fff' : '#000'),
+          color: record.color || (themeMode === 'dark' ? DEFAULT_LIGTH_COLOR : DEFAULT_DARK_COLOR),
         };
         const overrideProps = getOverridePropertiesByName(overrides, record.fields?.refId);
         if (!_.isEmpty(overrideProps)) {
@@ -175,7 +178,7 @@ export default function Stat(props: IProps) {
           <div
             className='renderer-table-td-content'
             style={{
-              color: colorMode === 'background' ? '#fff' : textObj?.color,
+              color: colorMode === 'background' ? DEFAULT_LIGTH_COLOR : textObj?.color,
               backgroundColor: colorMode === 'background' ? textObj.color : 'unset',
             }}
           >
@@ -210,13 +213,13 @@ export default function Stat(props: IProps) {
             const textObj = {
               value: record?.value,
               unit: record?.unit,
-              color: record.color || (themeMode === 'dark' ? '#fff' : '#000'),
+              color: record.color || (themeMode === 'dark' ? DEFAULT_LIGTH_COLOR : DEFAULT_DARK_COLOR),
             };
             return (
               <div
                 className='renderer-table-td-content'
                 style={{
-                  color: colorMode === 'background' ? '#fff' : textObj?.color,
+                  color: colorMode === 'background' ? DEFAULT_LIGTH_COLOR : textObj?.color,
                   backgroundColor: colorMode === 'background' ? textObj.color : 'unset',
                 }}
               >
@@ -263,7 +266,8 @@ export default function Stat(props: IProps) {
         title: result[name]?.name,
         dataIndex: name,
         key: name,
-        width: idx < groupNames.length - 1 ? size?.width! / (groupNames.length + 1) : undefined,
+        // TODO: 暂时关闭维度值列的伸缩，降低对目前不太理想的列伸缩交互的理解和操作成本
+        // width: idx < groupNames.length - 1 ? size?.width! / (groupNames.length + 1) : undefined,
         sorter: (a, b) => {
           return _.get(a[name], 'stat') - _.get(b[name], 'stat');
         },
@@ -273,7 +277,7 @@ export default function Stat(props: IProps) {
           let textObj = {
             value: text?.text,
             unit: '',
-            color: text?.color || (themeMode === 'dark' ? '#fff' : '#000'),
+            color: text?.color || (themeMode === 'dark' ? DEFAULT_LIGTH_COLOR : DEFAULT_DARK_COLOR),
           };
           const overrideProps = getOverridePropertiesByName(overrides, name);
           if (!_.isEmpty(overrideProps)) {
@@ -285,12 +289,13 @@ export default function Stat(props: IProps) {
               },
               overrideProps?.valueMappings,
             );
+            textObj.color = textObj.color || (themeMode === 'dark' ? DEFAULT_LIGTH_COLOR : DEFAULT_DARK_COLOR);
           }
           return (
             <div
               className='renderer-table-td-content'
               style={{
-                color: colorMode === 'background' ? '#fff' : textObj?.color,
+                color: colorMode === 'background' ? DEFAULT_LIGTH_COLOR : textObj?.color,
                 backgroundColor: colorMode === 'background' ? textObj?.color : 'unset',
               }}
             >
