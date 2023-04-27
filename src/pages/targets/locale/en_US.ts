@@ -17,7 +17,7 @@ const en_US = {
   os: 'OS',
   arch: 'CPU Arch',
   unixtime: 'Unixtime',
-  remoteAddr: 'Remote Addr',
+  remote_addr: 'Remote Addr',
   note: 'Note',
   organize_columns: {
     title: 'Organize Columns',

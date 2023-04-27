@@ -322,15 +322,15 @@ export default function List(props: IProps) {
         dataIndex: 'unixtime',
         render: (val, reocrd) => {
           if (reocrd.cpu_num === -1) return 'unknown';
-          return moment.unix(val).format('YYYY-MM-DD HH:mm:ss');
+          return moment(val).format('YYYY-MM-DD HH:mm:ss');
         },
       });
     }
-    if (item.name === 'remoteAddr') {
+    if (item.name === 'remote_addr') {
       columns.push({
-        title: t('remoteAddr'),
+        title: t('remote_addr'),
         width: 100,
-        dataIndex: 'remoteAddr',
+        dataIndex: 'remote_addr',
         render: (val, reocrd) => {
           if (reocrd.cpu_num === -1) return 'unknown';
           return val;
