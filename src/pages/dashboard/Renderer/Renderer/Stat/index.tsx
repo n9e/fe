@@ -55,7 +55,6 @@ function StatItem(props) {
 
   return (
     <div
-      key={item.name}
       className='renderer-stat-item'
       ref={ele}
       style={{
@@ -69,6 +68,7 @@ function StatItem(props) {
           <div
             className='renderer-stat-header'
             style={{
+              color: getTextColor(color, colorMode),
               fontSize: headerFontSize > 100 ? 100 : headerFontSize,
             }}
           >
@@ -152,7 +152,7 @@ export default function Stat(props: IProps) {
         {_.map(calculatedValues, (item, idx) => {
           return (
             <StatItem
-              key={item.name}
+              key={item.id}
               item={item}
               idx={idx}
               colSpan={colSpan}
