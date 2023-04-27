@@ -49,12 +49,12 @@ export default function DisplayItem(props: IProps) {
             maxTagCount='responsive'
             onChange={(v) => {
               let val = v;
-              if (multi && allOption && val.includes('all')) {
-                val = ['all'];
-              } else if (multi && !allOption) {
-                let allIndex = val.indexOf('all');
-                if (allIndex !== -1 && typeof val === 'object') {
-                  val.splice(allIndex, 1);
+              if (_.isArray(v)) {
+                const curVal = _.last(v);
+                if (curVal === 'all') {
+                  val = ['all'];
+                } else if (v.includes('all')) {
+                  val = _.without(v, 'all');
                 }
               }
               setSelected(val);
