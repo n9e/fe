@@ -15,7 +15,7 @@ const replaceValueVariables = (url, dataValue) => {
 };
 
 const replaceNameVariables = (url, dataValue) => {
-  return replaceData(/\${__field\.(__name)}/g, url, dataValue);
+  return replaceData(/\${__field\.(__name__)}/g, url, dataValue);
 };
 
 const replaceData = (pattern: RegExp, url, dataValue) => {
