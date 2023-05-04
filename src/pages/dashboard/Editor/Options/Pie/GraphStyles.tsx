@@ -76,13 +76,13 @@ export default function GraphStyles() {
               <Switch />
             </Form.Item>
           </Col>
-          <Col span={12}>
-            <Form.Item label={t('panel.custom.detailName')} name={[...namePrefix, 'detailName']}>
+          <Col span={9}>
+            <Form.Item label={t('panel.custom.pie.detailName')} name={[...namePrefix, 'detailName']}>
               <Input style={{ width: '100%' }} />
             </Form.Item>
           </Col>
-          <Col span={12}>
-            <Form.Item label={t('panel.custom.detailUrl')} name={[...namePrefix, 'detailUrl']}>
+          <Col span={15}>
+            <Form.Item label={t('panel.custom.pie.detailUrl')} name={[...namePrefix, 'detailUrl']}>
               <Input style={{ width: '100%' }} />
             </Form.Item>
           </Col>
