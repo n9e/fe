@@ -52,10 +52,10 @@ export default function Pie(props: IProps) {
   };
 
   const detailFormatter = (data: any) => {
+    // 指标数据
+    const formatUrl =  data ? replaceExpressionDetail(detailUrl, data) : detailUrl;
     // 渲染下钻链接, 变量
-    let formatUrl = replaceFieldWithVariable(detailUrl, dashboardMeta.dashboardId, getOptionsList(dashboardMeta, time));
-    // 指标
-    return data ? replaceExpressionDetail(formatUrl, data) : formatUrl;
+    return replaceFieldWithVariable(formatUrl, dashboardMeta.dashboardId, getOptionsList(dashboardMeta, time));
   };
 
   const calculatedValues = getCalculatedValuesBySeries(
