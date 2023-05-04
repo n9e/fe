@@ -169,6 +169,7 @@ export const defaultCustomValuesMap = {
     calc: 'lastNotNull',
     textSize: {},
     legengPosition: 'right',
+    detailName: '详情',
   },
   table: {
     showHeader: true,

@@ -183,6 +183,8 @@ const en_US = {
         donut: 'Donut',
         labelWithName: 'Label with name',
         labelWithValue: 'Label with metric value',
+        detailName: 'Link name',
+        detailUrl: 'Link addr',
       },
       table: {
         displayMode: 'Display mode',

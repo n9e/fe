@@ -189,6 +189,8 @@ const zh_CN = {
         donut: '环图模式',
         labelWithName: 'label是否包含名称',
         labelWithValue: 'label显示指标值',
+        detailName: '链接名称',
+        detailUrl: '链接地址',
       },
       table: {
         displayMode: '显示模式',

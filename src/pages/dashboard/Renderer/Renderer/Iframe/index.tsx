@@ -1,9 +1,8 @@
 import React from 'react';
 import { IPanel, IIframeStyles } from '../../../types';
-import { replaceFieldWithVariable } from '../../../VariableConfig/constant';
+import { replaceFieldWithVariable, getOptionsList } from '../../../VariableConfig/constant';
 import { useGlobalState } from '../../../globalState';
-import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
-import moment from 'moment';
+import { IRawTimeRange } from '@/components/TimeRangePicker';
 
 interface IProps {
   values: IPanel;
@@ -17,25 +16,7 @@ export default function index(props: IProps) {
   const { values, time } = props;
   const { custom } = values;
   const { src } = custom as IIframeStyles;
-  const rangeTime = parseRange(time);
-  const from = moment(rangeTime.start).valueOf();
-  const fromDateSeconds = moment(rangeTime.start).unix();
-  const fromDateISO = moment(rangeTime.start).toISOString();
-  const to = moment(rangeTime.end).valueOf();
-  const toDateSeconds = moment(rangeTime.end).unix();
-  const toDateISO = moment(rangeTime.end).toISOString();
-  const optionsList = [
-    ...(dashboardMeta.variableConfigWithOptions ? dashboardMeta.variableConfigWithOptions : []),
-    { name: '__from', value: from },
-    { name: '__from_date_seconds', value: fromDateSeconds },
-    { name: '__from_date_iso', value: fromDateISO },
-    { name: '__from_date', value: fromDateISO },
-    { name: '__to', value: to },
-    { name: '__to_date_seconds', value: toDateSeconds },
-    { name: '__to_date_iso', value: toDateISO },
-    { name: '__to_date', value: toDateISO },
-  ];
-  const content = replaceFieldWithVariable(src, dashboardMeta.dashboardId, optionsList);
+  const content = replaceFieldWithVariable(src, dashboardMeta.dashboardId, getOptionsList(dashboardMeta, time));
 
   return (
     <iframe
