@@ -303,7 +303,7 @@ export default function index(props: IProps) {
         title: t(`panel.options.legend.${column}`),
         dataIndex: column,
         width: 100,
-        sorter: (a, b) => a[column].value - b[column].value,
+        sorter: (a, b) => a[column].stat - b[column].stat,
         render: (text) => {
           return text.text;
         },

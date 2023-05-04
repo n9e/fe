@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 export const getDefaultColumnsConfigs = () => {
-  let defaultColumnsConfigs = _.map(['tags', 'group_obj', 'target_up', 'mem_util', 'cpu_util', 'offset', 'cpu_num', 'os', 'arch', 'note'], (item) => {
+  let defaultColumnsConfigs = _.map(['tags', 'group_obj', 'target_up', 'mem_util', 'cpu_util', 'offset', 'cpu_num', 'os', 'arch', 'unixtime', 'remote_addr', 'note'], (item) => {
     return {
       name: item,
       visible: true,

@@ -67,14 +67,8 @@ const Event: React.FC = () => {
     queryContent: '',
     rule_prods: [],
   });
-  const tableRef = useRef({
-    handleReload() {},
-  });
-  const cardRef = useRef({
-    reloadCard() {},
-  });
+  const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
-  const [refreshTableFlag, setRefreshTableFlag] = useState<string>(_.uniqueId('refresh_table_'));
 
   function renderLeftHeader() {
     return (
@@ -182,11 +176,6 @@ const Event: React.FC = () => {
                 queryContent: e.target.value,
               });
             }}
-            onPressEnter={() => {
-              if (view === 'list') {
-                setRefreshTableFlag(_.uniqueId('refresh_table_'));
-              }
-            }}
           />
         </Space>
         <Col
@@ -206,7 +195,7 @@ const Event: React.FC = () => {
                   selectedRowKeys,
                   () => {
                     setSelectedRowKeys([]);
-                    view === 'list' && tableRef.current.handleReload();
+                    setRefreshFlag(_.uniqueId('refresh_'));
                   },
                   t,
                 )
@@ -217,8 +206,7 @@ const Event: React.FC = () => {
           )}
           <AutoRefresh
             onRefresh={() => {
-              view === 'list' && tableRef.current.handleReload();
-              view === 'card' && cardRef.current.reloadCard();
+              setRefreshFlag(_.uniqueId('refresh_'));
             }}
           />
         </Col>
@@ -238,9 +226,9 @@ const Event: React.FC = () => {
   return (
     <PageLayout icon={<AlertOutlined />} title={t('title')}>
       {view === 'card' ? (
-        <Card ref={cardRef} header={renderLeftHeader()} filter={filterObj} />
+        <Card header={renderLeftHeader()} filter={filterObj} refreshFlag={refreshFlag} />
       ) : (
-        <Table header={renderLeftHeader()} filter={filter} filterObj={filterObj} setFilter={setFilter} refreshFlag={refreshTableFlag} />
+        <Table header={renderLeftHeader()} filter={filter} filterObj={filterObj} setFilter={setFilter} refreshFlag={refreshFlag} />
       )}
     </PageLayout>
   );

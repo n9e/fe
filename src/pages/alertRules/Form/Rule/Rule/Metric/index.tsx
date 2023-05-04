@@ -76,15 +76,7 @@ export default function index() {
             const datasourceId = getFirstDatasourceId(datasourceIds, curDatasourceList);
 
             return (
-              <Form.List
-                name={['rule_config', 'queries']}
-                initialValue={[
-                  {
-                    prom_ql: '',
-                    severity: 3,
-                  },
-                ]}
-              >
+              <Form.List name={['rule_config', 'queries']}>
                 {(fields, { add, remove }) => (
                   <Card
                     title={
@@ -107,7 +99,9 @@ export default function index() {
                       {fields.map((field) => (
                         <div key={field.key} className='alert-rule-trigger-container'>
                           <Row>
-                            <Col flex='100px'>PromQL</Col>
+                            <Col flex='80px'>
+                              <div style={{ marginTop: 6 }}>PromQL</div>
+                            </Col>
                             <Col flex='auto'>
                               <Form.Item
                                 {...field}

@@ -4,6 +4,7 @@ import { ColumnsType } from 'antd/es/table';
 import { SearchOutlined, DownOutlined, ReloadOutlined, CopyOutlined } from '@ant-design/icons';
 import { useAntdTable } from 'ahooks';
 import _ from 'lodash';
+import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import { BusiGroupItem } from '@/store/commonInterface';
 import { getMonObjectList } from '@/services/targets';
@@ -314,6 +315,28 @@ export default function List(props: IProps) {
         },
       });
     }
+    if (item.name === 'unixtime') {
+      columns.push({
+        title: t('unixtime'),
+        width: 100,
+        dataIndex: 'unixtime',
+        render: (val, reocrd) => {
+          if (reocrd.cpu_num === -1) return 'unknown';
+          return moment(val).format('YYYY-MM-DD HH:mm:ss');
+        },
+      });
+    }
+    if (item.name === 'remote_addr') {
+      columns.push({
+        title: t('remote_addr'),
+        width: 100,
+        dataIndex: 'remote_addr',
+        render: (val, reocrd) => {
+          if (reocrd.cpu_num === -1) return 'unknown';
+          return val;
+        },
+      });
+    }
     if (item.name === 'note') {
       columns.push({
         title: t('common:table.note'),
@@ -437,6 +460,7 @@ export default function List(props: IProps) {
           showQuickJumper: true,
           pageSizeOptions: pageSizeOptions,
         }}
+        scroll={{ x: 'max-content' }}
       />
     </div>
   );

@@ -16,6 +16,8 @@ const zh_CN = {
   offset: '时间偏移',
   os: '操作系统',
   arch: 'CPU架构',
+  unixtime: '心跳时间',
+  remote_addr: '来源IP',
   note: '备注',
   organize_columns: {
     title: '显示列',

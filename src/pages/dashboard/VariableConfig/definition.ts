@@ -16,6 +16,7 @@
  */
 export interface IVariable {
   name: string;
+  label?: string;
   definition: string;
   fullDefinition?: string; // 转换变量后的完整表达式
   reg?: string;

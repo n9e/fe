@@ -181,7 +181,7 @@ const ExpressionInput = (
         ref.current = view;
       }
 
-      view.focus();
+      // view.focus();
     }
   }, [onChange, JSON.stringify(headers), completeEnabled]);
 

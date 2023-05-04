@@ -285,6 +285,7 @@ const Event: React.FC = () => {
 
   const { tableProps } = useAntdTable(fetchData, {
     refreshDeps: [refreshFlag, JSON.stringify(filterObj)],
+    defaultPageSize: 30,
   });
 
   return (
@@ -301,7 +302,6 @@ const Event: React.FC = () => {
             }}
             pagination={{
               ...tableProps.pagination,
-              pageSize: 30,
               pageSizeOptions: ['30', '100', '200', '500'],
             }}
           />
