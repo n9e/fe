@@ -11,8 +11,8 @@ you can deploy the front-end code independently, just replace the pub with the n
 ## Dependencies
 
 ```
-node: v16.x
-npm: 8.x
+node: v16.x <= v16.15.0
+npm: 8.x <= 8.5.5
 ```
 
 ## Installation
