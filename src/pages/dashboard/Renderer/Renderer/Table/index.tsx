@@ -157,17 +157,16 @@ export default function Stat(props: IProps) {
     },
     {
       title: 'value',
-      dataIndex: 'text',
-      key: 'text',
+      dataIndex: 'value',
+      key: 'value',
       sorter: (a, b) => {
         return a.stat - b.stat;
       },
-      sortOrder: getSortOrder('text', sortObj),
+      sortOrder: getSortOrder('value', sortObj),
       className: 'renderer-table-td-content-value-container',
-      render: (text, record) => {
+      render: (_val, record) => {
         let textObj = {
-          value: text,
-          unit: '',
+          text: record.text,
           color: record.color || (themeMode === 'dark' ? DEFAULT_LIGTH_COLOR : DEFAULT_DARK_COLOR),
         };
         const overrideProps = getOverridePropertiesByName(overrides, record.fields?.refId);
@@ -182,8 +181,7 @@ export default function Stat(props: IProps) {
               backgroundColor: colorMode === 'background' ? textObj.color : 'unset',
             }}
           >
-            {textObj.value}
-            {textObj.unit}
+            {textObj.text}
           </div>
         );
       },
@@ -208,13 +206,17 @@ export default function Stat(props: IProps) {
         },
         sortOrder: getSortOrder(key, sortObj),
         className: key === 'value' ? 'renderer-table-td-content-value-container' : '',
-        render: (_text, record) => {
+        render: (_val, record) => {
           if (key === 'value') {
-            const textObj = {
-              value: record?.value,
-              unit: record?.unit,
+            let textObj = {
+              text: record?.text,
               color: record.color || (themeMode === 'dark' ? DEFAULT_LIGTH_COLOR : DEFAULT_DARK_COLOR),
             };
+            const overrideProps = getOverridePropertiesByName(overrides, record.fields?.refId);
+            if (!_.isEmpty(overrideProps)) {
+              textObj = getSerieTextObj(record?.stat, overrideProps?.standardOptions, overrideProps?.valueMappings);
+              textObj.color = textObj.color || (themeMode === 'dark' ? DEFAULT_LIGTH_COLOR : DEFAULT_DARK_COLOR);
+            }
             return (
               <div
                 className='renderer-table-td-content'
@@ -223,8 +225,7 @@ export default function Stat(props: IProps) {
                   backgroundColor: colorMode === 'background' ? textObj.color : 'unset',
                 }}
               >
-                {textObj?.value}
-                {textObj?.unit}
+                {textObj?.text}
               </div>
             );
           }
@@ -273,22 +274,14 @@ export default function Stat(props: IProps) {
         },
         sortOrder: getSortOrder(name, sortObj),
         className: 'renderer-table-td-content-value-container',
-        render: (text) => {
+        render: (record) => {
           let textObj = {
-            value: text?.text,
-            unit: '',
-            color: text?.color || (themeMode === 'dark' ? DEFAULT_LIGTH_COLOR : DEFAULT_DARK_COLOR),
+            text: record?.text,
+            color: record?.color || (themeMode === 'dark' ? DEFAULT_LIGTH_COLOR : DEFAULT_DARK_COLOR),
           };
           const overrideProps = getOverridePropertiesByName(overrides, name);
           if (!_.isEmpty(overrideProps)) {
-            textObj = getSerieTextObj(
-              text?.stat,
-              {
-                ...(overrideProps?.standardOptions || {}),
-                unit: overrideProps?.standardOptions?.util, // TODO: 兼容性问题，后续需要修改
-              },
-              overrideProps?.valueMappings,
-            );
+            textObj = getSerieTextObj(record?.stat, overrideProps?.standardOptions, overrideProps?.valueMappings);
             textObj.color = textObj.color || (themeMode === 'dark' ? DEFAULT_LIGTH_COLOR : DEFAULT_DARK_COLOR);
           }
           return (
@@ -299,8 +292,7 @@ export default function Stat(props: IProps) {
                 backgroundColor: colorMode === 'background' ? textObj?.color : 'unset',
               }}
             >
-              {textObj?.value}
-              {textObj?.unit}
+              {textObj?.text}
             </div>
           );
         },
