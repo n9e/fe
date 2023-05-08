@@ -1,12 +1,13 @@
 import _ from 'lodash';
 import moment from 'moment';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
-import { replaceExpressionVars } from '../../VariableConfig/constant';
 import { fetchHistoryRangeBatch, fetchHistoryInstantBatch } from '@/services/dashboardV2';
 import { ITarget } from '../../types';
 import { IVariable } from '../../VariableConfig/definition';
 import replaceExpressionBracket from '../utils/replaceExpressionBracket';
 import { completeBreakpoints, getSerieName } from './utils';
+import replaceFieldWithVariable from '../utils/replaceFieldWithVariable';
+import { replaceExpressionVars } from '../../VariableConfig/constant';
 
 interface IOptions {
   id?: string; // panelId
@@ -17,6 +18,7 @@ interface IOptions {
   targets: ITarget[];
   variableConfig?: IVariable[];
   spanNulls?: boolean;
+  scopedVars?: any;
 }
 
 const getDefaultStepByStartAndEnd = (start: number, end: number) => {
@@ -24,7 +26,7 @@ const getDefaultStepByStartAndEnd = (start: number, end: number) => {
 };
 
 export default async function prometheusQuery(options: IOptions) {
-  const { dashboardId, id, time, targets, variableConfig, spanNulls } = options;
+  const { dashboardId, id, time, targets, variableConfig, spanNulls, scopedVars } = options;
   if (!time.start) return Promise.resolve([]);
   const parsedRange = parseRange(time);
   let start = moment(parsedRange.start).unix();
@@ -52,7 +54,7 @@ export default async function prometheusQuery(options: IOptions) {
       start = start - (start % _step!);
       end = end - (end % _step!);
 
-      const realExpr = variableConfig ? replaceExpressionVars(target.expr, variableConfig, variableConfig.length, dashboardId) : target.expr;
+      const realExpr = variableConfig ? replaceFieldWithVariable(dashboardId, target.expr, variableConfig, scopedVars) : target.expr;
       if (realExpr) {
         if (target.instant) {
           batchInstantParams.push({

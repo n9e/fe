@@ -333,6 +333,8 @@ function convertPanlesGrafanaToN9E(panels: any) {
           .value(),
         options: convertOptionsGrafanaToN9E(item),
         custom: chartsMap[item.type] ? chartsMap[item.type].fn(item) : {},
+        maxPerRow: item.maxPerRow || 4,
+        repeat: item.repeat,
         datasourceCate: item.datasource?.type,
         datasourceValue: item.datasource?.uid,
       };

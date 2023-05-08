@@ -37,6 +37,7 @@ interface IProps {
   variableConfig?: IVariable[];
   inViewPort?: boolean;
   spanNulls?: boolean;
+  scopedVars?: any;
 }
 
 export default function usePrometheus(props: IProps) {

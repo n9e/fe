@@ -15,7 +15,8 @@
  *
  */
 import _ from 'lodash';
-import { IPanel, IDashboard } from '../types';
+import { v4 as uuidv4 } from 'uuid';
+import { IPanel, IDashboard, IVariable } from '../types';
 
 export function buildLayout(panels: IPanel[]) {
   return _.map(panels, (item: IPanel) => {
@@ -217,6 +218,123 @@ export function updatePanelsInsertNewPanelToRow(panels: IPanel[], rowId: string,
 
 export function panelsMergeToConfigs(configs: IDashboard, panels: any[]) {
   const parsedConfigs = configs;
-  parsedConfigs.panels = panels;
+  const cloneDeep = _.cloneDeep(panels);
+  cleanUpRepeats(cloneDeep);
+  parsedConfigs.panels = cloneDeep;
   return JSON.stringify(parsedConfigs);
+}
+
+export function deleteScopeVars(panels: IPanel[]) {
+  for (const panel of panels) {
+    delete panel.scopedVars;
+    if (panel.panels?.length) {
+      for (const collapsedPanel of panel.panels) {
+        delete collapsedPanel.scopedVars;
+      }
+    }
+  }
+}
+
+export function cleanUpRepeats(panels: IPanel[]) {
+  const panelsToRemove = panels.filter((p) => !p.repeat && p.repeatPanelId);
+
+  deleteScopeVars(panels);
+
+  _.pull(panels, ...panelsToRemove);
+  sortPanelsByGridLayout(panels);
+}
+
+export function getPanelRepeatClone(sourcePanel: IPanel, valueIndex: number, sourcePanelIndex: number, panels: IPanel[]) {
+  // 源面板直接返回
+  if (valueIndex === 0) {
+    return sourcePanel;
+  }
+
+  const clone = _.cloneDeep(sourcePanel);
+  clone.id = uuidv4();
+
+  // 在源面板后面插入
+  panels.splice(sourcePanelIndex + valueIndex, 0, clone);
+
+  clone.repeatPanelId = sourcePanel.id;
+  clone.repeat = undefined;
+
+  return clone;
+}
+
+export function repeatPanel(panel: IPanel, panelIndex: number, panels: IPanel[], variables: IVariable[]) {
+  const variable = _.find(variables, { name: panel.repeat });
+  if (!variable) {
+    return;
+  }
+
+  let selectedOptions = variable.value;
+
+  if (typeof selectedOptions === 'number') {
+    return;
+  }
+  if (!selectedOptions) {
+    selectedOptions = [];
+  }
+  if (typeof selectedOptions === 'string') {
+    selectedOptions = [selectedOptions];
+  }
+  if (_.isEqual(selectedOptions, ['all'])) {
+    selectedOptions = variable.options || [];
+  }
+
+  const maxPerRow = panel.maxPerRow || 4;
+  let xPos = 0;
+  let yPos = panel.layout.y;
+
+  for (let index = 0; index < selectedOptions.length; index++) {
+    const option = selectedOptions[index];
+    let copy;
+
+    copy = getPanelRepeatClone(panel, index, panelIndex, panels);
+    copy.scopedVars ??= {};
+    copy.scopedVars[variable.name] = option;
+
+    // repeat 的面板默认占据整行
+    copy.layout.w = Math.max(24 / selectedOptions.length, 24 / maxPerRow);
+    copy.layout.x = xPos;
+    copy.layout.y = yPos;
+    copy.layout.i = copy.id;
+
+    xPos += copy.layout.w;
+
+    // 水平溢出的话就换行
+    if (xPos + copy.layout.w > 24) {
+      xPos = 0;
+      yPos += copy.layout.h;
+    }
+  }
+
+  // 更新后面 panel 的布局
+  const yOffset = yPos - panel.layout.y;
+  if (yOffset > 0) {
+    const panelBelowIndex = panelIndex + selectedOptions.length;
+    for (const curPanel of panels.slice(panelBelowIndex)) {
+      curPanel.layout.y += yOffset;
+    }
+  }
+}
+
+export function processRepeats(panels: IPanel[], variables: IVariable[]) {
+  const panelsClone = _.cloneDeep(panels);
+  if (!variables || variables.length === 0) {
+    return panelsClone;
+  }
+
+  cleanUpRepeats(panelsClone);
+
+  for (let i = 0; i < panelsClone.length; i++) {
+    const panel = panelsClone[i];
+    if (panel.repeat) {
+      repeatPanel(panel, i, panelsClone, variables);
+    }
+  }
+
+  const newPanels = sortPanelsByGridLayout(panelsClone);
+  return newPanels;
 }

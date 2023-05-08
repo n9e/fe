@@ -215,6 +215,10 @@ export interface IPanel {
   collapsed?: boolean; // 用于 row 展开收起控制是否显示
   panels?: IPanel[]; // 用于 row 收起时保存子面板
   transformations?: ITransformation[];
+  repeat?: string;
+  maxPerRow?: number;
+  repeatPanelId?: string;
+  scopedVars?: any;
 }
 
 export interface IVariable {
@@ -223,6 +227,7 @@ export interface IVariable {
   options?: string[];
   allOption?: boolean;
   multi?: boolean;
+  value?: string | number | string[];
 }
 
 // IDashboard.configs
