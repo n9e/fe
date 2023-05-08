@@ -18,6 +18,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import _ from 'lodash';
 import * as d3 from 'd3';
 import { useSize } from 'ahooks';
+import TsGraph from '@fc-plot/ts-graph';
+import '@fc-plot/ts-graph/dist/index.css';
 import { IPanel } from '../../../types';
 import { statHexPalette } from '../../../config';
 import getCalculatedValuesBySeries from '../../utils/getCalculatedValuesBySeries';
@@ -43,7 +45,9 @@ const getTextColor = (color, colorMode) => {
 function StatItem(props) {
   const ele = useRef(null);
   const eleSize = useSize(ele);
-  const { item, colSpan, textMode, colorMode, textSize, isFullSizeBackground, valueField = 'Value' } = props;
+  const chartEleRef = useRef<HTMLDivElement>(null);
+  const chartRef = useRef<TsGraph>(null);
+  const { item, colSpan, textMode, colorMode, textSize, isFullSizeBackground, valueField = 'Value', graphMode, serie } = props;
   const headerFontSize = textSize?.title ? textSize?.title : eleSize?.width! / _.toString(item.name).length || MIN_SIZE;
   let statFontSize = textSize?.value ? textSize?.value : (eleSize?.width! - item.unit.length * UNIT_SIZE - UNIT_PADDING) / _.toString(item.value).length || MIN_SIZE;
   const color = item.color;
@@ -52,6 +56,43 @@ function StatItem(props) {
   if (statFontSize > eleSize?.height! - 20) {
     statFontSize = eleSize?.height! - 20;
   }
+
+  useEffect(() => {
+    if (chartEleRef.current) {
+      if (chartRef.current) {
+        chartRef.current.destroy();
+      }
+      chartRef.current = new TsGraph({
+        timestamp: 'X',
+        xkey: 0,
+        ykey: 1,
+        ykey2: 2,
+        ykeyFormatter: (value) => Number(value),
+        chart: {
+          renderTo: chartEleRef.current,
+          height: chartEleRef.current.clientHeight,
+          marginTop: 0,
+          marginRight: 0,
+          marginBottom: 0,
+          marginLeft: 0,
+          colors: [colorMode === 'background' ? 'rgba(255, 255, 255, 0.5)' : color],
+        },
+        series: [serie],
+        line: {
+          width: 1,
+        },
+        xAxis: {
+          visible: false,
+        },
+        yAxis: {
+          visible: false,
+        },
+        area: {
+          opacity: 0.2,
+        },
+      });
+    }
+  }, [colorMode, graphMode]);
 
   return (
     <div
@@ -63,33 +104,39 @@ function StatItem(props) {
         backgroundColor: isFullSizeBackground ? 'transparent' : backgroundColor,
       }}
     >
-      <div className='renderer-stat-item-content'>
-        {textMode === 'valueAndName' && (
-          <div
-            className='renderer-stat-header'
-            style={{
-              color: getTextColor(color, colorMode),
-              fontSize: headerFontSize > 100 ? 100 : headerFontSize,
-            }}
-          >
-            {item.name}
+      <div style={{ width: '100%' }}>
+        {graphMode === 'area' && (
+          <div className='renderer-stat-item-graph'>
+            <div ref={chartEleRef} style={{ height: '100%', width: '100%' }} />
           </div>
         )}
-        <div
-          className='renderer-stat-value'
-          style={{
-            color: getTextColor(color, colorMode),
-            fontSize: statFontSize > 100 ? 100 : statFontSize,
-          }}
-        >
-          {valueField === 'Value' ? (
-            <>
-              {item.value}
-              <span style={{ fontSize: UNIT_SIZE, paddingLeft: UNIT_PADDING }}>{item.unit}</span>
-            </>
-          ) : (
-            _.get(item, ['metric', valueField])
+        <div className='renderer-stat-item-content'>
+          {textMode === 'valueAndName' && (
+            <div
+              className='renderer-stat-header'
+              style={{
+                fontSize: headerFontSize > 100 ? 100 : headerFontSize,
+              }}
+            >
+              {item.name}
+            </div>
           )}
+          <div
+            className='renderer-stat-value'
+            style={{
+              color: getTextColor(color, colorMode),
+              fontSize: statFontSize > 100 ? 100 : statFontSize,
+            }}
+          >
+            {valueField === 'Value' ? (
+              <>
+                {item.value}
+                <span style={{ fontSize: UNIT_SIZE, paddingLeft: UNIT_PADDING }}>{item.unit}</span>
+              </>
+            ) : (
+              _.get(item, ['metric', valueField])
+            )}
+          </div>
         </div>
       </div>
     </div>
@@ -110,7 +157,7 @@ const getColumnsKeys = (data: any[]) => {
 export default function Stat(props: IProps) {
   const { values, series, bodyWrapRef } = props;
   const { custom, options } = values;
-  const { calc, textMode, colorMode, colSpan, textSize, valueField } = custom;
+  const { calc, textMode, colorMode, colSpan, textSize, valueField, graphMode } = custom;
   const calculatedValues = getCalculatedValuesBySeries(
     series,
     calc,
@@ -161,6 +208,8 @@ export default function Stat(props: IProps) {
               textSize={textSize}
               isFullSizeBackground={isFullSizeBackground}
               valueField={valueField}
+              graphMode={graphMode}
+              serie={_.find(series, { id: item.id })}
             />
           );
         })}

@@ -129,6 +129,7 @@ export interface IStatStyles {
   };
   calc: string;
   colorMode: 'value' | 'background';
+  graphMode?: 'none' | 'area';
 }
 
 export interface ITableStyles {

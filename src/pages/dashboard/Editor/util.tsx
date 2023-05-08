@@ -8,6 +8,13 @@ export const normalizeInitialValues = (values: any) => {
   } else if (thresholdsSteps.length === 1 && thresholdsSteps[0].type !== 'base') {
     thresholdsSteps.unshift(defaultThreshold);
   }
+
+  if (values.type === 'stat') {
+    if (!values.custom?.graphMode) {
+      values.custom.graphMode = 'none';
+    }
+  }
+
   return {
     ...values,
     options: {
