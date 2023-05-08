@@ -62,6 +62,7 @@ import NotificationTpls from '@/pages/help/NotificationTpls';
 import NotificationSettings from '@/pages/help/NotificationSettings';
 import MigrateDashboards from '@/pages/help/migrate';
 import IBEX from '@/pages/help/NotificationSettings/IBEX';
+import Collects, { Add as CollectAdd, Edit as CollectEdit } from '@/pages/collects';
 import { dynamicPackages, Entry } from '@/utils';
 
 const Packages = dynamicPackages();
@@ -129,6 +130,9 @@ export default function Content() {
         <Route exact path='/alert-subscribes' component={Subscribe} />
         <Route exact path='/alert-subscribes/add' component={SubscribeAdd} />
         <Route exact path='/alert-subscribes/edit/:id' component={SubscribeEdit} />
+        <Route exact path='/collects' component={Collects} />
+        <Route exact path='/collects/add/:bgid' component={CollectAdd} />
+        <Route exact path='/collects/edit/:id' component={CollectEdit} />
 
         <Route exact path='/recording-rules/:id?' component={RecordingRule} />
         <Route exact path='/recording-rules/add/:group_id' component={RecordingRuleAdd} />

@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Table, Tag, Tooltip, Space, Input, Dropdown, Menu, Button, Modal, message } from 'antd';
 import { ColumnsType } from 'antd/es/table';
-import { SearchOutlined, DownOutlined, ReloadOutlined, CopyOutlined } from '@ant-design/icons';
+import { SearchOutlined, DownOutlined, ReloadOutlined, CopyOutlined, ApartmentOutlined } from '@ant-design/icons';
 import { useAntdTable } from 'ahooks';
 import _ from 'lodash';
 import moment from 'moment';
@@ -12,6 +12,7 @@ import { timeFormatter } from '@/pages/dashboard/Renderer/utils/valueFormatter';
 import clipboard from './clipboard';
 import OrganizeColumns from './OrganizeColumns';
 import { getDefaultColumnsConfigs, setDefaultColumnsConfigs } from './utils';
+import CollectsDrawer from './CollectsDrawer';
 
 export const pageSizeOptions = ['10', '20', '50', '100'];
 
@@ -58,6 +59,9 @@ export default function List(props: IProps) {
   const [searchVal, setSearchVal] = useState('');
   const [tableQueryContent, setTableQueryContent] = useState<string>('');
   const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs());
+  const [collectsDrawerVisible, setCollectsDrawerVisible] = useState(false);
+  const [collectsDrawerIdent, setCollectsDrawerIdent] = useState('');
+
   const columns: ColumnsType<any> = [
     {
       title: (
@@ -113,6 +117,21 @@ export default function List(props: IProps) {
         </Space>
       ),
       dataIndex: 'ident',
+      render: (text) => {
+        return (
+          <Space>
+            {text}
+            <Tooltip title='查看关联采集配置'>
+              <ApartmentOutlined
+                onClick={() => {
+                  setCollectsDrawerVisible(true);
+                  setCollectsDrawerIdent(text);
+                }}
+              />
+            </Tooltip>
+          </Space>
+        );
+      },
     },
   ];
 
@@ -462,6 +481,7 @@ export default function List(props: IProps) {
         }}
         scroll={{ x: 'max-content' }}
       />
+      <CollectsDrawer visible={collectsDrawerVisible} setVisible={setCollectsDrawerVisible} ident={collectsDrawerIdent} />
     </div>
   );
 }

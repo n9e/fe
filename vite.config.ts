@@ -52,15 +52,15 @@ export default defineConfig({
         changeOrigin: true,
       },
       '/api/n9e/proxy': {
-        target: 'http://10.206.16.17:17000/',
+        target: 'http://10.206.16.17:17001/',
         changeOrigin: true,
       },
       '/api/n9e/datasource': {
-        target: 'http://10.206.16.17:17000/',
+        target: 'http://10.206.16.17:17001/',
         changeOrigin: true,
       },
       '/api/n9e': {
-        target: 'http://10.206.16.17:17000/',
+        target: 'http://10.206.16.17:17001/',
         changeOrigin: true,
       },
       '/api/fc-brain': {

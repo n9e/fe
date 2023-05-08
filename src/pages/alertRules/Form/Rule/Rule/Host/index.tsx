@@ -88,7 +88,7 @@ export default function index() {
                           <Space align='baseline'>
                             <Form.Item {...field} name={[field.name, 'op']} rules={[{ required: true, message: 'Missing op' }]}>
                               <Select style={{ minWidth: 60 }}>
-                                <Select.Option value='='>==</Select.Option>
+                                <Select.Option value='=='>==</Select.Option>
                                 <Select.Option value='!='>!=</Select.Option>
                               </Select>
                             </Form.Item>

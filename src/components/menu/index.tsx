@@ -220,6 +220,15 @@ const getMenuList = (t) => {
       ],
     },
   ];
+  if (import.meta.env['VITE_IS_COLLECT']) {
+    const targets = _.find(menuList, (item) => item.key === 'targets');
+    if (targets) {
+      targets.children?.push({
+        key: '/collects',
+        label: t('采集配置'),
+      });
+    }
+  }
   return menuList;
 };
 
