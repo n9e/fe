@@ -19,21 +19,28 @@ import _ from 'lodash';
 import G2PieChart from '@/components/G2PieChart';
 import { IPanel } from '../../../types';
 import getCalculatedValuesBySeries from '../../utils/getCalculatedValuesBySeries';
+import { replaceExpressionDetail } from '../../utils/replaceExpressionDetail';
+
 import valueFormatter from '../../utils/valueFormatter';
 import './style.less';
+import { replaceFieldWithVariable, getOptionsList } from '../../../VariableConfig/constant';
+import { useGlobalState } from '../../../globalState';
+import { IRawTimeRange } from '@/components/TimeRangePicker';
 
 interface IProps {
   values: IPanel;
   series: any[];
   themeMode?: 'dark';
+  time: IRawTimeRange;
 }
 
 export default function Pie(props: IProps) {
-  const { values, series, themeMode } = props;
+  const [dashboardMeta] = useGlobalState('dashboardMeta');
+  const { values, series, themeMode, time } = props;
   const { custom, options } = values;
-  const { calc, legengPosition, max, labelWithName, labelWithValue, donut = false } = custom;
+  const { calc, legengPosition, max, labelWithName, labelWithValue, detailUrl, detailName, donut = false } = custom;
   const dataFormatter = (text: number) => {
-   const resFormatter =   valueFormatter(
+    const resFormatter = valueFormatter(
       {
         unit: options?.standardOptions?.util,
         decimals: options?.standardOptions?.decimals,
@@ -41,7 +48,14 @@ export default function Pie(props: IProps) {
       },
       text,
     );
-    return `${resFormatter.value}${resFormatter.unit}`
+    return `${resFormatter.value}${resFormatter.unit}`;
+  };
+
+  const detailFormatter = (data: any) => {
+    // 指标数据
+    const formatUrl =  data ? replaceExpressionDetail(detailUrl, data) : detailUrl;
+    // 渲染下钻链接, 变量
+    return replaceFieldWithVariable(formatUrl, dashboardMeta.dashboardId, getOptionsList(dashboardMeta, time));
   };
 
   const calculatedValues = getCalculatedValuesBySeries(
@@ -60,10 +74,9 @@ export default function Pie(props: IProps) {
     max && sortedValues.length > max
       ? sortedValues
           .slice(0, max)
-          .map((i) => ({ name: i.name, value: i.stat }))
-          .concat({ name: '其他', value: sortedValues.slice(max).reduce((previousValue, currentValue) => currentValue.stat + previousValue, 0) })
-      : sortedValues.map((i) => ({ name: i.name, value: i.stat }));
-
+          .map((i) => ({ name: i.name, value: i.stat, metric: i.metric }))
+          .concat({ name: '其他', value: sortedValues.slice(max).reduce((previousValue, currentValue) => currentValue.stat + previousValue, 0), metric: {} })
+      : sortedValues.map((i) => ({ name: i.name, value: i.stat, metric: i.metric }));
   return (
     <div className='renderer-pie-container'>
       <G2PieChart
@@ -74,6 +87,9 @@ export default function Pie(props: IProps) {
         labelWithName={labelWithName}
         labelWithValue={labelWithValue}
         dataFormatter={dataFormatter}
+        detailFormatter={detailFormatter}
+        detailName={detailName}
+        detailUrl={detailUrl}
         donut={donut}
       />
     </div>

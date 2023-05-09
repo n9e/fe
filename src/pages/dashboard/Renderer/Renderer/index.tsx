@@ -96,7 +96,7 @@ function index(props: IProps) {
     timeseries: () => <Timeseries {...subProps} themeMode={themeMode} time={time} />,
     stat: () => <Stat {...subProps} bodyWrapRef={bodyWrapRef} themeMode={themeMode} />,
     table: () => <Table {...subProps} themeMode={themeMode} />,
-    pie: () => <Pie {...subProps} themeMode={themeMode} />,
+    pie: () => <Pie {...subProps} themeMode={themeMode} time={time} />,
     hexbin: () => <Hexbin {...subProps} themeMode={themeMode} />,
     barGauge: () => <BarGauge {...subProps} themeMode={themeMode} />,
     text: () => <Text {...subProps} />,

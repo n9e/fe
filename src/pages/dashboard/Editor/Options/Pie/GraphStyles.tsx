@@ -15,7 +15,7 @@
  *
  */
 import React from 'react';
-import { Form, Select, Row, Col, InputNumber, Switch } from 'antd';
+import { Form, Select, Row, Col, InputNumber, Switch, Input } from 'antd';
 import { CaretDownOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -74,6 +74,16 @@ export default function GraphStyles() {
           <Col span={6}>
             <Form.Item label={t('panel.custom.pie.labelWithValue')} name={[...namePrefix, 'labelWithValue']} valuePropName='checked'>
               <Switch />
+            </Form.Item>
+          </Col>
+          <Col span={9}>
+            <Form.Item label={t('panel.custom.pie.detailName')} name={[...namePrefix, 'detailName']}>
+              <Input style={{ width: '100%' }} />
+            </Form.Item>
+          </Col>
+          <Col span={15}>
+            <Form.Item label={t('panel.custom.pie.detailUrl')} name={[...namePrefix, 'detailUrl']}>
+              <Input style={{ width: '100%' }} />
             </Form.Item>
           </Col>
         </Row>

@@ -30,6 +30,7 @@ interface ListItem extends DataType {
 type DataType = {
   name: string;
   value: number;
+  metric: any;
 };
 interface Props {
   data: DataType[];
@@ -38,6 +39,9 @@ interface Props {
   labelWithName: boolean;
   labelWithValue: boolean;
   dataFormatter: Function;
+  detailFormatter: Function;
+  detailName?: string;
+  detailUrl?: string;
   themeMode?: 'dark';
   donut?: boolean;
 }
@@ -59,7 +63,7 @@ function renderStatistic(containerWidth, text, style) {
 }
 
 const DemoPie = (props: Props) => {
-  const { data, positon, hidden, labelWithName, labelWithValue, themeMode, donut, dataFormatter } = props;
+  const { data, positon, hidden, labelWithName, labelWithValue, themeMode, detailName, detailUrl, donut, dataFormatter, detailFormatter } = props;
 
   const config: PieConfig = {
     padding: [16, 8, 16, 8],
@@ -120,9 +124,14 @@ const DemoPie = (props: Props) => {
       },
     ],
     tooltip: {
-      fields: ['name', 'value', 'unit'],
+      position: 'top',
+      offset: 2,
+      enterable: true,
+      fields: ['name', 'value', 'metric'],
       formatter: (datum) => {
-        return { name: datum.name, value: dataFormatter(datum.value) };
+        const formatUrl = detailFormatter(datum);
+        const detailDom = detailUrl && datum.name !== '其他' ? `&nbsp;|&nbsp;<span><a href=${formatUrl} target="_blank">${detailName}</a></span>` : '';
+        return { name: datum.name, value: dataFormatter(datum.value) + detailDom };
       },
     },
     legend: hidden
