@@ -35,6 +35,27 @@ const en_US = {
     title: 'Links',
     name: 'Name',
     url: 'URL',
+    url_tip: `
+      Variables usage
+      <1 />
+      \${variable_name}: dashboard variable value
+      <1 />
+      \${__field.name}: series name
+      <1 />
+      \${__field.value}: series value
+      <1 />
+      \${__field.labels.X}: specified label value
+      <1 />
+      \${__field.labels.__name__}: metric name
+      <1 />
+      \${__from}: Unix millisecond
+      <1 />
+      \${__from_date_seconds}: Unix seconds epoch
+      <1 />
+      \${__from_date_iso}: ISO 8601/RFC 3339
+      <1 />
+      The syntax above also works with \${__to}
+      `,
     isNewBlank: 'Open in new tab',
   },
   var: {

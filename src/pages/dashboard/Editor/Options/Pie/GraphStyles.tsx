@@ -18,7 +18,7 @@ import React from 'react';
 import { Form, Select, Row, Col, InputNumber, Switch, Input } from 'antd';
 import { CaretDownOutlined } from '@ant-design/icons';
 import _ from 'lodash';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import { Panel } from '../../Components/Collapse';
 import { calcsOptions, legendPostion } from '../../config';
 
@@ -82,7 +82,14 @@ export default function GraphStyles() {
             </Form.Item>
           </Col>
           <Col span={15}>
-            <Form.Item label={t('panel.custom.pie.detailUrl')} name={[...namePrefix, 'detailUrl']}>
+            <Form.Item
+              label={t('panel.custom.pie.detailUrl')}
+              name={[...namePrefix, 'detailUrl']}
+              tooltip={{
+                overlayInnerStyle: { width: 330 },
+                title: <Trans ns='dashboard' i18nKey='dashboard:link.url_tip' components={{ 1: <br /> }} />,
+              }}
+            >
               <Input style={{ width: '100%' }} />
             </Form.Item>
           </Col>

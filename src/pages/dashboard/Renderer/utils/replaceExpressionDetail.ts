@@ -11,11 +11,11 @@ const replaceLabelsVariables = (url, variables) => {
 };
 
 const replaceValueVariables = (url, dataValue) => {
-  return replaceData(/\${__field\.(__value)}/g, url, dataValue);
+  return replaceData(/\${__field\.(value)}/g, url, dataValue);
 };
 
 const replaceNameVariables = (url, dataValue) => {
-  return replaceData(/\${__field\.(__name__)}/g, url, dataValue);
+  return replaceData(/\${__field\.(name)}/g, url, dataValue);
 };
 
 const replaceData = (pattern: RegExp, url, dataValue) => {

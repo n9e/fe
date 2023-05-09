@@ -35,6 +35,27 @@ const zh_CN = {
     title: '仪表盘链接',
     name: '链接名称',
     url: '链接地址',
+    url_tip: `
+      变量使用说明
+      <1 />
+      \${variable_name}: 显示仪表盘变量值
+      <1 />
+      \${__field.name}: 显示序列的名称
+      <1 />
+      \${__field.value}: 显示序列的数值
+      <1 />
+      \${__field.labels.X}: 显示指定的标签值
+      <1 />
+      \${__field.labels.__name__}: 显示指标名
+      <1 />
+      \${__from}: 起始时间, 毫秒
+      <1 />
+      \${__from_date_seconds}: 起始时间, 秒
+      <1 />
+      \${__from_date_iso}: 起始时间, ISO 8601/RFC 3339
+      <1 />
+      上面语法适用于 \${__to}
+      `,
     isNewBlank: '是否新窗口打开',
   },
   var: {

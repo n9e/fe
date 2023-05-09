@@ -53,7 +53,7 @@ export default function Pie(props: IProps) {
 
   const detailFormatter = (data: any) => {
     // 指标数据
-    const formatUrl =  data ? replaceExpressionDetail(detailUrl, data) : detailUrl;
+    const formatUrl = data ? replaceExpressionDetail(detailUrl, data) : detailUrl;
     // 渲染下钻链接, 变量
     return replaceFieldWithVariable(formatUrl, dashboardMeta.dashboardId, getOptionsList(dashboardMeta, time));
   };

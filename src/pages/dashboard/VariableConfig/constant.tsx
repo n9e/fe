@@ -291,11 +291,13 @@ export function replaceFieldWithVariable(value: string, dashboardId?: string, va
   }
   return replaceExpressionVars(value, variableConfig, variableConfig.length, dashboardId);
 }
-export const getOptionsList =  ( dashboardMeta: {
+export const getOptionsList = (
+  dashboardMeta: {
     dashboardId: string;
     variableConfigWithOptions: any;
-},
-time: IRawTimeRange) => {
+  },
+  time: IRawTimeRange,
+) => {
   const rangeTime = parseRange(time);
   const from = moment(rangeTime.start).valueOf();
   const fromDateSeconds = moment(rangeTime.start).unix();
@@ -314,7 +316,7 @@ time: IRawTimeRange) => {
     { name: '__to_date_iso', value: toDateISO },
     { name: '__to_date', value: toDateISO },
   ];
-}
+};
 
 export function filterOptionsByReg(options, reg, formData: IVariable[], limit: number, id: string) {
   reg = replaceExpressionVars(reg, formData, limit, id);
