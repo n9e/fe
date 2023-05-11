@@ -121,14 +121,16 @@ export default function List(props: IProps) {
         return (
           <Space>
             {text}
-            <Tooltip title='查看关联采集配置'>
-              <ApartmentOutlined
-                onClick={() => {
-                  setCollectsDrawerVisible(true);
-                  setCollectsDrawerIdent(text);
-                }}
-              />
-            </Tooltip>
+            {import.meta.env['VITE_IS_COLLECT'] && (
+              <Tooltip title='查看关联采集配置'>
+                <ApartmentOutlined
+                  onClick={() => {
+                    setCollectsDrawerVisible(true);
+                    setCollectsDrawerIdent(text);
+                  }}
+                />
+              </Tooltip>
+            )}
           </Space>
         );
       },

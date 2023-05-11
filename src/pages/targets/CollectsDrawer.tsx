@@ -137,9 +137,11 @@ export default function CollectsDrawer(props: IProps) {
   }, [ident, visible]);
 
   useEffect(() => {
-    getCollectCates().then((res) => {
-      setCates(res);
-    });
+    if (import.meta.env['VITE_IS_COLLECT']) {
+      getCollectCates().then((res) => {
+        setCates(res);
+      });
+    }
   }, []);
 
   return (
