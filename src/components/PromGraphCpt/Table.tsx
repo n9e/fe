@@ -32,7 +32,7 @@ interface IProps {
   setTimestamp: (timestamp?: number) => void;
   refreshFlag: string;
 }
-type ResultType = 'matrix' | 'vector' | 'scalar' | 'string';
+type ResultType = 'matrix' | 'vector' | 'scalar' | 'string' | 'streams';
 
 const LIMIT = 10000;
 function getListItemLabel(resultType, record) {
@@ -61,7 +61,7 @@ function getListItemValue(resultType, record) {
   if (resultType === 'vector') {
     return _.get(record, 'value[1]', '-');
   }
-  if (resultType === 'matrix') {
+  if (resultType === 'matrix' || resultType === 'streams') {
     return _.map(_.get(record, 'values'), (value, i) => {
       return (
         <div key={i}>
@@ -165,7 +165,9 @@ export default function Table(props: IProps) {
         renderItem={(item) => {
           return (
             <List.Item>
-              <div>{getListItemLabel(data?.resultType, item)}</div>
+              { data?.resultType != 'streams' &&
+                <div>{getListItemLabel(data?.resultType, item)}</div>
+              }
               <div>{getListItemValue(data?.resultType, item)}</div>
             </List.Item>
           );
