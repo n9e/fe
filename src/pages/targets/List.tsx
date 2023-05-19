@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Table, Tag, Tooltip, Space, Input, Dropdown, Menu, Button, Modal, message } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { SearchOutlined, DownOutlined, ReloadOutlined, CopyOutlined, ApartmentOutlined } from '@ant-design/icons';
@@ -61,6 +61,10 @@ export default function List(props: IProps) {
   const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs());
   const [collectsDrawerVisible, setCollectsDrawerVisible] = useState(false);
   const [collectsDrawerIdent, setCollectsDrawerIdent] = useState('');
+  const [requestParams, setRequestParams] = useState({
+    current: 1,
+    pageSize: 30,
+  });
 
   const columns: ColumnsType<any> = [
     {
@@ -376,7 +380,7 @@ export default function List(props: IProps) {
     }
   });
 
-  const featchData = ({ current, pageSize }): Promise<any> => {
+  const featchData = ({ current, pageSize }: { current: number; pageSize: number }): Promise<any> => {
     const query = {
       query: tableQueryContent,
       bgid: curBusiId,
@@ -395,10 +399,13 @@ export default function List(props: IProps) {
     return t('common:table.total', { total });
   };
 
-  const { tableProps } = useAntdTable(featchData, {
-    refreshDeps: [tableQueryContent, curBusiId, refreshFlag],
-    defaultPageSize: 30,
+  const { tableProps, run } = useAntdTable(featchData, {
+    manual: true,
   });
+
+  useEffect(() => {
+    run(requestParams);
+  }, [tableQueryContent, curBusiId, refreshFlag, JSON.stringify(requestParams)]);
 
   return (
     <div>
@@ -480,6 +487,12 @@ export default function List(props: IProps) {
           showSizeChanger: true,
           showQuickJumper: true,
           pageSizeOptions: pageSizeOptions,
+        }}
+        onChange={(pagination) => {
+          setRequestParams({
+            current: pagination.current!,
+            pageSize: pagination.pageSize!,
+          });
         }}
         scroll={{ x: 'max-content' }}
       />
