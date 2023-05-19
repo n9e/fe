@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import _ from 'lodash';
-import { Link } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
+import queryString from 'query-string';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 import { List, Input, Button, Table, Space, Tag } from 'antd';
@@ -20,6 +21,9 @@ export { Detail };
 
 export default function index() {
   const { t } = useTranslation('dashboardBuiltin');
+  const history = useHistory();
+  const { search } = useLocation();
+  const query = queryString.parse(search);
   const { busiGroups } = useContext(CommonStateContext);
   const [data, setData] = useState<BoardCateType[]>([]);
   const [active, setActive] = useState<BoardCateType>();
@@ -45,7 +49,7 @@ export default function index() {
     return true;
   });
 
-  const fetchData = () => {
+  const fetchData = (cbk?: (dat: BoardCateType[]) => void) => {
     getDashboardCates().then((res) => {
       allBoards.current = _.reduce(
         res,
@@ -58,11 +62,21 @@ export default function index() {
         [] as BoardType[],
       );
       setData(res);
+      if (cbk) {
+        cbk(res);
+      }
     });
   };
 
   useEffect(() => {
-    fetchData();
+    fetchData((dat) => {
+      if (query.cate) {
+        const cate = _.find(dat, { name: query.cate });
+        if (cate) {
+          setActive(cate);
+        }
+      }
+    });
   }, []);
 
   return (
@@ -94,7 +108,13 @@ export default function index() {
                 <List.Item
                   key={item.name}
                   className={classNames('cate-list-item', { 'is-active': active?.name === item.name, 'is-last-favorite': item.favorite && !filteredCates[idx + 1]?.favorite })}
-                  onClick={() => setActive(item)}
+                  onClick={() => {
+                    setActive(item);
+                    history.replace({
+                      pathname: '/dashboards-built-in',
+                      search: `?cate=${item.name}`,
+                    });
+                  }}
                   extra={
                     <span
                       className='cate-list-item-extra'

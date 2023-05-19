@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
+import queryString from 'query-string';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
@@ -33,6 +34,9 @@ function processRules(cate: string, alertRules: { [key: string]: RuleType[] }) {
 
 export default function index() {
   const { t } = useTranslation('alertRulesBuiltin');
+  const history = useHistory();
+  const { search } = useLocation();
+  const query = queryString.parse(search);
   const { busiGroups, groupedDatasourceList } = useContext(CommonStateContext);
   const pagination = usePagination({ PAGESIZE_KEY: 'alert-rules-builtin-pagesize' });
   const [data, setData] = useState<RuleCateType[]>([]);
@@ -64,7 +68,7 @@ export default function index() {
     return isMatch;
   });
 
-  const fetchData = () => {
+  const fetchData = (cbk?: (dat: RuleCateType[]) => void) => {
     getRuleCates().then((res) => {
       allRules.current = _.reduce(
         res,
@@ -75,11 +79,21 @@ export default function index() {
         [] as RuleType[],
       );
       setData(res);
+      if (cbk) {
+        cbk(res);
+      }
     });
   };
 
   useEffect(() => {
-    fetchData();
+    fetchData((dat) => {
+      if (query.cate) {
+        const cate = _.find(dat, { name: query.cate });
+        if (cate) {
+          setActive(cate);
+        }
+      }
+    });
   }, []);
 
   return (
@@ -114,6 +128,10 @@ export default function index() {
                   className={classNames('cate-list-item', { 'is-active': active?.name === item.name, 'is-last-favorite': item.favorite && !filteredCates[idx + 1]?.favorite })}
                   onClick={() => {
                     setActive(item);
+                    history.replace({
+                      pathname: '/alert-rules-built-in',
+                      search: `?cate=${item.name}`,
+                    });
                     setGroup(_.map(_.groupBy(processRules(item.name, item.alert_rules), '__group__'), (v, k) => k)[0]);
                   }}
                   extra={
