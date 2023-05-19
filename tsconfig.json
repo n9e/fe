@@ -10,7 +10,8 @@
       "@/store/eventWallInterface": [
         "src/Packages/EventWall/interface/index.ts"
       ],
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "plus:/*": ["src/plus/*"],
     },
     "skipLibCheck": true,
     "esModuleInterop": false,

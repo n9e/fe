@@ -34,12 +34,12 @@ const MetricExplorerPage = () => {
             const cateOptions = isShow[0]
               ? [
                   {
-                    label: '阿里云SLS',
-                    value: 'aliyun-sls',
-                  },
-                  {
                     label: 'Elasticsearch',
                     value: 'elasticsearch',
+                  },
+                  {
+                    label: '阿里云SLS',
+                    value: 'aliyun-sls',
                   },
                 ]
               : [

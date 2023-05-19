@@ -38,7 +38,7 @@ export default function Index(props: Props) {
           </Col>
         </Row>
       </div>
-      {data?.http?.headers && (
+      {!_.isEmpty(data?.http?.headers) && (
         <>
           <div className='page-title'>{t('form.headers')}</div>
           <div className='flash-cat-block'>

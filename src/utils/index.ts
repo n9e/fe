@@ -16,8 +16,8 @@
  */
 import { message } from 'antd';
 import React, { ReactNode, Component } from 'react';
-import { IStore } from '@/store/common';
 import { useLocation } from 'react-router-dom';
+import { IStore } from '@/store/common';
 export { getDefaultDatasourceValue, setDefaultDatasourceValue } from './datasource';
 
 export const isPromise = (obj) => {

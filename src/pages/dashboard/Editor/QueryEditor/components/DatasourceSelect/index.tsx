@@ -62,6 +62,28 @@ export default function index({ chartForm, variableConfig }) {
                     ],
                     datasourceValue: getDefaultDatasourceValue('elasticsearch'),
                   });
+                } else if (val === 'zabbix') {
+                  chartForm.setFieldsValue({
+                    targets: [
+                      {
+                        refId: 'A',
+                        query: {
+                          mode: 'timeseries',
+                          subMode: 'metrics',
+                        },
+                      },
+                    ],
+                    datasourceValue: undefined,
+                  });
+                } else {
+                  chartForm.setFieldsValue({
+                    targets: [
+                      {
+                        refId: 'A',
+                      },
+                    ],
+                    datasourceValue: undefined,
+                  });
                 }
               }, 500);
             }}

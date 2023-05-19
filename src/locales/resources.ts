@@ -26,6 +26,10 @@ const resources = {
     common: common.zh_CN,
     datasource: datasource.zh_CN,
   },
+  zh_HK: {
+    common: common.zh_HK,
+    datasource: datasource.zh_HK,
+  },
 };
 
 export default resources;

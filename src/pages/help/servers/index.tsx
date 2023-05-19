@@ -23,13 +23,12 @@ import { useTranslation } from 'react-i18next';
 import PageLayout from '@/components/pageLayout';
 import { getN9EServers } from '@/services/help';
 import { CommonStateContext } from '@/App';
-import { ReactComponent as SystemInfoSvg } from '../../../../public/image/system-info.svg';
+import SystemInfoSvg from '../../../../public/image/system-info.svg';
 import './locale';
 
 export default function Servers() {
   const { t } = useTranslation('servers');
-  const { profile, groupedDatasourceList } = useContext(CommonStateContext);
-  const datasourceList = _.get(groupedDatasourceList, 'prometheus', []);
+  const { profile, datasourceList } = useContext(CommonStateContext);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const fetchData = () => {

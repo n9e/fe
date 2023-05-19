@@ -141,12 +141,40 @@ const Shield: React.FC = () => {
       title: t('time'),
       dataIndex: 'btime',
       render: (text: number, record: shieldItem) => {
-        return (
-          <div className='shield-time'>
-            <div>{moment.unix(record?.btime).format('YYYY-MM-DD HH:mm:ss')}</div>
-            <div>{moment.unix(record?.etime).format('YYYY-MM-DD HH:mm:ss')}</div>
-          </div>
-        );
+        if (record.mute_time_type === 0) {
+          return (
+            <div className='shield-time'>
+              <div>{moment.unix(record?.btime).format('YYYY-MM-DD HH:mm:ss')}</div>
+              <div>{moment.unix(record?.etime).format('YYYY-MM-DD HH:mm:ss')}</div>
+            </div>
+          );
+        } else if (record.mute_time_type === 1) {
+          return (
+            <Tooltip
+              overlayInnerStyle={{
+                width: 350,
+              }}
+              title={_.map(record.periodic_mutes, (item, idx) => {
+                return (
+                  <div key={idx}>
+                    <Space>
+                      <div>
+                        {item.enable_stime} ~ {item.enable_etime}
+                      </div>
+                      <Space>
+                        {_.map(_.split(item.enable_days_of_week, ' '), (item) => {
+                          return t(`common:time.weekdays.${item}`);
+                        })}
+                      </Space>
+                    </Space>
+                  </div>
+                );
+              })}
+            >
+              <a>{t('mute_type.1')}</a>
+            </Tooltip>
+          );
+        }
       },
     },
     {

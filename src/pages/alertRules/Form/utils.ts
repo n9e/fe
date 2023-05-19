@@ -1,7 +1,8 @@
 import _ from 'lodash';
 import moment from 'moment';
 import { defaultRuleConfig } from './constants';
-import { DATASOURCE_ALL } from '../constants';
+import { DATASOURCE_ALL, alphabet } from '../constants';
+import { mapOptionToRelativeTimeRange, mapRelativeTimeRangeToOption } from '@/components/TimeRangePicker';
 
 export function getFirstDatasourceId(datasourceIds = [], datasourceList: { id: number }[] = []) {
   return _.isEqual(datasourceIds, [DATASOURCE_ALL]) && datasourceList.length > 0 ? datasourceList[0]?.id : datasourceIds[0];
@@ -79,12 +80,39 @@ export function processFormValues(values) {
   if (values.prod === 'host') {
     cate = 'host';
   } else if (values.prod === 'anomaly') {
-    cate = 'anomaly';
-  } else if (values.prod === 'logging' && values.cate === 'elasticsearch') {
+    cate = 'prometheus';
+  } else if (values.cate === 'elasticsearch') {
     values.rule_config.queries = _.map(values.rule_config.queries, (item) => {
       return {
         ..._.omit(item, 'interval_unit'),
         interval: normalizeTime(item.interval, item.interval_unit),
+      };
+    });
+    values.rule_config.triggers = _.map(values.rule_config.triggers, (trigger) => {
+      if (trigger.mode === 0) {
+        return {
+          ...trigger,
+          exp: stringifyExpressions(trigger.expressions),
+        };
+      }
+      return trigger;
+    });
+  } else if (_.includes(['aliyun-sls', 'ck', 'influxdb'], values.cate)) {
+    values.rule_config.queries = _.map(values.rule_config.queries, (query, index) => {
+      const parsedRange = mapOptionToRelativeTimeRange(query.range);
+      if (cate === 'aliyun-sls') {
+        if (query?.keys?.valueKey) {
+          query.keys.valueKey = _.join(query.keys.valueKey, ' ');
+        }
+      }
+      if (query?.keys?.labelKey) {
+        query.keys.labelKey = _.join(query.keys.labelKey, ' ');
+      }
+      return {
+        ..._.omit(query, 'range'),
+        ref: alphabet[index],
+        from: parsedRange?.start,
+        to: parsedRange?.end,
       };
     });
     values.rule_config.triggers = _.map(values.rule_config.triggers, (trigger) => {
@@ -114,12 +142,27 @@ export function processFormValues(values) {
 }
 
 export function processInitialValues(values) {
-  if (values.prod === 'logging' && values.cate === 'elasticsearch') {
+  if (values.cate === 'elasticsearch') {
     values.rule_config.queries = _.map(values.rule_config.queries, (item) => {
       return {
         ...item,
         interval: parseTimeToValueAndUnit(item.interval).value,
         interval_unit: parseTimeToValueAndUnit(item.interval).unit,
+      };
+    });
+  } else if (_.includes(['aliyun-sls', 'ck', 'influxdb'], values.cate)) {
+    values.rule_config.queries = _.map(values.rule_config.queries, (query) => {
+      if (values.cate === 'aliyun-sls') {
+        _.set(query, 'keys.valueKey', query?.keys?.valueKey ? _.split(query.keys.valueKey, ' ') : []);
+      } else if (values.cate === 'ck') {
+        _.set(query, 'keys.labelKey', query?.keys?.labelKey ? _.split(query.keys.labelKey, ' ') : []);
+      }
+      return {
+        ..._.omit(query, ['from', 'to']),
+        range: mapRelativeTimeRangeToOption({
+          start: query.from,
+          end: query.to,
+        }),
       };
     });
   }

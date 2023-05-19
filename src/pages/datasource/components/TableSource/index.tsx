@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { message, Table, Modal, Button, Space, Popconfirm } from 'antd';
+import { message, Table, Modal, Button, Space, Popconfirm, Input } from 'antd';
 import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
 import Rename from '../Rename';
@@ -33,6 +33,7 @@ const TableSource = (props: IPropsType) => {
   const [refresh, setRefresh] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const pagination = usePagination({ PAGESIZE_KEY: 'datasource' });
+  const [searchVal, setSearchVal] = useState<string>('');
 
   useEffect(() => {
     init();
@@ -52,7 +53,25 @@ const TableSource = (props: IPropsType) => {
 
   const defaultColumns = [
     {
-      title: t('name'),
+      title: () => {
+        return (
+          <Space>
+            {t('name')}
+            <Input.Search
+              size='small'
+              placeholder={t('请输入要查询的名称')}
+              allowClear
+              onSearch={(val) => {
+                setSearchVal(val);
+              }}
+              style={{
+                width: 170,
+                marginLeft: '4px',
+              }}
+            />
+          </Space>
+        );
+      },
       dataIndex: 'name',
       render: (text, record) => {
         return (
@@ -78,6 +97,16 @@ const TableSource = (props: IPropsType) => {
       title: t('type'),
       width: 300,
       dataIndex: 'plugin_type',
+      filters: pluginList?.map((el) => {
+        let temp = {
+          text: <span style={{ marginLeft: 8 }}>{el.name}</span>,
+          value: el.type,
+        };
+        return temp;
+      }),
+      onFilter: (value: string, record) => {
+        return record.plugin_type === value;
+      },
     },
     {
       title: t('common:table.operations'),
@@ -127,7 +156,22 @@ const TableSource = (props: IPropsType) => {
     },
   ];
 
-  return <Table size='small' className='datasource-list' rowKey='id' dataSource={tableData} columns={defaultColumns} loading={loading} pagination={pagination} />;
+  return (
+    <Table
+      size='small'
+      className='datasource-list'
+      rowKey='id'
+      dataSource={_.filter(tableData, (item) => {
+        if (searchVal) {
+          return _.includes(item.name, searchVal);
+        }
+        return item;
+      })}
+      columns={defaultColumns}
+      loading={loading}
+      pagination={pagination}
+    />
+  );
 };
 
 export default TableSource;

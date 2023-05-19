@@ -28,11 +28,12 @@ import { priorityColor } from '@/utils/constant';
 import { deleteAlertEventsModal } from '.';
 import { parseValues } from '@/pages/alertRules/utils';
 import { CommonStateContext } from '@/App';
+import { Event as ElasticsearchDetail } from 'plus:/datasource/elasticsearch';
+import { Event as AliyunSLSDetail } from 'plus:/datasource/aliyunSLS';
+import { Event as InfluxDBDetail } from 'plus:/datasource/influxDB';
 import Preview from './Preview';
 import LogsDetail from './LogsDetail';
 import PrometheusDetail from './Detail/Prometheus';
-import ElasticsearchDetail from './Detail/Elasticsearch';
-import AliyunSLSDetail from './Detail/AliyunSLS';
 import Host from './Detail/Host';
 import './detail.less';
 
@@ -194,8 +195,9 @@ const EventDetailPage: React.FC = () => {
         })
       : [false]),
     ...(eventDetail?.cate === 'elasticsearch' ? ElasticsearchDetail() : [false]),
-    ...(eventDetail?.cate === 'aliyun-sls' ? AliyunSLSDetail() : [false]),
+    ...(eventDetail?.cate === 'aliyun-sls' ? AliyunSLSDetail(t) : [false]),
     ...(eventDetail?.cate === 'host' ? Host(t, commonState) : [false]),
+    ...(eventDetail?.cate === 'influxdb' ? InfluxDBDetail(t) : [false]),
     {
       label: t('detail.prom_eval_interval'),
       key: 'prom_eval_interval',
@@ -237,17 +239,6 @@ const EventDetailPage: React.FC = () => {
               </Tag>
             ))
           : '';
-      },
-    },
-    {
-      label: t('detail.runbook_url'),
-      key: 'runbook_url',
-      render(url) {
-        return (
-          <a href={url} target='_balank'>
-            {url}
-          </a>
-        );
       },
     },
   ];
@@ -332,7 +323,7 @@ const EventDetailPage: React.FC = () => {
           >
             {eventDetail && (
               <div>
-                {parsedEventDetail.rule_algo || parsedEventDetail.cate === 'elasticsearch' || parsedEventDetail.cate === 'aliyun-sls' ? (
+                {parsedEventDetail.rule_prod === 'anomaly' || parsedEventDetail.cate === 'elasticsearch' || parsedEventDetail.cate === 'aliyun-sls' ? (
                   <Preview
                     data={parsedEventDetail}
                     triggerTime={eventDetail.trigger_time}

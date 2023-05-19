@@ -54,7 +54,7 @@ export default function index() {
                 return _.upperCase(item.name).indexOf(_.upperCase(search)) > -1;
               })}
               size='small'
-              renderItem={(item) => (
+              renderItem={(item: any) => (
                 <List.Item key={item.id} className={active?.id === item.id ? 'is-active' : ''} onClick={() => setActive(item)}>
                   {item.name}
                 </List.Item>

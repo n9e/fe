@@ -108,7 +108,7 @@ export default function index() {
               }}
               dataSource={filteredCates}
               size='small'
-              renderItem={(item, idx) => (
+              renderItem={(item: any, idx) => (
                 <List.Item
                   key={item.name}
                   className={classNames('cate-list-item', { 'is-active': active?.name === item.name, 'is-last-favorite': item.favorite && !filteredCates[idx + 1]?.favorite })}

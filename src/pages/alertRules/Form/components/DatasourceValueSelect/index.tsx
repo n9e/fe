@@ -35,7 +35,7 @@ export default function index({ setFieldsValue, cate, datasourceList, mode, requ
       const curVal = _.last(v);
       if (curVal === DATASOURCE_ALL) {
         setFieldsValue({ datasource_ids: [DATASOURCE_ALL] });
-      } else if (v.includes(DATASOURCE_ALL)) {
+      } else if (typeof v !== 'number' && v.includes(DATASOURCE_ALL)) {
         setFieldsValue({ datasource_ids: _.without(v, DATASOURCE_ALL) });
       }
     }

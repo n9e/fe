@@ -29,7 +29,7 @@ const zh_CN = {
     alert: {
       query: {
         title: '查询统计',
-        preview: '机器预览',
+        preview: '数据预览',
       },
       trigger: {
         title: '告警条件',

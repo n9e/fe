@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Form, Select, InputNumber, Tooltip, Row, Col } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
+import AdvancedWrap from '@/components/AdvancedWrap';
 import Name from '../../components/items/Name';
 import HTTP from '../../components/items/HTTP';
 import BasicAuth from '../../components/items/BasicAuth';
@@ -10,13 +11,30 @@ import SkipTLSVerify from '../../components/items/SkipTLSVerify';
 import Headers from '../../components/items/Headers';
 import Description from '../../components/items/Description';
 import Footer from '../../components/items/Footer';
+import { getServerClusters } from '../../services';
 
 export default function FormCpt({ data, onFinish, submitLoading }: any) {
   const { t } = useTranslation('datasourceManage');
   const [form] = Form.useForm();
+  const [clusters, setClusters] = useState<any[]>([]);
+  const clusterRef = useRef<any>();
+
+  useEffect(() => {
+    getServerClusters().then((res) => {
+      setClusters(res);
+    });
+  }, []);
 
   return (
-    <Form form={form} layout='vertical' onFinish={onFinish} initialValues={data} className='settings-source-form'>
+    <Form
+      form={form}
+      layout='vertical'
+      onFinish={(values) => {
+        onFinish(values, clusterRef.current);
+      }}
+      initialValues={data}
+      className='settings-source-form'
+    >
       <Name />
       <HTTP />
       <BasicAuth />
@@ -59,6 +77,19 @@ export default function FormCpt({ data, onFinish, submitLoading }: any) {
           </Form.Item>
         </Col>
       </Row>
+      <AdvancedWrap var='VITE_IS_ALERT_ES'>
+        <Form.Item label={t('form.cluster')} name='cluster_name'>
+          <Select ref={clusterRef}>
+            {_.map(clusters, (item) => {
+              return (
+                <Select.Option key={item} value={item}>
+                  {item}
+                </Select.Option>
+              );
+            })}
+          </Select>
+        </Form.Item>
+      </AdvancedWrap>
       <Description />
       <div className='mt16'>
         <Footer id={data?.id} submitLoading={submitLoading} />

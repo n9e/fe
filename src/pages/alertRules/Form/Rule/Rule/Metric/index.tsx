@@ -16,31 +16,21 @@
  */
 
 import React, { useContext } from 'react';
-import { Form, Row, Col, Select, Card, Space } from 'antd';
-import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
+import { Form, Row, Col, Select } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import { CommonStateContext } from '@/App';
 import { getAuthorizedDatasourceCates } from '@/components/AdvancedWrap';
-import { PromQLInputWithBuilder } from '@/components/PromQLInput';
 import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
-import Severity from '@/pages/alertRules/Form/components/Severity';
-import Inhibit from '@/pages/alertRules/Form/components/Inhibit';
 import IntervalAndDuration from '@/pages/alertRules/Form/components/IntervalAndDuration';
-import { FormStateContext } from '@/pages/alertRules/Form';
-import './style.less';
-
-const DATASOURCE_ALL = 0;
-
-function getFirstDatasourceId(datasourceIds = [], datasourceList: { id: number }[] = []) {
-  return _.isEqual(datasourceIds, [DATASOURCE_ALL]) && datasourceList.length > 0 ? datasourceList[0]?.id : datasourceIds[0];
-}
+import Prometheus from './Prometheus';
+import { AlertRule as ClickHouse } from 'plus:/datasource/clickHouse';
+import { AlertRule as Influxdb } from 'plus:/datasource/influxDB';
 
 export default function index() {
   const { t } = useTranslation('alertRules');
   const { groupedDatasourceList } = useContext(CommonStateContext);
-  const { disabled } = useContext(FormStateContext);
-  const datasourceCates = _.filter(getAuthorizedDatasourceCates(), (item) => item.type === 'metric');
+  const datasourceCates = _.filter(getAuthorizedDatasourceCates(), (item) => item.type === 'metric' && !!item.alertRule);
 
   return (
     <div>
@@ -62,79 +52,35 @@ export default function index() {
           <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.cate !== curValues.cate} noStyle>
             {({ getFieldValue, setFieldsValue }) => {
               const cate = getFieldValue('cate');
-              return <DatasourceValueSelect mode='multiple' setFieldsValue={setFieldsValue} cate={cate} datasourceList={groupedDatasourceList[cate] || []} />;
+              return <DatasourceValueSelect setFieldsValue={setFieldsValue} cate={cate} datasourceList={groupedDatasourceList[cate] || []} />;
             }}
           </Form.Item>
         </Col>
       </Row>
       <div style={{ marginBottom: 10 }}>
-        <Form.Item noStyle shouldUpdate={(prevValues, curValues) => !_.isEqual(prevValues.datasource_ids, curValues.datasource_ids)}>
-          {({ getFieldValue }) => {
-            const cate = getFieldValue('cate');
-            const curDatasourceList = groupedDatasourceList[cate] || [];
-            const datasourceIds = getFieldValue('datasource_ids') || [];
-            const datasourceId = getFirstDatasourceId(datasourceIds, curDatasourceList);
-
-            return (
-              <Form.List name={['rule_config', 'queries']}>
-                {(fields, { add, remove }) => (
-                  <Card
-                    title={
-                      <Space>
-                        <span>{t('metric.query.title')}</span>
-                        <PlusCircleOutlined
-                          onClick={() =>
-                            add({
-                              prom_ql: '',
-                              severity: 3,
-                            })
-                          }
-                        />
-                        <Inhibit triggersKey='queries' />
-                      </Space>
-                    }
-                    size='small'
-                  >
-                    <div className='alert-rule-triggers-container'>
-                      {fields.map((field) => (
-                        <div key={field.key} className='alert-rule-trigger-container'>
-                          <Row>
-                            <Col flex='80px'>
-                              <div style={{ marginTop: 6 }}>PromQL</div>
-                            </Col>
-                            <Col flex='auto'>
-                              <Form.Item
-                                {...field}
-                                name={[field.name, 'prom_ql']}
-                                validateTrigger={['onBlur']}
-                                trigger='onChange'
-                                rules={[{ required: true, message: t('请输入PromQL') }]}
-                              >
-                                <PromQLInputWithBuilder readonly={disabled} datasourceValue={datasourceId} />
-                              </Form.Item>
-                            </Col>
-                          </Row>
-                          <div>
-                            <Severity field={field} />
-                          </div>
-                          <MinusCircleOutlined className='alert-rule-trigger-remove' onClick={() => remove(field.name)} />
-                        </div>
-                      ))}
-                    </div>
-                  </Card>
-                )}
-              </Form.List>
-            );
+        <Form.Item noStyle shouldUpdate={(prevValues, curValues) => !_.isEqual(prevValues.cate, curValues.cate) || !_.isEqual(prevValues.datasource_ids, curValues.datasource_ids)}>
+          {(form) => {
+            const cate = form.getFieldValue('cate');
+            const datasourceValue = form.getFieldValue('datasource_ids');
+            if (cate === 'prometheus') {
+              return <Prometheus datasourceCate={cate} datasourceValue={datasourceValue} />;
+            }
+            if (cate === 'ck') {
+              return <ClickHouse form={form} />;
+            }
+            if (cate === 'influxdb') {
+              return <Influxdb form={form} datasourceValue={datasourceValue} />;
+            }
           }}
         </Form.Item>
       </div>
 
       <IntervalAndDuration
         intervalTip={(num) => {
-          return t('metric.prom_eval_interval_tip', { num });
+          return t('datasource:es.alert.prom_eval_interval_tip', { num });
         }}
         durationTip={(num) => {
-          return t('metric.prom_for_duration_tip', { num });
+          return t('datasource:es.alert.prom_for_duration_tip', { num });
         }}
       />
     </div>

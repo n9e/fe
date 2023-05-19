@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="132px" height="64px" viewBox="0 0 132 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>阿里云SLS</title>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="系统设置_事件源管理" transform="translate(-904.000000, -1394.000000)">
+            <g id="阿里云SLS" transform="translate(904.000000, 1394.000000)">
+                <rect id="矩形" fill="#FFFFFF" opacity="0" x="0" y="0" width="132" height="64"></rect>
+                <g id="编组" transform="translate(41.000000, 7.000000)">
+                    <circle id="椭圆形" fill="#FF5D00" cx="25" cy="25" r="25"></circle>
+                    <g transform="translate(14.002233, 14.002233)">
+                        <circle id="椭圆形" stroke="#FFFFFF" stroke-width="2.4" transform="translate(11.000000, 11.000000) rotate(-360.000000) translate(-11.000000, -11.000000) " cx="11" cy="11" r="9.8"></circle>
+                        <rect id="矩形" fill="#FFFFFF" transform="translate(19.838835, 19.838835) rotate(-45.000000) translate(-19.838835, -19.838835) " x="17.8388353" y="16.3388353" width="4" height="7" rx="2"></rect>
+                        <rect id="矩形" fill="#FFFFFF" x="5.997767" y="7.397767" width="10" height="1.2" rx="0.6"></rect>
+                        <rect id="矩形" fill="#FFFFFF" x="5.997767" y="10.397767" width="10" height="1.2" rx="0.6"></rect>
+                        <rect id="矩形" fill="#FFFFFF" x="5.997767" y="13.397767" width="10" height="1.2" rx="0.6"></rect>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

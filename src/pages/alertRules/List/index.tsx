@@ -195,7 +195,7 @@ export default function List(props: ListProps) {
     {
       title: t('common:table.operations'),
       dataIndex: 'operator',
-      width: 120,
+      width: 140,
       render: (data, record: any) => {
         return (
           <div className='table-operator-area'>
@@ -228,7 +228,7 @@ export default function List(props: ListProps) {
             >
               {t('common:btn.delete')}
             </div>
-            {record.algorithm === 'holtwinters' && (
+            {record.prod === 'anomaly' && (
               <div>
                 <Link to={{ pathname: `/alert-rules/brain/${record.id}` }}>训练结果</Link>
               </div>
@@ -293,7 +293,7 @@ export default function List(props: ListProps) {
                 getAlertRules();
               }}
             />
-            <AdvancedWrap var='VITE_IS_ALERT_AI,VITE_IS_ALERT_ES'>
+            <AdvancedWrap var='VITE_IS_ALERT_AI,VITE_IS_ALERT_ES,VITE_IS_SLS_DS'>
               {(isShow) => {
                 let options = ruleTypeOptions;
                 if (isShow[0]) {
@@ -305,7 +305,7 @@ export default function List(props: ListProps) {
                     },
                   ];
                 }
-                if (isShow[1]) {
+                if (isShow[1] || isShow[2]) {
                   options = [
                     ...options,
                     {
@@ -338,7 +338,7 @@ export default function List(props: ListProps) {
                 );
               }}
             </AdvancedWrap>
-            <AdvancedWrap var='VITE_IS_ALERT_ES'>
+            <AdvancedWrap var='VITE_IS_ALERT_ES,VITE_IS_SLS_DS'>
               {(isShow) => {
                 return (
                   <DatasourceSelect
@@ -361,6 +361,9 @@ export default function List(props: ListProps) {
                       return _.filter(cates, (item) => {
                         if (item.value === 'elasticsearch') {
                           return isShow[0];
+                        }
+                        if (item.value === 'aliyun-sls') {
+                          return isShow[1];
                         }
                         return true;
                       });

@@ -16,8 +16,9 @@
  */
 import { defineConfig } from 'vite';
 import reactRefresh from '@vitejs/plugin-react-refresh';
-import svgr from 'vite-plugin-svgr';
 import { md } from './plugins/md';
+import plusResolve from './plugins/plusResolve';
+const reactSvgPlugin = require('./plugins/svg');
 
 const chunk2 = [
   '@codemirror/autocomplete',
@@ -35,7 +36,7 @@ const antdChunk = ['antd'];
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [md(), reactRefresh(), svgr()],
+  plugins: [md(), reactRefresh(), plusResolve(), reactSvgPlugin({ defaultExport: 'component' })],
   define: {},
   resolve: {
     alias: [
@@ -64,7 +65,7 @@ export default defineConfig({
         changeOrigin: true,
       },
       '/api/fc-brain': {
-        target: 'http://10.206.16.17:28000/',
+        target: 'http://10.206.16.17:28001/',
         changeOrigin: true,
       },
     },

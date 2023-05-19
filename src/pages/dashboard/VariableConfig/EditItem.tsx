@@ -20,7 +20,7 @@ import { QuestionCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
-import IndexSelect from '@/pages/alertRules/Form/Rule/Rule/Log/ElasticsearchSettings/IndexSelect';
+import IndexSelect from '@/pages/dashboard/Editor/QueryEditor/Elasticsearch/IndexSelect';
 import ClusterSelect from '@/pages/dashboard/Editor/QueryEditor/components/ClusterSelect';
 import { CommonStateContext } from '@/App';
 import { IVariable } from './definition';

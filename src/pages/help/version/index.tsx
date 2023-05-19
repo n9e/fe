@@ -18,7 +18,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Icon from '@ant-design/icons';
 import PageLayout from '@/components/pageLayout';
-import { ReactComponent as SystemInfoSvg } from '../../../../public/image/system-info.svg';
+import SystemInfoSvg from '../../../../public/image/system-info.svg';
 import pkgJson from '../../../../package.json';
 import './locale';
 

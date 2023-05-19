@@ -46,6 +46,15 @@ const en_US = {
     jaeger: {
       version: 'Version',
     },
+    ck: {
+      title: 'Database basic information',
+      addr: 'Database address',
+    },
+    sls: {
+      title: 'Service entry',
+      endpoint: 'Access domain name (private network domain name / public network domain name / cross-domain domain name)',
+      access: 'Access',
+    },
   },
 };
 export default en_US;

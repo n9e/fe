@@ -21,17 +21,31 @@ export default function FormCpt() {
   const onFinish = async (values: any) => {
     setSubmitLoading(true);
     // 转换 http.headers 格式
-    _.set(
-      values,
-      'http.headers',
-      _.transform(
-        values?.http?.headers,
-        (result, item) => {
-          result[item.key] = item.value;
-        },
-        {},
-      ),
-    );
+    if (type === 'influxdb') {
+      _.set(
+        values,
+        ['settings', 'influxdb.headers'],
+        _.transform(
+          values?.settings?.['influxdb.headers'],
+          (result, item) => {
+            result[item.key] = item.value;
+          },
+          {},
+        ),
+      );
+    } else {
+      _.set(
+        values,
+        'http.headers',
+        _.transform(
+          values?.http?.headers,
+          (result, item) => {
+            result[item.key] = item.value;
+          },
+          {},
+        ),
+      );
+    }
     return submitRequest({
       ...values,
       plugin_type: type,
@@ -88,8 +102,13 @@ export default function FormCpt() {
           <From
             data={data}
             onFinish={(values, clusterInstance) => {
-              if (type === 'prometheus' && !values.cluster_name) {
-                console.log('clustrInstance', clusterInstance);
+              if (
+                (type === 'prometheus' && !values.cluster_name) ||
+                (import.meta.env['VITE_IS_ALERT_ES'] && type === 'elasticsearch' && !values.cluster_name) ||
+                (import.meta.env['VITE_IS_INFLUXDB_DS'] && type === 'influxdb' && !values.cluster_name) ||
+                (import.meta.env['VITE_IS_CK_DS'] && type === 'ck' && !values.cluster_name) ||
+                (import.meta.env['VITE_IS_SLS_DS'] && type === 'aliyun-sls' && !values.cluster_name)
+              ) {
                 Modal.confirm({
                   title: t('form.cluster_confirm'),
                   okText: t('form.cluster_confirm_ok'),

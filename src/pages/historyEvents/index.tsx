@@ -22,6 +22,7 @@ import _ from 'lodash';
 import { useAntdTable } from 'ahooks';
 import { Input, Tag, Button, Space, Table, Select, message } from 'antd';
 import { Link } from 'react-router-dom';
+import AdvancedWrap from '@/components/AdvancedWrap';
 import PageLayout from '@/components/pageLayout';
 import RefreshIcon from '@/components/RefreshIcon';
 import { hoursOptions } from '@/pages/event/constants';
@@ -149,23 +150,62 @@ const Event: React.FC = () => {
               return <Select.Option value={item.value}>{t(`hours.${item.value}`)}</Select.Option>;
             })}
           </Select>
-          <Select
-            allowClear
-            placeholder={t('prod')}
-            style={{ minWidth: 80 }}
-            value={filter.rule_prods}
-            mode='multiple'
-            onChange={(val) => {
-              setFilter({
-                ...filter,
-                rule_prods: val,
-              });
+          <AdvancedWrap var='VITE_IS_ALERT_AI,VITE_IS_ALERT_ES,VITE_IS_SLS_DS'>
+            {(isShow) => {
+              let options = [
+                {
+                  label: 'Metric',
+                  value: 'metric',
+                },
+                {
+                  label: 'Host',
+                  value: 'host',
+                },
+              ];
+              if (isShow[0]) {
+                options = [
+                  ...options,
+                  {
+                    label: 'Anomaly',
+                    value: 'anomaly',
+                  },
+                ];
+              }
+              if (isShow[1] || isShow[2]) {
+                options = [
+                  ...options,
+                  {
+                    label: 'Log',
+                    value: 'logging',
+                  },
+                ];
+              }
+              return (
+                <Select
+                  allowClear
+                  placeholder={t('prod')}
+                  style={{ minWidth: 80 }}
+                  value={filter.rule_prods}
+                  mode='multiple'
+                  onChange={(val) => {
+                    setFilter({
+                      ...filter,
+                      rule_prods: val,
+                    });
+                  }}
+                  dropdownMatchSelectWidth={false}
+                >
+                  {options.map((item) => {
+                    return (
+                      <Select.Option value={item.value} key={item.value}>
+                        {item.label}
+                      </Select.Option>
+                    );
+                  })}
+                </Select>
+              );
             }}
-            dropdownMatchSelectWidth={false}
-          >
-            <Select.Option value='host'>Host</Select.Option>
-            <Select.Option value='metric'>Metric</Select.Option>
-          </Select>
+          </AdvancedWrap>
           <Select
             allowClear
             mode='multiple'

@@ -47,7 +47,7 @@ function AddModal(props: ModalWrapProps & IProps) {
               required: true,
             },
             {
-              pattern: /^[a-zA-Z0-9_]+$/,
+              pattern: /^[a-zA-Z0-9_-]+$/,
               message: t('channels.ident_msg1'),
             },
             {

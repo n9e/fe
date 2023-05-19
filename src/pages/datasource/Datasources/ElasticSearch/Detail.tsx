@@ -2,6 +2,7 @@ import React from 'react';
 import { Row, Col } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
+import AdvancedWrap from '@/components/AdvancedWrap';
 
 interface Props {
   data: any;
@@ -28,17 +29,17 @@ export default function Index(props: Props) {
           <Col span={8}>{t('form.password')}：</Col>
           <Col span={8}>{t('form.skip_ssl_verify')}：</Col>
           <Col span={8} className='second-color'>
-            {data?.auth?.basic_auth ? data?.auth?.basic_auth_user : '-'}
+            {data?.auth?.basic_auth_user || '-'}
           </Col>
           <Col span={8} className='second-color'>
-            {data?.auth?.basic_auth ? '******' : '-'}
+            {data?.auth?.basic_auth_password ? '******' : '-'}
           </Col>
           <Col span={8} className='second-color'>
             {data.http?.tls?.skip_tls_verify ? t('form.yes') : t('form.no')}
           </Col>
         </Row>
       </div>
-      {data?.http?.headers && (
+      {!_.isEmpty(data?.http?.headers) && (
         <>
           <div className='page-title'>{t('form.headers')}</div>
           <div className='flash-cat-block'>
@@ -59,7 +60,7 @@ export default function Index(props: Props) {
         <Row gutter={16}>
           <Col span={8}>{t('form.es.version')}：</Col>
           <Col span={8}>{t('form.es.max_shard')}：</Col>
-          <Col span={8}>{t('form.min_interval.max_shard')}：</Col>
+          <Col span={8}>{t('form.es.min_interval')}：</Col>
           <Col span={8} className='second-color'>
             {data.settings?.version || '-'}
           </Col>
@@ -70,6 +71,14 @@ export default function Index(props: Props) {
             {data.settings?.min_interval || '-'}
           </Col>
         </Row>
+        <AdvancedWrap var='VITE_IS_ALERT_ES'>
+          <Row gutter={16}>
+            <Col span={24}>{t('form.cluster')}：</Col>
+            <Col span={24} className='second-color'>
+              {data?.cluster_name || '-'}
+            </Col>
+          </Row>
+        </AdvancedWrap>
       </div>
     </div>
   );

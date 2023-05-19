@@ -25,6 +25,8 @@ export interface shieldItem {
   group_id?: number;
   cate: string;
   datasource_ids: number[];
+  mute_time_type: 0 | 1;
+  periodic_mutes: any[];
 }
 
 export interface IshieldState {

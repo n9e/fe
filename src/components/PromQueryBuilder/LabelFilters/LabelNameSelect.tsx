@@ -58,7 +58,7 @@ export default function LabelNameSelect(props: IProps) {
       })}
       value={searchValue}
       filterOption={(inputValue, option) => {
-        if (option && option.value) {
+        if (option && option.value && typeof option.value === 'string') {
           return option.value.indexOf(inputValue) !== -1;
         }
         return true;

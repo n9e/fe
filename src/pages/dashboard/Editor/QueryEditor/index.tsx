@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { Space, Form, Radio } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import Prometheus from './Prometheus';
-import Elasticsearch from './Elasticsearch';
-import AliyunSLS from './AliyunSLS';
+import { QueryBuilder as AliyunSLS } from 'plus:/datasource/aliyunSLS';
+import { QueryBuilder as Zabbix } from 'plus:/datasource/zabbix';
+import { QueryBuilder as InfluxDB } from 'plus:/datasource/influxDB';
 import OrganizeFields from '../TransformationsEditor/OrganizeFields';
 import DatasourceSelect from './components/DatasourceSelect';
+import Prometheus from './Prometheus';
+import Elasticsearch from './Elasticsearch';
 
 export default function index({ chartForm, type, variableConfig, dashboardId }) {
   const { t } = useTranslation('dashboard');
@@ -45,6 +47,12 @@ export default function index({ chartForm, type, variableConfig, dashboardId }) 
             }
             if (cate === 'aliyun-sls') {
               return <AliyunSLS chartForm={chartForm} />;
+            }
+            if (cate === 'zabbix') {
+              return <Zabbix chartForm={chartForm} />;
+            }
+            if (cate === 'influxdb') {
+              return <InfluxDB chartForm={chartForm} />;
             }
             return null;
           }}

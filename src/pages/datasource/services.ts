@@ -35,7 +35,11 @@ export const getDataSourceDetailById = (id: string | number) => {
 };
 
 export const submitRequest = (body) => {
-  return request(`${apiPrefix}/upsert`, {
+  let url = `${apiPrefix}/upsert`;
+  if (import.meta.env['VITE_IS_DS_SETTING']) {
+    url = ' /api/n9e-plus/datasource/upsert';
+  }
+  return request(url, {
     method: RequestMethod.Post,
     data: body,
   }).then((res) => res.data);

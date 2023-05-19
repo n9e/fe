@@ -1,0 +1,40 @@
+const zh_CN = {
+  title: '快捷視圖',
+  list: {
+    title: '快捷視圖清單',
+    public: '公開',
+    export: '匯出配寘',
+    add_title: '新建快捷視圖',
+    edit_title: '編輯快捷視圖',
+    import_title: '導入快捷視圖',
+    export_title: '匯出配寘',
+    name: '視圖名稱',
+    isPublic: '是否公開',
+    filters: '前置過濾條件',
+    dynamicLabels: '動態過濾標籤',
+    dimensionLabels: '展開維度標籤',
+    preview: '預覽',
+    count: '數量',
+    sample: '樣例',
+    import_label: '配寘JSON',
+    copy: '複製JSON內容到剪貼板',
+    allSelect: '全選',
+    clear: '清空已選的值',
+  },
+  metrics: {
+    title: '監控名額',
+    search_placeholder: '蒐索,空格分隔多個關鍵字',
+    clear: '清空圖表',
+    noData: '暫無名額數據,請選擇左側Labels',
+  },
+  graph: {
+    function: '計算函數',
+    none: '無',
+    offset: '環比',
+    aggregation: '彙總函式',
+    aggregation_by: '聚合維度',
+    calc: '取值計算',
+  },
+};
+
+export default zh_CN;

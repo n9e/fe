@@ -4,9 +4,10 @@ import moment from 'moment';
 import { TimeRangePickerWithRefresh, IRawTimeRange } from '@/components/TimeRangePicker';
 import Resolution from '@/components/Resolution';
 import { getStepByTimeAndStep } from '@/pages/dashboard/utils';
-import AlgoGraph from './AlgoGraph';
-import ElasticsearchGraph from './ElasticsearchGraph';
-import AliyunSLSGraph from './AliyunSLSGraph';
+import { EventPreview as AlgoGraph } from 'plus:/datasource/anomaly';
+import { EventPreview as ElasticsearchGraph } from 'plus:/datasource/elasticsearch';
+import { EventPreview as AliyunSLSGraph } from 'plus:/datasource/aliyunSLS';
+import { EventPreview as InfluxDBPreview } from 'plus:/datasource/influxDB';
 
 export default function index({ data, triggerTime, onClick }) {
   const [range, setRange] = useState<IRawTimeRange>();
@@ -31,9 +32,10 @@ export default function index({ data, triggerTime, onClick }) {
         />
         {data.cate === 'prometheus' && <Resolution value={step} onChange={(v) => setStep(v)} />}
       </Space>
-      {data.rule_algo && <AlgoGraph rid={data.rule_id} tags={data.tags} range={range} step={step} />}
+      {data.rule_prod === 'anomaly' && <AlgoGraph rid={data.rule_id} tags={data.tags} range={range} step={step} />}
       {data.cate === 'elasticsearch' && <ElasticsearchGraph eventId={data.id} range={range} triggerTime={triggerTime} onClick={onClick} />}
       {data.cate === 'aliyun-sls' && <AliyunSLSGraph eventId={data.id} range={range} triggerTime={triggerTime} onClick={onClick} />}
+      {data.cate === 'influxdb' && <InfluxDBPreview eventId={data.id} range={range} triggerTime={triggerTime} onClick={onClick} />}
     </div>
   );
 }

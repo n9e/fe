@@ -5,7 +5,7 @@
     "dev": "vite --port 8765 --host",
     "dev:advanced": "vite --port 8765 --host --mode advanced",
     "build": "tsc && cross-env NODE_OPTIONS=--max-old-space-size=4096 vite build",
-    "build:advanced": "node comb_feats ${npm_config_custom_options} && tsc && vite build --mode advanced",
+    "build:advanced": "node comb_feats ${npm_config_custom_options} && tsc && cross-env NODE_OPTIONS=--max-old-space-size=4096 vite build --mode advanced",
     "serve": "vite preview"
   },
   "dependencies": {
@@ -83,6 +83,6 @@
     "ts-node": "^10.9.1",
     "typescript": "4.3.2",
     "vite": "^2.1.5",
-    "vite-plugin-svgr": "^2.4.0"
+    "vite-plugin-react-svg": "^0.2.0"
   }
 }

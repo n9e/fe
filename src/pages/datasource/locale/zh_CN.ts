@@ -44,6 +44,15 @@ const zh_CN = {
     jaeger: {
       version: '版本',
     },
+    ck: {
+      title: '数据库基本信息',
+      addr: '数据库地址',
+    },
+    sls: {
+      title: '服务入口',
+      endpoint: '访问域名（私网域名/公网域名/跨域域名）',
+      access: '授权',
+    },
   },
 };
 export default zh_CN;

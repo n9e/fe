@@ -42,7 +42,8 @@ export const defaultRuleConfig = {
         expressions: [
           {
             ref: 'A',
-            comparisonOperator: '==',
+            comparisonOperator: '>',
+            value: 0,
             logicalOperator: '&&',
           },
         ],

@@ -6,6 +6,9 @@
  * 3. src/pages/*\/locale/zh_CN.ts
  * 4. src/pages/help/*\/locale/zh_CN.ts
  * 5. src/pages/warning/*\/locale/zh_CN.ts
+ *
+ * package.json 添加 "type": "module"
+ * npx ts-node generate_all_locales.ts
  */
 
 import fs from 'fs';
@@ -21,6 +24,7 @@ const targets = [
   path.resolve(__dirname, '../src/pages/*/locale/zh_CN.ts'),
   path.resolve(__dirname, '../src/pages/help/*/locale/zh_CN.ts'),
   path.resolve(__dirname, '../src/pages/warning/*/locale/zh_CN.ts'),
+  path.resolve(__dirname, '../src/plus/datasource/*/locale/zh_CN.ts'),
 ];
 const allfiles: string[] = [];
 

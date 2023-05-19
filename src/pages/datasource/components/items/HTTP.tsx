@@ -12,7 +12,7 @@ export default function HTTP() {
       <FormItem label='URL' name={['http', 'url']} rules={[{ required: true }]}>
         <Input placeholder='http://localhost:9090' />
       </FormItem>
-      <FormItem label={t('form.timeout')} name={['http', 'timeout']} rules={[{ type: 'number', min: 0 }]}>
+      <FormItem label={t('form.timeout')} name={['http', 'timeout']} rules={[{ type: 'number', min: 0 }]} initialValue={10000}>
         <InputNumber style={{ width: '100%' }} controls={false} />
       </FormItem>
     </div>

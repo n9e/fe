@@ -1,4 +1,0 @@
-VITE_IS_COMMON_DS = true; // use other common datasource
-VITE_IS_SLS_DS = true; // SLS datasource
-VITE_IS_ALERT_AI = true; // alert rule AI algo
-VITE_IS_ALERT_ES = true; // alert rule ES

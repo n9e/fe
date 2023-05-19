@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, { useState, useRef, useContext } from 'react';
 import { Button, Card, Space, Input, Form, Select } from 'antd';
 import { PlusOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
@@ -25,8 +25,11 @@ import { DatasourceCateEnum } from '@/utils/constant';
 import { getDefaultDatasourceValue, setDefaultDatasourceValue } from '@/utils';
 import { CommonStateContext } from '@/App';
 import Elasticsearch from './Elasticsearch';
-import AliyunSLS, { setDefaultValues } from './AliyunSLS';
+import { Explorer as AliyunSLS } from 'plus:/datasource/aliyunSLS';
 import Prometheus from './Prometheus';
+import { Explorer as ClickHouse } from 'plus:/datasource/clickHouse';
+import { Explorer as Zabbix } from 'plus:/datasource/zabbix';
+import { Explorer as InfluxDB } from 'plus:/datasource/influxDB';
 import './index.less';
 
 type PanelMeta = { id: string; defaultPromQL?: string };
@@ -60,13 +63,6 @@ const Panel = ({ defaultPromQL, removePanel, id, cateOptions, type, defaultCate 
   const [form] = Form.useForm();
   const headerExtraRef = useRef<HTMLDivElement>(null);
   const [datasourceCate, setDatasourceCate] = useState(localStorage.getItem(`explorer_datasource_cate_${type}`) || defaultCate);
-
-  useEffect(() => {
-    localStorage.setItem('datasource_cate_log', datasourceCate);
-    if (datasourceCate === 'aliyun-sls') {
-      setDefaultValues(form);
-    }
-  }, [datasourceCate]);
 
   return (
     <Card bodyStyle={{ padding: 16 }} className='panel'>
@@ -151,9 +147,15 @@ const Panel = ({ defaultPromQL, removePanel, id, cateOptions, type, defaultCate 
             if (datasourceCate === DatasourceCateEnum.elasticsearch) {
               return <Elasticsearch key={datasourceValue} datasourceValue={datasourceValue} form={form} />;
             } else if (datasourceCate === DatasourceCateEnum.aliyunSLS) {
-              return <AliyunSLS datasourceCate={DatasourceCateEnum.aliyunSLS} datasourceName={datasourceValue} headerExtra={headerExtraRef.current} form={form} />;
+              return <AliyunSLS datasourceCate={DatasourceCateEnum.aliyunSLS} datasourceValue={datasourceValue} headerExtra={headerExtraRef.current} form={form} />;
             } else if (datasourceCate === DatasourceCateEnum.prometheus) {
               return <Prometheus key={datasourceValue} defaultPromQL={defaultPromQL} headerExtra={headerExtraRef.current} datasourceValue={datasourceValue} form={form} />;
+            } else if (datasourceCate === DatasourceCateEnum.ck) {
+              return <ClickHouse datasourceCate={DatasourceCateEnum.ck} datasourceValue={datasourceValue} form={form} headerExtra={headerExtraRef.current} />;
+            } else if (datasourceCate === DatasourceCateEnum.zabbix) {
+              return <Zabbix datasourceCate={DatasourceCateEnum.zabbix} datasourceValue={datasourceValue} form={form} headerExtra={headerExtraRef.current} />;
+            } else if (datasourceCate === DatasourceCateEnum.influxdb) {
+              return <InfluxDB datasourceCate={DatasourceCateEnum.influxdb} datasourceValue={datasourceValue} form={form} />;
             }
           }}
         </Form.Item>

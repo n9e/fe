@@ -85,4 +85,8 @@ export enum DatasourceCateEnum {
   prometheus = 'prometheus',
   elasticsearch = 'elasticsearch',
   aliyunSLS = 'aliyun-sls',
+  ck = 'ck',
+  influxDB = 'influxdb',
+  zabbix = 'zabbix',
+  influxdb = 'influxdb',
 }

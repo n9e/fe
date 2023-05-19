@@ -53,7 +53,7 @@ export default function Prometheus(props: IProps) {
           search: queryString.stringify({ ...query, start, end }),
         });
       }}
-      promQL={defaultPromQL}
+      promQL={defaultPromQL as any}
       datasourceValue={datasourceValue}
       graphOperates={{ enabled: true }}
       globalOperates={{ enabled: true }}

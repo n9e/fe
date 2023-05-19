@@ -199,6 +199,15 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
       onFinish={onFinish}
       initialValues={{
         ...detail,
+        tags: detail?.tags?.map((item) => {
+          if (['not in', 'in'].includes(item.func)) {
+            return {
+              ...item,
+              value: item.value.split(' '),
+            };
+          }
+          return item;
+        }),
         prod: detail.prod || 'host',
         btime: detail?.btime ? moment(detail.btime * 1000) : moment(btimeDefault),
         etime: detail?.etime ? moment(detail.etime * 1000) : moment(etimeDefault),

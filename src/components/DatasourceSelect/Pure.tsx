@@ -12,7 +12,7 @@ interface IProps {
   datasourceValueMode?: 'multiple';
   onDatasourceValueChange?: (val: number | number[]) => void;
   defaultDatasourceValue?: number;
-  filterCates?: (cates: { value: string; label: string; type: string }[]) => { value: string; label: string; type: string }[];
+  filterCates?: (cates: { value: string; label: string; type: string; alertRule: boolean }[]) => { value: string; label: string; type: string; alertRule: boolean }[];
 }
 
 export default function Pure(props: IProps) {
