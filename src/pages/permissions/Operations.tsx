@@ -6,7 +6,7 @@ import { getOperationsByRole, putOperationsByRole } from './services';
 import { OperationType } from './types';
 
 function transformOperations(operations: OperationType[]) {
-  return operations.map((item) => {
+  return _.map(operations, (item) => {
     return {
       title: item.cname,
       key: item.name,
