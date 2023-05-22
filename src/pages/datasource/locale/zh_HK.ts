@@ -35,6 +35,9 @@ const zh_HK = {
     cluster_confirm: '發現你的資料來源沒有關聯告警引擎叢集，將無法用來做告警，是否去關聯下告警引擎叢集？',
     cluster_confirm_ok: '不做關聯',
     cluster_confirm_cancel: '去做關聯',
+    prom: {
+      write_addr_tip: '記錄規則產生的資料的回寫地址',
+    },
     es: {
       version: '版本',
       max_shard: '最大併發分片請求數',

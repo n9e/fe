@@ -41,7 +41,7 @@ export default function FormCpt({ data, onFinish, submitLoading }: any) {
       <div className='page-title' style={{ marginTop: 0 }}>
         {t('form.other')}
       </div>
-      <Form.Item label='write_addr' name={['settings', 'write_addr']}>
+      <Form.Item label='remote write' tooltip={t('form.prom.write_addr_tip')} name={['settings', 'write_addr']}>
         <Input />
       </Form.Item>
       <Form.Item label={t('form.cluster')} name='cluster_name'>
