@@ -34,5 +34,6 @@ const en_US = {
   单点登录: 'SSO',
   通知模板: 'Notification Template',
   通知设置: 'Notification Settings',
+  采集配置: 'Collectors',
 };
 export default en_US;
