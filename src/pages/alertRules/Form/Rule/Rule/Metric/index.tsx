@@ -52,7 +52,14 @@ export default function index() {
           <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.cate !== curValues.cate} noStyle>
             {({ getFieldValue, setFieldsValue }) => {
               const cate = getFieldValue('cate');
-              return <DatasourceValueSelect setFieldsValue={setFieldsValue} cate={cate} datasourceList={groupedDatasourceList[cate] || []} />;
+              return (
+                <DatasourceValueSelect
+                  setFieldsValue={setFieldsValue}
+                  cate={cate}
+                  datasourceList={groupedDatasourceList[cate] || []}
+                  mode={cate === 'prometheus' ? 'multiple' : undefined}
+                />
+              );
             }}
           </Form.Item>
         </Col>
