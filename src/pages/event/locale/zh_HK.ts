@@ -52,6 +52,7 @@ const zh_HK = {
     notify_groups_obj: '告警接收組',
     callbacks: '回撥地址',
     runbook_url: '預案連結',
+    detail_url: '詳情連結',
     host: {
       trigger: '觸發',
     },

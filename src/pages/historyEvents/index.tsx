@@ -53,9 +53,12 @@ const Event: React.FC = () => {
   });
   const columns = [
     {
-      title: t('common:datasource.type'),
-      dataIndex: 'cate',
+      title: t('prod'),
+      dataIndex: 'rule_prod',
       width: 100,
+      render: (value) => {
+        return t(`rule_prod.${value}`);
+      },
     },
     {
       title: t('common:datasource.id'),

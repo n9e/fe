@@ -20,5 +20,13 @@ const zh_CN = {
   export: '导出',
   export_failed: '导出失败',
   prod: '监控类型',
+  rule_prod: {
+    firemap: '灭火图',
+    northstar: '北极星',
+    metric: 'Metric',
+    host: 'Host',
+    log: 'Log',
+    anomaly: 'Anomaly',
+  },
 };
 export default zh_CN;

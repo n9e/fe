@@ -75,25 +75,46 @@ const EventDetailPage: React.FC = () => {
         );
       },
     },
-    {
-      label: t('detail.group_name'),
-      key: 'group_name',
-      render(content, { group_id }) {
-        return (
-          <Button size='small' type='link' className='rule-link-btn' onClick={() => handleNavToWarningList(group_id)}>
-            {content}
-          </Button>
-        );
-      },
-    },
+    ...(!_.includes(['firemap', 'northstar'], eventDetail?.rule_prod)
+      ? [
+          {
+            label: t('detail.group_name'),
+            key: 'group_name',
+            render(content, { group_id }) {
+              return (
+                <Button size='small' type='link' className='rule-link-btn' onClick={() => handleNavToWarningList(group_id)}>
+                  {content}
+                </Button>
+              );
+            },
+          },
+        ]
+      : [
+          {
+            label: t('detail.detail_url'),
+            key: 'rule_config',
+            render(val) {
+              const detail_url = _.get(val, 'detail_url');
+              return (
+                <a href={detail_url} target='_blank'>
+                  {detail_url}
+                </a>
+              );
+            },
+          },
+        ]),
     { label: t('detail.rule_note'), key: 'rule_note' },
-    {
-      label: t('detail.datasource_id'),
-      key: 'datasource_id',
-      render(content) {
-        return _.find(datasourceList, (item) => item.id === content)?.name;
-      },
-    },
+    ...(!_.includes(['firemap', 'northstar'], eventDetail?.rule_prod)
+      ? [
+          {
+            label: t('detail.datasource_id'),
+            key: 'datasource_id',
+            render(content) {
+              return _.find(datasourceList, (item) => item.id === content)?.name;
+            },
+          },
+        ]
+      : [false]),
     {
       label: t('detail.severity'),
       key: 'severity',
@@ -121,7 +142,7 @@ const EventDetailPage: React.FC = () => {
           : '';
       },
     },
-    { label: t('detail.target_note'), key: 'target_note' },
+    ...(!_.includes(['firemap', 'northstar'], eventDetail?.rule_prod) ? [{ label: t('detail.target_note'), key: 'target_note' }] : [false]),
     {
       label: t('detail.trigger_time'),
       key: 'trigger_time',
@@ -266,7 +287,7 @@ const EventDetailPage: React.FC = () => {
   }
 
   useEffect(() => {
-    const requestPromise = isHistory ? getHistoryEventsById(busiId, eventId) : getAlertEventsById(busiId, eventId);
+    const requestPromise = isHistory ? getHistoryEventsById(eventId) : getAlertEventsById(eventId);
     requestPromise.then((res) => {
       setEventDetail(res.dat);
     });

@@ -44,8 +44,12 @@ export default function TableCpt(props: IProps) {
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
   const columns = [
     {
-      title: t('common:datasource.type'),
-      dataIndex: 'cate',
+      title: t('prod'),
+      dataIndex: 'rule_prod',
+      width: 100,
+      render: (value) => {
+        return t(`AlertHisEvents:rule_prod.${value}`);
+      },
     },
     {
       title: t('common:datasource.id'),

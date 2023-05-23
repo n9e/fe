@@ -20,5 +20,13 @@ const en_US = {
   export: 'Export',
   export_failed: 'Export Failed',
   prod: 'Type',
+  rule_prod: {
+    firemap: 'Firemap',
+    northstar: 'Northstar',
+    metric: 'Metric',
+    host: 'Host',
+    log: 'Log',
+    anomaly: 'Anomaly',
+  },
 };
 export default en_US;

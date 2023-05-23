@@ -20,6 +20,14 @@ const zh_HK = {
   export: '匯出',
   export_failed: '匯出失敗',
   prod: '監控型別',
+  rule_prod: {
+    firemap: '滅火圖',
+    northstar: '北極星',
+    metric: 'Metric',
+    host: 'Host',
+    log: 'Log',
+    anomaly: 'Anomaly',
+  },
 };
 
 export default zh_HK;

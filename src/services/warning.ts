@@ -222,14 +222,22 @@ export const getHistoryEvents = function (data) {
   });
 };
 // 获取告警详情
-export function getAlertEventsById(busiId, eventId) {
-  return request(`/api/n9e/alert-cur-event/${eventId}`, {
+export function getAlertEventsById(eventId) {
+  let url = '/api/n9e/alert-cur-event';
+  if (import.meta.env.VITE_IS_COMMON_DS === 'true') {
+    url = '/api/n9e-plus/alert-cur-event';
+  }
+  return request(`${url}/${eventId}`, {
     method: RequestMethod.Get,
   });
 }
 
-export function getHistoryEventsById(busiId, eventId) {
-  return request(`/api/n9e/alert-his-event/${eventId}`, {
+export function getHistoryEventsById(eventId) {
+  let url = '/api/n9e/alert-his-event';
+  if (import.meta.env.VITE_IS_COMMON_DS === 'true') {
+    url = '/api/n9e-plus/alert-his-event';
+  }
+  return request(`${url}/${eventId}`, {
     method: RequestMethod.Get,
   });
 }
