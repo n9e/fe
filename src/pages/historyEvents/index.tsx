@@ -153,7 +153,7 @@ const Event: React.FC = () => {
               return <Select.Option value={item.value}>{t(`hours.${item.value}`)}</Select.Option>;
             })}
           </Select>
-          <AdvancedWrap var='VITE_IS_ALERT_AI,VITE_IS_ALERT_ES,VITE_IS_SLS_DS'>
+          <AdvancedWrap var='VITE_IS_ALERT_AI,VITE_IS_ALERT_ES,VITE_IS_SLS_DS,VITE_IS_COMMON_DS'>
             {(isShow) => {
               let options = [
                 {
@@ -180,6 +180,19 @@ const Event: React.FC = () => {
                   {
                     label: 'Log',
                     value: 'logging',
+                  },
+                ];
+              }
+              if (isShow[3]) {
+                options = [
+                  ...options,
+                  {
+                    label: t('rule_prod.firemap'),
+                    value: 'firemap',
+                  },
+                  {
+                    label: t('rule_prod.northstar'),
+                    value: 'northstar',
                   },
                 ];
               }

@@ -63,16 +63,19 @@ const EventDetailPage: React.FC = () => {
       label: t('detail.rule_name'),
       key: 'rule_name',
       render(content, { rule_id }) {
-        return (
-          <Link
-            to={{
-              pathname: `/alert-rules/edit/${rule_id}`,
-            }}
-            target='_blank'
-          >
-            {content}
-          </Link>
-        );
+        if (!_.includes(['firemap', 'northstar'], eventDetail?.rule_prod)) {
+          return (
+            <Link
+              to={{
+                pathname: `/alert-rules/edit/${rule_id}`,
+              }}
+              target='_blank'
+            >
+              {content}
+            </Link>
+          );
+        }
+        return content;
       },
     },
     ...(!_.includes(['firemap', 'northstar'], eventDetail?.rule_prod)
