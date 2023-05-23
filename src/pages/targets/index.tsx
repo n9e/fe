@@ -14,9 +14,10 @@
  * limitations under the License.
  *
  */
-import React, { useEffect, useState, useCallback, useContext } from 'react';
-import { Modal, Tag, Form, Input, Alert, Select, Tooltip } from 'antd';
-import { DatabaseOutlined } from '@ant-design/icons';
+import React, { useEffect, useState, useCallback, useContext, useRef } from 'react';
+import { Modal, Tag, Form, Input, Alert, Select, Tooltip, Divider, Space, Button, notification } from 'antd';
+import { DatabaseOutlined, PlusOutlined } from '@ant-design/icons';
+import type { InputRef } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _, { debounce } from 'lodash';
 import classNames from 'classnames';
@@ -57,10 +58,42 @@ const OperationModal: React.FC<OperateionModalProps> = ({ operateType, setOperat
   const [confirmLoading, setConfirmLoading] = useState<boolean>(false);
   const [identList, setIdentList] = useState<string[]>(idents);
   const [tagsList, setTagsList] = useState<string[]>([]);
-  const detailProp = operateType === OperateType.UnbindTag ? tagsList : busiGroups;
+  const [tagsAllList, setTagsAllList] = useState<string[]>([]);
+  const detailProp = operateType === OperateType.UnbindTag ? tagsList : (operateType === OperateType.BindTag ? tagsAllList:busiGroups);
+  const inputRef = useRef<InputRef>(null);
+  const [tag, setTag] = useState('');
+  const [tagStatus, setTagStatus] = useState<any>();
 
   // 绑定标签弹窗内容
-  const bindTagDetail = () => {
+  const bindTagDetail = (tagsAllList) => {
+    const contentRegExp = /^cmdb_[a-zA-Z_][\w]*={1}[^=]+$/;
+    const onTagChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setTag(event.target.value);
+    };
+    const addTag = (e) => {
+      e.stopPropagation()
+      e.preventDefault();
+      const { isCorrectFormat, isLengthAllowed } = isTagValid_add(tag)
+      if(isCorrectFormat && isLengthAllowed){
+        if(tagsAllList.indexOf(tag)==-1){
+          setTagsAllList([...tagsAllList, tag]);
+          setTagStatus(undefined)
+        }else{
+          setTagStatus('error')
+          notification.warning({
+            message: '此标签已存在',
+          });
+        }
+      } else {
+        notification.warning({
+          message: 'key 以字母或下划线开头，由字母、数字和下划线组成。[cmdb_为保留前缀]',
+        });
+        setTagStatus('error')
+      }
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 0);
+    };
     // 校验单个标签格式是否正确
     function isTagValid(tag) {
       const contentRegExp = /^[a-zA-Z_][\w]*={1}[^=]+$/;
@@ -68,6 +101,36 @@ const OperationModal: React.FC<OperateionModalProps> = ({ operateType, setOperat
         isCorrectFormat: contentRegExp.test(tag.toString()),
         isLengthAllowed: tag.toString().length <= 64,
       };
+    }
+    function isTagValid_add(tag) {
+      const contentRegExp = /^(?!cmdb_)[a-zA-Z_][\w]*={1}[^=]+$/;
+      return {
+        isCorrectFormat: contentRegExp.test(tag.toString()),
+        isLengthAllowed: tag.toString().length <= 64,
+      };
+    }
+
+    function dropdownRender(menu) {
+      return (
+        <>
+          {menu}
+          <Divider style={{ margin: '8px 0' }} />
+          <Space style={{ padding: '0 8px 4px' }}>
+            <Input
+              placeholder='标签格式 key=value'
+              ref={inputRef}
+              status={tagStatus}
+              value={tag}
+              style={{width:'280px'}}
+              onPressEnter={addTag}
+              onChange={onTagChange}
+            />
+            <Button type="text" icon={<PlusOutlined />} onClick={addTag}>
+              新增标签
+            </Button>
+          </Space>
+        </>
+      )
     }
 
     // 渲染标签
@@ -108,7 +171,11 @@ const OperationModal: React.FC<OperateionModalProps> = ({ operateType, setOperat
       render() {
         return (
           <Form.Item label={t('common:table.tag')} name='tags' rules={[{ required: true, message: t('bind_tag.msg1') }, isValidFormat]}>
-            <Select mode='tags' tokenSeparators={[' ']} open={false} placeholder={t('bind_tag.placeholder')} tagRender={tagRender} />
+            <Select
+              mode='multiple' showArrow={true}
+              placeholder={t('bind_tag.placeholder_select')}
+              dropdownRender={dropdownRender}
+              options={tagsAllList.map((tag) => ({ label: tag, value: tag, disabled: contentRegExp.test(tag) }))} />
           </Form.Item>
         );
       },
@@ -117,6 +184,7 @@ const OperationModal: React.FC<OperateionModalProps> = ({ operateType, setOperat
 
   // 解绑标签弹窗内容
   const unbindTagDetail = (tagsList) => {
+    const contentRegExp = /^cmdb_[a-zA-Z_][\w]*={1}[^=]+$/;
     return {
       operateTitle: t('unbind_tag.title'),
       requestFunc: unbindTags,
@@ -124,7 +192,7 @@ const OperationModal: React.FC<OperateionModalProps> = ({ operateType, setOperat
       render() {
         return (
           <Form.Item label={t('common:table.tag')} name='tags' rules={[{ required: true, message: t('unbind_tag.msg') }]}>
-            <Select mode='multiple' showArrow={true} placeholder={t('unbind_tag.placeholder')} options={tagsList.map((tag) => ({ label: tag, value: tag }))} />
+            <Select mode='multiple' showArrow={true} placeholder={t('unbind_tag.placeholder')} options={tagsList.map((tag) => ({ label: tag, value: tag, disabled: contentRegExp.test(tag) }))} />
           </Form.Item>
         );
       },
@@ -281,9 +349,8 @@ const OperationModal: React.FC<OperateionModalProps> = ({ operateType, setOperat
     }
   }, [operateType, idents]);
 
-  // 解绑标签时，根据输入框监控对象动态获取标签列表
   useEffect(() => {
-    if (operateType === OperateType.UnbindTag && identList.length) {
+    if (operateType === OperateType.UnbindTag && identList.length) {// 解绑标签时，根据输入框监控对象动态获取标签列表
       getTargetTags({ idents: identList.join(',') }).then(({ dat }) => {
         // 删除多余的选中标签
         const curSelectedTags = form.getFieldValue('tags') || [];
@@ -293,6 +360,17 @@ const OperationModal: React.FC<OperateionModalProps> = ({ operateType, setOperat
 
         setTagsList(dat);
       });
+    }else if (operateType === OperateType.BindTag && identList.length) {// 绑定标签时，全量获取标签列表
+      getTargetTags(undefined).then((res) => {
+        setTagsAllList(
+          _.filter(res?.dat || [],(item)=>{
+            const contentRegExp = /^(?!cmdb_)[a-zA-Z_][\w]*={1}[^=]+$/;
+            return contentRegExp.test(item)
+          }).map(res?.dat || [], (item) => {
+            return item;
+          }),
+        );
+      })
     }
   }, [operateType, identList]);
 

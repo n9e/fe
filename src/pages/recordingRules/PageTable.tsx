@@ -281,7 +281,7 @@ const PageTable: React.FC<Props> = ({ bgid }) => {
         >
           <span>{t('batch.delete')}</span>
         </li>
-        <li
+        {/* <li
           className='ant-dropdown-menu-item'
           onClick={() => {
             if (selectRowKeys.length == 0) {
@@ -292,7 +292,7 @@ const PageTable: React.FC<Props> = ({ bgid }) => {
           }}
         >
           <span>{t('batch.update.title')}</span>
-        </li>
+        </li> */}
       </ul>
     );
   }, [selectRowKeys, t]);

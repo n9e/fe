@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { Table, Tag, Tooltip, Space, Input, Dropdown, Menu, Button, Modal, message } from 'antd';
+import React, { useState, useRef, useEffect } from 'react';
+import { Table, Tag, Tooltip, Space, Input, Dropdown, Menu, Button, Modal, message, Select } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { SearchOutlined, DownOutlined, ReloadOutlined, CopyOutlined, ApartmentOutlined } from '@ant-design/icons';
 import { useAntdTable } from 'ahooks';
@@ -7,7 +7,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import { BusiGroupItem } from '@/store/commonInterface';
-import { getMonObjectList } from '@/services/targets';
+import { getMonObjectList, getTargetTags } from '@/services/targets';
 import { timeFormatter } from '@/pages/dashboard/Renderer/utils/valueFormatter';
 import clipboard from './clipboard';
 import OrganizeColumns from './OrganizeColumns';
@@ -61,7 +61,7 @@ export default function List(props: IProps) {
   const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs());
   const [collectsDrawerVisible, setCollectsDrawerVisible] = useState(false);
   const [collectsDrawerIdent, setCollectsDrawerIdent] = useState('');
-
+  const [tagsAllList, setTagsAllList] = useState<string[]>([]);
   const columns: ColumnsType<any> = [
     {
       title: (
@@ -143,10 +143,12 @@ export default function List(props: IProps) {
       columns.push({
         title: t('tags'),
         dataIndex: 'tags',
-        ellipsis: {
-          showTitle: false,
-        },
+        width: 150,
+        // ellipsis: {
+        //   showTitle: false,
+        // },
         render(tagArr) {
+
           const content =
             tagArr &&
             tagArr.map((item) => (
@@ -168,7 +170,7 @@ export default function List(props: IProps) {
           return (
             tagArr && (
               <Tooltip title={content} placement='topLeft' getPopupContainer={() => document.body} overlayClassName='mon-manage-table-tooltip'>
-                {content}
+                {content.slice(0,4)}...
               </Tooltip>
             )
           );
@@ -399,7 +401,14 @@ export default function List(props: IProps) {
     refreshDeps: [tableQueryContent, curBusiId, refreshFlag],
     defaultPageSize: 30,
   });
-
+  useEffect(()=>{
+    (async() => {
+      const list = await getTargetTags(undefined)
+      setTagsAllList(_.map(list?.dat || [], (item) => {
+        return item;
+      }))
+    })()
+  },[])
   return (
     <div>
       <div className='table-operate-box'>
@@ -423,6 +432,17 @@ export default function List(props: IProps) {
               setTableQueryContent(searchVal);
             }}
           />
+          <Select
+            mode='multiple'
+            showArrow={true}
+            placeholder='查询标签'
+            style={{width:'200px'}}
+            options={tagsAllList.map((tag) => (
+              { label: tag, value: tag }
+            ))}
+            onChange={(e)=>{
+              setTableQueryContent(searchVal+' '+e.join(' '));
+            }} />
         </Space>
         <Space>
           <Button
@@ -448,8 +468,8 @@ export default function List(props: IProps) {
               >
                 <Menu.Item key={OperateType.BindTag}>{t('bind_tag.title')}</Menu.Item>
                 <Menu.Item key={OperateType.UnbindTag}>{t('unbind_tag.title')}</Menu.Item>
-                <Menu.Item key={OperateType.UpdateBusi}>{t('update_busi.title')}</Menu.Item>
-                <Menu.Item key={OperateType.RemoveBusi}>{t('remove_busi.title')}</Menu.Item>
+                <Menu.Item key={OperateType.UpdateBusi} disabled>{t('update_busi.title')}</Menu.Item>
+                <Menu.Item key={OperateType.RemoveBusi} disabled>{t('remove_busi.title')}</Menu.Item>
                 <Menu.Item key={OperateType.UpdateNote}>{t('update_note.title')}</Menu.Item>
                 <Menu.Item key={OperateType.Delete}>{t('batch_delete.title')}</Menu.Item>
               </Menu>

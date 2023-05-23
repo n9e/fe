@@ -96,6 +96,26 @@ export function processFormValues(values) {
       }
       return trigger;
     });
+  } else if (values.prod === 'metric') {
+    if (values.rule_config.alert_configs) {
+      ["1","2","3"].forEach((key)=>{
+        if (!values.rule_config.alert_configs.hasOwnProperty(key)){
+          values.rule_config.alert_configs[key]=defaultRuleConfig.metric.alert_configs[key]
+        }
+      })
+    } else {
+      values.rule_config['alert_configs'] = defaultRuleConfig.metric.alert_configs
+    }
+    Object.keys(values.rule_config.alert_configs).forEach((key)=>{
+      if(values.rule_config.alert_configs[key].effective_time){
+        values.rule_config.alert_configs[key]={
+          ..._.omit(values.rule_config.alert_configs[key], 'effective_time'),
+          enable_days_of_weeks: values.rule_config.alert_configs[key].effective_time.map((item) => item.enable_days_of_week),
+          enable_stimes: values.rule_config.alert_configs[key].effective_time.map((item) => item.enable_stime.format('HH:mm')),
+          enable_etimes: values.rule_config.alert_configs[key].effective_time.map((item) => item.enable_etime.format('HH:mm'))
+        }
+      }
+    })
   }
   const data = {
     ..._.omit(values, 'effective_time'),
@@ -122,6 +142,38 @@ export function processInitialValues(values) {
         interval_unit: parseTimeToValueAndUnit(item.interval).unit,
       };
     });
+  } else if (values.prod === 'metric' && values.rule_config.alert_configs) {
+    ["1","2","3"].forEach((key)=>{
+      if (!values.rule_config.alert_configs.hasOwnProperty(key)){
+        values.rule_config.alert_configs[key]={
+          effective_time: [
+            {
+              enable_days_of_week: ['0', '1', '2', '3', '4', '5', '6'],
+              enable_stime: moment('00:00', 'HH:mm'),
+              enable_etime: moment('23:59', 'HH:mm'),
+            },
+          ],
+          recover_duration: 0,
+          notify_repeat_step: 60,
+          notify_max_number: 0,
+        }
+      }
+    })
+    Object.keys(values.rule_config.alert_configs).forEach((key)=>{
+      values.rule_config.alert_configs[key]["effective_time"]=values.rule_config.alert_configs[key]?.enable_etimes
+      ? values.rule_config.alert_configs[key]?.enable_etimes.map((item, index) => ({
+          enable_stime: moment(values.rule_config.alert_configs[key].enable_stimes[index], 'HH:mm'),
+          enable_etime: moment(values.rule_config.alert_configs[key].enable_etimes[index], 'HH:mm'),
+          enable_days_of_week: values.rule_config.alert_configs[key].enable_days_of_weeks[index],
+        }))
+      : [
+          {
+            enable_stime: moment('00:00', 'HH:mm'),
+            enable_etime: moment('23:59', 'HH:mm'),
+            enable_days_of_week: ['1', '2', '3', '4', '5', '6', '0'],
+          },
+        ]
+    })
   }
   return {
     ...values,

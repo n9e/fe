@@ -23,7 +23,7 @@ import { Button, Card, message, Space, Spin, Tag, Typography } from 'antd';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import PageLayout from '@/components/pageLayout';
-import { getAlertEventsById, getHistoryEventsById } from '@/services/warning';
+import { getAlertEventsById, getHistoryEventsById, getAlertEventsByCode } from '@/services/warning';
 import { priorityColor } from '@/utils/constant';
 import { deleteAlertEventsModal } from '.';
 import { parseValues } from '@/pages/alertRules/utils';
@@ -39,7 +39,8 @@ import './detail.less';
 const { Paragraph } = Typography;
 const EventDetailPage: React.FC = () => {
   const { t } = useTranslation('AlertCurEvents');
-  const { busiId, eventId } = useParams<{ busiId: string; eventId: string }>();
+  const { busiId, eventCode } = useParams<{ busiId: string; eventCode: string }>();
+  const [ eventId, setEventId] = useState(0)
   const commonState = useContext(CommonStateContext);
   const { busiGroups, datasourceList } = commonState;
   const handleNavToWarningList = (id) => {
@@ -51,6 +52,7 @@ const EventDetailPage: React.FC = () => {
   };
   const history = useHistory();
   const isHistory = history.location.pathname.includes('alert-his-events');
+  const isCurrent = history.location.pathname.includes('alert-cur-events');
   const [eventDetail, setEventDetail] = useState<any>();
   if (eventDetail) eventDetail.cate = eventDetail.cate || 'prometheus'; // TODO: 兼容历史的告警事件
   const parsedEventDetail = parseValues(eventDetail);
@@ -272,14 +274,17 @@ const EventDetailPage: React.FC = () => {
   }
 
   useEffect(() => {
-    const requestPromise = isHistory ? getHistoryEventsById(busiId, eventId) : getAlertEventsById(busiId, eventId);
+    const requestPromise = isHistory ? 
+      getHistoryEventsById(busiId, eventCode) : 
+      ( isCurrent ? getAlertEventsById(busiId, eventCode) : getAlertEventsByCode(busiId, eventCode));
     requestPromise.then((res) => {
+      setEventId(res.dat.id)
       setEventDetail(res.dat);
     });
-  }, [busiId, eventId]);
+  }, [busiId, eventCode]);
 
   return (
-    <PageLayout title={t('detail.title')} showBack backPath='/alert-his-events'>
+    <PageLayout title={isHistory?t('detail.title'):t('title')} showBack backPath={isHistory?'/alert-his-events':'/alert-cur-events'}>
       <div className='event-detail-container'>
         <Spin spinning={!eventDetail}>
           <Card

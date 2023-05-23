@@ -104,7 +104,7 @@ export default function MoreOperations(props: MoreOperationsProps) {
             >
               <span>{t('batch.delete')}</span>
             </li>
-            <li
+            {/* <li
               className='ant-dropdown-menu-item'
               onClick={() => {
                 if (selectRowKeys.length == 0) {
@@ -115,7 +115,7 @@ export default function MoreOperations(props: MoreOperationsProps) {
               }}
             >
               <span>{t('batch.update.title')}</span>
-            </li>
+            </li> */}
           </ul>
         }
         trigger={['click']}

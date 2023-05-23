@@ -53,9 +53,7 @@ export default function Info() {
 
   const handleSubmit = async () => {
     try {
-      console.log(111);
       await form.validateFields();
-      console.log(222);
       updateProfile();
     } catch (err) {
       console.log(err);

@@ -233,6 +233,12 @@ export function getHistoryEventsById(busiId, eventId) {
     method: RequestMethod.Get,
   });
 }
+
+export function getAlertEventsByCode(busiId, eventCode) {
+  return request(`/api/n9e/alert-event/${eventCode}`, {
+    method: RequestMethod.Get,
+  });
+}
 /**
  * 批量删除(忽略)告警历史
  */

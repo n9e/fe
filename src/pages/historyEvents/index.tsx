@@ -105,7 +105,14 @@ const Event: React.FC = () => {
         );
       },
     },
-
+    {
+      title: t('状态'),
+      dataIndex: 'is_recovered',
+      width: 60,
+      render(isRecovered) {
+        return <Tag color={isRecovered ? 'green' : 'red'}>{isRecovered ? 'Recovered' : 'Triggered'}</Tag>;
+      },
+    },
     {
       title: t('last_eval_time'),
       dataIndex: 'last_eval_time',

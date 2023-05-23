@@ -33,6 +33,7 @@ const en_US = {
   bind_tag: {
     title: 'Bind tag',
     placeholder: 'Tag format is key=value, separated by enter or space',
+    placeholder_select: '',
     msg1: 'Please fill in at least one tag!',
     msg2: 'Tag format is incorrect, please check!',
     render_tip1: 'Tag length should be less than or equal to 64 bits',

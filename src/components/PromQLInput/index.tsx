@@ -183,7 +183,7 @@ const ExpressionInput = (
 
       // view.focus();
     }
-  }, [onChange, JSON.stringify(headers), completeEnabled]);
+  }, [onChange, JSON.stringify(headers), completeEnabled,datasourceValue]);
 
   useEffect(() => {
     if (realValue.current !== value) {

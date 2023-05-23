@@ -27,6 +27,7 @@ import Effective from './Effective';
 import Notify from './Notify';
 import { getFirstDatasourceId, processFormValues, processInitialValues } from './utils';
 import { defaultValues } from './constants';
+import Combine from './Combine';
 
 interface IProps {
   type?: number; // 空: 新增 1:编辑 2:克隆 3:查看
@@ -43,7 +44,7 @@ export default function index(props: IProps) {
   const { bgid } = useParams<{ bgid: string }>();
   const { t } = useTranslation('alertRules');
   const [form] = Form.useForm();
-  const { groupedDatasourceList } = useContext(CommonStateContext);
+  // const { groupedDatasourceList } = useContext(CommonStateContext);
   const disabled = type === 3;
   const handleCheck = async (values) => {
     if (values.cate === 'prometheus') {
@@ -93,8 +94,9 @@ export default function index(props: IProps) {
   };
 
   useEffect(() => {
-    if (type === 1 || type === 2 || type === 3) {
-      form.setFieldsValue(processInitialValues(initialValues));
+    if ((type === 1 || type === 2 || type === 3) ) {
+      let val = processInitialValues(initialValues)
+      form.setFieldsValue(val);
     } else {
       form.setFieldsValue(defaultValues);
     }
@@ -115,6 +117,7 @@ export default function index(props: IProps) {
           <Rule form={form} />
           <Effective />
           <Notify disabled={disabled} />
+          <Combine disabled={disabled}/>
           {!disabled && (
             <Space>
               <Button

@@ -60,7 +60,6 @@ export default function index(props: IProps) {
 
   useEffect(() => {
     if (type === 1 || type === 2 || type === 3) {
-      console.log(processInitialValues(initialValues));
       form.setFieldsValue(processInitialValues(initialValues));
     } else {
       form.setFieldsValue({

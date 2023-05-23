@@ -13,7 +13,6 @@ interface IProps {
 
 export default function PrometheusDetail(props: IProps) {
   const { eventDetail, history } = props;
-
   return [
     {
       label: 'PromQL',
@@ -24,6 +23,11 @@ export default function PrometheusDetail(props: IProps) {
           <div style={{ width: '100%' }}>
             {_.map(queries, (query) => {
               const { prom_ql } = query;
+              if (typeof eventDetail.prom_ql === 'string' && eventDetail.prom_ql.length != 0 ) {
+                if (prom_ql != eventDetail.prom_ql ) {
+                  return
+                }
+              }
               return (
                 <Row className='promql-row' key={prom_ql}>
                   <Col span={20}>
