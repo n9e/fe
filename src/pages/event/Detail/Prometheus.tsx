@@ -19,7 +19,7 @@ export default function PrometheusDetail(props: IProps) {
       label: 'PromQL',
       key: 'rule_config',
       render(ruleConfig) {
-        const { queries } = ruleConfig;
+        const queries = _.get(ruleConfig, 'queries', []);
         return (
           <div style={{ width: '100%' }}>
             {_.map(queries, (query) => {
