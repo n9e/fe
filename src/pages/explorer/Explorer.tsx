@@ -25,10 +25,14 @@ import { DatasourceCateEnum } from '@/utils/constant';
 import { getDefaultDatasourceValue, setDefaultDatasourceValue } from '@/utils';
 import { CommonStateContext } from '@/App';
 import Elasticsearch from './Elasticsearch';
+// @ts-ignore
 import { Explorer as AliyunSLS } from 'plus:/datasource/aliyunSLS';
 import Prometheus from './Prometheus';
+// @ts-ignore
 import { Explorer as ClickHouse } from 'plus:/datasource/clickHouse';
+// @ts-ignore
 import { Explorer as Zabbix } from 'plus:/datasource/zabbix';
+// @ts-ignore
 import { Explorer as InfluxDB } from 'plus:/datasource/influxDB';
 import './index.less';
 

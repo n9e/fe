@@ -4,9 +4,13 @@ import moment from 'moment';
 import { TimeRangePickerWithRefresh, IRawTimeRange } from '@/components/TimeRangePicker';
 import Resolution from '@/components/Resolution';
 import { getStepByTimeAndStep } from '@/pages/dashboard/utils';
+// @ts-ignore
 import { EventPreview as AlgoGraph } from 'plus:/datasource/anomaly';
+// @ts-ignore
 import { EventPreview as ElasticsearchGraph } from 'plus:/datasource/elasticsearch';
+// @ts-ignore
 import { EventPreview as AliyunSLSGraph } from 'plus:/datasource/aliyunSLS';
+// @ts-ignore
 import { EventPreview as InfluxDBPreview } from 'plus:/datasource/influxDB';
 
 export default function index({ data, triggerTime, onClick }) {

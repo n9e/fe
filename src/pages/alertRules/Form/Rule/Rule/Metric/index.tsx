@@ -24,7 +24,9 @@ import { getAuthorizedDatasourceCates } from '@/components/AdvancedWrap';
 import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
 import IntervalAndDuration from '@/pages/alertRules/Form/components/IntervalAndDuration';
 import Prometheus from './Prometheus';
+// @ts-ignore
 import { AlertRule as ClickHouse } from 'plus:/datasource/clickHouse';
+// @ts-ignore
 import { AlertRule as Influxdb } from 'plus:/datasource/influxDB';
 
 export default function index() {

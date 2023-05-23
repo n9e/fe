@@ -28,8 +28,11 @@ import { priorityColor } from '@/utils/constant';
 import { deleteAlertEventsModal } from '.';
 import { parseValues } from '@/pages/alertRules/utils';
 import { CommonStateContext } from '@/App';
+// @ts-ignore
 import { Event as ElasticsearchDetail } from 'plus:/datasource/elasticsearch';
+// @ts-ignore
 import { Event as AliyunSLSDetail } from 'plus:/datasource/aliyunSLS';
+// @ts-ignore
 import { Event as InfluxDBDetail } from 'plus:/datasource/influxDB';
 import Preview from './Preview';
 import LogsDetail from './LogsDetail';

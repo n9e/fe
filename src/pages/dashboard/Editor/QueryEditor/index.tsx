@@ -2,8 +2,11 @@ import React, { useState } from 'react';
 import { Space, Form, Radio } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
+// @ts-ignore
 import { QueryBuilder as AliyunSLS } from 'plus:/datasource/aliyunSLS';
+// @ts-ignore
 import { QueryBuilder as Zabbix } from 'plus:/datasource/zabbix';
+// @ts-ignore
 import { QueryBuilder as InfluxDB } from 'plus:/datasource/influxDB';
 import OrganizeFields from '../TransformationsEditor/OrganizeFields';
 import DatasourceSelect from './components/DatasourceSelect';

@@ -63,6 +63,7 @@ import NotificationSettings from '@/pages/help/NotificationSettings';
 import MigrateDashboards from '@/pages/help/migrate';
 import IBEX from '@/pages/help/NotificationSettings/IBEX';
 import Collects, { Add as CollectAdd, Edit as CollectEdit } from '@/pages/collects';
+// @ts-ignore
 import { Jobs as StrategyBrain } from 'plus:/datasource/anomaly';
 import { dynamicPackages, Entry } from '@/utils';
 
