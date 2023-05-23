@@ -80,7 +80,7 @@ const ExpressionInput = (
         completeEnabled
           ? {
               remote: {
-                url: `${url}/${datasourceValue}`,
+                url: datasourceValue ? `${url}/${datasourceValue}` : url,
                 fetchFn: (resource, options = {}) => {
                   const params = options.body?.toString();
                   const search = params ? `?${params}` : '';
