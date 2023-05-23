@@ -71,7 +71,7 @@ export default function index() {
   useEffect(() => {
     fetchData((dat) => {
       if (query.cate) {
-        const cate = _.find(dat, { name: query.cate });
+        const cate = _.find(dat, { name: query.cate }) as BoardCateType;
         if (cate) {
           setActive(cate);
         }

@@ -88,7 +88,7 @@ export default function index() {
   useEffect(() => {
     fetchData((dat) => {
       if (query.cate) {
-        const cate = _.find(dat, { name: query.cate });
+        const cate = _.find(dat, { name: query.cate }) as RuleCateType;
         if (cate) {
           setActive(cate);
         }
