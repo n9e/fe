@@ -25,6 +25,7 @@ import './index.less';
 
 const MetricExplorerPage = () => {
   const { t } = useTranslation('explorer');
+
   return (
     <PageLayout title={t('title')} icon={<LineChartOutlined />}>
       <div className='prometheus-page'>

@@ -14,11 +14,17 @@
  * limitations under the License.
  *
  */
+/**
+ * querystring
+ * data_source_name: string
+ * data_source_id: string
+ */
 import React, { useState, useRef, useContext } from 'react';
 import { Button, Card, Space, Input, Form, Select } from 'antd';
 import { PlusOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 import { generateID } from '@/utils';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { DatasourceCateEnum } from '@/utils/constant';
@@ -66,7 +72,9 @@ const Panel = ({ defaultPromQL, removePanel, id, cateOptions, type, defaultCate 
   const { groupedDatasourceList } = useContext(CommonStateContext);
   const [form] = Form.useForm();
   const headerExtraRef = useRef<HTMLDivElement>(null);
-  const [datasourceCate, setDatasourceCate] = useState(localStorage.getItem(`explorer_datasource_cate_${type}`) || defaultCate);
+  const params = new URLSearchParams(useLocation().search);
+  const [datasourceCate, setDatasourceCate] = useState(params.get('data_source_name') || localStorage.getItem(`explorer_datasource_cate_${type}`) || defaultCate);
+  const datasourceValue = params.get('data_source_id') ? _.toNumber(params.get('data_source_id')) : getDefaultDatasourceValue(datasourceCate, groupedDatasourceList);
 
   return (
     <Card bodyStyle={{ padding: 16 }} className='panel'>
@@ -74,7 +82,7 @@ const Panel = ({ defaultPromQL, removePanel, id, cateOptions, type, defaultCate 
         form={form}
         initialValues={{
           datasourceCate: datasourceCate,
-          datasourceValue: getDefaultDatasourceValue(datasourceCate, groupedDatasourceList),
+          datasourceValue: datasourceValue,
         }}
       >
         <Space align='start'>
