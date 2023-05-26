@@ -204,6 +204,8 @@ const zh_CN = {
       reverseColorOrder: '反转颜色', // hexbin
       colorDomainAuto: '自动 min/max 值', // hexbin
       colorDomainAuto_tip: '默认自动从 series 里面取 min max 值', // hexbin
+      detailName: '链接名称',
+      detailUrl: '链接地址',
       pie: {
         legengPosition: '图例位置', // pie
         max: '最多展示块数',

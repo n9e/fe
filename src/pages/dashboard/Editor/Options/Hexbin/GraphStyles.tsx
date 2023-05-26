@@ -15,10 +15,10 @@
  *
  */
 import React from 'react';
-import { Form, Radio, Select, Row, Col, InputNumber, Switch } from 'antd';
+import { Form, Radio, Select, Row, Col, InputNumber, Switch, Input } from 'antd';
 import { CaretDownOutlined } from '@ant-design/icons';
 import _ from 'lodash';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import { Panel } from '../../Components/Collapse';
 import { calcsOptions } from '../../config';
 import { colors } from '../../../Components/ColorRangeMenu/config';
@@ -114,6 +114,20 @@ export default function GraphStyles() {
             }}
           </Form.Item>
         </Row>
+        <Row gutter={10}>
+          <Col span={24}>
+            <Form.Item
+              label={t('panel.custom.detailUrl')}
+              name={[...namePrefix, 'detailUrl']}
+              tooltip={{
+                overlayInnerStyle: { width: 330 },
+                title: <Trans ns='dashboard' i18nKey='dashboard:link.url_tip' components={{ 1: <br /> }} />,
+              }}
+            >
+              <Input style={{ width: '100%' }} />
+            </Form.Item>
+          </Col>
+          </Row>
       </>
     </Panel>
   );

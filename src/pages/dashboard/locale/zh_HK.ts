@@ -204,6 +204,8 @@ const zh_HK = {
       reverseColorOrder: '反轉顏色',
       colorDomainAuto: '自動 min/max 值',
       colorDomainAuto_tip: '預設自動從 series 裏面取 min max 值',
+      detailName: '連結名稱',
+      detailUrl: '連結地址',
       pie: {
         legengPosition: '圖例位置',
         max: '最多展示塊數',
