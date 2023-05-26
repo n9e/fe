@@ -75,6 +75,8 @@ function index(props: IProps) {
       if (_.isArray(initialValuesCopy.custom.colorRange)) {
         _.set(initialValuesCopy, 'custom.colorRange', _.join(initialValuesCopy.custom.colorRange, ','));
         setInitialValues(initialValuesCopy);
+      } else {
+        setInitialValues(initialValuesCopy);
       }
     } else {
       setInitialValues(initialValuesCopy);

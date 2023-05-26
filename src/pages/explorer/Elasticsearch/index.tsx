@@ -139,7 +139,6 @@ export default function index(props: IProps) {
   useEffect(() => {
     // 假设携带数据源值时会同时携带其他的参数，并且触发一次查询
     if (params.get('data_source_id')) {
-      console.log(params.get('timestamp'));
       form.setFieldsValue({
         query: {
           index: params.get('index_name'),
