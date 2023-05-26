@@ -150,6 +150,7 @@ export interface IHexbinStyles {
   colorDomainAuto: boolean;
   colorDomain: number[]; // 自定义 [min, max]
   reverseColorOrder: boolean;
+  detailUrl: string;
 }
 
 export interface IPieStyles {

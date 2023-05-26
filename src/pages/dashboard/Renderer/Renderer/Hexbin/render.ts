@@ -54,7 +54,7 @@ const div = select('body')
   .attr('class', 'hexbin-tooltip')
   .style('opacity', 0);
 
-function renderHoneyComb(svgGroup, data, { width, height, fontAutoScale = true, fontSize = 12, themeMode, textMode }) {
+function renderHoneyComb(svgGroup, data, { width, height, fontAutoScale = true, fontSize = 12, themeMode, textMode, detailUrl }, detailFormatter) {
   const t = transition().duration(750);
   const { columns: mapColumns, rows: mapRows } = getMapColumnsAndRows(width, height, data.length);
   const hexRadius = Math.floor(min([width / ((mapColumns + 0.5) * Math.sqrt(3)), height / ((mapRows + 1 / 3) * 1.5), width / 7]));
@@ -148,6 +148,11 @@ function renderHoneyComb(svgGroup, data, { width, height, fontAutoScale = true, 
       const curPath = svgGroup.selectAll('.hexagon').nodes()[i];
       curPath.setAttribute('stroke', data[i]?.color);
     })
+    .on('mousedown', (_d, i) => {
+      if (detailUrl) {
+        window.open(detailFormatter(data[i]), '_blank');
+      }
+    })
     .attr('stroke', (_d, i) => {
       return data[i]?.color;
     })
@@ -216,17 +221,23 @@ function renderHoneyComb(svgGroup, data, { width, height, fontAutoScale = true, 
   }
 }
 
-export function renderFn(data, { width, height, parentGroupEl, themeMode, textMode }) {
+export function renderFn(data, { width, height, parentGroupEl, themeMode, textMode, detailUrl }, detailFormatter) {
   const parentGroup = select(parentGroupEl).attr('width', width).attr('height', height);
   const countPerRow = bestFitElemCountPerRow(1, width, height);
   const unitWidth = Math.floor(width / countPerRow);
   const rowCount = Math.ceil(1 / countPerRow);
   const unitHeight = height / rowCount;
 
-  renderHoneyComb(parentGroup, data, {
-    width: unitWidth,
-    height: unitHeight,
-    themeMode,
-    textMode,
-  });
+  renderHoneyComb(
+    parentGroup,
+    data,
+    {
+      width: unitWidth,
+      height: unitHeight,
+      themeMode,
+      textMode,
+      detailUrl,
+    },
+    detailFormatter,
+  );
 }

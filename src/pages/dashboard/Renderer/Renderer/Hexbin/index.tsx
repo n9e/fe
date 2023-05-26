@@ -23,21 +23,27 @@ import { renderFn } from './render';
 import { IPanel, IHexbinStyles } from '../../../types';
 import getCalculatedValuesBySeries from '../../utils/getCalculatedValuesBySeries';
 import { getColorScaleLinearDomain } from './utils';
+import { replaceFieldWithVariable, getOptionsList } from '../../../VariableConfig/constant';
+import { replaceExpressionDetail } from '../../utils/replaceExpressionDetail';
+import { useGlobalState } from '../../../globalState';
+import { IRawTimeRange } from '@/components/TimeRangePicker';
 import './style.less';
 
 interface HoneyCombProps {
   values: IPanel;
   series: any[];
   themeMode?: 'dark';
+  time: IRawTimeRange;
 }
 
 const Hexbin: FunctionComponent<HoneyCombProps> = (props) => {
-  const { values, series, themeMode } = props;
+  const { values, series, themeMode, time } = props;
   const { custom = {}, options } = values;
-  const { calc, colorRange = [], reverseColorOrder = false, colorDomainAuto, colorDomain, textMode = 'valueAndName' } = custom as IHexbinStyles;
+  const { calc, colorRange = [], reverseColorOrder = false, colorDomainAuto, colorDomain, textMode = 'valueAndName', detailUrl } = custom as IHexbinStyles;
   const groupEl = useRef<SVGGElement>(null);
   const svgEl = useRef<HTMLDivElement>(null);
   const svgSize = useSize(svgEl);
+  const [dashboardMeta] = useGlobalState('dashboardMeta');
 
   useEffect(() => {
     const calculatedValues = getCalculatedValuesBySeries(
@@ -55,6 +61,13 @@ const Hexbin: FunctionComponent<HoneyCombProps> = (props) => {
       .domain(getColorScaleLinearDomain(calculatedValues, colorDomainAuto, colorDomain))
       .range(reverseColorOrder ? _.reverse(_.slice(colorRange)) : colorRange);
 
+      const detailFormatter = (data: any) => {
+        // 指标数据
+        const formatUrl = data ? replaceExpressionDetail(detailUrl, data) : detailUrl;
+        // 渲染下钻链接, 变量
+        return replaceFieldWithVariable(formatUrl, dashboardMeta.dashboardId, getOptionsList(dashboardMeta, time));
+      };
+
     if (svgSize?.width && svgSize?.height) {
       const renderProps = {
         width: svgSize?.width,
@@ -62,6 +75,7 @@ const Hexbin: FunctionComponent<HoneyCombProps> = (props) => {
         parentGroupEl: groupEl.current,
         themeMode,
         textMode,
+        detailUrl,
       };
       const data = _.map(calculatedValues, (item) => {
         return {
@@ -72,7 +86,7 @@ const Hexbin: FunctionComponent<HoneyCombProps> = (props) => {
       });
       d3.select(groupEl.current).selectAll('*').remove();
       if (data.length) {
-        renderFn(data, renderProps);
+        renderFn(data, renderProps, detailFormatter);
       }
     }
   }, [JSON.stringify(series), JSON.stringify(options), svgSize?.width, svgSize?.height, calc, colorRange, reverseColorOrder, colorDomainAuto, colorDomain]);
