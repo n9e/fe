@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Form, Input, Select } from 'antd';
+import React, { useRef } from 'react';
+import { Form, Input } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import Name from '../../components/items/Name';
@@ -9,19 +9,12 @@ import SkipTLSVerify from '../../components/items/SkipTLSVerify';
 import Headers from '../../components/items/Headers';
 import Description from '../../components/items/Description';
 import Footer from '../../components/items/Footer';
-import { getServerClusters } from '../../services';
+import Cluster from '../../components/items/Cluster';
 
 export default function FormCpt({ data, onFinish, submitLoading }: any) {
   const { t } = useTranslation('datasourceManage');
   const [form] = Form.useForm();
-  const [clusters, setClusters] = useState<any[]>([]);
   const clusterRef = useRef<any>();
-
-  useEffect(() => {
-    getServerClusters().then((res) => {
-      setClusters(res);
-    });
-  }, []);
 
   return (
     <Form
@@ -44,17 +37,7 @@ export default function FormCpt({ data, onFinish, submitLoading }: any) {
       <Form.Item label='remote write' tooltip={t('form.prom.write_addr_tip')} name={['settings', 'write_addr']}>
         <Input />
       </Form.Item>
-      <Form.Item label={t('form.cluster')} name='cluster_name'>
-        <Select ref={clusterRef}>
-          {_.map(clusters, (item) => {
-            return (
-              <Select.Option key={item} value={item}>
-                {item}
-              </Select.Option>
-            );
-          })}
-        </Select>
-      </Form.Item>
+      <Cluster form={form} clusterRef={clusterRef} />
       <Description />
       <div className='mt16'>
         <Footer id={data?.id} submitLoading={submitLoading} />

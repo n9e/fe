@@ -1,25 +1,18 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { Form, InputNumber, Input, Row, Col, Select } from 'antd';
+import React, { useRef } from 'react';
+import { Form, InputNumber, Input, Row, Col } from 'antd';
 import { MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import Name from '../../components/items/Name';
 import Description from '../../components/items/Description';
 import Footer from '../../components/items/Footer';
-import { getServerClusters } from '../../services';
+import Cluster from '../../components/items/Cluster';
 
 export default function FormCpt({ data, onFinish, submitLoading }: any) {
   const { t } = useTranslation('datasourceManage');
   const [form] = Form.useForm();
-  const [clusters, setClusters] = useState<any[]>([]);
   const clusterRef = useRef<any>();
   const names = ['settings'];
-
-  useEffect(() => {
-    getServerClusters().then((res) => {
-      setClusters(res);
-    });
-  }, []);
 
   return (
     <Form
@@ -87,17 +80,7 @@ export default function FormCpt({ data, onFinish, submitLoading }: any) {
           )}
         </Form.List>
       </>
-      <Form.Item label={t('form.cluster')} name='cluster_name'>
-        <Select ref={clusterRef}>
-          {_.map(clusters, (item) => {
-            return (
-              <Select.Option key={item} value={item}>
-                {item}
-              </Select.Option>
-            );
-          })}
-        </Select>
-      </Form.Item>
+      <Cluster form={form} clusterRef={clusterRef} />
       <Description />
       <div className='mt16'>
         <Footer id={data?.id} submitLoading={submitLoading} />
