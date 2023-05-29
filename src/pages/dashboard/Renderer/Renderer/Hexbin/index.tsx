@@ -61,12 +61,12 @@ const Hexbin: FunctionComponent<HoneyCombProps> = (props) => {
       .domain(getColorScaleLinearDomain(calculatedValues, colorDomainAuto, colorDomain))
       .range(reverseColorOrder ? _.reverse(_.slice(colorRange)) : colorRange);
 
-      const detailFormatter = (data: any) => {
-        // 指标数据
-        const formatUrl = data ? replaceExpressionDetail(detailUrl, data) : detailUrl;
-        // 渲染下钻链接, 变量
-        return replaceFieldWithVariable(formatUrl, dashboardMeta.dashboardId, getOptionsList(dashboardMeta, time));
-      };
+    const detailFormatter = (data: any) => {
+      // 指标数据
+      const formatUrl = data ? replaceExpressionDetail(detailUrl, data) : detailUrl;
+      // 渲染下钻链接, 变量
+      return replaceFieldWithVariable(formatUrl, dashboardMeta.dashboardId, getOptionsList(dashboardMeta, time));
+    };
 
     if (svgSize?.width && svgSize?.height) {
       const renderProps = {
