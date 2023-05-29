@@ -1,12 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Row, Col, Select, Space, Button, Input, Tooltip, InputNumber, Spin, Form, Radio } from 'antd';
+import { Row, Col, Select, Space, Button, Input, Tooltip, InputNumber, Spin, Form, Radio, Popover } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation, Trans } from 'react-i18next';
 import logfmtParser from 'logfmt/lib/logfmt_parser';
+import { Link } from 'react-router-dom';
 import TimeRangePicker, { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
+import EmptyDatasourcePopover from '@/components/DatasourceSelect/EmptyDatasourcePopover';
 import { CommonStateContext } from '@/App';
 import { SearchTraceType, SearchTraceIDType } from './type';
 import LabelField from './components/LabelField';
@@ -45,7 +47,7 @@ export type { SearchTraceType };
 
 export default function Index(props: IProps) {
   const { t } = useTranslation('trace');
-  const { groupedDatasourceList } = useContext(CommonStateContext);
+  const { profile, groupedDatasourceList } = useContext(CommonStateContext);
   const datasourceList = groupedDatasourceList['jaeger'];
   const { onSearch, resultLoading, init, initPluginId } = props;
   const [curPlugin, setCurPlugin] = useState<number>();
@@ -193,15 +195,17 @@ export default function Index(props: IProps) {
                     )}
                   </Select>
                 </InputGroupWithFormItem>
-                <InputGroupWithFormItem label={t('common:datasource.id')}>
-                  <Select style={{ minWidth: 121 }} value={curPlugin} onChange={handlePluginChange}>
-                    {_.map(datasourceList, (item) => (
-                      <Select.Option value={item.id} key={item.id}>
-                        {item.name}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </InputGroupWithFormItem>
+                <EmptyDatasourcePopover datasourceList={datasourceList}>
+                  <InputGroupWithFormItem label={t('common:datasource.id')}>
+                    <Select style={{ minWidth: 121 }} value={curPlugin} onChange={handlePluginChange}>
+                      {_.map(datasourceList, (item) => (
+                        <Select.Option value={item.id} key={item.id}>
+                          {item.name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </InputGroupWithFormItem>
+                </EmptyDatasourcePopover>
                 <Radio.Group optionType='button' buttonStyle='solid' value={isTraceId} onChange={handleTypeSwitch}>
                   <Radio value={false}>{t('mode.query')}</Radio>
                   <Radio value={true}>{t('mode.id')}</Radio>

@@ -27,6 +27,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { generateID } from '@/utils';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
+import EmptyDatasourcePopover from '@/components/DatasourceSelect/EmptyDatasourcePopover';
 import { DatasourceCateEnum } from '@/utils/constant';
 import { getDefaultDatasourceValue, setDefaultDatasourceValue } from '@/utils';
 import { CommonStateContext } from '@/App';
@@ -112,41 +113,44 @@ const Panel = ({ defaultPromQL, removePanel, id, cateOptions, type, defaultCate 
             {({ getFieldValue }) => {
               const cate = getFieldValue('datasourceCate');
               return (
-                <Input.Group compact>
-                  <span
-                    className='ant-input-group-addon'
-                    style={{
-                      width: 'max-content',
-                      height: 32,
-                      lineHeight: '32px',
-                    }}
-                  >
-                    {t('common:datasource.id')}
-                  </span>
-                  <Form.Item
-                    name='datasourceValue'
-                    rules={[
-                      {
-                        required: true,
-                        message: t('common:datasource.id_required'),
-                      },
-                    ]}
-                  >
-                    <Select
-                      style={{ minWidth: 70 }}
-                      dropdownMatchSelectWidth={false}
-                      onChange={(val: string) => {
-                        setDefaultDatasourceValue(cate, val);
+                <EmptyDatasourcePopover datasourceList={groupedDatasourceList[cate]}>
+                  <Input.Group compact>
+                    <span
+                      className='ant-input-group-addon'
+                      style={{
+                        width: 'max-content',
+                        height: 32,
+                        lineHeight: '32px',
                       }}
                     >
-                      {_.map(groupedDatasourceList[cate], (item) => (
-                        <Select.Option value={item.id} key={item.id}>
-                          {item.name}
-                        </Select.Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-                </Input.Group>
+                      {t('common:datasource.id')}
+                    </span>
+
+                    <Form.Item
+                      name='datasourceValue'
+                      rules={[
+                        {
+                          required: true,
+                          message: t('common:datasource.id_required'),
+                        },
+                      ]}
+                    >
+                      <Select
+                        style={{ minWidth: 70 }}
+                        dropdownMatchSelectWidth={false}
+                        onChange={(val: string) => {
+                          setDefaultDatasourceValue(cate, val);
+                        }}
+                      >
+                        {_.map(groupedDatasourceList[cate], (item) => (
+                          <Select.Option value={item.id} key={item.id}>
+                            {item.name}
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  </Input.Group>
+                </EmptyDatasourcePopover>
               );
             }}
           </Form.Item>
