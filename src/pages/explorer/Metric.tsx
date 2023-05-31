@@ -19,7 +19,6 @@ import { LineChartOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import PageLayout from '@/components/pageLayout';
-import AdvancedWrap from '@/components/AdvancedWrap';
 import Explorer from './Explorer';
 import './index.less';
 
@@ -28,36 +27,7 @@ const MetricExplorerPage = () => {
   return (
     <PageLayout title={t('title')} icon={<LineChartOutlined />}>
       <div className='prometheus-page'>
-        <AdvancedWrap
-          var='VITE_IS_CK_DS,VITE_IS_ZABBIX_DS,VITE_IS_INFLUXDB_DS'
-          children={(isShow) => {
-            const cateOptions = [
-              {
-                label: 'Prometheus',
-                value: 'prometheus',
-              },
-            ];
-            if (isShow[0]) {
-              cateOptions.push({
-                label: 'ClickHouse',
-                value: 'ck',
-              });
-            }
-            if (isShow[1]) {
-              cateOptions.push({
-                label: 'Zabbix',
-                value: 'zabbix',
-              });
-            }
-            if (isShow[2]) {
-              cateOptions.push({
-                label: 'InfluxDB',
-                value: 'influxdb',
-              });
-            }
-            return <Explorer cateOptions={cateOptions} type='metric' defaultCate='prometheus' />;
-          }}
-        />
+        <Explorer type='metric' defaultCate='prometheus' />
       </div>
     </PageLayout>
   );

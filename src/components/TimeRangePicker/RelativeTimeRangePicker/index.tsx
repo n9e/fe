@@ -61,7 +61,7 @@ const setHistoryCache = (range, dateFormat) => {
 export default function index(props: ITimeRangePickerProps) {
   const { t, i18n } = useTranslation('timeRangePicker');
   const historyCache = getHistoryCache();
-  const { value, onChange = () => {}, dateFormat = 'YYYY-MM-DD HH:mm', placeholder = '请选择时间', allowClear = false, onClear = () => {}, extraFooter } = props;
+  const { value, onChange = () => {}, dateFormat = 'YYYY-MM-DD HH:mm', placeholder = '请选择时间', allowClear = false, onClear = () => {}, extraFooter, disabled } = props;
   const [visible, setVisible] = useState(false);
   const [range, setRange] = useState<IRawTimeRange>();
   const [label, setLabel] = useState<string>('');
@@ -248,6 +248,7 @@ export default function index(props: ITimeRangePickerProps) {
           onClick={() => {
             setVisible(!visible);
           }}
+          disabled={disabled}
         >
           {props.label || label || placeholder}
           {!props.label && (

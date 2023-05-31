@@ -21,15 +21,14 @@ import { useHistory } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import moment from 'moment';
-import AdvancedWrap from '@/components/AdvancedWrap';
 import { addShield, editShield } from '@/services/shield';
 import { getBusiGroups } from '@/services/common';
 import { shieldItem } from '@/store/warningInterface';
 import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
 import { CommonStateContext } from '@/App';
-import { getAuthorizedDatasourceCates } from '@/components/AdvancedWrap';
 import { daysOfWeek } from '@/pages/alertRules/constants';
 import ProdSelect from '@/pages/alertRules/Form/components/ProdSelect';
+import { DatasourceCateSelect } from '@/components/DatasourceSelect';
 import TagItem from './tagItem';
 import { timeLensDefault } from '../../const';
 import { getDefaultValuesByProd } from './utils';
@@ -264,31 +263,14 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
               return (
                 <Row gutter={10}>
                   <Col span={12}>
-                    <AdvancedWrap var='VITE_IS_ALERT_ES'>
-                      {(isShow) => {
-                        return (
-                          <Form.Item label={t('common:datasource.type')} name='cate' initialValue='prometheus'>
-                            <Select>
-                              {_.map(
-                                _.filter(getAuthorizedDatasourceCates(), (item) => {
-                                  if (item.value === 'elasticsearch') {
-                                    return isShow[0];
-                                  }
-                                  return true;
-                                }),
-                                (item) => {
-                                  return (
-                                    <Select.Option value={item.value} key={item.value}>
-                                      {item.label}
-                                    </Select.Option>
-                                  );
-                                },
-                              )}
-                            </Select>
-                          </Form.Item>
-                        );
-                      }}
-                    </AdvancedWrap>
+                    <Form.Item label={t('common:datasource.type')} name='cate' initialValue='prometheus'>
+                      <DatasourceCateSelect
+                        scene='alert'
+                        filterCates={(cates) => {
+                          return _.filter(cates, (item) => item.type === prod && !!item.alertRule);
+                        }}
+                      />
+                    </Form.Item>
                   </Col>
                   <Col span={12}>
                     <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.cate !== curValues.cate} noStyle>

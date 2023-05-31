@@ -19,7 +19,6 @@ import { LineChartOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import PageLayout from '@/components/pageLayout';
-import AdvancedWrap from '@/components/AdvancedWrap';
 import Explorer from './Explorer';
 import './index.less';
 
@@ -29,29 +28,7 @@ const MetricExplorerPage = () => {
   return (
     <PageLayout title={t('title')} icon={<LineChartOutlined />}>
       <div className='prometheus-page'>
-        <AdvancedWrap
-          var='VITE_IS_SLS_DS'
-          children={(isShow) => {
-            const cateOptions = isShow[0]
-              ? [
-                  {
-                    label: 'Elasticsearch',
-                    value: 'elasticsearch',
-                  },
-                  {
-                    label: '阿里云SLS',
-                    value: 'aliyun-sls',
-                  },
-                ]
-              : [
-                  {
-                    label: 'Elasticsearch',
-                    value: 'elasticsearch',
-                  },
-                ];
-            return <Explorer cateOptions={cateOptions} type='log' defaultCate='elasticsearch' />;
-          }}
-        />
+        <Explorer type='logging' defaultCate='elasticsearch' />
       </div>
     </PageLayout>
   );

@@ -29,13 +29,11 @@ import { deleteAlertEventsModal } from '.';
 import { parseValues } from '@/pages/alertRules/utils';
 import { CommonStateContext } from '@/App';
 // @ts-ignore
-import { Event as ElasticsearchDetail } from 'plus:/datasource/elasticsearch';
+import plusEventDetail from 'plus:/parcels/Event/eventDetail';
 // @ts-ignore
-import { Event as AliyunSLSDetail } from 'plus:/datasource/aliyunSLS';
+import PlusPreview from 'plus:/parcels/Event/Preview';
 // @ts-ignore
-import { Event as InfluxDBDetail } from 'plus:/datasource/influxDB';
-import Preview from './Preview';
-import LogsDetail from './LogsDetail';
+import PlusLogsDetail from 'plus:/parcels/Event/LogsDetail';
 import PrometheusDetail from './Detail/Prometheus';
 import Host from './Detail/Host';
 import './detail.less';
@@ -160,36 +158,7 @@ const EventDetailPage: React.FC = () => {
         return (
           <span>
             {val}
-            {eventDetail?.cate === 'elasticsearch' && (
-              <Button
-                size='small'
-                style={{ marginLeft: 16 }}
-                onClick={() => {
-                  LogsDetail.Elasticsearch({
-                    id: eventId,
-                    start: eventDetail.trigger_time - 2 * eventDetail.prom_eval_interval,
-                    end: eventDetail.trigger_time + eventDetail.prom_eval_interval,
-                  });
-                }}
-              >
-                日志详情
-              </Button>
-            )}
-            {eventDetail?.cate === 'aliyun-sls' && (
-              <Button
-                size='small'
-                style={{ marginLeft: 16 }}
-                onClick={() => {
-                  LogsDetail.AliyunSLS({
-                    id: eventId,
-                    start: eventDetail.trigger_time - 2 * eventDetail.prom_eval_interval,
-                    end: eventDetail.trigger_time + eventDetail.prom_eval_interval,
-                  });
-                }}
-              >
-                日志详情
-              </Button>
-            )}
+            <PlusLogsDetail data={eventDetail} />
           </span>
         );
       },
@@ -221,10 +190,8 @@ const EventDetailPage: React.FC = () => {
           history,
         })
       : [false]),
-    ...(eventDetail?.cate === 'elasticsearch' ? ElasticsearchDetail() : [false]),
-    ...(eventDetail?.cate === 'aliyun-sls' ? AliyunSLSDetail(t) : [false]),
     ...(eventDetail?.cate === 'host' ? Host(t, commonState) : [false]),
-    ...(eventDetail?.cate === 'influxdb' ? InfluxDBDetail(t) : [false]),
+    ...plusEventDetail(eventDetail?.cate, t),
     {
       label: t('detail.prom_eval_interval'),
       key: 'prom_eval_interval',
@@ -350,27 +317,7 @@ const EventDetailPage: React.FC = () => {
           >
             {eventDetail && (
               <div>
-                {parsedEventDetail.rule_prod === 'anomaly' || parsedEventDetail.cate === 'elasticsearch' || parsedEventDetail.cate === 'aliyun-sls' ? (
-                  <Preview
-                    data={parsedEventDetail}
-                    triggerTime={eventDetail.trigger_time}
-                    onClick={(event, datetime) => {
-                      if (parsedEventDetail.cate === 'elasticsearch') {
-                        LogsDetail.Elasticsearch({
-                          id: eventId,
-                          start: moment(datetime).unix() - 2 * eventDetail.prom_eval_interval,
-                          end: moment(datetime).unix() + eventDetail.prom_eval_interval,
-                        });
-                      } else if (parsedEventDetail.cate === 'aliyun-sls') {
-                        LogsDetail.AliyunSLS({
-                          id: eventId,
-                          start: moment(datetime).unix() - 2 * eventDetail.prom_eval_interval,
-                          end: moment(datetime).unix() + eventDetail.prom_eval_interval,
-                        });
-                      }
-                    }}
-                  />
-                ) : null}
+                <PlusPreview data={parsedEventDetail} />
                 {descriptionInfo
                   .filter((item: any) => {
                     if (!item) return false;

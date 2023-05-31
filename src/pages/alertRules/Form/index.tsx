@@ -43,7 +43,7 @@ export default function index(props: IProps) {
   const { bgid } = useParams<{ bgid: string }>();
   const { t } = useTranslation('alertRules');
   const [form] = Form.useForm();
-  const { groupedDatasourceList } = useContext(CommonStateContext);
+  const { groupedDatasourceList, licenseRulesRemaining } = useContext(CommonStateContext);
   const disabled = type === 3;
   const handleCheck = async (values) => {
     if (values.cate === 'prometheus') {
@@ -61,7 +61,6 @@ export default function index(props: IProps) {
       //   return false;
       // }
     } else if (type !== 1) {
-      const licenseRulesRemaining = _.toNumber(window.localStorage.getItem('license_rules_remaining'));
       if (licenseRulesRemaining === 0 && values.prod === 'anomaly') {
         message.error('可添加的智能告警规则数量已达上限，请联系客服');
       }

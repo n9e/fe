@@ -3,11 +3,7 @@ import { Space, Form, Radio } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 // @ts-ignore
-import { QueryBuilder as AliyunSLS } from 'plus:/datasource/aliyunSLS';
-// @ts-ignore
-import { QueryBuilder as Zabbix } from 'plus:/datasource/zabbix';
-// @ts-ignore
-import { QueryBuilder as InfluxDB } from 'plus:/datasource/influxDB';
+import PlusQueryBuilder from 'plus:/parcels/Dashboard/QueryBuilder';
 import OrganizeFields from '../TransformationsEditor/OrganizeFields';
 import DatasourceSelect from './components/DatasourceSelect';
 import Prometheus from './Prometheus';
@@ -48,16 +44,7 @@ export default function index({ chartForm, type, variableConfig, dashboardId }) 
             if (cate === 'elasticsearch') {
               return <Elasticsearch chartForm={chartForm} variableConfig={variableConfig} dashboardId={dashboardId} />;
             }
-            if (cate === 'aliyun-sls') {
-              return <AliyunSLS chartForm={chartForm} />;
-            }
-            if (cate === 'zabbix') {
-              return <Zabbix chartForm={chartForm} />;
-            }
-            if (cate === 'influxdb') {
-              return <InfluxDB chartForm={chartForm} />;
-            }
-            return null;
+            return <PlusQueryBuilder cate={cate} form={chartForm} />;
           }}
         </Form.Item>
       </div>

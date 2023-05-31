@@ -1,8 +1,10 @@
 import React, { useContext } from 'react';
 import { Form, Input, Select, Space } from 'antd';
+import Icon from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { getAuthorizedDatasourceCates } from '@/components/AdvancedWrap';
+import { ProSvg } from '@/components/DatasourceSelect';
 import { CommonStateContext } from '@/App';
 
 const defaultDatasourceCate = 'prometheus';
@@ -10,7 +12,9 @@ const defaultDatasourceCate = 'prometheus';
 export default function index({ chartForm, variableConfig }) {
   const { t } = useTranslation('dashboard');
   const { groupedDatasourceList } = useContext(CommonStateContext);
-  const cates = getAuthorizedDatasourceCates();
+  const cates = _.filter(getAuthorizedDatasourceCates(), (item) => {
+    return !!item.dashboard;
+  });
   const datasourceVars = _.filter(variableConfig, { type: 'datasource' });
   const getDefaultDatasourceValue = (datasourceCate) => {
     const finded = _.find(datasourceVars, { definition: datasourceCate });
@@ -90,7 +94,10 @@ export default function index({ chartForm, variableConfig }) {
           >
             {_.map(cates, (item) => (
               <Select.Option key={item.value} value={item.value}>
-                {item.label}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  {item.graphPro ? <Icon component={ProSvg as any} style={{ color: '#6C53B1', fontSize: 14 }} /> : null}
+                  {item.label}
+                </div>
               </Select.Option>
             ))}
           </Select>

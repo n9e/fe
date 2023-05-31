@@ -16,38 +16,36 @@
  */
 
 import React, { useContext } from 'react';
-import { Form, Row, Col, Select } from 'antd';
+import { Form, Row, Col } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import { CommonStateContext } from '@/App';
-import { getAuthorizedDatasourceCates } from '@/components/AdvancedWrap';
 import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
 import IntervalAndDuration from '@/pages/alertRules/Form/components/IntervalAndDuration';
+import { DatasourceCateSelect } from '@/components/DatasourceSelect';
+import { getDefaultValuesByCate } from '../../../utils';
 import Prometheus from './Prometheus';
 // @ts-ignore
-import { AlertRule as ClickHouse } from 'plus:/datasource/clickHouse';
-// @ts-ignore
-import { AlertRule as Influxdb } from 'plus:/datasource/influxDB';
+import PlusAlertRule from 'plus:/parcels/AlertRule';
 
-export default function index() {
+export default function index({ form }) {
   const { t } = useTranslation('alertRules');
   const { groupedDatasourceList } = useContext(CommonStateContext);
-  const datasourceCates = _.filter(getAuthorizedDatasourceCates(), (item) => item.type === 'metric' && !!item.alertRule);
 
   return (
     <div>
       <Row gutter={16}>
         <Col span={12}>
           <Form.Item label={t('common:datasource.type')} name='cate'>
-            <Select>
-              {_.map(datasourceCates, (item) => {
-                return (
-                  <Select.Option value={item.value} key={item.value}>
-                    {item.label}
-                  </Select.Option>
-                );
-              })}
-            </Select>
+            <DatasourceCateSelect
+              scene='alert'
+              filterCates={(cates) => {
+                return _.filter(cates, (item) => item.type === 'metric' && !!item.alertRule);
+              }}
+              onChange={(val) => {
+                form.setFieldsValue(getDefaultValuesByCate('metric', val));
+              }}
+            />
           </Form.Item>
         </Col>
         <Col span={12}>
@@ -74,12 +72,7 @@ export default function index() {
             if (cate === 'prometheus') {
               return <Prometheus datasourceCate={cate} datasourceValue={datasourceValue} />;
             }
-            if (cate === 'ck') {
-              return <ClickHouse form={form} />;
-            }
-            if (cate === 'influxdb') {
-              return <Influxdb form={form} datasourceValue={datasourceValue} />;
-            }
+            return <PlusAlertRule cate={cate} form={form} datasourceValue={datasourceValue} />;
           }}
         </Form.Item>
       </div>

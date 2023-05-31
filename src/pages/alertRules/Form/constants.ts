@@ -83,9 +83,11 @@ export const ruleTypeOptions = [
   {
     label: 'Metric',
     value: 'metric',
+    pro: false,
   },
   {
     label: 'Host',
     value: 'host',
+    pro: false,
   },
 ];

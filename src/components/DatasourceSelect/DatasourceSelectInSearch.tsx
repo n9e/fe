@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { Space, Select } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { getAuthorizedDatasourceCates } from '@/components/AdvancedWrap';
+import { getAuthorizedDatasourceCates, Cate } from '@/components/AdvancedWrap';
 import { CommonStateContext } from '@/App';
 
 interface IProps {
@@ -12,7 +12,7 @@ interface IProps {
   datasourceValueMode?: 'multiple';
   onDatasourceValueChange?: (val: number | number[]) => void;
   defaultDatasourceValue?: number;
-  filterCates?: (cates: { value: string; label: string; type: string; alertRule: boolean }[]) => { value: string; label: string; type: string; alertRule: boolean }[];
+  filterCates?: (cates: Cate[]) => Cate[];
 }
 
 export default function Pure(props: IProps) {
@@ -42,7 +42,7 @@ export default function Pure(props: IProps) {
       </Select>
       <Select
         allowClear
-        placeholder={datasourceCate !== 'prometheus' ? t('id') : _.find(groupedDatasourceList.prometheus, { id: defaultDatasourceValue })?.name || '数据源'}
+        placeholder={t('id')}
         style={{ minWidth: 120 }}
         dropdownMatchSelectWidth={false}
         mode={datasourceValueMode}

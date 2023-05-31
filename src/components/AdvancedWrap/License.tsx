@@ -1,35 +1,63 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import { Tooltip, Modal } from 'antd';
 import _ from 'lodash';
 import moment from 'moment';
+import { useTranslation } from 'react-i18next';
 import { getBrainLicense } from '@/services/warning';
+import { CommonStateContext } from '@/App';
+import './locale';
+
+export async function getLicense(t) {
+  if (import.meta.env.VITE_IS_DS_SETTING === 'true' || import.meta.env.VITE_IS_COMMON_DS === 'true') {
+    const now = moment().unix();
+    const result = await getBrainLicense().catch((e) => {
+      const modal = Modal.error({ closable: false, maskClosable: false, title: t('advancedWrap:licenseExpired_tips'), className: 'license-off' });
+      setTimeout(() => {
+        modal.destroy();
+      }, 10000);
+      // 如果接口报错，就认为是license过期了
+      return Promise.resolve({
+        data: {
+          rules_remaining: 0,
+          expire: now,
+        },
+      });
+    });
+    return Promise.resolve({
+      licenseRulesRemaining: result?.data?.rules_remaining as number,
+      licenseExpireDays: _.round((result?.data?.expire - now) / 86400),
+    });
+  }
+  return Promise.resolve({
+    licenseRulesRemaining: undefined,
+    licenseExpireDays: undefined,
+  });
+}
 
 export default function License() {
-  const [days, setDays] = useState<any>();
-  const [rules, setRules] = useState<any>();
-  useEffect(() => {
-    const now = moment().unix();
-    getBrainLicense()
-      .then((res) => {
-        setDays(_.round((res?.data?.expire - now) / 86400));
-        setRules(res?.data?.rules_remaining);
-        window.localStorage.setItem('license_rules_remaining', _.toString(res?.data?.rules_remaining));
-      })
-      .catch((e) => {
-        const modal = Modal.error({ closable: false, maskClosable: false, title: 'License证书不存在或已过期，请联系Flashcat技术支持', className: 'license-off' });
-        setTimeout(() => {
-          modal.destroy();
-        }, 10000);
-      });
-  }, []);
-  if (!days || days > 30) return null;
+  const { t } = useTranslation('advancedWrap');
+  const { licenseRulesRemaining, licenseExpireDays } = useContext(CommonStateContext);
+  if (licenseExpireDays === undefined || licenseExpireDays > 30) return null;
+
   return (
     <div style={{ marginRight: 20 }}>
       <Tooltip
         title={
           <div>
-            <div>还剩 {days} 天到期</div>
-            {rules > 0 ? <div>还可添加 {rules} 条规则</div> : <div>请尽快联系管理员续费</div>}
+            <div>
+              {t('licenseExpireDays', {
+                licenseExpireDays,
+              })}
+            </div>
+            {licenseRulesRemaining && licenseRulesRemaining > 0 ? (
+              <div>
+                {t('licenseRulesRemaining', {
+                  licenseRulesRemaining,
+                })}
+              </div>
+            ) : (
+              <div>{t('licenseRulesRemaining_0')}</div>
+            )}
           </div>
         }
       >
@@ -42,7 +70,9 @@ export default function License() {
             padding: '2px 8px',
           }}
         >
-          还剩 {days} 天到期
+          {t('licenseExpireDays', {
+            licenseExpireDays,
+          })}
         </div>
       </Tooltip>
     </div>

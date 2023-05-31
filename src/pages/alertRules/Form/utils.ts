@@ -233,3 +233,37 @@ export function getDefaultValuesByProd(prod, defaultBrainParams) {
     };
   }
 }
+
+export function getDefaultValuesByCate(prod, cate) {
+  if (cate === 'prometheus') {
+    return {
+      prod,
+      cate: 'prometheus',
+      datasource_ids: [DATASOURCE_ALL],
+      rule_config: defaultRuleConfig.metric,
+    };
+  }
+  if (cate === 'ck' || cate === 'influxdb') {
+    return {
+      prod,
+      cate: 'ck',
+      datasource_ids: undefined,
+      rule_config: {
+        triggers: [
+          {
+            mode: 0,
+            expressions: [
+              {
+                ref: 'A',
+                comparisonOperator: '>',
+                value: 0,
+                logicalOperator: '&&',
+              },
+            ],
+            severity: 2,
+          },
+        ],
+      },
+    };
+  }
+}

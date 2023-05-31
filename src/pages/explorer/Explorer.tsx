@@ -31,32 +31,22 @@ import EmptyDatasourcePopover from '@/components/DatasourceSelect/EmptyDatasourc
 import { DatasourceCateEnum } from '@/utils/constant';
 import { getDefaultDatasourceValue, setDefaultDatasourceValue } from '@/utils';
 import { CommonStateContext } from '@/App';
+import { DatasourceCateSelect } from '@/components/DatasourceSelect';
+import Prometheus from './Prometheus';
 import Elasticsearch from './Elasticsearch';
 // @ts-ignore
-import { Explorer as AliyunSLS } from 'plus:/datasource/aliyunSLS';
-import Prometheus from './Prometheus';
-// @ts-ignore
-import { Explorer as ClickHouse } from 'plus:/datasource/clickHouse';
-// @ts-ignore
-import { Explorer as Zabbix } from 'plus:/datasource/zabbix';
-// @ts-ignore
-import { Explorer as InfluxDB } from 'plus:/datasource/influxDB';
+import PlusExplorer from 'plus:/parcels/Explorer';
 import './index.less';
 
 type PanelMeta = { id: string; defaultPromQL?: string };
-interface ICateOption {
-  label: string;
-  value: string;
-}
 interface IPanelProps {
   id: string;
   defaultPromQL: string;
   removePanel: (id: string) => void;
-  cateOptions: ICateOption[];
   type: Type;
   defaultCate: string;
 }
-type Type = 'log' | 'metric' | 'trace';
+type Type = 'logging' | 'metric';
 
 export function getUrlParamsByName(name) {
   let reg = new RegExp(`.*?${name}=([^&]*)`),
@@ -68,7 +58,7 @@ export function getUrlParamsByName(name) {
   return '';
 }
 
-const Panel = ({ defaultPromQL, removePanel, id, cateOptions, type, defaultCate }: IPanelProps) => {
+const Panel = ({ defaultPromQL, removePanel, id, type, defaultCate }: IPanelProps) => {
   const { t } = useTranslation('explorer');
   const { groupedDatasourceList } = useContext(CommonStateContext);
   const [form] = Form.useForm();
@@ -76,7 +66,6 @@ const Panel = ({ defaultPromQL, removePanel, id, cateOptions, type, defaultCate 
   const params = new URLSearchParams(useLocation().search);
   const [datasourceCate, setDatasourceCate] = useState(params.get('data_source_name') || localStorage.getItem(`explorer_datasource_cate_${type}`) || defaultCate);
   const datasourceValue = params.get('data_source_id') ? _.toNumber(params.get('data_source_id')) : getDefaultDatasourceValue(datasourceCate, groupedDatasourceList);
-
   return (
     <Card bodyStyle={{ padding: 16 }} className='panel'>
       <Form
@@ -89,7 +78,11 @@ const Panel = ({ defaultPromQL, removePanel, id, cateOptions, type, defaultCate 
         <Space align='start'>
           <InputGroupWithFormItem label={t('common:datasource.type')}>
             <Form.Item name='datasourceCate' noStyle>
-              <Select
+              <DatasourceCateSelect
+                scene='graph'
+                filterCates={(cates) => {
+                  return _.filter(cates, (item) => item.type === type);
+                }}
                 dropdownMatchSelectWidth={false}
                 style={{ minWidth: 70 }}
                 onChange={(val) => {
@@ -100,13 +93,7 @@ const Panel = ({ defaultPromQL, removePanel, id, cateOptions, type, defaultCate 
                     datasourceValue: getDefaultDatasourceValue(val, groupedDatasourceList),
                   });
                 }}
-              >
-                {_.map(cateOptions, (item) => (
-                  <Select.Option key={item.value} value={item.value}>
-                    {item.label}
-                  </Select.Option>
-                ))}
-              </Select>
+              />
             </Form.Item>
           </InputGroupWithFormItem>
           <Form.Item shouldUpdate={(prev, curr) => prev.datasourceCate !== curr.datasourceCate} noStyle>
@@ -162,17 +149,10 @@ const Panel = ({ defaultPromQL, removePanel, id, cateOptions, type, defaultCate 
             const datasourceValue = getFieldValue('datasourceValue');
             if (datasourceCate === DatasourceCateEnum.elasticsearch) {
               return <Elasticsearch key={datasourceValue} datasourceValue={datasourceValue} form={form} />;
-            } else if (datasourceCate === DatasourceCateEnum.aliyunSLS) {
-              return <AliyunSLS datasourceCate={DatasourceCateEnum.aliyunSLS} datasourceValue={datasourceValue} headerExtra={headerExtraRef.current} form={form} />;
             } else if (datasourceCate === DatasourceCateEnum.prometheus) {
               return <Prometheus key={datasourceValue} defaultPromQL={defaultPromQL} headerExtra={headerExtraRef.current} datasourceValue={datasourceValue} form={form} />;
-            } else if (datasourceCate === DatasourceCateEnum.ck) {
-              return <ClickHouse datasourceCate={DatasourceCateEnum.ck} datasourceValue={datasourceValue} form={form} headerExtra={headerExtraRef.current} />;
-            } else if (datasourceCate === DatasourceCateEnum.zabbix) {
-              return <Zabbix datasourceCate={DatasourceCateEnum.zabbix} datasourceValue={datasourceValue} form={form} headerExtra={headerExtraRef.current} />;
-            } else if (datasourceCate === DatasourceCateEnum.influxdb) {
-              return <InfluxDB datasourceCate={DatasourceCateEnum.influxdb} datasourceValue={datasourceValue} form={form} />;
             }
+            return <PlusExplorer datasourceCate={datasourceCate} datasourceValue={datasourceValue} headerExtraRef={headerExtraRef} form={form} />;
           }}
         </Form.Item>
       </Form>
@@ -191,10 +171,9 @@ const Panel = ({ defaultPromQL, removePanel, id, cateOptions, type, defaultCate 
 interface IProps {
   type: Type;
   defaultCate: string;
-  cateOptions: ICateOption[];
 }
 
-const PanelList = ({ cateOptions, type, defaultCate }: IProps) => {
+const PanelList = ({ type, defaultCate }: IProps) => {
   const { t } = useTranslation('explorer');
   const [panelList, setPanelList] = useState<PanelMeta[]>([{ id: generateID(), defaultPromQL: decodeURIComponent(getUrlParamsByName('promql')) }]);
 
@@ -216,7 +195,7 @@ const PanelList = ({ cateOptions, type, defaultCate }: IProps) => {
   return (
     <>
       {panelList.map(({ id, defaultPromQL = '' }) => {
-        return <Panel key={id} id={id} removePanel={removePanel} defaultPromQL={defaultPromQL} cateOptions={cateOptions} type={type} defaultCate={defaultCate} />;
+        return <Panel key={id} id={id} removePanel={removePanel} defaultPromQL={defaultPromQL} type={type} defaultCate={defaultCate} />;
       })}
       <div className='add-prometheus-panel'>
         <Button size='large' onClick={addPanel}>

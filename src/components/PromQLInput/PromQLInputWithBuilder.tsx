@@ -29,6 +29,7 @@ export function PromQLInputWithBuilder(props: CMExpressionInputProps & { datasou
               },
             });
           }}
+          disabled={props.readonly}
         >
           {t('builder_btn')}
         </Button>

@@ -1,17 +1,33 @@
 import _ from 'lodash';
 
-export const baseCates = [
+export interface Cate {
+  value: string;
+  label: string;
+  type: string;
+  alertRule: boolean;
+  dashboard: boolean;
+  graphPro: boolean;
+  alertPro: boolean;
+}
+
+export const baseCates: Cate[] = [
   {
     value: 'prometheus',
     label: 'Prometheus',
     type: 'metric',
     alertRule: true,
+    dashboard: true,
+    graphPro: false,
+    alertPro: false,
   },
   {
     value: 'elasticsearch',
     label: 'Elasticsearch',
     type: 'logging',
     alertRule: true,
+    dashboard: true,
+    graphPro: false,
+    alertPro: true,
   },
 ];
 
@@ -21,24 +37,36 @@ export const AdvancedCates = [
     label: '阿里云SLS',
     type: 'logging',
     alertRule: true,
+    dashboard: true,
+    graphPro: true,
+    alertPro: true,
   },
   {
     value: 'ck',
     label: 'ClickHouse',
     type: 'metric',
     alertRule: true,
+    dashboard: false,
+    graphPro: true,
+    alertPro: true,
   },
   {
     value: 'zabbix',
     label: 'Zabbix',
     type: 'metric',
     alertRule: false,
+    dashboard: true,
+    graphPro: true,
+    alertPro: true,
   },
   {
     value: 'influxdb',
     label: 'InfluxDB',
     type: 'metric',
     alertRule: true,
+    dashboard: true,
+    graphPro: true,
+    alertPro: true,
   },
 ];
 
@@ -55,12 +83,10 @@ export const getAuthorizedDatasourceCates = () => {
     if (_.endsWith(key, '_DS') && value === 'true') {
       const cate = varCateMap[key];
       if (cate) {
-        datasourceCates.push({
-          value: cate,
-          label: _.find(AdvancedCates, { value: cate })?.label!,
-          type: _.find(AdvancedCates, { value: cate })?.type!,
-          alertRule: _.find(AdvancedCates, { value: cate })?.alertRule!,
-        });
+        const finded = _.find(AdvancedCates, { value: cate });
+        if (finded) {
+          datasourceCates.push(finded);
+        }
       }
     }
   });

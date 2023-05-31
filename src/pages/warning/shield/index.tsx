@@ -30,7 +30,7 @@ import { shieldItem, strategyStatus } from '@/store/warningInterface';
 import { BusinessGroup } from '@/pages/targets';
 import RefreshIcon from '@/components/RefreshIcon';
 import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
-import { Pure as DatasourceSelect } from '@/components/DatasourceSelect';
+import { DatasourceSelectInSearch } from '@/components/DatasourceSelect';
 import { CommonStateContext } from '@/App';
 import { pageSizeOptionsDefault } from '../const';
 import './locale';
@@ -330,31 +330,22 @@ const Shield: React.FC = () => {
                     refreshList();
                   }}
                 />
-                <AdvancedWrap var='VITE_IS_ALERT_ES'>
-                  {(isShow) => {
-                    return (
-                      <DatasourceSelect
-                        datasourceCate={cate}
-                        onDatasourceCateChange={(val) => {
-                          setCate(val);
-                        }}
-                        datasourceValue={datasourceIds}
-                        datasourceValueMode='multiple'
-                        onDatasourceValueChange={(val: number[]) => {
-                          setDatasourceIds(val);
-                        }}
-                        filterCates={(cates) => {
-                          return _.filter(cates, (item) => {
-                            if (item.value === 'elasticsearch') {
-                              return isShow[0];
-                            }
-                            return true;
-                          });
-                        }}
-                      />
-                    );
+                <DatasourceSelectInSearch
+                  datasourceCate={cate}
+                  onDatasourceCateChange={(val) => {
+                    setCate(val);
                   }}
-                </AdvancedWrap>
+                  datasourceValue={datasourceIds}
+                  datasourceValueMode='multiple'
+                  onDatasourceValueChange={(val: number[]) => {
+                    setDatasourceIds(val);
+                  }}
+                  filterCates={(cates) => {
+                    return _.filter(cates, (item) => {
+                      return !!item.alertRule;
+                    });
+                  }}
+                />
                 <Input onPressEnter={onSearchQuery} prefix={<SearchOutlined />} placeholder={t('search_placeholder')} />
               </Space>
               <div className='header-right'>

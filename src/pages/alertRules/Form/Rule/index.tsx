@@ -20,9 +20,11 @@ import { useTranslation } from 'react-i18next';
 import { Card, Form } from 'antd';
 import { getBrainParams } from '@/services/warning';
 import { panelBaseProps } from '../../constants';
-import { Host, Metric, Log, Anomaly } from './Rule';
+import { Host, Metric } from './Rule';
 import { getDefaultValuesByProd } from '../utils';
 import ProdSelect from '../components/ProdSelect';
+// @ts-ignore
+import PlusAlertRule from 'plus:/parcels/AlertRule';
 
 export default function Rule({ form }) {
   const { t } = useTranslation('alertRules');
@@ -52,14 +54,9 @@ export default function Rule({ form }) {
             return <Host />;
           }
           if (prod === 'metric') {
-            return <Metric />;
+            return <Metric form={form} />;
           }
-          if (prod === 'logging') {
-            return <Log />;
-          }
-          if (prod === 'anomaly') {
-            return <Anomaly />;
-          }
+          return <PlusAlertRule prod={prod} />;
         }}
       </Form.Item>
     </Card>

@@ -69,6 +69,7 @@ export interface ITimeRangePickerProps {
   onClear?: () => void;
   label?: React.ReactElement;
   extraFooter?: (fn: Function) => React.ReactElement;
+  disabled?: boolean;
 }
 
 export interface ITimeRangePickerWithRefreshProps extends ITimeRangePickerProps {

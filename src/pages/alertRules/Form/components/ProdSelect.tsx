@@ -1,6 +1,8 @@
 import React from 'react';
 import { Form, Radio } from 'antd';
+import _ from 'lodash';
 import AdvancedWrap from '@/components/AdvancedWrap';
+import { ProSvg } from '@/components/DatasourceSelect';
 import { ruleTypeOptions } from '../constants';
 
 interface IProps {
@@ -19,6 +21,7 @@ export default function ProdSelect({ label, onChange = () => {} }: IProps) {
             {
               label: 'Anomaly',
               value: 'anomaly',
+              pro: true,
             },
           ];
         }
@@ -28,12 +31,30 @@ export default function ProdSelect({ label, onChange = () => {} }: IProps) {
             {
               label: 'Log',
               value: 'logging',
+              pro: true,
             },
           ];
         }
         return (
-          <Form.Item name='prod' label={label}>
-            <Radio.Group options={options} onChange={onChange} optionType='button' buttonStyle='solid' />
+          <Form.Item shouldUpdate={(prevValues, currentValues) => prevValues.prod !== currentValues.prod}>
+            {({ getFieldValue }) => {
+              const prod = getFieldValue('prod');
+              return (
+                <Form.Item name='prod' label={label}>
+                  <Radio.Group onChange={onChange} optionType='button' buttonStyle='solid'>
+                    {_.map(options, (item) => {
+                      return (
+                        <Radio value={item.value}>
+                          <div>
+                            {item.label} {item.pro ? <ProSvg type={prod === item.value ? 'selected' : 'normal'} /> : null}
+                          </div>
+                        </Radio>
+                      );
+                    })}
+                  </Radio.Group>
+                </Form.Item>
+              );
+            }}
           </Form.Item>
         );
       }}

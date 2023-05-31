@@ -26,9 +26,10 @@ interface IProps {
   datasourceList: { id: number; name: string }[];
   mode?: 'multiple';
   required?: boolean;
+  disabled?: boolean;
 }
 
-export default function index({ setFieldsValue, cate, datasourceList, mode, required = true }: IProps) {
+export default function index({ setFieldsValue, cate, datasourceList, mode, required = true, disabled }: IProps) {
   const { t } = useTranslation();
   const handleClusterChange = (v: number[] | number) => {
     if (_.isArray(v)) {
@@ -61,7 +62,7 @@ export default function index({ setFieldsValue, cate, datasourceList, mode, requ
         },
       ]}
     >
-      <Select mode={mode} onChange={handleClusterChange} maxTagCount='responsive'>
+      <Select mode={mode} onChange={handleClusterChange} maxTagCount='responsive' disabled={disabled}>
         {datasourceList?.map((item) => (
           <Select.Option value={item.id} key={item.id}>
             {item.name}

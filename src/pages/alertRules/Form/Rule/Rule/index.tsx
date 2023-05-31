@@ -17,8 +17,5 @@
 
 import Host from './Host';
 import Metric from './Metric';
-import Log from './Log';
-// @ts-ignore
-import { AlertRule as Anomaly } from 'plus:/datasource/anomaly';
 
-export { Host, Metric, Log, Anomaly };
+export { Host, Metric };

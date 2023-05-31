@@ -16,9 +16,10 @@ interface IProps {
   datasourceValue: number;
   index: string; // ES 索引
   backgroundVisible?: boolean;
+  disabled?: boolean;
 }
 
-export default function index({ prefixField = {}, prefixFieldNames = [], parentNames = [], datasourceValue, index, backgroundVisible = true }: IProps) {
+export default function index({ prefixField = {}, prefixFieldNames = [], parentNames = [], datasourceValue, index, backgroundVisible = true, disabled }: IProps) {
   const { t } = useTranslation('alertRules');
   const [fieldsOptions, setFieldsOptions] = useState<any[]>([]);
   const { run } = useDebounceFn(
@@ -63,6 +64,7 @@ export default function index({ prefixField = {}, prefixFieldNames = [], parentN
                   ],
                 });
               }}
+              disabled={disabled}
             />
           </div>
           {fields.map((field) => {
