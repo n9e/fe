@@ -17,6 +17,11 @@ const zh_CN = {
   os: '操作系统',
   arch: 'CPU架构',
   unixtime: '心跳时间',
+  unixtime_tip: `
+    机器时间偏移在 1分钟 以内为绿色 <1 />
+    机器时间偏移在 1分钟-3分钟 为黄色  <1 />
+    机器时间偏移在 3分钟 以上为红色
+  `,
   remote_addr: '来源IP',
   note: '备注',
   organize_columns: {

@@ -17,6 +17,11 @@ const zh_HK = {
   os: '作業系統',
   arch: 'CPU 架構',
   unixtime: '心跳時間',
+  unixtime_tip: `
+    機器時間偏移在 1分鐘 以內為綠色 <1 />
+    機器時間偏移在 1分鐘-3分鐘 為黃色  <1 />
+    機器時間偏移在 3分鐘 以上為紅色
+  `,
   remote_addr: '來源 IP',
   note: '備註',
   organize_columns: {

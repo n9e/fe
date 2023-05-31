@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Table, Tag, Tooltip, Space, Input, Dropdown, Menu, Button, Modal, message } from 'antd';
 import { ColumnsType } from 'antd/es/table';
-import { SearchOutlined, DownOutlined, ReloadOutlined, CopyOutlined, ApartmentOutlined } from '@ant-design/icons';
+import { SearchOutlined, DownOutlined, ReloadOutlined, CopyOutlined, ApartmentOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { useAntdTable } from 'ahooks';
 import _ from 'lodash';
 import moment from 'moment';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import { BusiGroupItem } from '@/store/commonInterface';
 import { getMonObjectList } from '@/services/targets';
 import { timeFormatter } from '@/pages/dashboard/Renderer/utils/valueFormatter';
@@ -188,40 +188,6 @@ export default function List(props: IProps) {
         },
       });
     }
-    if (item.name === 'target_up') {
-      columns.push({
-        title: t('target_up'),
-        width: 100,
-        dataIndex: 'target_up',
-        sorter: (a, b) => a.target_up - b.target_up,
-        render(text) {
-          if (text > 0) {
-            return (
-              <div
-                className='table-td-fullBG'
-                style={{
-                  backgroundColor: GREEN_COLOR,
-                }}
-              >
-                UP
-              </div>
-            );
-          } else if (text < 1) {
-            return (
-              <div
-                className='table-td-fullBG'
-                style={{
-                  backgroundColor: RED_COLOR,
-                }}
-              >
-                DOWN
-              </div>
-            );
-          }
-          return null;
-        },
-      });
-    }
     if (item.name === 'mem_util') {
       columns.push({
         title: t('mem_util'),
@@ -342,12 +308,37 @@ export default function List(props: IProps) {
     }
     if (item.name === 'unixtime') {
       columns.push({
-        title: t('unixtime'),
+        title: (
+          <Space>
+            {t('unixtime')}
+            <Tooltip title={<Trans ns='targets' i18nKey='unixtime_tip' components={{ 1: <br /> }} />}>
+              <QuestionCircleOutlined />
+            </Tooltip>
+          </Space>
+        ),
         width: 100,
         dataIndex: 'unixtime',
         render: (val, reocrd) => {
-          if (reocrd.cpu_num === -1) return 'unknown';
-          return moment(val).format('YYYY-MM-DD HH:mm:ss');
+          let result = moment(val).format('YYYY-MM-DD HH:mm:ss');
+          let backgroundColor = GREEN_COLOR;
+          if (reocrd.cpu_num === -1) {
+            result = 'unknown';
+          }
+          if (reocrd.target_up === 0) {
+            backgroundColor = RED_COLOR;
+          } else if (reocrd.target_up === 1) {
+            backgroundColor = YELLOW_COLOR;
+          }
+          return (
+            <div
+              className='table-td-fullBG'
+              style={{
+                backgroundColor,
+              }}
+            >
+              {result}
+            </div>
+          );
         },
       });
     }

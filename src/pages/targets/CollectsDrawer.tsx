@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { Table, Switch, Modal, Space, Button, Row, Col, message, Select } from 'antd';
+import { Table, Switch, Space, Row, Col, Select } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import _ from 'lodash';
 import moment from 'moment';
-import { useHistory, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import RefreshIcon from '@/components/RefreshIcon';
 import SearchInput from '@/components/BaseSearchInput';
 import usePagination from '@/components/usePagination';
-import { getCollectsByIdent, getCollectCates, putCollectStatus } from '@/pages/collects/services';
-import { CollectType, CollectCateType, StatusType } from '@/pages/collects/types';
+import { getCollectsByIdent, getCollectCates, putCollectStatus } from 'plus:/pages/collects/services';
+import { CollectType, CollectCateType, StatusType } from 'plus:/pages/collects/types';
 
 interface IProps {
   ident: string;

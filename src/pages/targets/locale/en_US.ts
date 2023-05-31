@@ -17,6 +17,11 @@ const en_US = {
   os: 'OS',
   arch: 'CPU Arch',
   unixtime: 'Unixtime',
+  unixtime_tip: `
+    machine time offset within 1 minute is green <1 />
+    machine time offset is yellow at 1 minute-3 minutes  <1 />
+    machine time offset above 3 minutes is red
+  `,
   remote_addr: 'Remote Addr',
   note: 'Note',
   organize_columns: {
