@@ -12,7 +12,8 @@ import { timeFormatter } from '@/pages/dashboard/Renderer/utils/valueFormatter';
 import clipboard from './clipboard';
 import OrganizeColumns from './OrganizeColumns';
 import { getDefaultColumnsConfigs, setDefaultColumnsConfigs } from './utils';
-import CollectsDrawer from './CollectsDrawer';
+// @ts-ignore
+import CollectsDrawer from 'plus:/pages/collects/CollectsDrawer';
 
 export const pageSizeOptions = ['10', '20', '50', '100'];
 
