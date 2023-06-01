@@ -17,7 +17,7 @@
 import React, { useEffect, useRef } from 'react';
 import classNames from 'classnames';
 import _ from 'lodash';
-import { EditorView, highlightSpecialChars, keymap, ViewUpdate, placeholder } from '@codemirror/view';
+import { EditorView, highlightSpecialChars, keymap, ViewUpdate, placeholder as placeholderFunc } from '@codemirror/view';
 import { EditorState, Prec } from '@codemirror/state';
 import { indentOnInput } from '@codemirror/language';
 import { history, historyKeymap } from '@codemirror/history';
@@ -46,6 +46,7 @@ export interface CMExpressionInputProps {
   completeEnabled?: boolean;
   trigger?: ('onBlur' | 'onEnter')[]; // 触发 onChang 的事件
   datasourceValue?: number;
+  placeholder?: string | false;
 }
 
 const ExpressionInput = (
@@ -60,6 +61,7 @@ const ExpressionInput = (
     completeEnabled = true,
     trigger = ['onBlur', 'onEnter'],
     datasourceValue,
+    placeholder = 'Input promql to query. Press Shift+Enter for newlines',
   }: CMExpressionInputProps,
   ref,
 ) => {
@@ -124,7 +126,7 @@ const ExpressionInput = (
           promqlHighlighter,
           EditorView.lineWrapping,
           keymap.of([...closeBracketsKeymap, ...defaultKeymap, ...historyKeymap, ...commentKeymap, ...completionKeymap, ...lintKeymap]),
-          placeholder('Input promql to query. Press Shift+Enter for newlines'),
+          placeholderFunc(placeholder === false ? '' : placeholder),
           promqlExtension.asExtension(),
           EditorView.editable.of(!readonly),
           keymap.of([
