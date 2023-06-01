@@ -168,6 +168,11 @@ export default function List(props: ListProps) {
       },
     },
     {
+      title: t('common:table.update_by'),
+      dataIndex: 'update_by',
+      width: 60,
+    },
+    {
       title: t('common:table.enabled'),
       dataIndex: 'disabled',
       render: (disabled, record) => (

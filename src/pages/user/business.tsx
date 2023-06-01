@@ -15,8 +15,9 @@
  *
  */
 import React, { useContext, useEffect, useState } from 'react';
+import moment from 'moment';
 import PageLayout from '@/components/pageLayout';
-import { Button, Table, Input, message, List, Row, Col, Modal } from 'antd';
+import { Button, Table, Input, message, List, Row, Col, Modal, Space } from 'antd';
 import { EditOutlined, DeleteOutlined, SearchOutlined, UserOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import UserInfoModal from './component/createModal';
 import { deleteBusinessTeamMember, getBusinessTeamList, getBusinessTeamInfo, deleteBusinessTeam } from '@/services/manage';
@@ -40,7 +41,7 @@ const Resource: React.FC = () => {
   const [action, setAction] = useState<ActionType>();
   const [teamId, setTeamId] = useState<string>(id || '');
   const [memberList, setMemberList] = useState<{ user_group: any }[]>([]);
-  const [teamInfo, setTeamInfo] = useState<{ name: string; id: number }>();
+  const [teamInfo, setTeamInfo] = useState<{ name: string; id: number; update_by: string; update_at: number }>();
   const [teamList, setTeamList] = useState<Team[]>([]);
   const [memberLoading, setMemberLoading] = useState<boolean>(false);
   const [searchMemberValue, setSearchMemberValue] = useState<string>('');
@@ -241,7 +242,17 @@ const Resource: React.FC = () => {
                     color: '#666',
                   }}
                 >
-                  {t('common:table.note')}：{t('business.note_content')}
+                  <Space>
+                    <span>
+                      {t('common:table.note')}：{t('business.note_content')}
+                    </span>
+                    <span>
+                      {t('common:table.update_by')}：{teamInfo?.update_by ? teamInfo.update_by : '-'}
+                    </span>
+                    <span>
+                      {t('common:table.update_at')}：{teamInfo?.update_at ? moment.unix(teamInfo.update_at).format('YYYY-MM-DD HH:mm:ss') : '-'}
+                    </span>
+                  </Space>
                 </Col>
               </Row>
               <Row justify='space-between' align='middle'>

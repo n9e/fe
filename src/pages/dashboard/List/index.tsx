@@ -142,9 +142,9 @@ export default function index() {
                   render: (text: number) => moment.unix(text).format('YYYY-MM-DD HH:mm:ss'),
                 },
                 {
-                  title: t('common:table.create_by'),
-                  width: 70,
-                  dataIndex: 'create_by',
+                  title: t('common:table.update_by'),
+                  dataIndex: 'update_by',
+                  width: 60,
                 },
                 {
                   title: t('public.name'),

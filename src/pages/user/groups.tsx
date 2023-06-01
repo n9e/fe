@@ -15,8 +15,9 @@
  *
  */
 import React, { useEffect, useState } from 'react';
+import moment from 'moment';
 import PageLayout from '@/components/pageLayout';
-import { Button, Table, Input, message, List, Row, Col, Modal } from 'antd';
+import { Button, Table, Input, message, List, Row, Col, Modal, Space } from 'antd';
 import { EditOutlined, DeleteOutlined, SearchOutlined, UserOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import UserInfoModal from './component/createModal';
 import { getTeamInfoList, getTeamInfo, deleteTeam, deleteMember } from '@/services/manage';
@@ -286,7 +287,17 @@ const Resource: React.FC = () => {
                     color: '#666',
                   }}
                 >
-                  {t('common:table.note')}：{teamInfo && teamInfo.note ? teamInfo.note : '-'}
+                  <Space>
+                    <span>
+                      {t('common:table.note')}：{teamInfo?.note ? teamInfo.note : '-'}
+                    </span>
+                    <span>
+                      {t('common:table.update_by')}：{teamInfo?.update_by ? teamInfo.update_by : '-'}
+                    </span>
+                    <span>
+                      {t('common:table.update_at')}：{teamInfo?.update_at ? moment.unix(teamInfo.update_at).format('YYYY-MM-DD HH:mm:ss') : '-'}
+                    </span>
+                  </Space>
                 </Col>
               </Row>
               <Row justify='space-between' align='middle'>
