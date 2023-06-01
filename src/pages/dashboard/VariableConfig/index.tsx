@@ -189,7 +189,7 @@ function index(props: IProps) {
             }}
           />
         ) : null}
-        {(data ? _.filter(data, (item) => item.type != 'constant')?.length === 0 : true) && editable && (
+        {(data ? _.filter(data, (item) => item.type != 'constant')?.length === 0 : true) && editable && !isPreview && (
           <div
             className='add-variable-tips'
             onClick={() => {

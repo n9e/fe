@@ -33,12 +33,13 @@ interface IProps {
   onAddPanel: (type: string) => void;
   isPreview: boolean;
   isBuiltin: boolean;
+  isAuthorized: boolean;
   gobackPath?: string;
 }
 
 export default function Title(props: IProps) {
   const { t, i18n } = useTranslation('dashboard');
-  const { dashboard, range, setRange, onAddPanel, isPreview, isBuiltin } = props;
+  const { dashboard, range, setRange, onAddPanel, isPreview, isBuiltin, isAuthorized } = props;
   const history = useHistory();
   const location = useLocation();
   const query = querystring.parse(location.search);
@@ -53,7 +54,7 @@ export default function Title(props: IProps) {
       <div className='dashboard-detail-header-right'>
         <Space>
           <div>
-            {!isPreview && (
+            {isAuthorized && (
               <Dropdown
                 trigger={['click']}
                 overlay={

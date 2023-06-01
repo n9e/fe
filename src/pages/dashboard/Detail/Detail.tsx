@@ -60,7 +60,9 @@ export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boole
   const { isPreview = false, isBuiltin = false, gobackPath, builtinParams } = props;
   const { t, i18n } = useTranslation('dashboard');
   const history = useHistory();
-  const { datasourceList } = useContext(CommonStateContext);
+  const { datasourceList, profile } = useContext(CommonStateContext);
+  const roles = _.get(profile, 'roles', []);
+  const isAuthorized = !_.some(roles, (item) => item === 'Guest') && !isPreview;
   const [dashboardMeta, setDashboardMeta] = useGlobalState('dashboardMeta');
   const { id } = useParams<URLParam>();
   const refreshRef = useRef<{ closeRefresh: Function }>();
@@ -165,6 +167,7 @@ export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boole
         <Title
           isPreview={isPreview}
           isBuiltin={isBuiltin}
+          isAuthorized={isAuthorized}
           gobackPath={gobackPath}
           dashboard={dashboard}
           range={range}
@@ -218,9 +221,11 @@ export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boole
           )}
           <div className='dashboard-detail-content-header'>
             <div className='variable-area'>
-              {variableConfig && <VariableConfig isPreview={isPreview} onChange={handleVariableChange} value={variableConfig} range={range} id={id} onOpenFire={stopAutoRefresh} />}
+              {variableConfig && (
+                <VariableConfig isPreview={!isAuthorized} onChange={handleVariableChange} value={variableConfig} range={range} id={id} onOpenFire={stopAutoRefresh} />
+              )}
             </div>
-            {!isPreview && (
+            {isAuthorized && (
               <DashboardLinks
                 value={dashboardLinks}
                 onChange={(v) => {

@@ -65,6 +65,8 @@ function index(props: IProps) {
   const location = useLocation();
   const { themeMode } = querystring.parse(location.search);
   const { editable, dashboard, range, variableConfig, panels, isPreview, setPanels, onShareClick, onUpdated } = props;
+  const roles = _.get(profile, 'roles', []);
+  const isAuthorized = !_.some(roles, (item) => item === 'Guest') && !isPreview;
   const layoutInitialized = useRef(false);
   const allowUpdateDashboardConfigs = useRef(false);
   const reactGridLayoutDefaultProps = {
@@ -74,8 +76,6 @@ function index(props: IProps) {
     draggableHandle: '.dashboards-panels-item-drag-handle',
   };
   const updateDashboardConfigs = (dashboardId, options) => {
-    const roles = _.get(profile, 'roles', []);
-    const isAuthorized = !_.some(roles, (item) => item === 'Guest') && !isPreview;
     if (!editable) {
       message.warning('仪表盘已经被别人修改，为避免相互覆盖，请刷新仪表盘查看最新配置和数据');
     }
@@ -145,7 +145,7 @@ function index(props: IProps) {
               {item.type !== 'row' ? (
                 semver.valid(item.version) ? (
                   <Renderer
-                    isPreview={isPreview}
+                    isPreview={!isAuthorized}
                     themeMode={themeMode as 'dark'}
                     dashboardId={_.toString(props.dashboardId)}
                     id={item.id}
