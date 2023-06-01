@@ -46,7 +46,7 @@ function getTableData(options: any, busiId: number | undefined, query: string, m
 
 const index = (_props: any) => {
   const history = useHistory();
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation('common');
   const [query, setQuery] = useState('');
   const [mine, setMine] = useState(true);
   const [days, setDays] = useState(7);

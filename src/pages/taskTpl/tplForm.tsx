@@ -26,7 +26,7 @@ const FormItem = Form.Item;
 const { TextArea } = Input;
 
 const TplForm = (props) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -38,45 +38,40 @@ const TplForm = (props) => {
       ...values,
       hosts: _.split(values.hosts, '\n'),
     });
-  }
+  };
 
   const { initialValues, type } = props;
 
   return (
-    <div className="job-tpl-form">
-      <Form onFinish={handleSubmit} form={form} layout="vertical">
+    <div className='job-tpl-form'>
+      <Form onFinish={handleSubmit} form={form} layout='vertical'>
         <FormItem
           label={
             <>
               <strong>Title:</strong>
-              { type === 'tpl' ? t('tpl.title.tpl.help') : t('tpl.title.task.help') }
+              {type === 'tpl' ? t('tpl.title.tpl.help') : t('tpl.title.task.help')}
             </>
           }
-          name="title"
+          name='title'
           initialValue={initialValues.title}
           rules={[{ required: true, message: '必填项！' }]}
         >
           <Input />
         </FormItem>
-        {
-          type === 'tpl' ?
-            <FormItem
-              label={
-                <>
-                  <strong>Tags:</strong>
-                  {t('tpl.tags.help')}
-                </>
-              }
-              name="tags"
-              initialValue={initialValues.tags}
-            >
-              <Select
-                mode="tags"
-                open={false}
-                style={{ width: '100%' }}
-              />
-            </FormItem> : null
-        }
+        {type === 'tpl' ? (
+          <FormItem
+            label={
+              <>
+                <strong>Tags:</strong>
+                {t('tpl.tags.help')}
+              </>
+            }
+            name='tags'
+            initialValue={initialValues.tags}
+          >
+            <Select mode='tags' open={false} style={{ width: '100%' }} />
+          </FormItem>
+        ) : null}
         <FormItem
           label={
             <>
@@ -84,7 +79,7 @@ const TplForm = (props) => {
               {t('tpl.account.help')}
             </>
           }
-          name="account"
+          name='account'
           initialValue={initialValues.account}
           rules={[{ required: true, message: '必填项！' }]}
         >
@@ -97,7 +92,7 @@ const TplForm = (props) => {
               {t('tpl.batch.help')}
             </>
           }
-          name="batch"
+          name='batch'
           initialValue={initialValues.batch}
           rules={[{ required: true, message: '必填项！' }]}
         >
@@ -110,7 +105,7 @@ const TplForm = (props) => {
               {t('tpl.tolerance.help')}
             </>
           }
-          name="tolerance"
+          name='tolerance'
           initialValue={initialValues.tolerance}
           rules={[{ required: true, message: '必填项！' }]}
         >
@@ -123,7 +118,7 @@ const TplForm = (props) => {
               {t('tpl.timeout.help')}
             </>
           }
-          name="timeout"
+          name='timeout'
           initialValue={initialValues.timeout}
         >
           <InputNumber min={0} />
@@ -135,7 +130,7 @@ const TplForm = (props) => {
               {t('tpl.pause.help')}
             </span>
           }
-          name="pause"
+          name='pause'
           initialValue={initialValues.pause}
         >
           <Input />
@@ -176,9 +171,9 @@ const TplForm = (props) => {
               {t('tpl.host.help')}
             </>
           }
-          name="hosts"
+          name='hosts'
           initialValue={_.join(initialValues.hosts, '\n')}
-          rules={[{ required: type !== 'tpl' , message: '必填项！'}]}
+          rules={[{ required: type !== 'tpl', message: '必填项！' }]}
         >
           <TextArea autoSize={{ minRows: 3, maxRows: 8 }} />
         </FormItem>
@@ -189,7 +184,7 @@ const TplForm = (props) => {
               {t('tpl.script.help')}
             </>
           }
-          name="script"
+          name='script'
           initialValue={initialValues.script}
           rules={[{ required: true, message: '必填项！' }]}
         >
@@ -202,18 +197,16 @@ const TplForm = (props) => {
               {t('tpl.args.help')}
             </span>
           }
-          name="args"
+          name='args'
           initialValue={initialValues.args}
         >
           <Input />
         </FormItem>
-        <FormItem>
-          {props.footer}
-        </FormItem>
+        <FormItem>{props.footer}</FormItem>
       </Form>
     </div>
   );
-}
+};
 
 TplForm.defaultProps = {
   type: 'tpl', // tpl || task

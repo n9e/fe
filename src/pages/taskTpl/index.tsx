@@ -43,7 +43,7 @@ function getTableData(options: any, busiGroup: number | undefined, query: string
 }
 
 const index = (_props: any) => {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation('common');
   const searchRef = useRef<any>(null);
   const [query, setQuery] = useState('');
   const { curBusiId, setCurBusiId } = useContext(CommonStateContext);

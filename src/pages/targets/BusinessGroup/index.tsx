@@ -19,7 +19,7 @@ interface IProps {
 
 export default function index(props: IProps) {
   const { t } = useTranslation();
-  const { title = t('business_group'), renderHeadExtra, curBusiId, setCurBusiId } = props;
+  const { title = t('common:business_group'), renderHeadExtra, curBusiId, setCurBusiId } = props;
   const history = useHistory();
   const [collapse, setCollapse] = useState(localStorage.getItem('leftlist') === '1');
   const [width, setWidth] = useState(_.toNumber(localStorage.getItem('leftwidth') || 200));
@@ -62,7 +62,7 @@ export default function index(props: IProps) {
           {renderHeadExtra && renderHeadExtra()}
           <div className='left-area-group-title'>
             {title}
-            {title === t('business_group') && <SettingOutlined onClick={() => history.push(`/busi-groups`)} />}
+            {title === t('common:business_group') && <SettingOutlined onClick={() => history.push(`/busi-groups`)} />}
           </div>
           <Input
             className='left-area-group-search'

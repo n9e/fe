@@ -24,7 +24,7 @@ import api from '@/utils/api';
 const FormItem = Form.Item;
 
 const BindTags = (props) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const [form] = Form.useForm();
   const handleOk = () => {
     const { selectedIds } = props;

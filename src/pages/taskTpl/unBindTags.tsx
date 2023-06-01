@@ -26,7 +26,7 @@ const FormItem = Form.Item;
 const { Option } = Select;
 
 const UnBindTags = (props) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const [form] = Form.useForm();
   const handleOk = () => {
     const { selectedIds } = props;

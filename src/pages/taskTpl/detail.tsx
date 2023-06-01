@@ -32,7 +32,7 @@ const Detail = (props: any) => {
   const history = useHistory();
   const id = _.get(props, 'match.params.id');
   const { curBusiId } = useContext(CommonStateContext);
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState({} as Tpl);
 

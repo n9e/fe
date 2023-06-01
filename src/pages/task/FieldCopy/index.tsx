@@ -30,7 +30,7 @@ type CopyType = 'all' | 'selected' | 'currentPage';
 type HandleCopyBtnClick = (dataIndex: string, copyType: CopyType) => void;
 
 const HostCopyTitle = (props: Props) => {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation('common');
   const handleCopyBtnClick: HandleCopyBtnClick = async (dataIndex, copyType) => {
     const { data } = props;
     let tobeCopy: any[] = [];

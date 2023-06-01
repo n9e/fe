@@ -31,7 +31,7 @@ import './style.less';
 const Detail = (props: any) => {
   const history = useHistory();
   const { curBusiId } = useContext(CommonStateContext);
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const taskId = _.get(props, 'match.params.id');
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState({} as any);

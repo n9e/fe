@@ -29,7 +29,7 @@ import { CommonStateContext } from '@/App';
 const Add = (props: any) => {
   const history = useHistory();
   const { curBusiId } = useContext(CommonStateContext);
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const handleSubmit = (values: any) => {
     request(`${api.tasktpls(curBusiId)}`, {
       method: 'POST',

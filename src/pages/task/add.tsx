@@ -31,7 +31,7 @@ const Add = (props: any) => {
   const history = useHistory();
   const query = queryString.parse(_.get(props, 'location.search'));
   const { curBusiId } = useContext(CommonStateContext);
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState();
   const [action, setAction] = useState('');
