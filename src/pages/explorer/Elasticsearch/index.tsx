@@ -104,7 +104,7 @@ export default function index(props: IProps) {
           });
           totalRef.current = res.total;
           setData(newData);
-          const tableEleNodes = document.querySelectorAll(`.event-logs-table .ant-table-body`)[0];
+          const tableEleNodes = document.querySelectorAll(`.es-discover-logs-table .ant-table-body`)[0];
           tableEleNodes?.scrollTo(0, 0);
         })
         .finally(() => {
@@ -357,7 +357,7 @@ export default function index(props: IProps) {
               </div>
               <div
                 onScrollCapture={() => {
-                  const tableEleNodes = document.querySelectorAll(`.event-logs-table .ant-table-body`)[0];
+                  const tableEleNodes = document.querySelectorAll(`.es-discover-logs-table .ant-table-body`)[0];
                   if (Math.round(tableEleNodes?.scrollTop) + tableEleNodes?.clientHeight === tableEleNodes?.scrollHeight) {
                     if (data.length > 500) {
                       setIsMore(false);
@@ -369,7 +369,7 @@ export default function index(props: IProps) {
               >
                 <Table
                   size='small'
-                  className='event-logs-table'
+                  className='es-discover-logs-table'
                   tableLayout='fixed'
                   rowKey='id'
                   columns={getColumnsFromFields(selectedFields, form.getFieldValue(['query', 'date_field']))}

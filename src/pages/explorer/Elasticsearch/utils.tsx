@@ -15,7 +15,7 @@ export function getColumnsFromFields(selectedFields: string[], dateField?: strin
         dataIndex: 'fields',
         render(text) {
           return (
-            <dl className='event-logs-row'>
+            <dl className='es-discover-logs-row'>
               {_.map(text, (val, key) => {
                 const value = _.isArray(val) ? _.join(val, ',') : val;
                 return (
