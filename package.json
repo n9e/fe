@@ -59,6 +59,7 @@
     "react-markdown": "^7.0.1",
     "react-router-dom": "^5.2.0",
     "react-sortable-hoc": "^1.8.3",
+    "react-syntax-highlighter": "^15.5.0",
     "react-use": "^17.3.1",
     "rehype-raw": "^6.1.1",
     "remark-gfm": "^1.0.0",
