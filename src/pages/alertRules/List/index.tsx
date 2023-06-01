@@ -425,6 +425,7 @@ export default function List(props: ListProps) {
           },
         }}
         columns={columns}
+        scroll={{ x: 'max-content' }}
       />
     </div>
   );
