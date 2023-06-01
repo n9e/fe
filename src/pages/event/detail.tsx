@@ -191,7 +191,7 @@ const EventDetailPage: React.FC = () => {
         })
       : [false]),
     ...(eventDetail?.cate === 'host' ? Host(t, commonState) : [false]),
-    ...plusEventDetail(eventDetail?.cate, t),
+    ...(plusEventDetail(eventDetail?.cate, t) || []),
     {
       label: t('detail.prom_eval_interval'),
       key: 'prom_eval_interval',
