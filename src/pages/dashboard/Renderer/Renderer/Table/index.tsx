@@ -39,7 +39,7 @@ interface IProps {
 }
 
 const DEFAULT_LIGTH_COLOR = '#ffffff';
-const DEFAULT_DARK_COLOR = '#2c9d3d';
+const DEFAULT_DARK_COLOR = '#333';
 
 const getColumnsKeys = (data: any[]) => {
   const keys = _.reduce(
@@ -53,6 +53,31 @@ const getColumnsKeys = (data: any[]) => {
 };
 const getSortOrder = (key, sortObj) => {
   return sortObj.sortColumn === key ? sortObj.sortOrder : false;
+};
+const getColor = (color, colorMode, themeMode) => {
+  if (themeMode === 'dark') {
+    if (colorMode === 'background') {
+      return {
+        color: DEFAULT_LIGTH_COLOR,
+        backgroundColor: color || 'unset',
+      };
+    }
+    return {
+      color: color || DEFAULT_LIGTH_COLOR,
+      backgroundColor: 'unset',
+    };
+  } else {
+    if (colorMode === 'background') {
+      return {
+        color: color ? DEFAULT_LIGTH_COLOR : color,
+        backgroundColor: color || 'unset',
+      };
+    }
+    return {
+      color: color || DEFAULT_DARK_COLOR,
+      backgroundColor: 'unset',
+    };
+  }
 };
 
 export default function Stat(props: IProps) {
@@ -167,18 +192,18 @@ export default function Stat(props: IProps) {
       render: (_val, record) => {
         let textObj = {
           text: record.text,
-          color: record.color || (themeMode === 'dark' ? DEFAULT_LIGTH_COLOR : DEFAULT_DARK_COLOR),
+          color: record.color,
         };
         const overrideProps = getOverridePropertiesByName(overrides, record.fields?.refId);
         if (!_.isEmpty(overrideProps)) {
           textObj = getSerieTextObj(record?.stat, overrideProps?.standardOptions, overrideProps?.valueMappings);
         }
+        const colorObj = getColor(textObj.color, colorMode, themeMode);
         return (
           <div
             className='renderer-table-td-content'
             style={{
-              color: colorMode === 'background' ? DEFAULT_LIGTH_COLOR : textObj?.color,
-              backgroundColor: colorMode === 'background' ? textObj.color : 'unset',
+              ...colorObj,
             }}
           >
             {textObj.text}
@@ -210,19 +235,18 @@ export default function Stat(props: IProps) {
           if (key === 'value') {
             let textObj = {
               text: record?.text,
-              color: record.color || (themeMode === 'dark' ? DEFAULT_LIGTH_COLOR : DEFAULT_DARK_COLOR),
+              color: record.color,
             };
             const overrideProps = getOverridePropertiesByName(overrides, record.fields?.refId);
             if (!_.isEmpty(overrideProps)) {
               textObj = getSerieTextObj(record?.stat, overrideProps?.standardOptions, overrideProps?.valueMappings);
-              textObj.color = textObj.color || (themeMode === 'dark' ? DEFAULT_LIGTH_COLOR : DEFAULT_DARK_COLOR);
             }
+            const colorObj = getColor(textObj.color, colorMode, themeMode);
             return (
               <div
                 className='renderer-table-td-content'
                 style={{
-                  color: colorMode === 'background' ? DEFAULT_LIGTH_COLOR : textObj?.color,
-                  backgroundColor: colorMode === 'background' ? textObj.color : 'unset',
+                  ...colorObj,
                 }}
               >
                 {textObj?.text}
@@ -277,19 +301,18 @@ export default function Stat(props: IProps) {
         render: (record) => {
           let textObj = {
             text: record?.text,
-            color: record?.color || (themeMode === 'dark' ? DEFAULT_LIGTH_COLOR : DEFAULT_DARK_COLOR),
+            color: record?.color,
           };
           const overrideProps = getOverridePropertiesByName(overrides, name);
           if (!_.isEmpty(overrideProps)) {
             textObj = getSerieTextObj(record?.stat, overrideProps?.standardOptions, overrideProps?.valueMappings);
-            textObj.color = textObj.color || (themeMode === 'dark' ? DEFAULT_LIGTH_COLOR : DEFAULT_DARK_COLOR);
           }
+          const colorObj = getColor(textObj.color, colorMode, themeMode);
           return (
             <div
               className='renderer-table-td-content'
               style={{
-                color: colorMode === 'background' ? DEFAULT_LIGTH_COLOR : textObj?.color,
-                backgroundColor: colorMode === 'background' ? textObj?.color : 'unset',
+                ...colorObj,
               }}
             >
               {textObj?.text}
