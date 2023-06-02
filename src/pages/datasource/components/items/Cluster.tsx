@@ -11,12 +11,16 @@ export default function Cluster({ form, clusterRef }) {
   useEffect(() => {
     getServerClusters().then((res) => {
       setClusters(res);
-      form.setFieldsValue({ cluster_name: res?.[0] });
+      // 新增的时候，自动填充第一个集群
+      const values = form.getFieldsValue();
+      if (values?.cluster_name === undefined) {
+        form.setFieldsValue({ cluster_name: res?.[0] });
+      }
     });
   }, []);
   return (
     <Form.Item label={t('form.cluster')} name='cluster_name'>
-      <Select ref={clusterRef}>
+      <Select ref={clusterRef} allowClear>
         {_.map(clusters, (item) => {
           return (
             <Select.Option key={item} value={item}>
