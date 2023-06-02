@@ -128,7 +128,7 @@ export default function index({ chartForm, variableConfig }) {
                 ]}
                 initialValue={getDefaultDatasourceValue(defaultDatasourceCate)}
               >
-                <Select allowClear placeholder={t('query.datasource_placeholder')} style={{ minWidth: 70 }} dropdownMatchSelectWidth={false}>
+                <Select allowClear placeholder={t('query.datasource_placeholder')} style={{ minWidth: 70 }} dropdownMatchSelectWidth={false} showSearch optionFilterProp='children'>
                   {_.map(datasourceVars, (item, idx) => {
                     return (
                       <Select.Option value={`\${${item.name}}`} key={`${item.name}_${idx}`}>

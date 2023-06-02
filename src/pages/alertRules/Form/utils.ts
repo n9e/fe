@@ -238,7 +238,7 @@ export function getDefaultValuesByCate(prod, cate) {
   if (cate === 'prometheus') {
     return {
       prod,
-      cate: 'prometheus',
+      cate,
       datasource_ids: [DATASOURCE_ALL],
       rule_config: defaultRuleConfig.metric,
     };
@@ -246,7 +246,7 @@ export function getDefaultValuesByCate(prod, cate) {
   if (cate === 'ck' || cate === 'influxdb') {
     return {
       prod,
-      cate: 'ck',
+      cate,
       datasource_ids: undefined,
       rule_config: {
         triggers: [
