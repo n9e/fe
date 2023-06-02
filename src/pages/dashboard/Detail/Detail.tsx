@@ -20,7 +20,8 @@ import semver from 'semver';
 import { useTranslation } from 'react-i18next';
 import { useInterval } from 'ahooks';
 import { v4 as uuidv4 } from 'uuid';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams, useHistory, useLocation } from 'react-router-dom';
+import queryString from 'query-string';
 import { Alert, Modal, Button } from 'antd';
 import PageLayout from '@/components/pageLayout';
 import { IRawTimeRange, getDefaultValue } from '@/components/TimeRangePicker';
@@ -55,6 +56,9 @@ const fetchDashboard = ({ id, builtinParams }) => {
   }
   return getDashboard(id);
 };
+const builtinParamsToID = (builtinParams) => {
+  return `${builtinParams['__built-in-cate']}_${builtinParams['__built-in-name']}`;
+};
 
 export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boolean; gobackPath?: string; builtinParams?: any }) {
   const { isPreview = false, isBuiltin = false, gobackPath, builtinParams } = props;
@@ -64,7 +68,11 @@ export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boole
   const roles = _.get(profile, 'roles', []);
   const isAuthorized = !_.some(roles, (item) => item === 'Guest') && !isPreview;
   const [dashboardMeta, setDashboardMeta] = useGlobalState('dashboardMeta');
-  const { id } = useParams<URLParam>();
+  let { id } = useParams<URLParam>();
+  if (isBuiltin) {
+    const query = queryString.parse(useLocation().search);
+    id = builtinParamsToID(query);
+  }
   const refreshRef = useRef<{ closeRefresh: Function }>();
   const [dashboard, setDashboard] = useState<Dashboard>({} as Dashboard);
   const [variableConfig, setVariableConfig] = useState<IVariable[]>();
