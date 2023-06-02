@@ -38,7 +38,7 @@ export default function index({ prefixField = {}, prefixFields = [], prefixNameF
     () => {
       getFields(datasourceValue, index, 'number').then((res) => {
         setFieldsOptions(
-          _.map(res, (item) => {
+          _.map(res.fields, (item) => {
             return {
               value: item,
             };

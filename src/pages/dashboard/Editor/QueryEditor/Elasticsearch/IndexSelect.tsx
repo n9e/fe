@@ -18,7 +18,7 @@ export default function IndexSelect({ prefixField = {}, prefixName = [], cate, d
   const { t } = useTranslation('datasource');
 
   useEffect(() => {
-    if (cate === 'elasticsearch' && datasourceValue) {
+    if (datasourceValue) {
       getIndices(datasourceValue).then((res) => {
         setOptions(
           _.map(res, (item) => {
