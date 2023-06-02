@@ -62,7 +62,7 @@ export default function index({ setFieldsValue, cate, datasourceList, mode, requ
         },
       ]}
     >
-      <Select mode={mode} onChange={handleClusterChange} maxTagCount='responsive' disabled={disabled}>
+      <Select mode={mode} onChange={handleClusterChange} maxTagCount='responsive' disabled={disabled} showSearch optionFilterProp='children'>
         {datasourceList?.map((item) => (
           <Select.Option value={item.id} key={item.id}>
             {item.name}

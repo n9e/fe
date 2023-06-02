@@ -9,7 +9,16 @@ export default function HTTP() {
   return (
     <div>
       <div className='page-title'>HTTP</div>
-      <FormItem label='URL' name={['http', 'url']} rules={[{ required: true }]}>
+      <FormItem
+        label='URL'
+        name={['http', 'url']}
+        rules={[
+          { required: true },
+          {
+            validator: (_, value) => (!value.includes(' ') ? Promise.resolve() : Promise.reject(new Error(t('form.url_no_spaces_msg')))),
+          },
+        ]}
+      >
         <Input placeholder='http://localhost:9090' />
       </FormItem>
       <FormItem label={t('form.timeout')} name={['http', 'timeout']} rules={[{ type: 'number', min: 0 }]} initialValue={10000}>

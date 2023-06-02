@@ -128,6 +128,8 @@ const Panel = ({ defaultPromQL, removePanel, id, type, defaultCate }: IPanelProp
                         onChange={(val: string) => {
                           setDefaultDatasourceValue(cate, val);
                         }}
+                        showSearch
+                        optionFilterProp='children'
                       >
                         {_.map(groupedDatasourceList[cate], (item) => (
                           <Select.Option value={item.id} key={item.id}>
