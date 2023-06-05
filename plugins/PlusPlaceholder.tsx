@@ -37,5 +37,6 @@ function Jobs() {
 const advancedCates = [];
 const envCateMap = {};
 enum AdvancedDatasourceCateEnum {}
+const notificationSettings = [];
 
-export { AlertRule, QueryBuilder, datasource, Event, EventLogs, EventPreview, Explorer, Jobs, advancedCates, envCateMap, AdvancedDatasourceCateEnum };
+export { AlertRule, QueryBuilder, datasource, Event, EventLogs, EventPreview, Explorer, Jobs, advancedCates, envCateMap, AdvancedDatasourceCateEnum, notificationSettings };

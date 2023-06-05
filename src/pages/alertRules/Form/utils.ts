@@ -81,7 +81,7 @@ export function processFormValues(values) {
     cate = 'host';
   } else if (values.prod === 'anomaly') {
     cate = 'prometheus';
-  } else if (values.cate === 'elasticsearch') {
+  } else if (values.cate === 'elasticsearch' || values.cate === 'opensearch') {
     values.rule_config.queries = _.map(values.rule_config.queries, (item) => {
       return {
         ..._.omit(item, 'interval_unit'),
@@ -142,7 +142,7 @@ export function processFormValues(values) {
 }
 
 export function processInitialValues(values) {
-  if (values.cate === 'elasticsearch') {
+  if (values.cate === 'elasticsearch' || values.cate === 'opensearch') {
     values.rule_config.queries = _.map(values.rule_config.queries, (item) => {
       return {
         ...item,
