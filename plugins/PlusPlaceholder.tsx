@@ -38,5 +38,4 @@ const advancedCates = [];
 const envCateMap = {};
 enum AdvancedDatasourceCateEnum {}
 
-export { AlertRule, QueryBuilder, datasource, Event, EventLogs, EventPreview, Explorer, Jobs, advancedCates, envCateMap };
-export type { AdvancedDatasourceCateEnum };
+export { AlertRule, QueryBuilder, datasource, Event, EventLogs, EventPreview, Explorer, Jobs, advancedCates, envCateMap, AdvancedDatasourceCateEnum };
