@@ -6,7 +6,7 @@ import { useHistory, useParams } from 'react-router-dom';
 import PageLayout from '@/components/pageLayout';
 import BreadCrumb from '@/components/BreadCrumb';
 import { getDataSourceDetailById, submitRequest } from './services';
-import From from './Datasources/Form';
+import Form from './Datasources/Form';
 import './index.less';
 
 export default function FormCpt() {
@@ -99,7 +99,7 @@ export default function FormCpt() {
         {action === 'edit' && data === undefined ? (
           <Spin spinning={true} />
         ) : (
-          <From
+          <Form
             data={data}
             onFinish={(values, clusterInstance) => {
               if (
