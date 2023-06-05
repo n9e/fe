@@ -10,7 +10,7 @@ import Channels from './Channels';
 import Contacts from './Contacts';
 import SMTP from './SMTP';
 // @ts-ignore
-import { notificationSettings as plusNotificationSettings } from 'plus:/parcels/NotificationSettings';
+import NotificationSettings from 'plus:/parcels/NotificationSettings';
 import './style.less';
 import './locale';
 
@@ -23,25 +23,30 @@ export default function index() {
   const panes = [
     {
       key: 'webhooks',
+      tab: t('webhooks.title'),
       content: <Webhooks />,
     },
     {
       key: 'script',
+      tab: t('script.title'),
       content: <Script />,
     },
     {
       key: 'channels',
+      tab: t('channels.title'),
       content: <Channels />,
     },
     {
       key: 'contacts',
+      tab: t('contacts.title'),
       content: <Contacts />,
     },
     {
       key: 'smtp',
+      tab: t('smtp.title'),
       content: <SMTP />,
     },
-    ...(plusNotificationSettings || []),
+    ...(NotificationSettings() || []),
   ];
 
   return (
@@ -64,7 +69,7 @@ export default function index() {
           >
             {panes.map((pane) => {
               return (
-                <Tabs.TabPane tab={t(`${pane.key}.title`)} key={pane.key}>
+                <Tabs.TabPane tab={pane.tab} key={pane.key}>
                   {pane.content}
                 </Tabs.TabPane>
               );
