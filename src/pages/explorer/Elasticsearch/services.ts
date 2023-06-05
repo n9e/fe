@@ -37,7 +37,10 @@ export function getFields(datasourceValue: number, index?: string, type?: string
     method: RequestMethod.Get,
     silence: true,
   }).then((res) => {
-    return mappingsToFields(res, type);
+    return {
+      allFields: mappingsToFields(res),
+      fields: type ? mappingsToFields(res, type) : [],
+    };
   });
 }
 

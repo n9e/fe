@@ -26,7 +26,7 @@ export default function index({ prefixField = {}, prefixFieldNames = [], parentN
     () => {
       getFields(datasourceValue, index).then((res) => {
         setFieldsOptions(
-          _.map(res, (item) => {
+          _.map(res.allFields, (item) => {
             return {
               value: item,
             };

@@ -1,4 +1,6 @@
 import _ from 'lodash';
+// @ts-ignore
+import { advancedCates, envCateMap } from 'plus:/constants';
 
 export interface Cate {
   value: string;
@@ -31,59 +33,13 @@ export const baseCates: Cate[] = [
   },
 ];
 
-export const AdvancedCates = [
-  {
-    value: 'aliyun-sls',
-    label: '阿里云SLS',
-    type: 'logging',
-    alertRule: true,
-    dashboard: true,
-    graphPro: true,
-    alertPro: true,
-  },
-  {
-    value: 'ck',
-    label: 'ClickHouse',
-    type: 'metric',
-    alertRule: true,
-    dashboard: false,
-    graphPro: true,
-    alertPro: true,
-  },
-  {
-    value: 'zabbix',
-    label: 'Zabbix',
-    type: 'metric',
-    alertRule: false,
-    dashboard: true,
-    graphPro: true,
-    alertPro: true,
-  },
-  {
-    value: 'influxdb',
-    label: 'InfluxDB',
-    type: 'metric',
-    alertRule: true,
-    dashboard: true,
-    graphPro: true,
-    alertPro: true,
-  },
-];
-
-const varCateMap = {
-  VITE_IS_SLS_DS: 'aliyun-sls',
-  VITE_IS_CK_DS: 'ck',
-  VITE_IS_ZABBIX_DS: 'zabbix',
-  VITE_IS_INFLUXDB_DS: 'influxdb',
-};
-
 export const getAuthorizedDatasourceCates = () => {
   const datasourceCates = [...baseCates];
   _.forEach(import.meta.env, (value, key) => {
     if (_.endsWith(key, '_DS') && value === 'true') {
-      const cate = varCateMap[key];
+      const cate = envCateMap[key];
       if (cate) {
-        const finded = _.find(AdvancedCates, { value: cate });
+        const finded = _.find(advancedCates, { value: cate });
         if (finded) {
           datasourceCates.push(finded);
         }

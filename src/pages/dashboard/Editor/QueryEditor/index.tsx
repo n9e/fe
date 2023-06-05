@@ -44,7 +44,7 @@ export default function index({ chartForm, type, variableConfig, dashboardId }) 
             if (cate === 'elasticsearch') {
               return <Elasticsearch chartForm={chartForm} variableConfig={variableConfig} dashboardId={dashboardId} />;
             }
-            return <PlusQueryBuilder cate={cate} form={chartForm} />;
+            return <PlusQueryBuilder cate={cate} form={chartForm} variableConfig={variableConfig} dashboardId={dashboardId} />;
           }}
         </Form.Item>
       </div>

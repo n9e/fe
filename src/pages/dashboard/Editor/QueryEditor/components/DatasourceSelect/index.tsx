@@ -45,7 +45,7 @@ export default function index({ chartForm, variableConfig }) {
                     ],
                     datasourceValue: getDefaultDatasourceValue('prometheus'),
                   });
-                } else if (val === 'elasticsearch') {
+                } else if (val === 'elasticsearch' || val === 'opensearch') {
                   chartForm.setFieldsValue({
                     targets: [
                       {
@@ -64,7 +64,7 @@ export default function index({ chartForm, variableConfig }) {
                         },
                       },
                     ],
-                    datasourceValue: getDefaultDatasourceValue('elasticsearch'),
+                    datasourceValue: getDefaultDatasourceValue(val),
                   });
                 } else if (val === 'zabbix') {
                   chartForm.setFieldsValue({

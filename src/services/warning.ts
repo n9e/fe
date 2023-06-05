@@ -214,8 +214,6 @@ export const getAlertEvents = function (data) {
  * 获取全量告警历史页面
  */
 export const getHistoryEvents = function (data) {
-  console.log(data);
-
   return request(`/api/n9e/history-alert-events`, {
     method: RequestMethod.Get,
     params: data,

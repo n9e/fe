@@ -27,7 +27,26 @@ export default function FormCpt({ data, onFinish, submitLoading }: any) {
       className='settings-source-form'
     >
       <Name />
-      <HTTP />
+      <HTTP
+        urlExtra={
+          <>
+            <div
+              className='second-color'
+              style={{
+                paddingLeft: '12px',
+                margin: '0 0 18px',
+              }}
+            >
+              <div>{t('form.prom.url_tip')}</div>
+              <div>{'1. Prometheus:  http://localhost:9090/'}</div>
+              <div>{'2. Thanos:  http://localhost:19192/'}</div>
+              <div>{'3. VictoriaMetrics:  http://{vmselect}:8481/select/0/prometheus/'}</div>
+              <div>{'4. M3:  http://localhost:7201/'}</div>
+              <div>{'5. SLS:  https://{project}.{sls-enpoint}/prometheus/{project}/{metricstore}/'}</div>
+            </div>
+          </>
+        }
+      />
       <BasicAuth />
       <SkipTLSVerify />
       <Headers />

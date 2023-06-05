@@ -48,7 +48,6 @@ export default function index(props: IProps) {
   const [dateFields, setDateFields] = useState<string[]>([]);
   const [fields, setFields] = useState<string[]>([]);
   const [selectedFields, setSelectedFields] = useState<string[]>([]);
-  const [isMore, setIsMore] = useState(true);
   const [interval, setInterval] = useState(1);
   const [intervalUnit, setIntervalUnit] = useState<'second' | 'min' | 'hour'>('min');
   const totalRef = useRef(0);
@@ -159,13 +158,10 @@ export default function index(props: IProps) {
   const { run: onIndexChange } = useDebounceFn(
     (val) => {
       if (datasourceValue && val) {
-        getFields(datasourceValue, val).then((res) => {
-          setFields(res);
-        });
         getFields(datasourceValue, val, 'date').then((res) => {
           const dateFiled = form.getFieldValue(['query', 'date_field']);
-          if (!_.includes(res, dateFiled)) {
-            if (_.includes(res, '@timestamp')) {
+          if (!_.includes(res.fields, dateFiled)) {
+            if (_.includes(res.fields, '@timestamp')) {
               form.setFieldsValue({
                 query: {
                   date_field: '@timestamp',
@@ -179,7 +175,8 @@ export default function index(props: IProps) {
               });
             }
           }
-          setDateFields(res);
+          setFields(res.allFields);
+          setDateFields(res.fields);
         });
       }
     },
@@ -355,18 +352,7 @@ export default function index(props: IProps) {
                   />
                 </div>
               </div>
-              <div
-                onScrollCapture={() => {
-                  const tableEleNodes = document.querySelectorAll(`.es-discover-logs-table .ant-table-body`)[0];
-                  if (Math.round(tableEleNodes?.scrollTop) + tableEleNodes?.clientHeight === tableEleNodes?.scrollHeight) {
-                    if (data.length > 500) {
-                      setIsMore(false);
-                      return false;
-                    }
-                    fetchData();
-                  }
-                }}
-              >
+              <div>
                 <Table
                   size='small'
                   className='es-discover-logs-table'
@@ -409,15 +395,8 @@ export default function index(props: IProps) {
                     expandIcon: ({ expanded, onExpand, record }) =>
                       expanded ? <DownOutlined onClick={(e) => onExpand(record, e)} /> : <RightOutlined onClick={(e) => onExpand(record, e)} />,
                   }}
-                  scroll={{ x: _.isEmpty(selectedFields) ? undefined : 'max-content', y: !isMore ? 302 - 35 : 302 }}
+                  scroll={{ x: _.isEmpty(selectedFields) ? undefined : 'max-content', y: 302 }}
                   pagination={false}
-                  footer={
-                    !isMore
-                      ? () => {
-                          return '只能查询您搜索匹配的前 500 个日志，请细化您的过滤条件。';
-                        }
-                      : undefined
-                  }
                   onChange={(pagination, filters, sorter: any, extra) => {
                     if (sorter.columnKey === 'time') {
                       sortOrder.current = sorter.order === 'ascend' ? 'asc' : 'desc';

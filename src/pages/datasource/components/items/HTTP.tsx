@@ -2,10 +2,16 @@ import React from 'react';
 import { Input, Form, InputNumber } from 'antd';
 import { useTranslation } from 'react-i18next';
 
+interface IProps {
+  urlExtra?: React.ReactNode;
+}
+
 const FormItem = Form.Item;
 
-export default function HTTP() {
+export default function HTTP(props: IProps) {
   const { t } = useTranslation('datasourceManage');
+  const { urlExtra } = props;
+
   return (
     <div>
       <div className='page-title'>HTTP</div>
@@ -21,6 +27,7 @@ export default function HTTP() {
       >
         <Input placeholder='http://localhost:9090' />
       </FormItem>
+      {urlExtra}
       <FormItem label={t('form.timeout')} name={['http', 'timeout']} rules={[{ type: 'number', min: 0 }]} initialValue={10000}>
         <InputNumber style={{ width: '100%' }} controls={false} />
       </FormItem>

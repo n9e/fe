@@ -9,6 +9,8 @@ import Script from './Script';
 import Channels from './Channels';
 import Contacts from './Contacts';
 import SMTP from './SMTP';
+// @ts-ignore
+import { notificationSettings as plusNotificationSettings } from 'plus:/parcels/NotificationSettings';
 import './style.less';
 import './locale';
 
@@ -18,6 +20,29 @@ export default function index() {
   const query = queryString.parse(search);
   const history = useHistory();
   const [activeKey, setActiveKey] = React.useState((query.tab as string) || 'webhooks');
+  const panes = [
+    {
+      key: 'webhooks',
+      content: <Webhooks />,
+    },
+    {
+      key: 'script',
+      content: <Script />,
+    },
+    {
+      key: 'channels',
+      content: <Channels />,
+    },
+    {
+      key: 'contacts',
+      content: <Contacts />,
+    },
+    {
+      key: 'smtp',
+      content: <SMTP />,
+    },
+    ...(plusNotificationSettings || []),
+  ];
 
   return (
     <PageLayout title={t('title')}>
@@ -37,21 +62,13 @@ export default function index() {
               });
             }}
           >
-            <Tabs.TabPane tab={t('webhooks.title')} key='webhooks'>
-              <Webhooks />
-            </Tabs.TabPane>
-            <Tabs.TabPane tab={t('script.title')} key='script'>
-              <Script />
-            </Tabs.TabPane>
-            <Tabs.TabPane tab={t('channels.title')} key='channels'>
-              <Channels />
-            </Tabs.TabPane>
-            <Tabs.TabPane tab={t('contacts.title')} key='contacts'>
-              <Contacts />
-            </Tabs.TabPane>
-            <Tabs.TabPane tab={t('smtp.title')} key='smtp'>
-              <SMTP />
-            </Tabs.TabPane>
+            {panes.map((pane) => {
+              return (
+                <Tabs.TabPane tab={t(`${pane.key}.title`)} key={pane.key}>
+                  {pane.content}
+                </Tabs.TabPane>
+              );
+            })}
           </Tabs>
         </div>
       </div>
