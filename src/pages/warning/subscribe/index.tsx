@@ -112,13 +112,16 @@ const Shield: React.FC = () => {
     },
     {
       title: t('redefine_severity'),
-      dataIndex: 'redefine_severity',
-      render: (text: number) => {
-        return (
-          <Tag key={text} color={priorityColor[text - 1]}>
-            S{text}
-          </Tag>
-        );
+      dataIndex: 'new_severity',
+      render: (text: number, record: subscribeItem) => {
+        if (record.redefine_severity === 1) {
+          return (
+            <Tag key={text} color={priorityColor[text - 1]}>
+              S{text}
+            </Tag>
+          );
+        }
+        return null;
       },
     },
     {
