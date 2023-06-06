@@ -155,7 +155,7 @@ function FormCpt(props: ModalWrapProps & IProps) {
             <Input />
           </Form.Item>
           {admin && (
-            <Form.Item label={t('list.isPublic')} name='cate' rules={[{ required: true }]} valuePropName='checked'>
+            <Form.Item label={t('list.isPublic')} name='cate' valuePropName='checked'>
               <Switch />
             </Form.Item>
           )}
