@@ -1,7 +1,8 @@
 import _ from 'lodash';
 import moment from 'moment';
+import semver from 'semver';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
-import { getDsQuery } from '@/services/warning';
+import { getDsQuery, getESVersion } from '@/services/warning';
 import { normalizeTime } from '@/pages/alertRules/utils';
 import { ITarget } from '../../../types';
 import { IVariable } from '../../../VariableConfig/definition';
@@ -75,8 +76,17 @@ export default async function elasticSearchQuery(options: IOptions) {
     });
     if (!_.isEmpty(batchDsParams)) {
       let payload = '';
+      let intervalkey = 'interval';
+      try {
+        const version = await getESVersion(datasourceValue);
+        if (semver.gte(version, '8.0.0')) {
+          intervalkey = 'fixed_interval';
+        }
+      } catch (e) {
+        console.error(new Error('get es version error'));
+      }
       _.forEach(batchDsParams, (item) => {
-        const esQuery = JSON.stringify(getSeriesQuery(item));
+        const esQuery = JSON.stringify(getSeriesQuery(item, intervalkey));
         const header = JSON.stringify({
           search_type: 'query_then_fetch',
           ignore_unavailable: true,

@@ -446,6 +446,15 @@ export function getIndices(datasourceValue: number) {
   });
 }
 
+export function getESVersion(datasourceValue: number) {
+  return request(`/api/n9e/proxy/${datasourceValue}/`, {
+    method: RequestMethod.Get,
+  }).then((res) => {
+    const dat = _.get(res, 'version.number');
+    return dat;
+  });
+}
+
 export function getEventTSQuery(params) {
   return request('/api/n9e-plus/event-ts-query', {
     method: RequestMethod.Post,
