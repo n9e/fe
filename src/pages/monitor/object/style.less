@@ -7,7 +7,6 @@
 }
 
 .n9e-metric-views {
-  // width: 100%;
   display: flex;
   gap: 10px;
   .mt16 {
@@ -25,6 +24,8 @@
 .n9e-metric-views-list {
   flex: 0 0 240px;
   padding: @margin-base;
+  display: flex;
+  flex-direction: column;
 }
 .n9e-metric-views-list-header {
   display: flex;
@@ -35,12 +36,15 @@
 }
 .n9e-metric-views-list-content {
   margin-top: @margin-base;
+  overflow-y: auto;
 }
 .n9e-metric-views-list-content-item {
   display: flex;
   justify-content: space-between;
   padding: 8px;
   position: relative;
+  word-break: break-all;
+  line-height: 1.4;
   cursor: pointer;
   .anticon {
     margin-left: 8px;
@@ -56,6 +60,10 @@
   }
   &.active {
     background-color: fade(@primary-color, 10%);
+  }
+  .name {
+    display: inline-block;
+    flex: 0 0 140px;
   }
 }
 .n9e-metric-views-labels-values {
@@ -96,6 +104,8 @@
   padding: 6px;
   margin-bottom: 2px;
   cursor: pointer;
+  word-break: break-all;
+  line-height: 1.4;
   &.active {
     background-color: fade(@primary-color, 10%);
   }

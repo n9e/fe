@@ -347,7 +347,7 @@ const Targets: React.FC = () => {
                 <div className='left-area-group-title'>{t('default_filter')}</div>
                 <div
                   className={classNames({
-                    'n9e-metric-views-list-content-item': true,
+                    'n9e-biz-group-item': true,
                     active: curBusiId === 0,
                   })}
                   onClick={() => {
@@ -358,7 +358,7 @@ const Targets: React.FC = () => {
                 </div>
                 <div
                   className={classNames({
-                    'n9e-metric-views-list-content-item': true,
+                    'n9e-biz-group-item': true,
                     active: curBusiId === -1,
                   })}
                   onClick={() => {
