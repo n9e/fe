@@ -23,6 +23,7 @@ const en_US = {
     email: 'Email',
     phone: 'Phone',
     moreContact: 'More contact',
+    moreContactLinkToSetting: 'Please go to the settings page to add',
     moreContactPlaceholder: 'Please select contact method',
   },
   editPicture: 'Edit',

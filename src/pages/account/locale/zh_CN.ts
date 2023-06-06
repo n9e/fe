@@ -23,6 +23,7 @@ const zh_CN = {
     email: '邮箱',
     phone: '手机号',
     moreContact: '更多联系方式',
+    moreContactLinkToSetting: '联系方式管理',
     moreContactPlaceholder: '请选择联系方式',
   },
   editPicture: '修改头像',

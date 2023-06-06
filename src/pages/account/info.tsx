@@ -19,6 +19,7 @@ import { Form, Input, Button, Modal, Row, Col, message, Space, Select } from 'an
 import { MinusCircleOutlined, PlusCircleOutlined, CaretDownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
+import { Link } from 'react-router-dom';
 import { getNotifyChannels } from '@/services/manage';
 import { ContactsItem } from '@/store/manageInterface';
 import { CommonStateContext } from '@/App';
@@ -189,7 +190,16 @@ export default function Info() {
                   );
                 })}
 
-            <Form.Item label={t('profile.moreContact')}>
+            <Form.Item
+              label={
+                <Space>
+                  {t('profile.moreContact')}
+                  <Link to='/help/notification-settings?tab=contacts' target='_blank'>
+                    {t('profile.moreContactLinkToSetting')}
+                  </Link>
+                </Space>
+              }
+            >
               <Form.List name='moreContacts'>
                 {(fields, { add, remove }) => (
                   <>

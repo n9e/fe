@@ -21,6 +21,7 @@ import { UserAndPasswordFormProps, Contacts, ContactsItem, User } from '@/store/
 import { MinusCircleOutlined, PlusCircleOutlined, CaretDownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
+import { Link } from 'react-router-dom';
 
 const { Option } = Select;
 const UserForm = React.forwardRef<ReactNode, UserAndPasswordFormProps>((props, ref) => {
@@ -158,7 +159,16 @@ const UserForm = React.forwardRef<ReactNode, UserAndPasswordFormProps>((props, r
       <Form.Item label={t('account:profile.phone')} name='phone'>
         <Input />
       </Form.Item>
-      <Form.Item label={t('account:profile.moreContact')}>
+      <Form.Item
+        label={
+          <Space>
+            {t('account:profile.moreContact')}
+            <Link to='/help/notification-settings?tab=contacts' target='_blank'>
+              {t('account:profile.moreContactLinkToSetting')}
+            </Link>
+          </Space>
+        }
+      >
         <Form.List name='contacts'>
           {(fields, { add, remove }) => (
             <>

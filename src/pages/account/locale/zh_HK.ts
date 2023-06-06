@@ -23,6 +23,7 @@ const zh_HK = {
     email: '郵箱',
     phone: '手機號',
     moreContact: '更多聯繫方式',
+    moreContactLinkToSetting: '聯繫方式管理',
     moreContactPlaceholder: '請選擇聯繫方式',
   },
   editPicture: '修改頭像',
