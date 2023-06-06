@@ -68,3 +68,20 @@
     background: rgba(0, 0, 0, 0.1);
   }
 }
+
+.n9e-biz-group-item {
+  justify-content: space-between;
+  padding: 6px 8px;
+  cursor: pointer;
+  &.active {
+    background-color: fade(@primary-color, 10%);
+  }
+}
+
+.n9e-biz-group-group {
+  padding-bottom: 0;
+  user-select: none;
+  & > .name {
+    margin-bottom: 4px;
+  }
+}
