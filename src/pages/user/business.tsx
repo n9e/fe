@@ -303,6 +303,7 @@ const Resource: React.FC = () => {
                   }}
                 >
                   <Space>
+                    <span>ID：{teamInfo?.id}</span>
                     <span>
                       {t('common:table.note')}：{t('business.note_content')}
                     </span>
