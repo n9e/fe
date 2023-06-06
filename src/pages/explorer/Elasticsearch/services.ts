@@ -73,3 +73,12 @@ export function getDsQuery(datasourceValue: number, requestBody) {
     return dat;
   });
 }
+
+export function getESVersion(datasourceValue: number) {
+  return request(`/api/n9e/proxy/${datasourceValue}`, {
+    method: RequestMethod.Get,
+  }).then((res) => {
+    const dat = _.get(res, 'version.number');
+    return dat;
+  });
+}

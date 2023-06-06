@@ -151,7 +151,7 @@ export function normalizeLogsQueryRequestBody(params: any) {
   return `${JSON.stringify(header)}\n${JSON.stringify(body)}\n`;
 }
 
-export function normalizeTimeseriesQueryRequestBody(params: any) {
+export function normalizeTimeseriesQueryRequestBody(params: any, intervalkey: string) {
   const header = {
     search_type: 'query_then_fetch',
     ignore_unavailable: true,
@@ -186,7 +186,7 @@ export function normalizeTimeseriesQueryRequestBody(params: any) {
             max: params.end,
           },
           format: 'epoch_millis',
-          interval: params.interval,
+          [intervalkey]: params.interval,
         },
         aggs: {},
       },
