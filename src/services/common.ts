@@ -21,9 +21,9 @@ import { RequestMethod } from '@/store/common';
 // 获取数据源列表
 export function getDatasourceList(pluginTypes?: string[]): Promise<{ name: string; id: number }[]> {
   let url = '/api/n9e/datasource/list';
-  if (import.meta.env.VITE_IS_COMMON_DS === 'true') {
-    url = '/api/v1/datasource/list';
-  }
+  // if (import.meta.env.VITE_IS_COMMON_DS === 'true') {
+  //   url = '/api/v1/datasource/list';
+  // }
   return request(url, {
     method: RequestMethod.Post,
     data: {
