@@ -28,7 +28,7 @@ export function getDatasourceList(pluginTypes?: string[]): Promise<{ name: strin
     method: RequestMethod.Post,
     data: {
       p: 1,
-      limit: 100, // TODO: 假设 n9e 里面需要选择的数据源不会超过 100 个
+      limit: 5000, // TODO: 假设 n9e 里面需要选择的数据源不会超过 5000 个
     },
   })
     .then((res) => {
