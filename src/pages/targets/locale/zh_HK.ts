@@ -40,6 +40,7 @@ const zh_HK = {
     placeholder: '標籤格式為 key=value ，使用回車或空格分隔',
     msg1: '請填寫至少一項標籤！',
     msg2: '標籤格式不正確，請檢查！',
+    msg3: '標籤 key 不能重複',
     render_tip1: '標籤長度應小於等於 64 位',
     render_tip2: '標籤格式應為 key=value。且 key 以字母或下劃線開頭，由字母、數字和下劃線組成。',
   },

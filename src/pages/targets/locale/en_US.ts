@@ -40,6 +40,7 @@ const en_US = {
     placeholder: 'Tag format is key=value, separated by enter or space',
     msg1: 'Please fill in at least one tag!',
     msg2: 'Tag format is incorrect, please check!',
+    msg3: 'Tag key cannot have duplicate',
     render_tip1: 'Tag length should be less than or equal to 64 bits',
     render_tip2: 'Tag format should be key=value. And key starts with a letter or underscore, and is composed of letters, numbers and underscores.',
   },

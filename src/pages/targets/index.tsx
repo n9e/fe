@@ -96,7 +96,20 @@ const OperationModal: React.FC<OperateionModalProps> = ({ operateType, setOperat
               return true;
             }
           });
-          return isInvalid ? Promise.reject(new Error(t('bind_tag.msg2'))) : Promise.resolve();
+          const tagkeys = value.map((tag) => {
+            const tagkey = tag.split('=')[0];
+            return tagkey;
+          });
+          const isDuplicateKey = tagkeys.some((tagkey, index) => {
+            return tagkeys.indexOf(tagkey) !== index;
+          });
+          if (isInvalid) {
+            return Promise.reject(new Error(t('bind_tag.msg2')));
+          }
+          if (isDuplicateKey) {
+            return Promise.reject(new Error(t('bind_tag.msg3')));
+          }
+          return Promise.resolve();
         },
       };
     }

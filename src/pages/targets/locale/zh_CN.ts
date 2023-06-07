@@ -40,6 +40,7 @@ const zh_CN = {
     placeholder: '标签格式为 key=value ，使用回车或空格分隔',
     msg1: '请填写至少一项标签！',
     msg2: '标签格式不正确，请检查！',
+    msg3: '标签 key 不能重复',
     render_tip1: '标签长度应小于等于 64 位',
     render_tip2: '标签格式应为 key=value。且 key 以字母或下划线开头，由字母、数字和下划线组成。',
   },
