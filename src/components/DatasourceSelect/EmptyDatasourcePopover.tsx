@@ -14,12 +14,13 @@ export default function EmptyDatasourcePopover(props: IProps) {
   const { t } = useTranslation();
   const { profile } = useContext(CommonStateContext);
   const { datasourceList, children } = props;
+  const linkUrl = import.meta.env.VITE_IS_COMMON_DS === 'true' ? '/settings/source/timeseries' : '/help/source';
 
   return (
     <Popover
       content={
         <>
-          {t('common:datasource.empty_modal.title')} {_.includes(profile?.roles, 'Admin') ? <Link to='/help/source'>{t('common:datasource.empty_modal.btn1')}</Link> : null}
+          {t('common:datasource.empty_modal.title')} {_.includes(profile?.roles, 'Admin') ? <Link to={linkUrl}>{t('common:datasource.empty_modal.btn1')}</Link> : null}
         </>
       }
       visible={_.isEmpty(datasourceList)}
