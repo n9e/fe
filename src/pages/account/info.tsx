@@ -125,7 +125,7 @@ export default function Info() {
 
     UpdateProfile(newData).then(() => {
       setProfile(newData);
-      message.success(t('common:modifiedSuccessfully'));
+      message.success(t('common:success.modify'));
     });
   };
 
