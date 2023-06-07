@@ -18,8 +18,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import _ from 'lodash';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
-import { Card, Space, Dropdown, Menu, Tag, Popover, Divider } from 'antd';
-import { ShareAltOutlined, SyncOutlined, CloseCircleOutlined, DownOutlined, PlusCircleOutlined, SettingOutlined, LineChartOutlined } from '@ant-design/icons';
+import { Card, Space, Dropdown, Menu, Tag, Popover, Divider, Tooltip } from 'antd';
+import { ShareAltOutlined, SyncOutlined, CloseCircleOutlined, DownOutlined, PlusCircleOutlined, SettingOutlined, LineChartOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { getLabels, getQueryRange, getExprs, setTmpChartData } from '@/services/metricViews';
 import { CommonStateContext } from '@/App';
@@ -139,7 +139,27 @@ export default function Graph(props: IProps) {
     <Card
       size='small'
       style={{ marginBottom: 10 }}
-      title={metric}
+      title={
+        <Space>
+          {metric}
+          <Tooltip
+            title={
+              <div>
+                {getExprs({
+                  metric,
+                  match: getMatchStr(match),
+                  aggrFunc,
+                  aggrGroups,
+                  calcFunc,
+                  comparison,
+                })}
+              </div>
+            }
+          >
+            <InfoCircleOutlined />
+          </Tooltip>
+        </Space>
+      }
       className='n9e-metric-views-metrics-graph'
       extra={
         <Space>
