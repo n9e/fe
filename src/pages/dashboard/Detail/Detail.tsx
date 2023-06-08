@@ -49,6 +49,14 @@ interface URLParam {
   id: string;
 }
 
+interface IProps {
+  isPreview?: boolean;
+  isBuiltin?: boolean;
+  gobackPath?: string;
+  builtinParams?: any;
+  onLoaded?: (dashboard: Dashboard['configs']) => boolean;
+}
+
 export const dashboardTimeCacheKey = 'dashboard-timeRangePicker-value';
 const fetchDashboard = ({ id, builtinParams }) => {
   if (builtinParams) {
@@ -60,7 +68,7 @@ const builtinParamsToID = (builtinParams) => {
   return `${builtinParams['__built-in-cate']}_${builtinParams['__built-in-name']}`;
 };
 
-export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boolean; gobackPath?: string; builtinParams?: any }) {
+export default function DetailV2(props: IProps) {
   const { isPreview = false, isBuiltin = false, gobackPath, builtinParams } = props;
   const { t, i18n } = useTranslation('dashboard');
   const history = useHistory();
@@ -101,7 +109,10 @@ export default function DetailV2(props: { isPreview?: boolean; isBuiltin?: boole
     }).then((res) => {
       updateAtRef.current = res.update_at;
       const configs = _.isString(res.configs) ? JSONParse(res.configs) : res.configs;
-      if (semver.lt(configs.version, '3.0.0') && !builtinParams) {
+      if (props.onLoaded && !props.onLoaded(configs)) {
+        return;
+      }
+      if ((!configs.version || semver.lt(configs.version, '3.0.0')) && !builtinParams) {
         setMigrationVisible(true);
       }
       setDashboard({
