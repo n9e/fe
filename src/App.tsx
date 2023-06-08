@@ -28,7 +28,7 @@ import TaskHostOutput from '@/pages/taskOutput/host';
 import { getAuthorizedDatasourceCates } from '@/components/AdvancedWrap';
 import { GetProfile } from '@/services/account';
 import { getBusiGroups, getDatasourceList, getDatasourceBriefList } from '@/services/common';
-import { getLicense } from '@/components/AdvancedWrap/License';
+import { getLicense } from '@/components/AdvancedWrap';
 import HeaderMenu from './components/menu';
 import Content from './routers';
 
