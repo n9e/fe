@@ -283,7 +283,15 @@ const Event: React.FC = () => {
       {view === 'card' ? (
         <Card header={renderLeftHeader()} filter={filterObj} refreshFlag={refreshFlag} />
       ) : (
-        <Table header={renderLeftHeader()} filter={filter} filterObj={filterObj} setFilter={setFilter} refreshFlag={refreshFlag} />
+        <Table
+          header={renderLeftHeader()}
+          filter={filter}
+          filterObj={filterObj}
+          setFilter={setFilter}
+          refreshFlag={refreshFlag}
+          selectedRowKeys={selectedRowKeys}
+          setSelectedRowKeys={setSelectedRowKeys}
+        />
       )}
     </PageLayout>
   );
