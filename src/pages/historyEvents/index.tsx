@@ -33,6 +33,18 @@ import { SeverityColor } from '../event';
 import '../event/index.less';
 import './locale';
 
+export const getDefaultHours = () => {
+  const locale = window.localStorage.getItem('alert_events_hours');
+  if (locale) {
+    return _.toNumber(locale) || 6;
+  }
+  return 6;
+};
+
+export const setDefaultHours = (hours: number) => {
+  window.localStorage.setItem('alert_events_hours', `${hours}`);
+};
+
 const Event: React.FC = () => {
   const { t } = useTranslation('AlertHisEvents');
   const { groupedDatasourceList, busiGroups, datasourceList } = useContext(CommonStateContext);
@@ -46,7 +58,7 @@ const Event: React.FC = () => {
     queryContent: string;
     rule_prods: string[];
   }>({
-    hours: 6,
+    hours: getDefaultHours(),
     datasourceIds: [],
     queryContent: '',
     rule_prods: [],
@@ -147,6 +159,7 @@ const Event: React.FC = () => {
                 ...filter,
                 hours: val,
               });
+              setDefaultHours(val);
             }}
           >
             {hoursOptions.map((item) => {
