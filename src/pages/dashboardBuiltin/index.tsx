@@ -241,12 +241,14 @@ export default function index() {
                   title: t('common:table.operations'),
                   width: 120,
                   render: (record) => {
+                    const cateValue = encodeURIComponent(active?.name || record?.__cate__);
+                    const nameValue = encodeURIComponent(record?.name);
                     return (
                       <Space>
                         <Link
                           to={{
                             pathname: '/dashboards-built-in/detail',
-                            search: `__built-in-cate=${active?.name || record?.__cate__}&__built-in-name=${record?.name}`,
+                            search: `__built-in-cate=${cateValue}&__built-in-name=${nameValue}`,
                           }}
                         >
                           {t('common:btn.view')}

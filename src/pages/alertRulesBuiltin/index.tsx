@@ -268,12 +268,14 @@ export default function index() {
                   title: t('common:table.operations'),
                   width: 120,
                   render: (record) => {
+                    const cateValue = encodeURIComponent(active?.name || record?.__cate__);
+                    const nameValue = encodeURIComponent(record?.name);
                     return (
                       <Space>
                         <Link
                           to={{
                             pathname: '/alert-rules-built-in/detail',
-                            search: `?cate=${active?.name || record?.__cate__}&name=${record?.name}`,
+                            search: `?cate=${cateValue}&name=${nameValue}`,
                           }}
                         >
                           {t('common:btn.view')}
