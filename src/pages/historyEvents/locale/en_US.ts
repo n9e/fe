@@ -25,7 +25,7 @@ const en_US = {
     northstar: 'Northstar',
     metric: 'Metric',
     host: 'Host',
-    log: 'Log',
+    logging: 'Log',
     anomaly: 'Anomaly',
   },
 };
