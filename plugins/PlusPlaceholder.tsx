@@ -37,6 +37,8 @@ function Jobs() {
 const advancedCates = [];
 const envCateMap = {};
 enum AdvancedDatasourceCateEnum {}
-const getLicense = async () => {};
+const getLicense = async () => {
+  return {};
+};
 
 export { AlertRule, QueryBuilder, datasource, Event, EventLogs, EventPreview, Explorer, Jobs, advancedCates, envCateMap, AdvancedDatasourceCateEnum, getLicense };
