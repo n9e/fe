@@ -7,6 +7,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  background-image: linear-gradient(212deg, #9c52ff 0%, #694df4 36%, #6a4df4 76%, #a343f5 100%);
   .left-top-bg {
     position: absolute;
     top: 0px;
@@ -48,8 +49,22 @@
       background-image: linear-gradient(212deg, #9c52ff 0%, #694df4 36%, #6a4df4 76%, #a343f5 100%);
       display: flex;
       width: 900px;
-      justify-content: left;
-      align-items: center;
+      flex-direction: column;
+      .banner-logo img {
+        width: 180px;
+        margin: 62px 0 150px 100px;
+      }
+      .banner-image {
+        display: flex;
+        width: 100%;
+        justify-content: center;
+        img {
+          display: block;
+          z-index: 5;
+          width: 60%;
+          min-width: 600px;
+        }
+      }
     }
     flex: 1;
     background: rgb(20, 22, 49);
@@ -82,6 +97,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    background-color: #fff;
     .login-main {
       &.integration {
         z-index: 5;
