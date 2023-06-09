@@ -24,6 +24,7 @@ import PageLayout from '@/components/pageLayout';
 import { deleteAlertEvents } from '@/services/warning';
 import { AutoRefresh } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
+import { getDefaultHours, setDefaultHours } from '@/pages/historyEvents';
 import Card from './card';
 import Table from './Table';
 import { hoursOptions } from './constants';
@@ -63,7 +64,7 @@ const Event: React.FC = () => {
     queryContent: string;
     rule_prods: string[];
   }>({
-    hours: 6,
+    hours: getDefaultHours(),
     datasourceIds: [],
     queryContent: '',
     rule_prods: [],
@@ -85,6 +86,7 @@ const Event: React.FC = () => {
                 ...filter,
                 hours: val,
               });
+              setDefaultHours(val);
             }}
           >
             {hoursOptions.map((item) => {
@@ -281,7 +283,15 @@ const Event: React.FC = () => {
       {view === 'card' ? (
         <Card header={renderLeftHeader()} filter={filterObj} refreshFlag={refreshFlag} />
       ) : (
-        <Table header={renderLeftHeader()} filter={filter} filterObj={filterObj} setFilter={setFilter} refreshFlag={refreshFlag} />
+        <Table
+          header={renderLeftHeader()}
+          filter={filter}
+          filterObj={filterObj}
+          setFilter={setFilter}
+          refreshFlag={refreshFlag}
+          selectedRowKeys={selectedRowKeys}
+          setSelectedRowKeys={setSelectedRowKeys}
+        />
       )}
     </PageLayout>
   );

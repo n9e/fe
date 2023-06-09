@@ -44,7 +44,7 @@ export function getLogsQuery(target: ElasticsearchQuery) {
   return queryObj;
 }
 
-export function getSeriesQuery(target: ElasticsearchQuery) {
+export function getSeriesQuery(target: ElasticsearchQuery, intervalkey: string) {
   target = _.cloneDeep(target);
   target.values = target.values || [{ func: 'count' }];
   target.group_by = target.group_by || [{ cate: 'date_histogram' }];
@@ -102,7 +102,7 @@ export function getSeriesQuery(target: ElasticsearchQuery) {
             max: target.end,
           },
           format: 'epoch_millis',
-          interval: target.interval,
+          [intervalkey]: target.interval,
         };
         break;
       }

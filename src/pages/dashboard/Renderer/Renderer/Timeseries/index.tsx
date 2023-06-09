@@ -248,6 +248,7 @@ export default function index(props: IProps) {
             dateFormat: options?.standardOptions?.dateFormat,
           },
           hexPalette,
+          custom.stack === 'noraml',
         ),
       );
     } else {

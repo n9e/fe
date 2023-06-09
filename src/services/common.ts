@@ -64,7 +64,7 @@ export function getDatasourceBriefList(): Promise<{ name: string; id: number }[]
     });
 }
 
-export function getBusiGroups(query = '', limit: number = 200) {
+export function getBusiGroups(query = '', limit: number = 5000) {
   return request(`/api/n9e/busi-groups`, {
     method: RequestMethod.Get,
     params: Object.assign(
@@ -73,6 +73,10 @@ export function getBusiGroups(query = '', limit: number = 200) {
       },
       query ? { query } : {},
     ),
+  }).then((res) => {
+    return {
+      dat: _.sortBy(res.dat, 'name'),
+    };
   });
 }
 

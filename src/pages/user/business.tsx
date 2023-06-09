@@ -16,9 +16,11 @@
  */
 import React, { useContext, useEffect, useState } from 'react';
 import moment from 'moment';
+import _ from 'lodash';
+import classNames from 'classnames';
 import PageLayout from '@/components/pageLayout';
-import { Button, Table, Input, message, List, Row, Col, Modal, Space } from 'antd';
-import { EditOutlined, DeleteOutlined, SearchOutlined, UserOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { Button, Table, Input, message, Row, Col, Modal, Space } from 'antd';
+import { EditOutlined, DeleteOutlined, SearchOutlined, UserOutlined, InfoCircleOutlined, DownOutlined, RightOutlined } from '@ant-design/icons';
 import UserInfoModal from './component/createModal';
 import { deleteBusinessTeamMember, getBusinessTeamList, getBusinessTeamInfo, deleteBusinessTeam } from '@/services/manage';
 import { Team, ActionType } from '@/store/manageInterface';
@@ -26,6 +28,7 @@ import { CommonStateContext } from '@/App';
 import { ColumnsType } from 'antd/lib/table';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@/utils';
+import { listToTree, getLocaleCollapsedNodes, setLocaleCollapsedNodes } from '@/pages/targets/BusinessGroup';
 import '@/components/BlankBusinessPlaceholder/index.less';
 import './index.less';
 
@@ -45,6 +48,7 @@ const Resource: React.FC = () => {
   const [teamList, setTeamList] = useState<Team[]>([]);
   const [memberLoading, setMemberLoading] = useState<boolean>(false);
   const [searchMemberValue, setSearchMemberValue] = useState<string>('');
+  const [collapsedNodes, setCollapsedNodes] = useState<string[]>(getLocaleCollapsedNodes());
   const teamMemberColumns: ColumnsType<any> = [
     {
       title: t('team.name'),
@@ -182,20 +186,76 @@ const Resource: React.FC = () => {
               />
             </div>
 
-            <List
-              style={{
-                marginBottom: '12px',
-                flex: 1,
-                overflow: 'auto',
-              }}
-              dataSource={teamList}
-              size='small'
-              renderItem={(item) => (
-                <List.Item key={item.id} className={teamId == item.id ? 'is-active' : ''} onClick={() => setTeamId(item.id)}>
-                  {item.name}
-                </List.Item>
-              )}
-            />
+            <div className='radio-list' style={{ overflowY: 'auto' }}>
+              {_.map(listToTree(teamList as any), (item) => {
+                if (item.children) {
+                  return (
+                    <div className='n9e-biz-group-item n9e-biz-group-group' key={item.key}>
+                      <div
+                        className='name'
+                        onClick={() => {
+                          let newCollapsedNodes = _.cloneDeep(collapsedNodes);
+                          if (_.includes(newCollapsedNodes, item.key)) {
+                            newCollapsedNodes = _.without(newCollapsedNodes, item.key as string);
+                          } else {
+                            newCollapsedNodes.push(item.key as string);
+                          }
+                          setCollapsedNodes(newCollapsedNodes);
+                          setLocaleCollapsedNodes(newCollapsedNodes);
+                        }}
+                      >
+                        <Space>
+                          {item.title}
+                          {!_.includes(collapsedNodes, item.key) ? <DownOutlined /> : <RightOutlined />}
+                        </Space>
+                      </div>
+                      {!_.includes(collapsedNodes, item.key) && (
+                        <div className='children'>
+                          {_.map(item.children, (child) => {
+                            return (
+                              <div
+                                className={classNames({
+                                  'n9e-biz-group-item': true,
+                                  active: child.id == (teamId as any),
+                                })}
+                                key={child.id}
+                                onClick={() => {
+                                  if (child.id !== (teamId as any)) {
+                                    localStorage.setItem('curBusiId', _.toString(child.id));
+                                    setTeamId(child.id as any);
+                                  }
+                                }}
+                              >
+                                <div className='name'>{child.title}</div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                } else {
+                  return (
+                    <div
+                      className={classNames({
+                        'n9e-biz-group-item': true,
+                        active: item.id == (teamId as any),
+                      })}
+                      key={item.key}
+                      onClick={() => {
+                        console.log(item.id, teamId);
+                        if (item.id !== (teamId as any)) {
+                          localStorage.setItem('curBusiId', _.toString(item.id));
+                          setTeamId(item.id as any);
+                        }
+                      }}
+                    >
+                      <div className='name'>{item.title}</div>
+                    </div>
+                  );
+                }
+              })}
+            </div>
           </div>
           {teamList.length > 0 ? (
             <div className='resource-table-content'>
@@ -243,6 +303,7 @@ const Resource: React.FC = () => {
                   }}
                 >
                   <Space>
+                    <span>ID：{teamInfo?.id}</span>
                     <span>
                       {t('common:table.note')}：{t('business.note_content')}
                     </span>

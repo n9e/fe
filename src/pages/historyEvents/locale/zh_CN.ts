@@ -25,7 +25,7 @@ const zh_CN = {
     northstar: '北极星',
     metric: 'Metric',
     host: 'Host',
-    log: 'Log',
+    logging: 'Log',
     anomaly: 'Anomaly',
   },
 };

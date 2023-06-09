@@ -2,7 +2,7 @@ export interface ElasticsearchQuery {
   index: string;
   filter: string;
   date_field: string;
-  interval?: number; // TODO: 是否可以为空？
+  interval?: string; // TODO: 是否可以为空？
   values: {
     func: string;
     field: string;

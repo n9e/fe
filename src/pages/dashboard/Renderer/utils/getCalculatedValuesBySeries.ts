@@ -110,8 +110,9 @@ const getCalculatedValuesBySeries = (series: any[], calc: string, { unit, decima
   return values;
 };
 
-export const getLegendValues = (series: any[], { unit, decimals, dateFormat }, hexPalette: string[]) => {
-  const values = _.map(series, (serie, idx) => {
+export const getLegendValues = (series: any[], { unit, decimals, dateFormat }, hexPalette: string[], stack = false) => {
+  const newSeries = stack ? _.reverse(_.clone(series)) : series;
+  const values = _.map(newSeries, (serie, idx) => {
     const results = {
       max: getValueAndToNumber(_.maxBy(serie.data, (item: any) => _.toNumber(item[1]))),
       min: getValueAndToNumber(_.minBy(serie.data, (item: any) => _.toNumber(item[1]))),

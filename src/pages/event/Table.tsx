@@ -33,14 +33,15 @@ interface IProps {
   filter: any;
   setFilter: (filter: any) => void;
   refreshFlag: string;
+  selectedRowKeys: number[];
+  setSelectedRowKeys: (selectedRowKeys: number[]) => void;
 }
 
 export default function TableCpt(props: IProps) {
-  const { filterObj, filter, setFilter, header } = props;
+  const { filterObj, filter, setFilter, header, selectedRowKeys, setSelectedRowKeys } = props;
   const history = useHistory();
   const { t } = useTranslation('AlertCurEvents');
   const { groupedDatasourceList } = useContext(CommonStateContext);
-  const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
   const columns = [
     {
@@ -173,10 +174,17 @@ export default function TableCpt(props: IProps) {
         <div style={{ display: 'flex' }}>{header}</div>
         <Table
           size='small'
+          rowKey={(record) => record.id}
           columns={columns}
           {...tableProps}
           rowClassName={(record: { severity: number; is_recovered: number }) => {
             return SeverityColor[record.is_recovered ? 3 : record.severity - 1] + '-left-border';
+          }}
+          rowSelection={{
+            selectedRowKeys: selectedRowKeys,
+            onChange(selectedRowKeys: number[]) {
+              setSelectedRowKeys(selectedRowKeys);
+            },
           }}
           pagination={{
             ...tableProps.pagination,

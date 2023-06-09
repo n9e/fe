@@ -87,6 +87,7 @@ const TeamForm = React.forwardRef<ReactNode, TeamProps>((props, ref) => {
                 required: true,
               },
             ]}
+            tooltip={<Trans ns='user' i18nKey='business.name_tip' components={{ 1: <br /> }} />}
           >
             <Input />
           </Form.Item>

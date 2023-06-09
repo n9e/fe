@@ -1,10 +1,11 @@
 import React, { useContext } from 'react';
 import _ from 'lodash';
 import { CommonStateContext } from '@/App';
-import License from './License';
+// @ts-ignore
+import License, { getLicense } from 'plus:/components/License';
 export { getAuthorizedDatasourceCates } from './utils';
 export type { Cate } from './utils';
-export { License };
+export { License, getLicense };
 
 interface IProps {
   var?: string; // 变量名，多个用逗号分隔

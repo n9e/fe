@@ -96,7 +96,20 @@ const OperationModal: React.FC<OperateionModalProps> = ({ operateType, setOperat
               return true;
             }
           });
-          return isInvalid ? Promise.reject(new Error(t('bind_tag.msg2'))) : Promise.resolve();
+          const tagkeys = value.map((tag) => {
+            const tagkey = tag.split('=')[0];
+            return tagkey;
+          });
+          const isDuplicateKey = tagkeys.some((tagkey, index) => {
+            return tagkeys.indexOf(tagkey) !== index;
+          });
+          if (isInvalid) {
+            return Promise.reject(new Error(t('bind_tag.msg2')));
+          }
+          if (isDuplicateKey) {
+            return Promise.reject(new Error(t('bind_tag.msg3')));
+          }
+          return Promise.resolve();
         },
       };
     }
@@ -347,7 +360,7 @@ const Targets: React.FC = () => {
                 <div className='left-area-group-title'>{t('default_filter')}</div>
                 <div
                   className={classNames({
-                    'n9e-metric-views-list-content-item': true,
+                    'n9e-biz-group-item': true,
                     active: curBusiId === 0,
                   })}
                   onClick={() => {
@@ -358,7 +371,7 @@ const Targets: React.FC = () => {
                 </div>
                 <div
                   className={classNames({
-                    'n9e-metric-views-list-content-item': true,
+                    'n9e-biz-group-item': true,
                     active: curBusiId === -1,
                   })}
                   onClick={() => {

@@ -28,6 +28,13 @@ const en_US = {
     note_content: 'Alert rules, alert events, monitoring objects, self-healing scripts, etc. all belong to the business group, which is a closed-loop organization in the system',
     empty: 'Business group (monitoring objects, monitoring dashboards, alert rules, self-healing scripts, etc.) is empty, please',
     name: 'Business Group Name',
+    name_tip: `
+      After being separated by a dash, it will be rendered into a tree structure, currently only supports two layers <1 />
+      For example: redis-monitoring and redis-login will be displayed as follows  <1 />
+      redis <1 />
+      - monitoring <1 />
+      - login <1 />
+    `,
     label_enable: 'Use as a label',
     label_enable_tip:
       'The system will automatically use the English identifier of the business group as a label attached to the time series data of the monitoring object under the business group',

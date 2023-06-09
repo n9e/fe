@@ -56,7 +56,7 @@ export default function Rule({ form }) {
           if (prod === 'metric') {
             return <Metric form={form} />;
           }
-          return <PlusAlertRule prod={prod} />;
+          return <PlusAlertRule prod={prod} form={form} />;
         }}
       </Form.Item>
     </Card>
