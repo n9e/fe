@@ -129,8 +129,7 @@ const DemoPie = (props: Props) => {
       enterable: true,
       fields: ['name', 'value', 'metric'],
       formatter: (datum) => {
-        const formatUrl = detailFormatter(datum);
-        const detailDom = detailUrl && datum.name !== '其他' ? `&nbsp;|&nbsp;<span><a href=${formatUrl} target="_blank">${detailName}</a></span>` : '';
+        const detailDom = detailUrl && datum.name !== '其他' ? `&nbsp;|&nbsp;<span><a href=${detailFormatter(datum)} target="_blank">${detailName}</a></span>` : '';
         return { name: datum.name, value: dataFormatter(datum.value) + detailDom };
       },
     },
