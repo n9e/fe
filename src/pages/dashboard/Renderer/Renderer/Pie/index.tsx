@@ -52,6 +52,9 @@ export default function Pie(props: IProps) {
   };
 
   const detailFormatter = (data: any) => {
+    if (!detailUrl) {
+      return;
+    }
     // 指标数据
     const formatUrl = data ? replaceExpressionDetail(detailUrl, data) : detailUrl;
     // 渲染下钻链接, 变量
