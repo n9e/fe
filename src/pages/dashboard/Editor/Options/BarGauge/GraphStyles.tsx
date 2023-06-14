@@ -18,7 +18,7 @@ import React from 'react';
 import { Form, Select, Row, Col, InputNumber, Input } from 'antd';
 import { CaretDownOutlined } from '@ant-design/icons';
 import _ from 'lodash';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import { Panel } from '../../Components/Collapse';
 import { calcsOptions } from '../../config';
 import ColorPicker from '../../../Components/ColorPicker';
@@ -73,6 +73,20 @@ export default function GraphStyles() {
                 <Select.Option value='asc'>Asc</Select.Option>
                 <Select.Option value='desc'>Desc</Select.Option>
               </Select>
+            </Form.Item>
+          </Col>
+        </Row>
+        <Row gutter={10}>
+          <Col span={24}>
+            <Form.Item
+              label={t('panel.custom.detailUrl')}
+              name={[...namePrefix, 'detailUrl']}
+              tooltip={{
+                overlayInnerStyle: { width: 330 },
+                title: <Trans ns='dashboard' i18nKey='dashboard:link.url_tip' components={{ 1: <br /> }} />,
+              }}
+            >
+              <Input style={{ width: '100%' }} />
             </Form.Item>
           </Col>
         </Row>

@@ -21,22 +21,28 @@ import Color from 'color';
 import { useSize } from 'ahooks';
 import { IPanel, IBarGaugeStyles } from '../../../types';
 import getCalculatedValuesBySeries from '../../utils/getCalculatedValuesBySeries';
+import { getDetailUrl } from '../../utils/replaceExpressionDetail';
+import { IRawTimeRange } from '@/components/TimeRangePicker';
+import { useGlobalState } from '../../../globalState';
+
 import './style.less';
 
 interface IProps {
   values: IPanel;
   series: any[];
   themeMode?: 'dark';
+  time: IRawTimeRange;
 }
 
 function Item(props) {
-  const { item, custom, themeMode, maxValue } = props;
-  const { baseColor = '#FF656B', displayMode = 'basic', serieWidth = 20 } = custom as IBarGaugeStyles;
+  const { item, custom, themeMode, maxValue, time } = props;
+  const { baseColor = '#FF656B', displayMode = 'basic', serieWidth = 20, detailUrl } = custom as IBarGaugeStyles;
   const color = item.color ? item.color : baseColor;
   const bgRef = useRef(null);
   const bgSize = useSize(bgRef);
   const textRef = useRef(null);
   const textSize = useSize(textRef);
+  const [dashboardMeta] = useGlobalState('dashboardMeta');
   const getTextRight = () => {
     if (bgSize?.width !== undefined && textSize?.width !== undefined) {
       if (bgSize?.width < textSize?.width + 8) {
@@ -56,7 +62,13 @@ function Item(props) {
             width: `${serieWidth}%`,
           }}
         >
-          {item.name}
+          {detailUrl ? (
+            <a target='_blank' href={getDetailUrl(detailUrl, item, dashboardMeta, time)}>
+              {item.name}
+            </a>
+          ) : (
+            item.name
+          )}
         </div>
       </Tooltip>
       <div
@@ -103,7 +115,7 @@ function Item(props) {
 }
 
 export default function BarGauge(props: IProps) {
-  const { values, series, themeMode } = props;
+  const { values, series, themeMode, time } = props;
   const { custom, options } = values;
   const { calc, maxValue, sortOrder = 'desc' } = custom;
   let calculatedValues = getCalculatedValuesBySeries(
@@ -125,7 +137,7 @@ export default function BarGauge(props: IProps) {
     <div className='renderer-bar-gauge-container'>
       <div className='renderer-bar-gauge scroll-container'>
         {_.map(calculatedValues, (item) => {
-          return <Item key={item.id} item={item} custom={custom} themeMode={themeMode} maxValue={curMaxValue} />;
+          return <Item key={item.id} item={item} custom={custom} themeMode={themeMode} maxValue={curMaxValue} time={time} />;
         })}
       </div>
     </div>

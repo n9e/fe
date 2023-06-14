@@ -19,11 +19,10 @@ import _ from 'lodash';
 import G2PieChart from '@/components/G2PieChart';
 import { IPanel } from '../../../types';
 import getCalculatedValuesBySeries from '../../utils/getCalculatedValuesBySeries';
-import { replaceExpressionDetail } from '../../utils/replaceExpressionDetail';
+import { getDetailUrl } from '../../utils/replaceExpressionDetail';
 
 import valueFormatter from '../../utils/valueFormatter';
 import './style.less';
-import { replaceFieldWithVariable, getOptionsList } from '../../../VariableConfig/constant';
 import { useGlobalState } from '../../../globalState';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 
@@ -52,13 +51,7 @@ export default function Pie(props: IProps) {
   };
 
   const detailFormatter = (data: any) => {
-    if (!detailUrl) {
-      return;
-    }
-    // 指标数据
-    const formatUrl = data ? replaceExpressionDetail(detailUrl, data) : detailUrl;
-    // 渲染下钻链接, 变量
-    return replaceFieldWithVariable(formatUrl, dashboardMeta.dashboardId, getOptionsList(dashboardMeta, time));
+    return getDetailUrl(detailUrl, data, dashboardMeta, time);
   };
 
   const calculatedValues = getCalculatedValuesBySeries(

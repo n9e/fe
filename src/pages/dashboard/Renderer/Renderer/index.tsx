@@ -98,7 +98,7 @@ function index(props: IProps) {
     table: () => <Table {...subProps} themeMode={themeMode} />,
     pie: () => <Pie {...subProps} themeMode={themeMode} time={time} />,
     hexbin: () => <Hexbin {...subProps} themeMode={themeMode} time={time} />,
-    barGauge: () => <BarGauge {...subProps} themeMode={themeMode} />,
+    barGauge: () => <BarGauge {...subProps} themeMode={themeMode} time={time} />,
     text: () => <Text {...subProps} />,
     gauge: () => <Gauge {...subProps} themeMode={themeMode} />,
     iframe: () => <Iframe {...subProps} time={time} />,

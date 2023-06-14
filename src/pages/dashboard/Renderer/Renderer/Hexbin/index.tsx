@@ -23,8 +23,7 @@ import { renderFn } from './render';
 import { IPanel, IHexbinStyles } from '../../../types';
 import getCalculatedValuesBySeries from '../../utils/getCalculatedValuesBySeries';
 import { getColorScaleLinearDomain } from './utils';
-import { replaceFieldWithVariable, getOptionsList } from '../../../VariableConfig/constant';
-import { replaceExpressionDetail } from '../../utils/replaceExpressionDetail';
+import { getDetailUrl } from '../../utils/replaceExpressionDetail';
 import { useGlobalState } from '../../../globalState';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import './style.less';
@@ -62,10 +61,7 @@ const Hexbin: FunctionComponent<HoneyCombProps> = (props) => {
       .range(reverseColorOrder ? _.reverse(_.slice(colorRange)) : colorRange);
 
     const detailFormatter = (data: any) => {
-      // 指标数据
-      const formatUrl = data ? replaceExpressionDetail(detailUrl, data) : detailUrl;
-      // 渲染下钻链接, 变量
-      return replaceFieldWithVariable(formatUrl, dashboardMeta.dashboardId, getOptionsList(dashboardMeta, time));
+      return getDetailUrl(detailUrl, data, dashboardMeta, time);
     };
 
     if (svgSize?.width && svgSize?.height) {

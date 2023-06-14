@@ -167,6 +167,7 @@ export interface IBarGaugeStyles {
   baseColor: string;
   serieWidth: number;
   sortOrder: 'none' | 'asc' | 'desc';
+  detailUrl: string | undefined;
 }
 
 export interface ITextStyles {
