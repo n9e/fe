@@ -223,7 +223,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
               {
                 enable_days_of_week: ['1', '2', '3', '4', '5', '6', '0'],
                 enable_stime: moment('00:00', 'HH:mm'),
-                enable_etime: moment('23:59', 'HH:mm'),
+                enable_etime: moment('00:00', 'HH:mm'),
               },
             ],
       }}
