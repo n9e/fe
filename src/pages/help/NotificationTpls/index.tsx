@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { List, Input, Space, Button, message } from 'antd';
-import { SoundOutlined, SearchOutlined, EditOutlined } from '@ant-design/icons';
+import { List, Input, Space, Button, Modal, message } from 'antd';
+import { SoundOutlined, SearchOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import PageLayout from '@/components/pageLayout';
-import { getNotifyTpls } from './services';
+import { getNotifyTpls, deleteNotifyTpl } from './services';
 import { NotifyTplsType } from './types';
 import HTML from './Editor/HTML';
 import Markdown from './Editor/Markdown';
@@ -20,7 +20,11 @@ export default function index() {
   const fetchData = () => {
     getNotifyTpls().then((res) => {
       setData(res);
-      setActive(res[0]);
+      if (!active) {
+        setActive(res[0]);
+      } else {
+        setActive(_.find(res, { id: active.id }) || res[0]);
+      }
     });
   };
 
@@ -33,7 +37,18 @@ export default function index() {
       <div className='user-manage-content'>
         <div style={{ display: 'flex', height: '100%' }}>
           <div className='left-tree-area'>
-            <div className='sub-title'>{t('list')}</div>
+            <div className='sub-title'>
+              {t('list')}
+              <Button
+                size='small'
+                type='link'
+                onClick={() => {
+                  FormModal({ mode: 'post', onOk: () => fetchData() });
+                }}
+              >
+                {t('common:btn.add')}
+              </Button>
+            </div>
             <div style={{ display: 'flex', margin: '5px 0px 12px' }}>
               <Input
                 prefix={<SearchOutlined />}
@@ -72,10 +87,28 @@ export default function index() {
                 <EditOutlined
                   onClick={() => {
                     if (active) {
-                      FormModal({ data: active, onOk: () => fetchData() });
+                      FormModal({ mode: 'update', data: active, onOk: () => fetchData() });
                     }
                   }}
                 />
+                {!active?.built_in && (
+                  <DeleteOutlined
+                    onClick={() => {
+                      Modal.confirm({
+                        title: t('common:confirm.delete'),
+                        onOk: () => {
+                          if (active?.id) {
+                            deleteNotifyTpl(active.id).then(() => {
+                              message.success(t('common:success.delete'));
+                              fetchData();
+                            });
+                          }
+                        },
+                        onCancel: () => {},
+                      });
+                    }}
+                  />
+                )}
               </Space>
               <div>
                 <Space>

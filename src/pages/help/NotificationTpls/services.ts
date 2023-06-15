@@ -10,6 +10,23 @@ export const getNotifyTpls = function (): Promise<NotifyTplsType[]> {
   });
 };
 
+export const postNotifyTpl = function (data: NotifyTplsType) {
+  return request('/api/n9e/notify-tpl', {
+    method: RequestMethod.Post,
+    data,
+  }).then((res) => {
+    return res.dat;
+  });
+};
+
+export const deleteNotifyTpl = function (id: number) {
+  return request(`/api/n9e/notify-tpl/${id}`, {
+    method: RequestMethod.Delete,
+  }).then((res) => {
+    return res.dat;
+  });
+};
+
 export const putNotifyTpl = function (data: NotifyTplsType) {
   return request('/api/n9e/notify-tpl', {
     method: RequestMethod.Put,

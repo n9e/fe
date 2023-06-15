@@ -2,15 +2,16 @@ import React, { useEffect } from 'react';
 import { Modal, Input, Form, Button, message } from 'antd';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { NotifyTplsType } from './types';
-import { putNotifyTpl } from './services';
+import { putNotifyTpl, postNotifyTpl } from './services';
 
 interface IProps {
-  data: NotifyTplsType;
+  mode: 'post' | 'update';
+  data?: NotifyTplsType;
   onOk: () => void;
 }
 
 function FormModal(props: IProps & ModalWrapProps) {
-  const { visible, destroy, onOk, data } = props;
+  const { mode, visible, destroy, onOk, data = {} as NotifyTplsType } = props;
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -51,7 +52,7 @@ function FormModal(props: IProps & ModalWrapProps) {
           <Input />
         </Form.Item>
         <Form.Item label='标识' name='channel'>
-          <Input disabled />
+          <Input disabled={mode === 'update'} />
         </Form.Item>
         <Form.Item>
           <Button
@@ -59,15 +60,21 @@ function FormModal(props: IProps & ModalWrapProps) {
             htmlType='submit'
             onClick={() => {
               form.validateFields().then((values) => {
-                putNotifyTpl({
-                  ...values,
-                  hide_contact: values.hide_contact ? 1 : 0,
-                  hide_channel: values.hide_channel ? 1 : 0,
-                }).then(() => {
-                  message.success('保存成功');
-                  onOk();
-                  destroy();
-                });
+                mode === 'post'
+                  ? postNotifyTpl(values).then(() => {
+                      message.success('新增成功');
+                      onOk();
+                      destroy();
+                    })
+                  : putNotifyTpl({
+                      ...values,
+                      hide_contact: values.hide_contact ? 1 : 0,
+                      hide_channel: values.hide_channel ? 1 : 0,
+                    }).then((res) => {
+                      message.success('保存成功');
+                      onOk();
+                      destroy();
+                    });
               });
             }}
           >
