@@ -18,11 +18,10 @@ import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, message } from 'antd';
 import { useHistory, useLocation } from 'react-router-dom';
 import { PictureOutlined, UserOutlined, LockOutlined } from '@ant-design/icons';
-import { getCaptcha, getSsoConfig, getRedirectURL, getRedirectURLCAS, getRedirectURLOAuth, authLogin } from '@/services/login';
+import { ifShowCaptcha, getCaptcha, getSsoConfig, getRedirectURL, getRedirectURLCAS, getRedirectURLOAuth, authLogin } from '@/services/login';
 import './login.less';
 
 import { useTranslation } from 'react-i18next';
-import { verify } from 'crypto';
 export interface DisplayName {
   oidc: string;
   cas: string;
@@ -53,22 +52,36 @@ export default function Login() {
         });
       }
     });
-    getCaptcha().then((res) => {
-        var img = document.querySelector('#verify-img') as HTMLImageElement
-        if (res.dat) {
-            img.src=res.dat.imgdata
-            localStorage.setItem('captchaid',res.dat.captchaid)
+
+    ifShowCaptcha().then((res) => { 
+      var img = document.querySelector('#verifyimg-div') as HTMLDivElement
+      if (res.dat) {
+        if (!res.dat.show) {
+          img.style.display = 'none';
+          localStorage.setItem('showcaptcha','no')
         } else {
-          message.warning('获取验证码失败');
+          getCaptcha().then((res) => {
+            var img = document.querySelector('#verify-img') as HTMLImageElement
+            if (res.dat) {
+                img.src=res.dat.imgdata
+                localStorage.setItem('captchaid',res.dat.captchaid)
+            } else {
+              message.warning('获取验证码失败');
+            }
+          });
         }
-      });
+      }
+    });
+
   }, []);
 
   const handleSubmit = async () => {
     try {
       await form.validateFields();
       login();
-      verifyimg.click()
+      if (localStorage.getItem('showcaptcha') != 'no') {
+        verifyimg.click()
+      }
     } catch {
       console.log(t('输入有误'));
     }
@@ -126,12 +139,13 @@ export default function Login() {
               <Input type='password' placeholder={t('请输入密码')} onPressEnter={handleSubmit} prefix={<LockOutlined className='site-form-item-icon' />} />
             </Form.Item>
 
+            <div className='verifyimg-div' id='verifyimg-div'>
             <Form.Item
               label='验证码'
               name='verifyvalue'
               rules={[
                 {
-                  required: true,
+                  required: false,
                   message: t('请输入验证码'),
                 },
               ]}
@@ -140,7 +154,6 @@ export default function Login() {
             </Form.Item>
 
 
-            <div className='verifyimg-div'>
               <img id='verify-img'
                 onClick={() => {
                     getCaptcha().then((res) => {

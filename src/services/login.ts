@@ -31,6 +31,12 @@ export const getCaptcha = function () {
   });
 };
 
+export const ifShowCaptcha = function () {
+  return request('/api/n9e/auth/ifshowcaptcha', {
+    method: RequestMethod.Get,
+  });
+};
+
 // 刷新accessToken
 export const UpdateAccessToken = function () {
   return request(`/api/n9e/auth/refresh`, {
