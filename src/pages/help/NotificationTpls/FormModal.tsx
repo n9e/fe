@@ -10,6 +10,11 @@ interface IProps {
   onOk: () => void;
 }
 
+const titleMap = {
+  post: '新增通知模板',
+  update: '编辑通知模板',
+};
+
 function FormModal(props: IProps & ModalWrapProps) {
   const { mode, visible, destroy, onOk, data = {} as NotifyTplsType } = props;
   const [form] = Form.useForm();
@@ -25,7 +30,7 @@ function FormModal(props: IProps & ModalWrapProps) {
   return (
     <Modal
       className='dashboard-import-modal'
-      title='编辑通知模板'
+      title={titleMap[mode]}
       visible={visible}
       onCancel={() => {
         destroy();
