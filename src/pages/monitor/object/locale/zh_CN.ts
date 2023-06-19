@@ -25,7 +25,7 @@ const zh_CN = {
     title: '监控指标',
     search_placeholder: '搜索，空格分隔多个关键字',
     clear: '清空图表',
-    noData: '暂无指标数据，请选择左侧 Labels',
+    noData: '暂无指标数据，请选择 Labels',
   },
   graph: {
     function: '计算函数',
