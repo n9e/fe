@@ -34,6 +34,7 @@ export const getCaptcha = function () {
 export const ifShowCaptcha = function () {
   return request('/api/n9e/auth/ifshowcaptcha', {
     method: RequestMethod.Get,
+    silence: true,
   });
 };
 

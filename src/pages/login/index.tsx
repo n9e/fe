@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Form, Input, Button, message } from 'antd';
 import { useHistory, useLocation } from 'react-router-dom';
 import { PictureOutlined, UserOutlined, LockOutlined } from '@ant-design/icons';
@@ -39,8 +39,19 @@ export default function Login() {
     cas: 'CAS',
     oauth: 'OAuth',
   });
-
-  const verifyimg = document.querySelector('#verify-img') as HTMLImageElement
+  const [showcaptcha, setShowcaptcha] = useState(false);
+  const verifyimgRef = useRef<HTMLImageElement>(null);
+  const captchaidRef = useRef<string>();
+  const refreshCaptcha = () => {
+    getCaptcha().then((res) => {
+      if (res.dat && verifyimgRef.current) {
+        verifyimgRef.current.src = res.dat.imgdata;
+        captchaidRef.current = res.dat.captchaid;
+      } else {
+        message.warning('获取验证码失败');
+      }
+    });
+  };
 
   useEffect(() => {
     getSsoConfig().then((res) => {
@@ -53,52 +64,44 @@ export default function Login() {
       }
     });
 
-    ifShowCaptcha().then((res) => { 
-      var img = document.querySelector('#verifyimg-div') as HTMLDivElement
-      if (res.dat) {
-        if (!res.dat.show) {
-          img.style.display = 'none';
-          localStorage.setItem('showcaptcha','no')
-        } else {
-          getCaptcha().then((res) => {
-            var img = document.querySelector('#verify-img') as HTMLImageElement
-            if (res.dat) {
-                img.src=res.dat.imgdata
-                localStorage.setItem('captchaid',res.dat.captchaid)
-            } else {
-              message.warning('获取验证码失败');
-            }
-          });
-        }
+    ifShowCaptcha().then((res) => {
+      setShowcaptcha(res?.dat?.show);
+      if (res?.dat?.show) {
+        getCaptcha().then((res) => {
+          if (res.dat && verifyimgRef.current) {
+            verifyimgRef.current.src = res.dat.imgdata;
+            captchaidRef.current = res.dat.captchaid;
+          } else {
+            message.warning('获取验证码失败');
+          }
+        });
       }
     });
-
   }, []);
 
-  const handleSubmit = async () => {
-    try {
-      await form.validateFields();
+  const handleSubmit = () => {
+    form.validateFields().then(() => {
       login();
-      if (localStorage.getItem('showcaptcha') != 'no') {
-        verifyimg.click()
-      }
-    } catch {
-      console.log(t('输入有误'));
-    }
+    });
   };
 
   const login = async () => {
     let { username, password, verifyvalue } = form.getFieldsValue();
-    let captchaid = localStorage.getItem('captchaid') || ""
-    authLogin(username, password, captchaid, verifyvalue).then((res) => {
-      const { dat, err } = res;
-      const { access_token, refresh_token } = dat;
-      localStorage.setItem('access_token', access_token);
-      localStorage.setItem('refresh_token', refresh_token);
-      if (!err) {
-        window.location.href = redirect || '/metric/explorer';
-      }
-    });
+    authLogin(username, password, captchaidRef.current!, verifyvalue)
+      .then((res) => {
+        const { dat, err } = res;
+        const { access_token, refresh_token } = dat;
+        localStorage.setItem('access_token', access_token);
+        localStorage.setItem('refresh_token', refresh_token);
+        if (!err) {
+          window.location.href = redirect || '/metric/explorer';
+        }
+      })
+      .catch(() => {
+        if (showcaptcha) {
+          refreshCaptcha();
+        }
+      });
   };
 
   return (
@@ -139,32 +142,28 @@ export default function Login() {
               <Input type='password' placeholder={t('请输入密码')} onPressEnter={handleSubmit} prefix={<LockOutlined className='site-form-item-icon' />} />
             </Form.Item>
 
-            <div className='verifyimg-div' id='verifyimg-div'>
-            <Form.Item
-              label='验证码'
-              name='verifyvalue'
-              rules={[
-                {
-                  required: false,
-                  message: t('请输入验证码'),
-                },
-              ]}
-            >
-              <Input placeholder={t('请输入验证码')} onPressEnter={handleSubmit} prefix={<PictureOutlined className='site-form-item-icon' />} />
-            </Form.Item>
+            <div className='verifyimg-div'>
+              <Form.Item
+                label='验证码'
+                name='verifyvalue'
+                rules={[
+                  {
+                    required: showcaptcha,
+                    message: t('请输入验证码'),
+                  },
+                ]}
+                hidden={!showcaptcha}
+              >
+                <Input placeholder={t('请输入验证码')} onPressEnter={handleSubmit} prefix={<PictureOutlined className='site-form-item-icon' />} />
+              </Form.Item>
 
-
-              <img id='verify-img'
-                onClick={() => {
-                    getCaptcha().then((res) => {
-                    if (res.dat) {
-                        verifyimg.src=res.dat.imgdata
-                        localStorage.setItem('captchaid',res.dat.captchaid)
-                    } else {
-                      message.warning('获取验证码失败');
-                    }
-                  });
+              <img
+                ref={verifyimgRef}
+                style={{
+                  display: showcaptcha ? 'inline-block' : 'none',
+                  marginBottom: 16,
                 }}
+                onClick={refreshCaptcha}
                 alt='点击获取验证码'
               />
             </div>
