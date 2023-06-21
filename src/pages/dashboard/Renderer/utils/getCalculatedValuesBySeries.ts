@@ -84,9 +84,9 @@ export const getSerieTextObj = (value: number | string | null | undefined, stand
 const getCalculatedValuesBySeries = (series: any[], calc: string, { unit, decimals, dateFormat }, valueMappings?: IValueMapping[], thresholds?: IThresholds) => {
   const values = _.map(series, (serie) => {
     const results = {
-      lastNotNull: () => _.get(_.last(_.filter(serie.data, (item) => item[1] !== null)), 1),
+      lastNotNull: () => _.get(_.last(_.filter(serie.data, (item) => item[1] !== null && !_.isNaN(_.toNumber(item[1])))), 1),
       last: () => _.get(_.last(serie.data), 1),
-      firstNotNull: () => _.get(_.first(_.filter(serie.data, (item) => item[1] !== null)), 1),
+      firstNotNull: () => _.get(_.first(_.filter(serie.data, (item) => item[1] !== null && !_.isNaN(_.toNumber(item[1])))), 1),
       first: () => _.get(_.first(serie.data), 1),
       min: () => getValueAndToNumber(_.minBy(serie.data, (item: any) => _.toNumber(item[1]))),
       max: () => getValueAndToNumber(_.maxBy(serie.data, (item: any) => _.toNumber(item[1]))),
