@@ -18,7 +18,7 @@ import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 
 // 登录
-export const authLogin = function (username: string, password: string, captchaid: string, verifyvalue: string) {
+export const authLogin = function (username: string, password: string, captchaid?: string, verifyvalue?: string) {
   return request(`/api/n9e/auth/login`, {
     method: RequestMethod.Post,
     data: { username, password, captchaid, verifyvalue },
