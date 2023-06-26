@@ -84,6 +84,8 @@ export interface IOptions {
     displayMode: 'list' | 'table' | 'hidden';
     placement: 'right' | 'bottom';
     columns?: string[];
+    detailName: string;
+    detailUrl: string;
   };
   tooltip?: {
     mode: 'single' | 'all';

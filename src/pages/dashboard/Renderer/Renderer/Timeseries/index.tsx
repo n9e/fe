@@ -31,6 +31,8 @@ import { getLegendValues } from '../../utils/getCalculatedValuesBySeries';
 import './style.less';
 import { ColumnProps } from 'antd/lib/table';
 import { useTranslation } from 'react-i18next';
+import { getDetailUrl } from '../../utils/replaceExpressionDetail';
+import { useGlobalState } from '../../../globalState';
 
 interface ColData {
   value: number;
@@ -78,6 +80,7 @@ function getStartAndEndByTargets(targets: any[]) {
 }
 
 export default function index(props: IProps) {
+  const [dashboardMeta] = useGlobalState('dashboardMeta');
   const { t } = useTranslation('dashboard');
   const { time, values, series, inDashboard = true, chartHeight = '200px', tableHeight = '200px', themeMode = '', onClick } = props;
   const { custom, options = {}, targets } = values;
@@ -91,12 +94,20 @@ export default function index(props: IProps) {
   const displayMode = options.legend?.displayMode || 'table';
   const placement = options.legend?.placement || 'bottom';
   const legendColumns = options.legend?.columns && options.legend?.columns.length > 0 ? options.legend?.columns : ['max', 'min', 'avg', 'sum', 'last'];
+  const detailUrl = options.legend?.detailUrl || undefined;
+  const detailName = options.legend?.detailName || undefined;
   const hasLegend = displayMode !== 'hidden';
   const [legendData, setLegendData] = useState<any[]>([]);
   const [isExpanded, setIsExpanded] = useState(false);
   let _chartHeight = hasLegend ? `calc(100% - ${legendEleSize?.height! + 16}px)` : '100%';
   let _tableHeight = hasLegend ? '30%' : '0px';
 
+  const detailFormatter = (data: any) => {
+    if (detailUrl && time) {
+      return getDetailUrl(detailUrl, data, dashboardMeta, time);
+    }
+    return;
+  };
   if (!inDashboard) {
     _chartHeight = chartHeight;
     _tableHeight = tableHeight;
@@ -312,6 +323,26 @@ export default function index(props: IProps) {
     ];
   });
 
+  // 是否添加详情
+  if (detailUrl) {
+    tableColumn = [
+      ...tableColumn,
+      {
+        title: detailName,
+        dataIndex: 'detail',
+        width: 60,
+        render: (_text, record: any) => {
+          const url = detailFormatter(record);
+          return (
+            <a href={url} target='_blank'>
+              {detailName}
+            </a>
+          );
+        },
+      },
+    ];
+  }
+
   return (
     <div
       className='renderer-timeseries-container'
@@ -392,7 +423,7 @@ export default function index(props: IProps) {
                       className={item.disabled ? 'disabled' : ''}
                     >
                       <span className='renderer-timeseries-legend-color-symbol' style={{ backgroundColor: item.color }} />
-                      {item.name}
+                      {item.name} {detailUrl ? <span>&nbsp;|&nbsp;<a href={detailFormatter(item)} target="_blank">{detailName}</a></span> :''}
                     </div>
                   );
                 })}
