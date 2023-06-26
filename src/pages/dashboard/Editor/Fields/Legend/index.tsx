@@ -29,7 +29,7 @@ export default function index() {
   return (
     <Panel header='Legend'>
       <Row gutter={10}>
-        <Col span={12}>
+        <Col span={9}>
           <Form.Item label={t('panel.options.legend.displayMode.label')} name={[...namePrefix, 'displayMode']}>
             <Radio.Group buttonStyle='solid'>
               <Radio.Button value='table'>{t('panel.options.legend.displayMode.table')}</Radio.Button>
@@ -38,7 +38,7 @@ export default function index() {
             </Radio.Group>
           </Form.Item>
         </Col>
-        <Col span={12}>
+        <Col span={15}>
           <Form.Item noStyle shouldUpdate={(prevValues, curValues) => _.get(prevValues, [...namePrefix, 'displayMode']) !== _.get(curValues, [...namePrefix, 'displayMode'])}>
             {({ getFieldValue }) => {
               if (getFieldValue([...namePrefix, 'displayMode']) === 'list') {
