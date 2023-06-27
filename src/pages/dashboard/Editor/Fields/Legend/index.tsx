@@ -15,9 +15,9 @@
  *
  */
 import React from 'react';
-import { Form, Radio, Row, Col, Select } from 'antd';
+import { Form, Radio, Row, Col, Select, Input } from 'antd';
 import _ from 'lodash';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { Panel } from '../../Components/Collapse';
 import { CaretDownOutlined } from '@ant-design/icons';
 
@@ -28,8 +28,8 @@ export default function index() {
 
   return (
     <Panel header='Legend'>
-      <Row>
-        <Col span={12}>
+      <Row gutter={10}>
+        <Col span={9}>
           <Form.Item label={t('panel.options.legend.displayMode.label')} name={[...namePrefix, 'displayMode']}>
             <Radio.Group buttonStyle='solid'>
               <Radio.Button value='table'>{t('panel.options.legend.displayMode.table')}</Radio.Button>
@@ -38,7 +38,7 @@ export default function index() {
             </Radio.Group>
           </Form.Item>
         </Col>
-        <Col span={12}>
+        <Col span={15}>
           <Form.Item noStyle shouldUpdate={(prevValues, curValues) => _.get(prevValues, [...namePrefix, 'displayMode']) !== _.get(curValues, [...namePrefix, 'displayMode'])}>
             {({ getFieldValue }) => {
               if (getFieldValue([...namePrefix, 'displayMode']) === 'list') {
@@ -67,6 +67,23 @@ export default function index() {
               }
               return null;
             }}
+          </Form.Item>
+        </Col>
+        <Col span={9}>
+          <Form.Item label={t('panel.custom.detailName')} name={[...namePrefix, 'detailName']}>
+            <Input style={{ width: '100%' }} />
+          </Form.Item>
+        </Col>
+        <Col span={15}>
+          <Form.Item
+            label={t('panel.custom.detailUrl')}
+            name={[...namePrefix, 'detailUrl']}
+            tooltip={{
+              overlayInnerStyle: { width: 330 },
+              title: <Trans ns='dashboard' i18nKey='dashboard:link.url_tip' components={{ 1: <br /> }} />,
+            }}
+          >
+            <Input style={{ width: '100%' }} />
           </Form.Item>
         </Col>
       </Row>
