@@ -60,6 +60,11 @@ const en_US = {
       endpoint: 'Access domain name (private network domain name / public network domain name / cross-domain domain name)',
       access: 'Access',
     },
+    os: {
+      title: 'OpenSearch Settings',
+      enable_write_title: 'Enable write',
+      enable_write: 'Enable write',
+    },
   },
 };
 export default en_US;

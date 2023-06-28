@@ -58,6 +58,11 @@ const zh_HK = {
       endpoint: '訪問域名（私網域名/公網域名/跨域域名）',
       access: '授權',
     },
+    os: {
+      title: 'OpenSearch 基本資訊',
+      enable_write_title: '是否允許寫入',
+      enable_write: '允許寫入',
+    },
   },
 };
 
