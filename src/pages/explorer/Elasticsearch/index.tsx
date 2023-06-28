@@ -34,7 +34,7 @@ export default function index(props: IProps) {
   const params = new URLSearchParams(useLocation().search);
   const filtersArr: string[] = [];
   for (const [key, value] of params) {
-    if (!['data_source_id', 'index_name', 'timestamp'].includes(key)) {
+    if (!['data_source_name', 'data_source_id', 'index_name', 'timestamp'].includes(key)) {
       filtersArr.push(`${key}:"${value}"`);
     }
   }

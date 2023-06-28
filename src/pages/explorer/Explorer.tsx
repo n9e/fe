@@ -24,8 +24,7 @@ import { Button, Card, Space, Input, Form, Select } from 'antd';
 import { PlusOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { useLocation } from 'react-router-dom';
-import { generateID } from '@/utils';
+import { useLocation, useHistory } from 'react-router-dom';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import EmptyDatasourcePopover from '@/components/DatasourceSelect/EmptyDatasourcePopover';
 import { DatasourceCateEnum } from '@/utils/constant';
@@ -38,34 +37,25 @@ import Elasticsearch from './Elasticsearch';
 import PlusExplorer from 'plus:/parcels/Explorer';
 import './index.less';
 
-type PanelMeta = { id: string; defaultPromQL?: string };
+type PanelMeta = { id: string };
 interface IPanelProps {
   id: string;
-  defaultPromQL: string;
   removePanel: (id: string) => void;
   type: Type;
   defaultCate: string;
 }
 type Type = 'logging' | 'metric';
 
-export function getUrlParamsByName(name) {
-  let reg = new RegExp(`.*?${name}=([^&]*)`),
-    str = location.search || '',
-    target = str.match(reg);
-  if (target) {
-    return target[1];
-  }
-  return '';
-}
-
-const Panel = ({ defaultPromQL, removePanel, id, type, defaultCate }: IPanelProps) => {
+const Panel = ({ removePanel, id, type, defaultCate }: IPanelProps) => {
   const { t } = useTranslation('explorer');
   const { groupedDatasourceList } = useContext(CommonStateContext);
   const [form] = Form.useForm();
+  const history = useHistory();
   const headerExtraRef = useRef<HTMLDivElement>(null);
   const params = new URLSearchParams(useLocation().search);
-  const [datasourceCate, setDatasourceCate] = useState(params.get('data_source_name') || localStorage.getItem(`explorer_datasource_cate_${type}`) || defaultCate);
+  const datasourceCate = params.get('data_source_name') || localStorage.getItem(`explorer_datasource_cate_${type}`) || defaultCate;
   const datasourceValue = params.get('data_source_id') ? _.toNumber(params.get('data_source_id')) : getDefaultDatasourceValue(datasourceCate, groupedDatasourceList);
+
   return (
     <Card bodyStyle={{ padding: 16 }} className='panel'>
       <Form
@@ -86,11 +76,11 @@ const Panel = ({ defaultPromQL, removePanel, id, type, defaultCate }: IPanelProp
                 dropdownMatchSelectWidth={false}
                 style={{ minWidth: 70 }}
                 onChange={(val) => {
-                  if (typeof val === 'string') {
-                    setDatasourceCate(val);
-                  }
                   form.setFieldsValue({
                     datasourceValue: getDefaultDatasourceValue(val, groupedDatasourceList),
+                  });
+                  history.replace({
+                    search: `?data_source_name=${val}&data_source_id=${getDefaultDatasourceValue(val, groupedDatasourceList)}`,
                   });
                 }}
               />
@@ -127,6 +117,9 @@ const Panel = ({ defaultPromQL, removePanel, id, type, defaultCate }: IPanelProp
                         dropdownMatchSelectWidth={false}
                         onChange={(val: string) => {
                           setDefaultDatasourceValue(cate, val);
+                          history.replace({
+                            search: `?data_source_name=${cate}&data_source_id=${val}`,
+                          });
                         }}
                         showSearch
                         optionFilterProp='children'
@@ -152,7 +145,7 @@ const Panel = ({ defaultPromQL, removePanel, id, type, defaultCate }: IPanelProp
             if (datasourceCate === DatasourceCateEnum.elasticsearch) {
               return <Elasticsearch key={datasourceValue} datasourceValue={datasourceValue} form={form} />;
             } else if (datasourceCate === DatasourceCateEnum.prometheus) {
-              return <Prometheus key={datasourceValue} defaultPromQL={defaultPromQL} headerExtra={headerExtraRef.current} datasourceValue={datasourceValue} form={form} />;
+              return <Prometheus key={datasourceValue} headerExtra={headerExtraRef.current} datasourceValue={datasourceValue} form={form} />;
             }
             return <PlusExplorer datasourceCate={datasourceCate} datasourceValue={datasourceValue} headerExtraRef={headerExtraRef} form={form} />;
           }}
@@ -177,30 +170,39 @@ interface IProps {
 
 const PanelList = ({ type, defaultCate }: IProps) => {
   const { t } = useTranslation('explorer');
-  const [panelList, setPanelList] = useState<PanelMeta[]>([{ id: generateID(), defaultPromQL: decodeURIComponent(getUrlParamsByName('promql')) }]);
-
-  // 添加一个查询面板
-  function addPanel() {
-    setPanelList(() => [
-      ...panelList,
-      {
-        id: generateID(),
-      },
-    ]);
-  }
-
-  // 删除指定查询面板
-  function removePanel(id) {
-    setPanelList(_.filter(panelList, (item) => item.id !== id));
-  }
+  const [panelList, setPanelList] = useState<PanelMeta[]>([
+    {
+      id: _.uniqueId('panel_'),
+    },
+  ]);
 
   return (
     <>
-      {panelList.map(({ id, defaultPromQL = '' }) => {
-        return <Panel key={id} id={id} removePanel={removePanel} defaultPromQL={defaultPromQL} type={type} defaultCate={defaultCate} />;
+      {panelList.map(({ id }) => {
+        return (
+          <Panel
+            key={id}
+            id={id}
+            removePanel={() => {
+              setPanelList(_.filter(panelList, (item) => item.id !== id));
+            }}
+            type={type}
+            defaultCate={defaultCate}
+          />
+        );
       })}
       <div className='add-prometheus-panel'>
-        <Button size='large' onClick={addPanel}>
+        <Button
+          size='large'
+          onClick={() => {
+            setPanelList(() => [
+              ...panelList,
+              {
+                id: _.uniqueId('panel_'),
+              },
+            ]);
+          }}
+        >
           <PlusOutlined />
           {t('add_btn')}
         </Button>
