@@ -52,6 +52,7 @@ interface IProps {
 const GREEN_COLOR = '#3FC453';
 const YELLOW_COLOR = '#FF9919';
 const RED_COLOR = '#FF656B';
+const LOST_COLOR = '#CCCCCC';
 
 export default function List(props: IProps) {
   const { t } = useTranslation('targets');
@@ -204,6 +205,10 @@ export default function List(props: IProps) {
           if (text > 85) {
             backgroundColor = RED_COLOR;
           }
+          if (reocrd.target_up === 0) {
+            backgroundColor = LOST_COLOR;
+          }
+
           return (
             <div
               className='table-td-fullBG'
@@ -231,6 +236,9 @@ export default function List(props: IProps) {
           }
           if (text > 85) {
             backgroundColor = RED_COLOR;
+          }
+          if (reocrd.target_up === 0) {
+            backgroundColor = LOST_COLOR;
           }
           return (
             <div
@@ -271,6 +279,9 @@ export default function List(props: IProps) {
           }
           if (text < 1000) {
             backgroundColor = GREEN_COLOR;
+          }
+          if (reocrd.target_up === 0) {
+            backgroundColor = LOST_COLOR;
           }
           return (
             <div
