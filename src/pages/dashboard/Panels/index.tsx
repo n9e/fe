@@ -218,6 +218,7 @@ function index(props: IProps) {
                 )
               ) : (
                 <Row
+                  isPreview={!isAuthorized}
                   name={item.name}
                   row={item}
                   onToggle={() => {
