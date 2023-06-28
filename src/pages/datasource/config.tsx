@@ -8,4 +8,5 @@ export const sourceLogoMap = {
   ck: <img src={'/logos/clickhouse.svg'} alt='' className='datasource-logo' width='132' height='56' />,
   zabbix: <img src={'/logos/zabbix.svg'} alt='' className='datasource-logo' width='132' />,
   influxdb: <img src={'/logos/influxdb.svg'} alt='' className='datasource-logo' width='132' height='56' />,
+  opensearch: <img src={'/logos/opensearch.svg'} alt='' className='datasource-logo' width='132' height='56' />,
 };
