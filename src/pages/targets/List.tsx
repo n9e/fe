@@ -14,6 +14,8 @@ import OrganizeColumns from './OrganizeColumns';
 import { getDefaultColumnsConfigs, setDefaultColumnsConfigs } from './utils';
 // @ts-ignore
 import CollectsDrawer from 'plus:/pages/collects/CollectsDrawer';
+// @ts-ignore
+import TargetMetaDrawer from 'plus:/parcels/Targets/TargetMetaDrawer';
 
 export const pageSizeOptions = ['10', '20', '50', '100'];
 
@@ -123,10 +125,10 @@ export default function List(props: IProps) {
         </Space>
       ),
       dataIndex: 'ident',
-      render: (text) => {
+      render: (text, record) => {
         return (
           <Space>
-            {text}
+            {import.meta.env['VITE_IS_DS_SETTING'] ? <TargetMetaDrawer ident={text} meta={record.meta_info} /> : text}
             {import.meta.env['VITE_IS_COLLECT'] && (
               <Tooltip title='查看关联采集配置'>
                 <ApartmentOutlined
