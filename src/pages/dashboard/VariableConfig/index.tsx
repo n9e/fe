@@ -23,7 +23,7 @@ import { useTranslation } from 'react-i18next';
 import { EditOutlined } from '@ant-design/icons';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
-import { convertExpressionToQuery, replaceExpressionVars, getVaraiableSelected, setVaraiableSelected, filterOptionsByReg } from './constant';
+import { convertExpressionToQuery, replaceExpressionVars, getVaraiableSelected, setVaraiableSelected, filterOptionsByReg, stringToRegex } from './constant';
 import { IVariable } from './definition';
 import DisplayItem from './DisplayItem';
 import EditItems from './EditItems';
@@ -119,8 +119,15 @@ function index(props: IProps) {
             }
           } else if (item.type === 'datasource') {
             const options = item.definition ? (groupedDatasourceList[item.definition] as any) : [];
+            const regex = item.regex ? stringToRegex(item.regex) : null;
             result[idx] = item;
-            result[idx].options = options;
+            if (regex) {
+              result[idx].options = _.filter(options, (option) => {
+                return regex.test(option.name);
+              });
+            } else {
+              result[idx].options = options;
+            }
             const selected = getVaraiableSelected(item.name, item.type, id);
             if (selected === null) {
               if (item.defaultValue) {

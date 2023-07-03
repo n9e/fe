@@ -20,6 +20,7 @@ export interface IVariable {
   definition: string;
   fullDefinition?: string; // 转换变量后的完整表达式
   reg?: string;
+  regex?: string; // v6 新增，用于 datasource 的正则过滤
   multi?: boolean;
   allOption?: boolean;
   allValue?: string;

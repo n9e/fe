@@ -78,6 +78,7 @@ const zh_CN = {
     allValue: '自定义全选值',
     textbox: {
       defaultValue: '默认值',
+      defaultValue_tip: '可选，仅作为初次加载时的默认值',
     },
     custom: {
       definition: '逗号分割的自定义值',
@@ -89,6 +90,8 @@ const zh_CN = {
     datasource: {
       definition: '数据源类型',
       defaultValue: '默认值',
+      regex: '数据源过滤',
+      regex_tip: '可选，可通过正则来过滤可选项',
     },
   },
   row: {

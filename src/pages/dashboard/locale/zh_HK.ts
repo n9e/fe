@@ -78,6 +78,7 @@ const zh_HK = {
     allValue: '自定義全選值',
     textbox: {
       defaultValue: '預設值',
+      defaultValue_tip: '可選，僅作為初次加載時的默認值',
     },
     custom: {
       definition: '逗號分割的自定義值',
@@ -89,6 +90,8 @@ const zh_HK = {
     datasource: {
       definition: '資料來源型別',
       defaultValue: '預設值',
+      regex: '數據源過濾',
+      regex_tip: '可選，可通過正則來過濾可選項，或提取值',
     },
   },
   row: {
