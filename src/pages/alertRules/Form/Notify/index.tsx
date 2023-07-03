@@ -22,6 +22,8 @@ import { Card, Form, Checkbox, Switch, Space, Select, Tooltip, Row, Col, InputNu
 import { PlusCircleOutlined, MinusCircleOutlined, QuestionCircleFilled } from '@ant-design/icons';
 import { getTeamInfoList, getNotifiesList } from '@/services/manage';
 import { panelBaseProps } from '../../constants';
+// @ts-ignore
+import NotifyExtra from 'plus:/parcels/AlertRule/NotifyExtra';
 
 export default function index({ disabled }) {
   const { t } = useTranslation('alertRules');
@@ -182,6 +184,7 @@ export default function index({ disabled }) {
           </div>
         )}
       </Form.List>
+      {import.meta.env.VITE_IS_DS_SETTING === 'true' && <NotifyExtra contactList={contactList} notifyGroups={notifyGroups} />}
     </Card>
   );
 }
