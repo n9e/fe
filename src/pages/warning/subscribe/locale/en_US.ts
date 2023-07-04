@@ -1,5 +1,5 @@
 const en_US = {
-  title: 'Subscriptions',
+  title: 'Alert Subscribes',
   search_placeholder: 'Search rules, tags, and receiving groups',
   rule_name: 'Rule Name',
   sub_rule_name: 'Subscribe Alert Rule',
@@ -17,17 +17,15 @@ const en_US = {
       label: 'Value',
     },
   },
-  redefine_severity: 'Severity',
-  redefine: 'Redefine',
-  new_severity: 'New Severity',
-  redefine_channels: 'Channels',
-  new_channels: 'New Channels',
+  redefine_severity: 'Redefine Severity',
+  redefine_channels: 'Redefine Channels',
+  redefine_webhooks: 'Redefine Webhooks',
   user_group_ids: 'Receiving Group',
   for_duration: 'Duration (seconds)',
-  redefine_webhooks: 'Receiving Webhooks',
   webhooks: 'New Webhooks',
   webhooks_msg: 'Webhook is required',
   prod: 'Type',
   subscribe_btn: 'Subscribe',
+  basic_configs: 'Basic',
 };
 export default en_US;

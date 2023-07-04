@@ -17,18 +17,16 @@ const zh_HK = {
       label: '標籤 Value',
     },
   },
-  redefine_severity: '告警級別',
-  redefine: '重新定義',
-  new_severity: '新告警級別',
-  redefine_channels: '通知媒介',
-  new_channels: '新通知媒介',
+  redefine_severity: '重新定義告警級別',
+  redefine_channels: '重新定義通知媒介',
+  redefine_webhooks: '重新定義回撥地址',
   user_group_ids: '訂閱告警接收組',
   for_duration: '訂閱事件持續時長超過 (秒)',
-  redefine_webhooks: '回撥地址',
   webhooks: '新回撥地址',
   webhooks_msg: '回撥地址不能為空',
   prod: '監控型別',
   subscribe_btn: '訂閱',
+  basic_configs: '基礎配置',
 };
 
 export default zh_HK;
