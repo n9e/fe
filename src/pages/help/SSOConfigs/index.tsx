@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Tabs, Button, message } from 'antd';
+import { Tabs, Button, Card, message } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import CodeMirror from '@uiw/react-codemirror';
@@ -8,6 +8,8 @@ import PageLayout from '@/components/pageLayout';
 import { getSSOConfigs, putSSOConfig } from './services';
 import { SSOConfigType } from './types';
 import './locale';
+//@ts-ignore
+import Global from 'plus:/parcels/SSOConfigs/Global';
 
 export default function index() {
   const { t } = useTranslation('SSOConfigs');
@@ -21,8 +23,19 @@ export default function index() {
 
   return (
     <PageLayout title={t('title')}>
-      <div>
-        <div style={{ padding: '0 16px 16px 16px' }}>
+      <main
+        style={{
+          padding: '10px 12px',
+        }}
+      >
+        <Global SSOConfigs={data} />
+        <Card
+          bordered
+          size='small'
+          bodyStyle={{
+            paddingTop: 2,
+          }}
+        >
           <Tabs>
             {data.map((item) => {
               return (
@@ -73,8 +86,8 @@ export default function index() {
               );
             })}
           </Tabs>
-        </div>
-      </div>
+        </Card>
+      </main>
     </PageLayout>
   );
 }
