@@ -137,7 +137,7 @@ export default function index() {
                 },
                 {
                   title: t('common:table.update_at'),
-                  width: 120,
+                  width: 150,
                   dataIndex: 'update_at',
                   render: (text: number) => moment.unix(text).format('YYYY-MM-DD HH:mm:ss'),
                 },
