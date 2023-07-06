@@ -101,3 +101,9 @@ export const getSsoConfig = function () {
     method: RequestMethod.Get,
   });
 };
+
+export const getRSAConfig = function () {
+  return request('/api/n9e/auth/rsa-config', {
+    method: RequestMethod.Get,
+  });
+};

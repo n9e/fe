@@ -18,10 +18,12 @@ import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, message } from 'antd';
 import { useHistory, useLocation } from 'react-router-dom';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import { getSsoConfig, getRedirectURL, getRedirectURLCAS, getRedirectURLOAuth, authLogin } from '@/services/login';
+import { getSsoConfig, getRedirectURL, getRedirectURLCAS, getRedirectURLOAuth, authLogin, getRSAConfig } from '@/services/login';
 import './login.less';
 
 import { useTranslation } from 'react-i18next';
+import { RsaEncry } from '@/utils/rsa';
+
 export interface DisplayName {
   oidc: string;
   cas: string;
@@ -62,7 +64,12 @@ export default function Login() {
 
   const login = async () => {
     let { username, password } = form.getFieldsValue();
-    authLogin(username, password).then((res) => {
+    const rsaConf = await getRSAConfig();
+    const {
+      dat: { OpenRSA, RSAPublicKey },
+    } = rsaConf;
+    const authPassWord = OpenRSA ? RsaEncry(password, RSAPublicKey) : password;
+    authLogin(username, authPassWord).then((res) => {
       const { dat, err } = res;
       const { access_token, refresh_token } = dat;
       localStorage.setItem('access_token', access_token);
