@@ -161,6 +161,18 @@ const getMenuList = (t) => {
       ],
     },
     {
+      key: 'audit',
+      icon: <IconFont type='icon-Menu_LogAnalysis' />,
+      activeIcon: <Icon component={menuIcon.LogAnalysis as any} />,
+      label: t('审计日志'),
+      children: [
+        {
+          key: '/audit/logs',
+          label: t('审计日志'),
+        }
+      ],
+    },
+    {
       key: 'manage',
       icon: <IconFont type='icon-Menu_PersonnelOrganization' />,
       activeIcon: <Icon component={menuIcon.PersonnelOrganization as any} />,
