@@ -15,7 +15,7 @@
  *
  */
 import React, { useState, useEffect, useCallback, useContext } from 'react';
-import { Form, Card, Select, Col, Button, Row, message, Checkbox, Tooltip, Radio, Modal, Space, InputNumber, Input } from 'antd';
+import { Form, Card, Select, Col, Button, Row, message, Checkbox, Tooltip, Radio, Modal, Space, InputNumber, Input, Switch } from 'antd';
 import { QuestionCircleFilled, PlusCircleOutlined, EditOutlined, DeleteOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -252,7 +252,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
             <Space>
               {t('redefine_severity')}
               <Form.Item name='redefine_severity' valuePropName='checked' noStyle>
-                <Checkbox />
+                <Switch />
               </Form.Item>
             </Space>
             <div
@@ -270,11 +270,11 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
               </Form.Item>
             </div>
           </div>
-          <div style={{ margin: '8px 0' }}>
+          <div style={{ margin: '16px 0' }}>
             <Space>
               {t('redefine_channels')}
               <Form.Item name='redefine_channels' valuePropName='checked' noStyle>
-                <Checkbox />
+                <Switch />
               </Form.Item>
             </Space>
             <div
@@ -296,11 +296,11 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
               </Form.Item>
             </div>
           </div>
-          <div style={{ margin: '8px 0' }}>
+          <div style={{ margin: '16px 0' }}>
             <Space>
               {t('redefine_webhooks')}
               <Form.Item name='redefine_webhooks' valuePropName='checked' noStyle>
-                <Checkbox />
+                <Switch />
               </Form.Item>
             </Space>
             <div
