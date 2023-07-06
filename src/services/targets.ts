@@ -19,7 +19,11 @@ import { RequestMethod } from '@/store/common';
 
 // 获取监控对象列表
 export function getMonObjectList(params) {
-  return request(`/api/n9e/targets`, {
+  let url = '/api/n9e/targets';
+  if (import.meta.env.VITE_IS_DS_SETTING === 'true') {
+    url = '/api/n9e-plus/targets';
+  }
+  return request(url, {
     method: RequestMethod.Get,
     params,
   });

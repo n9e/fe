@@ -162,7 +162,7 @@ export default function List(props: ListProps) {
     {
       title: t('common:table.update_at'),
       dataIndex: 'update_at',
-      width: 120,
+      width: 150,
       render: (text: string) => {
         return <div className='table-text'>{moment.unix(Number(text)).format('YYYY-MM-DD HH:mm:ss')}</div>;
       },

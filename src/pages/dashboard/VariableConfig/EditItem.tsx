@@ -24,7 +24,7 @@ import IndexSelect from '@/pages/dashboard/Editor/QueryEditor/Elasticsearch/Inde
 import ClusterSelect from '@/pages/dashboard/Editor/QueryEditor/components/ClusterSelect';
 import { CommonStateContext } from '@/App';
 import { IVariable } from './definition';
-import { convertExpressionToQuery, replaceExpressionVars, filterOptionsByReg, setVaraiableSelected } from './constant';
+import { convertExpressionToQuery, replaceExpressionVars, filterOptionsByReg, setVaraiableSelected, stringToRegex } from './constant';
 
 interface IProps {
   id: string;
@@ -280,17 +280,30 @@ function EditItem(props: IProps) {
                     ))}
                   </Select>
                 </Form.Item>
-                <Form.Item shouldUpdate={(prevValues, curValues) => prevValues?.definition !== curValues?.definition} noStyle>
+                <Form.Item label={t('var.datasource.regex')} name='regex' tooltip={t('var.datasource.regex_tip')}>
+                  <Input />
+                </Form.Item>
+                <Form.Item shouldUpdate={(prevValues, curValues) => prevValues?.definition !== curValues?.regex || prevValues?.regex} noStyle>
                   {({ getFieldValue }) => {
                     const definition = getFieldValue('definition');
+                    const regex = getFieldValue('regex');
                     return (
                       <Form.Item label={t('var.datasource.defaultValue')} name='defaultValue'>
                         <Select>
-                          {_.map(groupedDatasourceList[definition], (item) => (
-                            <Select.Option key={item.id} value={item.id}>
-                              {item.name}
-                            </Select.Option>
-                          ))}
+                          {_.map(
+                            _.filter(groupedDatasourceList[definition], (item) => {
+                              if (regex) {
+                                const reg = stringToRegex(regex);
+                                return reg ? reg.test(item.name) : false;
+                              }
+                              return true;
+                            }),
+                            (item) => (
+                              <Select.Option key={item.id} value={item.id}>
+                                {item.name}
+                              </Select.Option>
+                            ),
+                          )}
                         </Select>
                       </Form.Item>
                     );

@@ -58,6 +58,11 @@ const zh_CN = {
       endpoint: '访问域名（私网域名/公网域名/跨域域名）',
       access: '授权',
     },
+    os: {
+      title: 'OpenSearch 详情',
+      enable_write_title: '写配置',
+      enable_write: '允许写入',
+    },
   },
 };
 export default zh_CN;

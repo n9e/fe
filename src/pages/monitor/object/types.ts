@@ -19,7 +19,7 @@ export interface IMatch {
   refreshFlag?: string; // 用于修改记录后刷新
   filters: {
     label: string;
-    oper: '=' | '=~';
+    oper: '=' | '=~' | '!=' | '!~';
     value: string;
   }[];
   dynamicLabels: {

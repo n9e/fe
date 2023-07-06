@@ -7,6 +7,7 @@ import LinkAnalysis from './icons/LinkAnalysis.svg';
 import LogAnalysis from './icons/LogAnalysis.svg';
 import PersonnelOrganization from './icons/PersonnelOrganization.svg';
 import SystemInformation from './icons/SystemInformation.svg';
+import Infrastructure from './icons/Infrastructure.svg';
 
 const menuIcon = {
   Menu_Search,
@@ -18,6 +19,7 @@ const menuIcon = {
   LogAnalysis,
   PersonnelOrganization,
   SystemInformation,
+  Infrastructure,
 };
 
 export default menuIcon;

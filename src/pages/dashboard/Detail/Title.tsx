@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import querystring from 'query-string';
 import _ from 'lodash';
@@ -37,6 +37,8 @@ interface IProps {
   gobackPath?: string;
 }
 
+const cachePageTitle = document.title;
+
 export default function Title(props: IProps) {
   const { t, i18n } = useTranslation('dashboard');
   const { dashboard, range, setRange, onAddPanel, isPreview, isBuiltin, isAuthorized } = props;
@@ -44,6 +46,13 @@ export default function Title(props: IProps) {
   const location = useLocation();
   const query = querystring.parse(location.search);
   const { viewMode, themeMode } = query;
+
+  useEffect(() => {
+    document.title = `${dashboard.name} - ${cachePageTitle}`;
+    return () => {
+      document.title = cachePageTitle;
+    };
+  }, [dashboard.name]);
 
   return (
     <div className='dashboard-detail-header'>

@@ -83,11 +83,11 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
       const m = moment.duration(etime - btime).minutes();
       const s = moment.duration(etime - btime).seconds();
     }
-    if (!detail.busiGroup) {
+    if (!detail.group_id) {
       if (curBusiId) {
-        form.setFieldsValue({ busiGroup: curBusiId });
+        form.setFieldsValue({ group_id: curBusiId });
       } else if (filteredBusiGroups.length > 0) {
-        form.setFieldsValue({ busiGroup: filteredBusiGroups[0].id });
+        form.setFieldsValue({ group_id: filteredBusiGroups[0].id });
       } else {
         message.warning('无可用业务组');
         history.push('/alert-mutes');
@@ -140,7 +140,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
       }),
       cluster: '0',
     };
-    const curBusiItemId = form.getFieldValue('busiGroup');
+    const curBusiItemId = form.getFieldValue('group_id');
     if (type == 1) {
       editShield(params, curBusiItemId, detail.id).then((_) => {
         message.success(t('common:success.edit'));
@@ -223,7 +223,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
               {
                 enable_days_of_week: ['1', '2', '3', '4', '5', '6', '0'],
                 enable_stime: moment('00:00', 'HH:mm'),
-                enable_etime: moment('23:59', 'HH:mm'),
+                enable_etime: moment('00:00', 'HH:mm'),
               },
             ],
       }}
@@ -241,7 +241,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
           <Input />
         </Form.Item>
 
-        <Form.Item label={t('common:business_group')} name='busiGroup'>
+        <Form.Item label={t('common:business_group')} name='group_id'>
           <Select showSearch filterOption={false} suffixIcon={<CaretDownOutlined />} onSearch={debounceFetcher} notFoundContent={fetching ? <Spin size='small' /> : null}>
             {_.map(filteredBusiGroups, (item) => (
               <Option value={item.id} key={item.id}>

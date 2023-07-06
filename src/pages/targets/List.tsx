@@ -14,6 +14,8 @@ import OrganizeColumns from './OrganizeColumns';
 import { getDefaultColumnsConfigs, setDefaultColumnsConfigs } from './utils';
 // @ts-ignore
 import CollectsDrawer from 'plus:/pages/collects/CollectsDrawer';
+// @ts-ignore
+import TargetMetaDrawer from 'plus:/parcels/Targets/TargetMetaDrawer';
 
 export const pageSizeOptions = ['10', '20', '50', '100'];
 
@@ -52,6 +54,7 @@ interface IProps {
 const GREEN_COLOR = '#3FC453';
 const YELLOW_COLOR = '#FF9919';
 const RED_COLOR = '#FF656B';
+const LOST_COLOR = '#CCCCCC';
 
 export default function List(props: IProps) {
   const { t } = useTranslation('targets');
@@ -122,10 +125,10 @@ export default function List(props: IProps) {
         </Space>
       ),
       dataIndex: 'ident',
-      render: (text) => {
+      render: (text, record) => {
         return (
           <Space>
-            {text}
+            {import.meta.env['VITE_IS_DS_SETTING'] ? <TargetMetaDrawer ident={text} /> : text}
             {import.meta.env['VITE_IS_COLLECT'] && (
               <Tooltip title='查看关联采集配置'>
                 <ApartmentOutlined
@@ -204,6 +207,10 @@ export default function List(props: IProps) {
           if (text > 85) {
             backgroundColor = RED_COLOR;
           }
+          if (reocrd.target_up === 0) {
+            backgroundColor = LOST_COLOR;
+          }
+
           return (
             <div
               className='table-td-fullBG'
@@ -231,6 +238,9 @@ export default function List(props: IProps) {
           }
           if (text > 85) {
             backgroundColor = RED_COLOR;
+          }
+          if (reocrd.target_up === 0) {
+            backgroundColor = LOST_COLOR;
           }
           return (
             <div
@@ -271,6 +281,9 @@ export default function List(props: IProps) {
           }
           if (text < 1000) {
             backgroundColor = GREEN_COLOR;
+          }
+          if (reocrd.target_up === 0) {
+            backgroundColor = LOST_COLOR;
           }
           return (
             <div

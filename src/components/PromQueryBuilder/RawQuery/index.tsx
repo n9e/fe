@@ -83,12 +83,12 @@ export function renderQuery(query: PromVisualQuery, nested?: boolean) {
   return queryString;
 }
 
-export default function index(props: { query: PromVisualQuery }) {
+export default function index(props: { query: PromVisualQuery; datasourceValue: number }) {
   const promql = renderQuery(props.query);
   if (!promql) return null;
   return (
     <div className='prom-query-builder-rawquery-container'>
-      <PromQLInput value={promql} readonly />
+      <PromQLInput value={promql} datasourceValue={props.datasourceValue} readonly />
     </div>
   );
 }

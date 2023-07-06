@@ -77,7 +77,7 @@ export default function index(props: IProps) {
           }}
         />
       )}
-      {rawQueryOpen && <RawQuery query={query} />}
+      {rawQueryOpen && <RawQuery query={query} datasourceValue={datasourceValue} />}
     </div>
   );
 }

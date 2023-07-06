@@ -17,7 +17,7 @@
 import { FloatFcMenu } from '@fc-components/menu';
 import React, { FC, useState, useEffect, useContext } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import Icon, { AimOutlined } from '@ant-design/icons';
+import Icon from '@ant-design/icons';
 import _ from 'lodash';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
@@ -94,7 +94,7 @@ const getMenuList = (t) => {
           label: t('快捷视图'),
         },
         {
-          key: '/recording-rules',
+          key: import.meta.env['VITE_IS_DS_SETTING'] ? '/plus-recording-rules' : '/recording-rules',
           label: t('记录规则'),
         },
       ],
@@ -129,7 +129,8 @@ const getMenuList = (t) => {
     },
     {
       key: 'targets',
-      icon: <AimOutlined />,
+      icon: <IconFont type='icon-Menu_Infrastructure' />,
+      activeIcon: <Icon component={menuIcon.Infrastructure as any} />,
       label: t('基础设施'),
       children: [
         {

@@ -25,7 +25,7 @@ const zh_CN = {
     title: '監控名額',
     search_placeholder: '蒐索,空格分隔多個關鍵字',
     clear: '清空圖表',
-    noData: '暫無名額數據,請選擇左側Labels',
+    noData: '暫無名額數據,請選擇Labels',
   },
   graph: {
     function: '計算函數',

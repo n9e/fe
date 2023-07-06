@@ -78,6 +78,7 @@ const en_US = {
     allValue: 'Custom all value',
     textbox: {
       defaultValue: 'Default value',
+      defaultValue_tip: 'Optional, only as default on initial load',
     },
     custom: {
       definition: 'Custom value',
@@ -89,6 +90,8 @@ const en_US = {
     datasource: {
       definition: 'Datasource type',
       defaultValue: 'Default value',
+      regex: 'Datasource name filter',
+      regex_tip: 'Optional, can filter options or extract values by regex',
     },
   },
   row: {

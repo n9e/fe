@@ -295,7 +295,7 @@ const PageTable: React.FC<Props> = ({ bgid }) => {
         </li>
       </ul>
     );
-  }, [selectRowKeys, t]);
+  }, [selectRowKeys, t, curBusiId]);
 
   const editModalFinish = async (isOk, fieldsData?) => {
     if (isOk) {

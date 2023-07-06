@@ -97,7 +97,7 @@ export function mappingsToFields(mappings: Mappings, type?: string) {
             fields.push(`${prefix}${key}`);
           }
         } else {
-          loop(item, `${key}.`);
+          loop(item, `${prefix}${key}.`);
         }
       });
     }
