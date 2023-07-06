@@ -1,6 +1,6 @@
 {
   "name": "n9e-fe",
-  "version": "6.0.0-ga.12",
+  "version": "6.0.0-ga.13",
   "scripts": {
     "dev": "vite --port 8765 --host",
     "dev:advanced": "vite --port 8765 --host --mode advanced",
@@ -38,7 +38,7 @@
     "diff": "^4.0.2",
     "dompurify": "^2.4.4",
     "i18next": "20.3.2",
-    "jsencrypt":"^3.3.2",
+    "jsencrypt": "^3.3.2",
     "json-2-csv": "^3.18.0",
     "lezer": "^0.13.5",
     "lezer-promql": "^0.22.0",
