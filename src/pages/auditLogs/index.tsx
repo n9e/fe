@@ -104,6 +104,7 @@ export default function index() {
               <Form.Item name='username' noStyle>
                 <Select
                   placeholder="请选择用户名"
+                  showSearch
                   allowClear
                   style={{ minWidth: 120 }}
                   onChange={(val) => {
@@ -112,7 +113,7 @@ export default function index() {
                 >
                   {userList.map((item) => (
                     <Select.Option key={item.username} value={item.username}>
-                      {item.nickname}
+                      {item.username}
                     </Select.Option>
                   ))}
                 </Select>
