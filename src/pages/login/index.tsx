@@ -21,6 +21,9 @@ import { PictureOutlined, UserOutlined, LockOutlined } from '@ant-design/icons';
 import { ifShowCaptcha, getCaptcha, getSsoConfig, getRedirectURL, getRedirectURLCAS, getRedirectURLOAuth, authLogin, getRSAConfig } from '@/services/login';
 import './login.less';
 
+// @ts-ignore
+import useSsoWay from 'plus:/parcels/SSOConfigs/useSsoWay';
+
 import { useTranslation } from 'react-i18next';
 import { RsaEncry } from '@/utils/rsa';
 
@@ -54,6 +57,7 @@ export default function Login() {
       }
     });
   };
+  useSsoWay();
 
   useEffect(() => {
     getSsoConfig().then((res) => {
