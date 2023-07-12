@@ -15,8 +15,8 @@
  *
  */
 import React, { useContext, useRef, useState } from 'react';
-import { Button, Input, message, Modal, Select, Space, Row, Col } from 'antd';
-import { AlertOutlined, ExclamationCircleOutlined, SearchOutlined, AppstoreOutlined, UnorderedListOutlined } from '@ant-design/icons';
+import { Button, Input, message, Modal, Select, Space, Row, Col, Dropdown, Menu } from 'antd';
+import { AlertOutlined, ExclamationCircleOutlined, SearchOutlined, AppstoreOutlined, UnorderedListOutlined, DownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import AdvancedWrap from '@/components/AdvancedWrap';
@@ -30,6 +30,9 @@ import Table from './Table';
 import { hoursOptions } from './constants';
 import './locale';
 import './index.less';
+
+// @ts-ignore
+import BatchAckBtn from 'plus:/parcels/Event/Acknowledge/BatchAckBtn';
 
 const { confirm } = Modal;
 export const SeverityColor = ['red', 'orange', 'yellow', 'green'];
@@ -234,30 +237,44 @@ const Event: React.FC = () => {
           />
         </Space>
         <Col
-          flex='100px'
+          flex='200px'
           style={{
             display: 'flex',
             justifyContent: 'flex-end',
           }}
         >
           {view === 'list' && (
-            <Button
-              danger
-              style={{ marginRight: 8 }}
-              disabled={selectedRowKeys.length === 0}
-              onClick={() =>
-                deleteAlertEventsModal(
-                  selectedRowKeys,
-                  () => {
-                    setSelectedRowKeys([]);
-                    setRefreshFlag(_.uniqueId('refresh_'));
-                  },
-                  t,
-                )
+            <Dropdown
+              overlay={
+                <Menu>
+                  <Menu.Item
+                    disabled={selectedRowKeys.length === 0}
+                    onClick={() =>
+                      deleteAlertEventsModal(
+                        selectedRowKeys,
+                        () => {
+                          setSelectedRowKeys([]);
+                          setRefreshFlag(_.uniqueId('refresh_'));
+                        },
+                        t,
+                      )
+                    }
+                  >
+                    {t('common:btn.batch_delete')}{' '}
+                  </Menu.Item>
+                  <BatchAckBtn
+                    selectedIds={selectedRowKeys}
+                    onOk={() => {
+                      setSelectedRowKeys([]);
+                      setRefreshFlag(_.uniqueId('refresh_'));
+                    }}
+                  />
+                </Menu>
               }
+              trigger={['click']}
             >
-              {t('common:btn.batch_delete')}
-            </Button>
+              <Button style={{ marginRight: 8 }}>{t('batch_btn')}</Button>
+            </Dropdown>
           )}
           <AutoRefresh
             onRefresh={() => {

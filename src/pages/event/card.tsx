@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useLayoutEffect, useRef, useImperativeHandle, useContext } from 'react';
-import { Button, Row, Col, Drawer, Tag, Table } from 'antd';
+import { Button, Row, Col, Drawer, Tag, Table, Dropdown, Menu } from 'antd';
 import { useHistory } from 'react-router';
 import { ReactNode } from 'react-markdown/lib/react-markdown';
 import _, { throttle } from 'lodash';
@@ -12,6 +12,12 @@ import { CommonStateContext } from '@/App';
 import { SeverityColor, deleteAlertEventsModal } from './index';
 import CardLeft from './cardLeft';
 import './index.less';
+
+// @ts-ignore
+import BatchAckBtn from 'plus:/parcels/Event/Acknowledge/BatchAckBtn';
+// @ts-ignore
+import AckBtn from 'plus:/parcels/Event/Acknowledge/AckBtn';
+
 interface Props {
   filter: any;
   header: ReactNode;
@@ -148,10 +154,16 @@ function Card(props: Props, ref) {
     {
       title: t('common:table.operations'),
       dataIndex: 'operate',
-      width: 120,
+      width: 200,
       render(value, record) {
         return (
           <>
+            <AckBtn
+              data={record}
+              onOk={() => {
+                fetchCardDetail(openedCard!);
+              }}
+            />
             <Button
               size='small'
               type='link'
@@ -193,6 +205,17 @@ function Card(props: Props, ref) {
     },
   ];
 
+  if (import.meta.env.VITE_IS_DS_SETTING === 'true') {
+    columns.splice(4, 0, {
+      title: t('status'),
+      dataIndex: 'status',
+      width: 100,
+      render: (value) => {
+        return t(`status_${value}`) as string;
+      },
+    });
+  }
+
   const fetchCardDetail = (card: CardType) => {
     setVisible(true);
     setOpenedCard(card);
@@ -225,22 +248,38 @@ function Card(props: Props, ref) {
         title={
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span>{openedCard?.title}</span>
-            <Button
-              danger
+            <Dropdown
               disabled={selectedRowKeys.length === 0}
-              onClick={() =>
-                deleteAlertEventsModal(
-                  selectedRowKeys,
-                  () => {
-                    setSelectedRowKeys([]);
-                    fetchCardDetail(openedCard!);
-                  },
-                  t,
-                )
+              overlay={
+                <Menu>
+                  <Menu.Item
+                    disabled={selectedRowKeys.length === 0}
+                    onClick={() =>
+                      deleteAlertEventsModal(
+                        selectedRowKeys,
+                        () => {
+                          setSelectedRowKeys([]);
+                          fetchCardDetail(openedCard!);
+                        },
+                        t,
+                      )
+                    }
+                  >
+                    {t('common:btn.batch_delete')}{' '}
+                  </Menu.Item>
+                  <BatchAckBtn
+                    selectedIds={selectedRowKeys}
+                    onOk={() => {
+                      setSelectedRowKeys([]);
+                      fetchCardDetail(openedCard!);
+                    }}
+                  />
+                </Menu>
               }
+              trigger={['click']}
             >
-              {t('common:btn.batch_delete')}
-            </Button>
+              <Button style={{ marginRight: 8 }}>{t('batch_btn')}</Button>
+            </Dropdown>
           </div>
         }
         placement='right'
