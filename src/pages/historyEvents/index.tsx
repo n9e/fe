@@ -21,14 +21,15 @@ import moment from 'moment';
 import _ from 'lodash';
 import { useAntdTable } from 'ahooks';
 import { Input, Tag, Button, Space, Table, Select, message } from 'antd';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import queryString from 'query-string';
 import AdvancedWrap from '@/components/AdvancedWrap';
 import PageLayout from '@/components/pageLayout';
 import RefreshIcon from '@/components/RefreshIcon';
 import { hoursOptions } from '@/pages/event/constants';
 import { CommonStateContext } from '@/App';
 import exportEvents, { downloadFile } from './exportEvents';
-import { getEvents } from './services';
+import { getEvents, getEventsByIds } from './services';
 import { SeverityColor } from '../event';
 import '../event/index.less';
 import './locale';
@@ -47,6 +48,7 @@ export const setDefaultHours = (hours: number) => {
 
 const Event: React.FC = () => {
   const { t } = useTranslation('AlertHisEvents');
+  const query = queryString.parse(useLocation().search);
   const { groupedDatasourceList, busiGroups, datasourceList } = useContext(CommonStateContext);
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
   const [filter, setFilter] = useState<{
@@ -340,6 +342,14 @@ const Event: React.FC = () => {
   }
 
   const fetchData = ({ current, pageSize }) => {
+    if (query.ids && typeof query.ids === 'string') {
+      return getEventsByIds(query.ids).then((res) => {
+        return {
+          total: typeof query.ids === 'string' ? _.split(query.ids, ',').length : 0,
+          list: res.dat,
+        };
+      });
+    }
     return getEvents({
       p: current,
       limit: pageSize,
@@ -361,7 +371,7 @@ const Event: React.FC = () => {
     <PageLayout icon={<AlertOutlined />} title={t('title')}>
       <div className='event-content'>
         <div className='table-area'>
-          {renderLeftHeader()}
+          {!query.ids && renderLeftHeader()}
           <Table
             size='small'
             columns={columns}
