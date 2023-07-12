@@ -16,7 +16,7 @@
  */
 import React, { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Tag, Button, Table } from 'antd';
+import { Tag, Button, Table, Space } from 'antd';
 import { useHistory } from 'react-router-dom';
 import moment from 'moment';
 import _ from 'lodash';
@@ -26,6 +26,9 @@ import { CommonStateContext } from '@/App';
 import { getEvents } from './services';
 import { deleteAlertEventsModal } from './index';
 import { SeverityColor } from './index';
+
+// @ts-ignore
+import AckBtn from 'plus:/parcels/Event/Acknowledge/AckBtn';
 
 interface IProps {
   filterObj: any;
@@ -55,6 +58,7 @@ export default function TableCpt(props: IProps) {
     {
       title: t('common:datasource.id'),
       dataIndex: 'datasource_id',
+      width: 100,
       render: (value, record) => {
         return _.find(groupedDatasourceList?.[record.cate], { id: value })?.name || '-';
       },
@@ -106,10 +110,16 @@ export default function TableCpt(props: IProps) {
     {
       title: t('common:table.operations'),
       dataIndex: 'operate',
-      width: 120,
+      width: 200,
       render(value, record) {
         return (
           <>
+            <AckBtn
+              data={record}
+              onOk={() => {
+                setRefreshFlag(_.uniqueId('refresh_'));
+              }}
+            />
             <Button
               size='small'
               type='link'
@@ -150,6 +160,16 @@ export default function TableCpt(props: IProps) {
       },
     },
   ];
+  if (import.meta.env.VITE_IS_DS_SETTING === 'true') {
+    columns.splice(4, 0, {
+      title: t('status'),
+      dataIndex: 'status',
+      width: 100,
+      render: (value) => {
+        return t(`status_${value}`) as string;
+      },
+    });
+  }
   const fetchData = ({ current, pageSize }) => {
     return getEvents({
       p: current,

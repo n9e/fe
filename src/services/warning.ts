@@ -361,7 +361,11 @@ export const getAlertCards = function (params) {
 };
 
 export const getCardDetail = function (ids) {
-  return request('/api/n9e/alert-cur-events/card/details', {
+  let url = '/api/n9e/alert-cur-events/card/details';
+  if (import.meta.env.VITE_IS_DS_SETTING === 'true') {
+    url = '/api/n9e-plus/alert-cur-events/card/details';
+  }
+  return request(url, {
     method: RequestMethod.Post,
     data: { ids },
   });

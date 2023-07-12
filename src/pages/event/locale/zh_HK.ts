@@ -23,6 +23,15 @@ const zh_HK = {
   aggregate_rule_name: '規則名稱',
   public: '公開',
   isPublic: '是否公開',
+  status: '是否认领',
+  status_1: '已认领',
+  status_0: '未认领',
+  batch_btn: '批量操作',
+  batch_claim: '批量认领',
+  batch_unclaim: '批量取消认领',
+  claim: '认领',
+  unclaim: '取消认领',
+
   delete_confirm: {
     title: '刪除告警事件',
     content: '通常只有在確定監控資料永遠不再上報的情況下（比如調整了監控資料標籤，或者機器下線）才刪除告警事件，因為相關告警事件永遠無法自動恢復了，你確定要這麼做嗎？',
