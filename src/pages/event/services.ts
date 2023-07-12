@@ -3,7 +3,11 @@ import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 
 export function getEvents(params) {
-  return request('/api/n9e/alert-cur-events/list', {
+  let url = '/api/n9e/alert-cur-events/list';
+  if (import.meta.env.VITE_IS_DS_SETTING === 'true') {
+    url = '/api/n9e-plus/alert-cur-events/list';
+  }
+  return request(url, {
     method: RequestMethod.Get,
     params,
   });
