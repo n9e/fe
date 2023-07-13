@@ -27,6 +27,8 @@ const zh_HK = {
   prod: '監控型別',
   subscribe_btn: '訂閱',
   basic_configs: '基礎配置',
+  severities: '訂閱事件等級',
+  severities_msg: '訂閱事件等級不能為空',
 };
 
 export default zh_HK;

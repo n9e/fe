@@ -138,6 +138,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
         initialValues={{
           ...detail,
           prod: detail.prod || 'host',
+          severities: detail.severities || [1, 2, 3],
           redefine_severity: detail?.redefine_severity ? true : false,
           redefine_channels: detail?.redefine_channels ? true : false,
           redefine_webhooks: detail?.redefine_webhooks ? true : false,
@@ -192,6 +193,25 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
                 );
               }
             }}
+          </Form.Item>
+
+          <Form.Item label={t('severities')} name='severities' initialValue={[1, 2, 3]} rules={[{ required: true, message: t('severities_msg') }]}>
+            <Checkbox.Group
+              options={[
+                {
+                  label: t('common:severity.1'),
+                  value: 1,
+                },
+                {
+                  label: t('common:severity.2'),
+                  value: 2,
+                },
+                {
+                  label: t('common:severity.3'),
+                  value: 3,
+                },
+              ]}
+            />
           </Form.Item>
 
           <Form.Item label={t('sub_rule_name')}>

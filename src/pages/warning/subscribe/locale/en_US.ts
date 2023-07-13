@@ -27,5 +27,7 @@ const en_US = {
   prod: 'Type',
   subscribe_btn: 'Subscribe',
   basic_configs: 'Basic',
+  severities: 'Severity',
+  severities_msg: 'Severity is required',
 };
 export default en_US;

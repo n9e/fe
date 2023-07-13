@@ -27,5 +27,7 @@ const zh_CN = {
   prod: '监控类型',
   subscribe_btn: '订阅',
   basic_configs: '基础配置',
+  severities: '订阅事件等级',
+  severities_msg: '订阅事件等级不能为空',
 };
 export default zh_CN;

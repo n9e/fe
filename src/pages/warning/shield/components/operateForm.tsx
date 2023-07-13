@@ -15,7 +15,7 @@
  *
  */
 import React, { useState, useEffect, useMemo, useRef, useContext } from 'react';
-import { Form, Input, Card, Select, Col, Button, Row, message, DatePicker, Tooltip, Spin, Space, Radio, TimePicker } from 'antd';
+import { Form, Input, Card, Select, Col, Button, Row, message, DatePicker, Tooltip, Spin, Space, Radio, TimePicker, Checkbox } from 'antd';
 import { QuestionCircleFilled, PlusCircleOutlined, CaretDownOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router';
 import { useTranslation } from 'react-i18next';
@@ -208,6 +208,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
           return item;
         }),
         prod: detail.prod || 'host',
+        severities: detail.severities || [1, 2, 3],
         btime: detail?.btime ? moment(detail.btime * 1000) : moment(btimeDefault),
         etime: detail?.etime ? moment(detail.etime * 1000) : moment(etimeDefault),
         mute_time_type: detail?.mute_time_type || 0,
@@ -284,6 +285,24 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
               );
             }
           }}
+        </Form.Item>
+        <Form.Item label={t('severities')} name='severities' initialValue={[1, 2, 3]} rules={[{ required: true, message: t('severities_msg') }]}>
+          <Checkbox.Group
+            options={[
+              {
+                label: t('common:severity.1'),
+                value: 1,
+              },
+              {
+                label: t('common:severity.2'),
+                value: 2,
+              },
+              {
+                label: t('common:severity.3'),
+                value: 3,
+              },
+            ]}
+          />
         </Form.Item>
         <Form.Item label={t('mute_type.label')} name='mute_time_type'>
           <Radio.Group>
