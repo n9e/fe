@@ -17,7 +17,7 @@
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import _ from 'lodash';
-import { Input, DatePicker, List } from 'antd';
+import { Input, DatePicker, List, Space } from 'antd';
 import { getPromData } from './services';
 import { QueryStats } from './components/QueryStatsView';
 
@@ -56,19 +56,36 @@ function getListItemLabel(resultType, record) {
     </>
   );
 }
+function toFixedNoRound(num, fixed) {
+  if (typeof num !== 'number') return num;
+  const re = new RegExp(`^-?\\d+(?:\.\\d{0,${fixed || -1}})?`);
+  const arr = num.toString().match(re);
+  if (arr) return arr[0];
+  return num.toString();
+}
+
 function getListItemValue(resultType, record) {
   if (resultType === 'scalar' || resultType === 'string') return _.get(record, '[1]') || '-';
   if (resultType === 'vector') {
     return _.get(record, 'value[1]', '-');
   }
   if (resultType === 'matrix' || resultType === 'streams') {
-    return _.map(_.get(record, 'values'), (value, i) => {
-      return (
-        <div key={i}>
-          {_.get(value, '[1]', '-')} @{_.get(value, '[0]', '-')}
-        </div>
-      );
-    });
+    const values = _.get(record, 'values');
+    return (
+      <div style={{ display: 'table' }}>
+        {_.map(values, (value, i: number) => {
+          const timestamp = _.get(value, 0);
+          return (
+            <div key={i} style={{ display: 'table-row' }}>
+              <span style={{ display: 'table-cell', padding: '0 4px' }}>{_.get(value, 1, '-')}</span>
+              <span style={{ display: 'table-cell', padding: '0 4px' }}>@{timestamp || '-'}</span>
+              <span style={{ display: 'table-cell', padding: '0 4px' }}>{moment.unix(timestamp).format('YYYY-MM-DD HH:mm:ss')}</span>
+              <span style={{ display: 'table-cell', padding: '0 4px' }}>{i > 0 ? `+${toFixedNoRound(timestamp - _.get(values[i - 1], 0), 0)}` : ''}</span>
+            </div>
+          );
+        })}
+      </div>
+    );
   }
 }
 
@@ -165,9 +182,7 @@ export default function Table(props: IProps) {
         renderItem={(item) => {
           return (
             <List.Item>
-              { data?.resultType != 'streams' &&
-                <div>{getListItemLabel(data?.resultType, item)}</div>
-              }
+              {data?.resultType != 'streams' && <div>{getListItemLabel(data?.resultType, item)}</div>}
               <div>{getListItemValue(data?.resultType, item)}</div>
             </List.Item>
           );

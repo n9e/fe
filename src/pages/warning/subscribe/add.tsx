@@ -21,12 +21,10 @@ import { useTranslation } from 'react-i18next';
 import './index.less';
 
 const AddSubscribe: React.FC = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('alertSubscribes');
   return (
-    <PageLayout title={t('订阅规则')} showBack>
-      <div className='shield-add'>
-        <OperateForm />
-      </div>
+    <PageLayout title={t('title')} showBack>
+      <OperateForm />
     </PageLayout>
   );
 };

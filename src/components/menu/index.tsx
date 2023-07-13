@@ -229,6 +229,13 @@ const getMenuList = (t) => {
         label: t('采集配置'),
       });
     }
+    const systemMenu = _.find(menuList, (item) => item.key === 'help');
+    if (systemMenu) {
+      systemMenu.children.splice(6, 0, {
+        key: '/global-muting-rules',
+        label: t('全局屏蔽'),
+      });
+    }
   }
   return menuList;
 };

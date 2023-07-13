@@ -140,6 +140,7 @@ const Shield: React.FC = () => {
     {
       title: t('time'),
       dataIndex: 'btime',
+      fixed: 'right',
       render: (text: number, record: shieldItem) => {
         if (record.mute_time_type === 0) {
           return (
@@ -180,6 +181,7 @@ const Shield: React.FC = () => {
     {
       title: t('common:table.enabled'),
       dataIndex: 'disabled',
+      fixed: 'right',
       render: (disabled, record) => (
         <Switch
           checked={disabled === strategyStatus.Enable}
@@ -206,6 +208,7 @@ const Shield: React.FC = () => {
       title: t('common:table.operations'),
       width: '98px',
       dataIndex: 'operation',
+      fixed: 'right',
       render: (text: undefined, record: shieldItem) => {
         return (
           <>
@@ -363,6 +366,7 @@ const Shield: React.FC = () => {
             <Table
               size='small'
               rowKey='id'
+              scroll={{ x: 'max-content' }}
               pagination={{
                 total: currentShieldData.length,
                 showQuickJumper: true,

@@ -23,6 +23,14 @@ const en_US = {
   public: 'Public',
   isPublic: 'Is Public',
   prod: 'Type',
+  status: 'Status',
+  status_1: 'Claimed',
+  status_0: 'Unclaimed',
+  batch_btn: 'Batch Operation',
+  batch_claim: 'Batch Claim',
+  batch_unclaim: 'Batch Unclaim',
+  claim: 'Claim',
+  unclaim: 'Unclaim',
 
   delete_confirm: {
     title: 'Delete Alert Event',

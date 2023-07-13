@@ -36,7 +36,7 @@ export default function ProdSelect({ label, onChange = () => {} }: IProps) {
           ];
         }
         return (
-          <Form.Item shouldUpdate={(prevValues, currentValues) => prevValues.prod !== currentValues.prod}>
+          <Form.Item shouldUpdate={(prevValues, currentValues) => prevValues.prod !== currentValues.prod} noStyle>
             {({ getFieldValue }) => {
               const prod = getFieldValue('prod');
               return (

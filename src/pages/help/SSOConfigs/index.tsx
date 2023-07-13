@@ -74,7 +74,7 @@ export default function index() {
                         const curItem = _.find(data, (i) => i.id === item.id);
                         if (curItem) {
                           putSSOConfig(curItem).then(() => {
-                            message.success('common:success.save');
+                            message.success(t('common:success.save'));
                           });
                         }
                       }}
