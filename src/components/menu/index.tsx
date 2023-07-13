@@ -231,7 +231,7 @@ const getMenuList = (t) => {
     }
     const systemMenu = _.find(menuList, (item) => item.key === 'help');
     if (systemMenu) {
-      systemMenu.children?.push({
+      systemMenu.children.splice(6, 0, {
         key: '/global-muting-rules',
         label: t('全局屏蔽'),
       });
