@@ -106,6 +106,29 @@ export function mappingsToFields(mappings: Mappings, type?: string) {
   return _.sortBy(_.union(fields));
 }
 
+export function mappingsToFullFields(mappings: Mappings, type?: string) {
+  const fields: any[] = [];
+  _.forEach(mappings, (item: any) => {
+    function loop(mappings, prefix = '') {
+      // mappings?.doc?.properties 为了兼容 6.x 版本接口
+      _.forEach(mappings?.doc?.properties || mappings?.properties, (item, key) => {
+        if (item.type) {
+          if (typeMap[item.type] === type || !type) {
+            fields.push({
+              ...item,
+              name: `${prefix}${key}`,
+            });
+          }
+        } else {
+          loop(item, `${prefix}${key}.`);
+        }
+      });
+    }
+    loop(item.mappings);
+  });
+  return _.sortBy(_.union(fields));
+}
+
 export function normalizeLogsQueryRequestBody(params: any) {
   const header = {
     search_type: 'query_then_fetch',

@@ -18,7 +18,7 @@
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 import _ from 'lodash';
-import { mappingsToFields, flattenHits } from './utils';
+import { mappingsToFields, mappingsToFullFields, flattenHits } from './utils';
 
 export function getIndices(datasourceValue: number) {
   return request(`/api/n9e/proxy/${datasourceValue}/_cat/indices`, {
@@ -31,6 +31,23 @@ export function getIndices(datasourceValue: number) {
   });
 }
 
+export function getFullIndices(datasourceValue: number, target = '*', hide_system_indices = false) {
+  const params: any = {
+    format: 'json',
+    s: 'index',
+  };
+  if (hide_system_indices) {
+    params.expand_wildcards = 'all';
+  }
+  return request(`/api/n9e/proxy/${datasourceValue}/_cat/indices/${target}`, {
+    method: RequestMethod.Get,
+    params,
+    silence: true,
+  }).then((res) => {
+    return res;
+  });
+}
+
 export function getFields(datasourceValue: number, index?: string, type?: string) {
   const url = index ? `/${index}/_mapping` : '/_mapping';
   return request(`/api/n9e/proxy/${datasourceValue}${url}?pretty=true`, {
@@ -40,6 +57,25 @@ export function getFields(datasourceValue: number, index?: string, type?: string
     return {
       allFields: mappingsToFields(res),
       fields: type ? mappingsToFields(res, type) : [],
+    };
+  });
+}
+
+export function getFullFields(datasourceValue: number, index?: string, type?: string) {
+  const url = index ? `/${index}/_mapping` : '/_mapping';
+  return request(`/api/n9e/proxy/${datasourceValue}${url}?pretty=true`, {
+    method: RequestMethod.Get,
+    silence: true,
+  }).then((res) => {
+    return {
+      allFields: _.unionBy(mappingsToFullFields(res), (item) => {
+        return item.name + item.type;
+      }),
+      fields: type
+        ? _.unionBy(mappingsToFullFields(res, type), (item) => {
+            return item.name + item.type;
+          })
+        : [],
     };
   });
 }
