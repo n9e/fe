@@ -3,6 +3,7 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Tag } from 'antd';
 import { DownOutlined, RightOutlined, PlusCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { getFieldLabel } from '../../Elasticsearch/utils';
 
 interface IProps {
   style?: React.CSSProperties;
@@ -11,12 +12,8 @@ interface IProps {
   type: 'selected' | 'available';
   onSelect?: (field: string) => void;
   onRemove?: (field: string) => void;
+  fieldConfig?: any;
 }
-
-const titleMap = {
-  selected: '已选字段',
-  available: '可选字段',
-};
 
 const operIconMap = {
   selected: <CloseCircleOutlined />,
@@ -25,7 +22,7 @@ const operIconMap = {
 
 export default function FieldsList(props: IProps) {
   const { t } = useTranslation('explorer');
-  const { style = {}, fieldsSearch, fields, type, onSelect, onRemove } = props;
+  const { style = {}, fieldsSearch, fields, type, onSelect, onRemove, fieldConfig } = props;
   const [expanded, setExpanded] = React.useState<boolean>(true);
   const filteredFields = _.filter(fields, (field) => {
     if (fieldsSearch) {
@@ -68,7 +65,7 @@ export default function FieldsList(props: IProps) {
                   }
                 }}
               >
-                <span className='es-discover-fields-item-content'>{item}</span>
+                <span className='es-discover-fields-item-content'>{getFieldLabel(item, fieldConfig)}</span>
                 <span className='es-discover-fields-item-oper'>{operIconMap[type]}</span>
               </div>
             );

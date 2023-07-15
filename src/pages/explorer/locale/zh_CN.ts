@@ -7,6 +7,10 @@ const zh_CN = {
     available: '可选字段',
     selected: '已选字段',
     interval: '间隔',
+    mode: {
+      indexPatterns: 'Index Patterns',
+      indices: 'Indices',
+    },
   },
 };
 export default zh_CN;

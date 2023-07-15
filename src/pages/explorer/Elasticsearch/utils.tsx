@@ -1,12 +1,37 @@
 import React from 'react';
 import _ from 'lodash';
+import moment from 'moment';
 import flatten from './flatten';
 
 function localeCompareFunc(a, b) {
   return a.localeCompare(b);
 }
 
-export function getColumnsFromFields(selectedFields: string[], dateField?: string) {
+export function getFieldLabel(field: string, fieldConfig?: any) {
+  return fieldConfig?.attrs?.[field]?.alias || field;
+}
+
+export function getFieldValue(fieldKey, fieldValue, fieldConfig?: any) {
+  const format = fieldConfig?.formatMap?.[fieldKey];
+  if (format && format?.type === 'date' && format?.params?.pattern) {
+    return moment(fieldValue).format(format?.params?.pattern);
+  }
+  return fieldValue;
+}
+
+export function normalizeLogs(logs: { [index: string]: string }, fieldConfig?: any) {
+  const logsClone = _.cloneDeep(logs);
+  _.forEach(logsClone, (item, key) => {
+    const label = getFieldLabel(key, fieldConfig);
+    logsClone[label] = getFieldValue(key, item, fieldConfig);
+    if (label !== key) {
+      delete logsClone[key];
+    }
+  });
+  return logsClone;
+}
+
+export function getColumnsFromFields(selectedFields: string[], dateField?: string, fieldConfig?: any) {
   let columns: any[] = [];
   if (_.isEmpty(selectedFields)) {
     columns = [
@@ -17,10 +42,11 @@ export function getColumnsFromFields(selectedFields: string[], dateField?: strin
           return (
             <dl className='es-discover-logs-row'>
               {_.map(text, (val, key) => {
+                const label = getFieldLabel(key, fieldConfig);
                 const value = _.isArray(val) ? _.join(val, ',') : val;
                 return (
-                  <React.Fragment key={key}>
-                    <dt>{key}:</dt> <dd>{value}</dd>
+                  <React.Fragment key={label}>
+                    <dt>{label}:</dt> <dd>{value}</dd>
                   </React.Fragment>
                 );
               })}
@@ -32,11 +58,12 @@ export function getColumnsFromFields(selectedFields: string[], dateField?: strin
   } else {
     columns = _.map(selectedFields, (item) => {
       return {
-        title: item,
+        title: getFieldLabel(item, fieldConfig),
         dataIndex: 'fields',
         key: item,
         render: (fields) => {
-          const value = _.isArray(fields[item]) ? _.join(fields[item], ',') : fields[item];
+          const fieldVal = getFieldValue(item, fields[item], fieldConfig);
+          const value = _.isArray(fieldVal) ? _.join(fieldVal, ',') : fieldVal;
           return value;
         },
         sorter: (a, b) => localeCompareFunc(_.join(_.get(a, `fields[${item}]`, '')), _.join(_.get(b, `fields[${item}]`, ''))),
@@ -50,7 +77,17 @@ export function getColumnsFromFields(selectedFields: string[], dateField?: strin
       key: 'time',
       width: 200,
       render: (fields) => {
-        return fields[dateField];
+        const format = fieldConfig?.formatMap?.[dateField];
+        return getFieldValue(dateField, fields[dateField], {
+          formatMap: {
+            [dateField]: {
+              type: 'date',
+              params: {
+                pattern: format?.params?.pattern || 'YYYY-MM-DD HH:mm:ss',
+              },
+            },
+          },
+        });
       },
       defaultSortOrder: 'descend',
       sortDirections: ['ascend', 'descend', 'ascend'],

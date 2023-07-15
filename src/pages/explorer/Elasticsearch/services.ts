@@ -31,12 +31,12 @@ export function getIndices(datasourceValue: number) {
   });
 }
 
-export function getFullIndices(datasourceValue: number, target = '*', hide_system_indices = false) {
+export function getFullIndices(datasourceValue: number, target = '*', allow_hide_system_indices = false) {
   const params: any = {
     format: 'json',
     s: 'index',
   };
-  if (hide_system_indices) {
+  if (allow_hide_system_indices) {
     params.expand_wildcards = 'all';
   }
   return request(`/api/n9e/proxy/${datasourceValue}/_cat/indices/${target}`, {
@@ -48,10 +48,17 @@ export function getFullIndices(datasourceValue: number, target = '*', hide_syste
   });
 }
 
-export function getFields(datasourceValue: number, index?: string, type?: string) {
+export function getFields(datasourceValue: number, index?: string, type?: string, allow_hide_system_indices = false) {
   const url = index ? `/${index}/_mapping` : '/_mapping';
-  return request(`/api/n9e/proxy/${datasourceValue}${url}?pretty=true`, {
+  return request(`/api/n9e/proxy/${datasourceValue}${url}`, {
     method: RequestMethod.Get,
+    params: _.omit(
+      {
+        expand_wildcards: 'all',
+        pretty: true,
+      },
+      allow_hide_system_indices ? [] : ['expand_wildcards'],
+    ),
     silence: true,
   }).then((res) => {
     return {
@@ -61,10 +68,17 @@ export function getFields(datasourceValue: number, index?: string, type?: string
   });
 }
 
-export function getFullFields(datasourceValue: number, index?: string, type?: string) {
+export function getFullFields(datasourceValue: number, index?: string, type?: string, allow_hide_system_indices = false) {
   const url = index ? `/${index}/_mapping` : '/_mapping';
-  return request(`/api/n9e/proxy/${datasourceValue}${url}?pretty=true`, {
+  return request(`/api/n9e/proxy/${datasourceValue}${url}`, {
     method: RequestMethod.Get,
+    params: _.omit(
+      {
+        expand_wildcards: 'all',
+        pretty: true,
+      },
+      allow_hide_system_indices ? [] : ['expand_wildcards'],
+    ),
     silence: true,
   }).then((res) => {
     return {

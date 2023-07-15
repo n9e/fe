@@ -143,7 +143,7 @@ const Panel = ({ removePanel, id, type, defaultCate }: IPanelProps) => {
             const datasourceCate = getFieldValue('datasourceCate');
             const datasourceValue = getFieldValue('datasourceValue');
             if (datasourceCate === DatasourceCateEnum.elasticsearch) {
-              return <Elasticsearch key={datasourceValue} datasourceValue={datasourceValue} form={form} />;
+              return <Elasticsearch key={datasourceValue} headerExtra={headerExtraRef.current} datasourceValue={datasourceValue} form={form} />;
             } else if (datasourceCate === DatasourceCateEnum.prometheus) {
               return <Prometheus key={datasourceValue} headerExtra={headerExtraRef.current} datasourceValue={datasourceValue} form={form} />;
             }

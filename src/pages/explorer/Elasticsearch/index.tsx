@@ -1,62 +1,86 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import _ from 'lodash';
 import moment from 'moment';
-import { useTranslation, Trans } from 'react-i18next';
-import { Space, Form, Input, AutoComplete, Tooltip, Button, Table, Empty, Spin, InputNumber, Select } from 'antd';
+import { useTranslation } from 'react-i18next';
+import { Table, Empty, Spin, InputNumber, Select, Radio } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
-import { QuestionCircleOutlined, DownOutlined, RightOutlined } from '@ant-design/icons';
+import { DownOutlined, RightOutlined } from '@ant-design/icons';
 import CodeMirror from '@uiw/react-codemirror';
 import { EditorView } from '@codemirror/view';
 import { json } from '@codemirror/lang-json';
 import { defaultHighlightStyle } from '@codemirror/highlight';
-import { useDebounceFn } from 'ahooks';
 import { useLocation } from 'react-router-dom';
-import { getIndices, getLogsQuery, getFields } from './services';
-import TimeRangePicker, { parseRange } from '@/components/TimeRangePicker';
+import { getLogsQuery } from './services';
+import { parseRange } from '@/components/TimeRangePicker';
 import Timeseries from '@/pages/dashboard/Renderer/Renderer/Timeseries';
 import metricQuery from './metricQuery';
-import { getColumnsFromFields } from './utils';
+import { getColumnsFromFields, normalizeLogs } from './utils';
 import FieldsSidebar from '../components/FieldsSidebar';
 import { normalizeLogsQueryRequestBody } from './utils';
+import QueryBuilder from './QueryBuilder';
+import QueryBuilderWithIndexPatterns from './QueryBuilderWithIndexPatterns';
 import './style.less';
 
 interface IProps {
+  headerExtra: HTMLDivElement | null;
   datasourceValue?: number;
   form: FormInstance;
 }
 
 const LOGS_LIMIT = 500;
 const TIME_FORMAT = 'YYYY.MM.DD HH:mm:ss';
+enum IMode {
+  indexPatterns = 'index-patterns',
+  indices = 'indices',
+}
 
-export default function index(props: IProps) {
+const ModeRadio = ({ mode, setMode }) => {
   const { t } = useTranslation('explorer');
-  const { datasourceValue, form } = props;
-  const params = new URLSearchParams(useLocation().search);
+  return (
+    <Radio.Group
+      value={mode}
+      onChange={(e) => {
+        setMode(e.target.value);
+      }}
+      buttonStyle='solid'
+    >
+      <Radio.Button value={IMode.indexPatterns}>{t('log.mode.indexPatterns')}</Radio.Button>
+      <Radio.Button value={IMode.indices}>{t('log.mode.indices')}</Radio.Button>
+    </Radio.Group>
+  );
+};
+
+const getFiltersArr = (params) => {
   const filtersArr: string[] = [];
   for (const [key, value] of params) {
     if (!['data_source_name', 'data_source_id', 'index_name', 'timestamp'].includes(key)) {
       filtersArr.push(`${key}:"${value}"`);
     }
   }
+  return filtersArr;
+};
 
-  const [indexOptions, setIndexOptions] = useState<any[]>([]);
-  const [indexSearch, setIndexSearch] = useState('');
+export default function index(props: IProps) {
+  const { t } = useTranslation('explorer');
+  const { headerExtra, datasourceValue, form } = props;
+  const params = new URLSearchParams(useLocation().search);
+  const filtersArr = getFiltersArr(params);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [series, setSeries] = useState<any[]>([]);
   const [displayTimes, setDisplayTimes] = useState('');
-  const [dateFields, setDateFields] = useState<string[]>([]);
   const [fields, setFields] = useState<string[]>([]);
   const [selectedFields, setSelectedFields] = useState<string[]>([]);
   const [interval, setInterval] = useState(1);
   const [intervalUnit, setIntervalUnit] = useState<'second' | 'min' | 'hour'>('min');
-  const totalRef = useRef(0);
   const sortOrder = useRef('desc');
   const timesRef =
     useRef<{
       start: number;
       end: number;
     }>();
+  const [mode, setMode] = useState<IMode>((localStorage.getItem('explorer_es_mode') as IMode) || IMode.indices);
 
   const fetchSeries = (values) => {
     if (timesRef.current) {
@@ -101,7 +125,6 @@ export default function index(props: IProps) {
               json: item._source,
             };
           });
-          totalRef.current = res.total;
           setData(newData);
           const tableEleNodes = document.querySelectorAll(`.es-discover-logs-table .ant-table-body`)[0];
           tableEleNodes?.scrollTo(0, 0);
@@ -114,28 +137,6 @@ export default function index(props: IProps) {
   };
 
   useEffect(() => {
-    if (datasourceValue) {
-      getIndices(datasourceValue).then((res) => {
-        const index = form.getFieldValue(['query', 'index']);
-        const indexOptions = _.map(res, (item) => {
-          return {
-            value: item,
-          };
-        });
-
-        if (!_.includes(_.map(indexOptions, 'value'), index) && !params.has('data_source_id')) {
-          form.setFieldsValue({
-            query: {
-              index: '',
-            },
-          });
-        }
-        setIndexOptions(indexOptions);
-      });
-    }
-  }, [datasourceValue, params.get('data_source_id')]);
-
-  useEffect(() => {
     // 假设携带数据源值时会同时携带其他的参数，并且触发一次查询
     if (params.get('data_source_id')) {
       form.setFieldsValue({
@@ -145,8 +146,6 @@ export default function index(props: IProps) {
           date_field: params.get('timestamp'),
         },
       });
-
-      onIndexChange(params.get('index_name'));
       fetchData();
     }
   }, [params.get('data_source_id')]);
@@ -155,155 +154,49 @@ export default function index(props: IProps) {
     fetchSeries(form.getFieldsValue());
   }, [interval, intervalUnit]);
 
-  const { run: onIndexChange } = useDebounceFn(
-    (val) => {
-      if (datasourceValue && val) {
-        getFields(datasourceValue, val, 'date').then((res) => {
-          const dateFiled = form.getFieldValue(['query', 'date_field']);
-          if (!_.includes(res.fields, dateFiled)) {
-            if (_.includes(res.fields, '@timestamp')) {
-              form.setFieldsValue({
-                query: {
-                  date_field: '@timestamp',
-                },
-              });
-            } else {
-              form.setFieldsValue({
-                query: {
-                  date_field: '',
-                },
-              });
-            }
-          }
-          setFields(res.allFields);
-          setDateFields(res.fields);
-        });
-      }
-    },
-    {
-      wait: 500,
-    },
-  );
-
   return (
     <div className='es-discover-container'>
-      <Space>
-        <Input.Group compact>
-          <span
-            className='ant-input-group-addon'
-            style={{
-              width: 70,
-              height: 32,
-              lineHeight: '32px',
+      {headerExtra ? (
+        createPortal(
+          <ModeRadio
+            mode={mode}
+            setMode={(newMode) => {
+              localStorage.setItem('explorer_es_mode', newMode);
+              setMode(newMode);
             }}
-          >
-            {t('datasource:es.index')}{' '}
-            <Tooltip title={<Trans ns='datasource' i18nKey='datasource:es.index_tip' components={{ 1: <br /> }} />}>
-              <QuestionCircleOutlined />
-            </Tooltip>
-          </span>
-          <Form.Item
-            name={['query', 'index']}
-            rules={[
-              {
-                required: true,
-                message: t('datasource:es.index_msg'),
-              },
-            ]}
-            validateTrigger='onBlur'
-            style={{ width: 190 }}
-          >
-            <AutoComplete
-              dropdownMatchSelectWidth={false}
-              style={{ minWidth: 100 }}
-              options={_.filter(indexOptions, (item) => {
-                if (indexSearch) {
-                  return _.includes(item.value, indexSearch);
-                }
-                return true;
-              })}
-              onSearch={(val) => {
-                setIndexSearch(val);
-              }}
-              onChange={(val) => {
-                onIndexChange(val);
-              }}
-            />
-          </Form.Item>
-        </Input.Group>
-        <Input.Group compact>
-          <span
-            className='ant-input-group-addon'
-            style={{
-              width: 90,
-              height: 32,
-              lineHeight: '32px',
-            }}
-          >
-            {t('datasource:es.filter')}{' '}
-            <a href='https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax ' target='_blank'>
-              <QuestionCircleOutlined />
-            </a>
-          </span>
-          <Form.Item name={['query', 'filter']} style={{ minWidth: 300 }}>
-            <Input />
-          </Form.Item>
-        </Input.Group>
-        <div style={{ display: 'flex' }}>
-          <Space>
-            <Input.Group compact>
-              <span
-                className='ant-input-group-addon'
-                style={{
-                  width: 90,
-                  height: 32,
-                  lineHeight: '32px',
-                }}
-              >
-                {t('datasource:es.date_field')}{' '}
-              </span>
-              <Form.Item
-                name={['query', 'date_field']}
-                initialValue='@timestamp'
-                style={{ width: 'calc(100% - 90px)' }}
-                rules={[
-                  {
-                    required: true,
-                    message: t('datasource:es.date_field_msg'),
-                  },
-                ]}
-              >
-                <Select dropdownMatchSelectWidth={false} style={{ width: 150 }} showSearch>
-                  {_.map(dateFields, (item) => {
-                    return (
-                      <Select.Option key={item} value={item}>
-                        {item}
-                      </Select.Option>
-                    );
-                  })}
-                </Select>
-              </Form.Item>
-            </Input.Group>
-            <Form.Item name={['query', 'range']} initialValue={{ start: 'now-1h', end: 'now' }}>
-              <TimeRangePicker />
-            </Form.Item>
-            <Form.Item>
-              <Button
-                type='primary'
-                onClick={() => {
-                  fetchData();
-                }}
-              >
-                {t('query_btn')}
-              </Button>
-            </Form.Item>
-          </Space>
-        </div>
-      </Space>
+          />,
+          headerExtra,
+        )
+      ) : (
+        <ModeRadio mode={mode} setMode={setMode} />
+      )}
+      {mode === IMode.indices && (
+        <QueryBuilder
+          onExecute={fetchData}
+          datasourceValue={datasourceValue}
+          form={form}
+          fields={fields}
+          setFields={setFields}
+          selectedFields={selectedFields}
+          setSelectedFields={setSelectedFields}
+        />
+      )}
+      {mode === IMode.indexPatterns && (
+        <QueryBuilderWithIndexPatterns
+          onExecute={fetchData}
+          datasourceValue={datasourceValue}
+          form={form}
+          fields={fields}
+          setFields={setFields}
+          selectedFields={selectedFields}
+          setSelectedFields={setSelectedFields}
+        />
+      )}
+
       <Spin spinning={loading}>
         {!_.isEmpty(data) ? (
           <div className='es-discover-content'>
-            <FieldsSidebar fields={fields} setFields={setFields} value={selectedFields} onChange={setSelectedFields} />
+            <FieldsSidebar fieldConfig={form.getFieldValue(['fieldConfig'])} fields={fields} setFields={setFields} value={selectedFields} onChange={setSelectedFields} />
             <div className='es-discover-main'>
               <div className='es-discover-chart'>
                 <div className='es-discover-chart-title'>
@@ -358,13 +251,13 @@ export default function index(props: IProps) {
                   className='es-discover-logs-table'
                   tableLayout='fixed'
                   rowKey='id'
-                  columns={getColumnsFromFields(selectedFields, form.getFieldValue(['query', 'date_field']))}
+                  columns={getColumnsFromFields(selectedFields, form.getFieldValue(['query', 'date_field']), form.getFieldValue(['fieldConfig']))}
                   dataSource={data}
                   expandable={{
                     expandedRowRender: (record) => {
                       let value = '';
                       try {
-                        value = JSON.stringify(record.json, null, 4);
+                        value = JSON.stringify(normalizeLogs(record.json, form.getFieldValue(['fieldConfig'])), null, 4);
                       } catch (e) {
                         console.error(e);
                         value = '无法解析';
