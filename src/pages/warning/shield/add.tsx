@@ -29,7 +29,7 @@ const AddShield: React.FC = () => {
   const query: any = queryString.parse(search);
 
   if (query.busiGroup) {
-    query.busiGroup = _.toNumber(query.busiGroup);
+    query.group_id = _.toNumber(query.busiGroup);
   }
   if (query.datasource_ids) {
     if (_.isString(query.datasource_ids)) {
