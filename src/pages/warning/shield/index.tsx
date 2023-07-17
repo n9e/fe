@@ -60,10 +60,12 @@ const Shield: React.FC = () => {
     {
       title: t('common:datasource.type'),
       dataIndex: 'cate',
+      width: 100,
     },
     {
       title: t('common:datasource.id'),
       dataIndex: 'datasource_ids',
+      width: 100,
       render: (data, record: any) => {
         return _.map(data, (item) => {
           if (item === 0) {
@@ -140,7 +142,7 @@ const Shield: React.FC = () => {
     {
       title: t('time'),
       dataIndex: 'btime',
-      fixed: 'right',
+      width: 150,
       render: (text: number, record: shieldItem) => {
         if (record.mute_time_type === 0) {
           return (
@@ -181,7 +183,7 @@ const Shield: React.FC = () => {
     {
       title: t('common:table.enabled'),
       dataIndex: 'disabled',
-      fixed: 'right',
+      width: 40,
       render: (disabled, record) => (
         <Switch
           checked={disabled === strategyStatus.Enable}
@@ -208,7 +210,6 @@ const Shield: React.FC = () => {
       title: t('common:table.operations'),
       width: '98px',
       dataIndex: 'operation',
-      fixed: 'right',
       render: (text: undefined, record: shieldItem) => {
         return (
           <>
@@ -366,7 +367,7 @@ const Shield: React.FC = () => {
             <Table
               size='small'
               rowKey='id'
-              scroll={{ x: 'max-content' }}
+              tableLayout='fixed'
               pagination={{
                 total: currentShieldData.length,
                 showQuickJumper: true,
