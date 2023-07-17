@@ -7,8 +7,12 @@ function localeCompareFunc(a, b) {
   return a.localeCompare(b);
 }
 
-export function getFieldLabel(field: string, fieldConfig?: any) {
-  return fieldConfig?.attrs?.[field]?.alias || field;
+export function getFieldLabel(fieldKey: string, fieldConfig?: any) {
+  return fieldConfig?.attrs?.[fieldKey]?.alias || fieldKey;
+}
+
+export function getFieldType(fieldKey: string, fieldConfig?: any) {
+  return fieldConfig?.formatMap?.[fieldKey]?.type;
 }
 
 export function getFieldValue(fieldKey, fieldValue, fieldConfig?: any) {
@@ -43,7 +47,7 @@ export function getColumnsFromFields(selectedFields: string[], dateField?: strin
             <dl className='es-discover-logs-row'>
               {_.map(text, (val, key) => {
                 const label = getFieldLabel(key, fieldConfig);
-                const value = _.isArray(val) ? _.join(val, ',') : val;
+                const value = _.isArray(val) ? _.join(val, ',') : getFieldValue(key, val, fieldConfig);
                 return (
                   <React.Fragment key={label}>
                     <dt>{label}:</dt> <dd>{value}</dd>

@@ -24,6 +24,7 @@ import { getFullFields } from '@/pages/explorer/Elasticsearch/services';
 import { getESIndexPattern, putESIndexPattern } from './services';
 import { IndexPattern, FieldConfig } from './types';
 import EditField from './EditField';
+import { getFieldLabel, getFieldType } from '@/pages/explorer/Elasticsearch/utils';
 
 export default function Fields() {
   const { t } = useTranslation('es-index-patterns');
@@ -115,8 +116,16 @@ export default function Fields() {
                 dataIndex: 'type',
               },
               {
+                title: t('field.alias'),
+                render: (record) => {
+                  return data?.fieldConfig?.attrs?.[record.name]?.alias;
+                },
+              },
+              {
                 title: t('field.format.title'),
-                dataIndex: 'customFormat',
+                render: (record) => {
+                  return data?.fieldConfig?.formatMap?.[record.name]?.type;
+                },
               },
               {
                 title: t('common:table.operations'),

@@ -111,7 +111,7 @@ const getMenuList = (t) => {
         },
         {
           key: '/log/index-patterns',
-          label: t('索引规则'),
+          label: t('索引模式'),
         },
       ],
     },

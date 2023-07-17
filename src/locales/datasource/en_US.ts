@@ -13,6 +13,7 @@ const en_US = {
       `,
     index_msg: 'Index is required',
     indexPatterns: 'Index Patterns',
+    indexPattern_msg: 'Index Pattern is required',
     filter: 'Filter',
     time_label: 'Time',
     date_field: 'Date Field',

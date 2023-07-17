@@ -16,11 +16,12 @@ interface Props {
   setFields: (fields: string[]) => void;
   selectedFields: string[];
   setSelectedFields: (fields: string[]) => void;
+  allowHideSystemIndices?: boolean;
 }
 
 export default function QueryBuilder(props: Props) {
   const { t } = useTranslation('explorer');
-  const { onExecute, datasourceValue, form, fields, setFields, selectedFields, setSelectedFields } = props;
+  const { onExecute, datasourceValue, form, fields, setFields, selectedFields, setSelectedFields, allowHideSystemIndices } = props;
   const params = new URLSearchParams(useLocation().search);
   const [indexOptions, setIndexOptions] = useState<any[]>([]);
   const [indexSearch, setIndexSearch] = useState('');
@@ -28,7 +29,7 @@ export default function QueryBuilder(props: Props) {
   const { run: onIndexChange } = useDebounceFn(
     (val) => {
       if (datasourceValue && val) {
-        getFields(datasourceValue, val, 'date').then((res) => {
+        getFields(datasourceValue, val, 'date', allowHideSystemIndices).then((res) => {
           setFields(res.allFields);
           setDateFields(res.fields);
         });
@@ -41,7 +42,7 @@ export default function QueryBuilder(props: Props) {
 
   useEffect(() => {
     if (datasourceValue) {
-      getIndices(datasourceValue).then((res) => {
+      getIndices(datasourceValue, allowHideSystemIndices).then((res) => {
         const indexOptions = _.map(res, (item) => {
           return {
             value: item,
@@ -50,7 +51,7 @@ export default function QueryBuilder(props: Props) {
         setIndexOptions(indexOptions);
       });
     }
-  }, [datasourceValue]);
+  }, [datasourceValue, allowHideSystemIndices]);
 
   useEffect(() => {
     // 假设携带数据源值时会同时携带其他的参数，并且触发一次查询

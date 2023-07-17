@@ -59,7 +59,7 @@ function EditField(props: Props & ModalWrapProps) {
               destroy();
             }}
           >
-            <Form.Item>
+            <Form.Item label={t('field.type')}>
               <Input value={field.type} disabled />
             </Form.Item>
             <Form.Item label={t('field.alias')} name={['attrs', field.name, 'alias']} tooltip={t('field.alias_tip')}>

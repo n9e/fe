@@ -64,10 +64,7 @@ export default function QueryBuilder(props: Props) {
               lineHeight: '32px',
             }}
           >
-            {t('datasource:es.indexPatterns')}{' '}
-            <Tooltip title={<Trans ns='datasource' i18nKey='datasource:es.index_tip' components={{ 1: <br /> }} />}>
-              <QuestionCircleOutlined />
-            </Tooltip>
+            {t('datasource:es.indexPatterns')}
           </span>
           <Form.Item
             name={['query', 'indexPattern']}

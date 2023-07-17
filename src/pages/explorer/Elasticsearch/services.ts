@@ -20,12 +20,17 @@ import { RequestMethod } from '@/store/common';
 import _ from 'lodash';
 import { mappingsToFields, mappingsToFullFields, flattenHits } from './utils';
 
-export function getIndices(datasourceValue: number) {
+export function getIndices(datasourceValue: number, allow_hide_system_indices = false) {
+  const params: any = {
+    format: 'json',
+    s: 'index',
+  };
+  if (allow_hide_system_indices) {
+    params.expand_wildcards = 'all';
+  }
   return request(`/api/n9e/proxy/${datasourceValue}/_cat/indices`, {
     method: RequestMethod.Get,
-    params: {
-      format: 'json',
-    },
+    params,
   }).then((res) => {
     return _.sortBy(_.compact(_.map(res, 'index')));
   });

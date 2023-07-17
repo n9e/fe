@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
-import { Table, Empty, Spin, InputNumber, Select, Radio } from 'antd';
+import { Table, Empty, Spin, InputNumber, Select, Radio, Space, Checkbox } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
 import { DownOutlined, RightOutlined } from '@ant-design/icons';
 import CodeMirror from '@uiw/react-codemirror';
@@ -35,19 +35,31 @@ enum IMode {
   indices = 'indices',
 }
 
-const ModeRadio = ({ mode, setMode }) => {
+const ModeRadio = ({ mode, setMode, allowHideSystemIndices, setAllowHideSystemIndices }) => {
   const { t } = useTranslation('explorer');
   return (
-    <Radio.Group
-      value={mode}
-      onChange={(e) => {
-        setMode(e.target.value);
-      }}
-      buttonStyle='solid'
-    >
-      <Radio.Button value={IMode.indexPatterns}>{t('log.mode.indexPatterns')}</Radio.Button>
-      <Radio.Button value={IMode.indices}>{t('log.mode.indices')}</Radio.Button>
-    </Radio.Group>
+    <Space>
+      <Radio.Group
+        value={mode}
+        onChange={(e) => {
+          setMode(e.target.value);
+        }}
+        buttonStyle='solid'
+      >
+        <Radio.Button value={IMode.indexPatterns}>{t('log.mode.indexPatterns')}</Radio.Button>
+        <Radio.Button value={IMode.indices}>{t('log.mode.indices')}</Radio.Button>
+      </Radio.Group>
+      {mode === IMode.indices && (
+        <Checkbox
+          checked={allowHideSystemIndices}
+          onChange={(e) => {
+            setAllowHideSystemIndices(e.target.checked);
+          }}
+        >
+          {t('es-index-patterns:allow_hide_system_indices')}
+        </Checkbox>
+      )}
+    </Space>
   );
 };
 
@@ -81,6 +93,7 @@ export default function index(props: IProps) {
       end: number;
     }>();
   const [mode, setMode] = useState<IMode>((localStorage.getItem('explorer_es_mode') as IMode) || IMode.indices);
+  const [allowHideSystemIndices, setAllowHideSystemIndices] = useState<boolean>(false);
 
   const fetchSeries = (values) => {
     if (timesRef.current) {
@@ -164,11 +177,13 @@ export default function index(props: IProps) {
               localStorage.setItem('explorer_es_mode', newMode);
               setMode(newMode);
             }}
+            allowHideSystemIndices={allowHideSystemIndices}
+            setAllowHideSystemIndices={setAllowHideSystemIndices}
           />,
           headerExtra,
         )
       ) : (
-        <ModeRadio mode={mode} setMode={setMode} />
+        <ModeRadio mode={mode} setMode={setMode} allowHideSystemIndices={allowHideSystemIndices} setAllowHideSystemIndices={setAllowHideSystemIndices} />
       )}
       {mode === IMode.indices && (
         <QueryBuilder
@@ -179,6 +194,7 @@ export default function index(props: IProps) {
           setFields={setFields}
           selectedFields={selectedFields}
           setSelectedFields={setSelectedFields}
+          allowHideSystemIndices={allowHideSystemIndices}
         />
       )}
       {mode === IMode.indexPatterns && (

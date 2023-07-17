@@ -1,13 +1,13 @@
 const zh_CN = {
   unauthorized: '没有权限',
-  title: '索引规则',
+  title: '索引模式',
   name: '名称',
   name_msg1: '请输入名称',
   name_msg2: '已存在同名的规则',
   time_field: '时间字段',
-  allow_hide_system_indices: '匹配任何索引，包括隐藏的索引',
-  create_btn: '创建索引规则',
-  create_title: '创建索引规则',
+  allow_hide_system_indices: '匹配隐藏的索引',
+  create_btn: '创建索引模式',
+  create_title: '创建索引模式',
   indexes_empty: '没有匹配的索引',
   field: {
     name: '字段名称',
