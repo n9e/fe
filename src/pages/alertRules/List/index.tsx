@@ -75,12 +75,14 @@ export default function List(props: ListProps) {
         return (
           <Tags
             width={70}
-            data={_.map(value, (item) => {
-              if (item === 0) return '$all';
-              const name = _.find(datasourceList, { id: item })?.name;
-              if (!name) return '';
-              return name;
-            })}
+            data={_.compact(
+              _.map(value, (item) => {
+                if (item === 0) return '$all';
+                const name = _.find(datasourceList, { id: item })?.name;
+                if (!name) return '';
+                return name;
+              }),
+            )}
           />
         );
       },
