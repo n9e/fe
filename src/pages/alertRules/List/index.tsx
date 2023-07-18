@@ -88,56 +88,84 @@ export default function List(props: ListProps) {
       },
     },
     {
-      title: t('severity'),
-      dataIndex: 'severities',
-      width: 46,
-      render: (data) => {
-        return _.map(data, (severity) => {
-          return (
-            <Tag key={severity} color={priorityColor[severity - 1]}>
-              S{severity}
-            </Tag>
-          );
-        });
-      },
-    },
-    {
-      title: t('common:table.name'),
+      title: t('name_severities_appendtags'),
       dataIndex: 'name',
       render: (data, record) => {
         return (
-          <Link
-            className='table-text'
-            to={{
-              pathname: `/alert-rules/edit/${record.id}`,
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 2,
             }}
           >
-            {data}
-          </Link>
+            <div>
+              <Link
+                className='table-text'
+                to={{
+                  pathname: `/alert-rules/edit/${record.id}`,
+                }}
+              >
+                {data}
+              </Link>
+            </div>
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: 4,
+              }}
+            >
+              {_.map(record.severities, (severity) => {
+                return (
+                  <Tag
+                    key={severity}
+                    color={priorityColor[severity - 1]}
+                    style={{
+                      marginRight: 0,
+                    }}
+                  >
+                    S{severity}
+                  </Tag>
+                );
+              })}
+            </div>
+            <div>
+              {_.map(record.append_tags, (item) => {
+                return (
+                  <Tooltip key={item} title={item}>
+                    <Tag color='purple' style={{ maxWidth: '100%' }}>
+                      <div
+                        style={{
+                          maxWidth: 'max-content',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
+                        {item}
+                      </div>
+                    </Tag>
+                  </Tooltip>
+                );
+              })}
+            </div>
+          </div>
         );
       },
     },
     {
       title: t('notify_groups'),
       dataIndex: 'notify_groups_obj',
-      width: 100,
+      width: 140,
       render: (data) => {
         return (
           <Tags
-            width={70}
+            width={110}
             data={_.map(data, (user) => {
               return user.nickname || user.username || user.name;
             })}
           />
         );
-      },
-    },
-    {
-      title: t('append_tags'),
-      dataIndex: 'append_tags',
-      width: 100,
-      render(data) {
-        return <Tags width={70} data={data} />;
       },
     },
     {

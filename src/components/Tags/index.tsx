@@ -9,11 +9,12 @@ interface Props {
 
 export default function index(props: Props) {
   const { width, data } = props;
+  const displayData = _.slice(data, 0, 2);
   return (
-    <>
-      {_.map(data, (item, index) => {
-        return (
-          <Tooltip title={item}>
+    <Tooltip title={_.join(data, ', ')}>
+      <div>
+        {_.map(displayData, (item, index) => {
+          return (
             <div key={index}>
               <Tag color='purple'>
                 <div
@@ -27,9 +28,18 @@ export default function index(props: Props) {
                 </div>
               </Tag>
             </div>
-          </Tooltip>
-        );
-      })}
-    </>
+          );
+        })}
+        {data.length > 2 && (
+          <div
+            style={{
+              lineHeight: 1,
+            }}
+          >
+            ...
+          </div>
+        )}
+      </div>
+    </Tooltip>
   );
 }

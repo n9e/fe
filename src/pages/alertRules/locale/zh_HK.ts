@@ -6,6 +6,7 @@ const zh_HK = {
   notify_groups: '告警接收組',
   basic_configs: '基礎配置',
   name: '規則名稱',
+  name_severities_appendtags: '名称 & 級別 & 附加標籤',
   append_tags: '附加標籤',
   append_tags_msg: '標籤格式不正確，請檢查！',
   append_tags_msg1: '標籤長度應小於等於 64 位',
