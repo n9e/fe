@@ -5,7 +5,7 @@ import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import { Table, Empty, Spin, InputNumber, Select, Radio, Space, Checkbox } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
-import { DownOutlined, RightOutlined } from '@ant-design/icons';
+import { DownOutlined, RightOutlined, LeftOutlined } from '@ant-design/icons';
 import CodeMirror from '@uiw/react-codemirror';
 import { EditorView } from '@codemirror/view';
 import { json } from '@codemirror/lang-json';
@@ -80,12 +80,15 @@ export default function index(props: IProps) {
   const filtersArr = getFiltersArr(params);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
+  const [total, setTotal] = useState(0);
   const [series, setSeries] = useState<any[]>([]);
   const [displayTimes, setDisplayTimes] = useState('');
   const [fields, setFields] = useState<string[]>([]);
   const [selectedFields, setSelectedFields] = useState<string[]>([]);
   const [interval, setInterval] = useState(1);
   const [intervalUnit, setIntervalUnit] = useState<'second' | 'min' | 'hour'>('min');
+  const [chartVisible, setChartVisible] = useState(true);
+  const [collapsed, setCollapsed] = useState(true);
   const sortOrder = useRef('desc');
   const timesRef =
     useRef<{
@@ -139,6 +142,7 @@ export default function index(props: IProps) {
             };
           });
           setData(newData);
+          setTotal(res.total);
           const tableEleNodes = document.querySelectorAll(`.es-discover-logs-table .ant-table-body`)[0];
           tableEleNodes?.scrollTo(0, 0);
         })
@@ -208,60 +212,100 @@ export default function index(props: IProps) {
           setSelectedFields={setSelectedFields}
         />
       )}
+      <div style={{ height: 'calc(100% - 50px)' }}>
+        <Spin spinning={loading}>
+          {!_.isEmpty(data) ? (
+            <div className='es-discover-content'>
+              {collapsed && (
+                <FieldsSidebar fieldConfig={form.getFieldValue(['fieldConfig'])} fields={fields} setFields={setFields} value={selectedFields} onChange={setSelectedFields} />
+              )}
+              <div
+                className='es-discover-main'
+                style={{
+                  width: collapsed ? 'calc(100% - 266px)' : '100%',
+                }}
+              >
+                <div
+                  className='es-discover-chart'
+                  style={{
+                    height: chartVisible ? 190 : 40,
+                  }}
+                >
+                  <div className='es-discover-chart-title'>
+                    <div className='es-discover-chart-title-total'>
+                      <strong
+                        style={{
+                          fontSize: 14,
+                        }}
+                      >
+                        {total}
+                      </strong>{' '}
+                      hits
+                    </div>
 
-      <Spin spinning={loading}>
-        {!_.isEmpty(data) ? (
-          <div className='es-discover-content'>
-            <FieldsSidebar fieldConfig={form.getFieldValue(['fieldConfig'])} fields={fields} setFields={setFields} value={selectedFields} onChange={setSelectedFields} />
-            <div className='es-discover-main'>
-              <div className='es-discover-chart'>
-                <div className='es-discover-chart-title'>
-                  <span>{displayTimes}</span>
-                  <span style={{ marginLeft: 10 }}>
-                    {t('log.interval')}:{' '}
-                    <InputNumber
-                      size='small'
-                      value={interval}
-                      min={1}
-                      onBlur={(e) => {
-                        const val = _.toNumber(e.target.value);
-                        if (val > 0) setInterval(val);
-                      }}
-                      onPressEnter={(e: any) => {
-                        const val = _.toNumber(e.target.value);
-                        if (val > 0) setInterval(val);
-                      }}
-                    />{' '}
-                    <Select size='small' style={{ width: 80 }} value={intervalUnit} onChange={(val) => setIntervalUnit(val)}>
-                      <Select.Option value='second'>{t('common:time.second')}</Select.Option>
-                      <Select.Option value='min'>{t('common:time.minute')}</Select.Option>
-                      <Select.Option value='hour'>{t('common:time.hour')}</Select.Option>
-                    </Select>
-                  </span>
+                    <div className='es-discover-chart-title-content'>
+                      {chartVisible && (
+                        <>
+                          <span>{displayTimes}</span>
+                          <span style={{ marginLeft: 10 }}>
+                            {t('log.interval')}:{' '}
+                            <InputNumber
+                              size='small'
+                              value={interval}
+                              min={1}
+                              onBlur={(e) => {
+                                const val = _.toNumber(e.target.value);
+                                if (val > 0) setInterval(val);
+                              }}
+                              onPressEnter={(e: any) => {
+                                const val = _.toNumber(e.target.value);
+                                if (val > 0) setInterval(val);
+                              }}
+                            />{' '}
+                            <Select size='small' style={{ width: 80 }} value={intervalUnit} onChange={(val) => setIntervalUnit(val)}>
+                              <Select.Option value='second'>{t('common:time.second')}</Select.Option>
+                              <Select.Option value='min'>{t('common:time.minute')}</Select.Option>
+                              <Select.Option value='hour'>{t('common:time.hour')}</Select.Option>
+                            </Select>
+                          </span>
+                        </>
+                      )}
+                    </div>
+
+                    <div className='es-discover-chart-title-action'>
+                      <a
+                        onClick={() => {
+                          setChartVisible(!chartVisible);
+                        }}
+                      >
+                        {chartVisible ? t('log.hideChart') : t('log.showChart')}
+                      </a>
+                    </div>
+                  </div>
+                  {chartVisible && (
+                    <div className='es-discover-chart-content'>
+                      <Timeseries
+                        series={series}
+                        values={
+                          {
+                            custom: {
+                              drawStyle: 'bar',
+                              lineInterpolation: 'smooth',
+                            },
+                            options: {
+                              legend: {
+                                displayMode: 'hidden',
+                              },
+                              tooltip: {
+                                mode: 'all',
+                              },
+                            },
+                          } as any
+                        }
+                      />
+                    </div>
+                  )}
                 </div>
-                <div className='es-discover-chart-content'>
-                  <Timeseries
-                    series={series}
-                    values={
-                      {
-                        custom: {
-                          drawStyle: 'bar',
-                          lineInterpolation: 'smooth',
-                        },
-                        options: {
-                          legend: {
-                            displayMode: 'hidden',
-                          },
-                          tooltip: {
-                            mode: 'all',
-                          },
-                        },
-                      } as any
-                    }
-                  />
-                </div>
-              </div>
-              <div>
                 <Table
                   size='small'
                   className='es-discover-logs-table'
@@ -304,7 +348,7 @@ export default function index(props: IProps) {
                     expandIcon: ({ expanded, onExpand, record }) =>
                       expanded ? <DownOutlined onClick={(e) => onExpand(record, e)} /> : <RightOutlined onClick={(e) => onExpand(record, e)} />,
                   }}
-                  scroll={{ x: _.isEmpty(selectedFields) ? undefined : 'max-content', y: 302 }}
+                  scroll={{ x: _.isEmpty(selectedFields) ? undefined : 'max-content', y: 'calc(100% - 36px)' }}
                   pagination={false}
                   onChange={(pagination, filters, sorter: any, extra) => {
                     if (sorter.columnKey === 'time') {
@@ -313,20 +357,28 @@ export default function index(props: IProps) {
                     }
                   }}
                 />
+                <div
+                  className='es-discover-collapse'
+                  onClick={() => {
+                    setCollapsed(!collapsed);
+                  }}
+                >
+                  {collapsed ? <LeftOutlined /> : <RightOutlined />}
+                </div>
               </div>
             </div>
-          </div>
-        ) : (
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-            }}
-          >
-            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-          </div>
-        )}
-      </Spin>
+          ) : (
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+              }}
+            >
+              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+            </div>
+          )}
+        </Spin>
+      </div>
     </div>
   );
 }

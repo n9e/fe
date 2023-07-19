@@ -11,6 +11,8 @@ const zh_CN = {
       indexPatterns: 'Index Patterns',
       indices: 'Indices',
     },
+    hideChart: '隐藏图表',
+    showChart: '显示图表',
   },
 };
 export default zh_CN;

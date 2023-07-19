@@ -1,6 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 import moment from 'moment';
+import { measureTextWidth } from '@ant-design/plots';
 import flatten from './flatten';
 
 function localeCompareFunc(a, b) {
@@ -61,6 +62,7 @@ export function getColumnsFromFields(selectedFields: string[], dateField?: strin
     ];
   } else {
     columns = _.map(selectedFields, (item) => {
+      const label: string = getFieldLabel(item, fieldConfig);
       return {
         title: getFieldLabel(item, fieldConfig),
         dataIndex: 'fields',
@@ -68,7 +70,15 @@ export function getColumnsFromFields(selectedFields: string[], dateField?: strin
         render: (fields) => {
           const fieldVal = getFieldValue(item, fields[item], fieldConfig);
           const value = _.isArray(fieldVal) ? _.join(fieldVal, ',') : fieldVal;
-          return value;
+          return (
+            <div
+              style={{
+                minWidth: measureTextWidth(label) + 20,
+              }}
+            >
+              {value}
+            </div>
+          );
         },
         sorter: (a, b) => localeCompareFunc(_.join(_.get(a, `fields[${item}]`, '')), _.join(_.get(b, `fields[${item}]`, ''))),
       };
