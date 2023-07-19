@@ -40,6 +40,8 @@ const zh_HK = {
       prom_eval_interval_tip: '每隔 {{num}} 秒，去查詢後端儲存',
       prom_for_duration_tip:
         '通常持續時長大於執行頻率，在持續時長內按照執行頻率多次執行查詢，每次都觸發才生成告警；如果持續時長置為 0，表示只要有一次查詢的資料滿足告警條件，就生成告警',
+      advancedSettings: '高階設定',
+      delay: '延遲執行',
     },
   },
 };

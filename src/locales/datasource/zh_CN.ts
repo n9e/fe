@@ -40,6 +40,8 @@ const zh_CN = {
       prom_eval_interval_tip: '每隔 {{num}} 秒，去查询后端存储',
       prom_for_duration_tip:
         '通常持续时长大于执行频率，在持续时长内按照执行频率多次执行查询，每次都触发才生成告警；如果持续时长置为0，表示只要有一次查询的数据满足告警条件，就生成告警',
+      advancedSettings: '高级设置',
+      delay: '延迟执行',
     },
   },
 };
