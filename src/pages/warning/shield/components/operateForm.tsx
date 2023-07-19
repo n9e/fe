@@ -38,7 +38,7 @@ const { TextArea } = Input;
 
 interface Props {
   detail?: shieldItem;
-  type?: number; // 1:创建; 2:克隆 3:编辑
+  type?: number; // 1:编辑; 2:克隆 3:新增
 }
 
 const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
@@ -115,7 +115,6 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
       pathname: '/alert-mutes',
       search: `?id=${curBusiItemId}`,
     };
-    console.log('curBusiItemId', curBusiItemId);
     if (type == 1) {
       editShield(params, curBusiItemId, detail.id).then((_) => {
         message.success(t('common:success.edit'));
@@ -196,6 +195,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
 
         <Form.Item label={t('common:business_group')} name='group_id'>
           <Select
+            disabled={type == 1}
             options={_.map(busiGroups, (item) => {
               return {
                 label: item.name,

@@ -19,7 +19,6 @@ import { useLocation } from 'react-router-dom';
 import PageLayout from '@/components/pageLayout';
 import OperateForm from './components/operateForm';
 import { useTranslation } from 'react-i18next';
-
 import './index.less';
 
 function useQuery() {
