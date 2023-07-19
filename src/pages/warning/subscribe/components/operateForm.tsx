@@ -26,8 +26,9 @@ import { subscribeItem } from '@/store/warningInterface/subscribe';
 import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
 import { CommonStateContext } from '@/App';
 import ProdSelect from '@/pages/alertRules/Form/components/ProdSelect';
-import AdvancedWrap, { getAuthorizedDatasourceCates } from '@/components/AdvancedWrap';
+import { DatasourceCateSelect } from '@/components/DatasourceSelect';
 import { panelBaseProps } from '@/pages/alertRules/constants';
+import { getDefaultValuesByProd } from '@/pages/warning/shield/components/utils';
 import RuleModal from './ruleModal';
 import TagItem from './tagItem';
 import '../index.less';
@@ -147,7 +148,15 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
         }}
       >
         <Card {...panelBaseProps} size='small' title={t('basic_configs')}>
-          <ProdSelect label={t('prod')} />
+          <ProdSelect
+            label={t('prod')}
+            onChange={(e) => {
+              form.setFieldsValue({
+                ...getDefaultValuesByProd(e.target.value),
+                datasource_ids: [],
+              });
+            }}
+          />
           <Form.Item shouldUpdate noStyle>
             {({ getFieldValue }) => {
               const prod = getFieldValue('prod');
@@ -155,31 +164,19 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
                 return (
                   <Row gutter={10}>
                     <Col span={12}>
-                      <AdvancedWrap var='VITE_IS_ALERT_ES'>
-                        {(isShow) => {
-                          return (
-                            <Form.Item label={t('common:datasource.type')} name='cate' initialValue='prometheus'>
-                              <Select>
-                                {_.map(
-                                  _.filter(getAuthorizedDatasourceCates(), (item) => {
-                                    if (item.value === 'elasticsearch') {
-                                      return isShow[0];
-                                    }
-                                    return true;
-                                  }),
-                                  (item) => {
-                                    return (
-                                      <Select.Option value={item.value} key={item.value}>
-                                        {item.label}
-                                      </Select.Option>
-                                    );
-                                  },
-                                )}
-                              </Select>
-                            </Form.Item>
-                          );
-                        }}
-                      </AdvancedWrap>
+                      <Form.Item label={t('common:datasource.type')} name='cate' initialValue='prometheus'>
+                        <DatasourceCateSelect
+                          scene='alert'
+                          filterCates={(cates) => {
+                            return _.filter(cates, (item) => item.type === prod && !!item.alertRule);
+                          }}
+                          onChange={() => {
+                            form.setFieldsValue({
+                              datasource_ids: [],
+                            });
+                          }}
+                        />
+                      </Form.Item>
                     </Col>
                     <Col span={12}>
                       <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.cate !== curValues.cate} noStyle>

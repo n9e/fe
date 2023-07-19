@@ -207,7 +207,10 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
         <ProdSelect
           label={t('prod')}
           onChange={(e) => {
-            form.setFieldsValue(getDefaultValuesByProd(e.target.value));
+            form.setFieldsValue({
+              ...getDefaultValuesByProd(e.target.value),
+              datasource_ids: [],
+            });
           }}
         />
         <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.prod !== curValues.prod} noStyle>
@@ -222,6 +225,11 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
                         scene='alert'
                         filterCates={(cates) => {
                           return _.filter(cates, (item) => item.type === prod && !!item.alertRule);
+                        }}
+                        onChange={() => {
+                          form.setFieldsValue({
+                            datasource_ids: [],
+                          });
                         }}
                       />
                     </Form.Item>
