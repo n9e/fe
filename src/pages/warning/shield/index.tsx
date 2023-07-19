@@ -23,7 +23,7 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation, Link } from 'react-router-dom';
 import queryString from 'query-string';
-import AdvancedWrap from '@/components/AdvancedWrap';
+import Tags from '@/components/Tags';
 import PageLayout from '@/components/pageLayout';
 import { getShieldList, deleteShields, updateShields } from '@/services/shield';
 import { shieldItem, strategyStatus } from '@/store/warningInterface';
@@ -66,21 +66,21 @@ const Shield: React.FC = () => {
       title: t('common:datasource.id'),
       dataIndex: 'datasource_ids',
       width: 100,
-      render: (data, record: any) => {
-        return _.map(data, (item) => {
-          if (item === 0) {
-            return (
-              <Tag color='purple' key={item}>
-                $all
-              </Tag>
-            );
-          }
-          return (
-            <Tag color='purple' key={item}>
-              {_.find(groupedDatasourceList[record.cate], { id: item })?.name!}
-            </Tag>
-          );
-        });
+      render(value, record: any) {
+        if (!value) return '-';
+        return (
+          <Tags
+            width={70}
+            data={_.compact(
+              _.map(value, (item) => {
+                if (item === 0) return '$all';
+                const name = _.find(groupedDatasourceList[record.cate], { id: item })?.name;
+                if (!name) return '';
+                return name;
+              }),
+            )}
+          />
+        );
       },
     },
     {

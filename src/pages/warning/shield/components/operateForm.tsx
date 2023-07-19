@@ -14,15 +14,14 @@
  * limitations under the License.
  *
  */
-import React, { useState, useEffect, useMemo, useRef, useContext } from 'react';
-import { Form, Input, Card, Select, Col, Button, Row, message, DatePicker, Tooltip, Spin, Space, Radio, TimePicker, Checkbox } from 'antd';
+import React, { useState, useEffect, useContext } from 'react';
+import { Form, Input, Card, Select, Col, Button, Row, message, DatePicker, Tooltip, Space, Radio, TimePicker, Checkbox } from 'antd';
 import { QuestionCircleFilled, PlusCircleOutlined, CaretDownOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import moment from 'moment';
 import { addShield, editShield } from '@/services/shield';
-import { getBusiGroups } from '@/services/common';
 import { shieldItem } from '@/store/warningInterface';
 import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
 import { CommonStateContext } from '@/App';
@@ -65,36 +64,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
   const [form] = Form.useForm(null as any);
   const history = useHistory();
   const [timeLen, setTimeLen] = useState('1h');
-  const { curBusiId, busiGroups, groupedDatasourceList } = useContext(CommonStateContext);
-  const [filteredBusiGroups, setFilteredBusiGroups] = useState(busiGroups);
-
-  useEffect(() => {
-    if (!filteredBusiGroups.length) {
-      setFilteredBusiGroups(busiGroups);
-    }
-  }, [JSON.stringify(busiGroups)]);
-
-  useEffect(() => {
-    const btime = form.getFieldValue('btime');
-    const etime = form.getFieldValue('etime');
-    if (!!etime && !!btime) {
-      const d = moment.duration(etime - btime).days();
-      const h = moment.duration(etime - btime).hours();
-      const m = moment.duration(etime - btime).minutes();
-      const s = moment.duration(etime - btime).seconds();
-    }
-    if (!detail.group_id) {
-      if (curBusiId) {
-        form.setFieldsValue({ group_id: curBusiId });
-      } else if (filteredBusiGroups.length > 0) {
-        form.setFieldsValue({ group_id: filteredBusiGroups[0].id });
-      } else {
-        message.warning('无可用业务组');
-        history.push('/alert-mutes');
-      }
-    }
-    return () => {};
-  }, [form]);
+  const { groupedDatasourceList, busiGroups } = useContext(CommonStateContext);
 
   useEffect(() => {
     timeChange();
@@ -141,15 +111,20 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
       cluster: '0',
     };
     const curBusiItemId = form.getFieldValue('group_id');
+    const historyPushOptions = {
+      pathname: '/alert-mutes',
+      search: `?id=${curBusiItemId}`,
+    };
+    console.log('curBusiItemId', curBusiItemId);
     if (type == 1) {
       editShield(params, curBusiItemId, detail.id).then((_) => {
         message.success(t('common:success.edit'));
-        history.push('/alert-mutes');
+        history.push(historyPushOptions);
       });
     } else {
       addShield(params, curBusiItemId).then((_) => {
         message.success(t('common:success.add'));
-        history.push('/alert-mutes');
+        history.push(historyPushOptions);
       });
     }
   };
@@ -165,29 +140,6 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
       }),
     });
   };
-
-  const [fetching, setFetching] = useState(false);
-  const fetchRef = useRef(0);
-  const debounceFetcher = useMemo(() => {
-    const loadOptions = (value: string) => {
-      fetchRef.current += 1;
-      const fetchId = fetchRef.current;
-      setFilteredBusiGroups([]);
-      setFetching(true);
-
-      getBusiGroups(value).then((res) => {
-        if (fetchId !== fetchRef.current) {
-          // for fetch callback order
-          return;
-        }
-
-        setFilteredBusiGroups(res.dat || []);
-        setFetching(false);
-      });
-    };
-
-    return _.debounce(loadOptions, 500);
-  }, []);
 
   const content = (
     <Form
@@ -243,13 +195,14 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
         </Form.Item>
 
         <Form.Item label={t('common:business_group')} name='group_id'>
-          <Select showSearch filterOption={false} suffixIcon={<CaretDownOutlined />} onSearch={debounceFetcher} notFoundContent={fetching ? <Spin size='small' /> : null}>
-            {_.map(filteredBusiGroups, (item) => (
-              <Option value={item.id} key={item.id}>
-                {item.name}
-              </Option>
-            ))}
-          </Select>
+          <Select
+            options={_.map(busiGroups, (item) => {
+              return {
+                label: item.name,
+                value: item.id,
+              };
+            })}
+          />
         </Form.Item>
         <ProdSelect
           label={t('prod')}
