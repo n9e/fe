@@ -355,6 +355,7 @@ const Event: React.FC = () => {
   const { tableProps } = useAntdTable(fetchData, {
     refreshDeps: [refreshFlag, JSON.stringify(filterObj)],
     defaultPageSize: 30,
+    debounceWait: 500,
   });
 
   return (

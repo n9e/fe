@@ -67,7 +67,8 @@ const Event: React.FC = () => {
     queryContent: string;
     rule_prods: string[];
   }>({
-    hours: getDefaultHours(),
+    // hours: getDefaultHours(),
+    hours: 6,
     datasourceIds: [],
     queryContent: '',
     rule_prods: [],
@@ -81,7 +82,7 @@ const Event: React.FC = () => {
         <Space>
           <Button icon={<AppstoreOutlined />} onClick={() => setView('card')} />
           <Button icon={<UnorderedListOutlined />} onClick={() => setView('list')} />
-          <Select
+          {/* <Select
             style={{ minWidth: 80 }}
             value={filter.hours}
             onChange={(val) => {
@@ -95,7 +96,7 @@ const Event: React.FC = () => {
             {hoursOptions.map((item) => {
               return <Select.Option value={item.value}>{t(`hours.${item.value}`)}</Select.Option>;
             })}
-          </Select>
+          </Select> */}
           <AdvancedWrap var='VITE_IS_ALERT_AI,VITE_IS_ALERT_ES,VITE_IS_SLS_DS,VITE_IS_COMMON_DS'>
             {(isShow) => {
               let options = [

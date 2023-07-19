@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useLayoutEffect, useRef, useImperativeHandle, useContext } from 'react';
-import { Button, Row, Col, Drawer, Tag, Table, Dropdown, Menu } from 'antd';
-import { useHistory } from 'react-router';
+import { Button, Row, Col, Drawer, Tag, Table, Dropdown, Menu, Tooltip } from 'antd';
+import { useHistory, Link } from 'react-router-dom';
 import { ReactNode } from 'react-markdown/lib/react-markdown';
 import _, { throttle } from 'lodash';
 import moment from 'moment';
@@ -122,22 +122,29 @@ function Card(props: Props, ref) {
       title: t('rule_name'),
       dataIndex: 'rule_name',
       render(title, { id, tags }) {
-        const content =
-          tags &&
-          tags.map((item) => (
-            <Tag color='purple' key={item}>
-              {item}
-            </Tag>
-          ));
         return (
           <>
             <div>
-              <a style={{ padding: 0 }} onClick={() => history.push(`/alert-cur-events/${id}`)}>
-                {title}
-              </a>
+              <Link to={`/alert-cur-events/${id}`}>{title}</Link>
             </div>
             <div>
-              <span className='event-tags'>{content}</span>
+              {_.map(tags, (item) => {
+                return (
+                  <Tooltip key={item} title={item}>
+                    <Tag color='purple' style={{ maxWidth: '100%' }}>
+                      <div
+                        style={{
+                          maxWidth: 'max-content',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
+                        {item}
+                      </div>
+                    </Tag>
+                  </Tooltip>
+                );
+              })}
             </div>
           </>
         );
@@ -154,7 +161,7 @@ function Card(props: Props, ref) {
     {
       title: t('common:table.operations'),
       dataIndex: 'operate',
-      width: 200,
+      width: 180,
       render(value, record) {
         return (
           <>
@@ -288,6 +295,7 @@ function Card(props: Props, ref) {
         width={960}
       >
         <Table
+          tableLayout='fixed'
           size='small'
           rowKey={'id'}
           className='card-event-drawer'
