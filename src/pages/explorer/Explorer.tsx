@@ -77,6 +77,7 @@ const Panel = ({ type, defaultCate }: IProps) => {
                     onChange={(val) => {
                       form.setFieldsValue({
                         datasourceValue: getDefaultDatasourceValue(val, groupedDatasourceList),
+                        query: undefined,
                       });
                       history.replace({
                         search: `?data_source_name=${val}&data_source_id=${getDefaultDatasourceValue(val, groupedDatasourceList)}`,
@@ -118,6 +119,9 @@ const Panel = ({ type, defaultCate }: IProps) => {
                               setDefaultDatasourceValue(cate, val);
                               history.replace({
                                 search: `?data_source_name=${cate}&data_source_id=${val}`,
+                              });
+                              form.setFieldsValue({
+                                query: undefined,
                               });
                             }}
                             showSearch
