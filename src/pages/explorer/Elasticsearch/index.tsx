@@ -202,6 +202,9 @@ export default function index(props: IProps) {
             mode={mode}
             setMode={(newMode) => {
               localStorage.setItem('explorer_es_mode', newMode);
+              form.setFieldsValue({
+                fieldConfig: undefined,
+              });
               setMode(newMode);
             }}
             allowHideSystemIndices={allowHideSystemIndices}
@@ -210,7 +213,18 @@ export default function index(props: IProps) {
           headerExtra,
         )
       ) : (
-        <ModeRadio mode={mode} setMode={setMode} allowHideSystemIndices={allowHideSystemIndices} setAllowHideSystemIndices={setAllowHideSystemIndices} />
+        <ModeRadio
+          mode={mode}
+          setMode={(newMode) => {
+            localStorage.setItem('explorer_es_mode', newMode);
+            form.setFieldsValue({
+              fieldConfig: undefined,
+            });
+            setMode(newMode);
+          }}
+          allowHideSystemIndices={allowHideSystemIndices}
+          setAllowHideSystemIndices={setAllowHideSystemIndices}
+        />
       )}
       {mode === IMode.indices && (
         <QueryBuilder
