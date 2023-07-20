@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import _ from 'lodash';
 import moment from 'moment';
+import queryString, { ParsedQuery } from 'query-string';
 import { useTranslation } from 'react-i18next';
 import { Table, Empty, Spin, InputNumber, Select, Radio, Space, Checkbox } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
@@ -63,18 +64,30 @@ const ModeRadio = ({ mode, setMode, allowHideSystemIndices, setAllowHideSystemIn
   );
 };
 
-const getFiltersArr = (params) => {
-  const filtersArr: string[] = [];
-  for (const [key, value] of params) {
-    if (!['data_source_name', 'data_source_id', 'index_name', 'timestamp'].includes(key)) {
-      filtersArr.push(`${key}:"${value}"`);
-    }
+/**
+ * 从 URL query 中获取 filter
+ * 存在 query_string 时直接作为 filter 值
+ * 否则排查掉 data_source_name, data_source_id, index_name, timestamp 之后的参数合并为 filter
+ * 合并后的 filter 为 AND 关系
+ */
+
+const getFilterByQuery = (query: ParsedQuery<string>) => {
+  if (query?.query_string) {
+    return query?.query_string;
+  } else {
+    const filtersArr: string[] = [];
+    const validParmas = _.omit(query, ['data_source_name', 'data_source_id', 'index_name', 'timestamp']);
+    _.forEach(validParmas, (value, key) => {
+      if (value) {
+        filtersArr.push(`${key}:"${value}"`);
+      }
+    });
+    return _.join(filtersArr, ' AND ');
   }
-  return filtersArr;
 };
 
-const getDefaultMode = (params) => {
-  if (params.get('data_source_id') && params.get('index_name') && params.get('timestamp')) {
+const getDefaultMode = (query) => {
+  if (query?.data_source_id && query?.index_name) {
     return IMode.indices;
   }
   return (localStorage.getItem('explorer_es_mode') as IMode) || IMode.indices;
@@ -83,8 +96,7 @@ const getDefaultMode = (params) => {
 export default function index(props: IProps) {
   const { t } = useTranslation('explorer');
   const { headerExtra, datasourceValue, form } = props;
-  const params = new URLSearchParams(useLocation().search);
-  const filtersArr = getFiltersArr(params);
+  const query = queryString.parse(useLocation().search);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [total, setTotal] = useState(0);
@@ -102,7 +114,7 @@ export default function index(props: IProps) {
       start: number;
       end: number;
     }>();
-  const [mode, setMode] = useState<IMode>(getDefaultMode(params));
+  const [mode, setMode] = useState<IMode>(getDefaultMode(query));
   const [allowHideSystemIndices, setAllowHideSystemIndices] = useState<boolean>(false);
 
   const fetchSeries = (values) => {
@@ -165,13 +177,13 @@ export default function index(props: IProps) {
   };
 
   useEffect(() => {
-    // 初始载入如果携带参数，则自动查询
-    if (params.get('data_source_id') && params.get('index_name') && params.get('timestamp')) {
+    // 如果URL携带数据源值和索引值，则直接查询
+    if (query?.data_source_id && query?.index_name) {
       form.setFieldsValue({
         query: {
-          index: params.get('index_name'),
-          filter: filtersArr?.join(' and '),
-          date_field: params.get('timestamp'),
+          index: query.index_name,
+          filter: getFilterByQuery(query),
+          date_field: query.timestamp || '@timestamp',
         },
       });
       fetchData();
