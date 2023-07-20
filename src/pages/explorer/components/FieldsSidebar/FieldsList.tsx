@@ -26,7 +26,8 @@ export default function FieldsList(props: IProps) {
   const [expanded, setExpanded] = React.useState<boolean>(true);
   const filteredFields = _.filter(fields, (field) => {
     if (fieldsSearch) {
-      return field.indexOf(fieldsSearch) > -1;
+      const fieldKey = getFieldLabel(field, fieldConfig);
+      return fieldKey.indexOf(fieldsSearch) > -1;
     }
     return true;
   });
