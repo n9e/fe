@@ -1,129 +1,13 @@
-.prometheus-page {
-  padding: 20px;
-  .panel {
-    position: relative;
-    margin-bottom: 16px;
-    .query-stats {
-      position: absolute;
-      right: 16px;
-      opacity: 1;
-      transition: opacity 0.3s ease;
-    }
-    .query-state-hide {
-      opacity: 0;
-    }
-    .prometheus-input-box {
-      display: flex;
-      width: 100%;
-      margin-bottom: 10px;
-      .input-prefix {
-        display: flex;
-        align-items: center;
-        box-sizing: border-box;
-        padding: 0 16px;
-        border: 1px solid #ced4da;
-        margin-right: -1px;
-        border-radius: 2px 0px 0px 2px;
-        font-size: 14px;
-      }
-      .input {
-        flex: auto;
-        border: 1px solid #ced4da;
-        overflow-x: auto;
-        padding: 5px 0 0 8px;
-        .input-content {
-          font-size: 14px;
-        }
-      }
-      .suffix {
-        display: flex;
-      }
-      .metrics {
-        border-radius: 0;
-        margin-left: -1px;
-        height: 100%;
-      }
-      .execute {
-        border-radius: 0px 2px 2px 0;
-        margin-left: -1px;
-        height: 100%;
-      }
-    }
-    .error-alert {
-      margin-bottom: 10px;
-    }
-    .remove-panel-btn {
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      position: absolute;
-      top: -10px;
-      right: -4px;
-      font-size: 18px;
-      color: #ff4d4f;
-      cursor: pointer;
-      &:hover {
-        color: #ff7875;
-      }
-    }
-    .panel-tab-box {
-      .table-timestamp {
-        margin-bottom: 10px;
-      }
-      .table-list {
-        max-height: 700px;
-        overflow: auto;
-      }
-      .graph-operate-box {
-        display: flex;
-        flex-flow: row wrap;
-        justify-content: space-between;
-        margin-bottom: 10px;
-        .left {
-          display: flex;
-          align-items: center;
-          margin-right: 10px;
-        }
-        .right {
-          padding-top: 4px;
-        }
-      }
-      .ant-list-item {
-        cursor: default;
-      }
-      .list-item-content {
-        display: flex;
-        justify-content: space-between;
-        width: 100%;
-        .left {
-          width: 100%;
-          word-break: break-word;
-          padding-right: 40px;
-        }
-        .right {
-          padding-right: 4%;
-          white-space: nowrap;
-        }
-        .bold-text {
-          color: #000;
-          font-weight: bold;
-        }
-      }
-    }
-    &:hover {
-      .remove-panel-btn {
-        opacity: 1;
-      }
-    }
+.explorer-container {
+  height: 100%;
+  .ant-card,.ant-card-body,.ant-form {
+    height: 100%;
   }
-  .add-prometheus-panel {
-    margin-top: 10px;
-    width: 100%;
-    height: 44px;
-    .ant-btn {
-      width: 100%;
-      height: 100%;
-    }
-  }
+}
+.explorer-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .metrics-explorer-modal {

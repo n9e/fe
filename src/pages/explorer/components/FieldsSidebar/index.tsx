@@ -10,11 +10,12 @@ interface IProps {
   setFields: (fields: string[]) => void;
   value: string[];
   onChange: (value: string[]) => void;
+  fieldConfig?: any;
 }
 
 export default function index(props: IProps) {
   const { t } = useTranslation('explorer');
-  const { fields, setFields, value, onChange } = props;
+  const { fields, setFields, value, onChange, fieldConfig } = props;
   const [fieldsSearch, setFieldsSearch] = useState('');
 
   return (
@@ -39,6 +40,7 @@ export default function index(props: IProps) {
             onChange(_.without(value, field));
             setFields(_.concat(fields, field));
           }}
+          fieldConfig={fieldConfig}
         />
         <FieldsList
           fields={fields}
@@ -48,6 +50,7 @@ export default function index(props: IProps) {
             onChange(_.concat(value, field));
             setFields(_.without(fields, field));
           }}
+          fieldConfig={fieldConfig}
         />
       </div>
     </div>

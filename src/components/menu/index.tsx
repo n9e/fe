@@ -109,6 +109,10 @@ const getMenuList = (t) => {
           key: '/log/explorer',
           label: t('即时查询'),
         },
+        {
+          key: '/log/index-patterns',
+          label: t('索引模式'),
+        },
       ],
     },
     {

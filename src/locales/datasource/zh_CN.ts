@@ -12,6 +12,8 @@ const zh_CN = {
       <1 />
       `,
     index_msg: '索引不能为空',
+    indexPatterns: '索引模式',
+    indexPattern_msg: '索引模式不能为空',
     filter: '过滤条件',
     time_label: '时间颗粒度',
     date_field: '日期字段',

@@ -27,7 +27,7 @@ const MetricExplorerPage = () => {
 
   return (
     <PageLayout title={t('title')} icon={<LineChartOutlined />}>
-      <div className='prometheus-page'>
+      <div>
         <Explorer type='logging' defaultCate='elasticsearch' />
       </div>
     </PageLayout>

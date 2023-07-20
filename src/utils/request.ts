@@ -79,7 +79,13 @@ request.interceptors.response.use(
           // proxy/elasticsearch 返回的数据结构是 { ...data }
           // proxy/jeager 返回的数据结构是 { data: [], errors: [] }
           if (
-            _.some(['/api/v1', '/api/v2', '/api/n9e/datasource', '/api/n9e/proxy'], (item) => {
+            _.some(['/api/n9e/proxy'], (item) => {
+              return url.includes(item);
+            })
+          ) {
+            return data;
+          } else if (
+            _.some(['/api/v1', '/api/v2', '/api/n9e/datasource'], (item) => {
               return url.includes(item);
             })
           ) {
