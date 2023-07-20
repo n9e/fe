@@ -12,15 +12,13 @@ interface Props {
   onExecute: () => void;
   datasourceValue?: number;
   form: any;
-  fields: string[];
   setFields: (fields: string[]) => void;
-  selectedFields: string[];
-  setSelectedFields: (fields: string[]) => void;
+  onIndexChange: () => void;
 }
 
 export default function QueryBuilder(props: Props) {
   const { t } = useTranslation('explorer');
-  const { onExecute, datasourceValue, form, fields, setFields, selectedFields, setSelectedFields } = props;
+  const { onExecute, datasourceValue, form, setFields, onIndexChange } = props;
   const [indexPatterns, setIndexPatterns] = useState<any[]>([]);
   const { run: onIndexPatternChange } = useDebounceFn(
     (indexPattern) => {
@@ -106,6 +104,7 @@ export default function QueryBuilder(props: Props) {
                     query: formValuesQuery,
                     fieldConfig,
                   });
+                  onIndexChange();
                 }
               }}
             />
@@ -126,7 +125,13 @@ export default function QueryBuilder(props: Props) {
             </a>
           </span>
           <Form.Item name={['query', 'filter']} style={{ minWidth: 300 }}>
-            <Input />
+            <Input
+              onKeyDown={(e) => {
+                if (e.keyCode === 13) {
+                  onExecute();
+                }
+              }}
+            />
           </Form.Item>
         </Input.Group>
         <div style={{ display: 'flex' }}>

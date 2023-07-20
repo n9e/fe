@@ -152,6 +152,10 @@ export default function index(props: IProps) {
       fetchSeries(values);
     });
   };
+  const handlerIndexChange = () => {
+    setSelectedFields([]);
+    fetchData();
+  };
 
   useEffect(() => {
     // 假设携带数据源值时会同时携带其他的参数，并且触发一次查询
@@ -202,15 +206,7 @@ export default function index(props: IProps) {
         />
       )}
       {mode === IMode.indexPatterns && (
-        <QueryBuilderWithIndexPatterns
-          onExecute={fetchData}
-          datasourceValue={datasourceValue}
-          form={form}
-          fields={fields}
-          setFields={setFields}
-          selectedFields={selectedFields}
-          setSelectedFields={setSelectedFields}
-        />
+        <QueryBuilderWithIndexPatterns onExecute={fetchData} datasourceValue={datasourceValue} form={form} setFields={setFields} onIndexChange={handlerIndexChange} />
       )}
       <div style={{ height: 'calc(100% - 50px)' }}>
         <Spin spinning={loading}>

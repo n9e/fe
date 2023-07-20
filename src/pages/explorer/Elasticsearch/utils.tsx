@@ -73,7 +73,7 @@ export function getColumnsFromFields(selectedFields: string[], dateField?: strin
           return (
             <div
               style={{
-                minWidth: measureTextWidth(label) + 20,
+                minWidth: measureTextWidth(label) + 30, // sorter width
               }}
             >
               {value}
