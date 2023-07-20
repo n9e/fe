@@ -171,6 +171,20 @@ export default function index(props: IProps) {
       fetchSeries(values);
     });
   };
+  const handlerModeChange = (mode) => {
+    localStorage.setItem('explorer_es_mode', mode);
+    const queryValues = form.getFieldValue('query');
+    form.setFieldsValue({
+      fieldConfig: undefined,
+      query: {
+        ...(queryValues || {}),
+        index: undefined,
+        indexPattern: undefined,
+      },
+    });
+    setMode(mode);
+    setData([]);
+  };
   const handlerIndexChange = () => {
     setSelectedFields([]);
     fetchData();
@@ -198,33 +212,11 @@ export default function index(props: IProps) {
     <div className='es-discover-container'>
       {headerExtra ? (
         createPortal(
-          <ModeRadio
-            mode={mode}
-            setMode={(newMode) => {
-              localStorage.setItem('explorer_es_mode', newMode);
-              form.setFieldsValue({
-                fieldConfig: undefined,
-              });
-              setMode(newMode);
-            }}
-            allowHideSystemIndices={allowHideSystemIndices}
-            setAllowHideSystemIndices={setAllowHideSystemIndices}
-          />,
+          <ModeRadio mode={mode} setMode={handlerModeChange} allowHideSystemIndices={allowHideSystemIndices} setAllowHideSystemIndices={setAllowHideSystemIndices} />,
           headerExtra,
         )
       ) : (
-        <ModeRadio
-          mode={mode}
-          setMode={(newMode) => {
-            localStorage.setItem('explorer_es_mode', newMode);
-            form.setFieldsValue({
-              fieldConfig: undefined,
-            });
-            setMode(newMode);
-          }}
-          allowHideSystemIndices={allowHideSystemIndices}
-          setAllowHideSystemIndices={setAllowHideSystemIndices}
-        />
+        <ModeRadio mode={mode} setMode={handlerModeChange} allowHideSystemIndices={allowHideSystemIndices} setAllowHideSystemIndices={setAllowHideSystemIndices} />
       )}
       {mode === IMode.indices && (
         <QueryBuilder
