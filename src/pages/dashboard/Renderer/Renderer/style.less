@@ -9,9 +9,9 @@
         display: inline;
       }
     }
-    .renderer-header-loading {
-      .renderer-header-more {
-        display: inline-block;
+    .renderer-header-controllers {
+      .renderer-header-controller {
+        display: flex;
         background-color: rgba(0,0,0,0.04);
       }
     }
@@ -61,13 +61,15 @@
     font-size: 14px;
   }
 }
-.renderer-header-loading {
-  width: 34px;
-  text-align: center;
-  .renderer-header-more {
+.renderer-header-controllers {
+  width: 64px;
+  text-align: right;
+  margin-right: 5px;
+  .renderer-header-controller {
     width: 24px;
     height: 24px;
-    line-height: 24px;
+    justify-content: center;
+    align-items: center;
     display: none;
   }
 }

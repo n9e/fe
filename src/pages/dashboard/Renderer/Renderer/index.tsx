@@ -20,7 +20,7 @@ import classNames from 'classnames';
 import { useInViewport } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import { Dropdown, Menu, Tooltip, Space } from 'antd';
-import { InfoCircleOutlined, MoreOutlined, LinkOutlined, SettingOutlined, ShareAltOutlined, DeleteOutlined, CopyOutlined, SyncOutlined, WarningOutlined } from '@ant-design/icons';
+import { InfoCircleOutlined, MoreOutlined, LinkOutlined, SettingOutlined, ShareAltOutlined, DeleteOutlined, CopyOutlined, SyncOutlined, DragOutlined } from '@ant-design/icons';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import Timeseries from './Timeseries';
 import Stat from './Stat';
@@ -158,90 +158,93 @@ function index(props: IProps) {
               <div className='renderer-header-title dashboards-panels-item-drag-handle'>{name}</div>
             </Tooltip>
           </div>
-          <div className='renderer-header-loading'>
+          <div className='renderer-header-controllers'>
             {loading ? (
               <SyncOutlined spin />
             ) : (
               !isPreview && (
-                <Dropdown
-                  trigger={['click']}
-                  placement='bottom'
-                  getPopupContainer={() => ref.current!}
-                  overlayStyle={{
-                    minWidth: '100px',
-                  }}
-                  visible={visible}
-                  onVisibleChange={(visible) => {
-                    setVisible(visible);
-                  }}
-                  overlay={
-                    <Menu>
-                      <Menu.Item
-                        onClick={() => {
-                          setVisible(true);
-                          setTime({
-                            ...time,
-                            refreshFlag: _.uniqueId('refreshFlag_ '),
-                          });
-                        }}
-                        key='0'
-                      >
-                        <div>
-                          <SyncOutlined style={{ marginRight: 8 }} />
-                          {t('refresh_btn')}
-                        </div>
-                      </Menu.Item>
-                      {!values.repeatPanelId && (
+                <Space size={5}>
+                  <DragOutlined className='renderer-header-controller dashboards-panels-item-drag-handle' />
+                  <Dropdown
+                    trigger={['click']}
+                    placement='bottom'
+                    getPopupContainer={() => ref.current!}
+                    overlayStyle={{
+                      minWidth: '100px',
+                    }}
+                    visible={visible}
+                    onVisibleChange={(visible) => {
+                      setVisible(visible);
+                    }}
+                    overlay={
+                      <Menu>
+                        <Menu.Item
+                          onClick={() => {
+                            setVisible(true);
+                            setTime({
+                              ...time,
+                              refreshFlag: _.uniqueId('refreshFlag_ '),
+                            });
+                          }}
+                          key='0'
+                        >
+                          <div>
+                            <SyncOutlined style={{ marginRight: 8 }} />
+                            {t('refresh_btn')}
+                          </div>
+                        </Menu.Item>
+                        {!values.repeatPanelId && (
+                          <Menu.Item
+                            onClick={() => {
+                              setVisible(false);
+                              if (onEditClick) onEditClick();
+                            }}
+                            key='1'
+                          >
+                            <SettingOutlined style={{ marginRight: 8 }} />
+                            {t('common:btn.edit')}
+                          </Menu.Item>
+                        )}
+                        {!values.repeatPanelId && (
+                          <Menu.Item
+                            onClick={() => {
+                              setVisible(false);
+                              if (onCloneClick) onCloneClick();
+                            }}
+                            key='2'
+                          >
+                            <CopyOutlined style={{ marginRight: 8 }} />
+                            {t('common:btn.clone')}
+                          </Menu.Item>
+                        )}
                         <Menu.Item
                           onClick={() => {
                             setVisible(false);
-                            if (onEditClick) onEditClick();
+                            if (onShareClick) onShareClick();
                           }}
-                          key='1'
+                          key='3'
                         >
-                          <SettingOutlined style={{ marginRight: 8 }} />
-                          {t('common:btn.edit')}
+                          <ShareAltOutlined style={{ marginRight: 8 }} />
+                          {t('share_btn')}
                         </Menu.Item>
-                      )}
-                      {!values.repeatPanelId && (
-                        <Menu.Item
-                          onClick={() => {
-                            setVisible(false);
-                            if (onCloneClick) onCloneClick();
-                          }}
-                          key='2'
-                        >
-                          <CopyOutlined style={{ marginRight: 8 }} />
-                          {t('common:btn.clone')}
-                        </Menu.Item>
-                      )}
-                      <Menu.Item
-                        onClick={() => {
-                          setVisible(false);
-                          if (onShareClick) onShareClick();
-                        }}
-                        key='3'
-                      >
-                        <ShareAltOutlined style={{ marginRight: 8 }} />
-                        {t('share_btn')}
-                      </Menu.Item>
-                      {!values.repeatPanelId && (
-                        <Menu.Item
-                          onClick={() => {
-                            setVisible(false);
-                            if (onDeleteClick) onDeleteClick();
-                          }}
-                          key='4'
-                        >
-                          <DeleteOutlined style={{ marginRight: 8 }} />
-                          {t('common:btn.delete')}
-                        </Menu.Item>
-                      )}
-                    </Menu>
-                  }
-                >
-                  <MoreOutlined className='renderer-header-more' />
-                </Dropdown>
+                        {!values.repeatPanelId && (
+                          <Menu.Item
+                            onClick={() => {
+                              setVisible(false);
+                              if (onDeleteClick) onDeleteClick();
+                            }}
+                            key='4'
+                          >
+                            <DeleteOutlined style={{ marginRight: 8 }} />
+                            {t('common:btn.delete')}
+                          </Menu.Item>
+                        )}
+                      </Menu>
+                    }
+                  >
+                    <MoreOutlined className='renderer-header-controller' />
+                  </Dropdown>
+                </Space>
               )
             )}
           </div>
