@@ -119,15 +119,7 @@ export default function Prometheus({ chartForm, variableConfig, dashboardId }) {
                         </Form.Item>
                       </Col>
                       <Col flex='72px'>
-                        <Form.Item
-                          label='Step'
-                          {...field}
-                          name={[field.name, 'step']}
-                          tooltip={{
-                            getPopupContainer: () => document.body,
-                            title: t('query.prometheus.step_tip'),
-                          }}
-                        >
+                        <Form.Item label='Step' {...field} name={[field.name, 'step']}>
                           <Resolution />
                         </Form.Item>
                       </Col>

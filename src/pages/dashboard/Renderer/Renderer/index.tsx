@@ -186,12 +186,10 @@ function index(props: IProps) {
                         }}
                         key='0'
                       >
-                        <Tooltip title={<div>{/* {t('refresh_tip', { num: getStepByTimeAndStep(time, step) })} */}</div>} placement='left'>
-                          <div>
-                            <SyncOutlined style={{ marginRight: 8 }} />
-                            {t('refresh_btn')}
-                          </div>
-                        </Tooltip>
+                        <div>
+                          <SyncOutlined style={{ marginRight: 8 }} />
+                          {t('refresh_btn')}
+                        </div>
                       </Menu.Item>
                       {!values.repeatPanelId && (
                         <Menu.Item

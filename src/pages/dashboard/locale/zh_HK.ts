@@ -287,7 +287,6 @@ const zh_HK = {
     prometheus: {
       time: '時間選擇',
       time_tip: '可指定時間範圍，預設為儀表盤全域性時間範圍',
-      step_tip: '可指定 step，預設為儀表盤全域性 step',
     },
   },
   detail: {

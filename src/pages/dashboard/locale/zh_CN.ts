@@ -287,7 +287,6 @@ const zh_CN = {
     prometheus: {
       time: '时间选择',
       time_tip: '可指定时间范围，默认为仪表盘全局时间范围',
-      step_tip: '可指定 step，默认为仪表盘全局 step',
     },
   },
   detail: {

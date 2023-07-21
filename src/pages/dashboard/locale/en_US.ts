@@ -277,7 +277,6 @@ const en_US = {
     prometheus: {
       time: 'Time',
       time_tip: 'Default is the global time range of the dashboard',
-      step_tip: 'Default is the global step of the dashboard',
     },
   },
   detail: {
