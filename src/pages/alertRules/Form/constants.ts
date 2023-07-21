@@ -63,7 +63,7 @@ export const defaultValues = {
     {
       enable_days_of_week: ['0', '1', '2', '3', '4', '5', '6'],
       enable_stime: moment('00:00', 'HH:mm'),
-      enable_etime: moment('23:59', 'HH:mm'),
+      enable_etime: moment('00:00', 'HH:mm'), // 起止时间一致时，表示全天有效
     },
   ],
   notify_recovered: true,

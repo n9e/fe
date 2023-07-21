@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import moment from 'moment';
-import { defaultRuleConfig } from './constants';
+import { defaultRuleConfig, defaultValues } from './constants';
 import { DATASOURCE_ALL, alphabet } from '../constants';
 import { mapOptionToRelativeTimeRange, mapRelativeTimeRangeToOption } from '@/components/TimeRangePicker';
 
@@ -176,19 +176,13 @@ export function processInitialValues(values) {
           url: item,
         }))
       : undefined,
-    effective_time: values?.enable_etimes
+    effective_time: values?.enable_etimes // TODO: 兼容旧数据
       ? values?.enable_etimes.map((item, index) => ({
           enable_stime: moment(values.enable_stimes[index], 'HH:mm'),
           enable_etime: moment(values.enable_etimes[index], 'HH:mm'),
           enable_days_of_week: values.enable_days_of_weeks[index],
         }))
-      : [
-          {
-            enable_stime: moment('00:00', 'HH:mm'),
-            enable_etime: moment('23:59', 'HH:mm'),
-            enable_days_of_week: ['1', '2', '3', '4', '5', '6', '0'],
-          },
-        ],
+      : defaultValues.effective_time,
     annotations: _.map(values?.annotations, (value, key) => ({
       key,
       value,
