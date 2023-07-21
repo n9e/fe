@@ -138,7 +138,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
         onFinish={onFinish}
         initialValues={{
           ...detail,
-          prod: detail.prod || 'host',
+          prod: detail.prod || 'metric',
           severities: detail.severities || [1, 2, 3],
           redefine_severity: detail?.redefine_severity ? true : false,
           redefine_channels: detail?.redefine_channels ? true : false,

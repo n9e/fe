@@ -158,7 +158,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
           }
           return item;
         }),
-        prod: detail.prod || 'host',
+        prod: detail.prod || 'metric',
         severities: detail.severities || [1, 2, 3],
         btime: detail?.btime ? moment(detail.btime * 1000) : moment(btimeDefault),
         etime: detail?.etime ? moment(detail.etime * 1000) : moment(etimeDefault),
