@@ -20,7 +20,18 @@ import classNames from 'classnames';
 import { useInViewport } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import { Dropdown, Menu, Tooltip, Space } from 'antd';
-import { InfoCircleOutlined, MoreOutlined, LinkOutlined, SettingOutlined, ShareAltOutlined, DeleteOutlined, CopyOutlined, SyncOutlined, DragOutlined } from '@ant-design/icons';
+import {
+  InfoCircleOutlined,
+  MoreOutlined,
+  LinkOutlined,
+  SettingOutlined,
+  ShareAltOutlined,
+  DeleteOutlined,
+  CopyOutlined,
+  SyncOutlined,
+  DragOutlined,
+  WarningOutlined,
+} from '@ant-design/icons';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import Timeseries from './Timeseries';
 import Stat from './Stat';
@@ -76,7 +87,7 @@ function index(props: IProps) {
   });
   const name = replaceFieldWithVariable(dashboardId, values.name, variableConfig, values.scopedVars);
   const description = replaceFieldWithVariable(dashboardId, values.description, variableConfig, values.scopedVars);
-  const tipsVisible = !error && (description || !_.isEmpty(values.links));
+  const tipsVisible = description || !_.isEmpty(values.links);
 
   useEffect(() => {
     setTime(props.time);
@@ -114,31 +125,6 @@ function index(props: IProps) {
     >
       <div className='renderer-body-wrap' ref={bodyWrapRef}>
         <div className='renderer-header graph-header'>
-          {tipsVisible ? (
-            <Tooltip
-              placement='leftTop'
-              overlayInnerStyle={{
-                maxWidth: 300,
-              }}
-              getPopupContainer={() => ref.current!}
-              title={
-                <Space direction='vertical'>
-                  {description ? <Markdown content={description} /> : null}
-                  {_.map(values.links, (link, i) => {
-                    return (
-                      <div key={i}>
-                        <a href={replaceFieldWithVariable(dashboardId, link.url, variableConfig, values.scopedVars)} target={link.targetBlank ? '_blank' : '_self'}>
-                          {replaceFieldWithVariable(dashboardId, link.title, variableConfig, values.scopedVars)}
-                        </a>
-                      </div>
-                    );
-                  })}
-                </Space>
-              }
-            >
-              <div className='renderer-header-desc'>{description ? <InfoCircleOutlined /> : <LinkOutlined />}</div>
-            </Tooltip>
-          ) : null}
           {error && (
             <Tooltip
               title={error}
@@ -149,22 +135,57 @@ function index(props: IProps) {
               getPopupContainer={() => ref.current!}
             >
               <div className='renderer-header-error'>
-                <InfoCircleOutlined style={{ color: 'red' }} />
+                <WarningOutlined />
               </div>
             </Tooltip>
           )}
-          <div className='renderer-header-content'>
+          <div
+            className='renderer-header-content'
+            style={{
+              width: error ? 'calc(100% - 58px)' : 'calc(100% - 32px)',
+            }}
+          >
             <Tooltip title={name} getPopupContainer={() => ref.current!}>
               <div className='renderer-header-title dashboards-panels-item-drag-handle'>{name}</div>
             </Tooltip>
+            {tipsVisible ? (
+              <Tooltip
+                placement='top'
+                overlayInnerStyle={{
+                  maxWidth: 300,
+                }}
+                getPopupContainer={() => ref.current!}
+                title={
+                  <Space direction='vertical'>
+                    {description ? <Markdown content={description} /> : null}
+                    {_.map(values.links, (link, i) => {
+                      return (
+                        <div key={i}>
+                          <a href={replaceFieldWithVariable(dashboardId, link.url, variableConfig, values.scopedVars)} target={link.targetBlank ? '_blank' : '_self'}>
+                            {replaceFieldWithVariable(dashboardId, link.title, variableConfig, values.scopedVars)}
+                          </a>
+                        </div>
+                      );
+                    })}
+                  </Space>
+                }
+              >
+                <div className='renderer-header-desc'>{description ? <InfoCircleOutlined /> : <LinkOutlined />}</div>
+              </Tooltip>
+            ) : null}
           </div>
-          <div className='renderer-header-controllers'>
+          <div
+            className='renderer-header-controllers'
+            style={{
+              width: name ? 28 : 52,
+            }}
+          >
             {loading ? (
-              <SyncOutlined spin />
+              <SyncOutlined spin style={{ marginRight: 8 }} />
             ) : (
               !isPreview && (
-                <Space size={5}>
-                  <DragOutlined className='renderer-header-controller dashboards-panels-item-drag-handle' />
+                <Space size={2} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  {!name && <DragOutlined className='renderer-header-controller dashboards-panels-item-drag-handle' />}
                   <Dropdown
                     trigger={['click']}
                     placement='bottom'

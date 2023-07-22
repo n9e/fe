@@ -29,42 +29,51 @@
 }
 .renderer-header {
   padding: 0;
-  height: 34px;
-  line-height: 34px;
+  height: 28px;
+  line-height: 28px;
   display: flex;
+  align-items: center;
   border: 0 none !important;
   background-color: unset;
 }
+.renderer-header-desc {
+  .anticon-info-circle,
+  .anticon-link {
+    // margin-left: 8px;
+    color: #666;
+  }
+}
 .renderer-header-desc,.renderer-header-error {
-  width: 34px;
   text-align: center;
   cursor: pointer;
   position: relative;
-  .anticon-info-circle,
-  .anticon-link {
-    display: none;
-  }
 }
 .renderer-header-error {
-  .anticon-info-circle {
-    display: inline;
-  }
+  background-color: #ff0066;
+  color: #fff;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  margin-left: 2px;
+  flex-shrink: 0;
 }
 .renderer-header-content {
-  text-align: center;
+  text-align: left;
   flex: 1;
-  width: calc(100% - 68px);
+  width: calc(100% - 28px);
+  display: flex;
   .renderer-header-title {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
     font-size: 14px;
+    margin: 0 8px;
   }
 }
 .renderer-header-controllers {
-  width: 64px;
   text-align: right;
-  margin-right: 5px;
+  margin-right: 2px;
+  flex: 1;
   .renderer-header-controller {
     width: 24px;
     height: 24px;
