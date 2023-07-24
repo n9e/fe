@@ -137,3 +137,38 @@ export function getESVersion(datasourceValue: number) {
     return dat;
   });
 }
+
+export function getFieldValues(datasourceValue, requestBody, field) {
+  return request(`/api/n9e/proxy/${datasourceValue}/_msearch`, {
+    method: RequestMethod.Post,
+    data: requestBody,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  }).then((res) => {
+    const hits = _.get(res, 'responses[0].hits.hits');
+    let values: string[] = [];
+    _.forEach(hits, (hit) => {
+      const value = _.get(hit, ['fields', field]);
+      if (value) {
+        values = _.concat(values, value);
+      }
+    });
+    const uniqueValues = _.union(values);
+
+    return _.slice(
+      _.orderBy(
+        _.map(uniqueValues, (value) => {
+          return {
+            label: value,
+            value: _.filter(values, (v) => v === value).length / values.length,
+          };
+        }),
+        ['value'],
+        ['desc'],
+      ),
+      0,
+      5,
+    );
+  });
+}

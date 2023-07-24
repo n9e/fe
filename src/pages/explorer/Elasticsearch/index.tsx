@@ -4,7 +4,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import queryString, { ParsedQuery } from 'query-string';
 import { useTranslation } from 'react-i18next';
-import { Table, Empty, Spin, InputNumber, Select, Radio, Space, Checkbox } from 'antd';
+import { Table, Empty, Spin, InputNumber, Select, Radio, Space, Checkbox, Form } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
 import { DownOutlined, RightOutlined, LeftOutlined } from '@ant-design/icons';
 import CodeMirror from '@uiw/react-codemirror';
@@ -118,6 +118,7 @@ export default function index(props: IProps) {
     }>();
   const [mode, setMode] = useState<IMode>(getDefaultMode(query, isOpenSearch));
   const [allowHideSystemIndices, setAllowHideSystemIndices] = useState<boolean>(false);
+  const indexValue = Form.useWatch(['query', 'index']);
 
   const fetchSeries = (values) => {
     if (timesRef.current) {
@@ -261,7 +262,14 @@ export default function index(props: IProps) {
           {!_.isEmpty(data) ? (
             <div className='es-discover-content'>
               {collapsed && (
-                <FieldsSidebar fieldConfig={form.getFieldValue(['fieldConfig'])} fields={fields} setFields={setFields} value={selectedFields} onChange={setSelectedFields} />
+                <FieldsSidebar
+                  fieldConfig={form.getFieldValue(['fieldConfig'])}
+                  fields={fields}
+                  setFields={setFields}
+                  value={selectedFields}
+                  onChange={setSelectedFields}
+                  params={{ form, timesRef, datasourceValue }}
+                />
               )}
               <div
                 className='es-discover-main'

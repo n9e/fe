@@ -225,6 +225,53 @@ export function normalizeLogsQueryRequestBody(params: any) {
   return `${JSON.stringify(header)}\n${JSON.stringify(body)}\n`;
 }
 
+export function normalizeFieldValuesQueryRequestBody(params: any, field: string) {
+  const header = {
+    search_type: 'query_then_fetch',
+    ignore_unavailable: true,
+    index: params.index,
+  };
+  const body: any = {
+    size: params.limit,
+    query: {
+      bool: {
+        filter: [
+          {
+            range: {
+              [params.date_field]: {
+                gte: params.start,
+                lte: params.end,
+                format: 'epoch_millis',
+              },
+            },
+          },
+        ],
+      },
+    },
+    sort: [
+      {
+        [params.date_field]: {
+          order: params.order || 'desc',
+          unmapped_type: 'boolean',
+        },
+      },
+    ],
+    script_fields: {},
+    fields: [field],
+    aggs: {},
+    _source: false,
+  };
+  if (params.filter) {
+    body.query.bool.filter.push({
+      query_string: {
+        analyze_wildcard: true,
+        query: params.filter || '*',
+      },
+    });
+  }
+  return `${JSON.stringify(header)}\n${JSON.stringify(body)}\n`;
+}
+
 export function normalizeTimeseriesQueryRequestBody(params: any, intervalkey: string) {
   const header = {
     search_type: 'query_then_fetch',

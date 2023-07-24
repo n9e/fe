@@ -2,8 +2,9 @@ import React from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Tag } from 'antd';
-import { DownOutlined, RightOutlined, PlusCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { DownOutlined, RightOutlined } from '@ant-design/icons';
 import { getFieldLabel } from '../../Elasticsearch/utils';
+import Field from './Field';
 
 interface IProps {
   style?: React.CSSProperties;
@@ -13,16 +14,12 @@ interface IProps {
   onSelect?: (field: string) => void;
   onRemove?: (field: string) => void;
   fieldConfig?: any;
+  params?: any;
 }
-
-const operIconMap = {
-  selected: <CloseCircleOutlined />,
-  available: <PlusCircleOutlined />,
-};
 
 export default function FieldsList(props: IProps) {
   const { t } = useTranslation('explorer');
-  const { style = {}, fieldsSearch, fields, type, onSelect, onRemove, fieldConfig } = props;
+  const { style = {}, fieldsSearch, fields, type, onSelect, onRemove, fieldConfig, params } = props;
   const [expanded, setExpanded] = React.useState<boolean>(true);
   const filteredFields = _.filter(fields, (field) => {
     if (fieldsSearch) {
@@ -54,22 +51,7 @@ export default function FieldsList(props: IProps) {
         </div>
         {expanded &&
           _.map(filteredFields, (item) => {
-            return (
-              <div
-                className='es-discover-fields-item'
-                key={item}
-                onClick={() => {
-                  if (type === 'selected' && onRemove) {
-                    onRemove(item);
-                  } else if (type === 'available' && onSelect) {
-                    onSelect(item);
-                  }
-                }}
-              >
-                <span className='es-discover-fields-item-content'>{getFieldLabel(item, fieldConfig)}</span>
-                <span className='es-discover-fields-item-oper'>{operIconMap[type]}</span>
-              </div>
-            );
+            return <Field key={item} item={item} type={type} onSelect={onSelect} onRemove={onRemove} fieldConfig={fieldConfig} params={params} />;
           })}
       </div>
     );
