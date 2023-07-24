@@ -27,6 +27,7 @@ interface IProps {
   headerExtra: HTMLDivElement | null;
   datasourceValue?: number;
   form: FormInstance;
+  isOpenSearch?: boolean;
 }
 
 const LOGS_LIMIT = 500;
@@ -86,7 +87,8 @@ const getFilterByQuery = (query: ParsedQuery<string>) => {
   }
 };
 
-const getDefaultMode = (query) => {
+const getDefaultMode = (query, isOpenSearch) => {
+  if (isOpenSearch) return IMode.indices;
   if (query?.data_source_id && query?.index_name) {
     return IMode.indices;
   }
@@ -95,7 +97,7 @@ const getDefaultMode = (query) => {
 
 export default function index(props: IProps) {
   const { t } = useTranslation('explorer');
-  const { headerExtra, datasourceValue, form } = props;
+  const { headerExtra, datasourceValue, form, isOpenSearch = false } = props;
   const query = queryString.parse(useLocation().search);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
@@ -114,7 +116,7 @@ export default function index(props: IProps) {
       start: number;
       end: number;
     }>();
-  const [mode, setMode] = useState<IMode>(getDefaultMode(query));
+  const [mode, setMode] = useState<IMode>(getDefaultMode(query, isOpenSearch));
   const [allowHideSystemIndices, setAllowHideSystemIndices] = useState<boolean>(false);
 
   const fetchSeries = (values) => {
@@ -171,8 +173,10 @@ export default function index(props: IProps) {
       fetchSeries(values);
     });
   };
-  const handlerModeChange = (mode) => {
-    localStorage.setItem('explorer_es_mode', mode);
+  const handlerModeChange = (mode, isOpenSearch) => {
+    if (!isOpenSearch) {
+      localStorage.setItem('explorer_es_mode', mode);
+    }
     const queryValues = form.getFieldValue('query');
     form.setFieldsValue({
       fieldConfig: undefined,
@@ -210,14 +214,33 @@ export default function index(props: IProps) {
 
   return (
     <div className='es-discover-container'>
-      {headerExtra ? (
-        createPortal(
-          <ModeRadio mode={mode} setMode={handlerModeChange} allowHideSystemIndices={allowHideSystemIndices} setAllowHideSystemIndices={setAllowHideSystemIndices} />,
-          headerExtra,
-        )
-      ) : (
-        <ModeRadio mode={mode} setMode={handlerModeChange} allowHideSystemIndices={allowHideSystemIndices} setAllowHideSystemIndices={setAllowHideSystemIndices} />
+      {!isOpenSearch && (
+        <>
+          {headerExtra ? (
+            createPortal(
+              <ModeRadio
+                mode={mode}
+                setMode={(val) => {
+                  handlerModeChange(val, isOpenSearch);
+                }}
+                allowHideSystemIndices={allowHideSystemIndices}
+                setAllowHideSystemIndices={setAllowHideSystemIndices}
+              />,
+              headerExtra,
+            )
+          ) : (
+            <ModeRadio
+              mode={mode}
+              setMode={(val) => {
+                handlerModeChange(val, isOpenSearch);
+              }}
+              allowHideSystemIndices={allowHideSystemIndices}
+              setAllowHideSystemIndices={setAllowHideSystemIndices}
+            />
+          )}
+        </>
       )}
+
       {mode === IMode.indices && (
         <QueryBuilder
           onExecute={fetchData}

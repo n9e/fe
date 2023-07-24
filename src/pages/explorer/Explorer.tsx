@@ -150,7 +150,7 @@ const Panel = ({ type, defaultCate }: IProps) => {
                 } else if (datasourceCate === DatasourceCateEnum.prometheus) {
                   return <Prometheus key={datasourceValue} headerExtra={headerExtraRef.current} datasourceValue={datasourceValue} form={form} />;
                 }
-                return <PlusExplorer datasourceCate={datasourceCate} datasourceValue={datasourceValue} headerExtraRef={headerExtraRef} form={form} />;
+                return <PlusExplorer key={datasourceValue} datasourceCate={datasourceCate} datasourceValue={datasourceValue} headerExtraRef={headerExtraRef} form={form} />;
               }}
             </Form.Item>
           </div>
