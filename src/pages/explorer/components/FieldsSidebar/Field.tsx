@@ -24,7 +24,7 @@ const operIconMap = {
 export default function Field(props: Props) {
   const { t } = useTranslation('explorer');
   const { item, type, onSelect, onRemove, fieldConfig, params } = props;
-  const { form, timesRef, datasourceValue } = params;
+  const { form, timesRef, datasourceValue, order, limit } = params;
   const [top5Visible, setTop5Visible] = useState<boolean>(false);
   const [top5Data, setTop5Data] = useState<any[]>([]);
   const [top5Loading, setTop5Loading] = useState<boolean>(false);
@@ -75,8 +75,8 @@ export default function Field(props: Props) {
                 index: values.query.index,
                 filter: values.query.filter,
                 date_field: values.query.date_field,
-                limit: 500,
-                order: 'desc',
+                limit,
+                order,
               },
               item,
             ),

@@ -268,7 +268,7 @@ export default function index(props: IProps) {
                   setFields={setFields}
                   value={selectedFields}
                   onChange={setSelectedFields}
-                  params={{ form, timesRef, datasourceValue }}
+                  params={{ form, timesRef, datasourceValue, order: sortOrder.current, limit: LOGS_LIMIT }}
                 />
               )}
               <div
