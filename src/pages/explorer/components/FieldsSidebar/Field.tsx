@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { Popover, Progress, Spin } from 'antd';
 import { PlusCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { getFieldLabel } from '../../Elasticsearch/utils';
@@ -21,6 +22,7 @@ const operIconMap = {
 };
 
 export default function Field(props: Props) {
+  const { t } = useTranslation('explorer');
   const { item, type, onSelect, onRemove, fieldConfig, params } = props;
   const { form, timesRef, datasourceValue } = params;
   const [top5Visible, setTop5Visible] = useState<boolean>(false);
@@ -40,9 +42,10 @@ export default function Field(props: Props) {
       title={fieldLabel}
       content={
         <div className='es-discover-field-values-topn'>
-          <strong>Top 5 values</strong>
+          <strong>{t('log.fieldValues_topn')}</strong>
           <Spin spinning={top5Loading}>
             <div className='es-discover-field-values-topn-list'>
+              {_.isEmpty(top5Data) && t('log.fieldValues_topnNoData')}
               {_.map(top5Data, (item) => {
                 const percent = _.floor(item.value * 100, 2);
                 return (
