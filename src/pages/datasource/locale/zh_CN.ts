@@ -38,6 +38,7 @@ const zh_CN = {
     url_no_spaces_msg: 'URL不能包含空格',
     prom: {
       write_addr_tip: '记录规则产生的数据的回写地址',
+      read_addr_tip: '时序库内网地址',
       url_tip: '常见时序数据库配置示例（兼容 Prometheus 查询 API）：',
     },
     es: {
