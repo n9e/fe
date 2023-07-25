@@ -38,6 +38,7 @@ const zh_HK = {
     url_no_spaces_msg: '請勿輸入空格',
     prom: {
       write_addr_tip: '記錄規則產生的資料的回寫地址',
+      read_addr_tip: '時序庫內網地址',
       url_tip: '常見時序數據庫配置示例（兼容 Prometheus 查詢 API）：',
     },
     es: {
