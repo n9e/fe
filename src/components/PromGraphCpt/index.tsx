@@ -204,54 +204,56 @@ export default function index(props: IProps) {
         </Input.Group>
       </div>
       {errorContent && <Alert style={{ marginBottom: 16 }} message={errorContent} type='error' />}
-      <Tabs
-        destroyInactiveTabPane
-        tabBarGutter={0}
-        activeKey={tabActiveKey}
-        onChange={(key: 'table' | 'graph') => {
-          setTabActiveKey(key);
-          onTypeChange && onTypeChange(key);
-          setErrorContent('');
-          setQueryStats(null);
-        }}
-        type='card'
-        tabBarExtraContent={queryStats && <QueryStatsView {...queryStats} />}
-      >
-        <TabPane tab='Table' key='table'>
-          <Table
-            url={url}
-            contentMaxHeight={contentMaxHeight}
-            datasourceValue={datasourceValue}
-            promql={promql}
-            setQueryStats={setQueryStats}
-            setErrorContent={setErrorContent}
-            timestamp={timestamp}
-            setTimestamp={(val) => {
-              setTimestamp(val);
-            }}
-            refreshFlag={refreshFlag}
-          />
-        </TabPane>
-        <TabPane tab='Graph' key='graph'>
-          <Graph
-            url={url}
-            contentMaxHeight={contentMaxHeight}
-            datasourceValue={datasourceValue}
-            promql={promql}
-            setQueryStats={setQueryStats}
-            setErrorContent={setErrorContent}
-            range={range}
-            setRange={(newRange) => {
-              setRange(newRange);
-              onTimeChange && onTimeChange(newRange);
-            }}
-            step={step}
-            setStep={setStep}
-            graphOperates={graphOperates}
-            refreshFlag={refreshFlag}
-          />
-        </TabPane>
-      </Tabs>
+      <div style={{ minHeight: 0, height: '100%' }}>
+        <Tabs
+          destroyInactiveTabPane
+          tabBarGutter={0}
+          activeKey={tabActiveKey}
+          onChange={(key: 'table' | 'graph') => {
+            setTabActiveKey(key);
+            onTypeChange && onTypeChange(key);
+            setErrorContent('');
+            setQueryStats(null);
+          }}
+          type='card'
+          tabBarExtraContent={queryStats && <QueryStatsView {...queryStats} />}
+        >
+          <TabPane tab='Table' key='table'>
+            <Table
+              url={url}
+              contentMaxHeight={contentMaxHeight}
+              datasourceValue={datasourceValue}
+              promql={promql}
+              setQueryStats={setQueryStats}
+              setErrorContent={setErrorContent}
+              timestamp={timestamp}
+              setTimestamp={(val) => {
+                setTimestamp(val);
+              }}
+              refreshFlag={refreshFlag}
+            />
+          </TabPane>
+          <TabPane tab='Graph' key='graph'>
+            <Graph
+              url={url}
+              contentMaxHeight={contentMaxHeight}
+              datasourceValue={datasourceValue}
+              promql={promql}
+              setQueryStats={setQueryStats}
+              setErrorContent={setErrorContent}
+              range={range}
+              setRange={(newRange) => {
+                setRange(newRange);
+                onTimeChange && onTimeChange(newRange);
+              }}
+              step={step}
+              setStep={setStep}
+              graphOperates={graphOperates}
+              refreshFlag={refreshFlag}
+            />
+          </TabPane>
+        </Tabs>
+      </div>
       <MetricsExplorer
         url={url}
         datasourceValue={datasourceValue}

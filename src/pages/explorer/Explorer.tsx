@@ -141,18 +141,20 @@ const Panel = ({ type, defaultCate }: IProps) => {
               </Form.Item>
               <div ref={headerExtraRef} />
             </Space>
-            <Form.Item shouldUpdate noStyle>
-              {({ getFieldValue }) => {
-                const datasourceCate = getFieldValue('datasourceCate');
-                const datasourceValue = getFieldValue('datasourceValue');
-                if (datasourceCate === DatasourceCateEnum.elasticsearch) {
-                  return <Elasticsearch key={datasourceValue} headerExtra={headerExtraRef.current} datasourceValue={datasourceValue} form={form} />;
-                } else if (datasourceCate === DatasourceCateEnum.prometheus) {
-                  return <Prometheus key={datasourceValue} headerExtra={headerExtraRef.current} datasourceValue={datasourceValue} form={form} />;
-                }
-                return <PlusExplorer key={datasourceValue} datasourceCate={datasourceCate} datasourceValue={datasourceValue} headerExtraRef={headerExtraRef} form={form} />;
-              }}
-            </Form.Item>
+            <div style={{ minHeight: 0, height: '100%' }}>
+              <Form.Item shouldUpdate noStyle>
+                {({ getFieldValue }) => {
+                  const datasourceCate = getFieldValue('datasourceCate');
+                  const datasourceValue = getFieldValue('datasourceValue');
+                  if (datasourceCate === DatasourceCateEnum.elasticsearch) {
+                    return <Elasticsearch key={datasourceValue} headerExtra={headerExtraRef.current} datasourceValue={datasourceValue} form={form} />;
+                  } else if (datasourceCate === DatasourceCateEnum.prometheus) {
+                    return <Prometheus key={datasourceValue} headerExtra={headerExtraRef.current} datasourceValue={datasourceValue} form={form} />;
+                  }
+                  return <PlusExplorer key={datasourceValue} datasourceCate={datasourceCate} datasourceValue={datasourceValue} headerExtraRef={headerExtraRef} form={form} />;
+                }}
+              </Form.Item>
+            </div>
           </div>
         </Form>
       </Card>

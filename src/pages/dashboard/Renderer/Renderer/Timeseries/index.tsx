@@ -350,7 +350,11 @@ export default function index(props: IProps) {
         display: placement === 'right' ? 'flex' : 'block',
       }}
     >
-      <div ref={chartEleRef} style={{ height: _chartHeight, minHeight: '70%', width: placement === 'right' ? (isExpanded ? 0 : '60%') : '100%' }} />
+      <div
+        ref={chartEleRef}
+        className='renderer-timeseries-graph'
+        style={{ height: _chartHeight, minHeight: '70%', width: placement === 'right' ? (isExpanded ? 0 : '60%') : '100%' }}
+      />
       {hasLegend && (
         <div
           className='renderer-timeseries-legend-table'
@@ -423,7 +427,17 @@ export default function index(props: IProps) {
                       className={item.disabled ? 'disabled' : ''}
                     >
                       <span className='renderer-timeseries-legend-color-symbol' style={{ backgroundColor: item.color }} />
-                      {item.name} {detailUrl ? <span>&nbsp;|&nbsp;<a href={detailFormatter(item)} target="_blank">{detailName}</a></span> :''}
+                      {item.name}{' '}
+                      {detailUrl ? (
+                        <span>
+                          &nbsp;|&nbsp;
+                          <a href={detailFormatter(item)} target='_blank'>
+                            {detailName}
+                          </a>
+                        </span>
+                      ) : (
+                        ''
+                      )}
                     </div>
                   );
                 })}
