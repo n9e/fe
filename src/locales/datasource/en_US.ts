@@ -12,6 +12,8 @@ const en_US = {
       <br />
       `,
     index_msg: 'Index is required',
+    indexPatterns: 'Index Patterns',
+    indexPattern_msg: 'Index Pattern is required',
     filter: 'Filter',
     time_label: 'Time',
     date_field: 'Date Field',
@@ -40,6 +42,8 @@ const en_US = {
       prom_eval_interval_tip: 'Every {{num}} seconds, to query the backend storage',
       prom_for_duration_tip:
         'Usually the duration is greater than the execution frequency. During the duration, PromQL query is executed multiple times according to the execution frequency, and an alert is generated only if it is triggered every time. If the duration is set to 0, an alert is generated as long as the threshold is triggered once during the PromQL query.',
+      advancedSettings: 'Advanced Settings',
+      delay: 'Delay',
     },
   },
 };

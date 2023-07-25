@@ -38,6 +38,8 @@ export default function PrometheusDetail(props: IProps) {
                           pathname: '/metric/explorer',
                           search: queryString.stringify({
                             prom_ql,
+                            data_source_name: 'prometheus',
+                            data_source_id: eventDetail.datasource_id,
                             mode: 'graph',
                             start: moment.unix(eventDetail.trigger_time).subtract(30, 'minutes').unix(),
                             end: moment.unix(eventDetail.trigger_time).add(30, 'minutes').unix(),

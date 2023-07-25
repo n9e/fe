@@ -34,12 +34,6 @@ export default function Prometheus(props: IProps) {
   return (
     <PromGraph
       type={query.mode as IMode}
-      onTypeChange={(newType) => {
-        // history.replace({
-        //   pathname: '/metric/explorer',
-        //   search: queryString.stringify({ ...query, mode: newType }),
-        // });
-      }}
       defaultTime={defaultTime}
       onTimeChange={(newRange) => {
         let { start, end } = newRange;

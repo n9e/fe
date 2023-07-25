@@ -65,11 +65,6 @@ export default function List(props: IProps) {
   const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs());
   const [collectsDrawerVisible, setCollectsDrawerVisible] = useState(false);
   const [collectsDrawerIdent, setCollectsDrawerIdent] = useState('');
-  const [requestParams, setRequestParams] = useState({
-    current: 1,
-    pageSize: 30,
-  });
-
   const columns: ColumnsType<any> = [
     {
       title: (
@@ -406,11 +401,15 @@ export default function List(props: IProps) {
 
   const { tableProps, run } = useAntdTable(featchData, {
     manual: true,
+    defaultPageSize: 30,
   });
 
   useEffect(() => {
-    run(requestParams);
-  }, [tableQueryContent, curBusiId, refreshFlag, JSON.stringify(requestParams)]);
+    run({
+      current: 1,
+      pageSize: tableProps.pagination.pageSize,
+    });
+  }, [tableQueryContent, curBusiId, refreshFlag]);
 
   return (
     <div>
@@ -492,12 +491,6 @@ export default function List(props: IProps) {
           showSizeChanger: true,
           showQuickJumper: true,
           pageSizeOptions: pageSizeOptions,
-        }}
-        onChange={(pagination) => {
-          setRequestParams({
-            current: pagination.current!,
-            pageSize: pagination.pageSize!,
-          });
         }}
         scroll={{ x: 'max-content' }}
       />

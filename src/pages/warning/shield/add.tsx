@@ -14,22 +14,26 @@
  * limitations under the License.
  *
  */
-import React from 'react';
+import React, { useContext } from 'react';
 import _ from 'lodash';
 import { useLocation } from 'react-router-dom';
 import queryString from 'query-string';
-import PageLayout from '@/components/pageLayout';
-import OperateForm from './components/operateForm';
 import { useTranslation } from 'react-i18next';
+import PageLayout from '@/components/pageLayout';
+import { CommonStateContext } from '@/App';
+import OperateForm from './components/operateForm';
 import './index.less';
 
 const AddShield: React.FC = () => {
   const { t } = useTranslation('alertMutes');
   const { search } = useLocation();
+  const { curBusiId } = useContext(CommonStateContext);
   const query: any = queryString.parse(search);
 
   if (query.busiGroup) {
-    query.busiGroup = _.toNumber(query.busiGroup);
+    query.group_id = _.toNumber(query.busiGroup);
+  } else {
+    query.group_id = curBusiId;
   }
   if (query.datasource_ids) {
     if (_.isString(query.datasource_ids)) {

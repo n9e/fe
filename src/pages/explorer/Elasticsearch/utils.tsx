@@ -1,12 +1,42 @@
 import React from 'react';
 import _ from 'lodash';
+import moment from 'moment';
+import { measureTextWidth } from '@ant-design/plots';
 import flatten from './flatten';
 
 function localeCompareFunc(a, b) {
   return a.localeCompare(b);
 }
 
-export function getColumnsFromFields(selectedFields: string[], dateField?: string) {
+export function getFieldLabel(fieldKey: string, fieldConfig?: any) {
+  return fieldConfig?.attrs?.[fieldKey]?.alias || fieldKey;
+}
+
+export function getFieldType(fieldKey: string, fieldConfig?: any) {
+  return fieldConfig?.formatMap?.[fieldKey]?.type;
+}
+
+export function getFieldValue(fieldKey, fieldValue, fieldConfig?: any) {
+  const format = fieldConfig?.formatMap?.[fieldKey];
+  if (format && format?.type === 'date' && format?.params?.pattern) {
+    return moment(fieldValue).format(format?.params?.pattern);
+  }
+  return fieldValue;
+}
+
+export function normalizeLogs(logs: { [index: string]: string }, fieldConfig?: any) {
+  const logsClone = _.cloneDeep(logs);
+  _.forEach(logsClone, (item, key) => {
+    const label = getFieldLabel(key, fieldConfig);
+    logsClone[label] = getFieldValue(key, item, fieldConfig);
+    if (label !== key) {
+      delete logsClone[key];
+    }
+  });
+  return logsClone;
+}
+
+export function getColumnsFromFields(selectedFields: string[], dateField?: string, fieldConfig?: any) {
   let columns: any[] = [];
   if (_.isEmpty(selectedFields)) {
     columns = [
@@ -17,10 +47,11 @@ export function getColumnsFromFields(selectedFields: string[], dateField?: strin
           return (
             <dl className='es-discover-logs-row'>
               {_.map(text, (val, key) => {
-                const value = _.isArray(val) ? _.join(val, ',') : val;
+                const label = getFieldLabel(key, fieldConfig);
+                const value = _.isArray(val) ? _.join(val, ',') : getFieldValue(key, val, fieldConfig);
                 return (
-                  <React.Fragment key={key}>
-                    <dt>{key}:</dt> <dd>{value}</dd>
+                  <React.Fragment key={label}>
+                    <dt>{label}:</dt> <dd>{value}</dd>
                   </React.Fragment>
                 );
               })}
@@ -31,13 +62,23 @@ export function getColumnsFromFields(selectedFields: string[], dateField?: strin
     ];
   } else {
     columns = _.map(selectedFields, (item) => {
+      const label: string = getFieldLabel(item, fieldConfig);
       return {
-        title: item,
+        title: getFieldLabel(item, fieldConfig),
         dataIndex: 'fields',
         key: item,
         render: (fields) => {
-          const value = _.isArray(fields[item]) ? _.join(fields[item], ',') : fields[item];
-          return value;
+          const fieldVal = getFieldValue(item, fields[item], fieldConfig);
+          const value = _.isArray(fieldVal) ? _.join(fieldVal, ',') : fieldVal;
+          return (
+            <div
+              style={{
+                minWidth: measureTextWidth(label) + 30, // sorter width
+              }}
+            >
+              {value}
+            </div>
+          );
         },
         sorter: (a, b) => localeCompareFunc(_.join(_.get(a, `fields[${item}]`, '')), _.join(_.get(b, `fields[${item}]`, ''))),
       };
@@ -50,7 +91,17 @@ export function getColumnsFromFields(selectedFields: string[], dateField?: strin
       key: 'time',
       width: 200,
       render: (fields) => {
-        return fields[dateField];
+        const format = fieldConfig?.formatMap?.[dateField];
+        return getFieldValue(dateField, fields[dateField], {
+          formatMap: {
+            [dateField]: {
+              type: 'date',
+              params: {
+                pattern: format?.params?.pattern || 'YYYY-MM-DD HH:mm:ss',
+              },
+            },
+          },
+        });
       },
       defaultSortOrder: 'descend',
       sortDirections: ['ascend', 'descend', 'ascend'],
@@ -106,6 +157,29 @@ export function mappingsToFields(mappings: Mappings, type?: string) {
   return _.sortBy(_.union(fields));
 }
 
+export function mappingsToFullFields(mappings: Mappings, type?: string) {
+  const fields: any[] = [];
+  _.forEach(mappings, (item: any) => {
+    function loop(mappings, prefix = '') {
+      // mappings?.doc?.properties 为了兼容 6.x 版本接口
+      _.forEach(mappings?.doc?.properties || mappings?.properties, (item, key) => {
+        if (item.type) {
+          if (typeMap[item.type] === type || !type) {
+            fields.push({
+              ...item,
+              name: `${prefix}${key}`,
+            });
+          }
+        } else {
+          loop(item, `${prefix}${key}.`);
+        }
+      });
+    }
+    loop(item.mappings);
+  });
+  return _.sortBy(_.union(fields));
+}
+
 export function normalizeLogsQueryRequestBody(params: any) {
   const header = {
     search_type: 'query_then_fetch',
@@ -139,6 +213,53 @@ export function normalizeLogsQueryRequestBody(params: any) {
     ],
     script_fields: {},
     aggs: {},
+  };
+  if (params.filter) {
+    body.query.bool.filter.push({
+      query_string: {
+        analyze_wildcard: true,
+        query: params.filter || '*',
+      },
+    });
+  }
+  return `${JSON.stringify(header)}\n${JSON.stringify(body)}\n`;
+}
+
+export function normalizeFieldValuesQueryRequestBody(params: any, field: string) {
+  const header = {
+    search_type: 'query_then_fetch',
+    ignore_unavailable: true,
+    index: params.index,
+  };
+  const body: any = {
+    size: params.limit,
+    query: {
+      bool: {
+        filter: [
+          {
+            range: {
+              [params.date_field]: {
+                gte: params.start,
+                lte: params.end,
+                format: 'epoch_millis',
+              },
+            },
+          },
+        ],
+      },
+    },
+    sort: [
+      {
+        [params.date_field]: {
+          order: params.order || 'desc',
+          unmapped_type: 'boolean',
+        },
+      },
+    ],
+    script_fields: {},
+    fields: [field],
+    aggs: {},
+    _source: false,
   };
   if (params.filter) {
     body.query.bool.filter.push({

@@ -181,7 +181,12 @@ export default function index(props: IProps) {
                         setLocaleCollapsedNodes(newCollapsedNodes);
                       }}
                     >
-                      <Space>
+                      <Space
+                        style={{
+                          width: '100%',
+                          justifyContent: 'space-between',
+                        }}
+                      >
                         {item.title}
                         {!_.includes(collapsedNodes, item.key) ? <DownOutlined /> : <RightOutlined />}
                       </Space>

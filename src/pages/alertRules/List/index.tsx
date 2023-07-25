@@ -19,7 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { useHistory, Link } from 'react-router-dom';
 import _ from 'lodash';
 import moment from 'moment';
-import { Table, Tag, Switch, Modal, Space, Button, Row, Col, message, Select } from 'antd';
+import { Table, Tag, Switch, Modal, Space, Button, Row, Col, message, Select, Tooltip } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import AdvancedWrap from '@/components/AdvancedWrap';
 import { DatasourceSelectInSearch } from '@/components/DatasourceSelect';
@@ -29,6 +29,7 @@ import usePagination from '@/components/usePagination';
 import { getStrategyGroupSubList, updateAlertRules, deleteStrategy } from '@/services/warning';
 import { CommonStateContext } from '@/App';
 import { priorityColor } from '@/utils/constant';
+import Tags from '@/components/Tags';
 import { AlertRuleType, AlertRuleStatus } from '../types';
 import MoreOperations from './MoreOperations';
 import { ruleTypeOptions } from '../Form/constants';
@@ -60,102 +61,110 @@ export default function List(props: ListProps) {
     {
       title: t('common:datasource.type'),
       dataIndex: 'cate',
+      width: 100,
     },
     {
       title: t('common:datasource.name'),
       dataIndex: 'datasource_ids',
-      render: (value, record) => {
-        if (!record.datasource_ids) return '-';
+      width: 100,
+      ellipsis: {
+        showTitle: false,
+      },
+      render(value) {
+        if (!value) return '-';
         return (
-          <div>
-            {_.map(record.datasource_ids, (item) => {
-              if (item === 0) {
-                return (
-                  <Tag color='purple' key={item}>
-                    $all
-                  </Tag>
-                );
-              }
-              const name = _.find(datasourceList, { id: item })?.name;
-              if (!name) return '';
-              return (
-                <Tag color='purple' key={item}>
-                  {name}
-                </Tag>
-              );
-            })}
-          </div>
+          <Tags
+            width={70}
+            data={_.compact(
+              _.map(value, (item) => {
+                if (item === 0) return '$all';
+                const name = _.find(datasourceList, { id: item })?.name;
+                if (!name) return '';
+                return name;
+              }),
+            )}
+          />
         );
       },
     },
     {
-      title: t('severity'),
-      dataIndex: 'severities',
-      render: (data) => {
-        return _.map(data, (severity) => {
-          return (
-            <Tag key={severity} color={priorityColor[severity - 1]}>
-              S{severity}
-            </Tag>
-          );
-        });
-      },
-    },
-    {
-      title: t('common:table.name'),
+      title: t('name_severities_appendtags'),
       dataIndex: 'name',
       render: (data, record) => {
         return (
-          <Link
-            className='table-text'
-            to={{
-              pathname: `/alert-rules/edit/${record.id}`,
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 2,
             }}
           >
-            {data}
-          </Link>
+            <div>
+              <Link
+                className='table-text'
+                to={{
+                  pathname: `/alert-rules/edit/${record.id}`,
+                }}
+              >
+                {data}
+              </Link>
+            </div>
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: 4,
+              }}
+            >
+              {_.map(record.severities, (severity) => {
+                return (
+                  <Tag
+                    key={severity}
+                    color={priorityColor[severity - 1]}
+                    style={{
+                      marginRight: 0,
+                    }}
+                  >
+                    S{severity}
+                  </Tag>
+                );
+              })}
+            </div>
+            <div>
+              {_.map(record.append_tags, (item) => {
+                return (
+                  <Tooltip key={item} title={item}>
+                    <Tag color='purple' style={{ maxWidth: '100%' }}>
+                      <div
+                        style={{
+                          maxWidth: 'max-content',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
+                        {item}
+                      </div>
+                    </Tag>
+                  </Tooltip>
+                );
+              })}
+            </div>
+          </div>
         );
       },
     },
     {
       title: t('notify_groups'),
       dataIndex: 'notify_groups_obj',
-      width: 100,
+      width: 140,
       render: (data) => {
         return (
-          (data.length &&
-            data.map(
-              (
-                user: {
-                  nickname: string;
-                  username: string;
-                } & { name: string },
-                index: number,
-              ) => {
-                return (
-                  <Tag color='purple' key={index}>
-                    {user.nickname || user.username || user.name}
-                  </Tag>
-                );
-              },
-            )) || <div></div>
-        );
-      },
-    },
-    {
-      title: t('append_tags'),
-      dataIndex: 'append_tags',
-      render: (data) => {
-        const array = data || [];
-        return (
-          (array.length &&
-            array.map((tag: string, index: number) => {
-              return (
-                <Tag color='purple' key={index}>
-                  {tag}
-                </Tag>
-              );
-            })) || <div></div>
+          <Tags
+            width={110}
+            data={_.map(data, (user) => {
+              return user.nickname || user.username || user.name;
+            })}
+          />
         );
       },
     },
@@ -175,6 +184,7 @@ export default function List(props: ListProps) {
     {
       title: t('common:table.enabled'),
       dataIndex: 'disabled',
+      width: 40,
       render: (disabled, record) => (
         <Switch
           checked={disabled === AlertRuleStatus.Enable}
@@ -199,14 +209,12 @@ export default function List(props: ListProps) {
     },
     {
       title: t('common:table.operations'),
-      dataIndex: 'operator',
-      width: 140,
-      render: (data, record: any) => {
+      width: 130,
+      render: (record: any) => {
         return (
-          <div className='table-operator-area'>
+          <Space>
             <Link
               className='table-operator-area-normal'
-              style={{ marginRight: 8 }}
               to={{
                 pathname: `/alert-rules/edit/${record.id}?mode=clone`,
               }}
@@ -238,7 +246,7 @@ export default function List(props: ListProps) {
                 <Link to={{ pathname: `/alert-rules/brain/${record.id}` }}>训练结果</Link>
               </div>
             )}
-          </div>
+          </Space>
         );
       },
     },
@@ -412,6 +420,7 @@ export default function List(props: ListProps) {
         </Col>
       </Row>
       <Table
+        tableLayout='fixed'
         size='small'
         rowKey='id'
         pagination={pagination}
@@ -425,7 +434,6 @@ export default function List(props: ListProps) {
           },
         }}
         columns={columns}
-        scroll={{ x: 'max-content' }}
       />
     </div>
   );

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useLayoutEffect, useRef, useImperativeHandle, useContext } from 'react';
-import { Button, Row, Col, Drawer, Tag, Table } from 'antd';
-import { useHistory } from 'react-router';
+import { Button, Row, Col, Drawer, Tag, Table, Dropdown, Menu, Tooltip } from 'antd';
+import { useHistory, Link } from 'react-router-dom';
 import { ReactNode } from 'react-markdown/lib/react-markdown';
 import _, { throttle } from 'lodash';
 import moment from 'moment';
@@ -12,6 +12,12 @@ import { CommonStateContext } from '@/App';
 import { SeverityColor, deleteAlertEventsModal } from './index';
 import CardLeft from './cardLeft';
 import './index.less';
+
+// @ts-ignore
+import BatchAckBtn from 'plus:/parcels/Event/Acknowledge/BatchAckBtn';
+// @ts-ignore
+import AckBtn from 'plus:/parcels/Event/Acknowledge/AckBtn';
+
 interface Props {
   filter: any;
   header: ReactNode;
@@ -116,22 +122,29 @@ function Card(props: Props, ref) {
       title: t('rule_name'),
       dataIndex: 'rule_name',
       render(title, { id, tags }) {
-        const content =
-          tags &&
-          tags.map((item) => (
-            <Tag color='purple' key={item}>
-              {item}
-            </Tag>
-          ));
         return (
           <>
             <div>
-              <a style={{ padding: 0 }} onClick={() => history.push(`/alert-cur-events/${id}`)}>
-                {title}
-              </a>
+              <Link to={`/alert-cur-events/${id}`}>{title}</Link>
             </div>
             <div>
-              <span className='event-tags'>{content}</span>
+              {_.map(tags, (item) => {
+                return (
+                  <Tooltip key={item} title={item}>
+                    <Tag color='purple' style={{ maxWidth: '100%' }}>
+                      <div
+                        style={{
+                          maxWidth: 'max-content',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
+                        {item}
+                      </div>
+                    </Tag>
+                  </Tooltip>
+                );
+              })}
             </div>
           </>
         );
@@ -148,10 +161,16 @@ function Card(props: Props, ref) {
     {
       title: t('common:table.operations'),
       dataIndex: 'operate',
-      width: 120,
+      width: 180,
       render(value, record) {
         return (
           <>
+            <AckBtn
+              data={record}
+              onOk={() => {
+                fetchCardDetail(openedCard!);
+              }}
+            />
             <Button
               size='small'
               type='link'
@@ -193,6 +212,17 @@ function Card(props: Props, ref) {
     },
   ];
 
+  if (import.meta.env.VITE_IS_DS_SETTING === 'true') {
+    columns.splice(4, 0, {
+      title: t('status'),
+      dataIndex: 'status',
+      width: 100,
+      render: (value) => {
+        return t(`status_${value}`) as string;
+      },
+    });
+  }
+
   const fetchCardDetail = (card: CardType) => {
     setVisible(true);
     setOpenedCard(card);
@@ -208,7 +238,7 @@ function Card(props: Props, ref) {
   return (
     <div className='event-content cur-events' style={{ display: 'flex', height: '100%' }} ref={Ref}>
       <CardLeft onRefreshRule={setRule} />
-      <div style={{ background: '#fff', flex: 1, padding: 16 }}>
+      <div style={{ background: '#fff', flex: 1, padding: 16, overflowY: 'auto' }}>
         {header}
         <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
           {cardList?.map((card, i) => (
@@ -225,22 +255,38 @@ function Card(props: Props, ref) {
         title={
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span>{openedCard?.title}</span>
-            <Button
-              danger
+            <Dropdown
               disabled={selectedRowKeys.length === 0}
-              onClick={() =>
-                deleteAlertEventsModal(
-                  selectedRowKeys,
-                  () => {
-                    setSelectedRowKeys([]);
-                    fetchCardDetail(openedCard!);
-                  },
-                  t,
-                )
+              overlay={
+                <Menu>
+                  <Menu.Item
+                    disabled={selectedRowKeys.length === 0}
+                    onClick={() =>
+                      deleteAlertEventsModal(
+                        selectedRowKeys,
+                        () => {
+                          setSelectedRowKeys([]);
+                          fetchCardDetail(openedCard!);
+                        },
+                        t,
+                      )
+                    }
+                  >
+                    {t('common:btn.batch_delete')}{' '}
+                  </Menu.Item>
+                  <BatchAckBtn
+                    selectedIds={selectedRowKeys}
+                    onOk={() => {
+                      setSelectedRowKeys([]);
+                      fetchCardDetail(openedCard!);
+                    }}
+                  />
+                </Menu>
               }
+              trigger={['click']}
             >
-              {t('common:btn.batch_delete')}
-            </Button>
+              <Button style={{ marginRight: 8 }}>{t('batch_btn')}</Button>
+            </Dropdown>
           </div>
         }
         placement='right'
@@ -249,6 +295,7 @@ function Card(props: Props, ref) {
         width={960}
       >
         <Table
+          tableLayout='fixed'
           size='small'
           rowKey={'id'}
           className='card-event-drawer'

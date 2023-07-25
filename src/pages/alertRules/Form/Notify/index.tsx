@@ -22,6 +22,8 @@ import { Card, Form, Checkbox, Switch, Space, Select, Tooltip, Row, Col, InputNu
 import { PlusCircleOutlined, MinusCircleOutlined, QuestionCircleFilled } from '@ant-design/icons';
 import { getTeamInfoList, getNotifiesList } from '@/services/manage';
 import { panelBaseProps } from '../../constants';
+// @ts-ignore
+import NotifyExtra from 'plus:/parcels/AlertRule/NotifyExtra';
 
 export default function index({ disabled }) {
   const { t } = useTranslation('alertRules');
@@ -44,144 +46,147 @@ export default function index({ disabled }) {
   }, []);
 
   return (
-    <Card {...panelBaseProps} title={t('notify_configs')}>
-      <Form.Item label={t('notify_channels')} name='notify_channels'>
-        <Checkbox.Group disabled={disabled}>
-          {contactList.map((item) => {
+    <>
+      <Card {...panelBaseProps} title={t('notify_configs')}>
+        <Form.Item label={t('notify_channels')} name='notify_channels'>
+          <Checkbox.Group disabled={disabled}>
+            {contactList.map((item) => {
+              return (
+                <Checkbox value={item.key} key={item.label}>
+                  {item.label}
+                </Checkbox>
+              );
+            })}
+          </Checkbox.Group>
+        </Form.Item>
+        <Form.Item label={t('notify_groups')} name='notify_groups'>
+          <Select mode='multiple' showSearch optionFilterProp='children'>
+            {_.map(notifyGroups, (item) => {
+              // id to string 兼容 v5
+              return (
+                <Select.Option value={_.toString(item.id)} key={item.id}>
+                  {item.name}
+                </Select.Option>
+              );
+            })}
+          </Select>
+        </Form.Item>
+        <Form.Item label={t('notify_recovered')}>
+          <Space>
+            <Form.Item name='notify_recovered' valuePropName='checked' style={{ marginBottom: 0 }}>
+              <Switch />
+            </Form.Item>
+            <Tooltip title={t(`notify_recovered_tip`)}>
+              <QuestionCircleFilled />
+            </Tooltip>
+          </Space>
+        </Form.Item>
+        <Form.Item shouldUpdate noStyle>
+          {({ getFieldValue }) => {
             return (
-              <Checkbox value={item.key} key={item.label}>
-                {item.label}
-              </Checkbox>
-            );
-          })}
-        </Checkbox.Group>
-      </Form.Item>
-      <Form.Item label={t('notify_groups')} name='notify_groups'>
-        <Select mode='multiple' showSearch optionFilterProp='children'>
-          {_.map(notifyGroups, (item) => {
-            // id to string 兼容 v5
-            return (
-              <Select.Option value={_.toString(item.id)} key={item.id}>
-                {item.name}
-              </Select.Option>
-            );
-          })}
-        </Select>
-      </Form.Item>
-      <Form.Item label={t('notify_recovered')}>
-        <Space>
-          <Form.Item name='notify_recovered' valuePropName='checked' style={{ marginBottom: 0 }}>
-            <Switch />
-          </Form.Item>
-          <Tooltip title={t(`notify_recovered_tip`)}>
-            <QuestionCircleFilled />
-          </Tooltip>
-        </Space>
-      </Form.Item>
-      <Form.Item shouldUpdate noStyle>
-        {({ getFieldValue }) => {
-          return (
-            <Row gutter={16}>
-              <Col span={8}>
-                <Form.Item label={t('recover_duration')} name='recover_duration' tooltip={t('recover_duration_tip', { num: getFieldValue('recover_duration') })}>
-                  <InputNumber min={0} style={{ width: '100%' }} />
-                </Form.Item>
-              </Col>
-              <Col span={8}>
-                <Form.Item
-                  label={t('notify_repeat_step')}
-                  name='notify_repeat_step'
-                  rules={[
-                    {
-                      required: true,
-                    },
-                  ]}
-                  tooltip={t('notify_repeat_step_tip', { num: getFieldValue('notify_repeat_step') })}
-                >
-                  <InputNumber min={0} style={{ width: '100%' }} />
-                </Form.Item>
-              </Col>
-              <Col span={8}>
-                <Form.Item
-                  label={t('notify_max_number')}
-                  name='notify_max_number'
-                  rules={[
-                    {
-                      required: true,
-                    },
-                  ]}
-                  tooltip={t('notify_max_number_tip')}
-                >
-                  <InputNumber min={0} precision={0} style={{ width: '100%' }} />
-                </Form.Item>
-              </Col>
-            </Row>
-          );
-        }}
-      </Form.Item>
-      <Form.List name='callbacks'>
-        {(fields, { add, remove }) => (
-          <div>
-            <Space align='baseline'>
-              {t('callbacks')}
-              <PlusCircleOutlined className='control-icon-normal' onClick={() => add()} />
-            </Space>
-            {fields.map((field) => (
-              <Row gutter={16} key={field.key}>
-                <Col flex='auto'>
-                  <Form.Item {...field} name={[field.name, 'url']}>
-                    <Input />
+              <Row gutter={16}>
+                <Col span={8}>
+                  <Form.Item label={t('recover_duration')} name='recover_duration' tooltip={t('recover_duration_tip', { num: getFieldValue('recover_duration') })}>
+                    <InputNumber min={0} style={{ width: '100%' }} />
                   </Form.Item>
                 </Col>
-                <Col flex='40px'>
-                  <MinusCircleOutlined className='control-icon-normal' onClick={() => remove(field.name)} />
+                <Col span={8}>
+                  <Form.Item
+                    label={t('notify_repeat_step')}
+                    name='notify_repeat_step'
+                    rules={[
+                      {
+                        required: true,
+                      },
+                    ]}
+                    tooltip={t('notify_repeat_step_tip', { num: getFieldValue('notify_repeat_step') })}
+                  >
+                    <InputNumber min={0} style={{ width: '100%' }} />
+                  </Form.Item>
+                </Col>
+                <Col span={8}>
+                  <Form.Item
+                    label={t('notify_max_number')}
+                    name='notify_max_number'
+                    rules={[
+                      {
+                        required: true,
+                      },
+                    ]}
+                    tooltip={t('notify_max_number_tip')}
+                  >
+                    <InputNumber min={0} precision={0} style={{ width: '100%' }} />
+                  </Form.Item>
                 </Col>
               </Row>
-            ))}
-          </div>
-        )}
-      </Form.List>
+            );
+          }}
+        </Form.Item>
+        <Form.List name='callbacks'>
+          {(fields, { add, remove }) => (
+            <div>
+              <Space align='baseline'>
+                {t('callbacks')}
+                <PlusCircleOutlined className='control-icon-normal' onClick={() => add()} />
+              </Space>
+              {fields.map((field) => (
+                <Row gutter={16} key={field.key}>
+                  <Col flex='auto'>
+                    <Form.Item {...field} name={[field.name, 'url']}>
+                      <Input />
+                    </Form.Item>
+                  </Col>
+                  <Col flex='40px'>
+                    <MinusCircleOutlined className='control-icon-normal' onClick={() => remove(field.name)} />
+                  </Col>
+                </Row>
+              ))}
+            </div>
+          )}
+        </Form.List>
 
-      <Form.List name='annotations'>
-        {(fields, { add, remove }) => (
-          <div>
-            <Space align='baseline'>
-              {t('annotations')}
-              <PlusCircleOutlined className='control-icon-normal' onClick={() => add()} />
-            </Space>
-            {fields.map((field) => (
-              <Row gutter={16} key={field.key}>
-                <Col flex='120px'>
-                  <Form.Item {...field} name={[field.name, 'key']}>
-                    <AutoComplete
-                      options={[
-                        {
-                          value: t('annotationsOptions.plan_link'),
-                        },
-                        {
-                          value: t('annotationsOptions.dashboard_link'),
-                        },
-                        {
-                          value: t('annotationsOptions.desc'),
-                        },
-                      ]}
-                      style={{ width: 200 }}
-                    />
-                  </Form.Item>
-                </Col>
-                <Col flex='auto'>
-                  <Form.Item {...field} name={[field.name, 'value']}>
-                    <Input />
-                  </Form.Item>
-                </Col>
-                <Col flex='40px'>
-                  <MinusCircleOutlined className='control-icon-normal' onClick={() => remove(field.name)} />
-                </Col>
-              </Row>
-            ))}
-          </div>
-        )}
-      </Form.List>
-    </Card>
+        <Form.List name='annotations'>
+          {(fields, { add, remove }) => (
+            <div>
+              <Space align='baseline'>
+                {t('annotations')}
+                <PlusCircleOutlined className='control-icon-normal' onClick={() => add()} />
+              </Space>
+              {fields.map((field) => (
+                <Row gutter={16} key={field.key}>
+                  <Col flex='120px'>
+                    <Form.Item {...field} name={[field.name, 'key']}>
+                      <AutoComplete
+                        options={[
+                          {
+                            value: t('annotationsOptions.plan_link'),
+                          },
+                          {
+                            value: t('annotationsOptions.dashboard_link'),
+                          },
+                          {
+                            value: t('annotationsOptions.desc'),
+                          },
+                        ]}
+                        style={{ width: 200 }}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col flex='auto'>
+                    <Form.Item {...field} name={[field.name, 'value']}>
+                      <Input />
+                    </Form.Item>
+                  </Col>
+                  <Col flex='40px'>
+                    <MinusCircleOutlined className='control-icon-normal' onClick={() => remove(field.name)} />
+                  </Col>
+                </Row>
+              ))}
+            </div>
+          )}
+        </Form.List>
+      </Card>
+      <NotifyExtra contactList={contactList} notifyGroups={notifyGroups} />
+    </>
   );
 }

@@ -1,62 +1,124 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import _ from 'lodash';
 import moment from 'moment';
-import { useTranslation, Trans } from 'react-i18next';
-import { Space, Form, Input, AutoComplete, Tooltip, Button, Table, Empty, Spin, InputNumber, Select } from 'antd';
+import queryString, { ParsedQuery } from 'query-string';
+import { useTranslation } from 'react-i18next';
+import { Table, Empty, Spin, InputNumber, Select, Radio, Space, Checkbox, Form } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
-import { QuestionCircleOutlined, DownOutlined, RightOutlined } from '@ant-design/icons';
+import { DownOutlined, RightOutlined, LeftOutlined } from '@ant-design/icons';
 import CodeMirror from '@uiw/react-codemirror';
 import { EditorView } from '@codemirror/view';
 import { json } from '@codemirror/lang-json';
 import { defaultHighlightStyle } from '@codemirror/highlight';
-import { useDebounceFn } from 'ahooks';
 import { useLocation } from 'react-router-dom';
-import { getIndices, getLogsQuery, getFields } from './services';
-import TimeRangePicker, { parseRange } from '@/components/TimeRangePicker';
+import { getLogsQuery } from './services';
+import { parseRange } from '@/components/TimeRangePicker';
 import Timeseries from '@/pages/dashboard/Renderer/Renderer/Timeseries';
 import metricQuery from './metricQuery';
-import { getColumnsFromFields } from './utils';
+import { getColumnsFromFields, normalizeLogs } from './utils';
 import FieldsSidebar from '../components/FieldsSidebar';
 import { normalizeLogsQueryRequestBody } from './utils';
+import QueryBuilder from './QueryBuilder';
+import QueryBuilderWithIndexPatterns from './QueryBuilderWithIndexPatterns';
 import './style.less';
 
 interface IProps {
+  headerExtra: HTMLDivElement | null;
   datasourceValue?: number;
   form: FormInstance;
+  isOpenSearch?: boolean;
 }
 
 const LOGS_LIMIT = 500;
 const TIME_FORMAT = 'YYYY.MM.DD HH:mm:ss';
+enum IMode {
+  indexPatterns = 'index-patterns',
+  indices = 'indices',
+}
+
+const ModeRadio = ({ mode, setMode, allowHideSystemIndices, setAllowHideSystemIndices }) => {
+  const { t } = useTranslation('explorer');
+  return (
+    <Space>
+      <Radio.Group
+        value={mode}
+        onChange={(e) => {
+          setMode(e.target.value);
+        }}
+        buttonStyle='solid'
+      >
+        <Radio.Button value={IMode.indexPatterns}>{t('log.mode.indexPatterns')}</Radio.Button>
+        <Radio.Button value={IMode.indices}>{t('log.mode.indices')}</Radio.Button>
+      </Radio.Group>
+      {mode === IMode.indices && (
+        <Checkbox
+          checked={allowHideSystemIndices}
+          onChange={(e) => {
+            setAllowHideSystemIndices(e.target.checked);
+          }}
+        >
+          {t('es-index-patterns:allow_hide_system_indices')}
+        </Checkbox>
+      )}
+    </Space>
+  );
+};
+
+/**
+ * 从 URL query 中获取 filter
+ * 存在 query_string 时直接作为 filter 值
+ * 否则排查掉 data_source_name, data_source_id, index_name, timestamp 之后的参数合并为 filter
+ * 合并后的 filter 为 AND 关系
+ */
+
+const getFilterByQuery = (query: ParsedQuery<string>) => {
+  if (query?.query_string) {
+    return query?.query_string;
+  } else {
+    const filtersArr: string[] = [];
+    const validParmas = _.omit(query, ['data_source_name', 'data_source_id', 'index_name', 'timestamp']);
+    _.forEach(validParmas, (value, key) => {
+      if (value) {
+        filtersArr.push(`${key}:"${value}"`);
+      }
+    });
+    return _.join(filtersArr, ' AND ');
+  }
+};
+
+const getDefaultMode = (query, isOpenSearch) => {
+  if (isOpenSearch) return IMode.indices;
+  if (query?.data_source_id && query?.index_name) {
+    return IMode.indices;
+  }
+  return (localStorage.getItem('explorer_es_mode') as IMode) || IMode.indices;
+};
 
 export default function index(props: IProps) {
   const { t } = useTranslation('explorer');
-  const { datasourceValue, form } = props;
-  const params = new URLSearchParams(useLocation().search);
-  const filtersArr: string[] = [];
-  for (const [key, value] of params) {
-    if (!['data_source_name', 'data_source_id', 'index_name', 'timestamp'].includes(key)) {
-      filtersArr.push(`${key}:"${value}"`);
-    }
-  }
-
-  const [indexOptions, setIndexOptions] = useState<any[]>([]);
-  const [indexSearch, setIndexSearch] = useState('');
+  const { headerExtra, datasourceValue, form, isOpenSearch = false } = props;
+  const query = queryString.parse(useLocation().search);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
+  const [total, setTotal] = useState(0);
   const [series, setSeries] = useState<any[]>([]);
   const [displayTimes, setDisplayTimes] = useState('');
-  const [dateFields, setDateFields] = useState<string[]>([]);
   const [fields, setFields] = useState<string[]>([]);
   const [selectedFields, setSelectedFields] = useState<string[]>([]);
   const [interval, setInterval] = useState(1);
   const [intervalUnit, setIntervalUnit] = useState<'second' | 'min' | 'hour'>('min');
-  const totalRef = useRef(0);
+  const [chartVisible, setChartVisible] = useState(true);
+  const [collapsed, setCollapsed] = useState(true);
   const sortOrder = useRef('desc');
   const timesRef =
     useRef<{
       start: number;
       end: number;
     }>();
+  const [mode, setMode] = useState<IMode>(getDefaultMode(query, isOpenSearch));
+  const [allowHideSystemIndices, setAllowHideSystemIndices] = useState<boolean>(false);
+  const indexValue = Form.useWatch(['query', 'index']);
 
   const fetchSeries = (values) => {
     if (timesRef.current) {
@@ -101,8 +163,8 @@ export default function index(props: IProps) {
               json: item._source,
             };
           });
-          totalRef.current = res.total;
           setData(newData);
+          setTotal(res.total);
           const tableEleNodes = document.querySelectorAll(`.es-discover-logs-table .ant-table-body`)[0];
           tableEleNodes?.scrollTo(0, 0);
         })
@@ -112,259 +174,202 @@ export default function index(props: IProps) {
       fetchSeries(values);
     });
   };
-
-  useEffect(() => {
-    if (datasourceValue) {
-      getIndices(datasourceValue).then((res) => {
-        const index = form.getFieldValue(['query', 'index']);
-        const indexOptions = _.map(res, (item) => {
-          return {
-            value: item,
-          };
-        });
-
-        if (!_.includes(_.map(indexOptions, 'value'), index) && !params.has('data_source_id')) {
-          form.setFieldsValue({
-            query: {
-              index: '',
-            },
-          });
-        }
-        setIndexOptions(indexOptions);
-      });
+  const handlerModeChange = (mode, isOpenSearch) => {
+    if (!isOpenSearch) {
+      localStorage.setItem('explorer_es_mode', mode);
     }
-  }, [datasourceValue, params.get('data_source_id')]);
+    const queryValues = form.getFieldValue('query');
+    form.setFieldsValue({
+      fieldConfig: undefined,
+      query: {
+        ...(queryValues || {}),
+        index: undefined,
+        indexPattern: undefined,
+      },
+    });
+    setMode(mode);
+    setData([]);
+  };
+  const handlerIndexChange = () => {
+    setSelectedFields([]);
+    fetchData();
+  };
 
   useEffect(() => {
-    // 假设携带数据源值时会同时携带其他的参数，并且触发一次查询
-    if (params.get('data_source_id')) {
+    // 如果URL携带数据源值和索引值，则直接查询
+    if (query?.data_source_id && query?.index_name) {
       form.setFieldsValue({
         query: {
-          index: params.get('index_name'),
-          filter: filtersArr?.join(' and '),
-          date_field: params.get('timestamp'),
+          index: query.index_name,
+          filter: getFilterByQuery(query),
+          date_field: query.timestamp || '@timestamp',
         },
       });
-
-      onIndexChange(params.get('index_name'));
       fetchData();
     }
-  }, [params.get('data_source_id')]);
+  }, []);
 
   useEffect(() => {
     fetchSeries(form.getFieldsValue());
   }, [interval, intervalUnit]);
 
-  const { run: onIndexChange } = useDebounceFn(
-    (val) => {
-      if (datasourceValue && val) {
-        getFields(datasourceValue, val, 'date').then((res) => {
-          const dateFiled = form.getFieldValue(['query', 'date_field']);
-          if (!_.includes(res.fields, dateFiled)) {
-            if (_.includes(res.fields, '@timestamp')) {
-              form.setFieldsValue({
-                query: {
-                  date_field: '@timestamp',
-                },
-              });
-            } else {
-              form.setFieldsValue({
-                query: {
-                  date_field: '',
-                },
-              });
-            }
-          }
-          setFields(res.allFields);
-          setDateFields(res.fields);
-        });
-      }
-    },
-    {
-      wait: 500,
-    },
-  );
-
   return (
     <div className='es-discover-container'>
-      <Space>
-        <Input.Group compact>
-          <span
-            className='ant-input-group-addon'
-            style={{
-              width: 70,
-              height: 32,
-              lineHeight: '32px',
-            }}
-          >
-            {t('datasource:es.index')}{' '}
-            <Tooltip title={<Trans ns='datasource' i18nKey='datasource:es.index_tip' components={{ 1: <br /> }} />}>
-              <QuestionCircleOutlined />
-            </Tooltip>
-          </span>
-          <Form.Item
-            name={['query', 'index']}
-            rules={[
-              {
-                required: true,
-                message: t('datasource:es.index_msg'),
-              },
-            ]}
-            validateTrigger='onBlur'
-            style={{ width: 190 }}
-          >
-            <AutoComplete
-              dropdownMatchSelectWidth={false}
-              style={{ minWidth: 100 }}
-              options={_.filter(indexOptions, (item) => {
-                if (indexSearch) {
-                  return _.includes(item.value, indexSearch);
-                }
-                return true;
-              })}
-              onSearch={(val) => {
-                setIndexSearch(val);
+      {!isOpenSearch && (
+        <>
+          {headerExtra ? (
+            createPortal(
+              <ModeRadio
+                mode={mode}
+                setMode={(val) => {
+                  handlerModeChange(val, isOpenSearch);
+                }}
+                allowHideSystemIndices={allowHideSystemIndices}
+                setAllowHideSystemIndices={setAllowHideSystemIndices}
+              />,
+              headerExtra,
+            )
+          ) : (
+            <ModeRadio
+              mode={mode}
+              setMode={(val) => {
+                handlerModeChange(val, isOpenSearch);
               }}
-              onChange={(val) => {
-                onIndexChange(val);
-              }}
+              allowHideSystemIndices={allowHideSystemIndices}
+              setAllowHideSystemIndices={setAllowHideSystemIndices}
             />
-          </Form.Item>
-        </Input.Group>
-        <Input.Group compact>
-          <span
-            className='ant-input-group-addon'
-            style={{
-              width: 90,
-              height: 32,
-              lineHeight: '32px',
-            }}
-          >
-            {t('datasource:es.filter')}{' '}
-            <a href='https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax ' target='_blank'>
-              <QuestionCircleOutlined />
-            </a>
-          </span>
-          <Form.Item name={['query', 'filter']} style={{ minWidth: 300 }}>
-            <Input />
-          </Form.Item>
-        </Input.Group>
-        <div style={{ display: 'flex' }}>
-          <Space>
-            <Input.Group compact>
-              <span
-                className='ant-input-group-addon'
+          )}
+        </>
+      )}
+
+      {mode === IMode.indices && (
+        <QueryBuilder
+          onExecute={fetchData}
+          datasourceValue={datasourceValue}
+          form={form}
+          fields={fields}
+          setFields={setFields}
+          selectedFields={selectedFields}
+          setSelectedFields={setSelectedFields}
+          allowHideSystemIndices={allowHideSystemIndices}
+        />
+      )}
+      {mode === IMode.indexPatterns && (
+        <QueryBuilderWithIndexPatterns onExecute={fetchData} datasourceValue={datasourceValue} form={form} setFields={setFields} onIndexChange={handlerIndexChange} />
+      )}
+      <div style={{ height: 'calc(100% - 50px)' }}>
+        <Spin spinning={loading}>
+          {!_.isEmpty(data) ? (
+            <div className='es-discover-content'>
+              {collapsed && (
+                <FieldsSidebar
+                  fieldConfig={form.getFieldValue(['fieldConfig'])}
+                  fields={fields}
+                  setFields={setFields}
+                  value={selectedFields}
+                  onChange={setSelectedFields}
+                  params={{ form, timesRef, datasourceValue, order: sortOrder.current, limit: LOGS_LIMIT }}
+                />
+              )}
+              <div
+                className='es-discover-main'
                 style={{
-                  width: 90,
-                  height: 32,
-                  lineHeight: '32px',
+                  width: collapsed ? 'calc(100% - 266px)' : '100%',
                 }}
               >
-                {t('datasource:es.date_field')}{' '}
-              </span>
-              <Form.Item
-                name={['query', 'date_field']}
-                initialValue='@timestamp'
-                style={{ width: 'calc(100% - 90px)' }}
-                rules={[
-                  {
-                    required: true,
-                    message: t('datasource:es.date_field_msg'),
-                  },
-                ]}
-              >
-                <Select dropdownMatchSelectWidth={false} style={{ width: 150 }} showSearch>
-                  {_.map(dateFields, (item) => {
-                    return (
-                      <Select.Option key={item} value={item}>
-                        {item}
-                      </Select.Option>
-                    );
-                  })}
-                </Select>
-              </Form.Item>
-            </Input.Group>
-            <Form.Item name={['query', 'range']} initialValue={{ start: 'now-1h', end: 'now' }}>
-              <TimeRangePicker />
-            </Form.Item>
-            <Form.Item>
-              <Button
-                type='primary'
-                onClick={() => {
-                  fetchData();
-                }}
-              >
-                {t('query_btn')}
-              </Button>
-            </Form.Item>
-          </Space>
-        </div>
-      </Space>
-      <Spin spinning={loading}>
-        {!_.isEmpty(data) ? (
-          <div className='es-discover-content'>
-            <FieldsSidebar fields={fields} setFields={setFields} value={selectedFields} onChange={setSelectedFields} />
-            <div className='es-discover-main'>
-              <div className='es-discover-chart'>
-                <div className='es-discover-chart-title'>
-                  <span>{displayTimes}</span>
-                  <span style={{ marginLeft: 10 }}>
-                    {t('log.interval')}:{' '}
-                    <InputNumber
-                      size='small'
-                      value={interval}
-                      min={1}
-                      onBlur={(e) => {
-                        const val = _.toNumber(e.target.value);
-                        if (val > 0) setInterval(val);
-                      }}
-                      onPressEnter={(e: any) => {
-                        const val = _.toNumber(e.target.value);
-                        if (val > 0) setInterval(val);
-                      }}
-                    />{' '}
-                    <Select size='small' style={{ width: 80 }} value={intervalUnit} onChange={(val) => setIntervalUnit(val)}>
-                      <Select.Option value='second'>{t('common:time.second')}</Select.Option>
-                      <Select.Option value='min'>{t('common:time.minute')}</Select.Option>
-                      <Select.Option value='hour'>{t('common:time.hour')}</Select.Option>
-                    </Select>
-                  </span>
+                <div
+                  className='es-discover-chart'
+                  style={{
+                    height: chartVisible ? 190 : 40,
+                  }}
+                >
+                  <div className='es-discover-chart-title'>
+                    <div className='es-discover-chart-title-total'>
+                      <strong
+                        style={{
+                          fontSize: 14,
+                        }}
+                      >
+                        {total}
+                      </strong>{' '}
+                      hits
+                    </div>
+
+                    <div className='es-discover-chart-title-content'>
+                      {chartVisible && (
+                        <>
+                          <span>{displayTimes}</span>
+                          <span style={{ marginLeft: 10 }}>
+                            {t('log.interval')}:{' '}
+                            <InputNumber
+                              size='small'
+                              value={interval}
+                              min={1}
+                              onBlur={(e) => {
+                                const val = _.toNumber(e.target.value);
+                                if (val > 0) setInterval(val);
+                              }}
+                              onPressEnter={(e: any) => {
+                                const val = _.toNumber(e.target.value);
+                                if (val > 0) setInterval(val);
+                              }}
+                            />{' '}
+                            <Select size='small' style={{ width: 80 }} value={intervalUnit} onChange={(val) => setIntervalUnit(val)}>
+                              <Select.Option value='second'>{t('common:time.second')}</Select.Option>
+                              <Select.Option value='min'>{t('common:time.minute')}</Select.Option>
+                              <Select.Option value='hour'>{t('common:time.hour')}</Select.Option>
+                            </Select>
+                          </span>
+                        </>
+                      )}
+                    </div>
+
+                    <div className='es-discover-chart-title-action'>
+                      <a
+                        onClick={() => {
+                          setChartVisible(!chartVisible);
+                        }}
+                      >
+                        {chartVisible ? t('log.hideChart') : t('log.showChart')}
+                      </a>
+                    </div>
+                  </div>
+                  {chartVisible && (
+                    <div className='es-discover-chart-content'>
+                      <Timeseries
+                        series={series}
+                        values={
+                          {
+                            custom: {
+                              drawStyle: 'bar',
+                              lineInterpolation: 'smooth',
+                            },
+                            options: {
+                              legend: {
+                                displayMode: 'hidden',
+                              },
+                              tooltip: {
+                                mode: 'all',
+                              },
+                            },
+                          } as any
+                        }
+                      />
+                    </div>
+                  )}
                 </div>
-                <div className='es-discover-chart-content'>
-                  <Timeseries
-                    series={series}
-                    values={
-                      {
-                        custom: {
-                          drawStyle: 'bar',
-                          lineInterpolation: 'smooth',
-                        },
-                        options: {
-                          legend: {
-                            displayMode: 'hidden',
-                          },
-                          tooltip: {
-                            mode: 'all',
-                          },
-                        },
-                      } as any
-                    }
-                  />
-                </div>
-              </div>
-              <div>
                 <Table
                   size='small'
                   className='es-discover-logs-table'
                   tableLayout='fixed'
                   rowKey='id'
-                  columns={getColumnsFromFields(selectedFields, form.getFieldValue(['query', 'date_field']))}
+                  columns={getColumnsFromFields(selectedFields, form.getFieldValue(['query', 'date_field']), form.getFieldValue(['fieldConfig']))}
                   dataSource={data}
                   expandable={{
                     expandedRowRender: (record) => {
                       let value = '';
                       try {
-                        value = JSON.stringify(record.json, null, 4);
+                        value = JSON.stringify(normalizeLogs(record.json, form.getFieldValue(['fieldConfig'])), null, 4);
                       } catch (e) {
                         console.error(e);
                         value = '无法解析';
@@ -395,7 +400,7 @@ export default function index(props: IProps) {
                     expandIcon: ({ expanded, onExpand, record }) =>
                       expanded ? <DownOutlined onClick={(e) => onExpand(record, e)} /> : <RightOutlined onClick={(e) => onExpand(record, e)} />,
                   }}
-                  scroll={{ x: _.isEmpty(selectedFields) ? undefined : 'max-content', y: 302 }}
+                  scroll={{ x: _.isEmpty(selectedFields) ? undefined : 'max-content', y: 'calc(100% - 36px)' }}
                   pagination={false}
                   onChange={(pagination, filters, sorter: any, extra) => {
                     if (sorter.columnKey === 'time') {
@@ -404,20 +409,28 @@ export default function index(props: IProps) {
                     }
                   }}
                 />
+                <div
+                  className='es-discover-collapse'
+                  onClick={() => {
+                    setCollapsed(!collapsed);
+                  }}
+                >
+                  {collapsed ? <LeftOutlined /> : <RightOutlined />}
+                </div>
               </div>
             </div>
-          </div>
-        ) : (
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-            }}
-          >
-            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-          </div>
-        )}
-      </Spin>
+          ) : (
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+              }}
+            >
+              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+            </div>
+          )}
+        </Spin>
+      </div>
     </div>
   );
 }

@@ -23,7 +23,7 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation, Link } from 'react-router-dom';
 import queryString from 'query-string';
-import AdvancedWrap from '@/components/AdvancedWrap';
+import Tags from '@/components/Tags';
 import PageLayout from '@/components/pageLayout';
 import { getShieldList, deleteShields, updateShields } from '@/services/shield';
 import { shieldItem, strategyStatus } from '@/store/warningInterface';
@@ -60,25 +60,27 @@ const Shield: React.FC = () => {
     {
       title: t('common:datasource.type'),
       dataIndex: 'cate',
+      width: 100,
     },
     {
       title: t('common:datasource.id'),
       dataIndex: 'datasource_ids',
-      render: (data, record: any) => {
-        return _.map(data, (item) => {
-          if (item === 0) {
-            return (
-              <Tag color='purple' key={item}>
-                $all
-              </Tag>
-            );
-          }
-          return (
-            <Tag color='purple' key={item}>
-              {_.find(groupedDatasourceList[record.cate], { id: item })?.name!}
-            </Tag>
-          );
-        });
+      width: 100,
+      render(value, record: any) {
+        if (!value) return '-';
+        return (
+          <Tags
+            width={70}
+            data={_.compact(
+              _.map(value, (item) => {
+                if (item === 0) return '$all';
+                const name = _.find(groupedDatasourceList[record.cate], { id: item })?.name;
+                if (!name) return '';
+                return name;
+              }),
+            )}
+          />
+        );
       },
     },
     {
@@ -140,6 +142,7 @@ const Shield: React.FC = () => {
     {
       title: t('time'),
       dataIndex: 'btime',
+      width: 150,
       render: (text: number, record: shieldItem) => {
         if (record.mute_time_type === 0) {
           return (
@@ -180,6 +183,7 @@ const Shield: React.FC = () => {
     {
       title: t('common:table.enabled'),
       dataIndex: 'disabled',
+      width: 40,
       render: (disabled, record) => (
         <Switch
           checked={disabled === strategyStatus.Enable}
@@ -363,6 +367,7 @@ const Shield: React.FC = () => {
             <Table
               size='small'
               rowKey='id'
+              tableLayout='fixed'
               pagination={{
                 total: currentShieldData.length,
                 showQuickJumper: true,

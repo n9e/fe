@@ -29,9 +29,11 @@ export interface subscribeItem {
   datasource_ids: number[];
   redefine_severity?: number;
   redefine_channels?: number;
+  redefine_webhooks?: number;
   user_group_ids?: string;
   new_channels: string;
   prod: string;
+  severities?: number[];
 }
 
 interface IuserItem {

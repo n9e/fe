@@ -109,24 +109,28 @@ const getMenuList = (t) => {
           key: '/log/explorer',
           label: t('即时查询'),
         },
-      ],
-    },
-    {
-      key: 'trace',
-      icon: <IconFont type='icon-Menu_LinkAnalysis' />,
-      activeIcon: <Icon component={menuIcon.LinkAnalysis as any} />,
-      label: t('链路追踪'),
-      children: [
         {
-          key: '/trace/explorer',
-          label: t('即时查询'),
-        },
-        {
-          key: '/trace/dependencies',
-          label: t('拓扑分析'),
+          key: '/log/index-patterns',
+          label: t('索引模式'),
         },
       ],
     },
+    // {
+    //   key: 'trace',
+    //   icon: <IconFont type='icon-Menu_LinkAnalysis' />,
+    //   activeIcon: <Icon component={menuIcon.LinkAnalysis as any} />,
+    //   label: t('链路追踪'),
+    //   children: [
+    //     {
+    //       key: '/trace/explorer',
+    //       label: t('即时查询'),
+    //     },
+    //     {
+    //       key: '/trace/dependencies',
+    //       label: t('拓扑分析'),
+    //     },
+    //   ],
+    // },
     {
       key: 'targets',
       icon: <IconFont type='icon-Menu_Infrastructure' />,
@@ -227,6 +231,13 @@ const getMenuList = (t) => {
       targets.children?.push({
         key: '/collects',
         label: t('采集配置'),
+      });
+    }
+    const systemMenu = _.find(menuList, (item) => item.key === 'help');
+    if (systemMenu) {
+      systemMenu.children.splice(6, 0, {
+        key: '/global-muting-rules',
+        label: t('全局屏蔽'),
       });
     }
   }

@@ -17,13 +17,14 @@
 import React, { useState, useEffect, useCallback, useContext } from 'react';
 import moment from 'moment';
 import _ from 'lodash';
+import { debounce, join } from 'lodash';
 import { Form, Input, InputNumber, Radio, Select, Row, Col, TimePicker, Checkbox, Tag, message, Space, Switch, Tooltip, Modal, Button } from 'antd';
 import { QuestionCircleFilled, MinusCircleOutlined, PlusCircleOutlined, CaretDownOutlined, PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { getTeamInfoList, getNotifiesList } from '@/services/manage';
 import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
-import { debounce, join } from 'lodash';
 import { CommonStateContext } from '@/App';
+import { defaultValues } from '../Form/constants';
 
 const { Option } = Select;
 const layout = {
@@ -306,13 +307,7 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish }) => {
             disabled: 0, // 0:立即启用 1:禁用
             enable_status: true, // true:立即启用 false:禁用
             notify_recovered: 1, // 1:启用
-            effective_time: [
-              {
-                enable_stime: moment('00:00', 'HH:mm'),
-                enable_etime: moment('23:59', 'HH:mm'),
-                enable_days_of_week: ['1', '2', '3', '4', '5', '6', '0'],
-              },
-            ],
+            effective_time: defaultValues.effective_time,
             datasource_ids: [],
             field: 'datasource_ids',
           }}

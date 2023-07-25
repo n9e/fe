@@ -24,6 +24,14 @@ const zh_CN = {
   aggregate_rule_name: '规则名称',
   public: '公开',
   isPublic: '是否公开',
+  status: '是否认领',
+  status_1: '已认领',
+  status_0: '未认领',
+  batch_btn: '批量操作',
+  batch_claim: '批量认领',
+  batch_unclaim: '批量取消认领',
+  claim: '认领',
+  unclaim: '取消认领',
 
   delete_confirm: {
     title: '删除告警事件',

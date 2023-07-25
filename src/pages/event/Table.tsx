@@ -16,8 +16,8 @@
  */
 import React, { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Tag, Button, Table } from 'antd';
-import { useHistory } from 'react-router-dom';
+import { Tag, Button, Table, Tooltip } from 'antd';
+import { useHistory, Link } from 'react-router-dom';
 import moment from 'moment';
 import _ from 'lodash';
 import queryString from 'query-string';
@@ -26,6 +26,9 @@ import { CommonStateContext } from '@/App';
 import { getEvents } from './services';
 import { deleteAlertEventsModal } from './index';
 import { SeverityColor } from './index';
+
+// @ts-ignore
+import AckBtn from 'plus:/parcels/Event/Acknowledge/AckBtn';
 
 interface IProps {
   filterObj: any;
@@ -55,6 +58,7 @@ export default function TableCpt(props: IProps) {
     {
       title: t('common:datasource.id'),
       dataIndex: 'datasource_id',
+      width: 100,
       render: (value, record) => {
         return _.find(groupedDatasourceList?.[record.cate], { id: value })?.name || '-';
       },
@@ -63,33 +67,40 @@ export default function TableCpt(props: IProps) {
       title: t('rule_name'),
       dataIndex: 'rule_name',
       render(title, { id, tags }) {
-        const content =
-          tags &&
-          tags.map((item) => (
-            <Tag
-              color='purple'
-              key={item}
-              onClick={() => {
-                if (!filter.queryContent.includes(item)) {
-                  setFilter({
-                    ...filter,
-                    queryContent: filter.queryContent ? `${filter.queryContent.trim()} ${item}` : item,
-                  });
-                }
-              }}
-            >
-              {item}
-            </Tag>
-          ));
         return (
           <>
             <div>
-              <a style={{ padding: 0 }} onClick={() => history.push(`/alert-cur-events/${id}`)}>
-                {title}
-              </a>
+              <Link to={`/alert-cur-events/${id}`}>{title}</Link>
             </div>
             <div>
-              <span className='event-tags'>{content}</span>
+              {_.map(tags, (item) => {
+                return (
+                  <Tooltip key={item} title={item}>
+                    <Tag
+                      color='purple'
+                      style={{ maxWidth: '100%' }}
+                      onClick={() => {
+                        if (!filter.queryContent.includes(item)) {
+                          setFilter({
+                            ...filter,
+                            queryContent: filter.queryContent ? `${filter.queryContent.trim()} ${item}` : item,
+                          });
+                        }
+                      }}
+                    >
+                      <div
+                        style={{
+                          maxWidth: 'max-content',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
+                        {item}
+                      </div>
+                    </Tag>
+                  </Tooltip>
+                );
+              })}
             </div>
           </>
         );
@@ -106,10 +117,16 @@ export default function TableCpt(props: IProps) {
     {
       title: t('common:table.operations'),
       dataIndex: 'operate',
-      width: 120,
+      width: 200,
       render(value, record) {
         return (
           <>
+            <AckBtn
+              data={record}
+              onOk={() => {
+                setRefreshFlag(_.uniqueId('refresh_'));
+              }}
+            />
             <Button
               size='small'
               type='link'
@@ -150,6 +167,16 @@ export default function TableCpt(props: IProps) {
       },
     },
   ];
+  if (import.meta.env.VITE_IS_DS_SETTING === 'true') {
+    columns.splice(4, 0, {
+      title: t('status'),
+      dataIndex: 'status',
+      width: 100,
+      render: (value) => {
+        return t(`status_${value}`) as string;
+      },
+    });
+  }
   const fetchData = ({ current, pageSize }) => {
     return getEvents({
       p: current,
@@ -174,6 +201,7 @@ export default function TableCpt(props: IProps) {
         <div style={{ display: 'flex' }}>{header}</div>
         <Table
           size='small'
+          tableLayout='fixed'
           rowKey={(record) => record.id}
           columns={columns}
           {...tableProps}

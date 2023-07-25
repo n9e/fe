@@ -251,8 +251,13 @@ const Shield: React.FC = () => {
           }}
         />
         {bgid ? (
-          <div className='shield-index'>
-            <div className='header'>
+          <div style={{ padding: 10 }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+              }}
+            >
               <Space>
                 <RefreshIcon
                   onClick={() => {
@@ -278,7 +283,7 @@ const Shield: React.FC = () => {
                 </Select>
                 <Input style={{ minWidth: 200 }} onPressEnter={onSearchQuery} prefix={<SearchOutlined />} placeholder={t('search_placeholder')} />
               </Space>
-              <div className='header-right'>
+              <div>
                 <Button
                   type='primary'
                   className='add'

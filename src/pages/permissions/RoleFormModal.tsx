@@ -31,12 +31,12 @@ function CateFormModal(props: ModalWrapProps & IProps) {
           if (action === 'post') {
             postRoles(values).then(() => {
               onOk();
-              message.success('common:success.add');
+              message.success(t('common:success.add'));
             });
           } else if (action === 'put') {
             putRoles({ ...initialValues, ...values }).then(() => {
               onOk({ ...initialValues, ...values });
-              message.success('common:success.edit');
+              message.success(t('common:success.edit'));
             });
           }
           destroy();

@@ -6,6 +6,7 @@ const en_US = {
   notify_groups: 'Notify Groups',
   basic_configs: 'Basic Configs',
   name: 'Name',
+  name_severities_appendtags: 'Name & Severity & Tags',
   append_tags: 'Tags',
   append_tags_msg: 'Invalid tag format, please check!',
   append_tags_msg1: 'Tag length should be less than or equal to 64 bits',

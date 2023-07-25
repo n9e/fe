@@ -1,6 +1,12 @@
 @border-color: #d9d9d9;
 
 .prom-graph-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  .ant-tabs {
+    height: 100%;
+  }
   .ant-tabs-nav-wrap {
     border-left: 1px solid @border-color;
   }
@@ -15,6 +21,9 @@
   }
   .ant-tabs-top > .ant-tabs-nav {
     margin-bottom: 0;
+  }
+  .ant-tabs-content {
+    height: 100%;
   }
   .ant-tabs-content-holder {
     border: 1px solid @border-color;
@@ -47,6 +56,9 @@
   }
 }
 .prom-graph-table-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
   .prom-graph-table-controls {
     padding-bottom: 16px;
     .ant-picker {
@@ -55,6 +67,8 @@
   }
   .prom-graph-table-list {
     overflow: auto;
+    min-height: 0;
+    max-height: unset !important;
   }
   .ant-list-items {
     border-top: 1px solid #f0f0f0;
@@ -62,6 +76,24 @@
   }
   .ant-list-item {
     padding: 8px;
+  }
+}
+.prom-graph-graph-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  .renderer-timeseries-container {
+    display: flex !important;
+    flex-direction: column;
+    min-height: 0;
+    .renderer-timeseries-graph {
+      margin-top: 8px;
+      min-height: unset !important;
+    }
+    .renderer-timeseries-legend-table {
+      max-height: unset !important;
+      min-height: 0;
+    }
   }
 }
 .prom-graph-metrics-explorer-list {
