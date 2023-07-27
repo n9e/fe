@@ -1,7 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
+import type { InputRef } from 'antd';
 import { message, Table, Modal, Button, Space, Popconfirm, Input } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
 import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
 import Rename from '../Rename';
@@ -34,6 +36,7 @@ const TableSource = (props: IPropsType) => {
   const [loading, setLoading] = useState<boolean>(false);
   const pagination = usePagination({ PAGESIZE_KEY: 'datasource' });
   const [searchVal, setSearchVal] = useState<string>('');
+  const searchInput = useRef<InputRef>(null);
 
   useEffect(() => {
     init();
@@ -51,28 +54,28 @@ const TableSource = (props: IPropsType) => {
       });
   };
 
+  const getColumnSearchProps = (dataIndex) => ({
+    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
+      <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
+        <Input.Search
+          ref={searchInput}
+          placeholder={`Search ${dataIndex}`}
+          value={selectedKeys[0]}
+          onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+          onSearch={(val) => {
+            setSearchVal(val);
+          }}
+        />
+      </div>
+    ),
+    filterIcon: (filtered: boolean) => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
+  });
+
   const defaultColumns = [
     {
-      title: () => {
-        return (
-          <Space>
-            {t('name')}
-            <Input.Search
-              size='small'
-              placeholder={t('请输入要查询的名称')}
-              allowClear
-              onSearch={(val) => {
-                setSearchVal(val);
-              }}
-              style={{
-                width: 170,
-                marginLeft: '4px',
-              }}
-            />
-          </Space>
-        );
-      },
+      title: t('name'),
       dataIndex: 'name',
+      ...getColumnSearchProps('name'),
       render: (text, record) => {
         return (
           <Rename

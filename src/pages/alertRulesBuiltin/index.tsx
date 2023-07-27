@@ -4,12 +4,13 @@ import queryString from 'query-string';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
-import { List, Input, Button, Table, Space, Tag, Select } from 'antd';
+import { List, Input, Button, Table, Space, Tag, Select, Tabs } from 'antd';
 import { SafetyCertificateOutlined, SearchOutlined, StarOutlined, StarFilled } from '@ant-design/icons';
 import PageLayout from '@/components/pageLayout';
 import Export from '@/pages/dashboard/List/Export';
 import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
+import Instructions from '@/pages/dashboardBuiltin/Instructions';
 import { RuleCateType, RuleType } from './types';
 import { getRuleCates, postBuiltinCateFavorite, deleteBuiltinCateFavorite } from './services';
 import Import from './Import';
@@ -45,9 +46,8 @@ export default function index() {
   const [cateSearch, setCateSearch] = useState<string>('');
   const [ruleSearch, setRuleSearch] = useState<string>('');
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
-  const allRules = useRef<RuleType[]>([]);
   const selectedRows = useRef<RuleType[]>([]);
-  const curRules = active ? processRules(active.name, active.alert_rules) : allRules.current;
+  const curRules = active ? processRules(active.name, active.alert_rules) : [];
   const filteredCates = _.orderBy(
     _.filter(data, (item) => {
       return _.upperCase(item.name).indexOf(_.upperCase(cateSearch)) > -1;
@@ -70,15 +70,8 @@ export default function index() {
 
   const fetchData = (cbk?: (dat: RuleCateType[]) => void) => {
     getRuleCates().then((res) => {
-      allRules.current = _.reduce(
-        res,
-        (result, item) => {
-          const rules = processRules(item.name, item.alert_rules);
-          return _.concat(result, rules);
-        },
-        [] as RuleType[],
-      );
       setData(res);
+      setActive(_.orderBy(res, ['favorite', 'name'], ['desc', 'asc'])[0]);
       if (cbk) {
         cbk(res);
       }
@@ -163,150 +156,159 @@ export default function index() {
             />
           </div>
           <div className='resource-table-content'>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Space>
-                <Select
-                  style={{ width: 200 }}
-                  placeholder={t('group')}
-                  value={group}
-                  onChange={(val) => {
-                    setGroup(val);
-                  }}
-                >
-                  {_.map(_.groupBy(curRules, '__group__'), (_rules, group) => {
-                    return (
-                      <Select.Option key={group} value={group}>
-                        {group}
-                      </Select.Option>
-                    );
-                  })}
-                </Select>
-                <Input
-                  prefix={<SearchOutlined />}
-                  value={ruleSearch}
-                  onChange={(e) => {
-                    setRuleSearch(e.target.value);
-                  }}
-                  placeholder={t('common:search_placeholder')}
-                  style={{ width: 300 }}
-                  allowClear
-                />
-              </Space>
-              <Space>
-                <Button
-                  onClick={() => {
-                    Import({
-                      data: JSON.stringify(selectedRows.current, null, 4),
-                      busiGroups,
-                      groupedDatasourceList,
-                    });
-                  }}
-                >
-                  {t('common:btn.batch_clone')}
-                </Button>
-                <Button
-                  onClick={() => {
-                    Export({
-                      data: JSON.stringify(selectedRows.current, null, 4),
-                    });
-                  }}
-                >
-                  {t('common:btn.batch_export')}
-                </Button>
-              </Space>
-            </div>
-            <Table
-              size='small'
-              rowKey={(record) => `${record.__cate__}-${record.__group__}-${record.name}`}
-              dataSource={filteredRules}
-              rowSelection={{
-                selectedRowKeys,
-                onChange: (selectedRowKeys: string[], rows: RuleType[]) => {
-                  setSelectedRowKeys(selectedRowKeys);
-                  selectedRows.current = rows;
-                },
-              }}
-              columns={[
-                {
-                  title: t('name'),
-                  dataIndex: 'name',
-                  key: 'name',
-                },
-                {
-                  title: t('append_tags'),
-                  dataIndex: 'append_tags',
-                  key: 'append_tags',
-                  render: (val) => {
-                    return (
-                      <Space size='middle'>
-                        {_.map(val, (tag, idx) => {
+            <Tabs>
+              <Tabs.TabPane tab='规则列表' key='list'>
+                <>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Space>
+                      <Select
+                        style={{ width: 200 }}
+                        placeholder={t('group')}
+                        value={group}
+                        onChange={(val) => {
+                          setGroup(val);
+                        }}
+                      >
+                        {_.map(_.groupBy(curRules, '__group__'), (_rules, group) => {
                           return (
-                            <Tag
-                              key={idx}
-                              color='purple'
-                              style={{ cursor: 'pointer' }}
-                              onClick={() => {
-                                const queryItem = _.compact(_.split(ruleSearch, ' '));
-                                if (queryItem.includes(tag)) return;
-                                setRuleSearch((searchVal) => {
-                                  if (searchVal) {
-                                    return searchVal + ' ' + tag;
-                                  }
-                                  return tag;
-                                });
-                              }}
-                            >
-                              {tag}
-                            </Tag>
+                            <Select.Option key={group} value={group}>
+                              {group}
+                            </Select.Option>
                           );
                         })}
-                      </Space>
-                    );
-                  },
-                },
-                {
-                  title: t('common:table.operations'),
-                  width: 120,
-                  render: (record) => {
-                    const cateValue = encodeURIComponent(active?.name || record?.__cate__);
-                    const nameValue = encodeURIComponent(record?.name);
-                    return (
-                      <Space>
-                        <Link
-                          to={{
-                            pathname: '/alert-rules-built-in/detail',
-                            search: `?cate=${cateValue}&name=${nameValue}`,
-                          }}
-                        >
-                          {t('common:btn.view')}
-                        </Link>
-                        <a
-                          onClick={() => {
-                            Import({
-                              data: JSON.stringify(record, null, 4),
-                              busiGroups,
-                              groupedDatasourceList,
-                            });
-                          }}
-                        >
-                          {t('common:btn.clone')}
-                        </a>
-                        <a
-                          onClick={() => {
-                            Export({
-                              data: JSON.stringify(record, null, 4),
-                            });
-                          }}
-                        >
-                          {t('common:btn.export')}
-                        </a>
-                      </Space>
-                    );
-                  },
-                },
-              ]}
-              pagination={pagination}
-            />
+                      </Select>
+                      <Input
+                        prefix={<SearchOutlined />}
+                        value={ruleSearch}
+                        onChange={(e) => {
+                          setRuleSearch(e.target.value);
+                        }}
+                        placeholder={t('common:search_placeholder')}
+                        style={{ width: 300 }}
+                        allowClear
+                      />
+                    </Space>
+                    <Space>
+                      <Button
+                        onClick={() => {
+                          Import({
+                            data: JSON.stringify(selectedRows.current, null, 4),
+                            busiGroups,
+                            groupedDatasourceList,
+                          });
+                        }}
+                      >
+                        {t('common:btn.batch_clone')}
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          Export({
+                            data: JSON.stringify(selectedRows.current, null, 4),
+                          });
+                        }}
+                      >
+                        {t('common:btn.batch_export')}
+                      </Button>
+                    </Space>
+                  </div>
+                  <Table
+                    size='small'
+                    rowKey={(record) => `${record.__cate__}-${record.__group__}-${record.name}`}
+                    dataSource={filteredRules}
+                    rowSelection={{
+                      selectedRowKeys,
+                      onChange: (selectedRowKeys: string[], rows: RuleType[]) => {
+                        setSelectedRowKeys(selectedRowKeys);
+                        selectedRows.current = rows;
+                      },
+                    }}
+                    columns={[
+                      {
+                        title: t('name'),
+                        dataIndex: 'name',
+                        key: 'name',
+                      },
+                      {
+                        title: t('append_tags'),
+                        dataIndex: 'append_tags',
+                        key: 'append_tags',
+                        render: (val) => {
+                          return (
+                            <Space size='middle'>
+                              {_.map(val, (tag, idx) => {
+                                return (
+                                  <Tag
+                                    key={idx}
+                                    color='purple'
+                                    style={{ cursor: 'pointer' }}
+                                    onClick={() => {
+                                      const queryItem = _.compact(_.split(ruleSearch, ' '));
+                                      if (queryItem.includes(tag)) return;
+                                      setRuleSearch((searchVal) => {
+                                        if (searchVal) {
+                                          return searchVal + ' ' + tag;
+                                        }
+                                        return tag;
+                                      });
+                                    }}
+                                  >
+                                    {tag}
+                                  </Tag>
+                                );
+                              })}
+                            </Space>
+                          );
+                        },
+                      },
+                      {
+                        title: t('common:table.operations'),
+                        width: 120,
+                        render: (record) => {
+                          const cateValue = encodeURIComponent(active?.name || record?.__cate__);
+                          const nameValue = encodeURIComponent(record?.name);
+                          return (
+                            <Space>
+                              <Link
+                                to={{
+                                  pathname: '/alert-rules-built-in/detail',
+                                  search: `?cate=${cateValue}&name=${nameValue}`,
+                                }}
+                              >
+                                {t('common:btn.view')}
+                              </Link>
+                              <a
+                                onClick={() => {
+                                  Import({
+                                    data: JSON.stringify(record, null, 4),
+                                    busiGroups,
+                                    groupedDatasourceList,
+                                  });
+                                }}
+                              >
+                                {t('common:btn.clone')}
+                              </a>
+                              <a
+                                onClick={() => {
+                                  Export({
+                                    data: JSON.stringify(record, null, 4),
+                                  });
+                                }}
+                              >
+                                {t('common:btn.export')}
+                              </a>
+                            </Space>
+                          );
+                        },
+                      },
+                    ]}
+                    pagination={pagination}
+                  />
+                </>
+              </Tabs.TabPane>
+              <Tabs.TabPane tab='使用说明' key='makedown'>
+                <Instructions name={query.cate as string} />
+              </Tabs.TabPane>
+            </Tabs>
           </div>
         </div>
       </div>

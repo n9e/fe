@@ -37,26 +37,29 @@ export default function Header(props: IProps) {
 
   return (
     <>
-      <div className='table-handle' style={{ padding: 0 }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+        }}
+      >
         <Space>
           <RefreshIcon
             onClick={() => {
               refreshList();
             }}
           />
-          <div className='table-handle-search'>
-            <Input
-              className={'searchInput'}
-              value={searchVal}
-              onChange={(e) => {
-                onSearchChange(e.target.value);
-              }}
-              prefix={<SearchOutlined />}
-              placeholder={t('search_placeholder')}
-            />
-          </div>
+          <Input
+            className={'searchInput'}
+            value={searchVal}
+            onChange={(e) => {
+              onSearchChange(e.target.value);
+            }}
+            prefix={<SearchOutlined />}
+            placeholder={t('search_placeholder')}
+          />
         </Space>
-        <div className='table-handle-buttons'>
+        <Space>
           <Button
             type='primary'
             onClick={() => {
@@ -122,7 +125,7 @@ export default function Header(props: IProps) {
               </Button>
             </Dropdown>
           </div>
-        </div>
+        </Space>
       </div>
     </>
   );

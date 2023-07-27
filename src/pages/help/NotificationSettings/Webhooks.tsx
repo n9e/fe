@@ -123,7 +123,7 @@ export default function Webhooks() {
                       </Form.List>
                       <Space align='baseline'>
                         {t('webhooks.skip_verify')}
-                        <Form.Item {...field} name={[field.name, 'skip_verify']} noStyle>
+                        <Form.Item {...field} name={[field.name, 'skip_verify']} noStyle valuePropName='checked'>
                           <Switch />
                         </Form.Item>
                       </Space>
