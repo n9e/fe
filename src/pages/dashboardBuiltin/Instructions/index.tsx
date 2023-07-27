@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import classNames from 'classnames';
-import { getInstructionsByName } from './services';
+import { getInstructionsByName } from '../services';
+import './style.less';
 
 interface Props {
   name: string;
@@ -23,7 +25,8 @@ export default function Instructions(props: Props) {
   return (
     <div>
       <ReactMarkdown
-        className='collects-markdown-body'
+        className='instructions-markdown-body'
+        rehypePlugins={[rehypeRaw]}
         components={{
           code({ node, inline, className, children, ...props }) {
             const match = /language-(\w+)/.exec(className || '');

@@ -157,7 +157,7 @@ export default function index() {
           </div>
           <div className='resource-table-content'>
             <Tabs>
-              <Tabs.TabPane tab='规则列表' key='list'>
+              <Tabs.TabPane tab={t('tab_list')} key='list'>
                 <>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Space>
@@ -305,7 +305,7 @@ export default function index() {
                   />
                 </>
               </Tabs.TabPane>
-              <Tabs.TabPane tab='使用说明' key='makedown'>
+              <Tabs.TabPane tab={t('tab_instructions')} key='makedown'>
                 <Instructions name={query.cate as string} />
               </Tabs.TabPane>
             </Tabs>

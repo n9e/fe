@@ -1,4 +1,4 @@
 const en_US = {
-  title: 'Migration Dashboard',
+  title: 'Dashboard Migration',
 };
 export default en_US;
