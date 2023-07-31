@@ -281,6 +281,7 @@ const en_US = {
   },
   detail: {
     datasource_empty: 'Please configure the data source first',
+    invalidTimeRange: 'Invalid __from and __to values',
   },
 };
 export default en_US;

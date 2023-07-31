@@ -14,17 +14,18 @@
  * limitations under the License.
  *
  */
-import React, { useState, useRef, useEffect, useContext } from 'react';
+import React, { useState, useRef, useEffect, useContext, useCallback } from 'react';
 import _ from 'lodash';
+import moment from 'moment';
 import semver from 'semver';
 import { useTranslation } from 'react-i18next';
 import { useInterval } from 'ahooks';
 import { v4 as uuidv4 } from 'uuid';
 import { useParams, useHistory, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
-import { Alert, Modal, Button } from 'antd';
+import { Alert, Modal, Button, message } from 'antd';
 import PageLayout from '@/components/pageLayout';
-import { IRawTimeRange, getDefaultValue } from '@/components/TimeRangePicker';
+import { IRawTimeRange, getDefaultValue, isValid } from '@/components/TimeRangePicker';
 import { Dashboard } from '@/store/dashboardInterface';
 import { getDashboard, updateDashboardConfigs, getDashboardPure, getBuiltinDashboard } from '@/services/dashboardV2';
 import { SetTmpChartData } from '@/services/metric';
@@ -67,6 +68,41 @@ const fetchDashboard = ({ id, builtinParams }) => {
 const builtinParamsToID = (builtinParams) => {
   return `${builtinParams['__built-in-cate']}_${builtinParams['__built-in-name']}`;
 };
+/**
+ * 获取默认的时间范围
+ * 1. 优先使用 URL 中的 __from 和 __to，如果不合法则使用默认值
+ * 2. 如果 URL 中没有 __from 和 __to，则使用缓存中的值
+ * 3. 如果缓存中没有值，则使用默认值
+ */
+// TODO: 如果 URL 的 __from 和 __to 不合法就弹出提示，这里临时设置成只能弹出一次
+message.config({
+  maxCount: 1,
+});
+const getDefaultTimeRange = (query, t) => {
+  if (query.__from && query.__to) {
+    if (isValid(query.__from) && isValid(query.__to)) {
+      return {
+        start: query.__from,
+        end: query.__to,
+      };
+    }
+    if (moment(_.toNumber(query.__from)).isValid() && moment(_.toNumber(query.__to)).isValid()) {
+      return {
+        start: moment(_.toNumber(query.__from)),
+        end: moment(_.toNumber(query.__to)),
+      };
+    }
+    message.error(t('detail.invalidTimeRange'));
+    return getDefaultValue(dashboardTimeCacheKey, {
+      start: 'now-1h',
+      end: 'now',
+    });
+  }
+  return getDefaultValue(dashboardTimeCacheKey, {
+    start: 'now-1h',
+    end: 'now',
+  });
+};
 
 export default function DetailV2(props: IProps) {
   const { isPreview = false, isBuiltin = false, gobackPath, builtinParams } = props;
@@ -77,8 +113,8 @@ export default function DetailV2(props: IProps) {
   const isAuthorized = !_.some(roles, (item) => item === 'Guest') && !isPreview;
   const [dashboardMeta, setDashboardMeta] = useGlobalState('dashboardMeta');
   let { id } = useParams<URLParam>();
+  const query = queryString.parse(useLocation().search);
   if (isBuiltin) {
-    const query = queryString.parse(useLocation().search);
     id = builtinParamsToID(query);
   }
   const refreshRef = useRef<{ closeRefresh: Function }>();
@@ -87,12 +123,7 @@ export default function DetailV2(props: IProps) {
   const [variableConfigWithOptions, setVariableConfigWithOptions] = useState<IVariable[]>();
   const [dashboardLinks, setDashboardLinks] = useState<ILink[]>();
   const [panels, setPanels] = useState<any[]>([]);
-  const [range, setRange] = useState<IRawTimeRange>(
-    getDefaultValue(dashboardTimeCacheKey, {
-      start: 'now-1h',
-      end: 'now',
-    }),
-  );
+  const [range, setRange] = useState<IRawTimeRange>(getDefaultTimeRange(query, t));
   const [editable, setEditable] = useState(true);
   const [editorData, setEditorData] = useState({
     visible: false,
