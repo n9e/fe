@@ -118,7 +118,7 @@ function App() {
         if (!anonymous) {
           const { dat: profile } = await GetProfile();
           const { dat: busiGroups } = await getBusiGroups();
-          const datasourceList = await getDatasourceList();
+          const datasourceList = await getDatasourceBriefList();
           const { licenseRulesRemaining, licenseExpireDays } = await getLicense(t);
           const defaultBusiId = commonState.curBusiId || busiGroups?.[0]?.id;
           window.localStorage.setItem('curBusiId', String(defaultBusiId));
