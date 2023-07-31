@@ -22,7 +22,7 @@ import React from 'react';
 import TimeRangePicker from './TimeRangePicker';
 import { IRawTimeRange } from './types';
 import TimeRangePickerWithRefresh from './TimeRangePickerWithRefresh';
-import { parseRange, parse, valueAsString, isMathString, timeRangeUnix, describeTimeRange } from './utils';
+import { parseRange, parse, valueAsString, isMathString, timeRangeUnix, describeTimeRange, isValid } from './utils';
 import { ITimeRangePickerProps } from './types';
 import { mapOptionToRelativeTimeRange, mapRelativeTimeRangeToOption } from './RelativeTimeRangePicker/utils';
 import RelativeTimeRangePicker from './RelativeTimeRangePicker';
@@ -77,4 +77,5 @@ export {
   describeTimeRange,
   mapOptionToRelativeTimeRange,
   mapRelativeTimeRangeToOption,
+  isValid,
 };
