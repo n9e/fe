@@ -291,6 +291,7 @@ const zh_HK = {
   },
   detail: {
     datasource_empty: '沒有資料來源資訊，請先配置資料來源',
+    invalidTimeRange: '無效的 __from 和 __to 值',
   },
 };
 

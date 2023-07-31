@@ -290,7 +290,7 @@ export default function index() {
                               <a
                                 onClick={() => {
                                   Export({
-                                    data: JSON.stringify(record, null, 4),
+                                    data: JSON.stringify([record], null, 4),
                                   });
                                 }}
                               >
