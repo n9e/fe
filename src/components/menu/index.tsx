@@ -94,7 +94,7 @@ const getMenuList = (t) => {
           label: t('快捷视图'),
         },
         {
-          key: import.meta.env['VITE_IS_DS_SETTING'] ? '/plus-recording-rules' : '/recording-rules',
+          key: '/recording-rules',
           label: t('记录规则'),
         },
       ],
