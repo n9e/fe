@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
+import gfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import classNames from 'classnames';
 import { getInstructionsByName } from '../services';
@@ -27,6 +28,7 @@ export default function Instructions(props: Props) {
       <ReactMarkdown
         className='instructions-markdown-body'
         rehypePlugins={[rehypeRaw]}
+        remarkPlugins={[gfm]}
         components={{
           code({ node, inline, className, children, ...props }) {
             const match = /language-(\w+)/.exec(className || '');
