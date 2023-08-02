@@ -64,11 +64,13 @@ import NotificationTpls from '@/pages/help/NotificationTpls';
 import NotificationSettings from '@/pages/help/NotificationSettings';
 import MigrateDashboards from '@/pages/help/migrate';
 import IBEX from '@/pages/help/NotificationSettings/IBEX';
+import { dynamicPackages, Entry } from '@/utils';
 // @ts-ignore
 import { Jobs as StrategyBrain } from 'plus:/datasource/anomaly';
 // @ts-ignore
 import plusLoader from 'plus:/utils/loader';
-import { dynamicPackages, Entry } from '@/utils';
+// @ts-ignore
+import useIsPlus from 'plus:/components/useIsPlus';
 
 const Packages = dynamicPackages();
 let lazyRoutes = Packages.reduce((result: any, module: Entry) => {
@@ -89,6 +91,7 @@ function RouteWithSubRoutes(route) {
 
 export default function Content() {
   const location = useLocation();
+  const isPlus = useIsPlus();
   // 仪表盘在全屏和暗黑主题下需要定义个 dark 样式名
   let themeClassName = '';
   if (location.pathname.indexOf('/dashboard') === 0) {
@@ -138,9 +141,11 @@ export default function Content() {
         <Route exact path='/alert-subscribes/add' component={SubscribeAdd} />
         <Route exact path='/alert-subscribes/edit/:id' component={SubscribeEdit} />
 
-        <Route exact path='/recording-rules/:id?' component={RecordingRule} />
-        <Route exact path='/recording-rules/add/:group_id' component={RecordingRuleAdd} />
-        <Route exact path='/recording-rules/edit/:id' component={RecordingRuleEdit} />
+        {!isPlus && [
+          <Route key='recording-rules' exact path='/recording-rules/:id?' component={RecordingRule} />,
+          <Route key='recording-rules-add' exact path='/recording-rules/add/:group_id' component={RecordingRuleAdd} />,
+          <Route key='recording-rules-edit' exact path='/recording-rules/edit/:id' component={RecordingRuleEdit} />,
+        ]}
 
         <Route exact path='/alert-cur-events' component={Event} />
         <Route exact path='/alert-his-events' component={historyEvents} />
