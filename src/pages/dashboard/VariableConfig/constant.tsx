@@ -322,12 +322,12 @@ export const getOptionsList = (
     { name: '__to_date_seconds', value: toDateSeconds },
     { name: '__to_date_iso', value: toDateISO },
     { name: '__to_date', value: toDateISO },
-    { name: '__interval', value: interval },
-    { name: '__interval_ms', value: interval * 1000 },
-    { name: '__rate_interval', value: interval * 4 },
-    { name: '__range', value: toDateSeconds - fromDateSeconds },
-    { name: '__range_s', value: toDateSeconds - fromDateSeconds },
-    { name: '__range_ms', value: (toDateSeconds - fromDateSeconds) * 1000 },
+    { name: '__interval', value: `${interval}s` },
+    { name: '__interval_ms', value: `${interval * 1000}ms` },
+    { name: '__rate_interval', value: `${interval * 4}s` },
+    { name: '__range', value: `${toDateSeconds - fromDateSeconds}s` },
+    { name: '__range_s', value: `${toDateSeconds - fromDateSeconds}s` },
+    { name: '__range_ms', value: `${(toDateSeconds - fromDateSeconds) * 1000}ms` },
   ];
 };
 
