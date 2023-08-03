@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Table, Tag, Tooltip, Space, Input, Dropdown, Menu, Button, Modal, message } from 'antd';
+import { Table, Tag, Tooltip, Space, Input, Dropdown, Menu, Button, Modal, message, Select } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { SearchOutlined, DownOutlined, ReloadOutlined, CopyOutlined, ApartmentOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { useAntdTable } from 'ahooks';
@@ -55,6 +55,7 @@ const GREEN_COLOR = '#3FC453';
 const YELLOW_COLOR = '#FF9919';
 const RED_COLOR = '#FF656B';
 const LOST_COLOR = '#CCCCCC';
+const downtimeOptions = [1, 2, 3, 5, 10, 30];
 
 export default function List(props: IProps) {
   const { t } = useTranslation('targets');
@@ -65,6 +66,7 @@ export default function List(props: IProps) {
   const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs());
   const [collectsDrawerVisible, setCollectsDrawerVisible] = useState(false);
   const [collectsDrawerIdent, setCollectsDrawerIdent] = useState('');
+  const [downtime, setDowntime] = useState();
   const columns: ColumnsType<any> = [
     {
       title: (
@@ -386,6 +388,7 @@ export default function List(props: IProps) {
       bgid: curBusiId,
       limit: pageSize,
       p: current,
+      downtime,
     };
     return getMonObjectList(query).then((res) => {
       return {
@@ -409,7 +412,7 @@ export default function List(props: IProps) {
       current: 1,
       pageSize: tableProps.pagination.pageSize,
     });
-  }, [tableQueryContent, curBusiId, refreshFlag]);
+  }, [tableQueryContent, curBusiId, refreshFlag, downtime]);
 
   return (
     <div>
@@ -432,6 +435,21 @@ export default function List(props: IProps) {
             }}
             onBlur={() => {
               setTableQueryContent(searchVal);
+            }}
+          />
+          <Select
+            allowClear
+            placeholder='心跳超过'
+            style={{ width: 100 }}
+            options={_.map(downtimeOptions, (item) => {
+              return {
+                label: `${item} ${t('common:time.minute')}`,
+                value: item * 60,
+              };
+            })}
+            value={downtime}
+            onChange={(val) => {
+              setDowntime(val);
             }}
           />
         </Space>
