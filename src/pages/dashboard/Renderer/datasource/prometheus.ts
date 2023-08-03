@@ -128,7 +128,7 @@ export default async function prometheusQuery(options: IOptions) {
               name: target?.legend ? replaceExpressionBracket(target?.legend, serie.metric) : getSerieName(serie.metric),
               metric: serie.metric,
               expr: item.expr,
-              data: !spanNulls ? completeBreakpoints(_step, [serie.value]) : [serie.value],
+              data: serie.values ? serie.values : [serie.value],
             });
           });
         }

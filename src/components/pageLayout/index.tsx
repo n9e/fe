@@ -23,6 +23,7 @@ import { DownOutlined } from '@ant-design/icons';
 import { Logout } from '@/services/login';
 import AdvancedWrap, { License } from '@/components/AdvancedWrap';
 import { CommonStateContext } from '@/App';
+import Version from './Version';
 import './index.less';
 import './locale';
 
@@ -102,6 +103,9 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                   {t('docs')}
                 </a>
               )}
+
+              <Version />
+
               {/* 整合版本关闭文档链接 */}
               {import.meta.env.VITE_IS_COMMON_DS !== 'true' && (
                 <Space style={{ marginRight: 16 }}>
