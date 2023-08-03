@@ -20,7 +20,7 @@ import { convertDashboardV1ToV2 } from '../../help/migrate/utils';
 export { convertDashboardV1ToV2 } from '../../help/migrate/utils';
 import { JSONParse } from '../utils';
 export { JSONParse } from '../utils';
-export { convertDashboardGrafanaToN9E } from '../utils';
+export { convertDashboardGrafanaToN9E, checkGrafanaDashboardVersion } from '../utils';
 
 export function exportDataStringify(data: any) {
   return JSON.stringify(

@@ -21,7 +21,7 @@ import { Modal, Input, Tabs, Form, Button, Alert, message } from 'antd';
 import Icon from '@ant-design/icons';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { createDashboard } from '@/services/dashboardV2';
-import { getValidImportData, convertDashboardGrafanaToN9E, JSONParse } from './utils';
+import { getValidImportData, convertDashboardGrafanaToN9E, JSONParse, checkGrafanaDashboardVersion } from './utils';
 
 type ModalType = 'Import' | 'ImportGrafana';
 interface IProps {
@@ -57,6 +57,20 @@ function Import(props: IProps & ModalWrapProps) {
   const { t } = useTranslation('dashboard');
   const { visible, destroy, busiId, type, refreshList } = props;
   const [modalType, setModalType] = useState(type);
+  const [checkedVerisonResult, setCheckedVerisonResult] = useState<undefined | 0 | 1 | 2>();
+  const [form] = Form.useForm();
+  const importGrafanaFunc = (json) => {
+    const data = convertDashboardGrafanaToN9E(json);
+    createDashboard(busiId, {
+      ...data,
+      tags: '',
+      configs: JSON.stringify(data.configs),
+    }).then(() => {
+      message.success(t('common:success.import'));
+      refreshList();
+      destroy();
+    });
+  };
 
   return (
     <Modal
@@ -129,17 +143,14 @@ function Import(props: IProps & ModalWrapProps) {
       {modalType === 'ImportGrafana' ? (
         <Form
           layout='vertical'
+          form={form}
           onFinish={(vals) => {
-            const data = convertDashboardGrafanaToN9E(JSONParse(vals.import));
-            createDashboard(busiId, {
-              ...data,
-              tags: '',
-              configs: JSON.stringify(data.configs),
-            }).then(() => {
-              message.success(t('common:success.import'));
-              refreshList();
-              destroy();
-            });
+            const json = JSONParse(vals.import);
+            const checkedVerisonResult = checkGrafanaDashboardVersion(json);
+            setCheckedVerisonResult(checkedVerisonResult);
+            if (checkedVerisonResult === 2) {
+              importGrafanaFunc(json);
+            }
           }}
         >
           <div style={{ marginBottom: 10 }}>
@@ -156,10 +167,26 @@ function Import(props: IProps & ModalWrapProps) {
           >
             <Input.TextArea className='code-area' rows={16} />
           </Form.Item>
+          {checkedVerisonResult === 0 && <Alert message={t('batch.import_grafana_tip_version_error')} type='error' style={{ margin: '10px 0' }} />}
+          {checkedVerisonResult === 1 && <Alert message={t('batch.import_grafana_tip_version_warning')} type='warning' style={{ margin: '10px 0' }} />}
           <Form.Item>
-            <Button type='primary' htmlType='submit'>
-              {t('common:btn.import')}
-            </Button>
+            {checkedVerisonResult === undefined && (
+              <Button type='primary' htmlType='submit'>
+                {t('common:btn.import')}
+              </Button>
+            )}
+            {checkedVerisonResult === 1 && (
+              <Button
+                type='primary'
+                onClick={() => {
+                  form.validateFields().then((vals) => {
+                    importGrafanaFunc(JSONParse(vals.import));
+                  });
+                }}
+              >
+                {t('batch.continueToImport')}
+              </Button>
+            )}
           </Form.Item>
         </Form>
       ) : null}
