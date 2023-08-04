@@ -1,35 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import semver from 'semver';
+import React, { useContext } from 'react';
 import { Badge, Tooltip } from 'antd';
-import { useTranslation, Trans } from 'react-i18next';
-import { getVersions, Versions } from './services';
-import './locale';
+import { Trans } from 'react-i18next';
+import { CommonStateContext } from '@/App';
 // @ts-ignore
 import useIsPlus from 'plus:/components/useIsPlus';
+import './locale';
+export interface Versions {
+  github_verison: string;
+  version: string;
+}
 
 export default function Version() {
-  const { t } = useTranslation('headerVersion');
   const isPlus = useIsPlus();
-  const [versions, setVersions] = useState<Versions>();
-  const [badgeShow, setBadgeShow] = useState(false);
-
-  useEffect(() => {
-    if (!isPlus) {
-      getVersions().then((res) => {
-        setVersions(res);
-        if (semver.valid(res.version) && semver.valid(res.github_verison) && semver.gt(res.github_verison, res.version)) {
-          setBadgeShow(true);
-        }
-      });
-    }
-  }, []);
+  const { versions } = useContext(CommonStateContext);
 
   if (!isPlus) {
     return (
       <div style={{ marginRight: 16 }}>
         <Tooltip
           title={
-            badgeShow ? (
+            versions.newVersion ? (
               <Trans
                 ns='headerVersion'
                 i18nKey='newVersion'
@@ -41,10 +31,10 @@ export default function Version() {
             ) : undefined
           }
         >
-          <Badge dot={badgeShow}>
+          <Badge dot={versions.newVersion}>
             <span
               style={{
-                cursor: badgeShow ? 'pointer' : 'default',
+                cursor: versions.newVersion ? 'pointer' : 'default',
               }}
             >
               {versions?.version}
