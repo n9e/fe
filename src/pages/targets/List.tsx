@@ -332,9 +332,6 @@ export default function List(props: IProps) {
         render: (val, reocrd) => {
           let result = moment(val).format('YYYY-MM-DD HH:mm:ss');
           let backgroundColor = GREEN_COLOR;
-          if (reocrd.cpu_num === -1) {
-            result = 'unknown';
-          }
           if (reocrd.target_up === 0) {
             backgroundColor = RED_COLOR;
           } else if (reocrd.target_up === 1) {
