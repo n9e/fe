@@ -25,7 +25,7 @@ import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import TaskOutput from '@/pages/taskOutput';
 import TaskHostOutput from '@/pages/taskOutput/host';
-import { getAuthorizedDatasourceCates } from '@/components/AdvancedWrap';
+import { getAuthorizedDatasourceCates, Cate } from '@/components/AdvancedWrap';
 import { GetProfile } from '@/services/account';
 import { getBusiGroups, getDatasourceBriefList } from '@/services/common';
 import { getLicense } from '@/components/AdvancedWrap';
@@ -59,10 +59,7 @@ interface Datasource {
 }
 
 export interface ICommonState {
-  datasourceCateOptions: {
-    label: string;
-    value: string;
-  }[];
+  datasourceCateOptions: Cate[];
   groupedDatasourceList: {
     [index: string]: Datasource[];
   };
@@ -85,6 +82,11 @@ export interface ICommonState {
     github_verison: string;
     newVersion: boolean;
   };
+  feats?: {
+    fcBrain: boolean;
+    plugins: any[];
+  };
+  isPlus: boolean;
 }
 
 // 可以匿名访问的路由 TODO: job-task output 应该也可以匿名访问
@@ -99,7 +101,7 @@ function App() {
   const isPlus = useIsPlus();
   const initialized = useRef(false);
   const [commonState, setCommonState] = useState<ICommonState>({
-    datasourceCateOptions: getAuthorizedDatasourceCates(),
+    datasourceCateOptions: [],
     groupedDatasourceList: {},
     datasourceList: [],
     setDatasourceList: (datasourceList) => {
@@ -124,6 +126,7 @@ function App() {
       github_verison: '',
       newVersion: false,
     },
+    isPlus,
   });
 
   useEffect(() => {
@@ -134,7 +137,7 @@ function App() {
           const { dat: profile } = await GetProfile();
           const { dat: busiGroups } = await getBusiGroups();
           const datasourceList = await getDatasourceBriefList();
-          const { licenseRulesRemaining, licenseExpireDays } = await getLicense(t);
+          const { licenseRulesRemaining, licenseExpireDays, feats } = await getLicense(t);
           let versions = { version: '', github_verison: '', newVersion: false };
           if (!isPlus) {
             versions = await getVersions();
@@ -147,6 +150,7 @@ function App() {
               ...state,
               profile,
               busiGroups,
+              datasourceCateOptions: getAuthorizedDatasourceCates(feats, isPlus),
               groupedDatasourceList: _.groupBy(datasourceList, 'plugin_type'),
               datasourceList: datasourceList,
               curBusiId: defaultBusiId,
@@ -154,6 +158,7 @@ function App() {
               licenseExpireDays,
               licenseExpired: licenseExpireDays !== undefined && licenseExpireDays <= 0,
               versions,
+              feats,
             };
           });
           if (_.isEmpty(datasourceList) && !_.startsWith(location.pathname, '/help/source')) {

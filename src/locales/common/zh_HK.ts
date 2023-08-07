@@ -44,6 +44,7 @@ const zh_HK = {
     total: '共 {{total}} 條',
   },
   datasource: {
+    prod: '監控型別',
     name: '資料來源',
     type: '資料來源型別',
     id: '關聯資料來源',

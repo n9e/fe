@@ -70,7 +70,7 @@ const Panel = ({ type, defaultCate }: IProps) => {
                   <DatasourceCateSelect
                     scene='graph'
                     filterCates={(cates) => {
-                      return _.filter(cates, (item) => item.type === type);
+                      return _.filter(cates, (item) => _.includes(item.type, type));
                     }}
                     dropdownMatchSelectWidth={false}
                     style={{ minWidth: 70 }}

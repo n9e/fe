@@ -40,7 +40,7 @@ export default function index({ form }) {
             <DatasourceCateSelect
               scene='alert'
               filterCates={(cates) => {
-                return _.filter(cates, (item) => item.type === 'metric' && !!item.alertRule);
+                return _.filter(cates, (item) => _.includes(item.type, 'metric') && !!item.alertRule);
               }}
               onChange={(val) => {
                 form.setFieldsValue(getDefaultValuesByCate('metric', val));

@@ -224,7 +224,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
                       <DatasourceCateSelect
                         scene='alert'
                         filterCates={(cates) => {
-                          return _.filter(cates, (item) => item.type === prod && !!item.alertRule);
+                          return _.filter(cates, (item) => _.includes(item.type, prod) && !!item.alertRule);
                         }}
                         onChange={() => {
                           form.setFieldsValue({

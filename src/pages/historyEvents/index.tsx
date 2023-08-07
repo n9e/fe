@@ -22,11 +22,12 @@ import _ from 'lodash';
 import { useAntdTable } from 'ahooks';
 import { Input, Tag, Button, Space, Table, Select, message } from 'antd';
 import { Link } from 'react-router-dom';
-import AdvancedWrap from '@/components/AdvancedWrap';
 import PageLayout from '@/components/pageLayout';
 import RefreshIcon from '@/components/RefreshIcon';
 import { hoursOptions } from '@/pages/event/constants';
 import { CommonStateContext } from '@/App';
+import { getProdOptions } from '@/pages/alertRules/Form/components/ProdSelect';
+import DatasourceSelect from '@/components/DatasourceSelect/DatasourceSelect';
 import exportEvents, { downloadFile } from './exportEvents';
 import { getEvents } from './services';
 import { SeverityColor } from '../event';
@@ -47,7 +48,7 @@ export const setDefaultHours = (hours: number) => {
 
 const Event: React.FC = () => {
   const { t } = useTranslation('AlertHisEvents');
-  const { groupedDatasourceList, busiGroups, datasourceList } = useContext(CommonStateContext);
+  const { groupedDatasourceList, busiGroups, feats } = useContext(CommonStateContext);
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
   const [filter, setFilter] = useState<{
     hours: number;
@@ -142,6 +143,23 @@ const Event: React.FC = () => {
     filter.rule_prods.length ? { rule_prods: _.join(filter.rule_prods, ',') } : {},
   );
 
+  let prodOptions = getProdOptions(feats);
+  if (import.meta.env.VITE_IS_COMMON_DS === 'true') {
+    prodOptions = [
+      ...prodOptions,
+      {
+        label: t('rule_prod.firemap'),
+        value: 'firemap',
+        pro: false,
+      },
+      {
+        label: t('rule_prod.northstar'),
+        value: 'northstar',
+        pro: false,
+      },
+    ];
+  }
+
   function renderLeftHeader() {
     return (
       <div className='table-operate-box'>
@@ -166,96 +184,39 @@ const Event: React.FC = () => {
               return <Select.Option value={item.value}>{t(`hours.${item.value}`)}</Select.Option>;
             })}
           </Select>
-          <AdvancedWrap var='VITE_IS_ALERT_AI,VITE_IS_ALERT_ES,VITE_IS_SLS_DS,VITE_IS_COMMON_DS'>
-            {(isShow) => {
-              let options = [
-                {
-                  label: 'Metric',
-                  value: 'metric',
-                },
-                {
-                  label: 'Host',
-                  value: 'host',
-                },
-              ];
-              if (isShow[0]) {
-                options = [
-                  ...options,
-                  {
-                    label: 'Anomaly',
-                    value: 'anomaly',
-                  },
-                ];
-              }
-              if (isShow[1] || isShow[2]) {
-                options = [
-                  ...options,
-                  {
-                    label: 'Log',
-                    value: 'logging',
-                  },
-                ];
-              }
-              if (isShow[3]) {
-                options = [
-                  ...options,
-                  {
-                    label: t('rule_prod.firemap'),
-                    value: 'firemap',
-                  },
-                  {
-                    label: t('rule_prod.northstar'),
-                    value: 'northstar',
-                  },
-                ];
-              }
-              return (
-                <Select
-                  allowClear
-                  placeholder={t('prod')}
-                  style={{ minWidth: 80 }}
-                  value={filter.rule_prods}
-                  mode='multiple'
-                  onChange={(val) => {
-                    setFilter({
-                      ...filter,
-                      rule_prods: val,
-                    });
-                  }}
-                  dropdownMatchSelectWidth={false}
-                >
-                  {options.map((item) => {
-                    return (
-                      <Select.Option value={item.value} key={item.value}>
-                        {item.label}
-                      </Select.Option>
-                    );
-                  })}
-                </Select>
-              );
-            }}
-          </AdvancedWrap>
           <Select
             allowClear
+            placeholder={t('prod')}
+            style={{ minWidth: 80 }}
+            value={filter.rule_prods}
             mode='multiple'
-            placeholder={t('common:datasource.id')}
-            style={{ minWidth: 100 }}
-            maxTagCount='responsive'
-            dropdownMatchSelectWidth={false}
-            value={filter.datasourceIds}
             onChange={(val) => {
+              setFilter({
+                ...filter,
+                rule_prods: val,
+              });
+            }}
+            dropdownMatchSelectWidth={false}
+          >
+            {prodOptions.map((item) => {
+              return (
+                <Select.Option value={item.value} key={item.value}>
+                  {item.label}
+                </Select.Option>
+              );
+            })}
+          </Select>
+          <DatasourceSelect
+            style={{ width: 100 }}
+            filterKey='alertRule'
+            value={filter.datasourceIds}
+            onChange={(val: number[]) => {
               setFilter({
                 ...filter,
                 datasourceIds: val,
               });
             }}
-          >
-            {_.map(datasourceList, (item) => (
-              <Select.Option value={item.id} key={item.id}>
-                {item.name}
-              </Select.Option>
-            ))}
-          </Select>
+          />
           <Select
             style={{ minWidth: 120 }}
             placeholder={t('common:business_group')}

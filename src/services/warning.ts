@@ -407,13 +407,6 @@ export const getBrainJobs = function (id) {
   });
 };
 
-export function getBrainLicense() {
-  return request('/api/fc-brain/license', {
-    method: RequestMethod.Get,
-    silence: true,
-  });
-}
-
 export function getDsQuery(datasourceValue: number, requestBody) {
   return request(`/api/n9e/proxy/${datasourceValue}/_msearch`, {
     method: RequestMethod.Post,

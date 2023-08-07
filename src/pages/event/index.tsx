@@ -19,12 +19,13 @@ import { Button, Input, message, Modal, Select, Space, Row, Col, Dropdown, Menu 
 import { AlertOutlined, ExclamationCircleOutlined, SearchOutlined, AppstoreOutlined, UnorderedListOutlined, DownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
-import AdvancedWrap from '@/components/AdvancedWrap';
 import PageLayout from '@/components/pageLayout';
 import { deleteAlertEvents } from '@/services/warning';
 import { AutoRefresh } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
 import { getDefaultHours, setDefaultHours } from '@/pages/historyEvents';
+import { getProdOptions } from '@/pages/alertRules/Form/components/ProdSelect';
+import DatasourceSelect from '@/components/DatasourceSelect/DatasourceSelect';
 import Card from './card';
 import Table from './Table';
 import { hoursOptions } from './constants';
@@ -57,7 +58,7 @@ export function deleteAlertEventsModal(ids: number[], onSuccess = () => {}, t) {
 const Event: React.FC = () => {
   const { t } = useTranslation('AlertCurEvents');
   const [view, setView] = useState<'card' | 'list'>('card');
-  const { busiGroups, datasourceList } = useContext(CommonStateContext);
+  const { busiGroups, feats } = useContext(CommonStateContext);
   const [filter, setFilter] = useState<{
     hours: number;
     cate?: string;
@@ -75,6 +76,22 @@ const Event: React.FC = () => {
   });
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
+  let prodOptions = getProdOptions(feats);
+  if (import.meta.env.VITE_IS_COMMON_DS === 'true') {
+    prodOptions = [
+      ...prodOptions,
+      {
+        label: t('AlertHisEvents:rule_prod.firemap'),
+        value: 'firemap',
+        pro: false,
+      },
+      {
+        label: t('AlertHisEvents:rule_prod.northstar'),
+        value: 'northstar',
+        pro: false,
+      },
+    ];
+  }
 
   function renderLeftHeader() {
     return (
@@ -97,96 +114,39 @@ const Event: React.FC = () => {
               return <Select.Option value={item.value}>{t(`hours.${item.value}`)}</Select.Option>;
             })}
           </Select> */}
-          <AdvancedWrap var='VITE_IS_ALERT_AI,VITE_IS_ALERT_ES,VITE_IS_SLS_DS,VITE_IS_COMMON_DS'>
-            {(isShow) => {
-              let options = [
-                {
-                  label: 'Metric',
-                  value: 'metric',
-                },
-                {
-                  label: 'Host',
-                  value: 'host',
-                },
-              ];
-              if (isShow[0]) {
-                options = [
-                  ...options,
-                  {
-                    label: 'Anomaly',
-                    value: 'anomaly',
-                  },
-                ];
-              }
-              if (isShow[1] || isShow[2]) {
-                options = [
-                  ...options,
-                  {
-                    label: 'Log',
-                    value: 'logging',
-                  },
-                ];
-              }
-              if (isShow[3]) {
-                options = [
-                  ...options,
-                  {
-                    label: t('AlertHisEvents:rule_prod.firemap'),
-                    value: 'firemap',
-                  },
-                  {
-                    label: t('AlertHisEvents:rule_prod.northstar'),
-                    value: 'northstar',
-                  },
-                ];
-              }
-              return (
-                <Select
-                  allowClear
-                  placeholder={t('prod')}
-                  style={{ minWidth: 80 }}
-                  value={filter.rule_prods}
-                  mode='multiple'
-                  onChange={(val) => {
-                    setFilter({
-                      ...filter,
-                      rule_prods: val,
-                    });
-                  }}
-                  dropdownMatchSelectWidth={false}
-                >
-                  {options.map((item) => {
-                    return (
-                      <Select.Option value={item.value} key={item.value}>
-                        {item.label}
-                      </Select.Option>
-                    );
-                  })}
-                </Select>
-              );
-            }}
-          </AdvancedWrap>
           <Select
             allowClear
+            placeholder={t('prod')}
+            style={{ minWidth: 80 }}
+            value={filter.rule_prods}
             mode='multiple'
-            placeholder={t('common:datasource.id')}
-            style={{ minWidth: 100 }}
-            maxTagCount='responsive'
-            dropdownMatchSelectWidth={false}
-            value={filter.datasourceIds}
             onChange={(val) => {
+              setFilter({
+                ...filter,
+                rule_prods: val,
+              });
+            }}
+            dropdownMatchSelectWidth={false}
+          >
+            {prodOptions.map((item) => {
+              return (
+                <Select.Option value={item.value} key={item.value}>
+                  {item.label}
+                </Select.Option>
+              );
+            })}
+          </Select>
+          <DatasourceSelect
+            style={{ width: 100 }}
+            filterKey='alertRule'
+            value={filter.datasourceIds}
+            onChange={(val: number[]) => {
               setFilter({
                 ...filter,
                 datasourceIds: val,
               });
             }}
-          >
-            {_.map(datasourceList, (item) => (
-              <Select.Option value={item.id} key={item.id}>
-                {item.name}
-              </Select.Option>
-            ))}
-          </Select>
+          />
           <Select
             allowClear
             placeholder={t('common:business_group')}

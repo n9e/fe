@@ -21,8 +21,8 @@ import { Modal, Input, Form, Table, Button, Divider, message, Select, Row, Col, 
 import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { importStrategy } from '@/services/warning';
-import { getAuthorizedDatasourceCates } from '@/components/AdvancedWrap';
 import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
+import { CommonStateContext } from '@/App';
 
 interface IProps {
   busiId: number;
@@ -34,7 +34,8 @@ function Import(props: IProps & ModalWrapProps) {
   const { t } = useTranslation('alertRules');
   const { visible, destroy, busiId, refreshList, groupedDatasourceList } = props;
   const [importResult, setImportResult] = useState<{ name: string; msg: string }[]>();
-  const datasourceCates = _.filter(getAuthorizedDatasourceCates(), (item) => item.type === 'metric');
+  const { datasourceCateOptions } = useContext(CommonStateContext);
+  const datasourceCates = _.filter(datasourceCateOptions, (item) => _.includes(item.type, 'metric'));
 
   return (
     <Modal

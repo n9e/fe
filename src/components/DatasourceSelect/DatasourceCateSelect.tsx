@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Select, SelectProps } from 'antd';
 import _ from 'lodash';
-import { getAuthorizedDatasourceCates, Cate } from '@/components/AdvancedWrap';
+import { Cate } from '@/components/AdvancedWrap';
+import { CommonStateContext } from '@/App';
 
 interface IProps extends SelectProps {
   scene: 'graph' | 'alert';
@@ -30,8 +31,8 @@ export const ProSvg = ({ type = 'normal' }) => (
 );
 
 export default function DatasourceCateSelect({ filterCates, scene, disabled, ...props }: IProps) {
-  let cates = getAuthorizedDatasourceCates();
-  cates = filterCates ? filterCates(cates) : cates;
+  const { datasourceCateOptions } = useContext(CommonStateContext);
+  const cates = filterCates ? filterCates(datasourceCateOptions) : datasourceCateOptions;
 
   return (
     <Select {...props} optionLabelProp='label' disabled={disabled}>
