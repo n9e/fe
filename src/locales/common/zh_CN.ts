@@ -44,6 +44,7 @@ const zh_CN = {
     total: '共 {{total}} 条',
   },
   datasource: {
+    prod: '监控类型',
     name: '数据源',
     type: '数据源类型',
     id: '关联数据源',

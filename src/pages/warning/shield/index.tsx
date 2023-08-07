@@ -15,7 +15,7 @@
  *
  */
 import React, { useState, useEffect, useContext } from 'react';
-import { Button, Input, Table, Tooltip, message, Modal, Switch, Space, Tag } from 'antd';
+import { Button, Input, Table, Tooltip, message, Modal, Switch, Space } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { CloseCircleOutlined, ExclamationCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import moment from 'moment';
@@ -30,7 +30,7 @@ import { shieldItem, strategyStatus } from '@/store/warningInterface';
 import { BusinessGroup } from '@/pages/targets';
 import RefreshIcon from '@/components/RefreshIcon';
 import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
-import { DatasourceSelectInSearch } from '@/components/DatasourceSelect';
+import { DatasourceSelect, ProdSelect } from '@/components/DatasourceSelect';
 import { CommonStateContext } from '@/App';
 import { pageSizeOptionsDefault } from '../const';
 import './locale';
@@ -48,11 +48,12 @@ const Shield: React.FC = () => {
   const { id } = queryString.parse(search);
   const commonState = useContext(CommonStateContext);
   const bgid = id ? Number(id) : commonState.curBusiId;
-  const { groupedDatasourceList } = commonState;
+  const { datasourceList, groupedDatasourceList } = commonState;
   const [query, setQuery] = useState<string>('');
   const [currentShieldDataAll, setCurrentShieldDataAll] = useState<Array<shieldItem>>([]);
   const [currentShieldData, setCurrentShieldData] = useState<Array<shieldItem>>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [prod, setProd] = useState<string>();
   const [cate, setCate] = useState<string>();
   const [datasourceIds, setDatasourceIds] = useState<number[]>();
 
@@ -61,6 +62,10 @@ const Shield: React.FC = () => {
       title: t('common:datasource.type'),
       dataIndex: 'cate',
       width: 100,
+      render: (value: string) => {
+        if (!value) return '-';
+        return value;
+      },
     },
     {
       title: t('common:datasource.id'),
@@ -262,7 +267,7 @@ const Shield: React.FC = () => {
 
   useEffect(() => {
     filterData();
-  }, [query, cate, datasourceIds, currentShieldDataAll]);
+  }, [query, cate, prod, datasourceIds, currentShieldDataAll]);
 
   const dismiss = (id: number) => {
     deleteShields({ ids: [id] }, Number(bgid)).then((res) => {
@@ -275,6 +280,14 @@ const Shield: React.FC = () => {
     });
   };
 
+  const includesProm = (ids) => {
+    return _.some(ids, (id) => {
+      return _.some(datasourceList, (item) => {
+        if (item.id === id) return item.plugin_type === 'prometheus';
+      });
+    });
+  };
+
   const filterData = () => {
     const data = JSON.parse(JSON.stringify(currentShieldDataAll));
     const res = data.filter((item: shieldItem) => {
@@ -283,9 +296,9 @@ const Shield: React.FC = () => {
       });
       return (
         (item.cause.indexOf(query) > -1 || !!tagFind) &&
-        ((cate && cate === item.cate) || !cate) &&
+        ((prod && prod === item.prod) || !prod) &&
         (_.some(item.datasource_ids, (id) => {
-          if (id === 0) return true;
+          if (includesProm(datasourceIds) && id === 0) return true;
           return _.includes(datasourceIds, id);
         }) ||
           datasourceIds?.length === 0 ||
@@ -334,20 +347,13 @@ const Shield: React.FC = () => {
                     refreshList();
                   }}
                 />
-                <DatasourceSelectInSearch
-                  datasourceCate={cate}
-                  onDatasourceCateChange={(val) => {
-                    setCate(val);
-                  }}
-                  datasourceValue={datasourceIds}
-                  datasourceValueMode='multiple'
-                  onDatasourceValueChange={(val: number[]) => {
+                <ProdSelect style={{ width: 90 }} value={prod} onChange={setProd} />
+                <DatasourceSelect
+                  style={{ width: 100 }}
+                  filterKey='alertRule'
+                  value={datasourceIds}
+                  onChange={(val) => {
                     setDatasourceIds(val);
-                  }}
-                  filterCates={(cates) => {
-                    return _.filter(cates, (item) => {
-                      return !!item.alertRule;
-                    });
                   }}
                 />
                 <Input onPressEnter={onSearchQuery} prefix={<SearchOutlined />} placeholder={t('search_placeholder')} />

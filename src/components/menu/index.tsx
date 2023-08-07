@@ -225,8 +225,9 @@ const getMenuList = (t) => {
       ],
     },
   ];
-  if (import.meta.env['VITE_IS_COLLECT']) {
+  if (import.meta.env['VITE_IS_DS_SETTING']) {
     const targets = _.find(menuList, (item) => item.key === 'targets');
+
     if (targets) {
       targets.children?.push({
         key: '/collects',
