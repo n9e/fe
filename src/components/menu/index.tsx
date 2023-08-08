@@ -225,7 +225,7 @@ const getMenuList = (t) => {
       ],
     },
   ];
-  if (import.meta.env['VITE_IS_DS_SETTING']) {
+  if (import.meta.env['VITE_IS_PRO']) {
     const targets = _.find(menuList, (item) => item.key === 'targets');
 
     if (targets) {

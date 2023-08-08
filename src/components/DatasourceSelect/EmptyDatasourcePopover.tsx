@@ -14,7 +14,7 @@ export default function EmptyDatasourcePopover(props: IProps) {
   const { t } = useTranslation();
   const { profile } = useContext(CommonStateContext);
   const { datasourceList, children } = props;
-  const linkUrl = import.meta.env.VITE_IS_COMMON_DS === 'true' ? '/settings/source/timeseries' : '/help/source';
+  const linkUrl = import.meta.env.VITE_IS_ENT === 'true' ? '/settings/source/timeseries' : '/help/source';
 
   return (
     <Popover

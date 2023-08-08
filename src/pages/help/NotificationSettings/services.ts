@@ -64,7 +64,7 @@ export const putNotifyContacts = function (data: ChannelType[]) {
 
 export const getNotifyConfig = function (ckey: string): Promise<string> {
   let url = '/api/n9e/notify-config';
-  if (import.meta.env.VITE_IS_DS_SETTING === 'true') {
+  if (import.meta.env.VITE_IS_PRO === 'true') {
     url = '/api/n9e-plus/notify-config';
   }
   return request(url, {
@@ -77,7 +77,7 @@ export const getNotifyConfig = function (ckey: string): Promise<string> {
 
 export const putNotifyConfig = function (data: { ckey: string; cvalue: string }) {
   let url = '/api/n9e/notify-config';
-  if (import.meta.env.VITE_IS_DS_SETTING === 'true') {
+  if (import.meta.env.VITE_IS_PRO === 'true') {
     url = '/api/n9e-plus/notify-config';
   }
   return request(url, {
