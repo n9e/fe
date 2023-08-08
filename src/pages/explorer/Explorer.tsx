@@ -120,9 +120,11 @@ const Panel = ({ type, defaultCate }: IProps) => {
                               history.replace({
                                 search: `?data_source_name=${cate}&data_source_id=${val}`,
                               });
-                              form.setFieldsValue({
-                                query: undefined,
-                              });
+                              if (cate !== 'prometheus') {
+                                form.setFieldsValue({
+                                  query: undefined,
+                                });
+                              }
                             }}
                             showSearch
                             optionFilterProp='children'
@@ -149,7 +151,7 @@ const Panel = ({ type, defaultCate }: IProps) => {
                   if (datasourceCate === DatasourceCateEnum.elasticsearch) {
                     return <Elasticsearch key={datasourceValue} headerExtra={headerExtraRef.current} datasourceValue={datasourceValue} form={form} />;
                   } else if (datasourceCate === DatasourceCateEnum.prometheus) {
-                    return <Prometheus key={datasourceValue} headerExtra={headerExtraRef.current} datasourceValue={datasourceValue} form={form} />;
+                    return <Prometheus key={datasourceCate} headerExtra={headerExtraRef.current} datasourceValue={datasourceValue} form={form} />;
                   }
                   return <PlusExplorer key={datasourceValue} datasourceCate={datasourceCate} datasourceValue={datasourceValue} headerExtraRef={headerExtraRef} form={form} />;
                 }}
