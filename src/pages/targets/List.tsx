@@ -125,8 +125,8 @@ export default function List(props: IProps) {
       render: (text, record) => {
         return (
           <Space>
-            {import.meta.env['VITE_IS_DS_SETTING'] ? <TargetMetaDrawer ident={text} /> : text}
-            {import.meta.env['VITE_IS_DS_SETTING'] && (
+            {import.meta.env['VITE_IS_PRO'] ? <TargetMetaDrawer ident={text} /> : text}
+            {import.meta.env['VITE_IS_PRO'] && (
               <Tooltip title='查看关联采集配置'>
                 <ApartmentOutlined
                   onClick={() => {

@@ -77,7 +77,7 @@ const Event: React.FC = () => {
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
   let prodOptions = getProdOptions(feats);
-  if (import.meta.env.VITE_IS_COMMON_DS === 'true') {
+  if (import.meta.env.VITE_IS_ENT === 'true') {
     prodOptions = [
       ...prodOptions,
       {

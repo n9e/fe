@@ -144,7 +144,7 @@ const Event: React.FC = () => {
   );
 
   let prodOptions = getProdOptions(feats);
-  if (import.meta.env.VITE_IS_COMMON_DS === 'true') {
+  if (import.meta.env.VITE_IS_ENT === 'true') {
     prodOptions = [
       ...prodOptions,
       {

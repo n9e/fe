@@ -212,7 +212,7 @@ function Card(props: Props, ref) {
     },
   ];
 
-  if (import.meta.env.VITE_IS_DS_SETTING === 'true') {
+  if (import.meta.env.VITE_IS_PRO === 'true') {
     columns.splice(4, 0, {
       title: t('status'),
       dataIndex: 'status',
