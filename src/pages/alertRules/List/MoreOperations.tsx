@@ -48,7 +48,7 @@ export default function MoreOperations(props: MoreOperationsProps) {
   const { t } = useTranslation('alertRules');
   const { bgid, selectRowKeys, selectedRows, getAlertRules } = props;
   const [isModalVisible, setisModalVisible] = useState<boolean>(false);
-  const { groupedDatasourceList } = useContext(CommonStateContext);
+  const { groupedDatasourceList, datasourceCateOptions } = useContext(CommonStateContext);
 
   return (
     <>
@@ -62,6 +62,7 @@ export default function MoreOperations(props: MoreOperationsProps) {
                   busiId: bgid,
                   refreshList: getAlertRules,
                   groupedDatasourceList,
+                  datasourceCateOptions,
                 });
               }}
             >
