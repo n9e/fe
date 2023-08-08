@@ -31,6 +31,7 @@ import { panelBaseProps } from '@/pages/alertRules/constants';
 import { getDefaultValuesByProd } from '@/pages/warning/shield/components/utils';
 import RuleModal from './ruleModal';
 import TagItem from './tagItem';
+import BusiGroupsTagItem from './BusiGroupsTagItem';
 import '../index.less';
 
 // @ts-ignore
@@ -94,9 +95,16 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
         value: Array.isArray(item.value) ? item.value.join(' ') : item.value,
       };
     });
+    const busi_groups = values?.busi_groups?.map((item) => {
+      return {
+        ...item,
+        value: Array.isArray(item.value) ? item.value.join(' ') : item.value,
+      };
+    });
     const params = {
       ...values,
       tags,
+      busi_groups,
       redefine_severity: values.redefine_severity ? 1 : 0,
       redefine_channels: values.redefine_channels ? 1 : 0,
       redefine_webhooks: values.redefine_webhooks ? 1 : 0,
@@ -234,6 +242,33 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
             {!!ruleCur?.id && <DeleteOutlined style={{ cursor: 'pointer', fontSize: '18px', marginLeft: 5 }} onClick={() => subscribeRule({})} />}
           </Form.Item>
 
+          <Form.List name='busi_groups' initialValue={[]}>
+            {(fields, { add, remove }) => (
+              <>
+                <Row gutter={[10, 10]} style={{ marginBottom: '8px' }}>
+                  <Col span={5}>
+                    <Space align='baseline'>
+                      <span>{t('group.key.label')}</span>
+                      <PlusCircleOutlined
+                        className='control-icon-normal'
+                        onClick={() =>
+                          add({
+                            key: 'groups',
+                          })
+                        }
+                      />
+                    </Space>
+                  </Col>
+                  <Col span={3}>{t('group.func.label')}</Col>
+                  <Col span={16}>{t('group.value.label')}</Col>
+                </Row>
+                {fields.map((field, index) => (
+                  <BusiGroupsTagItem field={field} fields={fields} key={index} remove={remove} add={add} form={form} />
+                ))}
+              </>
+            )}
+          </Form.List>
+
           <Form.List name='tags' initialValue={[{}]}>
             {(fields, { add, remove }) => (
               <>
@@ -256,6 +291,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
               </>
             )}
           </Form.List>
+
           <Form.Item label={t('for_duration')} name='for_duration'>
             <InputNumber style={{ width: '100%' }} />
           </Form.Item>

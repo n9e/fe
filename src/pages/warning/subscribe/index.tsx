@@ -80,7 +80,24 @@ const Shield: React.FC = () => {
       title: t('rule_name'),
       dataIndex: 'rule_name',
       render: (data) => {
+        if (!data) return '-';
         return <div>{data}</div>;
+      },
+    },
+    {
+      title: t('group.key.label'),
+      dataIndex: 'busi_groups',
+      render: (text: any) => {
+        if (!text) return '-';
+        return (
+          <>
+            {text
+              ? text.map((tag, index) => {
+                  return tag ? <div key={index}>{`${tag.key} ${tag.func} ${tag.func === 'in' ? tag.value.split(' ').join(', ') : tag.value}`}</div> : null;
+                })
+              : ''}
+          </>
+        );
       },
     },
     {
@@ -102,6 +119,7 @@ const Shield: React.FC = () => {
       title: t('user_groups'),
       dataIndex: 'user_groups',
       render: (text: string, record: subscribeItem) => {
+        if (_.isEmpty(record.user_groups)) return '-';
         return (
           <>
             {record.user_groups?.map((item) => (
@@ -124,7 +142,7 @@ const Shield: React.FC = () => {
             </Tag>
           );
         }
-        return null;
+        return '-';
       },
     },
     {

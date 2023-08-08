@@ -29,8 +29,8 @@ interface Itag {
 
 const { Option } = Select;
 
-const TagItem: React.FC<Itag> = ({ field, remove, form }) => {
-  const { t } = useTranslation();
+const TagItem = ({ field, remove, form }: Itag) => {
+  const { t } = useTranslation('alertSubscribes');
   const [valuePlaceholder, setValuePlaceholder] = useState<string>('');
   const [funcCur, setfuncCur] = useState('==');
   const funcChange = (val) => {
@@ -45,17 +45,18 @@ const TagItem: React.FC<Itag> = ({ field, remove, form }) => {
   };
 
   useEffect(() => {
-    const tags = form.getFieldValue('tags');
+    const tags = form.getFieldValue('busi_groups');
     funcChange(tags[field.name].func);
   }, []);
 
   return (
     <>
       <Row gutter={[10, 10]} style={{ marginBottom: '16px' }}>
+        <Form.Item style={{ marginBottom: 0 }} name={[field.name, 'key']} rules={[{ required: true, message: t('key不能为空') }]} hidden>
+          <Input />
+        </Form.Item>
         <Col span={5}>
-          <Form.Item style={{ marginBottom: 0 }} name={[field.name, 'key']} rules={[{ required: true, message: t('key不能为空') }]}>
-            <Input />
-          </Form.Item>
+          <Input readOnly value={t('group.key.placeholder') as string} />
         </Col>
         <Col span={3}>
           <Form.Item style={{ marginBottom: 0 }} name={[field.name, 'func']} initialValue='=='>

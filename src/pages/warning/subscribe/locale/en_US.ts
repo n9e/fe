@@ -17,6 +17,18 @@ const en_US = {
       label: 'Value',
     },
   },
+  group: {
+    key: {
+      label: 'Groups',
+      placeholder: 'Groups',
+    },
+    func: {
+      label: 'Operator',
+    },
+    value: {
+      label: 'Value',
+    },
+  },
   redefine_severity: 'Redefine Severity',
   redefine_channels: 'Redefine Channels',
   redefine_webhooks: 'Redefine Webhooks',
