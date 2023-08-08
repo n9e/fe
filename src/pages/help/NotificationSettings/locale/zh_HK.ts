@@ -10,6 +10,17 @@ const zh_HK = {
     basic_auth_password: '密碼 (Basic Auth)',
     skip_verify: '跳過 SSL 驗證',
     add: '新增',
+    help: `
+      尊敬的夜鶯用戶，您好，如果您想把夜鶯告警事件全部轉發到另一個平台處理，可以通過這裡的全局回調地址來實現。
+      <br />
+      <br />
+      近期快貓團隊提供的事件OnCall產品FlashDuty也開始公測了，歡迎體驗，把各個監控系統的告警事件統一推給FlashDuty，享受告警聚合降噪、排班、認領、升級、協同處理一站式體驗。
+      <br />
+      <br />
+      <a href='https://console.flashcat.cloud/?from=n9e' target='_blank'>
+      免費體驗地址
+      </a>
+    `,
   },
   script: {
     title: '通知指令碼',

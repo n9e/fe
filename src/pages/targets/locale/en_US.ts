@@ -6,6 +6,9 @@ const en_US = {
   datasource: 'Datasource',
   search_placeholder: 'Multiple keywords are separated by spaces',
   ident_copy_success: '{{num}} records successfully copied',
+  filterDowntime: 'Downtime over',
+  filterDowntimeMin: '{{count}} minute',
+  filterDowntimeMin_plural: '{{count}} minutes',
   not_grouped: 'Ungrouped',
   tags: 'Tags',
   group_obj: 'Business group',
@@ -16,8 +19,8 @@ const en_US = {
   offset: 'Offset',
   os: 'OS',
   arch: 'CPU Arch',
-  unixtime: 'Unixtime',
-  unixtime_tip: `
+  update_at: 'Update at',
+  update_at_tip: `
     Heartbeat within 1 minute: Green <1 />
     Heartbeat within 3 minutes: yellow <1 />
     No heartbeat within 3 minutes: red

@@ -317,18 +317,18 @@ export default function List(props: IProps) {
         },
       });
     }
-    if (item.name === 'unixtime') {
+    if (item.name === 'update_at') {
       columns.push({
         title: (
           <Space>
-            {t('unixtime')}
-            <Tooltip title={<Trans ns='targets' i18nKey='unixtime_tip' components={{ 1: <br /> }} />}>
+            {t('update_at')}
+            <Tooltip title={<Trans ns='targets' i18nKey='update_at_tip' components={{ 1: <br /> }} />}>
               <QuestionCircleOutlined />
             </Tooltip>
           </Space>
         ),
         width: 100,
-        dataIndex: 'unixtime',
+        dataIndex: 'update_at',
         render: (val, reocrd) => {
           let result = moment(val).format('YYYY-MM-DD HH:mm:ss');
           let backgroundColor = GREEN_COLOR;
@@ -436,11 +436,11 @@ export default function List(props: IProps) {
           />
           <Select
             allowClear
-            placeholder='心跳超过'
-            style={{ width: 100 }}
+            placeholder={t('filterDowntime')}
+            style={{ width: 200 }}
             options={_.map(downtimeOptions, (item) => {
               return {
-                label: `${item} ${t('common:time.minute')}`,
+                label: t('filterDowntimeMin', { count: item }),
                 value: item * 60,
               };
             })}

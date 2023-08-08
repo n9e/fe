@@ -169,7 +169,7 @@ export default function List(props: ListProps) {
     {
       title: t('common:table.update_at'),
       dataIndex: 'update_at',
-      width: 150,
+      width: 90,
       render: (text: string) => {
         return <div className='table-text'>{moment.unix(Number(text)).format('YYYY-MM-DD HH:mm:ss')}</div>;
       },
@@ -177,12 +177,12 @@ export default function List(props: ListProps) {
     {
       title: t('common:table.update_by'),
       dataIndex: 'update_by',
-      width: 60,
+      width: 65,
     },
     {
       title: t('common:table.enabled'),
       dataIndex: 'disabled',
-      width: 40,
+      width: 65,
       render: (disabled, record) => (
         <Switch
           checked={disabled === AlertRuleStatus.Enable}
@@ -207,7 +207,7 @@ export default function List(props: ListProps) {
     },
     {
       title: t('common:table.operations'),
-      width: 130,
+      width: 160,
       render: (record: any) => {
         return (
           <Space>
@@ -241,7 +241,7 @@ export default function List(props: ListProps) {
             </div>
             {record.prod === 'anomaly' && (
               <div>
-                <Link to={{ pathname: `/alert-rules/brain/${record.id}` }}>训练结果</Link>
+                <Link to={{ pathname: `/alert-rules/brain/${record.id}` }}>{t('brain_result_btn')}</Link>
               </div>
             )}
           </Space>

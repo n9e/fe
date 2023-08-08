@@ -237,10 +237,10 @@ function FormCpt(props: IProps, ref) {
                     </Form.Item>
                   </Form.Item>
                   <AntdCollapse ghost defaultActiveKey={[]}>
-                    <AntdCollapse.Panel header='图表重复' key='1' forceRender>
+                    <AntdCollapse.Panel header={t('panel.base.repeatOptions.title')} key='1' forceRender>
                       <Row gutter={10}>
                         <Col span={12}>
-                          <Form.Item label='变量' name='repeat' tooltip='对所选变量的每个值重复此面板'>
+                          <Form.Item label={t('panel.base.repeatOptions.byVariable')} name='repeat' tooltip={t('panel.base.repeatOptions.byVariableTip')}>
                             <Select allowClear>
                               {_.map(variableConfigWithOptions, (item) => {
                                 return (
@@ -253,7 +253,7 @@ function FormCpt(props: IProps, ref) {
                           </Form.Item>
                         </Col>
                         <Col span={12}>
-                          <Form.Item label='每行最多显示' name='maxPerRow' initialValue={4}>
+                          <Form.Item label={t('panel.base.repeatOptions.maxPerRow')} name='maxPerRow' initialValue={4}>
                             <Select allowClear>
                               {_.map([2, 3, 4, 6, 8, 12], (item) => {
                                 return (

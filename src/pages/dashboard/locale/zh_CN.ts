@@ -125,6 +125,12 @@ const zh_CN = {
         isNewBlank: '是否新窗口打开',
       },
       description: '备注',
+      repeatOptions: {
+        title: '图表重复',
+        byVariable: '变量',
+        byVariableTip: '根据变量的值来重复图表',
+        maxPerRow: '每行最多显示',
+      },
     },
     options: {
       legend: {

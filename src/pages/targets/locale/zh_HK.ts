@@ -6,6 +6,8 @@ const zh_HK = {
   datasource: '資料來源',
   search_placeholder: '模糊搜尋表格內容 (多個關鍵詞請用空格分隔)',
   ident_copy_success: '複製成功 {{num}} 條記錄',
+  filterDowntime: '無更新超過',
+  filterDowntimeMin: '{{count}} 分鐘',
   not_grouped: '未歸組',
   tags: '標籤',
   group_obj: '業務組',
@@ -16,8 +18,8 @@ const zh_HK = {
   offset: '時間偏移',
   os: '作業系統',
   arch: 'CPU 架構',
-  unixtime: '心跳時間',
-  unixtime_tip: `
+  update_at: '更新時間',
+  update_at_tip: `
     1分鐘內有過心跳：綠色 <1 />
     3分鐘內有過心跳：黃色 <1 />
     3分鐘內沒有心跳：紅色

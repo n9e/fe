@@ -125,6 +125,12 @@ const en_US = {
         isNewBlank: 'Open in new tab',
       },
       description: 'Description',
+      repeatOptions: {
+        title: 'Repeat options',
+        byVariable: 'Repeat by variable',
+        byVariableTip: 'Repeat the panel for each value of the variable',
+        maxPerRow: 'Max per row',
+      },
     },
     options: {
       legend: {

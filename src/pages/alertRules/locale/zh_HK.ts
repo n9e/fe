@@ -133,6 +133,7 @@ const zh_HK = {
       },
     },
   },
+  brain_result_btn: '訓練結果',
 };
 
 export default zh_HK;

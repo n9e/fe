@@ -125,6 +125,12 @@ const zh_HK = {
         isNewBlank: '是否新視窗開啟',
       },
       description: '備註',
+      repeatOptions: {
+        title: '圖表重複',
+        byVariable: '變量',
+        byVariableTip: '根據變量的值來重複圖表',
+        maxPerRow: '每行最多顯示',
+      },
     },
     options: {
       legend: {
