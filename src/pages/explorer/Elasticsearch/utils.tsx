@@ -300,7 +300,7 @@ export function normalizeTimeseriesQueryRequestBody(params: any, intervalkey: st
     aggs: {
       A: {
         date_histogram: {
-          field: '@timestamp',
+          field: params.date_field,
           min_doc_count: 0,
           extended_bounds: {
             min: params.start,
