@@ -65,6 +65,7 @@ const zh_HK = {
     host: {
       trigger: '觸發',
     },
+    trigger: '觸發',
   },
 };
 

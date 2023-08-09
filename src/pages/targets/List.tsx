@@ -330,7 +330,7 @@ export default function List(props: IProps) {
         width: 100,
         dataIndex: 'update_at',
         render: (val, reocrd) => {
-          let result = moment(val).format('YYYY-MM-DD HH:mm:ss');
+          let result = moment.unix(val).format('YYYY-MM-DD HH:mm:ss');
           let backgroundColor = GREEN_COLOR;
           if (reocrd.target_up === 0) {
             backgroundColor = RED_COLOR;

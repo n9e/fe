@@ -1,5 +1,6 @@
 const zh_HK = {
   es: {
+    ref: '名稱',
     index: '索引',
     index_tip: `
       支援多種配置方式
@@ -20,6 +21,8 @@ const zh_HK = {
     date_field_msg: '日期欄位不能為空',
     interval: '時間間隔',
     value: '數值提取',
+    func: '函數',
+    funcField: '字段名',
     terms: {
       more: '高階設定',
       size: '匹配個數',
@@ -44,6 +47,9 @@ const zh_HK = {
         '通常持續時長大於執行頻率，在持續時長內按照執行頻率多次執行查詢，每次都觸發才生成告警；如果持續時長置為 0，表示只要有一次查詢的資料滿足告警條件，就生成告警',
       advancedSettings: '高階設定',
       delay: '延遲執行',
+    },
+    event: {
+      groupBy: `根據 {{field}} 分組，匹配個數 {{size}}, 文檔最小值 {{min_value}}`,
     },
   },
 };
