@@ -4,26 +4,29 @@ import { useTranslation } from 'react-i18next';
 import { Tag } from 'antd';
 import { DownOutlined, RightOutlined } from '@ant-design/icons';
 import { getFieldLabel } from '../../Elasticsearch/utils';
+import { Field as FieldType, Filter } from '../services';
 import Field from './Field';
 
 interface IProps {
   style?: React.CSSProperties;
   fieldsSearch?: string;
-  fields: string[];
+  fields: FieldType[];
   type: 'selected' | 'available';
-  onSelect?: (field: string) => void;
-  onRemove?: (field: string) => void;
   fieldConfig?: any;
   params?: any;
+  onSelect?: (field: string) => void;
+  onRemove?: (field: string) => void;
+  filters?: Filter[];
+  onValueFilter?: (Filter) => void;
 }
 
 export default function FieldsList(props: IProps) {
   const { t } = useTranslation('explorer');
-  const { style = {}, fieldsSearch, fields, type, onSelect, onRemove, fieldConfig, params } = props;
+  const { style = {}, fieldsSearch, fields, type, fieldConfig, params, onSelect, onRemove, filters, onValueFilter } = props;
   const [expanded, setExpanded] = React.useState<boolean>(true);
   const filteredFields = _.filter(fields, (field) => {
     if (fieldsSearch) {
-      const fieldKey = getFieldLabel(field, fieldConfig);
+      const fieldKey = getFieldLabel(field.name, fieldConfig);
       return fieldKey.indexOf(fieldsSearch) > -1;
     }
     return true;
@@ -50,8 +53,21 @@ export default function FieldsList(props: IProps) {
           </span>
         </div>
         {expanded &&
-          _.map(filteredFields, (item) => {
-            return <Field key={item} item={item} type={type} onSelect={onSelect} onRemove={onRemove} fieldConfig={fieldConfig} params={params} />;
+          _.map(filteredFields, (item, idx) => {
+            return (
+              <Field
+                key={item.name + item.type + idx}
+                item={item.name}
+                record={item}
+                type={type}
+                onSelect={onSelect}
+                onRemove={onRemove}
+                fieldConfig={fieldConfig}
+                params={params}
+                filters={filters}
+                onValueFilter={onValueFilter}
+              />
+            );
           })}
       </div>
     );

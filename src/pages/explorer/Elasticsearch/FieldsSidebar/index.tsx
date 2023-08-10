@@ -3,20 +3,23 @@ import { Input } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import FieldsList from './FieldsList';
+import { Field, Filter } from '../services';
 import './style.less';
 
 interface IProps {
-  fields: string[];
-  setFields: (fields: string[]) => void;
-  value: string[];
-  onChange: (value: string[]) => void;
+  fields: Field[];
+  setFields: (fields: Field[]) => void;
+  value: Field[];
+  onChange: (value: Field[]) => void;
   fieldConfig?: any;
   params?: any;
+  filters?: Filter[];
+  onValueFilter?: (Filter) => void;
 }
 
 export default function index(props: IProps) {
   const { t } = useTranslation('explorer');
-  const { fields, setFields, value, onChange, fieldConfig, params } = props;
+  const { fields, setFields, value, onChange, fieldConfig, params, filters, onValueFilter } = props;
   const [fieldsSearch, setFieldsSearch] = useState('');
 
   return (
@@ -38,22 +41,36 @@ export default function index(props: IProps) {
           fields={value}
           type='selected'
           onRemove={(field) => {
-            onChange(_.without(value, field));
-            setFields(_.concat(fields, field));
+            const finded = _.find(value, { name: field });
+            setFields(finded ? _.sortBy(_.concat(fields, finded), 'name') : fields);
+            onChange(
+              _.filter(value, (item) => {
+                return item.name !== field;
+              }),
+            );
           }}
           fieldConfig={fieldConfig}
           params={params}
+          filters={filters}
+          onValueFilter={onValueFilter}
         />
         <FieldsList
           fields={fields}
           fieldsSearch={fieldsSearch}
           type='available'
           onSelect={(field) => {
-            onChange(_.concat(value, field));
-            setFields(_.without(fields, field));
+            const finded = _.find(fields, { name: field });
+            onChange(finded ? _.concat(value, finded) : value);
+            setFields(
+              _.filter(fields, (item) => {
+                return item.name !== field;
+              }),
+            );
           }}
           fieldConfig={fieldConfig}
           params={params}
+          filters={filters}
+          onValueFilter={onValueFilter}
         />
       </div>
     </div>

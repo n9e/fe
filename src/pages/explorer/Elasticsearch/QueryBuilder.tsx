@@ -6,30 +6,29 @@ import { useTranslation, Trans } from 'react-i18next';
 import { Space, Input, Tooltip, Form, AutoComplete, Select, Button } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import TimeRangePicker from '@/components/TimeRangePicker';
-import { getIndices, getFields } from './services';
+import { getIndices, getFullFields, Field } from './services';
 
 interface Props {
   onExecute: () => void;
   datasourceValue?: number;
-  form: any;
-  fields: string[];
-  setFields: (fields: string[]) => void;
-  selectedFields: string[];
-  setSelectedFields: (fields: string[]) => void;
+  setFields: (fields: Field[]) => void;
   allowHideSystemIndices?: boolean;
 }
 
 export default function QueryBuilder(props: Props) {
   const { t } = useTranslation('explorer');
-  const { onExecute, datasourceValue, form, fields, setFields, selectedFields, setSelectedFields, allowHideSystemIndices } = props;
+  const { onExecute, datasourceValue, setFields, allowHideSystemIndices = false } = props;
   const params = new URLSearchParams(useLocation().search);
   const [indexOptions, setIndexOptions] = useState<any[]>([]);
   const [indexSearch, setIndexSearch] = useState('');
-  const [dateFields, setDateFields] = useState<string[]>([]);
+  const [dateFields, setDateFields] = useState<Field[]>([]);
   const { run: onIndexChange } = useDebounceFn(
     (val) => {
       if (datasourceValue && val) {
-        getFields(datasourceValue, val, 'date', allowHideSystemIndices).then((res) => {
+        getFullFields(datasourceValue, val, {
+          type: 'date',
+          allowHideSystemIndices,
+        }).then((res) => {
           setFields(res.allFields);
           setDateFields(res.fields);
         });
@@ -148,8 +147,8 @@ export default function QueryBuilder(props: Props) {
               <Select dropdownMatchSelectWidth={false} style={{ width: 150 }} showSearch>
                 {_.map(dateFields, (item) => {
                   return (
-                    <Select.Option key={item} value={item}>
-                      {item}
+                    <Select.Option key={item.name} value={item.name}>
+                      {item.name}
                     </Select.Option>
                   );
                 })}

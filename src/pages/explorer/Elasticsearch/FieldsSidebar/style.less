@@ -52,6 +52,8 @@
   }
   .es-discover-field-values-topn-item {
     margin-bottom: 8px;
+    display: flex;
+    gap: 10px;
   }
   .es-discover-field-values-topn-item-content {
     display: flex;
@@ -66,4 +68,46 @@
   .es-discover-field-values-topn-item-percent {
     color: #6c53b1;
   }
+}
+
+.es-discover-fields-item {
+  cursor: pointer;
+  min-height: 24px;
+  width: 250px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-right: 10px;
+  .es-discover-fields-item-icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    background-color: #f8f6f3;
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .es-discover-fields-item-field {
+      display: block;
+      transform: skew(-15deg);
+    }
+  }
+  .es-discover-fields-item-oper {
+    cursor: pointer;
+    width: 20px;
+    flex-shrink: 0;
+    visibility: hidden;
+  }
+  &:hover {
+    .es-discover-fields-item-oper {
+      visibility: visible;
+    }
+  }
+}
+.es-discover-fields-item-content {
+  width: calc(100% - 46px);
+  word-wrap: break-word;
+  word-break: normal;
+  line-height: 1.2;
+  padding: 4px 0;
 }

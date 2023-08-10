@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { useDebounceFn } from 'ahooks';
-import { useTranslation, Trans } from 'react-i18next';
-import { Space, Input, Tooltip, Form, Select, Button } from 'antd';
+import { useTranslation } from 'react-i18next';
+import { Space, Input, Form, Select, Button } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import TimeRangePicker from '@/components/TimeRangePicker';
 import { getESIndexPatterns } from '@/pages/log/IndexPatterns/services';
-import { getFields } from './services';
+import { getFullFields, Field } from './services';
 
 interface Props {
   onExecute: () => void;
   datasourceValue?: number;
   form: any;
-  setFields: (fields: string[]) => void;
+  setFields: (fields: Field[]) => void;
   onIndexChange: () => void;
 }
 
@@ -23,7 +23,9 @@ export default function QueryBuilder(props: Props) {
   const { run: onIndexPatternChange } = useDebounceFn(
     (indexPattern) => {
       if (datasourceValue && indexPattern) {
-        getFields(datasourceValue, indexPattern.name, undefined, indexPattern.allow_hide_system_indices).then((res) => {
+        getFullFields(datasourceValue, indexPattern.name, {
+          allowHideSystemIndices: indexPattern.allow_hide_system_indices,
+        }).then((res) => {
           setFields(res.allFields);
         });
       }

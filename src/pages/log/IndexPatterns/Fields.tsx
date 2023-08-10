@@ -24,7 +24,6 @@ import { getFullFields } from '@/pages/explorer/Elasticsearch/services';
 import { getESIndexPattern, putESIndexPattern } from './services';
 import { IndexPattern, FieldConfig } from './types';
 import EditField from './EditField';
-import { getFieldLabel, getFieldType } from '@/pages/explorer/Elasticsearch/utils';
 
 export default function Fields() {
   const { t } = useTranslation('es-index-patterns');
