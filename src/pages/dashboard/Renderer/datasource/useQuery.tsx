@@ -39,11 +39,13 @@ interface IProps {
   inViewPort?: boolean;
   spanNulls?: boolean;
   scopedVars?: any;
+  inspect?: boolean;
 }
 
 export default function usePrometheus(props: IProps) {
   const { dashboardId, datasourceCate, time, targets, variableConfig, inViewPort, spanNulls, datasourceValue } = props;
   const [series, setSeries] = useState<any[]>([]);
+  const [query, setQuery] = useState<any[]>([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const cachedVariableValues = _.map(variableConfig, (item) => {
@@ -60,12 +62,14 @@ export default function usePrometheus(props: IProps) {
       if (!datasourceCate) return;
       setLoading(true);
       fetchQueryMap[datasourceCate](props)
-        .then((res: any[]) => {
-          setSeries(res);
+        .then(({ series, query }: { series: any[]; query: any[] }) => {
+          setSeries(series);
+          setQuery(query);
           setError('');
         })
         .catch((e) => {
           setSeries([]);
+          setQuery([]);
           setError(e.message);
         })
         .finally(() => {
@@ -106,5 +110,5 @@ export default function usePrometheus(props: IProps) {
     setSeries(_series);
   }, [JSON.stringify(_.map(targets, 'legend'))]);
 
-  return { series, error, loading };
+  return { query, series, error, loading };
 }

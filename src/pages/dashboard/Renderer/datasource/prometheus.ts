@@ -12,22 +12,27 @@ import { replaceExpressionVars, getOptionsList } from '../../VariableConfig/cons
 interface IOptions {
   id?: string; // panelId
   dashboardId: string;
-  datasourceCate: string;
   datasourceValue: number; // 关联变量时 datasourceValue: string
   time: IRawTimeRange;
   targets: ITarget[];
   variableConfig?: IVariable[];
   spanNulls?: boolean;
   scopedVars?: any;
+  inspect?: boolean;
 }
 
 const getDefaultStepByStartAndEnd = (start: number, end: number) => {
   return Math.max(Math.floor((end - start) / 240), 1);
 };
 
-export default async function prometheusQuery(options: IOptions) {
+interface Result {
+  series: any[];
+  query?: any[];
+}
+
+export default async function prometheusQuery(options: IOptions): Promise<Result> {
   const { dashboardId, id, time, targets, variableConfig, spanNulls, scopedVars } = options;
-  if (!time.start) return Promise.resolve([]);
+  if (!time.start) return Promise.resolve({ series: [] });
   const parsedRange = parseRange(time);
   let start = moment(parsedRange.start).unix();
   let end = moment(parsedRange.end).unix();
@@ -89,9 +94,10 @@ export default async function prometheusQuery(options: IOptions) {
       }
     });
     try {
+      let batchQueryRes: any = {};
       if (!_.isEmpty(batchQueryParams)) {
-        const res = await fetchHistoryRangeBatch({ queries: batchQueryParams, datasource_id: datasourceValue }, signalKey);
-        const dat = res.dat || [];
+        batchQueryRes = await fetchHistoryRangeBatch({ queries: batchQueryParams, datasource_id: datasourceValue }, signalKey);
+        const dat = batchQueryRes.dat || [];
         for (let i = 0; i < dat?.length; i++) {
           var item = {
             result: dat[i],
@@ -111,9 +117,10 @@ export default async function prometheusQuery(options: IOptions) {
           });
         }
       }
+      let batchInstantRes: any = {};
       if (!_.isEmpty(batchInstantParams)) {
-        const res = await fetchHistoryInstantBatch({ queries: batchInstantParams, datasource_id: datasourceValue }, signalKey);
-        const dat = res.dat || [];
+        batchInstantRes = await fetchHistoryInstantBatch({ queries: batchInstantParams, datasource_id: datasourceValue }, signalKey);
+        const dat = batchInstantRes.dat || [];
         for (let i = 0; i < dat?.length; i++) {
           var item = {
             result: dat[i],
@@ -133,11 +140,39 @@ export default async function prometheusQuery(options: IOptions) {
           });
         }
       }
-      return Promise.resolve(series);
+      const resolveData: Result = { series };
+      if (options.inspect) {
+        resolveData.query = [];
+        if (!_.isEmpty(batchQueryParams)) {
+          resolveData.query.push({
+            type: 'Query Range',
+            request: {
+              url: '/api/n9e/query-range-batch',
+              method: 'POST',
+              data: { queries: batchQueryParams, datasource_id: datasourceValue },
+            },
+            response: batchQueryRes,
+          });
+        }
+        if (!_.isEmpty(batchInstantParams)) {
+          resolveData.query.push({
+            type: 'Query',
+            request: {
+              url: '/api/n9e/query-instant-batch',
+              method: 'POST',
+              data: { queries: batchInstantParams, datasource_id: datasourceValue },
+            },
+            response: batchInstantRes,
+          });
+        }
+      }
+      return Promise.resolve(resolveData);
     } catch (e) {
       console.error(e);
       return Promise.reject(e);
     }
   }
-  return Promise.resolve([]);
+  return Promise.resolve({
+    series: [],
+  });
 }

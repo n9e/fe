@@ -13,12 +13,12 @@ import { flattenHits } from '@/pages/explorer/Elasticsearch/utils';
 
 interface IOptions {
   dashboardId: string;
-  datasourceCate: string;
   datasourceValue: number;
   id?: string;
   time: IRawTimeRange;
   targets: ITarget[];
   variableConfig?: IVariable[];
+  inspect?: boolean;
 }
 
 /**
@@ -32,9 +32,14 @@ function isRawDataQuery(target: ITarget) {
   return false;
 }
 
-export default async function elasticSearchQuery(options: IOptions) {
-  const { dashboardId, time, targets, datasourceCate, variableConfig } = options;
-  if (!time.start) return;
+interface Result {
+  series: any[];
+  query?: any[];
+}
+
+export default async function elasticSearchQuery(options: IOptions): Promise<Result> {
+  const { dashboardId, time, targets, variableConfig } = options;
+  if (!time.start) return Promise.resolve({ series: [] });
   const parsedRange = parseRange(time);
   let start = moment(parsedRange.start).valueOf();
   let end = moment(parsedRange.end).valueOf();
@@ -74,8 +79,9 @@ export default async function elasticSearchQuery(options: IOptions) {
         });
       }
     });
+    let dsRes;
+    let dsPlayload = '';
     if (!_.isEmpty(batchDsParams)) {
-      let payload = '';
       let intervalkey = 'interval';
       try {
         const version = await getESVersion(datasourceValue);
@@ -92,19 +98,20 @@ export default async function elasticSearchQuery(options: IOptions) {
           ignore_unavailable: true,
           index: item.index,
         });
-        payload += header + '\n';
-        payload += esQuery + '\n';
+        dsPlayload += header + '\n';
+        dsPlayload += esQuery + '\n';
       });
-      const res = await getDsQuery(datasourceValue, payload);
-      series = _.map(processResponseToSeries(res, batchDsParams), (item) => {
+      dsRes = await getDsQuery(datasourceValue, dsPlayload);
+      series = _.map(processResponseToSeries(dsRes, batchDsParams), (item) => {
         return {
           id: _.uniqueId('series_'),
           ...item,
         };
       });
     }
+    let logRes;
+    let logPlayload = '';
     if (!_.isEmpty(batchLogParams)) {
-      let payload = '';
       _.forEach(batchLogParams, (item) => {
         const esQuery = JSON.stringify(getLogsQuery(item));
         const header = JSON.stringify({
@@ -112,11 +119,11 @@ export default async function elasticSearchQuery(options: IOptions) {
           ignore_unavailable: true,
           index: item.index,
         });
-        payload += header + '\n';
-        payload += esQuery + '\n';
+        logPlayload += header + '\n';
+        logPlayload += esQuery + '\n';
       });
-      const res = await getDsQuery(datasourceValue, payload);
-      _.forEach(res, (item) => {
+      logRes = await getDsQuery(datasourceValue, logPlayload);
+      _.forEach(logRes, (item) => {
         const { docs } = flattenHits(item?.hits?.hits);
         _.forEach(docs, (doc: any) => {
           series.push({
@@ -128,6 +135,35 @@ export default async function elasticSearchQuery(options: IOptions) {
         });
       });
     }
+    const resolveData: Result = { series };
+    if (options.inspect) {
+      resolveData.query = [];
+      if (!_.isEmpty(batchDsParams)) {
+        resolveData.query.push({
+          type: 'TimeSeries',
+          request: {
+            url: `/api/n9e/proxy/${datasourceValue}/_msearch`,
+            method: 'POST',
+            data: dsPlayload,
+          },
+          response: dsRes,
+        });
+      }
+      if (!_.isEmpty(batchLogParams)) {
+        resolveData.query.push({
+          type: 'Logs',
+          request: {
+            url: `/api/n9e/proxy/${datasourceValue}/_msearch`,
+            method: 'POST',
+            data: logPlayload,
+          },
+          response: logRes,
+        });
+      }
+    }
+    return Promise.resolve(resolveData);
   }
-  return series;
+  return Promise.resolve({
+    series: [],
+  });
 }

@@ -8,6 +8,7 @@ const en_US = {
   refresh_tip: 'Refresh interval less than step({{num}}s) will not update data',
   refresh_btn: 'Refresh',
   share_btn: 'Share',
+  inspect_btn: 'Inspect',
   public: {
     name: 'Public',
     0: {
@@ -273,6 +274,11 @@ const en_US = {
       iframe: {
         src: 'Src',
       },
+    },
+    inspect: {
+      title: 'Inspect',
+      query: 'Query',
+      json: 'Panel JSON',
     },
   },
   export: {

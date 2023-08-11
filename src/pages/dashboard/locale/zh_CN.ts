@@ -8,6 +8,7 @@ const zh_CN = {
   refresh_tip: '刷新间隔小于 step({{num}}s) 将不会更新数据',
   refresh_btn: '刷新',
   share_btn: '分享',
+  inspect_btn: '排查',
   public: {
     name: '公开',
     0: {
@@ -283,6 +284,11 @@ const zh_CN = {
       iframe: {
         src: 'iframe 地址',
       },
+    },
+    inspect: {
+      title: '排查',
+      query: '查询',
+      json: '图表配置',
     },
   },
   export: {

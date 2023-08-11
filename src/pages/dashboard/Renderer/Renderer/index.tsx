@@ -19,7 +19,7 @@ import _ from 'lodash';
 import classNames from 'classnames';
 import { useInViewport } from 'ahooks';
 import { useTranslation } from 'react-i18next';
-import { Dropdown, Menu, Tooltip, Space } from 'antd';
+import { Dropdown, Menu, Tooltip, Space, Drawer } from 'antd';
 import {
   InfoCircleOutlined,
   MoreOutlined,
@@ -47,6 +47,7 @@ import Markdown from '../../Editor/Components/Markdown';
 import useQuery from '../datasource/useQuery';
 import { IPanel } from '../../types';
 import replaceFieldWithVariable from '../utils/replaceFieldWithVariable';
+import Inspect from '../Inspect';
 import './style.less';
 
 interface IProps {
@@ -73,7 +74,8 @@ function index(props: IProps) {
   const ref = useRef<HTMLDivElement>(null);
   const bodyWrapRef = useRef<HTMLDivElement>(null);
   const [inViewPort] = useInViewport(ref);
-  const { series, error, loading } = useQuery({
+  const [inspect, setInspect] = useState(false);
+  const { query, series, error, loading } = useQuery({
     id,
     dashboardId,
     time,
@@ -84,6 +86,7 @@ function index(props: IProps) {
     datasourceValue: values.datasourceValue || datasourceValue,
     spanNulls: values.custom?.spanNulls,
     scopedVars: values.scopedVars,
+    inspect,
   });
   const name = replaceFieldWithVariable(dashboardId, values.name, variableConfig, values.scopedVars);
   const description = replaceFieldWithVariable(dashboardId, values.description, variableConfig, values.scopedVars);
@@ -207,7 +210,7 @@ function index(props: IProps) {
                               refreshFlag: _.uniqueId('refreshFlag_ '),
                             });
                           }}
-                          key='0'
+                          key='refresh_btn'
                         >
                           <div>
                             <SyncOutlined style={{ marginRight: 8 }} />
@@ -220,7 +223,7 @@ function index(props: IProps) {
                               setVisible(false);
                               if (onEditClick) onEditClick();
                             }}
-                            key='1'
+                            key='edit_btn'
                           >
                             <SettingOutlined style={{ marginRight: 8 }} />
                             {t('common:btn.edit')}
@@ -232,7 +235,7 @@ function index(props: IProps) {
                               setVisible(false);
                               if (onCloneClick) onCloneClick();
                             }}
-                            key='2'
+                            key='clone_btn'
                           >
                             <CopyOutlined style={{ marginRight: 8 }} />
                             {t('common:btn.clone')}
@@ -243,10 +246,24 @@ function index(props: IProps) {
                             setVisible(false);
                             if (onShareClick) onShareClick();
                           }}
-                          key='3'
+                          key='share_btn'
                         >
                           <ShareAltOutlined style={{ marginRight: 8 }} />
                           {t('share_btn')}
+                        </Menu.Item>
+                        <Menu.Item
+                          onClick={() => {
+                            setVisible(false);
+                            setTime({
+                              ...time,
+                              refreshFlag: _.uniqueId('refreshFlag_ '),
+                            });
+                            setInspect(true);
+                          }}
+                          key='inspect_btn'
+                        >
+                          <InfoCircleOutlined style={{ marginRight: 8 }} />
+                          {t('inspect_btn')}
                         </Menu.Item>
                         {!values.repeatPanelId && (
                           <Menu.Item
@@ -254,7 +271,7 @@ function index(props: IProps) {
                               setVisible(false);
                               if (onDeleteClick) onDeleteClick();
                             }}
-                            key='4'
+                            key='delete_btn'
                           >
                             <DeleteOutlined style={{ marginRight: 8 }} />
                             {t('common:btn.delete')}
@@ -278,6 +295,17 @@ function index(props: IProps) {
           )}
         </div>
       </div>
+      <Drawer
+        title={t('panel.inspect.title')}
+        placement='right'
+        width={800}
+        onClose={() => {
+          setInspect(false);
+        }}
+        visible={inspect}
+      >
+        <Inspect query={query} values={values} />
+      </Drawer>
     </div>
   );
 }

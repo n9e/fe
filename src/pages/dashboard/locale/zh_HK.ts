@@ -5,9 +5,10 @@ const zh_HK = {
   ident: '英文標識',
   ident_msg: '請輸入英文字母、數字、中劃線',
   search_placeholder: '儀表盤名稱、分類標籤',
-  refresh_tip: '重新整理間隔小於 step({{num}}s) 將不會更新資料',
-  refresh_btn: '重新整理',
+  refresh_tip: '刷新間隔小於 step({{num}}s) 將不會更新資料',
+  refresh_btn: '刷新',
   share_btn: '分享',
+  inspect_btn: '排查',
   public: {
     '0': {
       confirm: '確認公開嗎？',
@@ -283,6 +284,11 @@ const zh_HK = {
       iframe: {
         src: 'iframe 地址',
       },
+    },
+    inspect: {
+      title: '排查',
+      query: '查詢',
+      json: '圖表配置',
     },
   },
   export: {
