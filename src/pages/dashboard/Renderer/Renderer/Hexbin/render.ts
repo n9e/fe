@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  */
+// @ts-nocheck
 import { transition, min, select, event } from 'd3';
 import { hexbin as d3Hexbin } from 'd3-hexbin';
 import _ from 'lodash';

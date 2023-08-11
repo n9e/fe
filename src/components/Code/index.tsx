@@ -20,8 +20,8 @@ export default function Code(props: Props) {
     setCopied(true);
     if (!isValidElement(children) && typeof children === 'string') {
       copy2ClipBoard(children, true);
-    } else if (isValidElement(children) && typeof children.props.children === 'string') {
-      copy2ClipBoard(children.props.children, true);
+    } else if (isValidElement(children) && typeof (children.props as any).children === 'string') {
+      copy2ClipBoard((children.props as any).children, true);
     } else if (Array.isArray(children)) {
       let text = '';
       children.forEach((item: ReactNode) => {

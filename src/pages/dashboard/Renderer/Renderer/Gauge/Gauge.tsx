@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  */
+// @ts-nocheck
 import React, { useEffect, useRef } from 'react';
 import { arc } from 'd3';
 import _ from 'lodash';
@@ -95,7 +96,6 @@ export default function index(props: Iprops) {
           .context(context)({
           startAngle: (START_ANGLE + (threshold.start / 100) * (END_ANGLE - START_ANGLE)) * Math.PI + Math.PI / 2,
           // TODO: fix d3 type
-          // @ts-ignore
           endAngle: (START_ANGLE + (threshold.end / 100) * (END_ANGLE - START_ANGLE)) * Math.PI + Math.PI / 2,
         });
         context.fillStyle = threshold.color;
