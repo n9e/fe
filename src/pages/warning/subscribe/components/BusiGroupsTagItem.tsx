@@ -14,10 +14,12 @@
  * limitations under the License.
  *
  */
-import React, { useState, useEffect } from 'react';
-import { Form, Input, Select, Col, Row } from 'antd';
+import React, { useState, useEffect, useContext } from 'react';
+import { Form, Input, Select, Col, Row, AutoComplete } from 'antd';
 import { MinusCircleOutlined, CaretDownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import _ from 'lodash';
+import { CommonStateContext } from '@/App';
 
 interface Itag {
   field: any;
@@ -31,6 +33,7 @@ const { Option } = Select;
 
 const TagItem = ({ field, remove, form }: Itag) => {
   const { t } = useTranslation('alertSubscribes');
+  const { busiGroups } = useContext(CommonStateContext);
   const [valuePlaceholder, setValuePlaceholder] = useState<string>('');
   const [funcCur, setfuncCur] = useState('==');
   const funcChange = (val) => {
@@ -56,7 +59,7 @@ const TagItem = ({ field, remove, form }: Itag) => {
           <Input />
         </Form.Item>
         <Col span={5}>
-          <Input readOnly value={t('group.key.placeholder') as string} />
+          <Input disabled value={t('group.key.placeholder') as string} />
         </Col>
         <Col span={3}>
           <Form.Item style={{ marginBottom: 0 }} name={[field.name, 'func']} initialValue='=='>
@@ -73,9 +76,31 @@ const TagItem = ({ field, remove, form }: Itag) => {
         <Col span={15}>
           <Form.Item style={{ marginBottom: 0 }} name={[field.name, 'value']} rules={[{ required: true, message: t('value不能为空') }]}>
             {['not in', 'in'].includes(funcCur) ? (
-              <Select mode='tags' open={false} style={{ width: '100%' }} placeholder={t(valuePlaceholder)} tokenSeparators={[' ']}></Select>
+              <Select
+                mode='tags'
+                style={{ width: '100%' }}
+                placeholder={t(valuePlaceholder)}
+                tokenSeparators={[' ']}
+                options={_.map(busiGroups, (item) => {
+                  return {
+                    value: item.name,
+                    label: item.name,
+                  };
+                })}
+              />
             ) : (
-              <Input className='ant-input' placeholder={t(valuePlaceholder)} />
+              <AutoComplete
+                placeholder={t(valuePlaceholder)}
+                options={_.map(busiGroups, (item) => {
+                  return {
+                    value: item.name,
+                    label: item.name,
+                  };
+                })}
+                filterOption={(inputValue, option) => {
+                  return option?.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1;
+                }}
+              />
             )}
           </Form.Item>
         </Col>
