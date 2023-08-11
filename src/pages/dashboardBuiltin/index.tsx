@@ -61,8 +61,9 @@ export default function index() {
 
   useEffect(() => {
     fetchData((dat) => {
-      if (query.cate) {
-        const cate = _.find(dat, { name: query.cate }) as BoardCateType;
+      const cateStr = query.cate ? query.cate : localStorage.getItem('builtin-cate');
+      if (cateStr) {
+        const cate = _.find(dat, { name: cateStr }) as BoardCateType;
         if (cate) {
           setActive(cate);
         }
@@ -105,6 +106,7 @@ export default function index() {
                       pathname: '/dashboards-built-in',
                       search: `?cate=${item.name}`,
                     });
+                    localStorage.setItem('builtin-cate', item.name);
                   }}
                   extra={
                     <span

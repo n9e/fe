@@ -80,8 +80,9 @@ export default function index() {
 
   useEffect(() => {
     fetchData((dat) => {
-      if (query.cate) {
-        const cate = _.find(dat, { name: query.cate }) as RuleCateType;
+      const cateStr = query.cate ? query.cate : localStorage.getItem('builtin-cate');
+      if (cateStr) {
+        const cate = _.find(dat, { name: cateStr }) as RuleCateType;
         if (cate) {
           setActive(cate);
         }
@@ -125,6 +126,7 @@ export default function index() {
                       pathname: '/alert-rules-built-in',
                       search: `?cate=${item.name}`,
                     });
+                    localStorage.setItem('builtin-cate', item.name);
                     setGroup(_.map(_.groupBy(processRules(item.name, item.alert_rules), '__group__'), (v, k) => k)[0]);
                   }}
                   extra={
