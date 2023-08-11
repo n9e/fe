@@ -41,5 +41,6 @@ const zh_CN = {
   basic_configs: '基础配置',
   severities: '订阅事件等级',
   severities_msg: '订阅事件等级不能为空',
+  tags_groups_require: '标签和接收组至少填写一项',
 };
 export default zh_CN;

@@ -41,6 +41,7 @@ const zh_HK = {
   basic_configs: '基礎配置',
   severities: '訂閱事件等級',
   severities_msg: '訂閱事件等級不能為空',
+  tags_groups_require: '標籤和接收組至少填寫一項',
 };
 
 export default zh_HK;
