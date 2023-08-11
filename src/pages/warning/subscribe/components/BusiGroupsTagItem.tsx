@@ -98,7 +98,7 @@ const TagItem = ({ field, remove, form }: Itag) => {
                   };
                 })}
                 filterOption={(inputValue, option) => {
-                  return option?.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1;
+                  return option?.value ? String(option?.value).toUpperCase().indexOf(inputValue.toUpperCase()) !== -1 : false;
                 }}
               />
             )}
