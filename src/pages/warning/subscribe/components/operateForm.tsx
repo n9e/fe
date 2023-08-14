@@ -242,21 +242,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
             {!!ruleCur?.id && <DeleteOutlined style={{ cursor: 'pointer', fontSize: '18px', marginLeft: 5 }} onClick={() => subscribeRule({})} />}
           </Form.Item>
 
-          <Form.List
-            name='busi_groups'
-            initialValue={[]}
-            rules={[
-              {
-                validator: (rule, value, callback) => {
-                  const tags = form.getFieldValue('tags');
-                  if (_.isEmpty(value) && _.isEmpty(tags)) {
-                    return Promise.reject(new Error(t('tags_groups_require')));
-                  }
-                  return Promise.resolve();
-                },
-              },
-            ]}
-          >
+          <Form.List name='busi_groups' initialValue={[]}>
             {(fields, { add, remove }, { errors }) => (
               <>
                 <Row gutter={[10, 10]} style={{ marginBottom: '8px' }}>
@@ -284,21 +270,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
             )}
           </Form.List>
 
-          <Form.List
-            name='tags'
-            initialValue={[]}
-            rules={[
-              {
-                validator: (rule, value, callback) => {
-                  const busiGroups = form.getFieldValue('busi_groups');
-                  if (_.isEmpty(value) && _.isEmpty(busiGroups)) {
-                    return Promise.reject(new Error(t('tags_groups_require')));
-                  }
-                  return Promise.resolve();
-                },
-              },
-            ]}
-          >
+          <Form.List name='tags' initialValue={[]}>
             {(fields, { add, remove }, { errors }) => (
               <>
                 <Row gutter={[10, 10]} style={{ marginBottom: '8px' }}>
