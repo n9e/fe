@@ -336,10 +336,10 @@ const SideMenu: FC = () => {
     }
   }, [profile?.roles, i18n.language]);
 
-  return hideSideMenu() ? null : (
+  return (
     <div
       style={{
-        display: 'flex',
+        display: hideSideMenu() ? 'none' : 'flex',
         flexDirection: 'column',
         padding: '10px 0 10px 10px',
       }}
