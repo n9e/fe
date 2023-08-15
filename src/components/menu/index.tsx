@@ -233,6 +233,10 @@ const getMenuList = (t) => {
         key: '/collects',
         label: t('采集配置'),
       });
+      targets.children?.push({
+        key: '/network-devices',
+        label: t('网络设备'),
+      });
     }
     const systemMenu = _.find(menuList, (item) => item.key === 'help');
     if (systemMenu) {

@@ -1,5 +1,5 @@
 const en_US = {
-  title: 'Host List',
+  title: 'Infrastructure List',
   default_filter: 'Default',
   ungrouped_targets: 'Ungrouped hosts',
   all_targets: 'All hosts',
