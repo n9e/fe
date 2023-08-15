@@ -127,12 +127,10 @@ export default function List(props: ListProps) {
                   </Tag>
                 );
               })}
-            </div>
-            <div>
               {_.map(record.append_tags, (item) => {
                 return (
                   <Tooltip key={item} title={item}>
-                    <Tag color='purple' style={{ maxWidth: '100%' }}>
+                    <Tag color='purple' style={{ maxWidth: '100%', marginRight: 0 }}>
                       <div
                         style={{
                           maxWidth: 'max-content',
