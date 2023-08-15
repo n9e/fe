@@ -146,7 +146,6 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
         onFinish={onFinish}
         initialValues={{
           ...detail,
-          prod: detail.prod || 'metric',
           severities: detail.severities || [1, 2, 3],
           redefine_severity: detail?.redefine_severity ? true : false,
           redefine_channels: detail?.redefine_channels ? true : false,
@@ -156,49 +155,31 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
         }}
       >
         <Card {...panelBaseProps} size='small' title={t('basic_configs')}>
-          <ProdSelect
-            label={t('prod')}
-            onChange={(e) => {
-              form.setFieldsValue({
-                ...getDefaultValuesByProd(e.target.value),
-                datasource_ids: [],
-              });
-            }}
-          />
-          <Form.Item shouldUpdate noStyle>
-            {({ getFieldValue }) => {
-              const prod = getFieldValue('prod');
-              if (prod !== 'host') {
-                return (
-                  <Row gutter={10}>
-                    <Col span={12}>
-                      <Form.Item label={t('common:datasource.type')} name='cate' initialValue='prometheus'>
-                        <DatasourceCateSelect
-                          scene='alert'
-                          filterCates={(cates) => {
-                            return _.filter(cates, (item) => _.includes(item.type, prod) && !!item.alertRule);
-                          }}
-                          onChange={() => {
-                            form.setFieldsValue({
-                              datasource_ids: [],
-                            });
-                          }}
-                        />
-                      </Form.Item>
-                    </Col>
-                    <Col span={12}>
-                      <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.cate !== curValues.cate} noStyle>
-                        {({ getFieldValue, setFieldsValue }) => {
-                          const cate = getFieldValue('cate');
-                          return <DatasourceValueSelect mode='multiple' setFieldsValue={setFieldsValue} cate={cate} datasourceList={groupedDatasourceList[cate] || []} />;
-                        }}
-                      </Form.Item>
-                    </Col>
-                  </Row>
-                );
-              }
-            }}
-          </Form.Item>
+          <Row gutter={10}>
+            <Col span={12}>
+              <Form.Item label={t('common:datasource.type')} name='cate' initialValue='prometheus'>
+                <DatasourceCateSelect
+                  scene='alert'
+                  filterCates={(cates) => {
+                    return _.filter(cates, (item) => !!item.alertRule);
+                  }}
+                  onChange={() => {
+                    form.setFieldsValue({
+                      datasource_ids: [],
+                    });
+                  }}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.cate !== curValues.cate} noStyle>
+                {({ getFieldValue, setFieldsValue }) => {
+                  const cate = getFieldValue('cate');
+                  return <DatasourceValueSelect required={false} mode='multiple' setFieldsValue={setFieldsValue} cate={cate} datasourceList={groupedDatasourceList[cate] || []} />;
+                }}
+              </Form.Item>
+            </Col>
+          </Row>
 
           <Form.Item label={t('severities')} name='severities' initialValue={[1, 2, 3]} rules={[{ required: true, message: t('severities_msg') }]}>
             <Checkbox.Group

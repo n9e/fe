@@ -34,13 +34,20 @@ export default function Info() {
   const { profile, setProfile } = useContext(CommonStateContext);
   const [selectAvatar, setSelectAvatar] = useState<string>(profile.portrait || '/image/avatar1.png');
   const [customAvatar, setCustomAvatar] = useState('');
+  const contacts = Form.useWatch('contacts', form);
+
   useEffect(() => {
-    const { id, nickname, email, phone, contacts, portrait } = profile;
+    const { nickname, email, phone, contacts, portrait } = profile;
     form.setFieldsValue({
       nickname,
       email,
       phone,
-      contacts,
+      contacts: _.map(contacts, (value, key) => {
+        return {
+          key,
+          value,
+        };
+      }),
     });
     if (portrait?.startsWith('http')) {
       setCustomAvatar(portrait);
@@ -54,9 +61,7 @@ export default function Info() {
 
   const handleSubmit = async () => {
     try {
-      console.log(111);
       await form.validateFields();
-      console.log(222);
       updateProfile();
     } catch (err) {
       console.log(err);
@@ -89,30 +94,7 @@ export default function Info() {
   };
 
   const updateProfile = () => {
-    const { nickname, email, phone, moreContacts } = form.getFieldsValue();
-    let { contacts } = form.getFieldsValue();
-
-    if (moreContacts && moreContacts.length > 0) {
-      _.forEach(moreContacts, (item) => {
-        const { key, value } = item;
-
-        if (key && value) {
-          if (contacts) {
-            contacts[key] = value;
-          } else {
-            contacts = {
-              [key]: value,
-            };
-          }
-        }
-      });
-    }
-
-    for (let key in contacts) {
-      if (!contacts[key]) {
-        delete contacts[key];
-      }
-    }
+    const { nickname, email, phone, contacts } = form.getFieldsValue();
 
     const newData = {
       ...profile,
@@ -120,7 +102,7 @@ export default function Info() {
       nickname,
       email,
       phone,
-      contacts,
+      contacts: _.mapValues(_.keyBy(contacts, 'key'), 'value'),
     };
 
     UpdateProfile(newData).then(() => {
@@ -174,36 +156,20 @@ export default function Info() {
               <Input />
             </Form.Item>
 
-            {profile.contacts &&
-              Object.keys(profile.contacts)
-                .sort()
-                .map((key, i) => {
-                  let contact = contactsList.find((item) => item.key === key);
-                  return (
-                    <div key={i}>
-                      {contact ? (
-                        <Form.Item label={contact.label + '：'} name={['contacts', key]} key={i}>
-                          <Input />
-                        </Form.Item>
-                      ) : null}
-                    </div>
-                  );
-                })}
-
             <Form.Item
               label={
                 <Space>
-                  {t('profile.moreContact')}
+                  {t('account:profile.contact')}
                   <Link to='/help/notification-settings?tab=contacts' target='_blank'>
-                    {t('profile.moreContactLinkToSetting')}
+                    {t('account:profile.contactLinkToSetting')}
                   </Link>
                 </Space>
               }
             >
-              <Form.List name='moreContacts'>
+              <Form.List name='contacts'>
                 {(fields, { add, remove }) => (
                   <>
-                    {fields.map(({ key, name, ...restField }) => (
+                    {fields.map(({ key, name, fieldKey, ...restField }) => (
                       <Space
                         key={key}
                         style={{
@@ -220,12 +186,13 @@ export default function Info() {
                           rules={[
                             {
                               required: true,
+                              message: 'is required',
                             },
                           ]}
                         >
-                          <Select suffixIcon={<CaretDownOutlined />} placeholder={t('profile.moreContactPlaceholder')}>
+                          <Select suffixIcon={<CaretDownOutlined />} placeholder={t('account:profile.contactPlaceholder')}>
                             {_.map(contactsList, (item, index) => (
-                              <Option value={item.key} key={index}>
+                              <Option value={item.key} key={index} disabled={_.includes(_.map(contacts, 'key'), item.key)}>
                                 {item.label}
                               </Option>
                             ))}
@@ -234,12 +201,13 @@ export default function Info() {
                         <Form.Item
                           {...restField}
                           style={{
-                            width: '330px',
+                            width: '390px',
                           }}
                           name={[name, 'value']}
                           rules={[
                             {
                               required: true,
+                              message: 'is required',
                             },
                           ]}
                         >

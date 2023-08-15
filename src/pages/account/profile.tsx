@@ -39,14 +39,18 @@ export default function Profile() {
 
   return (
     <PageLayout title={t('title')}>
-      <Tabs activeKey={tab} className='profile' onChange={handleChange}>
-        <TabPane tab={t('profile.title')} key='info'>
-          <Info />
-        </TabPane>
-        <TabPane tab={t('password.title')} key='pwd'>
-          <ChangePassword />
-        </TabPane>
-      </Tabs>
+      <div>
+        <div>
+          <Tabs activeKey={tab} className='profile' onChange={handleChange}>
+            <TabPane tab={t('profile.title')} key='info'>
+              <Info />
+            </TabPane>
+            <TabPane tab={t('password.title')} key='pwd'>
+              <ChangePassword />
+            </TabPane>
+          </Tabs>
+        </div>
+      </div>
     </PageLayout>
   );
 }

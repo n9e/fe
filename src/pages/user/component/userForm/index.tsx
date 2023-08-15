@@ -32,10 +32,12 @@ const UserForm = React.forwardRef<ReactNode, UserAndPasswordFormProps>((props, r
   const [loading, setLoading] = useState<boolean>(true);
   const [contactsList, setContactsList] = useState<ContactsItem[]>([]);
   const [roleList, setRoleList] = useState<{ name: string; note: string }[]>([]);
+  const contacts = Form.useWatch('contacts', form);
 
   useImperativeHandle(ref, () => ({
     form: form,
   }));
+
   useEffect(() => {
     if (userId) {
       getUserInfoDetail(userId);
@@ -55,21 +57,14 @@ const UserForm = React.forwardRef<ReactNode, UserAndPasswordFormProps>((props, r
 
   const getUserInfoDetail = (id: string) => {
     getUserInfo(id).then((data: User) => {
-      let contacts: Array<Contacts> = [];
-
-      if (data.contacts) {
-        Object.keys(data.contacts).forEach((item: string) => {
-          let val: Contacts = {
-            key: item,
-            value: data.contacts[item],
-          };
-          contacts.push(val);
-        });
-      }
-
       setInitialValues(
         Object.assign({}, data, {
-          contacts,
+          contacts: _.map(data.contacts, (value, key) => {
+            return {
+              key,
+              value,
+            };
+          }),
         }),
       );
       setLoading(false);
@@ -162,9 +157,9 @@ const UserForm = React.forwardRef<ReactNode, UserAndPasswordFormProps>((props, r
       <Form.Item
         label={
           <Space>
-            {t('account:profile.moreContact')}
+            {t('account:profile.contact')}
             <Link to='/help/notification-settings?tab=contacts' target='_blank'>
-              {t('account:profile.moreContactLinkToSetting')}
+              {t('account:profile.contactLinkToSetting')}
             </Link>
           </Space>
         }
@@ -193,9 +188,9 @@ const UserForm = React.forwardRef<ReactNode, UserAndPasswordFormProps>((props, r
                       },
                     ]}
                   >
-                    <Select suffixIcon={<CaretDownOutlined />} placeholder={t('account:profile.moreContactPlaceholder')}>
+                    <Select suffixIcon={<CaretDownOutlined />} placeholder={t('account:profile.contactPlaceholder')}>
                       {_.map(contactsList, (item, index) => (
-                        <Option value={item.key} key={index}>
+                        <Option value={item.key} key={index} disabled={_.includes(_.map(contacts, 'key'), item.key)}>
                           {item.label}
                         </Option>
                       ))}
@@ -204,7 +199,7 @@ const UserForm = React.forwardRef<ReactNode, UserAndPasswordFormProps>((props, r
                   <Form.Item
                     {...restField}
                     style={{
-                      width: '170px',
+                      width: '240px',
                     }}
                     name={[name, 'value']}
                     rules={[
