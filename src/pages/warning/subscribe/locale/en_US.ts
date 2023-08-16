@@ -17,6 +17,18 @@ const en_US = {
       label: 'Value',
     },
   },
+  group: {
+    key: {
+      label: 'Groups',
+      placeholder: 'Groups',
+    },
+    func: {
+      label: 'Operator',
+    },
+    value: {
+      label: 'Value',
+    },
+  },
   redefine_severity: 'Redefine Severity',
   redefine_channels: 'Redefine Channels',
   redefine_webhooks: 'Redefine Webhooks',
@@ -29,5 +41,6 @@ const en_US = {
   basic_configs: 'Basic',
   severities: 'Severity',
   severities_msg: 'Severity is required',
+  tags_groups_require: 'Tags and receiving groups must fill in at least one item',
 };
 export default en_US;

@@ -5,6 +5,8 @@ const zh_CN = {
   all_targets: '全部对象',
   datasource: '数据源',
   search_placeholder: '模糊搜索表格内容(多个关键词请用空格分隔)',
+  filterDowntime: '无更新超过',
+  filterDowntimeMin: '{{count}} 分钟',
   ident_copy_success: '复制成功 {{num}} 条记录',
   not_grouped: '未归组',
   tags: '标签',
@@ -16,8 +18,8 @@ const zh_CN = {
   offset: '时间偏移',
   os: '操作系统',
   arch: 'CPU架构',
-  unixtime: '心跳时间',
-  unixtime_tip: `
+  update_at: '更新时间',
+  update_at_tip: `
     1分钟内有过心跳：绿色 <1 />
     3分钟内有过心跳：黄色 <1 />
     3分钟内没有心跳：红色

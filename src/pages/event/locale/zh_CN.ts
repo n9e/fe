@@ -67,6 +67,7 @@ const zh_CN = {
     host: {
       trigger: '触发',
     },
+    trigger: '触发',
   },
 };
 export default zh_CN;

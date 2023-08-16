@@ -14,13 +14,13 @@
  * limitations under the License.
  *
  */
-import React from 'react';
+import React, { useContext } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Modal, Input, Form, Button, Select, Row, Col, Switch, message } from 'antd';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
-import { getAuthorizedDatasourceCates } from '@/components/AdvancedWrap';
 import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
+import { CommonStateContext } from '@/App';
 import { createRule } from './services';
 
 interface IProps {
@@ -32,7 +32,8 @@ interface IProps {
 function Import(props: IProps & ModalWrapProps) {
   const { t } = useTranslation('alertRulesBuiltin');
   const { visible, destroy, data, busiGroups, groupedDatasourceList } = props;
-  const datasourceCates = _.filter(getAuthorizedDatasourceCates(), (item) => item.type === 'metric');
+  const { datasourceCateOptions } = useContext(CommonStateContext);
+  const datasourceCates = _.filter(datasourceCateOptions, (item) => _.includes(item.type, 'metric'));
 
   return (
     <Modal

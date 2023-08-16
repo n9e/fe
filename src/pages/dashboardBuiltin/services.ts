@@ -77,3 +77,11 @@ export const deleteBuiltinCateFavorite = function (name: string): Promise<any[]>
     return res.dat;
   });
 };
+
+export const getInstructionsByName = function (name: string): Promise<string> {
+  return request(`/api/n9e/integrations/makedown/${name}`, {
+    method: RequestMethod.Get,
+  }).then((res) => {
+    return res.dat;
+  });
+};

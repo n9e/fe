@@ -71,7 +71,7 @@ export default function Index(props: Props) {
             {data.settings?.min_interval || '-'}
           </Col>
         </Row>
-        <AdvancedWrap var='VITE_IS_ALERT_ES'>
+        <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
           <Row gutter={16}>
             <Col span={24}>{t('form.cluster')}：</Col>
             <Col span={24} className='second-color'>

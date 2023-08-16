@@ -27,6 +27,7 @@ export interface shieldItem {
   datasource_ids: number[];
   mute_time_type: 0 | 1;
   periodic_mutes: any[];
+  prod: string;
 }
 
 export interface IshieldState {

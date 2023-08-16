@@ -23,6 +23,7 @@ import { DownOutlined } from '@ant-design/icons';
 import { Logout } from '@/services/login';
 import AdvancedWrap, { License } from '@/components/AdvancedWrap';
 import { CommonStateContext } from '@/App';
+import Version from './Version';
 import './index.less';
 import './locale';
 
@@ -102,8 +103,11 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                   {t('docs')}
                 </a>
               )}
+
+              <Version />
+
               {/* 整合版本关闭文档链接 */}
-              {import.meta.env.VITE_IS_COMMON_DS !== 'true' && (
+              {import.meta.env.VITE_IS_ENT !== 'true' && (
                 <Space style={{ marginRight: 16 }}>
                   <div style={{ marginRight: 32, position: 'relative' }}>
                     <a target='_blank' href='https://flashcat.cloud/docs/'>
@@ -124,7 +128,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                     />
                   </div>
                   {profile?.admin && (
-                    <AdvancedWrap var='VITE_IS_DS_SETTING,VITE_IS_COMMON_DS'>
+                    <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
                       <Link to='/audits'>{t('audits:title')}</Link>
                     </AdvancedWrap>
                   )}
@@ -133,7 +137,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
 
               {rightArea}
 
-              <AdvancedWrap var='VITE_IS_DS_SETTING,VITE_IS_COMMON_DS'>
+              <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
                 <License />
               </AdvancedWrap>
 

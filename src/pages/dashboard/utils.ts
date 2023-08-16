@@ -19,7 +19,7 @@ import { v4 as uuidv4 } from 'uuid';
 import moment from 'moment';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { IDashboard, IVariable } from './types';
-import { defaultValues } from './Editor/config';
+import { defaultValues, calcsOptions } from './Editor/config';
 
 export function JSONParse(str) {
   if (str) {
@@ -73,6 +73,16 @@ const grafanaBuiltinColors = [
   { color: '#8F3BB8', name: 'dark-purple' },
 ];
 
+function normalizeCalc(calc: string) {
+  if (calc === 'mean') {
+    return 'avg';
+  }
+  if (calcsOptions[calc]) {
+    return calc;
+  }
+  return 'lastNotNull';
+}
+
 function convertThresholdsGrafanaToN9E(config: any) {
   return {
     mode: config.thresholds?.mode, // mode 目前是不支持的
@@ -87,15 +97,15 @@ function convertThresholdsGrafanaToN9E(config: any) {
   };
 }
 
-function convertVariablesGrafanaToN9E(templates: any) {
-  return _.chain(templates.list)
+function convertVariablesGrafanaToN9E(templates: any, __inputs: any[]) {
+  const vars = _.chain(templates.list)
     .filter((item) => {
       // 3.0.0 版本只支持 query / custom / textbox / constant 类型的变量
       return item.type === 'query' || item.type === 'custom' || item.type === 'textbox' || item.type === 'constant' || item.type === 'datasource';
     })
     .map((item) => {
       if (item.type === 'query') {
-        return {
+        const varObj: any = {
           type: 'query',
           name: item.name,
           definition: item.definition || _.get(item, 'query.query'),
@@ -104,6 +114,18 @@ function convertVariablesGrafanaToN9E(templates: any) {
           multi: item.multi,
           reg: item.regex,
         };
+        if (item.datasource && item.datasource?.type === 'prometheus') {
+          varObj.datasource = {
+            cate: 'prometheus',
+            value: item.datasource.uid,
+          };
+        } else if (typeof item.datasource === 'string') {
+          varObj.datasource = {
+            cate: 'prometheus',
+            value: item.datasource,
+          };
+        }
+        return varObj;
       } else if (item.type === 'custom') {
         return {
           type: 'custom',
@@ -133,6 +155,16 @@ function convertVariablesGrafanaToN9E(templates: any) {
       };
     })
     .value();
+  _.forEach(__inputs, (item) => {
+    if (item.type === 'datasource') {
+      vars.unshift({
+        type: 'datasource',
+        name: item.name,
+        definition: item.pluginId,
+      });
+    }
+  });
+  return vars;
 }
 
 function convertLinksGrafanaToN9E(links: any) {
@@ -205,7 +237,7 @@ function convertTimeseriesGrafanaToN9E(panel: any) {
 function convertPieGrafanaToN9E(panel: any) {
   return {
     version: '3.0.0',
-    calc: _.get(panel, 'options.reduceOptions.calcs[0]'),
+    calc: normalizeCalc(_.get(panel, 'options.reduceOptions.calcs[0]')),
     legengPosition: 'hidden',
   };
 }
@@ -214,7 +246,7 @@ function convertStatGrafanaToN9E(panel: any) {
   return {
     version: '3.0.0',
     textMode: 'value',
-    calc: _.get(panel, 'options.reduceOptions.calcs[0]'),
+    calc: normalizeCalc(_.get(panel, 'options.reduceOptions.calcs[0]')),
     colorMode: 'value',
   };
 }
@@ -223,7 +255,7 @@ function convertGaugeGrafanaToN9E(panel: any) {
   return {
     version: '3.0.0',
     textMode: 'value',
-    calc: _.get(panel, 'options.reduceOptions.calcs[0]'),
+    calc: normalizeCalc(_.get(panel, 'options.reduceOptions.calcs[0]')),
     colorMode: 'value',
   };
 }
@@ -231,7 +263,7 @@ function convertGaugeGrafanaToN9E(panel: any) {
 function convertBarGaugeGrafanaToN9E(panel: any) {
   return {
     version: '3.0.0',
-    calc: _.get(panel, 'options.reduceOptions.calcs[0]'),
+    calc: normalizeCalc(_.get(panel, 'options.reduceOptions.calcs[0]')),
   };
 }
 
@@ -266,7 +298,7 @@ function convertPanlesGrafanaToN9E(panels: any) {
       fn: convertGaugeGrafanaToN9E,
     },
     singlestat: {
-      type: 'stat',
+      type: 'gauge',
       fn: convertStatGrafanaToN9E,
     },
     stat: {
@@ -326,7 +358,7 @@ function convertPanlesGrafanaToN9E(panels: any) {
           .map((item) => {
             return {
               refId: item.refId,
-              expr: _.replace(_.replace(item.expr, '$__rate_interval', '5m'), '$__interval', '5m'), // TODO: 目前不支持 $__rate_interval 暂时统一替换为 5m
+              expr: item.expr,
               legend: item.legendFormat,
             };
           })
@@ -351,9 +383,27 @@ export function convertDashboardGrafanaToN9E(data) {
     configs: {
       version: '3.0.0',
       links: convertLinksGrafanaToN9E(data.links),
-      var: convertVariablesGrafanaToN9E(data.templating) as IVariable[],
+      var: convertVariablesGrafanaToN9E(data.templating, data.__inputs) as IVariable[],
       panels: convertPanlesGrafanaToN9E(data.panels),
     },
   };
   return dashboard;
+}
+
+/**
+ * 检测 Grafana Dashboard 版本
+ * @param data
+ * @returns
+ * 0: 不支持 < v7
+ * 1: 兼容 >= v7 < v8
+ * 2: 支持 >= v8
+ */
+export function checkGrafanaDashboardVersion(data) {
+  if (data.schemaVersion < 25) {
+    return 0;
+  }
+  if (data.schemaVersion < 30) {
+    return 1;
+  }
+  return 2;
 }

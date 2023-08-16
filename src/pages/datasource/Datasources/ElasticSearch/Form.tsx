@@ -70,7 +70,7 @@ export default function FormCpt({ data, onFinish, submitLoading }: any) {
           </Form.Item>
         </Col>
       </Row>
-      <AdvancedWrap var='VITE_IS_ALERT_ES'>
+      <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
         <Cluster form={form} clusterRef={clusterRef} />
       </AdvancedWrap>
       <Description />

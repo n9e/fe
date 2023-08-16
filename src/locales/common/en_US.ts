@@ -44,8 +44,9 @@ const en_US = {
     total: 'Total {{total}} items',
   },
   datasource: {
+    prod: 'Type',
     name: 'Datasource',
-    type: 'Datasource Type',
+    type: 'Cate',
     id: 'Datasource',
     id_required: 'Please select a datasource',
     empty_modal: {

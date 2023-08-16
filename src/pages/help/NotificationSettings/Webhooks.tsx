@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Alert, Form, Input, Switch, Button, Space, InputNumber, Row, Col, message } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined, CloseOutlined } from '@ant-design/icons';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import _ from 'lodash';
 import { getWebhooks, putWebhooks } from './services';
 
@@ -123,7 +123,7 @@ export default function Webhooks() {
                       </Form.List>
                       <Space align='baseline'>
                         {t('webhooks.skip_verify')}
-                        <Form.Item {...field} name={[field.name, 'skip_verify']} noStyle>
+                        <Form.Item {...field} name={[field.name, 'skip_verify']} noStyle valuePropName='checked'>
                           <Switch />
                         </Form.Item>
                       </Space>
@@ -183,17 +183,14 @@ export default function Webhooks() {
         <Alert
           type='info'
           message={
-            <div>
-              尊敬的夜莺老铁，您好，如果您想把夜莺告警事件全部转发到另一个平台处理，可以通过这里的全局回调地址来实现。
-              <br />
-              <br />
-              近期快猫团队提供的事件OnCall产品FlashDuty也开始公测了，欢迎体验，把各个监控系统的告警事件统一推给FlashDuty，享受告警聚合降噪、排班、认领、升级、协同处理一站式体验。
-              <br />
-              <br />
-              <a href='https://console.flashcat.cloud/?from=n9e' target='_blank'>
-                免费体验地址
-              </a>
-            </div>
+            <Trans
+              ns='notificationSettings'
+              i18nKey='webhooks.help'
+              components={{
+                a: <a href='https://console.flashcat.cloud/?from=n9e' target='_blank' />,
+                br: <br />,
+              }}
+            />
           }
         />
       </div>

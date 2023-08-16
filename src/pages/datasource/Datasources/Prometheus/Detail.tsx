@@ -57,9 +57,15 @@ export default function Index(props: Props) {
       <div className='page-title'>{t('form.other')}</div>
       <div className='flash-cat-block'>
         <Row gutter={16}>
-          <Col span={24}>write_addr：</Col>
+          <Col span={24}>Remote Write URL：</Col>
           <Col span={24} className='second-color'>
             {data.settings?.write_addr || '-'}
+          </Col>
+        </Row>
+        <Row gutter={16}>
+          <Col span={24}>Remote Read URL：</Col>
+          <Col span={24} className='second-color'>
+            {data.settings?.internal_addr || '-'}
           </Col>
         </Row>
         <Row gutter={16}>

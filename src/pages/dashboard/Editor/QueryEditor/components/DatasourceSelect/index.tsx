@@ -3,7 +3,6 @@ import { Form, Input, Select, Space } from 'antd';
 import Icon from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { getAuthorizedDatasourceCates } from '@/components/AdvancedWrap';
 import { ProSvg } from '@/components/DatasourceSelect';
 import { CommonStateContext } from '@/App';
 
@@ -11,8 +10,8 @@ const defaultDatasourceCate = 'prometheus';
 
 export default function index({ chartForm, variableConfig }) {
   const { t } = useTranslation('dashboard');
-  const { groupedDatasourceList } = useContext(CommonStateContext);
-  const cates = _.filter(getAuthorizedDatasourceCates(), (item) => {
+  const { groupedDatasourceList, datasourceCateOptions } = useContext(CommonStateContext);
+  const cates = _.filter(datasourceCateOptions, (item) => {
     return !!item.dashboard;
   });
   const datasourceVars = _.filter(variableConfig, { type: 'datasource' });
@@ -34,62 +33,62 @@ export default function index({ chartForm, variableConfig }) {
             style={{ minWidth: 70 }}
             onChange={(val) => {
               // TODO: 调整数据源类型后需要重置配置
-              setTimeout(() => {
-                if (val === 'prometheus') {
-                  chartForm.setFieldsValue({
-                    targets: [
-                      {
-                        refId: 'A',
-                        expr: '',
+              // setTimeout(() => {
+              if (val === 'prometheus') {
+                chartForm.setFieldsValue({
+                  targets: [
+                    {
+                      refId: 'A',
+                      expr: '',
+                    },
+                  ],
+                  datasourceValue: getDefaultDatasourceValue('prometheus'),
+                });
+              } else if (val === 'elasticsearch' || val === 'opensearch') {
+                chartForm.setFieldsValue({
+                  targets: [
+                    {
+                      refId: 'A',
+                      query: {
+                        index: '',
+                        filters: '',
+                        values: [
+                          {
+                            func: 'count',
+                          },
+                        ],
+                        date_field: '@timestamp',
+                        interval: 1,
+                        interval_unit: 'min',
                       },
-                    ],
-                    datasourceValue: getDefaultDatasourceValue('prometheus'),
-                  });
-                } else if (val === 'elasticsearch' || val === 'opensearch') {
-                  chartForm.setFieldsValue({
-                    targets: [
-                      {
-                        refId: 'A',
-                        query: {
-                          index: '',
-                          filters: '',
-                          values: [
-                            {
-                              func: 'count',
-                            },
-                          ],
-                          date_field: '@timestamp',
-                          interval: 1,
-                          interval_unit: 'min',
-                        },
+                    },
+                  ],
+                  datasourceValue: getDefaultDatasourceValue(val),
+                });
+              } else if (val === 'zabbix') {
+                chartForm.setFieldsValue({
+                  targets: [
+                    {
+                      refId: 'A',
+                      query: {
+                        mode: 'timeseries',
+                        subMode: 'metrics',
                       },
-                    ],
-                    datasourceValue: getDefaultDatasourceValue(val),
-                  });
-                } else if (val === 'zabbix') {
-                  chartForm.setFieldsValue({
-                    targets: [
-                      {
-                        refId: 'A',
-                        query: {
-                          mode: 'timeseries',
-                          subMode: 'metrics',
-                        },
-                      },
-                    ],
-                    datasourceValue: undefined,
-                  });
-                } else {
-                  chartForm.setFieldsValue({
-                    targets: [
-                      {
-                        refId: 'A',
-                      },
-                    ],
-                    datasourceValue: undefined,
-                  });
-                }
-              }, 500);
+                    },
+                  ],
+                  datasourceValue: undefined,
+                });
+              } else {
+                chartForm.setFieldsValue({
+                  targets: [
+                    {
+                      refId: 'A',
+                    },
+                  ],
+                  datasourceValue: undefined,
+                });
+              }
+              // }, 500);
             }}
           >
             {_.map(cates, (item) => (

@@ -8,6 +8,7 @@ const zh_CN = {
   refresh_tip: '刷新间隔小于 step({{num}}s) 将不会更新数据',
   refresh_btn: '刷新',
   share_btn: '分享',
+  inspect_btn: '排查',
   public: {
     name: '公开',
     0: {
@@ -30,6 +31,9 @@ const zh_CN = {
     label: '仪表盘 JSON',
     import_grafana: '导入 Grafana 仪表盘 JSON',
     import_grafana_tip: '目前只支持导入 v8+ 版本的仪表盘配置，导入完的图表只支持夜莺目前支持的图表类型和功能',
+    import_grafana_tip_version_error: '不支持导入小于 v7 版本的仪表盘配置',
+    import_grafana_tip_version_warning: '导入小于 v8 版本的仪表盘配置，可能会有部分图表不支持，以及图表无法正常渲染问题',
+    continueToImport: '继续导入',
   },
   link: {
     title: '仪表盘链接',
@@ -122,6 +126,12 @@ const zh_CN = {
         isNewBlank: '是否新窗口打开',
       },
       description: '备注',
+      repeatOptions: {
+        title: '图表重复',
+        byVariable: '变量',
+        byVariableTip: '根据变量的值来重复图表',
+        maxPerRow: '每行最多显示',
+      },
     },
     options: {
       legend: {
@@ -274,6 +284,11 @@ const zh_CN = {
       iframe: {
         src: 'iframe 地址',
       },
+    },
+    inspect: {
+      title: '排查',
+      query: '查询',
+      json: '图表配置',
     },
   },
   export: {

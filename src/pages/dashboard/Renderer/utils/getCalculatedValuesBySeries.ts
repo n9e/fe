@@ -41,11 +41,11 @@ export const getSerieTextObj = (value: number | string | null | undefined, stand
       if (type === 'special') {
         return value === match?.special;
       } else if (type === 'range') {
-        if (match?.from && match?.to) {
+        if (_.isNumber(match?.from) && _.isNumber(match?.to)) {
           return value >= match?.from && value <= match?.to;
-        } else if (match?.from) {
+        } else if (_.isNumber(match?.from)) {
           return value >= match?.from;
-        } else if (match?.to) {
+        } else if (_.isNumber(match?.to)) {
           return value <= match?.to;
         }
         return false;

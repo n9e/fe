@@ -53,7 +53,10 @@ export default function FormCpt({ data, onFinish, submitLoading }: any) {
       <div className='page-title' style={{ marginTop: 0 }}>
         {t('form.other')}
       </div>
-      <Form.Item label='remote write' tooltip={t('form.prom.write_addr_tip')} name={['settings', 'write_addr']}>
+      <Form.Item label='Remote Write URL' tooltip={t('form.prom.write_addr_tip')} name={['settings', 'write_addr']}>
+        <Input />
+      </Form.Item>
+      <Form.Item label='Remote Read URL' tooltip={t('form.prom.read_addr_tip')} name={['settings', 'internal_addr']}>
         <Input />
       </Form.Item>
       <Cluster form={form} clusterRef={clusterRef} />

@@ -30,6 +30,7 @@ export default function Terms({ prefixField, fieldsOptions, values }) {
             <InputGroupWithFormItem label='Field key' labelWidth={80}>
               <Form.Item {...prefixField} name={[prefixField.name, 'field']} rules={[{ required: true, message: '必须填写 field key' }]}>
                 <AutoComplete
+                  dropdownMatchSelectWidth={false}
                   options={_.filter(fieldsOptions, (item) => {
                     if (search) {
                       return item.value.includes(search);

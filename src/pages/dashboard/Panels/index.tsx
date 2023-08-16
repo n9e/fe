@@ -96,7 +96,7 @@ function index(props: IProps) {
   }, []);
 
   return (
-    <div className='dashboards-panels scroll-container'>
+    <div className='dashboards-panels'>
       <ReactGridLayout
         layout={buildLayout(panels)}
         onLayoutChange={(layout) => {

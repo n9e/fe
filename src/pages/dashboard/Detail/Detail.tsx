@@ -23,7 +23,7 @@ import { useInterval } from 'ahooks';
 import { v4 as uuidv4 } from 'uuid';
 import { useParams, useHistory, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
-import { Alert, Modal, Button, message } from 'antd';
+import { Alert, Modal, Button, Affix, message } from 'antd';
 import PageLayout from '@/components/pageLayout';
 import { IRawTimeRange, getDefaultValue, isValid } from '@/components/TimeRangePicker';
 import { Dashboard } from '@/store/dashboardInterface';
@@ -132,6 +132,7 @@ export default function DetailV2(props: IProps) {
   });
   const [migrationVisible, setMigrationVisible] = useState(false);
   const [migrationModalOpen, setMigrationModalOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
   let updateAtRef = useRef<number>();
   const refresh = async (cbk?: () => void) => {
     fetchDashboard({
@@ -263,32 +264,40 @@ export default function DetailV2(props: IProps) {
       }
     >
       <div className='dashboard-detail-container'>
-        <div className='dashboard-detail-content'>
-          {!editable && (
-            <div style={{ padding: '5px 10px' }}>
-              <Alert type='warning' message='仪表盘已经被别人修改，为避免相互覆盖，请刷新仪表盘查看最新配置和数据' />
-            </div>
-          )}
-          <div className='dashboard-detail-content-header'>
-            <div className='variable-area'>
-              {variableConfig && (
-                <VariableConfig isPreview={!isAuthorized} onChange={handleVariableChange} value={variableConfig} range={range} id={id} onOpenFire={stopAutoRefresh} />
+        <div className='dashboard-detail-content scroll-container' ref={containerRef}>
+          <Affix
+            target={() => {
+              return containerRef.current;
+            }}
+          >
+            <div className='dashboard-detail-content-header-container'>
+              {!editable && (
+                <div style={{ padding: '0px 10px', marginBottom: 8 }}>
+                  <Alert type='warning' message='仪表盘已经被别人修改，为避免相互覆盖，请刷新仪表盘查看最新配置和数据' />
+                </div>
               )}
+              <div className='dashboard-detail-content-header'>
+                <div className='variable-area'>
+                  {variableConfig && (
+                    <VariableConfig isPreview={!isAuthorized} onChange={handleVariableChange} value={variableConfig} range={range} id={id} onOpenFire={stopAutoRefresh} />
+                  )}
+                </div>
+                {isAuthorized && (
+                  <DashboardLinks
+                    value={dashboardLinks}
+                    onChange={(v) => {
+                      const dashboardConfigs: any = dashboard.configs;
+                      dashboardConfigs.links = v;
+                      handleUpdateDashboardConfigs(id, {
+                        configs: JSON.stringify(dashboardConfigs),
+                      });
+                      setDashboardLinks(v);
+                    }}
+                  />
+                )}
+              </div>
             </div>
-            {isAuthorized && (
-              <DashboardLinks
-                value={dashboardLinks}
-                onChange={(v) => {
-                  const dashboardConfigs: any = dashboard.configs;
-                  dashboardConfigs.links = v;
-                  handleUpdateDashboardConfigs(id, {
-                    configs: JSON.stringify(dashboardConfigs),
-                  });
-                  setDashboardLinks(v);
-                }}
-              />
-            )}
-          </div>
+          </Affix>
           {variableConfigWithOptions && (
             <Panels
               dashboardId={id}

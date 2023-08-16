@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Table, Tag, Tooltip, Space, Input, Dropdown, Menu, Button, Modal, message } from 'antd';
+import { Table, Tag, Tooltip, Space, Input, Dropdown, Menu, Button, Modal, message, Select } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { SearchOutlined, DownOutlined, ReloadOutlined, CopyOutlined, ApartmentOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { useAntdTable } from 'ahooks';
@@ -55,6 +55,7 @@ const GREEN_COLOR = '#3FC453';
 const YELLOW_COLOR = '#FF9919';
 const RED_COLOR = '#FF656B';
 const LOST_COLOR = '#CCCCCC';
+const downtimeOptions = [1, 2, 3, 5, 10, 30];
 
 export default function List(props: IProps) {
   const { t } = useTranslation('targets');
@@ -65,6 +66,7 @@ export default function List(props: IProps) {
   const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs());
   const [collectsDrawerVisible, setCollectsDrawerVisible] = useState(false);
   const [collectsDrawerIdent, setCollectsDrawerIdent] = useState('');
+  const [downtime, setDowntime] = useState();
   const columns: ColumnsType<any> = [
     {
       title: (
@@ -123,8 +125,8 @@ export default function List(props: IProps) {
       render: (text, record) => {
         return (
           <Space>
-            {import.meta.env['VITE_IS_DS_SETTING'] ? <TargetMetaDrawer ident={text} /> : text}
-            {import.meta.env['VITE_IS_COLLECT'] && (
+            {import.meta.env['VITE_IS_PRO'] ? <TargetMetaDrawer ident={text} /> : text}
+            {import.meta.env['VITE_IS_PRO'] && (
               <Tooltip title='查看关联采集配置'>
                 <ApartmentOutlined
                   onClick={() => {
@@ -315,24 +317,21 @@ export default function List(props: IProps) {
         },
       });
     }
-    if (item.name === 'unixtime') {
+    if (item.name === 'update_at') {
       columns.push({
         title: (
           <Space>
-            {t('unixtime')}
-            <Tooltip title={<Trans ns='targets' i18nKey='unixtime_tip' components={{ 1: <br /> }} />}>
+            {t('update_at')}
+            <Tooltip title={<Trans ns='targets' i18nKey='update_at_tip' components={{ 1: <br /> }} />}>
               <QuestionCircleOutlined />
             </Tooltip>
           </Space>
         ),
         width: 100,
-        dataIndex: 'unixtime',
+        dataIndex: 'update_at',
         render: (val, reocrd) => {
-          let result = moment(val).format('YYYY-MM-DD HH:mm:ss');
+          let result = moment.unix(val).format('YYYY-MM-DD HH:mm:ss');
           let backgroundColor = GREEN_COLOR;
-          if (reocrd.cpu_num === -1) {
-            result = 'unknown';
-          }
           if (reocrd.target_up === 0) {
             backgroundColor = RED_COLOR;
           } else if (reocrd.target_up === 1) {
@@ -386,6 +385,7 @@ export default function List(props: IProps) {
       bgid: curBusiId,
       limit: pageSize,
       p: current,
+      downtime,
     };
     return getMonObjectList(query).then((res) => {
       return {
@@ -409,7 +409,7 @@ export default function List(props: IProps) {
       current: 1,
       pageSize: tableProps.pagination.pageSize,
     });
-  }, [tableQueryContent, curBusiId, refreshFlag]);
+  }, [tableQueryContent, curBusiId, refreshFlag, downtime]);
 
   return (
     <div>
@@ -432,6 +432,21 @@ export default function List(props: IProps) {
             }}
             onBlur={() => {
               setTableQueryContent(searchVal);
+            }}
+          />
+          <Select
+            allowClear
+            placeholder={t('filterDowntime')}
+            style={{ width: 200 }}
+            options={_.map(downtimeOptions, (item) => {
+              return {
+                label: t('filterDowntimeMin', { count: item }),
+                value: item * 60,
+              };
+            })}
+            value={downtime}
+            onChange={(val) => {
+              setDowntime(val);
             }}
           />
         </Space>

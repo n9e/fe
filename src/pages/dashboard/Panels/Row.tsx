@@ -18,6 +18,7 @@ import React, { useState } from 'react';
 import { Space, Modal, Button, Mentions } from 'antd';
 import { CaretRightOutlined, CaretDownOutlined, HolderOutlined, SettingOutlined, DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
+import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { AddPanelIcon } from '../config';
 import { useGlobalState } from '../globalState';
@@ -49,7 +50,11 @@ export default function Row(props: IProps) {
   const [dashboardMeta] = useGlobalState('dashboardMeta');
 
   return (
-    <div className='dashboards-panels-row'>
+    <div
+      className={classNames('dashboards-panels-row', {
+        'dashboards-panels-row-collapsed': row.collapsed,
+      })}
+    >
       <div
         className='dashboards-panels-row-name'
         onClick={() => {

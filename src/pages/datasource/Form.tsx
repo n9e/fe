@@ -104,10 +104,10 @@ export default function FormCpt() {
             onFinish={(values, clusterInstance) => {
               if (
                 (type === 'prometheus' && !values.cluster_name) ||
-                (import.meta.env['VITE_IS_ALERT_ES'] && type === 'elasticsearch' && !values.cluster_name) ||
-                (import.meta.env['VITE_IS_INFLUXDB_DS'] && type === 'influxdb' && !values.cluster_name) ||
-                (import.meta.env['VITE_IS_CK_DS'] && type === 'ck' && !values.cluster_name) ||
-                (import.meta.env['VITE_IS_SLS_DS'] && type === 'aliyun-sls' && !values.cluster_name)
+                (type === 'elasticsearch' && !values.cluster_name) ||
+                (type === 'influxdb' && !values.cluster_name) ||
+                (type === 'ck' && !values.cluster_name) ||
+                (type === 'aliyun-sls' && !values.cluster_name)
               ) {
                 Modal.confirm({
                   title: t('form.cluster_confirm'),

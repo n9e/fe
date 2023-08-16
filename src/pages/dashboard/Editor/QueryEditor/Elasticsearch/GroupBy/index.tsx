@@ -4,7 +4,7 @@ import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useDebounceFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
-import { getFields } from '@/pages/explorer/Elasticsearch/services';
+import { getFields, getFullFields } from '@/pages/explorer/Elasticsearch/services';
 import Filters from './Filters';
 import Terms from './Terms';
 import Histgram from './Histgram';
@@ -24,11 +24,13 @@ export default function index({ prefixField = {}, prefixFieldNames = [], parentN
   const [fieldsOptions, setFieldsOptions] = useState<any[]>([]);
   const { run } = useDebounceFn(
     () => {
-      getFields(datasourceValue, index).then((res) => {
+      getFullFields(datasourceValue, index, {
+        includeSubFields: true,
+      }).then((res) => {
         setFieldsOptions(
           _.map(res.allFields, (item) => {
             return {
-              value: item,
+              value: item.name,
             };
           }),
         );

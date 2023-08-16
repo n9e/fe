@@ -6,5 +6,7 @@ const zh_CN = {
   json_label: '仪表盘 JSON',
   json_msg: 'JSON 格式错误，请检查',
   detail_no_result: '查询的内置仪表盘不存在',
+  tab_list: '仪表盘列表',
+  tab_instructions: '采集说明',
 };
 export default zh_CN;

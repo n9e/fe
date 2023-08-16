@@ -7,6 +7,7 @@ const en_US = {
   快捷视图: 'Quick View',
   记录规则: 'Record Rule',
   日志分析: 'Log Analysis',
+  索引模式: 'Index Patterns',
   链路追踪: 'Tracing',
   拓扑分析: 'Dependencies',
   基础设施: 'Infrastructure',
@@ -35,5 +36,7 @@ const en_US = {
   通知模板: 'Notification Template',
   通知设置: 'Notification Settings',
   采集配置: 'Collectors',
+  仪表盘迁移: 'Dashboard Migration',
+  全局屏蔽: 'Global Muting',
 };
 export default en_US;

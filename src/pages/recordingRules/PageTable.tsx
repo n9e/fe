@@ -320,7 +320,7 @@ const PageTable: React.FC<Props> = ({ bgid }) => {
 
   return (
     <div className='strategy-table-content'>
-      <div className='strategy-table-search table-handle'>
+      <div className='strategy-table-search'>
         <Space>
           <RefreshIcon
             onClick={() => {
@@ -347,21 +347,23 @@ const PageTable: React.FC<Props> = ({ bgid }) => {
           <SearchInput placeholder={t('search_placeholder')} onSearch={setQuery} allowClear />
         </Space>
         <div className='strategy-table-search-right'>
-          <Button type='primary' onClick={goToAddWarningStrategy} className='strategy-table-search-right-create'>
-            {t('common:btn.add')}
-          </Button>
-          <div className={'table-more-options'}>
-            <Dropdown overlay={menu} trigger={['click']}>
-              <Button onClick={(e) => e.stopPropagation()}>
-                {t('common:btn.more')}
-                <DownOutlined
-                  style={{
-                    marginLeft: 2,
-                  }}
-                />
-              </Button>
-            </Dropdown>
-          </div>
+          <Space>
+            <Button type='primary' onClick={goToAddWarningStrategy} className='strategy-table-search-right-create'>
+              {t('common:btn.add')}
+            </Button>
+            <div className={'table-more-options'}>
+              <Dropdown overlay={menu} trigger={['click']}>
+                <Button onClick={(e) => e.stopPropagation()}>
+                  {t('common:btn.more')}
+                  <DownOutlined
+                    style={{
+                      marginLeft: 2,
+                    }}
+                  />
+                </Button>
+              </Dropdown>
+            </div>
+          </Space>
         </div>
       </div>
 

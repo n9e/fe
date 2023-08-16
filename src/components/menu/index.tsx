@@ -225,8 +225,9 @@ const getMenuList = (t) => {
       ],
     },
   ];
-  if (import.meta.env['VITE_IS_COLLECT']) {
+  if (import.meta.env['VITE_IS_PRO']) {
     const targets = _.find(menuList, (item) => item.key === 'targets');
+
     if (targets) {
       targets.children?.push({
         key: '/collects',
@@ -335,10 +336,10 @@ const SideMenu: FC = () => {
     }
   }, [profile?.roles, i18n.language]);
 
-  return hideSideMenu() ? null : (
+  return (
     <div
       style={{
-        display: 'flex',
+        display: hideSideMenu() ? 'none' : 'flex',
         flexDirection: 'column',
         padding: '10px 0 10px 10px',
       }}

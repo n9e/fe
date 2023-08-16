@@ -285,18 +285,24 @@ export function stringToRegex(str: string): RegExp | false {
   }
 }
 
+export const getDefaultStepByStartAndEnd = (start: number, end: number) => {
+  return Math.max(Math.floor((end - start) / 240), 1);
+};
+
 export function replaceFieldWithVariable(value: string, dashboardId?: string, variableConfig?: IVariable[]) {
   if (!dashboardId || !variableConfig) {
     return value;
   }
   return replaceExpressionVars(value, variableConfig, variableConfig.length, dashboardId);
 }
+
 export const getOptionsList = (
   dashboardMeta: {
     dashboardId: string;
     variableConfigWithOptions: any;
   },
   time: IRawTimeRange,
+  step?: number,
 ) => {
   const rangeTime = parseRange(time);
   const from = moment(rangeTime.start).valueOf();
@@ -305,6 +311,7 @@ export const getOptionsList = (
   const to = moment(rangeTime.end).valueOf();
   const toDateSeconds = moment(rangeTime.end).unix();
   const toDateISO = moment(rangeTime.end).toISOString();
+  const interval = step ? step : getDefaultStepByStartAndEnd(fromDateSeconds, toDateSeconds);
   return [
     ...(dashboardMeta.variableConfigWithOptions ? dashboardMeta.variableConfigWithOptions : []),
     { name: '__from', value: from },
@@ -315,6 +322,12 @@ export const getOptionsList = (
     { name: '__to_date_seconds', value: toDateSeconds },
     { name: '__to_date_iso', value: toDateISO },
     { name: '__to_date', value: toDateISO },
+    { name: '__interval', value: `${interval}s` },
+    { name: '__interval_ms', value: `${interval * 1000}ms` },
+    { name: '__rate_interval', value: `${interval * 4}s` },
+    { name: '__range', value: `${toDateSeconds - fromDateSeconds}s` },
+    { name: '__range_s', value: `${toDateSeconds - fromDateSeconds}s` },
+    { name: '__range_ms', value: `${(toDateSeconds - fromDateSeconds) * 1000}ms` },
   ];
 };
 

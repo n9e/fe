@@ -67,6 +67,7 @@ const en_US = {
     host: {
       trigger: 'Trigger',
     },
+    trigger: 'Trigger',
   },
 };
 export default en_US;

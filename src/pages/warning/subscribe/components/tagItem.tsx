@@ -53,12 +53,12 @@ const TagItem: React.FC<Itag> = ({ field, remove, form }) => {
     <>
       <Row gutter={[10, 10]} style={{ marginBottom: '16px' }}>
         <Col span={5}>
-          <Form.Item style={{ marginBottom: 0 }} name={[field.name, 'key']} fieldKey={[field.name, 'key']} rules={[{ required: true, message: t('key不能为空') }]}>
+          <Form.Item style={{ marginBottom: 0 }} name={[field.name, 'key']} rules={[{ required: true, message: t('key不能为空') }]}>
             <Input />
           </Form.Item>
         </Col>
         <Col span={3}>
-          <Form.Item style={{ marginBottom: 0 }} name={[field.name, 'func']} fieldKey={[field.name, 'func']} initialValue='=='>
+          <Form.Item style={{ marginBottom: 0 }} name={[field.name, 'func']} initialValue='=='>
             <Select suffixIcon={<CaretDownOutlined />} onChange={funcChange}>
               <Option value='=='>==</Option>
               <Option value='=~'>=~</Option>
@@ -70,7 +70,7 @@ const TagItem: React.FC<Itag> = ({ field, remove, form }) => {
           </Form.Item>
         </Col>
         <Col span={15}>
-          <Form.Item style={{ marginBottom: 0 }} name={[field.name, 'value']} fieldKey={[field.name, 'value']} rules={[{ required: true, message: t('value不能为空') }]}>
+          <Form.Item style={{ marginBottom: 0 }} name={[field.name, 'value']} rules={[{ required: true, message: t('value不能为空') }]}>
             {['not in', 'in'].includes(funcCur) ? (
               <Select mode='tags' open={false} style={{ width: '100%' }} placeholder={t(valuePlaceholder)} tokenSeparators={[' ']}></Select>
             ) : (

@@ -7,14 +7,26 @@ const zh_HK = {
   user_groups: '告警接收組',
   tag: {
     key: {
-      label: '訂閱事件標籤 Key',
+      label: '訂閱事件標籤鍵',
       tip: '這裏的標籤是指告警事件的標籤，通過如下標籤匹配規則過濾告警事件',
     },
     func: {
       label: '運算子',
     },
     value: {
-      label: '標籤 Value',
+      label: '標籤值',
+    },
+  },
+  group: {
+    key: {
+      label: '訂閱業務組',
+      placeholder: '業務組',
+    },
+    func: {
+      label: '運算子',
+    },
+    value: {
+      label: '值',
     },
   },
   redefine_severity: '重新定義告警級別',
@@ -29,6 +41,7 @@ const zh_HK = {
   basic_configs: '基礎配置',
   severities: '訂閱事件等級',
   severities_msg: '訂閱事件等級不能為空',
+  tags_groups_require: '標籤和接收組至少填寫一項',
 };
 
 export default zh_HK;

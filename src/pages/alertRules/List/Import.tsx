@@ -14,27 +14,27 @@
  * limitations under the License.
  *
  */
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Modal, Input, Form, Table, Button, Divider, message, Select, Row, Col, Switch } from 'antd';
 import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { importStrategy } from '@/services/warning';
-import { getAuthorizedDatasourceCates } from '@/components/AdvancedWrap';
 import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
 
 interface IProps {
   busiId: number;
   refreshList: () => void;
   groupedDatasourceList: any;
+  datasourceCateOptions: any;
 }
 
 function Import(props: IProps & ModalWrapProps) {
   const { t } = useTranslation('alertRules');
-  const { visible, destroy, busiId, refreshList, groupedDatasourceList } = props;
+  const { visible, destroy, busiId, refreshList, groupedDatasourceList, datasourceCateOptions } = props;
   const [importResult, setImportResult] = useState<{ name: string; msg: string }[]>();
-  const datasourceCates = _.filter(getAuthorizedDatasourceCates(), (item) => item.type === 'metric');
+  const datasourceCates = _.filter(datasourceCateOptions, (item) => !!item.alertRule);
 
   return (
     <Modal

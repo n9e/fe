@@ -4,7 +4,7 @@ import { Link, useHistory, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
-import { List, Input, Button, Table, Space, Tag } from 'antd';
+import { List, Input, Button, Table, Space, Tag, Tabs } from 'antd';
 import { SafetyCertificateOutlined, SearchOutlined, StarFilled, StarOutlined } from '@ant-design/icons';
 import PageLayout from '@/components/pageLayout';
 import Export from '@/pages/dashboard/List/Export';
@@ -14,6 +14,7 @@ import { BoardCateType, BoardType } from './types';
 import { getDashboardCates, getDashboardDetail, postBuiltinCateFavorite, deleteBuiltinCateFavorite } from './services';
 import Import from './Import';
 import Detail from './Detail';
+import Instructions from './Instructions';
 import './locale';
 import './style.less';
 
@@ -31,9 +32,8 @@ export default function index() {
   const [boardSearch, setBoardSearch] = useState<string>('');
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
   const pagination = usePagination({ PAGESIZE_KEY: 'dashboard-builtin-pagesize' });
-  const allBoards = useRef<BoardType[]>([]);
   const selectedRows = useRef<BoardType[]>([]);
-  const datasource = active ? active.boards : allBoards.current;
+  const datasource = active ? active.boards : [];
   const filteredCates = _.orderBy(
     _.filter(data, (item) => {
       return _.upperCase(item.name).indexOf(_.upperCase(cateSearch)) > -1;
@@ -51,17 +51,8 @@ export default function index() {
 
   const fetchData = (cbk?: (dat: BoardCateType[]) => void) => {
     getDashboardCates().then((res) => {
-      allBoards.current = _.reduce(
-        res,
-        (result, item) => {
-          return _.concat(
-            result,
-            _.map(item.boards, (board) => ({ ...board, __cate__: item.name })),
-          );
-        },
-        [] as BoardType[],
-      );
       setData(res);
+      setActive(_.orderBy(res, ['favorite', 'name'], ['desc', 'asc'])[0]);
       if (cbk) {
         cbk(res);
       }
@@ -70,8 +61,9 @@ export default function index() {
 
   useEffect(() => {
     fetchData((dat) => {
-      if (query.cate) {
-        const cate = _.find(dat, { name: query.cate }) as BoardCateType;
+      const cateStr = query.cate ? query.cate : localStorage.getItem('builtin-cate');
+      if (cateStr) {
+        const cate = _.find(dat, { name: cateStr }) as BoardCateType;
         if (cate) {
           setActive(cate);
         }
@@ -114,6 +106,7 @@ export default function index() {
                       pathname: '/dashboards-built-in',
                       search: `?cate=${item.name}`,
                     });
+                    localStorage.setItem('builtin-cate', item.name);
                   }}
                   extra={
                     <span
@@ -143,145 +136,155 @@ export default function index() {
               )}
             />
           </div>
+
           <div className='resource-table-content'>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Input
-                prefix={<SearchOutlined />}
-                value={boardSearch}
-                onChange={(e) => {
-                  setBoardSearch(e.target.value);
-                }}
-                style={{ width: 300 }}
-                allowClear
-              />
-              <Space>
-                <Button
-                  onClick={() => {
-                    const requests = _.map(selectedRows.current, (item) => {
-                      return getDashboardDetail(item);
-                    });
-                    Promise.all(requests).then((res) => {
-                      Import({
-                        data: JSON.stringify(res, null, 4),
-                        busiGroups,
-                      });
-                    });
-                  }}
-                >
-                  {t('common:btn.batch_clone')}
-                </Button>
-                <Button
-                  onClick={() => {
-                    const requests = _.map(selectedRows.current, (item) => {
-                      return getDashboardDetail(item);
-                    });
-                    Promise.all(requests).then((res) => {
-                      Export({
-                        data: JSON.stringify(res, null, 4),
-                      });
-                    });
-                  }}
-                >
-                  {t('common:btn.batch_export')}
-                </Button>
-              </Space>
-            </div>
-            <Table
-              size='small'
-              rowKey='name'
-              pagination={pagination}
-              dataSource={filteredDatasource}
-              rowSelection={{
-                selectedRowKeys,
-                onChange: (selectedRowKeys: string[], rows: BoardType[]) => {
-                  setSelectedRowKeys(selectedRowKeys);
-                  selectedRows.current = rows;
-                },
-              }}
-              columns={[
-                {
-                  title: t('name'),
-                  dataIndex: 'name',
-                  key: 'name',
-                },
-                {
-                  title: t('tags'),
-                  dataIndex: 'tags',
-                  key: 'tags',
-                  render: (val) => {
-                    const tags = _.compact(_.split(val, ' '));
-                    return (
-                      <Space size='middle'>
-                        {_.map(tags, (tag, idx) => {
+            <Tabs>
+              <Tabs.TabPane tab={t('tab_list')} key='list'>
+                <>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Input
+                      prefix={<SearchOutlined />}
+                      value={boardSearch}
+                      onChange={(e) => {
+                        setBoardSearch(e.target.value);
+                      }}
+                      style={{ width: 300 }}
+                      allowClear
+                    />
+                    <Space>
+                      <Button
+                        onClick={() => {
+                          const requests = _.map(selectedRows.current, (item) => {
+                            return getDashboardDetail(item);
+                          });
+                          Promise.all(requests).then((res) => {
+                            Import({
+                              data: JSON.stringify(res, null, 4),
+                              busiGroups,
+                            });
+                          });
+                        }}
+                      >
+                        {t('common:btn.batch_clone')}
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          const requests = _.map(selectedRows.current, (item) => {
+                            return getDashboardDetail(item);
+                          });
+                          Promise.all(requests).then((res) => {
+                            Export({
+                              data: JSON.stringify(res, null, 4),
+                            });
+                          });
+                        }}
+                      >
+                        {t('common:btn.batch_export')}
+                      </Button>
+                    </Space>
+                  </div>
+                  <Table
+                    size='small'
+                    rowKey='name'
+                    pagination={pagination}
+                    dataSource={filteredDatasource}
+                    rowSelection={{
+                      selectedRowKeys,
+                      onChange: (selectedRowKeys: string[], rows: BoardType[]) => {
+                        setSelectedRowKeys(selectedRowKeys);
+                        selectedRows.current = rows;
+                      },
+                    }}
+                    columns={[
+                      {
+                        title: t('name'),
+                        dataIndex: 'name',
+                        key: 'name',
+                      },
+                      {
+                        title: t('tags'),
+                        dataIndex: 'tags',
+                        key: 'tags',
+                        render: (val) => {
+                          const tags = _.compact(_.split(val, ' '));
                           return (
-                            <Tag
-                              key={idx}
-                              color='purple'
-                              style={{ cursor: 'pointer' }}
-                              onClick={() => {
-                                const queryItem = _.compact(_.split(boardSearch, ' '));
-                                if (queryItem.includes(tag)) return;
-                                setBoardSearch((searchVal) => {
-                                  if (searchVal) {
-                                    return searchVal + ' ' + tag;
-                                  }
-                                  return tag;
-                                });
-                              }}
-                            >
-                              {tag}
-                            </Tag>
+                            <Space size='middle'>
+                              {_.map(tags, (tag, idx) => {
+                                return (
+                                  <Tag
+                                    key={idx}
+                                    color='purple'
+                                    style={{ cursor: 'pointer' }}
+                                    onClick={() => {
+                                      const queryItem = _.compact(_.split(boardSearch, ' '));
+                                      if (queryItem.includes(tag)) return;
+                                      setBoardSearch((searchVal) => {
+                                        if (searchVal) {
+                                          return searchVal + ' ' + tag;
+                                        }
+                                        return tag;
+                                      });
+                                    }}
+                                  >
+                                    {tag}
+                                  </Tag>
+                                );
+                              })}
+                            </Space>
                           );
-                        })}
-                      </Space>
-                    );
-                  },
-                },
-                {
-                  title: t('common:table.operations'),
-                  width: 120,
-                  render: (record) => {
-                    const cateValue = encodeURIComponent(active?.name || record?.__cate__);
-                    const nameValue = encodeURIComponent(record?.name);
-                    return (
-                      <Space>
-                        <Link
-                          to={{
-                            pathname: '/dashboards-built-in/detail',
-                            search: `__built-in-cate=${cateValue}&__built-in-name=${nameValue}`,
-                          }}
-                        >
-                          {t('common:btn.view')}
-                        </Link>
-                        <a
-                          onClick={() => {
-                            getDashboardDetail(record).then((res) => {
-                              Import({
-                                data: JSON.stringify(res, null, 4),
-                                busiGroups,
-                              });
-                            });
-                          }}
-                        >
-                          {t('common:btn.clone')}
-                        </a>
-                        <a
-                          onClick={() => {
-                            getDashboardDetail(record).then((res) => {
-                              Export({
-                                data: JSON.stringify(res, null, 4),
-                              });
-                            });
-                          }}
-                        >
-                          {t('common:btn.export')}
-                        </a>
-                      </Space>
-                    );
-                  },
-                },
-              ]}
-            />
+                        },
+                      },
+                      {
+                        title: t('common:table.operations'),
+                        width: 120,
+                        render: (record) => {
+                          const cateValue = encodeURIComponent(active?.name || record?.__cate__);
+                          const nameValue = encodeURIComponent(record?.name);
+                          return (
+                            <Space>
+                              <Link
+                                to={{
+                                  pathname: '/dashboards-built-in/detail',
+                                  search: `__built-in-cate=${cateValue}&__built-in-name=${nameValue}`,
+                                }}
+                              >
+                                {t('common:btn.view')}
+                              </Link>
+                              <a
+                                onClick={() => {
+                                  getDashboardDetail(record).then((res) => {
+                                    Import({
+                                      data: JSON.stringify(res, null, 4),
+                                      busiGroups,
+                                    });
+                                  });
+                                }}
+                              >
+                                {t('common:btn.clone')}
+                              </a>
+                              <a
+                                onClick={() => {
+                                  getDashboardDetail(record).then((res) => {
+                                    Export({
+                                      data: JSON.stringify(res, null, 4),
+                                    });
+                                  });
+                                }}
+                              >
+                                {t('common:btn.export')}
+                              </a>
+                            </Space>
+                          );
+                        },
+                      },
+                    ]}
+                  />
+                </>
+              </Tabs.TabPane>
+              <Tabs.TabPane tab={t('tab_instructions')} key='makedown'>
+                <Instructions name={query.cate as string} />
+              </Tabs.TabPane>
+            </Tabs>
           </div>
         </div>
       </div>

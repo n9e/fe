@@ -63,6 +63,7 @@
     font-size: @baseFontSizeMiddle;
     line-height: 32px;
     cursor: pointer;
+    display: none;
   }
 
   .tag-control-area {
@@ -73,6 +74,12 @@
       &:last-of-type {
         margin-left: 8px;
       }
+    }
+  }
+
+  &:hover {
+    .icon {
+      display: block;
     }
   }
 }

@@ -5,9 +5,10 @@ const zh_HK = {
   ident: '英文標識',
   ident_msg: '請輸入英文字母、數字、中劃線',
   search_placeholder: '儀表盤名稱、分類標籤',
-  refresh_tip: '重新整理間隔小於 step({{num}}s) 將不會更新資料',
-  refresh_btn: '重新整理',
+  refresh_tip: '刷新間隔小於 step({{num}}s) 將不會更新資料',
+  refresh_btn: '刷新',
   share_btn: '分享',
+  inspect_btn: '排查',
   public: {
     '0': {
       confirm: '確認公開嗎？',
@@ -30,6 +31,9 @@ const zh_HK = {
     label: '儀表盤 JSON',
     import_grafana: '匯入 Grafana 儀表盤 JSON',
     import_grafana_tip: '目前只支援匯入 v8+ 版本的儀表盤配置，匯入完的圖表只支援夜鶯目前支援的圖表型別和功能',
+    import_grafana_tip_version_error: '不支援匯入小於 v7 版本的儀表盤配置',
+    import_grafana_tip_version_warning: '匯入的儀表盤配置版本小於 v8，部分圖表可能無法正常顯示，是否繼續匯入？',
+    continueToImport: '繼續匯入',
   },
   link: {
     title: '儀表盤連結',
@@ -122,6 +126,12 @@ const zh_HK = {
         isNewBlank: '是否新視窗開啟',
       },
       description: '備註',
+      repeatOptions: {
+        title: '圖表重複',
+        byVariable: '變量',
+        byVariableTip: '根據變量的值來重複圖表',
+        maxPerRow: '每行最多顯示',
+      },
     },
     options: {
       legend: {
@@ -274,6 +284,11 @@ const zh_HK = {
       iframe: {
         src: 'iframe 地址',
       },
+    },
+    inspect: {
+      title: '排查',
+      query: '查詢',
+      json: '圖表配置',
     },
   },
   export: {

@@ -17,7 +17,7 @@
 import React, { useEffect, useState, createContext, useRef } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 // Modal 会被注入的代码所使用，请不要删除
-import { ConfigProvider, Empty, Modal } from 'antd';
+import { ConfigProvider, Modal } from 'antd';
 import zhCN from 'antd/lib/locale/zh_CN';
 import enUS from 'antd/lib/locale/en_US';
 import 'antd/dist/antd.less';
@@ -25,12 +25,16 @@ import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import TaskOutput from '@/pages/taskOutput';
 import TaskHostOutput from '@/pages/taskOutput/host';
-import { getAuthorizedDatasourceCates } from '@/components/AdvancedWrap';
+import { getAuthorizedDatasourceCates, Cate } from '@/components/AdvancedWrap';
 import { GetProfile } from '@/services/account';
-import { getBusiGroups, getDatasourceList, getDatasourceBriefList } from '@/services/common';
+import { getBusiGroups, getDatasourceBriefList } from '@/services/common';
 import { getLicense } from '@/components/AdvancedWrap';
+import { getVersions } from '@/components/pageLayout/Version/services';
 import HeaderMenu from './components/menu';
 import Content from './routers';
+
+// @ts-ignore
+import useIsPlus from 'plus:/components/useIsPlus';
 
 import './App.less';
 import './global.variable.less';
@@ -55,10 +59,7 @@ interface Datasource {
 }
 
 export interface ICommonState {
-  datasourceCateOptions: {
-    label: string;
-    value: string;
-  }[];
+  datasourceCateOptions: Cate[];
   groupedDatasourceList: {
     [index: string]: Datasource[];
   };
@@ -76,6 +77,16 @@ export interface ICommonState {
   licenseRulesRemaining?: number;
   licenseExpireDays?: number;
   licenseExpired: boolean;
+  versions: {
+    version: string;
+    github_verison: string;
+    newVersion: boolean;
+  };
+  feats?: {
+    fcBrain: boolean;
+    plugins: any[];
+  };
+  isPlus: boolean;
 }
 
 // 可以匿名访问的路由 TODO: job-task output 应该也可以匿名访问
@@ -87,9 +98,10 @@ export const CommonStateContext = createContext({} as ICommonState);
 
 function App() {
   const { t, i18n } = useTranslation();
+  const isPlus = useIsPlus();
   const initialized = useRef(false);
   const [commonState, setCommonState] = useState<ICommonState>({
-    datasourceCateOptions: getAuthorizedDatasourceCates(),
+    datasourceCateOptions: [],
     groupedDatasourceList: {},
     datasourceList: [],
     setDatasourceList: (datasourceList) => {
@@ -109,6 +121,12 @@ function App() {
       setCommonState((state) => ({ ...state, profile }));
     },
     licenseExpired: false,
+    versions: {
+      version: '',
+      github_verison: '',
+      newVersion: false,
+    },
+    isPlus,
   });
 
   useEffect(() => {
@@ -118,8 +136,12 @@ function App() {
         if (!anonymous) {
           const { dat: profile } = await GetProfile();
           const { dat: busiGroups } = await getBusiGroups();
-          const datasourceList = await getDatasourceList();
-          const { licenseRulesRemaining, licenseExpireDays } = await getLicense(t);
+          const datasourceList = await getDatasourceBriefList();
+          const { licenseRulesRemaining, licenseExpireDays, feats } = await getLicense(t);
+          let versions = { version: '', github_verison: '', newVersion: false };
+          if (!isPlus) {
+            versions = await getVersions();
+          }
           const defaultBusiId = commonState.curBusiId || busiGroups?.[0]?.id;
           window.localStorage.setItem('curBusiId', String(defaultBusiId));
           initialized.current = true;
@@ -128,12 +150,15 @@ function App() {
               ...state,
               profile,
               busiGroups,
+              datasourceCateOptions: getAuthorizedDatasourceCates(feats, isPlus),
               groupedDatasourceList: _.groupBy(datasourceList, 'plugin_type'),
               datasourceList: datasourceList,
               curBusiId: defaultBusiId,
               licenseRulesRemaining,
               licenseExpireDays,
               licenseExpired: licenseExpireDays !== undefined && licenseExpireDays <= 0,
+              versions,
+              feats,
             };
           });
           if (_.isEmpty(datasourceList) && !_.startsWith(location.pathname, '/help/source')) {

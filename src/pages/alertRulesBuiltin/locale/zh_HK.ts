@@ -7,6 +7,8 @@ const zh_HK = {
   json_label: '規則 JSON',
   json_msg: 'JSON 格式錯誤，請檢查',
   detail_no_result: '查詢的內建規則不存在',
+  tab_list: '規則列表',
+  tab_instructions: '採集說明',
 };
 
 export default zh_HK;

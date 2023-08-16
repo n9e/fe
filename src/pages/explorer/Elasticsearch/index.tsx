@@ -4,7 +4,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import queryString, { ParsedQuery } from 'query-string';
 import { useTranslation } from 'react-i18next';
-import { Table, Empty, Spin, InputNumber, Select, Radio, Space, Checkbox, Form } from 'antd';
+import { Table, Empty, Spin, InputNumber, Select, Radio, Space, Checkbox, Tag, Form } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
 import { DownOutlined, RightOutlined, LeftOutlined } from '@ant-design/icons';
 import CodeMirror from '@uiw/react-codemirror';
@@ -16,9 +16,8 @@ import { getLogsQuery } from './services';
 import { parseRange } from '@/components/TimeRangePicker';
 import Timeseries from '@/pages/dashboard/Renderer/Renderer/Timeseries';
 import metricQuery from './metricQuery';
-import { getColumnsFromFields, normalizeLogs } from './utils';
-import FieldsSidebar from '../components/FieldsSidebar';
-import { normalizeLogsQueryRequestBody } from './utils';
+import { getColumnsFromFields, normalizeLogs, Field, dslBuilder, Filter, getFieldLabel } from './utils';
+import FieldsSidebar from './FieldsSidebar';
 import QueryBuilder from './QueryBuilder';
 import QueryBuilderWithIndexPatterns from './QueryBuilderWithIndexPatterns';
 import './style.less';
@@ -104,12 +103,14 @@ export default function index(props: IProps) {
   const [total, setTotal] = useState(0);
   const [series, setSeries] = useState<any[]>([]);
   const [displayTimes, setDisplayTimes] = useState('');
-  const [fields, setFields] = useState<string[]>([]);
-  const [selectedFields, setSelectedFields] = useState<string[]>([]);
+  const [fields, setFields] = useState<Field[]>([]);
+  const [selectedFields, setSelectedFields] = useState<Field[]>([]);
   const [interval, setInterval] = useState(1);
   const [intervalUnit, setIntervalUnit] = useState<'second' | 'min' | 'hour'>('min');
   const [chartVisible, setChartVisible] = useState(true);
   const [collapsed, setCollapsed] = useState(true);
+  const [filters, setFilters] = useState<Filter[]>();
+  const fieldConfig = Form.useWatch('fieldConfig', form);
   const sortOrder = useRef('desc');
   const timesRef =
     useRef<{
@@ -118,18 +119,17 @@ export default function index(props: IProps) {
     }>();
   const [mode, setMode] = useState<IMode>(getDefaultMode(query, isOpenSearch));
   const [allowHideSystemIndices, setAllowHideSystemIndices] = useState<boolean>(false);
-  const indexValue = Form.useWatch(['query', 'index']);
 
   const fetchSeries = (values) => {
     if (timesRef.current) {
       const { start, end } = timesRef.current;
       metricQuery({
         ...timesRef.current,
-        datasourceCate: 'elasticsearch',
         datasourceValue: values.datasourceValue,
         query: values.query,
         interval,
         intervalUnit,
+        filters,
       }).then((res) => {
         setDisplayTimes(`${moment(start).format(TIME_FORMAT)} - ${moment(end).format(TIME_FORMAT)}`);
         setSeries(res || []);
@@ -144,15 +144,19 @@ export default function index(props: IProps) {
         end: moment(end).valueOf(),
       };
       setLoading(true);
+
       getLogsQuery(
         values.datasourceValue,
-        normalizeLogsQueryRequestBody({
-          ...timesRef.current,
+        dslBuilder({
           index: values.query.index,
-          filter: values.query.filter,
+          ...timesRef.current,
           date_field: values.query.date_field,
+          filters,
+          query_string: values.query.filter,
           limit: LOGS_LIMIT,
           order: sortOrder.current,
+          orderField: values.query.date_field,
+          _source: true,
         }),
       )
         .then((res) => {
@@ -163,6 +167,7 @@ export default function index(props: IProps) {
               json: item._source,
             };
           });
+          console.log('newData', newData);
           setData(newData);
           setTotal(res.total);
           const tableEleNodes = document.querySelectorAll(`.es-discover-logs-table .ant-table-body`)[0];
@@ -213,6 +218,12 @@ export default function index(props: IProps) {
     fetchSeries(form.getFieldsValue());
   }, [interval, intervalUnit]);
 
+  useEffect(() => {
+    if (_.isArray(filters)) {
+      fetchData();
+    }
+  }, [JSON.stringify(filters)]);
+
   return (
     <div className='es-discover-container'>
       {!isOpenSearch && (
@@ -242,22 +253,29 @@ export default function index(props: IProps) {
         </>
       )}
 
-      {mode === IMode.indices && (
-        <QueryBuilder
-          onExecute={fetchData}
-          datasourceValue={datasourceValue}
-          form={form}
-          fields={fields}
-          setFields={setFields}
-          selectedFields={selectedFields}
-          setSelectedFields={setSelectedFields}
-          allowHideSystemIndices={allowHideSystemIndices}
-        />
-      )}
+      {mode === IMode.indices && <QueryBuilder onExecute={fetchData} datasourceValue={datasourceValue} setFields={setFields} allowHideSystemIndices={allowHideSystemIndices} />}
       {mode === IMode.indexPatterns && (
         <QueryBuilderWithIndexPatterns onExecute={fetchData} datasourceValue={datasourceValue} form={form} setFields={setFields} onIndexChange={handlerIndexChange} />
       )}
-      <div style={{ height: 'calc(100% - 50px)' }}>
+      <div style={{ height: 'calc(100% - 50px)', display: 'flex', flexDirection: 'column' }}>
+        {!_.isEmpty(filters) && (
+          <div className='es-discover-filters'>
+            {_.map(filters, (filter) => {
+              return (
+                <Tag
+                  closable
+                  color={filter.operator === 'is not' ? 'red' : undefined}
+                  onClose={(e) => {
+                    e.preventDefault();
+                    setFilters(_.filter(filters, (item) => item.key !== filter.key));
+                  }}
+                >
+                  {getFieldLabel(filter.key, fieldConfig)} {filter.operator === 'is not' ? '!=' : '='} {filter.value}
+                </Tag>
+              );
+            })}
+          </div>
+        )}
         <Spin spinning={loading}>
           {!_.isEmpty(data) ? (
             <div className='es-discover-content'>
@@ -269,6 +287,25 @@ export default function index(props: IProps) {
                   value={selectedFields}
                   onChange={setSelectedFields}
                   params={{ form, timesRef, datasourceValue, order: sortOrder.current, limit: LOGS_LIMIT }}
+                  filters={filters}
+                  onValueFilter={({ key, value, operator }) => {
+                    if (!_.find(filters, { key })) {
+                      setFilters([...(filters || []), { key, value, operator }]);
+                    } else {
+                      setFilters(
+                        _.map(filters, (item) => {
+                          if (item.key === key) {
+                            return {
+                              ...item,
+                              value,
+                              operator,
+                            };
+                          }
+                          return item;
+                        }),
+                      );
+                    }
+                  }}
                 />
               )}
               <div
@@ -363,7 +400,7 @@ export default function index(props: IProps) {
                   className='es-discover-logs-table'
                   tableLayout='fixed'
                   rowKey='id'
-                  columns={getColumnsFromFields(selectedFields, form.getFieldValue(['query', 'date_field']), form.getFieldValue(['fieldConfig']))}
+                  columns={getColumnsFromFields(selectedFields, form.getFieldValue(['query', 'date_field']), form.getFieldValue(['fieldConfig']), filters)}
                   dataSource={data}
                   expandable={{
                     expandedRowRender: (record) => {

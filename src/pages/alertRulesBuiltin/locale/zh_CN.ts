@@ -7,5 +7,7 @@ const zh_CN = {
   json_label: '规则 JSON',
   json_msg: 'JSON 格式错误，请检查',
   detail_no_result: '查询的内置规则不存在',
+  tab_list: '规则列表',
+  tab_instructions: '采集说明',
 };
 export default zh_CN;

@@ -18,7 +18,9 @@
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 import _ from 'lodash';
-import { mappingsToFields, mappingsToFullFields, flattenHits } from './utils';
+import { mappingsToFields, mappingsToFullFields, flattenHits, Field, typeMap, Filter } from './utils';
+export type { Field, Filter };
+export { typeMap };
 
 export function getIndices(datasourceValue: number, allow_hide_system_indices = false) {
   const params: any = {
@@ -73,7 +75,18 @@ export function getFields(datasourceValue: number, index?: string, type?: string
   });
 }
 
-export function getFullFields(datasourceValue: number, index?: string, type?: string, allow_hide_system_indices = false) {
+export function getFullFields(
+  datasourceValue: number,
+  index?: string,
+  options: {
+    type?: string;
+    allowHideSystemIndices?: boolean;
+    includeSubFields?: boolean;
+  } = {
+    allowHideSystemIndices: false,
+    includeSubFields: false,
+  },
+) {
   const url = index ? `/${index}/_mapping` : '/_mapping';
   return request(`/api/n9e/proxy/${datasourceValue}${url}`, {
     method: RequestMethod.Get,
@@ -82,18 +95,29 @@ export function getFullFields(datasourceValue: number, index?: string, type?: st
         expand_wildcards: 'all',
         pretty: true,
       },
-      allow_hide_system_indices ? [] : ['expand_wildcards'],
+      options.allowHideSystemIndices ? [] : ['expand_wildcards'],
     ),
     silence: true,
   }).then((res) => {
     return {
-      allFields: _.unionBy(mappingsToFullFields(res), (item) => {
-        return item.name + item.type;
-      }),
-      fields: type
-        ? _.unionBy(mappingsToFullFields(res, type), (item) => {
-            return item.name + item.type;
-          })
+      allFields: _.unionBy(
+        mappingsToFullFields(res, {
+          includeSubFields: options.includeSubFields,
+        }),
+        (item) => {
+          return item.name + item.type;
+        },
+      ),
+      fields: options.type
+        ? _.unionBy(
+            mappingsToFullFields(res, {
+              type: options.type,
+              includeSubFields: options.includeSubFields,
+            }),
+            (item) => {
+              return item.name + item.type;
+            },
+          )
         : [],
     };
   });

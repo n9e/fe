@@ -44,6 +44,7 @@
 
 .dashboard-detail-container {
   padding: 0 !important;
+  margin-right: 0 !important;
 }
 
 .dashboard-detail-content {
@@ -52,13 +53,31 @@
   height: 100%;
   background-color: #f9f9f9 !important; // 覆盖 pageLayout 上面约定的样式
   box-shadow: unset !important;
+  overflow: auto;
+  overflow-x: hidden;
   .variable-area {
     display: flex;
+    width: 100%;
     .date-picker-area {
       display: flex;
       width: 400px;
       height: 32px;
       flex-shrink: 0;
+    }
+  }
+
+  .ant-affix {
+    .dashboard-detail-content-header-container {
+      background-color: #f9f9f9;
+      box-shadow: 0 4px 4px rgba(0, 0, 0, .12);
+    }
+    .dashboard-detail-content-header {
+      padding: 0 10px 10px 10px;
+    }
+  }
+  .dashboard-detail-content-header-container {
+    .ant-alert {
+      padding: 4px 8px;
     }
   }
 
@@ -70,8 +89,6 @@
   }
   .dashboards-panels {
     flex: 1;
-    overflow: auto;
-    overflow-x: hidden;
     background-color: unset !important;
 
     .ant-tooltip-inner {

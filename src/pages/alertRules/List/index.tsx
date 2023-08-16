@@ -21,8 +21,6 @@ import _ from 'lodash';
 import moment from 'moment';
 import { Table, Tag, Switch, Modal, Space, Button, Row, Col, message, Select, Tooltip } from 'antd';
 import { ColumnType } from 'antd/lib/table';
-import AdvancedWrap from '@/components/AdvancedWrap';
-import { DatasourceSelectInSearch } from '@/components/DatasourceSelect';
 import RefreshIcon from '@/components/RefreshIcon';
 import SearchInput from '@/components/BaseSearchInput';
 import usePagination from '@/components/usePagination';
@@ -30,9 +28,9 @@ import { getStrategyGroupSubList, updateAlertRules, deleteStrategy } from '@/ser
 import { CommonStateContext } from '@/App';
 import { priorityColor } from '@/utils/constant';
 import Tags from '@/components/Tags';
+import { DatasourceSelect, ProdSelect } from '@/components/DatasourceSelect';
 import { AlertRuleType, AlertRuleStatus } from '../types';
 import MoreOperations from './MoreOperations';
-import { ruleTypeOptions } from '../Form/constants';
 
 interface ListProps {
   bgid?: number;
@@ -171,7 +169,7 @@ export default function List(props: ListProps) {
     {
       title: t('common:table.update_at'),
       dataIndex: 'update_at',
-      width: 150,
+      width: 90,
       render: (text: string) => {
         return <div className='table-text'>{moment.unix(Number(text)).format('YYYY-MM-DD HH:mm:ss')}</div>;
       },
@@ -179,12 +177,12 @@ export default function List(props: ListProps) {
     {
       title: t('common:table.update_by'),
       dataIndex: 'update_by',
-      width: 60,
+      width: 65,
     },
     {
       title: t('common:table.enabled'),
       dataIndex: 'disabled',
-      width: 40,
+      width: 65,
       render: (disabled, record) => (
         <Switch
           checked={disabled === AlertRuleStatus.Enable}
@@ -209,7 +207,7 @@ export default function List(props: ListProps) {
     },
     {
       title: t('common:table.operations'),
-      width: 130,
+      width: 160,
       render: (record: any) => {
         return (
           <Space>
@@ -243,7 +241,7 @@ export default function List(props: ListProps) {
             </div>
             {record.prod === 'anomaly' && (
               <div>
-                <Link to={{ pathname: `/alert-rules/brain/${record.id}` }}>训练结果</Link>
+                <Link to={{ pathname: `/alert-rules/brain/${record.id}` }}>{t('brain_result_btn')}</Link>
               </div>
             )}
           </Space>
@@ -251,6 +249,13 @@ export default function List(props: ListProps) {
       },
     },
   ];
+  const includesProm = (ids?: number[]) => {
+    return _.some(ids, (id) => {
+      return _.some(datasourceList, (item) => {
+        if (item.id === id) return item.plugin_type === 'prometheus';
+      });
+    });
+  };
 
   const filterData = () => {
     return data.filter((item) => {
@@ -258,7 +263,6 @@ export default function List(props: ListProps) {
       const lowerCaseQuery = search?.toLowerCase() || '';
       return (
         (item.name.toLowerCase().indexOf(lowerCaseQuery) > -1 || item.append_tags.join(' ').toLowerCase().indexOf(lowerCaseQuery) > -1) &&
-        ((cate && cate === item.cate) || !cate) &&
         ((prod && prod === item.prod) || !prod) &&
         ((item.severities &&
           _.some(item.severities, (severity) => {
@@ -267,7 +271,7 @@ export default function List(props: ListProps) {
           })) ||
           !item.severities) &&
         (_.some(item.datasource_ids, (id) => {
-          if (id === 0) return true;
+          if (includesProm(datasourceIds) && id === 0) return true;
           return _.includes(datasourceIds, id);
         }) ||
           datasourceIds?.length === 0 ||
@@ -306,72 +310,24 @@ export default function List(props: ListProps) {
                 getAlertRules();
               }}
             />
-            <AdvancedWrap var='VITE_IS_ALERT_AI,VITE_IS_ALERT_ES,VITE_IS_SLS_DS'>
-              {(isShow) => {
-                let options = ruleTypeOptions;
-                if (isShow[0]) {
-                  options = [
-                    ...options,
-                    {
-                      label: 'Anomaly',
-                      value: 'anomaly',
-                      pro: true,
-                    },
-                  ];
-                }
-                if (isShow[1] || isShow[2]) {
-                  options = [
-                    ...options,
-                    {
-                      label: 'Log',
-                      value: 'logging',
-                      pro: true,
-                    },
-                  ];
-                }
-                return (
-                  <Select
-                    style={{ width: 90 }}
-                    placeholder={t('prod')}
-                    allowClear
-                    value={filter.prod}
-                    onChange={(val) => {
-                      setFilter({
-                        ...filter,
-                        prod: val,
-                      });
-                    }}
-                  >
-                    {options.map((item) => {
-                      return (
-                        <Select.Option value={item.value} key={item.value}>
-                          {item.label}
-                        </Select.Option>
-                      );
-                    })}
-                  </Select>
-                );
-              }}
-            </AdvancedWrap>
-            <DatasourceSelectInSearch
-              datasourceCate={filter.cate}
-              onDatasourceCateChange={(val) => {
+            <ProdSelect
+              style={{ width: 90 }}
+              value={filter.prod}
+              onChange={(val) => {
                 setFilter({
                   ...filter,
-                  cate: val,
+                  prod: val,
                 });
               }}
-              datasourceValue={filter.datasourceIds}
-              datasourceValueMode='multiple'
-              onDatasourceValueChange={(val: number[]) => {
+            />
+            <DatasourceSelect
+              style={{ width: 100 }}
+              filterKey='alertRule'
+              value={filter.datasourceIds}
+              onChange={(val) => {
                 setFilter({
                   ...filter,
                   datasourceIds: val,
-                });
-              }}
-              filterCates={(cates) => {
-                return _.filter(cates, (item) => {
-                  return !!item.alertRule;
                 });
               }}
             />

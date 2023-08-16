@@ -21,6 +21,7 @@ import { Button, Space, Dropdown, Menu } from 'antd';
 import { DownOutlined, EditOutlined } from '@ant-design/icons';
 import Edit from './Edit';
 import { ILink } from '../types';
+import './style.less';
 
 interface IProps {
   editable?: boolean;
@@ -32,44 +33,46 @@ export default function index(props: IProps) {
   const { t } = useTranslation('dashboard');
   const { editable = true, value } = props;
   return (
-    <Space align='baseline'>
-      <Dropdown
-        overlay={
-          <Menu>
-            {_.isEmpty(value) ? (
-              <div style={{ textAlign: 'center' }}>{t('common:nodata')}</div>
-            ) : (
-              _.map(value, (item, idx) => {
-                return (
-                  <Menu.Item key={idx}>
-                    <a href={item.url} target={item.targetBlank ? '_blank' : '_self'}>
-                      {item.title}
-                    </a>
-                  </Menu.Item>
-                );
-              })
-            )}
-          </Menu>
-        }
-      >
-        <Button>
-          {t('link.title')} <DownOutlined />
-        </Button>
-      </Dropdown>
-      {editable && (
-        <EditOutlined
-          style={{ fontSize: 18 }}
-          className='icon'
-          onClick={() => {
-            Edit({
-              initialValues: value,
-              onOk: (newValue) => {
-                props.onChange(newValue);
-              },
-            });
-          }}
-        />
-      )}
-    </Space>
+    <div className='dashboard-detail-links'>
+      <Space align='baseline'>
+        {editable && (
+          <EditOutlined
+            style={{ fontSize: 18 }}
+            className='icon'
+            onClick={() => {
+              Edit({
+                initialValues: value,
+                onOk: (newValue) => {
+                  props.onChange(newValue);
+                },
+              });
+            }}
+          />
+        )}
+        <Dropdown
+          overlay={
+            <Menu>
+              {_.isEmpty(value) ? (
+                <div style={{ textAlign: 'center' }}>{t('common:nodata')}</div>
+              ) : (
+                _.map(value, (item, idx) => {
+                  return (
+                    <Menu.Item key={idx}>
+                      <a href={item.url} target={item.targetBlank ? '_blank' : '_self'}>
+                        {item.title}
+                      </a>
+                    </Menu.Item>
+                  );
+                })
+              )}
+            </Menu>
+          }
+        >
+          <Button>
+            {t('link.title')} <DownOutlined />
+          </Button>
+        </Dropdown>
+      </Space>
+    </div>
   );
 }

@@ -61,6 +61,44 @@ function index(props: IProps) {
       type: item.type || 'query',
     };
   });
+  const renderBtns = () => {
+    if (editable && !isPreview) {
+      if (_.isEmpty(data)) {
+        return (
+          <a
+            onClick={() => {
+              setEditing(true);
+              onOpenFire && onOpenFire();
+            }}
+          >
+            {t('var.btn')}
+          </a>
+        );
+      } else if (_.isEmpty(_.filter(data, (item) => !item.hide && item.type !== 'constant'))) {
+        return (
+          <a
+            onClick={() => {
+              setEditing(true);
+              onOpenFire && onOpenFire();
+            }}
+          >
+            {t('var.title.edit')}
+          </a>
+        );
+      } else {
+        return (
+          <EditOutlined
+            className='icon'
+            onClick={() => {
+              setEditing(true);
+              onOpenFire && onOpenFire();
+            }}
+          />
+        );
+      }
+    }
+    return null;
+  };
 
   useEffect(() => {
     if (value) {
@@ -187,26 +225,7 @@ function index(props: IProps) {
             />
           );
         })}
-        {editable && !isPreview ? (
-          <EditOutlined
-            className='icon'
-            onClick={() => {
-              setEditing(true);
-              onOpenFire && onOpenFire();
-            }}
-          />
-        ) : null}
-        {(data ? _.filter(data, (item) => item.type != 'constant')?.length === 0 : true) && editable && !isPreview && (
-          <div
-            className='add-variable-tips'
-            onClick={() => {
-              setEditing(true);
-              onOpenFire && onOpenFire();
-            }}
-          >
-            {t('var.btn')}
-          </div>
-        )}
+        {renderBtns()}
       </div>
       <EditItems
         visible={editing}

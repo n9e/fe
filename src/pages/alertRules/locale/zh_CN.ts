@@ -136,5 +136,6 @@ const zh_CN = {
       },
     },
   },
+  brain_result_btn: '训练结果',
 };
 export default zh_CN;

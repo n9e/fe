@@ -108,7 +108,7 @@ export default function EditItems(props: IProps) {
               },
             },
             {
-              title: t('common:operations'),
+              title: t('common:table.operations'),
               width: 150,
               render: (_text, record, idx) => {
                 return (
