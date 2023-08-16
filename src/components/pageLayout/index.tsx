@@ -43,7 +43,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
   const { t, i18n } = useTranslation('pageLayout');
   const history = useHistory();
   const { profile } = useContext(CommonStateContext);
-  const embled = localStorage.getItem('embled') === '1';
+  const embled = localStorage.getItem('embled') === '1' && window.self !== window.top
   const menu = (
     <Menu>
       <Menu.Item
