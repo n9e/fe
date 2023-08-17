@@ -37,6 +37,7 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
   let start = moment(parsedRange.start).unix();
   let end = moment(parsedRange.end).unix();
   let _step: any = getDefaultStepByStartAndEnd(start, end);
+
   const series: any[] = [];
   let batchQueryParams: any[] = [];
   let batchInstantParams: any[] = [];

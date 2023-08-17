@@ -234,6 +234,10 @@ const getMenuList = (t) => {
         label: t('采集配置'),
       });
       targets.children?.push({
+        key: '/collect-tpls',
+        label: t('采集模板'),
+      });
+      targets.children?.push({
         key: '/network-devices',
         label: t('网络设备'),
       });
