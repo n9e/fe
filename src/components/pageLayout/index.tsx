@@ -43,7 +43,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
   const { t, i18n } = useTranslation('pageLayout');
   const history = useHistory();
   const { profile } = useContext(CommonStateContext);
-  const embled = localStorage.getItem('embled') === '1' && window.self !== window.top
+  const embed = localStorage.getItem('embed') === '1' && window.self !== window.top
   const menu = (
     <Menu>
       <Menu.Item
@@ -70,7 +70,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
 
   return (
     <div className={'page-wrapper'}>
-      {!embled && (
+      {!embed && (
         <>
           {' '}
           {customArea ? (
