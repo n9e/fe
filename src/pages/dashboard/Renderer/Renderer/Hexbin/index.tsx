@@ -54,6 +54,7 @@ const Hexbin: FunctionComponent<HoneyCombProps> = (props) => {
         dateFormat: options?.standardOptions?.dateFormat,
       },
       options?.valueMappings,
+      options?.thresholds,
     );
     const colorScales = d3
       .scaleLinear()
@@ -77,7 +78,7 @@ const Hexbin: FunctionComponent<HoneyCombProps> = (props) => {
         return {
           ...item,
           value: item.text,
-          color: item.color || colorScales(item.stat) || '#3399CC',
+          color: _.isEqual(colorRange, ['thresholds']) ? item.color : colorScales(item.stat) || '#3399CC',
         };
       });
       d3.select(groupEl.current).selectAll('*').remove();

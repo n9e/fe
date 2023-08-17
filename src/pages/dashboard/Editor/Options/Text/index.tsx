@@ -17,7 +17,7 @@
 import React from 'react';
 import GraphStyles from './GraphStyles';
 
-export default function Timeseries({ variableConfigWithOptions }) {
+export default function Text({ variableConfigWithOptions }) {
   return (
     <>
       <GraphStyles variableConfigWithOptions={variableConfigWithOptions} />

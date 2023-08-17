@@ -70,6 +70,7 @@ export default function index() {
               onClick={() => {
                 add(
                   {
+                    color: '#ef843c',
                     value: 0,
                     type: '', // 只是为了不让合并默认值的时候被覆盖
                   },

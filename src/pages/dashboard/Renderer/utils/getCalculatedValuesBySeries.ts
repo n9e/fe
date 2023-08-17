@@ -63,7 +63,7 @@ export const getSerieTextObj = (value: number | string | null | undefined, stand
       return Number(item.value);
     }),
     (item) => {
-      if (item.value && value) {
+      if (_.isNumber(item.value) && value) {
         value = _.toNumber(value) as number;
         if (value >= item.value) {
           matchedThresholdsColor = item.color;

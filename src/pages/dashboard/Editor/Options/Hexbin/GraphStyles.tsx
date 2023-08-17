@@ -27,6 +27,7 @@ import '../../../Components/ColorRangeMenu/style.less';
 export default function GraphStyles() {
   const { t, i18n } = useTranslation('dashboard');
   const namePrefix = ['custom'];
+  const colorRange = Form.useWatch([...namePrefix, 'colorRange']);
 
   return (
     <Panel header={t('panel.custom.title')}>
@@ -63,16 +64,17 @@ export default function GraphStyles() {
                   return (
                     <Select.Option key={item.label} label={item.label} value={_.join(item.value, ',')}>
                       <span className='color-scales-menu-colors'>
-                        {_.map(item.value, (color) => {
-                          return (
-                            <span
-                              key={color}
-                              style={{
-                                backgroundColor: color,
-                              }}
-                            />
-                          );
-                        })}
+                        {item.type === 'palette' &&
+                          _.map(item.value, (color) => {
+                            return (
+                              <span
+                                key={color}
+                                style={{
+                                  backgroundColor: color,
+                                }}
+                              />
+                            );
+                          })}
                       </span>
                       {item.label}
                     </Select.Option>
@@ -81,39 +83,48 @@ export default function GraphStyles() {
               </Select>
             </Form.Item>
           </Col>
-          <Col span={8}>
-            <Form.Item label={t('panel.custom.reverseColorOrder')} name={[...namePrefix, 'reverseColorOrder']} valuePropName='checked'>
-              <Switch />
-            </Form.Item>
-          </Col>
+          {colorRange !== 'thresholds' && (
+            <Col span={8}>
+              <Form.Item label={t('panel.custom.reverseColorOrder')} name={[...namePrefix, 'reverseColorOrder']} valuePropName='checked'>
+                <Switch />
+              </Form.Item>
+            </Col>
+          )}
         </Row>
-        <Row gutter={10}>
-          <Col span={8}>
-            <Form.Item label={t('panel.custom.colorDomainAuto')} tooltip={t('panel.custom.colorDomainAuto_tip')} name={[...namePrefix, 'colorDomainAuto']} valuePropName='checked'>
-              <Switch />
+        {colorRange !== 'thresholds' && (
+          <Row gutter={10}>
+            <Col span={8}>
+              <Form.Item
+                label={t('panel.custom.colorDomainAuto')}
+                tooltip={t('panel.custom.colorDomainAuto_tip')}
+                name={[...namePrefix, 'colorDomainAuto']}
+                valuePropName='checked'
+              >
+                <Switch />
+              </Form.Item>
+            </Col>
+            <Form.Item shouldUpdate noStyle>
+              {({ getFieldValue }) => {
+                if (!getFieldValue([...namePrefix, 'colorDomainAuto'])) {
+                  return (
+                    <>
+                      <Col span={8}>
+                        <Form.Item label='min' name={[...namePrefix, 'colorDomain', 0]}>
+                          <InputNumber style={{ width: '100%' }} />
+                        </Form.Item>
+                      </Col>
+                      <Col span={8}>
+                        <Form.Item label='max' name={[...namePrefix, 'colorDomain', 1]}>
+                          <InputNumber style={{ width: '100%' }} />
+                        </Form.Item>
+                      </Col>
+                    </>
+                  );
+                }
+              }}
             </Form.Item>
-          </Col>
-          <Form.Item shouldUpdate noStyle>
-            {({ getFieldValue }) => {
-              if (!getFieldValue([...namePrefix, 'colorDomainAuto'])) {
-                return (
-                  <>
-                    <Col span={8}>
-                      <Form.Item label='min' name={[...namePrefix, 'colorDomain', 0]}>
-                        <InputNumber style={{ width: '100%' }} />
-                      </Form.Item>
-                    </Col>
-                    <Col span={8}>
-                      <Form.Item label='max' name={[...namePrefix, 'colorDomain', 1]}>
-                        <InputNumber style={{ width: '100%' }} />
-                      </Form.Item>
-                    </Col>
-                  </>
-                );
-              }
-            }}
-          </Form.Item>
-        </Row>
+          </Row>
+        )}
         <Row gutter={10}>
           <Col span={24}>
             <Form.Item
@@ -127,7 +138,7 @@ export default function GraphStyles() {
               <Input style={{ width: '100%' }} />
             </Form.Item>
           </Col>
-          </Row>
+        </Row>
       </>
     </Panel>
   );

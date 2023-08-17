@@ -20,13 +20,13 @@ import StandardOptions from '../../Fields/StandardOptions';
 import ValueMappings from '../../Fields/ValueMappings';
 import Thresholds from '../../Fields/Thresholds';
 
-export default function Timeseries() {
+export default function Gauge() {
   return (
     <>
       <GraphStyles />
+      <Thresholds />
       <ValueMappings />
       <StandardOptions />
-      <Thresholds />
     </>
   );
 }
