@@ -42,9 +42,9 @@ export default function index() {
   const pagination = usePagination({ PAGESIZE_KEY: 'alert-rules-builtin-pagesize' });
   const [data, setData] = useState<RuleCateType[]>([]);
   const [active, setActive] = useState<RuleCateType>();
-  const [group, setGroup] = useState<string>();
+  const [group, setGroup] = useState<string>(sessionStorage.getItem('builtin-group') || '');
   const [cateSearch, setCateSearch] = useState<string>('');
-  const [ruleSearch, setRuleSearch] = useState<string>('');
+  const [ruleSearch, setRuleSearch] = useState<string>(sessionStorage.getItem('builtin-search') || '');
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
   const selectedRows = useRef<RuleType[]>([]);
   const curRules = active ? processRules(active.name, active.alert_rules) : [];
@@ -76,6 +76,15 @@ export default function index() {
         cbk(res);
       }
     });
+  };
+
+  const updateGroup = (group: string) => {
+    setGroup(group);
+    sessionStorage.setItem('builtin-group', group);
+  };
+  const updateRuleSearch = (search: string) => {
+    setRuleSearch(search);
+    sessionStorage.setItem('builtin-search', search);
   };
 
   useEffect(() => {
@@ -127,7 +136,8 @@ export default function index() {
                       search: `?cate=${item.name}`,
                     });
                     localStorage.setItem('builtin-cate', item.name);
-                    setGroup(_.map(_.groupBy(processRules(item.name, item.alert_rules), '__group__'), (v, k) => k)[0]);
+                    updateGroup(_.map(_.groupBy(processRules(item.name, item.alert_rules), '__group__'), (v, k) => k)[0]);
+                    updateRuleSearch('');
                   }}
                   extra={
                     <span
@@ -168,7 +178,7 @@ export default function index() {
                         placeholder={t('group')}
                         value={group}
                         onChange={(val) => {
-                          setGroup(val);
+                          updateGroup(val);
                         }}
                       >
                         {_.map(_.groupBy(curRules, '__group__'), (_rules, group) => {
@@ -183,7 +193,7 @@ export default function index() {
                         prefix={<SearchOutlined />}
                         value={ruleSearch}
                         onChange={(e) => {
-                          setRuleSearch(e.target.value);
+                          updateRuleSearch(e.target.value);
                         }}
                         placeholder={t('common:search_placeholder')}
                         style={{ width: 300 }}

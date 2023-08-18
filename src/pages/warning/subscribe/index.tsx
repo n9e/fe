@@ -76,6 +76,35 @@ const Shield: React.FC = () => {
       },
     },
     {
+      title: t('severities'),
+      dataIndex: 'severities',
+      render: (data) => {
+        return (
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: 4,
+            }}
+          >
+            {_.map(data, (severity) => {
+              return (
+                <Tag
+                  key={severity}
+                  color={priorityColor[severity - 1]}
+                  style={{
+                    marginRight: 0,
+                  }}
+                >
+                  S{severity}
+                </Tag>
+              );
+            })}
+          </div>
+        );
+      },
+    },
+    {
       title: t('rule_name'),
       dataIndex: 'rule_name',
       render: (data) => {
