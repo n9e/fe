@@ -297,6 +297,12 @@ const en_US = {
   detail: {
     datasource_empty: 'Please configure the data source first',
     invalidTimeRange: 'Invalid __from and __to values',
+    fullscreen: {
+      notification: {
+        esc: 'Press ESC to exit full screen mode',
+        theme: 'Theme',
+      },
+    },
   },
 };
 export default en_US;

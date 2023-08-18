@@ -19,8 +19,9 @@ import { useHistory, useLocation } from 'react-router-dom';
 import querystring from 'query-string';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Button, Space, Dropdown, Menu, Switch } from 'antd';
+import { Button, Space, Dropdown, Menu, Switch, notification } from 'antd';
 import { RollbackOutlined } from '@ant-design/icons';
+import { useKeyPress } from 'ahooks';
 import { TimeRangePickerWithRefresh, IRawTimeRange } from '@/components/TimeRangePicker';
 import { AddPanelIcon } from '../config';
 import { visualizations } from '../Editor/config';
@@ -54,8 +55,59 @@ export default function Title(props: IProps) {
     };
   }, [dashboard.name]);
 
+  useKeyPress('esc', () => {
+    if (query.viewMode === 'fullscreen') {
+      history.replace({
+        pathname: location.pathname,
+        search: querystring.stringify(_.omit(query, ['viewMode', 'themeMode'])),
+      });
+      notification.close('dashboard_fullscreen');
+      setTimeout(() => {
+        window.dispatchEvent(new Event('resize'));
+      }, 500);
+    }
+  });
+
+  useEffect(() => {
+    if (query.viewMode === 'fullscreen') {
+      notification.info({
+        key: 'dashboard_fullscreen',
+        message: (
+          <div>
+            <div>{t('detail.fullscreen.notification.esc')}</div>
+            <div>
+              <Space>
+                {t('detail.fullscreen.notification.theme')}
+                <Switch
+                  checkedChildren='dark'
+                  unCheckedChildren='light'
+                  defaultChecked={themeMode === 'dark'}
+                  onChange={(checked) => {
+                    const newQuery = _.omit(query, ['themeMode']);
+                    newQuery.themeMode = checked ? 'dark' : 'light';
+                    localStorage.setItem('dashboard_themeMode', checked ? 'dark' : 'light');
+                    history.replace({
+                      pathname: location.pathname,
+                      search: querystring.stringify(newQuery),
+                    });
+                  }}
+                />
+              </Space>
+            </div>
+          </div>
+        ),
+        duration: 3,
+      });
+    }
+  }, [query.viewMode]);
+
   return (
-    <div className='dashboard-detail-header'>
+    <div
+      className='dashboard-detail-header'
+      style={{
+        display: query.viewMode === 'fullscreen' ? 'none' : 'flex',
+      }}
+    >
       <div className='dashboard-detail-header-left'>
         {isPreview && !isBuiltin ? null : <RollbackOutlined className='back' onClick={() => history.push(props.gobackPath || '/dashboards')} />}
         <div className='title'>{dashboard.name}</div>
@@ -102,6 +154,7 @@ export default function Title(props: IProps) {
                 const newQuery = _.omit(query, ['viewMode', 'themeMode']);
                 if (!viewMode) {
                   newQuery.viewMode = 'fullscreen';
+                  newQuery.themeMode = localStorage.getItem('dashboard_themeMode') || 'light';
                 }
                 history.replace({
                   pathname: location.pathname,
@@ -116,7 +169,7 @@ export default function Title(props: IProps) {
               {viewMode === 'fullscreen' ? t('exit_full_screen') : t('full_screen')}
             </Button>
           )}
-          {viewMode === 'fullscreen' && (
+          {/* {viewMode === 'fullscreen' && (
             <Switch
               checkedChildren='dark'
               unCheckedChildren='light'
@@ -132,7 +185,7 @@ export default function Title(props: IProps) {
                 });
               }}
             />
-          )}
+          )} */}
         </Space>
       </div>
     </div>

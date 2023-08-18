@@ -270,7 +270,12 @@ export default function DetailV2(props: IProps) {
               return containerRef.current;
             }}
           >
-            <div className='dashboard-detail-content-header-container'>
+            <div
+              className='dashboard-detail-content-header-container'
+              style={{
+                display: query.viewMode !== 'fullscreen' ? 'block' : 'none',
+              }}
+            >
               {!editable && (
                 <div style={{ padding: '0px 10px', marginBottom: 8 }}>
                   <Alert type='warning' message='仪表盘已经被别人修改，为避免相互覆盖，请刷新仪表盘查看最新配置和数据' />
