@@ -101,6 +101,7 @@ function Card(props: Props, ref) {
     {
       title: t('common:datasource.name'),
       dataIndex: 'datasource_id',
+      width: 100,
       render: (value, record) => {
         if (value === 0) {
           return (
@@ -161,7 +162,7 @@ function Card(props: Props, ref) {
     {
       title: t('common:table.operations'),
       dataIndex: 'operate',
-      width: 180,
+      width: 200,
       render(value, record) {
         return (
           <>
@@ -219,6 +220,14 @@ function Card(props: Props, ref) {
       width: 100,
       render: (value) => {
         return t(`status_${value}`) as string;
+      },
+    });
+    columns.splice(5, 0, {
+      title: t('claimant'),
+      dataIndex: 'claimant',
+      width: 100,
+      render: (value) => {
+        return value;
       },
     });
   }
@@ -292,7 +301,7 @@ function Card(props: Props, ref) {
         placement='right'
         onClose={onClose}
         visible={visible}
-        width={960}
+        width={1060}
       >
         <Table
           tableLayout='fixed'

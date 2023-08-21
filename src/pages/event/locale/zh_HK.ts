@@ -31,6 +31,7 @@ const zh_HK = {
   batch_unclaim: '批量取消认领',
   claim: '认领',
   unclaim: '取消认领',
+  claimant: '认领人',
 
   delete_confirm: {
     title: '刪除告警事件',
