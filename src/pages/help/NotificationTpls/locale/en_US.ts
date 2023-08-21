@@ -10,5 +10,6 @@ const en_US = {
     0: 'No',
     1: 'Yes',
   },
+  content_prompt: 'The content has been modified. Do you want to discard the changes?',
 };
 export default en_US;

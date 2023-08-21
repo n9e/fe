@@ -10,6 +10,7 @@ const zh_HK = {
     '0': '不隱藏',
     '1': '隱藏',
   },
+  content_prompt: '內容有修改，是否放棄修改的內容？',
 };
 
 export default zh_HK;

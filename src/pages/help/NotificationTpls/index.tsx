@@ -70,7 +70,24 @@ export default function index() {
               })}
               size='small'
               renderItem={(item: any) => (
-                <List.Item key={item.id} className={active?.id === item.id ? 'is-active' : ''} onClick={() => setActive(item)}>
+                <List.Item
+                  key={item.id}
+                  className={active?.id === item.id ? 'is-active' : ''}
+                  onClick={() => {
+                    console.log(data, active);
+                    const activeOrigin = _.find(data, { id: active?.id });
+                    if (activeOrigin && active && !_.isEqual(activeOrigin.content, active?.content)) {
+                      Modal.confirm({
+                        title: t('content_prompt'),
+                        onOk: () => {
+                          setActive(item);
+                        },
+                      });
+                    } else {
+                      setActive(item);
+                    }
+                  }}
+                >
                   {item.name}
                 </List.Item>
               )}
