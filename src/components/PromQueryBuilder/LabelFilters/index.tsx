@@ -3,6 +3,7 @@ import { Select, Input, Button, Space } from 'antd';
 import { PlusCircleOutlined, CloseOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useDynamicList } from 'ahooks';
+import { useTranslation } from 'react-i18next';
 import FormItem from '../components/FormItem';
 import LabelNameSelect from './LabelNameSelect';
 import LabelValueSelect from './LabelValueSelect';
@@ -20,6 +21,7 @@ interface IProps {
 }
 
 export default function index(props: IProps) {
+  const { t } = useTranslation('PromQueryBuilder');
   const { datasourceValue, metric, params, value, onChange } = props;
   const { list, remove, getKey, insert, replace } = useDynamicList(
     value || [
@@ -40,7 +42,7 @@ export default function index(props: IProps) {
       <FormItem
         label={
           <Space>
-            标签过滤
+            {t('labelFilter')}
             <PlusCircleOutlined
               onClick={() => {
                 insert(list.length, {
