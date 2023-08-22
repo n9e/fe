@@ -31,11 +31,12 @@ interface IProps {
   range: IRawTimeRange;
   setRange: (range: IRawTimeRange) => void;
   match: IMatch;
+  metricModeWhenMatchChange?: 'replace' | 'append';
 }
 
 export default function Metrics(props: IProps) {
   const { t } = useTranslation('objectExplorer');
-  const { datasourceValue, range, setRange, match } = props;
+  const { datasourceValue, range, setRange, match, metricModeWhenMatchChange = 'replace' } = props;
   const [refreshFlag, setRefreshFlag] = useState(_.uniqueId('refreshFlag_'));
   const [search, setSearch] = useState('');
   const [metrics, setMetrics] = useState<any[]>([]);
@@ -93,7 +94,7 @@ export default function Metrics(props: IProps) {
   useEffect(() => {
     if (matchStr) {
       getMetricValues(datasourceValue, matchStr, range).then((res) => {
-        const _metrics: any[] = _.union(res);
+        const _metrics: any[] = _.union(metricModeWhenMatchChange === 'append' ? [...metrics, ...res] : res);
         const metricPrefixes = _.union(
           _.compact(
             _.map(_metrics, (m) => {
@@ -111,6 +112,7 @@ export default function Metrics(props: IProps) {
   }, [refreshFlag, matchStr]);
 
   useEffect(() => {
+    if (metricModeWhenMatchChange === 'append') return;
     setSelectedMetrics([]);
     setActiveKey('all');
     setMetrics([]);
