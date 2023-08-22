@@ -15,15 +15,16 @@
  *
  */
 import React from 'react';
-import { Form, Select, Row, Col, Switch, Radio } from 'antd';
-import { CaretDownOutlined } from '@ant-design/icons';
+import { Form, Select, Row, Col, Switch, Radio, Button, Mentions, Space, Tooltip, Input } from 'antd';
+import { CaretDownOutlined, DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import { Panel } from '../../Components/Collapse';
 import { calcsOptions } from '../../config';
 import { useGlobalState } from '../../../globalState';
+import Info from '@/pages/account/info';
 
-export default function GraphStyles({ chartForm }) {
+export default function GraphStyles({ chartForm, variableConfigWithOptions }) {
   const { t, i18n } = useTranslation('dashboard');
   const namePrefix = ['custom'];
   const [tableFields] = useGlobalState('tableFields');
@@ -99,7 +100,7 @@ export default function GraphStyles({ chartForm }) {
                 return (
                   <Col span={12}>
                     <Form.Item label={t('panel.custom.table.aggrDimension')} name={[...namePrefix, 'aggrDimension']}>
-                      <Select suffixIcon={<CaretDownOutlined />}>
+                      <Select suffixIcon={<CaretDownOutlined />} mode='multiple'>
                         {_.map(tableFields, (item) => {
                           return (
                             <Select.Option key={item} value={item}>
@@ -169,6 +170,89 @@ export default function GraphStyles({ chartForm }) {
             </Form.Item>
           </Col>
         </Row>
+        <Form.Item
+          label={
+            <Space>
+              {t('panel.base.link.label')}
+              <Tooltip title={<Trans ns='dashboard' i18nKey='dashboard:link.url_tip' components={{ 1: <br /> }} />}>
+                <InfoCircleOutlined />
+              </Tooltip>
+            </Space>
+          }
+          style={{ marginBottom: 0 }}
+        >
+          <Form.List name={[...namePrefix, 'links']}>
+            {(fields, { add, remove }) => (
+              <>
+                <Button
+                  style={{ width: '100%', marginBottom: 10 }}
+                  onClick={() => {
+                    add({});
+                  }}
+                >
+                  {t('panel.base.link.btn')}
+                </Button>
+                {fields.map(({ key, name, ...restField }) => {
+                  return (
+                    <Space
+                      key={key}
+                      style={{
+                        alignItems: 'flex-start',
+                      }}
+                    >
+                      <Form.Item
+                        {...restField}
+                        name={[name, 'title']}
+                        rules={[
+                          {
+                            required: true,
+                            message: t('panel.base.link.name_msg'),
+                          },
+                        ]}
+                      >
+                        <Input />
+                      </Form.Item>
+                      <Form.Item
+                        {...restField}
+                        name={[name, 'url']}
+                        rules={[
+                          {
+                            required: true,
+                            message: t('panel.base.link.url_msg'),
+                          },
+                        ]}
+                      >
+                        <Input style={{ width: 284 }} />
+                      </Form.Item>
+                      <Tooltip title={t('panel.base.link.isNewBlank')}>
+                        <Form.Item {...restField} name={[name, 'targetBlank']} valuePropName='checked'>
+                          <Switch />
+                        </Form.Item>
+                      </Tooltip>
+                      <Button
+                        icon={<DeleteOutlined />}
+                        onClick={() => {
+                          remove(name);
+                        }}
+                      />
+                    </Space>
+                  );
+                })}
+              </>
+            )}
+          </Form.List>
+          <Form.Item label={t('panel.base.description')} name='description'>
+            <Mentions prefix='$' split='' rows={3}>
+              {_.map(variableConfigWithOptions, (item) => {
+                return (
+                  <Mentions.Option key={item.name} value={item.name}>
+                    {item.name}
+                  </Mentions.Option>
+                );
+              })}
+            </Mentions>
+          </Form.Item>
+        </Form.Item>
       </>
     </Panel>
   );

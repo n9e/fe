@@ -221,8 +221,12 @@ export const replaceExpressionVarsSpecifyRule = (
               newExpression = !_.isNaN(_.toNumber(newExpression)) ? (_.toNumber(newExpression) as any) : newExpression;
             }
           } else if (typeof selected === 'number') {
-            // number 目前只用于数据源变量的数据源ID
-            newExpression = selected as any;
+            if (type === 'datasource' && newExpression === `\${${name}}`) {
+              // number 目前只用于数据源变量的数据源ID
+              newExpression = selected as any;
+            } else {
+              newExpression = replaceAllPolyfill(newExpression, placeholder, selected as any);
+            }
           }
         }
       }

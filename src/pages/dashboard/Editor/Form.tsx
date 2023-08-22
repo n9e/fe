@@ -197,7 +197,7 @@ function FormCpt(props: IProps, ref) {
                                     },
                                   ]}
                                 >
-                                  <Mentions prefix='$' split='' style={{ width: 260 }} placeholder={t('panel.base.link.url')}>
+                                  <Mentions prefix='$' split='' style={{ width: 280 }} placeholder={t('panel.base.link.url')}>
                                     {_.map(variableConfigWithOptions, (item) => {
                                       return (
                                         <Mentions.Option key={item.name} value={item.name}>
