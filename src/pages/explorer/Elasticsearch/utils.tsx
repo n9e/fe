@@ -21,6 +21,13 @@ export function getFieldValue(fieldKey, fieldValue, fieldConfig?: any) {
   if (format && format?.type === 'date' && format?.params?.pattern) {
     return moment(fieldValue).format(format?.params?.pattern);
   }
+  if (format && format?.type === 'url' && format?.params?.urlTemplate) {
+    return (
+      <a target='_blank' href={format?.params?.urlTemplate.replace('{{value}}', fieldValue)}>
+        {format?.params?.labelTemplate.replace('{{value}}', fieldValue)}
+      </a>
+    );
+  }
   return fieldValue;
 }
 
@@ -69,7 +76,7 @@ export function getColumnsFromFields(selectedFields: { name: string }[], dateFie
         dataIndex: 'fields',
         key: item,
         render: (fields) => {
-          const fieldVal = getFieldValue(item, fields[fieldKey], fieldConfig);
+          const fieldVal = getFieldValue(item.name, fields[fieldKey], fieldConfig);
           const value = _.isArray(fieldVal) ? _.join(fieldVal, ',') : fieldVal;
           return (
             <div

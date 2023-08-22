@@ -34,7 +34,7 @@ const FieldBooleanSvg = () => (
 
 const FieldBooleanIcon = (props: Partial<CustomIconComponentProps>) => <Icon component={FieldBooleanSvg} {...props} />;
 
-const typeIconMap = {
+export const typeIconMap = {
   string: (
     <span className='es-discover-fields-item-field' style={{ color: '#4a7194' }}>
       t

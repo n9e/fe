@@ -15,6 +15,7 @@ const en_US = {
     showChart: 'Show chart',
     fieldValues_topn: 'Top 5 values',
     fieldValues_topnNoData: 'The field present in the mapping, but not in the 500 documents',
+    copyToClipboard: 'Copy to clipboard',
   },
 };
 export default en_US;

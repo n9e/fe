@@ -33,6 +33,18 @@ function EditField(props: Props & ModalWrapProps) {
   const { visible, destroy, field, values, onOk } = props;
   const [form] = Form.useForm();
   const formatType = Form.useWatch(['formatMap', field.name, 'type'], form);
+  const formatTypeOptions = [
+    {
+      label: 'URL',
+      value: 'url',
+    },
+  ];
+  if (field.type === 'date') {
+    formatTypeOptions.unshift({
+      label: 'Date',
+      value: 'date',
+    });
+  }
 
   return (
     <Drawer
@@ -65,25 +77,35 @@ function EditField(props: Props & ModalWrapProps) {
             <Form.Item label={t('field.alias')} name={['attrs', field.name, 'alias']} tooltip={t('field.alias_tip')}>
               <Input />
             </Form.Item>
-            {field.type === 'date' && (
+
+            <Form.Item label={t('field.format.type')} name={['formatMap', field.name, 'type']}>
+              <Select allowClear options={formatTypeOptions} />
+            </Form.Item>
+            {formatType === 'date' && (
+              <Form.Item
+                label={t('field.format.params.date.pattern')}
+                name={['formatMap', field.name, 'params', 'pattern']}
+                tooltip={t('field.format.params.date.pattern_tip')}
+                initialValue='YYYY-MM-DD HH:mm:ss.SSS'
+              >
+                <Input placeholder={t('field.format.params.date.pattern_placeholder')} />
+              </Form.Item>
+            )}
+            {formatType === 'url' && (
               <>
-                <Form.Item label={t('field.format.type')} name={['formatMap', field.name, 'type']}>
-                  <Select allowClear>
-                    <Select.Option key='date'>Date</Select.Option>
-                  </Select>
+                <Form.Item
+                  label={t('field.format.params.url.urlTemplate')}
+                  name={['formatMap', field.name, 'params', 'urlTemplate']}
+                  tooltip={t('field.format.params.url.urlTemplateTip', { skipInterpolation: true })}
+                >
+                  <Input placeholder={t('field.format.params.url.urlTemplatePlaceholder', { skipInterpolation: true })} />
                 </Form.Item>
-                {formatType === 'date' && (
-                  <Form.Item
-                    label={t('field.format.params.date.pattern')}
-                    name={['formatMap', field.name, 'params', 'pattern']}
-                    tooltip={t('field.format.params.date.pattern_tip')}
-                    initialValue='YYYY-MM-DD HH:mm:ss.SSS'
-                  >
-                    <Input placeholder={t('field.format.params.date.pattern_placeholder')} />
-                  </Form.Item>
-                )}
+                <Form.Item label={t('field.format.params.url.labelTemplate')} name={['formatMap', field.name, 'params', 'labelTemplate']} initialValue='{{value}}'>
+                  <Input placeholder={t('field.format.params.url.labelTemplatePlaceholder', { skipInterpolation: true })} />
+                </Form.Item>
               </>
             )}
+
             <Form.Item>
               <Button type='primary' htmlType='submit'>
                 {t('common:btn.save')}
