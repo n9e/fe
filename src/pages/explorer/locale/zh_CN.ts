@@ -15,6 +15,7 @@ const zh_CN = {
     showChart: '显示图表',
     fieldValues_topn: '前 5 个值',
     fieldValues_topnNoData: '该字段存在于 mapping 中，但不存在于显示的 500 个文档中',
+    copyToClipboard: '复制到剪贴板',
   },
 };
 export default zh_CN;

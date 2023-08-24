@@ -25,6 +25,13 @@ const zh_HK = {
           pattern_tip: '使用 Moment.js 格式模式, 默認值為 YYYY-MM-DD HH:mm:ss.SSS',
           pattern_placeholder: 'YYYY-MM-DD HH:mm:ss.SSS',
         },
+        url: {
+          urlTemplate: 'URL 模板',
+          urlTemplateTip: '使用 {{value}} 作為占位符',
+          urlTemplatePlaceholder: 'https://www.example.com/?q={{value}}',
+          labelTemplate: '標籤模板',
+          labelTemplatePlaceholder: '{{value}}',
+        },
       },
     },
   },

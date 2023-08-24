@@ -15,6 +15,7 @@ const zh_HK = {
     showChart: '顯示圖表',
     fieldValues_topn: '前 5 個值',
     fieldValues_topnNoData: '該欄位存在於 mapping 中，但不存在於顯示的 500 個文檔中',
+    copyToClipboard: '複製到剪貼板',
   },
 };
 
