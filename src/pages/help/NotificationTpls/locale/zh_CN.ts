@@ -10,5 +10,6 @@ const zh_CN = {
     0: '不隐藏',
     1: '隐藏',
   },
+  content_prompt: '内容有修改，是否放弃修改的内容？',
 };
 export default zh_CN;
