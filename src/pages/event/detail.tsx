@@ -26,7 +26,6 @@ import PageLayout from '@/components/pageLayout';
 import { getAlertEventsById, getHistoryEventsById } from '@/services/warning';
 import { priorityColor } from '@/utils/constant';
 import { deleteAlertEventsModal } from '.';
-import { parseValues } from '@/pages/alertRules/utils';
 import { CommonStateContext } from '@/App';
 // @ts-ignore
 import plusEventDetail from 'plus:/parcels/Event/eventDetail';
@@ -55,7 +54,6 @@ const EventDetailPage: React.FC = () => {
   const isHistory = history.location.pathname.includes('alert-his-events');
   const [eventDetail, setEventDetail] = useState<any>();
   if (eventDetail) eventDetail.cate = eventDetail.cate || 'prometheus'; // TODO: 兼容历史的告警事件
-  const parsedEventDetail = parseValues(eventDetail);
   const descriptionInfo = [
     {
       label: t('detail.rule_name'),
@@ -317,17 +315,17 @@ const EventDetailPage: React.FC = () => {
           >
             {eventDetail && (
               <div>
-                <PlusPreview data={parsedEventDetail} />
+                <PlusPreview data={eventDetail} />
                 {descriptionInfo
                   .filter((item: any) => {
                     if (!item) return false;
-                    return parsedEventDetail.is_recovered ? true : item.key !== 'recover_time';
+                    return eventDetail.is_recovered ? true : item.key !== 'recover_time';
                   })
                   .map(({ label, key, render }: any, i) => {
                     return (
                       <div className='desc-row' key={key + i}>
                         <div className='desc-label'>{label}：</div>
-                        <div className='desc-content'>{render ? render(parsedEventDetail[key], parsedEventDetail) : parsedEventDetail[key]}</div>
+                        <div className='desc-content'>{render ? render(eventDetail[key], eventDetail) : eventDetail[key]}</div>
                       </div>
                     );
                   })}
