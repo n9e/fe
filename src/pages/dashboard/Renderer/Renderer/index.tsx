@@ -109,7 +109,7 @@ function index(props: IProps) {
   const RendererCptMap = {
     timeseries: () => <Timeseries {...subProps} themeMode={themeMode} time={time} />,
     stat: () => <Stat {...subProps} bodyWrapRef={bodyWrapRef} themeMode={themeMode} />,
-    table: () => <Table {...subProps} themeMode={themeMode} />,
+    table: () => <Table {...subProps} themeMode={themeMode} time={time} />,
     pie: () => <Pie {...subProps} themeMode={themeMode} time={time} />,
     hexbin: () => <Hexbin {...subProps} themeMode={themeMode} time={time} />,
     barGauge: () => <BarGauge {...subProps} themeMode={themeMode} time={time} />,

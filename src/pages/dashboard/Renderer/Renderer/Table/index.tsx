@@ -23,12 +23,14 @@ import type { FilterConfirmProps } from 'antd/es/table/interface';
 import { useSize } from 'ahooks';
 import { useAntdResizableHeader } from '@minko-fe/use-antd-resizable-header';
 import '@minko-fe/use-antd-resizable-header/dist/style.css';
+import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { IPanel } from '../../../types';
 import getCalculatedValuesBySeries, { getSerieTextObj } from '../../utils/getCalculatedValuesBySeries';
 import getOverridePropertiesByName from '../../utils/getOverridePropertiesByName';
 import localeCompare from '../../utils/localeCompare';
 import formatToTable from '../../utils/formatToTable';
 import { useGlobalState } from '../../../globalState';
+import { getDetailUrl } from '../../utils/replaceExpressionDetail';
 import { transformColumns } from './utils';
 import './style.less';
 
@@ -36,6 +38,7 @@ interface IProps {
   values: IPanel;
   series: any[];
   themeMode?: 'dark';
+  time: IRawTimeRange;
 }
 
 const DEFAULT_LIGTH_COLOR = '#ffffff';
@@ -81,9 +84,10 @@ const getColor = (color, colorMode, themeMode) => {
 };
 
 export default function Stat(props: IProps) {
+  const [dashboardMeta] = useGlobalState('dashboardMeta');
   const eleRef = useRef<HTMLDivElement>(null);
   const size = useSize(eleRef);
-  const { values, series, themeMode } = props;
+  const { values, series, themeMode, time } = props;
   const { custom, options, overrides } = values;
   const { showHeader, calc, aggrDimension, displayMode, columns, sortColumn, sortOrder, colorMode = 'value' } = custom;
   const [calculatedValues, setCalculatedValues] = useState<any[]>([]);
@@ -261,7 +265,8 @@ export default function Stat(props: IProps) {
   }
 
   if (displayMode === 'labelValuesToRows' && aggrDimension) {
-    tableDataSource = formatToTable(calculatedValues, aggrDimension, 'refId');
+    const aggrDimensions = _.isArray(aggrDimension) ? aggrDimension : [aggrDimension];
+    tableDataSource = formatToTable(calculatedValues, aggrDimensions, 'refId');
     const groupNames = _.reduce(
       tableDataSource,
       (pre, item) => {
@@ -269,8 +274,8 @@ export default function Stat(props: IProps) {
       },
       [],
     );
-    tableColumns = [
-      {
+    tableColumns = _.map(aggrDimensions, (aggrDimension) => {
+      return {
         title: aggrDimension,
         dataIndex: aggrDimension,
         key: aggrDimension,
@@ -281,8 +286,8 @@ export default function Stat(props: IProps) {
         sortOrder: getSortOrder(aggrDimension, sortObj),
         render: (text) => <div className='renderer-table-td-content'>{text}</div>,
         ...getColumnSearchProps([aggrDimension]),
-      },
-    ];
+      };
+    });
     _.map(groupNames, (name, idx) => {
       const result = _.find(tableDataSource, (item) => {
         return item[name];
@@ -321,6 +326,36 @@ export default function Stat(props: IProps) {
         },
         ...getColumnSearchProps([name, 'text']),
       });
+    });
+  }
+
+  if (custom.links) {
+    tableColumns.push({
+      title: '链接',
+      render: (_val, record) => {
+        return (
+          <Space>
+            {_.map(custom.links, (link, idx) => {
+              const data = {
+                name: record.name,
+                value: record.value,
+                metric: record.metric,
+              };
+              if (displayMode === 'labelValuesToRows' && aggrDimension) {
+                data.metric = {};
+                _.forEach(tableFields, (item) => {
+                  data.metric[item] = record[item];
+                });
+              }
+              return (
+                <a key={idx} href={getDetailUrl(link.url, data, dashboardMeta, time)} target='_blank'>
+                  {link.title}
+                </a>
+              );
+            })}
+          </Space>
+        );
+      },
     });
   }
 
