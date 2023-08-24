@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useState, useRef, useEffect, useContext } from 'react';
+import React, { useState, useRef, useEffect, useContext, useCallback } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
 import semver from 'semver';

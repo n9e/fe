@@ -41,9 +41,10 @@ type Type = 'logging' | 'metric';
 interface IProps {
   type: Type;
   defaultCate: string;
+  panelIdx?: number;
 }
 
-const Panel = ({ type, defaultCate }: IProps) => {
+const Panel = ({ type, defaultCate, panelIdx }: IProps) => {
   const { t } = useTranslation('explorer');
   const { groupedDatasourceList } = useContext(CommonStateContext);
   const [form] = Form.useForm();
@@ -79,9 +80,11 @@ const Panel = ({ type, defaultCate }: IProps) => {
                         datasourceValue: getDefaultDatasourceValue(val, groupedDatasourceList),
                         query: undefined,
                       });
-                      history.replace({
-                        search: `?data_source_name=${val}&data_source_id=${getDefaultDatasourceValue(val, groupedDatasourceList)}`,
-                      });
+                      if (panelIdx === 0) {
+                        history.replace({
+                          search: `?data_source_name=${val}&data_source_id=${getDefaultDatasourceValue(val, groupedDatasourceList)}`,
+                        });
+                      }
                     }}
                   />
                 </Form.Item>
@@ -117,9 +120,11 @@ const Panel = ({ type, defaultCate }: IProps) => {
                             dropdownMatchSelectWidth={false}
                             onChange={(val: string) => {
                               setDefaultDatasourceValue(cate, val);
-                              history.replace({
-                                search: `?data_source_name=${cate}&data_source_id=${val}`,
-                              });
+                              if (panelIdx === 0) {
+                                history.replace({
+                                  search: `?data_source_name=${cate}&data_source_id=${val}`,
+                                });
+                              }
                               if (cate !== 'prometheus') {
                                 form.setFieldsValue({
                                   query: undefined,
@@ -151,7 +156,7 @@ const Panel = ({ type, defaultCate }: IProps) => {
                   if (datasourceCate === DatasourceCateEnum.elasticsearch) {
                     return <Elasticsearch key={datasourceValue} headerExtra={headerExtraRef.current} datasourceValue={datasourceValue} form={form} />;
                   } else if (datasourceCate === DatasourceCateEnum.prometheus) {
-                    return <Prometheus key={datasourceCate} headerExtra={headerExtraRef.current} datasourceValue={datasourceValue} form={form} />;
+                    return <Prometheus key={datasourceCate} headerExtra={headerExtraRef.current} datasourceValue={datasourceValue} form={form} panelIdx={panelIdx} />;
                   }
                   return <PlusExplorer key={datasourceValue} datasourceCate={datasourceCate} datasourceValue={datasourceValue} headerExtraRef={headerExtraRef} form={form} />;
                 }}

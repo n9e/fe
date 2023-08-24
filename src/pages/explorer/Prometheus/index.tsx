@@ -13,10 +13,11 @@ interface IProps {
   headerExtra: HTMLDivElement | null;
   datasourceValue: number;
   form: FormInstance;
+  panelIdx?: number;
 }
 
 export default function Prometheus(props: IProps) {
-  const { headerExtra, datasourceValue, form } = props;
+  const { headerExtra, datasourceValue, form, panelIdx = 0 } = props;
   const history = useHistory();
   const { search } = useLocation();
   const query = queryString.parse(search, queryStringOptions);
@@ -42,10 +43,12 @@ export default function Prometheus(props: IProps) {
           start = parsedRange.start as any;
           end = parsedRange.end as any;
         }
-        history.replace({
-          pathname: '/metric/explorer',
-          search: queryString.stringify({ ...query, start, end }),
-        });
+        if (panelIdx === 0) {
+          history.replace({
+            pathname: '/metric/explorer',
+            search: queryString.stringify({ ...query, start, end }),
+          });
+        }
       }}
       promQL={defaultPromQL as any}
       datasourceValue={datasourceValue}
