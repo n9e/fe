@@ -1,16 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { message, Spin, Modal } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import PageLayout from '@/components/pageLayout';
 import BreadCrumb from '@/components/BreadCrumb';
+import { CommonStateContext } from '@/App';
 import { getDataSourceDetailById, submitRequest } from './services';
 import Form from './Datasources/Form';
 import './index.less';
 
 export default function FormCpt() {
   const { t } = useTranslation('datasourceManage');
+  const { isPlus } = useContext(CommonStateContext);
   const history = useHistory();
   const params = useParams<{ action: string; type: string; id: string }>();
   const { action } = params;
@@ -104,7 +106,7 @@ export default function FormCpt() {
             onFinish={(values, clusterInstance) => {
               if (
                 (type === 'prometheus' && !values.cluster_name) ||
-                (type === 'elasticsearch' && !values.cluster_name) ||
+                (type === 'elasticsearch' && !values.cluster_name && isPlus) ||
                 (type === 'influxdb' && !values.cluster_name) ||
                 (type === 'ck' && !values.cluster_name) ||
                 (type === 'aliyun-sls' && !values.cluster_name)
