@@ -134,6 +134,7 @@ const zh_HK = {
     },
   },
   brain_result_btn: '訓練結果',
+  check_btn: '檢查',
 };
 
 export default zh_HK;
