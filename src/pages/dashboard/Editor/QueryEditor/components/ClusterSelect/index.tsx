@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { Form, Select } from 'antd';
 import _ from 'lodash';
-import { getDatasourceList } from '@/services/common';
+import { CommonStateContext } from '@/App';
 
 interface IProps {
   cate: string;
@@ -12,13 +12,7 @@ interface IProps {
 
 export default function index(props: IProps) {
   const { cate, name = 'datasourceValue', label, datasourceVars } = props;
-  const [datasourceList, setDatasourceList] = useState<{ name: string; id: number }[]>([]);
-
-  useEffect(() => {
-    getDatasourceList([cate]).then((res) => {
-      setDatasourceList(res);
-    });
-  }, [cate]);
+  const { groupedDatasourceList } = useContext(CommonStateContext);
 
   return (
     <Form.Item
@@ -40,7 +34,7 @@ export default function index(props: IProps) {
             </Select.Option>
           );
         })}
-        {datasourceList?.map((item) => (
+        {_.map(groupedDatasourceList[cate], (item) => (
           <Select.Option value={item.id} key={item.id}>
             {item.name}
           </Select.Option>
