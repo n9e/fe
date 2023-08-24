@@ -97,7 +97,7 @@ function convertThresholdsGrafanaToN9E(config: any) {
   };
 }
 
-function convertVariablesGrafanaToN9E(templates: any, __inputs: any[]) {
+function convertVariablesGrafanaToN9E(templates: any, __inputs: any[], data: any) {
   const vars = _.chain(templates.list)
     .filter((item) => {
       // 3.0.0 版本只支持 query / custom / textbox / constant 类型的变量
@@ -114,17 +114,11 @@ function convertVariablesGrafanaToN9E(templates: any, __inputs: any[]) {
           multi: item.multi,
           reg: item.regex,
         };
-        if (item.datasource && item.datasource?.type === 'prometheus') {
-          varObj.datasource = {
-            cate: 'prometheus',
-            value: item.datasource.uid,
-          };
-        } else if (typeof item.datasource === 'string') {
-          varObj.datasource = {
-            cate: 'prometheus',
-            value: item.datasource,
-          };
-        }
+        const datasource = convertDatasourceGrafanaToN9E(item);
+        varObj.datasource = {
+          cate: datasource.datasourceCate,
+          value: datasource.datasourceValue,
+        };
         return varObj;
       } else if (item.type === 'custom') {
         return {
@@ -164,6 +158,18 @@ function convertVariablesGrafanaToN9E(templates: any, __inputs: any[]) {
       });
     }
   });
+  if (
+    !_.some(vars, { type: 'datasource' }) &&
+    _.some(data.panels, (panel) => {
+      return _.toLower(panel?.datasource?.type) !== 'prometheus';
+    })
+  ) {
+    vars.unshift({
+      type: 'datasource',
+      name: 'datasource',
+      definition: 'prometheus',
+    });
+  }
   return vars;
 }
 
@@ -274,6 +280,19 @@ function convertTextGrafanaToN9E(panel: any) {
   };
 }
 
+function convertDatasourceGrafanaToN9E(panel: any) {
+  if (_.toLower(panel?.datasource?.type) === 'prometheus') {
+    return {
+      datasourceCate: 'prometheus',
+      datasourceValue: panel.datasource.uid,
+    };
+  }
+  return {
+    datasourceCate: 'prometheus',
+    datasourceValue: '${datasource}',
+  };
+}
+
 function convertPanlesGrafanaToN9E(panels: any) {
   const chartsMap = {
     graph: {
@@ -367,8 +386,7 @@ function convertPanlesGrafanaToN9E(panels: any) {
         custom: chartsMap[item.type] ? chartsMap[item.type].fn(item) : {},
         maxPerRow: item.maxPerRow || 4,
         repeat: item.repeat,
-        datasourceCate: item.datasource?.type,
-        datasourceValue: item.datasource?.uid,
+        ...convertDatasourceGrafanaToN9E(item),
       };
     })
     .value();
@@ -383,7 +401,7 @@ export function convertDashboardGrafanaToN9E(data) {
     configs: {
       version: '3.0.0',
       links: convertLinksGrafanaToN9E(data.links),
-      var: convertVariablesGrafanaToN9E(data.templating, data.__inputs) as IVariable[],
+      var: convertVariablesGrafanaToN9E(data.templating, data.__inputs, data) as IVariable[],
       panels: convertPanlesGrafanaToN9E(data.panels),
     },
   };
@@ -392,8 +410,6 @@ export function convertDashboardGrafanaToN9E(data) {
 
 /**
  * 检测 Grafana Dashboard 版本
- * @param data
- * @returns
  * 0: 不支持 < v7
  * 1: 兼容 >= v7 < v8
  * 2: 支持 >= v8

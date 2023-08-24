@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Modal } from 'antd';
 import moment from 'moment';
+import { useTranslation } from 'react-i18next';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import PromQueryBuilder, { PromVisualQuery, renderQuery, buildPromVisualQueryFromPromQL } from './index';
+import './locale';
 
 interface IProps {
   datasourceValue: number;
@@ -13,6 +15,7 @@ interface IProps {
 }
 
 function PromQueryBuilderModal(props: ModalWrapProps & IProps) {
+  const { t } = useTranslation('PromQueryBuilder');
   const { visible, datasourceValue, range, value = '', onChange } = props;
   const parsedRange = parseRange(range);
   const start = moment(parsedRange.start).unix();
@@ -23,7 +26,7 @@ function PromQueryBuilderModal(props: ModalWrapProps & IProps) {
   return (
     <Modal
       width={800}
-      title='PromQL 新手模式'
+      title={t('title')}
       visible={visible}
       closable={false}
       onOk={() => {

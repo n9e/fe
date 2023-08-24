@@ -16,27 +16,38 @@
  */
 export const colors = [
   {
-    label: 'green / orange',
+    type: 'thresholds',
+    label: 'From thresholds',
+    value: ['thresholds'],
+  },
+  {
+    type: 'palette',
+    label: 'Green / Orange',
     value: ['#83c898', '#c2c2c2', '#fc653f'],
   },
   {
-    label: 'yellow / green',
+    type: 'palette',
+    label: 'Yellow / Green',
     value: ['#f0ee6e', '#6ba261', '#306d52'],
   },
   {
-    label: 'warm',
+    type: 'palette',
+    label: 'Warm',
     value: ['#ffeda0', '#fc4e2a', '#800026'],
   },
   {
-    label: 'cool',
+    type: 'palette',
+    label: 'Cool',
     value: ['#c7f1ff', '#42a1fa', '#083294'],
   },
   {
-    label: 'plasma',
+    type: 'palette',
+    label: 'Plasma',
     value: ['#f0f921', '#b12a90', '#0d0887'],
   },
   {
-    label: 'viridis',
+    type: 'palette',
+    label: 'Viridis',
     value: ['#fde725', '#2a788e', '#440154'],
   },
 ];

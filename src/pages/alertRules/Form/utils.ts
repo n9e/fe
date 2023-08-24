@@ -1,79 +1,13 @@
 import _ from 'lodash';
 import moment from 'moment';
 import { defaultRuleConfig, defaultValues } from './constants';
-import { DATASOURCE_ALL, alphabet } from '../constants';
-import { mapOptionToRelativeTimeRange, mapRelativeTimeRangeToOption } from '@/components/TimeRangePicker';
+import { DATASOURCE_ALL } from '../constants';
+// @ts-ignore
+import * as alertUtils from 'plus:/parcels/AlertRule/utils';
 
 export function getFirstDatasourceId(datasourceIds = [], datasourceList: { id: number }[] = []) {
   return _.isEqual(datasourceIds, [DATASOURCE_ALL]) && datasourceList.length > 0 ? datasourceList[0]?.id : datasourceIds[0];
 }
-
-export const parseTimeToValueAndUnit = (value?: number) => {
-  if (!value) {
-    return {
-      value: value,
-      unit: 'min',
-    };
-  }
-  let time = value / 60;
-  if (time < 60) {
-    return {
-      value: time,
-      unit: 'min',
-    };
-  }
-  time = time / 60;
-  if (time < 24) {
-    return {
-      value: time,
-      unit: 'hour',
-    };
-  }
-  time = time / 24;
-  return {
-    value: time,
-    unit: 'day',
-  };
-};
-
-export const normalizeTime = (value?: number, unit?: 'second' | 'min' | 'hour') => {
-  if (!value) {
-    return value;
-  }
-  if (unit === 'second') {
-    return value;
-  }
-  if (unit === 'min') {
-    return value * 60;
-  }
-  if (unit === 'hour') {
-    return value * 60 * 60;
-  }
-  if (unit === 'day') {
-    return value * 60 * 60 * 24;
-  }
-  return value;
-};
-
-export const stringifyExpressions = (
-  expressions: {
-    ref: string;
-    label: string;
-    comparisonOperator: string;
-    value: string;
-    logicalOperator?: string;
-  }[],
-) => {
-  const logicalOperator = _.get(expressions, '[0].logicalOperator');
-  let exp = '';
-  _.forEach(expressions, (expression, index) => {
-    if (index !== 0) {
-      exp += ` ${logicalOperator} `;
-    }
-    exp += `$${expression.ref}${expression.label ? `.${expression.label}` : ''} ${expression.comparisonOperator} ${expression.value}`;
-  });
-  return exp;
-};
 
 export function processFormValues(values) {
   let cate = values.cate;
@@ -81,49 +15,9 @@ export function processFormValues(values) {
     cate = 'host';
   } else if (values.prod === 'anomaly') {
     cate = 'prometheus';
-  } else if (values.cate === 'elasticsearch' || values.cate === 'opensearch') {
-    values.rule_config.queries = _.map(values.rule_config.queries, (item) => {
-      return {
-        ..._.omit(item, 'interval_unit'),
-        interval: normalizeTime(item.interval, item.interval_unit),
-      };
-    });
-    values.rule_config.triggers = _.map(values.rule_config.triggers, (trigger) => {
-      if (trigger.mode === 0) {
-        return {
-          ...trigger,
-          exp: stringifyExpressions(trigger.expressions),
-        };
-      }
-      return trigger;
-    });
-  } else if (_.includes(['aliyun-sls', 'ck', 'influxdb'], values.cate)) {
-    values.rule_config.queries = _.map(values.rule_config.queries, (query, index) => {
-      const parsedRange = mapOptionToRelativeTimeRange(query.range);
-      if (cate === 'aliyun-sls') {
-        if (query?.keys?.valueKey) {
-          query.keys.valueKey = _.join(query.keys.valueKey, ' ');
-        }
-      }
-      if (query?.keys?.labelKey) {
-        query.keys.labelKey = _.join(query.keys.labelKey, ' ');
-      }
-      return {
-        ..._.omit(query, 'range'),
-        ref: alphabet[index],
-        from: parsedRange?.start,
-        to: parsedRange?.end,
-      };
-    });
-    values.rule_config.triggers = _.map(values.rule_config.triggers, (trigger) => {
-      if (trigger.mode === 0) {
-        return {
-          ...trigger,
-          exp: stringifyExpressions(trigger.expressions),
-        };
-      }
-      return trigger;
-    });
+  }
+  if (_.isFunction(alertUtils.processFormValues)) {
+    values = alertUtils.processFormValues(values);
   }
   const data = {
     ..._.omit(values, 'effective_time'),
@@ -142,29 +36,8 @@ export function processFormValues(values) {
 }
 
 export function processInitialValues(values) {
-  if (values.cate === 'elasticsearch' || values.cate === 'opensearch') {
-    values.rule_config.queries = _.map(values.rule_config.queries, (item) => {
-      return {
-        ...item,
-        interval: parseTimeToValueAndUnit(item.interval).value,
-        interval_unit: parseTimeToValueAndUnit(item.interval).unit,
-      };
-    });
-  } else if (_.includes(['aliyun-sls', 'ck', 'influxdb'], values.cate)) {
-    values.rule_config.queries = _.map(values.rule_config.queries, (query) => {
-      if (values.cate === 'aliyun-sls') {
-        _.set(query, 'keys.valueKey', query?.keys?.valueKey ? _.split(query.keys.valueKey, ' ') : []);
-      } else if (values.cate === 'ck') {
-        _.set(query, 'keys.labelKey', query?.keys?.labelKey ? _.split(query.keys.labelKey, ' ') : []);
-      }
-      return {
-        ..._.omit(query, ['from', 'to']),
-        range: mapRelativeTimeRangeToOption({
-          start: query.from,
-          end: query.to,
-        }),
-      };
-    });
+  if (_.isFunction(alertUtils.processInitialValues)) {
+    values = alertUtils.processInitialValues(values);
   }
   return {
     ...values,
@@ -237,27 +110,7 @@ export function getDefaultValuesByCate(prod, cate) {
       rule_config: defaultRuleConfig.metric,
     };
   }
-  if (cate === 'ck' || cate === 'influxdb') {
-    return {
-      prod,
-      cate,
-      datasource_ids: undefined,
-      rule_config: {
-        triggers: [
-          {
-            mode: 0,
-            expressions: [
-              {
-                ref: 'A',
-                comparisonOperator: '>',
-                value: 0,
-                logicalOperator: '&&',
-              },
-            ],
-            severity: 2,
-          },
-        ],
-      },
-    };
+  if (_.isFunction(alertUtils.getDefaultValuesByCate)) {
+    return alertUtils.getDefaultValuesByCate(prod, cate);
   }
 }

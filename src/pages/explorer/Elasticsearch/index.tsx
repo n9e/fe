@@ -7,19 +7,16 @@ import { useTranslation } from 'react-i18next';
 import { Table, Empty, Spin, InputNumber, Select, Radio, Space, Checkbox, Tag, Form } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
 import { DownOutlined, RightOutlined, LeftOutlined } from '@ant-design/icons';
-import CodeMirror from '@uiw/react-codemirror';
-import { EditorView } from '@codemirror/view';
-import { json } from '@codemirror/lang-json';
-import { defaultHighlightStyle } from '@codemirror/highlight';
 import { useLocation } from 'react-router-dom';
 import { getLogsQuery } from './services';
 import { parseRange } from '@/components/TimeRangePicker';
 import Timeseries from '@/pages/dashboard/Renderer/Renderer/Timeseries';
 import metricQuery from './metricQuery';
-import { getColumnsFromFields, normalizeLogs, Field, dslBuilder, Filter, getFieldLabel } from './utils';
+import { getColumnsFromFields, Field, dslBuilder, Filter, getFieldLabel } from './utils';
 import FieldsSidebar from './FieldsSidebar';
 import QueryBuilder from './QueryBuilder';
 import QueryBuilderWithIndexPatterns from './QueryBuilderWithIndexPatterns';
+import LogView from './LogView';
 import './style.less';
 
 interface IProps {
@@ -167,7 +164,6 @@ export default function index(props: IProps) {
               json: item._source,
             };
           });
-          console.log('newData', newData);
           setData(newData);
           setTotal(res.total);
           const tableEleNodes = document.querySelectorAll(`.es-discover-logs-table .ant-table-body`)[0];
@@ -404,35 +400,7 @@ export default function index(props: IProps) {
                   dataSource={data}
                   expandable={{
                     expandedRowRender: (record) => {
-                      let value = '';
-                      try {
-                        value = JSON.stringify(normalizeLogs(record.json, form.getFieldValue(['fieldConfig'])), null, 4);
-                      } catch (e) {
-                        console.error(e);
-                        value = '无法解析';
-                      }
-                      return (
-                        <CodeMirror
-                          value={value}
-                          height='auto'
-                          theme='light'
-                          basicSetup={false}
-                          editable={false}
-                          extensions={[
-                            defaultHighlightStyle.fallback,
-                            json(),
-                            EditorView.lineWrapping,
-                            EditorView.theme({
-                              '&': {
-                                backgroundColor: '#F6F6F6 !important',
-                              },
-                              '&.cm-editor.cm-focused': {
-                                outline: 'unset',
-                              },
-                            }),
-                          ]}
-                        />
-                      );
+                      return <LogView value={record.json} fieldConfig={form.getFieldValue(['fieldConfig'])} fields={fields} />;
                     },
                     expandIcon: ({ expanded, onExpand, record }) =>
                       expanded ? <DownOutlined onClick={(e) => onExpand(record, e)} /> : <RightOutlined onClick={(e) => onExpand(record, e)} />,

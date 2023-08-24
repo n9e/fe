@@ -20,7 +20,7 @@ import StandardOptions from '../../Fields/StandardOptions';
 import ValueMappings from '../../Fields/ValueMappings';
 import Overrides from '../../Fields/Overrides';
 
-export default function Timeseries({ targets, chartForm }) {
+export default function Table({ targets, chartForm }) {
   return (
     <>
       <GraphStyles chartForm={chartForm} />

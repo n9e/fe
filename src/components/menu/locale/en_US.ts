@@ -11,7 +11,7 @@ const en_US = {
   链路追踪: 'Tracing',
   拓扑分析: 'Dependencies',
   基础设施: 'Infrastructure',
-  监控机器: 'Host',
+  监控机器: 'Infrastructure List',
   告警管理: 'Monitors',
   告警规则: 'Alert Rule',
   内置规则: 'Built-in',
@@ -36,6 +36,7 @@ const en_US = {
   通知模板: 'Notification Template',
   通知设置: 'Notification Settings',
   采集配置: 'Collectors',
+  网络设备: 'Network Devices',
   仪表盘迁移: 'Dashboard Migration',
   全局屏蔽: 'Global Muting',
 };

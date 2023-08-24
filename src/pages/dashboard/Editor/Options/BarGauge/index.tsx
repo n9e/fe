@@ -19,7 +19,7 @@ import GraphStyles from './GraphStyles';
 import StandardOptions from '../../Fields/StandardOptions';
 import ValueMappings from '../../Fields/ValueMappings';
 
-export default function Timeseries() {
+export default function BarGauge() {
   return (
     <>
       <GraphStyles />

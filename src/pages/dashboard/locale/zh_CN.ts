@@ -307,6 +307,12 @@ const zh_CN = {
   detail: {
     datasource_empty: '没有数据源信息，请先配置数据源',
     invalidTimeRange: '无效的 __from 和 __to 值',
+    fullscreen: {
+      notification: {
+        esc: '按 ESC 键退出全屏模式',
+        theme: '主题切换',
+      },
+    },
   },
 };
 export default zh_CN;

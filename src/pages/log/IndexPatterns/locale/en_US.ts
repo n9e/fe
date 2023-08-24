@@ -25,6 +25,13 @@ const en_US = {
           pattern_tip: 'Moment.js format pattern, default value is YYYY-MM-DD HH:mm:ss.SSS',
           pattern_placeholder: 'YYYY-MM-DD HH:mm:ss.SSS',
         },
+        url: {
+          urlTemplate: 'URL template',
+          urlTemplateTip: 'Use {{value}} as a placeholder',
+          urlTemplatePlaceholder: 'https://www.example.com/?q={{value}}',
+          labelTemplate: 'Label template',
+          labelTemplatePlaceholder: '{{value}}',
+        },
       },
     },
   },

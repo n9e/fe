@@ -85,9 +85,9 @@ const Resource: React.FC = () => {
             confirm({
               title: t('common:confirm.delete'),
               onOk: () => {
-                deleteBusinessTeamMember(teamId, params).then((_) => {
+                deleteBusinessTeamMember(teamId, params).then(() => {
                   message.success(t('common:success.delete'));
-                  handleClose('deleteMember');
+                  getTeamList();
                 });
               },
               onCancel: () => {},
@@ -120,8 +120,17 @@ const Resource: React.FC = () => {
     };
     getBusinessTeamList(params).then((data) => {
       setTeamList(data.dat || []);
-      if ((!teamId || isDelete) && data.dat.length > 0) {
+      if (
+        (!teamId ||
+          isDelete ||
+          _.every(data.dat, (item) => {
+            return item.id !== teamId;
+          })) &&
+        data.dat.length > 0
+      ) {
         setTeamId(data.dat[0].id);
+      } else {
+        teamId && getTeamInfoDetail(teamId);
       }
       setBusiGroups(data.dat || []);
     });

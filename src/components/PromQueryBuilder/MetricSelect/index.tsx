@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AutoComplete } from 'antd';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { getMetric } from '@/services/dashboardV2';
 import FormItem from '../components/FormItem';
 
@@ -15,6 +16,7 @@ interface IProps {
 }
 
 export default function index(props: IProps) {
+  const { t } = useTranslation('PromQueryBuilder');
   const { datasourceValue, params, value, onChange } = props;
   const [metricData, setMetricData] = useState<string[]>([]);
   const [searchValue, setSearchValue] = useState<string | undefined>();
@@ -31,7 +33,7 @@ export default function index(props: IProps) {
 
   return (
     <FormItem
-      label='指标'
+      label={t('metric')}
       style={{
         width: 'calc(50% - 4px)',
       }}

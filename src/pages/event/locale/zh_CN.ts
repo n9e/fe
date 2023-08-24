@@ -32,6 +32,7 @@ const zh_CN = {
   batch_unclaim: '批量取消认领',
   claim: '认领',
   unclaim: '取消认领',
+  claimant: '认领人',
 
   delete_confirm: {
     title: '删除告警事件',

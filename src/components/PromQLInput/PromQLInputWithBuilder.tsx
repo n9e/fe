@@ -8,12 +8,10 @@ import './locale';
 
 export function PromQLInputWithBuilder(props: CMExpressionInputProps & { datasourceValue: number }) {
   const { t } = useTranslation('promQLInput');
-  const inputProps: any = props;
+  const inputProps: any = {...props};
 
-  // @ts-ignore
-  if (props.id) {
-    // @ts-ignore
-    inputProps.key = props.id; // TODO 在 Form.List 中修改 list 后重置组件，解决状态更新 field.name 错误问题
+  if (inputProps.id) {
+    inputProps.key = inputProps.id;
   }
 
   return (

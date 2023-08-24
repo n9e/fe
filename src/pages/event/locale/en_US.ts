@@ -31,6 +31,7 @@ const en_US = {
   batch_unclaim: 'Batch Unclaim',
   claim: 'Claim',
   unclaim: 'Unclaim',
+  claimant: 'Claimant',
 
   delete_confirm: {
     title: 'Delete Alert Event',

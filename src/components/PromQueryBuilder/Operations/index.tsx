@@ -3,6 +3,7 @@ import { Cascader, Button } from 'antd';
 import _ from 'lodash';
 import { arrayMoveImmutable } from 'array-move';
 import { SortableContainer } from 'react-sortable-hoc';
+import { useTranslation } from 'react-i18next';
 import { getOperationDefinitions } from './utils';
 import { PromVisualQuery, QueryBuilderOperationDef } from '../types';
 import Operation from './Operation';
@@ -22,6 +23,7 @@ interface IProps {
 const SortableBody = SortableContainer(({ children }) => <div className='prom-query-builder-operations'>{children}</div>);
 
 export default function index(props: IProps) {
+  const { t } = useTranslation('PromQueryBuilder');
   const { query, onChange } = props;
   const { operations } = query;
   const addOperationOptions = getOperationDefinitions();
@@ -72,7 +74,7 @@ export default function index(props: IProps) {
             onChange(operationDef.addOperationHandler(operationDef, query, firstOperationDef));
           }}
         >
-          <Button>添加操作</Button>
+          <Button>{t('addOperations')}</Button>
         </Cascader>
       </div>
     </div>

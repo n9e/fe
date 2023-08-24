@@ -16,6 +16,7 @@
  */
 import React, { useRef, useState } from 'react';
 import { Modal, message, Button } from 'antd';
+import _ from 'lodash';
 import UserForm from '../userForm';
 import TeamForm from '../teamForm';
 import BusinessForm from '../businessForm';
@@ -52,12 +53,7 @@ const CreateModal: React.FC<ModalProps> = (props: ModalProps) => {
     if (isUserForm) {
       let form = userRef.current.form;
       const values: User = await form.validateFields();
-      let contacts = {};
-      values.contacts &&
-        values.contacts.forEach((item: Contacts) => {
-          contacts[item.key] = item.value;
-        });
-      let params = { ...values, contacts, confirm: undefined };
+      let params = { ...values, contacts: _.mapValues(_.keyBy(values.contacts, 'key'), 'value'), confirm: undefined };
 
       if (action === ActionType.CreateUser) {
         createUser(params).then((_) => {

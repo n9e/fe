@@ -176,6 +176,14 @@ export default function TableCpt(props: IProps) {
         return t(`status_${value}`) as string;
       },
     });
+    columns.splice(5, 0, {
+      title: t('claimant'),
+      dataIndex: 'claimant',
+      width: 100,
+      render: (value) => {
+        return value;
+      },
+    });
   }
   const fetchData = ({ current, pageSize }) => {
     return getEvents({

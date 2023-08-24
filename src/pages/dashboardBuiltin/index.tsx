@@ -282,7 +282,7 @@ export default function index() {
                 </>
               </Tabs.TabPane>
               <Tabs.TabPane tab={t('tab_instructions')} key='makedown'>
-                <Instructions name={query.cate as string} />
+                <Instructions name={(query.cate ? query.cate : localStorage.getItem('builtin-cate')) as any} />
               </Tabs.TabPane>
             </Tabs>
           </div>

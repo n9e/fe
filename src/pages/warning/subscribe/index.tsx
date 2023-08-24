@@ -51,7 +51,6 @@ const Shield: React.FC = () => {
   const [currentShieldDataAll, setCurrentShieldDataAll] = useState<Array<subscribeItem>>([]);
   const [currentShieldData, setCurrentShieldData] = useState<Array<subscribeItem>>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [prod, setProd] = useState<string>();
   const [datasourceIds, setDatasourceIds] = useState<number[]>();
 
   const columns: ColumnsType = [
@@ -74,6 +73,35 @@ const Shield: React.FC = () => {
             </Tag>
           );
         });
+      },
+    },
+    {
+      title: t('severities'),
+      dataIndex: 'severities',
+      render: (data) => {
+        return (
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: 4,
+            }}
+          >
+            {_.map(data, (severity) => {
+              return (
+                <Tag
+                  key={severity}
+                  color={priorityColor[severity - 1]}
+                  style={{
+                    marginRight: 0,
+                  }}
+                >
+                  S{severity}
+                </Tag>
+              );
+            })}
+          </div>
+        );
       },
     },
     {
@@ -206,7 +234,7 @@ const Shield: React.FC = () => {
 
   useEffect(() => {
     filterData();
-  }, [query, prod, datasourceIds, currentShieldDataAll]);
+  }, [query, datasourceIds, currentShieldDataAll]);
 
   const dismiss = (id: number) => {
     deleteSubscribes({ ids: [id] }, Number(bgid)).then((res) => {
@@ -230,7 +258,6 @@ const Shield: React.FC = () => {
       });
       return (
         (item?.rule_name?.indexOf(query) > -1 || !!tagFind || !!groupFind) &&
-        ((prod && prod === item.prod) || !prod) &&
         (_.some(item.datasource_ids, (id) => {
           if (id === 0) return true;
           return _.includes(datasourceIds, id);
@@ -286,7 +313,6 @@ const Shield: React.FC = () => {
                     refreshList();
                   }}
                 />
-                <ProdSelect style={{ width: 90 }} value={prod} onChange={setProd} />
                 <DatasourceSelect
                   style={{ width: 100 }}
                   filterKey='alertRule'

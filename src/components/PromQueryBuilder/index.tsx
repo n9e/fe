@@ -7,6 +7,7 @@ import { PromVisualQuery } from './types';
 import NestedQueryList from './NestedQueryList';
 import { normalizeDefaultValue } from './utils';
 import './style.less';
+import './locale';
 
 export type { PromVisualQuery } from './types';
 export { renderQuery } from './RawQuery';
