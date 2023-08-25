@@ -174,7 +174,7 @@ function App() {
             });
           }
         } else {
-          const datasourceList = await getDatasourceBriefList();
+          const datasourceList = !location.pathname.startsWith('/login') ? await getDatasourceBriefList() : [];
           initialized.current = true;
           setCommonState((state) => {
             return {
