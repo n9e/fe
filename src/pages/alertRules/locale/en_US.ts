@@ -137,5 +137,6 @@ const en_US = {
     },
   },
   brain_result_btn: 'Training Result',
+  check_btn: 'Check',
 };
 export default en_US;
