@@ -2,6 +2,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { fetchHistoryRangeBatch, fetchHistoryInstantBatch } from '@/services/dashboardV2';
+import i18next from 'i18next';
 import { ITarget } from '../../types';
 import { IVariable } from '../../VariableConfig/definition';
 import replaceExpressionBracket from '../utils/replaceExpressionBracket';
@@ -172,6 +173,11 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
       console.error(e);
       return Promise.reject(e);
     }
+  }
+  if (datasourceValue !== 'number') {
+    return Promise.reject({
+      message: i18next.t('dashboard:detail.invalidDatasource'),
+    });
   }
   return Promise.resolve({
     series: [],

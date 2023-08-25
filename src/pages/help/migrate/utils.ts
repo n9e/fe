@@ -187,6 +187,19 @@ export function convertDashboardV2ToV3(board, { name, datasourceDefaultValue }) 
         datasourceCate: panel.datasourceCate || datasourceCate,
         datasourceValue: panel.datasourceValue || varName,
       };
+    } else {
+      if (!_.isEmpty(panel.panels)) {
+        return {
+          ...panel,
+          panels: _.map(panel.panels, (subPanel) => {
+            return {
+              ...subPanel,
+              datasourceCate: subPanel.datasourceCate || datasourceCate,
+              datasourceValue: subPanel.datasourceValue || varName,
+            };
+          }),
+        };
+      }
     }
     return panel;
   });
