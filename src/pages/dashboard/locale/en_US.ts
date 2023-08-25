@@ -297,6 +297,7 @@ const en_US = {
   detail: {
     datasource_empty: 'Please configure the data source first',
     invalidTimeRange: 'Invalid __from and __to values',
+    invalidDatasource: 'Invalid datasource',
     fullscreen: {
       notification: {
         esc: 'Press ESC to exit full screen mode',
