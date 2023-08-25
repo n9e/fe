@@ -101,14 +101,14 @@ function convertVariablesGrafanaToN9E(templates: any, __inputs: any[], data: any
   const vars = _.chain(templates.list)
     .filter((item) => {
       // 3.0.0 版本只支持 query / custom / textbox / constant 类型的变量
-      return item.type === 'query' || item.type === 'custom' || item.type === 'textbox' || item.type === 'constant' || item.type === 'datasource';
+      return item.type === 'query' || item.type === 'custom' || item.type === 'textbox' || item.type === 'constant' || item.type === 'datasource' || item.type === 'interval';
     })
     .map((item) => {
       if (item.type === 'query') {
         const varObj: any = {
           type: 'query',
           name: item.name,
-          definition: item.definition || _.get(item, 'query.query'),
+          definition: item.definition || _.get(item, 'query') || _.get(item, 'query.query'),
           allValue: item.allValue,
           allOption: item.includeAll,
           multi: item.multi,
@@ -140,6 +140,15 @@ function convertVariablesGrafanaToN9E(templates: any, __inputs: any[], data: any
           type: 'datasource',
           name: item.name,
           definition: item.query,
+        };
+      } else if (item.type === 'interval') {
+        return {
+          type: 'custom',
+          name: item.name,
+          definition: '1s,5s,1m,5m,1h,6h,1d',
+          allValue: item.allValue,
+          allOption: item.includeAll,
+          multi: item.multi,
         };
       }
       return {
@@ -282,9 +291,10 @@ function convertTextGrafanaToN9E(panel: any) {
 
 function convertDatasourceGrafanaToN9E(panel: any) {
   if (_.toLower(panel?.datasource?.type) === 'prometheus') {
+    const reg = /^${[0-9a-zA-Z_]+}%/;
     return {
       datasourceCate: 'prometheus',
-      datasourceValue: panel.datasource.uid,
+      datasourceValue: reg.test(panel.datasource.uid) ? panel.datasource.uid : '${datasource}',
     };
   }
   return {
