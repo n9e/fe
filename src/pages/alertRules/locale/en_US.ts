@@ -137,6 +137,9 @@ const en_US = {
     },
   },
   brain_result_btn: 'Training Result',
-  check_btn: 'Check',
+  testTip: `
+  Rule validity check：<br />
+  1. Check channels and groups
+  `,
 };
 export default en_US;

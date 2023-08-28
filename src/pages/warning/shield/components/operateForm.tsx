@@ -30,7 +30,8 @@ import ProdSelect from '@/pages/alertRules/Form/components/ProdSelect';
 import { DatasourceCateSelect } from '@/components/DatasourceSelect';
 import TagItem from './tagItem';
 import { timeLensDefault } from '../../const';
-import { getDefaultValuesByProd } from './utils';
+import { getDefaultValuesByProd, processFormValues } from './utils';
+import PreviewMutedEvents from './PreviewMutedEvents';
 import '../index.less';
 
 const { Option } = Select;
@@ -90,26 +91,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
   };
 
   const onFinish = (values) => {
-    const tags = values?.tags?.map((item) => {
-      return {
-        ...item,
-        value: Array.isArray(item.value) ? item.value.join(' ') : item.value,
-      };
-    });
-    const params = {
-      ...values,
-      btime: moment(values.btime).unix(),
-      etime: moment(values.etime).unix(),
-      tags,
-      periodic_mutes: _.map(values.periodic_mutes, (item) => {
-        return {
-          enable_days_of_week: _.join(item.enable_days_of_week, ' '),
-          enable_stime: moment(item.enable_stime).format('HH:mm'),
-          enable_etime: moment(item.enable_etime).format('HH:mm'),
-        };
-      }),
-      cluster: '0',
-    };
+    const params = processFormValues(values);
     const curBusiItemId = form.getFieldValue('group_id');
     const historyPushOptions = {
       pathname: '/alert-mutes',
@@ -413,6 +395,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
             <Button type='primary' htmlType='submit'>
               {type === 1 ? t('common:btn.edit') : type === 2 ? t('common:btn.clone') : t('common:btn.create')}
             </Button>
+            <PreviewMutedEvents form={form} />
             <Button onClick={() => window.history.back()}>{t('common:btn.cancel')}</Button>
           </Space>
         </Form.Item>
