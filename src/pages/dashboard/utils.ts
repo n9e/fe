@@ -411,6 +411,7 @@ function convertPanlesGrafanaToN9E(panels: any) {
 
 export function convertDashboardGrafanaToN9E(data) {
   data = updateSchema(data);
+
   const dashboard: {
     name: string;
     configs: IDashboard;
