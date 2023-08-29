@@ -20,6 +20,7 @@ import moment from 'moment';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { IDashboard, IVariable } from './types';
 import { defaultValues, calcsOptions } from './Editor/config';
+import updateSchema from './updateSchema';
 
 export function JSONParse(str) {
   if (str) {
@@ -290,11 +291,17 @@ function convertTextGrafanaToN9E(panel: any) {
 }
 
 function convertDatasourceGrafanaToN9E(panel: any) {
+  const reg = /^\${[0-9a-zA-Z_]+}$/;
   if (_.toLower(panel?.datasource?.type) === 'prometheus') {
-    const reg = /^${[0-9a-zA-Z_]+}%/;
     return {
       datasourceCate: 'prometheus',
       datasourceValue: reg.test(panel.datasource.uid) ? panel.datasource.uid : '${datasource}',
+    };
+  }
+  if (typeof panel.datasource === 'string' && reg.test(panel.datasource)) {
+    return {
+      datasourceCate: 'prometheus',
+      datasourceValue: panel.datasource,
     };
   }
   return {
@@ -403,6 +410,8 @@ function convertPanlesGrafanaToN9E(panels: any) {
 }
 
 export function convertDashboardGrafanaToN9E(data) {
+  data = updateSchema(data);
+
   const dashboard: {
     name: string;
     configs: IDashboard;
@@ -420,14 +429,14 @@ export function convertDashboardGrafanaToN9E(data) {
 
 /**
  * 检测 Grafana Dashboard 版本
- * 0: 不支持 < v7
+ * 0: 不支持 < v7 // 2023-08-29 启用 grafana update schema 功能后，不再禁止 < v7
  * 1: 兼容 >= v7 < v8
  * 2: 支持 >= v8
  */
 export function checkGrafanaDashboardVersion(data) {
-  if (data.schemaVersion < 25) {
-    return 0;
-  }
+  // if (data.schemaVersion < 25) {
+  //   return 0;
+  // }
   if (data.schemaVersion < 30) {
     return 1;
   }
