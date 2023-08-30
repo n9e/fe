@@ -87,6 +87,7 @@ function index(props: IProps) {
     spanNulls: values.custom?.spanNulls,
     scopedVars: values.scopedVars,
     inspect,
+    type: values.type,
   });
   const name = replaceFieldWithVariable(dashboardId, values.name, variableConfig, values.scopedVars);
   const description = replaceFieldWithVariable(dashboardId, values.description, variableConfig, values.scopedVars);

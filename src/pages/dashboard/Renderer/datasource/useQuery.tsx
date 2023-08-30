@@ -40,6 +40,7 @@ interface IProps {
   spanNulls?: boolean;
   scopedVars?: any;
   inspect?: boolean;
+  type?: string;
 }
 
 export default function usePrometheus(props: IProps) {
