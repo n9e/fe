@@ -352,7 +352,7 @@ function convertPanlesGrafanaToN9E(panels: any) {
   };
   return _.chain(panels)
     .filter((item) => {
-      if (item.targets) {
+      if (item.targets && item.type !== 'row') {
         return _.every(item.targets, (subItem) => {
           return !!subItem.expr;
         });
@@ -411,7 +411,6 @@ function convertPanlesGrafanaToN9E(panels: any) {
 
 export function convertDashboardGrafanaToN9E(data) {
   data = updateSchema(data);
-
   const dashboard: {
     name: string;
     configs: IDashboard;

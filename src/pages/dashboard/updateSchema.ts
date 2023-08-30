@@ -41,7 +41,7 @@ export default function updateSchema(old: any) {
   // this.dashboard.schemaVersion = 37;
 
   if (oldVersion >= 37) {
-    return;
+    return dashboard;
   }
 
   // version 2 schema changes
