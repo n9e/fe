@@ -37,7 +37,7 @@ export const baseCates: Cate[] = [
     label: 'Loki',
     type: ['loki','logging'],
     alertRule: true,
-    dashboard: true,
+    dashboard: false,
     graphPro: false,
     alertPro: false,
   },
