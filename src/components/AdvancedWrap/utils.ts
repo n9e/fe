@@ -32,6 +32,15 @@ export const baseCates: Cate[] = [
     graphPro: false,
     alertPro: true,
   },
+  {
+    value: 'tdengine',
+    label: 'TDengine',
+    type: ['metric'],
+    alertRule: true,
+    dashboard: true,
+    graphPro: false,
+    alertPro: false,
+  },
 ];
 
 export const allCates = [...baseCates, ...advancedCates];

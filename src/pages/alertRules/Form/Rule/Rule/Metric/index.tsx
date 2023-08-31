@@ -23,8 +23,10 @@ import { CommonStateContext } from '@/App';
 import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
 import IntervalAndDuration from '@/pages/alertRules/Form/components/IntervalAndDuration';
 import { DatasourceCateSelect } from '@/components/DatasourceSelect';
+import { DatasourceCateEnum } from '@/utils/constant';
 import { getDefaultValuesByCate } from '../../../utils';
 import Prometheus from './Prometheus';
+import TDengine from '@/plugins/TDengine/AlertRule';
 // @ts-ignore
 import PlusAlertRule from 'plus:/parcels/AlertRule';
 
@@ -69,8 +71,11 @@ export default function index({ form }) {
           {(form) => {
             const cate = form.getFieldValue('cate');
             const datasourceValue = form.getFieldValue('datasource_ids');
-            if (cate === 'prometheus') {
+            if (cate === DatasourceCateEnum.prometheus) {
               return <Prometheus datasourceCate={cate} datasourceValue={datasourceValue} />;
+            }
+            if (cate === DatasourceCateEnum.tdengine) {
+              return <TDengine form={form as any} datasourceValue={datasourceValue} />;
             }
             return <PlusAlertRule cate={cate} form={form} datasourceValue={datasourceValue} />;
           }}

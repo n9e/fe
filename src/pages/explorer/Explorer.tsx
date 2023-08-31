@@ -30,8 +30,10 @@ import { DatasourceCateEnum } from '@/utils/constant';
 import { getDefaultDatasourceValue, setDefaultDatasourceValue } from '@/utils';
 import { CommonStateContext } from '@/App';
 import { DatasourceCateSelect } from '@/components/DatasourceSelect';
+import TDengine from '@/plugins/TDengine/Explorer';
 import Prometheus from './Prometheus';
 import Elasticsearch from './Elasticsearch';
+
 // @ts-ignore
 import PlusExplorer from 'plus:/parcels/Explorer';
 import './index.less';
@@ -157,6 +159,8 @@ const Panel = ({ type, defaultCate, panelIdx }: IProps) => {
                     return <Elasticsearch key={datasourceValue} headerExtra={headerExtraRef.current} datasourceValue={datasourceValue} form={form} />;
                   } else if (datasourceCate === DatasourceCateEnum.prometheus) {
                     return <Prometheus key={datasourceCate} headerExtra={headerExtraRef.current} datasourceValue={datasourceValue} form={form} panelIdx={panelIdx} />;
+                  } else if (datasourceCate === DatasourceCateEnum.tdengine) {
+                    return <TDengine key={datasourceValue} datasourceValue={datasourceValue} form={form} />;
                   }
                   return <PlusExplorer key={datasourceValue} datasourceCate={datasourceCate} datasourceValue={datasourceValue} headerExtraRef={headerExtraRef} form={form} />;
                 }}

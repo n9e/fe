@@ -25,6 +25,7 @@ import replaceExpressionBracket from '../utils/replaceExpressionBracket';
 import { getSerieName } from './utils';
 import prometheusQuery from './prometheus';
 import elasticsearchQuery from './elasticsearch';
+import tdengineQuery from '@/plugins/TDengine/Dashboard/datasource';
 // @ts-ignore
 import plusDatasource from 'plus:/parcels/Dashboard/datasource';
 
@@ -55,6 +56,7 @@ export default function usePrometheus(props: IProps) {
   const fetchQueryMap = {
     prometheus: prometheusQuery,
     elasticsearch: elasticsearchQuery,
+    tdengine: tdengineQuery,
     ...plusDatasource,
   };
   const { run: fetchData } = useDebounceFn(

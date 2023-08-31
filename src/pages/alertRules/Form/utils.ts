@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import moment from 'moment';
+import { DatasourceCateEnum } from '@/utils/constant';
 import { defaultRuleConfig, defaultValues } from './constants';
 import { DATASOURCE_ALL } from '../constants';
 // @ts-ignore
@@ -18,6 +19,13 @@ export function processFormValues(values) {
   }
   if (_.isFunction(alertUtils.processFormValues)) {
     values = alertUtils.processFormValues(values);
+  } else {
+    if (values?.keys?.labelKey && _.isArray(values.keys.labelKey)) {
+      values.keys.labelKey = _.join(values.keys.labelKey, ' ');
+    }
+    if (values?.keys?.valueKey && _.isArray(values.keys.valueKey)) {
+      values.keys.valueKey = _.join(values.keys.valueKey, ' ');
+    }
   }
   const data = {
     ..._.omit(values, 'effective_time'),
@@ -38,6 +46,9 @@ export function processFormValues(values) {
 export function processInitialValues(values) {
   if (_.isFunction(alertUtils.processInitialValues)) {
     values = alertUtils.processInitialValues(values);
+  } else if (values.cate === DatasourceCateEnum.tdengine) {
+    _.set(values, 'keys.labelKey', values?.keys?.labelKey ? _.split(values.keys.labelKey, ' ') : []);
+    _.set(values, 'keys.valueKey', values?.keys?.valueKey ? _.split(values.keys.valueKey, ' ') : []);
   }
   return {
     ...values,
@@ -102,12 +113,35 @@ export function getDefaultValuesByProd(prod, defaultBrainParams) {
 }
 
 export function getDefaultValuesByCate(prod, cate) {
-  if (cate === 'prometheus') {
+  if (cate === DatasourceCateEnum.prometheus) {
     return {
       prod,
       cate,
       datasource_ids: [DATASOURCE_ALL],
       rule_config: defaultRuleConfig.metric,
+    };
+  }
+  if (cate === DatasourceCateEnum.tdengine) {
+    return {
+      prod,
+      cate,
+      datasource_ids: undefined,
+      rule_config: {
+        triggers: [
+          {
+            mode: 0,
+            expressions: [
+              {
+                ref: 'A',
+                comparisonOperator: '>',
+                value: 0,
+                logicalOperator: '&&',
+              },
+            ],
+            severity: 2,
+          },
+        ],
+      },
     };
   }
   if (_.isFunction(alertUtils.getDefaultValuesByCate)) {
