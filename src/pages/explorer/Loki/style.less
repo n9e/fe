@@ -1,0 +1,126 @@
+.loki-discover-container {
+  display: flex;
+  flex-direction: column;
+}
+.loki-discover-main {
+  width: 100%;
+  flex-shrink: 0;
+  border: 1px solid #d9d9d9;
+}
+.loki-discover-chart {
+  height: 200px;
+}
+.loki-discover-chart-content {
+  height: 200px;
+  // padding: 10px 0;
+}
+.event-logs-table {
+  .ant-table {
+    margin-top: 0;
+  }
+}
+
+.log-expression-input {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  .ant-input-affix-wrapper {
+    padding: 6px 11px;
+    z-index: 2 !important;
+  }
+  .ant-input-affix-wrapper > .ant-input {
+    padding: 0;
+    border: none;
+    outline: none;
+  }
+}
+
+.log-query-operator {
+  background: #f6f6f6;
+  border: 1px solid #e5e5e5;
+  border-radius: 0 0 4px 4px;
+  height: 52px;
+  line-height: 52px;
+  margin: 10px 5px;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logRowStyled {
+    font-size: 12px;
+    cursor: pointer;
+    padding-left: 0.5rem;
+    margin-left: 0.25rem;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 2px;
+    margin-top: 2px;
+    font-family: monospace;
+    height: 1;
+
+    border-left: 4px solid green;
+    .log-ts-row {
+      display: flex;
+      &:hover {
+        background: #EAE8F2;
+      }
+    }
+
+    .rowLogContent {
+      font-size: 12px;
+      line-height: 1.5;
+      word-break: break-all;
+      word-wrap: break-word;
+      white-space: normal;
+    }
+    
+    .rowTimestamp {
+      position: relative;
+      margin-right: 0.25rem;
+      white-space: nowrap;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+}
+
+
+.rowsCont {
+  overflow: hidden;
+  overflow-y: auto;
+  height: calc(100% - 200px);
+}
+
+.value-tags-container {
+  background-color: #fff;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(128, 128, 128, 0.466);
+  border-radius: 4px;
+  padding: 4px;
+  margin-top: 10px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  .value-tags {
+    font-family: monospace;
+    font-size: 12px;
+    display: flex;
+    margin: 2px;
+    padding: 2px;
+    flex: 1;
+    justify-content: space-between;
+    span {
+      display: flex;
+      flex: 1;
+      line-height: 20px;
+      margin-left: 6px;
+    }
+
+    .icon {
+      margin-right: 2px;
+      flex: 0;
+    }
+  }
+}
