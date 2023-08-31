@@ -249,6 +249,22 @@ const getMenuList = (t) => {
         label: t('全局屏蔽'),
       });
     }
+
+    const logIndex = _.findIndex(menuList, (item) => item.key === 'log');
+    if (logIndex !== -1) {
+      menuList.splice(logIndex, 0, {
+        key: 'dial-analysis',
+        icon: <Icon component={menuIcon.DialAnalysis as any} />,
+        activeIcon: <Icon component={menuIcon.DialAnalysisHover as any} />,
+        label: t('拨测分析'),
+        children: [
+          {
+            key: '/dial-analysis',
+            label: t('拨测分析'),
+          },
+        ],
+      });
+    }
   }
   return menuList;
 };
