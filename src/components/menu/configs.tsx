@@ -8,6 +8,8 @@ import LogAnalysis from './icons/LogAnalysis.svg';
 import PersonnelOrganization from './icons/PersonnelOrganization.svg';
 import SystemInformation from './icons/SystemInformation.svg';
 import Infrastructure from './icons/Infrastructure.svg';
+import DialAnalysis from './icons/DialAnalysis.svg';
+import DialAnalysisHover from './icons/DialAnalysis-Hover.svg';
 
 const menuIcon = {
   Menu_Search,
@@ -20,6 +22,8 @@ const menuIcon = {
   PersonnelOrganization,
   SystemInformation,
   Infrastructure,
+  DialAnalysis,
+  DialAnalysisHover,
 };
 
 export default menuIcon;
