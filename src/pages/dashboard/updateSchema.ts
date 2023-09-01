@@ -667,6 +667,7 @@ export default function updateSchema(old: any) {
 }
 
 function upgradeToGridLayout(old: any, dashboard: any) {
+  dashboard.panels = dashboard.panels || [];
   let yPos = 0;
   const widthFactor = GRID_COLUMN_COUNT / 12;
 
@@ -709,7 +710,7 @@ function upgradeToGridLayout(old: any, dashboard: any) {
         x: 0,
         y: yPos,
         w: GRID_COLUMN_COUNT,
-        h: rowGridHeight,
+        h: 1,
       };
       rowPanelModel = rowPanel;
       // rowPanelModel = new PanelModel(rowPanel);
