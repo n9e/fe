@@ -1,18 +1,19 @@
 import _ from 'lodash';
 import { getSerieName } from '@/pages/dashboard/Renderer/datasource/utils';
 
-function processAggregations(aggregations: any[], seriesList: any[], metric: { [index: string]: string }, hasCountFunc: boolean) {
+function processAggregations(aggregations: any[], seriesList: any[], metric: { [index: string]: string }, target, queryCount: number) {
+  const prefixName = queryCount > 1 ? `${target.index} ` : '';
   let aggId;
   const metricObj = _.cloneDeep(metric);
   for (aggId in aggregations) {
     const buckets = aggregations[aggId].buckets;
     if (aggId === 'date') {
       const subAggs = _.omit(buckets[0], ['key', 'key_as_string', 'doc_count']);
-      if (hasCountFunc) {
+      if (hasCountFunc(target)) {
         seriesList.push({
           metric: {
             ...metricObj,
-            __name__: 'count',
+            __name__: `${prefixName}count`,
           },
           data: [],
         });
@@ -25,7 +26,7 @@ function processAggregations(aggregations: any[], seriesList: any[], metric: { [
             seriesList.push({
               metric: {
                 ...metricObj,
-                __name__: `p${percentileKey} ${percentilesField}`,
+                __name__: `${prefixName}p${percentileKey} ${percentilesField}`,
               },
               data: [],
             });
@@ -34,7 +35,7 @@ function processAggregations(aggregations: any[], seriesList: any[], metric: { [
           seriesList.push({
             metric: {
               ...metricObj,
-              __name__: subAggId,
+              __name__: `${prefixName}${subAggId}`,
             },
             data: [],
           });
@@ -53,7 +54,7 @@ function processAggregations(aggregations: any[], seriesList: any[], metric: { [
               const series = _.find(seriesList, (s) =>
                 _.isEqual(s.metric, {
                   ...metric,
-                  __name__: `p${percentileKey} ${percentilesField}`,
+                  __name__: `${prefixName}p${percentileKey} ${percentilesField}`,
                 }),
               );
               if (series) {
@@ -65,7 +66,7 @@ function processAggregations(aggregations: any[], seriesList: any[], metric: { [
             const series = _.find(seriesList, (s) =>
               _.isEqual(s.metric, {
                 ...metric,
-                __name__: subAggId,
+                __name__: `${prefixName}${subAggId}`,
               }),
             );
             if (series) {
@@ -73,11 +74,11 @@ function processAggregations(aggregations: any[], seriesList: any[], metric: { [
             }
           }
         });
-        if (hasCountFunc) {
+        if (hasCountFunc(target)) {
           const series = _.find(seriesList, (s) =>
             _.isEqual(s.metric, {
               ...metric,
-              __name__: 'count',
+              __name__: `${prefixName}count`,
             }),
           );
           if (series) {
@@ -86,7 +87,7 @@ function processAggregations(aggregations: any[], seriesList: any[], metric: { [
         }
       } else {
         metric[aggId] = key;
-        processAggregations(subAggs, seriesList, metric, hasCountFunc);
+        processAggregations(subAggs, seriesList, metric, target, queryCount);
       }
     });
   }
@@ -100,7 +101,7 @@ export function processResponseToSeries(responses: any[], params: any[]) {
   const seriesList: any[] = [];
   _.forEach(responses, (response, idx: number) => {
     const { aggregations } = response;
-    processAggregations(aggregations, seriesList, {}, hasCountFunc(params[idx]));
+    processAggregations(aggregations, seriesList, {}, params[idx], params.length);
   });
   return _.map(seriesList, (item) => {
     return {
