@@ -36,6 +36,7 @@ import PlusLogsDetail from 'plus:/parcels/Event/LogsDetail';
 import PrometheusDetail from './Detail/Prometheus';
 import Host from './Detail/Host';
 import './detail.less';
+import LokiDetail from './Detail/Loki';
 
 const { Paragraph } = Typography;
 const EventDetailPage: React.FC = () => {
@@ -184,6 +185,12 @@ const EventDetailPage: React.FC = () => {
     },
     ...(eventDetail?.cate === 'prometheus'
       ? PrometheusDetail({
+          eventDetail,
+          history,
+        })
+      : [false]),
+    ...(eventDetail?.cate === 'loki'
+      ? LokiDetail({
           eventDetail,
           history,
         })

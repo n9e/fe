@@ -27,6 +27,7 @@ const zh_HK = {
     host: 'Host',
     logging: 'Log',
     anomaly: 'Anomaly',
+    loki: 'Loki',
   },
 };
 

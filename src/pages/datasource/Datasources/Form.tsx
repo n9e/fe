@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import Prometheus from './Prometheus/Form';
 import ElasticSearch from './ElasticSearch/Form';
 import Jaeger from './Jaeger/Form';
+import Loki from './Loki/Form';
 // @ts-ignore
 import Plus from 'plus:/parcels/Datasource/Form';
 
@@ -16,6 +17,9 @@ export default function Form(props) {
   }
   if (params.type === 'jaeger') {
     return <Jaeger {...props} />;
+  }
+  if (params.type === 'loki') {
+    return <Loki {...props} />;
   }
   return <Plus type={params.type} {...props} />;
 }
