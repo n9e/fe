@@ -82,6 +82,7 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
           batchInstantParams.push({
             time: end,
             query: realExpr,
+            refId: target.refId,
           });
         } else {
           batchQueryParams.push({
@@ -89,6 +90,7 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
             start,
             query: realExpr,
             step: _step,
+            refId: target.refId,
           });
         }
         exprs.push(target.expr);
@@ -104,10 +106,10 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
         for (let i = 0; i < dat?.length; i++) {
           var item = {
             result: dat[i],
-            expr: exprs[i],
-            refId: refIds[i],
+            expr: batchQueryParams[i]?.query,
+            refId: batchQueryParams[i]?.refId,
           };
-          const target = _.find(targets, (t) => t.expr === item.expr);
+          const target = _.find(targets, (t) => t.refId === item.refId);
           _.forEach(item.result, (serie) => {
             series.push({
               id: _.uniqueId('series_'),
@@ -127,10 +129,10 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
         for (let i = 0; i < dat?.length; i++) {
           var item = {
             result: dat[i],
-            expr: exprs[i],
-            refId: refIds[i],
+            expr: batchInstantParams[i]?.query,
+            refId: batchInstantParams[i]?.refId,
           };
-          const target = _.find(targets, (t) => t.expr === item.expr);
+          const target = _.find(targets, (t) => t.refId === item.refId);
           _.forEach(item.result, (serie) => {
             series.push({
               id: _.uniqueId('series_'),
