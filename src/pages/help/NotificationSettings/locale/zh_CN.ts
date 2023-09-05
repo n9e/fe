@@ -48,6 +48,7 @@ const zh_CN = {
   },
   smtp: {
     title: 'SMTP 设置',
+    testMessage: '已发送测试邮件，请查收',
   },
   ibex: {
     title: '自愈配置',

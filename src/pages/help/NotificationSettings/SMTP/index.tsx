@@ -82,7 +82,7 @@ export default function index() {
                           ...values,
                           email,
                         }).then((res) => {
-                          message.success('测试成功');
+                          message.success(t('smtp.testMessage'));
                           setTestPopoverVisible(false);
                         });
                       });
