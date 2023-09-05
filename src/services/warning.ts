@@ -177,6 +177,13 @@ export const prometheusQuery = function (data, datasourceValue): Promise<any> {
   });
 };
 
+export const validateRule = function (data: any[]) {
+  return request(`/api/n9e/busi-group/alert-rule/validate`, {
+    method: RequestMethod.Put,
+    data: data,
+  });
+};
+
 /**
  * 批量更新规则
  */
