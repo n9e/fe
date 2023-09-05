@@ -134,7 +134,10 @@ const zh_HK = {
     },
   },
   brain_result_btn: '訓練結果',
-  check_btn: '檢查',
+  testTip: `
+  规则有效性检查，包括以下检查项：<br />
+  1. 用户联系方式有效性检查
+  `,
 };
 
 export default zh_HK;
