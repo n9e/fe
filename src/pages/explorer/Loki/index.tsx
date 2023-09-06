@@ -37,6 +37,7 @@ export default function index(props: IProps) {
   const { search } = useLocation();
   const params = queryString.parse(search);
   const [loading, setLoading] = useState(false);
+  // @ts-ignore
   const [value, setValue] = useState<string | undefined>(_.isString(params.prom_ql) ? params.prom_ql : ''); // for logQLInput
   const [data, setData] = useState<Row[]>([]);
   const [typeIsStreams, setTypeIsStreams] = useState<boolean>(true); // table or graph chart
