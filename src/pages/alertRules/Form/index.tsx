@@ -140,7 +140,7 @@ export default function index(props: IProps) {
               >
                 {t('common:btn.save')}
               </Button>
-              <Tooltip
+              {/* <Tooltip
                 title={
                   <Trans
                     ns='alertRules'
@@ -166,7 +166,7 @@ export default function index(props: IProps) {
                 >
                   {t('common:btn.test')}
                 </Button>
-              </Tooltip>
+              </Tooltip> */}
               <Link to='/alert-rules'>
                 <Button>{t('common:btn.cancel')}</Button>
               </Link>
