@@ -211,6 +211,7 @@ const en_US = {
       reverseColorOrder: 'Reverse color order', // hexbin
       colorDomainAuto: 'Color domain auto', // hexbin
       colorDomainAuto_tip: 'By default, the min max value is automatically taken from the series', // hexbin
+      fontBackground: 'Font background', // hexbin
       detailName: 'Link name',
       detailUrl: 'Link addr',
       pie: {

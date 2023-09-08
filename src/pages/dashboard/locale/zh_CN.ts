@@ -217,6 +217,7 @@ const zh_CN = {
       reverseColorOrder: '反转颜色', // hexbin
       colorDomainAuto: '自动 min/max 值', // hexbin
       colorDomainAuto_tip: '默认自动从 series 里面取 min max 值', // hexbin
+      fontBackground: '文字背景色', // hexbin
       detailName: '链接名称',
       detailUrl: '链接地址',
       pie: {

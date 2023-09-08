@@ -55,7 +55,7 @@ const div = select('body')
   .attr('class', 'hexbin-tooltip')
   .style('opacity', 0);
 
-function renderHoneyComb(svgGroup, data, { width, height, fontAutoScale = true, fontSize = 12, themeMode, textMode, detailUrl }, detailFormatter) {
+function renderHoneyComb(svgGroup, data, { width, height, fontAutoScale = true, fontSize = 12, themeMode, textMode, detailUrl, fontBackground = false }, detailFormatter) {
   const t = transition().duration(750);
   const { columns: mapColumns, rows: mapRows } = getMapColumnsAndRows(width, height, data.length);
   const hexRadius = Math.floor(min([width / ((mapColumns + 0.5) * Math.sqrt(3)), height / ((mapRows + 1 / 3) * 1.5), width / 7]));
@@ -76,6 +76,7 @@ function renderHoneyComb(svgGroup, data, { width, height, fontAutoScale = true, 
   let activeValueFontSize = fontSize;
   let isShowEllipses = false;
   let numOfChars = 0;
+  const fillColor = fontBackground ? '#fff' : '#000';
 
   if (fontAutoScale) {
     let maxLabel = '';
@@ -190,10 +191,33 @@ function renderHoneyComb(svgGroup, data, { width, height, fontAutoScale = true, 
       .attr('alignment-baseline', 'central')
       .style('pointer-events', 'none')
       .style('font-size', activeLabelFontSize + 'px')
-      .style('fill', 'black')
+      .style('fill', fillColor)
       .each(function (this, d) {
         d.bbox = this.getBBox();
       });
+
+    if (fontBackground) {
+      hexagons
+        .enter()
+        .insert('rect', 'text')
+        .attr('x', function (d) {
+          return d.bbox.x - 4;
+        })
+        .attr('y', function (d) {
+          return d.bbox.y + 6;
+        })
+        .attr('rx', 2)
+        .attr('ry', 2)
+        .attr('width', function (d) {
+          return d.bbox.width + 8;
+        })
+        .attr('height', function (d) {
+          return d.bbox.height - 12;
+        })
+        .attr('fill-opacity', '0.2')
+        .style('fill', '#000')
+        .style('pointer-events', 'none');
+    }
   }
 
   if (textMode === 'valueAndName' || textMode === 'value') {
@@ -214,15 +238,38 @@ function renderHoneyComb(svgGroup, data, { width, height, fontAutoScale = true, 
       .attr('text-anchor', 'middle')
       .attr('alignment-baseline', 'central')
       .style('font-size', activeValueFontSize + 'px')
-      .style('fill', 'black')
+      .style('fill', fillColor)
       .style('pointer-events', 'none')
       .each(function (this, d) {
         d.bbox = this.getBBox();
       });
+
+    if (fontBackground) {
+      hexagons
+        .enter()
+        .insert('rect', 'text')
+        .attr('x', function (d) {
+          return d.bbox.x - 4;
+        })
+        .attr('y', function (d) {
+          return d.bbox.y + 4;
+        })
+        .attr('rx', 2)
+        .attr('ry', 2)
+        .attr('width', function (d) {
+          return d.bbox.width + 8;
+        })
+        .attr('height', function (d) {
+          return d.bbox.height - 8;
+        })
+        .attr('fill-opacity', '0.2')
+        .style('fill', '#000')
+        .style('pointer-events', 'none');
+    }
   }
 }
 
-export function renderFn(data, { width, height, parentGroupEl, themeMode, textMode, detailUrl }, detailFormatter) {
+export function renderFn(data, { width, height, parentGroupEl, themeMode, textMode, detailUrl, fontBackground }, detailFormatter) {
   const parentGroup = select(parentGroupEl).attr('width', width).attr('height', height);
   const countPerRow = bestFitElemCountPerRow(1, width, height);
   const unitWidth = Math.floor(width / countPerRow);
@@ -238,6 +285,7 @@ export function renderFn(data, { width, height, parentGroupEl, themeMode, textMo
       themeMode,
       textMode,
       detailUrl,
+      fontBackground,
     },
     detailFormatter,
   );

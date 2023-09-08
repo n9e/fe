@@ -153,6 +153,7 @@ export interface IHexbinStyles {
   colorDomain: number[]; // 自定义 [min, max]
   reverseColorOrder: boolean;
   detailUrl: string;
+  fontBackground: boolean;
 }
 
 export interface IPieStyles {
