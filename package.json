@@ -22,6 +22,7 @@
     "@codemirror/legacy-modes": "^0.19.1",
     "@codemirror/lint": "^0.19.0",
     "@codemirror/state": "^0.19.0",
+    "@codemirror/stream-parser": "^0.19.9",
     "@codemirror/view": "^0.19.0",
     "@fc-components/menu": "^1.1.23",
     "@fc-plot/ts-graph": "^0.22.21",
