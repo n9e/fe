@@ -247,6 +247,9 @@ export default function index(props: IProps) {
             ).text;
           },
         },
+        onClick: (event, datetime, value, points) => {
+          if (onClick) onClick(event, datetime, value, points);
+        },
       });
     }
     if (hasLegend) {
