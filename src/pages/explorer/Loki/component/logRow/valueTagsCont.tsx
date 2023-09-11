@@ -27,7 +27,7 @@ export function ValueTagsCont(props: IProps) {
   }, [log]);
   if (showTags) {
     const sortedTags = _.sortBy(_.toPairs(tags), ([key, value]) => key);
-    console.log('sortedTags', sortedTags);
+    // console.log('sortedTags', sortedTags);
     return (
       <div className='value-tags-container'>
         <Table

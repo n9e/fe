@@ -16,8 +16,6 @@ interface IProps {
   datasourceValue: number;
 }
 
-const keys = ['app', 'container', 'container_name', 'level', 'namespace', 'pod', 'pod_name'];
-
 function LogContext(props: IProps & ModalWrapProps) {
   const { t } = useTranslation('explorer');
   const { time, log, tags, datasourceValue, visible, destroy } = props;
@@ -32,11 +30,11 @@ function LogContext(props: IProps & ModalWrapProps) {
     }
   };
   const fetchData = async () => {
-    const tagString = _.map(_.pick(tags, keys), (value, key) => `${key}="${value}"`).join(',');
+    const expr = _.map(tags, (value, key) => `${key}="${value}"`).join(',');
     try {
       setLoading(true);
       const twoHoursAgoQueryParams = {
-        query: `{${tagString}}`,
+        query: `{${expr}}`,
         limit: limit,
         start:
           moment(Number(time) / 1000 / 1000)
@@ -44,12 +42,11 @@ function LogContext(props: IProps & ModalWrapProps) {
             .valueOf() *
           1000 *
           1000,
-        // TODO 丢失两位精度
         end: Number(time),
         direction: 'BACKWARD',
       };
       const twoHoursLaterQueryParams = {
-        query: `{${tagString}}`,
+        query: `{${expr}}`,
         limit: limit,
         start: Number(time),
         end:
