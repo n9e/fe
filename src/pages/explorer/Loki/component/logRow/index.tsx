@@ -26,7 +26,7 @@ export default function LogRow(props: IProps) {
   }, [row]);
 
   return (
-    <div className='rowsCont'>
+    <div>
       <span
         className='logRowStyled'
         style={{ borderLeftColor: getRowSytleColor(row.tags?.level ?? 'unknow') }}
@@ -68,7 +68,7 @@ export default function LogRow(props: IProps) {
             </Button>
           )}
         </span>
-        <ValueTagsCont tags={row.tags} showTags={showTags} addQueryLabel={addQueryLabel} log={row.log}/>
+        <ValueTagsCont tags={row.tags} showTags={showTags} addQueryLabel={addQueryLabel} log={row.log} />
       </span>
     </div>
   );

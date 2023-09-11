@@ -268,24 +268,26 @@ export default function index(props: IProps) {
                   </Space>
                   <SelectSort onChange={(v) => setSortOrder(v)} />
                 </div>
-                {data.map((item: Row) => {
-                  return (
-                    <LogRow
-                      datasourceValue={datasourceValue}
-                      row={item}
-                      keywords={keywords}
-                      operator={{
-                        showTime: showTime,
-                        prettifyJson: prettifyJson,
-                      }}
-                      addQueryLabel={(k, v, operator) => {
-                        const label = `${k}${operator}"${v}"`;
-                        const regex = /{([^}]+)}/g;
-                        setValue(value?.replace(regex, (match, p1) => `{${p1},${label}}`));
-                      }}
-                    />
-                  );
-                })}
+                <div className='loki-discover-rows-container'>
+                  {data.map((item: Row) => {
+                    return (
+                      <LogRow
+                        datasourceValue={datasourceValue}
+                        row={item}
+                        keywords={keywords}
+                        operator={{
+                          showTime: showTime,
+                          prettifyJson: prettifyJson,
+                        }}
+                        addQueryLabel={(k, v, operator) => {
+                          const label = `${k}${operator}"${v}"`;
+                          const regex = /{([^}]+)}/g;
+                          setValue(value?.replace(regex, (match, p1) => `{${p1},${label}}`));
+                        }}
+                      />
+                    );
+                  })}
+                </div>
               </div>
             ) : (
               <div className='loki-discover-graph'>
