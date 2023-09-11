@@ -260,7 +260,11 @@ const getMenuList = (t) => {
         children: [
           {
             key: '/dial-analysis',
-            label: t('拨测分析'),
+            label: t('拨测管理'),
+          },
+          {
+            key: '/dial-status',
+            label: t('拨测状态'),
           },
         ],
       });
