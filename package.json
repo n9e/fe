@@ -4,8 +4,8 @@
   "scripts": {
     "dev": "vite --port 8765 --host",
     "dev:advanced": "vite --port 8765 --host --mode advanced",
-    "build": "tsc && cross-env NODE_OPTIONS=--max-old-space-size=4096 vite build",
-    "build:advanced": "node comb_feats ${npm_config_custom_options} && tsc && cross-env NODE_OPTIONS=--max-old-space-size=4096 vite build --mode advanced",
+    "build": "tsc && cross-env NODE_OPTIONS=--max-old-space-size=6096 vite build",
+    "build:advanced": "node comb_feats ${npm_config_custom_options} && tsc && cross-env NODE_OPTIONS=--max-old-space-size=6096 vite build --mode advanced",
     "serve": "vite preview"
   },
   "dependencies": {
