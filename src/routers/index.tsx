@@ -14,12 +14,14 @@
  * limitations under the License.
  *
  */
-import React from 'react';
-import { Switch, Route, useLocation, Redirect } from 'react-router-dom';
+import React, { useEffect, useContext } from 'react';
+import { Switch, Route, useLocation, Redirect, useHistory } from 'react-router-dom';
 import querystring from 'query-string';
 import _ from 'lodash';
-import NotFound from '@/pages/notFound';
+import { getMenuPerm } from '@/services/common';
+import { CommonStateContext } from '@/App';
 import Page403 from '@/pages/notFound/Page403';
+import NotFound from '@/pages/notFound';
 import Login from '@/pages/login';
 import Overview from '@/pages/login/overview';
 import LoginCallback from '@/pages/loginCallback';
@@ -91,7 +93,9 @@ function RouteWithSubRoutes(route) {
 
 export default function Content() {
   const location = useLocation();
+  const history = useHistory();
   const isPlus = useIsPlus();
+  const { profile } = useContext(CommonStateContext);
   // 仪表盘在全屏和暗黑主题下需要定义个 dark 样式名
   let themeClassName = '';
   if (location.pathname.indexOf('/dashboard') === 0) {
@@ -100,6 +104,24 @@ export default function Content() {
       themeClassName = 'theme-dark';
     }
   }
+
+  useEffect(() => {
+    if (profile?.roles?.length > 0) {
+      if (profile?.roles.indexOf('Admin') === -1) {
+        getMenuPerm().then((res) => {
+          const { dat } = res;
+          // 如果没有权限则重定向到 403 页面
+          if (
+            _.every(dat, (item) => {
+              return location.pathname.indexOf(item) === -1;
+            })
+          ) {
+            history.push('/403');
+          }
+        });
+      }
+    }
+  }, []);
 
   return (
     <div className={`content ${themeClassName}`}>
