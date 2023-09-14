@@ -67,7 +67,7 @@ export default function GraphStyles({ chartForm, variableConfigWithOptions }) {
                   if (val === 'labelsOfSeriesToRows') {
                     chartForm.setFieldsValue({ custom: { columns: [] } });
                   } else if (val === 'labelValuesToRows') {
-                    chartForm.setFieldsValue({ custom: { aggrDimension: '' } });
+                    chartForm.setFieldsValue({ custom: { aggrDimension: [] } });
                   }
                 }}
               >
