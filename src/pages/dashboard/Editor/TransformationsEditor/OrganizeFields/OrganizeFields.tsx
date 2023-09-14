@@ -35,10 +35,10 @@ const DragHandle = SortableHandle(() => <Button icon={<MenuOutlined />} />);
 export default function OrganizeFields(props: IProps) {
   const { value, onChange } = props;
   const [displayedTableFields, setDisplayedTableFields] = useGlobalState('displayedTableFields');
-  const [fields, setFields] = useState(displayedTableFields);
+  const [fields, setFields] = useState(_.flatten(displayedTableFields));
 
   useEffect(() => {
-    setFields(displayedTableFields);
+    setFields(_.flatten(displayedTableFields));
   }, [JSON.stringify(displayedTableFields)]);
 
   return (
