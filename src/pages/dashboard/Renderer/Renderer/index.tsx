@@ -254,15 +254,18 @@ function index(props: IProps) {
                           <ShareAltOutlined style={{ marginRight: 8 }} />
                           {t('share_btn')}
                         </Menu.Item>
-                        <Menu.Item
-                          onClick={() => {
-                            tableRef.current.exportCsv();
-                          }}
-                          key='export_btn'
-                        >
-                          <ExportOutlined style={{ marginRight: 8 }} />
-                          {t('export_btn')}
-                        </Menu.Item>
+                        {values.type === 'table' && (
+                          <Menu.Item
+                            onClick={() => {
+                              tableRef.current.exportCsv();
+                            }}
+                            key='export_btn'
+                          >
+                            <ExportOutlined style={{ marginRight: 8 }} />
+                            {t('export_btn')}
+                          </Menu.Item>
+                        )}
+
                         <Menu.Item
                           onClick={() => {
                             setVisible(false);
