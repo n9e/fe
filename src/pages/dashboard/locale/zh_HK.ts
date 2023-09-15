@@ -8,6 +8,7 @@ const zh_HK = {
   refresh_tip: '刷新間隔小於 step({{num}}s) 將不會更新資料',
   refresh_btn: '刷新',
   share_btn: '分享',
+  export_btn: '匯出（CSV）',
   inspect_btn: '排查',
   public: {
     '0': {
