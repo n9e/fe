@@ -3,9 +3,10 @@ import _ from 'lodash';
 import { useDebounceFn } from 'ahooks';
 import { useLocation } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
-import { Space, Input, Tooltip, Form, AutoComplete, Select, Button } from 'antd';
+import { Input, Tooltip, Form, AutoComplete, Select, Button } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import TimeRangePicker from '@/components/TimeRangePicker';
+import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { getIndices, getFullFields, Field } from './services';
 
 interface Props {
@@ -58,118 +59,97 @@ export default function QueryBuilder(props: Props) {
   }, []);
 
   return (
-    <Space>
-      <Input.Group compact>
-        <span
-          className='ant-input-group-addon'
-          style={{
-            width: 70,
-            height: 32,
-            lineHeight: '32px',
-          }}
+    <div style={{ display: 'flex', gap: 8 }}>
+      <div style={{ width: 290, flexShrink: 0 }}>
+        <InputGroupWithFormItem
+          label={
+            <>
+              {t('datasource:es.index')}{' '}
+              <Tooltip title={<Trans ns='datasource' i18nKey='datasource:es.index_tip' components={{ 1: <br /> }} />}>
+                <QuestionCircleOutlined />
+              </Tooltip>
+            </>
+          }
         >
-          {t('datasource:es.index')}{' '}
-          <Tooltip title={<Trans ns='datasource' i18nKey='datasource:es.index_tip' components={{ 1: <br /> }} />}>
-            <QuestionCircleOutlined />
-          </Tooltip>
-        </span>
-        <Form.Item
-          name={['query', 'index']}
-          rules={[
-            {
-              required: true,
-              message: t('datasource:es.index_msg'),
-            },
-          ]}
-          validateTrigger='onBlur'
-          style={{ width: 190 }}
-        >
-          <AutoComplete
-            dropdownMatchSelectWidth={false}
-            style={{ minWidth: 100 }}
-            options={_.filter(indexOptions, (item) => {
-              if (indexSearch) {
-                return _.includes(item.value, indexSearch);
-              }
-              return true;
-            })}
-            onSearch={(val) => {
-              setIndexSearch(val);
-            }}
-            onChange={(val) => {
-              onIndexChange(val);
-            }}
-          />
-        </Form.Item>
-      </Input.Group>
-      <Input.Group compact>
-        <span
-          className='ant-input-group-addon'
-          style={{
-            width: 90,
-            height: 32,
-            lineHeight: '32px',
-          }}
-        >
-          {t('datasource:es.filter')}{' '}
-          <a href='https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax ' target='_blank'>
-            <QuestionCircleOutlined />
-          </a>
-        </span>
-        <Form.Item name={['query', 'filter']} style={{ minWidth: 300 }}>
+          <Form.Item
+            name={['query', 'index']}
+            rules={[
+              {
+                required: true,
+                message: t('datasource:es.index_msg'),
+              },
+            ]}
+            validateTrigger='onBlur'
+          >
+            <AutoComplete
+              dropdownMatchSelectWidth={false}
+              options={_.filter(indexOptions, (item) => {
+                if (indexSearch) {
+                  return _.includes(item.value, indexSearch);
+                }
+                return true;
+              })}
+              onSearch={(val) => {
+                setIndexSearch(val);
+              }}
+              onChange={(val) => {
+                onIndexChange(val);
+              }}
+            />
+          </Form.Item>
+        </InputGroupWithFormItem>
+      </div>
+      <InputGroupWithFormItem
+        label={
+          <>
+            {t('datasource:es.filter')}{' '}
+            <a href='https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax ' target='_blank'>
+              <QuestionCircleOutlined />
+            </a>
+          </>
+        }
+      >
+        <Form.Item name={['query', 'filter']}>
           <Input />
         </Form.Item>
-      </Input.Group>
-      <div style={{ display: 'flex' }}>
-        <Space>
-          <Input.Group compact>
-            <span
-              className='ant-input-group-addon'
-              style={{
-                width: 90,
-                height: 32,
-                lineHeight: '32px',
-              }}
-            >
-              {t('datasource:es.date_field')}{' '}
-            </span>
-            <Form.Item
-              name={['query', 'date_field']}
-              initialValue='@timestamp'
-              style={{ width: 'calc(100% - 90px)' }}
-              rules={[
-                {
-                  required: true,
-                  message: t('datasource:es.date_field_msg'),
-                },
-              ]}
-            >
-              <Select dropdownMatchSelectWidth={false} style={{ width: 150 }} showSearch>
-                {_.map(dateFields, (item) => {
-                  return (
-                    <Select.Option key={item.name} value={item.name}>
-                      {item.name}
-                    </Select.Option>
-                  );
-                })}
-              </Select>
-            </Form.Item>
-          </Input.Group>
-          <Form.Item name={['query', 'range']} initialValue={{ start: 'now-1h', end: 'now' }}>
-            <TimeRangePicker />
+      </InputGroupWithFormItem>
+      <div style={{ width: 200, flexShrink: 0 }}>
+        <InputGroupWithFormItem label={t('datasource:es.date_field')}>
+          <Form.Item
+            name={['query', 'date_field']}
+            initialValue='@timestamp'
+            rules={[
+              {
+                required: true,
+                message: t('datasource:es.date_field_msg'),
+              },
+            ]}
+          >
+            <Select dropdownMatchSelectWidth={false} showSearch>
+              {_.map(dateFields, (item) => {
+                return (
+                  <Select.Option key={item.name} value={item.name}>
+                    {item.name}
+                  </Select.Option>
+                );
+              })}
+            </Select>
           </Form.Item>
-          <Form.Item>
-            <Button
-              type='primary'
-              onClick={() => {
-                onExecute();
-              }}
-            >
-              {t('query_btn')}
-            </Button>
-          </Form.Item>
-        </Space>
+        </InputGroupWithFormItem>
       </div>
-    </Space>
+      <Form.Item name={['query', 'range']} initialValue={{ start: 'now-1h', end: 'now' }}>
+        <TimeRangePicker />
+      </Form.Item>
+      <Form.Item>
+        <Button
+          type='primary'
+          onClick={() => {
+            onExecute();
+          }}
+        >
+          {t('query_btn')}
+        </Button>
+      </Form.Item>
+    </div>
   );
 }
