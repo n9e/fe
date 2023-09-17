@@ -268,6 +268,22 @@ const getMenuList = (t) => {
           },
         ],
       });
+      menuList.splice(logIndex, 0, {
+        key: 'ping-mesh',
+        icon: <Icon component={menuIcon.Pingmesh as any} />,
+        activeIcon: <Icon component={menuIcon.PingmeshHover as any} />,
+        label: t('Pingmesh'),
+        children: [
+          {
+            key: '/pingmesh',
+            label: t('Pingmesh'),
+          },
+          {
+            key: '/pingmesh-config',
+            label: t('Pingmesh配置'),
+          },
+        ],
+      });
     }
   }
   return menuList;
