@@ -193,7 +193,17 @@ const zh_CN = {
       decimals: '小数位数',
     },
     overrides: {
-      matcher: '查询条件名称',
+      matcher: {
+        id: '匹配类型',
+        byFrameRefID: {
+          option: '根据查询条件名称',
+          name: '查询条件名称',
+        },
+        byName: {
+          option: '根据字段名',
+          name: '字段名',
+        },
+      },
     },
     custom: {
       title: '图表样式',
