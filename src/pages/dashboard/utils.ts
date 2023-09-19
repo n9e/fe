@@ -20,6 +20,7 @@ import moment from 'moment';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { IDashboard, IVariable } from './types';
 import { defaultValues, calcsOptions } from './Editor/config';
+import updateSchema from './updateSchema';
 
 export function JSONParse(str) {
   if (str) {
@@ -101,14 +102,14 @@ function convertVariablesGrafanaToN9E(templates: any, __inputs: any[], data: any
   const vars = _.chain(templates.list)
     .filter((item) => {
       // 3.0.0 版本只支持 query / custom / textbox / constant 类型的变量
-      return item.type === 'query' || item.type === 'custom' || item.type === 'textbox' || item.type === 'constant' || item.type === 'datasource';
+      return item.type === 'query' || item.type === 'custom' || item.type === 'textbox' || item.type === 'constant' || item.type === 'datasource' || item.type === 'interval';
     })
     .map((item) => {
       if (item.type === 'query') {
         const varObj: any = {
           type: 'query',
           name: item.name,
-          definition: item.definition || _.get(item, 'query.query'),
+          definition: item.definition || _.get(item, 'query') || _.get(item, 'query.query'),
           allValue: item.allValue,
           allOption: item.includeAll,
           multi: item.multi,
@@ -140,6 +141,15 @@ function convertVariablesGrafanaToN9E(templates: any, __inputs: any[], data: any
           type: 'datasource',
           name: item.name,
           definition: item.query,
+        };
+      } else if (item.type === 'interval') {
+        return {
+          type: 'custom',
+          name: item.name,
+          definition: '1s,5s,1m,5m,1h,6h,1d',
+          allValue: item.allValue,
+          allOption: item.includeAll,
+          multi: item.multi,
         };
       }
       return {
@@ -281,10 +291,17 @@ function convertTextGrafanaToN9E(panel: any) {
 }
 
 function convertDatasourceGrafanaToN9E(panel: any) {
+  const reg = /^\${[0-9a-zA-Z_]+}$/;
   if (_.toLower(panel?.datasource?.type) === 'prometheus') {
     return {
       datasourceCate: 'prometheus',
-      datasourceValue: panel.datasource.uid,
+      datasourceValue: reg.test(panel.datasource.uid) ? panel.datasource.uid : '${datasource}',
+    };
+  }
+  if (typeof panel.datasource === 'string' && reg.test(panel.datasource)) {
+    return {
+      datasourceCate: 'prometheus',
+      datasourceValue: panel.datasource,
     };
   }
   return {
@@ -335,7 +352,7 @@ function convertPanlesGrafanaToN9E(panels: any) {
   };
   return _.chain(panels)
     .filter((item) => {
-      if (item.targets) {
+      if (item.targets && item.type !== 'row') {
         return _.every(item.targets, (subItem) => {
           return !!subItem.expr;
         });
@@ -393,6 +410,7 @@ function convertPanlesGrafanaToN9E(panels: any) {
 }
 
 export function convertDashboardGrafanaToN9E(data) {
+  data = updateSchema(data);
   const dashboard: {
     name: string;
     configs: IDashboard;
@@ -410,14 +428,14 @@ export function convertDashboardGrafanaToN9E(data) {
 
 /**
  * 检测 Grafana Dashboard 版本
- * 0: 不支持 < v7
+ * 0: 不支持 < v7 // 2023-08-29 启用 grafana update schema 功能后，不再禁止 < v7
  * 1: 兼容 >= v7 < v8
  * 2: 支持 >= v8
  */
 export function checkGrafanaDashboardVersion(data) {
-  if (data.schemaVersion < 25) {
-    return 0;
-  }
+  // if (data.schemaVersion < 25) {
+  //   return 0;
+  // }
   if (data.schemaVersion < 30) {
     return 1;
   }

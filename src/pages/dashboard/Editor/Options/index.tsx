@@ -30,7 +30,7 @@ export default function index({ type, targets, chartForm, variableConfigWithOpti
   const OptionsCptMap = {
     timeseries: <Timeseries />,
     stat: <Stat />,
-    table: <Table targets={targets} chartForm={chartForm} />,
+    table: <Table targets={targets} chartForm={chartForm} variableConfigWithOptions={variableConfigWithOptions} />,
     pie: <Pie />,
     hexbin: <Hexbin />,
     barGauge: <BarGauge />,

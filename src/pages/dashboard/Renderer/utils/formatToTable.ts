@@ -16,15 +16,21 @@
  */
 import _ from 'lodash';
 
-const formatToTable = (series: any[], rowBy: string, colBy: string) => {
+const formatToTable = (series: any[], rowBy: string[], colBy: string) => {
   const rows = _.groupBy(series, (item) => {
-    return item.fields[rowBy];
+    let groupkeys = '';
+    _.forEach(rowBy, (key) => {
+      groupkeys += item.fields[key];
+    });
+    return groupkeys;
   });
   const newSeries = _.map(rows, (val, key) => {
     const item: any = {
       id: _.uniqueId('series_'),
-      [rowBy]: key,
     };
+    _.forEach(rowBy, (key) => {
+      item[key] = val?.[0]?.fields?.[key];
+    });
     const subGrouped = _.groupBy(val, (item) => {
       return item.fields[colBy];
     });
