@@ -29,6 +29,9 @@ import menuIcon from './configs';
 import './menu.less';
 import './locale';
 
+// @ts-ignore
+import getPlusMenu from '@/plus/menu';
+
 const getMenuList = (t) => {
   const menuList = [
     {
@@ -225,59 +228,14 @@ const getMenuList = (t) => {
       ],
     },
   ];
-  if (import.meta.env['VITE_IS_PRO']) {
-    const targets = _.find(menuList, (item) => item.key === 'targets');
-
-    if (targets) {
-      targets.children?.push({
-        key: '/collects',
-        label: t('采集配置'),
-      });
-      targets.children?.push({
-        key: '/network-devices',
-        label: t('网络设备'),
-      });
-      targets.children?.push({
-        key: '/collect-tpls',
-        label: t('采集模板'),
-      });
-    }
-    const systemMenu = _.find(menuList, (item) => item.key === 'help');
-    if (systemMenu) {
-      systemMenu.children.splice(6, 0, {
-        key: '/global-muting-rules',
-        label: t('全局屏蔽'),
-      });
-    }
-
-    const logIndex = _.findIndex(menuList, (item) => item.key === 'log');
-    if (logIndex !== -1) {
-      menuList.splice(logIndex, 0, {
-        key: 'dial-analysis',
-        icon: <Icon component={menuIcon.DialAnalysis as any} />,
-        activeIcon: <Icon component={menuIcon.DialAnalysisHover as any} />,
-        label: t('拨测分析'),
-        children: [
-          {
-            key: '/dial-analysis',
-            label: t('拨测管理'),
-          },
-          {
-            key: '/dial-status',
-            label: t('拨测状态'),
-          },
-        ],
-      });
-    }
-  }
   return menuList;
 };
 
 const SideMenu: FC = () => {
   const { t, i18n } = useTranslation('menu');
-  const { profile } = useContext(CommonStateContext);
+  const { profile, isPlus, siteInfo } = useContext(CommonStateContext);
   const [defaultSelectedKeys, setDefaultSelectedKeys] = useState<string[]>();
-  const menuList = getMenuList(t);
+  const menuList = isPlus ? getPlusMenu(t) : getMenuList(t);
   const [menus, setMenus] = useState(menuList);
   const history = useHistory();
   const location = useLocation();
@@ -364,6 +322,11 @@ const SideMenu: FC = () => {
     }
   }, [profile?.roles, i18n.language]);
 
+  let imgURL = siteInfo?.menu_big_logo_url || '/image/logo-l.svg';
+  if (collapsed === '1') {
+    imgURL = siteInfo?.menu_small_logo_url || '/image/logo.svg';
+  }
+
   return (
     <div
       style={{
@@ -383,8 +346,8 @@ const SideMenu: FC = () => {
             collapse: collapsed === '1',
           })}
         >
-          <div className='name' onClick={() => history.push('/metric/explorer')} key='overview'>
-            <img src={collapsed === '1' ? '/image/logo.svg' : '/image/logo-l.svg'} alt='' className='logo' />
+          <div className='name' onClick={() => history.push('/')} key='overview'>
+            <img src={imgURL} alt='' className='logo' />
           </div>
         </div>
       )}
