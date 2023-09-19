@@ -9,7 +9,7 @@ import OrganizeFields from '../TransformationsEditor/OrganizeFields';
 import DatasourceSelect from './components/DatasourceSelect';
 import Prometheus from './Prometheus';
 import Elasticsearch from './Elasticsearch';
-import TDengine from '@/plugins/TDengine/Dashboard/QueryBuilder';
+import { QueryBuilder as TDengine } from '@/plugins/TDengine';
 
 export default function index({ chartForm, type, variableConfig, dashboardId }) {
   const { t } = useTranslation('dashboard');

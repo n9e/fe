@@ -20,7 +20,7 @@ interface IProps {
 const alphabet = 'ABCDEFGHIGKLMNOPQRSTUVWXYZ'.split('');
 
 export default function index({ form, prefixField = {}, fullPrefixName = [], prefixName = [], disabled }: IProps) {
-  const { t } = useTranslation('db_aliyunSLS');
+  const { t } = useTranslation('db_tdengine');
   return (
     <>
       <Form.List

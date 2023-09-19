@@ -14,7 +14,7 @@ interface IProps {
 }
 
 function AdvancedSettings(props: IProps) {
-  const { t } = useTranslation('db_aliyunSLS');
+  const { t } = useTranslation('db_tdengine');
   const { span = 6, prefixField = {}, prefixName = [], disabled, mode } = props;
   const [open, setOpen] = useState(false);
 

@@ -32,6 +32,7 @@ export function getDatabases(data: BaseParams): Promise<string[]> {
 export function getTables(
   data: BaseParams & {
     db: string;
+    is_stable: boolean;
   },
 ): Promise<string[]> {
   return request('/api/n9e/tdengine-tables', {
@@ -47,7 +48,13 @@ export function getColumns(
     db: string;
     table: string;
   },
-): Promise<string[][]> {
+): Promise<
+  {
+    name: string;
+    type: string;
+    size: number;
+  }[]
+> {
   return request('/api/n9e/tdengine-columns', {
     method: RequestMethod.Post,
     data,
@@ -95,6 +102,14 @@ export function getLogsQuery(
   return request('/api/n9e-plus/logs-query', {
     method: RequestMethod.Post,
     data,
+  }).then((res) => {
+    return res.dat;
+  });
+}
+
+export function getSqlTemplate(): Promise<{ [index: string]: string }> {
+  return request('/api/n9e/sql-template', {
+    method: RequestMethod.Get,
   }).then((res) => {
     return res.dat;
   });

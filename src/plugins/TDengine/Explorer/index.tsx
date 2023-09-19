@@ -18,6 +18,7 @@ interface IProps {
 export default function Prometheus(props: IProps) {
   const { datasourceValue, form } = props;
   const [mode, setMode] = useState<string>('graph');
+  const [refreshFlag, setRefreshFlag] = useState<string>();
 
   return (
     <div className='tdengine-discover-container'>
@@ -26,7 +27,20 @@ export default function Prometheus(props: IProps) {
           <Meta datasourceValue={datasourceValue} />
         </div>
         <div style={{ width: '100%', height: '100%' }}>
-          <QueryBuilder extra={<Button type='primary'>查询</Button>} />
+          <QueryBuilder
+            form={form}
+            extra={
+              <Button
+                type='primary'
+                onClick={() => {
+                  setRefreshFlag(_.uniqueId('refreshFlag_'));
+                }}
+              >
+                查询
+              </Button>
+            }
+            setRefreshFlag={setRefreshFlag}
+          />
           <Tabs
             destroyInactiveTabPane
             tabBarGutter={0}
@@ -38,11 +52,11 @@ export default function Prometheus(props: IProps) {
           >
             <Tabs.TabPane tab='Graph' key='graph'>
               <AdvancedSettings mode='graph' span={8} prefixName={['query']} />
-              <Graph form={form} datasourceValue={datasourceValue} />
+              <Graph form={form} datasourceValue={datasourceValue} refreshFlag={refreshFlag} setRefreshFlag={setRefreshFlag} />
             </Tabs.TabPane>
             <Tabs.TabPane tab='Table' key='table'>
               <AdvancedSettings mode='table' span={8} prefixName={['query']} />
-              <Table form={form} datasourceValue={datasourceValue} />
+              <Table form={form} datasourceValue={datasourceValue} refreshFlag={refreshFlag} setRefreshFlag={setRefreshFlag} />
             </Tabs.TabPane>
           </Tabs>
         </div>

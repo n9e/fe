@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Tree } from 'antd';
+import { Tree, Segmented } from 'antd';
 import _ from 'lodash';
 import { DatasourceCateEnum } from '@/utils/constant';
 import { getDatabases, getTables, getColumns } from '../services';
@@ -14,8 +14,8 @@ interface DataNode {
   children?: DataNode[];
 }
 
-const updateTreeData = (list: DataNode[], key: React.Key, children: DataNode[]): DataNode[] =>
-  list.map((node) => {
+const updateTreeData = (list: DataNode[], key: React.Key, children: DataNode[]): DataNode[] => {
+  return _.map(list, (node) => {
     if (node.key === key) {
       return {
         ...node,
@@ -30,9 +30,10 @@ const updateTreeData = (list: DataNode[], key: React.Key, children: DataNode[]):
     }
     return node;
   });
-
+};
 export default function Meta(props: Props) {
   const { datasourceValue } = props;
+  const [isStable, setIsStable] = useState<boolean>(false); // 是否是超级表
   const [treeData, setTreeData] = useState<DataNode[]>([]);
   const baseParams = {
     cate: DatasourceCateEnum.tdengine,
@@ -49,6 +50,7 @@ export default function Meta(props: Props) {
         getTables({
           ...baseParams,
           db: key,
+          is_stable: isStable,
         }).then((res) => {
           setTreeData((origin) =>
             updateTreeData(
@@ -77,9 +79,10 @@ export default function Meta(props: Props) {
               origin,
               key,
               _.map(res, (item) => {
+                console.log(item);
                 return {
-                  title: _.join(item, ','),
-                  key: `${key}.${item}`,
+                  title: `${item.name} (${item.type})`,
+                  key: `${key}.${item.name}`,
                   isLeaf: true,
                 };
               }),
@@ -100,15 +103,36 @@ export default function Meta(props: Props) {
       }));
       setTreeData(databases);
     });
-  }, []);
+  }, [isStable]);
 
   return (
-    <Tree
-      loadData={onLoadData}
-      treeData={treeData}
-      showLine={{
-        showLeafIcon: false,
-      }}
-    />
+    <div>
+      <Segmented
+        block
+        options={[
+          {
+            label: '普通表',
+            value: 'table',
+          },
+          {
+            label: '超级表',
+            value: 'stable',
+          },
+        ]}
+        value={isStable ? 'stable' : 'table'}
+        onChange={(value) => {
+          setIsStable(value === 'stable');
+        }}
+      />
+      <Tree
+        blockNode
+        key={isStable ? 'stable' : 'table'}
+        loadData={onLoadData}
+        treeData={treeData}
+        showLine={{
+          showLeafIcon: false,
+        }}
+      />
+    </div>
   );
 }

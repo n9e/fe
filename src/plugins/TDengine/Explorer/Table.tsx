@@ -11,10 +11,12 @@ import { getSerieName } from './utils';
 interface Props {
   form: FormInstance;
   datasourceValue: number;
+  refreshFlag?: string;
+  setRefreshFlag: (flag?: string) => void;
 }
 
 export default function TableCpt(props: Props) {
-  const { form, datasourceValue } = props;
+  const { form, datasourceValue, refreshFlag, setRefreshFlag } = props;
   const [data, setData] = useState<any[]>([]);
   const [errorContent, setErrorContent] = useState('');
   const range = Form.useWatch(['query', 'range'], form);
@@ -22,7 +24,7 @@ export default function TableCpt(props: Props) {
   const query = Form.useWatch(['query', 'query'], form);
 
   useEffect(() => {
-    if (datasourceValue && query) {
+    if (datasourceValue && query && refreshFlag) {
       const parsedRange = parseRange(range);
       const start = moment(parsedRange.start).unix();
       const end = moment(parsedRange.end).unix();
@@ -52,9 +54,12 @@ export default function TableCpt(props: Props) {
         .catch((err) => {
           const msg = _.get(err, 'message');
           setErrorContent(`Error executing query: ${msg}`);
+        })
+        .finally(() => {
+          setRefreshFlag();
         });
     }
-  }, [JSON.stringify(range), JSON.stringify(keys), query]);
+  }, [JSON.stringify(range), JSON.stringify(keys), query, refreshFlag]);
 
   return (
     <div>

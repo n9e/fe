@@ -9,7 +9,7 @@ import { getDsQuery } from '../../services';
 import { getSerieName } from '../../utils';
 
 export default function GraphPreview({ cate, datasourceValue, query }) {
-  const { t } = useTranslation('db_aliyunSLS');
+  const { t } = useTranslation('db_tdengine');
   const divRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
   const [data, setData] = useState<any[]>([]);

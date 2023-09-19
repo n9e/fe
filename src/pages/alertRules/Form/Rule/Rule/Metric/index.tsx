@@ -26,7 +26,7 @@ import { DatasourceCateSelect } from '@/components/DatasourceSelect';
 import { DatasourceCateEnum } from '@/utils/constant';
 import { getDefaultValuesByCate } from '../../../utils';
 import Prometheus from './Prometheus';
-import TDengine from '@/plugins/TDengine/AlertRule';
+import { AlertRule as TDengine } from '@/plugins/TDengine';
 // @ts-ignore
 import PlusAlertRule from 'plus:/parcels/AlertRule';
 

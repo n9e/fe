@@ -25,7 +25,7 @@ import replaceExpressionBracket from '../utils/replaceExpressionBracket';
 import { getSerieName } from './utils';
 import prometheusQuery from './prometheus';
 import elasticsearchQuery from './elasticsearch';
-import tdengineQuery from '@/plugins/TDengine/Dashboard/datasource';
+import { datasource as tdengineQuery } from '@/plugins/TDengine';
 // @ts-ignore
 import plusDatasource from 'plus:/parcels/Dashboard/datasource';
 

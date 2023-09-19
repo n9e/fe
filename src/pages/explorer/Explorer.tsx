@@ -30,7 +30,7 @@ import { DatasourceCateEnum } from '@/utils/constant';
 import { getDefaultDatasourceValue, setDefaultDatasourceValue } from '@/utils';
 import { CommonStateContext } from '@/App';
 import { DatasourceCateSelect } from '@/components/DatasourceSelect';
-import TDengine from '@/plugins/TDengine/Explorer';
+import { Explorer as TDengine } from '@/plugins/TDengine';
 import Prometheus from './Prometheus';
 import Elasticsearch from './Elasticsearch';
 
