@@ -133,7 +133,7 @@ export interface Entry {
 
 export const dynamicPackages = (): Entry[] => {
   const Packages = import.meta.globEager('../Packages/*/entry.tsx');
-  return Object.values(Packages).map((obj) => obj.default);
+  return Object.values(Packages).map((obj: any) => obj.default);
 };
 
 export const generateID = (): string => {
