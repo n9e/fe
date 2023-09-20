@@ -58,7 +58,11 @@ export default function Graph(props: Props) {
             query,
             from: start,
             to: end,
-            keys,
+            keys: {
+              metricKey: _.join(keys.metricKey, ' '),
+              labelKey: _.join(keys.labelKey, ' '),
+              timeFormat: keys.timeFormat,
+            },
           },
         ],
       })

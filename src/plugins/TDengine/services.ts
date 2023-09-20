@@ -70,8 +70,8 @@ export function getDsQuery(
       from: string;
       to: string;
       keys: {
+        metricKey: string;
         labelKey: string;
-        valueKey: string;
         timeFormat: string;
       };
     }[];
@@ -92,8 +92,6 @@ export function getLogsQuery(
       from: string;
       to: string;
       keys: {
-        labelKey: string;
-        valueKey: string;
         timeFormat: string;
       };
     }[];

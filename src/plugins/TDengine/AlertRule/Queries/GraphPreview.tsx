@@ -39,12 +39,13 @@ export default function GraphPreview({ cate, datasourceValue, query }) {
         cate,
         datasource_id: datasourceValue,
         query: _.map([query], (q) => {
-          const parsedRange = parseRange(q.range);
+          const queryItem = q.query;
+          const parsedRange = parseRange(queryItem.range);
           const from = moment(parsedRange.start).format();
           const to = moment(parsedRange.end).format();
           return {
-            query: q.query,
-            keys: q.keys,
+            query: queryItem.query,
+            keys: queryItem.keys,
             from,
             to,
           };
