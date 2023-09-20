@@ -135,25 +135,21 @@ function App() {
   useEffect(() => {
     try {
       (async () => {
+        const iconLink = document.querySelector("link[rel~='icon']") as any;
         let siteInfo;
         if (isPlus) {
           const siteInfoStr = await getN9eConfig('site_info');
           if (siteInfoStr) {
             try {
               siteInfo = JSON.parse(siteInfoStr);
-              if (siteInfo?.page_title) {
-                document.title = siteInfo?.page_title;
-              }
-              if (siteInfo?.menu_small_logo_url) {
-                let iconLink = document.querySelector("link[rel~='icon']") as any;
-                if (iconLink) {
-                  iconLink.href = siteInfo?.menu_small_logo_url;
-                }
-              }
             } catch (e) {
               console.error(e);
             }
           }
+        }
+        document.title = siteInfo?.page_title || 'Nightingale';
+        if (iconLink) {
+          iconLink.href = siteInfo?.menu_small_logo_url || '/favicon.svg';
         }
         // 非匿名访问，需要初始化一些公共数据
         if (!anonymous) {
