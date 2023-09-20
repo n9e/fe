@@ -84,7 +84,7 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
                       </div>
                     </Col>
                   </Row>
-                  <AdvancedSettings mode='graph' prefixField={field} prefixName={[field.name]} disabled={disabled} />
+                  <AdvancedSettings mode='graph' prefixField={field} prefixName={[field.name, 'query']} disabled={disabled} />
                   {fields.length > 1 && (
                     <CloseCircleOutlined
                       style={{ position: 'absolute', right: 16, top: 16 }}

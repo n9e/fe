@@ -45,7 +45,11 @@ export default function GraphPreview({ cate, datasourceValue, query }) {
           const to = moment(parsedRange.end).format();
           return {
             query: queryItem.query,
-            keys: queryItem.keys,
+            keys: {
+              metricKey: _.join(queryItem.keys.metricKey, ' '),
+              labelKey: _.join(queryItem.keys.labelKey, ' '),
+              timeFormat: queryItem.keys.timeFormat,
+            },
             from,
             to,
           };

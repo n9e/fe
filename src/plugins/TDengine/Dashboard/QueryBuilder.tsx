@@ -100,7 +100,7 @@ export default function TDengineQueryBuilder({ chartForm, variableConfig, dashbo
                     >
                       <Input />
                     </Form.Item>
-                    <AdvancedSettings mode='graph' span={8} prefixField={field} prefixName={[field.name]} />
+                    <AdvancedSettings mode='graph' span={8} prefixField={field} prefixName={[field.name, 'query']} />
                   </Panel>
                 );
               })}
