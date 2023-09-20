@@ -40,5 +40,8 @@ enum AdvancedDatasourceCateEnum {}
 const getLicense = async () => {
   return {};
 };
+const getN9eConfig = async () => {
+  return {};
+};
 
-export { AlertRule, QueryBuilder, datasource, Event, EventLogs, EventPreview, Explorer, Jobs, advancedCates, envCateMap, AdvancedDatasourceCateEnum, getLicense };
+export { AlertRule, QueryBuilder, datasource, Event, EventLogs, EventPreview, Explorer, Jobs, advancedCates, envCateMap, AdvancedDatasourceCateEnum, getLicense, getN9eConfig };

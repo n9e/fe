@@ -7,7 +7,7 @@
 }
 .tdengine-discover-meta-container {
   width: 200px;
-  height: 440px;
+  // height: 440px;
   flex-shrink: 0;
   overflow-x: auto;
   overflow-y: hidden;
@@ -16,13 +16,26 @@
     white-space: nowrap;
   }
 }
+.tdengine-discover-container {
+  height: 100%;
+  .ant-table-wrapper,.ant-spin-nested-loading,.ant-spin-container,.ant-table,.ant-table-container {
+    height: 100% !important;
+  }
+}
+.tdengine-discover-main {
+  width: calc(100% - 210px);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
 .tdengine-discover-query-container {
   display: flex;
   gap: 10px;
   height: 100%;
 
   .ant-tabs {
-    height: 100%;
+    min-height: 0;
+    height: 100%
   }
   .ant-tabs-nav-wrap {
     border-left: 1px solid @border-color;

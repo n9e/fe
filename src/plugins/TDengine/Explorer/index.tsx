@@ -26,7 +26,7 @@ export default function Prometheus(props: IProps) {
         <div className='tdengine-discover-meta-container'>
           <Meta datasourceValue={datasourceValue} />
         </div>
-        <div style={{ width: '100%', height: '100%' }}>
+        <div className='tdengine-discover-main'>
           <QueryBuilder
             form={form}
             extra={
@@ -55,8 +55,16 @@ export default function Prometheus(props: IProps) {
               <Graph form={form} datasourceValue={datasourceValue} refreshFlag={refreshFlag} setRefreshFlag={setRefreshFlag} />
             </Tabs.TabPane>
             <Tabs.TabPane tab='Table' key='table'>
-              <AdvancedSettings mode='table' span={8} prefixName={['query']} />
-              <Table form={form} datasourceValue={datasourceValue} refreshFlag={refreshFlag} setRefreshFlag={setRefreshFlag} />
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  height: '100%',
+                }}
+              >
+                <AdvancedSettings mode='table' span={8} prefixName={['query']} />
+                <Table form={form} datasourceValue={datasourceValue} refreshFlag={refreshFlag} setRefreshFlag={setRefreshFlag} />
+              </div>
             </Tabs.TabPane>
           </Tabs>
         </div>

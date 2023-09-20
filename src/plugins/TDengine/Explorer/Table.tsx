@@ -6,7 +6,6 @@ import { FormInstance } from 'antd/lib/form/Form';
 import { parseRange } from '@/components/TimeRangePicker';
 import { DatasourceCateEnum } from '@/utils/constant';
 import { getLogsQuery } from '../services';
-import { getSerieName } from './utils';
 
 interface Props {
   form: FormInstance;
@@ -17,6 +16,7 @@ interface Props {
 
 export default function TableCpt(props: Props) {
   const { form, datasourceValue, refreshFlag, setRefreshFlag } = props;
+  const [columns, setColumns] = useState<any[]>([]);
   const [data, setData] = useState<any[]>([]);
   const [errorContent, setErrorContent] = useState('');
   const range = Form.useWatch(['query', 'range'], form);
@@ -41,15 +41,24 @@ export default function TableCpt(props: Props) {
         ],
       })
         .then((res) => {
-          const series = _.map(res?.result, (item) => {
-            return {
-              id: _.uniqueId('series_'),
-              name: getSerieName(item.metric),
-              metric: item.metric,
-              data: item.values,
-            };
+          const data = _.map(res?.data, (item) => {
+            return _.reduce(
+              item,
+              (result, item, idx) => {
+                if (res?.column_meta?.[idx]?.[0]) {
+                  result[res?.column_meta?.[idx]?.[0]] = item;
+                }
+                return result;
+              },
+              {},
+            );
           });
-          setData(series);
+          setData(data);
+          setColumns(
+            _.map(res?.column_meta, (item) => {
+              return item?.[0];
+            }),
+          );
         })
         .catch((err) => {
           const msg = _.get(err, 'message');
@@ -62,9 +71,25 @@ export default function TableCpt(props: Props) {
   }, [JSON.stringify(range), JSON.stringify(keys), query, refreshFlag]);
 
   return (
-    <div>
+    <div style={{ minHeight: 0 }}>
       {errorContent && <Alert style={{ marginBottom: 16 }} message={errorContent} type='error' />}
-      <Table dataSource={data} columns={[{}]} />
+      <Table
+        size='small'
+        rowKey='_ts'
+        dataSource={data}
+        columns={_.map(columns, (item) => {
+          return {
+            title: item,
+            dataIndex: item,
+            key: item,
+          };
+        })}
+        pagination={false}
+        scroll={{
+          x: 'max-content',
+          y: 'calc(100% - 36px)',
+        }}
+      />
     </div>
   );
 }

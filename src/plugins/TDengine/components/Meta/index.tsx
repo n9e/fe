@@ -130,6 +130,7 @@ export default function Meta(props: Props) {
       <div className='tdengine-discover-meta-tree'>
         <Tree
           blockNode
+          selectable={false}
           key={isStable ? 'stable' : 'table'}
           loadData={onLoadData}
           treeData={treeData}
