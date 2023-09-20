@@ -1,15 +1,18 @@
 import React from 'react';
-import { Form, Row, Col, Input, Button, Dropdown, Menu } from 'antd';
-import { DeleteOutlined, DownOutlined } from '@ant-design/icons';
+import { Form, Row, Col, Input, Button } from 'antd';
+import { DeleteOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import AdvancedSettings from '@/plugins/TDengine/components/AdvancedSettings';
 import Collapse, { Panel } from '@/pages/dashboard/Editor/Components/Collapse';
 import getFirstUnusedLetter from '@/pages/dashboard/Renderer/utils/getFirstUnusedLetter';
+import { replaceExpressionVars } from '@/pages/dashboard/VariableConfig/constant';
+import SqlTemplates from '../components/SqlTemplates';
+import { MetaModal } from '../components/Meta';
 
 const alphabet = 'ABCDEFGHIGKLMNOPQRSTUVWXYZ'.split('');
 
-export default function Prometheus({ chartForm, variableConfig, dashboardId }) {
+export default function TDengineQueryBuilder({ chartForm, variableConfig, dashboardId }) {
   const { t } = useTranslation('dashboard');
 
   return (
@@ -50,7 +53,7 @@ export default function Prometheus({ chartForm, variableConfig, dashboardId }) {
                         <Form.Item
                           label='查询条件'
                           {...field}
-                          name={[field.name, 'query']}
+                          name={[field.name, 'query', 'query']}
                           validateTrigger={['onBlur']}
                           rules={[
                             {
@@ -63,21 +66,26 @@ export default function Prometheus({ chartForm, variableConfig, dashboardId }) {
                         </Form.Item>
                       </Col>
                       <Col flex='92px'>
-                        <Dropdown
-                          overlay={
-                            <Menu>
-                              <Menu.Item>模板一</Menu.Item>
-                              <Menu.Item>模板二</Menu.Item>
-                            </Menu>
-                          }
-                        >
-                          <Button style={{ marginTop: 27 }}>
-                            查询模板 <DownOutlined />
-                          </Button>
-                        </Dropdown>
+                        <div style={{ marginTop: 27 }}>
+                          <SqlTemplates
+                            onSelect={(sql) => {
+                              chartForm.setFieldsValue({
+                                query: _.set(chartForm.getFieldValue(['targets', field.name, 'query']), 'query', sql),
+                              });
+                            }}
+                          />
+                        </div>
                       </Col>
                       <Col flex='62px'>
-                        <Button style={{ marginTop: 27 }}>元信息</Button>
+                        <div style={{ marginTop: 27 }}>
+                          <Form.Item shouldUpdate={(prevValues, curValues) => _.isEqual(prevValues.datasourceValue, curValues.datasourceValue)} noStyle>
+                            {({ getFieldValue }) => {
+                              let datasourceValue = getFieldValue('datasourceValue');
+                              datasourceValue = variableConfig ? replaceExpressionVars(datasourceValue, variableConfig, variableConfig.length, dashboardId) : datasourceValue;
+                              return <MetaModal datasourceValue={datasourceValue} />;
+                            }}
+                          </Form.Item>
+                        </div>
                       </Col>
                     </Row>
 

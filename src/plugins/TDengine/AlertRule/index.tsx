@@ -8,7 +8,7 @@ export default function index({ form, datasourceValue }) {
   return (
     <>
       <div style={{ marginBottom: 10 }}>
-        <Queries form={form} prefixName={['rule_config']} />
+        <Queries form={form} prefixName={['rule_config']} datasourceValue={datasourceValue} />
       </div>
       <Form.Item shouldUpdate noStyle>
         {({ getFieldValue }) => {

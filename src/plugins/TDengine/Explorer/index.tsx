@@ -5,7 +5,7 @@ import { Button, Tabs } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
 import AdvancedSettings from '../components/AdvancedSettings';
 import QueryBuilder from './QueryBuilder';
-import Meta from './Meta';
+import Meta from '../components/Meta';
 import Graph from './Graph';
 import Table from './Table';
 import './style.less';
