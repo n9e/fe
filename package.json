@@ -88,7 +88,7 @@
     "rollup-plugin-visualizer": "^5.5.2",
     "ts-node": "^10.9.1",
     "typescript": "4.9.4",
-    "vite": "^2.1.5",
+    "vite": "^2.9.16",
     "vite-plugin-react-svg": "^0.2.0"
   }
 }
