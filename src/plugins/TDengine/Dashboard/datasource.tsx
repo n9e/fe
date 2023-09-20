@@ -29,8 +29,8 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
   const { dashboardId, time, targets, variableConfig } = options;
   if (!time.start) return Promise.resolve({ series: [] });
   const parsedRange = parseRange(time);
-  const start = moment(parsedRange.start).unix();
-  const end = moment(parsedRange.end).unix();
+  const start = moment(parsedRange.start).format();
+  const end = moment(parsedRange.end).format();
   const series: any[] = [];
   let refIds: string[] = [];
   const datasourceValue = variableConfig ? replaceExpressionVars(options.datasourceValue as any, variableConfig, variableConfig.length, dashboardId) : options.datasourceValue;
