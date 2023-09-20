@@ -67,8 +67,8 @@ export function getDsQuery(
   data: BaseParams & {
     query: {
       query: string;
-      from: number;
-      to: number;
+      from: string;
+      to: string;
       keys: {
         labelKey: string;
         valueKey: string;
@@ -89,8 +89,8 @@ export function getLogsQuery(
   data: BaseParams & {
     query: {
       query: string;
-      from: number;
-      to: number;
+      from: string;
+      to: string;
       keys: {
         labelKey: string;
         valueKey: string;
@@ -99,7 +99,7 @@ export function getLogsQuery(
     }[];
   },
 ): Promise<any> {
-  return request('/api/n9e-plus/logs-query', {
+  return request('/api/n9e/logs-query', {
     method: RequestMethod.Post,
     data,
   }).then((res) => {
@@ -108,7 +108,7 @@ export function getLogsQuery(
 }
 
 export function getSqlTemplate(): Promise<{ [index: string]: string }> {
-  return request('/api/n9e/sql-template', {
+  return request('/api/n9e/sql-template?cate=tdengine', {
     method: RequestMethod.Get,
   }).then((res) => {
     return res.dat;

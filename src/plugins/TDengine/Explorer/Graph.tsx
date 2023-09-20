@@ -48,8 +48,8 @@ export default function Graph(props: Props) {
   useEffect(() => {
     if (datasourceValue && query && refreshFlag) {
       const parsedRange = parseRange(range);
-      const start = moment(parsedRange.start).unix();
-      const end = moment(parsedRange.end).unix();
+      const start = moment(parsedRange.start).format();
+      const end = moment(parsedRange.end).format();
       getDsQuery({
         cate: DatasourceCateEnum.tdengine,
         datasource_id: datasourceValue,

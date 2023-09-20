@@ -20,6 +20,7 @@ export default function SqlTemplates(props: Props) {
 
   return (
     <Dropdown
+      trigger={['click']}
       overlay={
         <Menu>
           {_.map(templates, (val, key) => {
