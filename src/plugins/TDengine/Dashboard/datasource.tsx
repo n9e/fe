@@ -47,7 +47,11 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
           from: start,
           to: end,
           query: query.query,
-          keys: query.keys,
+          keys: {
+            metricKey: _.join(query.keys.metricKey, ' '),
+            labelKey: _.join(query.keys.labelKey, ' '),
+            timeFormat: query.keys.timeFormat,
+          },
         };
       }),
     };
