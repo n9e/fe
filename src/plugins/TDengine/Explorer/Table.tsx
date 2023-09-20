@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
-import { Table, Form, Alert } from 'antd';
+import { Table, Form, Alert, Empty } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
 import { parseRange } from '@/components/TimeRangePicker';
 import { DatasourceCateEnum } from '@/utils/constant';
@@ -73,23 +73,27 @@ export default function TableCpt(props: Props) {
   return (
     <div style={{ minHeight: 0 }}>
       {errorContent && <Alert style={{ marginBottom: 16 }} message={errorContent} type='error' />}
-      <Table
-        size='small'
-        rowKey='_ts'
-        dataSource={data}
-        columns={_.map(columns, (item) => {
-          return {
-            title: item,
-            dataIndex: item,
-            key: item,
-          };
-        })}
-        pagination={false}
-        scroll={{
-          x: 'max-content',
-          y: 'calc(100% - 36px)',
-        }}
-      />
+      {_.isEmpty(data) ? (
+        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+      ) : (
+        <Table
+          size='small'
+          rowKey='_ts'
+          dataSource={data}
+          columns={_.map(columns, (item) => {
+            return {
+              title: item,
+              dataIndex: item,
+              key: item,
+            };
+          })}
+          pagination={false}
+          scroll={{
+            x: 'max-content',
+            y: 'calc(100% - 36px)',
+          }}
+        />
+      )}
     </div>
   );
 }

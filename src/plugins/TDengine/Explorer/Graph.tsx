@@ -84,7 +84,7 @@ export default function Graph(props: Props) {
   }, [JSON.stringify(range), JSON.stringify(keys), query, refreshFlag]);
 
   return (
-    <div>
+    <div style={{ minHeight: 0 }}>
       {errorContent && <Alert style={{ marginBottom: 16 }} message={errorContent} type='error' />}
       <Timeseries inDashboard={false} values={lineGraphProps as any} series={data} />
     </div>

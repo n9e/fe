@@ -21,8 +21,9 @@ export default function SqlTemplates(props: Props) {
   return (
     <Dropdown
       trigger={['click']}
+      placement='bottomRight'
       overlay={
-        <Menu>
+        <Menu style={{ height: 300, overflow: 'auto' }}>
           {_.map(templates, (val, key) => {
             return (
               <Menu.Item
@@ -31,7 +32,7 @@ export default function SqlTemplates(props: Props) {
                   onSelect(val);
                 }}
               >
-                {key}
+                {key}: {val}
               </Menu.Item>
             );
           })}

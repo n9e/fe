@@ -47,6 +47,9 @@ export default function Prometheus(props: IProps) {
             activeKey={mode}
             onChange={(key: 'table' | 'graph') => {
               setMode(key);
+              setTimeout(() => {
+                setRefreshFlag(_.uniqueId('refreshFlag_'));
+              }, 200);
             }}
             type='card'
           >
