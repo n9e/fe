@@ -37,31 +37,6 @@ const zh_HK = {
     title: '告警條件',
     value_msg: '請輸入數值',
   },
-  logs: {
-    title: '日誌詳情',
-    count: '結果數',
-    filter_fields: '篩選欄位',
-    settings: {
-      breakLine: '換行',
-      reverse: '時間',
-      organizeFields: {
-        title: '字段列設置',
-        allFields: '可用字段',
-        showFields: '顯示字段',
-        showFields_empty: '日誌默認顯示全部字段',
-      },
-      jsonSettings: {
-        title: 'JSON 設置',
-        displayMode: '默認展示類型',
-        displayMode_tree: '樹形展示',
-        displayMode_string: '字符串展示',
-        expandLevel: '默認展開層級',
-      },
-    },
-    tagsDetail: 'Tag 詳情',
-    expand: '展開',
-    collapse: '收起',
-  },
 };
 
 export default zh_HK;

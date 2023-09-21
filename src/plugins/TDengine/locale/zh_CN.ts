@@ -37,30 +37,5 @@ const zh_CN = {
     title: '告警条件',
     value_msg: '请输入表达式值',
   },
-  logs: {
-    title: '日志详情',
-    count: '结果数',
-    filter_fields: '筛选字段',
-    settings: {
-      breakLine: '换行',
-      reverse: '时间',
-      organizeFields: {
-        title: '字段列设置',
-        allFields: '可用字段',
-        showFields: '显示字段',
-        showFields_empty: '日志默认显示全部字段',
-      },
-      jsonSettings: {
-        title: 'JSON 设置',
-        displayMode: '默认展示类型',
-        displayMode_tree: '树形展示',
-        displayMode_string: '字符串展示',
-        expandLevel: '默认展开层级',
-      },
-    },
-    tagsDetail: 'Tag 详情',
-    expand: '展开',
-    collapse: '收起',
-  },
 };
 export default zh_CN;

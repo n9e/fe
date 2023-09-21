@@ -37,30 +37,5 @@ const en_US = {
     title: 'Trigger',
     value_msg: 'Please input expression value',
   },
-  logs: {
-    title: 'Logs',
-    count: 'Count',
-    filter_fields: 'Filter Fields',
-    settings: {
-      breakLine: 'Break Line',
-      reverse: 'Time',
-      organizeFields: {
-        title: 'Organize Fields',
-        allFields: 'All Fields',
-        showFields: 'Show Fields',
-        showFields_empty: 'Show all fields by default',
-      },
-      jsonSettings: {
-        title: 'JSON Settings',
-        displayMode: 'Default Display Mode',
-        displayMode_tree: 'Tree',
-        displayMode_string: 'String',
-        expandLevel: 'Default Expand Level',
-      },
-    },
-    tagsDetail: 'Tag Detail',
-    expand: 'Expand',
-    collapse: 'Collapse',
-  },
 };
 export default en_US;
