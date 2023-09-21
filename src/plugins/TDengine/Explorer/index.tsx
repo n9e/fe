@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Button, Tabs } from 'antd';
@@ -15,10 +15,28 @@ interface IProps {
   form: FormInstance;
 }
 
+export const cacheDefaultValues = (datasourceID, query: string) => {
+  localStorage.setItem(`explorer_tdengine_${datasourceID}_query`, query);
+};
+
+export const setDefaultValues = (form: FormInstance) => {
+  const datasourceID = form.getFieldValue('datasourceValue');
+  const queryStr = localStorage.getItem(`explorer_tdengine_${datasourceID}_query`);
+  form.setFieldsValue({
+    query: {
+      query: queryStr,
+    },
+  });
+};
+
 export default function Prometheus(props: IProps) {
   const { datasourceValue, form } = props;
   const [mode, setMode] = useState<string>('graph');
   const [refreshFlag, setRefreshFlag] = useState<string>();
+
+  useEffect(() => {
+    setDefaultValues(form);
+  }, []);
 
   return (
     <div className='tdengine-discover-container'>

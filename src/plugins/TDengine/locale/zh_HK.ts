@@ -24,10 +24,11 @@ const zh_HK = {
     },
     advancedSettings: {
       title: '輔助配置',
-      valueKey_tip: '通過此欄位從返回結果中提取的數值。例如查詢條件為 `* | select count(1) as PV` 返回結果為 PV:11，ValueKey 寫了 PV，則會根據 PV 提取到 11，作為查詢結果的值',
+      metricKey_tip:
+        '透過此欄位可以指定哪些欄位作為 metricName，預設會將數值類型的欄位作為 metricName，例如查詢的結果為used_percent:96 host:host01，used_percent將作為 metricName, value 為 96',
       tags_placeholder: '回車輸入多個',
       labelKey_tip:
-        '將此欄位以及期對應的 value，作為 tag，追加到監控資料的標籤中，例如查詢條件為  `* | select count(1) as PV group by host` 返回結果為 `[{PV:11 host:dev01},{PV:10 host:dev02}]`, LabelKey 寫了 host, 則第一條返回資料 host=dev01 會作為 tag',
+        '透過此欄位可以指定哪些欄位為 labelName，預設會將非數值類型的欄位為 labelName，例如查詢的結果為used_percent:96 host:host01，host 將作為 label 的 name, host01 為 label 的值',
       timeKey_tip: '指定哪個欄位是時間欄位，作為繪製曲線圖的 x 軸座標',
       timeFormat_tip: '時間的格式，會根據此格式將時間轉為時間戳',
     },

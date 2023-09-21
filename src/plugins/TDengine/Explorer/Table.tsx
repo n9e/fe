@@ -6,6 +6,7 @@ import { FormInstance } from 'antd/lib/form/Form';
 import { parseRange } from '@/components/TimeRangePicker';
 import { DatasourceCateEnum } from '@/utils/constant';
 import { getLogsQuery } from '../services';
+import { cacheDefaultValues } from './index';
 
 interface Props {
   form: FormInstance;
@@ -28,6 +29,7 @@ export default function TableCpt(props: Props) {
       const parsedRange = parseRange(range);
       const start = moment(parsedRange.start).format();
       const end = moment(parsedRange.end).format();
+      cacheDefaultValues(datasourceValue, query);
       getLogsQuery({
         cate: DatasourceCateEnum.tdengine,
         datasource_id: datasourceValue,

@@ -24,11 +24,11 @@ const en_US = {
     },
     advancedSettings: {
       title: 'Advanced Settings',
-      valueKey_tip:
-        'The numeric value extracted from the returned result by this field. For example, if the query condition is `* | select count(1) as PV`, the returned result is PV:11, and if the ValueKey writes PV, 11 will be extracted according to the PV as the value of the query result',
+      metricKey_tip:
+        'This field can be used to specify which fields will be used as metricName. By default, numerical fields will be used as metricName. For example, the query result is used_percent:96 host:host01, used_percent will be used as metricName, and the value is 96',
       tags_placeholder: 'Press Enter to input multiple',
       labelKey_tip:
-        'Add this field and the corresponding value as a tag to the tag of the monitoring data. For example, if the query condition is `* | select count(1) as PV group by host`, the returned result is `[{PV:11 host:dev01 },{PV:10 host:dev02}]`, LabelKey writes host, then the first returned data host=dev01 will be used as tag',
+        'This field can be used to specify which fields will be used as labelName. By default, non-numeric fields will be used as labelName. For example, the query result is used_percent:96 host:host01, host will be the name of the label, and host01 will be the value of the label.',
       timeKey_tip: 'Specify which field is the time field and use it as the x-axis coordinate for drawing the curve',
       timeFormat_tip: 'The format of the time, which will convert the time to a timestamp according to this format',
     },

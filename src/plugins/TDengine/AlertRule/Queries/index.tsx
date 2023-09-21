@@ -70,7 +70,7 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
                             <Input />
                           </Form.Item>
                         </InputGroupWithFormItem>
-                        <Form.Item {...field} name={[field.name, 'query', 'range']} initialValue={{ start: 'now-1h', end: 'now' }}>
+                        <Form.Item {...field} name={[field.name, 'query', 'range']} initialValue={{ start: 'now-1m', end: 'now' }}>
                           <RelativeTimeRangePicker />
                         </Form.Item>
                         <SqlTemplates

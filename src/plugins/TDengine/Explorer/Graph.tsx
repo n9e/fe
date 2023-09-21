@@ -8,6 +8,7 @@ import { DatasourceCateEnum } from '@/utils/constant';
 import Timeseries from '@/pages/dashboard/Renderer/Renderer/Timeseries';
 import { getSerieName } from './utils';
 import { getDsQuery } from '../services';
+import { cacheDefaultValues } from './index';
 
 interface Props {
   form: FormInstance;
@@ -50,6 +51,7 @@ export default function Graph(props: Props) {
       const parsedRange = parseRange(range);
       const start = moment(parsedRange.start).format();
       const end = moment(parsedRange.end).format();
+      cacheDefaultValues(datasourceValue, query);
       getDsQuery({
         cate: DatasourceCateEnum.tdengine,
         datasource_id: datasourceValue,

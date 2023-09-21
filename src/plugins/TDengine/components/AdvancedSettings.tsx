@@ -39,7 +39,7 @@ function AdvancedSettings(props: IProps) {
                   label={
                     <span>
                       MetricKey{' '}
-                      <Tooltip title={t('query.advancedSettings.valueKey_tip')}>
+                      <Tooltip title={t('query.advancedSettings.metricKey_tip')}>
                         <QuestionCircleOutlined />
                       </Tooltip>
                     </span>
@@ -47,7 +47,7 @@ function AdvancedSettings(props: IProps) {
                   labelWidth={100}
                 >
                   <Form.Item {...prefixField} name={[...prefixName, 'keys', 'metricKey']} style={{ width: '100%' }}>
-                    <Select mode='tags' placeholder={t('query.advancedSettings.tags_placeholder')} disabled={disabled} />
+                    <Select mode='tags' placeholder={t('query.advancedSettings.tags_placeholder')} disabled={disabled} open={false} />
                   </Form.Item>
                 </InputGroupWithFormItem>
               </Col>
@@ -64,7 +64,7 @@ function AdvancedSettings(props: IProps) {
                   labelWidth={100}
                 >
                   <Form.Item {...prefixField} name={[...prefixName, 'keys', 'labelKey']} style={{ width: '100%' }}>
-                    <Select mode='tags' placeholder={t('query.advancedSettings.tags_placeholder')} disabled={disabled} />
+                    <Select mode='tags' placeholder={t('query.advancedSettings.tags_placeholder')} disabled={disabled} open={false} />
                   </Form.Item>
                 </InputGroupWithFormItem>
               </Col>
@@ -81,7 +81,6 @@ function AdvancedSettings(props: IProps) {
                   </Tooltip>
                 </span>
               }
-              labelWidth={105}
             >
               <Form.Item {...prefixField} name={[...prefixName, 'keys', 'timeFormat']} style={{ width: '100%' }} initialValue='%H:%i:%s'>
                 <Input disabled={disabled} />

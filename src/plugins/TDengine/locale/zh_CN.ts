@@ -24,10 +24,11 @@ const zh_CN = {
     },
     advancedSettings: {
       title: '辅助配置',
-      valueKey_tip: '通过此字段从返回结果中提取的数值。例如 查询条件为 `* | select count(1) as PV` 返回结果为 PV:11，ValueKey 写了 PV，则会根据 PV 提取到 11，作为查询结果的值',
+      metricKey_tip:
+        '通过此字段可以指定将哪些字段作为 metricName，默认会将数值类型的字段作为 metricName，例如查询的结果为used_percent:96 host:host01，used_percent将作为 metricName, value 为 96',
       tags_placeholder: '回车输入多个',
       labelKey_tip:
-        '将此字段以及期对应的 value，作为tag，追加到监控数据的标签中，例如 查询条件为  `* | select count(1) as PV group by host` 返回结果为 `[{PV:11 host:dev01},{PV:10 host:dev02}]`, LabelKey 写了 host, 则第一条返回数据 host=dev01 会作为tag',
+        '通过此字段可以指定将哪些字段作为 labelName，默认会将非数值类型的字段作为 labelName，例如查询的结果为used_percent:96 host:host01，host 将作为 label 的 name, host01 为 label 的值',
       timeKey_tip: '指定哪个字段是时间字段，作为绘制曲线图的x轴坐标',
       timeFormat_tip: '时间的格式，会根据此格式将时间转为时间戳',
     },
