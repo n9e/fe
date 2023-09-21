@@ -49,8 +49,8 @@ export default function Graph(props: Props) {
   useEffect(() => {
     if (datasourceValue && query && refreshFlag) {
       const parsedRange = parseRange(range);
-      const start = moment(parsedRange.start).format();
-      const end = moment(parsedRange.end).format();
+      const start = moment(parsedRange.start).toISOString();
+      const end = moment(parsedRange.end).toISOString();
       cacheDefaultValues(datasourceValue, query);
       getDsQuery({
         cate: DatasourceCateEnum.tdengine,
