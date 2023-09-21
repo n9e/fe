@@ -5,6 +5,7 @@ import { Table, Form, Alert, Empty } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
 import { parseRange } from '@/components/TimeRangePicker';
 import { DatasourceCateEnum } from '@/utils/constant';
+import getTextWidth from '@/pages/dashboard/Renderer/utils/getTextWidth';
 import { getLogsQuery } from '../services';
 import { cacheDefaultValues } from './index';
 
@@ -87,6 +88,17 @@ export default function TableCpt(props: Props) {
               title: item,
               dataIndex: item,
               key: item,
+              render: (text) => {
+                return (
+                  <div
+                    style={{
+                      minWidth: getTextWidth(item),
+                    }}
+                  >
+                    {text}
+                  </div>
+                );
+              },
             };
           })}
           pagination={false}

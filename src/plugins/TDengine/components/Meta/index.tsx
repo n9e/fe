@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Tree, Segmented, Modal, Button } from 'antd';
+import { Tree, Modal, Button } from 'antd';
 import _ from 'lodash';
 import type { DraggableData, DraggableEvent } from 'react-draggable';
 import Draggable from 'react-draggable';
@@ -37,7 +37,6 @@ const updateTreeData = (list: DataNode[], key: React.Key, children: DataNode[]):
 
 export default function Meta(props: Props) {
   const { datasourceValue } = props;
-  const [isStable, setIsStable] = useState<boolean>(false); // 是否是超级表
   const [treeData, setTreeData] = useState<DataNode[]>([]);
   const baseParams = {
     cate: DatasourceCateEnum.tdengine,
@@ -50,11 +49,12 @@ export default function Meta(props: Props) {
         resolve();
         return;
       }
-      if (_.split(pos, '-')?.length === 2) {
+      if (_.split(pos, '-')?.length === 3) {
+        const keyArr = key.split('.');
         getTables({
           ...baseParams,
-          db: key,
-          is_stable: isStable,
+          db: keyArr[0],
+          is_stable: keyArr[1] === 'stable',
         }).then((res) => {
           setTreeData((origin) =>
             updateTreeData(
@@ -72,11 +72,11 @@ export default function Meta(props: Props) {
           resolve();
           return;
         });
-      } else if (_.split(pos, '-')?.length === 3) {
+      } else if (_.split(pos, '-')?.length === 4) {
         getColumns({
           ...baseParams,
           db: key.split('.')[0],
-          table: key.split('.')[1],
+          table: key.split('.')[2],
         }).then((res) => {
           setTreeData((origin) =>
             updateTreeData(
@@ -103,35 +103,27 @@ export default function Meta(props: Props) {
       const databases = _.map(res, (item) => ({
         title: item,
         key: item,
+        children: [
+          {
+            title: '普通表',
+            key: `${item}.table`,
+          },
+          {
+            title: '超级表',
+            key: `${item}.stable`,
+          },
+        ],
       }));
       setTreeData(databases);
     });
-  }, [isStable]);
+  }, []);
 
   return (
     <div className='tdengine-discover-meta-content'>
-      <Segmented
-        block
-        options={[
-          {
-            label: '普通表',
-            value: 'table',
-          },
-          {
-            label: '超级表',
-            value: 'stable',
-          },
-        ]}
-        value={isStable ? 'stable' : 'table'}
-        onChange={(value) => {
-          setIsStable(value === 'stable');
-        }}
-      />
       <div className='tdengine-discover-meta-tree'>
         <Tree
           blockNode
           selectable={false}
-          key={isStable ? 'stable' : 'table'}
           loadData={onLoadData}
           treeData={treeData}
           showLine={{
