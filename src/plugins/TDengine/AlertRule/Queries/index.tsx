@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Space, Input, Row, Col, Card, Button } from 'antd';
+import { Form, Space, Input, Row, Col, Card, InputNumber, Select } from 'antd';
 import { PlusCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -66,17 +66,29 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
                     <Col flex='auto'>
                       <div className='tdengine-discover-query'>
                         <InputGroupWithFormItem label='查询条件'>
-                          <Form.Item {...field} name={[field.name, 'query', 'query']}>
+                          <Form.Item {...field} name={[field.name, 'query']}>
                             <Input />
                           </Form.Item>
                         </InputGroupWithFormItem>
-                        <Form.Item {...field} name={[field.name, 'query', 'range']} initialValue={{ start: 'now-1m', end: 'now' }}>
-                          <RelativeTimeRangePicker />
-                        </Form.Item>
+                        <Input.Group style={{ height: 32, width: 380 }}>
+                          <span className='ant-input-group-addon'>{t('datasource:es.interval')}</span>
+                          <Form.Item {...field} name={[field.name, 'interval']} noStyle>
+                            <InputNumber disabled={disabled} style={{ width: '100%' }} />
+                          </Form.Item>
+                          <span className='ant-input-group-addon'>
+                            <Form.Item {...field} name={[field.name, 'interval_unit']} noStyle initialValue='min'>
+                              <Select disabled={disabled}>
+                                <Select.Option value='second'>{t('common:time.second')}</Select.Option>
+                                <Select.Option value='min'>{t('common:time.minute')}</Select.Option>
+                                <Select.Option value='hour'>{t('common:time.hour')}</Select.Option>
+                              </Select>
+                            </Form.Item>
+                          </span>
+                        </Input.Group>
                         <SqlTemplates
                           onSelect={(sql) => {
                             form.setFieldsValue({
-                              query: _.set(form.getFieldValue([...prefixName, 'queries', field.name, 'query']), 'query', sql),
+                              query: _.set(form.getFieldValue([...prefixName, 'queries', field.name]), 'query', sql),
                             });
                           }}
                         />
@@ -84,7 +96,7 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
                       </div>
                     </Col>
                   </Row>
-                  <AdvancedSettings mode='graph' prefixField={field} prefixName={[field.name, 'query']} disabled={disabled} />
+                  <AdvancedSettings mode='graph' prefixField={field} prefixName={[field.name]} disabled={disabled} />
                   {fields.length > 1 && (
                     <CloseCircleOutlined
                       style={{ position: 'absolute', right: 16, top: 16 }}

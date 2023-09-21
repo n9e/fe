@@ -9,4 +9,5 @@ export const sourceLogoMap = {
   zabbix: <img src={'/logos/zabbix.svg'} alt='' className='datasource-logo' width='132' />,
   influxdb: <img src={'/logos/influxdb.svg'} alt='' className='datasource-logo' width='132' height='56' />,
   opensearch: <img src={'/logos/opensearch.svg'} alt='' className='datasource-logo' width='132' height='56' />,
+  tdengine: <img src={'/logos/tdengine.svg'} alt='' className='datasource-logo' width='132' height='56' />,
 };
