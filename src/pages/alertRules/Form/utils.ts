@@ -228,6 +228,7 @@ export function getDefaultValuesByCate(prod, cate) {
       rule_config: {
         queries: [
           {
+            ref: 'A',
             interval: 1,
             interval_unit: 'min',
           },

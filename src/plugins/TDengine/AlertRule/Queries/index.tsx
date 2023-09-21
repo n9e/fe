@@ -47,6 +47,8 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
                   onClick={() => {
                     add({
                       ref: alphabet[fields.length],
+                      interval: 1,
+                      interval_unit: 'min',
                     });
                   }}
                 />
