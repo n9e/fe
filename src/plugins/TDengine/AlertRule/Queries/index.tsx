@@ -1,6 +1,6 @@
 import React from 'react';
-import { Form, Space, Input, Row, Col, Card, InputNumber, Select } from 'antd';
-import { PlusCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { Form, Space, Input, Row, Col, Card, InputNumber, Select, Tooltip } from 'antd';
+import { PlusCircleOutlined, CloseCircleOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
@@ -66,7 +66,25 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
                     </Col>
                     <Col flex='auto'>
                       <div className='tdengine-discover-query'>
-                        <InputGroupWithFormItem label='查询条件'>
+                        <InputGroupWithFormItem
+                          label={
+                            <span>
+                              查询条件{' '}
+                              <Tooltip
+                                title={
+                                  <span>
+                                    TDengine 查询语法可参考
+                                    <a target='_blank' href='https://docs.taosdata.com/taos-sql/select/'>
+                                      官方文档
+                                    </a>
+                                  </span>
+                                }
+                              >
+                                <InfoCircleOutlined />
+                              </Tooltip>
+                            </span>
+                          }
+                        >
                           <Form.Item {...field} name={[field.name, 'query']}>
                             <Input />
                           </Form.Item>

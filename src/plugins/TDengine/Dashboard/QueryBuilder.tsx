@@ -1,6 +1,6 @@
 import React from 'react';
-import { Form, Row, Col, Input, Button } from 'antd';
-import { DeleteOutlined } from '@ant-design/icons';
+import { Form, Row, Col, Input, Button, Tooltip } from 'antd';
+import { DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import AdvancedSettings from '@/plugins/TDengine/components/AdvancedSettings';
@@ -51,7 +51,23 @@ export default function TDengineQueryBuilder({ chartForm, variableConfig, dashbo
                     <Row gutter={10}>
                       <Col flex='auto'>
                         <Form.Item
-                          label='查询条件'
+                          label={
+                            <span>
+                              查询条件{' '}
+                              <Tooltip
+                                title={
+                                  <span>
+                                    TDengine 查询语法可参考
+                                    <a target='_blank' href='https://docs.taosdata.com/taos-sql/select/'>
+                                      官方文档
+                                    </a>
+                                  </span>
+                                }
+                              >
+                                <InfoCircleOutlined />
+                              </Tooltip>
+                            </span>
+                          }
                           {...field}
                           name={[field.name, 'query', 'query']}
                           validateTrigger={['onBlur']}

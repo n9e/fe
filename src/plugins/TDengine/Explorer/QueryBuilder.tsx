@@ -1,6 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
-import { Input, Form } from 'antd';
+import { Input, Form, Tooltip } from 'antd';
+import { InfoCircleOutlined } from '@ant-design/icons';
 import { FormInstance } from 'antd/lib/form/Form';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import TimeRangePicker from '@/components/TimeRangePicker';
@@ -18,7 +19,25 @@ export default function QueryBuilder(props: Props) {
   return (
     <div style={{ width: '100%' }}>
       <div className='tdengine-discover-query'>
-        <InputGroupWithFormItem label='查询条件'>
+        <InputGroupWithFormItem
+          label={
+            <span>
+              查询条件{' '}
+              <Tooltip
+                title={
+                  <span>
+                    TDengine 查询语法可参考
+                    <a target='_blank' href='https://docs.taosdata.com/taos-sql/select/'>
+                      官方文档
+                    </a>
+                  </span>
+                }
+              >
+                <InfoCircleOutlined />
+              </Tooltip>
+            </span>
+          }
+        >
           <Form.Item name={['query', 'query']}>
             <Input
               onBlur={() => {
