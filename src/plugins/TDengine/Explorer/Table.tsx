@@ -56,6 +56,7 @@ export default function TableCpt(props: Props) {
               {},
             );
           });
+          setErrorContent('');
           setData(data);
           setColumns(
             _.map(res?.column_meta, (item) => {
@@ -66,6 +67,8 @@ export default function TableCpt(props: Props) {
         .catch((err) => {
           const msg = _.get(err, 'message');
           setErrorContent(`Error executing query: ${msg}`);
+          setData([]);
+          setColumns([]);
         })
         .finally(() => {
           setRefreshFlag();

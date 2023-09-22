@@ -9,12 +9,16 @@ import './style.less';
 
 interface Props {
   datasourceValue: number;
+  onTreeNodeClick?: (node: any) => void;
 }
 
 interface DataNode {
   title: string;
   key: string;
   children?: DataNode[];
+  levelType?: 'table' | 'field';
+  isLeaf?: boolean;
+  type?: string;
 }
 
 const updateTreeData = (list: DataNode[], key: React.Key, children: DataNode[]): DataNode[] => {
@@ -35,8 +39,10 @@ const updateTreeData = (list: DataNode[], key: React.Key, children: DataNode[]):
   });
 };
 
+const numberTypes = ['BIGINT', 'INT', 'INT UNSIGNED', 'BIGINT UNSIGNED', 'FLOAT', 'DOUBLE', 'SMALLINT', 'SMALLINT UNSIGNED', 'TINYINT', 'TINYINT UNSIGNED'];
+
 export default function Meta(props: Props) {
-  const { datasourceValue } = props;
+  const { datasourceValue, onTreeNodeClick } = props;
   const [treeData, setTreeData] = useState<DataNode[]>([]);
   const baseParams = {
     cate: DatasourceCateEnum.tdengine,
@@ -65,6 +71,9 @@ export default function Meta(props: Props) {
                   title: item,
                   key: `${key}.${item}`,
                   paranetKey: key,
+                  levelType: 'table',
+                  database: keyArr[0],
+                  table: item,
                 };
               }),
             ),
@@ -87,6 +96,11 @@ export default function Meta(props: Props) {
                   title: `${item.name} (${item.type})`,
                   key: `${key}.${item.name}`,
                   isLeaf: true,
+                  levelType: 'field',
+                  database: key.split('.')[0],
+                  table: key.split('.')[2],
+                  field: item.name,
+                  type: item.type,
                 };
               }),
             ),
@@ -107,10 +121,12 @@ export default function Meta(props: Props) {
           {
             title: '普通表',
             key: `${item}.table`,
+            database: item,
           },
           {
             title: '超级表',
             key: `${item}.stable`,
+            database: item,
           },
         ],
       }));
@@ -129,6 +145,25 @@ export default function Meta(props: Props) {
           showLine={{
             showLeafIcon: false,
           }}
+          titleRender={(nodeData) => {
+            if (nodeData.levelType === 'field' && _.includes(numberTypes, nodeData.type)) {
+              return (
+                <span
+                  style={{
+                    cursor: 'pointer',
+                  }}
+                  onClick={() => {
+                    if (onTreeNodeClick) {
+                      onTreeNodeClick(nodeData);
+                    }
+                  }}
+                >
+                  {nodeData.title}
+                </span>
+              );
+            }
+            return <span>{nodeData.title}</span>;
+          }}
         />
       </div>
     </div>
@@ -136,7 +171,7 @@ export default function Meta(props: Props) {
 }
 
 export function MetaModal(props: Props) {
-  const { datasourceValue } = props;
+  const { datasourceValue, onTreeNodeClick } = props;
   const [open, setOpen] = useState(false);
   const [disabled, setDisabled] = useState(true);
   const [bounds, setBounds] = useState({ left: 0, top: 0, bottom: 0, right: 0 });
@@ -202,7 +237,7 @@ export function MetaModal(props: Props) {
           </Draggable>
         )}
       >
-        <Meta datasourceValue={datasourceValue} />
+        <Meta datasourceValue={datasourceValue} onTreeNodeClick={onTreeNodeClick} />
       </Modal>
       <Button
         onClick={() => {

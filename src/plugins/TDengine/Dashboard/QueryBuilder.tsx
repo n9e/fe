@@ -69,8 +69,10 @@ export default function TDengineQueryBuilder({ chartForm, variableConfig, dashbo
                         <div style={{ marginTop: 27 }}>
                           <SqlTemplates
                             onSelect={(sql) => {
+                              const targets = _.cloneDeep(chartForm.getFieldValue('targets'));
+                              _.set(targets, [field.name, 'query', 'query'], sql);
                               chartForm.setFieldsValue({
-                                query: _.set(chartForm.getFieldValue(['targets', field.name, 'query']), 'query', sql),
+                                targets,
                               });
                             }}
                           />
@@ -82,7 +84,24 @@ export default function TDengineQueryBuilder({ chartForm, variableConfig, dashbo
                             {({ getFieldValue }) => {
                               let datasourceValue = getFieldValue('datasourceValue');
                               datasourceValue = variableConfig ? replaceExpressionVars(datasourceValue, variableConfig, variableConfig.length, dashboardId) : datasourceValue;
-                              return <MetaModal datasourceValue={datasourceValue} />;
+                              return (
+                                <MetaModal
+                                  datasourceValue={datasourceValue}
+                                  onTreeNodeClick={(nodeData) => {
+                                    const targets = _.cloneDeep(chartForm.getFieldValue('targets'));
+                                    _.set(targets, [field.name, 'query', 'query'], `select * from ${nodeData.database}.${nodeData.table} where _ts >= $from and _ts < $to`);
+                                    if (nodeData.levelType === 'field') {
+                                      _.set(targets, [field.name, 'query', 'keys'], {
+                                        ...(targets?.[field.name]?.query?.keys || {}),
+                                        metricKey: [nodeData.field],
+                                      });
+                                    }
+                                    chartForm.setFieldsValue({
+                                      targets,
+                                    });
+                                  }}
+                                />
+                              );
                             }}
                           </Form.Item>
                         </div>

@@ -3,7 +3,6 @@ import { Form, Space, Input, Row, Col, Card, InputNumber, Select } from 'antd';
 import { PlusCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { RelativeTimeRangePicker } from '@/components/TimeRangePicker';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import AdvancedSettings from '@/plugins/TDengine/components/AdvancedSettings';
 import GraphPreview from './GraphPreview';
@@ -89,19 +88,42 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
                         </Input.Group>
                         <SqlTemplates
                           onSelect={(sql) => {
+                            const queries = _.cloneDeep(form.getFieldValue([...prefixName, 'queries']));
+                            _.set(queries, [field.name, 'query'], sql);
                             form.setFieldsValue({
-                              query: _.set(form.getFieldValue([...prefixName, 'queries', field.name]), 'query', sql),
+                              rule_config: {
+                                ...form.getFieldValue('rule_config'),
+                                queries,
+                              },
                             });
                           }}
                         />
-                        <MetaModal datasourceValue={datasourceID} />
+                        <MetaModal
+                          datasourceValue={datasourceID}
+                          onTreeNodeClick={(nodeData) => {
+                            const queries = _.cloneDeep(form.getFieldValue([...prefixName, 'queries']));
+                            _.set(queries, [field.name, 'query'], `select * from ${nodeData.database}.${nodeData.table} where _ts >= $from and _ts < $to`);
+                            if (nodeData.levelType === 'field') {
+                              _.set(queries, [field.name, 'keys'], {
+                                ...(queries?.[field.name]?.keys || {}),
+                                metricKey: [nodeData.field],
+                              });
+                            }
+                            form.setFieldsValue({
+                              rule_config: {
+                                ...form.getFieldValue('rule_config'),
+                                queries,
+                              },
+                            });
+                          }}
+                        />
                       </div>
                     </Col>
                   </Row>
                   <AdvancedSettings mode='graph' prefixField={field} prefixName={[field.name]} disabled={disabled} />
                   {fields.length > 1 && (
                     <CloseCircleOutlined
-                      style={{ position: 'absolute', right: 16, top: 16 }}
+                      style={{ position: 'absolute', right: -4, top: -4 }}
                       onClick={() => {
                         remove(field.name);
                       }}

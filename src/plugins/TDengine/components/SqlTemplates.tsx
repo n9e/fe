@@ -23,7 +23,7 @@ export default function SqlTemplates(props: Props) {
       trigger={['click']}
       placement='bottomRight'
       overlay={
-        <Menu style={{ height: 300, overflow: 'auto' }}>
+        <Menu style={{ height: 300, width: 800, overflow: 'auto' }}>
           {_.map(templates, (val, key) => {
             return (
               <Menu.Item
@@ -32,7 +32,7 @@ export default function SqlTemplates(props: Props) {
                   onSelect(val);
                 }}
               >
-                {key}: {val}
+                <strong>{key}:</strong> <span style={{ color: '#999' }}>{val}</span>
               </Menu.Item>
             );
           })}

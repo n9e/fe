@@ -42,7 +42,23 @@ export default function Prometheus(props: IProps) {
     <div className='tdengine-discover-container'>
       <div className='tdengine-discover-query-container'>
         <div className='tdengine-discover-meta-container'>
-          <Meta datasourceValue={datasourceValue} />
+          <Meta
+            datasourceValue={datasourceValue}
+            onTreeNodeClick={(nodeData) => {
+              const query = form.getFieldValue(['query']);
+              _.set(query, 'query', `select * from ${nodeData.database}.${nodeData.table} where _ts >= $from and _ts < $to`);
+              if (nodeData.levelType === 'field') {
+                query.keys = {
+                  ...(query?.keys || {}),
+                  metricKey: [nodeData.field],
+                };
+              }
+              form.setFieldsValue({
+                query,
+              });
+              setRefreshFlag(_.uniqueId('refreshFlag_'));
+            }}
+          />
         </div>
         <div className='tdengine-discover-main'>
           <QueryBuilder
@@ -72,7 +88,7 @@ export default function Prometheus(props: IProps) {
             type='card'
           >
             <Tabs.TabPane tab='Graph' key='graph'>
-              <AdvancedSettings mode='graph' span={8} prefixName={['query']} />
+              <AdvancedSettings mode='graph' span={8} prefixName={['query']} expanded expandTriggerVisible={false} />
               <Graph form={form} datasourceValue={datasourceValue} refreshFlag={refreshFlag} setRefreshFlag={setRefreshFlag} />
             </Tabs.TabPane>
             <Tabs.TabPane tab='Table' key='table'>
@@ -83,7 +99,7 @@ export default function Prometheus(props: IProps) {
                   height: '100%',
                 }}
               >
-                <AdvancedSettings mode='table' span={8} prefixName={['query']} />
+                <AdvancedSettings mode='table' span={8} prefixName={['query']} expanded expandTriggerVisible={false} />
                 <Table form={form} datasourceValue={datasourceValue} refreshFlag={refreshFlag} setRefreshFlag={setRefreshFlag} />
               </div>
             </Tabs.TabPane>

@@ -11,25 +11,29 @@ interface IProps {
   prefixName?: (string | number)[];
   disabled?: boolean;
   mode: 'graph' | 'table';
+  expanded?: boolean;
+  expandTriggerVisible?: boolean;
 }
 
 function AdvancedSettings(props: IProps) {
   const { t } = useTranslation('db_tdengine');
-  const { span = 6, prefixField = {}, prefixName = [], disabled, mode } = props;
-  const [open, setOpen] = useState(false);
+  const { span = 6, prefixField = {}, prefixName = [], disabled, mode, expandTriggerVisible = true } = props;
+  const [open, setOpen] = useState(!!props.expanded);
 
   return (
     <div>
-      <div style={{ marginBottom: 8 }}>
-        <span
-          onClick={() => {
-            setOpen(!open);
-          }}
-          style={{ cursor: 'pointer' }}
-        >
-          {open ? <DownOutlined /> : <RightOutlined />} {t('query.advancedSettings.title')}
-        </span>
-      </div>
+      {expandTriggerVisible && (
+        <div style={{ marginBottom: 8 }}>
+          <span
+            onClick={() => {
+              setOpen(!open);
+            }}
+            style={{ cursor: 'pointer' }}
+          >
+            {open ? <DownOutlined /> : <RightOutlined />} {t('query.advancedSettings.title')}
+          </span>
+        </div>
+      )}
       <div style={{ display: open ? 'block' : 'none' }}>
         <Row gutter={8}>
           {mode === 'graph' && (

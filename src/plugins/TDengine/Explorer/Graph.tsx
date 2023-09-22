@@ -77,11 +77,13 @@ export default function Graph(props: Props) {
               data: item.values,
             };
           });
+          setErrorContent('');
           setData(series);
         })
         .catch((err) => {
           const msg = _.get(err, 'message');
           setErrorContent(`Error executing query: ${msg}`);
+          setData([]);
         })
         .finally(() => {
           setRefreshFlag();
