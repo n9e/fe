@@ -63,6 +63,7 @@
     "react-sortable-hoc": "^2.0.0",
     "react-syntax-highlighter": "^15.5.0",
     "react-use": "^17.3.1",
+    "reactflow": "^11.7.4",
     "rehype-raw": "^6.1.1",
     "remark-gfm": "^1.0.0",
     "sanitize-html": "^2.10.0",

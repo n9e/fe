@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  */
+// @ts-nocheck
 import * as React from 'react';
 import { useEffect, useRef, FunctionComponent } from 'react';
 import _ from 'lodash';
