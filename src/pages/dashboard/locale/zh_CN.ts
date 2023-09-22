@@ -8,6 +8,7 @@ const zh_CN = {
   refresh_tip: '刷新间隔小于 step({{num}}s) 将不会更新数据',
   refresh_btn: '刷新',
   share_btn: '分享',
+  export_btn: '导出（CSV）',
   inspect_btn: '排查',
   public: {
     name: '公开',
@@ -192,7 +193,17 @@ const zh_CN = {
       decimals: '小数位数',
     },
     overrides: {
-      matcher: '查询条件名称',
+      matcher: {
+        id: '匹配类型',
+        byFrameRefID: {
+          option: '根据查询条件名称',
+          name: '查询条件名称',
+        },
+        byName: {
+          option: '根据字段名',
+          name: '字段名',
+        },
+      },
     },
     custom: {
       title: '图表样式',
@@ -217,6 +228,7 @@ const zh_CN = {
       reverseColorOrder: '反转颜色', // hexbin
       colorDomainAuto: '自动 min/max 值', // hexbin
       colorDomainAuto_tip: '默认自动从 series 里面取 min max 值', // hexbin
+      fontBackground: '文字背景色', // hexbin
       detailName: '链接名称',
       detailUrl: '链接地址',
       pie: {

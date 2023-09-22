@@ -287,19 +287,18 @@ export default function DetailV2(props: IProps) {
                     <VariableConfig isPreview={!isAuthorized} onChange={handleVariableChange} value={variableConfig} range={range} id={id} onOpenFire={stopAutoRefresh} />
                   )}
                 </div>
-                {isAuthorized && (
-                  <DashboardLinks
-                    value={dashboardLinks}
-                    onChange={(v) => {
-                      const dashboardConfigs: any = dashboard.configs;
-                      dashboardConfigs.links = v;
-                      handleUpdateDashboardConfigs(id, {
-                        configs: JSON.stringify(dashboardConfigs),
-                      });
-                      setDashboardLinks(v);
-                    }}
-                  />
-                )}
+                <DashboardLinks
+                  editable={isAuthorized}
+                  value={dashboardLinks}
+                  onChange={(v) => {
+                    const dashboardConfigs: any = dashboard.configs;
+                    dashboardConfigs.links = v;
+                    handleUpdateDashboardConfigs(id, {
+                      configs: JSON.stringify(dashboardConfigs),
+                    });
+                    setDashboardLinks(v);
+                  }}
+                />
               </div>
             </div>
           </Affix>

@@ -52,7 +52,7 @@ export const typeIconMap = {
 export default function Field(props: Props) {
   const { t } = useTranslation('explorer');
   const { item, record, type, fieldConfig, params, onSelect, onRemove, filters, onValueFilter } = props;
-  const { form, timesRef, datasourceValue, order, limit } = params;
+  const { form, timesRef, datasourceValue, limit } = params;
   const [top5Visible, setTop5Visible] = useState<boolean>(false);
   const [top5Data, setTop5Data] = useState<any[]>([]);
   const [top5Loading, setTop5Loading] = useState<boolean>(false);
@@ -134,8 +134,6 @@ export default function Field(props: Props) {
               filters,
               query_string: values.query.filter,
               limit,
-              order,
-              orderField: values.query.date_field,
               fields: [item],
             }),
             item,

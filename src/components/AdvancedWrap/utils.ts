@@ -41,6 +41,15 @@ export const baseCates: Cate[] = [
     graphPro: false,
     alertPro: false,
   },
+  {
+    value: 'loki',
+    label: 'Loki',
+    type: ['loki', 'logging'],
+    alertRule: true,
+    dashboard: false,
+    graphPro: false,
+    alertPro: false,
+  },
 ];
 
 export const allCates = [...baseCates, ...advancedCates];

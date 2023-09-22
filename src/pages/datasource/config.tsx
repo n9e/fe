@@ -10,4 +10,5 @@ export const sourceLogoMap = {
   influxdb: <img src={'/logos/influxdb.svg'} alt='' className='datasource-logo' width='132' height='56' />,
   opensearch: <img src={'/logos/opensearch.svg'} alt='' className='datasource-logo' width='132' height='56' />,
   tdengine: <img src={'/logos/tdengine.svg'} alt='' className='datasource-logo' width='132' height='56' />,
+  loki: <img src={'/logos/loki_logo.png'} alt='' className='prometheus_logo' width='56' />,
 };

@@ -247,6 +247,9 @@ export default function index(props: IProps) {
             ).text;
           },
         },
+        onClick: (event, datetime, value, points) => {
+          if (onClick) onClick(event, datetime, value, points);
+        },
       });
     }
     if (hasLegend) {
@@ -372,7 +375,6 @@ export default function index(props: IProps) {
                 rowKey='id'
                 size='small'
                 className='scroll-container-table'
-                scroll={{ x: 650 }}
                 columns={tableColumn}
                 dataSource={legendData}
                 locale={{

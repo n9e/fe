@@ -16,6 +16,13 @@ const en_US = {
     fieldValues_topn: 'Top 5 values',
     fieldValues_topnNoData: 'The field present in the mapping, but not in the 500 documents',
     copyToClipboard: 'Copy to clipboard',
+    show_conext: 'Show Context',
+    context: 'Log Context',
+    limit: 'Limit',
+    sort: {
+      NEWEST_FIRST: 'Newest first',
+      OLDEST_FIRST: 'Oldest first',
+    },
   },
 };
 export default en_US;

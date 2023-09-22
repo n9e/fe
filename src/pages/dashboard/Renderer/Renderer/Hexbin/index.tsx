@@ -38,7 +38,7 @@ interface HoneyCombProps {
 const Hexbin: FunctionComponent<HoneyCombProps> = (props) => {
   const { values, series, themeMode, time } = props;
   const { custom = {}, options } = values;
-  const { calc, colorRange = [], reverseColorOrder = false, colorDomainAuto, colorDomain, textMode = 'valueAndName', detailUrl } = custom as IHexbinStyles;
+  const { calc, colorRange = [], reverseColorOrder = false, colorDomainAuto, colorDomain, textMode = 'valueAndName', detailUrl, fontBackground } = custom as IHexbinStyles;
   const groupEl = useRef<SVGGElement>(null);
   const svgEl = useRef<HTMLDivElement>(null);
   const svgSize = useSize(svgEl);
@@ -73,6 +73,7 @@ const Hexbin: FunctionComponent<HoneyCombProps> = (props) => {
         themeMode,
         textMode,
         detailUrl,
+        fontBackground,
       };
       const data = _.map(calculatedValues, (item) => {
         return {
@@ -86,7 +87,7 @@ const Hexbin: FunctionComponent<HoneyCombProps> = (props) => {
         renderFn(data, renderProps, detailFormatter);
       }
     }
-  }, [JSON.stringify(series), JSON.stringify(options), svgSize?.width, svgSize?.height, calc, colorRange, reverseColorOrder, colorDomainAuto, colorDomain]);
+  }, [JSON.stringify(series), JSON.stringify(options), svgSize?.width, svgSize?.height, calc, colorRange, reverseColorOrder, colorDomainAuto, colorDomain, fontBackground]);
   return (
     <div ref={svgEl} style={{ width: '100%', height: '100%' }}>
       <svg style={{ width: '100%', height: '100%' }}>
