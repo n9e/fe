@@ -297,7 +297,7 @@ function TableCpt(props: IProps, ref: any) {
         dataIndex: name,
         key: name,
         // TODO: 暂时关闭维度值列的伸缩，降低对目前不太理想的列伸缩交互的理解和操作成本
-        // width: idx < groupNames.length - 1 ? size?.width! / (groupNames.length + 1) : undefined,
+        width: idx < groupNames.length - 1 ? size?.width! / (groupNames.length + 1) : undefined,
         sorter: (a, b) => {
           return _.get(a[name], 'stat') - _.get(b[name], 'stat');
         },
