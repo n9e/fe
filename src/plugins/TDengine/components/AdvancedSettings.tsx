@@ -74,23 +74,24 @@ function AdvancedSettings(props: IProps) {
               </Col>
             </>
           )}
-
-          <Col span={span}>
-            <InputGroupWithFormItem
-              label={
-                <span>
-                  TimeFormat{' '}
-                  <Tooltip title={t('query.advancedSettings.timeFormat_tip')}>
-                    <QuestionCircleOutlined />
-                  </Tooltip>
-                </span>
-              }
-            >
-              <Form.Item {...prefixField} name={[...prefixName, 'keys', 'timeFormat']} style={{ width: '100%' }} initialValue='%H:%i:%s'>
-                <Input disabled={disabled} />
-              </Form.Item>
-            </InputGroupWithFormItem>
-          </Col>
+          {mode === 'table' && (
+            <Col span={span}>
+              <InputGroupWithFormItem
+                label={
+                  <span>
+                    TimeFormat{' '}
+                    <Tooltip title={t('query.advancedSettings.timeFormat_tip')}>
+                      <QuestionCircleOutlined />
+                    </Tooltip>
+                  </span>
+                }
+              >
+                <Form.Item {...prefixField} name={[...prefixName, 'keys', 'timeFormat']} style={{ width: '100%' }} initialValue='2006-01-02T15:04:05'>
+                  <Input disabled={disabled} />
+                </Form.Item>
+              </InputGroupWithFormItem>
+            </Col>
+          )}
         </Row>
       </div>
     </div>
