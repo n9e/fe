@@ -298,7 +298,7 @@ function TableCpt(props: IProps, ref: any) {
           title: aggrDimension,
           dataIndex: aggrDimension,
           key: aggrDimension,
-          width: (size?.width! - 200) / (groupNames.length + aggrDimensions.length),
+          width: size?.width! / (groupNames.length + aggrDimensions.length),
           sorter: (a, b) => {
             return localeCompare(a[aggrDimension], b[aggrDimension]);
           },
@@ -316,7 +316,7 @@ function TableCpt(props: IProps, ref: any) {
           dataIndex: name,
           key: name,
           // TODO: 暂时关闭维度值列的伸缩，降低对目前不太理想的列伸缩交互的理解和操作成本
-          width: (size?.width! - 120) / (groupNames.length + aggrDimensions.length),
+          width: idx < groupNames.length - 1 ? size?.width! / (groupNames.length + aggrDimensions.length) : undefined,
           sorter: (a, b) => {
             return _.get(a[name], 'stat') - _.get(b[name], 'stat');
           },
