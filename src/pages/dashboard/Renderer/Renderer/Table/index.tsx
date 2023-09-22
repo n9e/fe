@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useRef, useEffect, useState, useMemo } from 'react';
+import React, { useRef, useEffect, useState, useMemo, forwardRef, useImperativeHandle } from 'react';
 import _ from 'lodash';
 import { Table, Input, Space, Button } from 'antd';
 import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
@@ -31,7 +31,7 @@ import localeCompare from '../../utils/localeCompare';
 import formatToTable from '../../utils/formatToTable';
 import { useGlobalState } from '../../../globalState';
 import { getDetailUrl } from '../../utils/replaceExpressionDetail';
-import { transformColumns } from './utils';
+import { transformColumns, downloadCsv } from './utils';
 import './style.less';
 
 interface IProps {
@@ -83,7 +83,7 @@ const getColor = (color, colorMode, themeMode) => {
   }
 };
 
-export default function Stat(props: IProps) {
+function TableCpt(props: IProps, ref: any) {
   const [dashboardMeta] = useGlobalState('dashboardMeta');
   const eleRef = useRef<HTMLDivElement>(null);
   const size = useSize(eleRef);
@@ -198,7 +198,7 @@ export default function Stat(props: IProps) {
           text: record.text,
           color: record.color,
         };
-        const overrideProps = getOverridePropertiesByName(overrides, record.fields?.refId);
+        const overrideProps = getOverridePropertiesByName(overrides, 'byFrameRefID', record.fields?.refId);
         if (!_.isEmpty(overrideProps)) {
           textObj = getSerieTextObj(record?.stat, overrideProps?.standardOptions, overrideProps?.valueMappings);
         }
@@ -241,7 +241,7 @@ export default function Stat(props: IProps) {
               text: record?.text,
               color: record.color,
             };
-            const overrideProps = getOverridePropertiesByName(overrides, record.fields?.refId);
+            const overrideProps = getOverridePropertiesByName(overrides, 'byFrameRefID', record.fields?.refId);
             if (!_.isEmpty(overrideProps)) {
               textObj = getSerieTextObj(record?.stat, overrideProps?.standardOptions, overrideProps?.valueMappings);
             }
@@ -257,7 +257,24 @@ export default function Stat(props: IProps) {
               </div>
             );
           }
-          return <span title={_.get(record.metric, key)}>{_.get(record.metric, key)}</span>;
+          let textObj = {
+            text: _.get(record.metric, key),
+            color: undefined,
+          };
+          const overrideProps = getOverridePropertiesByName(overrides, 'byName', key);
+          if (!_.isEmpty(overrideProps)) {
+            textObj = getSerieTextObj(_.toNumber(textObj.text), overrideProps?.standardOptions, overrideProps?.valueMappings);
+          }
+          return (
+            <div
+              className='renderer-table-td-content'
+              style={{
+                color: textObj.color,
+              }}
+            >
+              {textObj?.text}
+            </div>
+          );
         },
         ...getColumnSearchProps(['metric', key]),
       };
@@ -297,7 +314,7 @@ export default function Stat(props: IProps) {
         dataIndex: name,
         key: name,
         // TODO: 暂时关闭维度值列的伸缩，降低对目前不太理想的列伸缩交互的理解和操作成本
-        // width: idx < groupNames.length - 1 ? size?.width! / (groupNames.length + 1) : undefined,
+        width: idx < groupNames.length - 1 ? size?.width! / (groupNames.length + 1) : undefined,
         sorter: (a, b) => {
           return _.get(a[name], 'stat') - _.get(b[name], 'stat');
         },
@@ -308,7 +325,7 @@ export default function Stat(props: IProps) {
             text: record?.text,
             color: record?.color,
           };
-          const overrideProps = getOverridePropertiesByName(overrides, name);
+          const overrideProps = getOverridePropertiesByName(overrides, 'byFrameRefID', name);
           if (!_.isEmpty(overrideProps)) {
             textObj = getSerieTextObj(record?.stat, overrideProps?.standardOptions, overrideProps?.valueMappings);
           }
@@ -375,6 +392,70 @@ export default function Stat(props: IProps) {
     },
   });
 
+  useImperativeHandle(
+    ref,
+    () => {
+      return {
+        exportCsv() {
+          let data: string[][] = _.map(tableDataSource, (item) => {
+            return [item.name, item.value];
+          });
+          data.unshift(['name', 'value']);
+          if (displayMode === 'labelsOfSeriesToRows') {
+            const keys = _.isEmpty(columns) ? _.concat(getColumnsKeys(tableDataSource), 'value') : columns;
+            data = _.map(tableDataSource, (item) => {
+              return _.map(keys, (key) => {
+                if (key === 'value') {
+                  return _.get(item, key);
+                }
+                return _.get(item.metric, key);
+              });
+            });
+            data.unshift(keys);
+          }
+          if (displayMode === 'labelValuesToRows' && aggrDimension) {
+            const aggrDimensions = _.isArray(aggrDimension) ? aggrDimension : [aggrDimension];
+            const groupNames = _.reduce(
+              tableDataSource,
+              (pre, item) => {
+                return _.union(_.concat(pre, item.groupNames));
+              },
+              [],
+            );
+            data = _.map(tableDataSource, (item) => {
+              const row = _.map(aggrDimensions, (key) => _.get(item, key));
+              _.map(groupNames, (name) => {
+                row.push(_.get(item, name)?.text);
+              });
+              return row;
+            });
+            data.unshift(
+              _.concat(
+                aggrDimensions,
+                _.map(groupNames, (name) => _.get(tableDataSource[0], name)?.name),
+              ),
+            );
+          }
+          const organizeOptions = values.transformations?.[0]?.options;
+          if (organizeOptions) {
+            const { renameByName } = organizeOptions;
+            if (renameByName) {
+              data[0] = _.map(data[0], (item) => {
+                const newName = renameByName[item];
+                if (newName) {
+                  return newName;
+                }
+                return item;
+              });
+            }
+          }
+          downloadCsv(data, values.name);
+        },
+      };
+    },
+    [JSON.stringify(tableDataSource), JSON.stringify(aggrDimension), displayMode, JSON.stringify(values.transformations), JSON.stringify(columns)],
+  );
+
   return (
     <div className='renderer-table-container' ref={eleRef}>
       <div className='renderer-table-container-box'>
@@ -401,3 +482,5 @@ export default function Stat(props: IProps) {
     </div>
   );
 }
+
+export default forwardRef(TableCpt);

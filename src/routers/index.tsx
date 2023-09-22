@@ -67,6 +67,7 @@ import NotificationSettings from '@/pages/help/NotificationSettings';
 import MigrateDashboards from '@/pages/help/migrate';
 import IBEX from '@/pages/help/NotificationSettings/IBEX';
 import { dynamicPackages, Entry } from '@/utils';
+import { CommonStateContext } from '@/App';
 // @ts-ignore
 import { Jobs as StrategyBrain } from 'plus:/datasource/anomaly';
 // @ts-ignore
@@ -95,7 +96,7 @@ export default function Content() {
   const location = useLocation();
   const history = useHistory();
   const isPlus = useIsPlus();
-  const { profile } = useContext(CommonStateContext);
+  const { profile, siteInfo } = useContext(CommonStateContext);
   // 仪表盘在全屏和暗黑主题下需要定义个 dark 样式名
   let themeClassName = '';
   if (location.pathname.indexOf('/dashboard') === 0) {
@@ -209,7 +210,7 @@ export default function Content() {
           <RouteWithSubRoutes key={i} {...route} />
         ))}
         <Route path='/' exact>
-          <Redirect to='/metric/explorer' />
+          <Redirect to={siteInfo?.home_page_url || '/metric/explorer'} />
         </Route>
         <Route path='/403' component={Page403} />
         <Route path='/404' component={NotFound} />

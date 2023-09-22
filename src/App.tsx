@@ -35,6 +35,8 @@ import Content from './routers';
 
 // @ts-ignore
 import useIsPlus from 'plus:/components/useIsPlus';
+// @ts-ignore
+import { getN9eConfig } from 'plus:/pages/SiteInfo/services';
 
 import './App.less';
 import './global.variable.less';
@@ -87,6 +89,7 @@ export interface ICommonState {
     plugins: any[];
   };
   isPlus: boolean;
+  siteInfo?: { [index: string]: string };
 }
 
 // 可以匿名访问的路由 TODO: job-task output 应该也可以匿名访问
@@ -132,6 +135,22 @@ function App() {
   useEffect(() => {
     try {
       (async () => {
+        const iconLink = document.querySelector("link[rel~='icon']") as any;
+        let siteInfo;
+        if (isPlus) {
+          const siteInfoStr = await getN9eConfig('site_info');
+          if (siteInfoStr) {
+            try {
+              siteInfo = JSON.parse(siteInfoStr);
+            } catch (e) {
+              console.error(e);
+            }
+          }
+        }
+        document.title = siteInfo?.page_title || 'Nightingale';
+        if (iconLink) {
+          iconLink.href = siteInfo?.menu_small_logo_url || '/image/favicon.svg';
+        }
         // 非匿名访问，需要初始化一些公共数据
         if (!anonymous) {
           const { dat: profile } = await GetProfile();
@@ -159,6 +178,7 @@ function App() {
               licenseExpired: licenseExpireDays !== undefined && licenseExpireDays <= 0,
               versions,
               feats,
+              siteInfo,
             };
           });
           if (_.isEmpty(datasourceList) && !_.startsWith(location.pathname, '/help/source')) {
@@ -181,6 +201,7 @@ function App() {
               ...state,
               groupedDatasourceList: _.groupBy(datasourceList, 'plugin_type'),
               datasourceList: datasourceList,
+              siteInfo,
             };
           });
         }

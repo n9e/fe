@@ -70,7 +70,7 @@ function renderHoneyComb(svgGroup, data, { width, height, fontAutoScale = true, 
   const translateX = adjustedOffSetX;
   const translateY = adjustedOffSetY;
   const hexbinPoints = hexbin(points);
-  const textAreaHeight = hexRadius;
+  const textAreaHeight = hexRadius * 0.85;
   const textAreaWidth = hexbinWidth * 0.9;
   let activeLabelFontSize = fontSize;
   let activeValueFontSize = fontSize;
@@ -112,9 +112,6 @@ function renderHoneyComb(svgGroup, data, { width, height, fontAutoScale = true, 
     //   activeValueFontSize = activeLabelFontSize;
     // }
   }
-
-  const valueWithLabelTextAlignment = textAreaHeight / 2 / 2;
-  const labelWithValueTextAlignment = -(textAreaHeight / 2 / 2);
 
   svgGroup.attr('width', width).attr('height', height).attr('transform', `translate(${translateX},${translateY})`);
 
@@ -177,7 +174,7 @@ function renderHoneyComb(svgGroup, data, { width, height, fontAutoScale = true, 
         return d.x;
       })
       .attr('y', function (d) {
-        return d.y + (textMode === 'valueAndName' ? labelWithValueTextAlignment : 0);
+        return d.y - (textMode === 'valueAndName' ? hexRadius * 0.1 : 0);
       })
       .text(function (_d, i) {
         let name = data[i]?.name;
@@ -188,7 +185,7 @@ function renderHoneyComb(svgGroup, data, { width, height, fontAutoScale = true, 
         return name;
       })
       .attr('text-anchor', 'middle')
-      .attr('alignment-baseline', 'central')
+      .attr('alignment-baseline', textMode === 'valueAndName' ? 'baseline' : 'central')
       .style('pointer-events', 'none')
       .style('font-size', activeLabelFontSize + 'px')
       .style('fill', fillColor)
@@ -204,7 +201,7 @@ function renderHoneyComb(svgGroup, data, { width, height, fontAutoScale = true, 
           return d.bbox.x - 4;
         })
         .attr('y', function (d) {
-          return d.bbox.y + 6;
+          return d.bbox.y;
         })
         .attr('rx', 2)
         .attr('ry', 2)
@@ -212,7 +209,7 @@ function renderHoneyComb(svgGroup, data, { width, height, fontAutoScale = true, 
           return d.bbox.width + 8;
         })
         .attr('height', function (d) {
-          return d.bbox.height - 12;
+          return d.bbox.height;
         })
         .attr('fill-opacity', '0.2')
         .style('fill', '#000')
@@ -229,14 +226,14 @@ function renderHoneyComb(svgGroup, data, { width, height, fontAutoScale = true, 
         return d.x;
       })
       .attr('y', function (d) {
-        return d.y + (textMode === 'valueAndName' ? valueWithLabelTextAlignment : 0);
+        return d.y + (textMode === 'valueAndName' ? hexRadius * 0.1 : 0);
       })
       .text(function (_d, i) {
         const value = data[i]?.value;
         return value;
       })
       .attr('text-anchor', 'middle')
-      .attr('alignment-baseline', 'central')
+      .attr('alignment-baseline', textMode === 'valueAndName' ? 'hanging' : 'central')
       .style('font-size', activeValueFontSize + 'px')
       .style('fill', fillColor)
       .style('pointer-events', 'none')
