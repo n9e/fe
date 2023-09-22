@@ -193,7 +193,17 @@ const zh_HK = {
       decimals: '小數位數',
     },
     overrides: {
-      matcher: '查詢條件名稱',
+      matcher: {
+        id: '匹配類型',
+        byFrameRefID: {
+          option: '根據查詢條件名稱',
+          name: '查詢條件名稱',
+        },
+        byName: {
+          option: '根據字段名',
+          name: '字段名',
+        },
+      },
     },
     custom: {
       title: '圖表樣式',

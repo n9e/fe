@@ -198,7 +198,7 @@ function TableCpt(props: IProps, ref: any) {
           text: record.text,
           color: record.color,
         };
-        const overrideProps = getOverridePropertiesByName(overrides, record.fields?.refId);
+        const overrideProps = getOverridePropertiesByName(overrides, 'byFrameRefID', record.fields?.refId);
         if (!_.isEmpty(overrideProps)) {
           textObj = getSerieTextObj(record?.stat, overrideProps?.standardOptions, overrideProps?.valueMappings);
         }
@@ -241,7 +241,7 @@ function TableCpt(props: IProps, ref: any) {
               text: record?.text,
               color: record.color,
             };
-            const overrideProps = getOverridePropertiesByName(overrides, record.fields?.refId);
+            const overrideProps = getOverridePropertiesByName(overrides, 'byFrameRefID', record.fields?.refId);
             if (!_.isEmpty(overrideProps)) {
               textObj = getSerieTextObj(record?.stat, overrideProps?.standardOptions, overrideProps?.valueMappings);
             }
@@ -257,7 +257,24 @@ function TableCpt(props: IProps, ref: any) {
               </div>
             );
           }
-          return <span title={_.get(record.metric, key)}>{_.get(record.metric, key)}</span>;
+          let textObj = {
+            text: _.get(record.metric, key),
+            color: undefined,
+          };
+          const overrideProps = getOverridePropertiesByName(overrides, 'byName', key);
+          if (!_.isEmpty(overrideProps)) {
+            textObj = getSerieTextObj(_.toNumber(textObj.text), overrideProps?.standardOptions, overrideProps?.valueMappings);
+          }
+          return (
+            <div
+              className='renderer-table-td-content'
+              style={{
+                color: textObj.color,
+              }}
+            >
+              {textObj?.text}
+            </div>
+          );
         },
         ...getColumnSearchProps(['metric', key]),
       };
@@ -308,7 +325,7 @@ function TableCpt(props: IProps, ref: any) {
             text: record?.text,
             color: record?.color,
           };
-          const overrideProps = getOverridePropertiesByName(overrides, name);
+          const overrideProps = getOverridePropertiesByName(overrides, 'byFrameRefID', name);
           if (!_.isEmpty(overrideProps)) {
             textObj = getSerieTextObj(record?.stat, overrideProps?.standardOptions, overrideProps?.valueMappings);
           }

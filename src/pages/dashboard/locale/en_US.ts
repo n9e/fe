@@ -187,7 +187,17 @@ const en_US = {
       decimals: 'Decimals',
     },
     overrides: {
-      matcher: 'Matcher',
+      matcher: {
+        id: 'Matcher',
+        byFrameRefID: {
+          option: 'By query condition name',
+          name: 'Query condition name',
+        },
+        byName: {
+          option: 'By field name',
+          name: 'Field name',
+        },
+      },
     },
     custom: {
       title: 'Graph styles',
