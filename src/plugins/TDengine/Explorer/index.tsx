@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
+import { Resizable } from 're-resizable';
 import { Button, Tabs } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
 import AdvancedSettings from '../components/AdvancedSettings';
@@ -33,6 +34,7 @@ export default function Prometheus(props: IProps) {
   const { datasourceValue, form } = props;
   const [mode, setMode] = useState<string>('graph');
   const [refreshFlag, setRefreshFlag] = useState<string>();
+  const [width, setWidth] = useState(_.toNumber(localStorage.getItem('tdengine-meta-sidebar') || 200));
 
   useEffect(() => {
     setDefaultValues(form);
@@ -42,23 +44,38 @@ export default function Prometheus(props: IProps) {
     <div className='tdengine-discover-container'>
       <div className='tdengine-discover-query-container'>
         <div className='tdengine-discover-meta-container'>
-          <Meta
-            datasourceValue={datasourceValue}
-            onTreeNodeClick={(nodeData) => {
-              const query = form.getFieldValue(['query']);
-              _.set(query, 'query', `select * from ${nodeData.database}.${nodeData.table} where _ts >= $from and _ts < $to`);
-              if (nodeData.levelType === 'field') {
-                query.keys = {
-                  ...(query?.keys || {}),
-                  metricKey: [nodeData.field],
-                };
-              }
-              form.setFieldsValue({
-                query,
-              });
-              setRefreshFlag(_.uniqueId('refreshFlag_'));
+          <Resizable
+            size={{ width, height: '100%' }}
+            enable={{
+              right: true,
             }}
-          />
+            onResizeStop={(e, direction, ref, d) => {
+              let curWidth = width + d.width;
+              if (curWidth < 200) {
+                curWidth = 200;
+              }
+              setWidth(curWidth);
+              localStorage.setItem('tdengine-meta-sidebar', curWidth.toString());
+            }}
+          >
+            <Meta
+              datasourceValue={datasourceValue}
+              onTreeNodeClick={(nodeData) => {
+                const query = form.getFieldValue(['query']);
+                _.set(query, 'query', `select * from ${nodeData.database}.${nodeData.table} where _ts >= $from and _ts < $to`);
+                if (nodeData.levelType === 'field') {
+                  query.keys = {
+                    ...(query?.keys || {}),
+                    metricKey: [nodeData.field],
+                  };
+                }
+                form.setFieldsValue({
+                  query,
+                });
+                setRefreshFlag(_.uniqueId('refreshFlag_'));
+              }}
+            />
+          </Resizable>
         </div>
         <div className='tdengine-discover-main'>
           <QueryBuilder
