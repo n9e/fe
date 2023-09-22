@@ -74,10 +74,9 @@ export default defineConfig({
     commonjsOptions: {
       ignoreTryCatch: false, // https://github.com/wbkd/react-flow/issues/1840
     },
-    target: 'chrome58',
     outDir: 'pub',
     chunkSizeWarningLimit: 650,
-    sourcemap: true,
+    sourcemap: false,
     rollupOptions: {
       output: {
         manualChunks: {

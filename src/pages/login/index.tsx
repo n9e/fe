@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Form, Input, Button, message } from 'antd';
 import { useHistory, useLocation } from 'react-router-dom';
 import { PictureOutlined, UserOutlined, LockOutlined } from '@ant-design/icons';
@@ -26,6 +26,7 @@ import useSsoWay from 'plus:/parcels/SSOConfigs/useSsoWay';
 
 import { useTranslation } from 'react-i18next';
 import { RsaEncry } from '@/utils/rsa';
+import { CommonStateContext } from '@/App';
 
 export interface DisplayName {
   oidc: string;
@@ -38,6 +39,7 @@ export default function Login() {
   const [form] = Form.useForm();
   const history = useHistory();
   const location = useLocation();
+  const { siteInfo } = useContext(CommonStateContext);
   const redirect = location.search && new URLSearchParams(location.search).get('redirect');
   const [displayName, setDis] = useState<DisplayName>({
     oidc: 'OIDC',
@@ -105,7 +107,7 @@ export default function Login() {
         localStorage.setItem('access_token', access_token);
         localStorage.setItem('refresh_token', refresh_token);
         if (!err) {
-          window.location.href = redirect || '/metric/explorer';
+          window.location.href = redirect || '/';
         }
       })
       .catch(() => {
@@ -117,15 +119,15 @@ export default function Login() {
 
   return (
     <div className='login-warp'>
-      <img src={'/image/login-left-top-corner.png'} className='left-top-bg'></img>
-      <img src={'/image/login-right-bottom-corner.png'} className='right-bottom-bg'></img>
+      {/* <img src={'/image/login-left-top-corner.png'} className='left-top-bg'></img> */}
+      {/* <img src={'/image/login-right-bottom-corner.png'} className='right-bottom-bg'></img> */}
       <div className='banner integration'>
         <img src={'/image/login-dashboard.svg'} style={{ margin: '0 60px', zIndex: 5, width: 632 }}></img>
       </div>
       <div className='login-panel'>
         <div className='login-main  integration'>
           <div className='login-title'>
-            <img src={'/image/logo-dark.svg'} style={{ width: '120px' }} />
+            <img src={siteInfo?.login_page_logo_url || '/image/logo-dark.svg'} style={{ width: '120px' }} />
           </div>
           <Form form={form} layout='vertical' requiredMark={true}>
             <Form.Item

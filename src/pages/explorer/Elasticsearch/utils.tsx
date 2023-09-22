@@ -43,7 +43,7 @@ export function normalizeLogs(logs: { [index: string]: string }, fieldConfig?: a
   return logsClone;
 }
 
-export function getColumnsFromFields(selectedFields: { name: string }[], dateField?: string, fieldConfig?: any, filters?: any[]) {
+export function getColumnsFromFields(selectedFields: { name: string; type: string }[], dateField?: string, fieldConfig?: any, filters?: any[]) {
   let columns: any[] = [];
   if (_.isEmpty(selectedFields)) {
     columns = [
@@ -68,13 +68,13 @@ export function getColumnsFromFields(selectedFields: { name: string }[], dateFie
       },
     ];
   } else {
-    columns = _.map(selectedFields, (item) => {
+    columns = _.map(selectedFields, (item, idx) => {
       const fieldKey = item.name;
       const label: string = getFieldLabel(fieldKey, fieldConfig);
       return {
         title: getFieldLabel(fieldKey, fieldConfig),
         dataIndex: 'fields',
-        key: item,
+        key: fieldKey,
         render: (fields) => {
           const fieldVal = getFieldValue(item.name, fields[fieldKey], fieldConfig);
           const value = _.isArray(fieldVal) ? _.join(fieldVal, ',') : fieldVal;
@@ -88,7 +88,12 @@ export function getColumnsFromFields(selectedFields: { name: string }[], dateFie
             </div>
           );
         },
-        sorter: (a, b) => localeCompareFunc(_.join(_.get(a, `fields[${item}]`, '')), _.join(_.get(b, `fields[${item}]`, ''))),
+        sorter: _.includes(['date', 'number'], typeMap[item.type])
+          ? {
+              multiple: idx + 2,
+              compare: (a, b) => localeCompareFunc(_.join(_.get(a, `fields[${item}]`, '')), _.join(_.get(b, `fields[${item}]`, ''))),
+            }
+          : false,
       };
     });
   }
@@ -96,7 +101,7 @@ export function getColumnsFromFields(selectedFields: { name: string }[], dateFie
     columns.unshift({
       title: 'Time',
       dataIndex: 'fields',
-      key: 'time',
+      key: dateField,
       width: 200,
       render: (fields) => {
         const format = fieldConfig?.formatMap?.[dateField];
@@ -113,7 +118,9 @@ export function getColumnsFromFields(selectedFields: { name: string }[], dateFie
       },
       defaultSortOrder: 'descend',
       sortDirections: ['ascend', 'descend', 'ascend'],
-      sorter: true,
+      sorter: {
+        multiple: 1,
+      },
     });
   }
   return columns;
@@ -267,6 +274,10 @@ export function dslBuilder(params: {
   limit?: number;
   order?: string;
   orderField?: string;
+  sorter?: {
+    field: string;
+    order: string;
+  }[];
   fields?: string[];
   _source?: boolean;
   date_histogram?: {
@@ -310,7 +321,16 @@ export function dslBuilder(params: {
   if (params.limit) {
     body.size = params.limit;
   }
-  if (params.order && params.orderField) {
+  if (!_.isEmpty(params.sorter)) {
+    body.sort = _.map(params.sorter, (item) => {
+      return {
+        [item.field]: {
+          order: item.order,
+          unmapped_type: 'boolean',
+        },
+      };
+    });
+  } else if (params.order && params.orderField) {
     body.sort = [
       {
         [params.orderField]: {

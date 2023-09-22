@@ -85,3 +85,10 @@ export const putNotifyConfig = function (data: { ckey: string; cvalue: string })
     data,
   });
 };
+
+export const smtpConfigTest = function (data: { ckey: string; cvalue: string }) {
+  return request('/api/n9e/smtp-config-test', {
+    method: RequestMethod.Put,
+    data,
+  });
+};

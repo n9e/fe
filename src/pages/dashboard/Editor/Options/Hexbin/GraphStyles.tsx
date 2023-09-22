@@ -19,6 +19,7 @@ import { Form, Radio, Select, Row, Col, InputNumber, Switch, Input } from 'antd'
 import { CaretDownOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
+import ColorPicker from '../../../Components/ColorPicker';
 import { Panel } from '../../Components/Collapse';
 import { calcsOptions } from '../../config';
 import { colors } from '../../../Components/ColorRangeMenu/config';
@@ -33,7 +34,7 @@ export default function GraphStyles() {
     <Panel header={t('panel.custom.title')}>
       <>
         <Row gutter={10}>
-          <Col span={12}>
+          <Col span={10}>
             <Form.Item label={t('panel.custom.textMode')} name={[...namePrefix, 'textMode']}>
               <Radio.Group buttonStyle='solid'>
                 <Radio.Button value='valueAndName'>{t('panel.custom.valueAndName')}</Radio.Button>
@@ -42,9 +43,14 @@ export default function GraphStyles() {
               </Radio.Group>
             </Form.Item>
           </Col>
+          <Col span={7}>
+            <Form.Item label={t('panel.custom.fontBackground')} name={[...namePrefix, 'fontBackground']} valuePropName='checked'>
+              <Switch />
+            </Form.Item>
+          </Col>
         </Row>
         <Row gutter={10}>
-          <Col span={8}>
+          <Col span={10}>
             <Form.Item label={t('panel.custom.calc')} name={[...namePrefix, 'calc']}>
               <Select suffixIcon={<CaretDownOutlined />}>
                 {_.map(calcsOptions, (item, key) => {
@@ -57,7 +63,7 @@ export default function GraphStyles() {
               </Select>
             </Form.Item>
           </Col>
-          <Col span={8}>
+          <Col span={7}>
             <Form.Item label={t('panel.custom.colorRange')} name={[...namePrefix, 'colorRange']}>
               <Select suffixIcon={<CaretDownOutlined />} dropdownClassName='color-scales' optionLabelProp='label'>
                 {_.map(colors, (item) => {
@@ -84,7 +90,7 @@ export default function GraphStyles() {
             </Form.Item>
           </Col>
           {colorRange !== 'thresholds' && (
-            <Col span={8}>
+            <Col span={7}>
               <Form.Item label={t('panel.custom.reverseColorOrder')} name={[...namePrefix, 'reverseColorOrder']} valuePropName='checked'>
                 <Switch />
               </Form.Item>

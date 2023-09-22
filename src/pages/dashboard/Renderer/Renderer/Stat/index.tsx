@@ -22,7 +22,7 @@ import TsGraph from '@fc-plot/ts-graph';
 import '@fc-plot/ts-graph/dist/index.css';
 import { IPanel } from '../../../types';
 import { statHexPalette } from '../../../config';
-import getCalculatedValuesBySeries from '../../utils/getCalculatedValuesBySeries';
+import getCalculatedValuesBySeries, { getSerieTextObj } from '../../utils/getCalculatedValuesBySeries';
 import { useGlobalState } from '../../../globalState';
 import './style.less';
 
@@ -47,7 +47,30 @@ function StatItem(props) {
   const eleSize = useSize(ele);
   const chartEleRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<TsGraph>(null);
-  const { item, colSpan, textMode, colorMode, textSize, isFullSizeBackground, valueField = 'Value', graphMode, serie } = props;
+  const { colSpan, textMode, colorMode, textSize, isFullSizeBackground, valueField = 'Value', graphMode, serie, options } = props;
+  let item = props.item;
+
+  if (valueField !== 'Value') {
+    const value = _.get(item, ['metric', valueField]);
+    if (!_.isNaN(_.toNumber(value))) {
+      const result = getSerieTextObj(
+        value,
+        {
+          unit: options?.standardOptions?.util,
+          decimals: options?.standardOptions?.decimals,
+          dateFormat: options?.standardOptions?.dateFormat,
+        },
+        options?.valueMappings,
+        options?.thresholds,
+      );
+      item.value = result?.value;
+      item.unit = result?.unit;
+      item.color = result?.color;
+    } else {
+      item.value = value;
+    }
+  }
+
   const headerFontSize = textSize?.title ? textSize?.title : eleSize?.width! / _.toString(item.name).length || MIN_SIZE;
   let statFontSize = textSize?.value ? textSize?.value : (eleSize?.width! - item.unit.length * UNIT_SIZE - UNIT_PADDING) / _.toString(item.value).length || MIN_SIZE;
   const color = item.color;
@@ -128,14 +151,8 @@ function StatItem(props) {
               fontSize: statFontSize > 100 ? 100 : statFontSize,
             }}
           >
-            {valueField === 'Value' ? (
-              <>
-                {item.value}
-                <span style={{ fontSize: UNIT_SIZE, paddingLeft: UNIT_PADDING }}>{item.unit}</span>
-              </>
-            ) : (
-              _.get(item, ['metric', valueField])
-            )}
+            {item.value}
+            <span style={{ fontSize: UNIT_SIZE, paddingLeft: UNIT_PADDING }}>{item.unit}</span>
           </div>
         </div>
       </div>
@@ -210,6 +227,7 @@ export default function Stat(props: IProps) {
               valueField={valueField}
               graphMode={graphMode}
               serie={_.find(series, { id: item.id })}
+              options={options}
             />
           );
         })}

@@ -108,7 +108,7 @@ export default function index(props: IProps) {
   const [collapsed, setCollapsed] = useState(true);
   const [filters, setFilters] = useState<Filter[]>();
   const fieldConfig = Form.useWatch('fieldConfig', form);
-  const sortOrder = useRef('desc');
+  const sorterRef = useRef<any>([]);
   const timesRef =
     useRef<{
       start: number;
@@ -151,8 +151,14 @@ export default function index(props: IProps) {
           filters,
           query_string: values.query.filter,
           limit: LOGS_LIMIT,
-          order: sortOrder.current,
-          orderField: values.query.date_field,
+          sorter: _.isEmpty(sorterRef.current)
+            ? [
+                {
+                  field: values.query.date_field,
+                  order: 'desc',
+                },
+              ]
+            : sorterRef.current,
           _source: true,
         }),
       )
@@ -282,7 +288,7 @@ export default function index(props: IProps) {
                   setFields={setFields}
                   value={selectedFields}
                   onChange={setSelectedFields}
-                  params={{ form, timesRef, datasourceValue, order: sortOrder.current, limit: LOGS_LIMIT }}
+                  params={{ form, timesRef, datasourceValue, limit: LOGS_LIMIT }}
                   filters={filters}
                   onValueFilter={({ key, value, operator }) => {
                     if (!_.find(filters, { key })) {
@@ -408,10 +414,13 @@ export default function index(props: IProps) {
                   scroll={{ x: _.isEmpty(selectedFields) ? undefined : 'max-content', y: 'calc(100% - 36px)' }}
                   pagination={false}
                   onChange={(pagination, filters, sorter: any, extra) => {
-                    if (sorter.columnKey === 'time') {
-                      sortOrder.current = sorter.order === 'ascend' ? 'asc' : 'desc';
-                      fetchData();
-                    }
+                    sorterRef.current = _.map(_.isArray(sorter) ? sorter : [sorter], (item) => {
+                      return {
+                        field: item.columnKey,
+                        order: item.order === 'ascend' ? 'asc' : 'desc',
+                      };
+                    });
+                    fetchData();
                   }}
                 />
                 <div

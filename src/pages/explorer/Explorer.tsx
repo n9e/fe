@@ -30,13 +30,15 @@ import { DatasourceCateEnum } from '@/utils/constant';
 import { getDefaultDatasourceValue, setDefaultDatasourceValue } from '@/utils';
 import { CommonStateContext } from '@/App';
 import { DatasourceCateSelect } from '@/components/DatasourceSelect';
+import { Explorer as TDengine } from '@/plugins/TDengine';
 import Prometheus from './Prometheus';
 import Elasticsearch from './Elasticsearch';
+import Loki from './Loki';
 // @ts-ignore
 import PlusExplorer from 'plus:/parcels/Explorer';
 import './index.less';
 
-type Type = 'logging' | 'metric';
+type Type = 'logging' | 'metric' | 'loki';
 
 interface IProps {
   type: Type;
@@ -157,6 +159,10 @@ const Panel = ({ type, defaultCate, panelIdx }: IProps) => {
                     return <Elasticsearch key={datasourceValue} headerExtra={headerExtraRef.current} datasourceValue={datasourceValue} form={form} />;
                   } else if (datasourceCate === DatasourceCateEnum.prometheus) {
                     return <Prometheus key={datasourceCate} headerExtra={headerExtraRef.current} datasourceValue={datasourceValue} form={form} panelIdx={panelIdx} />;
+                  } else if (datasourceCate === DatasourceCateEnum.tdengine) {
+                    return <TDengine key={datasourceValue} datasourceValue={datasourceValue} form={form} />;
+                  } else if (datasourceCate === DatasourceCateEnum.loki) {
+                    return <Loki datasourceValue={datasourceValue} headerExtra={headerExtraRef.current} form={form} />;
                   }
                   return <PlusExplorer key={datasourceValue} datasourceCate={datasourceCate} datasourceValue={datasourceValue} headerExtraRef={headerExtraRef} form={form} />;
                 }}
