@@ -1,6 +1,5 @@
 import React, { useRef } from 'react';
-import { Form, Select, InputNumber, Tooltip, Row, Col } from 'antd';
-import { InfoCircleOutlined } from '@ant-design/icons';
+import { Form } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import AdvancedWrap from '@/components/AdvancedWrap';
@@ -33,46 +32,7 @@ export default function FormCpt({ data, onFinish, submitLoading }: any) {
       <BasicAuth />
       <SkipTLSVerify />
       <Headers />
-      <div className='page-title' style={{ marginTop: 0 }}>
-        {t('form.other')}
-      </div>
-      <Row gutter={8}>
-        <Col span={8}>
-          <Form.Item label={t('form.es.version')} name={['settings', 'version']} rules={[]} initialValue='7.0+'>
-            <Select
-              options={[
-                { lebel: '6.0+', value: '6.0+' },
-                { lebel: '7.0+', value: '7.0+' },
-              ]}
-            ></Select>
-          </Form.Item>
-        </Col>
-        <Col span={8}>
-          <Form.Item label={t('form.es.max_shard')} name={['settings', 'max_shard']} rules={[{ type: 'number', min: 0 }]} initialValue={5}>
-            <InputNumber style={{ width: '100%' }} controls={false} />
-          </Form.Item>
-        </Col>
-        <Col span={8}>
-          <Form.Item
-            label={
-              <>
-                <span>{t('form.es.min_interval')}</span>
-                <Tooltip title={t('form.es.min_interval_tip')}>
-                  <InfoCircleOutlined className='ml8' />
-                </Tooltip>
-              </>
-            }
-            name={['settings', 'min_interval']}
-            rules={[{ type: 'number', min: 0 }]}
-            initialValue={10}
-          >
-            <InputNumber style={{ width: '100%' }} controls={false} />
-          </Form.Item>
-        </Col>
-      </Row>
-      <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
-        <Cluster form={form} clusterRef={clusterRef} />
-      </AdvancedWrap>
+      <Cluster form={form} clusterRef={clusterRef} />
       <Description />
       <div className='mt16'>
         <Footer id={data?.id} submitLoading={submitLoading} />

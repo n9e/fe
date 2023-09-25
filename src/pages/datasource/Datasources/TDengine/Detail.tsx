@@ -55,31 +55,6 @@ export default function Index(props: Props) {
           </div>
         </>
       )}
-      <div className='page-title'>{t('form.other')}</div>
-      <div className='flash-cat-block'>
-        <Row gutter={16}>
-          <Col span={8}>{t('form.es.version')}：</Col>
-          <Col span={8}>{t('form.es.max_shard')}：</Col>
-          <Col span={8}>{t('form.es.min_interval')}：</Col>
-          <Col span={8} className='second-color'>
-            {data.settings?.version || '-'}
-          </Col>
-          <Col span={8} className='second-color'>
-            {data.settings?.max_shard || '-'}
-          </Col>
-          <Col span={8} className='second-color'>
-            {data.settings?.min_interval || '-'}
-          </Col>
-        </Row>
-        <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
-          <Row gutter={16}>
-            <Col span={24}>{t('form.cluster')}：</Col>
-            <Col span={24} className='second-color'>
-              {data?.cluster_name || '-'}
-            </Col>
-          </Row>
-        </AdvancedWrap>
-      </div>
     </div>
   );
 }
