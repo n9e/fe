@@ -30,7 +30,7 @@ import './menu.less';
 import './locale';
 
 // @ts-ignore
-import getPlusMenu from '@/plus/menu';
+import getPlusMenu from 'plus:/menu';
 
 const getMenuList = (t) => {
   const menuList = [
