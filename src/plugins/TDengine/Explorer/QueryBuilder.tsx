@@ -40,7 +40,7 @@ export default function QueryBuilder(props: Props) {
         >
           <Form.Item name={['query', 'query']}>
             <Input
-              onBlur={() => {
+              onPressEnter={() => {
                 setRefreshFlag(_.uniqueId('refreshFlag_'));
               }}
             />

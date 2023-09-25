@@ -77,7 +77,12 @@ export default function Prometheus(props: IProps) {
             />
           </Resizable>
         </div>
-        <div className='tdengine-discover-main'>
+        <div
+          className='tdengine-discover-main'
+          style={{
+            width: `calc(100% - ${width + 8}px)`,
+          }}
+        >
           <QueryBuilder
             form={form}
             extra={

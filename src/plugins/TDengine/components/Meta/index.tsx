@@ -74,6 +74,7 @@ export default function Meta(props: Props) {
                   levelType: 'table',
                   database: keyArr[0],
                   table: item,
+                  selectable: false,
                 };
               }),
             ),
@@ -117,16 +118,19 @@ export default function Meta(props: Props) {
       const databases = _.map(res, (item) => ({
         title: item,
         key: item,
+        selectable: false,
         children: [
           {
             title: '普通表',
             key: `${item}.table`,
             database: item,
+            selectable: false,
           },
           {
             title: '超级表',
             key: `${item}.stable`,
             database: item,
+            selectable: false,
           },
         ],
       }));
@@ -139,7 +143,6 @@ export default function Meta(props: Props) {
       <div className='tdengine-discover-meta-tree'>
         <Tree
           blockNode
-          selectable={false}
           loadData={onLoadData}
           treeData={treeData}
           showLine={{
