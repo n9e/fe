@@ -106,7 +106,7 @@ export default function Content() {
   }
 
   useEffect(() => {
-    if (profile?.roles?.length > 0) {
+    if (profile?.roles?.length > 0 && location.pathname !== '/') {
       if (profile?.roles.indexOf('Admin') === -1) {
         getMenuPerm().then((res) => {
           const { dat } = res;
