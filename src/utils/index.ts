@@ -140,18 +140,21 @@ export const generateID = (): string => {
   return `_${Math.random().toString(36).substr(2, 9)}`;
 };
 
+export interface SizeFormatterOptions {
+  withUnit?: boolean;
+  withByte?: boolean;
+  trimZero?: boolean;
+  convertNum?: number
+}
+
 // https://github.com/n9e/fe-v5/issues/72 修改 withByte 默认为 false
 export const sizeFormatter = (
   val,
   fixedCount = 2,
-  { withUnit = true, withByte = false, trimZero = false, convertNum = 1024 } = {
-    withUnit: true,
-    withByte: false,
-    trimZero: false,
-    convertNum: 1024 | 1000,
-  },
+  options?: SizeFormatterOptions,
 ) => {
   const size = val ? Number(val) : 0;
+  const { withUnit = true, withByte = false, trimZero = false, convertNum = 1024 } = options || {}
   let result;
   let unit = '';
 
