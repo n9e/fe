@@ -21,6 +21,7 @@ interface IOptions {
   type: 'si' | 'iec';
   base?: 'bits' | 'bytes';
   decimals: number;
+  postfix?: string;
 }
 
 const defaultOptions: IOptions = {
@@ -85,8 +86,8 @@ export function format(value: number, options = defaultOptions) {
   if ((options.type === 'si' && Math.abs(value) < 1000) || (options.type === 'iec' && Math.abs(value) < 1024)) {
     return {
       value: _.round(value, options.decimals),
-      unit: baseUtil,
-      text: _.round(value, options.decimals) + baseUtil,
+      unit: baseUtil + options.postfix,
+      text: _.round(value, options.decimals) + baseUtil + options.postfix,
       stat: value,
     };
   }
@@ -112,11 +113,10 @@ export function format(value: number, options = defaultOptions) {
     const exp = _.get(map, options.type === 'iec' ? 'iecExp' : 'exp');
     const divider = Math.pow(baseNum, exp);
     const newValue = _.round(value / divider, options.decimals);
-
     return {
       value: newValue,
-      unit: unit + baseUtil,
-      text: newValue + unit + baseUtil,
+      unit: unit + baseUtil + options.postfix,
+      text: newValue + unit + baseUtil + options.postfix,
       stat: value,
     };
   }

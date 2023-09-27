@@ -31,4 +31,24 @@ export const utilValMap = {
     type: 'iec',
     base: 'bytes',
   },
+  bitsSecSI: {
+    type: 'si',
+    base: 'bits',
+    postfix: '/s',
+  },
+  bytesSecSI: {
+    type: 'si',
+    base: 'bytes',
+    postfix: '/s',
+  },
+  bitsSecIEC: {
+    type: 'iec',
+    base: 'bits',
+    postfix: '/s',
+  },
+  bytesSecIEC: {
+    type: 'iec',
+    base: 'bytes',
+    postfix: '/s',
+  },
 };

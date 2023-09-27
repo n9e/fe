@@ -98,11 +98,12 @@ const valueFormatter = ({ unit, decimals = 3, dateFormat = 'YYYY-MM-DD HH:mm:ss'
   if (unit) {
     const utilValObj = utilValMap[unit];
     if (utilValObj) {
-      const { type, base } = utilValObj;
+      const { type, base, postfix } = utilValObj;
       return byteConverter.format(val, {
         type,
         base,
         decimals,
+        postfix,
       });
     }
     if (unit === 'none') {
