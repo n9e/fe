@@ -83,11 +83,12 @@ export function format(value: number, options = defaultOptions) {
       stat: '',
     };
   const baseUtil = options.base ? baseUtilMap[options.base] : ''; // 支持
+  const postfix = options.postfix || '';
   if ((options.type === 'si' && Math.abs(value) < 1000) || (options.type === 'iec' && Math.abs(value) < 1024)) {
     return {
       value: _.round(value, options.decimals),
-      unit: baseUtil + options.postfix,
-      text: _.round(value, options.decimals) + baseUtil + options.postfix,
+      unit: baseUtil + postfix,
+      text: _.round(value, options.decimals) + baseUtil + postfix,
       stat: value,
     };
   }
@@ -115,8 +116,8 @@ export function format(value: number, options = defaultOptions) {
     const newValue = _.round(value / divider, options.decimals);
     return {
       value: newValue,
-      unit: unit + baseUtil + options.postfix,
-      text: newValue + unit + baseUtil + options.postfix,
+      unit: unit + baseUtil + postfix,
+      text: newValue + unit + baseUtil + postfix,
       stat: value,
     };
   }
