@@ -66,7 +66,7 @@ export default function index(props: IProps) {
                     }
                     name={[...namePrefix, 'util']}
                   >
-                    <Select suffixIcon={<CaretDownOutlined />} placeholder='auto' allowClear>
+                    <Select suffixIcon={<CaretDownOutlined />} placeholder='auto' allowClear showSearch>
                       <Option value='none'>none</Option>
                       <OptGroup label='Data(SI)'>
                         <Option value='bitsSI'>bits(SI)</Option>
@@ -75,6 +75,14 @@ export default function index(props: IProps) {
                       <OptGroup label='Data(IEC)'>
                         <Option value='bitsIEC'>bits(IEC)</Option>
                         <Option value='bytesIEC'>bytes(IEC)</Option>
+                      </OptGroup>
+                      <OptGroup label='Data rate(SI)'>
+                        <Option value='bitsSecSI'>bits/sec(SI)</Option>
+                        <Option value='bytesSecSI'>bytes/sec(SI)</Option>
+                      </OptGroup>
+                      <OptGroup label='Data rate(IEC)'>
+                        <Option value='bitsSecIEC'>bits/sec(IEC)</Option>
+                        <Option value='bytesSecIEC'>bytes/sec(IEC)</Option>
                       </OptGroup>
                       <OptGroup label='Percent'>
                         <Option value='percent'>percent(0-100)</Option>
