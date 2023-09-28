@@ -181,18 +181,6 @@ function App() {
               siteInfo,
             };
           });
-          if (_.isEmpty(datasourceList) && !_.startsWith(location.pathname, '/help/source')) {
-            Modal.warning({
-              title: t('common:datasource.empty_modal.title'),
-              okText: _.includes(profile.roles, 'Admin') ? t('common:datasource.empty_modal.btn1') : t('common:datasource.empty_modal.btn2'),
-              onOk: () => {
-                if (_.includes(profile.roles, 'Admin')) {
-                  history.pushState(null, '', '/help/source');
-                  window.location.reload();
-                }
-              },
-            });
-          }
         } else {
           const datasourceList = !location.pathname.startsWith('/login') ? await getDatasourceBriefList() : [];
           initialized.current = true;
