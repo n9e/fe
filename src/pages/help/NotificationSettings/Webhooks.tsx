@@ -1,12 +1,14 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Alert, Form, Input, Switch, Button, Space, InputNumber, Row, Col, message } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined, CloseOutlined } from '@ant-design/icons';
 import { useTranslation, Trans } from 'react-i18next';
 import _ from 'lodash';
+import { CommonStateContext } from '@/App';
 import { getWebhooks, putWebhooks } from './services';
 
 export default function Webhooks() {
   const { t } = useTranslation('notificationSettings');
+  const { isPlus } = useContext(CommonStateContext);
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -179,21 +181,23 @@ export default function Webhooks() {
           </div>
         </Form>
       </div>
-      <div className='webhooks-doc'>
-        <Alert
-          type='info'
-          message={
-            <Trans
-              ns='notificationSettings'
-              i18nKey='webhooks.help'
-              components={{
-                a: <a href='https://console.flashcat.cloud/?from=n9e' target='_blank' />,
-                br: <br />,
-              }}
-            />
-          }
-        />
-      </div>
+      {!isPlus && (
+        <div className='webhooks-doc'>
+          <Alert
+            type='info'
+            message={
+              <Trans
+                ns='notificationSettings'
+                i18nKey='webhooks.help'
+                components={{
+                  a: <a href='https://console.flashcat.cloud/?from=n9e' target='_blank' />,
+                  br: <br />,
+                }}
+              />
+            }
+          />
+        </div>
+      )}
     </div>
   );
 }
