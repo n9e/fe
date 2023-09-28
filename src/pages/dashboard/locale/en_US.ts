@@ -301,10 +301,8 @@ const en_US = {
     transform: 'Transform',
     datasource_placeholder: 'Select datasource',
     datasource_msg: 'Please select datasource',
-    prometheus: {
-      time: 'Time',
-      time_tip: 'Default is the global time range of the dashboard',
-    },
+    time: 'Time',
+    time_tip: 'Default is the global time range of the dashboard',
   },
   detail: {
     datasource_empty: 'Please configure the data source first',

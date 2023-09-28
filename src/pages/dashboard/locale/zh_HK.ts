@@ -311,10 +311,8 @@ const zh_HK = {
     transform: '資料轉換',
     datasource_placeholder: '請選擇資料來源',
     datasource_msg: '請選擇資料來源',
-    prometheus: {
-      time: '時間選擇',
-      time_tip: '可指定時間範圍，預設為儀表盤全域性時間範圍',
-    },
+    time: '時間選擇',
+    time_tip: '可指定時間範圍，預設為儀表盤全域性時間範圍',
   },
   detail: {
     datasource_empty: '沒有資料來源資訊，請先配置資料來源',

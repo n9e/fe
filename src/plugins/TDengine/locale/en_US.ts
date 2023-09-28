@@ -18,6 +18,7 @@ const en_US = {
     range: 'Range',
     power_sql: 'SQL Enhance',
     query: 'Query',
+    query_msg: 'Please input query condition',
     mode: {
       timeSeries: 'Time Series',
       raw: 'Raw Logs',

@@ -55,6 +55,11 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
     : options.datasourceValue;
   if (targets && datasourceValue && !isInvalid) {
     _.forEach(targets, (target) => {
+      if (target.time) {
+        const parsedRange = parseRange(target.time);
+        start = moment(parsedRange.start).valueOf();
+        end = moment(parsedRange.end).valueOf();
+      }
       const query: any = target.query || {};
       const filter = variableConfig ? replaceExpressionVars(query.filter, variableConfig, variableConfig.length, dashboardId) : query.filter;
       if (isRawDataQuery(target)) {

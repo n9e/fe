@@ -311,10 +311,8 @@ const zh_CN = {
     transform: '数据转换',
     datasource_placeholder: '请选择数据源',
     datasource_msg: '请选择数据源',
-    prometheus: {
-      time: '时间选择',
-      time_tip: '可指定时间范围，默认为仪表盘全局时间范围',
-    },
+    time: '时间选择',
+    time_tip: '可指定时间范围，默认为仪表盘全局时间范围',
   },
   detail: {
     datasource_empty: '没有数据源信息，请先配置数据源',

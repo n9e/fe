@@ -156,7 +156,7 @@ export default function Elasticsearch({ chartForm, variableConfig, dashboardId }
                             </Row>
                           );
                         }
-                        return <Time prefixField={field} prefixNameField={[field.name]} />;
+                        return <Time prefixField={field} prefixNameField={[field.name]} chartForm={chartForm} />;
                       }}
                     </Form.Item>
                   </Panel>

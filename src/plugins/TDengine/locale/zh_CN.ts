@@ -18,6 +18,7 @@ const zh_CN = {
     range: '查询区间',
     power_sql: 'SQL增强',
     query: '查询条件',
+    query_msg: '请输入查询条件',
     mode: {
       timeSeries: '时序值',
       raw: '日志原文',

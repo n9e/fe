@@ -29,8 +29,8 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
   const { dashboardId, time, targets, variableConfig } = options;
   if (!time.start) return Promise.resolve({ series: [] });
   const parsedRange = parseRange(time);
-  const start = moment(parsedRange.start).toISOString();
-  const end = moment(parsedRange.end).toISOString();
+  let start = moment(parsedRange.start).toISOString();
+  let end = moment(parsedRange.end).toISOString();
   const series: any[] = [];
   let refIds: string[] = [];
   const datasourceValue = variableConfig ? replaceExpressionVars(options.datasourceValue as any, variableConfig, variableConfig.length, dashboardId) : options.datasourceValue;
@@ -42,15 +42,20 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
       cate: DatasourceCateEnum.tdengine,
       datasource_id: datasourceValue,
       query: _.map(targets, (target) => {
+        if (target.time) {
+          const parsedRange = parseRange(target.time);
+          start = moment(parsedRange.start).toISOString();
+          end = moment(parsedRange.end).toISOString();
+        }
         const query: any = target.query || {};
         return {
           from: start,
           to: end,
           query: query.query,
           keys: {
-            metricKey: _.join(query.keys.metricKey, ' '),
-            labelKey: _.join(query.keys.labelKey, ' '),
-            timeFormat: query.keys.timeFormat,
+            metricKey: _.join(query.keys?.metricKey, ' '),
+            labelKey: _.join(query.keys?.labelKey, ' '),
+            timeFormat: query.keys?.timeFormat,
           },
         };
       }),

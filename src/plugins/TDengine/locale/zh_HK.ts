@@ -18,6 +18,7 @@ const zh_HK = {
     range: '查詢區間',
     power_sql: 'SQL 增強',
     query: '查詢條件',
+    query_msg: '請輸入查詢條件',
     mode: {
       timeSeries: '時序值',
       raw: '日誌原文',
