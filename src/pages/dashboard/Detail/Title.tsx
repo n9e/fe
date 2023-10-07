@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import querystring from 'query-string';
 import _ from 'lodash';
@@ -23,6 +23,7 @@ import { Button, Space, Dropdown, Menu, Switch, notification } from 'antd';
 import { RollbackOutlined } from '@ant-design/icons';
 import { useKeyPress } from 'ahooks';
 import { TimeRangePickerWithRefresh, IRawTimeRange } from '@/components/TimeRangePicker';
+import { CommonStateContext } from '@/App';
 import { AddPanelIcon } from '../config';
 import { visualizations } from '../Editor/config';
 import { dashboardTimeCacheKey } from './Detail';
@@ -45,13 +46,14 @@ export default function Title(props: IProps) {
   const { dashboard, range, setRange, onAddPanel, isPreview, isBuiltin, isAuthorized } = props;
   const history = useHistory();
   const location = useLocation();
+  const { siteInfo } = useContext(CommonStateContext);
   const query = querystring.parse(location.search);
   const { viewMode, themeMode } = query;
 
   useEffect(() => {
-    document.title = `${dashboard.name} - ${cachePageTitle}`;
+    document.title = `${dashboard.name} - ${siteInfo?.page_title || cachePageTitle}`;
     return () => {
-      document.title = cachePageTitle;
+      document.title = siteInfo?.page_title || cachePageTitle;
     };
   }, [dashboard.name]);
 

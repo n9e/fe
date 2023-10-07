@@ -42,8 +42,8 @@ interface IPageLayoutProps {
 const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introIcon, children, customArea, showBack, backPath, docFn }) => {
   const { t, i18n } = useTranslation('pageLayout');
   const history = useHistory();
-  const { profile } = useContext(CommonStateContext);
-  const embed = localStorage.getItem('embed') === '1' && window.self !== window.top
+  const { profile, siteInfo } = useContext(CommonStateContext);
+  const embed = localStorage.getItem('embed') === '1' && window.self !== window.top;
   const menu = (
     <Menu>
       <Menu.Item
@@ -113,7 +113,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                   {import.meta.env.VITE_IS_ENT !== 'true' && (
                     <Space style={{ marginRight: 16 }}>
                       <div style={{ marginRight: 32, position: 'relative' }}>
-                        <a target='_blank' href='https://flashcat.cloud/docs/'>
+                        <a target='_blank' href={siteInfo?.document_url || 'https://flashcat.cloud/docs/'}>
                           {t('docs')}
                         </a>
                         <Icon

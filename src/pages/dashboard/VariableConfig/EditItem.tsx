@@ -75,7 +75,7 @@ function EditItem(props: IProps) {
   const { t } = useTranslation('dashboard');
   const { data, vars, range, id, index, datasourceVars, onOk, onCancel } = props;
   const [form] = Form.useForm();
-  const { groupedDatasourceList } = useContext(CommonStateContext);
+  const { groupedDatasourceList, datasourceCateOptions } = useContext(CommonStateContext);
   // TODO: 不太清楚这里的逻辑是干嘛的，后面找时间看下
   const handleBlur = (val?: string) => {
     const reg = data.reg;
@@ -273,7 +273,7 @@ function EditItem(props: IProps) {
               <>
                 <Form.Item label={t('var.datasource.definition')} name='definition' rules={[{ required: true }]}>
                   <Select>
-                    {_.map(allOptions, (item) => (
+                    {_.map(datasourceCateOptions, (item) => (
                       <Select.Option key={item.value} value={item.value}>
                         {item.label}
                       </Select.Option>

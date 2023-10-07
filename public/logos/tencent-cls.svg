@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="132px" height="64px" viewBox="0 0 132 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>腾讯云CLS</title>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="系统设置_事件源管理" transform="translate(-1212.000000, -1394.000000)">
+            <g id="腾讯云CLS" transform="translate(1212.000000, 1394.000000)">
+                <rect id="矩形" fill="#FFFFFF" opacity="0" x="0" y="0" width="132" height="64"></rect>
+                <g id="编组" transform="translate(41.000000, 7.000000)">
+                    <circle id="椭圆形" fill="#0052D9" cx="25" cy="25" r="25"></circle>
+                    <g transform="translate(9.000000, 9.000000)">
+                        <path d="M16,7.92140089 L21.3875485,11 L16,14.0785991 L10.6124515,11 L16,7.92140089 Z" id="多边形" stroke="#FFFFFF" stroke-width="1.6"></path>
+                        <path d="M11.5,15.3234232 L16.3875485,18.116308 L11.5,20.9091928 L6.61245155,18.116308 L11.5,15.3234232 Z" id="多边形" stroke="#FFFFFF" stroke-width="1.6" transform="translate(11.500000, 18.116308) rotate(-300.000000) translate(-11.500000, -18.116308) "></path>
+                        <path d="M19.8966658,15.3234232 L24.7842142,18.116308 L19.8966658,20.9091928 L15.0091173,18.116308 L19.8966658,15.3234232 Z" id="多边形" stroke="#FFFFFF" stroke-width="1.6" transform="translate(19.896666, 18.116308) scale(-1, 1) rotate(-300.000000) translate(-19.896666, -18.116308) "></path>
+                        <path d="M16,0.923760431 L29.0564065,8.46188022 L29.0564065,23.5381198 L16,31.0762396 L2.94359354,23.5381198 L2.94359354,8.46188022 L16,0.923760431 Z" id="多边形" stroke="#FFFFFF" stroke-width="1.6"></path>
+                        <rect id="矩形" fill="#0052D9" transform="translate(29.366025, 10.500000) rotate(-30.000000) translate(-29.366025, -10.500000) " x="25.8660254" y="8.5" width="7" height="4"></rect>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

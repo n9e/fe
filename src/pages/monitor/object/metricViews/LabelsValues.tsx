@@ -57,7 +57,7 @@ export default function LabelsValues(props: IProps) {
       });
       setLabelValues(_labelValues);
     });
-  }, [filtersStr, datasourceValue]);
+  }, [filtersStr, datasourceValue, _.join(_.map(dynamicLabels, 'label'))]);
 
   useEffect(() => {
     const matchStr = _.join(_.compact(_.concat(filtersStr, dynamicLabelsStr)), ',');

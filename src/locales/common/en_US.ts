@@ -28,6 +28,7 @@ const en_US = {
     batch_modify: 'Batch Modify',
     batch_export: 'Batch Export',
     batch_import: 'Batch Import',
+    test: 'Test',
   },
   table: {
     name: 'Name',

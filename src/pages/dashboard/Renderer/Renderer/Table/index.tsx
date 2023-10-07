@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useRef, useEffect, useState, useMemo } from 'react';
+import React, { useRef, useEffect, useState, useMemo, forwardRef, useImperativeHandle } from 'react';
 import _ from 'lodash';
 import { Table, Input, Space, Button } from 'antd';
 import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
@@ -31,7 +31,7 @@ import localeCompare from '../../utils/localeCompare';
 import formatToTable from '../../utils/formatToTable';
 import { useGlobalState } from '../../../globalState';
 import { getDetailUrl } from '../../utils/replaceExpressionDetail';
-import { transformColumns } from './utils';
+import { transformColumns, downloadCsv } from './utils';
 import './style.less';
 
 interface IProps {
@@ -83,7 +83,7 @@ const getColor = (color, colorMode, themeMode) => {
   }
 };
 
-export default function Stat(props: IProps) {
+function TableCpt(props: IProps, ref: any) {
   const [dashboardMeta] = useGlobalState('dashboardMeta');
   const eleRef = useRef<HTMLDivElement>(null);
   const size = useSize(eleRef);
@@ -171,77 +171,163 @@ export default function Stat(props: IProps) {
   });
 
   let tableDataSource = calculatedValues;
-  let tableColumns: any[] = [
-    {
-      title: 'name',
-      dataIndex: 'name',
-      key: 'name',
-      width: size?.width! - 200,
-      sorter: (a, b) => {
-        return localeCompare(a.name, b.name);
-      },
-      sortOrder: getSortOrder('name', sortObj),
-      render: (text) => <div className='renderer-table-td-content'>{text}</div>,
-      ...getColumnSearchProps(['name']),
-    },
-    {
-      title: 'value',
-      dataIndex: 'value',
-      key: 'value',
-      sorter: (a, b) => {
-        return a.stat - b.stat;
-      },
-      sortOrder: getSortOrder('value', sortObj),
-      className: 'renderer-table-td-content-value-container',
-      render: (_val, record) => {
-        let textObj = {
-          text: record.text,
-          color: record.color,
-        };
-        const overrideProps = getOverridePropertiesByName(overrides, record.fields?.refId);
-        if (!_.isEmpty(overrideProps)) {
-          textObj = getSerieTextObj(record?.stat, overrideProps?.standardOptions, overrideProps?.valueMappings);
-        }
-        const colorObj = getColor(textObj.color, colorMode, themeMode);
-        return (
-          <div
-            className='renderer-table-td-content'
-            style={{
-              ...colorObj,
-            }}
-          >
-            {textObj.text}
-          </div>
-        );
-      },
-      ...getColumnSearchProps(['text']),
-    },
-  ];
-
-  if (displayMode === 'labelsOfSeriesToRows') {
-    const allColumns = _.concat(getColumnsKeys(calculatedValues), 'value');
-    const columnsKeys: any[] = _.isEmpty(columns) ? _.concat(getColumnsKeys(calculatedValues), 'value') : columns;
-    tableColumns = _.map(columnsKeys, (key, idx) => {
-      return {
-        title: key,
-        dataIndex: key,
-        key: key,
-        width: idx < columnsKeys.length - 1 ? size?.width! / columnsKeys.length : undefined,
+  let tableColumns: any[] = [];
+  if (!_.isEmpty(calculatedValues)) {
+    tableColumns = [
+      {
+        title: 'name',
+        dataIndex: 'name',
+        key: 'name',
+        width: size?.width! - 200,
         sorter: (a, b) => {
-          if (key === 'value') {
-            return a.stat - b.stat;
-          }
-          return localeCompare(_.toString(_.get(a.metric, key)), _.toString(_.get(b.metric, key)));
+          return localeCompare(a.name, b.name);
         },
-        sortOrder: getSortOrder(key, sortObj),
-        className: key === 'value' ? 'renderer-table-td-content-value-container' : '',
+        sortOrder: getSortOrder('name', sortObj),
+        render: (text) => <div className='renderer-table-td-content'>{text}</div>,
+        ...getColumnSearchProps(['name']),
+      },
+      {
+        title: 'value',
+        dataIndex: 'value',
+        key: 'value',
+        sorter: (a, b) => {
+          return a.stat - b.stat;
+        },
+        sortOrder: getSortOrder('value', sortObj),
+        className: 'renderer-table-td-content-value-container',
         render: (_val, record) => {
-          if (key === 'value') {
+          let textObj = {
+            text: record.text,
+            color: record.color,
+          };
+          const overrideProps = getOverridePropertiesByName(overrides, 'byFrameRefID', record.fields?.refId);
+          if (!_.isEmpty(overrideProps)) {
+            textObj = getSerieTextObj(record?.stat, overrideProps?.standardOptions, overrideProps?.valueMappings);
+          }
+          const colorObj = getColor(textObj.color, colorMode, themeMode);
+          return (
+            <div
+              className='renderer-table-td-content'
+              style={{
+                ...colorObj,
+              }}
+            >
+              {textObj.text}
+            </div>
+          );
+        },
+        ...getColumnSearchProps(['text']),
+      },
+    ];
+
+    if (displayMode === 'labelsOfSeriesToRows') {
+      const allColumns = _.concat(getColumnsKeys(calculatedValues), 'value');
+      const columnsKeys: any[] = _.isEmpty(columns) ? _.concat(getColumnsKeys(calculatedValues), 'value') : columns;
+      tableColumns = _.map(columnsKeys, (key, idx) => {
+        return {
+          title: key,
+          dataIndex: key,
+          key: key,
+          width: idx < columnsKeys.length - 1 ? size?.width! / columnsKeys.length : undefined,
+          sorter: (a, b) => {
+            if (key === 'value') {
+              return a.stat - b.stat;
+            }
+            return localeCompare(_.toString(_.get(a.metric, key)), _.toString(_.get(b.metric, key)));
+          },
+          sortOrder: getSortOrder(key, sortObj),
+          className: key === 'value' ? 'renderer-table-td-content-value-container' : '',
+          render: (_val, record) => {
+            if (key === 'value') {
+              let textObj = {
+                text: record?.text,
+                color: record.color,
+              };
+              const overrideProps = getOverridePropertiesByName(overrides, 'byFrameRefID', record.fields?.refId);
+              if (!_.isEmpty(overrideProps)) {
+                textObj = getSerieTextObj(record?.stat, overrideProps?.standardOptions, overrideProps?.valueMappings);
+              }
+              const colorObj = getColor(textObj.color, colorMode, themeMode);
+              return (
+                <div
+                  className='renderer-table-td-content'
+                  style={{
+                    ...colorObj,
+                  }}
+                >
+                  {textObj?.text}
+                </div>
+              );
+            }
+            let textObj = {
+              text: _.get(record.metric, key),
+              color: undefined,
+            };
+            const overrideProps = getOverridePropertiesByName(overrides, 'byName', key);
+            if (!_.isEmpty(overrideProps)) {
+              textObj = getSerieTextObj(_.toNumber(textObj.text), overrideProps?.standardOptions, overrideProps?.valueMappings);
+            }
+            return (
+              <div
+                className='renderer-table-td-content'
+                style={{
+                  color: textObj.color,
+                }}
+              >
+                {textObj?.text}
+              </div>
+            );
+          },
+          ...getColumnSearchProps(['metric', key]),
+        };
+      });
+    }
+
+    if (displayMode === 'labelValuesToRows' && aggrDimension) {
+      const aggrDimensions = _.isArray(aggrDimension) ? aggrDimension : [aggrDimension];
+      tableDataSource = formatToTable(calculatedValues, aggrDimensions, 'refId');
+      const groupNames = _.reduce(
+        tableDataSource,
+        (pre, item) => {
+          return _.union(_.concat(pre, item.groupNames));
+        },
+        [],
+      );
+      tableColumns = _.map(aggrDimensions, (aggrDimension) => {
+        return {
+          title: aggrDimension,
+          dataIndex: aggrDimension,
+          key: aggrDimension,
+          width: size?.width! / (groupNames.length + aggrDimensions.length),
+          sorter: (a, b) => {
+            return localeCompare(a[aggrDimension], b[aggrDimension]);
+          },
+          sortOrder: getSortOrder(aggrDimension, sortObj),
+          render: (text) => <div className='renderer-table-td-content'>{text}</div>,
+          ...getColumnSearchProps([aggrDimension]),
+        };
+      });
+      _.map(groupNames, (name, idx) => {
+        const result = _.find(tableDataSource, (item) => {
+          return item[name];
+        });
+        tableColumns.push({
+          title: result[name]?.name,
+          dataIndex: name,
+          key: name,
+          // TODO: 暂时关闭维度值列的伸缩，降低对目前不太理想的列伸缩交互的理解和操作成本
+          width: idx < groupNames.length - 1 ? size?.width! / (groupNames.length + aggrDimensions.length) : undefined,
+          sorter: (a, b) => {
+            return _.get(a[name], 'stat') - _.get(b[name], 'stat');
+          },
+          sortOrder: getSortOrder(name, sortObj),
+          className: 'renderer-table-td-content-value-container',
+          render: (record) => {
             let textObj = {
               text: record?.text,
-              color: record.color,
+              color: record?.color,
             };
-            const overrideProps = getOverridePropertiesByName(overrides, record.fields?.refId);
+            const overrideProps = getOverridePropertiesByName(overrides, 'byFrameRefID', name);
             if (!_.isEmpty(overrideProps)) {
               textObj = getSerieTextObj(record?.stat, overrideProps?.standardOptions, overrideProps?.valueMappings);
             }
@@ -256,111 +342,41 @@ export default function Stat(props: IProps) {
                 {textObj?.text}
               </div>
             );
-          }
-          return <span title={_.get(record.metric, key)}>{_.get(record.metric, key)}</span>;
-        },
-        ...getColumnSearchProps(['metric', key]),
-      };
-    });
-  }
-
-  if (displayMode === 'labelValuesToRows' && aggrDimension) {
-    const aggrDimensions = _.isArray(aggrDimension) ? aggrDimension : [aggrDimension];
-    tableDataSource = formatToTable(calculatedValues, aggrDimensions, 'refId');
-    const groupNames = _.reduce(
-      tableDataSource,
-      (pre, item) => {
-        return _.union(_.concat(pre, item.groupNames));
-      },
-      [],
-    );
-    tableColumns = _.map(aggrDimensions, (aggrDimension) => {
-      return {
-        title: aggrDimension,
-        dataIndex: aggrDimension,
-        key: aggrDimension,
-        width: size?.width! / (groupNames.length + 1),
-        sorter: (a, b) => {
-          return localeCompare(a[aggrDimension], b[aggrDimension]);
-        },
-        sortOrder: getSortOrder(aggrDimension, sortObj),
-        render: (text) => <div className='renderer-table-td-content'>{text}</div>,
-        ...getColumnSearchProps([aggrDimension]),
-      };
-    });
-    _.map(groupNames, (name, idx) => {
-      const result = _.find(tableDataSource, (item) => {
-        return item[name];
+          },
+          ...getColumnSearchProps([name, 'text']),
+        });
       });
+    }
+
+    if (!_.isEmpty(custom.links)) {
       tableColumns.push({
-        title: result[name]?.name,
-        dataIndex: name,
-        key: name,
-        // TODO: 暂时关闭维度值列的伸缩，降低对目前不太理想的列伸缩交互的理解和操作成本
-        // width: idx < groupNames.length - 1 ? size?.width! / (groupNames.length + 1) : undefined,
-        sorter: (a, b) => {
-          return _.get(a[name], 'stat') - _.get(b[name], 'stat');
-        },
-        sortOrder: getSortOrder(name, sortObj),
-        className: 'renderer-table-td-content-value-container',
-        render: (record) => {
-          let textObj = {
-            text: record?.text,
-            color: record?.color,
-          };
-          const overrideProps = getOverridePropertiesByName(overrides, name);
-          if (!_.isEmpty(overrideProps)) {
-            textObj = getSerieTextObj(record?.stat, overrideProps?.standardOptions, overrideProps?.valueMappings);
-          }
-          const colorObj = getColor(textObj.color, colorMode, themeMode);
+        title: '链接',
+        render: (_val, record) => {
           return (
-            <div
-              className='renderer-table-td-content'
-              style={{
-                ...colorObj,
-              }}
-            >
-              {textObj?.text}
-            </div>
+            <Space>
+              {_.map(custom.links, (link, idx) => {
+                const data = {
+                  name: record.name,
+                  value: record.value,
+                  metric: record.metric,
+                };
+                if (displayMode === 'labelValuesToRows' && aggrDimension) {
+                  data.metric = {};
+                  _.forEach(tableFields, (item) => {
+                    data.metric[item] = record[item];
+                  });
+                }
+                return (
+                  <a key={idx} href={getDetailUrl(link.url, data, dashboardMeta, time)} target='_blank'>
+                    {link.title}
+                  </a>
+                );
+              })}
+            </Space>
           );
         },
-        ...getColumnSearchProps([name, 'text']),
       });
-    });
-  }
-
-  if (custom.links) {
-    tableColumns.push({
-      title: '链接',
-      render: (_val, record) => {
-        return (
-          <Space>
-            {_.map(custom.links, (link, idx) => {
-              const data = {
-                name: record.name,
-                value: record.value,
-                metric: record.metric,
-              };
-              if (displayMode === 'labelValuesToRows' && aggrDimension) {
-                data.metric = {};
-                _.forEach(tableFields, (item) => {
-                  data.metric[item] = record[item];
-                });
-              }
-              return (
-                <a key={idx} href={getDetailUrl(link.url, data, dashboardMeta, time)} target='_blank'>
-                  {link.title}
-                </a>
-              );
-            })}
-          </Space>
-        );
-      },
-    });
-  }
-
-  if (!_.isEmpty(calculatedValues) && !_.isEmpty(tableColumns)) {
-    tableColumns = transformColumns(tableColumns, values.transformations);
+    }
   }
 
   const headerHeight = showHeader ? 44 : 0;
@@ -368,12 +384,81 @@ export default function Stat(props: IProps) {
   const realHeight = isNaN(height) ? 0 : height;
 
   const { components, resizableColumns, tableWidth, resetColumns } = useAntdResizableHeader({
-    columns: useMemo(() => tableColumns, [JSON.stringify(columns), displayMode, JSON.stringify(calculatedValues), sortObj, themeMode, aggrDimension, overrides, size]),
+    columns: useMemo(() => {
+      if (!_.isEmpty(calculatedValues) && !_.isEmpty(tableColumns)) {
+        tableColumns = transformColumns(tableColumns, values.transformations);
+      }
+      return tableColumns;
+    }, [JSON.stringify(columns), displayMode, JSON.stringify(calculatedValues), sortObj, themeMode, aggrDimension, overrides, size]),
     columnsState: {
       persistenceType: 'localStorage',
       persistenceKey: `dashboard-table-resizable-${values.id}`,
     },
   });
+
+  useImperativeHandle(
+    ref,
+    () => {
+      return {
+        exportCsv() {
+          let data: string[][] = _.map(tableDataSource, (item) => {
+            return [item.name, item.value];
+          });
+          data.unshift(['name', 'value']);
+          if (displayMode === 'labelsOfSeriesToRows') {
+            const keys = _.isEmpty(columns) ? _.concat(getColumnsKeys(tableDataSource), 'value') : columns;
+            data = _.map(tableDataSource, (item) => {
+              return _.map(keys, (key) => {
+                if (key === 'value') {
+                  return _.get(item, key);
+                }
+                return _.get(item.metric, key);
+              });
+            });
+            data.unshift(keys);
+          }
+          if (displayMode === 'labelValuesToRows' && aggrDimension) {
+            const aggrDimensions = _.isArray(aggrDimension) ? aggrDimension : [aggrDimension];
+            const groupNames = _.reduce(
+              tableDataSource,
+              (pre, item) => {
+                return _.union(_.concat(pre, item.groupNames));
+              },
+              [],
+            );
+            data = _.map(tableDataSource, (item) => {
+              const row = _.map(aggrDimensions, (key) => _.get(item, key));
+              _.map(groupNames, (name) => {
+                row.push(_.get(item, name)?.text);
+              });
+              return row;
+            });
+            data.unshift(
+              _.concat(
+                aggrDimensions,
+                _.map(groupNames, (name) => _.get(tableDataSource[0], name)?.name),
+              ),
+            );
+          }
+          const organizeOptions = values.transformations?.[0]?.options;
+          if (organizeOptions) {
+            const { renameByName } = organizeOptions;
+            if (renameByName) {
+              data[0] = _.map(data[0], (item) => {
+                const newName = renameByName[item];
+                if (newName) {
+                  return newName;
+                }
+                return item;
+              });
+            }
+          }
+          downloadCsv(data, values.name);
+        },
+      };
+    },
+    [JSON.stringify(tableDataSource), JSON.stringify(aggrDimension), displayMode, JSON.stringify(values.transformations), JSON.stringify(columns)],
+  );
 
   return (
     <div className='renderer-table-container' ref={eleRef}>
@@ -401,3 +486,5 @@ export default function Stat(props: IProps) {
     </div>
   );
 }
+
+export default forwardRef(TableCpt);
