@@ -32,7 +32,7 @@ export const setDefaultValues = (form: FormInstance) => {
 
 export default function Prometheus(props: IProps) {
   const { datasourceValue, form } = props;
-  const [mode, setMode] = useState<string>('graph');
+  const [mode, setMode] = useState<string>('table');
   const [refreshFlag, setRefreshFlag] = useState<string>();
   const [width, setWidth] = useState(_.toNumber(localStorage.getItem('tdengine-meta-sidebar') || 200));
 
@@ -109,10 +109,6 @@ export default function Prometheus(props: IProps) {
             }}
             type='card'
           >
-            <Tabs.TabPane tab='Graph' key='graph'>
-              <AdvancedSettings mode='graph' span={8} prefixName={['query']} expanded expandTriggerVisible={false} />
-              <Graph form={form} datasourceValue={datasourceValue} refreshFlag={refreshFlag} setRefreshFlag={setRefreshFlag} />
-            </Tabs.TabPane>
             <Tabs.TabPane tab='Table' key='table'>
               <div
                 style={{
@@ -124,6 +120,9 @@ export default function Prometheus(props: IProps) {
                 <AdvancedSettings mode='table' span={8} prefixName={['query']} expanded expandTriggerVisible={false} />
                 <Table form={form} datasourceValue={datasourceValue} refreshFlag={refreshFlag} setRefreshFlag={setRefreshFlag} />
               </div>
+            </Tabs.TabPane>
+            <Tabs.TabPane tab='Graph' key='graph'>
+              <Graph form={form} datasourceValue={datasourceValue} refreshFlag={refreshFlag} setRefreshFlag={setRefreshFlag} />
             </Tabs.TabPane>
           </Tabs>
         </div>
