@@ -49,9 +49,9 @@ export default function GraphPreview({ cate, datasourceValue, query }) {
           return {
             query: q.query,
             keys: {
-              metricKey: _.join(q.keys.metricKey, ' '),
-              labelKey: _.join(q.keys.labelKey, ' '),
-              timeFormat: q.keys.timeFormat,
+              metricKey: _.join(q.keys?.metricKey, ' '),
+              labelKey: _.join(q.keys?.labelKey, ' '),
+              timeFormat: q.keys?.timeFormat,
             },
             from,
             to,

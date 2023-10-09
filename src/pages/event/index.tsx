@@ -14,21 +14,19 @@
  * limitations under the License.
  *
  */
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Button, Input, message, Modal, Select, Space, Row, Col, Dropdown, Menu } from 'antd';
-import { AlertOutlined, ExclamationCircleOutlined, SearchOutlined, AppstoreOutlined, UnorderedListOutlined, DownOutlined } from '@ant-design/icons';
+import { AlertOutlined, ExclamationCircleOutlined, SearchOutlined, AppstoreOutlined, UnorderedListOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import PageLayout from '@/components/pageLayout';
 import { deleteAlertEvents } from '@/services/warning';
 import { AutoRefresh } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
-import { getDefaultHours, setDefaultHours } from '@/pages/historyEvents';
 import { getProdOptions } from '@/pages/alertRules/Form/components/ProdSelect';
 import DatasourceSelect from '@/components/DatasourceSelect/DatasourceSelect';
 import Card from './card';
 import Table from './Table';
-import { hoursOptions } from './constants';
 import './locale';
 import './index.less';
 
@@ -60,7 +58,6 @@ const Event: React.FC = () => {
   const [view, setView] = useState<'card' | 'list'>('card');
   const { busiGroups, feats } = useContext(CommonStateContext);
   const [filter, setFilter] = useState<{
-    hours: number;
     cate?: string;
     datasourceIds: number[];
     bgid?: number;
@@ -68,8 +65,6 @@ const Event: React.FC = () => {
     queryContent: string;
     rule_prods: string[];
   }>({
-    // hours: getDefaultHours(),
-    hours: 6,
     datasourceIds: [],
     queryContent: '',
     rule_prods: [],
@@ -99,21 +94,6 @@ const Event: React.FC = () => {
         <Space>
           <Button icon={<AppstoreOutlined />} onClick={() => setView('card')} />
           <Button icon={<UnorderedListOutlined />} onClick={() => setView('list')} />
-          {/* <Select
-            style={{ minWidth: 80 }}
-            value={filter.hours}
-            onChange={(val) => {
-              setFilter({
-                ...filter,
-                hours: val,
-              });
-              setDefaultHours(val);
-            }}
-          >
-            {hoursOptions.map((item) => {
-              return <Select.Option value={item.value}>{t(`hours.${item.value}`)}</Select.Option>;
-            })}
-          </Select> */}
           <Select
             allowClear
             placeholder={t('prod')}
@@ -248,7 +228,6 @@ const Event: React.FC = () => {
   }
 
   const filterObj = Object.assign(
-    { hours: filter.hours },
     filter.datasourceIds.length ? { datasource_ids: filter.datasourceIds } : {},
     filter.severity ? { severity: filter.severity } : {},
     filter.queryContent ? { query: filter.queryContent } : {},
