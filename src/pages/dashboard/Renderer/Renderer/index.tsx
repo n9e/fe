@@ -268,16 +268,18 @@ function index(props: IProps) {
                           </Menu.Item>
                         )}
                         {values.type === 'table' && (
-                          <Menu.Item
-                            onClick={() => {
-                              window.localStorage.removeItem(`dashboard-table-resizable-${values.id}`);
-                              setVisible(false);
-                            }}
-                            key='clear_cache_btn'
-                          >
-                            <ClearOutlined style={{ marginRight: 8 }} />
-                            {t('clear_cache_btn')}
-                          </Menu.Item>
+                          <Tooltip title={t('clear_cache_btn_tip')} placement='left'>
+                            <Menu.Item
+                              onClick={() => {
+                                window.localStorage.removeItem(`dashboard-table-resizable-${values.id}`);
+                                setVisible(false);
+                              }}
+                              key='clear_cache_btn'
+                            >
+                              <ClearOutlined style={{ marginRight: 8 }} />
+                              {t('clear_cache_btn')}
+                            </Menu.Item>
+                          </Tooltip>
                         )}
 
                         <Menu.Item
@@ -338,6 +340,5 @@ function index(props: IProps) {
     </div>
   );
 }
-
 
 export default React.memo(index);
