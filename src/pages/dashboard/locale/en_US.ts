@@ -9,6 +9,8 @@ const en_US = {
   refresh_btn: 'Refresh',
   share_btn: 'Share',
   export_btn: 'Export (CSV)',
+  clear_cache_btn: 'Clear cache',
+  clear_cache_btn_tip: 'Clear the table column width cache, take effect after refreshing the page',
   inspect_btn: 'Inspect',
   public: {
     name: 'Public',

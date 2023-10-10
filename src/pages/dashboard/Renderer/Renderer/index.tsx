@@ -32,6 +32,7 @@ import {
   DragOutlined,
   WarningOutlined,
   ExportOutlined,
+  ClearOutlined,
 } from '@ant-design/icons';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import Timeseries from './Timeseries';
@@ -258,11 +259,24 @@ function index(props: IProps) {
                           <Menu.Item
                             onClick={() => {
                               tableRef.current.exportCsv();
+                              setVisible(false);
                             }}
                             key='export_btn'
                           >
                             <ExportOutlined style={{ marginRight: 8 }} />
                             {t('export_btn')}
+                          </Menu.Item>
+                        )}
+                        {values.type === 'table' && (
+                          <Menu.Item
+                            onClick={() => {
+                              window.localStorage.removeItem(`dashboard-table-resizable-${values.id}`);
+                              setVisible(false);
+                            }}
+                            key='clear_cache_btn'
+                          >
+                            <ClearOutlined style={{ marginRight: 8 }} />
+                            {t('clear_cache_btn')}
                           </Menu.Item>
                         )}
 
@@ -324,5 +338,6 @@ function index(props: IProps) {
     </div>
   );
 }
+
 
 export default React.memo(index);
