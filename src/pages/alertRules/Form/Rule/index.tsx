@@ -26,21 +26,23 @@ import ProdSelect from '../components/ProdSelect';
 // @ts-ignore
 import PlusAlertRule from 'plus:/parcels/AlertRule';
 
-export default function Rule({ form }) {  
+export default function Rule({ form }) {
   const { t } = useTranslation('alertRules');
 
   return (
     <Card {...panelBaseProps} title={t('rule_configs')}>
       <ProdSelect
-        onChange={(e) => {
-          const val = e.target.value;
-          if (val === 'anomaly') {
+        onChange={(prod) => {
+          if (prod === 'anomaly') {
             // 获取默认 brain 参数，用于初始化智能告警的设置
+            form.setFieldsValue({
+              prod: 'anomaly',
+            });
             getBrainParams().then((res) => {
-              form.setFieldsValue(getDefaultValuesByProd(val, res));
+              form.setFieldsValue(getDefaultValuesByProd(prod, res));
             });
           } else {
-            form.setFieldsValue(getDefaultValuesByProd(val, {}));
+            form.setFieldsValue(getDefaultValuesByProd(prod, {}));
           }
         }}
       />
@@ -57,7 +59,7 @@ export default function Rule({ form }) {
             return <Metric form={form} />;
           }
           if (prod === 'loki') {
-            return <Loki form={form}/>;
+            return <Loki form={form} />;
           }
           return <PlusAlertRule prod={prod} form={form} />;
         }}

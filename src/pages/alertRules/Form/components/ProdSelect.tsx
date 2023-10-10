@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Form, Radio } from 'antd';
+import { Form, Segmented } from 'antd';
 import _ from 'lodash';
 import { ProSvg } from '@/components/DatasourceSelect';
 import { CommonStateContext } from '@/App';
@@ -20,44 +20,35 @@ export const getProdOptions = (feats) => {
       pro: true,
     });
   }
-  if (
-    _.some(feats?.plugins, (plugin) => {
-      return _.includes(plugin.type, 'logging');
-    })
-  ) {
-    prodOptions.push({
-      label: 'Log',
-      value: 'logging',
-      pro: true,
-    });
-  }
   return prodOptions;
 };
 
 export default function ProdSelect({ label, onChange = () => {} }: IProps) {
   const { feats } = useContext(CommonStateContext);
   const prodOptions = getProdOptions(feats);
+  const prod = Form.useWatch('prod');
 
   return (
-    <Form.Item shouldUpdate={(prevValues, currentValues) => prevValues.prod !== currentValues.prod} noStyle>
-      {({ getFieldValue }) => {
-        const prod = getFieldValue('prod');
-        return (
-          <Form.Item name='prod' label={label}>
-            <Radio.Group onChange={onChange} optionType='button' buttonStyle='solid'>
-              {_.map(prodOptions, (item) => {
-                return (
-                  <Radio value={item.value}>
-                    <div>
-                      {item.label} {item.pro ? <ProSvg type={prod === item.value ? 'selected' : 'normal'} /> : null}
-                    </div>
-                  </Radio>
-                );
-              })}
-            </Radio.Group>
-          </Form.Item>
-        );
-      }}
-    </Form.Item>
+    <>
+      <Form.Item name='prod' hidden>
+        <div />
+      </Form.Item>
+      <Form.Item label={label}>
+        <Segmented
+          value={prod}
+          onChange={onChange}
+          options={_.map(prodOptions, (item) => {
+            return {
+              label: (
+                <div>
+                  {item.label} {item.pro ? <ProSvg type='normal' /> : null}
+                </div>
+              ),
+              value: item.value,
+            };
+          })}
+        />
+      </Form.Item>
+    </>
   );
 }

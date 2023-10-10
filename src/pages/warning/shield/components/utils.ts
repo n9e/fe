@@ -27,6 +27,9 @@ export function getDefaultValuesByProd(prod) {
       cate: 'elasticsearch',
     };
   }
+  return {
+    prod,
+  };
 }
 
 export const processFormValues = (values) => {

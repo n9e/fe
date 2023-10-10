@@ -188,9 +188,9 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
         </Form.Item>
         <ProdSelect
           label={t('prod')}
-          onChange={(e) => {
+          onChange={(prod) => {
             form.setFieldsValue({
-              ...getDefaultValuesByProd(e.target.value),
+              ...getDefaultValuesByProd(prod),
               datasource_ids: [],
             });
           }}

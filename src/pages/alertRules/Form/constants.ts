@@ -100,8 +100,8 @@ export const ruleTypeOptions = [
     pro: false,
   },
   {
-    label: 'Loki',
-    value: 'loki',
+    label: 'Log',
+    value: 'logging',
     pro: false,
   },
 ];
