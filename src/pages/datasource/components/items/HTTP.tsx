@@ -4,13 +4,14 @@ import { useTranslation } from 'react-i18next';
 
 interface IProps {
   urlExtra?: React.ReactNode;
+  placeholder?: string;
 }
 
 const FormItem = Form.Item;
 
 export default function HTTP(props: IProps) {
   const { t } = useTranslation('datasourceManage');
-  const { urlExtra } = props;
+  const { urlExtra, placeholder } = props;
 
   return (
     <div>
@@ -25,7 +26,7 @@ export default function HTTP(props: IProps) {
           },
         ]}
       >
-        <Input placeholder='http://localhost:9090' />
+        <Input placeholder={placeholder || 'http://localhost:9090'} />
       </FormItem>
       {urlExtra}
       <FormItem label={t('form.timeout')} name={['http', 'timeout']} rules={[{ type: 'number', min: 0 }]} initialValue={10000}>

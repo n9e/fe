@@ -28,7 +28,7 @@ export default function FormCpt({ data, onFinish, submitLoading }: any) {
       className='settings-source-form'
     >
       <Name />
-      <HTTP />
+      <HTTP placeholder='http://localhost:6041' />
       <BasicAuth />
       <SkipTLSVerify />
       <Headers />
