@@ -43,5 +43,21 @@ const getLicense = async () => {
 const getN9eConfig = async () => {
   return {};
 };
+const getDefaultValuesByCate = () => {};
 
-export { AlertRule, QueryBuilder, datasource, Event, EventLogs, EventPreview, Explorer, Jobs, advancedCates, envCateMap, AdvancedDatasourceCateEnum, getLicense, getN9eConfig };
+export {
+  AlertRule,
+  QueryBuilder,
+  datasource,
+  Event,
+  EventLogs,
+  EventPreview,
+  Explorer,
+  Jobs,
+  advancedCates,
+  envCateMap,
+  AdvancedDatasourceCateEnum,
+  getLicense,
+  getN9eConfig,
+  getDefaultValuesByCate,
+};
