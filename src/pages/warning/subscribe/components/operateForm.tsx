@@ -45,7 +45,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
   const { t } = useTranslation('alertSubscribes');
   const [form] = Form.useForm(null as any);
   const history = useHistory();
-  const { curBusiId, groupedDatasourceList } = useContext(CommonStateContext);
+  const { curBusiId, groupedDatasourceList, isPlus } = useContext(CommonStateContext);
   const [ruleModalShow, setRuleModalShow] = useState<boolean>(false);
   const [ruleCur, setRuleCur] = useState<any>();
   const [contactList, setInitContactList] = useState([]);
@@ -159,7 +159,9 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
                 <DatasourceCateSelect
                   scene='alert'
                   filterCates={(cates) => {
-                    return _.filter(cates, (item) => !!item.alertRule);
+                    return _.filter(cates, (item) => {
+                      return !!item.alertRule && (item.alertPro ? isPlus : true);
+                    });
                   }}
                   onChange={() => {
                     form.setFieldsValue({
