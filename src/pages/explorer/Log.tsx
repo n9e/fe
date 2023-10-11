@@ -28,7 +28,7 @@ const MetricExplorerPage = () => {
   return (
     <PageLayout title={t('title')} icon={<LineChartOutlined />}>
       <div>
-        <Explorer type='logging' defaultCate='elasticsearch' />
+        <Explorer type='logging' defaultCate='elasticsearch' panelIdx={0} />
       </div>
     </PageLayout>
   );
