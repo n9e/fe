@@ -1,7 +1,7 @@
 import moment from 'moment';
 import _ from 'lodash';
 
-export function getDefaultValuesByProd(prod) {
+export function getDefaultValuesByProd(prod, isPlus = false) {
   if (prod === 'host') {
     return {
       prod,
@@ -24,7 +24,7 @@ export function getDefaultValuesByProd(prod) {
   if (prod === 'logging') {
     return {
       prod,
-      cate: 'elasticsearch',
+      cate: isPlus ? 'elasticsearch' : 'loki',
     };
   }
   return {

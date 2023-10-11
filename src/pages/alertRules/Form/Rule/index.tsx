@@ -15,10 +15,11 @@
  *
  */
 
-import React from 'react';
+import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, Form } from 'antd';
 import { getBrainParams } from '@/services/warning';
+import { CommonStateContext } from '@/App';
 import { panelBaseProps } from '../../constants';
 import { Host, Metric, Log } from './Rule';
 import { getDefaultValuesByProd } from '../utils';
@@ -28,6 +29,7 @@ import PlusAlertRule from 'plus:/parcels/AlertRule';
 
 export default function Rule({ form }) {
   const { t } = useTranslation('alertRules');
+  const { isPlus } = useContext(CommonStateContext);
 
   return (
     <Card {...panelBaseProps} title={t('rule_configs')}>
@@ -42,7 +44,7 @@ export default function Rule({ form }) {
               form.setFieldsValue(getDefaultValuesByProd(prod, res));
             });
           } else {
-            form.setFieldsValue(getDefaultValuesByProd(prod, {}));
+            form.setFieldsValue(getDefaultValuesByProd(prod, {}, isPlus));
           }
         }}
       />

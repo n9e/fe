@@ -29,12 +29,10 @@ import Loki from './Loki';
 
 // @ts-ignore
 import PlusAlertRule from 'plus:/parcels/AlertRule';
-// @ts-ignore
-import { getDefaultValuesByCate as plusGetDefaultValuesByCate } from 'plus:/parcels/AlertRule/utils';
 
 export default function index({ form }) {
   const { t } = useTranslation('alertRules');
-  const { groupedDatasourceList, datasourceCateOptions } = useContext(CommonStateContext);
+  const { groupedDatasourceList, datasourceCateOptions, isPlus } = useContext(CommonStateContext);
   const prod = Form.useWatch('prod');
   const cate = Form.useWatch('cate');
 
@@ -46,13 +44,14 @@ export default function index({ form }) {
             <DatasourceCateSelect
               scene='alert'
               filterCates={(cates) => {
-                return _.filter(cates, (item) => _.includes(item.type, prod) && !!item.alertRule);
+                return _.filter(cates, (item) => {
+                  return _.includes(item.type, prod) && !!item.alertRule && (item.alertPro ? isPlus : true);
+                });
               }}
               onChange={(val) => {
                 const cateObj = _.find(datasourceCateOptions, (item) => item.value === val);
                 if (cateObj) {
-                  const defaultValue = cateObj.alertPro ? plusGetDefaultValuesByCate(prod, val) : getDefaultValuesByCate(prod, val);
-                  form.setFieldsValue(defaultValue);
+                  form.setFieldsValue(getDefaultValuesByCate(prod, val));
                 }
               }}
             />
