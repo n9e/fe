@@ -9,6 +9,8 @@ const zh_CN = {
   refresh_btn: '刷新',
   share_btn: '分享',
   export_btn: '导出（CSV）',
+  clear_cache_btn: '清除缓存',
+  clear_cache_btn_tip: '清除表格列宽缓存，刷新页面后生效',
   inspect_btn: '排查',
   public: {
     name: '公开',

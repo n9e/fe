@@ -21,8 +21,8 @@ import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
 import type { ColumnType } from 'antd/es/table';
 import type { FilterConfirmProps } from 'antd/es/table/interface';
 import { useSize } from 'ahooks';
-import { useAntdResizableHeader } from '@minko-fe/use-antd-resizable-header';
-import '@minko-fe/use-antd-resizable-header/dist/style.css';
+import { useAntdResizableHeader } from '@fc-components/use-antd-resizable-header';
+import '@fc-components/use-antd-resizable-header/dist/style.css';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { IPanel } from '../../../types';
 import getCalculatedValuesBySeries, { getSerieTextObj } from '../../utils/getCalculatedValuesBySeries';
@@ -392,7 +392,7 @@ function TableCpt(props: IProps, ref: any) {
     }, [JSON.stringify(columns), displayMode, JSON.stringify(calculatedValues), sortObj, themeMode, aggrDimension, overrides, size]),
     columnsState: {
       persistenceType: 'localStorage',
-      persistenceKey: `dashboard-table-resizable-${values.id}`,
+      persistenceKey: `dashboard-table2-resizable-${values.id}`,
     },
   });
 

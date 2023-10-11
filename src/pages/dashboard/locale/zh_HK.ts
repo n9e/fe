@@ -9,6 +9,8 @@ const zh_HK = {
   refresh_btn: '刷新',
   share_btn: '分享',
   export_btn: '匯出（CSV）',
+  clear_cache_btn: '清除缓存',
+  clear_cache_btn_tip: '清除表格列寬缓存，刷新頁面後生效',
   inspect_btn: '排查',
   public: {
     '0': {
