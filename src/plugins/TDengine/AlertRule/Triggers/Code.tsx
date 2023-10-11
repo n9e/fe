@@ -16,7 +16,7 @@ export default function Code(props: IProps) {
 
   return (
     <Form.Item {...prefixField} name={[...prefixName, 'exp']}>
-      <Input disabled={disabled} />
+      <Input disabled={disabled} placeholder='$A.count > 0 && $B.count < $A.count' />
     </Form.Item>
   );
 }

@@ -20,7 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { Card, Form } from 'antd';
 import { getBrainParams } from '@/services/warning';
 import { panelBaseProps } from '../../constants';
-import { Host, Metric, Loki } from './Rule';
+import { Host, Metric, Log } from './Rule';
 import { getDefaultValuesByProd } from '../utils';
 import ProdSelect from '../components/ProdSelect';
 // @ts-ignore
@@ -52,14 +52,15 @@ export default function Rule({ form }) {
       <Form.Item shouldUpdate={(prevValues, currentValues) => prevValues.prod !== currentValues.prod}>
         {() => {
           const prod = form.getFieldValue('prod');
+          const cate = form.getFieldValue('cate');
           if (prod === 'host') {
             return <Host />;
           }
           if (prod === 'metric') {
             return <Metric form={form} />;
           }
-          if (prod === 'loki') {
-            return <Loki form={form} />;
+          if (prod === 'logging') {
+            return <Log form={form} />;
           }
           return <PlusAlertRule prod={prod} form={form} />;
         }}

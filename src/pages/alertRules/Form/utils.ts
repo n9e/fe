@@ -258,7 +258,7 @@ export function getDefaultValuesByCate(prod, cate) {
       },
     };
   }
-  if (cate === 'loki') {
+  if (cate === DatasourceCateEnum.loki) {
     return {
       prod,
       cate,
