@@ -32,6 +32,11 @@ const EditShield: React.FC = () => {
   const query = useQuery();
   const isClone = query.get('mode');
 
+  // 兼容 <= v6.2.x 版本 loki prod
+  if (state.prod === 'loki') {
+    state.prod = 'logging';
+  }
+
   return (
     <PageLayout title={t('title')} showBack>
       <div className='shield-add'>{state.id && <OperateForm detail={state} type={!isClone ? 1 : 2} />}</div>

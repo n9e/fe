@@ -33,7 +33,12 @@ export default function Edit() {
   useEffect(() => {
     if (alertRuleId) {
       getWarningStrategy(alertRuleId).then((res) => {
-        setValues(res.dat || {});
+        const data = res.dat || {};
+        // 兼容 <= v6.2.x 版本 loki prod
+        if (data.prod === 'loki') {
+          data.prod = 'logging';
+        }
+        setValues(data);
       });
     }
   }, [alertRuleId]);
