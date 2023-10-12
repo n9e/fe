@@ -105,6 +105,7 @@ const zh_CN = {
     edit_title: '编辑分组',
     delete_title: '删除分组',
     name: '分组名称',
+    repeatFor: '重复变量',
     delete_confirm: '确认删除分组吗？',
     cancel: '取消',
     ok: '删除分组和图表',

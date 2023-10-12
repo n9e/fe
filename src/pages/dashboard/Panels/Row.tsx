@@ -15,14 +15,14 @@
  *
  */
 import React, { useState } from 'react';
-import { Space, Modal, Button, Mentions } from 'antd';
+import { Space, Modal, Button, Mentions, Select, Form } from 'antd';
 import { CaretRightOutlined, CaretDownOutlined, HolderOutlined, SettingOutlined, DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { AddPanelIcon } from '../config';
 import { useGlobalState } from '../globalState';
-import { IVariable, replaceExpressionVars } from '../VariableConfig';
+import replaceFieldWithVariable from '../Renderer/utils/replaceFieldWithVariable';
 
 interface IProps {
   isPreview?: boolean;
@@ -34,18 +34,12 @@ interface IProps {
   onDeleteClick: (mode: 'self' | 'withPanels') => void;
 }
 
-function replaceFieldWithVariable(value: string, dashboardId?: string, variableConfig?: IVariable[]) {
-  if (!dashboardId || !variableConfig) {
-    return value;
-  }
-  return replaceExpressionVars(value, variableConfig, variableConfig.length, dashboardId);
-}
-
 export default function Row(props: IProps) {
   const { t } = useTranslation('dashboard');
   const { isPreview, name, row, onToggle, onAddClick, onEditClick, onDeleteClick } = props;
   const [editVisble, setEditVisble] = useState(false);
   const [newName, setNewName] = useState<string>();
+  const [repeat, setRepeat] = useState<string>();
   const [deleteVisible, setDeleteVisible] = useState(false);
   const [dashboardMeta] = useGlobalState('dashboardMeta');
 
@@ -61,29 +55,44 @@ export default function Row(props: IProps) {
           onToggle();
         }}
       >
-        <span style={{ paddingRight: 6 }}>{replaceFieldWithVariable(name, dashboardMeta.dashboardId, dashboardMeta.variableConfigWithOptions)}</span>
-        {row.collapsed ? <CaretDownOutlined /> : <CaretRightOutlined />}
-      </div>
-      {!isPreview && (
         <Space>
-          <AddPanelIcon
-            onClick={() => {
-              onAddClick();
-            }}
-          />
-          <SettingOutlined
-            onClick={() => {
-              setEditVisble(true);
-              setNewName(name);
-            }}
-          />
-          <DeleteOutlined
-            onClick={() => {
-              setDeleteVisible(true);
-            }}
-          />
-          {row.collapsed === false && <HolderOutlined className='dashboards-panels-item-drag-handle' />}
+          <span style={{ paddingRight: 6 }}>{replaceFieldWithVariable(dashboardMeta.dashboardId, name, dashboardMeta.variableConfigWithOptions, row.scopedVars)}</span>
+          {row.collapsed ? <CaretDownOutlined /> : <CaretRightOutlined />}
+          {!isPreview && !row.repeatPanelId && (
+            <Space>
+              <AddPanelIcon
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onAddClick();
+                }}
+              />
+              <SettingOutlined
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setEditVisble(true);
+                  setNewName(name);
+                  setRepeat(row.repeat);
+                }}
+              />
+              <DeleteOutlined
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setDeleteVisible(true);
+                }}
+              />
+            </Space>
+          )}
         </Space>
+      </div>
+      {!isPreview && row.collapsed === false && !row.repeatPanelId && (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <HolderOutlined className='dashboards-panels-item-drag-handle' />
+        </div>
       )}
       <Modal
         title={t('row.edit_title')}
@@ -95,36 +104,54 @@ export default function Row(props: IProps) {
           onEditClick({
             ...row,
             name: newName,
+            repeat,
           });
           setEditVisble(false);
         }}
       >
-        <div>
-          {t('row.name')}
-          <Mentions
-            prefix='$'
-            split=''
-            value={newName}
-            onChange={(val) => {
-              setNewName(val);
-            }}
-            onPressEnter={() => {
-              onEditClick({
-                ...row,
-                name: newName,
-              });
-              setEditVisble(false);
-            }}
-          >
-            {_.map(dashboardMeta.variableConfigWithOptions, (item) => {
-              return (
-                <Mentions.Option key={item.name} value={item.name}>
-                  {item.name}
-                </Mentions.Option>
-              );
-            })}
-          </Mentions>
-        </div>
+        <Form layout='vertical'>
+          <Form.Item label={t('row.name')}>
+            <Mentions
+              prefix='$'
+              split=''
+              value={newName}
+              onChange={(val) => {
+                setNewName(val);
+              }}
+              onPressEnter={() => {
+                onEditClick({
+                  ...row,
+                  name: newName,
+                  repeat,
+                });
+                setEditVisble(false);
+              }}
+            >
+              {_.map(dashboardMeta.variableConfigWithOptions, (item) => {
+                return (
+                  <Mentions.Option key={item.name} value={item.name}>
+                    {item.name}
+                  </Mentions.Option>
+                );
+              })}
+            </Mentions>
+          </Form.Item>
+          <Form.Item label={t('row.repeatFor')}>
+            <Select
+              value={repeat}
+              onChange={(val) => {
+                setRepeat(val);
+              }}
+              allowClear
+              options={_.map(dashboardMeta.variableConfigWithOptions, (item) => {
+                return {
+                  label: item.name,
+                  value: item.name,
+                };
+              })}
+            ></Select>
+          </Form.Item>
+        </Form>
       </Modal>
       <Modal
         closable={false}

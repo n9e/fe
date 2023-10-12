@@ -123,6 +123,7 @@ export default function DetailV2(props: IProps) {
   const [variableConfigWithOptions, setVariableConfigWithOptions] = useState<IVariable[]>();
   const [dashboardLinks, setDashboardLinks] = useState<ILink[]>();
   const [panels, setPanels] = useState<any[]>([]);
+  const [refreshFlag, setRefreshFlag] = useState(_.uniqueId('refreshFlag_'));
   const [range, setRange] = useState<IRawTimeRange>(getDefaultTimeRange(query, t));
   const [editable, setEditable] = useState(true);
   const [editorData, setEditorData] = useState({
@@ -166,6 +167,7 @@ export default function DetailV2(props: IProps) {
         );
         setDashboardLinks(configs.links);
         setPanels(sortPanelsByGridLayout(configs.panels));
+        setRefreshFlag(_.uniqueId('refreshFlag_'));
         if (cbk) {
           cbk();
         }
@@ -302,8 +304,9 @@ export default function DetailV2(props: IProps) {
               </div>
             </div>
           </Affix>
-          {variableConfigWithOptions && (
+          {variableConfigWithOptions && !_.isEmpty(panels) && (
             <Panels
+              key={refreshFlag}
               dashboardId={id}
               isPreview={isPreview}
               editable={editable}

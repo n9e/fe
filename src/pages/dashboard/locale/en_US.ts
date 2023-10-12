@@ -105,6 +105,7 @@ const en_US = {
     edit_title: 'Edit row',
     delete_title: 'Delete row',
     name: 'Name',
+    repeatFor: 'Repeat for',
     delete_confirm: 'Confirm to delete row?',
     cancel: 'Cancel',
     ok: 'Delete row and panels',

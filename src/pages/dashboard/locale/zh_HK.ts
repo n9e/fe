@@ -105,6 +105,7 @@ const zh_HK = {
     edit_title: '編輯分組',
     delete_title: '刪除分組',
     name: '分組名稱',
+    repeatFor: '重複變量',
     delete_confirm: '確認刪除分組嗎？',
     cancel: '取消',
     ok: '刪除分組和圖表',

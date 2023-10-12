@@ -296,7 +296,7 @@ export function repeatPanel(panel: IPanel, panelIndex: number, panels: IPanel[],
     copy.scopedVars[variable.name] = option;
 
     // repeat 的面板默认占据整行
-    copy.layout.w = Math.max(24 / selectedOptions.length, 24 / maxPerRow);
+    copy.layout.w = Math.max(24 / selectedOptions.length, 24 / 1);
     copy.layout.x = xPos;
     copy.layout.y = yPos;
     copy.layout.i = copy.id;

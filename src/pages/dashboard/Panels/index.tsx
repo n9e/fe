@@ -222,7 +222,8 @@ function index(props: IProps) {
                   name={item.name}
                   row={item}
                   onToggle={() => {
-                    const newPanels = handleRowToggle(!item.collapsed, panels, _.cloneDeep(item));
+                    let newPanels = handleRowToggle(!item.collapsed, panels, _.cloneDeep(item));
+                    newPanels = processRepeats(newPanels, variableConfig);
                     setPanels(newPanels);
                     updateDashboardConfigs(dashboard.id, {
                       configs: panelsMergeToConfigs(dashboard.configs, newPanels),
