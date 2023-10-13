@@ -108,7 +108,7 @@ function Import(props: IProps & ModalWrapProps) {
             },
           ]}
         >
-          <Select>
+          <Select showSearch optionFilterProp='children'>
             {_.map(busiGroups, (item) => {
               return (
                 <Select.Option key={item.id} value={item.id}>
