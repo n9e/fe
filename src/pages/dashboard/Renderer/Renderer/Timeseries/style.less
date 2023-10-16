@@ -19,6 +19,7 @@
 }
 .renderer-timeseries-legend-container {
   position: relative;
+  height: calc(100% - 8px);
 }
 .renderer-timeseries-legend-list {
   overflow-y: auto;
@@ -28,7 +29,7 @@
   flex-wrap: wrap;
   column-gap: 20px;
   align-content: flex-start;
-  padding: 0 8px 8px 8px;
+  padding: 4px 8px;
   margin: 8px;
   cursor: pointer;
   user-select: none;
@@ -43,8 +44,11 @@
   }
 }
 .renderer-timeseries-legend-list-placement-right {
+  flex-direction: column;
+  flex-wrap: unset;
+  height: 100%;
   & > div {
-    width: 100%;
+    flex-shrink: 0;
   }
 }
 .renderer-timeseries-legend-color-symbol {
