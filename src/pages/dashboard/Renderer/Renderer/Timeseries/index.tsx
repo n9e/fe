@@ -92,7 +92,7 @@ export default function index(props: IProps) {
   const legendEleRef = useRef<HTMLDivElement>(null);
   const legendEleSize = useSize(legendEleRef);
   const displayMode = options.legend?.displayMode || 'table';
-  const placement = options.legend?.placement || 'bottom';
+  const placement = displayMode === 'table' ? 'bottom' : options.legend?.placement || 'bottom';
   const legendColumns = options.legend?.columns && options.legend?.columns.length > 0 ? options.legend?.columns : ['max', 'min', 'avg', 'sum', 'last'];
   const detailUrl = options.legend?.detailUrl || undefined;
   const detailName = options.legend?.detailName || undefined;
@@ -356,15 +356,20 @@ export default function index(props: IProps) {
       <div
         ref={chartEleRef}
         className='renderer-timeseries-graph'
-        style={{ height: _chartHeight, minHeight: '70%', width: placement === 'right' ? (isExpanded ? 0 : '60%') : '100%' }}
+        style={{
+          height: _chartHeight,
+          minHeight: '70%',
+          width: placement === 'right' ? (isExpanded ? 0 : `calc(100% - ${legendEleSize?.width}px)`) : '100%',
+        }}
       />
       {hasLegend && (
         <div
           className='renderer-timeseries-legend-table'
           style={{
             [inDashboard ? 'maxHeight' : 'maxHeight']: _tableHeight,
-            height: legendEleSize?.height! + 16,
-            width: placement === 'right' ? (isExpanded ? '100%' : '40%') : '100%',
+            height: legendEleSize?.height! + 14,
+            width: placement === 'right' ? (isExpanded ? '100%' : 'max-content') : '100%',
+            maxWidth: placement === 'right' ? (isExpanded ? '100%' : '40%') : '100%',
             overflow: 'hidden',
             overflowY: 'auto',
           }}
