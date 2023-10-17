@@ -202,6 +202,10 @@ const getMenuList = (t) => {
           label: t('数据源'),
         },
         {
+          key: '/help/variable-configs',
+          label: t('变量设置'),
+        },
+        {
           key: '/help/notification-settings',
           label: t('通知设置'),
         },
@@ -217,6 +221,7 @@ const getMenuList = (t) => {
           key: '/help/servers',
           label: t('告警引擎'),
         },
+
         {
           key: '/help/migrate',
           label: t('仪表盘迁移'),

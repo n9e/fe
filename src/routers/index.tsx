@@ -66,6 +66,7 @@ import NotificationTpls from '@/pages/help/NotificationTpls';
 import NotificationSettings from '@/pages/help/NotificationSettings';
 import MigrateDashboards from '@/pages/help/migrate';
 import IBEX from '@/pages/help/NotificationSettings/IBEX';
+import VariableConfigs from '@/pages/variableConfigs';
 import { dynamicPackages, Entry } from '@/utils';
 // @ts-ignore
 import { Jobs as StrategyBrain } from 'plus:/datasource/anomaly';
@@ -196,6 +197,7 @@ export default function Content() {
         <Route exact path='/help/notification-tpls' component={NotificationTpls} />
         <Route exact path='/help/notification-settings' component={NotificationSettings} />
         <Route exact path='/help/migrate' component={MigrateDashboards} />
+        <Route exact path='/help/variable-configs' component={VariableConfigs} />
 
         <Route exact path='/trace/explorer' component={TraceExplorer} />
         <Route exact path='/trace/dependencies' component={TraceDependencies} />
