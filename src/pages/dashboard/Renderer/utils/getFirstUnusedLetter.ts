@@ -16,7 +16,7 @@
  */
 import _ from 'lodash';
 
-const alphabet = 'ABCDEFGHIGKLMNOPQRSTUVWXYZ'.split('');
+export const alphabet = 'ABCDEFGHIGKLMNOPQRSTUVWXYZ'.split('');
 
 const getFirstUnusedLetter = (usedLetters: string[]) => {
   for (let i = 0; i < alphabet.length; i++) {
