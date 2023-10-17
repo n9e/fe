@@ -18,7 +18,7 @@ import React, { useContext, useState } from 'react';
 import { Dropdown, Button, Modal, message } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { deleteStrategy, updateAlertRules } from '@/services/warning';
+import { deleteStrategy, updateAlertRules, updateServiceCal } from '@/services/warning';
 import { CommonStateContext } from '@/App';
 import Import from './Import';
 import Export from './Export';
@@ -48,7 +48,7 @@ export default function MoreOperations(props: MoreOperationsProps) {
   const { t } = useTranslation('alertRules');
   const { bgid, selectRowKeys, selectedRows, getAlertRules } = props;
   const [isModalVisible, setisModalVisible] = useState<boolean>(false);
-  const { groupedDatasourceList, datasourceCateOptions } = useContext(CommonStateContext);
+  const { groupedDatasourceList, datasourceCateOptions, isPlus } = useContext(CommonStateContext);
 
   return (
     <>
@@ -134,22 +134,39 @@ export default function MoreOperations(props: MoreOperationsProps) {
         isModalVisible={isModalVisible}
         editModalFinish={async (isOk, fieldsData) => {
           if (isOk) {
-            const action = fieldsData.action;
-            delete fieldsData.action;
-            const res = await updateAlertRules(
-              {
-                ids: selectRowKeys,
-                fields: fieldsData,
-                action,
-              },
-              bgid,
-            );
-            if (!res.err) {
-              message.success('修改成功！');
-              getAlertRules();
-              setisModalVisible(false);
+            if (isPlus) {
+              const res = await updateServiceCal(
+                {
+                  ids: selectRowKeys,
+                  service_cal_ids: fieldsData?.service_cal_ids || [],
+                },
+                bgid,
+              );
+              if (!res.err) {
+                message.success('修改成功！');
+                getAlertRules();
+                setisModalVisible(false);
+              } else {
+                message.error(res.err);
+              }
             } else {
-              message.error(res.err);
+              const action = fieldsData.action;
+              delete fieldsData.action;
+              const res = await updateAlertRules(
+                {
+                  ids: selectRowKeys,
+                  fields: fieldsData,
+                  action,
+                },
+                bgid,
+              );
+              if (!res.err) {
+                message.success('修改成功！');
+                getAlertRules();
+                setisModalVisible(false);
+              } else {
+                message.error(res.err);
+              }
             }
           } else {
             setisModalVisible(false);

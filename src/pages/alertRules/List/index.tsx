@@ -218,8 +218,13 @@ export default function List(props: ListProps) {
             >
               {t('common:btn.clone')}
             </Link>
-            <div
-              className='table-operator-area-warning'
+            <Button
+              size='small'
+              type='link'
+              danger
+              style={{
+                padding: 0,
+              }}
               onClick={() => {
                 Modal.confirm({
                   title: t('common:confirm.delete'),
@@ -236,7 +241,7 @@ export default function List(props: ListProps) {
               }}
             >
               {t('common:btn.delete')}
-            </div>
+            </Button>
             {record.prod === 'anomaly' && (
               <div>
                 <Link to={{ pathname: `/alert-rules/brain/${record.id}` }}>{t('brain_result_btn')}</Link>

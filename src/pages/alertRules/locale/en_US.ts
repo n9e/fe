@@ -133,6 +133,7 @@ const en_US = {
         callbacks: 'Callbacks',
         note: 'Note',
         runbook_url: 'Runbook URL',
+        service_cal_ids: 'Service Calendar',
       },
     },
   },
