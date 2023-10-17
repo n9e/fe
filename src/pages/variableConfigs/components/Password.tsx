@@ -1,4 +1,4 @@
-import React, { useEffect, useImperativeHandle, forwardRef } from 'react';
+import React, { useImperativeHandle, forwardRef } from 'react';
 import { Button, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { RsaEncry } from '@/utils/rsa';
@@ -6,6 +6,7 @@ import { RASConfig } from '../types';
 
 interface Props {
   rsaConfig: RASConfig;
+  disabled?: boolean;
   value?: string;
   onChange?: (value?: string) => void;
 }
@@ -13,7 +14,7 @@ interface Props {
 function Password(props: Props, ref) {
   const { t } = useTranslation('variableConfigs');
   const { rsaConfig, value, onChange } = props;
-  const [disabled, setDisabled] = React.useState(true);
+  const [disabled, setDisabled] = React.useState(props.disabled !== undefined ? props.disabled : true);
   const [password, setPassword] = React.useState<string>();
   const inputRef = React.useRef<any>(null);
 
@@ -31,7 +32,8 @@ function Password(props: Props, ref) {
     <div style={{ display: 'flex', gap: 8 }}>
       <Input.Password
         ref={inputRef}
-        visibilityToggle={false}
+        key={disabled ? 'disabled' : 'enabled'}
+        visibilityToggle={!disabled}
         value={disabled ? value : password}
         onChange={(e) => {
           setPassword(e.target.value);

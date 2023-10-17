@@ -6,5 +6,6 @@ const en_US = {
   isEncrypted: 'Is Encrypted',
   resetPassword: 'Reset Password',
   passwordNotSaved: 'Password Not Saved',
+  passwordRequired: 'Password is Required',
 };
 export default en_US;

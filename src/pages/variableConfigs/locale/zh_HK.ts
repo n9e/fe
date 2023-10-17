@@ -6,6 +6,7 @@ const zh_HK = {
   isEncrypted: '是否加密',
   resetPassword: '重置密碼',
   passwordNotSaved: '密碼未保存',
+  passwordRequired: '密碼不能為空',
 };
 
 export default zh_HK;

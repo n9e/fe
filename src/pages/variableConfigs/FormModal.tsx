@@ -73,22 +73,21 @@ function FormModal(props: Props & ModalWrapProps) {
             label={t('cval')}
             rules={[
               {
-                required: true,
-              },
-              {
-                validator: () => {
+                validator: (_, value) => {
                   const result = passwordRef.current!.validator();
                   if (result === true) {
+                    if (!value) {
+                      return Promise.reject(new Error(t('passwordRequired')));
+                    }
                     return Promise.resolve();
                   } else {
-                    return Promise.reject();
+                    return Promise.reject(new Error(t('passwordNotSaved')));
                   }
                 },
-                message: t('passwordNotSaved'),
               },
             ]}
           >
-            <Password rsaConfig={rsaConfig} ref={passwordRef} />
+            <Password rsaConfig={rsaConfig} ref={passwordRef} disabled={!!data} />
           </Form.Item>
         ) : (
           <Form.Item
