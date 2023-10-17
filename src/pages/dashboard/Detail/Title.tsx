@@ -150,27 +150,25 @@ export default function Title(props: IProps) {
             value={range}
             onChange={setRange}
           />
-          {!isPreview && (
-            <Button
-              onClick={() => {
-                const newQuery = _.omit(query, ['viewMode', 'themeMode']);
-                if (!viewMode) {
-                  newQuery.viewMode = 'fullscreen';
-                  newQuery.themeMode = localStorage.getItem('dashboard_themeMode') || 'light';
-                }
-                history.replace({
-                  pathname: location.pathname,
-                  search: querystring.stringify(newQuery),
-                });
-                // TODO: 解决仪表盘 layout resize 问题
-                setTimeout(() => {
-                  window.dispatchEvent(new Event('resize'));
-                }, 500);
-              }}
-            >
-              {viewMode === 'fullscreen' ? t('exit_full_screen') : t('full_screen')}
-            </Button>
-          )}
+          <Button
+            onClick={() => {
+              const newQuery = _.omit(query, ['viewMode', 'themeMode']);
+              if (!viewMode) {
+                newQuery.viewMode = 'fullscreen';
+                newQuery.themeMode = localStorage.getItem('dashboard_themeMode') || 'light';
+              }
+              history.replace({
+                pathname: location.pathname,
+                search: querystring.stringify(newQuery),
+              });
+              // TODO: 解决仪表盘 layout resize 问题
+              setTimeout(() => {
+                window.dispatchEvent(new Event('resize'));
+              }, 500);
+            }}
+          >
+            {viewMode === 'fullscreen' ? t('exit_full_screen') : t('full_screen')}
+          </Button>
           {/* {viewMode === 'fullscreen' && (
             <Switch
               checkedChildren='dark'

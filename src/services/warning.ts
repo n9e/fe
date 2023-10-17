@@ -201,6 +201,19 @@ export const updateAlertRules = function (
   });
 };
 
+export const updateServiceCal = function (
+  data: {
+    ids: React.Key[];
+    service_cal_ids: number[];
+  },
+  busiId: number,
+) {
+  return request(`/api/n9e-plus/busi-group/${busiId}/alert-rules/service-cal`, {
+    method: RequestMethod.Put,
+    data: data,
+  });
+};
+
 /**
  * 获取未恢复告警列表
  */

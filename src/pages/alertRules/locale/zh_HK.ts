@@ -130,6 +130,7 @@ const zh_HK = {
         callbacks: '回撥地址',
         note: '備註',
         runbook_url: '預案連結',
+        service_cal_ids: '服務日曆',
       },
     },
   },

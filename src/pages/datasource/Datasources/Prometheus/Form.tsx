@@ -40,9 +40,10 @@ export default function FormCpt({ data, onFinish, submitLoading }: any) {
               <div>{t('form.prom.url_tip')}</div>
               <div>{'1. Prometheus:  http://localhost:9090/'}</div>
               <div>{'2. Thanos:  http://localhost:19192/'}</div>
-              <div>{'3. VictoriaMetrics:  http://{vmselect}:8481/select/0/prometheus/'}</div>
-              <div>{'4. M3:  http://localhost:7201/'}</div>
-              <div>{'5. SLS:  https://{project}.{sls-enpoint}/prometheus/{project}/{metricstore}/'}</div>
+              <div>{'3. VictoriaMetrics Cluster Version:  http://{vmselect}:8481/select/0/prometheus/'}</div>
+              <div>{'4. VictoriaMetrics Single Version: http://{vmselect}:8428/'}</div>
+              <div>{'5. M3:  http://localhost:7201/'}</div>
+              <div>{'6. SLS:  https://{project}.{sls-enpoint}/prometheus/{project}/{metricstore}/'}</div>
             </div>
           </>
         }

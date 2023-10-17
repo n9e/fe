@@ -25,10 +25,8 @@ import { getNotifiesList, getTeamInfoList } from '@/services/manage';
 import { subscribeItem } from '@/store/warningInterface/subscribe';
 import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
 import { CommonStateContext } from '@/App';
-import ProdSelect from '@/pages/alertRules/Form/components/ProdSelect';
 import { DatasourceCateSelect } from '@/components/DatasourceSelect';
 import { panelBaseProps } from '@/pages/alertRules/constants';
-import { getDefaultValuesByProd } from '@/pages/warning/shield/components/utils';
 import RuleModal from './ruleModal';
 import TagItem from './tagItem';
 import BusiGroupsTagItem from './BusiGroupsTagItem';
@@ -47,7 +45,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
   const { t } = useTranslation('alertSubscribes');
   const [form] = Form.useForm(null as any);
   const history = useHistory();
-  const { curBusiId, groupedDatasourceList } = useContext(CommonStateContext);
+  const { curBusiId, groupedDatasourceList, isPlus } = useContext(CommonStateContext);
   const [ruleModalShow, setRuleModalShow] = useState<boolean>(false);
   const [ruleCur, setRuleCur] = useState<any>();
   const [contactList, setInitContactList] = useState([]);
@@ -161,7 +159,9 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
                 <DatasourceCateSelect
                   scene='alert'
                   filterCates={(cates) => {
-                    return _.filter(cates, (item) => !!item.alertRule);
+                    return _.filter(cates, (item) => {
+                      return !!item.alertRule && (item.alertPro ? isPlus : true);
+                    });
                   }}
                   onChange={() => {
                     form.setFieldsValue({

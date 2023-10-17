@@ -173,7 +173,7 @@ export function processInitialValues(values) {
   };
 }
 
-export function getDefaultValuesByProd(prod, defaultBrainParams) {
+export function getDefaultValuesByProd(prod, defaultBrainParams, isPlus = false) {
   if (prod === 'host') {
     return {
       prod,
@@ -202,11 +202,19 @@ export function getDefaultValuesByProd(prod, defaultBrainParams) {
     };
   }
   if (prod === 'logging') {
+    if (isPlus) {
+      return {
+        prod,
+        cate: 'elasticsearch',
+        datasource_ids: undefined,
+        rule_config: defaultRuleConfig.logging,
+      };
+    }
     return {
       prod,
-      cate: 'elasticsearch',
-      datasource_ids: undefined,
-      rule_config: defaultRuleConfig.logging,
+      cate: 'loki',
+      datasource_ids: [DATASOURCE_ALL],
+      rule_config: defaultRuleConfig.loki,
     };
   }
   if (prod === 'loki') {
@@ -258,7 +266,7 @@ export function getDefaultValuesByCate(prod, cate) {
       },
     };
   }
-  if (cate === 'loki') {
+  if (cate === DatasourceCateEnum.loki) {
     return {
       prod,
       cate,

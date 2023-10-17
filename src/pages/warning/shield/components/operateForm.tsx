@@ -65,7 +65,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
   const [form] = Form.useForm(null as any);
   const history = useHistory();
   const [timeLen, setTimeLen] = useState('1h');
-  const { groupedDatasourceList, busiGroups } = useContext(CommonStateContext);
+  const { groupedDatasourceList, busiGroups, isPlus } = useContext(CommonStateContext);
 
   useEffect(() => {
     timeChange();
@@ -188,9 +188,9 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
         </Form.Item>
         <ProdSelect
           label={t('prod')}
-          onChange={(e) => {
+          onChange={(prod) => {
             form.setFieldsValue({
-              ...getDefaultValuesByProd(e.target.value),
+              ...getDefaultValuesByProd(prod, isPlus),
               datasource_ids: [],
             });
           }}
@@ -206,7 +206,9 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
                       <DatasourceCateSelect
                         scene='alert'
                         filterCates={(cates) => {
-                          return _.filter(cates, (item) => _.includes(item.type, prod) && !!item.alertRule);
+                          return _.filter(cates, (item) => {
+                            return _.includes(item.type, prod) && !!item.alertRule && (item.alertPro ? isPlus : true);
+                          });
                         }}
                         onChange={() => {
                           form.setFieldsValue({

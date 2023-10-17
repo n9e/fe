@@ -14,14 +14,20 @@
  * limitations under the License.
  *
  */
-import React from 'react';
+import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, Form, Switch, Space, Select, TimePicker } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
+import { CommonStateContext } from '@/App';
 import { panelBaseProps, daysOfWeek } from '../../constants';
+
+// @ts-ignore
+import ServiceCalendarSelect from 'plus:/pages/ServiceCalendar/ServiceCalendarSelect';
 
 export default function index() {
   const { t } = useTranslation('alertRules');
+  const { isPlus } = useContext(CommonStateContext);
+
   return (
     <Card {...panelBaseProps} title={t('effective_configs')}>
       <div style={{ marginBottom: 10 }}>
@@ -107,6 +113,7 @@ export default function index() {
           </>
         )}
       </Form.List>
+      {isPlus && <ServiceCalendarSelect name={['extra_config', 'service_cal_ids']} />}
       <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.cate !== curValues.cate} noStyle>
         {({ getFieldValue }) => {
           if (getFieldValue('cate') === 'prometheus') {

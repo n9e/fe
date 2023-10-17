@@ -133,6 +133,7 @@ const zh_CN = {
         callbacks: '回调地址',
         note: '备注',
         runbook_url: '预案链接',
+        service_cal_ids: '服务日历',
       },
     },
   },

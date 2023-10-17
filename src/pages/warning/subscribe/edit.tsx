@@ -54,6 +54,7 @@ const EditSubscribe: React.FC = () => {
     setCurSubscribeData(
       {
         ...dat,
+        datasource_ids: dat.datasource_ids || undefined, // 兼容 null 值
         tags,
       } || {},
     );

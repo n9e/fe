@@ -24,11 +24,17 @@ import DatasourceValueSelect from '@/pages/alertRules/Form/components/Datasource
 import IntervalAndDuration from '@/pages/alertRules/Form/components/IntervalAndDuration';
 import { DatasourceCateSelect } from '@/components/DatasourceSelect';
 import { getDefaultValuesByCate } from '../../../utils';
+import AdvancedSettings from './AdvancedSettings';
 import Loki from './Loki';
+
+// @ts-ignore
+import PlusAlertRule from 'plus:/parcels/AlertRule';
 
 export default function index({ form }) {
   const { t } = useTranslation('alertRules');
-  const { groupedDatasourceList } = useContext(CommonStateContext);
+  const { groupedDatasourceList, datasourceCateOptions, isPlus } = useContext(CommonStateContext);
+  const prod = Form.useWatch('prod');
+  const cate = Form.useWatch('cate');
 
   return (
     <div>
@@ -38,10 +44,15 @@ export default function index({ form }) {
             <DatasourceCateSelect
               scene='alert'
               filterCates={(cates) => {
-                return _.filter(cates, (item) => _.includes(item.type, 'loki') && !!item.alertRule);
+                return _.filter(cates, (item) => {
+                  return _.includes(item.type, prod) && !!item.alertRule && (item.alertPro ? isPlus : true);
+                });
               }}
               onChange={(val) => {
-                form.setFieldsValue(getDefaultValuesByCate('loki', val));
+                const cateObj = _.find(datasourceCateOptions, (item) => item.value === val);
+                if (cateObj) {
+                  form.setFieldsValue(getDefaultValuesByCate(prod, val));
+                }
               }}
             />
           </Form.Item>
@@ -66,8 +77,12 @@ export default function index({ form }) {
         <Form.Item noStyle shouldUpdate={(prevValues, curValues) => !_.isEqual(prevValues.cate, curValues.cate) || !_.isEqual(prevValues.datasource_ids, curValues.datasource_ids)}>
           {(form) => {
             const cate = form.getFieldValue('cate');
-            const datasourceValue = form.getFieldValue('datasource_ids');
-            return <Loki datasourceCate={cate} datasourceValue={datasourceValue} />;
+            let datasourceValue = form.getFieldValue('datasource_ids');
+            datasourceValue = _.isArray(datasourceValue) ? datasourceValue[0] : datasourceValue;
+            if (cate === 'loki') {
+              return <Loki datasourceCate={cate} datasourceValue={datasourceValue} />;
+            }
+            return <PlusAlertRule cate={cate} form={form} datasourceValue={datasourceValue} />;
           }}
         </Form.Item>
       </div>
@@ -80,6 +95,7 @@ export default function index({ form }) {
           return t('datasource:es.alert.prom_for_duration_tip', { num });
         }}
       />
+      {cate !== 'loki' && <AdvancedSettings />}
     </div>
   );
 }

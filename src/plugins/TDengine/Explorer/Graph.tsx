@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
-import { Form, Alert } from 'antd';
+import { Form, Alert, Popover, Button, Space } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
+import { SettingOutlined } from '@ant-design/icons';
 import { parseRange } from '@/components/TimeRangePicker';
 import { DatasourceCateEnum } from '@/utils/constant';
 import Timeseries from '@/pages/dashboard/Renderer/Renderer/Timeseries';
+import LineGraphStandardOptions from '@/components/PromGraphCpt/components/GraphStandardOptions';
+import AdvancedSettings from '../components/AdvancedSettings';
 import { getSerieName } from './utils';
 import { getDsQuery } from '../services';
 import { cacheDefaultValues } from './index';
@@ -24,7 +27,12 @@ export default function Graph(props: Props) {
   const range = Form.useWatch(['query', 'range'], form);
   const keys = Form.useWatch(['query', 'keys'], form);
   const query = Form.useWatch(['query', 'query'], form);
-
+  const [highLevelConfig, setHighLevelConfig] = useState({
+    shared: true,
+    sharedSortDirection: 'desc',
+    legend: true,
+    unit: 'none',
+  });
   const lineGraphProps = {
     custom: {
       drawStyle: 'lines',
@@ -34,14 +42,14 @@ export default function Graph(props: Props) {
     },
     options: {
       legend: {
-        displayMode: 'table',
+        displayMode: highLevelConfig.legend ? 'table' : 'hidden',
       },
       tooltip: {
-        mode: 'all',
-        sort: 'desc',
+        mode: highLevelConfig.shared ? 'all' : 'single',
+        sort: highLevelConfig.sharedSortDirection,
       },
       standardOptions: {
-        util: 'none',
+        util: highLevelConfig.unit,
       },
     },
   };
@@ -93,6 +101,22 @@ export default function Graph(props: Props) {
 
   return (
     <div style={{ minHeight: 0 }}>
+      <Space>
+        <div style={{ width: 600 }}>
+          <AdvancedSettings mode='graph' span={12} prefixName={['query']} expanded expandTriggerVisible={false} />
+        </div>
+        <Form.Item>
+          <Popover
+            placement='left'
+            content={<LineGraphStandardOptions highLevelConfig={highLevelConfig} setHighLevelConfig={setHighLevelConfig} />}
+            trigger='click'
+            autoAdjustOverflow={false}
+            getPopupContainer={() => document.body}
+          >
+            <Button icon={<SettingOutlined />} />
+          </Popover>
+        </Form.Item>
+      </Space>
       {errorContent && <Alert style={{ marginBottom: 16 }} message={errorContent} type='error' />}
       <Timeseries inDashboard={false} values={lineGraphProps as any} series={data} />
     </div>

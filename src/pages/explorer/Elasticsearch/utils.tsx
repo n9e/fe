@@ -117,7 +117,6 @@ export function getColumnsFromFields(selectedFields: { name: string; type: strin
         });
       },
       defaultSortOrder: 'descend',
-      sortDirections: ['ascend', 'descend', 'ascend'],
       sorter: {
         multiple: 1,
       },

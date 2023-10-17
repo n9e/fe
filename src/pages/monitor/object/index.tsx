@@ -17,7 +17,7 @@
 import React, { useState, useContext } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Select } from 'antd';
+import { Select, Result } from 'antd';
 import { LineChartOutlined } from '@ant-design/icons';
 import PageLayout from '@/components/pageLayout';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
@@ -42,7 +42,13 @@ export default function index() {
   const datasources = groupedDatasourceList.prometheus;
   const [datasourceValue, setDatasourceValue] = useState<number>(getDefaultDatasourceValue('prometheus', groupedDatasourceList));
 
-  if (!datasourceValue) return null;
+  if (!datasourceValue) {
+    return (
+      <div style={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Result title={t('common:datasource.empty_modal.title')} />
+      </div>
+    );
+  }
 
   return (
     <PageLayout

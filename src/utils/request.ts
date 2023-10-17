@@ -133,6 +133,14 @@ request.interceptors.response.use(
             })
           : (location.href = `/login${location.pathname != '/' ? '?redirect=' + location.pathname + location.search : ''}`);
       }
+    } else if (status === 403 && (response.url.includes('/api/v1') || response.url.includes('/api/v2'))) {
+      return response
+        .clone()
+        .json()
+        .then((data) => {
+          location.href = '/403';
+          if (data.error && data.error.message) throw new Error(data.error.message);
+        });
     } else {
       return response
         .clone()

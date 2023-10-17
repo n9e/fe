@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Resizable } from 're-resizable';
 import _ from 'lodash';
 import classNames from 'classnames';
-import { useHistory } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { Input, Space } from 'antd';
 import { LeftOutlined, RightOutlined, SettingOutlined, SearchOutlined, DownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
@@ -150,7 +150,11 @@ export default function index(props: IProps) {
           {renderHeadExtra && renderHeadExtra()}
           <div className='left-area-group-title'>
             {title}
-            {title === t('common:business_group') && <SettingOutlined onClick={() => history.push(`/busi-groups`)} />}
+            {title === t('common:business_group') && (
+              <Link to='/busi-groups' target='_blank'>
+                <SettingOutlined />
+              </Link>
+            )}
           </div>
           <Input
             className='left-area-group-search'

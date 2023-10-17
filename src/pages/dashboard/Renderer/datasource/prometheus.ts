@@ -9,6 +9,7 @@ import replaceExpressionBracket from '../utils/replaceExpressionBracket';
 import { completeBreakpoints, getSerieName } from './utils';
 import replaceFieldWithVariable from '../utils/replaceFieldWithVariable';
 import { replaceExpressionVars, getOptionsList } from '../../VariableConfig/constant';
+import { alphabet } from '../utils/getFirstUnusedLetter';
 
 interface IOptions {
   id?: string; // panelId
@@ -48,7 +49,11 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
   let signalKey = `${id}`;
   const datasourceValue = variableConfig ? replaceExpressionVars(options.datasourceValue as any, variableConfig, variableConfig.length, dashboardId) : options.datasourceValue;
   if (targets && typeof datasourceValue === 'number') {
-    _.forEach(targets, (target) => {
+    _.forEach(targets, (target, idx) => {
+      // 兼容没有 refId 数据的旧版内置大盘
+      if (!target.refId) {
+        target.refId = alphabet[idx];
+      }
       if (target.time) {
         const parsedRange = parseRange(target.time);
         start = moment(parsedRange.start).unix();

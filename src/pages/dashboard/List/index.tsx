@@ -171,9 +171,6 @@ export default function index() {
                             target='_blank'
                             to={{
                               pathname: `/dashboards/share/${record.id}`,
-                              search: queryString.stringify({
-                                viewMode: 'fullscreen',
-                              }),
                             }}
                             style={{ marginLeft: 10 }}
                           >
