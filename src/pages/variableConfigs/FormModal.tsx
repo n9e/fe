@@ -19,6 +19,7 @@ import React from 'react';
 import { Form, Input, Modal, Switch } from 'antd';
 import { useTranslation } from 'react-i18next';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
+import { RsaEncry } from '@/utils/rsa';
 import { VariableConfig, RASConfig } from './types';
 import Password from './components/Password';
 
@@ -34,7 +35,6 @@ function FormModal(props: Props & ModalWrapProps) {
   const { visible, destroy, data, title, rsaConfig, onOk } = props;
   const [form] = Form.useForm();
   const encrypted = Form.useWatch('encrypted', form);
-  const passwordRef = React.useRef<any>(null);
 
   return (
     <Modal
@@ -45,7 +45,12 @@ function FormModal(props: Props & ModalWrapProps) {
       }}
       onOk={() => {
         form.validateFields().then((values) => {
+          const toBeEncrypted = values.toBeEncrypted;
           values.encrypted = values.encrypted ? 1 : 0;
+          delete values.toBeEncrypted;
+          if (toBeEncrypted && values.encrypted === 1) {
+            values.cval = RsaEncry(values.cval, rsaConfig.RSAPublicKey);
+          }
           onOk(values).then(() => {
             destroy();
           });
@@ -64,6 +69,9 @@ function FormModal(props: Props & ModalWrapProps) {
         >
           <Input />
         </Form.Item>
+        <Form.Item name='toBeEncrypted' hidden>
+          <div />
+        </Form.Item>
         <Form.Item name='encrypted' label={t('isEncrypted')} valuePropName='checked'>
           <Switch />
         </Form.Item>
@@ -73,21 +81,18 @@ function FormModal(props: Props & ModalWrapProps) {
             label={t('cval')}
             rules={[
               {
-                validator: (_, value) => {
-                  const result = passwordRef.current!.validator();
-                  if (result === true) {
-                    if (!value) {
-                      return Promise.reject(new Error(t('passwordRequired')));
-                    }
-                    return Promise.resolve();
-                  } else {
-                    return Promise.reject(new Error(t('passwordNotSaved')));
-                  }
-                },
+                required: true,
               },
             ]}
           >
-            <Password rsaConfig={rsaConfig} ref={passwordRef} disabled={!!data} />
+            <Password
+              disabled={!!data}
+              onChange={() => {
+                form.setFieldsValue({
+                  toBeEncrypted: true,
+                });
+              }}
+            />
           </Form.Item>
         ) : (
           <Form.Item
