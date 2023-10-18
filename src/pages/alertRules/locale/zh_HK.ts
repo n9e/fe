@@ -47,6 +47,9 @@ const zh_HK = {
     dashboard_link: '儀表盤連結',
     desc: '描述',
   },
+  invalid_datasource_tip_1: '資料來源',
+  invalid_datasource_tip_2: '未配置關聯告警引擎集群',
+  invalid_datasource_reload: '刷新資料來源',
   host: {
     query: {
       title: '機器篩選',

@@ -47,7 +47,9 @@ const zh_CN = {
     dashboard_link: '仪表盘链接',
     desc: '描述',
   },
-
+  invalid_datasource_tip_1: '数据源',
+  invalid_datasource_tip_2: '未配置关联告警引擎集群',
+  invalid_datasource_reload: '刷新数据源',
   host: {
     query: {
       title: '机器筛选',
@@ -76,7 +78,6 @@ const zh_CN = {
     prom_for_duration_tip:
       '通常持续时长大于执行频率，在持续时长内按照执行频率多次执行PromQL查询，每次都触发才生成告警；如果持续时长置为0，表示只要有一次PromQL查询触发阈值，就生成告警',
   },
-
   metric: {
     query: {
       title: '告警条件',
@@ -85,7 +86,6 @@ const zh_CN = {
     prom_for_duration_tip:
       '通常持续时长大于执行频率，在持续时长内按照执行频率多次执行PromQL查询，每次都触发才生成告警；如果持续时长置为0，表示只要有一次PromQL查询触发阈值，就生成告警',
   },
-
   batch: {
     not_select: '请先选择策略',
     delete: '删除告警规则',

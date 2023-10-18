@@ -14,10 +14,14 @@
  * limitations under the License.
  *
  */
-import React from 'react';
-import { Form, Select } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Form, Select, Button } from 'antd';
+import { WarningOutlined, ReloadOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
+import { Link } from 'react-router-dom';
+import { getDataSourceList } from '@/pages/datasource/services';
+
 export const DATASOURCE_ALL = 0;
 
 interface IProps {
@@ -29,21 +33,35 @@ interface IProps {
   disabled?: boolean;
 }
 
-export default function index({ setFieldsValue, cate, datasourceList, mode, required = true, disabled }: IProps) {
-  const { t } = useTranslation();
-  const handleClusterChange = (v: number[] | number) => {
-    if (_.isArray(v)) {
-      const curVal = _.last(v);
-      if (curVal === DATASOURCE_ALL) {
-        setFieldsValue({ datasource_ids: [DATASOURCE_ALL] });
-      } else if (typeof v !== 'number' && v.includes(DATASOURCE_ALL)) {
-        setFieldsValue({ datasource_ids: _.without(v, DATASOURCE_ALL) });
-      }
+const getInvalidDatasourceIds = (ids: number | number[], datasourceList: { id: number; name: string }[], fullDatasourceList: any[]) => {
+  let val = _.isArray(ids) ? ids : [ids];
+  if (_.last(val) === DATASOURCE_ALL) {
+    val = _.map(datasourceList, 'id');
+  }
+  const invalid = _.filter(val, (item) => {
+    const result = _.find(fullDatasourceList, { id: item });
+    if (result) {
+      return !result.cluster_name;
     }
+  }) as number[];
+
+  return invalid;
+};
+
+export default function index({ setFieldsValue, cate, datasourceList, mode, required = true, disabled }: IProps) {
+  const { t } = useTranslation('alertRules');
+  const [fullDatasourceList, setFullDatasourceList] = useState<any[]>([]);
+  const datasourceIds = Form.useWatch('datasource_ids');
+  const invalidDatasourceIds = getInvalidDatasourceIds(datasourceIds, datasourceList, fullDatasourceList);
+  const fetchDatasourceList = () => {
+    getDataSourceList().then((res) => {
+      setFullDatasourceList(res);
+    });
   };
+  let curDatasourceList = datasourceList;
 
   if (cate === 'prometheus' || cate === 'loki') {
-    datasourceList = [
+    curDatasourceList = [
       {
         id: DATASOURCE_ALL,
         name: '$all',
@@ -52,18 +70,84 @@ export default function index({ setFieldsValue, cate, datasourceList, mode, requ
     ];
   }
 
+  useEffect(() => {
+    fetchDatasourceList();
+  }, []);
+
   return (
     <Form.Item
-      label={t('common:datasource.id')}
+      label={
+        <div>
+          {t('common:datasource.id')}
+          <span style={{ paddingLeft: 16 }}>
+            {_.isEmpty(invalidDatasourceIds) ? null : (
+              <span style={{ color: '#ff4d4f' }}>
+                <span>
+                  <WarningOutlined /> {t('invalid_datasource_tip_1')}
+                </span>
+                {_.map(invalidDatasourceIds, (item) => {
+                  const result = _.find(fullDatasourceList, { id: item });
+                  if (result) {
+                    return (
+                      <Link style={{ paddingLeft: 8 }} target='_blank' to={`/help/source/edit/${result.plugin_type}/${result.id}`}>
+                        {result.name}
+                      </Link>
+                    );
+                  }
+                })}
+                <span style={{ paddingLeft: 8 }}>{t('invalid_datasource_tip_2')}</span>
+                <a
+                  style={{ paddingLeft: 8 }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    fetchDatasourceList();
+                  }}
+                >
+                  {t('invalid_datasource_reload')}
+                </a>
+              </span>
+            )}
+          </span>
+        </div>
+      }
       name='datasource_ids'
       rules={[
         {
           required,
+          message: t('common:datasource.id_required'),
+        },
+        {
+          validator(rule, value, callback) {
+            const invalidDatasourceIds = getInvalidDatasourceIds(datasourceIds, datasourceList, fullDatasourceList);
+            if (_.isEmpty(invalidDatasourceIds)) {
+              callback();
+            } else {
+              callback('invalidDatasourceIds');
+            }
+          },
+          message: '', // label 右侧已经显示，这里就不显示 error msg
         },
       ]}
+      required
     >
-      <Select mode={mode} onChange={handleClusterChange} maxTagCount='responsive' disabled={disabled} showSearch optionFilterProp='children'>
-        {datasourceList?.map((item) => (
+      <Select
+        mode={mode}
+        onChange={(v: number[] | number) => {
+          if (_.isArray(v)) {
+            const curVal = _.last(v);
+            if (curVal === DATASOURCE_ALL) {
+              setFieldsValue({ datasource_ids: [DATASOURCE_ALL] });
+            } else if (typeof v !== 'number' && v.includes(DATASOURCE_ALL)) {
+              setFieldsValue({ datasource_ids: _.without(v, DATASOURCE_ALL) });
+            }
+          }
+        }}
+        maxTagCount='responsive'
+        disabled={disabled}
+        showSearch
+        optionFilterProp='children'
+      >
+        {_.map(curDatasourceList, (item) => (
           <Select.Option value={item.id} key={item.id}>
             {item.name}
           </Select.Option>
