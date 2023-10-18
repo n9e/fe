@@ -73,7 +73,13 @@ function FormModal(props: Props & ModalWrapProps) {
           <div />
         </Form.Item>
         <Form.Item name='encrypted' label={t('isEncrypted')} valuePropName='checked'>
-          <Switch />
+          <Switch
+            onChange={() => {
+              form.setFieldsValue({
+                cval: undefined,
+              });
+            }}
+          />
         </Form.Item>
         {encrypted ? (
           <Form.Item
