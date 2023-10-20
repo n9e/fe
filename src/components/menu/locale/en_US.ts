@@ -32,6 +32,7 @@ const en_US = {
   系统版本: 'Version',
   告警引擎: 'Alert Engines',
   数据源: 'Data Sources',
+  变量设置: 'Variable Configs',
   单点登录: 'SSO',
   通知模板: 'Notification Template',
   通知设置: 'Notification Settings',
