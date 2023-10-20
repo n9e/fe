@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useRef, useState, useContext, useEffect } from 'react';
+import React, { useRef, useContext, useEffect } from 'react';
 import _ from 'lodash';
 import semver from 'semver';
 import { v4 as uuidv4 } from 'uuid';
@@ -35,14 +35,13 @@ import {
   updatePanelsWithNewPanel,
   updatePanelsInsertNewPanel,
   panelsMergeToConfigs,
-  updatePanelsInsertNewPanelToRow,
   getRowCollapsedPanels,
   getRowUnCollapsedPanels,
   processRepeats,
 } from './utils';
 import Renderer from '../Renderer/Renderer/index';
 import Row from './Row';
-import Editor from '../Editor';
+import EditorModal from './EditorModal';
 import './style.less';
 
 interface IProps {
@@ -84,12 +83,7 @@ function index(props: IProps) {
     }
     return Promise.reject();
   };
-  const [editorData, setEditorData] = useState({
-    mode: 'add',
-    visible: false,
-    id: '',
-    initialValues: {} as any,
-  });
+  const editorRef = useRef<any>(null);
 
   useEffect(() => {
     setPanels(processRepeats(panels, variableConfig));
@@ -169,7 +163,7 @@ function index(props: IProps) {
                       onShareClick(item);
                     }}
                     onEditClick={() => {
-                      setEditorData({
+                      editorRef.current?.setEditorData({
                         mode: 'edit',
                         visible: true,
                         id: item.id,
@@ -231,7 +225,7 @@ function index(props: IProps) {
                     });
                   }}
                   onAddClick={() => {
-                    setEditorData({
+                    editorRef.current?.setEditorData({
                       mode: 'add',
                       visible: true,
                       id: item.id,
@@ -279,29 +273,17 @@ function index(props: IProps) {
           );
         })}
       </ReactGridLayout>
-      <Editor
-        mode={editorData.mode}
-        visible={editorData.visible}
-        setVisible={(visible) => {
-          setEditorData({
-            ...editorData,
-            visible,
-          });
-        }}
-        variableConfigWithOptions={variableConfig}
-        id={editorData.id}
-        dashboardId={_.toString(props.dashboardId)}
-        time={range}
-        initialValues={editorData.initialValues}
-        onOK={(values, mode) => {
-          const newPanels = mode === 'edit' ? updatePanelsWithNewPanel(panels, values) : updatePanelsInsertNewPanelToRow(panels, editorData.id, values);
-          setPanels(newPanels);
-          updateDashboardConfigs(dashboard.id, {
-            configs: panelsMergeToConfigs(dashboard.configs, newPanels),
-          }).then((res) => {
-            onUpdated(res);
-          });
-        }}
+
+      <EditorModal
+        ref={editorRef}
+        dashboardId={props.dashboardId}
+        variableConfig={variableConfig}
+        range={range}
+        dashboard={dashboard}
+        panels={panels}
+        setPanels={setPanels}
+        updateDashboardConfigs={updateDashboardConfigs}
+        onUpdated={onUpdated}
       />
     </div>
   );

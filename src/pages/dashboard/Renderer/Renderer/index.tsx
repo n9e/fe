@@ -341,4 +341,7 @@ function index(props: IProps) {
   );
 }
 
-export default React.memo(index);
+export default React.memo(index, (prevProps, nextProps) => {
+  const omitKeys = ['onCloneClick', 'onShareClick', 'onEditClick', 'onDeleteClick'];
+  return _.isEqual(_.omit(prevProps, omitKeys), _.omit(nextProps, omitKeys));
+});
