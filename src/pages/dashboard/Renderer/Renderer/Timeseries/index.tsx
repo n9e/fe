@@ -17,7 +17,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
-import { Table, Tooltip } from 'antd';
+import { Space, Table, Tooltip } from 'antd';
 import classNames from 'classnames';
 import { VerticalRightOutlined, VerticalLeftOutlined } from '@ant-design/icons';
 import { useSize } from 'ahooks';
@@ -93,7 +93,7 @@ export default function index(props: IProps) {
   const legendEleSize = useSize(legendEleRef);
   const displayMode = options.legend?.displayMode || 'table';
   const placement = displayMode === 'table' ? 'bottom' : options.legend?.placement || 'bottom';
-  const legendColumns = options.legend?.columns && options.legend?.columns.length > 0 ? options.legend?.columns : ['max', 'min', 'avg', 'sum', 'last'];
+  const legendColumns = !_.isEmpty(options.legend?.columns) ? options.legend?.columns : displayMode === 'table' ? ['max', 'min', 'avg', 'sum', 'last'] : [];
   const detailUrl = options.legend?.detailUrl || undefined;
   const detailName = options.legend?.detailName || undefined;
   const hasLegend = displayMode !== 'hidden';
@@ -311,7 +311,7 @@ export default function index(props: IProps) {
       },
     },
   ];
-  legendColumns.forEach((column) => {
+  _.forEach(legendColumns, (column) => {
     tableColumn = [
       ...tableColumn,
       {
@@ -359,110 +359,119 @@ export default function index(props: IProps) {
         style={{
           height: _chartHeight,
           minHeight: '70%',
-          width: placement === 'right' ? (isExpanded ? 0 : `calc(100% - ${legendEleSize?.width}px)`) : '100%',
+          width: '100%',
+          minWidth: 0,
         }}
       />
-      {hasLegend && (
-        <div
-          className='renderer-timeseries-legend-table'
-          style={{
-            [inDashboard ? 'maxHeight' : 'maxHeight']: _tableHeight,
-            height: legendEleSize?.height! + 14,
-            width: placement === 'right' ? (isExpanded ? '100%' : 'max-content') : '100%',
-            maxWidth: placement === 'right' ? (isExpanded ? '100%' : '40%') : '100%',
-            overflow: 'hidden',
-            overflowY: 'auto',
-          }}
-        >
-          {displayMode === 'table' && (
-            <div ref={legendEleRef}>
-              <Table
-                rowKey='id'
-                size='small'
-                className='scroll-container-table'
-                columns={tableColumn}
-                dataSource={legendData}
-                locale={{
-                  emptyText: '暂无数据',
-                }}
-                pagination={false}
-                rowClassName={(record) => {
-                  return record.disabled ? 'disabled' : '';
-                }}
-                onRow={(record) => {
-                  return {
-                    onClick: () => {
-                      setActiveLegend(activeLegend !== record.id ? record.id : '');
+      <div
+        className='renderer-timeseries-legend-table'
+        style={{
+          [inDashboard ? 'maxHeight' : 'maxHeight']: _tableHeight,
+          height: legendEleSize?.height! + 14,
+          width: placement === 'right' ? (isExpanded ? '100%' : 'max-content') : '100%',
+          maxWidth: placement === 'right' ? (isExpanded ? '100%' : '40%') : '100%',
+          overflow: 'hidden',
+          overflowY: 'auto',
+          display: hasLegend ? 'block' : 'none',
+          flexShrink: 0,
+        }}
+      >
+        {displayMode === 'table' && (
+          <div ref={legendEleRef}>
+            <Table
+              rowKey='id'
+              size='small'
+              className='scroll-container-table'
+              columns={tableColumn}
+              dataSource={legendData}
+              locale={{
+                emptyText: '暂无数据',
+              }}
+              pagination={false}
+              rowClassName={(record) => {
+                return record.disabled ? 'disabled' : '';
+              }}
+              onRow={(record) => {
+                return {
+                  onClick: () => {
+                    setActiveLegend(activeLegend !== record.id ? record.id : '');
+                    setSeriesData(
+                      _.map(seriesData, (subItem) => {
+                        return {
+                          ...subItem,
+                          visible: activeLegend === record.id ? true : record.id === subItem.id,
+                        };
+                      }),
+                    );
+                  },
+                };
+              }}
+            />
+          </div>
+        )}
+        {displayMode === 'list' && !_.isEmpty(legendData) && (
+          <div className='renderer-timeseries-legend-container' ref={legendEleRef}>
+            <div
+              className={classNames({
+                'renderer-timeseries-legend-list': true,
+                'renderer-timeseries-legend-list-placement-right': placement === 'right',
+                'scroll-container': true,
+              })}
+            >
+              {_.map(legendData, (item) => {
+                return (
+                  <div
+                    key={item.id}
+                    onClick={() => {
+                      setActiveLegend(activeLegend !== item.id ? item.id : '');
                       setSeriesData(
                         _.map(seriesData, (subItem) => {
                           return {
                             ...subItem,
-                            visible: activeLegend === record.id ? true : record.id === subItem.id,
+                            visible: activeLegend === item.id ? true : item.id === subItem.id,
                           };
                         }),
                       );
-                    },
-                  };
-                }}
-              />
-            </div>
-          )}
-          {displayMode === 'list' && !_.isEmpty(legendData) && (
-            <div className='renderer-timeseries-legend-container' ref={legendEleRef}>
-              <div
-                className={classNames({
-                  'renderer-timeseries-legend-list': true,
-                  'renderer-timeseries-legend-list-placement-right': placement === 'right',
-                  'scroll-container': true,
-                })}
-              >
-                {_.map(legendData, (item) => {
-                  return (
-                    <div
-                      key={item.id}
-                      onClick={() => {
-                        setActiveLegend(activeLegend !== item.id ? item.id : '');
-                        setSeriesData(
-                          _.map(seriesData, (subItem) => {
-                            return {
-                              ...subItem,
-                              visible: activeLegend === item.id ? true : item.id === subItem.id,
-                            };
-                          }),
+                    }}
+                    className={classNames('renderer-timeseries-legend-list-item', {
+                      disabled: item.disabled,
+                    })}
+                  >
+                    <span className='renderer-timeseries-legend-color-symbol' style={{ backgroundColor: item.color }} />
+                    <span className='renderer-timeseries-legend-list-item-name'>{item.name}</span>
+                    <span className='renderer-timeseries-legend-list-item-calcs'>
+                      {_.map(legendColumns, (column) => {
+                        return (
+                          <span key={column}>
+                            {t(`panel.options.legend.${column}`)}: {item[column].text}
+                          </span>
                         );
-                      }}
-                      className={item.disabled ? 'disabled' : ''}
-                    >
-                      <span className='renderer-timeseries-legend-color-symbol' style={{ backgroundColor: item.color }} />
-                      {item.name}{' '}
-                      {detailUrl ? (
-                        <span>
-                          &nbsp;|&nbsp;
-                          <a href={detailFormatter(item)} target='_blank'>
-                            {detailName}
-                          </a>
-                        </span>
-                      ) : (
-                        ''
+                      })}
+                    </span>
+                    <span className='renderer-timeseries-legend-list-item-link'>
+                      {detailUrl && (
+                        <a href={detailFormatter(item)} target='_blank'>
+                          {detailName}
+                        </a>
                       )}
-                    </div>
-                  );
-                })}
-              </div>
-              {placement === 'right' && (
-                <div
-                  className='renderer-timeseries-legend-toggle'
-                  onClick={() => {
-                    setIsExpanded(!isExpanded);
-                  }}
-                >
-                  {isExpanded ? <VerticalLeftOutlined /> : <VerticalRightOutlined />}
-                </div>
-              )}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
-          )}
-        </div>
-      )}
+            {placement === 'right' && (
+              <div
+                className='renderer-timeseries-legend-toggle'
+                onClick={() => {
+                  setIsExpanded(!isExpanded);
+                }}
+              >
+                {isExpanded ? <VerticalLeftOutlined /> : <VerticalRightOutlined />}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
