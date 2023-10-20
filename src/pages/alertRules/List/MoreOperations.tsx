@@ -134,7 +134,7 @@ export default function MoreOperations(props: MoreOperationsProps) {
         isModalVisible={isModalVisible}
         editModalFinish={async (isOk, fieldsData) => {
           if (isOk) {
-            if (isPlus) {
+            if (isPlus && fieldsData?.service_cal_ids) {
               const res = await updateServiceCal(
                 {
                   ids: selectRowKeys,

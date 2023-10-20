@@ -284,10 +284,10 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish }) => {
         }}
       >
         <Form
-          {...layout}
+          layout='vertical'
           form={form}
           className='strategy-form'
-          layout={refresh ? 'horizontal' : 'horizontal'}
+          // layout={refresh ? 'horizontal' : 'horizontal'}
           initialValues={{
             prom_eval_interval: 15,
             disabled: 0, // 0:立即启用 1:禁用
