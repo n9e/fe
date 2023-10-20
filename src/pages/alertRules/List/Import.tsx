@@ -83,7 +83,7 @@ function Import(props: IProps & ModalWrapProps) {
         }}
       >
         <Row gutter={10}>
-          <Col span={8}>
+          <Col span={24}>
             <Form.Item label={t('common:datasource.type')} name='cate'>
               <Select>
                 {_.map(datasourceCates, (item) => {
@@ -96,7 +96,7 @@ function Import(props: IProps & ModalWrapProps) {
               </Select>
             </Form.Item>
           </Col>
-          <Col span={12}>
+          <Col span={24}>
             <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.cate !== curValues.cate} noStyle>
               {({ getFieldValue, setFieldsValue }) => {
                 const cate = getFieldValue('cate');
@@ -104,7 +104,7 @@ function Import(props: IProps & ModalWrapProps) {
               }}
             </Form.Item>
           </Col>
-          <Col span={4}>
+          <Col span={24}>
             <Form.Item label={t('common:table.enabled')} name='enabled' valuePropName='checked'>
               <Switch />
             </Form.Item>
