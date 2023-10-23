@@ -52,7 +52,7 @@ interface IProps {
   variableConfig: any;
   panels: any[];
   isPreview: boolean;
-  setPanels: (panels: any[]) => void;
+  setPanels: React.Dispatch<React.SetStateAction<any[]>>;
   onShareClick: (panel: any) => void;
   onUpdated: (res: any) => void;
 }
@@ -147,15 +147,17 @@ function index(props: IProps) {
                     values={item}
                     variableConfig={variableConfig}
                     onCloneClick={() => {
-                      const newPanels = updatePanelsInsertNewPanel(panels, {
-                        ...item,
-                        id: uuidv4(),
-                        layout: {
-                          ...item.layout,
-                          i: uuidv4(),
-                        },
+                      setPanels((panels) => {
+                        return updatePanelsInsertNewPanel(panels, {
+                          ...item,
+                          id: uuidv4(),
+                          layout: {
+                            ...item.layout,
+                            i: uuidv4(),
+                          },
+                        });
                       });
-                      setPanels(newPanels);
+
                       // 克隆面板必然会触发 layoutChange，更新 dashboard 放到 onLayoutChange 里面处理
                       allowUpdateDashboardConfigs.current = true;
                     }}
@@ -177,13 +179,15 @@ function index(props: IProps) {
                       Modal.confirm({
                         title: `是否删除图表：${item.name}`,
                         onOk: async () => {
-                          const newPanels = _.filter(panels, (panel) => panel.id !== item.id);
-                          allowUpdateDashboardConfigs.current = true;
-                          setPanels(newPanels);
-                          updateDashboardConfigs(dashboard.id, {
-                            configs: panelsMergeToConfigs(dashboard.configs, newPanels),
-                          }).then((res) => {
-                            onUpdated(res);
+                          setPanels((panels) => {
+                            const newPanels = _.filter(panels, (panel) => panel.id !== item.id);
+                            allowUpdateDashboardConfigs.current = true;
+                            updateDashboardConfigs(dashboard.id, {
+                              configs: panelsMergeToConfigs(dashboard.configs, newPanels),
+                            }).then((res) => {
+                              onUpdated(res);
+                            });
+                            return newPanels;
                           });
                         },
                       });
