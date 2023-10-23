@@ -249,6 +249,11 @@ const en_US = {
         aggrDimension: 'Aggr dimension',
         sortColumn: 'Sort column',
         sortOrder: 'Sort order',
+        link: {
+          mode: 'Link mode',
+          cellLink: 'Cell link',
+          appendLinkColumn: 'Append link column',
+        },
       },
       text: {
         textColor: 'TextColor',

@@ -168,6 +168,12 @@ export default function GraphStyles({ chartForm, variableConfigWithOptions }) {
             </Form.Item>
           </Col>
         </Row>
+        <Form.Item label={t('panel.custom.table.link.mode')} name={[...namePrefix, 'linkMode']} initialValue='appendLinkColumn'>
+          <Radio.Group buttonStyle='solid'>
+            <Radio.Button value='appendLinkColumn'>{t('panel.custom.table.link.appendLinkColumn')}</Radio.Button>
+            <Radio.Button value='cellLink'>{t('panel.custom.table.link.cellLink')}</Radio.Button>
+          </Radio.Group>
+        </Form.Item>
         <Form.Item
           label={
             <Space>
@@ -239,17 +245,17 @@ export default function GraphStyles({ chartForm, variableConfigWithOptions }) {
               </>
             )}
           </Form.List>
-          <Form.Item label={t('panel.base.description')} name='description'>
-            <Mentions prefix='$' split='' rows={3}>
-              {_.map(variableConfigWithOptions, (item) => {
-                return (
-                  <Mentions.Option key={item.name} value={item.name}>
-                    {item.name}
-                  </Mentions.Option>
-                );
-              })}
-            </Mentions>
-          </Form.Item>
+        </Form.Item>
+        <Form.Item label={t('panel.base.description')} name='description'>
+          <Mentions prefix='$' split='' rows={3}>
+            {_.map(variableConfigWithOptions, (item) => {
+              return (
+                <Mentions.Option key={item.name} value={item.name}>
+                  {item.name}
+                </Mentions.Option>
+              );
+            })}
+          </Mentions>
         </Form.Item>
       </>
     </Panel>
