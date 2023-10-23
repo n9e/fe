@@ -38,22 +38,32 @@ export default function index() {
             </Radio.Group>
           </Form.Item>
         </Col>
-        <Col span={15}>
-          <Form.Item noStyle shouldUpdate={(prevValues, curValues) => _.get(prevValues, [...namePrefix, 'displayMode']) !== _.get(curValues, [...namePrefix, 'displayMode'])}>
-            {({ getFieldValue }) => {
-              if (getFieldValue([...namePrefix, 'displayMode']) === 'list') {
-                return (
+        <Form.Item noStyle shouldUpdate={(prevValues, curValues) => _.get(prevValues, [...namePrefix, 'displayMode']) !== _.get(curValues, [...namePrefix, 'displayMode'])}>
+          {({ getFieldValue }) => {
+            const displayMode = getFieldValue([...namePrefix, 'displayMode']);
+            return (
+              <>
+                <Col
+                  span={7}
+                  style={{
+                    display: displayMode === 'list' ? 'block' : 'none',
+                  }}
+                >
                   <Form.Item label={t('panel.options.legend.placement')} name={[...namePrefix, 'placement']}>
                     <Radio.Group buttonStyle='solid'>
                       <Radio.Button value='bottom'>Bottom</Radio.Button>
                       <Radio.Button value='right'>Right</Radio.Button>
                     </Radio.Group>
                   </Form.Item>
-                );
-              } else if (getFieldValue([...namePrefix, 'displayMode']) === 'table') {
-                return (
+                </Col>
+                <Col
+                  span={8}
+                  style={{
+                    display: displayMode === 'list' ? 'block' : 'none',
+                  }}
+                >
                   <Form.Item label={t('panel.options.legend.columns')} name={[...namePrefix, 'columns']}>
-                    <Select mode='multiple' placeholder='' suffixIcon={<CaretDownOutlined />}>
+                    <Select mode='multiple'>
                       {_.map(tableColumn, (item) => {
                         return (
                           <Select.Option key={item} value={item}>
@@ -63,12 +73,29 @@ export default function index() {
                       })}
                     </Select>
                   </Form.Item>
-                );
-              }
-              return null;
-            }}
-          </Form.Item>
-        </Col>
+                </Col>
+                <Col
+                  span={15}
+                  style={{
+                    display: displayMode === 'table' ? 'block' : 'none',
+                  }}
+                >
+                  <Form.Item label={t('panel.options.legend.columns')} name={[...namePrefix, 'columns']}>
+                    <Select mode='multiple'>
+                      {_.map(tableColumn, (item) => {
+                        return (
+                          <Select.Option key={item} value={item}>
+                            {t(`panel.options.legend.${item}`)}
+                          </Select.Option>
+                        );
+                      })}
+                    </Select>
+                  </Form.Item>
+                </Col>
+              </>
+            );
+          }}
+        </Form.Item>
         <Col span={9}>
           <Form.Item label={t('panel.custom.detailName')} name={[...namePrefix, 'detailName']}>
             <Input style={{ width: '100%' }} />

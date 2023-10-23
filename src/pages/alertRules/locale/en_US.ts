@@ -47,7 +47,9 @@ const en_US = {
     dashboard_link: 'Dashboard Link',
     desc: 'Description',
   },
-
+  invalid_datasource_tip_1: 'Datasources',
+  invalid_datasource_tip_2: 'are not configured with cluster of alert engine',
+  invalid_datasource_reload: 'Reload',
   host: {
     query: {
       title: 'Queries',
@@ -76,7 +78,6 @@ const en_US = {
     prom_for_duration_tip:
       '通常持续时长大于执行频率，在持续时长内按照执行频率多次执行PromQL查询，每次都触发才生成告警；如果持续时长置为0，表示只要有一次PromQL查询触发阈值，就生成告警',
   },
-
   metric: {
     query: {
       title: 'Queries',
@@ -85,7 +86,6 @@ const en_US = {
     prom_for_duration_tip:
       'Usually the duration is greater than the execution frequency. During the duration, PromQL query is executed multiple times according to the execution frequency, and an alert is generated only if it is triggered every time. If the duration is set to 0, an alert is generated as long as the threshold is triggered once during the PromQL query.',
   },
-
   batch: {
     not_select: 'Please select some rules first',
     delete: 'Delete Alert Rules',

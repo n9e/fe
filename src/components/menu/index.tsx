@@ -304,26 +304,22 @@ const SideMenu: FC = () => {
 
   useEffect(() => {
     if (profile?.roles?.length > 0) {
-      if (profile?.roles.indexOf('Admin') === -1) {
-        getMenuPerm().then((res) => {
-          const { dat } = res;
-          // 过滤掉没有权限的菜单
-          const newMenus: any = _.filter(
-            _.map(menuList, (menu) => {
-              return {
-                ...menu,
-                children: _.filter(menu.children, (item) => item && dat.includes(item.key)),
-              };
-            }),
-            (item) => {
-              return item.children && item.children.length > 0;
-            },
-          );
-          setMenus(newMenus);
-        });
-      } else {
-        setMenus(menuList);
-      }
+      getMenuPerm().then((res) => {
+        const { dat } = res;
+        // 过滤掉没有权限的菜单
+        const newMenus: any = _.filter(
+          _.map(menuList, (menu) => {
+            return {
+              ...menu,
+              children: _.filter(menu.children, (item) => item && dat.includes(item.key)),
+            };
+          }),
+          (item) => {
+            return item.children && item.children.length > 0;
+          },
+        );
+        setMenus(newMenus);
+      });
     }
   }, [profile?.roles, i18n.language]);
 

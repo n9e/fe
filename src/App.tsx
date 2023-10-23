@@ -37,6 +37,8 @@ import Content from './routers';
 import useIsPlus from 'plus:/components/useIsPlus';
 // @ts-ignore
 import { getN9eConfig } from 'plus:/pages/SiteInfo/services';
+// @ts-ignore
+import CustomerServiceFloatButton from 'plus:/components/CustomerServiceFloatButton';
 
 import './App.less';
 import './global.variable.less';
@@ -220,6 +222,7 @@ function App() {
           </Router>
         </ConfigProvider>
       </CommonStateContext.Provider>
+      {import.meta.env.VITE_IS_ENT !== 'true' && import.meta.env.VITE_IS_PRO === 'true' && <CustomerServiceFloatButton />}
     </div>
   );
 }
