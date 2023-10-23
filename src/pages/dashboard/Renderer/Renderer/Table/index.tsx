@@ -178,7 +178,7 @@ function TableCpt(props: IProps, ref: any) {
         title: 'name',
         dataIndex: 'name',
         key: 'name',
-        width: size?.width! - 200,
+        width: size?.width! - 120,
         sorter: (a, b) => {
           return localeCompare(a.name, b.name);
         },
@@ -228,7 +228,7 @@ function TableCpt(props: IProps, ref: any) {
           title: key,
           dataIndex: key,
           key: key,
-          width: idx < columnsKeys.length - 1 ? size?.width! / columnsKeys.length : undefined,
+          width: idx < columnsKeys.length - 1 ? size?.width! / columnsKeys.length - 14 : undefined,
           sorter: (a, b) => {
             if (key === 'value') {
               return a.stat - b.stat;
@@ -298,7 +298,7 @@ function TableCpt(props: IProps, ref: any) {
           title: aggrDimension,
           dataIndex: aggrDimension,
           key: aggrDimension,
-          width: size?.width! / (groupNames.length + aggrDimensions.length),
+          width: size?.width! / (groupNames.length + aggrDimensions.length) - 14,
           sorter: (a, b) => {
             return localeCompare(a[aggrDimension], b[aggrDimension]);
           },
@@ -316,7 +316,7 @@ function TableCpt(props: IProps, ref: any) {
           dataIndex: name,
           key: name,
           // TODO: 暂时关闭维度值列的伸缩，降低对目前不太理想的列伸缩交互的理解和操作成本
-          width: idx < groupNames.length - 1 ? size?.width! / (groupNames.length + aggrDimensions.length) : undefined,
+          width: idx < groupNames.length - 1 ? size?.width! / (groupNames.length + aggrDimensions.length) - 14 : undefined,
           sorter: (a, b) => {
             return _.get(a[name], 'stat') - _.get(b[name], 'stat');
           },
@@ -471,7 +471,7 @@ function TableCpt(props: IProps, ref: any) {
           showHeader={showHeader}
           dataSource={tableDataSource}
           columns={resizableColumns}
-          scroll={{ y: realHeight, x: tableWidth }}
+          scroll={{ y: realHeight, x: tableWidth ? tableWidth - 30 : tableWidth }}
           bordered={false}
           pagination={false}
           onChange={(pagination, filters, sorter: any) => {
