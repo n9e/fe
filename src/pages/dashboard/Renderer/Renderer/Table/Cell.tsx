@@ -39,10 +39,10 @@ export default function Cell(props: Props) {
                 </div>
               }
             >
-              <a>{text}</a>
+              <a style={styleObj}>{text}</a>
             </Popover>
           ) : (
-            <a target={firstLink?.targetBlank ? '_blank' : '_self'} href={firstLink?.url}>
+            <a target={firstLink?.targetBlank ? '_blank' : '_self'} href={firstLink?.url} style={styleObj}>
               {text}
             </a>
           )}

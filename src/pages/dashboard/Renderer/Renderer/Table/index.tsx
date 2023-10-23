@@ -263,6 +263,7 @@ function TableCpt(props: IProps, ref: any) {
                 textObj = getSerieTextObj(record?.stat, overrideProps?.standardOptions, overrideProps?.valueMappings);
               }
               const colorObj = getColor(textObj.color, colorMode, themeMode);
+              return <Cell {...textObj} style={colorObj} panel={values} />;
               return (
                 <div
                   className='renderer-table-td-content'
