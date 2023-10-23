@@ -16,7 +16,6 @@
  */
 import React from 'react';
 import { Form, Radio, Select, Row, Col, InputNumber } from 'antd';
-import { CaretDownOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Panel } from '../../Components/Collapse';
@@ -63,7 +62,7 @@ export default function GraphStyles() {
         <Row gutter={10}>
           <Col span={8}>
             <Form.Item label={t('panel.custom.calc')} name={[...namePrefix, 'calc']}>
-              <Select suffixIcon={<CaretDownOutlined />}>
+              <Select>
                 {_.map(calcsOptions, (item, key) => {
                   return (
                     <Select.Option key={key} value={key}>
@@ -76,7 +75,7 @@ export default function GraphStyles() {
           </Col>
           <Col span={8}>
             <Form.Item label={t('panel.custom.valueField')} name={[...namePrefix, 'valueField']}>
-              <Select suffixIcon={<CaretDownOutlined />}>
+              <Select>
                 {_.map(fields, (item) => {
                   return (
                     <Select.Option key={item} value={item}>
@@ -89,7 +88,7 @@ export default function GraphStyles() {
           </Col>
           <Col span={8}>
             <Form.Item label={t('panel.custom.colSpan')} name={[...namePrefix, 'colSpan']}>
-              <Select suffixIcon={<CaretDownOutlined />}>
+              <Select>
                 {_.map(colSpans, (item) => {
                   return (
                     <Select.Option key={item} value={item}>

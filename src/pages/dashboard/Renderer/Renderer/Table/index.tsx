@@ -25,7 +25,7 @@ import { useAntdResizableHeader } from '@fc-components/use-antd-resizable-header
 import '@fc-components/use-antd-resizable-header/dist/style.css';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { IPanel } from '../../../types';
-import getCalculatedValuesBySeries, { getSerieTextObj } from '../../utils/getCalculatedValuesBySeries';
+import getCalculatedValuesBySeries, { getSerieTextObj, getMappedTextObj } from '../../utils/getCalculatedValuesBySeries';
 import getOverridePropertiesByName from '../../utils/getOverridePropertiesByName';
 import localeCompare from '../../utils/localeCompare';
 import formatToTable from '../../utils/formatToTable';
@@ -183,7 +183,19 @@ function TableCpt(props: IProps, ref: any) {
           return localeCompare(a.name, b.name);
         },
         sortOrder: getSortOrder('name', sortObj),
-        render: (text) => <div className='renderer-table-td-content'>{text}</div>,
+        render: (text) => {
+          const textObj = getMappedTextObj(text, options?.valueMappings);
+          return (
+            <div
+              className='renderer-table-td-content'
+              style={{
+                color: textObj.color,
+              }}
+            >
+              {textObj.text}
+            </div>
+          );
+        },
         ...getColumnSearchProps(['name']),
       },
       {
@@ -221,7 +233,6 @@ function TableCpt(props: IProps, ref: any) {
     ];
 
     if (displayMode === 'labelsOfSeriesToRows') {
-      const allColumns = _.concat(getColumnsKeys(calculatedValues), 'value');
       const columnsKeys: any[] = _.isEmpty(columns) ? _.concat(getColumnsKeys(calculatedValues), 'value') : columns;
       tableColumns = _.map(columnsKeys, (key, idx) => {
         return {
@@ -259,10 +270,7 @@ function TableCpt(props: IProps, ref: any) {
                 </div>
               );
             }
-            let textObj = {
-              text: _.get(record.metric, key),
-              color: undefined,
-            };
+            let textObj = getMappedTextObj(record.metric?.[key], options?.valueMappings);
             const overrideProps = getOverridePropertiesByName(overrides, 'byName', key);
             if (!_.isEmpty(overrideProps)) {
               textObj = getSerieTextObj(_.toNumber(textObj.text), overrideProps?.standardOptions, overrideProps?.valueMappings);
@@ -303,7 +311,19 @@ function TableCpt(props: IProps, ref: any) {
             return localeCompare(a[aggrDimension], b[aggrDimension]);
           },
           sortOrder: getSortOrder(aggrDimension, sortObj),
-          render: (text) => <div className='renderer-table-td-content'>{text}</div>,
+          render: (text) => {
+            const textObj = getMappedTextObj(text, options?.valueMappings);
+            return (
+              <div
+                className='renderer-table-td-content'
+                style={{
+                  color: textObj.color,
+                }}
+              >
+                {textObj.text}
+              </div>
+            );
+          },
           ...getColumnSearchProps([aggrDimension]),
         };
       });

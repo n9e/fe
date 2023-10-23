@@ -81,6 +81,29 @@ export const getSerieTextObj = (value: number | string | null | undefined, stand
   };
 };
 
+export const getMappedTextObj = (textValue: string, valueMappings?: IValueMapping[]) => {
+  if (typeof textValue === 'string') {
+    const matchedValueMapping = _.find(valueMappings, (item: any) => {
+      const { type, match } = item;
+      if (type === 'textValue') {
+        return textValue === match?.textValue;
+      }
+      return false;
+    });
+    if (matchedValueMapping) {
+      return {
+        // origin: textValue,
+        text: matchedValueMapping?.result?.text || textValue,
+        color: matchedValueMapping?.result?.color,
+      };
+    }
+  }
+  return {
+    // origin: textValue,
+    text: textValue,
+  };
+};
+
 const getCalculatedValuesBySeries = (series: any[], calc: string, { unit, decimals, dateFormat }, valueMappings?: IValueMapping[], thresholds?: IThresholds) => {
   const values = _.map(series, (serie) => {
     const results = {

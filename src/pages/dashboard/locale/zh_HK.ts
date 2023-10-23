@@ -169,10 +169,12 @@ const zh_HK = {
           <1>特殊值 Null 說明： 匹配值為 null 或 undefined 或 no data</1>
         `,
         type_map: {
-          special: '固定值',
+          special: '固定值(數值)',
+          textValue: '固定值(文字值)',
           range: '範圍值',
           specialValue: '特殊值',
         },
+        value_placeholder: '精確匹配的值',
         text: '顯示文字',
         text_placeholder: '可選',
         color: '顏色',

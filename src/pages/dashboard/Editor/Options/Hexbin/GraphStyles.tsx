@@ -16,7 +16,6 @@
  */
 import React from 'react';
 import { Form, Radio, Select, Row, Col, InputNumber, Switch, Input } from 'antd';
-import { CaretDownOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
 import ColorPicker from '../../../Components/ColorPicker';
@@ -52,7 +51,7 @@ export default function GraphStyles() {
         <Row gutter={10}>
           <Col span={10}>
             <Form.Item label={t('panel.custom.calc')} name={[...namePrefix, 'calc']}>
-              <Select suffixIcon={<CaretDownOutlined />}>
+              <Select>
                 {_.map(calcsOptions, (item, key) => {
                   return (
                     <Select.Option key={key} value={key}>
@@ -65,7 +64,7 @@ export default function GraphStyles() {
           </Col>
           <Col span={7}>
             <Form.Item label={t('panel.custom.colorRange')} name={[...namePrefix, 'colorRange']}>
-              <Select suffixIcon={<CaretDownOutlined />} dropdownClassName='color-scales' optionLabelProp='label'>
+              <Select dropdownClassName='color-scales' optionLabelProp='label'>
                 {_.map(colors, (item) => {
                   return (
                     <Select.Option key={item.label} label={item.label} value={_.join(item.value, ',')}>

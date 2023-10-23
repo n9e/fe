@@ -169,10 +169,12 @@ const en_US = {
           <1>Null: match value is null or undefined or no data</1>
         `,
         type_map: {
-          special: 'Fixed',
+          special: 'Number',
+          textValue: 'Text',
           range: 'Range',
           specialValue: 'Special',
         },
+        value_placeholder: 'Match value',
         text: 'Text',
         text_placeholder: 'Optional',
         color: 'Color',
