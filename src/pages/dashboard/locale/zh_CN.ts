@@ -169,10 +169,12 @@ const zh_CN = {
           <1>特殊值Null说明: 匹配值为 null 或 undefined 或 no data</1>
         `,
         type_map: {
-          special: '固定值',
+          special: '固定值(数值)',
+          textValue: '固定值(文本值)',
           range: '范围值',
           specialValue: '特殊值',
         },
+        value_placeholder: '精准匹配的值',
         text: '显示文字',
         text_placeholder: '可选',
         color: '颜色',

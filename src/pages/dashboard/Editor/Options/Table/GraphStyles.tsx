@@ -16,7 +16,7 @@
  */
 import React from 'react';
 import { Form, Select, Row, Col, Switch, Radio, Button, Mentions, Space, Tooltip, Input } from 'antd';
-import { CaretDownOutlined, DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
 import { Panel } from '../../Components/Collapse';
@@ -48,7 +48,7 @@ export default function GraphStyles({ chartForm, variableConfigWithOptions }) {
           </Col>
         </Row>
         <Form.Item label={t('panel.custom.calc')} name={[...namePrefix, 'calc']}>
-          <Select suffixIcon={<CaretDownOutlined />}>
+          <Select>
             {_.map(calcsOptions, (item, key) => {
               return (
                 <Select.Option key={key} value={key}>
@@ -62,7 +62,6 @@ export default function GraphStyles({ chartForm, variableConfigWithOptions }) {
           <Col span={12}>
             <Form.Item label={t('panel.custom.table.displayMode')} name={[...namePrefix, 'displayMode']}>
               <Select
-                suffixIcon={<CaretDownOutlined />}
                 onChange={(val) => {
                   if (val === 'labelsOfSeriesToRows') {
                     chartForm.setFieldsValue({ custom: { columns: [] } });
@@ -83,7 +82,7 @@ export default function GraphStyles({ chartForm, variableConfigWithOptions }) {
                 return (
                   <Col span={12}>
                     <Form.Item label={t('panel.custom.table.columns')} name={[...namePrefix, 'columns']}>
-                      <Select mode='multiple' placeholder='' suffixIcon={<CaretDownOutlined />}>
+                      <Select mode='multiple' placeholder=''>
                         {_.map(_.concat(tableFields, 'value'), (item) => {
                           return (
                             <Select.Option key={item} value={item}>
@@ -100,7 +99,7 @@ export default function GraphStyles({ chartForm, variableConfigWithOptions }) {
                 return (
                   <Col span={12}>
                     <Form.Item label={t('panel.custom.table.aggrDimension')} name={[...namePrefix, 'aggrDimension']}>
-                      <Select suffixIcon={<CaretDownOutlined />} mode='multiple'>
+                      <Select mode='multiple'>
                         {_.map(tableFields, (item) => {
                           return (
                             <Select.Option key={item} value={item}>
@@ -136,7 +135,6 @@ export default function GraphStyles({ chartForm, variableConfigWithOptions }) {
                 return (
                   <Form.Item label={t('panel.custom.table.sortColumn')} name={[...namePrefix, 'sortColumn']}>
                     <Select
-                      suffixIcon={<CaretDownOutlined />}
                       allowClear
                       onChange={() => {
                         if (!chartForm.getFieldValue([...namePrefix, 'sortOrder'])) {
@@ -163,7 +161,7 @@ export default function GraphStyles({ chartForm, variableConfigWithOptions }) {
           </Col>
           <Col span={12}>
             <Form.Item label={t('panel.custom.table.sortOrder')} name={[...namePrefix, 'sortOrder']}>
-              <Select suffixIcon={<CaretDownOutlined />} allowClear>
+              <Select allowClear>
                 <Select.Option value='ascend'>Asc</Select.Option>
                 <Select.Option value='descend'>Desc</Select.Option>
               </Select>

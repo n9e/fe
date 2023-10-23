@@ -16,7 +16,7 @@
  */
 import React from 'react';
 import { Form, Input, InputNumber, Button, Select, Row, Col, Tooltip } from 'antd';
-import { DeleteOutlined, InfoCircleOutlined, CaretDownOutlined } from '@ant-design/icons';
+import { DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
 import { Panel } from '../../Components/Collapse';
@@ -51,7 +51,7 @@ export default function index(props: IProps) {
             </Button>
             {_.isEmpty(fields) ? null : (
               <Row gutter={10}>
-                <Col flex='290px'>
+                <Col flex='330px'>
                   <Tooltip
                     overlayInnerStyle={{
                       width: 300,
@@ -66,7 +66,7 @@ export default function index(props: IProps) {
                     {t('panel.options.valueMappings.type')} <InfoCircleOutlined />
                   </Tooltip>
                 </Col>
-                <Col flex='210'>{t('panel.options.valueMappings.text')}</Col>
+                <Col flex='170'>{t('panel.options.valueMappings.text')}</Col>
                 <Col flex='45'>{t('panel.options.valueMappings.color')}</Col>
                 <Col flex='50'>{t('panel.options.valueMappings.operations')}</Col>
               </Row>
@@ -75,12 +75,13 @@ export default function index(props: IProps) {
             {fields.map(({ key, name, ...restField }) => {
               return (
                 <Row key={key} gutter={10} style={{ marginBottom: 10 }}>
-                  <Col flex='290px'>
+                  <Col flex='330px'>
                     <Row gutter={10}>
-                      <Col flex='80px'>
+                      <Col flex='120px'>
                         <Form.Item noStyle {...restField} name={[name, 'type']}>
-                          <Select suffixIcon={<CaretDownOutlined />} style={{ width: 80 }}>
+                          <Select style={{ width: 120 }}>
                             <Select.Option value='special'>{t('panel.options.valueMappings.type_map.special')}</Select.Option>
+                            <Select.Option value='textValue'>{t('panel.options.valueMappings.type_map.textValue')}</Select.Option>
                             <Select.Option value='range'>{t('panel.options.valueMappings.type_map.range')}</Select.Option>
                             <Select.Option value='specialValue'>{t('panel.options.valueMappings.type_map.specialValue')}</Select.Option>
                           </Select>
@@ -93,7 +94,14 @@ export default function index(props: IProps) {
                             if (type === 'special') {
                               return (
                                 <Form.Item noStyle {...restField} name={[name, 'match', 'special']}>
-                                  <InputNumber style={{ width: '100%' }} />
+                                  <InputNumber style={{ width: '100%' }} placeholder={t('panel.options.valueMappings.value_placeholder')} />
+                                </Form.Item>
+                              );
+                            }
+                            if (type === 'textValue') {
+                              return (
+                                <Form.Item noStyle {...restField} name={[name, 'match', 'textValue']}>
+                                  <Input style={{ width: '100%' }} placeholder={t('panel.options.valueMappings.value_placeholder')} />
                                 </Form.Item>
                               );
                             }
@@ -116,7 +124,7 @@ export default function index(props: IProps) {
                             if (type === 'specialValue') {
                               return (
                                 <Form.Item noStyle {...restField} name={[name, 'match', 'specialValue']}>
-                                  <Select suffixIcon={<CaretDownOutlined />} style={{ width: '100%' }}>
+                                  <Select style={{ width: '100%' }}>
                                     <Select.Option value='null'>Null</Select.Option>
                                     <Select.Option value='empty'>Empty string</Select.Option>
                                   </Select>
@@ -129,7 +137,7 @@ export default function index(props: IProps) {
                       </Col>
                     </Row>
                   </Col>
-                  <Col flex='210'>
+                  <Col flex='170'>
                     <Form.Item noStyle {...restField} name={[name, 'result', 'text']}>
                       <Input placeholder={t('panel.options.valueMappings.text_placeholder')} />
                     </Form.Item>

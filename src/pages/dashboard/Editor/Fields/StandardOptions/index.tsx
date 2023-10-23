@@ -16,7 +16,7 @@
  */
 import React from 'react';
 import { Form, Select, InputNumber, Row, Col, Tooltip, Input } from 'antd';
-import { InfoCircleOutlined, CaretDownOutlined } from '@ant-design/icons';
+import { InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
 import { Panel } from '../../Components/Collapse';
@@ -66,7 +66,7 @@ export default function index(props: IProps) {
                     }
                     name={[...namePrefix, 'util']}
                   >
-                    <Select suffixIcon={<CaretDownOutlined />} placeholder='auto' allowClear showSearch>
+                    <Select placeholder='auto' allowClear showSearch>
                       <Option value='none'>none</Option>
                       <OptGroup label='Data(SI)'>
                         <Option value='bitsSI'>bits(SI)</Option>
