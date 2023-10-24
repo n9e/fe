@@ -24,6 +24,7 @@ export default function Cell(props: Props) {
         <>
           {_.size(links) > 1 ? (
             <Popover
+              placement='bottomLeft'
               trigger={['click']}
               content={
                 <div>

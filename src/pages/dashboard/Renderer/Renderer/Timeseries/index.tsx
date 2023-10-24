@@ -82,7 +82,7 @@ function getStartAndEndByTargets(targets: any[]) {
 function NameWithTooltip({ text, record }) {
   return (
     <Tooltip
-      placement='topLeft'
+      placement='left'
       title={
         <div>
           <div>{_.get(record, 'name')}</div>
