@@ -85,6 +85,7 @@ function NameWithTooltip({ text, record }) {
       placement='topLeft'
       title={
         <div>
+          <div>{_.get(record, 'name')}</div>
           <div>{_.get(record, 'metric.__name__')}</div>
           <div>{record.offset && record.offset !== 'current' ? `offfset ${record.offset}` : ''}</div>
           {_.map(_.omit(record.metric, '__name__'), (val, key) => {
@@ -301,7 +302,7 @@ export default function index(props: IProps) {
     if (chartRef.current) {
       chartRef.current.handleResize();
     }
-  }, [placement]);
+  }, [placement, JSON.stringify(legendEleSize)]);
 
   let tableColumn: ColumnProps<DataItem>[] = [
     {

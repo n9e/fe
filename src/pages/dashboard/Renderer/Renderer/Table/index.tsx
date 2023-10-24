@@ -420,7 +420,7 @@ function TableCpt(props: IProps, ref: any) {
     }, [JSON.stringify(columns), displayMode, JSON.stringify(calculatedValues), sortObj, themeMode, aggrDimension, overrides, size]),
     columnsState: {
       persistenceType: 'localStorage',
-      persistenceKey: `dashboard-table2-resizable-${values.id}`,
+      persistenceKey: `dashboard-table2.1-resizable-${values.id}`,
     },
   });
 
