@@ -255,6 +255,11 @@ const zh_CN = {
         aggrDimension: '显示维度',
         sortColumn: '默认排序列',
         sortOrder: '默认排序',
+        link: {
+          mode: '链接模式',
+          cellLink: '单元格链接',
+          appendLinkColumn: '追加链接列',
+        },
       },
       text: {
         textColor: '文字颜色',

@@ -271,7 +271,7 @@ function index(props: IProps) {
                           <Tooltip title={t('clear_cache_btn_tip')} placement='left'>
                             <Menu.Item
                               onClick={() => {
-                                window.localStorage.removeItem(`dashboard-table2-resizable-${values.id}`);
+                                window.localStorage.removeItem(`dashboard-table2.1-resizable-${values.id}`);
                                 setVisible(false);
                               }}
                               key='clear_cache_btn'

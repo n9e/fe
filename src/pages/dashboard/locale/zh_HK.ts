@@ -255,6 +255,11 @@ const zh_HK = {
         aggrDimension: '顯示維度',
         sortColumn: '預設排序列',
         sortOrder: '預設排序',
+        link: {
+          mode: '連結模式',
+          cellLink: '單元格連結',
+          appendLinkColumn: '追加連結列',
+        },
       },
       text: {
         textColor: '文字顏色',

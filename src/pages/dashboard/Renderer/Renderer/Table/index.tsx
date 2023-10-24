@@ -32,6 +32,7 @@ import formatToTable from '../../utils/formatToTable';
 import { useGlobalState } from '../../../globalState';
 import { getDetailUrl } from '../../utils/replaceExpressionDetail';
 import { transformColumns, downloadCsv } from './utils';
+import Cell from './Cell';
 import './style.less';
 
 interface IProps {
@@ -97,6 +98,7 @@ function TableCpt(props: IProps, ref: any) {
   });
   const [tableFields, setTableFields] = useGlobalState('tableFields');
   const [displayedTableFields, setDisplayedTableFields] = useGlobalState('displayedTableFields');
+  const isAppendLinkColumn = !_.isEmpty(custom.links) && custom.linkMode !== 'cellLink';
 
   useEffect(() => {
     setSortObj({
@@ -178,13 +180,14 @@ function TableCpt(props: IProps, ref: any) {
         title: 'name',
         dataIndex: 'name',
         key: 'name',
-        width: size?.width! - 120,
+        width: size?.width! - (isAppendLinkColumn ? 240 : 120),
         sorter: (a, b) => {
           return localeCompare(a.name, b.name);
         },
         sortOrder: getSortOrder('name', sortObj),
         render: (text) => {
           const textObj = getMappedTextObj(text, options?.valueMappings);
+          return <Cell {...textObj} panel={values} />;
           return (
             <div
               className='renderer-table-td-content'
@@ -217,6 +220,7 @@ function TableCpt(props: IProps, ref: any) {
             textObj = getSerieTextObj(record?.stat, overrideProps?.standardOptions, overrideProps?.valueMappings);
           }
           const colorObj = getColor(textObj.color, colorMode, themeMode);
+          return <Cell {...textObj} style={colorObj} panel={values} />;
           return (
             <div
               className='renderer-table-td-content'
@@ -259,6 +263,7 @@ function TableCpt(props: IProps, ref: any) {
                 textObj = getSerieTextObj(record?.stat, overrideProps?.standardOptions, overrideProps?.valueMappings);
               }
               const colorObj = getColor(textObj.color, colorMode, themeMode);
+              return <Cell {...textObj} style={colorObj} panel={values} />;
               return (
                 <div
                   className='renderer-table-td-content'
@@ -275,6 +280,7 @@ function TableCpt(props: IProps, ref: any) {
             if (!_.isEmpty(overrideProps)) {
               textObj = getSerieTextObj(_.toNumber(textObj.text), overrideProps?.standardOptions, overrideProps?.valueMappings);
             }
+            return <Cell {...textObj} panel={values} />;
             return (
               <div
                 className='renderer-table-td-content'
@@ -313,6 +319,7 @@ function TableCpt(props: IProps, ref: any) {
           sortOrder: getSortOrder(aggrDimension, sortObj),
           render: (text) => {
             const textObj = getMappedTextObj(text, options?.valueMappings);
+            return <Cell {...textObj} panel={values} />;
             return (
               <div
                 className='renderer-table-td-content'
@@ -352,6 +359,7 @@ function TableCpt(props: IProps, ref: any) {
               textObj = getSerieTextObj(record?.stat, overrideProps?.standardOptions, overrideProps?.valueMappings);
             }
             const colorObj = getColor(textObj.color, colorMode, themeMode);
+            return <Cell {...textObj} style={colorObj} panel={values} />;
             return (
               <div
                 className='renderer-table-td-content'
@@ -368,7 +376,7 @@ function TableCpt(props: IProps, ref: any) {
       });
     }
 
-    if (!_.isEmpty(custom.links)) {
+    if (isAppendLinkColumn) {
       tableColumns.push({
         title: '链接',
         render: (_val, record) => {
@@ -412,7 +420,7 @@ function TableCpt(props: IProps, ref: any) {
     }, [JSON.stringify(columns), displayMode, JSON.stringify(calculatedValues), sortObj, themeMode, aggrDimension, overrides, size]),
     columnsState: {
       persistenceType: 'localStorage',
-      persistenceKey: `dashboard-table2-resizable-${values.id}`,
+      persistenceKey: `dashboard-table2.1-resizable-${values.id}`,
     },
   });
 

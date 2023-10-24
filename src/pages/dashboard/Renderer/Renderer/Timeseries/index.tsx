@@ -79,6 +79,33 @@ function getStartAndEndByTargets(targets: any[]) {
   return { start, end };
 }
 
+function NameWithTooltip({ text, record }) {
+  return (
+    <Tooltip
+      placement='topLeft'
+      title={
+        <div>
+          <div>{_.get(record, 'name')}</div>
+          <div>{_.get(record, 'metric.__name__')}</div>
+          <div>{record.offset && record.offset !== 'current' ? `offfset ${record.offset}` : ''}</div>
+          {_.map(_.omit(record.metric, '__name__'), (val, key) => {
+            return (
+              <div key={key}>
+                {key}={val}
+              </div>
+            );
+          })}
+        </div>
+      }
+      getTooltipContainer={() => document.body}
+    >
+      <span className='renderer-timeseries-legend-color-symbol' style={{ backgroundColor: record.color }} />
+      {record.offset && record.offset !== 'current' ? <span style={{ paddingRight: 5 }}>offfset {record.offset}</span> : ''}
+      <span>{text}</span>
+    </Tooltip>
+  );
+}
+
 export default function index(props: IProps) {
   const [dashboardMeta] = useGlobalState('dashboardMeta');
   const { t } = useTranslation('dashboard');
@@ -275,7 +302,7 @@ export default function index(props: IProps) {
     if (chartRef.current) {
       chartRef.current.handleResize();
     }
-  }, [placement]);
+  }, [placement, JSON.stringify(legendEleSize)]);
 
   let tableColumn: ColumnProps<DataItem>[] = [
     {
@@ -284,30 +311,8 @@ export default function index(props: IProps) {
       ellipsis: {
         showTitle: false,
       },
-      render: (_text, record: any) => {
-        return (
-          <Tooltip
-            placement='topLeft'
-            title={
-              <div>
-                <div>{_.get(record, 'metric.__name__')}</div>
-                <div>{record.offset && record.offset !== 'current' ? `offfset ${record.offset}` : ''}</div>
-                {_.map(_.omit(record.metric, '__name__'), (val, key) => {
-                  return (
-                    <div key={key}>
-                      {key}={val}
-                    </div>
-                  );
-                })}
-              </div>
-            }
-            getTooltipContainer={() => document.body}
-          >
-            <span className='renderer-timeseries-legend-color-symbol' style={{ backgroundColor: record.color }} />
-            {record.offset && record.offset !== 'current' ? <span style={{ paddingRight: 5 }}>offfset {record.offset}</span> : ''}
-            <span>{_text}</span>
-          </Tooltip>
-        );
+      render: (text, record: any) => {
+        return <NameWithTooltip text={text} record={record} />;
       },
     },
   ];
@@ -438,7 +443,9 @@ export default function index(props: IProps) {
                     })}
                   >
                     <span className='renderer-timeseries-legend-color-symbol' style={{ backgroundColor: item.color }} />
-                    <span className='renderer-timeseries-legend-list-item-name'>{item.name}</span>
+                    <span className='renderer-timeseries-legend-list-item-name'>
+                      <NameWithTooltip text={item.name} record={item} />
+                    </span>
                     <span className='renderer-timeseries-legend-list-item-calcs'>
                       {_.map(legendColumns, (column) => {
                         return (
