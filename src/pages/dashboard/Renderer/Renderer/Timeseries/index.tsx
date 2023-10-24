@@ -99,7 +99,6 @@ function NameWithTooltip({ text, record }) {
       }
       getTooltipContainer={() => document.body}
     >
-      <span className='renderer-timeseries-legend-color-symbol' style={{ backgroundColor: record.color }} />
       {record.offset && record.offset !== 'current' ? <span style={{ paddingRight: 5 }}>offfset {record.offset}</span> : ''}
       <span>{text}</span>
     </Tooltip>
