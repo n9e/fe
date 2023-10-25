@@ -205,7 +205,7 @@ export default function index(props: IProps) {
     if (chartRef.current) {
       chartRef.current.update({
         type: custom.drawStyle === 'lines' ? 'line' : 'bar',
-        series: seriesData,
+        series: _.cloneDeep(seriesData),
         line: {
           width: lineWidth,
         },
