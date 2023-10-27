@@ -19,6 +19,7 @@ import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 import _ from 'lodash';
 import { mappingsToFields, mappingsToFullFields, flattenHits, Field, typeMap, Filter } from './utils';
+import { N9E_PATHNAME } from '@/utils/constant';
 export type { Field, Filter };
 export { typeMap };
 
@@ -30,8 +31,7 @@ export function getIndices(datasourceValue: number, allow_hide_system_indices = 
   if (allow_hide_system_indices) {
     params.expand_wildcards = 'all';
   }
-  const isProOrEnt = import.meta.env.VITE_IS_ENT === 'true' || import.meta.env.VITE_IS_PRO === 'true'
-  return request(`/api/${isProOrEnt?'n9e-plus':'n9e'}/proxy/${datasourceValue}/_cat/indices`, {
+  return request(`/api/${N9E_PATHNAME}/proxy/${datasourceValue}/_cat/indices`, {
     method: RequestMethod.Get,
     params,
   }).then((res) => {
@@ -47,8 +47,7 @@ export function getFullIndices(datasourceValue: number, target = '*', allow_hide
   if (allow_hide_system_indices) {
     params.expand_wildcards = 'all';
   }
-  const isProOrEnt = import.meta.env.VITE_IS_ENT === 'true' || import.meta.env.VITE_IS_PRO === 'true'
-  return request(`/api/${isProOrEnt?'n9e-plus':'n9e'}/proxy/${datasourceValue}/_cat/indices/${target}`, {
+  return request(`/api/${N9E_PATHNAME}/proxy/${datasourceValue}/_cat/indices/${target}`, {
     method: RequestMethod.Get,
     params,
     silence: true,
@@ -59,8 +58,7 @@ export function getFullIndices(datasourceValue: number, target = '*', allow_hide
 
 export function getFields(datasourceValue: number, index?: string, type?: string, allow_hide_system_indices = false) {
   const url = index ? `/${index}/_mapping` : '/_mapping';
-  const isProOrEnt = import.meta.env.VITE_IS_ENT === 'true' || import.meta.env.VITE_IS_PRO === 'true'
-  return request(`/api/${isProOrEnt?'n9e-plus':'n9e'}/proxy/${datasourceValue}${url}`, {
+  return request(`/api/${N9E_PATHNAME}/proxy/${datasourceValue}${url}`, {
     method: RequestMethod.Get,
     params: _.omit(
       {
@@ -91,8 +89,8 @@ export function getFullFields(
   },
 ) {
   const url = index ? `/${index}/_mapping` : '/_mapping';
-  const isProOrEnt = import.meta.env.VITE_IS_ENT === 'true' || import.meta.env.VITE_IS_PRO === 'true'
-  return request(`/api/${isProOrEnt?'n9e-plus':'n9e'}/proxy/${datasourceValue}${url}`, {
+
+  return request(`/api/${N9E_PATHNAME}/proxy/${datasourceValue}${url}`, {
     method: RequestMethod.Get,
     params: _.omit(
       {
@@ -128,8 +126,7 @@ export function getFullFields(
 }
 
 export function getLogsQuery(datasourceValue: number, requestBody) {
-  const isProOrEnt = import.meta.env.VITE_IS_ENT === 'true' || import.meta.env.VITE_IS_PRO === 'true'
-  return request(`/api/${isProOrEnt?'n9e-plus':'n9e'}/proxy/${datasourceValue}/_msearch`, {
+  return request(`/api/${N9E_PATHNAME}/proxy/${datasourceValue}/_msearch`, {
     method: RequestMethod.Post,
     data: requestBody,
     headers: {
@@ -146,8 +143,7 @@ export function getLogsQuery(datasourceValue: number, requestBody) {
 }
 
 export function getDsQuery(datasourceValue: number, requestBody) {
-  const isProOrEnt = import.meta.env.VITE_IS_ENT === 'true' || import.meta.env.VITE_IS_PRO === 'true'
-  return request(`/api/${isProOrEnt?'n9e-plus':'n9e'}/proxy/${datasourceValue}/_msearch`, {
+  return request(`/api/${N9E_PATHNAME}/proxy/${datasourceValue}/_msearch`, {
     method: RequestMethod.Post,
     data: requestBody,
     headers: {
@@ -160,8 +156,7 @@ export function getDsQuery(datasourceValue: number, requestBody) {
 }
 
 export function getESVersion(datasourceValue: number) {
-  const isProOrEnt = import.meta.env.VITE_IS_ENT === 'true' || import.meta.env.VITE_IS_PRO === 'true'
-  return request(`/api/${isProOrEnt?'n9e-plus':'n9e'}/proxy/${datasourceValue}`, {
+  return request(`/api/${N9E_PATHNAME}/proxy/${datasourceValue}`, {
     method: RequestMethod.Get,
   }).then((res) => {
     const dat = _.get(res, 'version.number');
@@ -170,8 +165,7 @@ export function getESVersion(datasourceValue: number) {
 }
 
 export function getFieldValues(datasourceValue, requestBody, field) {
-  const isProOrEnt = import.meta.env.VITE_IS_ENT === 'true' || import.meta.env.VITE_IS_PRO === 'true'
-  return request(`/api/${isProOrEnt?'n9e-plus':'n9e'}/proxy/${datasourceValue}/_msearch`, {
+  return request(`/api/${N9E_PATHNAME}/proxy/${datasourceValue}/_msearch`, {
     method: RequestMethod.Post,
     data: requestBody,
     headers: {

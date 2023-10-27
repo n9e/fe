@@ -21,6 +21,7 @@ import type { MetricListRes, strategyGroup, strategyStatus, TagKeysRes, TagValue
 import { PAGE_SIZE } from '@/utils/constant';
 import React from 'react';
 import queryString from 'query-string';
+import { N9E_PATHNAME } from '@/utils/constant';
 
 // 获得策略分组列表
 export const getStrategyGroupList = function (query?: string, p = 1) {
@@ -171,8 +172,7 @@ export const batchDeleteStrategy = function (ruleId, ids: Array<number>) {
 };
 
 export const prometheusQuery = function (data, datasourceValue): Promise<any> {
-  const isProOrEnt = import.meta.env.VITE_IS_ENT === 'true' || import.meta.env.VITE_IS_PRO === 'true'
-  return request(`/api/${isProOrEnt?'n9e-plus':'n9e'}/proxy/${datasourceValue}/api/v1/query`, {
+  return request(`/api/${N9E_PATHNAME}/proxy/${datasourceValue}/api/v1/query`, {
     method: RequestMethod.Get,
     params: data,
   });
@@ -429,8 +429,7 @@ export const getBrainJobs = function (id) {
 };
 
 export function getDsQuery(datasourceValue: number, requestBody) {
-  const isProOrEnt = import.meta.env.VITE_IS_ENT === 'true' || import.meta.env.VITE_IS_PRO === 'true'
-  return request(`/api/${isProOrEnt?'n9e-plus':'n9e'}/proxy/${datasourceValue}/_msearch`, {
+  return request(`/api/${N9E_PATHNAME}/proxy/${datasourceValue}/_msearch`, {
     method: RequestMethod.Post,
     data: requestBody,
     headers: {
@@ -455,8 +454,7 @@ export function getLogQuery(params) {
 }
 
 export function getIndices(datasourceValue: number) {
-  const isProOrEnt = import.meta.env.VITE_IS_ENT === 'true' || import.meta.env.VITE_IS_PRO === 'true'
-  return request(`/api/${isProOrEnt?'n9e-plus':'n9e'}/proxy/${datasourceValue}/_cat/indices`, {
+  return request(`/api/${N9E_PATHNAME}/proxy/${datasourceValue}/_cat/indices`, {
     method: RequestMethod.Get,
     params: {
       format: 'json',
@@ -467,8 +465,7 @@ export function getIndices(datasourceValue: number) {
 }
 
 export function getESVersion(datasourceValue: number) {
-  const isProOrEnt = import.meta.env.VITE_IS_ENT === 'true' || import.meta.env.VITE_IS_PRO === 'true'
-  return request(`/api/${isProOrEnt?'n9e-plus':'n9e'}/proxy/${datasourceValue}/`, {
+  return request(`/api/${N9E_PATHNAME}/proxy/${datasourceValue}/`, {
     method: RequestMethod.Get,
   }).then((res) => {
     const dat = _.get(res, 'version.number');

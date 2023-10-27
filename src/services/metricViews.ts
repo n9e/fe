@@ -18,6 +18,7 @@ import _ from 'lodash';
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 import { IRawTimeRange, timeRangeUnix } from '@/components/TimeRangePicker';
+import { N9E_PATHNAME } from '@/utils/constant';
 
 export const getLabelValues = function (datasourceValue: number, label: string, range: IRawTimeRange, match?: string) {
   const params = {
@@ -26,8 +27,7 @@ export const getLabelValues = function (datasourceValue: number, label: string, 
   if (match) {
     params['match[]'] = match;
   }
-  const isProOrEnt = import.meta.env.VITE_IS_ENT === 'true' || import.meta.env.VITE_IS_PRO === 'true'
-  return request(`/api/${isProOrEnt?'n9e-plus':'n9e'}/proxy/${datasourceValue}/api/v1/label/${label}/values`, {
+  return request(`/api/${N9E_PATHNAME}/proxy/${datasourceValue}/api/v1/label/${label}/values`, {
     method: RequestMethod.Get,
     params,
   }).then((res) => {
@@ -42,8 +42,7 @@ export const getLabels = function (datasourceValue: number, match: string, range
   if (match) {
     params['match[]'] = match;
   }
-  const isProOrEnt = import.meta.env.VITE_IS_ENT === 'true' || import.meta.env.VITE_IS_PRO === 'true'
-  return request(`/api/${isProOrEnt?'n9e-plus':'n9e'}/proxy/${datasourceValue}/api/v1/labels`, {
+  return request(`/api/${N9E_PATHNAME}/proxy/${datasourceValue}/api/v1/labels`, {
     method: RequestMethod.Get,
     params,
   }).then((res) => {
@@ -52,8 +51,7 @@ export const getLabels = function (datasourceValue: number, match: string, range
 };
 
 export const getMetricValues = function (datasourceValue: number, match: string, range: IRawTimeRange) {
-  const isProOrEnt = import.meta.env.VITE_IS_ENT === 'true' || import.meta.env.VITE_IS_PRO === 'true'
-  return request(`/api/${isProOrEnt?'n9e-plus':'n9e'}/proxy/${datasourceValue}/api/v1/label/__name__/values`, {
+  return request(`/api/${N9E_PATHNAME}/proxy/${datasourceValue}/api/v1/label/__name__/values`, {
     method: RequestMethod.Get,
     params: {
       ...timeRangeUnix(range),
@@ -134,8 +132,7 @@ export const getQueryRange = function (
     aggrGroups,
   });
   const requests = _.map(exprs, (expr) => {
-    const isProOrEnt = import.meta.env.VITE_IS_ENT === 'true' || import.meta.env.VITE_IS_PRO === 'true'
-  return request(`/api/${isProOrEnt?'n9e-plus':'n9e'}/proxy/${datasourceValue}/api/v1/query_range`, {
+    return request(`/api/${N9E_PATHNAME}/proxy/${datasourceValue}/api/v1/query_range`, {
       method: RequestMethod.Get,
       params: {
         start: start - (start % _step!),

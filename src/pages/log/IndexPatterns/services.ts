@@ -16,10 +16,10 @@
  */
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
+import { N9E_PATHNAME } from '@/utils/constant';
 
 export const getESIndexPatterns = function (datasource_id?: number) {
-  const isProOrEnt = import.meta.env.VITE_IS_ENT === 'true' || import.meta.env.VITE_IS_PRO === 'true'
-  return request(`/api/${isProOrEnt?'n9e-plus':'n9e'}/es-index-pattern-list`, {
+  return request(`/api/${N9E_PATHNAME}/es-index-pattern-list`, {
     method: RequestMethod.Get,
     params: {
       datasource_id,

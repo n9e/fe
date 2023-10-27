@@ -30,6 +30,7 @@ import Table from './Table';
 import Graph from './Graph';
 import QueryStatsView, { QueryStats } from './components/QueryStatsView';
 import MetricsExplorer from './components/MetricsExplorer';
+import { N9E_PATHNAME } from '@/utils/constant';
 import './locale';
 import './style.less';
 
@@ -56,9 +57,8 @@ const TabPane = Tabs.TabPane;
 
 export default function index(props: IProps) {
   const { t } = useTranslation('promGraphCpt');
-  const isProOrEnt = import.meta.env.VITE_IS_ENT === 'true' || import.meta.env.VITE_IS_PRO === 'true'
   const {
-    url = `/api/${isProOrEnt?'n9e-plus':'n9e'}/proxy`,
+    url = `/api/${N9E_PATHNAME}/proxy`,
     datasourceValue,
     promQL,
     contentMaxHeight = 300,
