@@ -141,13 +141,14 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
       });
     }
     const resolveData: Result = { series };
+    const isProOrEnt = import.meta.env.VITE_IS_ENT === 'true' || import.meta.env.VITE_IS_PRO === 'true'
     if (options.inspect) {
       resolveData.query = [];
       if (!_.isEmpty(batchDsParams)) {
         resolveData.query.push({
           type: 'TimeSeries',
           request: {
-            url: `/api/n9e/proxy/${datasourceValue}/_msearch`,
+            url: `/api/${isProOrEnt?'n9e-plus':'n9e'}/proxy/${datasourceValue}/_msearch`,
             method: 'POST',
             data: dsPlayload,
           },
@@ -158,7 +159,7 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
         resolveData.query.push({
           type: 'Logs',
           request: {
-            url: `/api/n9e/proxy/${datasourceValue}/_msearch`,
+            url: `/api/${isProOrEnt?'n9e-plus':'n9e'}/proxy/${datasourceValue}/_msearch`,
             method: 'POST',
             data: logPlayload,
           },

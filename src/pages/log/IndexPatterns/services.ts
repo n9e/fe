@@ -18,7 +18,8 @@ import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 
 export const getESIndexPatterns = function (datasource_id?: number) {
-  return request('/api/n9e/es-index-pattern-list', {
+  const isProOrEnt = import.meta.env.VITE_IS_ENT === 'true' || import.meta.env.VITE_IS_PRO === 'true'
+  return request(`/api/${isProOrEnt?'n9e-plus':'n9e'}/es-index-pattern-list`, {
     method: RequestMethod.Get,
     params: {
       datasource_id,

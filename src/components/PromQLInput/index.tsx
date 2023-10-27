@@ -51,7 +51,7 @@ export interface CMExpressionInputProps {
 
 const ExpressionInput = (
   {
-    url = '/api/n9e/proxy',
+    url = `/api/${import.meta.env.VITE_IS_ENT === 'true' || import.meta.env.VITE_IS_PRO === 'true' ? 'n9e-plus':'n9e'}/proxy`,
     headers,
     value,
     onChange,

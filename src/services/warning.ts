@@ -171,7 +171,8 @@ export const batchDeleteStrategy = function (ruleId, ids: Array<number>) {
 };
 
 export const prometheusQuery = function (data, datasourceValue): Promise<any> {
-  return request(`/api/n9e/proxy/${datasourceValue}/api/v1/query`, {
+  const isProOrEnt = import.meta.env.VITE_IS_ENT === 'true' || import.meta.env.VITE_IS_PRO === 'true'
+  return request(`/api/${isProOrEnt?'n9e-plus':'n9e'}/proxy/${datasourceValue}/api/v1/query`, {
     method: RequestMethod.Get,
     params: data,
   });
@@ -428,7 +429,8 @@ export const getBrainJobs = function (id) {
 };
 
 export function getDsQuery(datasourceValue: number, requestBody) {
-  return request(`/api/n9e/proxy/${datasourceValue}/_msearch`, {
+  const isProOrEnt = import.meta.env.VITE_IS_ENT === 'true' || import.meta.env.VITE_IS_PRO === 'true'
+  return request(`/api/${isProOrEnt?'n9e-plus':'n9e'}/proxy/${datasourceValue}/_msearch`, {
     method: RequestMethod.Post,
     data: requestBody,
     headers: {
@@ -453,7 +455,8 @@ export function getLogQuery(params) {
 }
 
 export function getIndices(datasourceValue: number) {
-  return request(`/api/n9e/proxy/${datasourceValue}/_cat/indices`, {
+  const isProOrEnt = import.meta.env.VITE_IS_ENT === 'true' || import.meta.env.VITE_IS_PRO === 'true'
+  return request(`/api/${isProOrEnt?'n9e-plus':'n9e'}/proxy/${datasourceValue}/_cat/indices`, {
     method: RequestMethod.Get,
     params: {
       format: 'json',
@@ -464,7 +467,8 @@ export function getIndices(datasourceValue: number) {
 }
 
 export function getESVersion(datasourceValue: number) {
-  return request(`/api/n9e/proxy/${datasourceValue}/`, {
+  const isProOrEnt = import.meta.env.VITE_IS_ENT === 'true' || import.meta.env.VITE_IS_PRO === 'true'
+  return request(`/api/${isProOrEnt?'n9e-plus':'n9e'}/proxy/${datasourceValue}/`, {
     method: RequestMethod.Get,
   }).then((res) => {
     const dat = _.get(res, 'version.number');

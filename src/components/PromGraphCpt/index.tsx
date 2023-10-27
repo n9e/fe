@@ -56,8 +56,9 @@ const TabPane = Tabs.TabPane;
 
 export default function index(props: IProps) {
   const { t } = useTranslation('promGraphCpt');
+  const isProOrEnt = import.meta.env.VITE_IS_ENT === 'true' || import.meta.env.VITE_IS_PRO === 'true'
   const {
-    url = '/api/n9e/proxy',
+    url = `/api/${isProOrEnt?'n9e-plus':'n9e'}/proxy`,
     datasourceValue,
     promQL,
     contentMaxHeight = 300,

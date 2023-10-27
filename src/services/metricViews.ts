@@ -26,7 +26,8 @@ export const getLabelValues = function (datasourceValue: number, label: string, 
   if (match) {
     params['match[]'] = match;
   }
-  return request(`/api/n9e/proxy/${datasourceValue}/api/v1/label/${label}/values`, {
+  const isProOrEnt = import.meta.env.VITE_IS_ENT === 'true' || import.meta.env.VITE_IS_PRO === 'true'
+  return request(`/api/${isProOrEnt?'n9e-plus':'n9e'}/proxy/${datasourceValue}/api/v1/label/${label}/values`, {
     method: RequestMethod.Get,
     params,
   }).then((res) => {
@@ -41,7 +42,8 @@ export const getLabels = function (datasourceValue: number, match: string, range
   if (match) {
     params['match[]'] = match;
   }
-  return request(`/api/n9e/proxy/${datasourceValue}/api/v1/labels`, {
+  const isProOrEnt = import.meta.env.VITE_IS_ENT === 'true' || import.meta.env.VITE_IS_PRO === 'true'
+  return request(`/api/${isProOrEnt?'n9e-plus':'n9e'}/proxy/${datasourceValue}/api/v1/labels`, {
     method: RequestMethod.Get,
     params,
   }).then((res) => {
@@ -50,7 +52,8 @@ export const getLabels = function (datasourceValue: number, match: string, range
 };
 
 export const getMetricValues = function (datasourceValue: number, match: string, range: IRawTimeRange) {
-  return request(`/api/n9e/proxy/${datasourceValue}/api/v1/label/__name__/values`, {
+  const isProOrEnt = import.meta.env.VITE_IS_ENT === 'true' || import.meta.env.VITE_IS_PRO === 'true'
+  return request(`/api/${isProOrEnt?'n9e-plus':'n9e'}/proxy/${datasourceValue}/api/v1/label/__name__/values`, {
     method: RequestMethod.Get,
     params: {
       ...timeRangeUnix(range),
@@ -131,7 +134,8 @@ export const getQueryRange = function (
     aggrGroups,
   });
   const requests = _.map(exprs, (expr) => {
-    return request(`/api/n9e/proxy/${datasourceValue}/api/v1/query_range`, {
+    const isProOrEnt = import.meta.env.VITE_IS_ENT === 'true' || import.meta.env.VITE_IS_PRO === 'true'
+  return request(`/api/${isProOrEnt?'n9e-plus':'n9e'}/proxy/${datasourceValue}/api/v1/query_range`, {
       method: RequestMethod.Get,
       params: {
         start: start - (start % _step!),

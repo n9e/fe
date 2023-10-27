@@ -168,7 +168,8 @@ export const fetchHistoryInstantBatch = (data, signalKey) => {
 };
 
 export const getLabelNames = function (data, datasourceValue: number) {
-  return request(`/api/n9e/proxy/${datasourceValue}/api/v1/labels`, {
+  const isProOrEnt = import.meta.env.VITE_IS_ENT === 'true' || import.meta.env.VITE_IS_PRO === 'true'
+  return request(`/api/${isProOrEnt?'n9e-plus':'n9e'}/proxy/${datasourceValue}/api/v1/labels`, {
     method: RequestMethod.Get,
     params: { ...data },
     silence: true,
@@ -176,7 +177,8 @@ export const getLabelNames = function (data, datasourceValue: number) {
 };
 
 export const getLabelValues = function (label, data, datasourceValue: number) {
-  return request(`/api/n9e/proxy/${datasourceValue}/api/v1/label/${label}/values`, {
+  const isProOrEnt = import.meta.env.VITE_IS_ENT === 'true' || import.meta.env.VITE_IS_PRO === 'true'
+  return request(`/api/${isProOrEnt?'n9e-plus':'n9e'}/proxy/${datasourceValue}/api/v1/label/${label}/values`, {
     method: RequestMethod.Get,
     params: { ...data },
     silence: true,
@@ -184,7 +186,8 @@ export const getLabelValues = function (label, data, datasourceValue: number) {
 };
 
 export const getMetricSeries = function (data, datasourceValue: number) {
-  return request(`/api/n9e/proxy/${datasourceValue}/api/v1/series`, {
+  const isProOrEnt = import.meta.env.VITE_IS_ENT === 'true' || import.meta.env.VITE_IS_PRO === 'true'
+  return request(`/api/${isProOrEnt?'n9e-plus':'n9e'}/proxy/${datasourceValue}/api/v1/series`, {
     method: RequestMethod.Get,
     params: { ...data },
     silence: true,
@@ -192,7 +195,8 @@ export const getMetricSeries = function (data, datasourceValue: number) {
 };
 
 export const getMetric = function (data = {}, datasourceValue: number) {
-  return request(`/api/n9e/proxy/${datasourceValue}/api/v1/label/__name__/values`, {
+  const isProOrEnt = import.meta.env.VITE_IS_ENT === 'true' || import.meta.env.VITE_IS_PRO === 'true'
+  return request(`/api/${isProOrEnt?'n9e-plus':'n9e'}/proxy/${datasourceValue}/api/v1/label/__name__/values`, {
     method: RequestMethod.Get,
     params: { ...data },
     silence: true,
@@ -200,7 +204,8 @@ export const getMetric = function (data = {}, datasourceValue: number) {
 };
 
 export const getQueryResult = function (data, datasourceValue: number) {
-  return request(`/api/n9e/proxy/${datasourceValue}/api/v1/query`, {
+  const isProOrEnt = import.meta.env.VITE_IS_ENT === 'true' || import.meta.env.VITE_IS_PRO === 'true'
+  return request(`/api/${isProOrEnt?'n9e-plus':'n9e'}/proxy/${datasourceValue}/api/v1/query`, {
     method: RequestMethod.Get,
     params: { ...data },
     silence: true,
@@ -208,7 +213,8 @@ export const getQueryResult = function (data, datasourceValue: number) {
 };
 
 export function getESVariableResult(datasourceValue: number, index, requestBody) {
-  return request(`/api/n9e/proxy/${datasourceValue}/${index}/_search`, {
+  const isProOrEnt = import.meta.env.VITE_IS_ENT === 'true' || import.meta.env.VITE_IS_PRO === 'true'
+  return request(`/api/${isProOrEnt?'n9e-plus':'n9e'}/proxy/${datasourceValue}/${index}/_search`, {
     method: RequestMethod.Post,
     data: JSON.stringify(requestBody),
     headers: {
