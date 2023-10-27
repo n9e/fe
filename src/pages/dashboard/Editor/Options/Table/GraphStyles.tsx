@@ -214,7 +214,7 @@ export default function GraphStyles({ chartForm, variableConfigWithOptions }) {
                           },
                         ]}
                       >
-                        <Input />
+                        <Input placeholder={t('link.name')} />
                       </Form.Item>
                       <Form.Item
                         {...restField}
@@ -226,7 +226,7 @@ export default function GraphStyles({ chartForm, variableConfigWithOptions }) {
                           },
                         ]}
                       >
-                        <Input style={{ width: 284 }} />
+                        <Input style={{ width: 284 }} placeholder={t('link.url')} />
                       </Form.Item>
                       <Tooltip title={t('panel.base.link.isNewBlank')}>
                         <Form.Item {...restField} name={[name, 'targetBlank']} valuePropName='checked'>
