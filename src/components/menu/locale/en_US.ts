@@ -40,5 +40,11 @@ const en_US = {
   网络设备: 'Network Devices',
   仪表盘迁移: 'Dashboard Migration',
   全局屏蔽: 'Global Muting',
+  产品集成: 'Integration',
+  服务日历: 'Service Calendar',
+  采集模板: 'Collector Templates',
+  拨测管理: 'Ping',
+  拨测状态: 'Ping Status',
+  Pingmesh配置: 'Pingmesh Config',
 };
 export default en_US;
