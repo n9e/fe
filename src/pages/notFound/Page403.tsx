@@ -25,11 +25,6 @@ const NotFound: React.FC = () => {
       <Result
         title='403'
         subTitle='你没有权限访问该页面, 请联系管理员!'
-        extra={
-          <Button type='primary' onClick={() => history.go(-2)}>
-            返回上一页
-          </Button>
-        }
       />
     </div>
   );
