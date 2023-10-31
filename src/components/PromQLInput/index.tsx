@@ -30,6 +30,7 @@ import { lintKeymap } from '@codemirror/lint';
 import { autocompletion, completionKeymap } from '@codemirror/autocomplete';
 import { PromQLExtension } from 'codemirror-promql';
 import { baseTheme, promqlHighlighter } from './CMTheme';
+import { N9E_PATHNAME } from '@/utils/constant';
 
 export { PromQLInputWithBuilder } from './PromQLInputWithBuilder';
 
@@ -51,7 +52,7 @@ export interface CMExpressionInputProps {
 
 const ExpressionInput = (
   {
-    url = '/api/n9e/proxy',
+    url = `/api/${N9E_PATHNAME}/proxy`,
     headers,
     value,
     onChange,

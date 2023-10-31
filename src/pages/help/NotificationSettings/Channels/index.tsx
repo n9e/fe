@@ -20,6 +20,7 @@ export default function Channels() {
   return (
     <div className='channels-container'>
       <Table<ChannelType>
+        rowKey='ident'
         size='small'
         tableLayout='fixed'
         pagination={false}

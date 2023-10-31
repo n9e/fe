@@ -185,9 +185,9 @@ function TableCpt(props: IProps, ref: any) {
           return localeCompare(a.name, b.name);
         },
         sortOrder: getSortOrder('name', sortObj),
-        render: (text) => {
+        render: (text, record) => {
           const textObj = getMappedTextObj(text, options?.valueMappings);
-          return <Cell {...textObj} panel={values} />;
+          return <Cell {...textObj} panel={values} time={time} record={record} />;
           return (
             <div
               className='renderer-table-td-content'
@@ -220,7 +220,7 @@ function TableCpt(props: IProps, ref: any) {
             textObj = getSerieTextObj(record?.stat, overrideProps?.standardOptions, overrideProps?.valueMappings);
           }
           const colorObj = getColor(textObj.color, colorMode, themeMode);
-          return <Cell {...textObj} style={colorObj} panel={values} />;
+          return <Cell {...textObj} style={colorObj} panel={values} time={time} record={record} />;
           return (
             <div
               className='renderer-table-td-content'
@@ -263,7 +263,7 @@ function TableCpt(props: IProps, ref: any) {
                 textObj = getSerieTextObj(record?.stat, overrideProps?.standardOptions, overrideProps?.valueMappings);
               }
               const colorObj = getColor(textObj.color, colorMode, themeMode);
-              return <Cell {...textObj} style={colorObj} panel={values} />;
+              return <Cell {...textObj} style={colorObj} panel={values} time={time} record={record} />;
               return (
                 <div
                   className='renderer-table-td-content'
@@ -280,7 +280,7 @@ function TableCpt(props: IProps, ref: any) {
             if (!_.isEmpty(overrideProps)) {
               textObj = getSerieTextObj(_.toNumber(textObj.text), overrideProps?.standardOptions, overrideProps?.valueMappings);
             }
-            return <Cell {...textObj} panel={values} />;
+            return <Cell {...textObj} panel={values} time={time} record={record} />;
             return (
               <div
                 className='renderer-table-td-content'
@@ -317,9 +317,9 @@ function TableCpt(props: IProps, ref: any) {
             return localeCompare(a[aggrDimension], b[aggrDimension]);
           },
           sortOrder: getSortOrder(aggrDimension, sortObj),
-          render: (text) => {
+          render: (text, record) => {
             const textObj = getMappedTextObj(text, options?.valueMappings);
-            return <Cell {...textObj} panel={values} />;
+            return <Cell {...textObj} panel={values} time={time} record={record} />;
             return (
               <div
                 className='renderer-table-td-content'
@@ -359,7 +359,7 @@ function TableCpt(props: IProps, ref: any) {
               textObj = getSerieTextObj(record?.stat, overrideProps?.standardOptions, overrideProps?.valueMappings);
             }
             const colorObj = getColor(textObj.color, colorMode, themeMode);
-            return <Cell {...textObj} style={colorObj} panel={values} />;
+            return <Cell {...textObj} style={colorObj} panel={values} time={time} record={record} />;
             return (
               <div
                 className='renderer-table-td-content'

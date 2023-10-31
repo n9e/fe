@@ -16,9 +16,10 @@
  */
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
+import { N9E_PATHNAME } from '@/utils/constant';
 
 export const getESIndexPatterns = function (datasource_id?: number) {
-  return request('/api/n9e/es-index-pattern-list', {
+  return request(`/api/${N9E_PATHNAME}/es-index-pattern-list`, {
     method: RequestMethod.Get,
     params: {
       datasource_id,
