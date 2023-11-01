@@ -68,19 +68,16 @@ export default function index(props: IProps) {
                   >
                     <Select placeholder='auto' allowClear showSearch>
                       <Option value='none'>none</Option>
-                      <OptGroup label='Data(SI)'>
+                      <OptGroup label='Data'>
                         <Option value='bitsSI'>bits(SI)</Option>
                         <Option value='bytesSI'>bytes(SI)</Option>
-                      </OptGroup>
-                      <OptGroup label='Data(IEC)'>
                         <Option value='bitsIEC'>bits(IEC)</Option>
                         <Option value='bytesIEC'>bytes(IEC)</Option>
                       </OptGroup>
-                      <OptGroup label='Data rate(SI)'>
+                      <OptGroup label='Data rate'>
+                        <Option value='packetsSec'>packets/sec</Option>
                         <Option value='bitsSecSI'>bits/sec(SI)</Option>
                         <Option value='bytesSecSI'>bytes/sec(SI)</Option>
-                      </OptGroup>
-                      <OptGroup label='Data rate(IEC)'>
                         <Option value='bitsSecIEC'>bits/sec(IEC)</Option>
                         <Option value='bytesSecIEC'>bytes/sec(IEC)</Option>
                       </OptGroup>
