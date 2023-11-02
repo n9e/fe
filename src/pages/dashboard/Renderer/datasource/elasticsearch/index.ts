@@ -10,6 +10,7 @@ import { replaceExpressionVars } from '../../../VariableConfig/constant';
 import { getSeriesQuery, getLogsQuery } from './queryBuilder';
 import { processResponseToSeries } from './processResponse';
 import { flattenHits } from '@/pages/explorer/Elasticsearch/utils';
+import { N9E_PATHNAME } from '@/utils/constant';
 
 interface IOptions {
   dashboardId: string;
@@ -147,7 +148,7 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
         resolveData.query.push({
           type: 'TimeSeries',
           request: {
-            url: `/api/n9e/proxy/${datasourceValue}/_msearch`,
+            url: `/api/${N9E_PATHNAME}/proxy/${datasourceValue}/_msearch`,
             method: 'POST',
             data: dsPlayload,
           },
@@ -158,7 +159,7 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
         resolveData.query.push({
           type: 'Logs',
           request: {
-            url: `/api/n9e/proxy/${datasourceValue}/_msearch`,
+            url: `/api/${N9E_PATHNAME}/proxy/${datasourceValue}/_msearch`,
             method: 'POST',
             data: logPlayload,
           },

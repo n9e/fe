@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { ReactNode, useContext } from 'react';
+import React, { ReactNode, useContext, useState, useEffect } from 'react';
 import { useHistory, Link } from 'react-router-dom';
 import Icon, { RollbackOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
@@ -39,11 +39,22 @@ interface IPageLayoutProps {
   docFn?: Function;
 }
 
+const i18nMap = {
+  zh_CN: '简体',
+  zh_HK: '繁體',
+  en_US: 'En',
+};
+
 const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introIcon, children, customArea, showBack, backPath, docFn }) => {
   const { t, i18n } = useTranslation('pageLayout');
   const history = useHistory();
   const { profile, siteInfo } = useContext(CommonStateContext);
   const embed = localStorage.getItem('embed') === '1' && window.self !== window.top;
+  const [curLanguage, setCurLanguage] = useState(i18nMap[i18n.language] || '中文');
+  useEffect(() => {
+    setCurLanguage(i18nMap[i18n.language] || '中文');
+  }, [i18n.language]);
+
   const menu = (
     <Menu>
       <Menu.Item
@@ -144,17 +155,26 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                     <License />
                   </AdvancedWrap>
 
-                  {/* 文案完善了再打开 */}
-                  <span
-                    className='language'
-                    onClick={() => {
-                      let language = i18n.language == 'en_US' ? 'zh_CN' : 'en_US';
-                      i18n.changeLanguage(language);
-                      localStorage.setItem('language', language);
+                  <Dropdown
+                overlay={
+                  <Menu
+                    onSelect={({ key }) => {
+                      i18n.changeLanguage(key);
+                      setCurLanguage(i18nMap[key]);
+                      localStorage.setItem('language', key);
                     }}
+                    selectable
                   >
-                    {i18n.language == 'zh_CN' ? 'EN' : '中'}
-                  </span>
+                    {Object.keys(i18nMap).map((el) => {
+                      return <Menu.Item key={el}>{i18nMap[el]}</Menu.Item>;
+                    })}
+                  </Menu>
+                }
+              >
+                <a style={{ marginRight: 20 }} onClick={(e) => e.preventDefault()} id='i18n-btn'>
+                  {curLanguage}
+                </a>
+              </Dropdown>
                   <Dropdown overlay={menu} trigger={['click']}>
                     <span className='avator'>
                       <img src={profile.portrait || '/image/avatar1.png'} alt='' />

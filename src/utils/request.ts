@@ -3,6 +3,7 @@ import { extend } from 'umi-request';
 import { notification } from 'antd';
 import _ from 'lodash';
 import { UpdateAccessToken } from '@/services/login';
+import { N9E_PATHNAME } from '@/utils/constant';
 
 /** 异常处理程序，所有的error都被这里处理，页面无法感知具体error */
 const errorHandler = (error: Error): Response => {
@@ -79,7 +80,7 @@ request.interceptors.response.use(
           // proxy/elasticsearch 返回的数据结构是 { ...data }
           // proxy/jeager 返回的数据结构是 { data: [], errors: [] }
           if (
-            _.some(['/api/n9e/proxy', '/probe/v1'], (item) => {
+            _.some([`/api/${N9E_PATHNAME}/proxy`, '/probe/v1'], (item) => {
               return url.includes(item);
             })
           ) {
