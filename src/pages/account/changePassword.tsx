@@ -35,7 +35,7 @@ export default function ChangePassword() {
   const modifyPassword = () => {
     const { oldpass, newpass } = form.getFieldsValue();
     UpdatePwd(oldpass, newpass).then(() => {
-      message.success(t('changeSuccess'));
+      message.success(t('password.changeSuccess'));
     });
   };
 

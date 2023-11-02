@@ -30,7 +30,7 @@ import { GetProfile } from '@/services/account';
 import { getBusiGroups, getDatasourceBriefList } from '@/services/common';
 import { getLicense } from '@/components/AdvancedWrap';
 import { getVersions } from '@/components/pageLayout/Version/services';
-import HeaderMenu from './components/menu';
+import HeaderMenu from './components/menu/SideMenu';
 import Content from './routers';
 
 // @ts-ignore
