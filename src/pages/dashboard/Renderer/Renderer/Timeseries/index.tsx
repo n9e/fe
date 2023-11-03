@@ -79,7 +79,7 @@ function getStartAndEndByTargets(targets: any[]) {
   return { start, end };
 }
 
-function NameWithTooltip({ text, record }) {
+function NameWithTooltip({ record, children }) {
   return (
     <Tooltip
       placement='left'
@@ -99,8 +99,7 @@ function NameWithTooltip({ text, record }) {
       }
       getTooltipContainer={() => document.body}
     >
-      {record.offset && record.offset !== 'current' ? <span style={{ paddingRight: 5 }}>offfset {record.offset}</span> : ''}
-      <span>{text}</span>
+      {children}
     </Tooltip>
   );
 }
@@ -311,7 +310,14 @@ export default function index(props: IProps) {
         showTitle: false,
       },
       render: (text, record: any) => {
-        return <NameWithTooltip text={text} record={record} />;
+        return (
+          <NameWithTooltip record={record}>
+            <div className='ant-table-cell-ellipsis'>
+              {record.offset && record.offset !== 'current' ? <span style={{ paddingRight: 5 }}>offfset {record.offset}</span> : ''}
+              <span>{text}</span>
+            </div>
+          </NameWithTooltip>
+        );
       },
     },
   ];
@@ -371,13 +377,14 @@ export default function index(props: IProps) {
         className='renderer-timeseries-legend-table'
         style={{
           [inDashboard ? 'maxHeight' : 'maxHeight']: _tableHeight,
-          height: legendEleSize?.height! + 14,
+          // height: legendEleSize?.height! + 14,
           width: placement === 'right' ? (isExpanded ? '100%' : 'max-content') : '100%',
           maxWidth: placement === 'right' ? (isExpanded ? '100%' : '40%') : '100%',
           overflow: 'hidden',
           overflowY: 'auto',
           display: hasLegend ? 'block' : 'none',
-          flexShrink: 0,
+          flexShrink: displayMode === 'table' ? 1 : 0,
+          minHeight: 0,
         }}
       >
         {displayMode === 'table' && (
@@ -442,9 +449,10 @@ export default function index(props: IProps) {
                     })}
                   >
                     <span className='renderer-timeseries-legend-color-symbol' style={{ backgroundColor: item.color }} />
-                    <span className='renderer-timeseries-legend-list-item-name'>
-                      <NameWithTooltip text={item.name} record={item} />
-                    </span>
+                    <NameWithTooltip record={item}>
+                      <span className='renderer-timeseries-legend-list-item-name'>{item.name}</span>
+                    </NameWithTooltip>
+
                     <span className='renderer-timeseries-legend-list-item-calcs'>
                       {_.map(legendColumns, (column) => {
                         return (
