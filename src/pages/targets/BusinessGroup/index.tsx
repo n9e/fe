@@ -42,7 +42,7 @@ export function listToTree2(data: { id: number; name: string }[]) {
             return temp.children;
           },
           r,
-        ).push({ id: item.id, key: `${item.id}_${text}`, originName: item.name, title: text, isLeaf: true });
+        ).push({ id: item.id, key: `${item.id}_${text}`, originName: item.name, title: text + ' ', isLeaf: true });
       } else {
         r.push({
           id: item.id,
@@ -211,7 +211,6 @@ export default function index(props: IProps) {
                 blockNode
                 switcherIcon={<DownOutlined />}
                 onSelect={(_selectedKeys, e) => {
-                  console.log(111);
                   const nodeId = e.node.id;
                   if (nodeId !== curBusiId) {
                     localStorage.setItem('curBusiId', _.toString(nodeId));
