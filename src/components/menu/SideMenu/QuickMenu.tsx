@@ -96,6 +96,7 @@ export default forwardRef(function QuickMenu(props: Props, ref) {
         e.preventDefault();
         setOpen((open) => !open);
       } else if (e.key === 'ArrowDown') {
+        if (!open) return;
         setActiveIndex((activeIndex) => {
           if (menusRef.current) {
             if (activeIndex === -1) return -1;
@@ -109,6 +110,7 @@ export default forwardRef(function QuickMenu(props: Props, ref) {
           return activeIndex;
         });
       } else if (e.key === 'ArrowUp') {
+        if (!open) return;
         setActiveIndex((activeIndex) => {
           if (menusRef.current) {
             if (activeIndex === -1) return -1;
@@ -122,6 +124,7 @@ export default forwardRef(function QuickMenu(props: Props, ref) {
           return activeIndex;
         });
       } else if (e.key === 'Enter') {
+        if (!open) return;
         if (activeIndex > -1) {
           const item = filteredMenus[activeIndex] as QuickMenuItem;
           setOpen(false);
@@ -132,7 +135,7 @@ export default forwardRef(function QuickMenu(props: Props, ref) {
     };
     document.addEventListener('keydown', down);
     return () => document.removeEventListener('keydown', down);
-  }, [activeIndex, menus]);
+  }, [activeIndex, menus, open]);
 
   useImperativeHandle(ref, () => ({
     open: () => setOpen(true),
@@ -142,6 +145,7 @@ export default forwardRef(function QuickMenu(props: Props, ref) {
   return (
     <Modal
       className='quick-menu-modal'
+      destroyOnClose
       visible={open}
       onCancel={() => {
         setOpen(false);

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState, useContext } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons';
+import { MenuUnfoldOutlined, MenuFoldOutlined, NotificationFilled } from '@ant-design/icons';
 import _ from 'lodash';
 import querystring from 'query-string';
 import { useTranslation } from 'react-i18next';
@@ -67,6 +67,40 @@ export const getMenuList = (t) => {
       ],
     },
     {
+      key: 'notification',
+      icon: <NotificationFilled />,
+      label: t('告警通知'),
+      children: [
+        {
+          key: '/help/notification-settings',
+          label: t('通知设置'),
+        },
+        {
+          key: '/help/notification-tpls',
+          label: t('通知模板'),
+        },
+      ],
+    },
+    {
+      key: 'job',
+      icon: <IconFont type='icon-Menu_AlarmSelfhealing' />,
+      label: t('告警自愈'),
+      children: [
+        {
+          key: '/job-tpls',
+          label: t('自愈脚本'),
+        },
+        {
+          key: '/job-tasks',
+          label: t('执行历史'),
+        },
+        {
+          key: '/ibex-settings',
+          label: t('自愈配置'),
+        },
+      ],
+    },
+    {
       key: 'metric',
       icon: <IconFont type='icon-IndexManagement1' />,
       label: t('时序指标'),
@@ -111,26 +145,6 @@ export const getMenuList = (t) => {
         },
       ],
     },
-
-    {
-      key: 'job',
-      icon: <IconFont type='icon-Menu_AlarmSelfhealing' />,
-      label: t('告警自愈'),
-      children: [
-        {
-          key: '/job-tpls',
-          label: t('自愈脚本'),
-        },
-        {
-          key: '/job-tasks',
-          label: t('执行历史'),
-        },
-        {
-          key: '/ibex-settings',
-          label: t('自愈配置'),
-        },
-      ],
-    },
     {
       key: 'manage',
       icon: <IconFont type='icon-Menu_PersonnelOrganization' />,
@@ -168,14 +182,6 @@ export const getMenuList = (t) => {
           label: t('变量设置'),
         },
         {
-          key: '/help/notification-settings',
-          label: t('通知设置'),
-        },
-        {
-          key: '/help/notification-tpls',
-          label: t('通知模板'),
-        },
-        {
           key: '/help/sso',
           label: t('单点登录'),
         },
@@ -183,11 +189,10 @@ export const getMenuList = (t) => {
           key: '/help/servers',
           label: t('告警引擎'),
         },
-
-        {
-          key: '/help/migrate',
-          label: t('仪表盘迁移'),
-        },
+        // {
+        //   key: '/help/migrate',
+        //   label: t('仪表盘迁移'),
+        // },
         {
           key: '/help/version',
           label: t('系统版本'),
