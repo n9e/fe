@@ -23,6 +23,7 @@ export default function Cell(props: Props) {
   const { links, linkMode } = custom;
   const firstLink = _.first<any>(links);
   const styleObj = style || { color };
+  if (!record) return null;
   const data = {
     name: record.name,
     value: record.value,
