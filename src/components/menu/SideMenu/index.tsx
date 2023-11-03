@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { getMenuPerm } from '@/services/common';
 import { ScrollArea } from '@/components/ScrollArea';
 import { CommonStateContext } from '@/App';
+import { getSideMenuBgColor } from '@/components/pageLayout/SideMenuColorSetting';
 import IconFont from '../../IconFont';
 import { cn } from './utils';
 import SideMenuHeader from './Header';
@@ -206,15 +207,15 @@ export const getMenuList = (t) => {
 
 const SideMenu = () => {
   const { t, i18n } = useTranslation('menu');
-  const { profile, isPlus } = useContext(CommonStateContext);
+  const { profile, isPlus, sideMenuBgMode } = useContext(CommonStateContext);
+  const sideMenuBgColor = getSideMenuBgColor(sideMenuBgMode as any);
   const history = useHistory();
   const location = useLocation();
   const [selectedKeys, setSelectedKeys] = useState<string[]>();
   const [collapsed, setCollapsed] = useState<boolean>(Number(localStorage.getItem('menuCollapsed')) === 1);
   const [collapsedHover, setCollapsedHover] = useState<boolean>(false);
   const quickMenuRef = useRef<{ open: () => void }>({ open: () => {} });
-  const sideMenuBgColor = 'rgb(108, 83, 177)';
-  const isCustomBg = true;
+  const isCustomBg = sideMenuBgMode !== 'light';
   const menuList = isPlus ? getPlusMenu(t) : getMenuList(t);
   const [menus, setMenus] = useState<IMenuItem[]>(menuList);
   const menuPaths = useMemo(
@@ -309,7 +310,7 @@ const SideMenu = () => {
           style={{ background: sideMenuBgColor }}
         >
           <div className='flex flex-1 flex-col justify-between gap-8 overflow-hidden'>
-            <SideMenuHeader collapsed={collapsed} sideMenuBgColor={sideMenuBgColor} isCustomBg={isCustomBg} />
+            <SideMenuHeader collapsed={collapsed} collapsedHover={collapsedHover} sideMenuBgMode={sideMenuBgMode} />
             <ScrollArea className='-mr-2 flex-1'>
               <MenuList
                 list={menus}

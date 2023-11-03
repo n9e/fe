@@ -92,6 +92,8 @@ export interface ICommonState {
   };
   isPlus: boolean;
   siteInfo?: { [index: string]: string };
+  sideMenuBgMode: string;
+  setSideMenuBgMode: (color: string) => void;
 }
 
 // 可以匿名访问的路由 TODO: job-task output 应该也可以匿名访问
@@ -132,6 +134,11 @@ function App() {
       newVersion: false,
     },
     isPlus,
+    sideMenuBgMode: localStorage.getItem('sideMenuBgMode') || 'theme',
+    setSideMenuBgMode: (mode: string) => {
+      window.localStorage.setItem('sideMenuBgMode', mode);
+      setCommonState((state) => ({ ...state, sideMenuBgMode: mode }));
+    },
   });
 
   useEffect(() => {
