@@ -60,6 +60,9 @@ export default function TableCpt(props: IProps) {
       dataIndex: 'datasource_id',
       width: 100,
       render: (value, record) => {
+        if (value === 0) {
+          return '$all';
+        }
         return _.find(groupedDatasourceList?.[record.cate], { id: value })?.name || '-';
       },
     },

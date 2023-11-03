@@ -99,24 +99,14 @@ function Card(props: Props, ref) {
       },
     },
     {
-      title: t('common:datasource.name'),
+      title: t('common:datasource.id'),
       dataIndex: 'datasource_id',
       width: 100,
       render: (value, record) => {
         if (value === 0) {
-          return (
-            <Tag color='purple' key={value}>
-              $all
-            </Tag>
-          );
+          return '$all';
         }
-        const name = _.find(groupedDatasourceList[record.cate], { id: value })?.name;
-        if (!name) return null;
-        return (
-          <Tag color='purple' key={value}>
-            {_.find(groupedDatasourceList[record.cate], { id: value })?.name}
-          </Tag>
-        );
+        return _.find(groupedDatasourceList?.[record.cate], { id: value })?.name || '-';
       },
     },
     {
