@@ -26,6 +26,10 @@ interface IProps {
 
 export const units = [
   {
+    label: 'auto',
+    value: undefined,
+  },
+  {
     label: 'none',
     value: 'none',
   },
