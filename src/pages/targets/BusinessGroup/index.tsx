@@ -3,7 +3,7 @@ import { Resizable } from 're-resizable';
 import _ from 'lodash';
 import classNames from 'classnames';
 import { Link, useHistory } from 'react-router-dom';
-import { Input, Space } from 'antd';
+import { Input, Space, Tree } from 'antd';
 import { LeftOutlined, RightOutlined, SettingOutlined, SearchOutlined, DownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { getBusiGroups } from '@/services/common';
@@ -22,6 +22,41 @@ interface Node {
   title: string;
   key: string | number;
   children?: Node[];
+}
+
+export function listToTree2(data: { id: number; name: string }[]) {
+  const result = _.reduce(
+    data,
+    (r, item) => {
+      const keys = item.name.split('-');
+
+      if (keys.length > 1) {
+        const text = keys.pop();
+        _.reduce(
+          keys,
+          (q, text) => {
+            var temp = _.find(q, (o) => o.title === text);
+            if (!temp) {
+              q.push((temp = { id: item.id, key: `${item.id}_${text}`, originName: item.name, title: text, selectable: false, children: [] }));
+            }
+            return temp.children;
+          },
+          r,
+        ).push({ id: item.id, key: `${item.id}_${text}`, originName: item.name, title: text, isLeaf: true });
+      } else {
+        r.push({
+          id: item.id,
+          key: `${item.id}_${item.name}`,
+          title: item.name + ' ', // 防止节点跟组名称重复 antd tree 不会渲染同名节点问题
+          originName: item.name,
+          isLeaf: true,
+        });
+      }
+      return r;
+    },
+    [] as any[],
+  );
+  return result;
 }
 
 export function listToTree(data: { id: number; name: string }[]) {
@@ -168,78 +203,27 @@ export default function index(props: IProps) {
             }}
           />
           <div className='radio-list'>
-            {_.map(listToTree(businessGroupData), (item) => {
-              if (item.children) {
-                return (
-                  <div className='n9e-biz-group-item n9e-biz-group-group' key={item.key}>
-                    <div
-                      className='name'
-                      onClick={() => {
-                        let newCollapsedNodes = _.cloneDeep(collapsedNodes);
-                        if (_.includes(newCollapsedNodes, item.key)) {
-                          newCollapsedNodes = _.without(newCollapsedNodes, item.key as string);
-                        } else {
-                          newCollapsedNodes.push(item.key as string);
-                        }
-                        setCollapsedNodes(newCollapsedNodes);
-                        setLocaleCollapsedNodes(newCollapsedNodes);
-                      }}
-                    >
-                      <Space
-                        style={{
-                          width: '100%',
-                          justifyContent: 'space-between',
-                        }}
-                      >
-                        {item.title}
-                        {!_.includes(collapsedNodes, item.key) ? <DownOutlined /> : <RightOutlined />}
-                      </Space>
-                    </div>
-                    {!_.includes(collapsedNodes, item.key) && (
-                      <div className='children'>
-                        {_.map(item.children, (child) => {
-                          return (
-                            <div
-                              className={classNames({
-                                'n9e-biz-group-item': true,
-                                active: child.id == curBusiId,
-                              })}
-                              key={child.id}
-                              onClick={() => {
-                                if (child.id !== curBusiId) {
-                                  localStorage.setItem('curBusiId', _.toString(child.id));
-                                  setCurBusiId && setCurBusiId(child.id, child);
-                                }
-                              }}
-                            >
-                              <div className='name'>{child.title}</div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-                );
-              } else {
-                return (
-                  <div
-                    className={classNames({
-                      'n9e-biz-group-item': true,
-                      active: item.id == curBusiId,
-                    })}
-                    key={item.key}
-                    onClick={() => {
-                      if (item.id !== curBusiId) {
-                        localStorage.setItem('curBusiId', _.toString(item.id));
-                        setCurBusiId && setCurBusiId(item.id, item);
-                      }
-                    }}
-                  >
-                    <div className='name'>{item.title}</div>
-                  </div>
-                );
-              }
-            })}
+            {!_.isEmpty(businessGroupData) && (
+              <Tree
+                rootClassName='business-group-tree'
+                showLine={true}
+                defaultExpandAll
+                blockNode
+                switcherIcon={<DownOutlined />}
+                onSelect={(_selectedKeys, e) => {
+                  console.log(111);
+                  const nodeId = e.node.id;
+                  if (nodeId !== curBusiId) {
+                    localStorage.setItem('curBusiId', _.toString(nodeId));
+                    setCurBusiId && setCurBusiId(nodeId, e.node);
+                  }
+                }}
+                onExpand={(expandedKeys) => {
+                  console.log(expandedKeys);
+                }}
+                treeData={listToTree2(businessGroupData as any)}
+              />
+            )}
           </div>
         </div>
       </div>
