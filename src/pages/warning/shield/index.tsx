@@ -188,7 +188,7 @@ const Shield: React.FC = () => {
     {
       title: t('common:table.enabled'),
       dataIndex: 'disabled',
-      width: 40,
+      width: 80,
       render: (disabled, record) => (
         <Switch
           checked={disabled === strategyStatus.Enable}
