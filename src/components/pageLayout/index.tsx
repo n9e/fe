@@ -26,6 +26,7 @@ import { CommonStateContext } from '@/App';
 import Version from './Version';
 import './index.less';
 import './locale';
+import { AccessTokenKey } from '@/utils/constant';
 
 interface IPageLayoutProps {
   icon?: ReactNode;
@@ -67,7 +68,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
       <Menu.Item
         onClick={() => {
           Logout().then(() => {
-            localStorage.removeItem('access_token');
+            localStorage.removeItem(AccessTokenKey);
             localStorage.removeItem('refresh_token');
             localStorage.removeItem('curBusiId');
             history.push('/login');

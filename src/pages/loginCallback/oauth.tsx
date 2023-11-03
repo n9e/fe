@@ -18,6 +18,7 @@ import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router';
 import queryString from 'query-string';
 import { authCallbackOAuth } from '@/services/login';
+import { AccessTokenKey } from '@/utils/constant';
 
 export default function index() {
   const location = useLocation();
@@ -33,7 +34,7 @@ export default function index() {
       .then((res) => {
         if (res.err === '') {
           if (res.dat && res.dat.access_token && res.dat.refresh_token) {
-            localStorage.setItem('access_token', res.dat.access_token);
+            localStorage.setItem(AccessTokenKey, res.dat.access_token);
             localStorage.setItem('refresh_token', res.dat.refresh_token);
             window.location.href = res.dat.redirect;
           } else {

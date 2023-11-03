@@ -30,7 +30,7 @@ import { lintKeymap } from '@codemirror/lint';
 import { autocompletion, completionKeymap } from '@codemirror/autocomplete';
 import { PromQLExtension } from 'codemirror-promql';
 import { baseTheme, promqlHighlighter } from './CMTheme';
-import { N9E_PATHNAME } from '@/utils/constant';
+import { N9E_PATHNAME, AccessTokenKey } from '@/utils/constant';
 
 export { PromQLInputWithBuilder } from './PromQLInputWithBuilder';
 
@@ -71,7 +71,7 @@ const ExpressionInput = (
   const executeQueryCallback = useRef(executeQuery);
   const realValue = useRef<string | undefined>(value || '');
   const defaultHeaders = {
-    Authorization: `Bearer ${localStorage.getItem('access_token') || ''}`,
+    Authorization: `Bearer ${localStorage.getItem(AccessTokenKey) || ''}`,
   };
 
   useEffect(() => {
