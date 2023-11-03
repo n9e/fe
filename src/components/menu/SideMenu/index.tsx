@@ -14,6 +14,7 @@ import MenuList from './MenuList';
 import QuickMenu from './QuickMenu';
 import { IMenuItem } from './types';
 import './menu.less';
+import '../locale';
 
 // @ts-ignore
 import getPlusMenu from 'plus:/menu';
@@ -283,6 +284,8 @@ const SideMenu = () => {
     }
   }, [menuPaths, location.pathname, selectedKeys]);
 
+  const uncollapsedWidth = i18n.language === 'en_US' ? 'w-[210px]' : 'w-[172px]';
+
   return (
     <div
       id='#tailwind'
@@ -300,8 +303,8 @@ const SideMenu = () => {
         <div
           className={cn(
             'z-10 flex h-full select-none flex-col justify-between border-0 border-r border-solid border-fc-300 transition-width',
-            collapsed ? 'w-[64px]' : 'w-[172px]',
-            collapsedHover ? 'absolute w-[172px] shadow-mf' : '',
+            collapsed ? 'w-[64px]' : uncollapsedWidth,
+            collapsedHover ? `absolute ${uncollapsedWidth} shadow-mf` : '',
           )}
           style={{ background: sideMenuBgColor }}
         >
@@ -342,7 +345,7 @@ const SideMenu = () => {
           </div>
         </div>
       </div>
-      <QuickMenu ref={quickMenuRef} menuList={menuList} />
+      <QuickMenu ref={quickMenuRef} menuList={menus} />
     </div>
   );
 };

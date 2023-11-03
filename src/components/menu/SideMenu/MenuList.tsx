@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { RightOutlined } from '@ant-design/icons';
 import { IMenuItem } from './types';
 import { cn } from './utils';
-import { useEffect, useState } from 'react';
 import IconFont from '../../IconFont';
 
 interface IMenuProps {
@@ -90,12 +90,17 @@ export default function MenuList(
     list: IMenuItem[];
   } & IMenuProps,
 ) {
+  const { t } = useTranslation('menu');
   const { list, ...otherProps } = props;
 
   return (
     <>
       <div className={cn('h-full pl-2 pr-4', props.isCustomBg ? 'text-[#e6e6e8]' : 'text-main')}>
-        <MenuItem {...otherProps} item={{ key: 'quickJump', label: '快捷跳转', icon: <IconFont type='icon-Menu_Search' /> }} onClick={() => props.quickMenuRef.current.open()} />
+        <MenuItem
+          {...otherProps}
+          item={{ key: 'quickJump', label: t('quickJump'), icon: <IconFont type='icon-Menu_Search' /> }}
+          onClick={() => props.quickMenuRef.current.open()}
+        />
         <div className={cn('my-2 h-px w-full', props.isCustomBg ? 'bg-white/10' : 'bg-fc-200')}></div>
         <div className='space-y-1'>
           {list

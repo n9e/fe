@@ -1,5 +1,6 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useContext, useState } from 'react';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { match } from 'pinyin-pro';
 import { Modal } from 'antd';
@@ -49,25 +50,12 @@ const calcVisibleMenuRange = (scrollTop) => {
 };
 
 export default forwardRef(function QuickMenu(props: Props, ref) {
+  const { t } = useTranslation('menu');
   const { menuList } = props;
   const history = useHistory();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
-  const [menus, setMenus] = useState(
-    (() => {
-      const newMenus: QuickMenuItem[] = [];
-
-      _.forEach(menuList, (item) => {
-        if (item.children?.length) {
-          _.forEach(item.children, (child) => {
-            newMenus.push({ ...child, parent: item });
-          });
-        }
-      });
-
-      return sortQuickMenuItems(newMenus);
-    })(),
-  );
+  const [menus, setMenus] = useState<QuickMenuItem[]>([]);
   const [lockMouseHover, setLockMouseHover] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const searchInputRef = React.useRef<HTMLInputElement>(null);
@@ -77,6 +65,19 @@ export default forwardRef(function QuickMenu(props: Props, ref) {
     const { parent: { label: parentName } = {} } = item;
     return !search || match(item.label, search) || (parentName && match(parentName, search));
   });
+
+  useEffect(() => {
+    const newMenus: QuickMenuItem[] = [];
+    _.forEach(menuList, (item) => {
+      if (item.children?.length) {
+        _.forEach(item.children, (child) => {
+          newMenus.push({ ...child, parent: item });
+        });
+      }
+    });
+
+    setMenus(sortQuickMenuItems(newMenus));
+  }, [JSON.stringify(menuList)]);
 
   useEffect(() => {
     !open && setMenus(sortQuickMenuItems(menus));
@@ -157,7 +158,7 @@ export default forwardRef(function QuickMenu(props: Props, ref) {
       footer={
         <div className='flex justify-end py-2 pr-2'>
           <div className='flex items-center'>
-            <span className='text-hint'>打开/关闭</span>
+            <span className='text-hint'>{t('quickOpenClose')}</span>
             <div className='ml-2 mr-1 rounded-sm bg-fc-200 px-1'>{isMac ? '⌘' : 'Ctrl'}</div>
             <div className='rounded-sm bg-fc-200 px-1.5'>K</div>
           </div>
@@ -170,7 +171,7 @@ export default forwardRef(function QuickMenu(props: Props, ref) {
           <input
             ref={searchInputRef}
             className='border-none flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-hint disabled:cursor-not-allowed disabled:opacity-50'
-            placeholder='输入内容以检索...'
+            placeholder={t('quickSearchPlaceholder')}
             value={search}
             onChange={(e) => {
               setActiveIndex(0);
@@ -182,7 +183,7 @@ export default forwardRef(function QuickMenu(props: Props, ref) {
           />
         </div>
         <div className='p-2 overflow-hidden text-slate-950' onMouseMove={() => setLockMouseHover(false)}>
-          <div className='font-bold pl-2.5 pb-1'>快捷菜单</div>
+          <div className='font-bold pl-2.5 pb-1'>{t('quickMenus')}</div>
           <div className='overflow-auto h-[300px] text-sm' ref={menusRef}>
             {_.map(filteredMenus, (item: QuickMenuItem, idx) => {
               const { parent: { label: parentName, icon: parentIcon } = {} } = item;
