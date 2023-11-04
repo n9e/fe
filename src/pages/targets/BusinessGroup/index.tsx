@@ -42,11 +42,11 @@ export function listToTree2(data: { id: number; name: string }[]) {
             return temp.children;
           },
           r,
-        ).push({ id: item.id, key: `${item.id}_${text}`, originName: item.name, title: text + ' ', isLeaf: true });
+        ).push({ id: item.id, key: item.id, originName: item.name, title: text + ' ', isLeaf: true });
       } else {
         r.push({
           id: item.id,
-          key: `${item.id}_${item.name}`,
+          key: item.id,
           title: item.name + ' ', // 防止节点跟组名称重复 antd tree 不会渲染同名节点问题
           originName: item.name,
           isLeaf: true,
@@ -120,7 +120,7 @@ export function listToTree(data: { id: number; name: string }[]) {
 }
 
 export function getLocaleCollapsedNodes() {
-  const val = localStorage.getItem('biz_group_collapsed');
+  const val = localStorage.getItem('biz_group2_collapsed');
   try {
     if (val) {
       const parsed = JSON.parse(val);
@@ -136,7 +136,7 @@ export function getLocaleCollapsedNodes() {
 }
 
 export function setLocaleCollapsedNodes(nodes: string[]) {
-  localStorage.setItem('biz_group_collapsed', JSON.stringify(nodes));
+  localStorage.setItem('biz_group2_collapsed', JSON.stringify(nodes));
 }
 
 export default function index(props: IProps) {
@@ -206,8 +206,12 @@ export default function index(props: IProps) {
             {!_.isEmpty(businessGroupData) && (
               <Tree
                 rootClassName='business-group-tree'
-                showLine={true}
-                defaultExpandAll
+                showLine={{
+                  showLeafIcon: false,
+                }}
+                defaultExpandParent={false}
+                expandedKeys={collapsedNodes}
+                selectedKeys={curBusiId ? [curBusiId] : undefined}
                 blockNode
                 switcherIcon={<DownOutlined />}
                 onSelect={(_selectedKeys, e) => {
@@ -217,8 +221,9 @@ export default function index(props: IProps) {
                     setCurBusiId && setCurBusiId(nodeId, e.node);
                   }
                 }}
-                onExpand={(expandedKeys) => {
-                  console.log(expandedKeys);
+                onExpand={(expandedKeys: string[]) => {
+                  setCollapsedNodes(expandedKeys);
+                  setLocaleCollapsedNodes(expandedKeys);
                 }}
                 treeData={listToTree2(businessGroupData as any)}
               />

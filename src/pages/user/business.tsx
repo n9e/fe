@@ -199,14 +199,22 @@ const Resource: React.FC = () => {
               {!_.isEmpty(teamList) && (
                 <Tree
                   rootClassName='business-group-tree'
-                  showLine={true}
-                  defaultExpandAll
+                  showLine={{
+                    showLeafIcon: false,
+                  }}
+                  defaultExpandParent={false}
+                  expandedKeys={collapsedNodes}
+                  selectedKeys={[teamId]}
                   blockNode
                   switcherIcon={<DownOutlined />}
                   onSelect={(_selectedKeys, e) => {
                     const nodeId = e.node.id;
                     localStorage.setItem('curBusiId', _.toString(nodeId));
                     setTeamId(nodeId as any);
+                  }}
+                  onExpand={(expandedKeys: string[]) => {
+                    setCollapsedNodes(expandedKeys);
+                    setLocaleCollapsedNodes(expandedKeys);
                   }}
                   treeData={listToTree2(teamList as any)}
                 />
