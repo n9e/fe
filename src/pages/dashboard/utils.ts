@@ -98,6 +98,15 @@ function convertThresholdsGrafanaToN9E(config: any) {
   };
 }
 
+const varWithUnitMap = {
+  '${__interval}s': '${__interval}',
+  '${__interval_ms}ms': '${__interval}',
+  '${__rate_interval}s': '${__rate_interval}',
+  '${__range}s': '${__range}',
+  '${__range_s}s': '${__range_s}',
+  '${__range_ms}ms': '${__range_ms}',
+};
+
 function convertVariablesGrafanaToN9E(templates: any, __inputs: any[], data: any) {
   const vars = _.chain(templates.list)
     .filter((item) => {
@@ -106,14 +115,19 @@ function convertVariablesGrafanaToN9E(templates: any, __inputs: any[], data: any
     })
     .map((item) => {
       if (item.type === 'query') {
+        let definition = item.definition || _.get(item, 'query') || _.get(item, 'query.query');
+        _.forEach(varWithUnitMap, (val, key) => {
+          definition = _.replace(definition, key, val);
+        });
         const varObj: any = {
           type: 'query',
           name: item.name,
-          definition: item.definition || _.get(item, 'query') || _.get(item, 'query.query'),
+          definition,
           allValue: item.allValue,
           allOption: item.includeAll,
           multi: item.multi,
           reg: item.regex,
+          hide: item.hide === 0 ? false : true,
         };
         const datasource = convertDatasourceGrafanaToN9E(item);
         varObj.datasource = {
@@ -129,18 +143,21 @@ function convertVariablesGrafanaToN9E(templates: any, __inputs: any[], data: any
           allValue: item.allValue,
           allOption: item.includeAll,
           multi: item.multi,
+          hide: item.hide === 0 ? false : true,
         };
       } else if (item.type === 'constant') {
         return {
           type: 'constant',
           name: item.name,
           definition: item.query,
+          hide: item.hide === 0 ? false : true,
         };
       } else if (item.type === 'datasource') {
         return {
           type: 'datasource',
           name: item.name,
           definition: item.query,
+          hide: item.hide === 0 ? false : true,
         };
       } else if (item.type === 'interval') {
         return {
@@ -150,12 +167,14 @@ function convertVariablesGrafanaToN9E(templates: any, __inputs: any[], data: any
           allValue: item.allValue,
           allOption: item.includeAll,
           multi: item.multi,
+          hide: item.hide === 0 ? false : true,
         };
       }
       return {
         type: 'textbox',
         name: item.name,
         defaultValue: item.query,
+        hide: item.hide === 0 ? false : true,
       };
     })
     .value();

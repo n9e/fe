@@ -33,7 +33,7 @@ const en_US = {
     import: 'Import dashboard JSON',
     label: 'Dashboard JSON',
     import_grafana: 'Import Grafana dashboard JSON',
-    import_grafana_tip: 'Currently only support import dashboard config of v8+ version, imported panels only support the chart types and features that n9e currently supports',
+    import_grafana_tip: 'Imported panels only support the chart types and features that n9e currently supports, <a>feedback</a>',
     import_grafana_tip_version_error: 'Import of dashboard config less than v7 version is not supported',
     import_grafana_tip_version_warning: 'The imported dashboard config version is less than v8, some panels may not be displayed properly, do you want to continue importing?',
     continueToImport: 'Continue to import',

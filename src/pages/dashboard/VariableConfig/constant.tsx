@@ -25,7 +25,7 @@ import { normalizeESQueryRequestBody } from './utils';
 
 // https://grafana.com/docs/grafana/latest/datasources/prometheus/#query-variable 根据文档解析表达式
 // 每一个promtheus接口都接受start和end参数来限制返回值
-export const convertExpressionToQuery = (expression: string, range: IRawTimeRange, item: IVariable) => {
+export const convertExpressionToQuery = (expression: string, range: IRawTimeRange, item: IVariable, dashboardId) => {
   const { type, datasource, config } = item;
   const parsedRange = parseRange(range);
   const start = moment(parsedRange.start).unix();
@@ -59,7 +59,8 @@ export const convertExpressionToQuery = (expression: string, range: IRawTimeRang
       const metric = expression.substring('metrics('.length, expression.length - 1);
       return getMetric({ start, end }, datasourceValue).then((res) => res.data.filter((item) => item.includes(metric)));
     } else if (expression.startsWith('query_result(')) {
-      const promql = expression.substring('query_result('.length, expression.length - 1);
+      let promql = expression.substring('query_result('.length, expression.length - 1);
+      promql = replaceFieldWithVariable(promql, dashboardId, getOptionsList({}, range));
       return getQueryResult({ query: promql, start, end }, datasourceValue).then((res) =>
         _.map(res?.data?.result, ({ metric, value }) => {
           const metricName = metric['__name__'];
@@ -302,8 +303,8 @@ export function replaceFieldWithVariable(value: string, dashboardId?: string, va
 
 export const getOptionsList = (
   dashboardMeta: {
-    dashboardId: string;
-    variableConfigWithOptions: any;
+    dashboardId?: string;
+    variableConfigWithOptions?: any;
   },
   time: IRawTimeRange,
   step?: number,

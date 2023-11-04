@@ -33,7 +33,7 @@ const zh_HK = {
     import: '匯入儀表盤 JSON',
     label: '儀表盤 JSON',
     import_grafana: '匯入 Grafana 儀表盤 JSON',
-    import_grafana_tip: '目前只支援匯入 v8+ 版本的儀表盤配置，匯入完的圖表只支援夜鶯目前支援的圖表型別和功能',
+    import_grafana_tip: '匯入完的圖表只支援夜鶯目前支援的圖表型別和功能, <a>問題反饋</a>',
     import_grafana_tip_version_error: '不支援匯入小於 v7 版本的儀表盤配置',
     import_grafana_tip_version_warning: '匯入的儀表盤配置版本小於 v8，部分圖表可能無法正常顯示，是否繼續匯入？',
     continueToImport: '繼續匯入',

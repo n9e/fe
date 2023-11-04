@@ -16,7 +16,7 @@
  */
 import React, { useState } from 'react';
 import _ from 'lodash';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import { Modal, Input, Tabs, Form, Button, Alert, message } from 'antd';
 import Icon from '@ant-design/icons';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
@@ -154,7 +154,10 @@ function Import(props: IProps & ModalWrapProps) {
           }}
         >
           <div style={{ marginBottom: 10 }}>
-            <Alert message={t('batch.import_grafana_tip')} type='info' />
+            <Alert
+              message={<Trans ns='dashboard' i18nKey='batch.import_grafana_tip' components={{ a: <a href='https://github.com/n9e/fe/issues/48' target='_blank' /> }} />}
+              type='info'
+            />
           </div>
           <Form.Item
             label={t('batch.label')}

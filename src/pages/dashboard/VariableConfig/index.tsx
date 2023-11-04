@@ -111,14 +111,19 @@ function index(props: IProps) {
 
             let options = [];
             try {
-              options = await convertExpressionToQuery(definition, range, {
-                ...item,
-                datasource: {
-                  ...(item?.datasource || {}),
-                  value: result.length ? (replaceExpressionVars(item?.datasource?.value as any, result, result.length, id) as any) : item?.datasource?.value,
+              options = await convertExpressionToQuery(
+                definition,
+                range,
+                {
+                  ...item,
+                  datasource: {
+                    ...(item?.datasource || {}),
+                    value: result.length ? (replaceExpressionVars(item?.datasource?.value as any, result, result.length, id) as any) : item?.datasource?.value,
+                  },
                 },
-              });
-              options = _.sortBy(options);
+                id,
+              );
+              options = _.sortBy(_.uniq(options));
             } catch (error) {
               console.error(error);
             }
