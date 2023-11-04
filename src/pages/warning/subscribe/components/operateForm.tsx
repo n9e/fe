@@ -135,7 +135,8 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
   return (
     <main
       style={{
-        padding: '10px 12px',
+        padding: '10px 10px 0 10px',
+        overflow: 'hidden auto',
       }}
     >
       <Form

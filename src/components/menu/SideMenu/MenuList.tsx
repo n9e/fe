@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import classNames from 'classnames';
-import Icon from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
+import { RightOutlined } from '@ant-design/icons';
 import { IMenuItem } from './types';
+import { cn } from './utils';
+import IconFont from '../../IconFont';
 
 interface IMenuProps {
   collapsed: boolean;
@@ -28,21 +30,21 @@ function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
     <div className='w-full'>
       <div
         onClick={() => setIsExpand(!isExpand)}
-        className={classNames(
+        className={cn(
           'group flex h-9 cursor-pointer items-center justify-between rounded px-3.5 transition-colors transition-spacing duration-75',
           props.isCustomBg ? 'hover:bg-gray-200/20' : 'hover:bg-fc-200',
           collapsed && isActive ? (props.isCustomBg ? 'bg-gray-200/20' : 'bg-fc-200') : '',
         )}
       >
         <div className='flex items-center'>
-          <div className={classNames('h-4.5 children:h-4.5 children:w-4.5', isActive ? (props.isCustomBg ? 'text-[#fff]' : 'text-title') : '', !collapsed ? 'mr-4' : '')}>
+          <div className={cn('h-4.5 children-icon2:h-4.5 children-icon2:w-4.5', isActive ? (props.isCustomBg ? 'text-[#fff]' : 'text-title') : '', !collapsed ? 'mr-4' : '')}>
             {item.icon}
           </div>
           {!collapsed && <div className={`overflow-hidden truncate text-l1 tracking-wide ${isActive ? (props.isCustomBg ? 'text-[#fff]' : 'text-title') : ''}`}>{item.label}</div>}
         </div>
         {!collapsed && (
           <div>
-            <Icon type='ArrowRight' className={classNames('h-3.5 w-3.5 transition', isExpand ? 'rotate-90' : '')} />
+            <RightOutlined className={cn('h-3.5 w-3.5 transition', isExpand ? 'rotate-90' : '')} />
           </div>
         )}
       </div>
@@ -65,14 +67,14 @@ function MenuItem(props: { item: IMenuItem; isSub?: boolean } & IMenuProps) {
   return (
     <div
       onClick={() => onClick(item.key)}
-      className={classNames(
+      className={cn(
         'group flex h-9 cursor-pointer items-center rounded px-3.5 transition-colors transition-spacing duration-75',
         isActive ? (isCustomBg ? 'bg-gray-200/20' : 'bg-fc-200') : '',
         isCustomBg ? 'hover:bg-gray-200/20' : 'hover:bg-fc-200',
       )}
     >
       {!isSub ? (
-        <div className={classNames('h-4.5 children:h-4.5 children:w-4.5', isActive ? (props.isCustomBg ? 'text-[#fff]' : 'text-title') : '', !collapsed ? 'mr-4' : '')}>
+        <div className={cn('h-4.5 children-icon2:h-4.5 children-icon2:w-4.5', isActive ? (props.isCustomBg ? 'text-[#fff]' : 'text-title') : '', !collapsed ? 'mr-4' : '')}>
           {item.icon}
         </div>
       ) : (
@@ -88,13 +90,18 @@ export default function MenuList(
     list: IMenuItem[];
   } & IMenuProps,
 ) {
+  const { t } = useTranslation('menu');
   const { list, ...otherProps } = props;
 
   return (
     <>
-      <div className={classNames('h-full pl-2 pr-4', props.isCustomBg ? 'text-[#e6e6e8]' : 'text-main')}>
-        <MenuItem {...otherProps} item={{ key: 'quickJump', label: '快捷跳转', icon: <Icon type='Search-8bbf72gj' /> }} onClick={() => props.quickMenuRef.current.open()} />
-        <div className={classNames('my-2 h-px w-full', props.isCustomBg ? 'bg-white/10' : 'bg-fc-200')}></div>
+      <div className={cn('h-full pl-2 pr-4', props.isCustomBg ? 'text-[#e6e6e8]' : 'text-main')}>
+        <MenuItem
+          {...otherProps}
+          item={{ key: 'quickJump', label: t('quickJump'), icon: <IconFont type='icon-Menu_Search' /> }}
+          onClick={() => props.quickMenuRef.current.open()}
+        />
+        <div className={cn('my-2 h-px w-full', props.isCustomBg ? 'bg-white/10' : 'bg-fc-200')}></div>
         <div className='space-y-1'>
           {list
             .filter((m) => m)

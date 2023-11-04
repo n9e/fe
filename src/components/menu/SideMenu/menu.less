@@ -1,0 +1,51 @@
+@import './tailwindVariable.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.quick-menu-modal {
+  .border-b {
+    box-sizing: border-box;
+    border-width: 0;
+    border-style: solid; // tailwindcss reset
+  }
+  .ant-modal-content {
+    border-radius: 8px;
+  }
+  .ant-modal-close-x {
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+  }
+  .ant-modal-footer {
+    padding: 0;
+  }
+}
+
+.side-menu-content {
+  padding: 14px 0 8px 12px;
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  overflow: hidden;
+  transition: padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  .logo {
+    width: 130px;
+    height: 30px;
+  }
+  &.collapse {
+    padding-left: 8px;
+    visibility: visible !important;
+  }
+  &.saas {
+    padding: 16px 16px 0 16px;
+    margin-top: -5px;
+    .logo {
+      width: 120px;
+      height: unset;
+    }
+    &.collapse {
+      padding-left: 12px;
+    }
+  }
+}
