@@ -77,7 +77,7 @@ export default forwardRef(function QuickMenu(props: Props, ref) {
     });
 
     setMenus(sortQuickMenuItems(newMenus));
-  }, [JSON.stringify(menuList)]);
+  }, [_.join(_.map(menuList, 'key'))]);
 
   useEffect(() => {
     !open && setMenus(sortQuickMenuItems(menus));

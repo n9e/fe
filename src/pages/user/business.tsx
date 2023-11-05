@@ -17,10 +17,9 @@
 import React, { useContext, useEffect, useState } from 'react';
 import moment from 'moment';
 import _ from 'lodash';
-import classNames from 'classnames';
 import PageLayout from '@/components/pageLayout';
 import { Button, Table, Input, message, Row, Col, Modal, Space, Tree } from 'antd';
-import { EditOutlined, DeleteOutlined, SearchOutlined, UserOutlined, InfoCircleOutlined, DownOutlined, CheckOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined, SearchOutlined, UserOutlined, InfoCircleOutlined, DownOutlined } from '@ant-design/icons';
 import UserInfoModal from './component/createModal';
 import { deleteBusinessTeamMember, getBusinessTeamList, getBusinessTeamInfo, deleteBusinessTeam } from '@/services/manage';
 import { Team, ActionType } from '@/store/manageInterface';
@@ -28,7 +27,7 @@ import { CommonStateContext } from '@/App';
 import { ColumnsType } from 'antd/lib/table';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@/utils';
-import { listToTree, listToTree2, getLocaleCollapsedNodes, setLocaleCollapsedNodes } from '@/pages/targets/BusinessGroup';
+import { listToTree2, getCollapsedKeys, getLocaleExpandedKeys, setLocaleExpandedKeys } from '@/pages/targets/BusinessGroup';
 import '@/components/BlankBusinessPlaceholder/index.less';
 import './index.less';
 
@@ -48,7 +47,6 @@ const Resource: React.FC = () => {
   const [teamList, setTeamList] = useState<Team[]>([]);
   const [memberLoading, setMemberLoading] = useState<boolean>(false);
   const [searchMemberValue, setSearchMemberValue] = useState<string>('');
-  const [collapsedNodes, setCollapsedNodes] = useState<string[]>(getLocaleCollapsedNodes());
   const teamMemberColumns: ColumnsType<any> = [
     {
       title: t('team.name'),
@@ -203,7 +201,7 @@ const Resource: React.FC = () => {
                     showLeafIcon: false,
                   }}
                   defaultExpandParent={false}
-                  expandedKeys={collapsedNodes}
+                  defaultExpandedKeys={getCollapsedKeys(listToTree2(teamList as any), getLocaleExpandedKeys(), teamId as any)}
                   selectedKeys={[teamId]}
                   blockNode
                   switcherIcon={<DownOutlined />}
@@ -213,8 +211,7 @@ const Resource: React.FC = () => {
                     setTeamId(nodeId as any);
                   }}
                   onExpand={(expandedKeys: string[]) => {
-                    setCollapsedNodes(expandedKeys);
-                    setLocaleCollapsedNodes(expandedKeys);
+                    setLocaleExpandedKeys(expandedKeys);
                   }}
                   treeData={listToTree2(teamList as any)}
                 />

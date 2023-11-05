@@ -32,8 +32,8 @@ import './locale';
 const { confirm } = Modal;
 export const PAGE_SIZE = 20;
 
-export function getLocaleCollapsedNodes() {
-  const val = localStorage.getItem('team_collapsed');
+export function getLocaleExpandedKeys() {
+  const val = localStorage.getItem('team_tree_expanded_keys');
   try {
     if (val) {
       const parsed = JSON.parse(val);
@@ -48,8 +48,8 @@ export function getLocaleCollapsedNodes() {
   }
 }
 
-export function setLocaleCollapsedNodes(nodes: string[]) {
-  localStorage.setItem('team_collapsed', JSON.stringify(nodes));
+export function setLocaleExpandedKeys(nodes: string[]) {
+  localStorage.setItem('team_tree_expanded_keys', JSON.stringify(nodes));
 }
 
 const Resource: React.FC = () => {
@@ -65,7 +65,6 @@ const Resource: React.FC = () => {
   const [memberLoading, setMemberLoading] = useState<boolean>(false);
   const [searchValue, setSearchValue] = useState<string>('');
   const [searchMemberValue, setSearchMemberValue] = useState<string>('');
-  const [collapsedNodes, setCollapsedNodes] = useState<string[]>(getLocaleCollapsedNodes());
   const userColumn: ColumnsType<User> = [
     {
       title: t('account:profile.username'),
@@ -256,7 +255,7 @@ const Resource: React.FC = () => {
                   showLeafIcon: false,
                 }}
                 defaultExpandParent={false}
-                expandedKeys={collapsedNodes}
+                defaultExpandedKeys={getLocaleExpandedKeys()}
                 selectedKeys={[teamId]}
                 blockNode
                 switcherIcon={<DownOutlined />}
@@ -266,8 +265,7 @@ const Resource: React.FC = () => {
                   setTeamId(nodeId as any);
                 }}
                 onExpand={(expandedKeys: string[]) => {
-                  setCollapsedNodes(expandedKeys);
-                  setLocaleCollapsedNodes(expandedKeys);
+                  setLocaleExpandedKeys(expandedKeys);
                 }}
                 treeData={listToTree2(teamList as any)}
               />
