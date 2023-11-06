@@ -51,6 +51,10 @@ export const visualizations = [
     name: '仪表盘',
   },
   {
+    type: 'heatmap',
+    name: '色块图',
+  },
+  {
     type: 'iframe',
     name: '内嵌文档(iframe)',
   },
