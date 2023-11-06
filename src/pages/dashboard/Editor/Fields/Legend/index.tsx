@@ -19,7 +19,6 @@ import { Form, Radio, Row, Col, Select, Input } from 'antd';
 import _ from 'lodash';
 import { Trans, useTranslation } from 'react-i18next';
 import { Panel } from '../../Components/Collapse';
-import { CaretDownOutlined } from '@ant-design/icons';
 
 export default function index() {
   const { t } = useTranslation('dashboard');

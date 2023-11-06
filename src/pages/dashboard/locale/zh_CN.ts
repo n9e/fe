@@ -180,6 +180,11 @@ const zh_CN = {
         color: '颜色',
         operations: '操作',
       },
+      colors: {
+        name: '颜色设置',
+        scheme: '颜色方案',
+        reverse: '反转颜色',
+      },
     },
     standardOptions: {
       title: '高级设置',
@@ -304,6 +309,11 @@ const zh_CN = {
       },
       iframe: {
         src: 'iframe 地址',
+      },
+      heatmap: {
+        xAxisField: 'X轴',
+        yAxisField: 'Y轴',
+        valueField: '数值列',
       },
     },
     inspect: {
