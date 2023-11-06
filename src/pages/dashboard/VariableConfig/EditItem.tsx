@@ -76,21 +76,6 @@ function EditItem(props: IProps) {
   const { data, vars, range, id, index, datasourceVars, onOk, onCancel } = props;
   const [form] = Form.useForm();
   const { groupedDatasourceList, datasourceCateOptions } = useContext(CommonStateContext);
-  // TODO: 不太清楚这里的逻辑是干嘛的，后面找时间看下
-  const handleBlur = (val?: string) => {
-    const reg = data.reg;
-    const expression = val || data.definition;
-    if ((!reg || new RegExp('^/(.*?)/(g?i?m?y?)$').test(reg)) && expression && data) {
-      const formData = form.getFieldsValue();
-      var newExpression = replaceExpressionVars(expression, formData, index, id);
-      convertExpressionToQuery(newExpression, range, data).then((res) => {
-        const regFilterRes = filterOptionsByReg(res, reg, formData, index, id);
-        if (regFilterRes.length > 0) {
-          setVaraiableSelected({ name: formData.var[index].name, value: regFilterRes[0], id });
-        }
-      });
-    }
-  };
 
   return (
     <Form layout='vertical' autoComplete='off' preserve={false} form={form} initialValues={data}>
@@ -243,29 +228,29 @@ function EditItem(props: IProps) {
                     }),
                   ]}
                 >
-                  <Input onBlur={(e) => handleBlur(e.target.value)} />
+                  <Input />
                 </Form.Item>
                 <Form.Item label={t('var.reg')} name='reg' tooltip={t('var.reg_tip')} rules={[{ pattern: new RegExp('^/(.*?)/(g?i?m?y?)$'), message: 'invalid regex' }]}>
-                  <Input placeholder='/*.hna/' onBlur={() => handleBlur()} />
+                  <Input placeholder='/*.hna/' />
                 </Form.Item>
               </>
             );
           } else if (type === 'textbox') {
             return (
               <Form.Item label={t('var.textbox.defaultValue')} name='defaultValue'>
-                <Input onBlur={() => handleBlur()} />
+                <Input />
               </Form.Item>
             );
           } else if (type === 'custom') {
             return (
               <Form.Item label={t('var.custom.definition')} name='definition' rules={[{ required: true }]}>
-                <Input onBlur={() => handleBlur()} placeholder='1,10' />
+                <Input placeholder='1,10' />
               </Form.Item>
             );
           } else if (type === 'constant') {
             return (
               <Form.Item label={t('var.constant.definition')} name='definition' tooltip={t('var.constant.defaultValue_tip')} rules={[{ required: true }]}>
-                <Input onBlur={() => handleBlur()} />
+                <Input />
               </Form.Item>
             );
           } else if (type === 'datasource') {

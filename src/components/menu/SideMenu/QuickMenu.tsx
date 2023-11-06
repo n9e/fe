@@ -61,8 +61,8 @@ export default forwardRef(function QuickMenu(props: Props, ref) {
   const searchInputRef = React.useRef<HTMLInputElement>(null);
   const menusRef = React.useRef<HTMLDivElement>(null);
   const isMac = /Mac/i.test(navigator.userAgent) || navigator.platform.includes('Mac');
-  const filteredMenus = _.filter(menus, (item) => {
-    const { parent: { label: parentName } = {} } = item;
+  const filteredMenus = _.filter(menus, (item: any) => {
+    const parentName = item?.parent?.label;
     return !search || match(item.label, search) || (parentName && match(parentName, search));
   });
 

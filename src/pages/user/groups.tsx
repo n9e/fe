@@ -259,7 +259,7 @@ const Resource: React.FC = () => {
                 selectedKeys={[teamId]}
                 blockNode
                 switcherIcon={<DownOutlined />}
-                onSelect={(_selectedKeys, e) => {
+                onSelect={(_selectedKeys, e: any) => {
                   const nodeId = e.node.id;
                   localStorage.setItem('curBusiId', _.toString(nodeId));
                   setTeamId(nodeId as any);
