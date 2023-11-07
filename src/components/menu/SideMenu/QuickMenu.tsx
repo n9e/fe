@@ -80,7 +80,6 @@ export default forwardRef(function QuickMenu(props: Props, ref) {
   }, [_.join(_.map(menuList, 'key'))]);
 
   useEffect(() => {
-    !open && setMenus(sortQuickMenuItems(menus));
     if (open) {
       searchInputRef.current?.focus();
     } else {
