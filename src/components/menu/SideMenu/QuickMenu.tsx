@@ -81,7 +81,10 @@ export default forwardRef(function QuickMenu(props: Props, ref) {
 
   useEffect(() => {
     if (open) {
-      searchInputRef.current?.focus();
+      // 500ms 后 focus，避免无法 focus 的问题，尚不清楚为什么
+      setTimeout(() => {
+        searchInputRef.current?.focus();
+      }, 500);
     } else {
       setSearch('');
       setActiveIndex(0);
@@ -145,7 +148,6 @@ export default forwardRef(function QuickMenu(props: Props, ref) {
   return (
     <Modal
       className='quick-menu-modal'
-      destroyOnClose
       visible={open}
       onCancel={() => {
         setOpen(false);
