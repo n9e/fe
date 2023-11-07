@@ -24,13 +24,14 @@ import { Panel } from '../../Components/Collapse';
 interface IProps {
   preNamePrefix?: (string | number)[];
   namePrefix?: (string | number)[];
+  showMinMax?: boolean;
 }
 
 const { Option, OptGroup } = Select;
 
 export default function index(props: IProps) {
   const { t } = useTranslation('dashboard');
-  const { preNamePrefix = [], namePrefix = ['options', 'standardOptions'] } = props;
+  const { preNamePrefix = [], namePrefix = ['options', 'standardOptions'], showMinMax = true } = props;
 
   return (
     <Panel header={t('panel.standardOptions.title')}>
@@ -108,17 +109,21 @@ export default function index(props: IProps) {
           }}
         </Form.Item>
         <Row gutter={10}>
-          <Col span={8}>
-            <Form.Item label={t('panel.standardOptions.min')} name={[...namePrefix, 'min']}>
-              <InputNumber placeholder='auto' style={{ width: '100%' }} />
-            </Form.Item>
-          </Col>
-          <Col span={8}>
-            <Form.Item label={t('panel.standardOptions.max')} name={[...namePrefix, 'max']}>
-              <InputNumber placeholder='auto' style={{ width: '100%' }} />
-            </Form.Item>
-          </Col>
-          <Col span={8}>
+          {showMinMax && (
+            <Col span={8}>
+              <Form.Item label={t('panel.standardOptions.min')} name={[...namePrefix, 'min']}>
+                <InputNumber placeholder='auto' style={{ width: '100%' }} />
+              </Form.Item>
+            </Col>
+          )}
+          {showMinMax && (
+            <Col span={8}>
+              <Form.Item label={t('panel.standardOptions.max')} name={[...namePrefix, 'max']}>
+                <InputNumber placeholder='auto' style={{ width: '100%' }} />
+              </Form.Item>
+            </Col>
+          )}
+          <Col span={showMinMax ? 8 : 24}>
             <Form.Item label={t('panel.standardOptions.decimals')} name={[...namePrefix, 'decimals']}>
               <InputNumber placeholder='auto' style={{ width: '100%' }} />
             </Form.Item>

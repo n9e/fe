@@ -91,6 +91,9 @@ export interface IOptions {
     mode: 'single' | 'all';
     sort: 'none' | 'asc' | 'desc';
   };
+  colors?: {
+    scheme: string;
+  };
 }
 
 export interface IOverride {

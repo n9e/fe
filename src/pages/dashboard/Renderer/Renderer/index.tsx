@@ -44,6 +44,7 @@ import BarGauge from './BarGauge';
 import Text from './Text';
 import Gauge from './Gauge';
 import Iframe from './Iframe';
+import Heatmap from './Heatmap';
 import { IVariable } from '../../VariableConfig/definition';
 import Markdown from '../../Editor/Components/Markdown';
 import useQuery from '../datasource/useQuery';
@@ -120,6 +121,7 @@ function index(props: IProps) {
     text: () => <Text {...subProps} />,
     gauge: () => <Gauge {...subProps} themeMode={themeMode} />,
     iframe: () => <Iframe {...subProps} time={time} />,
+    heatmap: () => <Heatmap {...subProps} themeMode={themeMode} time={time} />,
   };
 
   return (
