@@ -22,22 +22,6 @@ const zh_CN = {
   auth: {
     name: '授权',
     'not-support': '暂不支持',
-    manage: '授权管理',
-    new: '新增授权',
-    edit:'编辑授权',
-    placeholder: '请输入',
-    assign:"授权给",
-    index:"索引关键字",
-    project:'项目关键字',
-    logstore:'日志库关键字',
-    delMessage:"确定要删除该授权吗？",
-    updatetime:"更新时间",
-    owner: "创建人",
-    alluser: "所有用户",
-    allusergroup: "所有用户组",
-    alllbusiness: "所有业务组",
-    inputplaceholder: "可输入多个，逗号分割",
-    assignplaceholder:"请选择授予的用户、团队、业务组"
   },
   form: {
     other: '其他',
