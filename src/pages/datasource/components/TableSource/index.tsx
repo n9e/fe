@@ -8,7 +8,8 @@ import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
 import Rename from '../Rename';
 import { deleteDataSourceById, getDataSourceList, updateDataSourceStatus } from '../../services';
-
+import { autoDatasourcetype, AuthList, AutoDatasourcetypeValue } from './auth';
+import useIsPlus from 'plus:/components/useIsPlus';
 export interface IDefaultES {
   default_id: number;
   system_id: number;
@@ -29,7 +30,9 @@ export interface IKeyValue {
 
 const TableSource = (props: IPropsType) => {
   const { t } = useTranslation('datasourceManage');
+  const isPlus = useIsPlus();
   const { nameClick, pluginList } = props;
+  const [auth, setAuth] = useState<{ visible: boolean; name: string; type: AutoDatasourcetypeValue; dataSourceId: number }>();
   const { setDatasourceList } = useContext(CommonStateContext);
   const [tableData, setTableData] = useState<any>([]);
   const [refresh, setRefresh] = useState<boolean>(false);
@@ -159,21 +162,57 @@ const TableSource = (props: IPropsType) => {
     },
   ];
 
+  if (isPlus) {
+    defaultColumns.splice(2, 0, {
+      title: t('auth.name'),
+      dataIndex: 'auth',
+      width: 150,
+      render: (text, record) => {
+        return autoDatasourcetype.includes(record.plugin_type) ? (
+          <Button
+            type='link'
+            size='small'
+            onClick={() => {
+              setAuth({ visible: true, name: record.name, type: record.plugin_type, dataSourceId: record.id });
+            }}
+          >
+            {t('common:btn.modify')}
+          </Button>
+        ) : (
+          t('auth.not-support')
+        );
+      },
+    },);
+  }
+
   return (
-    <Table
-      size='small'
-      className='datasource-list'
-      rowKey='id'
-      dataSource={_.filter(tableData, (item) => {
-        if (searchVal) {
-          return _.includes(item.name, searchVal);
-        }
-        return item;
-      })}
-      columns={defaultColumns}
-      loading={loading}
-      pagination={pagination}
-    />
+    <>
+      <Table
+        size='small'
+        className='datasource-list'
+        rowKey='id'
+        dataSource={_.filter(tableData, (item) => {
+          if (searchVal) {
+            return _.includes(item.name, searchVal);
+          }
+          return item;
+        })}
+        columns={defaultColumns}
+        loading={loading}
+        pagination={pagination}
+      />
+      {auth && (
+        <AuthList
+          visible={auth.visible}
+          onClose={() => {
+            setAuth(undefined);
+          }}
+          name={auth.name}
+          type={auth.type}
+          dataSourceId={auth.dataSourceId}
+        />
+      )}
+    </>
   );
 };
 
