@@ -77,7 +77,13 @@ export default forwardRef(function QuickMenu(props: Props, ref) {
     });
 
     setMenus(sortQuickMenuItems(newMenus));
-  }, [_.join(_.map(menuList, 'key'))]);
+  }, [
+    _.join(
+      _.map(menuList, (item) => {
+        return _.concat([item.key, _.map(item.children, (child) => child.key)]);
+      }),
+    ),
+  ]);
 
   useEffect(() => {
     if (open) {
@@ -138,7 +144,7 @@ export default forwardRef(function QuickMenu(props: Props, ref) {
     };
     document.addEventListener('keydown', down);
     return () => document.removeEventListener('keydown', down);
-  }, [activeIndex, menus, open, JSON.stringify(filteredMenus)]);
+  }, [activeIndex, menus, open, _.join(_.map(filteredMenus, 'key'))]);
 
   useImperativeHandle(ref, () => ({
     open: () => setOpen(true),
