@@ -2,9 +2,9 @@ import React, { useContext, useEffect, useState, useRef } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import type { InputRef } from 'antd';
-import { message, Table, Modal, Button, Space, Popconfirm, Input } from 'antd';
+import { message, Table, Modal, Button, Space, Popconfirm, Input, Tooltip } from 'antd';
 import { ColumnProps } from 'antd/es/table';
-import { SearchOutlined } from '@ant-design/icons';
+import { SearchOutlined, CheckCircleFilled } from '@ant-design/icons';
 import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
 import Rename from '../Rename';
@@ -95,6 +95,13 @@ const TableSource = (props: IPropsType) => {
               }}
             >
               {text}
+              {record?.is_default && <Tooltip placement='top' title={t('该数据源类型下的默认集群')}>
+                <CheckCircleFilled
+                  style={{
+                    visibility: 'visible',
+                  }}
+                />
+              </Tooltip>}
             </a>
           </Rename>
         );
