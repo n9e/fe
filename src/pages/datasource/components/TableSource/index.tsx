@@ -9,7 +9,8 @@ import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
 import Rename from '../Rename';
 import { deleteDataSourceById, getDataSourceList, updateDataSourceStatus } from '../../services';
-import { autoDatasourcetype, AuthList, AutoDatasourcetypeValue } from './auth';
+// @ts-ignore
+import { autoDatasourcetype, AuthList, AutoDatasourcetypeValue } from 'plus:/components/DataSourceAuth/auth';
 import useIsPlus from 'plus:/components/useIsPlus';
 export interface IDefaultES {
   default_id: number;
