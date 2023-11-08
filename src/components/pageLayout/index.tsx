@@ -66,13 +66,15 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
       >
         {t('profile')}
       </Menu.Item>
-      <Menu.Item
-        onClick={() => {
-          setThemeVisible(true);
-        }}
-      >
-        {t('themeSetting')}
-      </Menu.Item>
+      {import.meta.env.VITE_IS_ENT !== 'true' && (
+        <Menu.Item
+          onClick={() => {
+            setThemeVisible(true);
+          }}
+        >
+          {t('themeSetting')}
+        </Menu.Item>
+      )}
       <Menu.Item
         onClick={() => {
           Logout().then(() => {

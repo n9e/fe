@@ -138,7 +138,7 @@ export default forwardRef(function QuickMenu(props: Props, ref) {
     };
     document.addEventListener('keydown', down);
     return () => document.removeEventListener('keydown', down);
-  }, [activeIndex, menus, open]);
+  }, [activeIndex, menus, open, JSON.stringify(filteredMenus)]);
 
   useImperativeHandle(ref, () => ({
     open: () => setOpen(true),
