@@ -61,8 +61,8 @@ export default forwardRef(function QuickMenu(props: Props, ref) {
   const searchInputRef = React.useRef<HTMLInputElement>(null);
   const menusRef = React.useRef<HTMLDivElement>(null);
   const isMac = /Mac/i.test(navigator.userAgent) || navigator.platform.includes('Mac');
-  const filteredMenus = _.filter(menus, (item) => {
-    const { parent: { label: parentName } = {} } = item;
+  const filteredMenus = _.filter(menus, (item: any) => {
+    const parentName = item?.parent?.label;
     return !search || match(item.label, search) || (parentName && match(parentName, search));
   });
 
@@ -77,7 +77,13 @@ export default forwardRef(function QuickMenu(props: Props, ref) {
     });
 
     setMenus(sortQuickMenuItems(newMenus));
-  }, [JSON.stringify(menuList)]);
+  }, [
+    _.join(
+      _.map(menuList, (item) => {
+        return _.concat([item.key, _.map(item.children, (child) => child.key)]);
+      }),
+    ),
+  ]);
 
   useEffect(() => {
     if (open) {
@@ -138,7 +144,7 @@ export default forwardRef(function QuickMenu(props: Props, ref) {
     };
     document.addEventListener('keydown', down);
     return () => document.removeEventListener('keydown', down);
-  }, [activeIndex, menus, open, JSON.stringify(filteredMenus)]);
+  }, [activeIndex, menus, open, _.join(_.map(filteredMenus, 'key'))]);
 
   useImperativeHandle(ref, () => ({
     open: () => setOpen(true),
