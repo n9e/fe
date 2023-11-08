@@ -44,6 +44,8 @@ const getN9eConfig = async () => {
   return {};
 };
 const getDefaultValuesByCate = () => {};
+const autoDatasourcetype = []
+const AuthList = []
 
 export {
   AlertRule,
@@ -60,4 +62,6 @@ export {
   getLicense,
   getN9eConfig,
   getDefaultValuesByCate,
+  autoDatasourcetype,
+  AuthList
 };

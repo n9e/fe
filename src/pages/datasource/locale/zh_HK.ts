@@ -17,6 +17,12 @@ const zh_HK = {
   },
   rename_title: '修改資料來源名稱',
   type_btn_add: '新增',
+  default:"設置為默認資料來源",
+  default_msg:"該資料來源型別下的默認集群",
+  auth: {
+    name: '授權',
+    'not-support': '暫不支援',
+  },
   form: {
     other: '其他',
     name: '名稱',

@@ -2,13 +2,15 @@ import React, { useContext, useEffect, useState, useRef } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import type { InputRef } from 'antd';
-import { message, Table, Modal, Button, Space, Popconfirm, Input } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
+import { message, Table, Modal, Button, Space, Popconfirm, Input, Tooltip } from 'antd';
+import { ColumnProps } from 'antd/es/table';
+import { SearchOutlined, CheckCircleFilled } from '@ant-design/icons';
 import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
 import Rename from '../Rename';
 import { deleteDataSourceById, getDataSourceList, updateDataSourceStatus } from '../../services';
-
+import { autoDatasourcetype, AuthList, AutoDatasourcetypeValue } from 'plus:/components/DataSourceAuth/auth';
+import useIsPlus from 'plus:/components/useIsPlus';
 export interface IDefaultES {
   default_id: number;
   system_id: number;
@@ -29,7 +31,9 @@ export interface IKeyValue {
 
 const TableSource = (props: IPropsType) => {
   const { t } = useTranslation('datasourceManage');
+  const isPlus = useIsPlus();
   const { nameClick, pluginList } = props;
+  const [auth, setAuth] = useState<{ visible: boolean; name: string; type: AutoDatasourcetypeValue; dataSourceId: number }>();
   const { setDatasourceList } = useContext(CommonStateContext);
   const [tableData, setTableData] = useState<any>([]);
   const [refresh, setRefresh] = useState<boolean>(false);
@@ -71,7 +75,7 @@ const TableSource = (props: IPropsType) => {
     filterIcon: (filtered: boolean) => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
   });
 
-  const defaultColumns = [
+  const defaultColumns: ColumnProps<any>[] = [
     {
       title: t('name'),
       dataIndex: 'name',
@@ -91,6 +95,13 @@ const TableSource = (props: IPropsType) => {
               }}
             >
               {text}
+              {record?.is_default && <Tooltip placement='top' title={t('该数据源类型下的默认集群')}>
+                <CheckCircleFilled
+                  style={{
+                    visibility: 'visible',
+                  }}
+                />
+              </Tooltip>}
             </a>
           </Rename>
         );
@@ -159,21 +170,57 @@ const TableSource = (props: IPropsType) => {
     },
   ];
 
+  if (isPlus) {
+    defaultColumns.splice(2, 0, {
+      title: t('auth.name'),
+      dataIndex: 'auth',
+      width: 150,
+      render: (text, record) => {
+        return autoDatasourcetype.includes(record.plugin_type) ? (
+          <Button
+            type='link'
+            size='small'
+            onClick={() => {
+              setAuth({ visible: true, name: record.name, type: record.plugin_type, dataSourceId: record.id });
+            }}
+          >
+            {t('common:btn.modify')}
+          </Button>
+        ) : (
+          t('auth.not-support')
+        );
+      },
+    });
+  }
+
   return (
-    <Table
-      size='small'
-      className='datasource-list'
-      rowKey='id'
-      dataSource={_.filter(tableData, (item) => {
-        if (searchVal) {
-          return _.includes(item.name, searchVal);
-        }
-        return item;
-      })}
-      columns={defaultColumns}
-      loading={loading}
-      pagination={pagination}
-    />
+    <>
+      <Table
+        size='small'
+        className='datasource-list'
+        rowKey='id'
+        dataSource={_.filter(tableData, (item) => {
+          if (searchVal) {
+            return _.includes(item.name, searchVal);
+          }
+          return item;
+        })}
+        columns={defaultColumns}
+        loading={loading}
+        pagination={pagination}
+      />
+      {auth && (
+        <AuthList
+          visible={auth.visible}
+          onClose={() => {
+            setAuth(undefined);
+          }}
+          name={auth.name}
+          type={auth.type}
+          dataSourceId={auth.dataSourceId}
+        />
+      )}
+    </>
   );
 };
 
