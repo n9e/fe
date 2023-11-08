@@ -3,6 +3,7 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import type { InputRef } from 'antd';
 import { message, Table, Modal, Button, Space, Popconfirm, Input } from 'antd';
+import { ColumnProps } from 'antd/es/table';
 import { SearchOutlined } from '@ant-design/icons';
 import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
@@ -74,7 +75,7 @@ const TableSource = (props: IPropsType) => {
     filterIcon: (filtered: boolean) => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
   });
 
-  const defaultColumns = [
+  const defaultColumns: ColumnProps<any>[] = [
     {
       title: t('name'),
       dataIndex: 'name',
@@ -182,7 +183,7 @@ const TableSource = (props: IPropsType) => {
           t('auth.not-support')
         );
       },
-    },);
+    });
   }
 
   return (
