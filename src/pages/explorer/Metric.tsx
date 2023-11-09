@@ -33,35 +33,39 @@ const MetricExplorerPage = () => {
 
   return (
     <PageLayout title={t('title')} icon={<LineChartOutlined />}>
-      <div className='prometheus-page'>
-        {_.map(panels, (panel, idx) => {
-          return (
-            <div key={panel.uuid} style={{ height: 650, marginBottom: 16, position: 'relative' }}>
-              <Explorer type='metric' defaultCate='prometheus' panelIdx={idx} />
-              {panels.length > 1 && (
-                <CloseCircleOutlined
-                  style={{
-                    position: 'absolute',
-                    top: 8,
-                    right: 8,
-                    fontSize: 14,
-                  }}
-                  onClick={() => {
-                    setPanels(_.filter(panels, (item) => item.uuid !== panel.uuid));
-                  }}
-                />
-              )}
-            </div>
-          );
-        })}
-        <Button
-          style={{ width: '100%' }}
-          onClick={() => {
-            setPanels([...panels, { uuid: _.uniqueId('panel_') }]);
-          }}
-        >
-          Add Panel
-        </Button>
+      <div>
+        <div style={{ boxShadow: 'unset', background: 'unset' }}>
+          <div className='prometheus-page' style={{ padding: 16, background: '#fff', boxShadow: '0 1px 8px #0000001a' }}>
+            {_.map(panels, (panel, idx) => {
+              return (
+                <div key={panel.uuid} style={{ height: 650, marginBottom: 16, position: 'relative' }}>
+                  <Explorer type='metric' defaultCate='prometheus' panelIdx={idx} />
+                  {panels.length > 1 && (
+                    <CloseCircleOutlined
+                      style={{
+                        position: 'absolute',
+                        top: 8,
+                        right: 8,
+                        fontSize: 14,
+                      }}
+                      onClick={() => {
+                        setPanels(_.filter(panels, (item) => item.uuid !== panel.uuid));
+                      }}
+                    />
+                  )}
+                </div>
+              );
+            })}
+            <Button
+              style={{ width: '100%' }}
+              onClick={() => {
+                setPanels([...panels, { uuid: _.uniqueId('panel_') }]);
+              }}
+            >
+              Add Panel
+            </Button>
+          </div>
+        </div>
       </div>
     </PageLayout>
   );
