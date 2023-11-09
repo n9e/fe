@@ -44,9 +44,14 @@ interface IProps {
   type: Type;
   defaultCate: string;
   panelIdx?: number;
+  defaultFormValuesControl?: {
+    isInited?: boolean;
+    defaultFormValues?: any;
+    setDefaultFormValues?: (query: any) => void;
+  };
 }
 
-const Panel = ({ type, defaultCate, panelIdx }: IProps) => {
+const Panel = ({ type, defaultCate, panelIdx, defaultFormValuesControl }: IProps) => {
   const { t } = useTranslation('explorer');
   const { groupedDatasourceList } = useContext(CommonStateContext);
   const [form] = Form.useForm();
@@ -155,7 +160,15 @@ const Panel = ({ type, defaultCate, panelIdx }: IProps) => {
                 const datasourceCate = getFieldValue('datasourceCate');
                 const datasourceValue = getFieldValue('datasourceValue');
                 if (datasourceCate === DatasourceCateEnum.elasticsearch) {
-                  return <Elasticsearch key={datasourceValue} headerExtra={headerExtraRef.current} datasourceValue={datasourceValue} form={form} />;
+                  return (
+                    <Elasticsearch
+                      key={datasourceValue}
+                      headerExtra={headerExtraRef.current}
+                      datasourceValue={datasourceValue}
+                      form={form}
+                      defaultFormValuesControl={defaultFormValuesControl}
+                    />
+                  );
                 } else if (datasourceCate === DatasourceCateEnum.prometheus) {
                   return <Prometheus key={datasourceCate} headerExtra={headerExtraRef.current} datasourceValue={datasourceValue} form={form} panelIdx={panelIdx} />;
                 } else if (datasourceCate === DatasourceCateEnum.tdengine) {
@@ -163,7 +176,16 @@ const Panel = ({ type, defaultCate, panelIdx }: IProps) => {
                 } else if (datasourceCate === DatasourceCateEnum.loki) {
                   return <Loki datasourceValue={datasourceValue} headerExtra={headerExtraRef.current} form={form} />;
                 }
-                return <PlusExplorer key={datasourceValue} datasourceCate={datasourceCate} datasourceValue={datasourceValue} headerExtraRef={headerExtraRef} form={form} />;
+                return (
+                  <PlusExplorer
+                    key={datasourceValue}
+                    datasourceCate={datasourceCate}
+                    datasourceValue={datasourceValue}
+                    headerExtraRef={headerExtraRef}
+                    form={form}
+                    defaultFormValuesControl={defaultFormValuesControl}
+                  />
+                );
               }}
             </Form.Item>
           </div>

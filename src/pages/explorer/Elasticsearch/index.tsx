@@ -24,6 +24,11 @@ interface IProps {
   datasourceValue?: number;
   form: FormInstance;
   isOpenSearch?: boolean;
+  defaultFormValuesControl?: {
+    isInited?: boolean;
+    defaultFormValues?: any;
+    setDefaultFormValues?: (query: any) => void;
+  };
 }
 
 const LOGS_LIMIT = 500;
@@ -93,7 +98,7 @@ const getDefaultMode = (query, isOpenSearch) => {
 
 export default function index(props: IProps) {
   const { t } = useTranslation('explorer');
-  const { headerExtra, datasourceValue, form, isOpenSearch = false } = props;
+  const { headerExtra, datasourceValue, form, isOpenSearch = false, defaultFormValuesControl } = props;
   const query = queryString.parse(useLocation().search);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
@@ -141,7 +146,13 @@ export default function index(props: IProps) {
         end: moment(end).valueOf(),
       };
       setLoading(true);
-
+      if (defaultFormValuesControl?.setDefaultFormValues) {
+        defaultFormValuesControl.setDefaultFormValues({
+          datasourceCate: 'elasticsearch',
+          datasourceValue,
+          query: values.query,
+        });
+      }
       getLogsQuery(
         values.datasourceValue,
         dslBuilder({
@@ -202,19 +213,19 @@ export default function index(props: IProps) {
     fetchData();
   };
 
-  useEffect(() => {
-    // 如果URL携带数据源值和索引值，则直接查询
-    if (query?.data_source_id && query?.index_name) {
-      form.setFieldsValue({
-        query: {
-          index: query.index_name,
-          filter: getFilterByQuery(query),
-          date_field: query.timestamp || '@timestamp',
-        },
-      });
-      fetchData();
-    }
-  }, []);
+  // useEffect(() => {
+  //   // 如果URL携带数据源值和索引值，则直接查询
+  //   if (query?.data_source_id && query?.index_name) {
+  //     form.setFieldsValue({
+  //       query: {
+  //         index: query.index_name,
+  //         filter: getFilterByQuery(query),
+  //         date_field: query.timestamp || '@timestamp',
+  //       },
+  //     });
+  //     fetchData();
+  //   }
+  // }, []);
 
   useEffect(() => {
     fetchSeries(form.getFieldsValue());
@@ -225,6 +236,12 @@ export default function index(props: IProps) {
       fetchData();
     }
   }, [JSON.stringify(filters)]);
+
+  useEffect(() => {
+    if (defaultFormValuesControl?.defaultFormValues && defaultFormValuesControl?.isInited === false) {
+      form.setFieldsValue(defaultFormValuesControl.defaultFormValues);
+    }
+  }, []);
 
   return (
     <div className='es-discover-container'>
