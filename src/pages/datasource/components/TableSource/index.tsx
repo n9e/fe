@@ -9,7 +9,9 @@ import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
 import Rename from '../Rename';
 import { deleteDataSourceById, getDataSourceList, updateDataSourceStatus } from '../../services';
+// @ts-ignore
 import { autoDatasourcetype, AuthList, AutoDatasourcetypeValue } from 'plus:/components/DataSourceAuth/auth';
+// @ts-ignore
 import useIsPlus from 'plus:/components/useIsPlus';
 export interface IDefaultES {
   default_id: number;
@@ -95,13 +97,15 @@ const TableSource = (props: IPropsType) => {
               }}
             >
               {text}
-              {record?.is_default && <Tooltip placement='top' title={t('该数据源类型下的默认集群')}>
-                <CheckCircleFilled
-                  style={{
-                    visibility: 'visible',
-                  }}
-                />
-              </Tooltip>}
+              {record?.is_default && (
+                <Tooltip placement='top' title={t('该数据源类型下的默认集群')}>
+                  <CheckCircleFilled
+                    style={{
+                      visibility: 'visible',
+                    }}
+                  />
+                </Tooltip>
+              )}
             </a>
           </Rename>
         );
