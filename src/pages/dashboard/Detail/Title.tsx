@@ -169,23 +169,21 @@ export default function Title(props: IProps) {
           >
             {viewMode === 'fullscreen' ? t('exit_full_screen') : t('full_screen')}
           </Button>
-          {/* {viewMode === 'fullscreen' && (
-            <Switch
-              checkedChildren='dark'
-              unCheckedChildren='light'
-              checked={themeMode === 'dark'}
-              onChange={(checked) => {
-                const newQuery = _.omit(query, ['themeMode']);
-                if (checked) {
-                  newQuery.themeMode = 'dark';
-                }
-                history.replace({
-                  pathname: location.pathname,
-                  search: querystring.stringify(newQuery),
-                });
-              }}
-            />
-          )} */}
+          <Switch
+            checkedChildren='dark'
+            unCheckedChildren='light'
+            checked={themeMode === 'dark'}
+            onChange={(checked) => {
+              const newQuery = _.omit(query, ['themeMode']);
+              if (checked) {
+                newQuery.themeMode = 'dark';
+              }
+              history.replace({
+                pathname: location.pathname,
+                search: querystring.stringify(newQuery),
+              });
+            }}
+          />
         </Space>
       </div>
     </div>

@@ -264,7 +264,7 @@ function convertTimeseriesGrafanaToN9E(panel: any) {
     version: '3.0.0',
     drawStyle: panel.type === 'barchart' ? 'bars' : 'lines',
     lineInterpolation: lineInterpolation === 'smooth' ? 'smooth' : 'linear',
-    fillOpacity: fillOpacity ? fillOpacity / 100 : 0.5,
+    fillOpacity: fillOpacity ? fillOpacity / 100 : 0,
     stack: stack === 'normal' ? 'normal' : 'off',
   };
 }
