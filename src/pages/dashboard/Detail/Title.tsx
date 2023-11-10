@@ -19,7 +19,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import querystring from 'query-string';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Button, Space, Dropdown, Menu, Switch, notification } from 'antd';
+import { Button, Space, Dropdown, Menu, Switch, notification, Select } from 'antd';
 import { RollbackOutlined } from '@ant-design/icons';
 import { useKeyPress } from 'ahooks';
 import { TimeRangePickerWithRefresh, IRawTimeRange } from '@/components/TimeRangePicker';
@@ -169,15 +169,15 @@ export default function Title(props: IProps) {
           >
             {viewMode === 'fullscreen' ? t('exit_full_screen') : t('full_screen')}
           </Button>
-          <Switch
-            checkedChildren='dark'
-            unCheckedChildren='light'
-            checked={themeMode === 'dark'}
-            onChange={(checked) => {
+          <Select
+            options={[
+              { label: 'light', value: 'light' },
+              { label: 'dark', value: 'dark' },
+            ]}
+            value={themeMode || 'light'}
+            onChange={(val) => {
               const newQuery = _.omit(query, ['themeMode']);
-              if (checked) {
-                newQuery.themeMode = 'dark';
-              }
+              newQuery.themeMode = val;
               history.replace({
                 pathname: location.pathname,
                 search: querystring.stringify(newQuery),
