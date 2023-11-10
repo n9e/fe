@@ -82,6 +82,9 @@ export default function index(props: IProps) {
                         <Option value='bitsSecIEC'>bits/sec(IEC)</Option>
                         <Option value='bytesSecIEC'>bytes/sec(IEC)</Option>
                       </OptGroup>
+                      <OptGroup label='Energy'>
+                        <Option value='dBm'>Decibel-milliwatt(dBm)</Option>
+                      </OptGroup>
                       <OptGroup label='Percent'>
                         <Option value='percent'>percent(0-100)</Option>
                         <Option value='percentUnit'>percent(0.0-1.0)</Option>
