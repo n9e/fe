@@ -49,6 +49,15 @@ const MetricExplorerPage = () => {
                     ...items,
                     {
                       key: newActiveKey,
+                      isInited: false,
+                      formValues: {
+                        query: {
+                          range: {
+                            start: 'now-1h',
+                            end: 'now',
+                          },
+                        },
+                      },
                     },
                   ];
                   setItems(newItems);
@@ -60,8 +69,8 @@ const MetricExplorerPage = () => {
                   setItems(newItems);
                   setLocalItems(newItems);
                   if (targetKey === activeKey) {
-                    setActiveKey(items?.[0]?.key);
-                    setLocalActiveKey(items?.[0]?.key);
+                    setActiveKey(newItems?.[0]?.key);
+                    setLocalActiveKey(newItems?.[0]?.key);
                   }
                 }
               }}
@@ -76,15 +85,27 @@ const MetricExplorerPage = () => {
                     <Explorer
                       type='logging'
                       defaultCate='elasticsearch'
-                      panelIdx={idx}
                       defaultFormValuesControl={{
                         isInited: item.isInited,
+                        setIsInited: () => {
+                          const newItems = _.map(items, (i) => {
+                            if (i.key === item.key) {
+                              return {
+                                ...i,
+                                isInited: true,
+                              };
+                            }
+                            return i;
+                          });
+                          setItems(newItems);
+                        },
                         defaultFormValues: item.formValues,
                         setDefaultFormValues: (newValues) => {
                           const newItems = _.map(items, (i) => {
                             if (i.key === item.key) {
                               return {
                                 ...i,
+                                isInited: true,
                                 formValues: newValues,
                               };
                             }

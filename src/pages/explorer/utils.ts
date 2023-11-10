@@ -85,6 +85,19 @@ export const getFormValuesBySearch = (params: { [index: string]: string | null }
         };
       }
     }
+    if (data_source_name === 'loki') {
+      const query = _.get(params, 'query');
+      const limit = _.get(params, 'limit');
+      if (query) {
+        return {
+          ...formValues,
+          query: {
+            query,
+            limit,
+          },
+        };
+      }
+    }
   }
   return undefined;
 };
@@ -187,7 +200,6 @@ export const getLocalActiveKey = (params: { [index: string]: string | null }, it
       return item.key;
     }
   }
-  console.log('activeKey', activeKey);
   if (activeKey) {
     const item = _.find(items, (item) => {
       return item.key === activeKey;

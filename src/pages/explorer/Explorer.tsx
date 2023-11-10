@@ -46,6 +46,10 @@ interface IProps {
   panelIdx?: number;
   defaultFormValuesControl?: {
     isInited?: boolean;
+<<<<<<< HEAD
+=======
+    setIsInited: () => void;
+>>>>>>> 1109
     defaultFormValues?: any;
     setDefaultFormValues?: (query: any) => void;
   };
@@ -58,16 +62,16 @@ const Panel = ({ type, defaultCate, panelIdx, defaultFormValuesControl }: IProps
   const history = useHistory();
   const headerExtraRef = useRef<HTMLDivElement>(null);
   const params = new URLSearchParams(useLocation().search);
-  const datasourceCate = params.get('data_source_name') || localStorage.getItem(`explorer_datasource_cate_${type}`) || defaultCate;
-  const datasourceValue = params.get('data_source_id') ? _.toNumber(params.get('data_source_id')) : getDefaultDatasourceValue(datasourceCate, groupedDatasourceList);
+  const defaultDatasourceCate = params.get('data_source_name') || localStorage.getItem(`explorer_datasource_cate_${type}`) || defaultCate;
+  const defaultDatasourceValue = params.get('data_source_id') ? _.toNumber(params.get('data_source_id')) : getDefaultDatasourceValue(defaultDatasourceCate, groupedDatasourceList);
 
   return (
     <div className='explorer-container'>
       <Form
         form={form}
         initialValues={{
-          datasourceCate: datasourceCate,
-          datasourceValue: datasourceValue,
+          datasourceCate: defaultDatasourceCate,
+          datasourceValue: defaultDatasourceValue,
         }}
       >
         <div className='explorer-content'>
@@ -85,6 +89,14 @@ const Panel = ({ type, defaultCate, panelIdx, defaultFormValuesControl }: IProps
                     form.setFieldsValue({
                       datasourceValue: getDefaultDatasourceValue(val, groupedDatasourceList),
                       query: undefined,
+                    });
+                    form.setFieldsValue({
+                      query: {
+                        range: {
+                          start: 'now-1h',
+                          end: 'now',
+                        },
+                      },
                     });
                     if (panelIdx === 0) {
                       history.replace({
@@ -126,14 +138,22 @@ const Panel = ({ type, defaultCate, panelIdx, defaultFormValuesControl }: IProps
                           dropdownMatchSelectWidth={false}
                           onChange={(val: string) => {
                             setDefaultDatasourceValue(cate, val);
-                            if (panelIdx === 0) {
-                              history.replace({
-                                search: `?data_source_name=${cate}&data_source_id=${val}`,
-                              });
-                            }
                             if (cate !== 'prometheus') {
                               form.setFieldsValue({
                                 query: undefined,
+                              });
+                              form.setFieldsValue({
+                                query: {
+                                  range: {
+                                    start: 'now-1h',
+                                    end: 'now',
+                                  },
+                                },
+                              });
+                            }
+                            if (panelIdx === 0) {
+                              history.replace({
+                                search: `?data_source_name=${cate}&data_source_id=${val}`,
                               });
                             }
                           }}
@@ -162,7 +182,11 @@ const Panel = ({ type, defaultCate, panelIdx, defaultFormValuesControl }: IProps
                 if (datasourceCate === DatasourceCateEnum.elasticsearch) {
                   return (
                     <Elasticsearch
+<<<<<<< HEAD
                       key={datasourceValue}
+=======
+                      // key={datasourceValue}
+>>>>>>> 1109
                       headerExtra={headerExtraRef.current}
                       datasourceValue={datasourceValue}
                       form={form}
@@ -170,15 +194,33 @@ const Panel = ({ type, defaultCate, panelIdx, defaultFormValuesControl }: IProps
                     />
                   );
                 } else if (datasourceCate === DatasourceCateEnum.prometheus) {
-                  return <Prometheus key={datasourceCate} headerExtra={headerExtraRef.current} datasourceValue={datasourceValue} form={form} panelIdx={panelIdx} />;
+                  return (
+                    <Prometheus
+                      // key={datasourceCate}
+                      headerExtra={headerExtraRef.current}
+                      datasourceValue={datasourceValue}
+                      form={form}
+                      panelIdx={panelIdx}
+                    />
+                  );
                 } else if (datasourceCate === DatasourceCateEnum.tdengine) {
-                  return <TDengine key={datasourceValue} datasourceValue={datasourceValue} form={form} />;
+                  return (
+                    <TDengine
+                      // key={datasourceValue}
+                      datasourceValue={datasourceValue}
+                      form={form}
+                    />
+                  );
                 } else if (datasourceCate === DatasourceCateEnum.loki) {
-                  return <Loki datasourceValue={datasourceValue} headerExtra={headerExtraRef.current} form={form} />;
+                  return <Loki datasourceValue={datasourceValue} headerExtra={headerExtraRef.current} form={form} defaultFormValuesControl={defaultFormValuesControl} />;
                 }
                 return (
                   <PlusExplorer
+<<<<<<< HEAD
                     key={datasourceValue}
+=======
+                    // key={datasourceValue}
+>>>>>>> 1109
                     datasourceCate={datasourceCate}
                     datasourceValue={datasourceValue}
                     headerExtraRef={headerExtraRef}

@@ -26,6 +26,7 @@ interface IProps {
   isOpenSearch?: boolean;
   defaultFormValuesControl?: {
     isInited?: boolean;
+    setIsInited: () => void;
     defaultFormValues?: any;
     setDefaultFormValues?: (query: any) => void;
   };
@@ -88,12 +89,12 @@ const getFilterByQuery = (query: ParsedQuery<string>) => {
   }
 };
 
-const getDefaultMode = (query, isOpenSearch) => {
+const getDefaultMode = (query, isOpenSearch, value?) => {
   if (isOpenSearch) return IMode.indices;
   if (query?.data_source_id && query?.index_name) {
     return IMode.indices;
   }
-  return (localStorage.getItem('explorer_es_mode') as IMode) || IMode.indices;
+  return value || IMode.indices;
 };
 
 export default function index(props: IProps) {
@@ -193,9 +194,6 @@ export default function index(props: IProps) {
     });
   };
   const handlerModeChange = (mode, isOpenSearch) => {
-    if (!isOpenSearch) {
-      localStorage.setItem('explorer_es_mode', mode);
-    }
     const queryValues = form.getFieldValue('query');
     form.setFieldsValue({
       fieldConfig: undefined,
@@ -213,20 +211,6 @@ export default function index(props: IProps) {
     fetchData();
   };
 
-  // useEffect(() => {
-  //   // 如果URL携带数据源值和索引值，则直接查询
-  //   if (query?.data_source_id && query?.index_name) {
-  //     form.setFieldsValue({
-  //       query: {
-  //         index: query.index_name,
-  //         filter: getFilterByQuery(query),
-  //         date_field: query.timestamp || '@timestamp',
-  //       },
-  //     });
-  //     fetchData();
-  //   }
-  // }, []);
-
   useEffect(() => {
     fetchSeries(form.getFieldsValue());
   }, [interval, intervalUnit]);
@@ -240,6 +224,8 @@ export default function index(props: IProps) {
   useEffect(() => {
     if (defaultFormValuesControl?.defaultFormValues && defaultFormValuesControl?.isInited === false) {
       form.setFieldsValue(defaultFormValuesControl.defaultFormValues);
+      defaultFormValuesControl.setIsInited();
+      setMode(getDefaultMode(query, isOpenSearch, defaultFormValuesControl.defaultFormValues?.query?.mode));
     }
   }, []);
 
@@ -253,6 +239,11 @@ export default function index(props: IProps) {
                 mode={mode}
                 setMode={(val) => {
                   handlerModeChange(val, isOpenSearch);
+                  form.setFieldsValue({
+                    query: {
+                      mode: val,
+                    },
+                  });
                 }}
                 allowHideSystemIndices={allowHideSystemIndices}
                 setAllowHideSystemIndices={setAllowHideSystemIndices}
@@ -264,6 +255,11 @@ export default function index(props: IProps) {
               mode={mode}
               setMode={(val) => {
                 handlerModeChange(val, isOpenSearch);
+                form.setFieldsValue({
+                  query: {
+                    mode: val,
+                  },
+                });
               }}
               allowHideSystemIndices={allowHideSystemIndices}
               setAllowHideSystemIndices={setAllowHideSystemIndices}
@@ -271,10 +267,21 @@ export default function index(props: IProps) {
           )}
         </>
       )}
-
-      {mode === IMode.indices && <QueryBuilder onExecute={fetchData} datasourceValue={datasourceValue} setFields={setFields} allowHideSystemIndices={allowHideSystemIndices} />}
+      <Form.Item name={['query', 'mode']} hidden>
+        <div />
+      </Form.Item>
+      {mode === IMode.indices && (
+        <QueryBuilder key={datasourceValue} onExecute={fetchData} datasourceValue={datasourceValue} setFields={setFields} allowHideSystemIndices={allowHideSystemIndices} />
+      )}
       {mode === IMode.indexPatterns && (
-        <QueryBuilderWithIndexPatterns onExecute={fetchData} datasourceValue={datasourceValue} form={form} setFields={setFields} onIndexChange={handlerIndexChange} />
+        <QueryBuilderWithIndexPatterns
+          key={datasourceValue}
+          onExecute={fetchData}
+          datasourceValue={datasourceValue}
+          form={form}
+          setFields={setFields}
+          onIndexChange={handlerIndexChange}
+        />
       )}
       <div style={{ height: 'calc(100% - 50px)', display: 'flex', flexDirection: 'column' }}>
         {!_.isEmpty(filters) && (

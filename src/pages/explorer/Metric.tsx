@@ -35,10 +35,10 @@ const MetricExplorerPage = () => {
     <PageLayout title={t('title')} icon={<LineChartOutlined />}>
       <div>
         <div style={{ boxShadow: 'unset', background: 'unset' }}>
-          <div className='prometheus-page' style={{ padding: 16, background: '#fff', boxShadow: '0 1px 8px #0000001a' }}>
+          <div className='prometheus-page'>
             {_.map(panels, (panel, idx) => {
               return (
-                <div key={panel.uuid} style={{ height: 650, marginBottom: 16, position: 'relative' }}>
+                <div key={panel.uuid} style={{ padding: 16, height: 650, marginBottom: 16, position: 'relative', background: '#fff', boxShadow: '0 1px 8px #0000001a' }}>
                   <Explorer type='metric' defaultCate='prometheus' panelIdx={idx} />
                   {panels.length > 1 && (
                     <CloseCircleOutlined
