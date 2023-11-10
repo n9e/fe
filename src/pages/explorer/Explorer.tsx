@@ -46,10 +46,7 @@ interface IProps {
   panelIdx?: number;
   defaultFormValuesControl?: {
     isInited?: boolean;
-<<<<<<< HEAD
-=======
     setIsInited: () => void;
->>>>>>> 1109
     defaultFormValues?: any;
     setDefaultFormValues?: (query: any) => void;
   };
@@ -182,11 +179,7 @@ const Panel = ({ type, defaultCate, panelIdx, defaultFormValuesControl }: IProps
                 if (datasourceCate === DatasourceCateEnum.elasticsearch) {
                   return (
                     <Elasticsearch
-<<<<<<< HEAD
-                      key={datasourceValue}
-=======
                       // key={datasourceValue}
->>>>>>> 1109
                       headerExtra={headerExtraRef.current}
                       datasourceValue={datasourceValue}
                       form={form}
@@ -216,11 +209,7 @@ const Panel = ({ type, defaultCate, panelIdx, defaultFormValuesControl }: IProps
                 }
                 return (
                   <PlusExplorer
-<<<<<<< HEAD
-                    key={datasourceValue}
-=======
                     // key={datasourceValue}
->>>>>>> 1109
                     datasourceCate={datasourceCate}
                     datasourceValue={datasourceValue}
                     headerExtraRef={headerExtraRef}

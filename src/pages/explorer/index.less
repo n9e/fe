@@ -32,17 +32,13 @@
 
 .logs-explorer-container {
   height: 100%;
-  .ant-tabs {
+  & > .ant-tabs {
     height: 100%;
   }
   .ant-tabs-top > .ant-tabs-nav {
     margin-bottom: 8px;
   }
-  .ant-tabs-card .ant-tabs-content {
-    height: 120px;
-    margin-top: -16px;
-  }
-  .ant-tabs-card .ant-tabs-content > .ant-tabs-tabpane {
+  .ant-tabs-card > .ant-tabs-content-holder > .ant-tabs-content > .ant-tabs-tabpane {
     padding: 16px;
     background: #fff;
     box-shadow: 0 1px 8px #0000001a;
@@ -50,14 +46,13 @@
   .ant-tabs-card > .ant-tabs-nav::before {
     display: none;
   }
-  .card-container > .ant-tabs-card .ant-tabs-tab-active,
-  .ant-tabs-card .ant-tabs-tab-active {
+  .ant-tabs-card > .ant-tabs-nav > .ant-tabs-nav-wrap > .ant-tabs-nav-list > .ant-tabs-tab-active {
     background: #fff;
     border-color: #fff;
     box-shadow: 0 1px 8px #0000001a;
     border-top: 1px solid #6C53B1;
   }
-  .ant-tabs-card .ant-tabs-content {
+  .ant-tabs-card > .ant-tabs-content-holder > .ant-tabs-content {
     height: 120px;
     margin-top: -8px;
     height: 100%;
