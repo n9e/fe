@@ -62,7 +62,7 @@ const Shield: React.FC = () => {
         return (
           <Link
             to={{
-              pathname: `/alert-mutes/edit/${record.id}`,
+              pathname: `/alert-subscribes/edit/${record.id}`,
               state: record,
             }}
           >
