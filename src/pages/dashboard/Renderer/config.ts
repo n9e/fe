@@ -51,4 +51,12 @@ export const utilValMap = {
     base: 'bytes',
     postfix: '/s',
   },
+  packetsSec: {
+    type: 'si',
+    postfix: 'p/s',
+  },
+  dBm: {
+    type: 'si',
+    postfix: 'dBm',
+  },
 };
