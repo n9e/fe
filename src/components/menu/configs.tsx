@@ -12,6 +12,8 @@ import DialAnalysis from './icons/DialAnalysis.svg';
 import DialAnalysisHover from './icons/DialAnalysis-Hover.svg';
 import Pingmesh from './icons//Pingmesh.svg';
 import PingmeshHover from './icons/Pingmesh-Hover.svg';
+import EmbedsSvg from './icons/Embeds.svg';
+import EmbedsSvgHover from './icons/Embeds-Hover.svg';
 
 const menuIcon = {
   Menu_Search,
@@ -28,6 +30,8 @@ const menuIcon = {
   DialAnalysisHover,
   Pingmesh,
   PingmeshHover,
+  EmbedsSvg,
+  EmbedsSvgHover,
 };
 
 export default menuIcon;

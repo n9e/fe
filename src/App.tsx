@@ -104,6 +104,8 @@ export const CommonStateContext = createContext({} as ICommonState);
 function App() {
   const { t, i18n } = useTranslation();
   const isPlus = useIsPlus();
+  console.log('isPlus', isPlus);
+
   const initialized = useRef(false);
   const [commonState, setCommonState] = useState<ICommonState>({
     datasourceCateOptions: [],
