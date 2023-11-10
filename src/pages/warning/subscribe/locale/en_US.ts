@@ -42,5 +42,6 @@ const en_US = {
   severities: 'Severity',
   severities_msg: 'Severity is required',
   tags_groups_require: 'Tags and receiving groups must fill in at least one item',
+  note: 'Note',
 };
 export default en_US;

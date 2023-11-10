@@ -59,6 +59,22 @@ const Shield: React.FC = () => {
 
   const columns: ColumnsType = [
     {
+      title: t('note'),
+      dataIndex: 'note',
+      render: (data, record: any) => {
+        return (
+          <Link
+            to={{
+              pathname: `/alert-mutes/edit/${record.id}`,
+              state: record,
+            }}
+          >
+            {data}
+          </Link>
+        );
+      },
+    },
+    {
       title: t('common:datasource.type'),
       dataIndex: 'cate',
       width: 100,
@@ -85,22 +101,6 @@ const Shield: React.FC = () => {
               }),
             )}
           />
-        );
-      },
-    },
-    {
-      title: t('note'),
-      dataIndex: 'note',
-      render: (data, record: any) => {
-        return (
-          <Link
-            to={{
-              pathname: `/alert-mutes/edit/${record.id}`,
-              state: record,
-            }}
-          >
-            {data}
-          </Link>
         );
       },
     },
