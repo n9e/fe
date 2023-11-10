@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { CSSProperties } from 'react';
 import { Input } from 'antd';
 import classNames from 'classnames';
 import './style.less';
@@ -8,10 +8,11 @@ interface IProps {
   label: React.ReactNode;
   labelWidth?: number | string;
   noStyle?: boolean;
+  customStyle?: CSSProperties;
 }
 
 export default function index(props: IProps) {
-  const { children, label, labelWidth = 'max-content', noStyle = false } = props;
+  const { children, label, labelWidth = 'max-content', noStyle = false, customStyle } = props;
   return (
     <Input.Group compact className='input-group-with-form-item'>
       <span
@@ -22,6 +23,7 @@ export default function index(props: IProps) {
         style={{
           width: labelWidth,
           maxWidth: 'unset',
+          ...customStyle,
         }}
       >
         {label}
