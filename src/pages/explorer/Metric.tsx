@@ -35,7 +35,7 @@ const MetricExplorerPage = () => {
     <PageLayout title={t('title')} icon={<LineChartOutlined />}>
       <div>
         <div style={{ boxShadow: 'unset', background: 'unset' }}>
-          <div className='prometheus-page'>
+          <div>
             {_.map(panels, (panel, idx) => {
               return (
                 <div key={panel.uuid} style={{ padding: 16, height: 650, marginBottom: 16, position: 'relative', background: '#fff', boxShadow: '0 1px 8px #0000001a' }}>
