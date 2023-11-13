@@ -105,7 +105,7 @@ export default function Title(props: IProps) {
 
   return (
     <div
-      className='dashboard-detail-header'
+      className={`dashboard-detail-header ${import.meta.env.VITE_IS_ENT !== 'true' ? 'n9e-page-header-content' : ''}`}
       style={{
         display: query.viewMode === 'fullscreen' ? 'none' : 'flex',
       }}
