@@ -96,15 +96,15 @@ export default function index() {
           }}
         </Form.Item>
         <Col span={24}>
-          <Form.Item label='单击触发行为' name={[...namePrefix, 'behaviour']} initialValue='showItem'>
+          <Form.Item label={t('panel.options.legend.behaviour.label')} name={[...namePrefix, 'behaviour']} initialValue='showItem'>
             <Select
               options={[
                 {
-                  label: '显示项目',
+                  label: t('panel.options.legend.behaviour.showItem'),
                   value: 'showItem',
                 },
                 {
-                  label: '隐藏项目',
+                  label: t('panel.options.legend.behaviour.hideItem'),
                   value: 'hideItem',
                 },
               ]}
