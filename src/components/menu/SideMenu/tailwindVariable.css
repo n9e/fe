@@ -1,0 +1,59 @@
+/* 该文件变量用于定义 tailwindcss 变量色
+ * 浅色模式于深色模式变量一一对应
+ * 在切换浅色/深色模式时，自动切换颜色，不需要手动为元素添加 dark: 前缀
+ * 变量命名统一使用 --fc- 前缀，防止与其他变量冲突
+
+ 注意：修改此处变量，需要同步修改 src/App.tsx 中 Antd 主题对应的变量
+*/
+/* 浅色模式 */
+:root {
+  /* 填充色 */
+  --fc-fill-1: 248 250 252;
+  --fc-fill-2: 255 255 255;
+  --fc-fill-3: 243 244 246;
+  --fc-fill-4: 229 231 235;
+  --fc-fill-5: 209 213 219;
+  --fc-fill-6: 209 213 219;
+  --fc-fill-7: 209 213 219;
+  --fc-fill-primary: 108 83 177;
+  --fc-fill-success: 0 167 0;
+  --fc-fill-warning: 250 200 0;
+  --fc-fill-alert: 250 125 0;
+  --fc-fill-error: 200 0 0;
+
+  /* 文本 */
+  --fc-text-1: #1a1a1a;
+  --fc-text-2: #333333;
+  --fc-text-3: #666666;
+  --fc-text-4: #999999;
+  --fc-text-5: #d1d1d9;
+  --fc-text-link: #6c53b1;
+  --fc-text-placeholder: #bfbfbf;
+}
+
+/* -------------------  分割线 ------------------- */
+
+/* 深色模式 */
+.dark {
+  --fc-fill-1: 32 34 46;
+  --fc-fill-2: 39 42 56;
+  --fc-fill-3: 50 53 69;
+  --fc-fill-4: 57 60 77;
+  --fc-fill-5: 64 67 84;
+  --fc-fill-6: 71 74 91;
+  --fc-fill-7: 79 82 99;
+  /* --fc-fill-primary: 108 83 177; */
+  --fc-fill-success: 63 196 83;
+  --fc-fill-warning: 230 198 39;
+  --fc-fill-alert: 250 125 0;
+  --fc-fill-error: 255 101 107;
+
+  /* 文本 */
+  --fc-text-1: #ffffff;
+  --fc-text-2: #e6e6e8;
+  --fc-text-3: #bfbfc5;
+  --fc-text-4: #9999a2;
+  --fc-text-5: #737380;
+  /* --fc-text-link: #9470FF; */
+  --fc-text-placeholder: #bfbfbf;
+}

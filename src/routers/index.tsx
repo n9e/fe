@@ -101,7 +101,7 @@ export default function Content() {
   let themeClassName = '';
   if (location.pathname.indexOf('/dashboard') === 0) {
     const query = querystring.parse(location.search);
-    if (query?.viewMode === 'fullscreen' && query?.themeMode === 'dark') {
+    if (query?.themeMode === 'dark') {
       themeClassName = 'theme-dark';
     }
   }

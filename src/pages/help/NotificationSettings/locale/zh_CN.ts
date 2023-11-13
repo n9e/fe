@@ -40,6 +40,7 @@ const zh_CN = {
     add: '添加',
     add_title: '添加通知媒介',
     edit_title: '编辑通知媒介',
+    enabled: '启用',
   },
   contacts: {
     title: '联系方式',

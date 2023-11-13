@@ -95,6 +95,22 @@ export default function index() {
             );
           }}
         </Form.Item>
+        <Col span={24}>
+          <Form.Item label={t('panel.options.legend.behaviour.label')} name={[...namePrefix, 'behaviour']} initialValue='showItem'>
+            <Select
+              options={[
+                {
+                  label: t('panel.options.legend.behaviour.showItem'),
+                  value: 'showItem',
+                },
+                {
+                  label: t('panel.options.legend.behaviour.hideItem'),
+                  value: 'hideItem',
+                },
+              ]}
+            />
+          </Form.Item>
+        </Col>
         <Col span={9}>
           <Form.Item label={t('panel.custom.detailName')} name={[...namePrefix, 'detailName']}>
             <Input style={{ width: '100%' }} />

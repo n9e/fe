@@ -39,6 +39,7 @@ const en_US = {
     add: 'Add',
     add_title: 'Add Channel',
     edit_title: 'Edit Channel',
+    enabled: 'Enabled',
   },
   contacts: {
     title: 'Contacts',

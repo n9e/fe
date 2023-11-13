@@ -15,22 +15,23 @@
  *
  */
 import React, { useState, useEffect, useContext } from 'react';
-import { Button, Input, Table, message, Modal, Space, Select, Tag } from 'antd';
+import { Button, Input, Table, message, Modal, Space, Switch, Tag } from 'antd';
 import { CopyOutlined, ExclamationCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/lib/table';
 import { useHistory, useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import _ from 'lodash';
+import _, { update } from 'lodash';
 import queryString from 'query-string';
 import PageLayout from '@/components/pageLayout';
-import { getSubscribeList, deleteSubscribes } from '@/services/subscribe';
+import { getSubscribeList, deleteSubscribes, editSubscribe } from '@/services/subscribe';
 import { subscribeItem } from '@/store/warningInterface/subscribe';
 import { BusinessGroup } from '@/pages/targets';
 import RefreshIcon from '@/components/RefreshIcon';
 import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
 import { CommonStateContext } from '@/App';
 import { priorityColor } from '@/utils/constant';
-import { DatasourceSelect, ProdSelect } from '@/components/DatasourceSelect';
+import { DatasourceSelect } from '@/components/DatasourceSelect';
+import { strategyStatus } from '@/store/warningInterface';
 import { pageSizeOptionsDefault } from '../const';
 import './locale';
 import './index.less';
@@ -54,6 +55,22 @@ const Shield: React.FC = () => {
   const [datasourceIds, setDatasourceIds] = useState<number[]>();
 
   const columns: ColumnsType = [
+    {
+      title: t('note'),
+      dataIndex: 'note',
+      render: (data, record: any) => {
+        return (
+          <Link
+            to={{
+              pathname: `/alert-subscribes/edit/${record.id}`,
+              state: record,
+            }}
+          >
+            {data}
+          </Link>
+        );
+      },
+    },
     {
       title: t('common:datasource.id'),
       dataIndex: 'datasource_ids',
@@ -179,8 +196,32 @@ const Shield: React.FC = () => {
       dataIndex: 'update_by',
     },
     {
+      title: t('common:table.enabled'),
+      dataIndex: 'disabled',
+      width: 70,
+      render: (disabled, record: any) => (
+        <Switch
+          checked={disabled === strategyStatus.Enable}
+          size='small'
+          onChange={() => {
+            editSubscribe(
+              [
+                {
+                  ..._.omit(record, ['create_at', 'create_by', 'update_at', 'update_by']),
+                  disabled: disabled === 0 ? 1 : 0,
+                },
+              ],
+              Number(bgid),
+            ).then(() => {
+              refreshList();
+            });
+          }}
+        />
+      ),
+    },
+    {
       title: t('common:table.operations'),
-      width: '128px',
+      width: 120,
       dataIndex: 'operation',
       render: (text: undefined, record: subscribeItem) => {
         return (

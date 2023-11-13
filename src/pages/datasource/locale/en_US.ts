@@ -17,6 +17,12 @@ const en_US = {
   },
   rename_title: 'Rename',
   type_btn_add: 'Add',
+  default:"Set as default",
+  default_msg:"Default cluster of this data source type",
+  auth: {
+    name: 'Auth',
+    'not-support': 'Not support',
+  },
   form: {
     other: 'Other',
     name: 'Name',

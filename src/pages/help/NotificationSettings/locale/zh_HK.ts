@@ -40,6 +40,7 @@ const zh_HK = {
     add: '新增',
     add_title: '新增通知媒介',
     edit_title: '編輯通知媒介',
+    enabled: '啟用',
   },
   contacts: {
     title: '聯繫方式',

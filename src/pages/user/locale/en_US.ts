@@ -29,7 +29,7 @@ const en_US = {
     empty: 'Business group (monitoring objects, monitoring dashboards, alert rules, self-healing scripts, etc.) is empty, please',
     name: 'Business Group Name',
     name_tip: `
-      After being separated by a dash, it will be rendered into a tree structure, currently only supports two layers <1 />
+      After being separated by a dash, it will be rendered into a tree structure <1 />
       For example: redis-monitoring and redis-login will be displayed as follows  <1 />
       redis <1 />
       - monitoring <1 />
