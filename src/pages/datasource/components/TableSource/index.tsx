@@ -102,6 +102,8 @@ const TableSource = (props: IPropsType) => {
                   <CheckCircleFilled
                     style={{
                       visibility: 'visible',
+                      marginLeft: 5,
+                      marginRight: 5,
                     }}
                   />
                 </Tooltip>
@@ -173,7 +175,6 @@ const TableSource = (props: IPropsType) => {
       },
     },
   ];
-
   if (isPlus) {
     defaultColumns.splice(2, 0, {
       title: t('auth.name'),
