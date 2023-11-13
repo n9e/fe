@@ -39,7 +39,7 @@ interface IProps {
   gobackPath?: string;
 }
 
-const cachePageTitle = document.title;
+const cachePageTitle = document.title || 'Nightingale';
 
 export default function Title(props: IProps) {
   const { t, i18n } = useTranslation('dashboard');
