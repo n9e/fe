@@ -151,6 +151,11 @@ const zh_HK = {
         sum: '彙總值',
         last: '當前值',
         columns: '顯示列',
+        behaviour: {
+          label: '點擊觸發的行為',
+          showItem: '显示项目',
+          hideItem: '隐藏项目',
+        },
       },
       thresholds: {
         title: '閾值',

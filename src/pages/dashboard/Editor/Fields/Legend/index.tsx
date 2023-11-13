@@ -95,6 +95,22 @@ export default function index() {
             );
           }}
         </Form.Item>
+        <Col span={24}>
+          <Form.Item label='单击触发行为' name={[...namePrefix, 'behaviour']} initialValue='showItem'>
+            <Select
+              options={[
+                {
+                  label: '显示项目',
+                  value: 'showItem',
+                },
+                {
+                  label: '隐藏项目',
+                  value: 'hideItem',
+                },
+              ]}
+            />
+          </Form.Item>
+        </Col>
         <Col span={9}>
           <Form.Item label={t('panel.custom.detailName')} name={[...namePrefix, 'detailName']}>
             <Input style={{ width: '100%' }} />

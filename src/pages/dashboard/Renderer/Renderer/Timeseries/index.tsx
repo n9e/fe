@@ -17,7 +17,9 @@
 import React, { useRef, useEffect, useState } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
-import { Space, Table, Tooltip } from 'antd';
+import { useTranslation } from 'react-i18next';
+import { Table, Tooltip } from 'antd';
+import { ColumnProps } from 'antd/lib/table';
 import classNames from 'classnames';
 import { VerticalRightOutlined, VerticalLeftOutlined } from '@ant-design/icons';
 import { useSize } from 'ahooks';
@@ -28,11 +30,9 @@ import { IPanel } from '../../../types';
 import { hexPalette } from '../../../config';
 import valueFormatter from '../../utils/valueFormatter';
 import { getLegendValues } from '../../utils/getCalculatedValuesBySeries';
-import './style.less';
-import { ColumnProps } from 'antd/lib/table';
-import { useTranslation } from 'react-i18next';
 import { getDetailUrl } from '../../utils/replaceExpressionDetail';
 import { useGlobalState } from '../../../globalState';
+import './style.less';
 
 interface ColData {
   value: number;
@@ -121,6 +121,7 @@ export default function index(props: IProps) {
   const legendColumns = !_.isEmpty(options.legend?.columns) ? options.legend?.columns : displayMode === 'table' ? ['max', 'min', 'avg', 'sum', 'last'] : [];
   const detailUrl = options.legend?.detailUrl || undefined;
   const detailName = options.legend?.detailName || undefined;
+  const legendBehaviour = options.legend?.behaviour || 'showItem';
   const hasLegend = displayMode !== 'hidden';
   const [legendData, setLegendData] = useState<any[]>([]);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -405,12 +406,13 @@ export default function index(props: IProps) {
               onRow={(record) => {
                 return {
                   onClick: () => {
-                    setActiveLegend(activeLegend !== record.id ? record.id : '');
+                    const newActiveLegend = activeLegend !== record.id ? record.id : '';
+                    setActiveLegend(newActiveLegend);
                     setSeriesData(
                       _.map(seriesData, (subItem) => {
                         return {
                           ...subItem,
-                          visible: activeLegend === record.id ? true : record.id === subItem.id,
+                          visible: newActiveLegend ? (legendBehaviour === 'hideItem' ? newActiveLegend !== subItem.id : newActiveLegend === subItem.id) : true,
                         };
                       }),
                     );
@@ -434,12 +436,13 @@ export default function index(props: IProps) {
                   <div
                     key={item.id}
                     onClick={() => {
-                      setActiveLegend(activeLegend !== item.id ? item.id : '');
+                      const newActiveLegend = activeLegend !== item.id ? item.id : '';
+                      setActiveLegend(newActiveLegend);
                       setSeriesData(
                         _.map(seriesData, (subItem) => {
                           return {
                             ...subItem,
-                            visible: activeLegend === item.id ? true : item.id === subItem.id,
+                            visible: newActiveLegend ? (legendBehaviour === 'hideItem' ? newActiveLegend !== subItem.id : newActiveLegend === subItem.id) : true,
                           };
                         }),
                       );

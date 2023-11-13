@@ -151,6 +151,11 @@ const zh_CN = {
         sum: '汇总值',
         last: '当前值',
         columns: '显示列',
+        behaviour: {
+          label: '单击触发行为',
+          showItem: '显示项目',
+          hideItem: '隐藏项目',
+        },
       },
       thresholds: {
         title: '阈值',

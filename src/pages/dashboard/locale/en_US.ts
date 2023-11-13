@@ -151,6 +151,11 @@ const en_US = {
         sum: 'Sum',
         last: 'Last',
         columns: 'Columns',
+        behaviour: {
+          label: 'Behavior triggered by click',
+          showItem: 'Show item',
+          hideItem: 'Hide item',
+        },
       },
       thresholds: {
         title: 'Thresholds',
