@@ -86,10 +86,14 @@ export interface IOptions {
     columns?: string[];
     detailName: string;
     detailUrl: string;
+    behaviour: 'showItem' | 'hideItem';
   };
   tooltip?: {
     mode: 'single' | 'all';
     sort: 'none' | 'asc' | 'desc';
+  };
+  colors?: {
+    scheme: string;
   };
 }
 

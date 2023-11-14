@@ -16,6 +16,7 @@
  */
 
 import React from 'react';
+import _ from 'lodash';
 import { MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import { Form, InputNumber, Space, Select, Card } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -81,18 +82,52 @@ export default function index() {
                       </Select>
                     </Form.Item>
                     <Form.Item shouldUpdate noStyle>
-                      {({ getFieldValue }) => {
+                      {({ getFieldValue, setFieldsValue }) => {
                         const queryKey = getFieldValue(['rule_config', 'queries', field.name, 'key']);
+                        const queryOp = getFieldValue(['rule_config', 'queries', field.name, 'op']);
                         if (queryKey === 'all_hosts') return null;
                         return (
                           <Space align='baseline'>
                             <Form.Item {...field} name={[field.name, 'op']} rules={[{ required: true, message: 'Missing op' }]}>
-                              <Select style={{ minWidth: 60 }}>
-                                <Select.Option value='=='>==</Select.Option>
-                                <Select.Option value='!='>!=</Select.Option>
-                              </Select>
+                              <Select
+                                style={{ minWidth: 60 }}
+                                options={_.concat(
+                                  [
+                                    {
+                                      value: '==',
+                                      label: '==',
+                                    },
+                                    {
+                                      value: '!=',
+                                      label: '!=',
+                                    },
+                                  ],
+                                  queryKey === 'hosts'
+                                    ? [
+                                        {
+                                          value: '=~',
+                                          label: '=~',
+                                        },
+                                        {
+                                          value: '!~',
+                                          label: '!~',
+                                        },
+                                      ]
+                                    : [],
+                                )}
+                                onChange={(val) => {
+                                  const queries = getFieldValue(['rule_config', 'queries']);
+                                  const query = queries[field.name];
+                                  query.values = undefined;
+                                  setFieldsValue({
+                                    rule_config: {
+                                      queries,
+                                    },
+                                  });
+                                }}
+                              />
                             </Form.Item>
-                            <ValuesSelect queryKey={queryKey} field={field} />
+                            <ValuesSelect queryKey={queryKey} queryOp={queryOp} field={field} />
                           </Space>
                         );
                       }}

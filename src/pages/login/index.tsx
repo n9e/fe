@@ -128,7 +128,7 @@ export default function Login() {
       <div className='login-panel'>
         <div className='login-main  integration'>
           <div className='login-title'>
-            <img src={siteInfo?.login_page_logo_url || '/image/logo-dark.svg'} style={{ width: '120px' }} />
+            <img src={siteInfo?.login_page_logo_url || '/image/login-logo.png'} style={{ width: '120px' }} />
           </div>
           <Form form={form} layout='vertical' requiredMark={true}>
             <Form.Item

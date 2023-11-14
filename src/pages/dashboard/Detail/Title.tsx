@@ -19,7 +19,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import querystring from 'query-string';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Button, Space, Dropdown, Menu, Switch, notification } from 'antd';
+import { Button, Space, Dropdown, Menu, Switch, notification, Select } from 'antd';
 import { RollbackOutlined } from '@ant-design/icons';
 import { useKeyPress } from 'ahooks';
 import { TimeRangePickerWithRefresh, IRawTimeRange } from '@/components/TimeRangePicker';
@@ -39,7 +39,7 @@ interface IProps {
   gobackPath?: string;
 }
 
-const cachePageTitle = document.title;
+const cachePageTitle = document.title || 'Nightingale';
 
 export default function Title(props: IProps) {
   const { t, i18n } = useTranslation('dashboard');
@@ -105,7 +105,7 @@ export default function Title(props: IProps) {
 
   return (
     <div
-      className='dashboard-detail-header'
+      className={`dashboard-detail-header ${import.meta.env.VITE_IS_ENT !== 'true' ? 'n9e-page-header-content' : ''}`}
       style={{
         display: query.viewMode === 'fullscreen' ? 'none' : 'flex',
       }}
@@ -169,23 +169,21 @@ export default function Title(props: IProps) {
           >
             {viewMode === 'fullscreen' ? t('exit_full_screen') : t('full_screen')}
           </Button>
-          {/* {viewMode === 'fullscreen' && (
-            <Switch
-              checkedChildren='dark'
-              unCheckedChildren='light'
-              checked={themeMode === 'dark'}
-              onChange={(checked) => {
-                const newQuery = _.omit(query, ['themeMode']);
-                if (checked) {
-                  newQuery.themeMode = 'dark';
-                }
-                history.replace({
-                  pathname: location.pathname,
-                  search: querystring.stringify(newQuery),
-                });
-              }}
-            />
-          )} */}
+          <Select
+            options={[
+              { label: 'light', value: 'light' },
+              { label: 'dark', value: 'dark' },
+            ]}
+            value={themeMode || 'light'}
+            onChange={(val) => {
+              const newQuery = _.omit(query, ['themeMode']);
+              newQuery.themeMode = val;
+              history.replace({
+                pathname: location.pathname,
+                search: querystring.stringify(newQuery),
+              });
+            }}
+          />
         </Space>
       </div>
     </div>

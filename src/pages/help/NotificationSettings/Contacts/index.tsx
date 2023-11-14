@@ -60,19 +60,19 @@ export default function Channels() {
             key: 'ident',
           },
           {
-            title: t('channels.hide'),
+            title: t('channels.enabled'),
             dataIndex: 'hide',
             key: 'hide',
             render: (val: boolean, record) => {
               return (
                 <Switch
-                  checked={val}
+                  checked={!val}
                   onChange={(checked) => {
                     const newData = _.map(data, (item) => {
                       if (item.ident === record.ident) {
                         return {
                           ...item,
-                          hide: checked,
+                          hide: !checked,
                         };
                       }
                       return item;

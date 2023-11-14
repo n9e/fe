@@ -40,12 +40,17 @@ const zh_HK = {
   网络设备: '網路設備',
   仪表盘迁移: '儀表盤遷移',
   全局屏蔽: '全局屏蔽',
+  告警通知: '告警通知',
   产品集成: '產品整合',
   服务日历: '服務日曆',
   采集模板: '採集模板',
   拨测管理: '撥測管理',
   拨测状态: '撥測狀態',
   Pingmesh配置: 'Pingmesh配置',
+  quickJump: '快速跳轉',
+  quickOpenClose: '打開/關閉',
+  quickSearchPlaceholder: '輸入內容以檢索...',
+  quickMenus: '快捷選單',
 };
 
 export default zh_HK;

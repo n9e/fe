@@ -217,6 +217,14 @@ export function getDefaultValuesByProd(prod, defaultBrainParams, isPlus = false)
       rule_config: defaultRuleConfig.loki,
     };
   }
+  if (prod === 'loki') {
+    return {
+      prod,
+      cate: 'loki',
+      datasource_ids: [DATASOURCE_ALL],
+      rule_config: defaultRuleConfig.loki,
+    };
+  }
 }
 
 export function getDefaultValuesByCate(prod, cate) {

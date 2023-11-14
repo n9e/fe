@@ -24,6 +24,12 @@ interface IProps {
   datasourceValue: number;
   headerExtra: HTMLDivElement | null;
   form: FormInstance;
+  defaultFormValuesControl?: {
+    isInited?: boolean;
+    setIsInited: () => void;
+    defaultFormValues?: any;
+    setDefaultFormValues?: (query: any) => void;
+  };
 }
 
 const { Paragraph } = Typography;
@@ -32,7 +38,7 @@ const LOGS_LIMIT = [100, 300, 500, 700, 1000];
 
 export default function index(props: IProps) {
   const { t } = useTranslation('explorer');
-  const { datasourceValue, form, headerExtra } = props;
+  const { datasourceValue, form, headerExtra, defaultFormValuesControl } = props;
   const history = useHistory();
   const { search } = useLocation();
   const params = queryString.parse(search);
@@ -94,6 +100,13 @@ export default function index(props: IProps) {
     }
   }, [sortOrder]);
 
+  useEffect(() => {
+    if (defaultFormValuesControl?.defaultFormValues && defaultFormValuesControl?.isInited === false) {
+      setValue(defaultFormValuesControl?.defaultFormValues?.query?.query);
+      defaultFormValuesControl.setIsInited();
+    }
+  }, []);
+
   const createSeries = (result) => {
     return result.map((item) => {
       const name = getSerieName(item.metric);
@@ -120,6 +133,15 @@ export default function index(props: IProps) {
         limit: limit,
         ...timesRef.current,
       };
+      if (defaultFormValuesControl?.setDefaultFormValues) {
+        defaultFormValuesControl.setDefaultFormValues({
+          datasourceCate: 'loki',
+          datasourceValue,
+          query: {
+            query: value,
+          },
+        });
+      }
       if (_.startsWith(value, '{')) {
         const [query_result, volume_result] = await Promise.all([
           getLogsQuery(values.datasourceValue, queryParams),

@@ -116,7 +116,7 @@ request.interceptors.response.use(
             }
           }
         });
-    } else if (status === 401) {
+    } else if (status === 401 && !_.includes(response.url, '/api/n9e-plus/proxy') && !_.includes(response.url, '/api/n9e/proxy')) {
       if (response.url.indexOf('/api/n9e/auth/refresh') > 0) {
         location.href = `/login${location.pathname != '/' ? '?redirect=' + location.pathname + location.search : ''}`;
       } else {
@@ -134,7 +134,13 @@ request.interceptors.response.use(
             })
           : (location.href = `/login${location.pathname != '/' ? '?redirect=' + location.pathname + location.search : ''}`);
       }
-    } else if (status === 403 && (response.url.includes('/api/v1') || response.url.includes('/api/v2'))) {
+    } else if (
+      status === 403 &&
+      (response.url.includes('/api/v1') || response.url.includes('/api/v2')) &&
+      // 排除掉 proxy 的接口
+      !_.includes(response.url, '/api/n9e-plus/proxy') &&
+      !_.includes(response.url, '/api/n9e/proxy')
+    ) {
       return response
         .clone()
         .json()

@@ -27,7 +27,7 @@ import ProdSelect from '../components/ProdSelect';
 // @ts-ignore
 import PlusAlertRule from 'plus:/parcels/AlertRule';
 
-export default function Rule({ form }) {
+export default function Rule({ form }) {  
   const { t } = useTranslation('alertRules');
   const { isPlus } = useContext(CommonStateContext);
 

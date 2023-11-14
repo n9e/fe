@@ -16,19 +16,41 @@
  */
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
+import _ from 'lodash';
 import PageLayout from '@/components/pageLayout';
-import { Button, Table, Input, message, List, Row, Col, Modal, Space } from 'antd';
-import { EditOutlined, DeleteOutlined, SearchOutlined, UserOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { Button, Table, Input, message, List, Row, Col, Modal, Space, Tree } from 'antd';
+import { EditOutlined, DeleteOutlined, SearchOutlined, UserOutlined, InfoCircleOutlined, DownOutlined } from '@ant-design/icons';
 import UserInfoModal from './component/createModal';
 import { getTeamInfoList, getTeamInfo, deleteTeam, deleteMember } from '@/services/manage';
 import { User, Team, UserType, ActionType, TeamInfo } from '@/store/manageInterface';
 import { ColumnsType } from 'antd/lib/table';
 import { useTranslation } from 'react-i18next';
+import { listToTree2 } from '@/pages/targets/BusinessGroup';
 import './index.less';
 import './locale';
 
 const { confirm } = Modal;
 export const PAGE_SIZE = 20;
+
+export function getLocaleExpandedKeys() {
+  const val = localStorage.getItem('team_tree_expanded_keys');
+  try {
+    if (val) {
+      const parsed = JSON.parse(val);
+      if (_.isArray(parsed)) {
+        return parsed;
+      }
+      return [];
+    }
+    return [];
+  } catch (e) {
+    return [];
+  }
+}
+
+export function setLocaleExpandedKeys(nodes: string[]) {
+  localStorage.setItem('team_tree_expanded_keys', JSON.stringify(nodes));
+}
 
 const Resource: React.FC = () => {
   const { t } = useTranslation('user');
@@ -226,21 +248,28 @@ const Resource: React.FC = () => {
                 }}
               />
             </div>
-
-            <List
-              style={{
-                marginBottom: '12px',
-                flex: 1,
-                overflow: 'auto',
-              }}
-              dataSource={teamList}
-              size='small'
-              renderItem={(item) => (
-                <List.Item key={item.id} className={teamId === item.id ? 'is-active' : ''} onClick={() => setTeamId(item.id)}>
-                  {item.name}
-                </List.Item>
-              )}
-            />
+            {!_.isEmpty(teamList) && (
+              <Tree
+                rootClassName='business-group-tree'
+                showLine={{
+                  showLeafIcon: false,
+                }}
+                defaultExpandParent={false}
+                defaultExpandedKeys={getLocaleExpandedKeys()}
+                selectedKeys={[teamId]}
+                blockNode
+                switcherIcon={<DownOutlined />}
+                onSelect={(_selectedKeys, e: any) => {
+                  const nodeId = e.node.id;
+                  localStorage.setItem('curBusiId', _.toString(nodeId));
+                  setTeamId(nodeId as any);
+                }}
+                onExpand={(expandedKeys: string[]) => {
+                  setLocaleExpandedKeys(expandedKeys);
+                }}
+                treeData={listToTree2(teamList as any)}
+              />
+            )}
           </div>
           {teamList.length > 0 ? (
             <div className='resource-table-content'>

@@ -55,4 +55,8 @@ export const utilValMap = {
     type: 'si',
     postfix: 'p/s',
   },
+  dBm: {
+    type: 'si',
+    postfix: 'dBm',
+  },
 };

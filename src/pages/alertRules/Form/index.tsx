@@ -105,8 +105,8 @@ export default function index(props: IProps) {
         disabled,
       }}
     >
-      <Form form={form} layout='vertical' disabled={disabled}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: '0 10px', marginBottom: 24 }}>
+      <Form form={form} layout='vertical' disabled={disabled} style={{ overflow: 'hidden auto' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: '10px 10px 0 10px', marginBottom: 24 }}>
           <Form.Item name='disabled' hidden>
             <div />
           </Form.Item>

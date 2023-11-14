@@ -25,6 +25,7 @@ import BarGauge from './BarGauge';
 import Text from './Text';
 import Gauge from './Gauge';
 import Iframe from './Iframe';
+import Heatmap from './Heatmap';
 
 export default function index({ type, targets, chartForm, variableConfigWithOptions }) {
   const OptionsCptMap = {
@@ -37,6 +38,7 @@ export default function index({ type, targets, chartForm, variableConfigWithOpti
     text: <Text variableConfigWithOptions={variableConfigWithOptions} />,
     iframe: <Iframe variableConfigWithOptions={variableConfigWithOptions} />,
     gauge: <Gauge />,
+    heatmap: <Heatmap />,
   };
   return OptionsCptMap[type] || `无效的图表类型 ${type}`;
 }

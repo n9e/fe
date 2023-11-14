@@ -135,7 +135,8 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
   return (
     <main
       style={{
-        padding: '10px 12px',
+        padding: '10px 10px 0 10px',
+        overflow: 'hidden auto',
       }}
     >
       <Form
@@ -154,6 +155,11 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
       >
         <Card {...panelBaseProps} size='small' title={t('basic_configs')}>
           <Row gutter={10}>
+            <Col span={24}>
+              <Form.Item label={t('note')} name='note'>
+                <Input />
+              </Form.Item>
+            </Col>
             <Col span={12}>
               <Form.Item label={t('common:datasource.type')} name='cate' initialValue='prometheus'>
                 <DatasourceCateSelect

@@ -17,6 +17,12 @@ const zh_CN = {
   },
   rename_title: '修改数据源名称',
   type_btn_add: '添加',
+  default:"设置为默认数据源",
+  default_msg:"该数据源类型下的默认集群",
+  auth: {
+    name: '授权',
+    'not-support': '暂不支持',
+  },
   form: {
     other: '其他',
     name: '名称',

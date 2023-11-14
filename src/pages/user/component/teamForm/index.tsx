@@ -18,7 +18,7 @@ import React, { useEffect, useState, useImperativeHandle, ReactNode } from 'reac
 import { Form, Input } from 'antd';
 import { getTeamInfo } from '@/services/manage';
 import { TeamProps, Team, TeamInfo } from '@/store/manageInterface';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 const TeamForm = React.forwardRef<ReactNode, TeamProps>((props, ref) => {
   const { t } = useTranslation('user');
   const { teamId } = props;
@@ -53,6 +53,7 @@ const TeamForm = React.forwardRef<ReactNode, TeamProps>((props, ref) => {
             required: true,
           },
         ]}
+        tooltip={<Trans ns='user' i18nKey='business.name_tip' components={{ 1: <br /> }} />}
       >
         <Input />
       </Form.Item>

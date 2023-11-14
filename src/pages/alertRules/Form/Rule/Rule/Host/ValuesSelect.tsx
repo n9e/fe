@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import _ from 'lodash';
-import { Select, Form, Spin } from 'antd';
+import { Select, Form, Spin, AutoComplete } from 'antd';
 import { useDebounceFn } from 'ahooks';
 import { CommonStateContext } from '@/App';
 import { getBusiGroups } from '@/services/common';
@@ -8,11 +8,12 @@ import { getTargetTags, getMonObjectList } from '@/services/targets';
 
 interface IProps {
   queryKey: string;
+  queryOp: string;
   field: any;
 }
 
 export default function ValuesSelect(props: IProps) {
-  const { queryKey, field } = props;
+  const { queryKey, queryOp, field } = props;
   const { groupedDatasourceList } = useContext(CommonStateContext);
   const datasourceList = _.reduce(
     groupedDatasourceList,
@@ -104,7 +105,7 @@ export default function ValuesSelect(props: IProps) {
         />
       ) : (
         <Select
-          mode='multiple'
+          mode={queryOp === '=~' || queryOp === '!~' ? 'tags' : 'multiple'}
           style={{ minWidth: 200, maxWidth: 600 }}
           filterOption={false}
           onSearch={(val) => {

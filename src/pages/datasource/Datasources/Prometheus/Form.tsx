@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Form, Input } from 'antd';
+import { Form, Input, Checkbox } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import Name from '../../components/items/Name';
@@ -61,6 +61,9 @@ export default function FormCpt({ data, onFinish, submitLoading }: any) {
         <Input />
       </Form.Item>
       <Cluster form={form} clusterRef={clusterRef} />
+      <Form.Item valuePropName='checked' name={[`is_default`]}>
+        <Checkbox>{t('default')}</Checkbox>
+      </Form.Item>
       <Description />
       <div className='mt16'>
         <Footer id={data?.id} submitLoading={submitLoading} />

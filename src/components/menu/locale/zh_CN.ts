@@ -40,5 +40,16 @@ const zh_CN = {
   网络设备: '网络设备',
   仪表盘迁移: '仪表盘迁移',
   全局屏蔽: '全局屏蔽',
+  告警通知: '告警通知',
+  产品集成: '产品集成',
+  服务日历: '服务日历',
+  采集模板: '采集模板',
+  拨测管理: '拨测管理',
+  拨测状态: '拨测状态',
+  Pingmesh配置: 'Pingmesh配置',
+  quickJump: '快捷跳转',
+  quickOpenClose: '打开/关闭',
+  quickSearchPlaceholder: '输入内容以检索...',
+  quickMenus: '快捷菜单',
 };
 export default zh_CN;
