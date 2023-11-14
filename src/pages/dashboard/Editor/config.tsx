@@ -152,7 +152,7 @@ export const defaultCustomValuesMap = {
     drawStyle: 'lines',
     lineInterpolation: 'smooth',
     lineWidth: 1,
-    fillOpacity: 0.5,
+    fillOpacity: 0,
     gradientMode: 'none',
     stack: 'off',
     scaleDistribution: {
