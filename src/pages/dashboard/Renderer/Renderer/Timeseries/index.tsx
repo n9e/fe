@@ -53,6 +53,7 @@ interface DataItem {
 
 interface IProps {
   time?: IRawTimeRange;
+  setRange: (range: IRawTimeRange) => void;
   inDashboard?: boolean;
   chartHeight?: string;
   tableHeight?: string;
@@ -107,7 +108,7 @@ function NameWithTooltip({ record, children }) {
 export default function index(props: IProps) {
   const [dashboardMeta] = useGlobalState('dashboardMeta');
   const { t } = useTranslation('dashboard');
-  const { time, values, series, inDashboard = true, chartHeight = '200px', tableHeight = '200px', themeMode = '', onClick } = props;
+  const { time, setRange, values, series, inDashboard = true, chartHeight = '200px', tableHeight = '200px', themeMode = '', onClick } = props;
   const { custom, options = {}, targets } = values;
   const { lineWidth = 1, gradientMode = 'none', scaleDistribution } = custom;
   const [seriesData, setSeriesData] = useState(series);
@@ -226,6 +227,9 @@ export default function index(props: IProps) {
           ...chartRef.current.options.tooltip,
           shared: options.tooltip?.mode === 'all',
           sharedSortDirection: options.tooltip?.sort !== 'none' ? options.tooltip?.sort : undefined,
+          cascade: _.includes(['sharedCrosshair', 'sharedTooltip'], dashboardMeta.graphTooltip),
+          cascadeScope: 'cascadeScope',
+          cascadeMode: _.includes(['sharedCrosshair', 'sharedTooltip'], dashboardMeta.graphTooltip) ? dashboardMeta.graphTooltip : undefined,
           pointValueformatter: (val) => {
             return valueFormatter(
               {
@@ -276,6 +280,15 @@ export default function index(props: IProps) {
         onClick: (event, datetime, value, points) => {
           if (onClick) onClick(event, datetime, value, points);
         },
+        onZoomWithoutDefult:
+          dashboardMeta.graphZoom === 'updateTimeRange'
+            ? (times: Date[]) => {
+                setRange({
+                  start: moment(times[0]),
+                  end: moment(times[1]),
+                });
+              }
+            : undefined,
       });
     }
     if (hasLegend) {

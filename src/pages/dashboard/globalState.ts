@@ -4,6 +4,8 @@ export const { useGlobalState } = createGlobalState<{
   dashboardMeta: {
     dashboardId: string;
     variableConfigWithOptions: any;
+    graphTooltip: string;
+    graphZoom: string;
   };
   statFields: string[];
   tableFields: string[];
@@ -15,5 +17,7 @@ export const { useGlobalState } = createGlobalState<{
   dashboardMeta: {} as {
     dashboardId: string;
     variableConfigWithOptions: any;
+    graphTooltip: string;
+    graphZoom: string;
   },
 });

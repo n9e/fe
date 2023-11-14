@@ -16,7 +16,7 @@
  */
 import _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
-import { IPanel, IDashboard, IVariable } from '../types';
+import { IPanel, IDashboardConfig, IVariable } from '../types';
 
 export function buildLayout(panels: IPanel[]) {
   return _.map(panels, (item: IPanel) => {
@@ -216,7 +216,7 @@ export function updatePanelsInsertNewPanelToRow(panels: IPanel[], rowId: string,
   return _.concat(newPanel, newPanels);
 }
 
-export function panelsMergeToConfigs(configs: IDashboard, panels: any[]) {
+export function panelsMergeToConfigs(configs: IDashboardConfig, panels: any[]) {
   const parsedConfigs = configs;
   const cloneDeep = _.cloneDeep(panels);
   cleanUpRepeats(cloneDeep);

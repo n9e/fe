@@ -240,9 +240,24 @@ export interface IVariable {
 }
 
 // IDashboard.configs
-export interface IDashboard {
+export interface IDashboardConfig {
   version: string; // 整个仪表盘使用的版本，遵循版本规范 '1.0.0'
   links: ILink[];
   var: IVariable[]; // 变量配置
   panels: IPanel[];
+  graphTooltip: 'default' | 'sharedCrosshair' | 'sharedTooltip';
+  graphZoom: 'default' | 'updateTimeRange';
+}
+
+export interface IDashboard {
+  create_by: string;
+  favorite: number;
+  id: number;
+  name: string;
+  ident?: string;
+  tags: string;
+  update_at: number;
+  update_by: string;
+  configs: IDashboardConfig;
+  public?: number;
 }

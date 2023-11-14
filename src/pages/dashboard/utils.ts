@@ -18,7 +18,7 @@ import _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import moment from 'moment';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
-import { IDashboard, IVariable } from './types';
+import { IDashboardConfig, IVariable } from './types';
 import { defaultValues, calcsOptions } from './Editor/config';
 import updateSchema from './updateSchema';
 
@@ -432,7 +432,7 @@ export function convertDashboardGrafanaToN9E(data) {
   data = updateSchema(data);
   const dashboard: {
     name: string;
-    configs: IDashboard;
+    configs: IDashboardConfig;
   } = {
     name: data.title,
     configs: {

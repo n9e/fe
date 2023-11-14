@@ -20,7 +20,7 @@ import { SearchOutlined, DownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { removeDashboards } from '@/services/dashboardV2';
 import RefreshIcon from '@/components/RefreshIcon';
-import FormCpt from './Form';
+import FormModal from './FormModal';
 import Import from './Import';
 
 interface IProps {
@@ -63,10 +63,10 @@ export default function Header(props: IProps) {
           <Button
             type='primary'
             onClick={() => {
-              FormCpt({
-                mode: 'create',
+              FormModal({
+                action: 'create',
                 busiId,
-                refreshList,
+                onOk: refreshList,
               });
             }}
           >

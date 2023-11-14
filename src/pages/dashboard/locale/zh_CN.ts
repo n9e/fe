@@ -349,5 +349,20 @@ const zh_CN = {
       },
     },
   },
+  settings: {
+    graphTooltip: {
+      label: '提示信息 (Tooltip)',
+      tip: '控制所有图表的提示信息 (Tooltip) 行为',
+      default: '默认',
+      sharedCrosshair: '共享十字线',
+      sharedTooltip: '共享提示信息 (Tooltip)',
+    },
+    graphZoom: {
+      label: '缩放行为',
+      tip: '控制所有图表的缩放行为',
+      default: '默认',
+      updateTimeRange: '更新时间范围',
+    },
+  },
 };
 export default zh_CN;

@@ -147,6 +147,11 @@ export default function DetailV2(props: IProps) {
       if ((!configs.version || semver.lt(configs.version, '3.0.0')) && !builtinParams) {
         setMigrationVisible(true);
       }
+      setDashboardMeta({
+        ...(dashboardMeta || {}),
+        graphTooltip: configs.graphTooltip,
+        graphZoom: configs.graphZoom,
+      });
       setDashboard({
         ...res,
         configs,
@@ -187,6 +192,7 @@ export default function DetailV2(props: IProps) {
     if (valueWithOptions) {
       setVariableConfigWithOptions(valueWithOptions);
       setDashboardMeta({
+        ...(dashboardMeta || {}),
         dashboardId: _.toString(id),
         variableConfigWithOptions: valueWithOptions,
       });
@@ -311,6 +317,7 @@ export default function DetailV2(props: IProps) {
               setPanels={setPanels}
               dashboard={dashboard}
               range={range}
+              setRange={setRange}
               variableConfig={variableConfigWithOptions}
               onShareClick={(panel) => {
                 const curDatasourceValue = replaceExpressionVars(panel.datasourceValue, variableConfigWithOptions, variableConfigWithOptions.length, id);
