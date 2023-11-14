@@ -27,6 +27,7 @@ import useSsoWay from 'plus:/parcels/SSOConfigs/useSsoWay';
 import { useTranslation } from 'react-i18next';
 import { RsaEncry } from '@/utils/rsa';
 import { CommonStateContext } from '@/App';
+import { AccessTokenKey } from '@/utils/constant';
 
 export interface DisplayName {
   oidc: string;
@@ -104,7 +105,7 @@ export default function Login() {
       .then((res) => {
         const { dat, err } = res;
         const { access_token, refresh_token } = dat;
-        localStorage.setItem('access_token', access_token);
+        localStorage.setItem(AccessTokenKey, access_token);
         localStorage.setItem('refresh_token', refresh_token);
         if (!err) {
           window.location.href = redirect || '/';
