@@ -329,5 +329,20 @@ const en_US = {
       },
     },
   },
+  settings: {
+    graphTooltip: {
+      label: 'Graph tooltip',
+      tip: 'Control tooltip behavior for all panels',
+      default: 'Default',
+      sharedCrosshair: 'Shared crosshair',
+      sharedTooltip: 'Shared tooltip',
+    },
+    graphZoom: {
+      label: 'Graph zoom',
+      tip: 'Control zoom behavior for all panels',
+      default: 'Default',
+      updateTimeRange: 'Update time range',
+    },
+  },
 };
 export default en_US;

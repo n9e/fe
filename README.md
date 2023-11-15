@@ -29,6 +29,7 @@ npm run dev
 
 The back-end api proxy config is https://github.com/n9e/fe/blob/main/vite.config.ts#L49
 
+Trouble shooting: https://answer.flashcat.cloud/questions/10010000000003759
 ## Build
 
 ```

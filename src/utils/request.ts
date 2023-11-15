@@ -3,7 +3,7 @@ import { extend } from 'umi-request';
 import { notification } from 'antd';
 import _ from 'lodash';
 import { UpdateAccessToken } from '@/services/login';
-import { N9E_PATHNAME } from '@/utils/constant';
+import { N9E_PATHNAME, AccessTokenKey } from '@/utils/constant';
 
 /** 异常处理程序，所有的error都被这里处理，页面无法感知具体error */
 const errorHandler = (error: Error): Response => {
@@ -54,7 +54,7 @@ request.interceptors.request.use((url, options) => {
   let headers = {
     ...options.headers,
   };
-  headers['Authorization'] = `Bearer ${localStorage.getItem('access_token') || ''}`;
+  headers['Authorization'] = `Bearer ${localStorage.getItem(AccessTokenKey) || ''}`;
   headers['X-Language'] = localStorage.getItem('language') === 'en_US' ? 'en' : 'zh';
   return {
     url,
@@ -127,7 +127,7 @@ request.interceptors.response.use(
                 location.href = `/login${location.pathname != '/' ? '?redirect=' + location.pathname + location.search : ''}`;
               } else {
                 const { access_token, refresh_token } = res.dat;
-                localStorage.setItem('access_token', access_token);
+                localStorage.setItem(AccessTokenKey, access_token);
                 localStorage.setItem('refresh_token', refresh_token);
                 location.href = `${location.pathname}${location.search}`;
               }

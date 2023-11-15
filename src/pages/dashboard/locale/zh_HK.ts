@@ -339,6 +339,21 @@ const zh_HK = {
       },
     },
   },
+  settings: {
+    graphTooltip: {
+      label: '圖表提示信息 (Tooltip)',
+      tip: '控制所有圖表的提示資訊 (Tooltip) 行為',
+      default: '默認',
+      sharedCrosshair: '共享十字線',
+      sharedTooltip: '共享提示信息 (Tooltip)',
+    },
+    graphZoom: {
+      label: '縮放方式',
+      tip: '控制所有圖表的縮放行為',
+      default: '默认',
+      updateTimeRange: '更新時間範圍',
+    },
+  },
 };
 
 export default zh_HK;

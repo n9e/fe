@@ -49,6 +49,7 @@ interface IProps {
   editable: boolean;
   dashboard: Dashboard;
   range: IRawTimeRange;
+  setRange: (range: IRawTimeRange) => void;
   variableConfig: any;
   panels: any[];
   isPreview: boolean;
@@ -144,6 +145,7 @@ function index(props: IProps) {
                     dashboardId={_.toString(props.dashboardId)}
                     id={item.id}
                     time={range}
+                    setRange={props.setRange}
                     values={item}
                     variableConfig={variableConfig}
                     onCloneClick={() => {

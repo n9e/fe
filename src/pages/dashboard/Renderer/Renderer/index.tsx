@@ -59,6 +59,7 @@ interface IProps {
   dashboardId: string;
   id?: string;
   time: IRawTimeRange;
+  setRange?: (range: IRawTimeRange) => void;
   values: IPanel;
   variableConfig?: IVariable[];
   isPreview?: boolean; // 是否是预览，预览中不显示编辑和分享
@@ -112,7 +113,7 @@ function index(props: IProps) {
     series,
   };
   const RendererCptMap = {
-    timeseries: () => <Timeseries {...subProps} themeMode={themeMode} time={time} />,
+    timeseries: () => <Timeseries {...subProps} themeMode={themeMode} time={time} setRange={props.setRange} />,
     stat: () => <Stat {...subProps} bodyWrapRef={bodyWrapRef} themeMode={themeMode} />,
     table: () => <Table {...subProps} themeMode={themeMode} time={time} ref={tableRef} />,
     pie: () => <Pie {...subProps} themeMode={themeMode} time={time} />,
@@ -344,6 +345,6 @@ function index(props: IProps) {
 }
 
 export default React.memo(index, (prevProps, nextProps) => {
-  const omitKeys = ['onCloneClick', 'onShareClick', 'onEditClick', 'onDeleteClick'];
+  const omitKeys = ['setRange', 'onCloneClick', 'onShareClick', 'onEditClick', 'onDeleteClick'];
   return _.isEqual(_.omit(prevProps, omitKeys), _.omit(nextProps, omitKeys));
 });

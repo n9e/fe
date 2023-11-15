@@ -23,7 +23,6 @@ import { Table, Tag, Modal, Switch, message } from 'antd';
 import { FundViewOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import _ from 'lodash';
-import queryString from 'query-string';
 import { useTranslation } from 'react-i18next';
 import { Dashboard as DashboardType } from '@/store/dashboardInterface';
 import { getDashboards, cloneDashboard, removeDashboards, getDashboard, updateDashboardPublic } from '@/services/dashboardV2';
@@ -33,7 +32,7 @@ import { CommonStateContext } from '@/App';
 import { BusinessGroup } from '@/pages/targets';
 import usePagination from '@/components/usePagination';
 import Header from './Header';
-import FormCpt from './Form';
+import FormModal from './FormModal';
 import Export from './Export';
 import { exportDataStringify } from './utils';
 import './style.less';
@@ -189,14 +188,11 @@ export default function index() {
                       <div
                         className='table-operator-area-normal'
                         onClick={() => {
-                          FormCpt({
-                            mode: 'edit',
-                            initialValues: {
-                              ...record,
-                              tags: record.tags ? _.split(record.tags, ' ') : undefined,
-                            },
+                          FormModal({
+                            action: 'edit',
+                            initialValues: record,
                             busiId,
-                            refreshList: () => {
+                            onOk: () => {
                               setRefreshKey(_.uniqueId('refreshKey_'));
                             },
                           });

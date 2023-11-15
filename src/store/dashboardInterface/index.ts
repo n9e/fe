@@ -15,7 +15,7 @@
  *
  */
 
-import { IDashboard } from '@/pages/dashboard/types';
+import { IDashboardConfig } from '@/pages/dashboard/types';
 export interface Dashboard {
   create_by: string;
   favorite: number;
@@ -25,7 +25,7 @@ export interface Dashboard {
   tags: string;
   update_at: number;
   update_by: string;
-  configs: IDashboard;
+  configs: IDashboardConfig;
   public?: number;
 }
 
