@@ -440,7 +440,7 @@ export function convertDashboardGrafanaToN9E(data) {
       links: convertLinksGrafanaToN9E(data.links),
       var: convertVariablesGrafanaToN9E(data.templating, data.__inputs, data) as IVariable[],
       panels: convertPanlesGrafanaToN9E(data.panels),
-    },
+    } as IDashboardConfig,
   };
   return dashboard;
 }

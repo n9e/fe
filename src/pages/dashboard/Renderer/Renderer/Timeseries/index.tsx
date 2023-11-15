@@ -53,7 +53,7 @@ interface DataItem {
 
 interface IProps {
   time?: IRawTimeRange;
-  setRange: (range: IRawTimeRange) => void;
+  setRange?: (range: IRawTimeRange) => void;
   inDashboard?: boolean;
   chartHeight?: string;
   tableHeight?: string;
@@ -283,10 +283,12 @@ export default function index(props: IProps) {
         onZoomWithoutDefult:
           dashboardMeta.graphZoom === 'updateTimeRange'
             ? (times: Date[]) => {
-                setRange({
-                  start: moment(times[0]),
-                  end: moment(times[1]),
-                });
+                if (setRange) {
+                  setRange({
+                    start: moment(times[0]),
+                    end: moment(times[1]),
+                  });
+                }
               }
             : undefined,
       });

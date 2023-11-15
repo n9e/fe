@@ -59,7 +59,7 @@ interface IProps {
   dashboardId: string;
   id?: string;
   time: IRawTimeRange;
-  setRange: (range: IRawTimeRange) => void;
+  setRange?: (range: IRawTimeRange) => void;
   values: IPanel;
   variableConfig?: IVariable[];
   isPreview?: boolean; // 是否是预览，预览中不显示编辑和分享
