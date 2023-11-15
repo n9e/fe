@@ -217,6 +217,7 @@ const zh_HK = {
     custom: {
       title: '圖表樣式',
       calc: '取值計算',
+      calc_tip: '時序資料需要對所有時間點資料做取值計算，非時序資料忽略此設置',
       maxValue: '最大值',
       baseColor: '基礎顏色',
       serieWidth: '序列名寬度',
@@ -227,7 +228,9 @@ const zh_HK = {
       name: '名稱',
       background: '背景',
       colorMode: '顏色模式',
-      valueField: '值欄位',
+      valueField: '值字段',
+      valueField_tip: 'Value 是保留關鍵字，作為時序資料取值計算後的字段名',
+      valueField_tip2: '需選擇值為數值類型的字段',
       colSpan: '每行最多顯示',
       textSize: {
         title: '標題字型大小',

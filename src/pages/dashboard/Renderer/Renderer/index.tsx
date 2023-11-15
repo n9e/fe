@@ -114,15 +114,15 @@ function index(props: IProps) {
   };
   const RendererCptMap = {
     timeseries: () => <Timeseries {...subProps} themeMode={themeMode} time={time} setRange={props.setRange} />,
-    stat: () => <Stat {...subProps} bodyWrapRef={bodyWrapRef} themeMode={themeMode} />,
-    table: () => <Table {...subProps} themeMode={themeMode} time={time} ref={tableRef} />,
-    pie: () => <Pie {...subProps} themeMode={themeMode} time={time} />,
-    hexbin: () => <Hexbin {...subProps} themeMode={themeMode} time={time} />,
+    stat: () => <Stat {...subProps} bodyWrapRef={bodyWrapRef} themeMode={themeMode} isPreview={isPreview} />,
+    table: () => <Table {...subProps} themeMode={themeMode} time={time} isPreview={isPreview} ref={tableRef} />,
+    pie: () => <Pie {...subProps} themeMode={themeMode} time={time} isPreview={isPreview} />,
+    hexbin: () => <Hexbin {...subProps} themeMode={themeMode} time={time} isPreview={isPreview} />,
     barGauge: () => <BarGauge {...subProps} themeMode={themeMode} time={time} />,
     text: () => <Text {...subProps} />,
-    gauge: () => <Gauge {...subProps} themeMode={themeMode} />,
+    gauge: () => <Gauge {...subProps} themeMode={themeMode} isPreview={isPreview} />,
     iframe: () => <Iframe {...subProps} time={time} />,
-    heatmap: () => <Heatmap {...subProps} themeMode={themeMode} time={time} />,
+    heatmap: () => <Heatmap {...subProps} themeMode={themeMode} time={time} isPreview={isPreview} />,
   };
 
   return (

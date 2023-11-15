@@ -171,6 +171,7 @@ export const defaultCustomValuesMap = {
     textMode: 'valueAndName',
     colorMode: 'value',
     calc: 'lastNotNull',
+    valueField: 'Value',
     textSize: {},
     legengPosition: 'right',
     detailName: '详情',
@@ -184,6 +185,7 @@ export const defaultCustomValuesMap = {
   hexbin: {
     textMode: 'valueAndName',
     calc: 'lastNotNull',
+    valueField: 'Value',
     colorRange: _.join(colors[0].value, ','),
     colorDomainAuto: true,
     colorDomain: [],
@@ -207,6 +209,12 @@ export const defaultCustomValuesMap = {
   gauge: {
     textMode: 'valueAndName',
     calc: 'lastNotNull',
+    valueField: 'Value',
+  },
+  heatmap: {
+    calc: 'lastNotNull',
+    valueField: 'Value',
+    scheme: 'Blues',
   },
 };
 

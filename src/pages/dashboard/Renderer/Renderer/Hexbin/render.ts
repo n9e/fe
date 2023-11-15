@@ -47,6 +47,15 @@ function getHexbinHeight(mapRows, hexRadius) {
   }
   return count * hexRadius;
 }
+function getName(record: any, valueField?: string) {
+  if (valueField !== 'Value') {
+    return valueField;
+  }
+  return record?.name;
+}
+function getValue(record: any, valueField?: string) {
+  return _.get(record, valueField !== 'Value' ? ['metric', valueField] : 'value');
+}
 
 const div = select('body')
   .append(function () {
@@ -55,7 +64,12 @@ const div = select('body')
   .attr('class', 'hexbin-tooltip')
   .style('opacity', 0);
 
-function renderHoneyComb(svgGroup, data, { width, height, fontAutoScale = true, fontSize = 12, themeMode, textMode, detailUrl, fontBackground = false }, detailFormatter) {
+function renderHoneyComb(
+  svgGroup,
+  data,
+  { width, height, fontAutoScale = true, fontSize = 12, themeMode, textMode, detailUrl, fontBackground = false, valueField },
+  detailFormatter,
+) {
   const t = transition().duration(750);
   const { columns: mapColumns, rows: mapRows } = getMapColumnsAndRows(width, height, data.length);
   const hexRadius = Math.floor(min([width / ((mapColumns + 0.5) * Math.sqrt(3)), height / ((mapRows + 1 / 3) * 1.5), width / 7]));
@@ -82,11 +96,13 @@ function renderHoneyComb(svgGroup, data, { width, height, fontAutoScale = true, 
     let maxLabel = '';
     let maxValue = '';
     for (let i = 0; i < data.length; i++) {
-      if (data[i].name.length > maxLabel.length) {
-        maxLabel = data[i].name;
+      const name = getName(data[i], valueField);
+      const value = getValue(data[i], valueField);
+      if (name?.length > maxLabel.length) {
+        maxLabel = name;
       }
-      if (_.toString(data[i].value).length > maxValue.length) {
-        maxValue = _.toString(data[i].value);
+      if (_.toString(value).length > maxValue.length) {
+        maxValue = _.toString(value);
       }
     }
     activeLabelFontSize = computeTextFontSize(maxLabel, 2, textAreaWidth, textAreaHeight);
@@ -128,7 +144,7 @@ function renderHoneyComb(svgGroup, data, { width, height, fontAutoScale = true, 
     .on('mousemove', function (_d, i) {
       const metricObj = data[i]?.metric;
       const metricName = metricObj?.__name__ || 'value';
-      const metricNameRow = `<div><strong>${metricName}: ${data[i]?.value}</strong></div>`;
+      const metricNameRow = `<div><strong>${metricName}: ${getValue(data[i], valueField)}</strong></div>`;
       const labelsRows = _.map(_.omit(metricObj, '__name__'), (val, key) => {
         return `<div>${key}: ${val}</div>`;
       });
@@ -177,8 +193,8 @@ function renderHoneyComb(svgGroup, data, { width, height, fontAutoScale = true, 
         return d.y - (textMode === 'valueAndName' ? hexRadius * 0.1 : 0);
       })
       .text(function (_d, i) {
-        let name = data[i]?.name;
-        if (isShowEllipses) {
+        let name = getName(data[i], valueField);
+        if (name && isShowEllipses) {
           name = name.substring(0, numOfChars) + '...';
           return name;
         }
@@ -229,7 +245,7 @@ function renderHoneyComb(svgGroup, data, { width, height, fontAutoScale = true, 
         return d.y + (textMode === 'valueAndName' ? hexRadius * 0.1 : 0);
       })
       .text(function (_d, i) {
-        const value = data[i]?.value;
+        const value = getValue(data[i], valueField);
         return value;
       })
       .attr('text-anchor', 'middle')
@@ -266,7 +282,7 @@ function renderHoneyComb(svgGroup, data, { width, height, fontAutoScale = true, 
   }
 }
 
-export function renderFn(data, { width, height, parentGroupEl, themeMode, textMode, detailUrl, fontBackground }, detailFormatter) {
+export function renderFn(data, { width, height, parentGroupEl, themeMode, textMode, detailUrl, fontBackground, valueField }, detailFormatter) {
   const parentGroup = select(parentGroupEl).attr('width', width).attr('height', height);
   const countPerRow = bestFitElemCountPerRow(1, width, height);
   const unitWidth = Math.floor(width / countPerRow);
@@ -283,6 +299,7 @@ export function renderFn(data, { width, height, parentGroupEl, themeMode, textMo
       textMode,
       detailUrl,
       fontBackground,
+      valueField,
     },
     detailFormatter,
   );

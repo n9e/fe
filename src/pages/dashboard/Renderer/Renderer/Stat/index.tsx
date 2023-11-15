@@ -33,6 +33,7 @@ interface IProps {
     current: HTMLDivElement | null;
   };
   themeMode?: 'dark';
+  isPreview?: boolean;
 }
 
 const UNIT_SIZE = 12;
@@ -172,7 +173,7 @@ const getColumnsKeys = (data: any[]) => {
 };
 
 export default function Stat(props: IProps) {
-  const { values, series, bodyWrapRef } = props;
+  const { values, series, bodyWrapRef, isPreview } = props;
   const { custom, options } = values;
   const { calc, textMode, colorMode, colSpan, textSize, valueField, graphMode } = custom;
   const calculatedValues = getCalculatedValuesBySeries(
@@ -191,7 +192,9 @@ export default function Stat(props: IProps) {
 
   // 只有单个序列值且是背景色模式，则填充整个卡片的背景色
   useEffect(() => {
-    setStatFields(getColumnsKeys(calculatedValues));
+    if (isPreview) {
+      setStatFields(getColumnsKeys(calculatedValues));
+    }
     if (bodyWrapRef.current) {
       if (calculatedValues.length === 1 && colorMode === 'background') {
         const head = _.head(calculatedValues);
@@ -208,7 +211,7 @@ export default function Stat(props: IProps) {
         setIsFullSizeBackground(false);
       }
     }
-  }, [JSON.stringify(calculatedValues), colorMode]);
+  }, [isPreview, JSON.stringify(calculatedValues), colorMode]);
 
   return (
     <div className='renderer-stat-container'>

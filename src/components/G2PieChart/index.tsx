@@ -93,7 +93,7 @@ const DemoPie = (props: Props) => {
         customHtml: (container, _view, datum) => {
           const { width, height } = container.getBoundingClientRect();
           const d = Math.sqrt(Math.pow(width / 2, 2) + Math.pow(height / 2, 2));
-          const text = datum ? datum.name : '总计';
+          const text = datum ? datum.name : 'Total';
           return renderStatistic(d, text, {
             fontSize: 28,
           });
@@ -129,7 +129,7 @@ const DemoPie = (props: Props) => {
       enterable: true,
       fields: ['name', 'value', 'metric'],
       formatter: (datum) => {
-        const detailDom = detailUrl && datum.name !== '其他' ? `&nbsp;|&nbsp;<span><a href=${detailFormatter(datum)} target="_blank">${detailName}</a></span>` : '';
+        const detailDom = detailUrl && datum.name !== 'Other' ? `&nbsp;|&nbsp;<span><a href=${detailFormatter(datum)} target="_blank">${detailName}</a></span>` : '';
         return { name: datum.name, value: dataFormatter(datum.value) + detailDom };
       },
     },
