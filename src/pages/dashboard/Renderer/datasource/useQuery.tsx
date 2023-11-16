@@ -18,6 +18,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import _ from 'lodash';
 import { useDebounceFn } from 'ahooks';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
+import { datasource as tdengineQuery } from '@/plugins/TDengine';
+import flatten from '@/utils/flatten';
 import { ITarget } from '../../types';
 import { getVaraiableSelected } from '../../VariableConfig/constant';
 import { IVariable } from '../../VariableConfig/definition';
@@ -25,7 +27,7 @@ import replaceExpressionBracket from '../utils/replaceExpressionBracket';
 import { getSerieName } from './utils';
 import prometheusQuery from './prometheus';
 import elasticsearchQuery from './elasticsearch';
-import { datasource as tdengineQuery } from '@/plugins/TDengine';
+
 // @ts-ignore
 import plusDatasource from 'plus:/parcels/Dashboard/datasource';
 
@@ -66,7 +68,14 @@ export default function usePrometheus(props: IProps) {
       setLoading(true);
       fetchQueryMap[datasourceCate](props)
         .then(({ series, query }: { series: any[]; query: any[] }) => {
-          setSeries(series);
+          setSeries(
+            _.map(series, (item) => {
+              return {
+                ...item,
+                metric: flatten(item.metric), // 日志数据可能会有多层嵌套，这里统一展开
+              };
+            }),
+          );
           setQuery(query);
           setError('');
         })

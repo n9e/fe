@@ -14,23 +14,32 @@
  * limitations under the License.
  *
  */
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Form, Select, Row, Col, InputNumber, Switch, Input } from 'antd';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
 import { Panel } from '../../Components/Collapse';
 import { calcsOptions, legendPostion } from '../../config';
+import { useGlobalState } from '../../../globalState';
 
 export default function GraphStyles() {
   const { t, i18n } = useTranslation('dashboard');
   const namePrefix = ['custom'];
+  const [statFields, setStatFields] = useGlobalState('statFields');
+  const fields = _.compact(_.concat(statFields, 'Value'));
+
+  useEffect(() => {
+    return () => {
+      setStatFields([]);
+    };
+  }, []);
 
   return (
     <Panel header={t('panel.custom.title')}>
       <>
         <Row gutter={10}>
-          <Col span={12}>
-            <Form.Item label={t('panel.custom.calc')} name={[...namePrefix, 'calc']}>
+          <Col span={8}>
+            <Form.Item label={t('panel.custom.calc')} name={[...namePrefix, 'calc']} tooltip={t('panel.custom.calc_tip')}>
               <Select>
                 {_.map(calcsOptions, (item, key) => {
                   return (
@@ -42,7 +51,20 @@ export default function GraphStyles() {
               </Select>
             </Form.Item>
           </Col>
-          <Col span={12}>
+          <Col span={8}>
+            <Form.Item label={t('panel.custom.valueField')} name={[...namePrefix, 'valueField']} tooltip={t('panel.custom.valueField_tip')}>
+              <Select>
+                {_.map(fields, (item) => {
+                  return (
+                    <Select.Option key={item} value={item}>
+                      {item}
+                    </Select.Option>
+                  );
+                })}
+              </Select>
+            </Form.Item>
+          </Col>
+          <Col span={8}>
             <Form.Item label={t('panel.custom.pie.legengPosition')} name={[...namePrefix, 'legengPosition']}>
               <Select>
                 {legendPostion.map((item) => {

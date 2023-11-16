@@ -222,6 +222,7 @@ const zh_CN = {
     custom: {
       title: '图表样式',
       calc: '取值计算',
+      calc_tip: '时序数据需要对所有时间点数据做取值计算，非时序数据忽略此设置',
       maxValue: '最大值',
       baseColor: '基础颜色',
       serieWidth: '序列名宽度',
@@ -233,6 +234,8 @@ const zh_CN = {
       background: '背景',
       colorMode: '颜色模式',
       valueField: '值字段',
+      valueField_tip: 'Value 是保留关键字，作为时序数据取值计算后的字段名',
+      valueField_tip2: '需选择值为数值类型的字段',
       colSpan: '每行最多显示',
       textSize: {
         title: '标题字体大小',

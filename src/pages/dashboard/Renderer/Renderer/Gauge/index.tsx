@@ -19,7 +19,7 @@ import _ from 'lodash';
 import { Tooltip } from 'antd';
 import { useSize } from 'ahooks';
 import { IPanel } from '../../../types';
-import getCalculatedValuesBySeries from '../../utils/getCalculatedValuesBySeries';
+import getCalculatedValuesBySeries, { getSerieTextObj } from '../../utils/getCalculatedValuesBySeries';
 import { useGlobalState } from '../../../globalState';
 import Gauge from './Gauge';
 import { calculateGridDimensions } from '../../utils/squares';
@@ -29,6 +29,7 @@ interface IProps {
   values: IPanel;
   series: any[];
   themeMode?: 'dark';
+  isPreview?: boolean;
 }
 
 interface IGrid {
@@ -43,7 +44,7 @@ const MIN_SIZE = 12;
 const ITEM_SPACIING = 8;
 
 function GaugeItemContent(props) {
-  const { eleSize, realHeaderFontSize, item, themeMode, thresholds } = props;
+  const { eleSize, realHeaderFontSize, item, themeMode, options } = props;
   const height = eleSize?.height! - realHeaderFontSize;
   const width = eleSize?.width! > height ? height : eleSize?.width;
 
@@ -59,7 +60,7 @@ function GaugeItemContent(props) {
         bgColor={themeMode === 'dark' ? '#404456' : '#eeeeee'}
         width={width}
         height={width}
-        thresholds={thresholds}
+        thresholds={options.thresholds}
       />
     </div>
   );
@@ -85,9 +86,31 @@ function GaugeItemLabel(props) {
 function GaugeItem(props) {
   const ele = useRef(null);
   const eleSize = useSize(ele);
-  const { item, textMode = 'valueAndName', style } = props;
-  const headerFontSize = eleSize?.width! / _.toString(item.name).length || MIN_SIZE;
+  const { textMode = 'valueAndName', style, options, valueField } = props;
+  const headerFontSize = eleSize?.width! / _.toString(props.item.name).length || MIN_SIZE;
   const realHeaderFontSize = headerFontSize > 24 ? 24 : headerFontSize;
+  let item = props.item;
+
+  if (valueField !== 'Value') {
+    const value = _.get(item, ['metric', valueField]);
+    if (!_.isNaN(_.toNumber(value))) {
+      const result = getSerieTextObj(
+        value,
+        {
+          unit: options?.standardOptions?.util,
+          decimals: options?.standardOptions?.decimals,
+          dateFormat: options?.standardOptions?.dateFormat,
+        },
+        options?.valueMappings,
+        options?.thresholds,
+      );
+      item.value = result?.value;
+      item.unit = result?.unit;
+      item.color = result?.color;
+    } else {
+      item.value = value;
+    }
+  }
 
   return (
     <Tooltip title={textMode === 'valueAndName' ? item.name : undefined}>
@@ -113,9 +136,9 @@ const getColumnsKeys = (data: any[]) => {
 };
 
 export default function Index(props: IProps) {
-  const { values, series, themeMode } = props;
+  const { values, series, themeMode, isPreview } = props;
   const { custom, options } = values;
-  const { calc, textMode } = custom;
+  const { calc, textMode, valueField = 'Value' } = custom;
   const calculatedValues = getCalculatedValuesBySeries(
     series,
     calc,
@@ -135,12 +158,14 @@ export default function Index(props: IProps) {
   let yGrid = 0;
 
   useEffect(() => {
-    setStatFields(getColumnsKeys(calculatedValues));
+    if (isPreview) {
+      setStatFields(getColumnsKeys(calculatedValues));
+    }
     if (eleSize?.width) {
       const grid = calculateGridDimensions(eleSize.width, eleSize.height, ITEM_SPACIING, calculatedValues.length);
       setGrid(grid);
     }
-  }, [JSON.stringify(calculatedValues), eleSize?.width]);
+  }, [isPreview, JSON.stringify(calculatedValues), eleSize?.width]);
 
   return (
     <div className='renderer-gauge-container'>
@@ -165,7 +190,8 @@ export default function Index(props: IProps) {
                   idx={idx}
                   textMode={textMode}
                   themeMode={themeMode}
-                  thresholds={options.thresholds}
+                  options={options}
+                  valueField={valueField}
                   style={{
                     position: 'absolute',
                     left: xPos,

@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Form, Select, Row, Col, Switch, Radio, Button, Mentions, Space, Tooltip, Input } from 'antd';
 import { DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
@@ -27,7 +27,13 @@ import Info from '@/pages/account/info';
 export default function GraphStyles({ chartForm, variableConfigWithOptions }) {
   const { t, i18n } = useTranslation('dashboard');
   const namePrefix = ['custom'];
-  const [tableFields] = useGlobalState('tableFields');
+  const [tableFields, setTableFields] = useGlobalState('tableFields');
+
+  useEffect(() => {
+    return () => {
+      setTableFields([]);
+    };
+  }, []);
 
   return (
     <Panel header={t('panel.custom.title')}>
@@ -47,7 +53,7 @@ export default function GraphStyles({ chartForm, variableConfigWithOptions }) {
             </Form.Item>
           </Col>
         </Row>
-        <Form.Item label={t('panel.custom.calc')} name={[...namePrefix, 'calc']}>
+        <Form.Item label={t('panel.custom.calc')} name={[...namePrefix, 'calc']} tooltip={t('panel.custom.calc_tip')}>
           <Select>
             {_.map(calcsOptions, (item, key) => {
               return (

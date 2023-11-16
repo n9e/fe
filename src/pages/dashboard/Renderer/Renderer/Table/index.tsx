@@ -40,6 +40,7 @@ interface IProps {
   series: any[];
   themeMode?: 'dark';
   time: IRawTimeRange;
+  isPreview?: boolean;
 }
 
 const DEFAULT_LIGTH_COLOR = '#ffffff';
@@ -88,7 +89,7 @@ function TableCpt(props: IProps, ref: any) {
   const [dashboardMeta] = useGlobalState('dashboardMeta');
   const eleRef = useRef<HTMLDivElement>(null);
   const size = useSize(eleRef);
-  const { values, series, themeMode, time } = props;
+  const { values, series, themeMode, time, isPreview } = props;
   const { custom, options, overrides } = values;
   const { showHeader, calc, aggrDimension, displayMode, columns, sortColumn, sortOrder, colorMode = 'value' } = custom;
   const [calculatedValues, setCalculatedValues] = useState<any[]>([]);
@@ -127,9 +128,11 @@ function TableCpt(props: IProps, ref: any) {
       fields = [aggrDimension];
     }
     setDisplayedTableFields(fields);
-    setTableFields(getColumnsKeys(data));
+    if (isPreview) {
+      setTableFields(getColumnsKeys(data));
+    }
     setCalculatedValues(data);
-  }, [JSON.stringify(series), calc, JSON.stringify(options), displayMode, aggrDimension, JSON.stringify(columns)]);
+  }, [isPreview, JSON.stringify(series), calc, JSON.stringify(options), displayMode, aggrDimension, JSON.stringify(columns)]);
 
   const searchInput = useRef<any>(null);
   const handleSearch = (confirm: (param?: FilterConfirmProps) => void) => {

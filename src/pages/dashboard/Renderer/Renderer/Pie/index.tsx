@@ -14,30 +14,43 @@
  * limitations under the License.
  *
  */
-import React from 'react';
+import React, { useEffect } from 'react';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 import G2PieChart from '@/components/G2PieChart';
+import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { IPanel } from '../../../types';
 import getCalculatedValuesBySeries from '../../utils/getCalculatedValuesBySeries';
 import { getDetailUrl } from '../../utils/replaceExpressionDetail';
-
 import valueFormatter from '../../utils/valueFormatter';
-import './style.less';
 import { useGlobalState } from '../../../globalState';
-import { IRawTimeRange } from '@/components/TimeRangePicker';
+import './style.less';
 
 interface IProps {
   values: IPanel;
   series: any[];
   themeMode?: 'dark';
   time: IRawTimeRange;
+  isPreview?: boolean;
 }
+
+const getColumnsKeys = (data: any[]) => {
+  const keys = _.reduce(
+    data,
+    (result, item) => {
+      return _.union(result, _.keys(item.metric));
+    },
+    [],
+  );
+  return _.uniq(keys);
+};
 
 export default function Pie(props: IProps) {
   const [dashboardMeta] = useGlobalState('dashboardMeta');
-  const { values, series, themeMode, time } = props;
+  const [statFields, setStatFields] = useGlobalState('statFields');
+  const { values, series, themeMode, time, isPreview } = props;
   const { custom, options } = values;
-  const { calc, legengPosition, max, labelWithName, labelWithValue, detailUrl, detailName, donut = false } = custom;
+  const { calc, legengPosition, max, labelWithName, labelWithValue, detailUrl, detailName, donut = false, valueField = 'Value' } = custom;
   const dataFormatter = (text: number) => {
     const resFormatter = valueFormatter(
       {
@@ -65,14 +78,47 @@ export default function Pie(props: IProps) {
     options?.valueMappings,
   );
 
-  const sortedValues = calculatedValues.sort((a, b) => b.stat - a.stat);
-  const data =
-    max && sortedValues.length > max
-      ? sortedValues
-          .slice(0, max)
-          .map((i) => ({ name: i.name, value: i.stat, metric: i.metric }))
-          .concat({ name: '其他', value: sortedValues.slice(max).reduce((previousValue, currentValue) => currentValue.stat + previousValue, 0), metric: {} })
-      : sortedValues.map((i) => ({ name: i.name, value: i.stat, metric: i.metric }));
+  let data: any[] = [];
+  if (valueField !== 'Value') {
+    data = _.map(
+      _.groupBy(
+        _.map(calculatedValues, (item) => {
+          return {
+            name: custom.valueField,
+            value: _.get(item, ['metric', custom.valueField]),
+          };
+        }),
+        'value',
+      ),
+      (vals, name) => {
+        return {
+          name,
+          value: _.size(vals),
+          metric: {
+            [custom.valueField]: name,
+          },
+        };
+      },
+    );
+  } else {
+    const sortedValues = calculatedValues.sort((a, b) => b.stat - a.stat);
+    data =
+      max && sortedValues.length > max
+        ? sortedValues
+            .slice(0, max)
+            .map((i) => ({ name: i.name, value: i.stat, metric: i.metric }))
+            .concat({ name: 'Other', value: sortedValues.slice(max).reduce((previousValue, currentValue) => currentValue.stat + previousValue, 0), metric: {} })
+        : sortedValues.map((i) => ({ name: i.name, value: i.stat, metric: i.metric }));
+  }
+
+  // 只有单个序列值且是背景色模式，则填充整个卡片的背景色
+  useEffect(() => {
+    // 当编辑状态是设置 statFields，同时关闭编辑后需要清空 statFields
+    if (isPreview) {
+      setStatFields(getColumnsKeys(calculatedValues));
+    }
+  }, [isPreview, JSON.stringify(calculatedValues)]);
+
   return (
     <div className='renderer-pie-container'>
       <G2PieChart

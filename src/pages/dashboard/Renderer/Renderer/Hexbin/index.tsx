@@ -34,16 +34,39 @@ interface HoneyCombProps {
   series: any[];
   themeMode?: 'dark';
   time: IRawTimeRange;
+  isPreview?: boolean;
 }
 
+const getColumnsKeys = (data: any[]) => {
+  const keys = _.reduce(
+    data,
+    (result, item) => {
+      return _.union(result, _.keys(item.metric));
+    },
+    [],
+  );
+  return _.uniq(keys);
+};
+
 const Hexbin: FunctionComponent<HoneyCombProps> = (props) => {
-  const { values, series, themeMode, time } = props;
+  const { values, series, themeMode, time, isPreview } = props;
   const { custom = {}, options } = values;
-  const { calc, colorRange = [], reverseColorOrder = false, colorDomainAuto, colorDomain, textMode = 'valueAndName', detailUrl, fontBackground } = custom as IHexbinStyles;
+  const {
+    calc,
+    colorRange = [],
+    reverseColorOrder = false,
+    colorDomainAuto,
+    colorDomain,
+    textMode = 'valueAndName',
+    detailUrl,
+    fontBackground,
+    valueField = 'Value',
+  } = custom as IHexbinStyles;
   const groupEl = useRef<SVGGElement>(null);
   const svgEl = useRef<HTMLDivElement>(null);
   const svgSize = useSize(svgEl);
   const [dashboardMeta] = useGlobalState('dashboardMeta');
+  const [statFields, setStatFields] = useGlobalState('statFields');
 
   useEffect(() => {
     const calculatedValues = getCalculatedValuesBySeries(
@@ -57,6 +80,10 @@ const Hexbin: FunctionComponent<HoneyCombProps> = (props) => {
       options?.valueMappings,
       options?.thresholds,
     );
+
+    if (isPreview) {
+      setStatFields(getColumnsKeys(calculatedValues));
+    }
     const colorScales = d3
       .scaleLinear()
       .domain(getColorScaleLinearDomain(calculatedValues, colorDomainAuto, colorDomain))
@@ -75,6 +102,7 @@ const Hexbin: FunctionComponent<HoneyCombProps> = (props) => {
         textMode,
         detailUrl,
         fontBackground,
+        valueField,
       };
       const data = _.map(calculatedValues, (item) => {
         return {
@@ -88,7 +116,20 @@ const Hexbin: FunctionComponent<HoneyCombProps> = (props) => {
         renderFn(data, renderProps, detailFormatter);
       }
     }
-  }, [JSON.stringify(series), JSON.stringify(options), svgSize?.width, svgSize?.height, calc, colorRange, reverseColorOrder, colorDomainAuto, colorDomain, fontBackground]);
+  }, [
+    isPreview,
+    JSON.stringify(series),
+    JSON.stringify(options),
+    svgSize?.width,
+    svgSize?.height,
+    calc,
+    colorRange,
+    reverseColorOrder,
+    colorDomainAuto,
+    colorDomain,
+    fontBackground,
+  ]);
+
   return (
     <div ref={svgEl} style={{ width: '100%', height: '100%' }}>
       <svg style={{ width: '100%', height: '100%' }}>

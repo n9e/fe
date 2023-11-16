@@ -211,6 +211,7 @@ const en_US = {
     custom: {
       title: 'Graph styles',
       calc: 'Calc',
+      calc_tip: 'Time series data requires value calculation for all time point data. Non-time series data ignores this setting',
       maxValue: 'Max',
       baseColor: 'Base color',
       serieWidth: 'Serie width',
@@ -222,6 +223,8 @@ const en_US = {
       background: 'Background',
       colorMode: 'Color mode',
       valueField: 'Value field',
+      valueField_tip: 'Value is a reserved keyword, used as the field name after time series data value calculation',
+      valueField_tip2: 'You need to select a column whose value is a numeric type',
       colSpan: 'Col span',
       textSize: {
         title: 'Title textsize',

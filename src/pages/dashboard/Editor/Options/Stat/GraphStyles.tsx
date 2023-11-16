@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Form, Radio, Select, Row, Col, InputNumber } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -27,8 +27,14 @@ const colSpans = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 export default function GraphStyles() {
   const { t, i18n } = useTranslation('dashboard');
   const namePrefix = ['custom'];
-  const [statFields] = useGlobalState('statFields');
+  const [statFields, setStatFields] = useGlobalState('statFields');
   const fields = _.compact(_.concat(statFields, 'Value'));
+
+  useEffect(() => {
+    return () => {
+      setStatFields([]);
+    };
+  }, []);
 
   return (
     <Panel header={t('panel.custom.title')}>
@@ -61,7 +67,7 @@ export default function GraphStyles() {
         </Row>
         <Row gutter={10}>
           <Col span={8}>
-            <Form.Item label={t('panel.custom.calc')} name={[...namePrefix, 'calc']}>
+            <Form.Item label={t('panel.custom.calc')} name={[...namePrefix, 'calc']} tooltip={t('panel.custom.calc_tip')}>
               <Select>
                 {_.map(calcsOptions, (item, key) => {
                   return (
@@ -74,7 +80,7 @@ export default function GraphStyles() {
             </Form.Item>
           </Col>
           <Col span={8}>
-            <Form.Item label={t('panel.custom.valueField')} name={[...namePrefix, 'valueField']}>
+            <Form.Item label={t('panel.custom.valueField')} name={[...namePrefix, 'valueField']} tooltip={t('panel.custom.valueField_tip')}>
               <Select>
                 {_.map(fields, (item) => {
                   return (

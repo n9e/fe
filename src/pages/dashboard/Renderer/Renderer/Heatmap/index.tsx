@@ -31,6 +31,7 @@ interface IProps {
   series: any[];
   themeMode?: 'dark';
   time: IRawTimeRange;
+  isPreview?: boolean;
 }
 
 const getColumnsKeys = (data: any[]) => {
@@ -45,13 +46,12 @@ const getColumnsKeys = (data: any[]) => {
 };
 
 export default function Heatmap(props: IProps) {
-  const [dashboardMeta] = useGlobalState('dashboardMeta');
   const containerRef = useRef<HTMLDivElement>(null);
   const containerSize = useSize(containerRef);
   const chartRef = useRef<any>();
-  const { values, series, themeMode, time } = props;
+  const { values, series, isPreview } = props;
   const { custom, options } = values;
-  const { calc, legengPosition, max, labelWithName, labelWithValue, detailUrl, detailName, donut = false } = custom;
+  const { calc, xAxisField, yAxisField, valueField, scheme } = custom;
   const calculatedValues = getCalculatedValuesBySeries(
     series,
     calc,
@@ -65,16 +65,27 @@ export default function Heatmap(props: IProps) {
   const [statFields, setStatFields] = useGlobalState('statFields');
   const render = () => {
     if (!chartRef.current) return;
+    let data: any[] = [];
+    if (valueField !== 'Value') {
+      data = _.map(calculatedValues, 'metric');
+    } else {
+      data = _.map(calculatedValues, (item) => {
+        return {
+          ...item.metric,
+          Value: item.value,
+        };
+      });
+    }
     chartRef.current
       .cell()
-      .data(_.map(calculatedValues, 'metric'))
+      .data(data)
       .transform({ type: 'group', color: 'max' })
-      .encode('x', custom.xAxisField)
-      .encode('y', custom.yAxisField)
-      .encode('color', custom.valueField)
-      .scale('color', { palette: custom?.scheme || 'Blues' })
+      .encode('x', xAxisField)
+      .encode('y', yAxisField)
+      .encode('color', valueField)
+      .scale('color', { palette: scheme || 'Blues' })
       .label({
-        text: custom.valueField,
+        text: valueField,
         position: 'inside',
         transform: [
           {
@@ -101,8 +112,10 @@ export default function Heatmap(props: IProps) {
   };
 
   useEffect(() => {
-    setStatFields(getColumnsKeys(calculatedValues));
-  }, [JSON.stringify(calculatedValues)]);
+    if (isPreview) {
+      setStatFields(getColumnsKeys(calculatedValues));
+    }
+  }, [isPreview, JSON.stringify(calculatedValues)]);
 
   useEffect(() => {
     if (!containerRef.current || !containerSize || !containerSize?.height) return;
