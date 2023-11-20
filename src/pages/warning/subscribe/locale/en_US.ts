@@ -7,7 +7,7 @@ const en_US = {
   user_groups: 'Receiving Group',
   tag: {
     key: {
-      label: 'Key',
+      label: 'Subscribed Event Tag Key',
       tip: 'The tag is the tag of the alert event, and the alert event is filtered by the following tag matching rules',
     },
     func: {
@@ -19,8 +19,8 @@ const en_US = {
   },
   group: {
     key: {
-      label: 'Groups',
-      placeholder: 'Groups',
+      label: 'Subscribed Groups',
+      placeholder: 'Subscribed Groups',
     },
     func: {
       label: 'Operator',
@@ -38,7 +38,7 @@ const en_US = {
   webhooks_msg: 'Webhook is required',
   prod: 'Type',
   subscribe_btn: 'Subscribe',
-  basic_configs: 'Basic',
+  basic_configs: 'Basic Settings',
   severities: 'Severity',
   severities_msg: 'Severity is required',
   tags_groups_require: 'Tags and receiving groups must fill in at least one item',

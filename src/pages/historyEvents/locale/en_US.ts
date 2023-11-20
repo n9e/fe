@@ -2,7 +2,7 @@ const en_US = {
   title: 'History Events',
   rule_name: 'Rule Name & Event Tags',
   search_placeholder: 'multiple keywords separated by spaces',
-  last_eval_time: 'Last Eval Time',
+  last_eval_time: 'Triggered',
   hours: {
     6: 'Last 6 Hours',
     12: 'Last 12 Hours',

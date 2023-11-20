@@ -20,12 +20,13 @@ import { MinusCircleOutlined, CaretDownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 const { Option } = Select;
 interface Itag {
+  count: number;
   field: any;
   remove: Function;
   form: any;
 }
 
-const TagItem: React.FC<Itag> = ({ field, remove, form }) => {
+const TagItem: React.FC<Itag> = ({ count, field, remove, form }) => {
   const { t } = useTranslation('alertMutes');
   const [valuePlaceholder, setValuePlaceholder] = useState<string>('');
   const [funcCur, setfuncCur] = useState('==');
@@ -74,9 +75,11 @@ const TagItem: React.FC<Itag> = ({ field, remove, form }) => {
             )}
           </Form.Item>
         </Col>
-        <Col>
-          <MinusCircleOutlined style={{ marginTop: '8px' }} onClick={() => remove(field.name)} />
-        </Col>
+        {count > 1 && (
+          <Col>
+            <MinusCircleOutlined style={{ marginTop: '8px' }} onClick={() => remove(field.name)} />
+          </Col>
+        )}
       </Row>
     </>
   );

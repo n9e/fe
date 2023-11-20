@@ -23,7 +23,7 @@ const zh_HK = {
     },
     name: '公開',
   },
-  create_title: '建立儀表盤',
+  create_title: '創建儀表盤',
   edit_title: '編輯儀表盤',
   add_panel: '新增圖表',
   cluster: '叢集',

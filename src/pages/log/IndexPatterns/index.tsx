@@ -15,7 +15,7 @@
  *
  */
 import React, { useState, useEffect, useContext } from 'react';
-import { Button, Popconfirm, Table, Tag, message } from 'antd';
+import { Button, Popconfirm, Space, Table, Tag, message } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -101,20 +101,25 @@ export default function Servers() {
                   },
                   {
                     title: t('common:table.operations'),
-                    width: 80,
+                    width: 160,
                     render: (record) => {
                       return (
-                        <Popconfirm
-                          title={t('common:confirm.delete')}
-                          onConfirm={() => {
-                            deleteESIndexPattern(record.id).then(() => {
-                              message.success(t('common:success.delete'));
-                              fetchData();
-                            });
-                          }}
-                        >
-                          <Button type='link'>{t('common:btn.delete')}</Button>
-                        </Popconfirm>
+                        <Space>
+                          <Link to={`/log/index-patterns/${record.id}`}>{t('common:btn.edit')}</Link>
+                          <Popconfirm
+                            title={t('common:confirm.delete')}
+                            onConfirm={() => {
+                              deleteESIndexPattern(record.id).then(() => {
+                                message.success(t('common:success.delete'));
+                                fetchData();
+                              });
+                            }}
+                          >
+                            <Button type='link' style={{ padding: 0 }}>
+                              {t('common:btn.delete')}
+                            </Button>
+                          </Popconfirm>
+                        </Space>
                       );
                     },
                   },

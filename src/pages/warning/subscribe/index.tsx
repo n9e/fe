@@ -221,7 +221,7 @@ const Shield: React.FC = () => {
     },
     {
       title: t('common:table.operations'),
-      width: 120,
+      width: 140,
       dataIndex: 'operation',
       render: (text: undefined, record: subscribeItem) => {
         return (
@@ -362,7 +362,7 @@ const Shield: React.FC = () => {
                     setDatasourceIds(val);
                   }}
                 />
-                <Input style={{ minWidth: 200 }} onPressEnter={onSearchQuery} prefix={<SearchOutlined />} placeholder={t('search_placeholder')} />
+                <Input style={{ minWidth: 400 }} onPressEnter={onSearchQuery} prefix={<SearchOutlined />} placeholder={t('search_placeholder')} />
               </Space>
               <div>
                 <Button
