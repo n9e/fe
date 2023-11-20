@@ -1,7 +1,7 @@
 const zh_HK = {
   business_group: '業務組',
   search_placeholder: '搜尋',
-  nodata: '暫無資料',
+  nodata: '暫無數據',
   btn: {
     add: '新增',
     create: '建立',
@@ -65,7 +65,7 @@ const zh_HK = {
     submit: '提交成功',
     modify: '修改成功',
     edit: '編輯成功',
-    create: '建立成功',
+    create: '創建成功',
     add: '新增成功',
     delete: '刪除成功',
     clone: '克隆成功',
@@ -155,7 +155,7 @@ const zh_HK = {
   'last.90.days': '最近 90 天',
   'msg.submit.success': '提交成功',
   'msg.modify.success': '修改成功',
-  'msg.create.success': '建立成功',
+  'msg.create.success': '創建成功',
   'msg.add.success': '新增成功',
   'msg.delete.success': '刪除成功',
   'msg.clone.success': '克隆成功',

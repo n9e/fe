@@ -48,6 +48,7 @@ const zh_CN = {
     team_name: '团队',
     perm_flag_0: '只读',
     perm_flag_1: '读写',
+    user_group_msg: '业务组团队不能为空',
   },
   disbale: '禁用',
   enable: '启用',

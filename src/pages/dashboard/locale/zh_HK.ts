@@ -37,6 +37,7 @@ const zh_HK = {
     import_grafana_tip_version_error: '不支援匯入小於 v7 版本的儀表盤配置',
     import_grafana_tip_version_warning: '匯入的儀表盤配置版本小於 v8，部分圖表可能無法正常顯示，是否繼續匯入？',
     continueToImport: '繼續匯入',
+    noSelected: '請選擇儀表盤',
   },
   link: {
     title: '儀表盤連結',
@@ -78,6 +79,8 @@ const zh_HK = {
     type: '變數型別',
     hide: '隱藏變數',
     definition: '變數定義',
+    definition_msg1: '請輸入變數定義',
+    definition_msg2: '變數定義必須是合法的JSON',
     reg: '正則',
     reg_tip: '可選，可通過正則來過濾可選項，或提取值',
     multi: '多選',
@@ -243,6 +246,11 @@ const zh_HK = {
       fontBackground: '文字背景色',
       detailName: '連結名稱',
       detailUrl: '連結地址',
+      stat: {
+        graphMode: '圖表模式',
+        none: '無',
+        area: '迷你圖',
+      },
       pie: {
         legengPosition: '圖例位置',
         max: '最多展示塊數',

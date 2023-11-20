@@ -37,6 +37,7 @@ const en_US = {
     import_grafana_tip_version_error: 'Import of dashboard config less than v7 version is not supported',
     import_grafana_tip_version_warning: 'The imported dashboard config version is less than v8, some panels may not be displayed properly, do you want to continue importing?',
     continueToImport: 'Continue to import',
+    noSelected: 'Please select any dashboard',
   },
   link: {
     title: 'Links',
@@ -78,6 +79,8 @@ const en_US = {
     type: 'Type',
     hide: 'Hide',
     definition: 'Definition',
+    definition_msg1: 'Please enter variable definition',
+    definition_msg2: 'Variable definition must be valid JSON',
     reg: 'Regex',
     reg_tip: 'Optional, can filter options or extract values by regex',
     multi: 'Multi select',
@@ -237,6 +240,11 @@ const en_US = {
       fontBackground: 'Font background', // hexbin
       detailName: 'Link name',
       detailUrl: 'Link addr',
+      stat: {
+        graphMode: 'Graph mode',
+        none: 'None',
+        area: 'Mini graph',
+      },
       pie: {
         legengPosition: 'Legend position',
         max: 'Max',
@@ -358,7 +366,7 @@ const en_US = {
     table: 'Table',
     pie: 'Pie',
     hexbin: 'Hexmap',
-    barGauge: 'Top List',
+    barGauge: 'Bar Gauge',
     text: 'Text',
     gauge: 'Gauge',
     heatmap: 'Heatmap',

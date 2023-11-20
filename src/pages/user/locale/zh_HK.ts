@@ -48,6 +48,7 @@ const zh_HK = {
     team_name: '團隊',
     perm_flag_0: '只讀',
     perm_flag_1: '讀寫',
+    user_group_msg: '業務組團隊不能為空',
   },
   disbale: '禁用',
   enable: '啟用',

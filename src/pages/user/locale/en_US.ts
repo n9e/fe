@@ -49,6 +49,7 @@ const en_US = {
     team_name: 'Team',
     perm_flag_0: 'ro',
     perm_flag_1: 'rw',
+    user_group_msg: 'Business group team is required',
   },
   disbale: 'Disable',
   enable: 'Enable',

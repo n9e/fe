@@ -1,5 +1,5 @@
 const en_US = {
-  title: 'Record Rules',
+  title: 'Recording Rules',
   search_placeholder: 'Search by name or tags',
   name: 'Metric Name',
   name_msg: 'Metric name is invalid',

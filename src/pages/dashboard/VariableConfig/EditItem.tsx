@@ -217,16 +217,17 @@ function EditItem(props: IProps) {
                               JSON.parse(definition);
                               return Promise.resolve();
                             } catch (e) {
-                              return Promise.reject('变量定义必须是合法的JSON');
+                              return Promise.reject(t('var.definition_msg2'));
                             }
                           }
                           return Promise.resolve();
                         } else {
-                          return Promise.reject(new Error('请输入变量定义'));
+                          return Promise.reject(new Error(t('var.definition_msg1')));
                         }
                       },
                     }),
                   ]}
+                  required
                 >
                   <Input />
                 </Form.Item>

@@ -149,7 +149,7 @@ const TeamForm = React.forwardRef<ReactNode, TeamProps>((props, ref) => {
               <>
                 {fields.map(({ key, name, fieldKey, ...restField }) => (
                   <Space key={key} style={{ display: 'flex', marginBottom: 8 }} align='baseline'>
-                    <Form.Item style={{ width: 450 }} {...restField} name={[name, 'user_group_id']} rules={[{ required: true, message: t('业务组团队不能为空！') }]}>
+                    <Form.Item style={{ width: 450 }} {...restField} name={[name, 'user_group_id']} rules={[{ required: true, message: t('business.user_group_msg') }]}>
                       <Select
                         suffixIcon={<CaretDownOutlined />}
                         style={{ width: '100%' }}

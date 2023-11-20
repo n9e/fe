@@ -37,6 +37,7 @@ const zh_CN = {
     import_grafana_tip_version_error: '不支持导入小于 v7 版本的仪表盘配置',
     import_grafana_tip_version_warning: '导入小于 v8 版本的仪表盘配置，可能会有部分图表不支持，以及图表无法正常渲染问题',
     continueToImport: '继续导入',
+    noSelected: '请选择仪表盘',
   },
   link: {
     title: '仪表盘链接',
@@ -78,6 +79,8 @@ const zh_CN = {
     type: '变量类型',
     hide: '隐藏变量',
     definition: '变量定义',
+    definition_msg1: '请输入变量定义',
+    definition_msg2: '变量定义必须是合法的JSON',
     reg: '正则',
     reg_tip: '可选，可通过正则来过滤可选项，或提取值',
     multi: '多选',
@@ -248,6 +251,11 @@ const zh_CN = {
       fontBackground: '文字背景色', // hexbin
       detailName: '链接名称',
       detailUrl: '链接地址',
+      stat: {
+        graphMode: '图表模式',
+        none: '不显示',
+        area: '迷你图',
+      },
       pie: {
         legengPosition: '图例位置', // pie
         max: '最多展示块数',

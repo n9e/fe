@@ -34,9 +34,9 @@ const en_US = {
     name: 'Name',
     ident: 'Ident',
     tag: 'Tag',
-    update_at: 'Update at',
+    update_at: 'Updated',
     update_by: 'Updater',
-    create_at: 'Create at',
+    create_at: 'Created',
     create_by: 'Creator',
     status: 'Status',
     enabled: 'Enabled',
@@ -47,7 +47,7 @@ const en_US = {
   datasource: {
     prod: 'Type',
     name: 'Datasource',
-    type: 'Category',
+    type: 'Source Type',
     id: 'Datasource',
     id_required: 'Please select a datasource',
     empty_modal: {

@@ -105,7 +105,7 @@ export default function Header(props: IProps) {
                           },
                         });
                       } else {
-                        message.warning('未选择任何仪表盘');
+                        message.warning(t('batch.noSelected'));
                       }
                     }}
                   >
