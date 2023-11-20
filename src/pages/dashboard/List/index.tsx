@@ -198,7 +198,7 @@ export default function index() {
                           });
                         }}
                       >
-                        {t('common:btn.modify')}
+                        {t('common:btn.edit')}
                       </div>
                       <div
                         className='table-operator-area-normal'

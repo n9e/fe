@@ -411,9 +411,6 @@ export default function index(props: IProps) {
               className='scroll-container-table'
               columns={tableColumn}
               dataSource={legendData}
-              locale={{
-                emptyText: '暂无数据',
-              }}
               pagination={false}
               rowClassName={(record) => {
                 return record.disabled ? 'disabled' : '';

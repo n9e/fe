@@ -26,11 +26,11 @@ const zh_HK = {
     advancedSettings: {
       title: '輔助配置',
       metricKey_tip:
-        '透過此欄位可以指定哪些欄位作為 metricName，預設會將數值類型的欄位作為 metricName，例如查詢的結果為used_percent:96 host:host01，used_percent將作為 metricName, value 為 96',
+        '透過此字段可以指定哪些字段作為 metricName，預設會將數值類型的字段作為 metricName，例如查詢的結果為used_percent:96 host:host01，used_percent將作為 metricName, value 為 96',
       tags_placeholder: '回車輸入多個',
       labelKey_tip:
-        '透過此欄位可以指定哪些欄位為 labelName，預設會將非數值類型的欄位為 labelName，例如查詢的結果為used_percent:96 host:host01，host 將作為 label 的 name, host01 為 label 的值',
-      timeKey_tip: '指定哪個欄位是時間欄位，作為繪製曲線圖的 x 軸座標',
+        '透過此字段可以指定哪些字段為 labelName，預設會將非數值類型的字段為 labelName，例如查詢的結果為used_percent:96 host:host01，host 將作為 label 的 name, host01 為 label 的值',
+      timeKey_tip: '指定哪個字段是時間字段，作為繪製曲線圖的 x 軸座標',
       timeFormat_tip: '時間的格式，會根據此格式將時間轉為時間戳',
     },
   },

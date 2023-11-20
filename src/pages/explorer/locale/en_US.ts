@@ -2,6 +2,7 @@ const en_US = {
   title: 'Explorer',
   add_btn: 'Add a query panel',
   query_btn: 'Execute',
+  query_tab: 'Query',
   log: {
     search_placeholder: 'Search field',
     available: 'Available fields',

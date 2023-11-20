@@ -47,15 +47,15 @@ const zh_HK = {
     dashboard_link: '儀表盤連結',
     desc: '描述',
   },
-  invalid_datasource_tip_1: '資料來源',
+  invalid_datasource_tip_1: '數據源',
   invalid_datasource_tip_2: '未配置關聯告警引擎集群',
-  invalid_datasource_reload: '刷新資料來源',
+  invalid_datasource_reload: '刷新數據源',
   host: {
     query: {
       title: '機器篩選',
       key: {
         all_hosts: '全部機器',
-        datasource_ids: '資料來源',
+        datasource_ids: '數據源',
         group_ids: '業務組',
         tags: '標籤',
         hosts: '機器標識',
@@ -104,7 +104,7 @@ const zh_HK = {
     update: {
       title: '更新告警規則',
       name: '批量更新',
-      field: '欄位',
+      field: '字段',
       changeto: '改為',
       enable_in_bg_tip: '根據告警事件中的 ident 歸屬關係判斷',
       callback_cover: {
@@ -116,7 +116,7 @@ const zh_HK = {
       effective_time_msg: '生效時間不能為空',
       effective_time_add: '新增生效時間',
       options: {
-        datasource_ids: '資料來源',
+        datasource_ids: '數據源',
         severity: '告警級別',
         prom_eval_interval: '執行頻率',
         prom_for_duration: '持續時長',

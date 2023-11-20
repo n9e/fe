@@ -58,7 +58,7 @@ export default function GraphStyles({ chartForm, variableConfigWithOptions }) {
             {_.map(calcsOptions, (item, key) => {
               return (
                 <Select.Option key={key} value={key}>
-                  {i18n.language === 'en_US' ? key : item.name}
+                  {t(`calcs.${key}`)}
                 </Select.Option>
               );
             })}

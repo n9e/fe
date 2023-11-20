@@ -81,7 +81,7 @@ const MetricExplorerPage = () => {
             >
               {_.map(items, (item, idx) => {
                 return (
-                  <Tabs.TabPane closable={items.length !== 1} tab={`查询 ${idx + 1}`} key={item.key}>
+                  <Tabs.TabPane closable={items.length !== 1} tab={`${t('query_tab')} ${idx + 1}`} key={item.key}>
                     <Explorer
                       type='logging'
                       defaultCate='elasticsearch'

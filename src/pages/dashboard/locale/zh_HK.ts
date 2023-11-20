@@ -95,7 +95,7 @@ const zh_HK = {
       defaultValue_tip: '定義一個隱藏的常量值',
     },
     datasource: {
-      definition: '資料來源型別',
+      definition: '數據源型別',
       defaultValue: '預設值',
       regex: '數據源過濾',
       regex_tip: '可選，可通過正則來過濾可選項，或提取值',
@@ -313,6 +313,11 @@ const zh_HK = {
       iframe: {
         src: 'iframe 地址',
       },
+      heatmap: {
+        xAxisField: 'X軸',
+        yAxisField: 'Y軸',
+        valueField: '數值列',
+      },
     },
     inspect: {
       title: '排查',
@@ -326,15 +331,15 @@ const zh_HK = {
   query: {
     title: '查詢條件',
     transform: '資料轉換',
-    datasource_placeholder: '請選擇資料來源',
-    datasource_msg: '請選擇資料來源',
+    datasource_placeholder: '請選擇數據源',
+    datasource_msg: '請選擇數據源',
     time: '時間選擇',
     time_tip: '可指定時間範圍，預設為儀表盤全域性時間範圍',
   },
   detail: {
-    datasource_empty: '沒有資料來源資訊，請先配置資料來源',
+    datasource_empty: '沒有數據源資訊，請先配置數據源',
     invalidTimeRange: '無效的 __from 和 __to 值',
-    invalidDatasource: '無效的資料來源',
+    invalidDatasource: '無效的數據源',
     fullscreen: {
       notification: {
         esc: '按 ESC 鍵退出全螢幕模式',
@@ -356,6 +361,30 @@ const zh_HK = {
       default: '默认',
       updateTimeRange: '更新時間範圍',
     },
+  },
+  visualizations: {
+    timeseries: '時序圖',
+    stat: '指標圖',
+    table: '表格',
+    pie: '餅圖',
+    hexbin: '蜂窩圖',
+    barGauge: '排行榜',
+    text: '文本卡片',
+    gauge: '儀表圖',
+    heatmap: '色塊圖',
+    iframe: '內嵌文檔(iframe)',
+    row: '分組',
+  },
+  calcs: {
+    lastNotNull: '最後一個非空值',
+    last: '最後一個值',
+    firstNotNull: '第一個非空值',
+    first: '第一個值',
+    min: '最小值',
+    max: '最大值',
+    avg: '平均值',
+    sum: '總和',
+    count: '數量',
   },
 };
 
