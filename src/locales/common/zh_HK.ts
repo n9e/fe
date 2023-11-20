@@ -46,12 +46,12 @@ const zh_HK = {
   },
   datasource: {
     prod: '監控型別',
-    name: '資料來源',
-    type: '資料來源型別',
-    id: '關聯資料來源',
-    id_required: '請選擇資料來源',
+    name: '數據源',
+    type: '數據源型別',
+    id: '關聯數據源',
+    id_required: '請選擇數據源',
     empty_modal: {
-      title: '暫無資料來源配置，請聯絡管理員去新增資料來源',
+      title: '暫無數據源配置，請聯絡管理員去新增數據源',
       btn1: '前往配置',
       btn2: '知道了',
     },

@@ -3,7 +3,7 @@ const zh_HK = {
   default_filter: '預置篩選',
   ungrouped_targets: '未歸組物件',
   all_targets: '全部物件',
-  datasource: '資料來源',
+  datasource: '數據源',
   search_placeholder: '模糊搜尋表格內容 (多個關鍵詞請用空格分隔)',
   ident_copy_success: '複製成功 {{num}} 條記錄',
   filterDowntime: '無更新超過',

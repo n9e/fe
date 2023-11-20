@@ -177,39 +177,16 @@ const Panel = ({ type, defaultCate, panelIdx, defaultFormValuesControl }: IProps
                 const datasourceCate = getFieldValue('datasourceCate');
                 const datasourceValue = getFieldValue('datasourceValue');
                 if (datasourceCate === DatasourceCateEnum.elasticsearch) {
-                  return (
-                    <Elasticsearch
-                      // key={datasourceValue}
-                      headerExtra={headerExtraRef.current}
-                      datasourceValue={datasourceValue}
-                      form={form}
-                      defaultFormValuesControl={defaultFormValuesControl}
-                    />
-                  );
+                  return <Elasticsearch headerExtra={headerExtraRef.current} datasourceValue={datasourceValue} form={form} defaultFormValuesControl={defaultFormValuesControl} />;
                 } else if (datasourceCate === DatasourceCateEnum.prometheus) {
-                  return (
-                    <Prometheus
-                      // key={datasourceCate}
-                      headerExtra={headerExtraRef.current}
-                      datasourceValue={datasourceValue}
-                      form={form}
-                      panelIdx={panelIdx}
-                    />
-                  );
+                  return <Prometheus headerExtra={headerExtraRef.current} datasourceValue={datasourceValue} form={form} panelIdx={panelIdx} />;
                 } else if (datasourceCate === DatasourceCateEnum.tdengine) {
-                  return (
-                    <TDengine
-                      // key={datasourceValue}
-                      datasourceValue={datasourceValue}
-                      form={form}
-                    />
-                  );
+                  return <TDengine datasourceValue={datasourceValue} form={form} />;
                 } else if (datasourceCate === DatasourceCateEnum.loki) {
                   return <Loki datasourceValue={datasourceValue} headerExtra={headerExtraRef.current} form={form} defaultFormValuesControl={defaultFormValuesControl} />;
                 }
                 return (
                   <PlusExplorer
-                    // key={datasourceValue}
                     datasourceCate={datasourceCate}
                     datasourceValue={datasourceValue}
                     headerExtraRef={headerExtraRef}

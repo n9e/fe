@@ -123,7 +123,7 @@ export default function Title(props: IProps) {
               trigger={['click']}
               overlay={
                 <Menu>
-                  {_.map([{ type: 'row', name: '分组' }, ...visualizations], (item) => {
+                  {_.map([{ type: 'row', name: 'row' }, ...visualizations], (item) => {
                     return (
                       <Menu.Item
                         key={item.type}
@@ -131,7 +131,7 @@ export default function Title(props: IProps) {
                           onAddPanel(item.type);
                         }}
                       >
-                        {i18n.language === 'en_US' ? item.type : item.name}
+                        {t(`visualizations.${item.type}`)}
                       </Menu.Item>
                     );
                   })}

@@ -26,11 +26,11 @@ const zh_HK = {
     delete: '刪除記錄規則',
     update: {
       title: '更新記錄規則',
-      field: '欄位',
+      field: '字段',
       changeto: '改為',
       prom_eval_interval_tip: 'promql 執行頻率，每隔 {{num}} 秒查詢時序庫，查到的結果重新命名寫回時序庫',
       options: {
-        datasource_ids: '資料來源',
+        datasource_ids: '數據源',
         prom_eval_interval: '執行頻率',
         disabled: '啟用',
         append_tags: '附加標籤',

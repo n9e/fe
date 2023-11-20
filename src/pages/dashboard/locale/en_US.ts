@@ -303,6 +303,11 @@ const en_US = {
       iframe: {
         src: 'Src',
       },
+      heatmap: {
+        xAxisField: 'X axis',
+        yAxisField: 'Y axis',
+        valueField: 'Value field',
+      },
     },
     inspect: {
       title: 'Inspect',
@@ -346,6 +351,30 @@ const en_US = {
       default: 'Default',
       updateTimeRange: 'Update time range',
     },
+  },
+  visualizations: {
+    timeseries: 'Time Series',
+    stat: 'Stat',
+    table: 'Table',
+    pie: 'Pie',
+    hexbin: 'Hexmap',
+    barGauge: 'Top List',
+    text: 'Text',
+    gauge: 'Gauge',
+    heatmap: 'Heatmap',
+    iframe: 'Iframe',
+    row: 'Row',
+  },
+  calcs: {
+    lastNotNull: 'Last not null value',
+    last: 'Last value',
+    firstNotNull: 'First not null value',
+    first: 'First value',
+    min: 'Min',
+    max: 'Max',
+    avg: 'Avg',
+    sum: 'Sum',
+    count: 'Count',
   },
 };
 export default en_US;
