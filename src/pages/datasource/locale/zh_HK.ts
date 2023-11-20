@@ -4,7 +4,7 @@ const zh_HK = {
   name: '數據源名稱',
   id: '數據源 ID',
   description: '備註',
-  type: '數據源型別',
+  type: '數據源類型',
   enable: '啟用',
   disable: '禁用',
   confirm: {
@@ -18,7 +18,7 @@ const zh_HK = {
   rename_title: '修改數據源名稱',
   type_btn_add: '新增',
   default: '設置為默認數據源',
-  default_msg: '該數據源型別下的默認集群',
+  default_msg: '該數據源類型下的默認集群',
   auth: {
     name: '授權',
     'not-support': '暫不支援',

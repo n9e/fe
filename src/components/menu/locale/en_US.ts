@@ -5,7 +5,7 @@ const en_US = {
   时序指标: 'Metrics',
   即时查询: 'Explorer',
   快捷视图: 'Quick View',
-  记录规则: 'Record Rule',
+  记录规则: 'Recording Rule',
   日志分析: 'Log Analysis',
   索引模式: 'Index Patterns',
   链路追踪: 'Tracing',

@@ -19,7 +19,7 @@ const zh_HK = {
   eventType: '事件類別',
   export: '匯出',
   export_failed: '匯出失敗',
-  prod: '監控型別',
+  prod: '監控類型',
   rule_prod: {
     firemap: '滅火圖',
     northstar: '北極星',

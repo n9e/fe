@@ -33,7 +33,7 @@ const zh_HK = {
     import: '匯入儀表盤 JSON',
     label: '儀表盤 JSON',
     import_grafana: '匯入 Grafana 儀表盤 JSON',
-    import_grafana_tip: '匯入完的圖表只支援夜鶯目前支援的圖表型別和功能, <a>問題反饋</a>',
+    import_grafana_tip: '匯入完的圖表只支援夜鶯目前支援的圖表類型和功能, <a>問題反饋</a>',
     import_grafana_tip_version_error: '不支援匯入小於 v7 版本的儀表盤配置',
     import_grafana_tip_version_warning: '匯入的儀表盤配置版本小於 v8，部分圖表可能無法正常顯示，是否繼續匯入？',
     continueToImport: '繼續匯入',
@@ -76,7 +76,7 @@ const zh_HK = {
     name: '變數名稱',
     name_msg: '僅支援數字和字元下劃線',
     label: '顯示名稱',
-    type: '變數型別',
+    type: '變數類型',
     hide: '隱藏變數',
     definition: '變數定義',
     definition_msg1: '請輸入變數定義',
@@ -98,7 +98,7 @@ const zh_HK = {
       defaultValue_tip: '定義一個隱藏的常量值',
     },
     datasource: {
-      definition: '數據源型別',
+      definition: '數據源類型',
       defaultValue: '預設值',
       regex: '數據源過濾',
       regex_tip: '可選，可通過正則來過濾可選項，或提取值',
@@ -121,7 +121,7 @@ const zh_HK = {
     base: {
       title: '面板配置',
       name: '標題',
-      name_tip: '表格型別的圖表必須設定標題，否則面板編輯會跟表格表頭衝突',
+      name_tip: '表格類型的圖表必須設定標題，否則面板編輯會跟表格表頭衝突',
       link: {
         label: '連結',
         btn: '新增',
