@@ -317,6 +317,7 @@ export function dslBuilder(params: {
     _source: false,
     aggs: {},
   };
+  body.track_total_hits = true;  //get real hits total
   if (params.limit) {
     body.size = params.limit;
   }
