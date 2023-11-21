@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import _ from 'lodash';
-import { Modal, Button, Form, Input, Select, Space, message } from 'antd';
-import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
+import { useTranslation } from 'react-i18next';
+import { Modal, Button, Form, Input, Select, message } from 'antd';
 import { CommonStateContext } from '@/App';
 import { convertDashboardV2ToV3 } from './utils';
 
@@ -13,6 +13,7 @@ interface MigrationModalProps {
 }
 
 export default function MigrationModal(props: MigrationModalProps) {
+  const { t } = useTranslation('migrationDashboard');
   const { boards, visible, setVisible, onOk } = props;
   const [migrating, setMigrating] = useState(false);
   const [form] = Form.useForm();
@@ -20,7 +21,7 @@ export default function MigrationModal(props: MigrationModalProps) {
 
   return (
     <Modal
-      title='迁移设置'
+      title={t('settings')}
       destroyOnClose
       maskClosable={false}
       closable={false}
@@ -33,7 +34,7 @@ export default function MigrationModal(props: MigrationModalProps) {
             setVisible(false);
           }}
         >
-          取消
+          {t('common:btn.cancel')}
         </Button>,
         <Button
           key='submit'
@@ -53,47 +54,35 @@ export default function MigrationModal(props: MigrationModalProps) {
               Promise.all(requests).then(() => {
                 setVisible(false);
                 setMigrating(false);
-                message.success('迁移成功');
+                message.success(t('success_migrate'));
                 onOk();
               });
             });
           }}
         >
-          迁移
+          {t('migrate')}
         </Button>,
       ]}
     >
-      <Form form={form}>
-        <div style={{ marginBottom: 10 }}>数据源变量设置</div>
-        <div>
-          <InputGroupWithFormItem label='变量名称'>
-            <Form.Item name='name' rules={[{ required: true, message: '请填写变量名称' }]} initialValue='datasource'>
-              <Input />
-            </Form.Item>
-          </InputGroupWithFormItem>
-        </div>
-        <div>
-          <Space>
-            <InputGroupWithFormItem label='数据源类型'>
-              <Form.Item>
-                <Input disabled value='Prometheus' />
-              </Form.Item>
-            </InputGroupWithFormItem>
-            <InputGroupWithFormItem label='数据源默认值'>
-              <Form.Item name='datasourceDefaultValue'>
-                <Select allowClear style={{ width: 168 }}>
-                  {_.map(groupedDatasourceList.prometheus, (item) => {
-                    return (
-                      <Select.Option key={item.id} value={item.id}>
-                        {item.name}
-                      </Select.Option>
-                    );
-                  })}
-                </Select>
-              </Form.Item>
-            </InputGroupWithFormItem>
-          </Space>
-        </div>
+      <Form form={form} layout='vertical'>
+        <div style={{ marginBottom: 10 }}>{t('datasource_variable')}</div>
+        <Form.Item label={t('variable_name')} name='name' rules={[{ required: true }]} initialValue='datasource'>
+          <Input />
+        </Form.Item>
+        <Form.Item label={t('common:datasource.type')}>
+          <Input disabled value='Prometheus' />
+        </Form.Item>
+        <Form.Item name='datasourceDefaultValue' label={t('datasource_default')}>
+          <Select allowClear style={{ width: '100%' }}>
+            {_.map(groupedDatasourceList.prometheus, (item) => {
+              return (
+                <Select.Option key={item.id} value={item.id}>
+                  {item.name}
+                </Select.Option>
+              );
+            })}
+          </Select>
+        </Form.Item>
       </Form>
     </Modal>
   );

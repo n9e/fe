@@ -11,6 +11,8 @@ const zh_HK = {
     '1': '隱藏',
   },
   content_prompt: '內容有修改，是否放棄修改的內容？',
+  post_title: '新增通知模板',
+  update_title: '編輯通知模板',
 };
 
 export default zh_HK;

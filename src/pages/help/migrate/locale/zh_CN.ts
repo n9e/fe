@@ -8,5 +8,10 @@ const zh_CN = {
   <br />
   以下是待迁移的仪表盘列表，点击迁移按钮开始迁移。
   `,
+  settings: '迁移设置',
+  success_migrate: '迁移成功',
+  datasource_variable: '数据源变量设置',
+  variable_name: '变量名称',
+  datasource_default: '数据源默认值',
 };
 export default zh_CN;
