@@ -229,6 +229,8 @@ export default function index(props: IProps) {
     }
   }, []);
 
+  if (defaultFormValuesControl?.defaultFormValues && defaultFormValuesControl?.isInited === false) return null;
+
   return (
     <div className='es-discover-container'>
       {!isOpenSearch && (
