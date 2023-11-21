@@ -26,7 +26,7 @@ function isTagValid(tag) {
 }
 
 function getFirstDatasourceId(datasourceIds = [], datasourceList: { id: number }[] = []) {
-  return _.isEqual(datasourceIds, [DATASOURCE_ALL]) && datasourceList.length > 0 ? datasourceList[0]?.id : datasourceIds[0];
+  return _.isEqual(datasourceIds, [DATASOURCE_ALL]) && datasourceList.length > 0 ? datasourceList?.[0]?.id : datasourceIds?.[0];
 }
 
 const operateForm: React.FC<Props> = ({ type, detail = {} }) => {

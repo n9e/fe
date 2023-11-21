@@ -28,7 +28,7 @@ import { FormStateContext } from '@/pages/alertRules/Form';
 const DATASOURCE_ALL = 0;
 
 function getFirstDatasourceId(datasourceIds: number[] = [], datasourceList: { id: number }[] = []) {
-  return _.isEqual(datasourceIds, [DATASOURCE_ALL]) && datasourceList.length > 0 ? datasourceList[0]?.id : datasourceIds[0];
+  return _.isEqual(datasourceIds, [DATASOURCE_ALL]) && datasourceList.length > 0 ? datasourceList[0]?.id : datasourceIds?.[0];
 }
 
 export default function index(props: { datasourceCate: string; datasourceValue: number[] }) {
