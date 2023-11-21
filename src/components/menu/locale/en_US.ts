@@ -43,8 +43,8 @@ const en_US = {
   产品集成: 'Integration',
   服务日历: 'Service Calendar',
   采集模板: 'Collector Templates',
-  拨测管理: 'Ping',
-  拨测状态: 'Ping Status',
+  拨测管理: 'Probe',
+  拨测状态: 'Probe Status',
   Pingmesh配置: 'Pingmesh Config',
 };
 export default en_US;
