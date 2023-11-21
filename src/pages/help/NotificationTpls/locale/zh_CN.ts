@@ -11,5 +11,7 @@ const zh_CN = {
     1: '隐藏',
   },
   content_prompt: '内容有修改，是否放弃修改的内容？',
+  post_title: '新增通知模板',
+  update_title: '编辑通知模板',
 };
 export default zh_CN;

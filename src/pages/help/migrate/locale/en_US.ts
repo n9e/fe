@@ -8,5 +8,10 @@ const en_US = {
   <br />
   The following is a list of dashboards to be migrated. Click the migration button to start the migration.
   `,
+  settings: 'Migration Settings',
+  success_migrate: 'Migration Success',
+  datasource_variable: 'Data Source Variable Settings',
+  variable_name: 'Variable Name',
+  datasource_default: 'Data Source Default Value',
 };
 export default en_US;
