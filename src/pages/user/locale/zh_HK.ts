@@ -18,7 +18,7 @@ const zh_HK = {
   },
   business: {
     title: '業務組管理',
-    list: '業務組列表',
+    list: '業務組',
     search_placeholder: '業務名',
     team_search_placeholder: '搜尋團隊名稱',
     create: '創建業務組',
