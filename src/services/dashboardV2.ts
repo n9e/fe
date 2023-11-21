@@ -141,7 +141,7 @@ export const fetchHistoryRangeBatch = (data, signalKey) => {
     signals[signalKey].abort();
   }
   signals[signalKey] = controller;
-  return request(`/api/n9e/query-range-batch`, {
+  return request(`/api/${N9E_PATHNAME}/query-range-batch`, {
     method: RequestMethod.Post,
     data,
     signal,
@@ -158,7 +158,7 @@ export const fetchHistoryInstantBatch = (data, signalKey) => {
     signals[signalKey].abort();
   }
   signals[signalKey] = controller;
-  return request(`/api/n9e/query-instant-batch`, {
+  return request(`/api/${N9E_PATHNAME}/query-instant-batch`, {
     method: RequestMethod.Post,
     data,
     signal,

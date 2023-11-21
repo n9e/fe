@@ -10,6 +10,7 @@ import { completeBreakpoints, getSerieName } from './utils';
 import replaceFieldWithVariable from '../utils/replaceFieldWithVariable';
 import { replaceExpressionVars, getOptionsList } from '../../VariableConfig/constant';
 import { alphabet } from '../utils/getFirstUnusedLetter';
+import { N9E_PATHNAME } from '@/utils/constant';
 
 interface IOptions {
   id?: string; // panelId
@@ -157,7 +158,7 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
           resolveData.query.push({
             type: 'Query Range',
             request: {
-              url: '/api/n9e/query-range-batch',
+              url: `/api/${N9E_PATHNAME}/query-range-batch`,
               method: 'POST',
               data: { queries: batchQueryParams, datasource_id: datasourceValue },
             },
@@ -168,7 +169,7 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
           resolveData.query.push({
             type: 'Query',
             request: {
-              url: '/api/n9e/query-instant-batch',
+              url: `/api/${N9E_PATHNAME}/query-instant-batch`,
               method: 'POST',
               data: { queries: batchInstantParams, datasource_id: datasourceValue },
             },

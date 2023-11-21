@@ -7,7 +7,7 @@ import { IVariable } from '@/pages/dashboard/VariableConfig/definition';
 import replaceExpressionBracket from '@/pages/dashboard/Renderer/utils/replaceExpressionBracket';
 import { replaceExpressionVars } from '@/pages/dashboard/VariableConfig/constant';
 import { getSerieName } from '../utils';
-
+import { N9E_PATHNAME } from '@/utils/constant';
 interface IOptions {
   id?: string; // panelId
   dashboardId: string;
@@ -82,7 +82,7 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
         resolveData.query.push({
           type: 'Query Range',
           request: {
-            url: '/api/n9e/query-range-batch',
+            url: `/api/${N9E_PATHNAME}/query-range-batch`,
             method: 'POST',
             data: queryParmas,
           },
