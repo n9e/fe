@@ -50,7 +50,7 @@ export default function Bar(props: IProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const containerSize = useSize(containerRef);
   const chartRef = useRef<any>();
-  const { values, series, isPreview } = props;
+  const { values, series, themeMode, isPreview } = props;
   const { custom, options } = values;
   const { calc, xAxisField, yAxisField, colorField, barMaxWidth } = custom;
   const calculatedValues = getCalculatedValuesBySeries(
@@ -97,6 +97,12 @@ export default function Bar(props: IProps) {
       },
     );
     chartRef.current
+      .theme({
+        type: themeMode === 'dark' ? 'dark' : 'light',
+        view: {
+          viewFill: 'transparent',
+        },
+      })
       .interval()
       .data(data)
       .transform({ type: 'dodgeX' })
@@ -175,7 +181,7 @@ export default function Bar(props: IProps) {
     });
     chartRef.current = chart;
     render();
-  }, [JSON.stringify(options), JSON.stringify(custom), JSON.stringify(_.map(calculatedValues, 'metric'))]);
+  }, [themeMode, JSON.stringify(options), JSON.stringify(custom), JSON.stringify(_.map(calculatedValues, 'metric'))]);
 
   return <div className='renderer-heatmap-container' style={{ height: '100%' }} ref={containerRef} />;
 }
