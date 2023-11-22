@@ -175,7 +175,7 @@ export default function List(props: ListProps) {
     {
       title: t('common:table.update_by'),
       dataIndex: 'update_by',
-      width: 65,
+      width: 85,
     },
     {
       title: t('common:table.enabled'),

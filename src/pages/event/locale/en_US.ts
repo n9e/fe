@@ -61,7 +61,7 @@ const en_US = {
     prom_eval_interval: 'Execution frequency',
     prom_for_duration: 'Duration',
     notify_channels: 'Receiving Channels',
-    notify_groups_obj: 'Receiving Groups',
+    notify_groups_obj: 'Receiving Group',
     callbacks: 'Callbacks',
     runbook_url: 'Runbook URL',
     detail_url: 'Detail URL',
