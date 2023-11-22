@@ -45,6 +45,7 @@ import Text from './Text';
 import Gauge from './Gauge';
 import Iframe from './Iframe';
 import Heatmap from './Heatmap';
+import BarChart from './BarChart';
 import { IVariable } from '../../VariableConfig/definition';
 import Markdown from '../../Editor/Components/Markdown';
 import useQuery from '../datasource/useQuery';
@@ -123,6 +124,7 @@ function index(props: IProps) {
     gauge: () => <Gauge {...subProps} themeMode={themeMode} isPreview={isPreview} />,
     iframe: () => <Iframe {...subProps} time={time} />,
     heatmap: () => <Heatmap {...subProps} themeMode={themeMode} time={time} isPreview={isPreview} />,
+    barchart: () => <BarChart {...subProps} themeMode={themeMode} time={time} isPreview={isPreview} />,
   };
 
   return (

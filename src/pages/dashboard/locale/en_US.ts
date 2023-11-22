@@ -316,6 +316,12 @@ const en_US = {
         yAxisField: 'Y axis',
         valueField: 'Value field',
       },
+      barchart: {
+        xAxisField: 'X axis',
+        yAxisField: 'Y axis',
+        colorField: 'Color by field',
+        barMaxWidth: 'Bar max width',
+      },
     },
     inspect: {
       title: 'Inspect',
@@ -362,9 +368,10 @@ const en_US = {
   },
   visualizations: {
     timeseries: 'Time Series',
+    barchart: 'Bar Chart',
     stat: 'Stat',
     table: 'Table',
-    pie: 'Pie',
+    pie: 'Pie Chart',
     hexbin: 'Hexmap',
     barGauge: 'Bar Gauge',
     text: 'Text',

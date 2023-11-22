@@ -22,6 +22,9 @@ export const visualizations = [
     type: 'timeseries',
   },
   {
+    type: 'barchart',
+  },
+  {
     type: 'stat',
   },
   {
@@ -187,6 +190,10 @@ export const defaultCustomValuesMap = {
     calc: 'lastNotNull',
     valueField: 'Value',
     scheme: 'Blues',
+  },
+  barchart: {
+    calc: 'lastNotNull',
+    valueField: 'Value',
   },
 };
 
