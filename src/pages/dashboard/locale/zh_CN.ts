@@ -331,6 +331,12 @@ const zh_CN = {
         yAxisField: 'Y轴',
         valueField: '数值列',
       },
+      barchart: {
+        xAxisField: 'X轴',
+        yAxisField: 'Y轴',
+        colorField: '颜色字段',
+        barMaxWidth: '条形最大宽度',
+      },
     },
     inspect: {
       title: '排查',
@@ -377,6 +383,7 @@ const zh_CN = {
   },
   visualizations: {
     timeseries: '时序图',
+    barchart: '柱状图',
     stat: '指标值',
     table: '表格',
     pie: '饼图',

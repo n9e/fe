@@ -326,6 +326,12 @@ const zh_HK = {
         yAxisField: 'Y軸',
         valueField: '數值列',
       },
+      barchart: {
+        xAxisField: 'X轴',
+        yAxisField: 'Y轴',
+        colorField: '颜色字段',
+        barMaxWidth: '條形最大寬度',
+      },
     },
     inspect: {
       title: '排查',
@@ -372,6 +378,7 @@ const zh_HK = {
   },
   visualizations: {
     timeseries: '時序圖',
+    barchart: '柱狀圖',
     stat: '指標圖',
     table: '表格',
     pie: '餅圖',
