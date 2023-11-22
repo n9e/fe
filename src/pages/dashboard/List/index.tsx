@@ -143,7 +143,7 @@ export default function index() {
                 {
                   title: t('common:table.update_by'),
                   dataIndex: 'update_by',
-                  width: 60,
+                  width: 85,
                 },
                 {
                   title: t('public.name'),
