@@ -232,7 +232,7 @@ const Shield: React.FC = () => {
                   pathname: `/alert-subscribes/edit/${record.id}`,
                 }}
               >
-                {t('common:btn.modify')}
+                {t('common:btn.edit')}
               </Link>
               <div
                 className='table-operator-area-normal'

@@ -18,7 +18,7 @@ const en_US = {
   },
   business: {
     title: 'Business Group Management',
-    list: 'List',
+    list: 'Business Group',
     search_placeholder: 'Business Name',
     team_search_placeholder: 'Search Team Name',
     create: 'Create Business Group',

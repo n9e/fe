@@ -18,7 +18,7 @@ const en_US = {
   profile: {
     title: 'Profile',
     username: 'Username',
-    nickname: 'Nickname',
+    nickname: 'Alias',
     role: 'Role',
     email: 'Email',
     phone: 'Phone',

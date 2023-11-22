@@ -18,7 +18,7 @@ const zh_CN = {
   },
   business: {
     title: '业务组管理',
-    list: '业务组列表',
+    list: '业务组',
     search_placeholder: '业务名',
     team_search_placeholder: '搜索团队名称',
     create: '创建业务组',

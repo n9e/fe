@@ -146,7 +146,7 @@ const index = (_props: any) => {
           <span>
             <Link to={{ pathname: `/job-tpls/add/task`, search: `tpl=${record.id}` }}>{t('task.create')}</Link>
             <Divider type='vertical' />
-            <Link to={{ pathname: `/job-tpls/${record.id}/modify` }}>{t('common:btn.modify')}</Link>
+            <Link to={{ pathname: `/job-tpls/${record.id}/modify` }}>{t('common:btn.edit')}</Link>
             <Divider type='vertical' />
             <Link to={{ pathname: `/job-tpls/${record.id}/clone` }}>{t('common:btn.clone')}</Link>
             <Divider type='vertical' />
