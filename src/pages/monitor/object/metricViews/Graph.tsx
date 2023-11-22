@@ -367,13 +367,13 @@ export default function Graph(props: IProps) {
                 overlay={
                   <Menu onClick={(e) => setReduceFunc(e.key)} selectedKeys={[reduceFunc]}>
                     {_.map(calcsOptions, (val, key) => {
-                      return <Menu.Item key={key}>{i18n.language === 'en_US' ? key : val.name}</Menu.Item>;
+                      return <Menu.Item key={key}>{t(`dashboard:calcs.${key}`)}</Menu.Item>;
                     })}
                   </Menu>
                 }
               >
                 <a className='ant-dropdown-link' onClick={(e) => e.preventDefault()}>
-                  {i18n.language === 'en_US' ? reduceFunc : calcsOptions[reduceFunc]?.name} <DownOutlined />
+                  {t(`dashboard:calcs.${reduceFunc}`)} <DownOutlined />
                 </a>
               </Dropdown>
             </div>
