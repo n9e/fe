@@ -1,7 +1,7 @@
 const zh_HK = {
   title: '告警規則',
   search_placeholder: '搜尋名稱或標籤',
-  prod: '監控型別',
+  prod: '監控類型',
   severity: '級別',
   notify_groups: '告警接收組',
   basic_configs: '基礎配置',

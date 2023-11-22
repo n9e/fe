@@ -18,7 +18,7 @@ const zh_CN = {
   },
   business: {
     title: '业务组管理',
-    list: '业务组列表',
+    list: '业务组',
     search_placeholder: '业务名',
     team_search_placeholder: '搜索团队名称',
     create: '创建业务组',
@@ -48,6 +48,7 @@ const zh_CN = {
     team_name: '团队',
     perm_flag_0: '只读',
     perm_flag_1: '读写',
+    user_group_msg: '业务组团队不能为空',
   },
   disbale: '禁用',
   enable: '启用',

@@ -7,7 +7,7 @@ import { DATASOURCE_ALL } from '../constants';
 import * as alertUtils from 'plus:/parcels/AlertRule/utils';
 
 export function getFirstDatasourceId(datasourceIds = [], datasourceList: { id: number }[] = []) {
-  return _.isEqual(datasourceIds, [DATASOURCE_ALL]) && datasourceList.length > 0 ? datasourceList[0]?.id : datasourceIds[0];
+  return _.isEqual(datasourceIds, [DATASOURCE_ALL]) && datasourceList.length > 0 ? datasourceList?.[0]?.id : datasourceIds?.[0];
 }
 
 export const parseTimeToValueAndUnit = (value?: number) => {

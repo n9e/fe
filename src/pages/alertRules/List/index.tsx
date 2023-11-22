@@ -360,6 +360,7 @@ export default function List(props: ListProps) {
                 });
               }}
               allowClear
+              style={{ width: 300 }}
             />
           </Space>
         </Col>

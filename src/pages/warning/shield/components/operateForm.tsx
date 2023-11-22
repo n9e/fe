@@ -384,7 +384,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
                 <Col span={16}>{t('tag.value.label')}</Col>
               </Row>
               {fields.map((field, index) => (
-                <TagItem field={field} key={index} remove={remove} form={form} />
+                <TagItem count={fields.length} field={field} key={index} remove={remove} form={form} />
               ))}
             </>
           )}

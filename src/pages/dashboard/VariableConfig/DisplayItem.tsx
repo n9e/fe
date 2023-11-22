@@ -42,6 +42,7 @@ export default function DisplayItem(props: IProps) {
         <span className='ant-input-group-addon'>{label || name}</span>
         {type === 'query' || type === 'custom' ? (
           <Select
+            allowClear
             mode={multi ? 'tags' : undefined}
             style={{
               width: '180px',

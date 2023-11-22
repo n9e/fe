@@ -295,7 +295,7 @@ const ruleModal: React.FC<props> = ({ visible, ruleModalClose, subscribe }) => {
               </Option>
             ))}
           </Select>
-          <Input style={{ marginLeft: 10, width: '280px' }} onPressEnter={onSearchQuery} prefix={<SearchOutlined />} placeholder={t('规则名称、附加标签')} />
+          <Input style={{ marginLeft: 10, width: '280px' }} onPressEnter={onSearchQuery} prefix={<SearchOutlined />} placeholder={t('alertRules:search_placeholder')} />
         </div>
         <div className='rule_modal_table'>
           <Table size='small' rowKey='id' pagination={pagination} dataSource={currentStrategyData} columns={columns} />

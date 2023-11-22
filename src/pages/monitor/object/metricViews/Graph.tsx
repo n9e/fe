@@ -62,7 +62,7 @@ export default function Graph(props: IProps) {
     sharedSortDirection: 'desc',
     legend: true,
     unit: 'none',
-    colorRange: colors[0].value,
+    colorRange: colors[1].value,
     reverseColorOrder: false,
     colorDomainAuto: true,
     colorDomain: [],
@@ -362,7 +362,7 @@ export default function Graph(props: IProps) {
           ) : null}
           {chartType === 'hexbin' && (
             <div>
-              {t('graph.calc')}：：
+              {t('graph.calc')}：
               <Dropdown
                 overlay={
                   <Menu onClick={(e) => setReduceFunc(e.key)} selectedKeys={[reduceFunc]}>

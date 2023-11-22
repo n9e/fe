@@ -36,7 +36,7 @@ const zh_HK = {
   for_duration: '訂閱事件持續時長超過 (秒)',
   webhooks: '新回撥地址',
   webhooks_msg: '回撥地址不能為空',
-  prod: '監控型別',
+  prod: '監控類型',
   subscribe_btn: '訂閱',
   basic_configs: '基礎配置',
   severities: '訂閱事件等級',

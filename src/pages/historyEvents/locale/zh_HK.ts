@@ -2,7 +2,7 @@ const zh_HK = {
   title: '歷史告警',
   rule_name: '規則標題 & 事件標籤',
   search_placeholder: '模糊搜尋規則和標籤 (多個關鍵詞請用空格分隔)',
-  last_eval_time: '計算時間',
+  last_eval_time: '觸發時間',
   hours: {
     '6': '最近 6 小時',
     '12': '最近 12 小時',
@@ -19,7 +19,7 @@ const zh_HK = {
   eventType: '事件類別',
   export: '匯出',
   export_failed: '匯出失敗',
-  prod: '監控型別',
+  prod: '監控類型',
   rule_prod: {
     firemap: '滅火圖',
     northstar: '北極星',

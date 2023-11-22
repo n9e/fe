@@ -1,5 +1,5 @@
 const zh_HK = {
-  title: '許可權管理',
+  title: '權限管理',
   roles: '角色列表',
   role_add: '新增角色',
   edit_title: {

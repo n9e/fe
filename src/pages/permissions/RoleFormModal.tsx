@@ -44,7 +44,17 @@ function CateFormModal(props: ModalWrapProps & IProps) {
       }}
     >
       <Form form={form} layout='vertical'>
-        <Form.Item label={t('common:table.name')} name='name' required initialValue={initialValues?.name}>
+        <Form.Item
+          label={t('common:table.name')}
+          name='name'
+          rules={[
+            {
+              required: true,
+            },
+          ]}
+          required
+          initialValue={initialValues?.name}
+        >
           <Input />
         </Form.Item>
         <Form.Item label={t('common:table.note')} name='note' initialValue={initialValues?.note}>

@@ -106,13 +106,13 @@ export default function Channels() {
                           });
                           putNotifyContacts(newData).then(() => {
                             setData(newData);
-                            message.success(t('common:success.modify'));
+                            message.success(t('common:success.edit'));
                           });
                         },
                       });
                     }}
                   >
-                    {t('common:btn.modify')}
+                    {t('common:btn.edit')}
                   </a>
                   {!reocrd.built_in && (
                     <Popconfirm
