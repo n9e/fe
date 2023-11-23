@@ -36,7 +36,7 @@ export default function index(props: IProps) {
   return (
     <Panel header={t('panel.standardOptions.title')}>
       <>
-        <Form.Item shouldUpdate>
+        <Form.Item shouldUpdate noStyle>
           {({ getFieldValue }) => {
             const unit = getFieldValue([...namePrefix, 'util']) || '';
             return (

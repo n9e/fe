@@ -21,7 +21,6 @@ html {
   color: #333752;
   background: #f9f9f9;
   font-family: @font-family;
-  // min-width: 1180px;
   .ant-menu-inline-collapsed {
     width: 50px;
   }
@@ -84,6 +83,10 @@ html {
         }
       }
     }
+  }
+
+  .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+    z-index: unset; // 修复 hover codemirror 后莫名其妙的会透出问题
   }
 }
 
@@ -321,19 +324,9 @@ input::placeholder {
 }
 
 .edit_area_background {
-  // background-color: #f6f6f6;
   border: 1px solid #f6f6f6;
   border-radius: 4px;
   padding: 8px;
-}
-
-::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
-}
-::-webkit-scrollbar-thumb {
-  border-radius: 4px;
-  background: rgba(0, 0, 0, 0.16);
 }
 
 .license-off {

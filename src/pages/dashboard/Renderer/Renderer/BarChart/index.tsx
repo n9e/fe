@@ -21,6 +21,7 @@ import { corelib, extend, Runtime } from '@antv/g2';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { IPanel } from '../../../types';
 import getCalculatedValuesBySeries from '../../utils/getCalculatedValuesBySeries';
+import valueFormatter from '../../utils/valueFormatter';
 import { useGlobalState } from '../../../globalState';
 import './style.less';
 
@@ -45,13 +46,13 @@ const getColumnsKeys = (data: any[]) => {
   return _.uniq(keys);
 };
 
-export default function Heatmap(props: IProps) {
+export default function Bar(props: IProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const containerSize = useSize(containerRef);
   const chartRef = useRef<any>();
   const { values, series, themeMode, isPreview } = props;
   const { custom, options } = values;
-  const { calc, xAxisField, yAxisField, valueField, scheme } = custom;
+  const { calc, xAxisField, yAxisField, colorField, barMaxWidth } = custom;
   const calculatedValues = getCalculatedValuesBySeries(
     series,
     calc,
@@ -66,7 +67,7 @@ export default function Heatmap(props: IProps) {
   const render = () => {
     if (!chartRef.current) return;
     let data: any[] = [];
-    if (valueField !== 'Value') {
+    if (yAxisField !== 'Value') {
       data = _.map(calculatedValues, 'metric');
     } else {
       data = _.map(calculatedValues, (item) => {
@@ -76,6 +77,25 @@ export default function Heatmap(props: IProps) {
         };
       });
     }
+    data = _.map(
+      _.groupBy(data, (item) => {
+        return item[xAxisField] + item[colorField];
+      }),
+      (items) => {
+        if (items.length === 1) {
+          return items[0];
+        } else {
+          const yAxisFieldValues = _.map(items, (item) => {
+            return item[yAxisField];
+          });
+          const yAxisFieldValue = _.sum(yAxisFieldValues);
+          return {
+            ...(items[0] || {}),
+            [yAxisField]: yAxisFieldValue,
+          };
+        }
+      },
+    );
     chartRef.current
       .theme({
         type: themeMode === 'dark' ? 'dark' : 'light',
@@ -83,36 +103,48 @@ export default function Heatmap(props: IProps) {
           viewFill: 'transparent',
         },
       })
-      .cell()
+      .interval()
       .data(data)
-      .transform({ type: 'group', color: 'max' })
+      .transform({ type: 'dodgeX' })
       .encode('x', xAxisField)
       .encode('y', yAxisField)
-      .encode('color', valueField)
-      .scale('color', { palette: scheme || 'Blues' })
-      .label({
-        text: valueField,
-        position: 'inside',
-        transform: [
-          {
-            type: 'contrastReverse',
-          },
-        ],
-      })
+      .encode('color', colorField)
       .axis('x', {
         title: false,
       })
       .axis('y', {
         title: false,
-      })
-      .style('inset', 0.5)
-      .legend('color', {
-        title: false,
-        layout: {
-          justifyContent: 'flex-end',
+        labelFormatter: (d) => {
+          const valueObj = valueFormatter(
+            {
+              unit: options?.standardOptions?.util,
+              decimals: options?.standardOptions?.decimals,
+              dateFormat: options?.standardOptions?.dateFormat,
+            },
+            d,
+          );
+          return valueObj.text;
         },
       })
-      .animate('enter', { type: 'fadeIn' });
+      .tooltip({
+        items: [
+          {
+            channel: 'y',
+            valueFormatter: (d) => {
+              const valueObj = valueFormatter(
+                {
+                  unit: options?.standardOptions?.util,
+                  decimals: options?.standardOptions?.decimals,
+                  dateFormat: options?.standardOptions?.dateFormat,
+                },
+                d,
+              );
+              return valueObj.text;
+            },
+          },
+        ],
+      })
+      .style('maxWidth', barMaxWidth || undefined);
 
     chartRef.current.render();
   };
@@ -149,7 +181,7 @@ export default function Heatmap(props: IProps) {
     });
     chartRef.current = chart;
     render();
-  }, [themeMode, JSON.stringify(custom), JSON.stringify(_.map(calculatedValues, 'metric'))]);
+  }, [themeMode, JSON.stringify(options), JSON.stringify(custom), JSON.stringify(_.map(calculatedValues, 'metric'))]);
 
   return <div className='renderer-heatmap-container' style={{ height: '100%' }} ref={containerRef} />;
 }
