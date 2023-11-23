@@ -73,7 +73,7 @@ const Modify = (props: any) => {
       }
     >
       <div style={{ padding: 10 }}>
-        <Card title={t('common:btn.modify')}>
+        <Card title={t('common:btn.edit')}>
           <Spin spinning={loading}>
             {data.title ? (
               <TplForm

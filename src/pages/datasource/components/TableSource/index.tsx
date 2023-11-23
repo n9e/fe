@@ -189,7 +189,7 @@ const TableSource = (props: IPropsType) => {
               setAuth({ visible: true, name: record.name, type: record.plugin_type, dataSourceId: record.id });
             }}
           >
-            {t('common:btn.modify')}
+            {t('common:btn.edit')}
           </Button>
         ) : (
           t('auth.not-support')

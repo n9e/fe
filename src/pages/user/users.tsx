@@ -86,7 +86,7 @@ const Resource: React.FC = () => {
       render: (text: string, record) => (
         <>
           <Button className='oper-name' type='link' onClick={() => handleClick(ActionType.EditUser, record.id)}>
-            {t('common:btn.modify')}
+            {t('common:btn.edit')}
           </Button>
           <Button className='oper-name' type='link' onClick={() => handleClick(ActionType.Reset, record.id)}>
             {t('account:password.reset')}
