@@ -23,6 +23,7 @@ export default function QueryBuilder(props: Props) {
   const [indexOptions, setIndexOptions] = useState<any[]>([]);
   const [indexSearch, setIndexSearch] = useState('');
   const [dateFields, setDateFields] = useState<Field[]>([]);
+  const indexValue = Form.useWatch(['query', 'index']);
   const { run: onIndexChange } = useDebounceFn(
     (val) => {
       if (datasourceValue && val) {
@@ -58,6 +59,12 @@ export default function QueryBuilder(props: Props) {
     onIndexChange(params.get('index_name'));
   }, []);
 
+  useEffect(() => {
+    if (indexValue) {
+      onIndexChange(indexValue);
+    }
+  }, [indexValue]);
+
   return (
     <div style={{ display: 'flex', gap: 8 }}>
       <div style={{ width: 290, flexShrink: 0 }}>
@@ -91,9 +98,6 @@ export default function QueryBuilder(props: Props) {
               })}
               onSearch={(val) => {
                 setIndexSearch(val);
-              }}
-              onChange={(val) => {
-                onIndexChange(val);
               }}
             />
           </Form.Item>
