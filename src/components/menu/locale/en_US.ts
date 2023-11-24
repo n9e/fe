@@ -35,7 +35,7 @@ const en_US = {
   变量设置: 'Variable Configs',
   单点登录: 'SSO',
   通知模板: 'Template',
-  通知设置: 'Settings',
+  通知设置: 'Notification',
   采集配置: 'Collectors',
   网络设备: 'Network Devices',
   仪表盘迁移: 'Dashboard Migration',
