@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React from 'react';
+import React, { useContext } from 'react';
 import { Input, Button, Dropdown, Modal, Space, message } from 'antd';
 import { SearchOutlined, DownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
@@ -22,9 +22,9 @@ import { removeDashboards } from '@/services/dashboardV2';
 import RefreshIcon from '@/components/RefreshIcon';
 import FormModal from './FormModal';
 import Import from './Import';
+import { CommonStateContext } from '@/App';
 
 interface IProps {
-  busiId: number;
   selectRowKeys: any[];
   refreshList: () => void;
   searchVal: string;
@@ -32,8 +32,9 @@ interface IProps {
 }
 
 export default function Header(props: IProps) {
+  const { businessGroupId, businessGroupIsLeaf } = useContext(CommonStateContext);
   const { t } = useTranslation('dashboard');
-  const { busiId, selectRowKeys, refreshList, searchVal, onSearchChange } = props;
+  const { selectRowKeys, refreshList, searchVal, onSearchChange } = props;
 
   return (
     <>
@@ -59,73 +60,77 @@ export default function Header(props: IProps) {
             placeholder={t('search_placeholder')}
           />
         </Space>
-        <Space>
-          <Button
-            type='primary'
-            onClick={() => {
-              FormModal({
-                action: 'create',
-                busiId,
-                onOk: refreshList,
-              });
-            }}
-          >
-            {t('common:btn.add')}
-          </Button>
-          <div className={'table-more-options'}>
-            <Dropdown
-              overlay={
-                <ul className='ant-dropdown-menu'>
-                  <li
-                    className='ant-dropdown-menu-item'
-                    onClick={() => {
-                      Import({
-                        busiId,
-                        type: 'Import',
-                        refreshList,
-                      });
-                    }}
-                  >
-                    <span>{t('common:btn.batch_import')}</span>
-                  </li>
-                  <li
-                    className='ant-dropdown-menu-item'
-                    onClick={() => {
-                      if (selectRowKeys.length) {
-                        Modal.confirm({
-                          title: t('common:confirm.delete'),
-                          onOk: async () => {
-                            removeDashboards(selectRowKeys).then(() => {
-                              message.success(t('common:success.delete'));
-                            });
-                            // TODO: 删除完后立马刷新数据有时候不是实时的，这里暂时间隔0.5s后再刷新列表
-                            setTimeout(() => {
-                              refreshList();
-                            }, 500);
-                          },
-                        });
-                      } else {
-                        message.warning(t('batch.noSelected'));
-                      }
-                    }}
-                  >
-                    <span>{t('common:btn.batch_delete')}</span>
-                  </li>
-                </ul>
-              }
-              trigger={['click']}
+        {businessGroupIsLeaf && (
+          <Space>
+            <Button
+              type='primary'
+              onClick={() => {
+                FormModal({
+                  action: 'create',
+                  busiId: businessGroupId,
+                  onOk: refreshList,
+                });
+              }}
             >
-              <Button onClick={(e) => e.stopPropagation()}>
-                {t('common:btn.more')}
-                <DownOutlined
-                  style={{
-                    marginLeft: 2,
-                  }}
-                />
-              </Button>
-            </Dropdown>
-          </div>
-        </Space>
+              {t('common:btn.add')}
+            </Button>
+            <div className={'table-more-options'}>
+              <Dropdown
+                overlay={
+                  <ul className='ant-dropdown-menu'>
+                    <li
+                      className='ant-dropdown-menu-item'
+                      onClick={() => {
+                        if (businessGroupId) {
+                          Import({
+                            busiId: businessGroupId,
+                            type: 'Import',
+                            refreshList,
+                          });
+                        }
+                      }}
+                    >
+                      <span>{t('common:btn.batch_import')}</span>
+                    </li>
+                    <li
+                      className='ant-dropdown-menu-item'
+                      onClick={() => {
+                        if (selectRowKeys.length) {
+                          Modal.confirm({
+                            title: t('common:confirm.delete'),
+                            onOk: async () => {
+                              removeDashboards(selectRowKeys).then(() => {
+                                message.success(t('common:success.delete'));
+                              });
+                              // TODO: 删除完后立马刷新数据有时候不是实时的，这里暂时间隔0.5s后再刷新列表
+                              setTimeout(() => {
+                                refreshList();
+                              }, 500);
+                            },
+                          });
+                        } else {
+                          message.warning(t('batch.noSelected'));
+                        }
+                      }}
+                    >
+                      <span>{t('common:btn.batch_delete')}</span>
+                    </li>
+                  </ul>
+                }
+                trigger={['click']}
+              >
+                <Button onClick={(e) => e.stopPropagation()}>
+                  {t('common:btn.more')}
+                  <DownOutlined
+                    style={{
+                      marginLeft: 2,
+                    }}
+                  />
+                </Button>
+              </Dropdown>
+            </div>
+          </Space>
+        )}
       </div>
     </>
   );

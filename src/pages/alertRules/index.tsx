@@ -15,12 +15,10 @@
  *
  */
 import React, { useContext } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import queryString from 'query-string';
 import { SettingOutlined } from '@ant-design/icons';
 import PageLayout from '@/components/pageLayout';
-import { BusinessGroup } from '@/pages/targets';
+import BusinessGroup from '@/components/BusinessGroup';
 import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
 import { CommonStateContext } from '@/App';
 import List from './List';
@@ -32,24 +30,14 @@ import './style.less';
 export { Add, Edit };
 
 export default function index() {
-  const commonState = useContext(CommonStateContext);
+  const { businessGroup } = useContext(CommonStateContext);
   const { t } = useTranslation('alertRules');
-  const { search } = useLocation();
-  const history = useHistory();
-  const { id } = queryString.parse(search);
-  const bgid = id ? Number(id) : commonState.curBusiId;
 
   return (
     <PageLayout title={t('title')} icon={<SettingOutlined />}>
       <div className='alert-rules-container'>
-        <BusinessGroup
-          curBusiId={bgid}
-          setCurBusiId={(id) => {
-            history.push(`/alert-rules?id=${id}`);
-            commonState.setCurBusiId(id);
-          }}
-        />
-        {bgid ? <List bgid={bgid} /> : <BlankBusinessPlaceholder text='告警规则' />}
+        <BusinessGroup />
+        {businessGroup.ids ? <List /> : <BlankBusinessPlaceholder text={t('title')} />}
       </div>
     </PageLayout>
   );

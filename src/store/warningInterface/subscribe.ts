@@ -25,7 +25,7 @@ export interface subscribeItem {
   etime: number;
   btime: number;
   id: number;
-  group_id?: number;
+  group_id: number;
   datasource_ids: number[];
   redefine_severity?: number;
   redefine_channels?: number;

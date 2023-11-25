@@ -23,6 +23,13 @@ export const getShieldList = function (params: { id: number }) {
   });
 };
 
+export const getBusiGroupsAlertMutes = function (gids: string) {
+  return request('/api/n9e/busi-groups/alert-mutes', {
+    method: RequestMethod.Get,
+    params: { gids },
+  });
+};
+
 export const addShield = function (data: any, busiId: number) {
   return request(`/api/n9e/busi-group/${busiId}/alert-mutes`, {
     method: RequestMethod.Post,

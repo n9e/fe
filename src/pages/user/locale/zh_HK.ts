@@ -29,8 +29,8 @@ const zh_HK = {
     empty: '業務組（監控機器、監控儀表盤、告警規則、自愈腳本都要歸屬某個業務組）為空，請先',
     name: '業務組名稱',
     name_tip: `
-      通過中劃線分隔後會渲染成樹結構 <1 />
-      如：redis-監控 和 redis-登錄 將顯示成如下  <1 />
+      通過 {{separator}} 分隔後會渲染成樹結構 <1 />
+      如：redis{{separator}}監控 和 redis{{separator}}登錄 將顯示成如下  <1 />
       redis <1 />
       - 監控 <1 />
       - 登錄 <1 />
