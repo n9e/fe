@@ -17,7 +17,6 @@ export default function index() {
 
   useEffect(() => {
     getN9eConfig('site_info').then((res) => {
-      console.log(res);
       if (res) {
         try {
           const result = JSON.parse(res);

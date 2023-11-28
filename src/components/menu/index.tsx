@@ -222,10 +222,6 @@ const getMenuList = (t) => {
           label: t('告警引擎'),
         },
         {
-          key: '/site-settings',
-          label: t('siteInfo:title'),
-        },
-        {
           key: '/help/migrate',
           label: t('仪表盘迁移'),
         },
