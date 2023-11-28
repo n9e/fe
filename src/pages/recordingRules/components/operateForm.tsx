@@ -33,12 +33,13 @@ const operateForm: React.FC<Props> = ({ type, detail = {} }) => {
   const { t } = useTranslation('recordingRules');
   const history = useHistory(); // 创建的时候默认选中的值
   const [form] = Form.useForm();
-  const { groupedDatasourceList, curBusiId } = useContext(CommonStateContext);
+  const { groupedDatasourceList, businessGroup } = useContext(CommonStateContext);
   const [refresh, setRefresh] = useState(true);
   const params: any = useParams();
   const strategyId = useMemo(() => {
     return params.id;
   }, [params]);
+  const curBusiId = detail.group_id || businessGroup.id!;
 
   // 渲染标签
   function tagRender(content) {

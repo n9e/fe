@@ -27,6 +27,7 @@ export interface Dashboard {
   update_by: string;
   configs: IDashboardConfig;
   public?: number;
+  group_id: number;
 }
 
 export interface Group {

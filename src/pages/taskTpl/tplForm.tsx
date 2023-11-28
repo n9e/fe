@@ -45,6 +45,9 @@ const TplForm = (props) => {
   return (
     <div className='job-tpl-form'>
       <Form onFinish={handleSubmit} form={form} layout='vertical'>
+        <Form.Item name='group_id' initialValue={initialValues.group_id} hidden>
+          <div />
+        </Form.Item>
         <FormItem
           label={
             <>

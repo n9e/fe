@@ -230,6 +230,7 @@ const Event: React.FC = () => {
                 bgid: val,
               });
             }}
+            dropdownMatchSelectWidth={false}
           >
             {_.map(busiGroups, (item) => {
               return <Select.Option value={item.id}>{item.name}</Select.Option>;

@@ -41,7 +41,7 @@ interface ITargetProps {
 }
 
 interface IProps {
-  curBusiId: number;
+  gids?: string;
   selectedIdents: string[];
   setSelectedIdents: (selectedIdents: string[]) => void;
   selectedRowKeys: any[];
@@ -59,7 +59,7 @@ const downtimeOptions = [1, 2, 3, 5, 10, 30];
 
 export default function List(props: IProps) {
   const { t } = useTranslation('targets');
-  const { curBusiId, selectedIdents, setSelectedIdents, selectedRowKeys, setSelectedRowKeys, refreshFlag, setRefreshFlag, setOperateType } = props;
+  const { gids, selectedIdents, setSelectedIdents, selectedRowKeys, setSelectedRowKeys, refreshFlag, setRefreshFlag, setOperateType } = props;
   const isAddTagToQueryInput = useRef(false);
   const [searchVal, setSearchVal] = useState('');
   const [tableQueryContent, setTableQueryContent] = useState<string>('');
@@ -382,7 +382,7 @@ export default function List(props: IProps) {
   const featchData = ({ current, pageSize }: { current: number; pageSize: number }): Promise<any> => {
     const query = {
       query: tableQueryContent,
-      bgid: curBusiId,
+      gids: gids,
       limit: pageSize,
       p: current,
       downtime,
@@ -409,7 +409,7 @@ export default function List(props: IProps) {
       current: 1,
       pageSize: tableProps.pagination.pageSize,
     });
-  }, [tableQueryContent, curBusiId, refreshFlag, downtime]);
+  }, [tableQueryContent, gids, refreshFlag, downtime]);
 
   return (
     <div>

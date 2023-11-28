@@ -8,6 +8,13 @@ export const getRecordingRuleSubList = function (busiId: number) {
   });
 };
 
+export const getBusiGroupsRecordingRules = function (gids) {
+  return request('/api/n9e/busi-groups/recording-rules', {
+    method: RequestMethod.Get,
+    params: { gids },
+  });
+};
+
 export const addOrEditRecordingRule = function (data: any[], busiId: number, method: string) {
   return request(`/api/n9e/busi-group/${busiId}/recording-rules`, {
     method: method,
