@@ -17,13 +17,13 @@ export function getChildrenIds(node: TreeNode) {
     return item.id;
   });
 }
-export function normalizeTreeData(treeData: TreeNode[]) {
+export function normalizeTreeData(treeData: TreeNode[], level = 1) {
   return _.map(treeData, (node) => {
     if (node.children) {
       return {
         ...node,
-        key: _.join(_.concat('group', _.flattenDeep(getChildrenIds(node))), ','),
-        children: normalizeTreeData(node.children),
+        key: _.join(_.concat(_.fill(Array(level), 'group'), _.flattenDeep(getChildrenIds(node))), ','),
+        children: normalizeTreeData(node.children, level + 1),
       };
     }
     return {
@@ -98,7 +98,7 @@ export function getCollapsedKeys(treeData: any[], collapsedKeys: string[], busin
 
 export function getCleanBusinessGroupIds(businessGroupIds?: string) {
   if (!businessGroupIds) return undefined;
-  return _.replace(businessGroupIds, /^group,/, '');
+  return _.replace(businessGroupIds, /group,/, '');
 }
 
 export function getDefaultBusinessGroupKey() {
