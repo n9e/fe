@@ -25,7 +25,8 @@ import PageLayout from '@/components/pageLayout';
 import { getBusiGroups } from '@/services/common';
 import { CommonStateContext } from '@/App';
 import List from './List';
-import BusinessGroup from '@/components/BusinessGroup';
+import BusinessGroup from './BusinessGroup';
+import BusinessGroup2 from '@/components/BusinessGroup';
 import './locale';
 import './index.less';
 
@@ -338,7 +339,7 @@ const OperationModal: React.FC<OperateionModalProps> = ({ operateType, setOperat
 
 const Targets: React.FC = () => {
   const { t } = useTranslation('targets');
-  const { businessGroup } = useContext(CommonStateContext);
+  const { businessGroup, businessGroupOnChange } = useContext(CommonStateContext);
   const [gids, setGids] = useState<string | undefined>(businessGroup.ids);
   const [operateType, setOperateType] = useState<OperateType>(OperateType.None);
   const [selectedRowKeys, setSelectedRowKeys] = useState<(string | number)[]>([]);
@@ -352,7 +353,8 @@ const Targets: React.FC = () => {
   return (
     <PageLayout icon={<DatabaseOutlined />} title={t('title')}>
       <div className='object-manage-page-content'>
-        <BusinessGroup
+        <BusinessGroup2
+          showSelected={gids !== '0' && gids !== undefined}
           renderHeadExtra={() => {
             return (
               <div>
@@ -371,10 +373,10 @@ const Targets: React.FC = () => {
                 <div
                   className={classNames({
                     'n9e-biz-group-item': true,
-                    active: gids === '-1',
+                    active: gids === undefined,
                   })}
                   onClick={() => {
-                    setGids('-1');
+                    setGids(undefined);
                   }}
                 >
                   {t('all_targets')}

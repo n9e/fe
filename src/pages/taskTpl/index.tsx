@@ -35,7 +35,7 @@ import { CommonStateContext } from '@/App';
 
 function getTableData(options: any, gids: string | undefined, query: string) {
   if (gids) {
-    return request(`/api/n9e/busi-groups/task-tpls?gids=${gids}limit=${options.pageSize}&p=${options.current}&query=${query}`).then((res) => {
+    return request(`/api/n9e/busi-groups/task-tpls?gids=${gids}&limit=${options.pageSize}&p=${options.current}&query=${query}`).then((res) => {
       return { list: res.dat.list, total: res.dat.total };
     });
   }
@@ -47,7 +47,6 @@ const index = (_props: any) => {
   const searchRef = useRef<any>(null);
   const [query, setQuery] = useState('');
   const { busiGroups, businessGroup } = useContext(CommonStateContext);
-  // const busiId = curBusiId;
   const [selectedIds, setSelectedIds] = useState([] as any[]);
   const { tableProps, refresh } = useAntdTable<any, any>((options) => getTableData(options, businessGroup.ids, query), { refreshDeps: [businessGroup.ids, query] });
 

@@ -25,7 +25,7 @@ import { getTeamInfoList, getTeamInfo, deleteTeam, deleteMember } from '@/servic
 import { User, Team, UserType, ActionType, TeamInfo } from '@/store/manageInterface';
 import { ColumnsType } from 'antd/lib/table';
 import { useTranslation } from 'react-i18next';
-import { listToTree2 } from '@/pages/targets/BusinessGroup';
+import { listToTree } from '@/components/BusinessGroup';
 import { CommonStateContext } from '@/App';
 import './index.less';
 import './locale';
@@ -251,7 +251,7 @@ const Resource: React.FC = () => {
               />
             </div>
             {siteInfo?.teamDisplayMode == 'list' ? (
-              <>
+              <div className='radio-list' style={{ overflowY: 'auto' }}>
                 <List
                   style={{
                     marginBottom: '12px',
@@ -266,9 +266,9 @@ const Resource: React.FC = () => {
                     </List.Item>
                   )}
                 />
-              </>
+              </div>
             ) : (
-              <>
+              <div className='radio-list' style={{ overflowY: 'auto' }}>
                 {!_.isEmpty(teamList) && (
                   <Tree
                     rootClassName='business-group-tree'
@@ -277,21 +277,20 @@ const Resource: React.FC = () => {
                     }}
                     defaultExpandParent={false}
                     defaultExpandedKeys={getLocaleExpandedKeys()}
-                    selectedKeys={[teamId]}
+                    selectedKeys={teamId ? [_.toString(teamId)] : []}
                     blockNode
                     switcherIcon={<DownOutlined />}
                     onSelect={(_selectedKeys, e: any) => {
                       const nodeId = e.node.id;
-                      localStorage.setItem('curBusiId', _.toString(nodeId));
                       setTeamId(nodeId as any);
                     }}
                     onExpand={(expandedKeys: string[]) => {
                       setLocaleExpandedKeys(expandedKeys);
                     }}
-                    treeData={listToTree2(teamList as any, siteInfo?.teamSeparator)}
+                    treeData={listToTree(teamList as any, siteInfo?.teamSeparator)}
                   />
                 )}
-              </>
+              </div>
             )}
           </div>
           {teamList.length > 0 ? (

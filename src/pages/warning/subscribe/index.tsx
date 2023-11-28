@@ -302,7 +302,7 @@ const Shield: React.FC = () => {
         return item?.name?.indexOf(query) > -1;
       });
       return (
-        (item?.rule_name?.indexOf(query) > -1 || !!tagFind || !!groupFind) &&
+        (item?.rule_name?.indexOf(query) > -1 || item?.note?.indexOf(query) > -1 || !!tagFind || !!groupFind) &&
         (_.some(item.datasource_ids, (id) => {
           if (id === 0) return true;
           return _.includes(datasourceIds, id);
@@ -316,7 +316,6 @@ const Shield: React.FC = () => {
 
   const getList = async () => {
     if (businessGroup.ids) {
-      console.log('businessGroup', businessGroup);
       setLoading(true);
       const { success, dat } = await getBusiGroupsAlertSubscribes(businessGroup.ids);
       if (success) {

@@ -34,6 +34,7 @@ export interface subscribeItem {
   new_channels: string;
   prod: string;
   severities?: number[];
+  note: string;
 }
 
 interface IuserItem {

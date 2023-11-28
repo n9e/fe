@@ -28,7 +28,7 @@ import { CommonStateContext } from '@/App';
 import { ColumnsType } from 'antd/lib/table';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@/utils';
-import { listToTree2, getCollapsedKeys, getLocaleExpandedKeys, setLocaleExpandedKeys } from '@/pages/targets/BusinessGroup';
+import { listToTree, getCollapsedKeys, getLocaleExpandedKeys, setLocaleExpandedKeys } from '@/components/BusinessGroup';
 import '@/components/BlankBusinessPlaceholder/index.less';
 import './index.less';
 
@@ -205,7 +205,6 @@ const Resource: React.FC = () => {
                       key={item.id}
                       onClick={() => {
                         if (item.id !== teamId) {
-                          localStorage.setItem('curBusiId', _.toString(item.id));
                           setTeamId(item.id as any);
                         }
                       }}
@@ -224,19 +223,18 @@ const Resource: React.FC = () => {
                       showLeafIcon: false,
                     }}
                     defaultExpandParent={false}
-                    defaultExpandedKeys={getCollapsedKeys(listToTree2(teamList as any, siteInfo?.businessGroupSeparator), getLocaleExpandedKeys(), teamId as any)}
-                    selectedKeys={[teamId]}
+                    defaultExpandedKeys={getCollapsedKeys(listToTree(teamList as any, siteInfo?.businessGroupSeparator), getLocaleExpandedKeys(), teamId as any)}
+                    selectedKeys={teamId ? [_.toString(teamId)] : []}
                     blockNode
                     switcherIcon={<DownOutlined />}
                     onSelect={(_selectedKeys, e: any) => {
                       const nodeId = e.node.id;
-                      localStorage.setItem('curBusiId', _.toString(nodeId));
                       setTeamId(nodeId as any);
                     }}
                     onExpand={(expandedKeys: string[]) => {
                       setLocaleExpandedKeys(expandedKeys);
                     }}
-                    treeData={listToTree2(teamList as any, siteInfo?.businessGroupSeparator)}
+                    treeData={listToTree(teamList as any, siteInfo?.businessGroupSeparator)}
                   />
                 )}
               </div>

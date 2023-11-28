@@ -32,7 +32,7 @@ interface IProps {
 }
 
 export default function Header(props: IProps) {
-  const { businessGroupId, businessGroupIsLeaf } = useContext(CommonStateContext);
+  const { businessGroup } = useContext(CommonStateContext);
   const { t } = useTranslation('dashboard');
   const { selectRowKeys, refreshList, searchVal, onSearchChange } = props;
 
@@ -60,14 +60,14 @@ export default function Header(props: IProps) {
             placeholder={t('search_placeholder')}
           />
         </Space>
-        {businessGroupIsLeaf && (
+        {businessGroup.isLeaf && (
           <Space>
             <Button
               type='primary'
               onClick={() => {
                 FormModal({
                   action: 'create',
-                  busiId: businessGroupId,
+                  busiId: businessGroup.id,
                   onOk: refreshList,
                 });
               }}
@@ -81,9 +81,9 @@ export default function Header(props: IProps) {
                     <li
                       className='ant-dropdown-menu-item'
                       onClick={() => {
-                        if (businessGroupId) {
+                        if (businessGroup.id) {
                           Import({
-                            busiId: businessGroupId,
+                            busiId: businessGroup.id,
                             type: 'Import',
                             refreshList,
                           });

@@ -373,20 +373,22 @@ export default function List(props: ListProps) {
             />
           </Space>
         </Col>
-        <Col>
-          <Space>
-            <Button
-              type='primary'
-              onClick={() => {
-                history.push(`/alert-rules/add/${businessGroup.id}`);
-              }}
-              className='strategy-table-search-right-create'
-            >
-              {t('common:btn.add')}
-            </Button>
-            {businessGroup.id && <MoreOperations bgid={businessGroup.id} selectRowKeys={selectRowKeys} selectedRows={selectedRows} getAlertRules={fetchData} />}
-          </Space>
-        </Col>
+        {businessGroup.isLeaf && (
+          <Col>
+            <Space>
+              <Button
+                type='primary'
+                onClick={() => {
+                  history.push(`/alert-rules/add/${businessGroup.id}`);
+                }}
+                className='strategy-table-search-right-create'
+              >
+                {t('common:btn.add')}
+              </Button>
+              {businessGroup.id && <MoreOperations bgid={businessGroup.id} selectRowKeys={selectRowKeys} selectedRows={selectedRows} getAlertRules={fetchData} />}
+            </Space>
+          </Col>
+        )}
       </Row>
       <Table
         tableLayout='fixed'

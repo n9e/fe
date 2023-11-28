@@ -19,6 +19,7 @@ interface IProps {
   onSelect?: (key: string, item: any) => void;
   title?: string;
   renderHeadExtra?: () => React.ReactNode;
+  showSelected?: boolean;
 }
 
 interface Node {
@@ -54,7 +55,7 @@ export default function index(props: IProps) {
   const location = useLocation();
   const query = queryString.parse(location.search);
   const history = useHistory();
-  const { title = t('common:business_group'), renderHeadExtra, onSelect } = props;
+  const { title = t('common:business_group'), renderHeadExtra, onSelect, showSelected = true } = props;
   const [collapse, setCollapse] = useState(localStorage.getItem('leftlist') === '1');
   const [width, setWidth] = useState(_.toNumber(localStorage.getItem('leftwidth') || 200));
   const { busiGroups, siteInfo } = useContext(CommonStateContext);
@@ -121,7 +122,7 @@ export default function index(props: IProps) {
                   <div
                     className={classNames({
                       'n9e-metric-views-list-content-item': true,
-                      active: itemKey === businessGroup.key,
+                      active: showSelected ? itemKey === businessGroup.key : false,
                     })}
                     key={itemKey}
                     onClick={() => {
@@ -153,7 +154,7 @@ export default function index(props: IProps) {
                   }}
                   defaultExpandParent={false}
                   defaultExpandedKeys={getCollapsedKeys(businessGroupTreeData, getLocaleExpandedKeys(), businessGroup.key)}
-                  selectedKeys={businessGroup.key ? [businessGroup.key] : undefined}
+                  selectedKeys={showSelected && businessGroup.key ? [businessGroup.key] : undefined}
                   blockNode
                   switcherIcon={<DownOutlined />}
                   onSelect={(_selectedKeys, e) => {
