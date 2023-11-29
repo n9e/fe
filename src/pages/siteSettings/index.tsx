@@ -7,7 +7,7 @@ import { getN9eConfig, putN9eConfig } from './services';
 import './locale';
 
 // @ts-ignore
-import SiteSettingsPlus from '@/plus/parcels/SiteSettings';
+import SiteSettingsPlus from 'plus:/parcels/SiteSettings';
 
 export default function index() {
   const { t } = useTranslation('siteInfo');
