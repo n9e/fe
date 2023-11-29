@@ -307,18 +307,26 @@ const en_US = {
         stack: 'Stack',
         stack_noraml: 'Normal',
         stack_off: 'Off',
+        yAxis: {
+          title: 'Y-Axis settings',
+          rightYAxis: {
+            label: 'Right Y-Axis',
+            noraml: 'On',
+            off: 'Off',
+          },
+        },
       },
       iframe: {
         src: 'Src',
       },
       heatmap: {
-        xAxisField: 'X axis',
-        yAxisField: 'Y axis',
+        xAxisField: 'X-Axis',
+        yAxisField: 'Y-Axis',
         valueField: 'Value field',
       },
       barchart: {
-        xAxisField: 'X axis',
-        yAxisField: 'Y axis',
+        xAxisField: 'X-Axis',
+        yAxisField: 'Y-Axis',
         colorField: 'Color by field',
         barMaxWidth: 'Bar max width',
       },

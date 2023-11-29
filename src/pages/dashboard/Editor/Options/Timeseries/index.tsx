@@ -20,8 +20,9 @@ import Legend from '../../Fields/Legend';
 import GraphStyles from './GraphStyles';
 import StandardOptions from '../../Fields/StandardOptions';
 import Thresholds from '../../Fields/Thresholds';
+import Overrides from './Overrides';
 
-export default function Timeseries() {
+export default function Timeseries({ targets }) {
   return (
     <>
       <Tooltip />
@@ -29,6 +30,7 @@ export default function Timeseries() {
       <GraphStyles />
       <StandardOptions />
       <Thresholds />
+      <Overrides targets={targets} />
     </>
   );
 }
