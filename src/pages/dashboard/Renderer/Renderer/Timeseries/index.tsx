@@ -280,6 +280,7 @@ export default function index(props: IProps) {
         onClick: (event, datetime, value, points) => {
           if (onClick) onClick(event, datetime, value, points);
         },
+        hideResetBtn: dashboardMeta.graphZoom === 'updateTimeRange',
         onZoomWithoutDefult:
           dashboardMeta.graphZoom === 'updateTimeRange'
             ? (times: Date[]) => {
