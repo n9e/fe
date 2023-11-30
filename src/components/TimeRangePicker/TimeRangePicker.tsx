@@ -341,7 +341,7 @@ export default function index(props: ITimeRangePickerProps) {
           }}
           disabled={disabled}
         >
-          {props.label || label || placeholder}
+          {props.label || label || <span style={{ color: '#bfbfbf' }}>{placeholder}</span>}
           {!props.label && (
             <span className='flashcat-timeRangePicker-target-icon'>
               {visible ? <UpOutlined /> : <DownOutlined />}
@@ -350,6 +350,7 @@ export default function index(props: ITimeRangePickerProps) {
                   e.nativeEvent.stopImmediatePropagation();
                   e.stopPropagation();
                   setRange(undefined);
+                  onChange(undefined as any); // TODO：兼容所有已调用的地方
                   setLabel('');
                   onClear();
                 }}
