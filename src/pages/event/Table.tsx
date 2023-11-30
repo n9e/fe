@@ -23,6 +23,7 @@ import _ from 'lodash';
 import queryString from 'query-string';
 import { useAntdTable } from 'ahooks';
 import { CommonStateContext } from '@/App';
+import { parseRange } from '@/components/TimeRangePicker';
 import { getEvents } from './services';
 import { deleteAlertEventsModal } from './index';
 import { SeverityColor } from './index';
@@ -189,11 +190,17 @@ export default function TableCpt(props: IProps) {
     });
   }
   const fetchData = ({ current, pageSize }) => {
-    return getEvents({
+    const params: any = {
       p: current,
       limit: pageSize,
-      ...filterObj,
-    }).then((res) => {
+      ..._.omit(filterObj, 'range'),
+    };
+    if (filterObj.range) {
+      const parsedRange = parseRange(filterObj.range);
+      params.stime = moment(parsedRange.start).unix();
+      params.etime = moment(parsedRange.end).unix();
+    }
+    return getEvents(params).then((res) => {
       return {
         total: res.dat.total,
         list: res.dat.list,
