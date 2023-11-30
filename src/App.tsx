@@ -23,7 +23,6 @@ import enUS from 'antd/lib/locale/en_US';
 import 'antd/dist/antd.less';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
-import queryString from 'query-string';
 import TaskOutput from '@/pages/taskOutput';
 import TaskHostOutput from '@/pages/taskOutput/host';
 import { getAuthorizedDatasourceCates, Cate } from '@/components/AdvancedWrap';
@@ -32,13 +31,12 @@ import { getBusiGroups, getDatasourceBriefList } from '@/services/common';
 import { getLicense } from '@/components/AdvancedWrap';
 import { getVersions } from '@/components/pageLayout/Version/services';
 import { getCleanBusinessGroupIds, getDefaultBusinessGroupKey } from '@/components/BusinessGroup';
+import { getN9eConfig } from '@/pages/siteSettings/services';
 import HeaderMenu from './components/menu/SideMenu';
 import Content from './routers';
 
 // @ts-ignore
 import useIsPlus from 'plus:/components/useIsPlus';
-// @ts-ignore
-import { getN9eConfig } from 'plus:/pages/SiteInfo/services';
 // @ts-ignore
 import CustomerServiceFloatButton from 'plus:/components/CustomerServiceFloatButton';
 
