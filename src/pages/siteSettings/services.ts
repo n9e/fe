@@ -11,10 +11,10 @@ export interface Data {
 }
 
 export const getN9eConfig = function (key: string) {
-  return request('/api/n9e/config', {
+  return request('/api/n9e/site-info', {
     method: RequestMethod.Get,
     params: { key },
-    silence: true, // /api/n9e/config 只有管理员有权限访问
+    silence: true,
   }).then((res) => res.dat || '');
 };
 
