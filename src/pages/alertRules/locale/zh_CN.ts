@@ -47,6 +47,9 @@ const zh_CN = {
     dashboard_link: '仪表盘链接',
     desc: '描述',
   },
+  extra_config: {
+    default_tpl: '默认模板',
+  },
   invalid_datasource_tip_1: '数据源',
   invalid_datasource_tip_2: '未配置关联告警引擎集群',
   invalid_datasource_reload: '刷新数据源',

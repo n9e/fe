@@ -47,6 +47,9 @@ const zh_HK = {
     dashboard_link: '儀表盤連結',
     desc: '描述',
   },
+  extra_config: {
+    default_tpl: '默認模板',
+  },
   invalid_datasource_tip_1: '數據源',
   invalid_datasource_tip_2: '未配置關聯告警引擎集群',
   invalid_datasource_reload: '刷新數據源',

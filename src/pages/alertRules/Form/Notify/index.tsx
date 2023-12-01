@@ -18,17 +18,23 @@
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Card, Form, Checkbox, Switch, Space, Select, Tooltip, Row, Col, InputNumber, Input, AutoComplete } from 'antd';
+import { Card, Form, Checkbox, Switch, Space, Select, Tooltip, Row, Col, InputNumber, Input, AutoComplete, Dropdown, Menu } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined, QuestionCircleFilled } from '@ant-design/icons';
 import { getTeamInfoList, getNotifiesList } from '@/services/manage';
+import { getNotifyTpls } from '@/pages/help/NotificationTpls/services';
 import { panelBaseProps } from '../../constants';
+import NotifyTplSelect from './NotifyTplSelect';
 // @ts-ignore
 import NotifyExtra from 'plus:/parcels/AlertRule/NotifyExtra';
 
-export default function index({ disabled }) {
+export default function index({ disabled, form }) {
   const { t } = useTranslation('alertRules');
   const [contactList, setContactList] = useState<{ key: string; label: string }[]>([]);
   const [notifyGroups, setNotifyGroups] = useState<any[]>([]);
+  const [notifyTpls, setNotifyTpls] = useState<any[]>([]);
+  const notify_channels = Form.useWatch('notify_channels');
+  const extra_config = Form.useWatch('extra_config');
+  const custom_notify_tpl = Form.useWatch(['extra_config', 'custom_notify_tpl']);
   const getNotifyChannel = () => {
     getNotifiesList().then((res) => {
       setContactList(res || []);
@@ -43,18 +49,43 @@ export default function index({ disabled }) {
   useEffect(() => {
     getGroups('');
     getNotifyChannel();
+    getNotifyTpls().then((res) => {
+      setNotifyTpls(res);
+    });
   }, []);
 
   return (
     <>
       <Card {...panelBaseProps} title={t('notify_configs')}>
+        <Form.Item name={['extra_config', 'custom_notify_tpl']} hidden>
+          <div />
+        </Form.Item>
         <Form.Item label={t('notify_channels')} name='notify_channels'>
           <Checkbox.Group disabled={disabled}>
             {contactList.map((item) => {
+              const isInclude = _.includes(notify_channels, item.key);
+              const customTplIdent = _.get(custom_notify_tpl, item.key);
               return (
-                <Checkbox value={item.key} key={item.label}>
-                  {item.label}
-                </Checkbox>
+                <div key={item.label} style={{ marginRight: isInclude ? 8 : 0, display: 'inline-block' }}>
+                  <Checkbox value={item.key}>{item.label}</Checkbox>
+                  {isInclude && (
+                    <NotifyTplSelect
+                      notifyTpls={notifyTpls}
+                      value={customTplIdent}
+                      onSelect={(ident) => {
+                        form.setFieldsValue({
+                          extra_config: {
+                            ...(extra_config || {}),
+                            custom_notify_tpl: {
+                              ...(custom_notify_tpl || {}),
+                              [item.key]: ident,
+                            },
+                          },
+                        });
+                      }}
+                    />
+                  )}
+                </div>
               );
             })}
           </Checkbox.Group>

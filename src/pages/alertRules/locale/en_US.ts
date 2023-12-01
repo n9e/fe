@@ -47,6 +47,9 @@ const en_US = {
     dashboard_link: 'Dashboard Link',
     desc: 'Description',
   },
+  extra_config: {
+    default_tpl: 'Default Template',
+  },
   invalid_datasource_tip_1: 'Datasources',
   invalid_datasource_tip_2: 'are not configured with cluster of alert engine',
   invalid_datasource_reload: 'Reload',
