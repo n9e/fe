@@ -28,6 +28,18 @@ export const getDashboards = function (id: number | string) {
   });
 };
 
+// 或许多个业务组的仪表盘列表
+export const getBusiGroupsDashboards = function (gids: string) {
+  return request(`/api/n9e/busi-groups/boards`, {
+    method: RequestMethod.Get,
+    params: {
+      gids,
+    },
+  }).then((res) => {
+    return res.dat;
+  });
+};
+
 interface Dashboard {
   name: string;
   ident?: string;

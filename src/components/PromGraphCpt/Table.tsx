@@ -17,7 +17,7 @@
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import _ from 'lodash';
-import { Input, DatePicker, List, Space } from 'antd';
+import { Input, DatePicker, List } from 'antd';
 import { getPromData } from './services';
 import { QueryStats } from './components/QueryStatsView';
 
@@ -117,7 +117,7 @@ export default function Table(props: IProps) {
             if (result.length > LIMIT) {
               tooLong = true;
               maxLength = result.length;
-              result = result.slice(LIMIT);
+              result = result.slice(0, LIMIT);
             }
             result.forEach((item) => {
               if (item.values && item.values.length > LIMIT) {
@@ -125,7 +125,7 @@ export default function Table(props: IProps) {
                 if (item.values.length > maxLength) {
                   maxLength = item.values.length;
                 }
-                item.values = item.values.slice(LIMIT);
+                item.values = item.values.slice(0, LIMIT);
               }
             });
           }

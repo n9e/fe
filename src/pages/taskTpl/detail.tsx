@@ -31,7 +31,8 @@ import { CommonStateContext } from '@/App';
 const Detail = (props: any) => {
   const history = useHistory();
   const id = _.get(props, 'match.params.id');
-  const { curBusiId } = useContext(CommonStateContext);
+  const { businessGroup } = useContext(CommonStateContext);
+  const curBusiId = businessGroup.id!;
   const { t } = useTranslation('common');
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState({} as Tpl);

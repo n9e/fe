@@ -67,6 +67,7 @@ import NotificationSettings from '@/pages/help/NotificationSettings';
 import MigrateDashboards from '@/pages/help/migrate';
 import IBEX from '@/pages/help/NotificationSettings/IBEX';
 import VariableConfigs from '@/pages/variableConfigs';
+import SiteSettings from '@/pages/siteSettings';
 import { dynamicPackages, Entry } from '@/utils';
 // @ts-ignore
 import { Jobs as StrategyBrain } from 'plus:/datasource/anomaly';
@@ -203,6 +204,8 @@ export default function Content() {
         <Route exact path='/trace/dependencies' component={TraceDependencies} />
 
         <Route exact path='/permissions' component={Permissions} />
+
+        <Route exact path='/site-settings' component={SiteSettings} />
 
         {lazyRoutes.map((route, i) => (
           <RouteWithSubRoutes key={i} {...route} />

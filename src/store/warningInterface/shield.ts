@@ -22,7 +22,7 @@ export interface shieldItem {
   etime: number;
   btime: number;
   id: number;
-  group_id?: number;
+  group_id: number;
   cate: string;
   datasource_ids: number[];
   mute_time_type: 0 | 1;

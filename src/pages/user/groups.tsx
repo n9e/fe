@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import moment from 'moment';
 import _ from 'lodash';
 import PageLayout from '@/components/pageLayout';
@@ -25,7 +25,8 @@ import { getTeamInfoList, getTeamInfo, deleteTeam, deleteMember } from '@/servic
 import { User, Team, UserType, ActionType, TeamInfo } from '@/store/manageInterface';
 import { ColumnsType } from 'antd/lib/table';
 import { useTranslation } from 'react-i18next';
-import { listToTree2 } from '@/pages/targets/BusinessGroup';
+import { listToTree } from '@/components/BusinessGroup';
+import { CommonStateContext } from '@/App';
 import './index.less';
 import './locale';
 
@@ -53,6 +54,7 @@ export function setLocaleExpandedKeys(nodes: string[]) {
 }
 
 const Resource: React.FC = () => {
+  const { siteInfo } = useContext(CommonStateContext);
   const { t } = useTranslation('user');
   const [visible, setVisible] = useState<boolean>(false);
   const [action, setAction] = useState<ActionType>();
@@ -248,27 +250,47 @@ const Resource: React.FC = () => {
                 }}
               />
             </div>
-            {!_.isEmpty(teamList) && (
-              <Tree
-                rootClassName='business-group-tree'
-                showLine={{
-                  showLeafIcon: false,
-                }}
-                defaultExpandParent={false}
-                defaultExpandedKeys={getLocaleExpandedKeys()}
-                selectedKeys={[teamId]}
-                blockNode
-                switcherIcon={<DownOutlined />}
-                onSelect={(_selectedKeys, e: any) => {
-                  const nodeId = e.node.id;
-                  localStorage.setItem('curBusiId', _.toString(nodeId));
-                  setTeamId(nodeId as any);
-                }}
-                onExpand={(expandedKeys: string[]) => {
-                  setLocaleExpandedKeys(expandedKeys);
-                }}
-                treeData={listToTree2(teamList as any)}
-              />
+            {siteInfo?.teamDisplayMode == 'list' ? (
+              <div className='radio-list' style={{ overflowY: 'auto' }}>
+                <List
+                  style={{
+                    marginBottom: '12px',
+                    flex: 1,
+                    overflow: 'auto',
+                  }}
+                  dataSource={teamList}
+                  size='small'
+                  renderItem={(item) => (
+                    <List.Item key={item.id} className={teamId === item.id ? 'is-active' : ''} onClick={() => setTeamId(item.id)}>
+                      {item.name}
+                    </List.Item>
+                  )}
+                />
+              </div>
+            ) : (
+              <div className='radio-list' style={{ overflowY: 'auto' }}>
+                {!_.isEmpty(teamList) && (
+                  <Tree
+                    rootClassName='business-group-tree'
+                    showLine={{
+                      showLeafIcon: false,
+                    }}
+                    defaultExpandParent={false}
+                    defaultExpandedKeys={getLocaleExpandedKeys()}
+                    selectedKeys={teamId ? [_.toString(teamId)] : []}
+                    blockNode
+                    switcherIcon={<DownOutlined />}
+                    onSelect={(_selectedKeys, e: any) => {
+                      const nodeId = e.node.id;
+                      setTeamId(nodeId as any);
+                    }}
+                    onExpand={(expandedKeys: string[]) => {
+                      setLocaleExpandedKeys(expandedKeys);
+                    }}
+                    treeData={listToTree(teamList as any, siteInfo?.teamSeparator)}
+                  />
+                )}
+              </div>
             )}
           </div>
           {teamList.length > 0 ? (

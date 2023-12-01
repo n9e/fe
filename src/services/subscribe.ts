@@ -19,13 +19,20 @@ import { RequestMethod } from '@/store/common';
 
 export const getSubscribeList = function (params: { id: number }) {
   return request(`/api/n9e/busi-group/${params.id}/alert-subscribes`, {
-    method: RequestMethod.Get
+    method: RequestMethod.Get,
+  });
+};
+
+export const getBusiGroupsAlertSubscribes = function (gids: string) {
+  return request('/api/n9e/busi-groups/alert-subscribes', {
+    method: RequestMethod.Get,
+    params: { gids },
   });
 };
 
 export const getSubscribeData = function (subscribeId: number) {
   return request(`/api/n9e/alert-subscribe/${subscribeId}`, {
-    method: RequestMethod.Get
+    method: RequestMethod.Get,
   });
 };
 
@@ -43,9 +50,9 @@ export const editSubscribe = function (data: any, busiId: number) {
   });
 };
 
-export const deleteSubscribes = function (data: {ids: number[]}, busiId: number) {
+export const deleteSubscribes = function (data: { ids: number[] }, busiId: number) {
   return request(`/api/n9e/busi-group/${busiId}/alert-subscribes`, {
     method: RequestMethod.Delete,
-    data
+    data,
   });
 };

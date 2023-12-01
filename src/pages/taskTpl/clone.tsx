@@ -30,13 +30,14 @@ import { CommonStateContext } from '@/App';
 const Add = (props: any) => {
   const history = useHistory();
   const id = _.get(props, 'match.params.id');
-  const { curBusiId } = useContext(CommonStateContext);
+  const { businessGroup } = useContext(CommonStateContext);
+  const curBusiId = businessGroup.id!;
   const { t } = useTranslation('common');
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState({} as Tpl);
 
   const handleSubmit = (values: any) => {
-    request(`${api.tasktpls(curBusiId)}`, {
+    request(`${api.tasktpls(values.group_id)}`, {
       method: 'POST',
       body: JSON.stringify(values),
     }).then(() => {
