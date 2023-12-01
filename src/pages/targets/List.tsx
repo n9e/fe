@@ -15,7 +15,7 @@ import { getDefaultColumnsConfigs, setDefaultColumnsConfigs } from './utils';
 // @ts-ignore
 import CollectsDrawer from 'plus:/pages/collects/CollectsDrawer';
 // @ts-ignore
-import { TargetMetaDrawer, extraColumns, UpgradeAgent } from 'plus:/parcels/Targets';
+import { TargetMetaDrawer, extraColumns, UpgradeAgent, VersionSelect } from 'plus:/parcels/Targets';
 
 export const pageSizeOptions = ['10', '20', '50', '100'];
 
@@ -67,6 +67,7 @@ export default function List(props: IProps) {
   const [collectsDrawerVisible, setCollectsDrawerVisible] = useState(false);
   const [collectsDrawerIdent, setCollectsDrawerIdent] = useState('');
   const [downtime, setDowntime] = useState();
+  const [agentVersion, setAgentVersion] = useState<string>();
   const columns: ColumnsType<any> = [
     {
       title: (
@@ -387,6 +388,7 @@ export default function List(props: IProps) {
       limit: pageSize,
       p: current,
       downtime,
+      agent_version: agentVersion,
     };
     return getMonObjectList(query).then((res) => {
       return {
@@ -410,7 +412,7 @@ export default function List(props: IProps) {
       current: 1,
       pageSize: tableProps.pagination.pageSize,
     });
-  }, [tableQueryContent, gids, refreshFlag, downtime]);
+  }, [tableQueryContent, gids, refreshFlag, downtime, agentVersion]);
 
   return (
     <div>
@@ -448,6 +450,12 @@ export default function List(props: IProps) {
             value={downtime}
             onChange={(val) => {
               setDowntime(val);
+            }}
+          />
+          <VersionSelect
+            value={agentVersion}
+            onChange={(val) => {
+              setAgentVersion(val);
             }}
           />
         </Space>
