@@ -44,8 +44,9 @@ const getN9eConfig = async () => {
   return {};
 };
 const getDefaultValuesByCate = () => {};
-const autoDatasourcetype = []
-const AuthList = []
+const autoDatasourcetype = [];
+const AuthList = [];
+const extraColumns = () => {};
 
 export {
   AlertRule,
@@ -63,5 +64,6 @@ export {
   getN9eConfig,
   getDefaultValuesByCate,
   autoDatasourcetype,
-  AuthList
+  AuthList,
+  extraColumns,
 };

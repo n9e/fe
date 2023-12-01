@@ -15,7 +15,7 @@ import { getDefaultColumnsConfigs, setDefaultColumnsConfigs } from './utils';
 // @ts-ignore
 import CollectsDrawer from 'plus:/pages/collects/CollectsDrawer';
 // @ts-ignore
-import TargetMetaDrawer from 'plus:/parcels/Targets/TargetMetaDrawer';
+import { TargetMetaDrawer, extraColumns, UpgradeAgent } from 'plus:/parcels/Targets';
 
 export const pageSizeOptions = ['10', '20', '50', '100'];
 
@@ -361,6 +361,7 @@ export default function List(props: IProps) {
         },
       });
     }
+    extraColumns(item.name, columns);
     if (item.name === 'note') {
       columns.push({
         title: t('common:table.note'),
@@ -469,7 +470,9 @@ export default function List(props: IProps) {
             overlay={
               <Menu
                 onClick={({ key }) => {
-                  setOperateType(key as OperateType);
+                  if (key) {
+                    setOperateType(key as OperateType);
+                  }
                 }}
               >
                 <Menu.Item key={OperateType.BindTag}>{t('bind_tag.title')}</Menu.Item>
@@ -478,6 +481,13 @@ export default function List(props: IProps) {
                 <Menu.Item key={OperateType.RemoveBusi}>{t('remove_busi.title')}</Menu.Item>
                 <Menu.Item key={OperateType.UpdateNote}>{t('update_note.title')}</Menu.Item>
                 <Menu.Item key={OperateType.Delete}>{t('batch_delete.title')}</Menu.Item>
+                <Menu.Item key={OperateType.Delete}>{t('batch_delete.title')}</Menu.Item>
+                <UpgradeAgent
+                  selectedIdents={selectedIdents}
+                  onOk={() => {
+                    setRefreshFlag(_.uniqueId('refreshFlag_'));
+                  }}
+                />
               </Menu>
             }
           >
