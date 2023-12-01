@@ -32,6 +32,7 @@ const en_US = {
   enable_in_bg_tip: 'Determine the ownership relationship based on the ident in the alert event',
   notify_configs: 'Notify Configuration',
   notify_channels: 'Channels',
+  notify_channels_tip: 'After selecting the notification medium, you can click the default template to modify the notification template',
   notify_recovered: 'Recovered',
   notify_recovered_tip: 'Send notification when the alert is recovered',
   recover_duration: 'Recover Duration (s)',

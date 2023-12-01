@@ -60,7 +60,7 @@ export default function index({ disabled, form }) {
         <Form.Item name={['extra_config', 'custom_notify_tpl']} hidden>
           <div />
         </Form.Item>
-        <Form.Item label={t('notify_channels')} name='notify_channels'>
+        <Form.Item label={t('notify_channels')} name='notify_channels' tooltip={t('notify_channels_tip')}>
           <Checkbox.Group disabled={disabled}>
             {contactList.map((item) => {
               const isInclude = _.includes(notify_channels, item.key);

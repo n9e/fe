@@ -32,6 +32,7 @@ const zh_HK = {
   enable_in_bg_tip: '根據告警事件中的 ident 歸屬關係判斷',
   notify_configs: '通知配置',
   notify_channels: '通知媒介',
+  notify_channels_tip: '選擇通知媒介後，可以點選默認模板修改通知模板',
   notify_recovered: '啟用恢復通知',
   notify_recovered_tip: '告警恢復時也傳送通知',
   recover_duration: '留觀時長（秒）',
