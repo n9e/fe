@@ -15,7 +15,13 @@ import { getDefaultColumnsConfigs, setDefaultColumnsConfigs } from './utils';
 // @ts-ignore
 import CollectsDrawer from 'plus:/pages/collects/CollectsDrawer';
 // @ts-ignore
-import { TargetMetaDrawer, extraColumns, UpgradeAgent, VersionSelect } from 'plus:/parcels/Targets';
+import TargetMetaDrawer from 'plus:/parcels/Targets/TargetMetaDrawer';
+// @ts-ignore
+import UpgradeAgent from 'plus:/parcels/Targets/UpgradeAgent';
+// @ts-ignore
+import VersionSelect from 'plus:/parcels/Targets/VersionSelect';
+// @ts-ignore
+import { extraColumns } from 'plus:/parcels/Targets';
 
 export const pageSizeOptions = ['10', '20', '50', '100'];
 
