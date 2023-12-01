@@ -73,7 +73,7 @@ export default function List(props: IProps) {
   const [collectsDrawerVisible, setCollectsDrawerVisible] = useState(false);
   const [collectsDrawerIdent, setCollectsDrawerIdent] = useState('');
   const [downtime, setDowntime] = useState();
-  const [agentVersion, setAgentVersion] = useState<string>();
+  const [agentVersions, setAgentVersions] = useState<string>();
   const columns: ColumnsType<any> = [
     {
       title: (
@@ -394,7 +394,7 @@ export default function List(props: IProps) {
       limit: pageSize,
       p: current,
       downtime,
-      agent_version: agentVersion,
+      agent_versions: _.isEmpty(agentVersions) ? undefined : JSON.stringify(agentVersions),
     };
     return getMonObjectList(query).then((res) => {
       return {
@@ -418,7 +418,7 @@ export default function List(props: IProps) {
       current: 1,
       pageSize: tableProps.pagination.pageSize,
     });
-  }, [tableQueryContent, gids, refreshFlag, downtime, agentVersion]);
+  }, [tableQueryContent, gids, refreshFlag, downtime, agentVersions]);
 
   return (
     <div>
@@ -459,9 +459,9 @@ export default function List(props: IProps) {
             }}
           />
           <VersionSelect
-            value={agentVersion}
+            value={agentVersions}
             onChange={(val) => {
-              setAgentVersion(val);
+              setAgentVersions(val);
             }}
           />
         </Space>
