@@ -32,7 +32,7 @@ const zh_CN = {
   enable_in_bg_tip: '根据告警事件中的ident归属关系判断',
   notify_configs: '通知配置',
   notify_channels: '通知媒介',
-  notify_channels_tip: '选择通知媒介后，可以点选默认模板修改通知模板',
+  notify_channels_tpl: '通知媒介模板',
   notify_recovered: '启用恢复通知',
   notify_recovered_tip: '告警恢复时也发送通知',
   recover_duration: '留观时长（秒）',

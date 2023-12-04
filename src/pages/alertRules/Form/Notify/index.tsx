@@ -22,8 +22,8 @@ import { Card, Form, Checkbox, Switch, Space, Select, Tooltip, Row, Col, InputNu
 import { PlusCircleOutlined, MinusCircleOutlined, QuestionCircleFilled } from '@ant-design/icons';
 import { getTeamInfoList, getNotifiesList } from '@/services/manage';
 import { getNotifyTpls } from '@/pages/help/NotificationTpls/services';
+import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { panelBaseProps } from '../../constants';
-import NotifyTplSelect from './NotifyTplSelect';
 // @ts-ignore
 import NotifyExtra from 'plus:/parcels/AlertRule/NotifyExtra';
 
@@ -60,36 +60,41 @@ export default function index({ disabled, form }) {
         <Form.Item name={['extra_config', 'custom_notify_tpl']} hidden>
           <div />
         </Form.Item>
-        <Form.Item label={t('notify_channels')} name='notify_channels' tooltip={t('notify_channels_tip')}>
+        <Form.Item label={t('notify_channels')} name='notify_channels'>
           <Checkbox.Group disabled={disabled}>
             {contactList.map((item) => {
-              const isInclude = _.includes(notify_channels, item.key);
-              const customTplIdent = _.get(custom_notify_tpl, item.key);
               return (
-                <div key={item.label} style={{ marginRight: isInclude ? 8 : 0, display: 'inline-block' }}>
-                  <Checkbox value={item.key}>{item.label}</Checkbox>
-                  {isInclude && (
-                    <NotifyTplSelect
-                      notifyTpls={notifyTpls}
-                      value={customTplIdent}
-                      onSelect={(ident) => {
-                        form.setFieldsValue({
-                          extra_config: {
-                            ...(extra_config || {}),
-                            custom_notify_tpl: {
-                              ...(custom_notify_tpl || {}),
-                              [item.key]: ident,
-                            },
-                          },
-                        });
-                      }}
-                    />
-                  )}
-                </div>
+                <Checkbox key={item.label} value={item.key}>
+                  {item.label}
+                </Checkbox>
               );
             })}
           </Checkbox.Group>
         </Form.Item>
+        {!_.isEmpty(notify_channels) && (
+          <div>
+            <div style={{ paddingBottom: 8 }}>{t('notify_channels_tpl')}</div>
+            {_.map(notify_channels, (channel) => {
+              return (
+                <InputGroupWithFormItem label={_.get(_.find(contactList, { key: channel }), 'label', channel)}>
+                  <Form.Item key={channel} name={['extra_config', 'custom_notify_tpl', channel]}>
+                    <Select
+                      showSearch
+                      allowClear
+                      placeholder={t('extra_config.default_tpl')}
+                      options={_.map(notifyTpls, (tpl) => {
+                        return {
+                          label: tpl.name,
+                          value: tpl.channel,
+                        };
+                      })}
+                    />
+                  </Form.Item>
+                </InputGroupWithFormItem>
+              );
+            })}
+          </div>
+        )}
         <Form.Item label={t('notify_groups')} name='notify_groups'>
           <Select mode='multiple' showSearch optionFilterProp='children'>
             {_.map(notifyGroups, (item) => {

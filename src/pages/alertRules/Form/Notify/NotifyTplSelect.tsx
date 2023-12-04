@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import _ from 'lodash';
-import { Menu, Dropdown } from 'antd';
+import { Menu, Dropdown, Select } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 interface Props {
@@ -15,38 +15,32 @@ export default function NotifyTplSelect(props: Props) {
   const [selected, setSelected] = useState<string | undefined>(value);
 
   return (
-    <Dropdown
-      trigger={['click']}
-      overlay={
-        <Menu>
-          {_.map(
-            _.concat(
-              [
-                {
-                  id: undefined,
-                  name: t('extra_config.default_tpl'),
-                },
-              ],
-              notifyTpls,
-            ),
-            (tpl) => {
-              return (
-                <Menu.Item
-                  key={tpl.channel}
-                  onClick={() => {
-                    setSelected(tpl.channel);
-                    onSelect(tpl.channel);
-                  }}
-                >
-                  {tpl.name}
-                </Menu.Item>
-              );
-            },
-          )}
-        </Menu>
-      }
-    >
-      <a>{selected ? _.get(_.find(notifyTpls, { channel: selected }), 'name', selected) : t('extra_config.default_tpl')}</a>
-    </Dropdown>
+    <Select
+      showSearch
+      bordered={false}
+      value={selected}
+      onChange={(value) => {
+        setSelected(value);
+        onSelect(value);
+      }}
+      placeholder={t('extra_config.default_tpl')}
+      options={_.map(notifyTpls, (tpl) => {
+        return {
+          label: tpl.name,
+          value: tpl.channel,
+        };
+        return (
+          <Menu.Item
+            key={tpl.channel}
+            onClick={() => {
+              setSelected(tpl.channel);
+              onSelect(tpl.channel);
+            }}
+          >
+            {tpl.name}
+          </Menu.Item>
+        );
+      })}
+    />
   );
 }
