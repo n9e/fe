@@ -495,7 +495,6 @@ export default function List(props: IProps) {
                 <Menu.Item key={OperateType.RemoveBusi}>{t('remove_busi.title')}</Menu.Item>
                 <Menu.Item key={OperateType.UpdateNote}>{t('update_note.title')}</Menu.Item>
                 <Menu.Item key={OperateType.Delete}>{t('batch_delete.title')}</Menu.Item>
-                <Menu.Item key={OperateType.Delete}>{t('batch_delete.title')}</Menu.Item>
                 <UpgradeAgent
                   selectedIdents={selectedIdents}
                   onOk={() => {
