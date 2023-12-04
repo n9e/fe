@@ -76,7 +76,12 @@ export default function index({ disabled, form }) {
             <div style={{ paddingBottom: 8 }}>{t('notify_channels_tpl')}</div>
             {_.map(notify_channels, (channel) => {
               return (
-                <InputGroupWithFormItem label={_.get(_.find(contactList, { key: channel }), 'label', channel)}>
+                <InputGroupWithFormItem
+                  label={_.get(_.find(contactList, { key: channel }), 'label', channel)}
+                  customStyle={{
+                    minWidth: 100,
+                  }}
+                >
                   <Form.Item key={channel} name={['extra_config', 'custom_notify_tpl', channel]}>
                     <Select
                       showSearch
