@@ -93,6 +93,7 @@ export default function index({ disabled, form }) {
                           value: tpl.channel,
                         };
                       })}
+                      optionFilterProp='label'
                     />
                   </Form.Item>
                 </InputGroupWithFormItem>
