@@ -19,7 +19,7 @@ import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Card, Form, Checkbox, Switch, Space, Select, Tooltip, Row, Col, InputNumber, Input, AutoComplete } from 'antd';
-import { PlusCircleOutlined, MinusCircleOutlined, QuestionCircleFilled, DownOutlined, UpOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { PlusCircleOutlined, MinusCircleOutlined, QuestionCircleFilled, DownOutlined, RightOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { getTeamInfoList, getNotifiesList } from '@/services/manage';
 import { getNotifyTpls } from '@/pages/help/NotificationTpls/services';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
@@ -83,7 +83,7 @@ export default function index({ disabled, form }) {
                 <Tooltip title={t('notify_channels_tpl_tip')}>
                   <InfoCircleOutlined />
                 </Tooltip>
-                {notifyTplsCollapsed ? <DownOutlined /> : <UpOutlined />}
+                {notifyTplsCollapsed ? <RightOutlined /> : <DownOutlined />}
               </Space>
             </div>
             {!notifyTplsCollapsed &&
@@ -99,7 +99,7 @@ export default function index({ disabled, form }) {
                       <Select
                         showSearch
                         allowClear
-                        placeholder={t('extra_config.default_tpl')}
+                        placeholder={t('notify_channels_tpl_tip')}
                         options={_.map(notifyTpls, (tpl) => {
                           return {
                             label: tpl.name,
