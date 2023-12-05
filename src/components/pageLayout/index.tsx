@@ -132,9 +132,9 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
 
                   <Version />
 
-                  {/* 整合版本关闭文档链接 */}
-                  {import.meta.env.VITE_IS_ENT !== 'true' && (
-                    <Space style={{ marginRight: 16 }}>
+                  <Space style={{ marginRight: 16 }}>
+                    {/* 整合版本关闭文档链接 */}
+                    {import.meta.env.VITE_IS_ENT !== 'true' && (
                       <div style={{ marginRight: 32, position: 'relative' }}>
                         <a target='_blank' href={siteInfo?.document_url || 'https://flashcat.cloud/docs/'}>
                           {t('docs')}
@@ -153,13 +153,13 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                           }}
                         />
                       </div>
-                      {profile?.admin && (
-                        <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
-                          <Link to='/audits'>{t('audits:title')}</Link>
-                        </AdvancedWrap>
-                      )}
-                    </Space>
-                  )}
+                    )}
+                    {profile?.admin && (
+                      <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
+                        <Link to='/audits'>{t('audits:title')}</Link>
+                      </AdvancedWrap>
+                    )}
+                  </Space>
 
                   {rightArea}
 
