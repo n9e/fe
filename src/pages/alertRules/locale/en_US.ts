@@ -33,6 +33,7 @@ const en_US = {
   notify_configs: 'Notify Configuration',
   notify_channels: 'Channels',
   notify_channels_tpl: 'Channels Template',
+  notify_channels_tpl_tip: 'If empty, use the default template',
   notify_recovered: 'Recovered',
   notify_recovered_tip: 'Send notification when the alert is recovered',
   recover_duration: 'Recover Duration (s)',

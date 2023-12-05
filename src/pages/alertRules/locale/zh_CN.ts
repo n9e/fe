@@ -33,6 +33,7 @@ const zh_CN = {
   notify_configs: '通知配置',
   notify_channels: '通知媒介',
   notify_channels_tpl: '通知媒介模板',
+  notify_channels_tpl_tip: '为空则使用默认模板',
   notify_recovered: '启用恢复通知',
   notify_recovered_tip: '告警恢复时也发送通知',
   recover_duration: '留观时长（秒）',

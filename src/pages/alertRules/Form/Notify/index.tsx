@@ -18,8 +18,8 @@
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Card, Form, Checkbox, Switch, Space, Select, Tooltip, Row, Col, InputNumber, Input, AutoComplete, Dropdown, Menu } from 'antd';
-import { PlusCircleOutlined, MinusCircleOutlined, QuestionCircleFilled } from '@ant-design/icons';
+import { Card, Form, Checkbox, Switch, Space, Select, Tooltip, Row, Col, InputNumber, Input, AutoComplete } from 'antd';
+import { PlusCircleOutlined, MinusCircleOutlined, QuestionCircleFilled, DownOutlined, UpOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { getTeamInfoList, getNotifiesList } from '@/services/manage';
 import { getNotifyTpls } from '@/pages/help/NotificationTpls/services';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
@@ -32,9 +32,8 @@ export default function index({ disabled, form }) {
   const [contactList, setContactList] = useState<{ key: string; label: string }[]>([]);
   const [notifyGroups, setNotifyGroups] = useState<any[]>([]);
   const [notifyTpls, setNotifyTpls] = useState<any[]>([]);
+  const [notifyTplsCollapsed, setNotifyTplsCollapsed] = useState<boolean>(true);
   const notify_channels = Form.useWatch('notify_channels');
-  const extra_config = Form.useWatch('extra_config');
-  const custom_notify_tpl = Form.useWatch(['extra_config', 'custom_notify_tpl']);
   const getNotifyChannel = () => {
     getNotifiesList().then((res) => {
       setContactList(res || []);
@@ -73,32 +72,46 @@ export default function index({ disabled, form }) {
         </Form.Item>
         {!_.isEmpty(notify_channels) && (
           <div>
-            <div style={{ paddingBottom: 8 }}>{t('notify_channels_tpl')}</div>
-            {_.map(notify_channels, (channel) => {
-              return (
-                <InputGroupWithFormItem
-                  label={_.get(_.find(contactList, { key: channel }), 'label', channel)}
-                  customStyle={{
-                    minWidth: 100,
-                  }}
-                >
-                  <Form.Item key={channel} name={['extra_config', 'custom_notify_tpl', channel]}>
-                    <Select
-                      showSearch
-                      allowClear
-                      placeholder={t('extra_config.default_tpl')}
-                      options={_.map(notifyTpls, (tpl) => {
-                        return {
-                          label: tpl.name,
-                          value: tpl.channel,
-                        };
-                      })}
-                      optionFilterProp='label'
-                    />
-                  </Form.Item>
-                </InputGroupWithFormItem>
-              );
-            })}
+            <div
+              style={{ paddingBottom: 8, cursor: 'pointer' }}
+              onClick={() => {
+                setNotifyTplsCollapsed(!notifyTplsCollapsed);
+              }}
+            >
+              <Space>
+                {t('notify_channels_tpl')}
+                <Tooltip title={t('notify_channels_tpl_tip')}>
+                  <InfoCircleOutlined />
+                </Tooltip>
+                {notifyTplsCollapsed ? <DownOutlined /> : <UpOutlined />}
+              </Space>
+            </div>
+            {!notifyTplsCollapsed &&
+              _.map(notify_channels, (channel) => {
+                return (
+                  <InputGroupWithFormItem
+                    label={_.get(_.find(contactList, { key: channel }), 'label', channel)}
+                    customStyle={{
+                      minWidth: 100,
+                    }}
+                  >
+                    <Form.Item key={channel} name={['extra_config', 'custom_notify_tpl', channel]}>
+                      <Select
+                        showSearch
+                        allowClear
+                        placeholder={t('extra_config.default_tpl')}
+                        options={_.map(notifyTpls, (tpl) => {
+                          return {
+                            label: tpl.name,
+                            value: tpl.channel,
+                          };
+                        })}
+                        optionFilterProp='label'
+                      />
+                    </Form.Item>
+                  </InputGroupWithFormItem>
+                );
+              })}
           </div>
         )}
         <Form.Item label={t('notify_groups')} name='notify_groups'>
