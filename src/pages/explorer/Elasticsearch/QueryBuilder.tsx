@@ -35,7 +35,6 @@ export default function QueryBuilder(props: Props) {
           setFields(res.allFields);
           setDateFields(res.fields);
           const query = form.getFieldValue('query');
-          console.log(query.date_field);
           const dateField = _.find(res.fields, { name: query.date_field })?.name;
           const defaultDateField = _.find(res.fields, { name: '@timestamp' })?.name || res.fields[0]?.name;
           form.setFieldsValue({
