@@ -26,7 +26,7 @@ import { getBusiGroups } from '@/services/common';
 import { CommonStateContext } from '@/App';
 import List from './List';
 import BusinessGroup from './BusinessGroup';
-import BusinessGroup2 from '@/components/BusinessGroup';
+import BusinessGroup2, { getCleanBusinessGroupIds } from '@/components/BusinessGroup';
 import './locale';
 import './index.less';
 
@@ -339,7 +339,7 @@ const OperationModal: React.FC<OperateionModalProps> = ({ operateType, setOperat
 
 const Targets: React.FC = () => {
   const { t } = useTranslation('targets');
-  const { businessGroup, businessGroupOnChange } = useContext(CommonStateContext);
+  const { businessGroup } = useContext(CommonStateContext);
   const [gids, setGids] = useState<string | undefined>(businessGroup.ids);
   const [operateType, setOperateType] = useState<OperateType>(OperateType.None);
   const [selectedRowKeys, setSelectedRowKeys] = useState<(string | number)[]>([]);
@@ -383,6 +383,10 @@ const Targets: React.FC = () => {
                 </div>
               </div>
             );
+          }}
+          onSelect={(key) => {
+            const ids = getCleanBusinessGroupIds(key);
+            setGids(ids);
           }}
         />
         <div
