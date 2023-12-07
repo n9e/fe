@@ -126,17 +126,15 @@ export default function index(props: IProps) {
                     })}
                     key={itemKey}
                     onClick={() => {
-                      if (itemKey !== businessGroup.key) {
-                        businessGroupOnChange(itemKey);
-                        onSelect && onSelect(itemKey, item);
-                        history.push({
-                          pathname: location.pathname,
-                          search: queryString.stringify({
-                            ...query,
-                            id: itemKey,
-                          }),
-                        });
-                      }
+                      businessGroupOnChange(itemKey);
+                      onSelect && onSelect(itemKey, item);
+                      history.push({
+                        pathname: location.pathname,
+                        search: queryString.stringify({
+                          ...query,
+                          ids: itemKey,
+                        }),
+                      });
                     }}
                   >
                     <span className='name'>{item.name}</span>
@@ -159,18 +157,16 @@ export default function index(props: IProps) {
                   switcherIcon={<DownOutlined />}
                   onSelect={(_selectedKeys, e) => {
                     const itemKey = e.node.key;
-                    if (itemKey !== businessGroup.key) {
-                      businessGroupOnChange(itemKey);
-                      onSelect && onSelect(itemKey, e.node);
-                      history.push({
-                        pathname: location.pathname,
-                        search: queryString.stringify({
-                          ...query,
-                          ids: getCleanBusinessGroupIds(itemKey),
-                          isLeaf: !_.startsWith(itemKey, 'group,'),
-                        }),
-                      });
-                    }
+                    businessGroupOnChange(itemKey);
+                    onSelect && onSelect(itemKey, e.node);
+                    history.push({
+                      pathname: location.pathname,
+                      search: queryString.stringify({
+                        ...query,
+                        ids: getCleanBusinessGroupIds(itemKey),
+                        isLeaf: !_.startsWith(itemKey, 'group,'),
+                      }),
+                    });
                   }}
                   onExpand={(expandedKeys: string[]) => {
                     setLocaleExpandedKeys(expandedKeys);
