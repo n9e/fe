@@ -24,7 +24,8 @@ const zh_CN = {
     3分钟内有过心跳：黄色 <1 />
     3分钟内没有心跳：红色
   `,
-  remote_addr: '来源IP',
+  remote_addr: '来源 IP',
+  agent_version: 'Agent 版本',
   note: '备注',
   organize_columns: {
     title: '显示列',

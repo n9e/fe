@@ -16,7 +16,6 @@
  */
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
-import { N9EAPI } from '../../config/constant';
 
 export const getIndicatorList = function (data: object) {
   return request(`/api/n9e/metric-descriptions`, {
@@ -25,10 +24,7 @@ export const getIndicatorList = function (data: object) {
   });
 };
 
-export const editIndicator = function (
-  id: number,
-  data: { description?: string | undefined; metric?: string | undefined },
-) {
+export const editIndicator = function (id: number, data: { description?: string | undefined; metric?: string | undefined }) {
   return request(`/api/n9e/metric-description/${id}`, {
     method: RequestMethod.Put,
     data: data,

@@ -16,7 +16,6 @@
  */
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
-import { N9EAPI } from '../../config/constant';
 
 // 修改个人信息
 export const getUserInfoList = function (params = {}) {

@@ -32,6 +32,8 @@ const en_US = {
   enable_in_bg_tip: 'Determine the ownership relationship based on the ident in the alert event',
   notify_configs: 'Notify Configuration',
   notify_channels: 'Channels',
+  notify_channels_tpl: 'Channels Template',
+  notify_channels_tpl_tip: 'If empty, use the default template',
   notify_recovered: 'Recovered',
   notify_recovered_tip: 'Send notification when the alert is recovered',
   recover_duration: 'Recover Duration (s)',
@@ -46,6 +48,9 @@ const en_US = {
     plan_link: 'Plan Link',
     dashboard_link: 'Dashboard Link',
     desc: 'Description',
+  },
+  extra_config: {
+    default_tpl: 'Default Template',
   },
   invalid_datasource_tip_1: 'Datasources',
   invalid_datasource_tip_2: 'are not configured with cluster of alert engine',

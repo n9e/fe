@@ -25,6 +25,7 @@ const zh_HK = {
     3分鐘內沒有心跳：紅色
   `,
   remote_addr: '來源 IP',
+  agent_version: 'Agent 版本',
   note: '備註',
   organize_columns: {
     title: '顯示列',
