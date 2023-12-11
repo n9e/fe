@@ -213,7 +213,7 @@ export default function Graph(props: IProps) {
           )}
         </Space>
       </div>
-      <Timeseries inDashboard={false} values={lineGraphProps as any} series={data} />
+      <Timeseries inDashboard={false} values={lineGraphProps as any} series={data} time={range} />
     </div>
   );
 }
