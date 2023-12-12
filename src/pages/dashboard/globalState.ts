@@ -10,6 +10,7 @@ export const { useGlobalState } = createGlobalState<{
   statFields: string[];
   tableFields: string[];
   displayedTableFields: string[];
+  tableRefIds: string[]; // labelValuesToRows 模式下，tableRefIds 用于记录当前表格的 refId
 }>({
   statFields: [],
   tableFields: [],
@@ -20,4 +21,5 @@ export const { useGlobalState } = createGlobalState<{
     graphTooltip: string;
     graphZoom: string;
   },
+  tableRefIds: [],
 });
