@@ -39,6 +39,7 @@ const promqlExtension = new PromQLExtension();
 export interface CMExpressionInputProps {
   url?: string;
   readonly?: boolean;
+  disabled?: boolean;
   headers?: { [index: string]: string };
   value?: string;
   onChange?: (expr?: string) => void;
@@ -58,6 +59,7 @@ const ExpressionInput = (
     onChange,
     executeQuery,
     readonly = false,
+    disabled = false,
     validateTrigger = ['onChange', 'onBlur'],
     completeEnabled = true,
     trigger = ['onBlur', 'onEnter'],
@@ -206,7 +208,7 @@ const ExpressionInput = (
 
   return (
     <div
-      className={classNames({ 'ant-input': true, readonly: readonly, 'promql-input': true })}
+      className={classNames({ 'ant-input': true, readonly: readonly, 'promql-input': true, disabled: disabled })}
       onBlur={() => {
         if (typeof onChange === 'function' && _.includes(trigger, 'onBlur')) {
           if (realValue.current !== value) {
