@@ -30,13 +30,13 @@ import { GetProfile } from '@/services/account';
 import { getBusiGroups, getDatasourceBriefList } from '@/services/common';
 import { getLicense } from '@/components/AdvancedWrap';
 import { getVersions } from '@/components/pageLayout/Version/services';
+import { getCleanBusinessGroupIds, getDefaultBusinessGroupKey } from '@/components/BusinessGroup';
+import { getN9eConfig } from '@/pages/siteSettings/services';
 import HeaderMenu from './components/menu/SideMenu';
 import Content from './routers';
 
 // @ts-ignore
 import useIsPlus from 'plus:/components/useIsPlus';
-// @ts-ignore
-import { getN9eConfig } from 'plus:/pages/SiteInfo/services';
 // @ts-ignore
 import CustomerServiceFloatButton from 'plus:/components/CustomerServiceFloatButton';
 
@@ -76,6 +76,13 @@ export interface ICommonState {
   setBusiGroups: (groups: { name: string; id: number }[]) => void;
   curBusiId: number;
   setCurBusiId: (id: number) => void;
+  businessGroup: {
+    key?: string; // 业务组组件本身的key
+    ids?: string; // 逗号分割 'id1,id2,id3'
+    id?: number; // 叶子节点的id 用于兼容旧的代码
+    isLeaf?: boolean;
+  };
+  businessGroupOnChange: (key: string) => void;
   profile: IProfile;
   setProfile: (profile: IProfile) => void;
   licenseRulesRemaining?: number;
@@ -107,6 +114,7 @@ function App() {
   const { t, i18n } = useTranslation();
   const isPlus = useIsPlus();
   const initialized = useRef(false);
+  const defaultBusinessGroupKey = getDefaultBusinessGroupKey();
   const [commonState, setCommonState] = useState<ICommonState>({
     datasourceCateOptions: [],
     groupedDatasourceList: {},
@@ -122,6 +130,25 @@ function App() {
     setCurBusiId: (id: number) => {
       window.localStorage.setItem('curBusiId', String(id));
       setCommonState((state) => ({ ...state, curBusiId: id }));
+    },
+    businessGroup: {
+      key: defaultBusinessGroupKey,
+      ids: getCleanBusinessGroupIds(defaultBusinessGroupKey),
+      id: _.map(_.split(getCleanBusinessGroupIds(defaultBusinessGroupKey), ','), _.toNumber)?.[0],
+      isLeaf: !_.startsWith(defaultBusinessGroupKey, 'group,'),
+    },
+    businessGroupOnChange: (key: string) => {
+      window.localStorage.setItem('businessGroupKey', key);
+      const ids = getCleanBusinessGroupIds(key);
+      setCommonState((state) => ({
+        ...state,
+        businessGroup: {
+          key,
+          ids,
+          id: _.map(_.split(ids, ','), _.toNumber)?.[0],
+          isLeaf: !_.startsWith(key, 'group,'),
+        },
+      }));
     },
     profile: {} as IProfile,
     setProfile: (profile: IProfile) => {
@@ -146,14 +173,12 @@ function App() {
       (async () => {
         const iconLink = document.querySelector("link[rel~='icon']") as any;
         let siteInfo;
-        if (isPlus) {
-          const siteInfoStr = await getN9eConfig('site_info');
-          if (siteInfoStr) {
-            try {
-              siteInfo = JSON.parse(siteInfoStr);
-            } catch (e) {
-              console.error(e);
-            }
+        const siteInfoStr = await getN9eConfig('site_info');
+        if (siteInfoStr) {
+          try {
+            siteInfo = JSON.parse(siteInfoStr);
+          } catch (e) {
+            console.error(e);
           }
         }
         document.title = siteInfo?.page_title || 'Nightingale';

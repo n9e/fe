@@ -322,6 +322,14 @@ const zh_CN = {
         stack: '堆叠',
         stack_noraml: '开启',
         stack_off: '关闭',
+        yAxis: {
+          title: 'Y轴设置',
+          rightYAxis: {
+            label: '右侧Y轴显示',
+            noraml: '开启',
+            off: '关闭',
+          },
+        },
       },
       iframe: {
         src: 'iframe 地址',

@@ -14,12 +14,15 @@
  * limitations under the License.
  *
  */
-import React, { useEffect, useState, useImperativeHandle, ReactNode } from 'react';
+import React, { useEffect, useState, useImperativeHandle, ReactNode, useContext } from 'react';
 import { Form, Input } from 'antd';
 import { getTeamInfo } from '@/services/manage';
 import { TeamProps, Team, TeamInfo } from '@/store/manageInterface';
 import { useTranslation, Trans } from 'react-i18next';
+import { CommonStateContext } from '@/App';
+
 const TeamForm = React.forwardRef<ReactNode, TeamProps>((props, ref) => {
+  const { siteInfo } = useContext(CommonStateContext);
   const { t } = useTranslation('user');
   const { teamId } = props;
   const [form] = Form.useForm();
@@ -53,7 +56,18 @@ const TeamForm = React.forwardRef<ReactNode, TeamProps>((props, ref) => {
             required: true,
           },
         ]}
-        tooltip={<Trans ns='user' i18nKey='business.name_tip' components={{ 1: <br /> }} />}
+        tooltip={
+          siteInfo?.teamDisplayMode === 'list' ? undefined : (
+            <Trans
+              ns='user'
+              i18nKey='business.name_tip'
+              components={{ 1: <br /> }}
+              values={{
+                separator: siteInfo?.teamSeparator || '-',
+              }}
+            />
+          )
+        }
       >
         <Input />
       </Form.Item>

@@ -25,6 +25,7 @@ export function bestFitElemCountPerRow(bucketLen, width, height) {
     if (netSpaceLost < base) {
       base = netSpaceLost;
       countPerRow = r;
+      bucketLen = Math.ceil(bucketLen / r);
     }
   }
   return countPerRow;

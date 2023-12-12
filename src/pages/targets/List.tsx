@@ -16,6 +16,12 @@ import { getDefaultColumnsConfigs, setDefaultColumnsConfigs } from './utils';
 import CollectsDrawer from 'plus:/pages/collects/CollectsDrawer';
 // @ts-ignore
 import TargetMetaDrawer from 'plus:/parcels/Targets/TargetMetaDrawer';
+// @ts-ignore
+import UpgradeAgent from 'plus:/parcels/Targets/UpgradeAgent';
+// @ts-ignore
+import VersionSelect from 'plus:/parcels/Targets/VersionSelect';
+// @ts-ignore
+import { extraColumns } from 'plus:/parcels/Targets';
 
 export const pageSizeOptions = ['10', '20', '50', '100'];
 
@@ -41,7 +47,7 @@ interface ITargetProps {
 }
 
 interface IProps {
-  curBusiId: number;
+  gids?: string;
   selectedIdents: string[];
   setSelectedIdents: (selectedIdents: string[]) => void;
   selectedRowKeys: any[];
@@ -59,7 +65,7 @@ const downtimeOptions = [1, 2, 3, 5, 10, 30];
 
 export default function List(props: IProps) {
   const { t } = useTranslation('targets');
-  const { curBusiId, selectedIdents, setSelectedIdents, selectedRowKeys, setSelectedRowKeys, refreshFlag, setRefreshFlag, setOperateType } = props;
+  const { gids, selectedIdents, setSelectedIdents, selectedRowKeys, setSelectedRowKeys, refreshFlag, setRefreshFlag, setOperateType } = props;
   const isAddTagToQueryInput = useRef(false);
   const [searchVal, setSearchVal] = useState('');
   const [tableQueryContent, setTableQueryContent] = useState<string>('');
@@ -67,6 +73,7 @@ export default function List(props: IProps) {
   const [collectsDrawerVisible, setCollectsDrawerVisible] = useState(false);
   const [collectsDrawerIdent, setCollectsDrawerIdent] = useState('');
   const [downtime, setDowntime] = useState();
+  const [agentVersions, setAgentVersions] = useState<string>();
   const columns: ColumnsType<any> = [
     {
       title: (
@@ -361,6 +368,7 @@ export default function List(props: IProps) {
         },
       });
     }
+    extraColumns(item.name, columns);
     if (item.name === 'note') {
       columns.push({
         title: t('common:table.note'),
@@ -382,10 +390,11 @@ export default function List(props: IProps) {
   const featchData = ({ current, pageSize }: { current: number; pageSize: number }): Promise<any> => {
     const query = {
       query: tableQueryContent,
-      bgid: curBusiId,
+      gids: gids,
       limit: pageSize,
       p: current,
       downtime,
+      agent_versions: _.isEmpty(agentVersions) ? undefined : JSON.stringify(agentVersions),
     };
     return getMonObjectList(query).then((res) => {
       return {
@@ -409,7 +418,7 @@ export default function List(props: IProps) {
       current: 1,
       pageSize: tableProps.pagination.pageSize,
     });
-  }, [tableQueryContent, curBusiId, refreshFlag, downtime]);
+  }, [tableQueryContent, gids, refreshFlag, downtime, agentVersions]);
 
   return (
     <div>
@@ -449,6 +458,12 @@ export default function List(props: IProps) {
               setDowntime(val);
             }}
           />
+          <VersionSelect
+            value={agentVersions}
+            onChange={(val) => {
+              setAgentVersions(val);
+            }}
+          />
         </Space>
         <Space>
           <Button
@@ -469,7 +484,9 @@ export default function List(props: IProps) {
             overlay={
               <Menu
                 onClick={({ key }) => {
-                  setOperateType(key as OperateType);
+                  if (key) {
+                    setOperateType(key as OperateType);
+                  }
                 }}
               >
                 <Menu.Item key={OperateType.BindTag}>{t('bind_tag.title')}</Menu.Item>
@@ -478,6 +495,12 @@ export default function List(props: IProps) {
                 <Menu.Item key={OperateType.RemoveBusi}>{t('remove_busi.title')}</Menu.Item>
                 <Menu.Item key={OperateType.UpdateNote}>{t('update_note.title')}</Menu.Item>
                 <Menu.Item key={OperateType.Delete}>{t('batch_delete.title')}</Menu.Item>
+                <UpgradeAgent
+                  selectedIdents={selectedIdents}
+                  onOk={() => {
+                    setRefreshFlag(_.uniqueId('refreshFlag_'));
+                  }}
+                />
               </Menu>
             }
           >

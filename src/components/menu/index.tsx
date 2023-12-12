@@ -221,7 +221,6 @@ const getMenuList = (t) => {
           key: '/help/servers',
           label: t('告警引擎'),
         },
-
         {
           key: '/help/migrate',
           label: t('仪表盘迁移'),

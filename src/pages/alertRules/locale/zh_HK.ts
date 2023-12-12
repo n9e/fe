@@ -32,6 +32,8 @@ const zh_HK = {
   enable_in_bg_tip: '根據告警事件中的 ident 歸屬關係判斷',
   notify_configs: '通知配置',
   notify_channels: '通知媒介',
+  notify_channels_tpl: '通知媒介模板',
+  notify_channels_tpl_tip: '為空則使用默認模板',
   notify_recovered: '啟用恢復通知',
   notify_recovered_tip: '告警恢復時也傳送通知',
   recover_duration: '留觀時長（秒）',
@@ -46,6 +48,9 @@ const zh_HK = {
     plan_link: '預案連結',
     dashboard_link: '儀表盤連結',
     desc: '描述',
+  },
+  extra_config: {
+    default_tpl: '默認模板',
   },
   invalid_datasource_tip_1: '數據源',
   invalid_datasource_tip_2: '未配置關聯告警引擎集群',

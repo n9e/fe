@@ -21,6 +21,7 @@ export default function QueryBuilder(props: Props) {
   const { t } = useTranslation('explorer');
   const { onExecute, datasourceValue, form, setFields, onIndexChange } = props;
   const [indexPatterns, setIndexPatterns] = useState<any[]>([]);
+  const indexPattern = Form.useWatch(['query', 'indexPattern']);
   const { run: onIndexPatternChange } = useDebounceFn(
     (indexPattern) => {
       if (datasourceValue && indexPattern) {
@@ -43,6 +44,12 @@ export default function QueryBuilder(props: Props) {
       });
     }
   }, [datasourceValue]);
+
+  useEffect(() => {
+    if (indexPattern) {
+      onIndexPatternChange(indexPattern);
+    }
+  }, [indexPattern]);
 
   return (
     <>
@@ -79,7 +86,6 @@ export default function QueryBuilder(props: Props) {
                 onChange={(val) => {
                   const indexPattern = _.find(indexPatterns, (item) => item.id === val);
                   if (indexPattern) {
-                    onIndexPatternChange(indexPattern);
                     const formValuesQuery = form.getFieldValue('query');
                     let fieldConfig;
                     try {

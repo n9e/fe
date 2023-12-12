@@ -23,12 +23,12 @@ const zh_HK = {
     `,
   },
   script: {
-    title: '通知指令碼',
+    title: '通知腳本',
     enable: '啟用',
     timeout: '超時 (單位： s)',
-    type: ['使用指令碼', '使用路徑'],
+    type: ['使用腳本', '使用路徑'],
     path: '檔案路徑',
-    content: '指令碼內容',
+    content: '腳本內容',
   },
   channels: {
     title: '通知媒介',

@@ -11,7 +11,7 @@ export function listToTree2(data: { id: number; name: string }[]) {
         _.reduce(
           keys,
           (q, text) => {
-            var temp = _.find(q, (o) => o.title === text);
+            var temp = _.find(q, (o) => o.title === text && o.isLeaf !== true); // 2023-12-05 添加不能是叶子节点的判断，防止处理同名节点补的空格再次触发同名问题
             if (!temp) {
               q.push((temp = { id: item.id, key: `${item.id}_${text}`, originName: item.name, title: text, selectable: false, children: [] }));
             }

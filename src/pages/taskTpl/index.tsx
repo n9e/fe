@@ -17,7 +17,7 @@
 import React, { useState, useRef, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { Table, Divider, Popconfirm, Tag, Row, Col, Input, Button, Dropdown, Menu, message } from 'antd';
-import { DownOutlined, PlusOutlined, SearchOutlined, CodeOutlined } from '@ant-design/icons';
+import { DownOutlined, SearchOutlined, CodeOutlined } from '@ant-design/icons';
 import { ColumnProps } from 'antd/lib/table';
 import _ from 'lodash';
 import moment from 'moment';
@@ -25,7 +25,7 @@ import { useAntdTable } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import request from '@/utils/request';
 import api from '@/utils/api';
-import { BusinessGroup } from '@/pages/targets';
+import BusinessGroup from '@/components/BusinessGroup';
 import PageLayout from '@/components/pageLayout';
 import { Tpl } from './interface';
 import BindTags from './bindTags';
@@ -33,9 +33,9 @@ import UnBindTags from './unBindTags';
 import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
 import { CommonStateContext } from '@/App';
 
-function getTableData(options: any, busiGroup: number | undefined, query: string) {
-  if (busiGroup) {
-    return request(`${api.tasktpls(busiGroup)}?limit=${options.pageSize}&p=${options.current}&query=${query}`).then((res) => {
+function getTableData(options: any, gids: string | undefined, query: string) {
+  if (gids) {
+    return request(`/api/n9e/busi-groups/task-tpls?gids=${gids}&limit=${options.pageSize}&p=${options.current}&query=${query}`).then((res) => {
       return { list: res.dat.list, total: res.dat.total };
     });
   }
@@ -46,10 +46,9 @@ const index = (_props: any) => {
   const { t, i18n } = useTranslation('common');
   const searchRef = useRef<any>(null);
   const [query, setQuery] = useState('');
-  const { curBusiId, setCurBusiId } = useContext(CommonStateContext);
-  const busiId = curBusiId;
+  const { busiGroups, businessGroup } = useContext(CommonStateContext);
   const [selectedIds, setSelectedIds] = useState([] as any[]);
-  const { tableProps, refresh } = useAntdTable<any, any>((options) => getTableData(options, busiId, query), { refreshDeps: [busiId, query] });
+  const { tableProps, refresh } = useAntdTable<any, any>((options) => getTableData(options, businessGroup.ids, query), { refreshDeps: [businessGroup.ids, query] });
 
   function handleTagClick(tag: string) {
     if (!_.includes(query, tag)) {
@@ -59,23 +58,12 @@ const index = (_props: any) => {
     }
   }
 
-  function handleDelBtnClick(id: number) {
-    if (busiId) {
-      request(`${api.tasktpl(busiId)}/${id}`, {
-        method: 'DELETE',
-      }).then(() => {
-        message.success(t('msg.delete.success'));
-        refresh();
-      });
-    }
-  }
-
   function handleBatchBindTags() {
     if (!_.isEmpty(selectedIds)) {
       BindTags({
         language: i18n.language,
         selectedIds,
-        busiId,
+        busiId: businessGroup.id,
         onOk: () => {
           refresh();
         },
@@ -94,7 +82,7 @@ const index = (_props: any) => {
         language: i18n.language,
         selectedIds,
         uniqueTags,
-        busiId,
+        busiId: businessGroup.id,
         onOk: () => {
           refresh();
         },
@@ -102,67 +90,86 @@ const index = (_props: any) => {
     }
   }
 
-  const columns: ColumnProps<Tpl>[] = [
-    {
-      title: 'ID',
-      dataIndex: 'id',
-    },
-    {
-      title: t('tpl.title'),
-      dataIndex: 'title',
-      render: (text, record) => {
-        return <Link to={{ pathname: `/job-tpls/${record.id}/detail` }}>{text}</Link>;
+  const columns: ColumnProps<Tpl>[] = _.concat(
+    businessGroup.isLeaf
+      ? []
+      : ([
+          {
+            title: t('common:business_group'),
+            dataIndex: 'group_id',
+            width: 100,
+            render: (id) => {
+              return _.find(busiGroups, { id })?.name;
+            },
+          },
+        ] as any),
+    [
+      {
+        title: 'ID',
+        dataIndex: 'id',
       },
-    },
-    {
-      title: t('tpl.tags'),
-      dataIndex: 'tags',
-      render: (text) => {
-        return _.map(text, (item) => (
-          <Tag color='purple' key={item} onClick={() => handleTagClick(item)}>
-            {item}
-          </Tag>
-        ));
+      {
+        title: t('tpl.title'),
+        dataIndex: 'title',
+        render: (text, record) => {
+          return <Link to={{ pathname: `/job-tpls/${record.id}/detail` }}>{text}</Link>;
+        },
       },
-    },
-    {
-      title: t('tpl.creator'),
-      dataIndex: 'create_by',
-      width: 100,
-    },
-    {
-      title: t('tpl.last_updated'),
-      dataIndex: 'update_at',
-      width: 160,
-      render: (text) => {
-        return moment.unix(text).format('YYYY-MM-DD HH:mm:ss');
+      {
+        title: t('tpl.tags'),
+        dataIndex: 'tags',
+        render: (text) => {
+          return _.map(text, (item) => (
+            <Tag color='purple' key={item} onClick={() => handleTagClick(item)}>
+              {item}
+            </Tag>
+          ));
+        },
       },
-    },
-    {
-      title: t('table.operations'),
-      width: 220,
-      render: (_text, record) => {
-        return (
-          <span>
-            <Link to={{ pathname: `/job-tpls/add/task`, search: `tpl=${record.id}` }}>{t('task.create')}</Link>
-            <Divider type='vertical' />
-            <Link to={{ pathname: `/job-tpls/${record.id}/modify` }}>{t('common:btn.modify')}</Link>
-            <Divider type='vertical' />
-            <Link to={{ pathname: `/job-tpls/${record.id}/clone` }}>{t('common:btn.clone')}</Link>
-            <Divider type='vertical' />
-            <Popconfirm
-              title={<div style={{ width: 100 }}>{t('common:confirm.delete')}</div>}
-              onConfirm={() => {
-                handleDelBtnClick(record.id);
-              }}
-            >
-              <a style={{ color: 'red' }}>{t('common:btn.delete')}</a>
-            </Popconfirm>
-          </span>
-        );
+      {
+        title: t('tpl.creator'),
+        dataIndex: 'create_by',
+        width: 100,
       },
-    },
-  ];
+      {
+        title: t('tpl.last_updated'),
+        dataIndex: 'update_at',
+        width: 160,
+        render: (text) => {
+          return moment.unix(text).format('YYYY-MM-DD HH:mm:ss');
+        },
+      },
+      {
+        title: t('table.operations'),
+        width: 220,
+        render: (_text, record) => {
+          return (
+            <span>
+              <Link to={{ pathname: `/job-tpls/add/task`, search: `tpl=${record.id}` }}>{t('task.create')}</Link>
+              <Divider type='vertical' />
+              <Link to={{ pathname: `/job-tpls/${record.id}/modify` }}>{t('common:btn.edit')}</Link>
+              <Divider type='vertical' />
+              <Link to={{ pathname: `/job-tpls/${record.id}/clone` }}>{t('common:btn.clone')}</Link>
+              <Divider type='vertical' />
+              <Popconfirm
+                title={<div style={{ width: 100 }}>{t('common:confirm.delete')}</div>}
+                onConfirm={() => {
+                  request(`${api.tasktpl(record.group_id)}/${record.id}`, {
+                    method: 'DELETE',
+                  }).then(() => {
+                    message.success(t('msg.delete.success'));
+                    refresh();
+                  });
+                }}
+              >
+                <a style={{ color: 'red' }}>{t('common:btn.delete')}</a>
+              </Popconfirm>
+            </span>
+          );
+        },
+      },
+    ],
+  );
   return (
     <PageLayout
       title={
@@ -173,13 +180,8 @@ const index = (_props: any) => {
       }
     >
       <div style={{ display: 'flex' }}>
-        <BusinessGroup
-          curBusiId={curBusiId}
-          setCurBusiId={(id) => {
-            setCurBusiId(id);
-          }}
-        />
-        {busiId ? (
+        <BusinessGroup />
+        {businessGroup.ids ? (
           <div style={{ flex: 1, padding: 10 }}>
             <Row>
               <Col span={14} className='mb10'>
@@ -193,43 +195,45 @@ const index = (_props: any) => {
                   }}
                 />
               </Col>
-              <Col span={10} className='textAlignRight'>
-                <Link to={{ pathname: `/job-tpls/add` }}>
-                  <Button style={{ marginRight: 10 }} type='primary'>
-                    {t('tpl.create')}
-                  </Button>
-                </Link>
-                <Dropdown
-                  overlay={
-                    <Menu>
-                      <Menu.Item>
-                        <Button
-                          type='link'
-                          disabled={selectedIds.length === 0}
-                          onClick={() => {
-                            handleBatchBindTags();
-                          }}
-                        >
-                          {t('tpl.tag.bind')}
-                        </Button>
-                      </Menu.Item>
-                      <Menu.Item>
-                        <Button
-                          type='link'
-                          disabled={selectedIds.length === 0}
-                          onClick={() => {
-                            handleBatchUnBindTags();
-                          }}
-                        >
-                          {t('tpl.tag.unbind')}
-                        </Button>
-                      </Menu.Item>
-                    </Menu>
-                  }
-                >
-                  <Button icon={<DownOutlined />}>{t('btn.batch_operations')}</Button>
-                </Dropdown>
-              </Col>
+              {businessGroup.isLeaf && (
+                <Col span={10} className='textAlignRight'>
+                  <Link to={{ pathname: `/job-tpls/add` }}>
+                    <Button style={{ marginRight: 10 }} type='primary'>
+                      {t('tpl.create')}
+                    </Button>
+                  </Link>
+                  <Dropdown
+                    overlay={
+                      <Menu>
+                        <Menu.Item>
+                          <Button
+                            type='link'
+                            disabled={selectedIds.length === 0}
+                            onClick={() => {
+                              handleBatchBindTags();
+                            }}
+                          >
+                            {t('tpl.tag.bind')}
+                          </Button>
+                        </Menu.Item>
+                        <Menu.Item>
+                          <Button
+                            type='link'
+                            disabled={selectedIds.length === 0}
+                            onClick={() => {
+                              handleBatchUnBindTags();
+                            }}
+                          >
+                            {t('tpl.tag.unbind')}
+                          </Button>
+                        </Menu.Item>
+                      </Menu>
+                    }
+                  >
+                    <Button icon={<DownOutlined />}>{t('btn.batch_operations')}</Button>
+                  </Dropdown>
+                </Col>
+              )}
             </Row>
             <Table
               size='small'

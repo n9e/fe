@@ -14,16 +14,18 @@
  * limitations under the License.
  *
  */
-import React, { useEffect, useState, useImperativeHandle, ReactNode, useCallback } from 'react';
+import React, { useEffect, useState, useImperativeHandle, ReactNode, useCallback, useContext } from 'react';
 import { Form, Input, Select, Switch, Tag, Space, Button } from 'antd';
 import { MinusCircleOutlined, PlusOutlined, CaretDownOutlined } from '@ant-design/icons';
 import { getBusinessTeamInfo, getTeamInfoList } from '@/services/manage';
 import { TeamProps, Team, ActionType } from '@/store/manageInterface';
 import { useTranslation, Trans } from 'react-i18next';
 import { debounce } from 'lodash';
+import { CommonStateContext } from '@/App';
 
 const { Option } = Select;
 const TeamForm = React.forwardRef<ReactNode, TeamProps>((props, ref) => {
+  const { siteInfo } = useContext(CommonStateContext);
   const { t } = useTranslation('user');
   const { businessId, action } = props;
   const [form] = Form.useForm();
@@ -87,7 +89,18 @@ const TeamForm = React.forwardRef<ReactNode, TeamProps>((props, ref) => {
                 required: true,
               },
             ]}
-            tooltip={<Trans ns='user' i18nKey='business.name_tip' components={{ 1: <br /> }} />}
+            tooltip={
+              siteInfo?.businessGroupDisplayMode === 'list' ? undefined : (
+                <Trans
+                  ns='user'
+                  i18nKey='business.name_tip'
+                  components={{ 1: <br /> }}
+                  values={{
+                    separator: siteInfo?.businessGroupSeparator || '-',
+                  }}
+                />
+              )
+            }
           >
             <Input />
           </Form.Item>

@@ -25,7 +25,7 @@ export interface subscribeItem {
   etime: number;
   btime: number;
   id: number;
-  group_id?: number;
+  group_id: number;
   datasource_ids: number[];
   redefine_severity?: number;
   redefine_channels?: number;
@@ -34,6 +34,7 @@ export interface subscribeItem {
   new_channels: string;
   prod: string;
   severities?: number[];
+  note: string;
 }
 
 interface IuserItem {

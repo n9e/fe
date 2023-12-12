@@ -19,16 +19,21 @@ import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Card, Form, Checkbox, Switch, Space, Select, Tooltip, Row, Col, InputNumber, Input, AutoComplete } from 'antd';
-import { PlusCircleOutlined, MinusCircleOutlined, QuestionCircleFilled } from '@ant-design/icons';
+import { PlusCircleOutlined, MinusCircleOutlined, QuestionCircleFilled, DownOutlined, RightOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { getTeamInfoList, getNotifiesList } from '@/services/manage';
+import { getNotifyTpls } from '@/pages/help/NotificationTpls/services';
+import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { panelBaseProps } from '../../constants';
 // @ts-ignore
 import NotifyExtra from 'plus:/parcels/AlertRule/NotifyExtra';
 
-export default function index({ disabled }) {
+export default function index({ disabled, form }) {
   const { t } = useTranslation('alertRules');
   const [contactList, setContactList] = useState<{ key: string; label: string }[]>([]);
   const [notifyGroups, setNotifyGroups] = useState<any[]>([]);
+  const [notifyTpls, setNotifyTpls] = useState<any[]>([]);
+  const [notifyTplsCollapsed, setNotifyTplsCollapsed] = useState<boolean>(true);
+  const notify_channels = Form.useWatch('notify_channels');
   const getNotifyChannel = () => {
     getNotifiesList().then((res) => {
       setContactList(res || []);
@@ -43,22 +48,72 @@ export default function index({ disabled }) {
   useEffect(() => {
     getGroups('');
     getNotifyChannel();
+    getNotifyTpls().then((res) => {
+      setNotifyTpls(res);
+    });
   }, []);
 
   return (
     <>
       <Card {...panelBaseProps} title={t('notify_configs')}>
+        <Form.Item name={['extra_config', 'custom_notify_tpl']} hidden>
+          <div />
+        </Form.Item>
         <Form.Item label={t('notify_channels')} name='notify_channels'>
           <Checkbox.Group disabled={disabled}>
             {contactList.map((item) => {
               return (
-                <Checkbox value={item.key} key={item.label}>
+                <Checkbox key={item.label} value={item.key}>
                   {item.label}
                 </Checkbox>
               );
             })}
           </Checkbox.Group>
         </Form.Item>
+        {!_.isEmpty(notify_channels) && (
+          <div>
+            <div
+              style={{ paddingBottom: 8, cursor: 'pointer' }}
+              onClick={() => {
+                setNotifyTplsCollapsed(!notifyTplsCollapsed);
+              }}
+            >
+              <Space>
+                {t('notify_channels_tpl')}
+                <Tooltip title={t('notify_channels_tpl_tip')}>
+                  <InfoCircleOutlined />
+                </Tooltip>
+                {notifyTplsCollapsed ? <RightOutlined /> : <DownOutlined />}
+              </Space>
+            </div>
+            {!notifyTplsCollapsed &&
+              _.map(notify_channels, (channel) => {
+                return (
+                  <InputGroupWithFormItem
+                    label={_.get(_.find(contactList, { key: channel }), 'label', channel)}
+                    customStyle={{
+                      minWidth: 100,
+                    }}
+                  >
+                    <Form.Item key={channel} name={['extra_config', 'custom_notify_tpl', channel]}>
+                      <Select
+                        showSearch
+                        allowClear
+                        placeholder={t('notify_channels_tpl_tip')}
+                        options={_.map(notifyTpls, (tpl) => {
+                          return {
+                            label: tpl.name,
+                            value: tpl.channel,
+                          };
+                        })}
+                        optionFilterProp='label'
+                      />
+                    </Form.Item>
+                  </InputGroupWithFormItem>
+                );
+              })}
+          </div>
+        )}
         <Form.Item label={t('notify_groups')} name='notify_groups'>
           <Select mode='multiple' showSearch optionFilterProp='children'>
             {_.map(notifyGroups, (item) => {

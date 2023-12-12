@@ -24,8 +24,7 @@ import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import { useAntdTable } from 'ahooks';
 import request from '@/utils/request';
-import api from '@/utils/api';
-import { BusinessGroup } from '@/pages/targets';
+import BusinessGroup from '@/components/BusinessGroup';
 import PageLayout from '@/components/pageLayout';
 import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
 import { CommonStateContext } from '@/App';
@@ -35,9 +34,9 @@ interface DataItem {
   title: string;
 }
 
-function getTableData(options: any, busiId: number | undefined, query: string, mine: boolean, days: number) {
-  if (busiId) {
-    return request(`${api.tasks(busiId)}?limit=${options.pageSize}&p=${options.current}&query=${query}&mine=${mine ? 1 : 0}&days=${days}`).then((res) => {
+function getTableData(options: any, gids: string | undefined, query: string, mine: boolean, days: number) {
+  if (gids) {
+    return request(`/api/n9e/busi-groups/tasks?gids=${gids}&limit=${options.pageSize}&p=${options.current}&query=${query}&mine=${mine ? 1 : 0}&days=${days}`).then((res) => {
       return { list: res.dat.list, total: res.dat.total };
     });
   }
@@ -50,49 +49,63 @@ const index = (_props: any) => {
   const [query, setQuery] = useState('');
   const [mine, setMine] = useState(true);
   const [days, setDays] = useState(7);
-  const { curBusiId, setCurBusiId } = useContext(CommonStateContext);
-  const { tableProps } = useAntdTable((options) => getTableData(options, curBusiId, query, mine, days), { refreshDeps: [curBusiId, query, mine, days] });
-  const columns: ColumnProps<DataItem>[] = [
-    {
-      title: 'ID',
-      dataIndex: 'id',
-      width: 100,
-    },
-    {
-      title: t('task.title'),
-      dataIndex: 'title',
-      width: 200,
-      render: (text, record) => {
-        return <Link to={{ pathname: `/job-tasks/${record.id}/result` }}>{text}</Link>;
+  const { businessGroup, busiGroups } = useContext(CommonStateContext);
+  const { tableProps } = useAntdTable((options) => getTableData(options, businessGroup.ids, query, mine, days), { refreshDeps: [businessGroup.ids, query, mine, days] });
+  const columns: ColumnProps<DataItem>[] = _.concat(
+    businessGroup.isLeaf
+      ? []
+      : ([
+          {
+            title: t('common:business_group'),
+            dataIndex: 'group_id',
+            width: 100,
+            render: (id) => {
+              return _.find(busiGroups, { id })?.name;
+            },
+          },
+        ] as any),
+    [
+      {
+        title: 'ID',
+        dataIndex: 'id',
+        width: 100,
       },
-    },
-    {
-      title: t('table.operations'),
-      width: 150,
-      render: (_text, record) => {
-        return (
-          <span>
-            <Link to={{ pathname: '/job-tasks/add', search: `task=${record.id}` }}>{t('task.clone')}</Link>
-            <Divider type='vertical' />
-            <Link to={{ pathname: `/job-tasks/${record.id}/detail` }}>{t('task.meta')}</Link>
-          </span>
-        );
+      {
+        title: t('task.title'),
+        dataIndex: 'title',
+        width: 200,
+        render: (text, record) => {
+          return <Link to={{ pathname: `/job-tasks/${record.id}/result` }}>{text}</Link>;
+        },
       },
-    },
-    {
-      title: t('task.creator'),
-      dataIndex: 'create_by',
-      width: 100,
-    },
-    {
-      title: t('task.created'),
-      dataIndex: 'create_at',
-      width: 160,
-      render: (text) => {
-        return moment.unix(text).format('YYYY-MM-DD HH:mm:ss');
+      {
+        title: t('table.operations'),
+        width: 150,
+        render: (_text, record) => {
+          return (
+            <span>
+              <Link to={{ pathname: '/job-tasks/add', search: `task=${record.id}` }}>{t('task.clone')}</Link>
+              <Divider type='vertical' />
+              <Link to={{ pathname: `/job-tasks/${record.id}/detail` }}>{t('task.meta')}</Link>
+            </span>
+          );
+        },
       },
-    },
-  ];
+      {
+        title: t('task.creator'),
+        dataIndex: 'create_by',
+        width: 100,
+      },
+      {
+        title: t('task.created'),
+        dataIndex: 'create_at',
+        width: 160,
+        render: (text) => {
+          return moment.unix(text).format('YYYY-MM-DD HH:mm:ss');
+        },
+      },
+    ],
+  );
   return (
     <PageLayout
       title={
@@ -103,13 +116,8 @@ const index = (_props: any) => {
       }
     >
       <div style={{ display: 'flex' }}>
-        <BusinessGroup
-          curBusiId={curBusiId}
-          setCurBusiId={(id) => {
-            setCurBusiId(id);
-          }}
-        />
-        {curBusiId ? (
+        <BusinessGroup />
+        {businessGroup.ids ? (
           <div style={{ flex: 1, padding: 10 }}>
             <Row>
               <Col span={16} className='mb10'>
@@ -143,16 +151,18 @@ const index = (_props: any) => {
                   {t('task.only.mine')}
                 </Checkbox>
               </Col>
-              <Col span={8} style={{ textAlign: 'right' }}>
-                <Button
-                  type='primary'
-                  onClick={() => {
-                    history.push('/job-tasks/add');
-                  }}
-                >
-                  {t('task.temporary.create')}
-                </Button>
-              </Col>
+              {businessGroup.isLeaf && (
+                <Col span={8} style={{ textAlign: 'right' }}>
+                  <Button
+                    type='primary'
+                    onClick={() => {
+                      history.push('/job-tasks/add');
+                    }}
+                  >
+                    {t('task.temporary.create')}
+                  </Button>
+                </Col>
+              )}
             </Row>
             <Table
               size='small'

@@ -59,7 +59,8 @@
     }
 
     & + div {
-      overflow: auto;
+      overflow-x: hidden;
+      overflow-y: auto;
       padding: 10px 6px 12px 12px; // 将原来 paddingRight 10px 拆开，以兼容出现滚动条的时候有距离右侧 6px 的间距
       margin-right: 6px;
       height: 100%;

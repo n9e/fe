@@ -317,6 +317,14 @@ const zh_HK = {
         stack: '堆疊',
         stack_noraml: '開啟',
         stack_off: '關閉',
+        yAxis: {
+          title: 'Y軸設定',
+          rightYAxis: {
+            label: '右側Y軸顯示',
+            noraml: '開啟',
+            off: '關閉',
+          },
+        },
       },
       iframe: {
         src: 'iframe 地址',

@@ -45,5 +45,6 @@ const zh_HK = {
   },
   last: '最近',
   next: '接下來',
+  close: '關閉',
 };
 export default zh_HK;

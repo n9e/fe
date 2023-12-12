@@ -25,11 +25,11 @@ import moment from 'moment';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Dashboard as DashboardType } from '@/store/dashboardInterface';
-import { getDashboards, cloneDashboard, removeDashboards, getDashboard, updateDashboardPublic } from '@/services/dashboardV2';
+import { getBusiGroupsDashboards, cloneDashboard, removeDashboards, getDashboard, updateDashboardPublic } from '@/services/dashboardV2';
 import PageLayout from '@/components/pageLayout';
 import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
 import { CommonStateContext } from '@/App';
-import { BusinessGroup } from '@/pages/targets';
+import BusinessGroup from '@/components/BusinessGroup';
 import usePagination from '@/components/usePagination';
 import Header from './Header';
 import FormModal from './FormModal';
@@ -39,8 +39,7 @@ import './style.less';
 
 export default function index() {
   const { t } = useTranslation('dashboard');
-  const commonState = useContext(CommonStateContext);
-  const { curBusiId: busiId } = commonState;
+  const { businessGroup, busiGroups } = useContext(CommonStateContext);
   const [list, setList] = useState<any[]>([]);
   const [selectRowKeys, setSelectRowKeys] = useState<number[]>([]);
   const [refreshKey, setRefreshKey] = useState(_.uniqueId('refreshKey_'));
@@ -48,12 +47,12 @@ export default function index() {
   const pagination = usePagination({ PAGESIZE_KEY: 'dashboard-pagesize' });
 
   useEffect(() => {
-    if (busiId) {
-      getDashboards(busiId).then((res) => {
+    if (businessGroup.ids) {
+      getBusiGroupsDashboards(businessGroup.ids).then((res) => {
         setList(res);
       });
     }
-  }, [busiId, refreshKey]);
+  }, [businessGroup.ids, refreshKey]);
 
   const data = _.filter(list, (item) => {
     if (searchVal) {
@@ -65,16 +64,10 @@ export default function index() {
   return (
     <PageLayout title={t('title')} icon={<FundViewOutlined />}>
       <div style={{ display: 'flex' }}>
-        <BusinessGroup
-          curBusiId={busiId}
-          setCurBusiId={(id) => {
-            commonState.setCurBusiId(id);
-          }}
-        />
-        {busiId ? (
+        <BusinessGroup />
+        {businessGroup.ids ? (
           <div className='dashboards-v2'>
             <Header
-              busiId={busiId}
               selectRowKeys={selectRowKeys}
               refreshList={() => {
                 setRefreshKey(_.uniqueId('refreshKey_'));
@@ -84,171 +77,185 @@ export default function index() {
             />
             <Table
               dataSource={data}
-              columns={[
-                {
-                  title: t('name'),
-                  dataIndex: 'name',
-                  className: 'name-column',
-                  render: (text: string, record: DashboardType) => {
-                    return (
-                      <Link
-                        className='table-active-text'
-                        to={{
-                          pathname: `/dashboards/${record.ident || record.id}`,
-                        }}
-                      >
-                        {text}
-                      </Link>
-                    );
+              columns={_.concat(
+                businessGroup.isLeaf
+                  ? []
+                  : ([
+                      {
+                        title: t('common:business_group'),
+                        dataIndex: 'group_id',
+                        width: 100,
+                        render: (id) => {
+                          return _.find(busiGroups, { id })?.name;
+                        },
+                      },
+                    ] as any),
+                [
+                  {
+                    title: t('name'),
+                    dataIndex: 'name',
+                    className: 'name-column',
+                    render: (text: string, record: DashboardType) => {
+                      return (
+                        <Link
+                          className='table-active-text'
+                          to={{
+                            pathname: `/dashboards/${record.ident || record.id}`,
+                          }}
+                        >
+                          {text}
+                        </Link>
+                      );
+                    },
                   },
-                },
-                {
-                  title: t('tags'),
-                  dataIndex: 'tags',
-                  className: 'tags-column',
-                  render: (text: string) => (
-                    <>
-                      {_.map(_.split(text, ' '), (tag, index) => {
-                        return tag ? (
-                          <Tag
-                            color='purple'
-                            key={index}
-                            style={{
-                              cursor: 'pointer',
-                            }}
-                            onClick={() => {
-                              const queryItem = searchVal.length > 0 ? searchVal.split(' ') : [];
-                              if (queryItem.includes(tag)) return;
-                              setsearchVal((searchVal) => {
-                                if (searchVal) {
-                                  return searchVal + ' ' + tag;
-                                }
-                                return tag;
+                  {
+                    title: t('tags'),
+                    dataIndex: 'tags',
+                    className: 'tags-column',
+                    render: (text: string) => (
+                      <>
+                        {_.map(_.split(text, ' '), (tag, index) => {
+                          return tag ? (
+                            <Tag
+                              color='purple'
+                              key={index}
+                              style={{
+                                cursor: 'pointer',
+                              }}
+                              onClick={() => {
+                                const queryItem = searchVal.length > 0 ? searchVal.split(' ') : [];
+                                if (queryItem.includes(tag)) return;
+                                setsearchVal((searchVal) => {
+                                  if (searchVal) {
+                                    return searchVal + ' ' + tag;
+                                  }
+                                  return tag;
+                                });
+                              }}
+                            >
+                              {tag}
+                            </Tag>
+                          ) : null;
+                        })}
+                      </>
+                    ),
+                  },
+                  {
+                    title: t('common:table.update_at'),
+                    width: 150,
+                    dataIndex: 'update_at',
+                    render: (text: number) => moment.unix(text).format('YYYY-MM-DD HH:mm:ss'),
+                  },
+                  {
+                    title: t('common:table.update_by'),
+                    dataIndex: 'update_by',
+                    width: 60,
+                  },
+                  {
+                    title: t('public.name'),
+                    width: 120,
+                    dataIndex: 'public',
+                    render: (text: number, record: DashboardType) => {
+                      return (
+                        <div>
+                          <Switch
+                            checked={text === 1}
+                            onChange={() => {
+                              Modal.confirm({
+                                title: record.public ? t('public.1.confirm') : t('public.0.confirm'),
+                                onOk: async () => {
+                                  await updateDashboardPublic(record.id, { public: record.public ? 0 : 1 });
+                                  message.success(record.public ? t('public.1.success') : t('public.0.success'));
+                                  setRefreshKey(_.uniqueId('refreshKey_'));
+                                },
                               });
                             }}
-                          >
-                            {tag}
-                          </Tag>
-                        ) : null;
-                      })}
-                    </>
-                  ),
-                },
-                {
-                  title: t('common:table.update_at'),
-                  width: 150,
-                  dataIndex: 'update_at',
-                  render: (text: number) => moment.unix(text).format('YYYY-MM-DD HH:mm:ss'),
-                },
-                {
-                  title: t('common:table.update_by'),
-                  dataIndex: 'update_by',
-                  width: 60,
-                },
-                {
-                  title: t('public.name'),
-                  width: 120,
-                  dataIndex: 'public',
-                  render: (text: number, record: DashboardType) => {
-                    return (
-                      <div>
-                        <Switch
-                          checked={text === 1}
-                          onChange={() => {
-                            Modal.confirm({
-                              title: record.public ? t('public.1.confirm') : t('public.0.confirm'),
-                              onOk: async () => {
-                                await updateDashboardPublic(record.id, { public: record.public ? 0 : 1 });
-                                message.success(record.public ? t('public.1.success') : t('public.0.success'));
+                          />
+                          {text === 1 && (
+                            <Link
+                              target='_blank'
+                              to={{
+                                pathname: `/dashboards/share/${record.id}`,
+                              }}
+                              style={{ marginLeft: 10 }}
+                            >
+                              {t('common:btn.view')}
+                            </Link>
+                          )}
+                        </div>
+                      );
+                    },
+                  },
+                  {
+                    title: t('common:table.operations'),
+                    width: '180px',
+                    render: (text: string, record: DashboardType) => (
+                      <div className='table-operator-area'>
+                        <div
+                          className='table-operator-area-normal'
+                          onClick={() => {
+                            FormModal({
+                              action: 'edit',
+                              initialValues: record,
+                              busiId: businessGroup.id,
+                              onOk: () => {
                                 setRefreshKey(_.uniqueId('refreshKey_'));
                               },
                             });
                           }}
-                        />
-                        {text === 1 && (
-                          <Link
-                            target='_blank'
-                            to={{
-                              pathname: `/dashboards/share/${record.id}`,
-                            }}
-                            style={{ marginLeft: 10 }}
-                          >
-                            {t('common:btn.view')}
-                          </Link>
-                        )}
+                        >
+                          {t('common:btn.edit')}
+                        </div>
+                        <div
+                          className='table-operator-area-normal'
+                          onClick={async () => {
+                            Modal.confirm({
+                              title: t('common:confirm.clone'),
+                              onOk: async () => {
+                                await cloneDashboard(record.group_id, record.id);
+                                message.success(t('common:success.clone'));
+                                setRefreshKey(_.uniqueId('refreshKey_'));
+                              },
+
+                              onCancel() {},
+                            });
+                          }}
+                        >
+                          {t('common:btn.clone')}
+                        </div>
+                        <div
+                          className='table-operator-area-normal'
+                          onClick={async () => {
+                            const exportData = await getDashboard(record.id);
+                            Export({
+                              data: exportDataStringify(exportData),
+                            });
+                          }}
+                        >
+                          {t('common:btn.export')}
+                        </div>
+                        <div
+                          className='table-operator-area-warning'
+                          onClick={async () => {
+                            Modal.confirm({
+                              title: t('common:confirm.delete'),
+                              onOk: async () => {
+                                await removeDashboards([record.id]);
+                                message.success(t('common:success.delete'));
+                                setRefreshKey(_.uniqueId('refreshKey_'));
+                              },
+
+                              onCancel() {},
+                            });
+                          }}
+                        >
+                          {t('common:btn.delete')}
+                        </div>
                       </div>
-                    );
+                    ),
                   },
-                },
-                {
-                  title: t('common:table.operations'),
-                  width: '180px',
-                  render: (text: string, record: DashboardType) => (
-                    <div className='table-operator-area'>
-                      <div
-                        className='table-operator-area-normal'
-                        onClick={() => {
-                          FormModal({
-                            action: 'edit',
-                            initialValues: record,
-                            busiId,
-                            onOk: () => {
-                              setRefreshKey(_.uniqueId('refreshKey_'));
-                            },
-                          });
-                        }}
-                      >
-                        {t('common:btn.edit')}
-                      </div>
-                      <div
-                        className='table-operator-area-normal'
-                        onClick={async () => {
-                          Modal.confirm({
-                            title: t('common:confirm.clone'),
-                            onOk: async () => {
-                              await cloneDashboard(busiId as number, record.id);
-                              message.success(t('common:success.clone'));
-                              setRefreshKey(_.uniqueId('refreshKey_'));
-                            },
-
-                            onCancel() {},
-                          });
-                        }}
-                      >
-                        {t('common:btn.clone')}
-                      </div>
-                      <div
-                        className='table-operator-area-normal'
-                        onClick={async () => {
-                          const exportData = await getDashboard(record.id);
-                          Export({
-                            data: exportDataStringify(exportData),
-                          });
-                        }}
-                      >
-                        {t('common:btn.export')}
-                      </div>
-                      <div
-                        className='table-operator-area-warning'
-                        onClick={async () => {
-                          Modal.confirm({
-                            title: t('common:confirm.delete'),
-                            onOk: async () => {
-                              await removeDashboards([record.id]);
-                              message.success(t('common:success.delete'));
-                              setRefreshKey(_.uniqueId('refreshKey_'));
-                            },
-
-                            onCancel() {},
-                          });
-                        }}
-                      >
-                        {t('common:btn.delete')}
-                      </div>
-                    </div>
-                  ),
-                },
-              ]}
+                ],
+              )}
               rowKey='id'
               size='small'
               rowSelection={{

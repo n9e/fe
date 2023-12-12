@@ -25,27 +25,17 @@ import { Link, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import PageLayout from '@/components/pageLayout';
 import RefreshIcon from '@/components/RefreshIcon';
-import { hoursOptions } from '@/pages/event/constants';
 import { CommonStateContext } from '@/App';
 import { getProdOptions } from '@/pages/alertRules/Form/components/ProdSelect';
 import DatasourceSelect from '@/components/DatasourceSelect/DatasourceSelect';
+import TimeRangePicker, { IRawTimeRange, parseRange, getDefaultValue } from '@/components/TimeRangePicker';
 import exportEvents, { downloadFile } from './exportEvents';
 import { getEvents, getEventsByIds } from './services';
 import { SeverityColor } from '../event';
 import '../event/index.less';
 import './locale';
 
-export const getDefaultHours = () => {
-  const locale = window.localStorage.getItem('alert_events_hours');
-  if (locale) {
-    return _.toNumber(locale) || 6;
-  }
-  return 6;
-};
-
-export const setDefaultHours = (hours: number) => {
-  window.localStorage.setItem('alert_events_hours', `${hours}`);
-};
+const CACHE_KEY = 'alert_events_range';
 
 const Event: React.FC = () => {
   const { t } = useTranslation('AlertHisEvents');
@@ -53,7 +43,7 @@ const Event: React.FC = () => {
   const { groupedDatasourceList, busiGroups, feats, datasourceList } = useContext(CommonStateContext);
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
   const [filter, setFilter] = useState<{
-    hours: number;
+    range: IRawTimeRange;
     datasourceIds: number[];
     bgid?: number;
     severity?: number;
@@ -61,7 +51,10 @@ const Event: React.FC = () => {
     queryContent: string;
     rule_prods: string[];
   }>({
-    hours: getDefaultHours(),
+    range: getDefaultValue(CACHE_KEY, {
+      start: 'now-6h',
+      end: 'now',
+    }),
     datasourceIds: [],
     queryContent: '',
     rule_prods: [],
@@ -136,7 +129,7 @@ const Event: React.FC = () => {
   ];
   const [exportBtnLoadding, setExportBtnLoadding] = useState(false);
   const filterObj = Object.assign(
-    { hours: filter.hours },
+    { range: filter.range },
     filter.datasourceIds.length ? { datasource_ids: _.join(filter.datasourceIds, ',') } : {},
     filter.severity !== undefined ? { severity: filter.severity } : {},
     filter.queryContent ? { query: filter.queryContent } : {},
@@ -171,21 +164,17 @@ const Event: React.FC = () => {
               setRefreshFlag(_.uniqueId('refresh_'));
             }}
           />
-          <Select
-            style={{ minWidth: 80 }}
-            value={filter.hours}
+          <TimeRangePicker
+            localKey={CACHE_KEY}
+            value={filter.range}
             onChange={(val) => {
               setFilter({
                 ...filter,
-                hours: val,
+                range: val,
               });
-              setDefaultHours(val);
             }}
-          >
-            {hoursOptions.map((item) => {
-              return <Select.Option value={item.value}>{t(`hours.${item.value}`)}</Select.Option>;
-            })}
-          </Select>
+            dateFormat='YYYY-MM-DD HH:mm:ss'
+          />
           <Select
             allowClear
             placeholder={t('prod')}
@@ -230,6 +219,7 @@ const Event: React.FC = () => {
                 bgid: val,
               });
             }}
+            dropdownMatchSelectWidth={false}
           >
             {_.map(busiGroups, (item) => {
               return <Select.Option value={item.id}>{item.name}</Select.Option>;
@@ -285,7 +275,8 @@ const Event: React.FC = () => {
             loading={exportBtnLoadding}
             onClick={() => {
               setExportBtnLoadding(true);
-              exportEvents({ ...filterObj, limit: 1000000, p: 1 }, (err, csv) => {
+              const parsedRange = parseRange(filterObj.range);
+              exportEvents({ ..._.omit(filterObj, 'range'), stime: moment(parsedRange.start).unix(), etime: moment(parsedRange.end).unix(), limit: 1000000, p: 1 }, (err, csv) => {
                 if (err) {
                   message.error(t('export_failed'));
                 } else {
@@ -311,10 +302,13 @@ const Event: React.FC = () => {
         };
       });
     }
+    const parsedRange = parseRange(filterObj.range);
     return getEvents({
       p: current,
       limit: pageSize,
-      ...filterObj,
+      ..._.omit(filterObj, 'range'),
+      stime: moment(parsedRange.start).unix(),
+      etime: moment(parsedRange.end).unix(),
     }).then((res) => {
       return {
         total: res.dat.total,

@@ -40,7 +40,8 @@ interface props {
 const ruleModal: React.FC<props> = ({ visible, ruleModalClose, subscribe }) => {
   const { t } = useTranslation('alertSubscribes');
   const pagination = usePagination({ PAGESIZE_KEY: 'alert-rules-pagesize' });
-  const { curBusiId, datasourceList } = useContext(CommonStateContext);
+  const { businessGroup, datasourceList } = useContext(CommonStateContext);
+  const curBusiId = businessGroup.id!;
   const [busiGroups, setBusiGroups] = useState<{ id: number; name: string }[]>([]);
   const [currentStrategyDataAll, setCurrentStrategyDataAll] = useState([]);
   const [currentStrategyData, setCurrentStrategyData] = useState([]);

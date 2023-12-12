@@ -41,10 +41,12 @@ export default function index(props: ITimeRangePickerProps) {
         if (localKey) {
           localStorage.setItem(
             localKey,
-            JSON.stringify({
-              start: valueAsString(val.start, dateFormat),
-              end: valueAsString(val.end, dateFormat),
-            }),
+            val
+              ? JSON.stringify({
+                  start: valueAsString(val.start, dateFormat),
+                  end: valueAsString(val.end, dateFormat),
+                })
+              : '',
           );
         }
         if (onChange) {

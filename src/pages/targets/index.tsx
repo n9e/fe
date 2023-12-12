@@ -26,6 +26,7 @@ import { getBusiGroups } from '@/services/common';
 import { CommonStateContext } from '@/App';
 import List from './List';
 import BusinessGroup from './BusinessGroup';
+import BusinessGroup2, { getCleanBusinessGroupIds } from '@/components/BusinessGroup';
 import './locale';
 import './index.less';
 
@@ -338,22 +339,22 @@ const OperationModal: React.FC<OperateionModalProps> = ({ operateType, setOperat
 
 const Targets: React.FC = () => {
   const { t } = useTranslation('targets');
-  const commonState = useContext(CommonStateContext);
-  const [curBusiId, setCurBusiId] = useState<number>(commonState.curBusiId);
+  const { businessGroup } = useContext(CommonStateContext);
+  const [gids, setGids] = useState<string | undefined>(businessGroup.ids);
   const [operateType, setOperateType] = useState<OperateType>(OperateType.None);
   const [selectedRowKeys, setSelectedRowKeys] = useState<(string | number)[]>([]);
   const [selectedIdents, setSelectedIdents] = useState<string[]>([]);
   const [refreshFlag, setRefreshFlag] = useState(_.uniqueId('refreshFlag_'));
 
+  useEffect(() => {
+    setGids(businessGroup.ids);
+  }, [businessGroup.ids]);
+
   return (
     <PageLayout icon={<DatabaseOutlined />} title={t('title')}>
       <div className='object-manage-page-content'>
-        <BusinessGroup
-          curBusiId={curBusiId}
-          setCurBusiId={(id) => {
-            commonState.setCurBusiId(id);
-            setCurBusiId(id);
-          }}
+        <BusinessGroup2
+          showSelected={gids !== '0' && gids !== undefined}
           renderHeadExtra={() => {
             return (
               <div>
@@ -361,10 +362,10 @@ const Targets: React.FC = () => {
                 <div
                   className={classNames({
                     'n9e-biz-group-item': true,
-                    active: curBusiId === 0,
+                    active: gids === '0',
                   })}
                   onClick={() => {
-                    setCurBusiId(0);
+                    setGids('0');
                   }}
                 >
                   {t('ungrouped_targets')}
@@ -372,16 +373,20 @@ const Targets: React.FC = () => {
                 <div
                   className={classNames({
                     'n9e-biz-group-item': true,
-                    active: curBusiId === -1,
+                    active: gids === undefined,
                   })}
                   onClick={() => {
-                    setCurBusiId(-1);
+                    setGids(undefined);
                   }}
                 >
                   {t('all_targets')}
                 </div>
               </div>
             );
+          }}
+          onSelect={(key) => {
+            const ids = getCleanBusinessGroupIds(key);
+            setGids(ids);
           }}
         />
         <div
@@ -392,7 +397,7 @@ const Targets: React.FC = () => {
           }}
         >
           <List
-            curBusiId={curBusiId}
+            gids={gids}
             selectedIdents={selectedIdents}
             setSelectedIdents={setSelectedIdents}
             selectedRowKeys={selectedRowKeys}

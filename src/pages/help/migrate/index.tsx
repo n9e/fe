@@ -5,7 +5,7 @@ import moment from 'moment';
 import _ from 'lodash';
 import semver from 'semver';
 import PageLayout from '@/components/pageLayout';
-import { BusinessGroup } from '@/pages/targets';
+import BusinessGroup from '@/components/BusinessGroup';
 import { CommonStateContext } from '@/App';
 import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
 import { getDashboards, getDashboard } from '@/services/dashboardV2';
@@ -14,17 +14,16 @@ import './locale';
 
 export default function index() {
   const { t } = useTranslation('migrationDashboard');
-  const commonState = useContext(CommonStateContext);
+  const { businessGroup } = useContext(CommonStateContext);
   const [refreshFlag, setRefreshFlag] = useState(_.uniqueId('refresh_'));
   const [loading, setLoading] = useState(false);
   const [boards, setBoards] = useState<any[]>([]);
   const [settingOpen, setSettingOpen] = useState(false);
-  const { curBusiId: busiId } = commonState;
 
   useEffect(() => {
-    if (busiId) {
+    if (businessGroup.id) {
       setLoading(true);
-      getDashboards(busiId)
+      getDashboards(businessGroup.id)
         .then((res) => {
           let requests: Promise<any>[] = [];
           _.forEach(res, (board) => {
@@ -52,18 +51,13 @@ export default function index() {
           setLoading(false);
         });
     }
-  }, [busiId, refreshFlag]);
+  }, [businessGroup.id, refreshFlag]);
 
   return (
     <PageLayout title={t('title')}>
       <div style={{ display: 'flex' }}>
-        <BusinessGroup
-          curBusiId={busiId}
-          setCurBusiId={(id) => {
-            commonState.setCurBusiId(id);
-          }}
-        />
-        {busiId ? (
+        <BusinessGroup />
+        {businessGroup.ids ? (
           <div className='dashboards-v2'>
             <div style={{ marginBottom: 10 }}>
               <Button

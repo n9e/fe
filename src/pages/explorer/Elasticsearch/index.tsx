@@ -273,7 +273,14 @@ export default function index(props: IProps) {
         <div />
       </Form.Item>
       {mode === IMode.indices && (
-        <QueryBuilder key={datasourceValue} onExecute={fetchData} datasourceValue={datasourceValue} setFields={setFields} allowHideSystemIndices={allowHideSystemIndices} />
+        <QueryBuilder
+          key={datasourceValue}
+          onExecute={fetchData}
+          datasourceValue={datasourceValue}
+          setFields={setFields}
+          allowHideSystemIndices={allowHideSystemIndices}
+          form={form}
+        />
       )}
       {mode === IMode.indexPatterns && (
         <QueryBuilderWithIndexPatterns

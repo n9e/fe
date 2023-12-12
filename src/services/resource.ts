@@ -16,19 +16,10 @@
  */
 import request from '@/utils/request';
 import { RequestMethod, IBasePagingParams } from '@/store/common';
-import { N9EAPI } from '../../config/constant';
-import {
-  collectItem,
-  collect_type,
-  prefixType,
-} from '@/store/businessInterface';
-import { PAGE_SIZE } from '@/utils/constant';
+import { collectItem, collect_type, prefixType } from '@/store/businessInterface';
 
 // 新建资源分组
-export const addResourceGroup = function (params: {
-  path: string;
-  node: string;
-}) {
+export const addResourceGroup = function (params: { path: string; node: string }) {
   return request(`/api/n9e/classpaths`, {
     method: RequestMethod.Post,
     data: params,
@@ -93,9 +84,7 @@ export const deleteResourceGroup = function (id: number) {
 };
 
 // 修改分组
-export const updateResourceGroup = function (
-  data: { path?: string; node?: string } & { id: number },
-) {
+export const updateResourceGroup = function (data: { path?: string; node?: string } & { id: number }) {
   return request(`/api/n9e/classpath/${data.id}`, {
     method: RequestMethod.Put,
     data,
@@ -103,9 +92,7 @@ export const updateResourceGroup = function (
 };
 
 //获取分组下资源列表
-export const getResourceList = function (
-  params: { id: number; prefix: prefixType } & IBasePagingParams,
-) {
+export const getResourceList = function (params: { id: number; prefix: prefixType } & IBasePagingParams) {
   return request(`/api/n9e/classpath/${params.id}/resources`, {
     method: RequestMethod.Get,
     params: {
@@ -139,10 +126,7 @@ export const deleteResource = function (id: number) {
 };
 
 // 批量修改资源分组
-export const updateResourceToGroup = function (params: {
-  res_idents: string[];
-  classpath_ids: string[];
-}) {
+export const updateResourceToGroup = function (params: { res_idents: string[]; classpath_ids: string[] }) {
   return request(`/api/n9e/resources/classpaths`, {
     method: RequestMethod.Put,
     data: params,
@@ -150,10 +134,7 @@ export const updateResourceToGroup = function (params: {
 };
 
 //分组添加资源
-export const addGroupResource = function (params: {
-  id: number;
-  data: Array<string>;
-}) {
+export const addGroupResource = function (params: { id: number; data: Array<string> }) {
   return request(`/api/n9e/classpath/${params.id}/resources`, {
     method: RequestMethod.Post,
     data: params.data,
@@ -176,10 +157,7 @@ export const getResourceDetail = function (id: number) {
 };
 
 //更新备注
-export const updateResourceDetailNote = function (data: {
-  ids: number[];
-  note: string;
-}) {
+export const updateResourceDetailNote = function (data: { ids: number[]; note: string }) {
   return request(`/api/n9e/resources/note`, {
     method: RequestMethod.Put,
     data,
@@ -187,10 +165,7 @@ export const updateResourceDetailNote = function (data: {
 };
 
 //更新tags
-export const updateResourceDetailTags = function (data: {
-  ids: number[];
-  tags: string;
-}) {
+export const updateResourceDetailTags = function (data: { ids: number[]; tags: string }) {
   return request(`/api/n9e/resources/tags`, {
     method: RequestMethod.Put,
     data,
@@ -198,11 +173,7 @@ export const updateResourceDetailTags = function (data: {
 };
 
 //修改机器屏蔽时间
-export const updateResourceMute = function (data: {
-  ids: Array<number>;
-  btime: number;
-  etime: number;
-}) {
+export const updateResourceMute = function (data: { ids: Array<number>; btime: number; etime: number }) {
   return request(`/api/n9e/resources/mute`, {
     method: RequestMethod.Put,
     data,
@@ -257,13 +228,7 @@ export const deleteCollectSetting = function (ids: Array<number>) {
 };
 
 //删除采集配置
-export const regCheck = function (data: {
-  tags_pattern?: Object;
-  func?: string;
-  re?: string;
-  log?: string;
-  time?: string;
-}) {
+export const regCheck = function (data: { tags_pattern?: Object; func?: string; re?: string; log?: string; time?: string }) {
   return request(`/api/n9e/log/check`, {
     method: RequestMethod.Post,
     data,
@@ -273,6 +238,6 @@ export const regCheck = function (data: {
 export const getHosts = (params) => {
   return request(`/api/n9e/targets`, {
     method: RequestMethod.Get,
-    params
+    params,
   });
 };
