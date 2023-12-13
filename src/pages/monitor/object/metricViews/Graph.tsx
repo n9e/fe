@@ -381,7 +381,7 @@ export default function Graph(props: IProps) {
         </Space>
       </div>
       <div>
-        {chartType === 'line' && <Timeseries inDashboard={false} values={lineGraphProps as any} series={series} />}
+        {chartType === 'line' && <Timeseries inDashboard={false} values={lineGraphProps as any} series={series} time={range} />}
         {chartType === 'hexbin' && (
           <div style={{ padding: '20px 0 0 0', height: highLevelConfig.chartheight }}>
             <Hexbin values={hexbinGraphProps as any} series={series} time={range} />
