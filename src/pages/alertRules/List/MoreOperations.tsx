@@ -15,10 +15,11 @@
  *
  */
 import React, { useContext, useState } from 'react';
+import _ from 'lodash';
 import { Dropdown, Button, Modal, message } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { deleteStrategy, updateAlertRules, updateServiceCal } from '@/services/warning';
+import { deleteStrategy, updateAlertRules, updateServiceCal, updateNotifyChannels } from '@/services/warning';
 import { CommonStateContext } from '@/App';
 import Import from './Import';
 import Export from './Export';
@@ -139,6 +140,22 @@ export default function MoreOperations(props: MoreOperationsProps) {
                 {
                   ids: selectRowKeys,
                   service_cal_ids: fieldsData?.service_cal_ids || [],
+                },
+                bgid,
+              );
+              if (!res.err) {
+                message.success('修改成功！');
+                getAlertRules();
+                setisModalVisible(false);
+              } else {
+                message.error(res.err);
+              }
+            } else if (isPlus && fieldsData?.notify_channels) {
+              const res = await updateNotifyChannels(
+                {
+                  ids: selectRowKeys,
+                  notify_channels: _.split(fieldsData?.notify_channels, ' ') || [],
+                  custom_notify_tpl: fieldsData?.custom_notify_tpl || {},
                 },
                 bgid,
               );
