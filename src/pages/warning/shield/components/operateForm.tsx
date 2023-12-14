@@ -15,7 +15,7 @@
  *
  */
 import React, { useState, useEffect, useContext } from 'react';
-import { Form, Input, Card, Select, Col, Button, Row, message, DatePicker, Tooltip, Space, Radio, TimePicker, Checkbox } from 'antd';
+import { Form, Input, Card, Select, Col, Button, Row, message, DatePicker, Tooltip, Space, Radio, TimePicker, Checkbox, Alert } from 'antd';
 import { QuestionCircleFilled, PlusCircleOutlined, CaretDownOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router';
 import { useTranslation } from 'react-i18next';
@@ -163,6 +163,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
       }}
     >
       <Card>
+        <Alert type='info' message='此屏蔽规则只会生效于本业务组关联的告警规则' style={{ marginBottom: 16 }} />
         <Form.Item
           label={t('note')}
           name='note'
