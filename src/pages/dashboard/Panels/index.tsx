@@ -88,7 +88,13 @@ function index(props: IProps) {
 
   useEffect(() => {
     setPanels(processRepeats(panels, variableConfig));
-  }, []);
+  }, [
+    JSON.stringify(
+      _.map(variableConfig, (item) => {
+        return item.value;
+      }),
+    ),
+  ]);
 
   return (
     <div className='dashboards-panels'>
