@@ -10,6 +10,7 @@ const en_US = {
   filterDowntimeMin: '{{count}} minute',
   filterDowntimeMin_plural: '{{count}} minutes',
   not_grouped: 'Ungrouped',
+  host_ip: 'IP',
   tags: 'Tags',
   group_obj: 'Business group',
   target_up: 'Status',

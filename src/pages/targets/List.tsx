@@ -151,6 +151,12 @@ export default function List(props: IProps) {
 
   _.forEach(columnsConfigs, (item) => {
     if (!item.visible) return;
+    if (item.name === 'host_ip') {
+      columns.push({
+        title: t('host_ip'),
+        dataIndex: 'host_ip',
+      });
+    }
     if (item.name === 'tags') {
       columns.push({
         title: t('tags'),

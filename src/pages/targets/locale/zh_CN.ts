@@ -9,6 +9,7 @@ const zh_CN = {
   filterDowntimeMin: '{{count}} 分钟',
   ident_copy_success: '复制成功 {{num}} 条记录',
   not_grouped: '未归组',
+  host_ip: 'IP',
   tags: '标签',
   group_obj: '业务组',
   target_up: '状态',

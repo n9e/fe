@@ -9,6 +9,7 @@ const zh_HK = {
   filterDowntime: '無更新超過',
   filterDowntimeMin: '{{count}} 分鐘',
   not_grouped: '未歸組',
+  host_ip: 'IP',
   tags: '標籤',
   group_obj: '業務組',
   target_up: '狀態',

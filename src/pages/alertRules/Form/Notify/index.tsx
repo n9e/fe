@@ -166,13 +166,13 @@ export default function index({ disabled, form }) {
                       <AutoComplete
                         options={[
                           {
-                            value: t('annotationsOptions.plan_link'),
+                            value: 'runbook_url',
                           },
                           {
-                            value: t('annotationsOptions.dashboard_link'),
+                            value: 'dashboard_url',
                           },
                           {
-                            value: t('annotationsOptions.desc'),
+                            value: 'summary',
                           },
                         ]}
                         style={{ width: 200 }}
