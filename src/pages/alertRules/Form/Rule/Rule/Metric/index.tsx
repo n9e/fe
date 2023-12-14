@@ -72,7 +72,7 @@ export default function index({ form }) {
             const cate = form.getFieldValue('cate');
             const datasourceValue = form.getFieldValue('datasource_ids');
             if (cate === DatasourceCateEnum.prometheus) {
-              return <Prometheus datasourceCate={cate} datasourceValue={datasourceValue} />;
+              return <Prometheus form={form as any} datasourceCate={cate} datasourceValue={datasourceValue} />;
             }
             if (cate === DatasourceCateEnum.tdengine) {
               return <TDengine form={form as any} datasourceValue={datasourceValue} />;
