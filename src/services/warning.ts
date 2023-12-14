@@ -225,6 +225,20 @@ export const updateServiceCal = function (
   });
 };
 
+export const updateNotifyChannels = function (
+  data: {
+    ids: React.Key[];
+    notify_channels: string[];
+    custom_notify_tpl: { [index: string]: string };
+  },
+  busiId: number,
+) {
+  return request(`/api/n9e-plus/busi-group/${busiId}/alert-rules/notify_channels`, {
+    method: RequestMethod.Put,
+    data: data,
+  });
+};
+
 /**
  * 获取未恢复告警列表
  */
