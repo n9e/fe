@@ -22,16 +22,17 @@ import { useTranslation, Trans } from 'react-i18next';
 import { Panel } from '../../Components/Collapse';
 import { calcsOptions } from '../../config';
 import { useGlobalState } from '../../../globalState';
-import Info from '@/pages/account/info';
 
 export default function GraphStyles({ chartForm, variableConfigWithOptions }) {
   const { t, i18n } = useTranslation('dashboard');
   const namePrefix = ['custom'];
   const [tableFields, setTableFields] = useGlobalState('tableFields');
+  const [tableRefIds, setTableRefIds] = useGlobalState('tableRefIds');
 
   useEffect(() => {
     return () => {
       setTableFields([]);
+      setTableRefIds([]);
     };
   }, []);
 
@@ -136,7 +137,7 @@ export default function GraphStyles({ chartForm, variableConfigWithOptions }) {
                 } else if (displayMode === 'labelsOfSeriesToRows') {
                   keys = columns;
                 } else if (displayMode === 'labelValuesToRows') {
-                  keys = [aggrDimension || 'name'];
+                  keys = _.concat([aggrDimension || 'name'], tableRefIds);
                 }
                 return (
                   <Form.Item label={t('panel.custom.table.sortColumn')} name={[...namePrefix, 'sortColumn']}>

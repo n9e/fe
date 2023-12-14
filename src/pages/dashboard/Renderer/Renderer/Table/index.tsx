@@ -99,6 +99,7 @@ function TableCpt(props: IProps, ref: any) {
   });
   const [tableFields, setTableFields] = useGlobalState('tableFields');
   const [displayedTableFields, setDisplayedTableFields] = useGlobalState('displayedTableFields');
+  const [tableRefIds, setTableRefIds] = useGlobalState('tableRefIds');
   const isAppendLinkColumn = !_.isEmpty(custom.links) && custom.linkMode !== 'cellLink';
 
   useEffect(() => {
@@ -128,7 +129,16 @@ function TableCpt(props: IProps, ref: any) {
       fields = [aggrDimension];
     }
     setDisplayedTableFields(fields);
+    tableDataSource = formatToTable(data, aggrDimension, 'refId');
+    const groupNames = _.reduce(
+      tableDataSource,
+      (pre, item) => {
+        return _.union(_.concat(pre, item.groupNames));
+      },
+      [],
+    );
     if (isPreview) {
+      setTableRefIds(groupNames);
       setTableFields(getColumnsKeys(data));
     }
     setCalculatedValues(data);
