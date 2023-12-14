@@ -126,7 +126,7 @@ function TableCpt(props: IProps, ref: any) {
     } else if (displayMode === 'labelsOfSeriesToRows') {
       fields = !_.isEmpty(columns) ? columns : [...getColumnsKeys(data), 'value'];
     } else if (displayMode === 'labelValuesToRows') {
-      fields = [aggrDimension];
+      fields = _.isArray(aggrDimension) ? aggrDimension : [aggrDimension];
     }
     setDisplayedTableFields(fields);
     tableDataSource = formatToTable(data, aggrDimension, 'refId');

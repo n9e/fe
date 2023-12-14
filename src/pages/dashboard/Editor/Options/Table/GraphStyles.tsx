@@ -130,14 +130,15 @@ export default function GraphStyles({ chartForm, variableConfigWithOptions }) {
                 const displayMode = getFieldValue([...namePrefix, 'displayMode']);
                 const fieldColumns = getFieldValue([...namePrefix, 'columns']);
                 const columns = !_.isEmpty(fieldColumns) ? fieldColumns : _.concat(tableFields, 'value');
-                const aggrDimension = getFieldValue([...namePrefix, 'aggrDimension']);
+                let aggrDimension = getFieldValue([...namePrefix, 'aggrDimension']);
+                aggrDimension = _.isArray(aggrDimension) ? aggrDimension : [aggrDimension];
                 let keys: string[] = [];
                 if (displayMode === 'seriesToRows') {
                   keys = ['name', 'value'];
                 } else if (displayMode === 'labelsOfSeriesToRows') {
                   keys = columns;
                 } else if (displayMode === 'labelValuesToRows') {
-                  keys = _.concat([aggrDimension || 'name'], tableRefIds);
+                  keys = _.concat(_.isEmpty(aggrDimension) ? ['name'] : aggrDimension, tableRefIds);
                 }
                 return (
                   <Form.Item label={t('panel.custom.table.sortColumn')} name={[...namePrefix, 'sortColumn']}>
