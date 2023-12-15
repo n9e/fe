@@ -74,7 +74,7 @@ export default function index({ disabled }) {
           }}
         >
           <Space>
-            <span>当前已配置了全局 Flashduty 推送</span>
+            <span>{t('notify_flashduty_configured')}</span>
             {notifyTargetCollapsed ? <RightOutlined /> : <DownOutlined />}
           </Space>
         </div>
