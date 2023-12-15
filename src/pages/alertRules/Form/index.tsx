@@ -113,7 +113,7 @@ export default function index(props: IProps) {
           <Base />
           <Rule form={form} />
           <Effective />
-          <Notify disabled={disabled} form={form} />
+          <Notify disabled={disabled} />
           {!disabled && (
             <Space>
               <Button
