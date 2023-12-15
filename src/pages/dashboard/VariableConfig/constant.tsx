@@ -274,7 +274,13 @@ export function stringStartsAsRegEx(str: string): boolean {
 
 export function stringToRegex(str: string): RegExp | false {
   if (!stringStartsAsRegEx(str)) {
-    return new RegExp(`^${str}$`);
+    let regex;
+    try {
+      regex = new RegExp(`^${str}$`);
+    } catch (e) {
+      return false;
+    }
+    return regex;
   }
 
   const match = str.match(new RegExp('^/(.*?)/(g?i?m?y?)$'));
