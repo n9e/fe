@@ -198,7 +198,6 @@ export const replaceExpressionVarsSpecifyRule = (
         const { name, options, reg, value, allValue, type } = formData[i];
         const placeholder = getPlaceholder(name);
         const selected = getVaraiableSelected(name, type, id);
-
         if (vars.includes(placeholder)) {
           if (_.isEqual(selected, ['all'])) {
             if (allValue) {
