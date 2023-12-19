@@ -42,6 +42,7 @@ import {
 import Renderer from '../Renderer/Renderer/index';
 import Row from './Row';
 import EditorModal from './EditorModal';
+import { getDefaultThemeMode } from '../Detail/utils';
 import './style.less';
 
 interface IProps {
@@ -63,7 +64,7 @@ const ReactGridLayout = WidthProvider(RGL);
 function index(props: IProps) {
   const { profile } = useContext(CommonStateContext);
   const location = useLocation();
-  const { themeMode } = querystring.parse(location.search);
+  const themeMode = getDefaultThemeMode(querystring.parse(location.search));
   const { editable, dashboard, range, variableConfig, panels, isPreview, setPanels, onShareClick, onUpdated } = props;
   const roles = _.get(profile, 'roles', []);
   const isAuthorized = !_.some(roles, (item) => item === 'Guest') && !isPreview;
