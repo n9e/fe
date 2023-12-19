@@ -60,7 +60,9 @@ interface IProps {
   values: IPanel;
   series: any[];
   themeMode?: 'dark';
+  hideResetBtn?: boolean;
   onClick?: (event: any, datetime: Date, value: number, points: any[]) => void;
+  onZoomWithoutDefult?: (times: Date[]) => void;
 }
 
 function getStartAndEndByTargets(targets: any[]) {
@@ -308,18 +310,19 @@ export default function index(props: IProps) {
         onClick: (event, datetime, value, points) => {
           if (onClick) onClick(event, datetime, value, points);
         },
-        hideResetBtn: dashboardMeta.graphZoom === 'updateTimeRange',
-        onZoomWithoutDefult:
-          dashboardMeta.graphZoom === 'updateTimeRange'
-            ? (times: Date[]) => {
-                if (setRange) {
-                  setRange({
-                    start: moment(times[0]),
-                    end: moment(times[1]),
-                  });
-                }
+        hideResetBtn: props.hideResetBtn || dashboardMeta.graphZoom === 'updateTimeRange',
+        onZoomWithoutDefult: props.onZoomWithoutDefult
+          ? props.onZoomWithoutDefult
+          : dashboardMeta.graphZoom === 'updateTimeRange'
+          ? (times: Date[]) => {
+              if (setRange) {
+                setRange({
+                  start: moment(times[0]),
+                  end: moment(times[1]),
+                });
               }
-            : undefined,
+            }
+          : undefined,
       });
     }
     if (hasLegend) {
