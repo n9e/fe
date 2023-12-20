@@ -29,6 +29,7 @@ import { visualizations } from '../Editor/config';
 import { dashboardTimeCacheKey } from './Detail';
 import FormModal from '../List/FormModal';
 import { IDashboard } from '../types';
+import { dashboardThemeModeCacheKey, getDefaultThemeMode } from './utils';
 
 interface IProps {
   dashboard: IDashboard;
@@ -50,7 +51,8 @@ export default function Title(props: IProps) {
   const location = useLocation();
   const { siteInfo } = useContext(CommonStateContext);
   const query = querystring.parse(location.search);
-  const { viewMode, themeMode } = query;
+  const { viewMode } = query;
+  const themeMode = getDefaultThemeMode(query);
 
   useEffect(() => {
     document.title = `${dashboard.name} - ${siteInfo?.page_title || cachePageTitle}`;
@@ -94,6 +96,7 @@ export default function Title(props: IProps) {
                       pathname: location.pathname,
                       search: querystring.stringify(newQuery),
                     });
+                    window.localStorage.setItem(dashboardThemeModeCacheKey, newQuery.themeMode);
                   }}
                 />
               </Space>
@@ -190,6 +193,7 @@ export default function Title(props: IProps) {
                 pathname: location.pathname,
                 search: querystring.stringify(newQuery),
               });
+              window.localStorage.setItem(dashboardThemeModeCacheKey, val);
             }}
           />
         </Space>

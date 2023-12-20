@@ -37,3 +37,8 @@ export const setLocalStep = (id, step) => {
     localStorage.removeItem(`dashboard_${id}_step`);
   }
 };
+
+export const dashboardThemeModeCacheKey = 'dashboard-themeMode-value';
+export const getDefaultThemeMode = (query) => {
+  return query.themeMode || window.localStorage.getItem(dashboardThemeModeCacheKey) || 'light';
+};
