@@ -11,12 +11,12 @@ interface Props {
 const getLogoSrc = (collapsed: boolean, sideMenuBgMode: string, siteInfo?: any) => {
   if (!collapsed) {
     if (sideMenuBgMode === 'light') {
-      return siteInfo?.menu_big_logo_url || '/image/logo-light-l.png';
+      return siteInfo?.light_menu_big_logo_url || '/image/logo-light-l.png';
     }
     return siteInfo?.menu_big_logo_url || '/image/logo-l.png';
   }
   if (sideMenuBgMode === 'light') {
-    return siteInfo?.menu_small_logo_url || '/image/logo-light.png';
+    return siteInfo?.light_menu_small_logo_url || '/image/logo-light.png';
   }
   return siteInfo?.menu_small_logo_url || '/image/logo.png';
 };

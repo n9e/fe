@@ -183,7 +183,7 @@ function App() {
         }
         document.title = siteInfo?.page_title || 'Nightingale';
         if (iconLink) {
-          iconLink.href = siteInfo?.menu_small_logo_url || '/image/favicon.svg';
+          iconLink.href = siteInfo?.favicon_url || '/image/favicon.svg';
         }
         // 非匿名访问，需要初始化一些公共数据
         if (!anonymous) {
