@@ -101,7 +101,7 @@ function RenderFilesystem({ value }) {
 }
 
 function Group({ name, data }) {
-  const { t } = useTranslation('targets_plus');
+  const { t } = useTranslation('targets');
   const [expand, setExpand] = useState(true);
 
   return (
