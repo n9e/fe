@@ -71,6 +71,14 @@ const zh_HK = {
     msg: '提示資訊：該操作會把監控機器從系統內中徹底刪除，非常危險，慎重操作！',
     btn: '刪除',
   },
+  meta_tip: '查看元信息',
+  meta_title: '元信息',
+  meta_desc_key: '元信息名稱',
+  meta_desc_value: '元信息值',
+  meta_value_click_to_copy: '點擊複製',
+  meta_expand: '展開',
+  meta_collapse: '收起',
+  meta_no_data: '暫無數據',
 };
 
 export default zh_HK;

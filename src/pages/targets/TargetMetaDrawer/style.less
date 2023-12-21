@@ -1,0 +1,69 @@
+.target-information-group {
+  margin-bottom: 20px;
+  .anticon-copy {
+    display: none;
+  }
+  &:hover {
+    .anticon-copy {
+      display: inline-block;
+    }
+  }
+}
+.target-information-group-header {
+  margin-bottom: 10px;
+  user-select: none;
+}
+.target-information-group-header-title {
+  color: rgba(18, 26, 31, 0.98);
+  font-weight: 800;
+}
+.target-information-group-content {
+  margin-left: 24px;
+}
+.target-information-group-content-item,.target-information-interface-item {
+  display: flex;
+  margin-bottom: 4px;
+}
+.target-information-group-content-item-key,.target-information-interface-item-key {
+  flex-shrink: 0;
+  color: rgba(28, 43, 52, .68);
+}
+.target-information-group-content-item-value,.target-information-interface-item-value {
+  .ant-tag-has-color {
+    color: #6C53B1;
+    cursor: pointer;
+  }
+  .ant-tag-has-color:hover {
+    color: #fff;
+    background-color: #6C53B1 !important;
+  }
+}
+.target-information-group-content-item {
+  gap: 20px;
+}
+.target-information-group-content-item-key {
+  width: 150px;
+}
+.target-information-interface {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+.target-information-interface-item {
+  gap: 4px;
+}
+.target-information-filesystem {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.target-information-filesystem-name {
+  color: rgba(28, 43, 52, .68);
+}
+.target-information-filesystem-mounted_on-value {
+  .ant-tag-has-color {
+    color: #6C53B1;
+    padding: 0 2px;
+    margin-right: 0;
+  }
+}

@@ -71,5 +71,13 @@ const zh_CN = {
     msg: '提示信息：该操作会把监控对象从系统内中彻底删除，非常危险，慎重操作！',
     btn: '删除',
   },
+  meta_tip: '查看元信息',
+  meta_title: '元信息',
+  meta_desc_key: '元信息名称',
+  meta_desc_value: '元信息值',
+  meta_value_click_to_copy: '点击复制',
+  meta_expand: '展开',
+  meta_collapse: '收起',
+  meta_no_data: '暂无数据',
 };
 export default zh_CN;
