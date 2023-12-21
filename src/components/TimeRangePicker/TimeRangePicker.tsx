@@ -123,16 +123,14 @@ const AbsoluteTimePicker = ({
           onBlur={(e) => {
             const val = e.target.value;
             const otherKey = type === 'start' ? 'end' : 'start';
-            // 必须是绝对时间才缓存
-            if (range && !isMathString(val) && moment.isMoment(range[otherKey])) {
-              setAbsoluteHistoryCache(
-                {
-                  ...range,
-                  [type]: val,
-                },
-                dateFormat,
-              );
-            }
+            // 2013-12-21 不再限制只能缓存绝对时间
+            setAbsoluteHistoryCache(
+              {
+                ...range,
+                [type]: val,
+              },
+              dateFormat,
+            );
           }}
         />
         <Popover
