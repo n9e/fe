@@ -47,7 +47,7 @@ const EventDetailPage: React.FC = () => {
   const { busiGroups, datasourceList } = commonState;
   const handleNavToWarningList = (id) => {
     if (busiGroups.find((item) => item.id === id)) {
-      history.push(`/alert-rules?id=${id}`);
+      window.open(`/alert-rules?ids=${id}&isLeaf=true`);
     } else {
       message.error(t('detail.buisness_not_exist'));
     }
