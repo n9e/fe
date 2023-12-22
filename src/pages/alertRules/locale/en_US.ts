@@ -42,6 +42,7 @@ const en_US = {
   notify_repeat_step_tip: 'If the alert continues to be unrecovered, the member of the alert receiving group will be reminded again after {{num}} minutes',
   notify_max_number: 'Max Send Times',
   notify_max_number_tip: 'The maximum number of times the alert is sent to the alert receiving group',
+  notify_flashduty_configured: 'Global Flashduty push is configured',
   callbacks: 'Callbacks',
   annotations: 'Annotations',
   annotationsOptions: {

@@ -42,6 +42,7 @@ const zh_HK = {
   notify_repeat_step_tip: '如果告警持續未恢復，間隔 {{num}} 分鐘之後重複提醒告警接收組的成員',
   notify_max_number: '最大發送次數',
   notify_max_number_tip: '如果值為 0，則不做最大發送次數的限制',
+  notify_flashduty_configured: '當前已配置了全局 Flashduty 推送',
   callbacks: '回撥地址',
   annotations: '附加資訊',
   annotationsOptions: {
