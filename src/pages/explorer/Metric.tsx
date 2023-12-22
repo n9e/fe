@@ -38,7 +38,7 @@ const MetricExplorerPage = () => {
           <div>
             {_.map(panels, (panel, idx) => {
               return (
-                <div key={panel.uuid} style={{ padding: 16, height: 650, marginBottom: 16, position: 'relative', background: '#fff', boxShadow: '0 1px 8px #0000001a' }}>
+                <div key={panel.uuid} className='n9e-fill-color-2' style={{ padding: 16, height: 650, marginBottom: 16, position: 'relative' }}>
                   <Explorer type='metric' defaultCate='prometheus' panelIdx={idx} />
                   {panels.length > 1 && (
                     <CloseCircleOutlined

@@ -299,7 +299,6 @@ const Resource: React.FC = () => {
                 <Col
                   span='24'
                   style={{
-                    color: '#000',
                     fontSize: '14px',
                     fontWeight: 'bold',
                     display: 'inline',
@@ -335,7 +334,7 @@ const Resource: React.FC = () => {
                 <Col
                   style={{
                     marginTop: '8px',
-                    color: '#666',
+                    // color: '#666',
                   }}
                 >
                   <Space>

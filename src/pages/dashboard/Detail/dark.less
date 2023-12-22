@@ -9,7 +9,7 @@
     border: unset !important;
   }
   .ant-table .ant-table-tbody td {
-    border-color: #303030;
+    border-color: rgb(57, 60, 77);
     color: unset;
   }
   .ant-table .ant-table-thead th {
@@ -68,5 +68,15 @@
     box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
     border-radius: 10px;
     background: unset;
+  }
+
+  .ant-tree-switcher-leaf-line::before {
+    border-right: 1px solid var(--fc-border-color);
+  }
+  .ant-tree-switcher-leaf-line::after {
+    border-bottom: 1px solid var(--fc-border-color);
+  }
+  .ant-tree-show-line .ant-tree-indent-unit::before {
+    border-right: 1px solid var(--fc-border-color);
   }
 }

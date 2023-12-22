@@ -100,14 +100,14 @@ export default function Content() {
   const isPlus = useIsPlus();
   const { profile, siteInfo } = useContext(CommonStateContext);
   // 仪表盘在全屏和暗黑主题下需要定义个 dark 样式名
-  let themeClassName = '';
-  if (_.startsWith(location.pathname, '/dashboards/') && !_.endsWith(location.pathname, '/dashboards/')) {
-    const query = querystring.parse(location.search);
-    const themeMode = getDefaultThemeMode(query);
-    if (themeMode === 'dark') {
-      themeClassName = 'theme-dark';
-    }
+  let themeClassName = 'theme-light';
+  // if (_.startsWith(location.pathname, '/dashboards/') && !_.endsWith(location.pathname, '/dashboards/')) {
+  const query = querystring.parse(location.search);
+  const themeMode = getDefaultThemeMode(query);
+  if (themeMode === 'dark') {
+    themeClassName = 'theme-dark';
   }
+  // }
 
   useEffect(() => {
     if (profile?.roles?.length > 0 && location.pathname !== '/') {

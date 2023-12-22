@@ -11,7 +11,6 @@
     .page-header-title {
       display: flex;
       align-items: center;
-      color: black;
       font-weight: bold;
       font-size: 16px;
       .anticon {
@@ -54,8 +53,8 @@
       align-items: center;
     }
     .n9e-page-header-content {
-      border-bottom: 1px solid #d9d9d9; // 2023-11-03 n9e 单独新增
-      background-color: #fff; // 2023-11-03 n9e 单独新增
+      border-bottom: 1px solid var(--fc-border-color); // 2023-11-03 n9e 单独新增
+      background-color: var(--fc-fill-2); // 2023-11-03 n9e 单独新增
     }
 
     & + div {
@@ -65,8 +64,9 @@
       margin-right: 6px;
       height: 100%;
       &:not(.srm) > * {
-        background: #fff;
-        box-shadow: 0px 1px 8px 0 rgb(0 0 0 / 10%);
+        background: var(--fc-fill-2);
+        // border: 1px solid var(--fc-border-color);
+        // box-shadow: 0px 1px 8px 0 rgb(0 0 0 / 10%);
       }
     }
   }
