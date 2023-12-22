@@ -311,7 +311,7 @@ const SideMenu = () => {
       >
         <div
           className={cn(
-            'z-20 flex h-full select-none flex-col justify-between border-0 transition-width',
+            'z-20 flex h-full select-none flex-col justify-between border-0 border-r border-solid border-fc-300 transition-width',
             collapsed ? 'w-[64px]' : uncollapsedWidth,
             collapsedHover ? `absolute ${uncollapsedWidth} shadow-mf` : '',
           )}
