@@ -23,11 +23,12 @@ import { DownOutlined } from '@ant-design/icons';
 import { Logout } from '@/services/login';
 import AdvancedWrap, { License } from '@/components/AdvancedWrap';
 import { CommonStateContext } from '@/App';
+import { AccessTokenKey } from '@/utils/constant';
+import DarkModeSelect from '@/components/DarkModeSelect';
 import Version from './Version';
 import SideMenuColorSetting from './SideMenuColorSetting';
 import './index.less';
 import './locale';
-import { AccessTokenKey } from '@/utils/constant';
 
 interface IPageLayoutProps {
   icon?: ReactNode;
@@ -187,6 +188,9 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                       {curLanguage}
                     </a>
                   </Dropdown>
+                  <div style={{ marginRight: 8 }}>
+                    <DarkModeSelect />
+                  </div>
                   <Dropdown overlay={menu} trigger={['click']}>
                     <span className='avator' style={{ cursor: 'pointer' }}>
                       <img src={profile.portrait || '/image/avatar1.png'} alt='' />

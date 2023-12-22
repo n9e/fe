@@ -98,9 +98,9 @@ export default function Content() {
   const location = useLocation();
   const history = useHistory();
   const isPlus = useIsPlus();
-  const { profile, siteInfo, sideMenuBgMode } = useContext(CommonStateContext);
+  const { profile, siteInfo, darkMode } = useContext(CommonStateContext);
   let themeClassName = 'theme-light';
-  if (sideMenuBgMode === 'dark') {
+  if (darkMode) {
     themeClassName = 'theme-dark';
   }
 

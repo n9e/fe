@@ -211,7 +211,11 @@ export const getMenuList = (t) => {
 
 const SideMenu = () => {
   const { t, i18n } = useTranslation('menu');
-  const { profile, isPlus, sideMenuBgMode } = useContext(CommonStateContext);
+  const { profile, isPlus, darkMode } = useContext(CommonStateContext);
+  let { sideMenuBgMode } = useContext(CommonStateContext);
+  if (darkMode) {
+    sideMenuBgMode = 'dark';
+  }
   const sideMenuBgColor = getSideMenuBgColor(sideMenuBgMode as any);
   const history = useHistory();
   const location = useLocation();

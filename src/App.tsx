@@ -101,6 +101,8 @@ export interface ICommonState {
   siteInfo?: { [index: string]: string };
   sideMenuBgMode: string;
   setSideMenuBgMode: (color: string) => void;
+  darkMode: boolean;
+  setDarkMode: (mode: boolean) => void;
 }
 
 // 可以匿名访问的路由 TODO: job-task output 应该也可以匿名访问
@@ -165,6 +167,11 @@ function App() {
     setSideMenuBgMode: (mode: string) => {
       window.localStorage.setItem('sideMenuBgMode', mode);
       setCommonState((state) => ({ ...state, sideMenuBgMode: mode }));
+    },
+    darkMode: localStorage.getItem('darkMode') === 'true',
+    setDarkMode: (mode: boolean) => {
+      window.localStorage.setItem('darkMode', String(mode));
+      setCommonState((state) => ({ ...state, darkMode: mode }));
     },
   });
 
