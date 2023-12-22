@@ -98,16 +98,11 @@ export default function Content() {
   const location = useLocation();
   const history = useHistory();
   const isPlus = useIsPlus();
-  const { profile, siteInfo } = useContext(CommonStateContext);
-  // 仪表盘在全屏和暗黑主题下需要定义个 dark 样式名
+  const { profile, siteInfo, sideMenuBgMode } = useContext(CommonStateContext);
   let themeClassName = 'theme-light';
-  // if (_.startsWith(location.pathname, '/dashboards/') && !_.endsWith(location.pathname, '/dashboards/')) {
-  const query = querystring.parse(location.search);
-  const themeMode = getDefaultThemeMode(query);
-  if (themeMode === 'dark') {
+  if (sideMenuBgMode === 'dark') {
     themeClassName = 'theme-dark';
   }
-  // }
 
   useEffect(() => {
     if (profile?.roles?.length > 0 && location.pathname !== '/') {
