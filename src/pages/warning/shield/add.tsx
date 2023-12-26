@@ -27,7 +27,8 @@ import './index.less';
 const AddShield: React.FC = () => {
   const { t } = useTranslation('alertMutes');
   const { search } = useLocation();
-  const { curBusiId } = useContext(CommonStateContext);
+  const { businessGroup } = useContext(CommonStateContext);
+  const curBusiId = businessGroup.id!;
   const query: any = queryString.parse(search);
 
   if (query.busiGroup) {

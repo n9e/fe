@@ -15,6 +15,9 @@ const alphabet = 'ABCDEFGHIGKLMNOPQRSTUVWXYZ'.split('');
 
 export default function Prometheus({ chartForm, variableConfig, dashboardId }) {
   const { t } = useTranslation('dashboard');
+  const varNams = _.map(variableConfig, (item) => {
+    return `$${item.name}`;
+  });
 
   return (
     <Form.List name='targets'>
@@ -67,7 +70,7 @@ export default function Prometheus({ chartForm, variableConfig, dashboardId }) {
                               ]}
                               style={{ flex: 1 }}
                             >
-                              <PromQLInputWithBuilder validateTrigger={['onBlur']} datasourceValue={datasourceValue} />
+                              <PromQLInputWithBuilder validateTrigger={['onBlur']} datasourceValue={datasourceValue} extraLabelValues={varNams} rangeVectorCompletion />
                             </Form.Item>
                           );
                         }}

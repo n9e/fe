@@ -22,16 +22,17 @@ import { useTranslation, Trans } from 'react-i18next';
 import { Panel } from '../../Components/Collapse';
 import { calcsOptions } from '../../config';
 import { useGlobalState } from '../../../globalState';
-import Info from '@/pages/account/info';
 
 export default function GraphStyles({ chartForm, variableConfigWithOptions }) {
   const { t, i18n } = useTranslation('dashboard');
   const namePrefix = ['custom'];
   const [tableFields, setTableFields] = useGlobalState('tableFields');
+  const [tableRefIds, setTableRefIds] = useGlobalState('tableRefIds');
 
   useEffect(() => {
     return () => {
       setTableFields([]);
+      setTableRefIds([]);
     };
   }, []);
 
@@ -58,7 +59,7 @@ export default function GraphStyles({ chartForm, variableConfigWithOptions }) {
             {_.map(calcsOptions, (item, key) => {
               return (
                 <Select.Option key={key} value={key}>
-                  {i18n.language === 'en_US' ? key : item.name}
+                  {t(`calcs.${key}`)}
                 </Select.Option>
               );
             })}
@@ -129,14 +130,15 @@ export default function GraphStyles({ chartForm, variableConfigWithOptions }) {
                 const displayMode = getFieldValue([...namePrefix, 'displayMode']);
                 const fieldColumns = getFieldValue([...namePrefix, 'columns']);
                 const columns = !_.isEmpty(fieldColumns) ? fieldColumns : _.concat(tableFields, 'value');
-                const aggrDimension = getFieldValue([...namePrefix, 'aggrDimension']);
+                let aggrDimension = getFieldValue([...namePrefix, 'aggrDimension']);
+                aggrDimension = _.isArray(aggrDimension) ? aggrDimension : [aggrDimension];
                 let keys: string[] = [];
                 if (displayMode === 'seriesToRows') {
                   keys = ['name', 'value'];
                 } else if (displayMode === 'labelsOfSeriesToRows') {
                   keys = columns;
                 } else if (displayMode === 'labelValuesToRows') {
-                  keys = [aggrDimension || 'name'];
+                  keys = _.concat(_.isEmpty(aggrDimension) ? ['name'] : aggrDimension, tableRefIds);
                 }
                 return (
                   <Form.Item label={t('panel.custom.table.sortColumn')} name={[...namePrefix, 'sortColumn']}>

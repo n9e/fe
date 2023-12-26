@@ -9,6 +9,7 @@ import queryString from 'query-string';
 import { useTranslation } from 'react-i18next';
 import { getAlertCards, getCardDetail } from '@/services/warning';
 import { CommonStateContext } from '@/App';
+import { parseRange } from '@/components/TimeRangePicker';
 import { SeverityColor, deleteAlertEventsModal } from './index';
 import CardLeft from './cardLeft';
 import './index.less';
@@ -64,7 +65,13 @@ function Card(props: Props, ref) {
   const { run: reloadCard } = useDebounceFn(
     () => {
       if (!rule) return;
-      getAlertCards({ ...filter, rule: rule.trim() }).then((res) => {
+      const params: any = { ..._.omit(filter, 'range'), rule: rule.trim() };
+      if (filter.range) {
+        const parsedRange = parseRange(filter.range);
+        params.stime = moment(parsedRange.start).unix();
+        params.etime = moment(parsedRange.end).unix();
+      }
+      getAlertCards(params).then((res) => {
         setCardList(res.dat);
       });
     },

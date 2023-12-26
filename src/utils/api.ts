@@ -18,9 +18,9 @@ function getApi(path: string) {
   const prefix = '/api/n9e/busi-group';
   return (busiGroup: string | number) => {
     return `${prefix}/${busiGroup}${path}`;
-  }
+  };
 }
-  
+
 const api = {
   tasktpls: getApi('/task-tpls'),
   tasktpl: getApi('/task-tpl'),
@@ -30,4 +30,3 @@ const api = {
 };
 
 export default api;
-  

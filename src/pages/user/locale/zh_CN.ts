@@ -18,7 +18,7 @@ const zh_CN = {
   },
   business: {
     title: '业务组管理',
-    list: '业务组列表',
+    list: '业务组',
     search_placeholder: '业务名',
     team_search_placeholder: '搜索团队名称',
     create: '创建业务组',
@@ -29,8 +29,8 @@ const zh_CN = {
     empty: '业务组（监控对象、监控仪表盘、告警规则、自愈脚本都要归属某个业务组）为空，请先',
     name: '业务组名称',
     name_tip: `
-      通过中划线分隔后会渲染成树结构 <1 />
-      如：redis-监控 和 redis-登录 将显示成如下  <1 />
+      通过 {{separator}} 分隔后会渲染成树结构 <1 />
+      如：redis{{separator}}监控 和 redis{{separator}}登录 将显示成如下  <1 />
       redis <1 />
       - 监控 <1 />
       - 登录 <1 />
@@ -48,6 +48,7 @@ const zh_CN = {
     team_name: '团队',
     perm_flag_0: '只读',
     perm_flag_1: '读写',
+    user_group_msg: '业务组团队不能为空',
   },
   disbale: '禁用',
   enable: '启用',

@@ -37,6 +37,7 @@ const en_US = {
     import_grafana_tip_version_error: 'Import of dashboard config less than v7 version is not supported',
     import_grafana_tip_version_warning: 'The imported dashboard config version is less than v8, some panels may not be displayed properly, do you want to continue importing?',
     continueToImport: 'Continue to import',
+    noSelected: 'Please select any dashboard',
   },
   link: {
     title: 'Links',
@@ -78,6 +79,8 @@ const en_US = {
     type: 'Type',
     hide: 'Hide',
     definition: 'Definition',
+    definition_msg1: 'Please enter variable definition',
+    definition_msg2: 'Variable definition must be valid JSON',
     reg: 'Regex',
     reg_tip: 'Optional, can filter options or extract values by regex',
     multi: 'Multi select',
@@ -237,6 +240,11 @@ const en_US = {
       fontBackground: 'Font background', // hexbin
       detailName: 'Link name',
       detailUrl: 'Link addr',
+      stat: {
+        graphMode: 'Graph mode',
+        none: 'None',
+        area: 'Mini graph',
+      },
       pie: {
         legengPosition: 'Legend position',
         max: 'Max',
@@ -299,9 +307,28 @@ const en_US = {
         stack: 'Stack',
         stack_noraml: 'Normal',
         stack_off: 'Off',
+        yAxis: {
+          title: 'Y-Axis settings',
+          rightYAxis: {
+            label: 'Right Y-Axis',
+            noraml: 'On',
+            off: 'Off',
+          },
+        },
       },
       iframe: {
         src: 'Src',
+      },
+      heatmap: {
+        xAxisField: 'X-Axis',
+        yAxisField: 'Y-Axis',
+        valueField: 'Value field',
+      },
+      barchart: {
+        xAxisField: 'X-Axis',
+        yAxisField: 'Y-Axis',
+        colorField: 'Color by field',
+        barMaxWidth: 'Bar max width',
       },
     },
     inspect: {
@@ -346,6 +373,31 @@ const en_US = {
       default: 'Default',
       updateTimeRange: 'Update time range',
     },
+  },
+  visualizations: {
+    timeseries: 'Time Series',
+    barchart: 'Bar Chart',
+    stat: 'Stat',
+    table: 'Table',
+    pie: 'Pie Chart',
+    hexbin: 'Hexmap',
+    barGauge: 'Bar Gauge',
+    text: 'Text',
+    gauge: 'Gauge',
+    heatmap: 'Heatmap',
+    iframe: 'Iframe',
+    row: 'Row',
+  },
+  calcs: {
+    lastNotNull: 'Last not null value',
+    last: 'Last value',
+    firstNotNull: 'First not null value',
+    first: 'First value',
+    min: 'Min',
+    max: 'Max',
+    avg: 'Avg',
+    sum: 'Sum',
+    count: 'Count',
   },
 };
 export default en_US;

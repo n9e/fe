@@ -229,6 +229,8 @@ export default function index(props: IProps) {
     }
   }, []);
 
+  if (defaultFormValuesControl?.defaultFormValues && defaultFormValuesControl?.isInited === false) return null;
+
   return (
     <div className='es-discover-container'>
       {!isOpenSearch && (
@@ -271,7 +273,14 @@ export default function index(props: IProps) {
         <div />
       </Form.Item>
       {mode === IMode.indices && (
-        <QueryBuilder key={datasourceValue} onExecute={fetchData} datasourceValue={datasourceValue} setFields={setFields} allowHideSystemIndices={allowHideSystemIndices} />
+        <QueryBuilder
+          key={datasourceValue}
+          onExecute={fetchData}
+          datasourceValue={datasourceValue}
+          setFields={setFields}
+          allowHideSystemIndices={allowHideSystemIndices}
+          form={form}
+        />
       )}
       {mode === IMode.indexPatterns && (
         <QueryBuilderWithIndexPatterns

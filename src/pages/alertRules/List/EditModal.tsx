@@ -28,6 +28,8 @@ import { defaultValues } from '../Form/constants';
 
 // @ts-ignore
 import ServiceCalendarSelect from 'plus:/pages/ServiceCalendar/ServiceCalendarSelect';
+// @ts-ignore
+import BatchEditNotifyChannels from 'plus:/parcels/AlertRule/BatchEditNotifyChannels';
 
 const { Option } = Select;
 const layout = {
@@ -412,6 +414,9 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish }) => {
                   </>
                 );
               case 'notify_channels':
+                if (isPlus) {
+                  return <BatchEditNotifyChannels />;
+                }
                 return (
                   <>
                     <Form.Item label={changetoText} name='notify_channels'>

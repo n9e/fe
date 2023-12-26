@@ -26,10 +26,11 @@ import Text from './Text';
 import Gauge from './Gauge';
 import Iframe from './Iframe';
 import Heatmap from './Heatmap';
+import BarChart from './BarChart';
 
 export default function index({ type, targets, chartForm, variableConfigWithOptions }) {
   const OptionsCptMap = {
-    timeseries: <Timeseries />,
+    timeseries: <Timeseries targets={targets} />,
     stat: <Stat />,
     table: <Table targets={targets} chartForm={chartForm} variableConfigWithOptions={variableConfigWithOptions} />,
     pie: <Pie />,
@@ -39,6 +40,7 @@ export default function index({ type, targets, chartForm, variableConfigWithOpti
     iframe: <Iframe variableConfigWithOptions={variableConfigWithOptions} />,
     gauge: <Gauge />,
     heatmap: <Heatmap />,
+    barchart: <BarChart />,
   };
   return OptionsCptMap[type] || `无效的图表类型 ${type}`;
 }

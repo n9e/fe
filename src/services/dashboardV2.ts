@@ -28,6 +28,18 @@ export const getDashboards = function (id: number | string) {
   });
 };
 
+// 或许多个业务组的仪表盘列表
+export const getBusiGroupsDashboards = function (gids: string) {
+  return request(`/api/n9e/busi-groups/boards`, {
+    method: RequestMethod.Get,
+    params: {
+      gids,
+    },
+  }).then((res) => {
+    return res.dat;
+  });
+};
+
 interface Dashboard {
   name: string;
   ident?: string;
@@ -141,7 +153,7 @@ export const fetchHistoryRangeBatch = (data, signalKey) => {
     signals[signalKey].abort();
   }
   signals[signalKey] = controller;
-  return request(`/api/n9e/query-range-batch`, {
+  return request(`/api/${N9E_PATHNAME}/query-range-batch`, {
     method: RequestMethod.Post,
     data,
     signal,
@@ -158,7 +170,7 @@ export const fetchHistoryInstantBatch = (data, signalKey) => {
     signals[signalKey].abort();
   }
   signals[signalKey] = controller;
-  return request(`/api/n9e/query-instant-batch`, {
+  return request(`/api/${N9E_PATHNAME}/query-instant-batch`, {
     method: RequestMethod.Post,
     data,
     signal,

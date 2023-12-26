@@ -74,7 +74,6 @@ export default function index() {
                   key={item.id}
                   className={active?.id === item.id ? 'is-active' : ''}
                   onClick={() => {
-                    console.log(data, active);
                     const activeOrigin = _.find(data, { id: active?.id });
                     if (activeOrigin && active && !_.isEqual(activeOrigin.content, active?.content)) {
                       Modal.confirm({

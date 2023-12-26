@@ -1,12 +1,12 @@
 const en_US = {
-  title: 'Record Rules',
+  title: 'Recording Rules',
   search_placeholder: 'Search by name or tags',
   name: 'Metric Name',
   name_msg: 'Metric name is invalid',
   name_tip: 'Promql is calculated periodically, and a new metric is generated. Fill in the name of the new metric here',
   note: 'Note',
   disabled: 'Enable',
-  prom_eval_interval: 'Eval interval',
+  prom_eval_interval: 'Execution frequency',
   prom_eval_interval_tip:
     'PromQL query is executed every {{num}} seconds to query the time-series database, and the results retrieved are renamed and written back to the time-series database',
   append_tags: 'Tags',
@@ -33,7 +33,7 @@ const en_US = {
         'PromQL query is executed every {{num}} seconds to query the time-series database, and the results retrieved are renamed and written back to the time-series database',
       options: {
         datasource_ids: 'Datasource',
-        prom_eval_interval: 'Eval interval',
+        prom_eval_interval: 'Execution frequency',
         disabled: 'Enable',
         append_tags: 'Tags',
       },

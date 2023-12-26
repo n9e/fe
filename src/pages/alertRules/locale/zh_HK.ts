@@ -1,7 +1,7 @@
 const zh_HK = {
   title: '告警規則',
   search_placeholder: '搜尋名稱或標籤',
-  prod: '監控型別',
+  prod: '監控類型',
   severity: '級別',
   notify_groups: '告警接收組',
   basic_configs: '基礎配置',
@@ -32,6 +32,8 @@ const zh_HK = {
   enable_in_bg_tip: '根據告警事件中的 ident 歸屬關係判斷',
   notify_configs: '通知配置',
   notify_channels: '通知媒介',
+  notify_channels_tpl: '通知媒介模板',
+  notify_channels_tpl_tip: '為空則使用默認模板',
   notify_recovered: '啟用恢復通知',
   notify_recovered_tip: '告警恢復時也傳送通知',
   recover_duration: '留觀時長（秒）',
@@ -40,6 +42,7 @@ const zh_HK = {
   notify_repeat_step_tip: '如果告警持續未恢復，間隔 {{num}} 分鐘之後重複提醒告警接收組的成員',
   notify_max_number: '最大發送次數',
   notify_max_number_tip: '如果值為 0，則不做最大發送次數的限制',
+  notify_flashduty_configured: '當前已配置了全局 Flashduty 推送',
   callbacks: '回撥地址',
   annotations: '附加資訊',
   annotationsOptions: {
@@ -47,15 +50,18 @@ const zh_HK = {
     dashboard_link: '儀表盤連結',
     desc: '描述',
   },
-  invalid_datasource_tip_1: '資料來源',
+  extra_config: {
+    default_tpl: '默認模板',
+  },
+  invalid_datasource_tip_1: '數據源',
   invalid_datasource_tip_2: '未配置關聯告警引擎集群',
-  invalid_datasource_reload: '刷新資料來源',
+  invalid_datasource_reload: '刷新數據源',
   host: {
     query: {
       title: '機器篩選',
       key: {
         all_hosts: '全部機器',
-        datasource_ids: '資料來源',
+        datasource_ids: '數據源',
         group_ids: '業務組',
         tags: '標籤',
         hosts: '機器標識',
@@ -104,7 +110,7 @@ const zh_HK = {
     update: {
       title: '更新告警規則',
       name: '批量更新',
-      field: '欄位',
+      field: '字段',
       changeto: '改為',
       enable_in_bg_tip: '根據告警事件中的 ident 歸屬關係判斷',
       callback_cover: {
@@ -116,7 +122,7 @@ const zh_HK = {
       effective_time_msg: '生效時間不能為空',
       effective_time_add: '新增生效時間',
       options: {
-        datasource_ids: '資料來源',
+        datasource_ids: '數據源',
         severity: '告警級別',
         prom_eval_interval: '執行頻率',
         prom_for_duration: '持續時長',

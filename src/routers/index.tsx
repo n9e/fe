@@ -15,7 +15,7 @@
  *
  */
 import React, { useEffect, useContext } from 'react';
-import { Switch, Route, useLocation, Redirect, useHistory } from 'react-router-dom';
+import { Switch, Route, useLocation, Redirect, useHistory, useParams } from 'react-router-dom';
 import querystring from 'query-string';
 import _ from 'lodash';
 import { getMenuPerm } from '@/services/common';
@@ -31,6 +31,7 @@ import AlertRules, { Add as AlertRuleAdd, Edit as AlertRuleEdit } from '@/pages/
 import AlertRulesBuiltin, { Detail as AlertRulesBuiltinDetail } from '@/pages/alertRulesBuiltin';
 import Profile from '@/pages/account/profile';
 import { List as Dashboard, Detail as DashboardDetail, Share as DashboardShare } from '@/pages/dashboard';
+import { getDefaultThemeMode } from '@/pages/dashboard/Detail/utils';
 import Chart from '@/pages/chart';
 import Groups from '@/pages/user/groups';
 import Users from '@/pages/user/users';
@@ -67,6 +68,7 @@ import NotificationSettings from '@/pages/help/NotificationSettings';
 import MigrateDashboards from '@/pages/help/migrate';
 import IBEX from '@/pages/help/NotificationSettings/IBEX';
 import VariableConfigs from '@/pages/variableConfigs';
+import SiteSettings from '@/pages/siteSettings';
 import { dynamicPackages, Entry } from '@/utils';
 // @ts-ignore
 import { Jobs as StrategyBrain } from 'plus:/datasource/anomaly';
@@ -99,9 +101,10 @@ export default function Content() {
   const { profile, siteInfo } = useContext(CommonStateContext);
   // 仪表盘在全屏和暗黑主题下需要定义个 dark 样式名
   let themeClassName = '';
-  if (location.pathname.indexOf('/dashboard') === 0) {
+  if (_.startsWith(location.pathname, '/dashboards/') && !_.endsWith(location.pathname, '/dashboards/')) {
     const query = querystring.parse(location.search);
-    if (query?.themeMode === 'dark') {
+    const themeMode = getDefaultThemeMode(query);
+    if (themeMode === 'dark') {
       themeClassName = 'theme-dark';
     }
   }
@@ -203,6 +206,8 @@ export default function Content() {
         <Route exact path='/trace/dependencies' component={TraceDependencies} />
 
         <Route exact path='/permissions' component={Permissions} />
+
+        <Route exact path='/site-settings' component={SiteSettings} />
 
         {lazyRoutes.map((route, i) => (
           <RouteWithSubRoutes key={i} {...route} />

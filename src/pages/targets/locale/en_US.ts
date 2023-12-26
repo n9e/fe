@@ -1,5 +1,5 @@
 const en_US = {
-  title: 'Infrastructure List',
+  title: 'Host List',
   default_filter: 'Default',
   ungrouped_targets: 'Ungrouped hosts',
   all_targets: 'All hosts',
@@ -10,6 +10,7 @@ const en_US = {
   filterDowntimeMin: '{{count}} minute',
   filterDowntimeMin_plural: '{{count}} minutes',
   not_grouped: 'Ungrouped',
+  host_ip: 'IP',
   tags: 'Tags',
   group_obj: 'Business group',
   target_up: 'Status',
@@ -26,6 +27,7 @@ const en_US = {
     No heartbeat within 3 minutes: red
   `,
   remote_addr: 'Remote Addr',
+  agent_version: 'Agent Version',
   note: 'Note',
   organize_columns: {
     title: 'Organize Columns',
@@ -70,5 +72,13 @@ const en_US = {
     msg: 'Warning: This operation will permanently delete the hosts from the system, very dangerous, be careful!',
     btn: 'Delete',
   },
+  meta_tip: 'View Meta Info',
+  meta_title: 'Information',
+  meta_desc_key: 'Key',
+  meta_desc_value: 'Value',
+  meta_value_click_to_copy: 'Click to copy',
+  meta_expand: 'Expand',
+  meta_collapse: 'Collapse',
+  meta_no_data: 'No data',
 };
 export default en_US;

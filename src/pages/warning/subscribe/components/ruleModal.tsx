@@ -40,7 +40,8 @@ interface props {
 const ruleModal: React.FC<props> = ({ visible, ruleModalClose, subscribe }) => {
   const { t } = useTranslation('alertSubscribes');
   const pagination = usePagination({ PAGESIZE_KEY: 'alert-rules-pagesize' });
-  const { curBusiId, datasourceList } = useContext(CommonStateContext);
+  const { businessGroup, datasourceList } = useContext(CommonStateContext);
+  const curBusiId = businessGroup.id!;
   const [busiGroups, setBusiGroups] = useState<{ id: number; name: string }[]>([]);
   const [currentStrategyDataAll, setCurrentStrategyDataAll] = useState([]);
   const [currentStrategyData, setCurrentStrategyData] = useState([]);
@@ -295,7 +296,7 @@ const ruleModal: React.FC<props> = ({ visible, ruleModalClose, subscribe }) => {
               </Option>
             ))}
           </Select>
-          <Input style={{ marginLeft: 10, width: '280px' }} onPressEnter={onSearchQuery} prefix={<SearchOutlined />} placeholder={t('规则名称、附加标签')} />
+          <Input style={{ marginLeft: 10, width: '280px' }} onPressEnter={onSearchQuery} prefix={<SearchOutlined />} placeholder={t('alertRules:search_placeholder')} />
         </div>
         <div className='rule_modal_table'>
           <Table size='small' rowKey='id' pagination={pagination} dataSource={currentStrategyData} columns={columns} />

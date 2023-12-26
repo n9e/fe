@@ -16,8 +16,8 @@ export function normalizeESQueryRequestBody(params: any) {
     aggs: {
       A: {
         [params?.find]: {
-          field: `${params?.field}.keyword`,
-          size: 500,
+          field: `${params?.field}`,
+          size: params.size || 500,
           order: {
             _key: 'asc',
           },

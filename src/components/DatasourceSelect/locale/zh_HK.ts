@@ -1,6 +1,6 @@
 const zh_HK = {
-  type: '資料來源型別',
-  id: '關聯資料來源',
+  type: '數據源類型',
+  id: '關聯數據源',
 };
 
 export default zh_HK;

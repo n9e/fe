@@ -10,6 +10,7 @@ deploy.sh
 src/Packages/*
 stats.html
 build.sh
+.env
 .env.advanced
 scripts/n9e_locale.json
 src/plus

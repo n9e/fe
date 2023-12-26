@@ -45,5 +45,6 @@ const zh_CN = {
   },
   last: '最近',
   next: '接下来',
+  close: '关闭',
 };
 export default zh_CN;

@@ -23,7 +23,7 @@ const zh_HK = {
     },
     name: '公開',
   },
-  create_title: '建立儀表盤',
+  create_title: '創建儀表盤',
   edit_title: '編輯儀表盤',
   add_panel: '新增圖表',
   cluster: '叢集',
@@ -33,10 +33,11 @@ const zh_HK = {
     import: '匯入儀表盤 JSON',
     label: '儀表盤 JSON',
     import_grafana: '匯入 Grafana 儀表盤 JSON',
-    import_grafana_tip: '匯入完的圖表只支援夜鶯目前支援的圖表型別和功能, <a>問題反饋</a>',
+    import_grafana_tip: '匯入完的圖表只支援夜鶯目前支援的圖表類型和功能, <a>問題反饋</a>',
     import_grafana_tip_version_error: '不支援匯入小於 v7 版本的儀表盤配置',
     import_grafana_tip_version_warning: '匯入的儀表盤配置版本小於 v8，部分圖表可能無法正常顯示，是否繼續匯入？',
     continueToImport: '繼續匯入',
+    noSelected: '請選擇儀表盤',
   },
   link: {
     title: '儀表盤連結',
@@ -75,9 +76,11 @@ const zh_HK = {
     name: '變數名稱',
     name_msg: '僅支援數字和字元下劃線',
     label: '顯示名稱',
-    type: '變數型別',
+    type: '變數類型',
     hide: '隱藏變數',
     definition: '變數定義',
+    definition_msg1: '請輸入變數定義',
+    definition_msg2: '變數定義必須是合法的JSON',
     reg: '正則',
     reg_tip: '可選，可通過正則來過濾可選項，或提取值',
     multi: '多選',
@@ -95,7 +98,7 @@ const zh_HK = {
       defaultValue_tip: '定義一個隱藏的常量值',
     },
     datasource: {
-      definition: '資料來源型別',
+      definition: '數據源類型',
       defaultValue: '預設值',
       regex: '數據源過濾',
       regex_tip: '可選，可通過正則來過濾可選項，或提取值',
@@ -118,7 +121,7 @@ const zh_HK = {
     base: {
       title: '面板配置',
       name: '標題',
-      name_tip: '表格型別的圖表必須設定標題，否則面板編輯會跟表格表頭衝突',
+      name_tip: '表格類型的圖表必須設定標題，否則面板編輯會跟表格表頭衝突',
       link: {
         label: '連結',
         btn: '新增',
@@ -243,6 +246,11 @@ const zh_HK = {
       fontBackground: '文字背景色',
       detailName: '連結名稱',
       detailUrl: '連結地址',
+      stat: {
+        graphMode: '圖表模式',
+        none: '無',
+        area: '迷你圖',
+      },
       pie: {
         legengPosition: '圖例位置',
         max: '最多展示塊數',
@@ -309,9 +317,28 @@ const zh_HK = {
         stack: '堆疊',
         stack_noraml: '開啟',
         stack_off: '關閉',
+        yAxis: {
+          title: 'Y軸設定',
+          rightYAxis: {
+            label: '右側Y軸顯示',
+            noraml: '開啟',
+            off: '關閉',
+          },
+        },
       },
       iframe: {
         src: 'iframe 地址',
+      },
+      heatmap: {
+        xAxisField: 'X軸',
+        yAxisField: 'Y軸',
+        valueField: '數值列',
+      },
+      barchart: {
+        xAxisField: 'X轴',
+        yAxisField: 'Y轴',
+        colorField: '颜色字段',
+        barMaxWidth: '條形最大寬度',
       },
     },
     inspect: {
@@ -326,15 +353,15 @@ const zh_HK = {
   query: {
     title: '查詢條件',
     transform: '資料轉換',
-    datasource_placeholder: '請選擇資料來源',
-    datasource_msg: '請選擇資料來源',
+    datasource_placeholder: '請選擇數據源',
+    datasource_msg: '請選擇數據源',
     time: '時間選擇',
     time_tip: '可指定時間範圍，預設為儀表盤全域性時間範圍',
   },
   detail: {
-    datasource_empty: '沒有資料來源資訊，請先配置資料來源',
+    datasource_empty: '沒有數據源資訊，請先配置數據源',
     invalidTimeRange: '無效的 __from 和 __to 值',
-    invalidDatasource: '無效的資料來源',
+    invalidDatasource: '無效的數據源',
     fullscreen: {
       notification: {
         esc: '按 ESC 鍵退出全螢幕模式',
@@ -356,6 +383,31 @@ const zh_HK = {
       default: '默认',
       updateTimeRange: '更新時間範圍',
     },
+  },
+  visualizations: {
+    timeseries: '時序圖',
+    barchart: '柱狀圖',
+    stat: '指標圖',
+    table: '表格',
+    pie: '餅圖',
+    hexbin: '蜂窩圖',
+    barGauge: '排行榜',
+    text: '文本卡片',
+    gauge: '儀表圖',
+    heatmap: '色塊圖',
+    iframe: '內嵌文檔(iframe)',
+    row: '分組',
+  },
+  calcs: {
+    lastNotNull: '最後一個非空值',
+    last: '最後一個值',
+    firstNotNull: '第一個非空值',
+    first: '第一個值',
+    min: '最小值',
+    max: '最大值',
+    avg: '平均值',
+    sum: '總和',
+    count: '數量',
   },
 };
 

@@ -91,10 +91,10 @@ export default function CardLeft(props: Props) {
 
   const handleDelete = (alert) => {
     Modal.confirm({
-      title: t('common:confirm_delete'),
+      title: t('common:confirm.delete'),
       onOk: async () => {
         await deleteAggrAlerts([alert.id]);
-        message.success(t('common:success_delete'));
+        message.success(t('common:success.delete'));
         getList(true);
       },
       onCancel: () => {},

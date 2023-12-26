@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { useDebounceFn } from 'ahooks';
 import { useLocation } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
-import { Input, Tooltip, Form, AutoComplete, Select, Button } from 'antd';
+import { Input, Tooltip, Form, AutoComplete, Select, Button, FormInstance } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import TimeRangePicker from '@/components/TimeRangePicker';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
@@ -14,15 +14,17 @@ interface Props {
   datasourceValue?: number;
   setFields: (fields: Field[]) => void;
   allowHideSystemIndices?: boolean;
+  form: FormInstance;
 }
 
 export default function QueryBuilder(props: Props) {
   const { t } = useTranslation('explorer');
-  const { onExecute, datasourceValue, setFields, allowHideSystemIndices = false } = props;
+  const { onExecute, datasourceValue, setFields, allowHideSystemIndices = false, form } = props;
   const params = new URLSearchParams(useLocation().search);
   const [indexOptions, setIndexOptions] = useState<any[]>([]);
   const [indexSearch, setIndexSearch] = useState('');
   const [dateFields, setDateFields] = useState<Field[]>([]);
+  const indexValue = Form.useWatch(['query', 'index']);
   const { run: onIndexChange } = useDebounceFn(
     (val) => {
       if (datasourceValue && val) {
@@ -32,6 +34,15 @@ export default function QueryBuilder(props: Props) {
         }).then((res) => {
           setFields(res.allFields);
           setDateFields(res.fields);
+          const query = form.getFieldValue('query');
+          const dateField = _.find(res.fields, { name: query.date_field })?.name;
+          const defaultDateField = _.find(res.fields, { name: '@timestamp' })?.name || res.fields[0]?.name;
+          form.setFieldsValue({
+            query: {
+              ...query,
+              date_field: dateField || defaultDateField,
+            },
+          });
         });
       }
     },
@@ -57,6 +68,12 @@ export default function QueryBuilder(props: Props) {
     // 假设携带数据源值时会同时携带其他的参数，并且触发一次查询
     onIndexChange(params.get('index_name'));
   }, []);
+
+  useEffect(() => {
+    if (indexValue) {
+      onIndexChange(indexValue);
+    }
+  }, [indexValue]);
 
   return (
     <div style={{ display: 'flex', gap: 8 }}>
@@ -92,9 +109,6 @@ export default function QueryBuilder(props: Props) {
               onSearch={(val) => {
                 setIndexSearch(val);
               }}
-              onChange={(val) => {
-                onIndexChange(val);
-              }}
             />
           </Form.Item>
         </InputGroupWithFormItem>
@@ -117,7 +131,6 @@ export default function QueryBuilder(props: Props) {
         <InputGroupWithFormItem label={t('datasource:es.date_field')}>
           <Form.Item
             name={['query', 'date_field']}
-            initialValue='@timestamp'
             rules={[
               {
                 required: true,

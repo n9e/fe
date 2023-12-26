@@ -198,7 +198,6 @@ export const replaceExpressionVarsSpecifyRule = (
         const { name, options, reg, value, allValue, type } = formData[i];
         const placeholder = getPlaceholder(name);
         const selected = getVaraiableSelected(name, type, id);
-
         if (vars.includes(placeholder)) {
           if (_.isEqual(selected, ['all'])) {
             if (allValue) {
@@ -274,7 +273,13 @@ export function stringStartsAsRegEx(str: string): boolean {
 
 export function stringToRegex(str: string): RegExp | false {
   if (!stringStartsAsRegEx(str)) {
-    return new RegExp(`^${str}$`);
+    let regex;
+    try {
+      regex = new RegExp(`^${str}$`);
+    } catch (e) {
+      return false;
+    }
+    return regex;
   }
 
   const match = str.match(new RegExp('^/(.*?)/(g?i?m?y?)$'));

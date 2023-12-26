@@ -65,10 +65,20 @@ export const updateStrategyGroup = function (data: Partial<strategyGroup> & { id
   });
 };
 
-//// 获取策略列表
+// 获取策略列表
 export const getStrategyGroupSubList = function (params: { id: number }) {
   return request(`/api/n9e/busi-group/${params.id}/alert-rules`, {
     method: RequestMethod.Get,
+  });
+};
+
+// 查询多个业务组的规则列表 2023-11-24 新增
+export const getBusiGroupsAlertRules = function (gids: string) {
+  return request('/api/n9e/busi-groups/alert-rules', {
+    method: RequestMethod.Get,
+    params: {
+      gids,
+    },
   });
 };
 
@@ -210,6 +220,20 @@ export const updateServiceCal = function (
   busiId: number,
 ) {
   return request(`/api/n9e-plus/busi-group/${busiId}/alert-rules/service-cal`, {
+    method: RequestMethod.Put,
+    data: data,
+  });
+};
+
+export const updateNotifyChannels = function (
+  data: {
+    ids: React.Key[];
+    notify_channels: string[];
+    custom_notify_tpl: { [index: string]: string };
+  },
+  busiId: number,
+) {
+  return request(`/api/n9e-plus/busi-group/${busiId}/alert-rules/notify_channels`, {
     method: RequestMethod.Put,
     data: data,
   });

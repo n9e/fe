@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { useRef } from 'react';
 
 export function transformColumns(columns: any[], transformations?: any[]): any[] {
   let newColumns: any[] = columns;
@@ -59,4 +60,13 @@ export function downloadCsv(data: any[], filename: string) {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+}
+
+export function useDeepCompareWithRef(value) {
+  const ref = useRef();
+  if (!_.isEqual(value, ref.current)) {
+    ref.current = value; //ref.current contains the previous object value
+  }
+
+  return ref.current;
 }

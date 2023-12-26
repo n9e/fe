@@ -25,6 +25,7 @@ import { AutoRefresh } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
 import { getProdOptions } from '@/pages/alertRules/Form/components/ProdSelect';
 import DatasourceSelect from '@/components/DatasourceSelect/DatasourceSelect';
+import TimeRangePicker, { IRawTimeRange, getDefaultValue } from '@/components/TimeRangePicker';
 import Card from './card';
 import Table from './Table';
 import './locale';
@@ -32,6 +33,8 @@ import './index.less';
 
 // @ts-ignore
 import BatchAckBtn from 'plus:/parcels/Event/Acknowledge/BatchAckBtn';
+
+const CACHE_KEY = 'alert_active_events_range';
 
 const { confirm } = Modal;
 export const SeverityColor = ['red', 'orange', 'yellow', 'green'];
@@ -58,6 +61,7 @@ const Event: React.FC = () => {
   const [view, setView] = useState<'card' | 'list'>('card');
   const { busiGroups, feats } = useContext(CommonStateContext);
   const [filter, setFilter] = useState<{
+    range?: IRawTimeRange;
     cate?: string;
     datasourceIds: number[];
     bgid?: number;
@@ -65,6 +69,7 @@ const Event: React.FC = () => {
     queryContent: string;
     rule_prods: string[];
   }>({
+    range: undefined,
     datasourceIds: [],
     queryContent: '',
     rule_prods: [],
@@ -94,6 +99,18 @@ const Event: React.FC = () => {
         <Space>
           <Button icon={<AppstoreOutlined />} onClick={() => setView('card')} />
           <Button icon={<UnorderedListOutlined />} onClick={() => setView('list')} />
+          <TimeRangePicker
+            allowClear
+            localKey={CACHE_KEY}
+            value={filter.range}
+            onChange={(val) => {
+              setFilter({
+                ...filter,
+                range: val,
+              });
+            }}
+            dateFormat='YYYY-MM-DD HH:mm:ss'
+          />
           <Select
             allowClear
             placeholder={t('prod')}
@@ -178,7 +195,7 @@ const Event: React.FC = () => {
           />
         </Space>
         <Col
-          flex='200px'
+          flex='100px'
           style={{
             display: 'flex',
             justifyContent: 'flex-end',
@@ -228,6 +245,7 @@ const Event: React.FC = () => {
   }
 
   const filterObj = Object.assign(
+    { range: filter.range },
     filter.datasourceIds.length ? { datasource_ids: filter.datasourceIds } : {},
     filter.severity ? { severity: filter.severity } : {},
     filter.queryContent ? { query: filter.queryContent } : {},

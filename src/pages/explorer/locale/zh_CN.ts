@@ -2,6 +2,7 @@ const zh_CN = {
   title: '即时查询',
   add_btn: '新增一个查询面板',
   query_btn: '查询',
+  query_tab: '查询',
   log: {
     search_placeholder: '搜索字段',
     available: '可选字段',

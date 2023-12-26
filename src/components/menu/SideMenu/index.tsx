@@ -38,6 +38,40 @@ export const getMenuList = (t) => {
       ],
     },
     {
+      key: 'metric',
+      icon: <IconFont type='icon-IndexManagement1' />,
+      label: t('时序指标'),
+      children: [
+        {
+          key: '/metric/explorer',
+          label: t('即时查询'),
+        },
+        {
+          key: '/object/explorer',
+          label: t('快捷视图'),
+        },
+        {
+          key: '/recording-rules',
+          label: t('记录规则'),
+        },
+      ],
+    },
+    {
+      key: 'log',
+      icon: <IconFont type='icon-Menu_LogAnalysis' />,
+      label: t('日志分析'),
+      children: [
+        {
+          key: '/log/explorer',
+          label: t('即时查询'),
+        },
+        {
+          key: '/log/index-patterns',
+          label: t('索引模式'),
+        },
+      ],
+    },
+    {
       key: 'alarm',
       icon: <IconFont type='icon-Menu_AlarmManagement' />,
       label: t('告警管理'),
@@ -103,40 +137,6 @@ export const getMenuList = (t) => {
       ],
     },
     {
-      key: 'metric',
-      icon: <IconFont type='icon-IndexManagement1' />,
-      label: t('时序指标'),
-      children: [
-        {
-          key: '/metric/explorer',
-          label: t('即时查询'),
-        },
-        {
-          key: '/object/explorer',
-          label: t('快捷视图'),
-        },
-        {
-          key: '/recording-rules',
-          label: t('记录规则'),
-        },
-      ],
-    },
-    {
-      key: 'log',
-      icon: <IconFont type='icon-Menu_LogAnalysis' />,
-      label: t('日志分析'),
-      children: [
-        {
-          key: '/log/explorer',
-          label: t('即时查询'),
-        },
-        {
-          key: '/log/index-patterns',
-          label: t('索引模式'),
-        },
-      ],
-    },
-    {
       key: 'targets',
       icon: <IconFont type='icon-Menu_Infrastructure' />,
       label: t('基础设施'),
@@ -190,6 +190,10 @@ export const getMenuList = (t) => {
         {
           key: '/help/servers',
           label: t('告警引擎'),
+        },
+        {
+          key: '/site-settings',
+          label: t('siteInfo:title'),
         },
         // {
         //   key: '/help/migrate',

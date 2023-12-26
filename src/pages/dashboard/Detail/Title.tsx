@@ -29,6 +29,7 @@ import { visualizations } from '../Editor/config';
 import { dashboardTimeCacheKey } from './Detail';
 import FormModal from '../List/FormModal';
 import { IDashboard } from '../types';
+import { dashboardThemeModeCacheKey, getDefaultThemeMode } from './utils';
 
 interface IProps {
   dashboard: IDashboard;
@@ -50,7 +51,8 @@ export default function Title(props: IProps) {
   const location = useLocation();
   const { siteInfo } = useContext(CommonStateContext);
   const query = querystring.parse(location.search);
-  const { viewMode, themeMode } = query;
+  const { viewMode } = query;
+  const themeMode = getDefaultThemeMode(query);
 
   useEffect(() => {
     document.title = `${dashboard.name} - ${siteInfo?.page_title || cachePageTitle}`;
@@ -94,6 +96,7 @@ export default function Title(props: IProps) {
                       pathname: location.pathname,
                       search: querystring.stringify(newQuery),
                     });
+                    window.localStorage.setItem(dashboardThemeModeCacheKey, newQuery.themeMode);
                   }}
                 />
               </Space>
@@ -123,7 +126,7 @@ export default function Title(props: IProps) {
               trigger={['click']}
               overlay={
                 <Menu>
-                  {_.map([{ type: 'row', name: '分组' }, ...visualizations], (item) => {
+                  {_.map([{ type: 'row', name: 'row' }, ...visualizations], (item) => {
                     return (
                       <Menu.Item
                         key={item.type}
@@ -131,7 +134,7 @@ export default function Title(props: IProps) {
                           onAddPanel(item.type);
                         }}
                       >
-                        {i18n.language === 'en_US' ? item.type : item.name}
+                        {t(`visualizations.${item.type}`)}
                       </Menu.Item>
                     );
                   })}
@@ -163,7 +166,7 @@ export default function Title(props: IProps) {
               const newQuery = _.omit(query, ['viewMode', 'themeMode']);
               if (!viewMode) {
                 newQuery.viewMode = 'fullscreen';
-                newQuery.themeMode = localStorage.getItem('dashboard_themeMode') || 'light';
+                newQuery.themeMode = localStorage.getItem(dashboardThemeModeCacheKey) || 'light';
               }
               history.replace({
                 pathname: location.pathname,
@@ -190,6 +193,7 @@ export default function Title(props: IProps) {
                 pathname: location.pathname,
                 search: querystring.stringify(newQuery),
               });
+              window.localStorage.setItem(dashboardThemeModeCacheKey, val);
             }}
           />
         </Space>

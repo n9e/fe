@@ -1,0 +1,28 @@
+const en_US = {
+  title: 'Site Settings',
+  favicon_url: 'Favicon',
+  favicon_url_tip: 'Enter the image resource address, recommended size 32x32',
+  login_page_logo_url: 'Login Page Logo',
+  login_page_logo_url_tip: 'Enter the image resource address, recommended size 120x38',
+  menu_big_logo_url: 'Menu Page Big Logo',
+  menu_big_logo_url_tip: 'Enter the image resource address, recommended size 120x38',
+  menu_small_logo_url: 'Menu Page Small Logo & Website Favicon',
+  menu_small_logo_url_tip: 'Enter the image resource address, recommended size 38x38',
+  document_url: 'Document URL',
+  document_url_tip: 'Override the default Nightingale document link address',
+  page_title: 'Site Title',
+  page_title_tip: 'Override the default title (Nightingale)',
+  home_page_url: 'Home Page URL',
+  home_page_url_tip: 'Override the default home page URL (/metric/explorer)',
+  displayMode: {
+    tree: 'Tree',
+    list: 'List',
+  },
+  businessGroupDisplayMode: 'Business Group Display Mode',
+  businessGroupSeparator: 'Business Group Separator',
+  teamDisplayMode: 'Team Display Mode',
+  teamSeparator: 'Team Separator',
+  darkTheme: 'Dark Theme',
+  lightTheme: 'Light Theme',
+};
+export default en_US;

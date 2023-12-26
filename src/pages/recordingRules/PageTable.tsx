@@ -7,17 +7,18 @@ import moment from 'moment';
 import _ from 'lodash';
 import RefreshIcon from '@/components/RefreshIcon';
 import { DownOutlined } from '@ant-design/icons';
-import { getRecordingRuleSubList, updateRecordingRules } from '@/services/recording';
+import { getBusiGroupsRecordingRules, updateRecordingRules } from '@/services/recording';
 import SearchInput from '@/components/BaseSearchInput';
 import { strategyItem, strategyStatus } from '@/store/warningInterface';
 import { deleteRecordingRule } from '@/services/recording';
-import EditModal from './components/editModal';
 import { CommonStateContext } from '@/App';
+import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
+import EditModal from './components/editModal';
 import Import from './components/Import';
 import Export from './components/Export';
 
 interface Props {
-  bgid?: number;
+  // bgid?: number;
 }
 
 const { confirm } = Modal;
@@ -32,13 +33,13 @@ const exportIgnoreAttrsObj = {
   update_by: undefined,
 };
 
-const PageTable: React.FC<Props> = ({ bgid }) => {
+const PageTable: React.FC<Props> = () => {
   const [severity] = useState<number>();
   const { t } = useTranslation('recordingRules');
   const history = useHistory();
   const [selectRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
   const [selectedRows, setSelectedRows] = useState<strategyItem[]>([]);
-  const { curBusiId, groupedDatasourceList } = useContext(CommonStateContext);
+  const { groupedDatasourceList, businessGroup, busiGroups } = useContext(CommonStateContext);
   const [query, setQuery] = useState<string>('');
   const [isModalVisible, setisModalVisible] = useState<boolean>(false);
   const [currentStrategyDataAll, setCurrentStrategyDataAll] = useState([]);
@@ -48,18 +49,18 @@ const PageTable: React.FC<Props> = ({ bgid }) => {
 
   useEffect(() => {
     getRecordingRules();
-  }, [bgid, severity]);
+  }, [businessGroup.ids, severity]);
 
   useEffect(() => {
     filterData();
   }, [query, datasourceIds, currentStrategyDataAll]);
 
   const getRecordingRules = async () => {
-    if (!bgid) {
+    if (!businessGroup.ids) {
       return;
     }
     setLoading(true);
-    const { success, dat } = await getRecordingRuleSubList(curBusiId);
+    const { success, dat } = await getBusiGroupsRecordingRules(businessGroup.ids);
     if (success) {
       setCurrentStrategyDataAll(dat.filter((item) => !severity || item.severity === severity) || []);
       setLoading(false);
@@ -83,7 +84,7 @@ const PageTable: React.FC<Props> = ({ bgid }) => {
     setCurrentStrategyData(res || []);
   };
   const goToAddWarningStrategy = () => {
-    history.push(`/recording-rules/add/${curBusiId}`);
+    history.push(`/recording-rules/add/${businessGroup.id}`);
   };
 
   const handleClickEdit = (id, isClone = false) => {
@@ -94,129 +95,149 @@ const PageTable: React.FC<Props> = ({ bgid }) => {
     getRecordingRules();
   };
 
-  const columns: ColumnType<strategyItem>[] = [
-    {
-      title: t('common:datasource.name'),
-      dataIndex: 'datasource_ids',
-      render: (data, record) => {
-        return _.map(data, (item) => {
-          if (item === 0) {
-            return (
-              <Tag color='purple' key={item}>
-                $all
-              </Tag>
-            );
-          }
-          return <Tag key={item}>{_.find(groupedDatasourceList.prometheus, { id: item })?.name!}</Tag>;
-        });
-      },
-    },
-    {
-      title: t('name'),
-      dataIndex: 'name',
-      render: (data, record) => {
-        return (
-          <div
-            className='table-active-text'
-            onClick={() => {
-              handleClickEdit(record.id);
-            }}
-          >
-            {data}
-          </div>
-        );
-      },
-    },
-    {
-      title: t('prom_eval_interval'),
-      dataIndex: 'prom_eval_interval',
-      render: (data) => {
-        return data + 's';
-      },
-    },
-    {
-      title: t('append_tags'),
-      dataIndex: 'append_tags',
-      render: (data) => {
-        const array = data || [];
-        return (
-          (array.length &&
-            array.map((tag: string, index: number) => {
+  const columns: ColumnType<strategyItem>[] = _.concat(
+    businessGroup.isLeaf
+      ? []
+      : ([
+          {
+            title: t('common:business_group'),
+            dataIndex: 'group_id',
+            width: 100,
+            render: (id) => {
+              return _.find(busiGroups, { id })?.name;
+            },
+          },
+        ] as any),
+    [
+      {
+        title: t('common:datasource.name'),
+        dataIndex: 'datasource_ids',
+        render: (data, record) => {
+          return _.map(data, (item) => {
+            if (item === 0) {
               return (
-                <Tag color='purple' key={index}>
-                  {tag}
+                <Tag color='purple' key={item}>
+                  $all
                 </Tag>
               );
-            })) || <div></div>
-        );
+            }
+            return <Tag key={item}>{_.find(groupedDatasourceList.prometheus, { id: item })?.name!}</Tag>;
+          });
+        },
       },
-    },
-    {
-      title: t('common:table.update_at'),
-      dataIndex: 'update_at',
-      render: (text: number) => moment.unix(text).format('YYYY-MM-DD HH:mm:ss'),
-    },
-    {
-      title: t('disabled'),
-      dataIndex: 'disabled',
-      render: (disabled, record) => (
-        <Switch
-          checked={disabled === strategyStatus.Enable}
-          size='small'
-          onChange={() => {
-            const { id, disabled } = record;
-            updateRecordingRules(
-              {
-                ids: [id],
-                fields: {
-                  disabled: !disabled ? 1 : 0,
-                },
-              },
-              curBusiId,
-            ).then(() => {
-              refreshList();
-            });
-          }}
-        />
-      ),
-    },
-    {
-      title: t('common:table.operations'),
-      dataIndex: 'operator',
-      render: (data, record) => {
-        return (
-          <div className='table-operator-area'>
+      {
+        title: t('name'),
+        dataIndex: 'name',
+        sorter: (a, b) => {
+          return localeCompare(a.name, b.name);
+        },
+        render: (data, record) => {
+          return (
             <div
-              className='table-operator-area-normal'
+              className='table-active-text'
               onClick={() => {
-                handleClickEdit(record.id, true);
+                handleClickEdit(record.id);
               }}
             >
-              {t('common:btn.clone')}
+              {data}
             </div>
-            <div
-              className='table-operator-area-warning'
-              onClick={() => {
-                confirm({
-                  title: t('common:confirm.delete'),
-                  onOk: () => {
-                    deleteRecordingRule([record.id], curBusiId).then(() => {
-                      message.success(t('common:success.delete'));
-                      refreshList();
-                    });
+          );
+        },
+      },
+      {
+        title: t('prom_eval_interval'),
+        dataIndex: 'prom_eval_interval',
+        render: (data) => {
+          return data + 's';
+        },
+      },
+      {
+        title: t('append_tags'),
+        dataIndex: 'append_tags',
+        render: (data) => {
+          const array = data || [];
+          return (
+            (array.length &&
+              array.map((tag: string, index: number) => {
+                return (
+                  <Tag color='purple' key={index}>
+                    {tag}
+                  </Tag>
+                );
+              })) || <div></div>
+          );
+        },
+      },
+      {
+        title: t('common:table.update_at'),
+        dataIndex: 'update_at',
+        sorter: (a, b) => {
+          return a.update_at - b.update_at;
+        },
+        render: (text: number) => moment.unix(text).format('YYYY-MM-DD HH:mm:ss'),
+      },
+      {
+        title: t('disabled'),
+        dataIndex: 'disabled',
+        render: (disabled, record) => (
+          <Switch
+            checked={disabled === strategyStatus.Enable}
+            size='small'
+            onChange={() => {
+              const { id, disabled } = record;
+              updateRecordingRules(
+                {
+                  ids: [id],
+                  fields: {
+                    disabled: !disabled ? 1 : 0,
                   },
-
-                  onCancel() {},
-                });
-              }}
-            >
-              {t('common:btn.delete')}
-            </div>
-          </div>
-        );
+                },
+                record.group_id,
+              ).then(() => {
+                refreshList();
+              });
+            }}
+          />
+        ),
       },
-    },
-  ];
+      {
+        title: t('common:table.operations'),
+        dataIndex: 'operator',
+        render: (data, record) => {
+          return (
+            <div className='table-operator-area'>
+              <div
+                className='table-operator-area-normal'
+                onClick={() => {
+                  handleClickEdit(record.id, true);
+                }}
+              >
+                {t('common:btn.clone')}
+              </div>
+              <div
+                className='table-operator-area-warning'
+                onClick={() => {
+                  confirm({
+                    title: t('common:confirm.delete'),
+                    onOk: () => {
+                      deleteRecordingRule([record.id], record.group_id).then(() => {
+                        message.success(t('common:success.delete'));
+                        refreshList();
+                      });
+                    },
+
+                    onCancel() {},
+                  });
+                }}
+              >
+                {t('common:btn.delete')}
+              </div>
+            </div>
+          );
+        },
+      },
+    ],
+  );
 
   const toOneArr = (arr, res, name) => {
     arr.forEach((ele) => {
@@ -234,10 +255,12 @@ const PageTable: React.FC<Props> = ({ bgid }) => {
         <li
           className='ant-dropdown-menu-item'
           onClick={() => {
-            Import({
-              busiId: curBusiId,
-              refreshList,
-            });
+            if (businessGroup.id) {
+              Import({
+                busiId: businessGroup.id,
+                refreshList,
+              });
+            }
           }}
         >
           <span>{t('batch.import.title')}</span>
@@ -266,10 +289,12 @@ const PageTable: React.FC<Props> = ({ bgid }) => {
               confirm({
                 title: t('common:confirm.delete'),
                 onOk: () => {
-                  deleteRecordingRule(selectRowKeys as number[], curBusiId).then(() => {
-                    message.success(t('common:success.delete'));
-                    refreshList();
-                  });
+                  if (businessGroup.id) {
+                    deleteRecordingRule(selectRowKeys as number[], businessGroup.id).then(() => {
+                      message.success(t('common:success.delete'));
+                      refreshList();
+                    });
+                  }
                 },
 
                 onCancel() {},
@@ -295,16 +320,16 @@ const PageTable: React.FC<Props> = ({ bgid }) => {
         </li>
       </ul>
     );
-  }, [selectRowKeys, t, curBusiId]);
+  }, [selectRowKeys, t, businessGroup.id]);
 
   const editModalFinish = async (isOk, fieldsData?) => {
-    if (isOk) {
+    if (isOk && businessGroup.id) {
       const res = await updateRecordingRules(
         {
           ids: selectRowKeys,
           fields: fieldsData,
         },
-        curBusiId,
+        businessGroup.id,
       );
       if (!res.err) {
         message.success(t('common:success.edit'));
@@ -346,25 +371,27 @@ const PageTable: React.FC<Props> = ({ bgid }) => {
           </Select>
           <SearchInput placeholder={t('search_placeholder')} onSearch={setQuery} allowClear />
         </Space>
-        <div className='strategy-table-search-right'>
-          <Space>
-            <Button type='primary' onClick={goToAddWarningStrategy} className='strategy-table-search-right-create'>
-              {t('common:btn.add')}
-            </Button>
-            <div className={'table-more-options'}>
-              <Dropdown overlay={menu} trigger={['click']}>
-                <Button onClick={(e) => e.stopPropagation()}>
-                  {t('common:btn.more')}
-                  <DownOutlined
-                    style={{
-                      marginLeft: 2,
-                    }}
-                  />
-                </Button>
-              </Dropdown>
-            </div>
-          </Space>
-        </div>
+        {businessGroup.isLeaf && (
+          <div className='strategy-table-search-right'>
+            <Space>
+              <Button type='primary' onClick={goToAddWarningStrategy} className='strategy-table-search-right-create'>
+                {t('common:btn.add')}
+              </Button>
+              <div className={'table-more-options'}>
+                <Dropdown overlay={menu} trigger={['click']}>
+                  <Button onClick={(e) => e.stopPropagation()}>
+                    {t('common:btn.more')}
+                    <DownOutlined
+                      style={{
+                        marginLeft: 2,
+                      }}
+                    />
+                  </Button>
+                </Dropdown>
+              </div>
+            </Space>
+          </div>
+        )}
       </div>
 
       <Table

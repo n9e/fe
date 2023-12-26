@@ -68,7 +68,7 @@ enum BaseDatasourceCateEnum {
 
 export const DatasourceCateEnum = { ...BaseDatasourceCateEnum, ...AdvancedDatasourceCateEnum };
 export type DatasourceCateEnum = BaseDatasourceCateEnum | AdvancedDatasourceCateEnum;
-
-export const N9E_PATHNAME = import.meta.env.VITE_IS_ENT === 'true' || import.meta.env.VITE_IS_PRO === 'true' ? 'n9e-plus' : 'n9e';
+export const IS_PLUS = import.meta.env.VITE_IS_ENT === 'true' || import.meta.env.VITE_IS_PRO === 'true';
+export const N9E_PATHNAME = IS_PLUS ? 'n9e-plus' : 'n9e';
 
 export const AccessTokenKey = 'access_token';

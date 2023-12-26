@@ -1,14 +1,15 @@
 const zh_HK = {
-  title: '物件列表',
+  title: '機器列表',
   default_filter: '預置篩選',
-  ungrouped_targets: '未歸組物件',
-  all_targets: '全部物件',
-  datasource: '資料來源',
+  ungrouped_targets: '未歸組機器',
+  all_targets: '全部機器',
+  datasource: '數據源',
   search_placeholder: '模糊搜尋表格內容 (多個關鍵詞請用空格分隔)',
   ident_copy_success: '複製成功 {{num}} 條記錄',
   filterDowntime: '無更新超過',
   filterDowntimeMin: '{{count}} 分鐘',
   not_grouped: '未歸組',
+  host_ip: 'IP',
   tags: '標籤',
   group_obj: '業務組',
   target_up: '狀態',
@@ -25,12 +26,13 @@ const zh_HK = {
     3分鐘內沒有心跳：紅色
   `,
   remote_addr: '來源 IP',
+  agent_version: 'Agent 版本',
   note: '備註',
   organize_columns: {
     title: '顯示列',
   },
-  targets: '監控物件',
-  targets_placeholder: '請填寫監控物件的指標，一行一個',
+  targets: '監控機器',
+  targets_placeholder: '請填寫監控機器的指標，一行一個',
   copy: {
     current_page: '複製當前頁',
     all: '複製全部',
@@ -57,7 +59,7 @@ const zh_HK = {
   },
   remove_busi: {
     title: '移出業務組',
-    msg: '提示資訊：移出所屬業務組，該業務組的管理人員將不再有許可權操作這些監控物件！你可能需要提前清空這批監控物件的標籤和備註資訊！',
+    msg: '提示資訊：移出所屬業務組，該業務組的管理人員將不再有權限操作這些監控機器！你可能需要提前清空這批監控機器的標籤和備註資訊！',
     btn: '移出',
   },
   update_note: {
@@ -66,9 +68,17 @@ const zh_HK = {
   },
   batch_delete: {
     title: '批量刪除',
-    msg: '提示資訊：該操作會把監控物件從系統內中徹底刪除，非常危險，慎重操作！',
+    msg: '提示資訊：該操作會把監控機器從系統內中徹底刪除，非常危險，慎重操作！',
     btn: '刪除',
   },
+  meta_tip: '查看元信息',
+  meta_title: '元信息',
+  meta_desc_key: '元信息名稱',
+  meta_desc_value: '元信息值',
+  meta_value_click_to_copy: '點擊複製',
+  meta_expand: '展開',
+  meta_collapse: '收起',
+  meta_no_data: '暫無數據',
 };
 
 export default zh_HK;

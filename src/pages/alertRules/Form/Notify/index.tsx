@@ -19,16 +19,22 @@ import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Card, Form, Checkbox, Switch, Space, Select, Tooltip, Row, Col, InputNumber, Input, AutoComplete } from 'antd';
-import { PlusCircleOutlined, MinusCircleOutlined, QuestionCircleFilled } from '@ant-design/icons';
+import { PlusCircleOutlined, MinusCircleOutlined, QuestionCircleFilled, RightOutlined, DownOutlined } from '@ant-design/icons';
 import { getTeamInfoList, getNotifiesList } from '@/services/manage';
+import { getWebhooks } from '@/pages/help/NotificationSettings/services';
 import { panelBaseProps } from '../../constants';
 // @ts-ignore
 import NotifyExtra from 'plus:/parcels/AlertRule/NotifyExtra';
+// @ts-ignore
+import NotifyChannelsTpl from 'plus:/parcels/AlertRule/NotifyChannelsTpl';
 
 export default function index({ disabled }) {
   const { t } = useTranslation('alertRules');
   const [contactList, setContactList] = useState<{ key: string; label: string }[]>([]);
   const [notifyGroups, setNotifyGroups] = useState<any[]>([]);
+  const [globalFlashdutyPushConfigured, setGlobalFlashdutyPushConfigured] = useState(false);
+  const [notifyTargetCollapsed, setNotifyTargetCollapsed] = useState<boolean>(false);
+  const notify_channels = Form.useWatch('notify_channels');
   const getNotifyChannel = () => {
     getNotifiesList().then((res) => {
       setContactList(res || []);
@@ -43,34 +49,65 @@ export default function index({ disabled }) {
   useEffect(() => {
     getGroups('');
     getNotifyChannel();
+    getWebhooks().then((res) => {
+      const globalFlashdutyPushConfigured = _.some(res, (item) => {
+        return _.includes(item.url, '/event/push/alert/n9e') && item.enable;
+      });
+      setGlobalFlashdutyPushConfigured(globalFlashdutyPushConfigured);
+      if (globalFlashdutyPushConfigured) {
+        setNotifyTargetCollapsed(true);
+      }
+    });
   }, []);
 
   return (
     <>
       <Card {...panelBaseProps} title={t('notify_configs')}>
-        <Form.Item label={t('notify_channels')} name='notify_channels'>
-          <Checkbox.Group disabled={disabled}>
-            {contactList.map((item) => {
-              return (
-                <Checkbox value={item.key} key={item.label}>
-                  {item.label}
-                </Checkbox>
-              );
-            })}
-          </Checkbox.Group>
-        </Form.Item>
-        <Form.Item label={t('notify_groups')} name='notify_groups'>
-          <Select mode='multiple' showSearch optionFilterProp='children'>
-            {_.map(notifyGroups, (item) => {
-              // id to string 兼容 v5
-              return (
-                <Select.Option value={_.toString(item.id)} key={item.id}>
-                  {item.name}
-                </Select.Option>
-              );
-            })}
-          </Select>
-        </Form.Item>
+        <div
+          style={{
+            display: globalFlashdutyPushConfigured ? 'block' : 'none',
+            marginBottom: 8,
+            cursor: 'pointer',
+          }}
+          onClick={() => {
+            setNotifyTargetCollapsed(!notifyTargetCollapsed);
+          }}
+        >
+          <Space>
+            <span>{t('notify_flashduty_configured')}</span>
+            {notifyTargetCollapsed ? <RightOutlined /> : <DownOutlined />}
+          </Space>
+        </div>
+        <div
+          style={{
+            display: notifyTargetCollapsed ? 'none' : 'block',
+          }}
+        >
+          <Form.Item label={t('notify_channels')} name='notify_channels'>
+            <Checkbox.Group disabled={disabled}>
+              {contactList.map((item) => {
+                return (
+                  <Checkbox key={item.label} value={item.key}>
+                    {item.label}
+                  </Checkbox>
+                );
+              })}
+            </Checkbox.Group>
+          </Form.Item>
+          <NotifyChannelsTpl contactList={contactList} notify_channels={notify_channels} name={['extra_config', 'custom_notify_tpl']} />
+          <Form.Item label={t('notify_groups')} name='notify_groups'>
+            <Select mode='multiple' showSearch optionFilterProp='children'>
+              {_.map(notifyGroups, (item) => {
+                // id to string 兼容 v5
+                return (
+                  <Select.Option value={_.toString(item.id)} key={item.id}>
+                    {item.name}
+                  </Select.Option>
+                );
+              })}
+            </Select>
+          </Form.Item>
+        </div>
         <Form.Item label={t('notify_recovered')}>
           <Space>
             <Form.Item name='notify_recovered' valuePropName='checked' style={{ marginBottom: 0 }}>
@@ -144,7 +181,6 @@ export default function index({ disabled }) {
             </div>
           )}
         </Form.List>
-
         <Form.List name='annotations'>
           {(fields, { add, remove }) => (
             <div>
@@ -159,13 +195,13 @@ export default function index({ disabled }) {
                       <AutoComplete
                         options={[
                           {
-                            value: t('annotationsOptions.plan_link'),
+                            value: 'runbook_url',
                           },
                           {
-                            value: t('annotationsOptions.dashboard_link'),
+                            value: 'dashboard_url',
                           },
                           {
-                            value: t('annotationsOptions.desc'),
+                            value: 'summary',
                           },
                         ]}
                         style={{ width: 200 }}

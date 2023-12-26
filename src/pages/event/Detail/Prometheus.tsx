@@ -23,7 +23,7 @@ export default function PrometheusDetail(props: IProps) {
         return (
           <div style={{ width: '100%' }}>
             {_.map(queries, (query) => {
-              const { prom_ql } = query;
+              const prom_ql = eventDetail.prom_ql;
               return (
                 <Row className='promql-row' key={prom_ql}>
                   <Col span={20}>

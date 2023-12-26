@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { Form, Select } from 'antd';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { CommonStateContext } from '@/App';
 
 interface IProps {
@@ -11,6 +12,7 @@ interface IProps {
 }
 
 export default function index(props: IProps) {
+  const { t } = useTranslation('dashboard');
   const { cate, name = 'datasourceValue', label, datasourceVars } = props;
   const { groupedDatasourceList } = useContext(CommonStateContext);
 
@@ -18,15 +20,14 @@ export default function index(props: IProps) {
     <Form.Item
       label={label}
       name={name}
-      tooltip='Prometheus 数据源默认关联全局的数据源值'
       rules={[
         {
           required: true,
-          message: '请选择数据源',
+          message: t('query.datasource_msg'),
         },
       ]}
     >
-      <Select allowClear placeholder='选择数据源' style={{ minWidth: 70 }} dropdownMatchSelectWidth={false}>
+      <Select allowClear placeholder={t('query.datasource_placeholder')} style={{ minWidth: 70 }} dropdownMatchSelectWidth={false}>
         {_.map(datasourceVars, (item, idx) => {
           return (
             <Select.Option value={`\${${item.name}}`} key={`${item.name}_${idx}`}>
