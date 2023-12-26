@@ -279,6 +279,7 @@ const zh_HK = {
       },
       text: {
         textColor: '文字顏色',
+        textDarkColor: '暗黑文字顏色',
         bgColor: '背景顏色',
         textSize: '文字大小',
         justifyContent: {

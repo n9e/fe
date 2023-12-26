@@ -15,11 +15,11 @@
  *
  */
 import React, { useState, useRef } from 'react';
+import _ from 'lodash';
 import { SketchPicker } from 'react-color';
 import { Popover } from 'antd';
 import useOnClickOutside from '@/components/useOnClickOutside';
 import './style.less';
-
 interface IProps {
   value?: string;
   onChange?: (val: string) => void;
@@ -48,24 +48,21 @@ export default function index(props: IProps) {
           }}
         >
           <SketchPicker
+            disableAlpha={false}
             color={value}
             presetColors={[
               '#FF656B',
               '#FF8286',
               '#CE4F52',
-
               '#FF9919',
               '#FFAE39',
               '#CE7B00',
-
               '#E6C627',
               '#ECD245',
               '#B99F00',
-
               '#3FC453',
               '#61D071',
               '#2C9D3D',
-
               '#9470FF',
               '#634CD9',
               '#51566B',
@@ -73,19 +70,41 @@ export default function index(props: IProps) {
             ]}
             onChange={(val) => {
               if (onChange) {
-                onChange(val.hex);
+                const {
+                  rgb: { r, g, b, a },
+                } = val;
+                onChange(`rgba(${r}, ${g}, ${b}, ${a})`);
               }
             }}
           />
         </div>
       }
     >
-      <div
-        style={{ background: value, width: 32, height: 32, borderRadius: 2, cursor: 'pointer', border: '1px solid #d9d9d9' }}
-        onClick={() => {
-          setVisible(!visible);
-        }}
-      />
+      <div style={{ position: 'relative', width: 32, height: 32 }}>
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background:
+              'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAADFJREFUOE9jZGBgEGHAD97gk2YcNYBhmIQBgWSAP52AwoAQwJvQRg1gACckQoC2gQgAIF8IscwEtKYAAAAASUVORK5CYII=") left center',
+          }}
+        ></div>
+        <div
+          style={{
+            background: value,
+            width: 32,
+            height: 32,
+            borderRadius: 2,
+            cursor: 'pointer',
+            border: '1px solid #d9d9d9',
+            position: 'absolute',
+            zIndex: 1,
+          }}
+          onClick={() => {
+            setVisible(!visible);
+          }}
+        />
+      </div>
     </Popover>
   );
 }

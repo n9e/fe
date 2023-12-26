@@ -120,7 +120,7 @@ function index(props: IProps) {
     pie: () => <Pie {...subProps} themeMode={themeMode} time={time} isPreview={isPreview} />,
     hexbin: () => <Hexbin {...subProps} themeMode={themeMode} time={time} isPreview={isPreview} />,
     barGauge: () => <BarGauge {...subProps} themeMode={themeMode} time={time} />,
-    text: () => <Text {...subProps} />,
+    text: () => <Text {...subProps} themeMode={themeMode} />,
     gauge: () => <Gauge {...subProps} themeMode={themeMode} isPreview={isPreview} />,
     iframe: () => <Iframe {...subProps} time={time} />,
     heatmap: () => <Heatmap {...subProps} themeMode={themeMode} time={time} isPreview={isPreview} />,
