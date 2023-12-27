@@ -61,7 +61,7 @@ export default function Graph(props: IProps) {
     shared: true,
     sharedSortDirection: 'desc',
     legend: true,
-    unit: 'none',
+    unit: undefined,
     colorRange: colors[1].value,
     reverseColorOrder: false,
     colorDomainAuto: true,

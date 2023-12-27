@@ -26,7 +26,7 @@ interface IProps {
 
 export const units = [
   {
-    label: 'auto',
+    label: 'SI prefixes',
     value: undefined,
   },
   {
