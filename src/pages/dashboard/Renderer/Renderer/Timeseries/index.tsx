@@ -63,6 +63,7 @@ interface IProps {
   hideResetBtn?: boolean;
   onClick?: (event: any, datetime: Date, value: number, points: any[]) => void;
   onZoomWithoutDefult?: (times: Date[]) => void;
+  isPreview?: boolean;
 }
 
 function getStartAndEndByTargets(targets: any[]) {
@@ -110,7 +111,7 @@ function NameWithTooltip({ record, children }) {
 export default function index(props: IProps) {
   const [dashboardMeta] = useGlobalState('dashboardMeta');
   const { t } = useTranslation('dashboard');
-  const { time, setRange, values, series, inDashboard = true, chartHeight = '200px', tableHeight = '200px', themeMode = '', onClick } = props;
+  const { time, setRange, values, series, inDashboard = true, chartHeight = '200px', tableHeight = '200px', themeMode = '', onClick, isPreview } = props;
   const { custom, options = {}, targets, overrides } = values;
   const { lineWidth = 1, gradientMode = 'none', scaleDistribution } = custom;
   const [seriesData, setSeriesData] = useState(series);
@@ -229,7 +230,7 @@ export default function index(props: IProps) {
           ...chartRef.current.options.tooltip,
           shared: options.tooltip?.mode === 'all',
           sharedSortDirection: options.tooltip?.sort !== 'none' ? options.tooltip?.sort : undefined,
-          cascade: _.includes(['sharedCrosshair', 'sharedTooltip'], dashboardMeta.graphTooltip),
+          cascade: isPreview === false ? _.includes(['sharedCrosshair', 'sharedTooltip'], dashboardMeta.graphTooltip) : undefined,
           cascadeScope: 'cascadeScope',
           cascadeMode: _.includes(['sharedCrosshair', 'sharedTooltip'], dashboardMeta.graphTooltip) ? dashboardMeta.graphTooltip : undefined,
           pointValueformatter: (val, nearestPoint) => {
