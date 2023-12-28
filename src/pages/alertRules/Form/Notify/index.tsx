@@ -21,6 +21,7 @@ import { useTranslation } from 'react-i18next';
 import { Card, Form, Checkbox, Switch, Space, Select, Tooltip, Row, Col, InputNumber, Input, AutoComplete } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined, QuestionCircleFilled, RightOutlined, DownOutlined } from '@ant-design/icons';
 import { getTeamInfoList, getNotifiesList } from '@/services/manage';
+import { getAlertRulesCallbacks } from '@/services/warning';
 import { getWebhooks } from '@/pages/help/NotificationSettings/services';
 import { panelBaseProps } from '../../constants';
 // @ts-ignore
@@ -34,6 +35,7 @@ export default function index({ disabled }) {
   const [notifyGroups, setNotifyGroups] = useState<any[]>([]);
   const [globalFlashdutyPushConfigured, setGlobalFlashdutyPushConfigured] = useState(false);
   const [notifyTargetCollapsed, setNotifyTargetCollapsed] = useState<boolean>(false);
+  const [callbacks, setCallbacks] = useState<string[]>([]);
   const notify_channels = Form.useWatch('notify_channels');
   const getNotifyChannel = () => {
     getNotifiesList().then((res) => {
@@ -57,6 +59,9 @@ export default function index({ disabled }) {
       if (globalFlashdutyPushConfigured) {
         setNotifyTargetCollapsed(true);
       }
+    });
+    getAlertRulesCallbacks().then((res) => {
+      setCallbacks(res);
     });
   }, []);
 
@@ -170,7 +175,19 @@ export default function index({ disabled }) {
                 <Row gutter={16} key={field.key}>
                   <Col flex='auto'>
                     <Form.Item {...field} name={[field.name, 'url']}>
-                      <Input />
+                      <AutoComplete
+                        options={_.map(callbacks, (item) => {
+                          return {
+                            value: item,
+                          };
+                        })}
+                        filterOption={(inputValue, option) => {
+                          if (option && option.value && typeof option.value === 'string') {
+                            return option.value.indexOf(inputValue) !== -1;
+                          }
+                          return true;
+                        }}
+                      />
                     </Form.Item>
                   </Col>
                   <Col flex='40px'>

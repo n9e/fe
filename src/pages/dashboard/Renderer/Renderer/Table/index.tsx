@@ -511,7 +511,9 @@ function TableCpt(props: IProps, ref: any) {
           showSorterTooltip={false}
           showHeader={showHeader}
           dataSource={tableDataSource}
-          columns={resizableColumns}
+          columns={_.map(resizableColumns, (item) => {
+            return _.omit(item, ['ellipsis']);
+          })}
           scroll={{ y: realHeight, x: tableWidth ? tableWidth - 30 : tableWidth }}
           bordered={false}
           pagination={false}

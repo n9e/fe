@@ -29,7 +29,7 @@ import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { IPanel } from '../../../types';
 import { hexPalette } from '../../../config';
 import valueFormatter from '../../utils/valueFormatter';
-import { getLegendValues } from '../../utils/getCalculatedValuesBySeries';
+import { getLegendValues, getMappedTextObj } from '../../utils/getCalculatedValuesBySeries';
 import { getDetailUrl } from '../../utils/replaceExpressionDetail';
 import { useGlobalState } from '../../../globalState';
 import './style.less';
@@ -181,6 +181,8 @@ export default function index(props: IProps) {
             dateFormat: options?.standardOptions?.dateFormat,
           },
           hexPalette,
+          undefined,
+          options?.valueMappings,
         ),
       );
     } else {
@@ -233,6 +235,9 @@ export default function index(props: IProps) {
           cascade: isPreview === false ? _.includes(['sharedCrosshair', 'sharedTooltip'], dashboardMeta.graphTooltip) : undefined,
           cascadeScope: 'cascadeScope',
           cascadeMode: _.includes(['sharedCrosshair', 'sharedTooltip'], dashboardMeta.graphTooltip) ? dashboardMeta.graphTooltip : undefined,
+          pointNameformatter: (val) => {
+            return getMappedTextObj(val, options?.valueMappings)?.text;
+          },
           pointValueformatter: (val, nearestPoint) => {
             if (overrides?.[0]?.matcher?.value && overrides?.[0]?.matcher?.value === nearestPoint?.serieOptions?.refId) {
               return valueFormatter(
@@ -337,6 +342,7 @@ export default function index(props: IProps) {
           },
           hexPalette,
           custom.stack === 'noraml',
+          options?.valueMappings,
         ),
       );
     } else {

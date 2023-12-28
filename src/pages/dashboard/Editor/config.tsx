@@ -176,7 +176,8 @@ export const defaultCustomValuesMap = {
   text: {
     textSize: 12,
     textColor: '#000000',
-    bgColor: '#FFFFFF',
+    textDarkColor: '#FFFFFF',
+    bgColor: 'rgba(0, 0, 0, 0)',
     justifyContent: 'center',
     alignItems: 'center',
     content: '',

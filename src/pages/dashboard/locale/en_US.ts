@@ -273,6 +273,7 @@ const en_US = {
       },
       text: {
         textColor: 'TextColor',
+        textDarkColor: 'TextDarkColor',
         bgColor: 'BgColor',
         textSize: 'TextSize',
         justifyContent: {
