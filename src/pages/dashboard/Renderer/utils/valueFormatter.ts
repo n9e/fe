@@ -106,6 +106,12 @@ const valueFormatter = ({ unit, decimals = 3, dateFormat = 'YYYY-MM-DD HH:mm:ss'
         postfix,
       });
     }
+    if (unit === 'default') {
+      return byteConverter.format(val, {
+        type: 'si',
+        decimals,
+      });
+    }
     if (unit === 'none') {
       return {
         value: _.round(val, decimals),

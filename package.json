@@ -1,6 +1,6 @@
 {
   "name": "n9e-fe",
-  "version": "v6.6.2",
+  "version": "v6.7.1",
   "scripts": {
     "dev": "vite --port 8765 --host",
     "dev:advanced": "vite --port 8765 --host --mode advanced",
@@ -26,9 +26,10 @@
     "@codemirror/state": "^0.19.0",
     "@codemirror/stream-parser": "^0.19.9",
     "@codemirror/view": "^0.19.0",
+    "@fc-components/codemirror-promql": "^0.19.6",
     "@fc-components/menu": "^1.1.23",
     "@fc-components/use-antd-resizable-header": "^2.8.16",
-    "@fc-plot/ts-graph": "^0.24.5",
+    "@fc-plot/ts-graph": "^0.24.6",
     "@radix-ui/react-scroll-area": "^1.0.5",
     "@uiw/react-codemirror": "4.6.0",
     "ahooks": "3.1.5",

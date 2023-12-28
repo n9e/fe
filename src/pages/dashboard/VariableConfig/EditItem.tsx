@@ -267,7 +267,7 @@ function EditItem(props: IProps) {
                   </Select>
                 </Form.Item>
                 <Form.Item label={t('var.datasource.regex')} name='regex' tooltip={t('var.datasource.regex_tip')}>
-                  <Input />
+                  <Input placeholder='/vm/' />
                 </Form.Item>
                 <Form.Item shouldUpdate={(prevValues, curValues) => prevValues?.definition !== curValues?.regex || prevValues?.regex} noStyle>
                   {({ getFieldValue }) => {

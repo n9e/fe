@@ -42,6 +42,7 @@ const zh_CN = {
   notify_repeat_step_tip: '如果告警持续未恢复，间隔 {{num}} 分钟之后重复提醒告警接收组的成员',
   notify_max_number: '最大发送次数',
   notify_max_number_tip: '如果值为0，则不做最大发送次数的限制',
+  notify_flashduty_configured: '当前已配置了全局 Flashduty 推送',
   callbacks: '回调地址',
   annotations: '附加信息',
   annotationsOptions: {

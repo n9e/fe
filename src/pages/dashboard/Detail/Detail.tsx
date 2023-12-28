@@ -32,7 +32,7 @@ import { SetTmpChartData } from '@/services/metric';
 import { CommonStateContext } from '@/App';
 import MigrationModal from '@/pages/help/migrate/MigrationModal';
 import VariableConfig, { IVariable } from '../VariableConfig';
-import { replaceExpressionVars } from '../VariableConfig/constant';
+import { replaceExpressionVars, getOptionsList } from '../VariableConfig/constant';
 import { ILink } from '../types';
 import DashboardLinks from '../DashboardLinks';
 import Panels from '../Panels';
@@ -328,9 +328,14 @@ export default function DetailV2(props: IProps) {
                     // @ts-ignore
                     datasourceName: _.find(datasourceList, { id: curDatasourceValue })?.name,
                     targets: _.map(panel.targets, (target) => {
-                      const realExpr = variableConfigWithOptions
-                        ? replaceExpressionVars(target.expr, variableConfigWithOptions, variableConfigWithOptions.length, id)
-                        : target.expr;
+                      const fullVars = getOptionsList(
+                        {
+                          dashboardId: _.toString(dashboard.id),
+                          variableConfigWithOptions: variableConfigWithOptions,
+                        },
+                        range,
+                      );
+                      const realExpr = variableConfigWithOptions ? replaceExpressionVars(target.expr, fullVars, fullVars.length, id) : target.expr;
                       return {
                         ...target,
                         expr: realExpr,

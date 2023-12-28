@@ -29,6 +29,7 @@ import { CommonStateContext } from '@/App';
 import { priorityColor } from '@/utils/constant';
 import Tags from '@/components/Tags';
 import { DatasourceSelect, ProdSelect } from '@/components/DatasourceSelect';
+import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
 import { AlertRuleType, AlertRuleStatus } from '../types';
 import MoreOperations from './MoreOperations';
 
@@ -101,6 +102,9 @@ export default function List(props: ListProps) {
       {
         title: t('name_severities_appendtags'),
         dataIndex: 'name',
+        sorter: (a, b) => {
+          return localeCompare(a.name, b.name);
+        },
         render: (data, record) => {
           return (
             <div
@@ -181,6 +185,9 @@ export default function List(props: ListProps) {
         title: t('common:table.update_at'),
         dataIndex: 'update_at',
         width: 90,
+        sorter: (a, b) => {
+          return a.update_at - b.update_at;
+        },
         render: (text: string) => {
           return <div className='table-text'>{moment.unix(Number(text)).format('YYYY-MM-DD HH:mm:ss')}</div>;
         },

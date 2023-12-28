@@ -12,10 +12,9 @@ import { timeFormatter } from '@/pages/dashboard/Renderer/utils/valueFormatter';
 import clipboard from './clipboard';
 import OrganizeColumns from './OrganizeColumns';
 import { getDefaultColumnsConfigs, setDefaultColumnsConfigs } from './utils';
+import TargetMetaDrawer from './TargetMetaDrawer';
 // @ts-ignore
 import CollectsDrawer from 'plus:/pages/collects/CollectsDrawer';
-// @ts-ignore
-import TargetMetaDrawer from 'plus:/parcels/Targets/TargetMetaDrawer';
 // @ts-ignore
 import UpgradeAgent from 'plus:/parcels/Targets/UpgradeAgent';
 // @ts-ignore
@@ -132,7 +131,7 @@ export default function List(props: IProps) {
       render: (text, record) => {
         return (
           <Space>
-            {import.meta.env['VITE_IS_PRO'] ? <TargetMetaDrawer ident={text} /> : text}
+            <TargetMetaDrawer ident={text} />
             {import.meta.env['VITE_IS_PRO'] && (
               <Tooltip title='查看关联采集配置'>
                 <ApartmentOutlined
@@ -151,6 +150,12 @@ export default function List(props: IProps) {
 
   _.forEach(columnsConfigs, (item) => {
     if (!item.visible) return;
+    if (item.name === 'host_ip') {
+      columns.push({
+        title: t('host_ip'),
+        dataIndex: 'host_ip',
+      });
+    }
     if (item.name === 'tags') {
       columns.push({
         title: t('tags'),
