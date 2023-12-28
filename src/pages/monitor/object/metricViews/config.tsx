@@ -32,7 +32,7 @@ export const HexbinIcon = (props) => <Icon component={HexbinSvg} {...props} />;
 export const units = [
   {
     label: 'SI prefixes',
-    value: undefined,
+    value: 'default',
   },
   {
     label: 'none',

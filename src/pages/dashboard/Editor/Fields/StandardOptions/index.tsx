@@ -68,7 +68,7 @@ export default function index(props: IProps) {
                     name={[...namePrefix, 'util']}
                   >
                     <Select placeholder='SI prefixes' allowClear showSearch>
-                      <Option value='none'>SI prefixes</Option>
+                      <Option value='none'>none</Option>
                       <OptGroup label='Data'>
                         <Option value='bitsSI'>bits(SI)</Option>
                         <Option value='bytesSI'>bytes(SI)</Option>
