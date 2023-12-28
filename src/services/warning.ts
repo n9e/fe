@@ -524,3 +524,9 @@ export const getAlertEventList = function (params) {
     params,
   }).then((res) => res?.dat?.list || []);
 };
+
+export const getAlertRulesCallbacks = function () {
+  return request('/api/n9e/alert-rules/callbacks', {
+    method: RequestMethod.Get,
+  }).then((res) => res?.dat || []);
+};

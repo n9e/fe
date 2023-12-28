@@ -284,6 +284,7 @@ const zh_CN = {
       },
       text: {
         textColor: '文字颜色',
+        textDarkColor: '暗黑文字颜色',
         bgColor: '背景颜色',
         textSize: '文字大小',
         justifyContent: {
