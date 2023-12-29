@@ -6,8 +6,8 @@
 }
 .template-field-editor {
   height: 100%;
-  border: 1px solid #e0dee2;
-  .cm-theme-light {
+  border: 1px solid var(--fc-border-color);
+  .cm-theme-light,.cm-theme-dark {
     height: calc(100% - 36px);
   }
   .ͼ1.cm-editor.cm-focused {
@@ -22,7 +22,8 @@
   justify-content: space-between;
   height: 36px;
   line-height: 36px;
-  background-color: #f5f5f5;
+  // background-color: #f5f5f5;
+  background-color: var(--fc-fill-3);
   padding: 0 16px;
 }
 .template-field-preview {

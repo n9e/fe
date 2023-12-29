@@ -1,19 +1,15 @@
-@backgroupColor: #20222E;
+@backgroupColor: var(--fc-fill-1);
 @baseColor: #F7F8F2;
 @cardBackgroundColor: #2A2D3C;
 .theme-dark {
   background-color: @backgroupColor;
   color: @baseColor;
+  h1, h2, h3, h4, h5, h6 {
+    color: @baseColor;
+  }
   .dashboard-detail-header {
     background-color: unset !important;
     border: unset !important;
-  }
-  .ant-table .ant-table-tbody td {
-    border-color: rgb(57, 60, 77);
-    color: unset;
-  }
-  .ant-table .ant-table-thead th {
-    color: unset;
   }
   .dashboard-detail-header-left {
     .title {
@@ -50,8 +46,14 @@
     border-right: 2px solid #46495C;
     border-bottom: 2px solid #46495C;
   }
+  .is-active {
+    background: fade(@primary-color, 40%);
+  }
+  .cm-editor {
+    background-color: var(--fc-fill-2) !important;
+    border: 1px solid var(--fc-border-color) !important;
+  }
 
-  
   .scroll-container::-webkit-scrollbar {
     height: 10px;
     width: 4px;
@@ -70,6 +72,39 @@
     background: unset;
   }
 
+  
+  /* 解决跟 tailwindcss 与 css variable 冲突的问题 */
+  .border-fc-200 {
+    border-color: var(--fc-fill-3) !important; 
+  }
+  .border-fc-300 {
+    border-color: var(--fc-fill-4) !important;
+  }
+  .border-fc-400 {
+    border-color: var(--fc-fill-5) !important;
+  }
+  /* 解决跟 tailwindcss 与 css variable 冲突的问题 */
+
+  /* antd */
+  .ant-modal .ant-table{
+    background: var(--fc-fill-2);
+  }
+  .ant-modal .ant-table.ant-table-small thead > tr > th,.ant-modal .ant-table tbody > tr.ant-table-row:hover > td {
+    background: var(--fc-fill-3);
+  }
+  .ant-table .ant-table-tbody td {
+    border-color: rgb(57, 60, 77);
+    color: unset;
+  }
+  .ant-table .ant-table-thead th {
+    color: unset;
+  }
+  .ant-table-tbody > tr.ant-table-row:hover > td, .theme-dark .ant-table-tbody > tr > td.ant-table-cell-row-hover {
+    background: var(--fc-fill-3);
+  }
+  .ant-table-tbody > tr.ant-table-placeholder:hover > td {
+    background: var(--fc-fill-3);
+  }
   .ant-tree-switcher-leaf-line::before {
     border-right: 1px solid var(--fc-border-color);
   }
@@ -79,4 +114,137 @@
   .ant-tree-show-line .ant-tree-indent-unit::before {
     border-right: 1px solid var(--fc-border-color);
   }
+  .ant-modal-header {
+    border-bottom: 1px solid var(--fc-border-color);
+  }
+  .ant-modal-header,.ant-modal-content,.ant-drawer-content {
+    background: var(--fc-fill-2);
+  }
+  .ant-input-affix-wrapper {
+    padding: 5.6px 11px;
+  }
+  .ant-segmented {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 14px;
+    font-variant: tabular-nums;
+    line-height: 1.5715;
+    list-style: none;
+    font-feature-settings: 'tnum';
+    display: inline-block;
+    padding: 2px;
+    color: rgba(255, 255, 255, 0.65);
+    background-color: rgba(0, 0, 0, 0.25);
+    border-radius: 2px;
+    transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  }
+  .ant-segmented-group {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    justify-items: flex-start;
+    width: 100%;
+  }
+  .ant-segmented.ant-segmented-block {
+    display: flex;
+  }
+  .ant-segmented.ant-segmented-block .ant-segmented-item {
+    flex: 1;
+    min-width: 0;
+  }
+  .ant-segmented:not(.ant-segmented-disabled):hover,
+  .ant-segmented:not(.ant-segmented-disabled):focus {
+    background-color: rgba(0, 0, 0, 0.25);
+  }
+  .ant-segmented-item {
+    position: relative;
+    text-align: center;
+    cursor: pointer;
+    transition: color 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  }
+  .ant-segmented-item-selected {
+    background-color: var(--fc-fill-3);
+    border-radius: 2px;
+    box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.05), 0 1px 4px -1px rgba(0, 0, 0, 0.07), 0 0 1px 0 rgba(0, 0, 0, 0.08);
+    color: rgba(255, 255, 255, 0.85);
+  }
+  .ant-segmented-item:hover,
+  .ant-segmented-item:focus {
+    color: rgba(255, 255, 255, 0.85);
+  }
+  .ant-segmented-item-label {
+    min-height: 28px;
+    padding: 0 11px;
+    line-height: 28px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    word-break: keep-all;
+  }
+  .ant-segmented-item-icon + * {
+    margin-left: 6px;
+  }
+  .ant-segmented-item-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .ant-segmented.ant-segmented-lg .ant-segmented-item-label {
+    min-height: 36px;
+    padding: 0 11px;
+    font-size: 16px;
+    line-height: 36px;
+  }
+  .ant-segmented.ant-segmented-sm .ant-segmented-item-label {
+    min-height: 20px;
+    padding: 0 7px;
+    line-height: 20px;
+  }
+  .ant-segmented-item-disabled,
+  .ant-segmented-item-disabled:hover,
+  .ant-segmented-item-disabled:focus {
+    color: rgba(255, 255, 255, 0.3);
+    cursor: not-allowed;
+  }
+  .ant-segmented-thumb {
+    background-color: var(--fc-fill-3);;
+    border-radius: 2px;
+    box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.05), 0 1px 4px -1px rgba(0, 0, 0, 0.07), 0 0 1px 0 rgba(0, 0, 0, 0.08);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    padding: 4px 0;
+  }
+  .ant-segmented-thumb-motion-appear-active {
+    transition: transform 0.3s cubic-bezier(0.645, 0.045, 0.355, 1), width 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+    will-change: transform, width;
+  }
+  .ant-segmented.ant-segmented-rtl {
+    direction: rtl;
+  }
+  .ant-segmented.ant-segmented-rtl .ant-segmented-item-icon {
+    margin-right: 0;
+    margin-left: 6px;
+  }
+  .ant-tree .ant-tree-node-content-wrapper.ant-tree-node-selected {
+    background-color: fade(@primary-color, 40%);
+  }
+  .ant-select-dropdown {
+    background-color: var(--fc-fill-2);
+  }
+  .ant-select-item-option-active:not(.ant-select-item-option-disabled) {
+    background-color: var(--fc-fill-3);
+  }
+  .ant-drawer-header {
+    background-color: var(--fc-fill-2);
+  }
+  /* antd */
 }

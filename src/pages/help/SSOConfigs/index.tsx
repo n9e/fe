@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Tabs, Button, Card, message } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import CodeMirror from '@uiw/react-codemirror';
 import { EditorView } from '@codemirror/view';
 import PageLayout from '@/components/pageLayout';
+import CodeMirror from '@/components/CodeMirror';
 import { getSSOConfigs, putSSOConfig } from './services';
 import { SSOConfigType } from './types';
 import './locale';
@@ -52,7 +52,6 @@ export default function index() {
                         setData(dataClone);
                       }}
                       height='auto'
-                      theme='light'
                       basicSetup
                       editable
                       extensions={[

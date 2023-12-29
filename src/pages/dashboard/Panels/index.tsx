@@ -20,7 +20,6 @@ import semver from 'semver';
 import { v4 as uuidv4 } from 'uuid';
 import { message, Modal } from 'antd';
 import { useLocation } from 'react-router-dom';
-import querystring from 'query-string';
 import RGL, { WidthProvider } from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
@@ -42,7 +41,6 @@ import {
 import Renderer from '../Renderer/Renderer/index';
 import Row from './Row';
 import EditorModal from './EditorModal';
-import { getDefaultThemeMode } from '../Detail/utils';
 import './style.less';
 
 interface IProps {
@@ -62,9 +60,9 @@ interface IProps {
 const ReactGridLayout = WidthProvider(RGL);
 
 function index(props: IProps) {
-  const { profile } = useContext(CommonStateContext);
+  const { profile, darkMode } = useContext(CommonStateContext);
   const location = useLocation();
-  const themeMode = getDefaultThemeMode(querystring.parse(location.search));
+  const themeMode = darkMode ? 'dark' : 'light';
   const { editable, dashboard, range, variableConfig, panels, isPreview, setPanels, onShareClick, onUpdated } = props;
   const roles = _.get(profile, 'roles', []);
   const isAuthorized = !_.some(roles, (item) => item === 'Guest') && !isPreview;

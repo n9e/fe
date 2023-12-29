@@ -99,10 +99,10 @@ export default function Content() {
   const history = useHistory();
   const isPlus = useIsPlus();
   const { profile, siteInfo, darkMode } = useContext(CommonStateContext);
-  let themeClassName = 'theme-light';
-  if (darkMode) {
-    themeClassName = 'theme-dark';
-  }
+  // let themeClassName = 'theme-light';
+  // if (darkMode) {
+  //   themeClassName = 'theme-dark';
+  // }
 
   useEffect(() => {
     if (profile?.roles?.length > 0 && location.pathname !== '/') {
@@ -123,7 +123,7 @@ export default function Content() {
   }, []);
 
   return (
-    <div className={`content ${themeClassName}`}>
+    <div className='content'>
       <Switch>
         <Route path='/demo' component={Demo} />
         <Route path='/overview' component={Overview} />

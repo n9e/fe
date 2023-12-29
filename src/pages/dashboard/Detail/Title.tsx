@@ -180,7 +180,7 @@ export default function Title(props: IProps) {
           >
             {viewMode === 'fullscreen' ? t('exit_full_screen') : t('full_screen')}
           </Button>
-          <Select
+          {/* <Select
             options={[
               { label: 'light', value: 'light' },
               { label: 'dark', value: 'dark' },
@@ -195,7 +195,7 @@ export default function Title(props: IProps) {
               });
               window.localStorage.setItem(dashboardThemeModeCacheKey, val);
             }}
-          />
+          /> */}
         </Space>
       </div>
     </div>

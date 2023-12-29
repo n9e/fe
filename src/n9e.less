@@ -4,6 +4,22 @@
 
 .theme-light {
   background-color: var(--fc-fill-1);
+  /* 解决跟 tailwindcss 与 css variable 冲突的问题 */
+  .border-fc-200 {
+    border-color: var(--fc-fill-3) !important; 
+  }
+  .border-fc-300 {
+    border-color: var(--fc-fill-4) !important;
+  }
+  .border-fc-400 {
+    border-color: var(--fc-fill-5) !important;
+  }
+  /* 解决跟 tailwindcss 与 css variable 冲突的问题 */
+  /* antd */
+  .ant-tree .ant-tree-node-content-wrapper.ant-tree-node-selected {
+    background-color: fade(@primary-color, 10%);
+  }
+  /* antd */
 }
 .n9e-fill-color-2 {
   background-color: var(--fc-fill-2);

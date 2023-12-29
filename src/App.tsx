@@ -210,6 +210,7 @@ function App() {
               ...state,
               profile,
               busiGroups,
+              // busiGroups: _.sortBy(busiGroups, 'name'),
               datasourceCateOptions: getAuthorizedDatasourceCates(feats, isPlus),
               groupedDatasourceList: _.groupBy(datasourceList, 'plugin_type'),
               datasourceList: datasourceList,
@@ -239,6 +240,10 @@ function App() {
       console.error(error);
     }
   }, []);
+
+  useEffect(() => {
+    document.body.className = commonState.darkMode ? 'theme-dark' : 'theme-light';
+  }, [commonState.darkMode]);
 
   // 初始化中不渲染任何内容
   if (!initialized.current) {
