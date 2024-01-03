@@ -24,9 +24,10 @@ export default function QueryBuilder(props: Props) {
   const indexPattern = Form.useWatch(['query', 'indexPattern']);
   const { run: onIndexPatternChange } = useDebounceFn(
     (indexPattern) => {
-      if (datasourceValue && indexPattern) {
-        getFullFields(datasourceValue, indexPattern.name, {
-          allowHideSystemIndices: indexPattern.allow_hide_system_indices,
+      const indexPatternObj = _.find(indexPatterns, (item) => item.id === indexPattern);
+      if (datasourceValue && indexPatternObj) {
+        getFullFields(datasourceValue, indexPatternObj.name, {
+          allowHideSystemIndices: indexPatternObj.allow_hide_system_indices,
         }).then((res) => {
           setFields(res.allFields);
         });
