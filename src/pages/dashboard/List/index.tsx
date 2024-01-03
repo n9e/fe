@@ -76,6 +76,7 @@ export default function index() {
               onSearchChange={setsearchVal}
             />
             <Table
+              className='mt8'
               dataSource={data}
               columns={_.concat(
                 businessGroup.isLeaf

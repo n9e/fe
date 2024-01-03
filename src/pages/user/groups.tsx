@@ -372,7 +372,7 @@ const Resource: React.FC = () => {
                 </Button>
               </Row>
 
-              <Table size='small' rowKey='id' columns={teamMemberColumns} dataSource={memberList} loading={memberLoading} />
+              <Table className='mt8' size='small' rowKey='id' columns={teamMemberColumns} dataSource={memberList} loading={memberLoading} />
             </div>
           ) : (
             <div className='blank-busi-holder'>

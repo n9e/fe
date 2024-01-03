@@ -398,6 +398,7 @@ export default function List(props: ListProps) {
         )}
       </Row>
       <Table
+        className='mt8'
         tableLayout='fixed'
         size='small'
         rowKey='id'

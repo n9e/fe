@@ -395,6 +395,7 @@ const PageTable: React.FC<Props> = () => {
       </div>
 
       <Table
+        className='mt8'
         size='small'
         rowKey='id'
         pagination={{

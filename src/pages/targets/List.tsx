@@ -516,6 +516,7 @@ export default function List(props: IProps) {
         </Space>
       </div>
       <Table
+        className='mt8'
         rowKey='id'
         columns={columns}
         size='small'
