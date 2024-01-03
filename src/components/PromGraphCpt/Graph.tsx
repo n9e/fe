@@ -61,7 +61,7 @@ const getSerieName = (metric: any) => {
 };
 
 export default function Graph(props: IProps) {
-  const { datasourceList } = useContext(CommonStateContext);
+  const { datasourceList, darkMode } = useContext(CommonStateContext);
   const { url, datasourceValue, promql, setQueryStats, setErrorContent, contentMaxHeight, range, setRange, step, setStep, graphOperates, refreshFlag } = props;
   const [data, setData] = useState<any[]>([]);
   const [highLevelConfig, setHighLevelConfig] = useState({
@@ -213,7 +213,7 @@ export default function Graph(props: IProps) {
           )}
         </Space>
       </div>
-      <Timeseries inDashboard={false} values={lineGraphProps as any} series={data} />
+      <Timeseries inDashboard={false} values={lineGraphProps as any} series={data} themeMode={darkMode ? 'dark' : undefined} />
     </div>
   );
 }

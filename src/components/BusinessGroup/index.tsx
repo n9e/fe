@@ -61,8 +61,6 @@ export default function index(props: IProps) {
   const { busiGroups, siteInfo } = useContext(CommonStateContext);
   const [businessGroupTreeData, setBusinessTreeGroupData] = useState<Node[]>([]);
 
-  console.log('busiGroups', busiGroups);
-
   useEffect(() => {
     setBusinessTreeGroupData(listToTree(busiGroups, siteInfo?.businessGroupSeparator));
   }, [busiGroups]);

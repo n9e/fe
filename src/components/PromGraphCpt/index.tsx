@@ -25,12 +25,12 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import PromQueryBuilderModal from '@/components/PromQueryBuilder/PromQueryBuilderModal';
+import { N9E_PATHNAME } from '@/utils/constant';
 import PromQLInput from '../PromQLInput';
 import Table from './Table';
 import Graph from './Graph';
 import QueryStatsView, { QueryStats } from './components/QueryStatsView';
 import MetricsExplorer from './components/MetricsExplorer';
-import { N9E_PATHNAME } from '@/utils/constant';
 import './locale';
 import './style.less';
 
