@@ -276,7 +276,7 @@ export default function index(props: IProps) {
               };
             },
           ),
-          backgroundColor: themeMode === 'dark' ? '#2A2D3C' : '#fff',
+          backgroundColor: getComputedStyle(document.body).getPropertyValue('--fc-fill-2'), // TODO: 实时切换主题需要刷新页面才生效，后面需要改进
           gridLineColor: themeMode === 'dark' ? 'rgba(255,255,255,0.05)' : '#efefef',
           tickValueFormatter: (val) => {
             return valueFormatter(
