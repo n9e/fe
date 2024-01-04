@@ -164,12 +164,6 @@ const AbsoluteTimePicker = ({
                 defaultValue: type === 'start' ? moment().startOf('day') : moment().endOf('day'),
                 showSecond: false,
               }}
-              disabledDate={(current: Moment) => {
-                if (type === 'start') {
-                  return current && current.valueOf() > moment(range?.end, true).valueOf();
-                }
-                return current && current.valueOf() < moment(range?.start, true).valueOf();
-              }}
               value={val.isValid() ? val : undefined}
               onChange={(value) => {
                 const newRange = {
