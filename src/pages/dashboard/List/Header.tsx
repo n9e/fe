@@ -90,7 +90,7 @@ export default function Header(props: IProps) {
                         }
                       }}
                     >
-                      <span>{t('common:btn.batch_import')}</span>
+                      <span>{t('common:btn.import')}</span>
                     </li>
                     <li
                       className='ant-dropdown-menu-item'
