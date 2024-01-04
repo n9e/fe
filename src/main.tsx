@@ -20,12 +20,7 @@ import { i18nInit } from './i18n'; // loaded and initialized first
 import App from './App';
 import { I18nextProvider } from 'react-i18next';
 import './variable.css';
-
-console.log(import.meta.env.VITE_IS_ENT);
-if (import.meta.env.VITE_IS_ENT !== 'true') {
-  const importWithoutVite = (path: string) => import(/* @vite-ignore */ path);
-  importWithoutVite('./n9e.less');
-}
+import './n9e.less';
 
 ReactDOM.render(
   <I18nextProvider i18n={i18nInit}>
