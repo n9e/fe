@@ -44,7 +44,7 @@ interface IProps {
 
 export default function Graph(props: IProps) {
   const { t, i18n } = useTranslation('objectExplorer');
-  const { datasourceList } = useContext(CommonStateContext);
+  const { datasourceList, darkMode } = useContext(CommonStateContext);
   const { datasourceValue, metric, match, range, step, onClose } = props;
   const newGroups = _.map(
     _.filter(match.dimensionLabels, (item) => !_.isEmpty(item.value)),
@@ -381,7 +381,7 @@ export default function Graph(props: IProps) {
         </Space>
       </div>
       <div>
-        {chartType === 'line' && <Timeseries inDashboard={false} values={lineGraphProps as any} series={series} />}
+        {chartType === 'line' && <Timeseries inDashboard={false} values={lineGraphProps as any} series={series} themeMode={darkMode ? 'dark' : undefined} />}
         {chartType === 'hexbin' && (
           <div style={{ padding: '20px 0 0 0', height: highLevelConfig.chartheight }}>
             <Hexbin values={hexbinGraphProps as any} series={series} time={range} />
