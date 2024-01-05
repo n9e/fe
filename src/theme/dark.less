@@ -1,6 +1,6 @@
 @backgroupColor: var(--fc-fill-1);
-@baseColor: #F7F8F2;
-@cardBackgroundColor: #272a38;
+@baseColor: var(--fc-text-1);
+@cardBackgroundColor: var(--fc-fill-2);
 .theme-dark {
   background-color: @backgroupColor;
   color: @baseColor;
@@ -272,6 +272,9 @@
   .ant-tooltip-arrow-content {
     background-color: var(--fc-fill-4);
     --antd-arrow-background-color: var(--fc-fill-4);
+  }
+  .ant-dropdown-menu {
+    background-color: var(--fc-fill-2);
   }
   .ant-form-item .ant-picker-calendar-year-select,
   .ant-form-item .ant-picker-calendar-month-select,
