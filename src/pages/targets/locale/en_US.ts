@@ -18,6 +18,7 @@ const en_US = {
   cpu_util: 'CPU',
   cpu_num: 'Cores',
   offset: 'Offset',
+  offset_tip: 'The calculation logic is to subtract the time when the machine is deployed by Nightingale from the time when the machine is deployed by categraf',
   os: 'OS',
   arch: 'CPU Arch',
   update_at: 'Update at',
@@ -27,8 +28,10 @@ const en_US = {
     No heartbeat within 3 minutes: red
   `,
   remote_addr: 'Remote Addr',
+  remote_addr_tip: 'Remote Addr is obtained from HTTP Header, if it is passed through a proxy, it may not be the real Remote Addr',
   agent_version: 'Agent Version',
   note: 'Note',
+  unknown_tip: 'The display of machine meta information requires categraf version to be higher than 0.2.35',
   organize_columns: {
     title: 'Organize Columns',
   },
