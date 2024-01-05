@@ -24,16 +24,14 @@ import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import { GetTmpChartData } from '@/services/metric';
 import { TimeRangePickerWithRefresh, IRawTimeRange, isMathString } from '@/components/TimeRangePicker';
-import Resolution from '@/components/Resolution';
 import { CommonStateContext } from '@/App';
 import Renderer from '../dashboard/Renderer/Renderer';
-import { getStepByTimeAndStep } from '../dashboard/utils';
 import './locale';
 import './index.less';
 
 export default function Chart() {
   const { t } = useTranslation('shareChart');
-  const { datasourceCateOptions } = useContext(CommonStateContext);
+  const { datasourceCateOptions, darkMode } = useContext(CommonStateContext);
   const { ids } =
     useParams<{
       ids: string;
@@ -93,19 +91,14 @@ export default function Chart() {
                 <span>
                   {t('common:datasource.id')}：{datasourceName.current}
                 </span>
-                <TimeRangePickerWithRefresh
-                  // refreshTooltip={t('refresh_tip', { num: getStepByTimeAndStep(range, step) })}
-                  onChange={setRange}
-                  value={range}
-                  dateFormat='YYYY-MM-DD HH:mm:ss'
-                />
+                <TimeRangePickerWithRefresh onChange={setRange} value={range} dateFormat='YYYY-MM-DD HH:mm:ss' />
               </Space>
             </div>
           </div>
           {chartData.map((item: any, index) => {
             if (semver.valid(item.dataProps?.version)) {
               return (
-                <div style={{ height: 740, border: '1px solid #efefef' }}>
+                <div style={{ height: 740 }}>
                   <Renderer
                     dashboardId={item.id}
                     key={index}
@@ -118,6 +111,7 @@ export default function Chart() {
                       },
                     })}
                     isPreview
+                    themeMode={darkMode ? 'dark' : undefined}
                   />
                 </div>
               );
