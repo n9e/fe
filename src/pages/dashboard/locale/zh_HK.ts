@@ -13,15 +13,19 @@ const zh_HK = {
   clear_cache_btn_tip: '清除表格列寬缓存，刷新頁面後生效',
   inspect_btn: '排查',
   public: {
-    '0': {
-      confirm: '確認公開嗎？',
-      success: '公開成功',
-    },
-    '1': {
-      confirm: '確認取消公開嗎？',
-      success: '取消公開成功',
-    },
     name: '公開',
+    unpublic: '未公開',
+    cate: {
+      0: '匿名訪問',
+      1: '登錄訪問',
+      2: '授權訪問',
+    },
+    bgids: '授權業務組',
+  },
+  default_filter: {
+    title: '預置篩選',
+    public: '公開儀表盤',
+    all: '全部儀表盤',
   },
   create_title: '創建儀表盤',
   edit_title: '編輯儀表盤',

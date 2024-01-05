@@ -1,6 +1,6 @@
 const en_US = {
   title: 'Host List',
-  default_filter: 'Default',
+  default_filter: 'Premade filters',
   ungrouped_targets: 'Ungrouped hosts',
   all_targets: 'All hosts',
   datasource: 'Datasource',

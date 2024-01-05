@@ -150,6 +150,10 @@ const zh_HK = {
   规则有效性检查，包括以下检查项：<br />
   1. 用户联系方式有效性检查
   `,
+  default_filter: {
+    title: '預置篩選',
+    all: '全部規則',
+  },
 };
 
 export default zh_HK;

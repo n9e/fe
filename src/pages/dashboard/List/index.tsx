@@ -19,40 +19,54 @@
  */
 import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { Table, Tag, Modal, Switch, message } from 'antd';
-import { FundViewOutlined } from '@ant-design/icons';
+import { Table, Tag, Modal, Space, Button, message } from 'antd';
+import { FundViewOutlined, EditOutlined, ShareAltOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import _ from 'lodash';
+import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
+import { useUpdateEffect } from 'ahooks';
 import { Dashboard as DashboardType } from '@/store/dashboardInterface';
-import { getBusiGroupsDashboards, cloneDashboard, removeDashboards, getDashboard, updateDashboardPublic } from '@/services/dashboardV2';
+import { getBusiGroupsDashboards, getBusiGroupsPublicDashboards, cloneDashboard, removeDashboards, getDashboard, updateDashboardPublic } from '@/services/dashboardV2';
 import PageLayout from '@/components/pageLayout';
 import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
 import { CommonStateContext } from '@/App';
-import BusinessGroup from '@/components/BusinessGroup';
+import BusinessGroup, { getCleanBusinessGroupIds } from '@/components/BusinessGroup';
 import usePagination from '@/components/usePagination';
 import Header from './Header';
 import FormModal from './FormModal';
 import Export from './Export';
 import { exportDataStringify } from './utils';
+import PublicForm from './PublicForm';
 import './style.less';
+
+const N9E_BOARD_NODE_ID = 'N9E_BOARD_NODE_ID';
 
 export default function index() {
   const { t } = useTranslation('dashboard');
   const { businessGroup, busiGroups } = useContext(CommonStateContext);
+  const [gids, setGids] = useState<string | undefined>(localStorage.getItem(N9E_BOARD_NODE_ID) || businessGroup.ids); // -1: 公开仪表盘, -2: 所有仪表盘
   const [list, setList] = useState<any[]>([]);
   const [selectRowKeys, setSelectRowKeys] = useState<number[]>([]);
   const [refreshKey, setRefreshKey] = useState(_.uniqueId('refreshKey_'));
   const [searchVal, setsearchVal] = useState<string>('');
   const pagination = usePagination({ PAGESIZE_KEY: 'dashboard-pagesize' });
 
+  useUpdateEffect(() => {
+    setGids(businessGroup.ids);
+  }, [businessGroup.ids]);
+
   useEffect(() => {
-    if (businessGroup.ids) {
-      getBusiGroupsDashboards(businessGroup.ids).then((res) => {
+    if (gids === '-1') {
+      getBusiGroupsPublicDashboards().then((res) => {
+        setList(res);
+      });
+    } else {
+      getBusiGroupsDashboards(gids === '-2' ? undefined : gids).then((res) => {
         setList(res);
       });
     }
-  }, [businessGroup.ids, refreshKey]);
+  }, [gids, refreshKey]);
 
   const data = _.filter(list, (item) => {
     if (searchVal) {
@@ -64,10 +78,49 @@ export default function index() {
   return (
     <PageLayout title={t('title')} icon={<FundViewOutlined />}>
       <div style={{ display: 'flex' }}>
-        <BusinessGroup />
+        <BusinessGroup
+          renderHeadExtra={() => {
+            return (
+              <div>
+                <div className='left-area-group-title'>{t('default_filter.title')}</div>
+                <div
+                  className={classNames({
+                    'n9e-biz-group-item': true,
+                    active: gids === '-1',
+                  })}
+                  onClick={() => {
+                    setGids('-1');
+                    localStorage.setItem(N9E_BOARD_NODE_ID, '-1');
+                  }}
+                >
+                  {t('default_filter.public')}
+                </div>
+                <div
+                  className={classNames({
+                    'n9e-biz-group-item': true,
+                    active: gids === '-2',
+                  })}
+                  onClick={() => {
+                    setGids('-2');
+                    localStorage.setItem(N9E_BOARD_NODE_ID, '-2');
+                  }}
+                >
+                  {t('default_filter.all')}
+                </div>
+              </div>
+            );
+          }}
+          showSelected={gids !== '-1' && gids !== '-2'}
+          onSelect={(key) => {
+            const ids = getCleanBusinessGroupIds(key);
+            setGids(ids);
+            localStorage.removeItem(N9E_BOARD_NODE_ID);
+          }}
+        />
         {businessGroup.ids ? (
           <div className='dashboards-v2'>
             <Header
+              gids={gids}
               selectRowKeys={selectRowKeys}
               refreshList={() => {
                 setRefreshKey(_.uniqueId('refreshKey_'));
@@ -149,40 +202,56 @@ export default function index() {
                   {
                     title: t('common:table.update_by'),
                     dataIndex: 'update_by',
-                    width: 60,
+                    width: 100,
                   },
                   {
                     title: t('public.name'),
-                    width: 120,
+                    width: 150,
                     dataIndex: 'public',
-                    render: (text: number, record: DashboardType) => {
-                      return (
-                        <div>
-                          <Switch
-                            checked={text === 1}
-                            onChange={() => {
-                              Modal.confirm({
-                                title: record.public ? t('public.1.confirm') : t('public.0.confirm'),
-                                onOk: async () => {
-                                  await updateDashboardPublic(record.id, { public: record.public ? 0 : 1 });
-                                  message.success(record.public ? t('public.1.success') : t('public.0.success'));
-                                  setRefreshKey(_.uniqueId('refreshKey_'));
-                                },
-                              });
-                            }}
-                          />
-                          {text === 1 && (
+                    className: 'published-cell',
+                    render: (val: number, record: DashboardType) => {
+                      let content: React.ReactNode = null;
+                      if (val === 1 && record.public_cate !== undefined) {
+                        if (record.public_cate === 0) {
+                          content = (
                             <Link
                               target='_blank'
                               to={{
                                 pathname: `/dashboards/share/${record.id}`,
                               }}
-                              style={{ marginLeft: 10 }}
                             >
-                              {t('common:btn.view')}
+                              <ShareAltOutlined /> {t(`public.cate.${record.public_cate}`)}
                             </Link>
+                          );
+                        } else {
+                          content = t(`public.cate.${record.public_cate}`);
+                        }
+                      } else {
+                        content = t('public.unpublic');
+                      }
+
+                      return (
+                        <Space>
+                          {content}
+                          {gids !== '-1' && (
+                            <EditOutlined
+                              onClick={() => {
+                                PublicForm({
+                                  busiGroups,
+                                  boardId: record.id,
+                                  initialValues: {
+                                    public: val,
+                                    public_cate: record.public_cate,
+                                    bgids: record.bgids,
+                                  },
+                                  onOk: () => {
+                                    setRefreshKey(_.uniqueId('refreshKey_'));
+                                  },
+                                });
+                              }}
+                            />
                           )}
-                        </div>
+                        </Space>
                       );
                     },
                   },
@@ -190,41 +259,48 @@ export default function index() {
                     title: t('common:table.operations'),
                     width: '180px',
                     render: (text: string, record: DashboardType) => (
-                      <div className='table-operator-area'>
-                        <div
-                          className='table-operator-area-normal'
-                          onClick={() => {
-                            FormModal({
-                              action: 'edit',
-                              initialValues: record,
-                              busiId: businessGroup.id,
-                              onOk: () => {
-                                setRefreshKey(_.uniqueId('refreshKey_'));
-                              },
-                            });
-                          }}
-                        >
-                          {t('common:btn.edit')}
-                        </div>
-                        <div
-                          className='table-operator-area-normal'
-                          onClick={async () => {
-                            Modal.confirm({
-                              title: t('common:confirm.clone'),
-                              onOk: async () => {
-                                await cloneDashboard(record.group_id, record.id);
-                                message.success(t('common:success.clone'));
-                                setRefreshKey(_.uniqueId('refreshKey_'));
-                              },
+                      <Space>
+                        {gids !== '-1' && (
+                          <Button
+                            type='link'
+                            className='p0'
+                            onClick={() => {
+                              FormModal({
+                                action: 'edit',
+                                initialValues: record,
+                                busiId: businessGroup.id,
+                                onOk: () => {
+                                  setRefreshKey(_.uniqueId('refreshKey_'));
+                                },
+                              });
+                            }}
+                          >
+                            {t('common:btn.edit')}
+                          </Button>
+                        )}
+                        {gids && gids !== '-1' && (
+                          <Button
+                            type='link'
+                            className='p0'
+                            onClick={async () => {
+                              Modal.confirm({
+                                title: t('common:confirm.clone'),
+                                onOk: async () => {
+                                  await cloneDashboard(record.group_id, record.id);
+                                  message.success(t('common:success.clone'));
+                                  setRefreshKey(_.uniqueId('refreshKey_'));
+                                },
 
-                              onCancel() {},
-                            });
-                          }}
-                        >
-                          {t('common:btn.clone')}
-                        </div>
-                        <div
-                          className='table-operator-area-normal'
+                                onCancel() {},
+                              });
+                            }}
+                          >
+                            {t('common:btn.clone')}
+                          </Button>
+                        )}
+                        <Button
+                          type='link'
+                          className='p0'
                           onClick={async () => {
                             const exportData = await getDashboard(record.id);
                             Export({
@@ -233,25 +309,29 @@ export default function index() {
                           }}
                         >
                           {t('common:btn.export')}
-                        </div>
-                        <div
-                          className='table-operator-area-warning'
-                          onClick={async () => {
-                            Modal.confirm({
-                              title: t('common:confirm.delete'),
-                              onOk: async () => {
-                                await removeDashboards([record.id]);
-                                message.success(t('common:success.delete'));
-                                setRefreshKey(_.uniqueId('refreshKey_'));
-                              },
+                        </Button>
+                        {gids !== '-1' && (
+                          <Button
+                            danger
+                            type='link'
+                            className='p0'
+                            onClick={async () => {
+                              Modal.confirm({
+                                title: t('common:confirm.delete'),
+                                onOk: async () => {
+                                  await removeDashboards([record.id]);
+                                  message.success(t('common:success.delete'));
+                                  setRefreshKey(_.uniqueId('refreshKey_'));
+                                },
 
-                              onCancel() {},
-                            });
-                          }}
-                        >
-                          {t('common:btn.delete')}
-                        </div>
-                      </div>
+                                onCancel() {},
+                              });
+                            }}
+                          >
+                            {t('common:btn.delete')}
+                          </Button>
+                        )}
+                      </Space>
                     ),
                   },
                 ],

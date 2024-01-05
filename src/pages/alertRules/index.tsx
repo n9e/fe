@@ -14,11 +14,12 @@
  * limitations under the License.
  *
  */
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import classNames from 'classnames';
 import { SettingOutlined } from '@ant-design/icons';
 import PageLayout from '@/components/pageLayout';
-import BusinessGroup from '@/components/BusinessGroup';
+import BusinessGroup, { getCleanBusinessGroupIds } from '@/components/BusinessGroup';
 import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
 import { CommonStateContext } from '@/App';
 import List from './List';
@@ -29,15 +30,44 @@ import './style.less';
 
 export { Add, Edit };
 
+const N9E_ALERT_NODE_ID = 'N9E_ALERT_NODE_ID';
+
 export default function index() {
   const { businessGroup } = useContext(CommonStateContext);
   const { t } = useTranslation('alertRules');
+  const [gids, setGids] = useState<string | undefined>(localStorage.getItem(N9E_ALERT_NODE_ID) || businessGroup.ids); // -2: 所有告警策略
 
   return (
     <PageLayout title={t('title')} icon={<SettingOutlined />}>
       <div className='alert-rules-container'>
-        <BusinessGroup />
-        {businessGroup.ids ? <List /> : <BlankBusinessPlaceholder text={t('title')} />}
+        <BusinessGroup
+          renderHeadExtra={() => {
+            return (
+              <div>
+                <div className='left-area-group-title'>{t('default_filter.title')}</div>
+                <div
+                  className={classNames({
+                    'n9e-biz-group-item': true,
+                    active: gids === '-2',
+                  })}
+                  onClick={() => {
+                    setGids('-2');
+                    localStorage.setItem(N9E_ALERT_NODE_ID, '-2');
+                  }}
+                >
+                  {t('default_filter.all')}
+                </div>
+              </div>
+            );
+          }}
+          showSelected={gids !== '-2'}
+          onSelect={(key) => {
+            const ids = getCleanBusinessGroupIds(key);
+            setGids(ids);
+            localStorage.removeItem(N9E_ALERT_NODE_ID);
+          }}
+        />
+        {businessGroup.ids ? <List gids={gids === '-2' ? undefined : gids} /> : <BlankBusinessPlaceholder text={t('title')} />}
       </div>
     </PageLayout>
   );

@@ -151,5 +151,9 @@ const en_US = {
   Rule validity check：<br />
   1. Check channels and groups
   `,
+  default_filter: {
+    title: 'Premade filters',
+    all: 'All rules',
+  },
 };
 export default en_US;

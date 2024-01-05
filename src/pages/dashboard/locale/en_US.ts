@@ -14,14 +14,18 @@ const en_US = {
   inspect_btn: 'Inspect',
   public: {
     name: 'Public',
-    0: {
-      confirm: 'Confirm to public?',
-      success: 'Public success',
+    unpublic: 'Unpublic',
+    cate: {
+      0: 'Anonymous access',
+      1: 'Login access',
+      2: 'Authorized access',
     },
-    1: {
-      confirm: 'Confirm to cancel public?',
-      success: 'Cancel public success',
-    },
+    bgids: 'Authorized business groups',
+  },
+  default_filter: {
+    title: 'Premade filters',
+    public: 'Public dashboards',
+    all: 'All dashboards',
   },
   create_title: 'Create Dashboard',
   edit_title: 'Edit Dashboard',

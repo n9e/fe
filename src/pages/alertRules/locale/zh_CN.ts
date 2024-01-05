@@ -150,5 +150,9 @@ const zh_CN = {
   规则有效性检查，包括以下检查项：<br />
   1. 用户联系方式有效性检查
   `,
+  default_filter: {
+    title: '预置筛选',
+    all: '全部规则',
+  },
 };
 export default zh_CN;
