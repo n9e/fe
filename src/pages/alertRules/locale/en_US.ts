@@ -152,7 +152,7 @@ const en_US = {
   1. Check channels and groups
   `,
   default_filter: {
-    title: 'Premade filters',
+    title: 'Preset filters',
     all: 'All rules',
   },
 };

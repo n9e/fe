@@ -23,7 +23,7 @@ const en_US = {
     bgids: 'Authorized business groups',
   },
   default_filter: {
-    title: 'Premade filters',
+    title: 'Preset filters',
     public: 'Public dashboards',
     all: 'All dashboards',
   },
