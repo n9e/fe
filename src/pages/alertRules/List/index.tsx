@@ -58,7 +58,7 @@ export default function List(props: ListProps) {
   const [data, setData] = useState<AlertRuleType<any>[]>([]);
   const [loading, setLoading] = useState(false);
   const columns: ColumnType<AlertRuleType<any>>[] = _.concat(
-    businessGroup.isLeaf
+    businessGroup.isLeaf && gids !== undefined // TODO 如果是全部规则筛选是显示 业务组 列
       ? []
       : ([
           {

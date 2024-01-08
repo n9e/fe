@@ -131,7 +131,7 @@ export default function index() {
             <Table
               dataSource={data}
               columns={_.concat(
-                businessGroup.isLeaf
+                businessGroup.isLeaf && gids !== '-1' && gids !== '-2'
                   ? []
                   : ([
                       {
