@@ -530,4 +530,6 @@ function TableCpt(props: IProps, ref: any) {
   );
 }
 
-export default forwardRef(TableCpt);
+export default React.memo(forwardRef(TableCpt), (prevProps, nextProps) => {
+  return _.isEqual(prevProps, nextProps);
+});
