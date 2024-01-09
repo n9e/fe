@@ -254,7 +254,7 @@ function App() {
           </Router>
         </ConfigProvider>
       </CommonStateContext.Provider>
-      {import.meta.env.VITE_IS_ENT !== 'true' && import.meta.env.VITE_IS_PRO === 'true' && <CustomerServiceFloatButton />}
+      {/* {import.meta.env.VITE_IS_ENT !== 'true' && import.meta.env.VITE_IS_PRO === 'true' && <CustomerServiceFloatButton />} */}
     </div>
   );
 }
