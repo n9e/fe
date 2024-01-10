@@ -15,7 +15,7 @@
  *
  */
 import { Moment } from 'moment';
-
+import type { SizeType } from 'antd/lib/config-provider/SizeContext';
 export type TDurationUnit =
   | 'year'
   | 'years'
@@ -70,6 +70,7 @@ export interface ITimeRangePickerProps {
   label?: React.ReactElement;
   extraFooter?: (fn: Function) => React.ReactElement;
   disabled?: boolean;
+  size?: SizeType;
 }
 
 export interface ITimeRangePickerWithRefreshProps extends ITimeRangePickerProps {

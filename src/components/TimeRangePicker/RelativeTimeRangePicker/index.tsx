@@ -240,6 +240,7 @@ export default function index(props: ITimeRangePickerProps) {
         }}
       >
         <Button
+          size={props.size}
           style={props.style}
           className={classNames({
             'flashcat-timeRangePicker-target': true,

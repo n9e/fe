@@ -29,7 +29,7 @@ import NotifyExtra from 'plus:/parcels/AlertRule/NotifyExtra';
 // @ts-ignore
 import NotifyChannelsTpl from 'plus:/parcels/AlertRule/NotifyChannelsTpl';
 
-export default function index({ disabled }) {
+export default function index({ disabled, hideAdvanced }: { disabled?: boolean; hideAdvanced?: boolean }) {
   const { t } = useTranslation('alertRules');
   const [contactList, setContactList] = useState<{ key: string; label: string }[]>([]);
   const [notifyGroups, setNotifyGroups] = useState<any[]>([]);
@@ -239,7 +239,7 @@ export default function index({ disabled }) {
           )}
         </Form.List>
       </Card>
-      <NotifyExtra contactList={contactList} notifyGroups={notifyGroups} />
+      {!hideAdvanced &&  <NotifyExtra contactList={contactList} notifyGroups={notifyGroups} />}
     </>
   );
 }

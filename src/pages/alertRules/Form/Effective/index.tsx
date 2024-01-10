@@ -24,7 +24,7 @@ import { panelBaseProps, daysOfWeek } from '../../constants';
 // @ts-ignore
 import ServiceCalendarSelect from 'plus:/pages/ServiceCalendar/ServiceCalendarSelect';
 
-export default function index() {
+export default function index({hideEnable}:{hideEnable?: boolean}) {
   const { t } = useTranslation('alertRules');
   const { isPlus } = useContext(CommonStateContext);
 
@@ -114,7 +114,7 @@ export default function index() {
         )}
       </Form.List>
       {isPlus && <ServiceCalendarSelect name={['extra_config', 'service_cal_ids']} />}
-      <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.cate !== curValues.cate} noStyle>
+      {!hideEnable && <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.cate !== curValues.cate} noStyle>
         {({ getFieldValue }) => {
           if (getFieldValue('cate') === 'prometheus') {
             return (
@@ -129,7 +129,7 @@ export default function index() {
             );
           }
         }}
-      </Form.Item>
+      </Form.Item>}
     </Card>
   );
 }
