@@ -184,6 +184,7 @@ export default function index() {
                     </Space>
                   </div>
                   <Table
+                    className='mt8'
                     size='small'
                     rowKey='name'
                     pagination={pagination}

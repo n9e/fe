@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Table, Tag, Tooltip, Space, Input, Dropdown, Menu, Button, Modal, message, Select } from 'antd';
 import { ColumnsType } from 'antd/es/table';
-import { SearchOutlined, DownOutlined, ReloadOutlined, CopyOutlined, ApartmentOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { SearchOutlined, DownOutlined, ReloadOutlined, CopyOutlined, ApartmentOutlined, QuestionCircleOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { useAntdTable } from 'ahooks';
 import _ from 'lodash';
 import moment from 'moment';
@@ -61,6 +61,10 @@ const YELLOW_COLOR = '#FF9919';
 const RED_COLOR = '#FF656B';
 const LOST_COLOR = '#CCCCCC';
 const downtimeOptions = [1, 2, 3, 5, 10, 30];
+const Unknown = () => {
+  const { t } = useTranslation('targets');
+  return <Tooltip title={t('unknown_tip')}>unknown</Tooltip>;
+};
 
 export default function List(props: IProps) {
   const { t } = useTranslation('targets');
@@ -208,7 +212,7 @@ export default function List(props: IProps) {
         dataIndex: 'mem_util',
         sorter: (a, b) => a.mem_util - b.mem_util,
         render(text, reocrd) {
-          if (reocrd.cpu_num === -1) return 'unknown';
+          if (reocrd.cpu_num === -1) return <Unknown />;
           let backgroundColor = GREEN_COLOR;
           if (text > 70) {
             backgroundColor = YELLOW_COLOR;
@@ -240,7 +244,7 @@ export default function List(props: IProps) {
         dataIndex: 'cpu_util',
         sorter: (a, b) => a.cpu_util - b.cpu_util,
         render(text, reocrd) {
-          if (reocrd.cpu_num === -1) return 'unknown';
+          if (reocrd.cpu_num === -1) return <Unknown />;
           let backgroundColor = GREEN_COLOR;
           if (text > 70) {
             backgroundColor = YELLOW_COLOR;
@@ -271,19 +275,26 @@ export default function List(props: IProps) {
         dataIndex: 'cpu_num',
         sorter: (a, b) => a.cpu_num - b.cpu_num,
         render: (val, reocrd) => {
-          if (reocrd.cpu_num === -1) return 'unknown';
+          if (reocrd.cpu_num === -1) return <Unknown />;
           return val;
         },
       });
     }
     if (item.name === 'offset') {
       columns.push({
-        title: t('offset'),
+        title: (
+          <Space>
+            {t('offset')}
+            <Tooltip title={t('offset_tip')}>
+              <InfoCircleOutlined />
+            </Tooltip>
+          </Space>
+        ),
         width: 100,
         dataIndex: 'offset',
         sorter: (a, b) => a.offset - b.offset,
         render(text, reocrd) {
-          if (reocrd.cpu_num === -1) return 'unknown';
+          if (reocrd.cpu_num === -1) return <Unknown />;
           let backgroundColor = RED_COLOR;
           if (text < 2000) {
             backgroundColor = YELLOW_COLOR;
@@ -313,7 +324,7 @@ export default function List(props: IProps) {
         width: 100,
         dataIndex: 'os',
         render: (val, reocrd) => {
-          if (reocrd.cpu_num === -1) return 'unknown';
+          if (reocrd.cpu_num === -1) return <Unknown />;
           return val;
         },
       });
@@ -324,7 +335,7 @@ export default function List(props: IProps) {
         width: 100,
         dataIndex: 'arch',
         render: (val, reocrd) => {
-          if (reocrd.cpu_num === -1) return 'unknown';
+          if (reocrd.cpu_num === -1) return <Unknown />;
           return val;
         },
       });
@@ -335,7 +346,7 @@ export default function List(props: IProps) {
           <Space>
             {t('update_at')}
             <Tooltip title={<Trans ns='targets' i18nKey='update_at_tip' components={{ 1: <br /> }} />}>
-              <QuestionCircleOutlined />
+              <InfoCircleOutlined />
             </Tooltip>
           </Space>
         ),
@@ -364,11 +375,18 @@ export default function List(props: IProps) {
     }
     if (item.name === 'remote_addr') {
       columns.push({
-        title: t('remote_addr'),
+        title: (
+          <Space>
+            {t('remote_addr')}
+            <Tooltip title={t('remote_addr_tip')}>
+              <InfoCircleOutlined />
+            </Tooltip>
+          </Space>
+        ),
         width: 100,
         dataIndex: 'remote_addr',
         render: (val, reocrd) => {
-          if (reocrd.cpu_num === -1) return 'unknown';
+          if (reocrd.cpu_num === -1) return <Unknown />;
           return val;
         },
       });
@@ -516,10 +534,12 @@ export default function List(props: IProps) {
         </Space>
       </div>
       <Table
+        className='mt8'
         rowKey='id'
         columns={columns}
         size='small'
         {...tableProps}
+        showSorterTooltip={false}
         rowSelection={{
           type: 'checkbox',
           selectedRowKeys: selectedRowKeys,

@@ -25,6 +25,7 @@ import Import from './Import';
 import { CommonStateContext } from '@/App';
 
 interface IProps {
+  gids?: string;
   selectRowKeys: any[];
   refreshList: () => void;
   searchVal: string;
@@ -34,7 +35,7 @@ interface IProps {
 export default function Header(props: IProps) {
   const { businessGroup } = useContext(CommonStateContext);
   const { t } = useTranslation('dashboard');
-  const { selectRowKeys, refreshList, searchVal, onSearchChange } = props;
+  const { gids, selectRowKeys, refreshList, searchVal, onSearchChange } = props;
 
   return (
     <>
@@ -60,7 +61,7 @@ export default function Header(props: IProps) {
             placeholder={t('search_placeholder')}
           />
         </Space>
-        {businessGroup.isLeaf && (
+        {businessGroup.isLeaf && gids && gids !== '-1' && (
           <Space>
             <Button
               type='primary'

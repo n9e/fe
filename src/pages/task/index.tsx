@@ -165,6 +165,7 @@ const index = (_props: any) => {
               )}
             </Row>
             <Table
+              className='mt8'
               size='small'
               rowKey='id'
               columns={columns as any}

@@ -14,14 +14,19 @@ const zh_CN = {
   inspect_btn: '排查',
   public: {
     name: '公开',
-    0: {
-      confirm: '确认公开吗？',
-      success: '公开成功',
+    unpublic: '不公开',
+    public_cate: '类型',
+    cate: {
+      0: '匿名访问',
+      1: '登录访问',
+      2: '授权访问',
     },
-    1: {
-      confirm: '确认取消公开吗？',
-      success: '取消公开成功',
-    },
+    bgids: '授权业务组',
+  },
+  default_filter: {
+    title: '预置筛选',
+    public: '公开仪表盘',
+    all: '全部仪表盘',
   },
   create_title: '创建仪表盘',
   edit_title: '编辑仪表盘',

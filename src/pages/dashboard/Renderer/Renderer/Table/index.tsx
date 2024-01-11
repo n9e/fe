@@ -261,7 +261,7 @@ function TableCpt(props: IProps, ref: any) {
             if (key === 'value') {
               return a.stat - b.stat;
             }
-            return localeCompare(_.toString(_.get(a.metric, key)), _.toString(_.get(b.metric, key)));
+            return localeCompare(_.get(a.metric, key), _.get(b.metric, key));
           },
           sortOrder: getSortOrder(key, sortObj),
           className: key === 'value' ? 'renderer-table-td-content-value-container' : '',

@@ -218,6 +218,7 @@ export default function TableCpt(props: IProps) {
       <div style={{ padding: 16, width: '100%', overflowY: 'auto' }}>
         <div style={{ display: 'flex' }}>{header}</div>
         <Table
+          className='mt8'
           size='small'
           tableLayout='fixed'
           rowKey={(record) => record.id}

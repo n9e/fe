@@ -34,7 +34,7 @@ import { AlertRuleType, AlertRuleStatus } from '../types';
 import MoreOperations from './MoreOperations';
 
 interface ListProps {
-  bgid?: number;
+  gids?: string;
 }
 
 interface Filter {
@@ -47,6 +47,7 @@ interface Filter {
 
 export default function List(props: ListProps) {
   const { businessGroup, busiGroups } = useContext(CommonStateContext);
+  const { gids } = props;
   const { t } = useTranslation('alertRules');
   const history = useHistory();
   const { datasourceList } = useContext(CommonStateContext);
@@ -57,7 +58,7 @@ export default function List(props: ListProps) {
   const [data, setData] = useState<AlertRuleType<any>[]>([]);
   const [loading, setLoading] = useState(false);
   const columns: ColumnType<AlertRuleType<any>>[] = _.concat(
-    businessGroup.isLeaf
+    businessGroup.isLeaf && gids !== undefined // TODO 如果是全部规则筛选是显示 业务组 列
       ? []
       : ([
           {
@@ -302,21 +303,18 @@ export default function List(props: ListProps) {
     });
   };
   const fetchData = async () => {
-    if (businessGroup.ids) {
-      setLoading(true);
-      const { success, dat } = await getBusiGroupsAlertRules(businessGroup.ids);
-      if (success) {
-        setData(dat || []);
-        setLoading(false);
-      }
+    setLoading(true);
+    const { success, dat } = await getBusiGroupsAlertRules(gids);
+    if (success) {
+      setData(dat || []);
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchData();
-  }, [businessGroup.ids]);
+  }, [gids]);
 
-  if (!businessGroup.ids) return null;
   const filteredData = filterData();
 
   return (
@@ -380,7 +378,7 @@ export default function List(props: ListProps) {
             />
           </Space>
         </Col>
-        {businessGroup.isLeaf && (
+        {businessGroup.isLeaf && gids && (
           <Col>
             <Space>
               <Button
@@ -398,6 +396,7 @@ export default function List(props: ListProps) {
         )}
       </Row>
       <Table
+        className='mt8'
         tableLayout='fixed'
         size='small'
         rowKey='id'

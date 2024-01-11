@@ -28,13 +28,30 @@ export const getDashboards = function (id: number | string) {
   });
 };
 
-// 或许多个业务组的仪表盘列表
-export const getBusiGroupsDashboards = function (gids: string) {
-  return request(`/api/n9e/busi-groups/boards`, {
+// 多个业务组的仪表盘列表
+export const getBusiGroupsDashboards = function (gids?: string) {
+  return request('/api/n9e/busi-groups/boards', {
     method: RequestMethod.Get,
     params: {
       gids,
     },
+  }).then((res) => {
+    return res.dat;
+  });
+};
+
+export const getBusiGroupsPublicDashboards = function () {
+  return request('/api/n9e/busi-groups/public-boards', {
+    method: RequestMethod.Get,
+  }).then((res) => {
+    return res.dat;
+  });
+};
+
+export const updateBoardPublic = function (id: number, data: any) {
+  return request(`/api/n9e/board/${id}/public`, {
+    method: RequestMethod.Put,
+    data,
   }).then((res) => {
     return res.dat;
   });

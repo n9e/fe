@@ -136,6 +136,7 @@ export default function index(props: IProps) {
                         search: queryString.stringify({
                           ...query,
                           ids: itemKey,
+                          isLeaf: true,
                         }),
                       });
                     }}

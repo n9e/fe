@@ -95,7 +95,10 @@ export default function index(props: IProps) {
     if (type === 1 || type === 2 || type === 3) {
       form.setFieldsValue(processInitialValues(initialValues));
     } else {
-      form.setFieldsValue(defaultValues);
+      form.setFieldsValue({
+        ...defaultValues,
+        group_id: Number(bgid),
+      });
     }
   }, [initialValues]);
 

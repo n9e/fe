@@ -70,6 +70,7 @@ export default function Servers() {
                 </Button>
               </div>
               <Table
+                className='mt8'
                 size='small'
                 rowKey='id'
                 tableLayout='fixed'

@@ -17,6 +17,7 @@ const zh_CN = {
   cpu_util: 'CPU',
   cpu_num: '核数',
   offset: '时间偏移',
+  offset_tip: '计算逻辑为用 夜莺部署机器的时间减去categraf部署机器的时间',
   os: '操作系统',
   arch: 'CPU架构',
   update_at: '更新时间',
@@ -26,8 +27,10 @@ const zh_CN = {
     3分钟内没有心跳：红色
   `,
   remote_addr: '来源 IP',
+  remote_addr_tip: '来源 IP 是从 HTTP Header 中获取的，如果经过了代理，不一定是真是的来源IP',
   agent_version: 'Agent 版本',
   note: '备注',
+  unknown_tip: '机器元信息的展示，categraf 的版本需要高于 0.2.35',
   organize_columns: {
     title: '显示列',
   },

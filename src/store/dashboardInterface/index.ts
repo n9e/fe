@@ -27,6 +27,8 @@ export interface Dashboard {
   update_by: string;
   configs: IDashboardConfig;
   public?: number;
+  public_cate?: number; // 0 匿名访问 1 登录访问 2 可选用户访问
+  bgids?: number[]; // 公开大盘授权的业务组
   group_id: number;
 }
 

@@ -17,6 +17,7 @@ const zh_HK = {
   cpu_util: 'CPU',
   cpu_num: '核數',
   offset: '時間偏移',
+  offset_tip: '計算邏輯為用 夜鶯部署機器的時間減去 categraf 部署機器的時間',
   os: '作業系統',
   arch: 'CPU 架構',
   update_at: '更新時間',
@@ -26,8 +27,10 @@ const zh_HK = {
     3分鐘內沒有心跳：紅色
   `,
   remote_addr: '來源 IP',
+  remote_addr_tip: '來源 IP 是從 HTTP Header 中獲取的，如果經過了代理，不一定是真是的來源IP',
   agent_version: 'Agent 版本',
   note: '備註',
+  unknown_tip: '機器元信息的展示，categraf 的版本需要高於 0.2.35',
   organize_columns: {
     title: '顯示列',
   },

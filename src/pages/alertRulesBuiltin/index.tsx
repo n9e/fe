@@ -224,6 +224,7 @@ export default function index() {
                     </Space>
                   </div>
                   <Table
+                    className='mt8'
                     size='small'
                     rowKey={(record) => `${record.__cate__}-${record.__group__}-${record.name}`}
                     dataSource={filteredRules}
