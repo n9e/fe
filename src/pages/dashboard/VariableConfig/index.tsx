@@ -146,7 +146,9 @@ function index(props: IProps) {
             result[idx].options = _.map(_.compact(_.split(item.definition, ',')), _.trim);
             const selected = getVaraiableSelected(item.name, item.type, id);
             if (selected === null && query.__variable_value_fixed === undefined) {
-              setVaraiableSelected({ name: item.name, value: item.defaultValue!, id, urlAttach: true });
+              const head = _.head(result[idx].options)!;
+              const defaultVal = item.multi ? (item.allOption ? ['all'] : head ? [head] : []) : head;
+              setVaraiableSelected({ name: item.name, value: defaultVal, id, urlAttach: true });
             }
           } else if (item.type === 'textbox') {
             result[idx] = item;
