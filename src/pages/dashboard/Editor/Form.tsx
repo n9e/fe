@@ -14,11 +14,12 @@
  * limitations under the License.
  *
  */
-import React, { useEffect, useState, useImperativeHandle, forwardRef } from 'react';
+import React, { useEffect, useState, useImperativeHandle, forwardRef, useContext } from 'react';
 import { Form, Row, Col, Button, Space, Switch, Tooltip, Mentions, Collapse as AntdCollapse, Select } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
+import { CommonStateContext } from '@/App';
 import { defaultValues, defaultCustomValuesMap } from './config';
 import Options from './Options';
 import Collapse, { Panel } from './Components/Collapse';
@@ -36,6 +37,7 @@ interface IProps {
 
 function FormCpt(props: IProps, ref) {
   const { t } = useTranslation('dashboard');
+  const { darkMode } = useContext(CommonStateContext);
   const [chartForm] = Form.useForm();
   const { initialValues, range, id, dashboardId } = props;
   const [variableConfigWithOptions, setVariableConfigWithOptions] = useState<IVariable[] | undefined>(props.variableConfigWithOptions);
@@ -88,7 +90,16 @@ function FormCpt(props: IProps, ref) {
             <div style={{ marginBottom: 10, height: 300 }}>
               <Form.Item shouldUpdate noStyle>
                 {({ getFieldsValue }) => {
-                  return <Renderer dashboardId={dashboardId} time={range} values={getFieldsValue()} variableConfig={variableConfigWithOptions} isPreview />;
+                  return (
+                    <Renderer
+                      dashboardId={dashboardId}
+                      time={range}
+                      values={getFieldsValue()}
+                      variableConfig={variableConfigWithOptions}
+                      isPreview
+                      themeMode={darkMode ? 'dark' : undefined}
+                    />
+                  );
                 }}
               </Form.Item>
             </div>

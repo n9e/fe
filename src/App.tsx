@@ -242,7 +242,9 @@ function App() {
   }, []);
 
   useEffect(() => {
-    document.body.className = commonState.darkMode ? 'theme-dark' : 'theme-light';
+    if (!location.pathname.startsWith('/login')) {
+      document.body.className = commonState.darkMode ? 'theme-dark' : 'theme-light';
+    }
   }, [commonState.darkMode]);
 
   // 初始化中不渲染任何内容

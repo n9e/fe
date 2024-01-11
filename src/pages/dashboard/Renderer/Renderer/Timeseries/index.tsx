@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useContext } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
@@ -26,6 +26,7 @@ import { useSize } from 'ahooks';
 import TsGraph from '@fc-plot/ts-graph';
 import '@fc-plot/ts-graph/dist/index.css';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
+import { CommonStateContext } from '@/App';
 import { IPanel } from '../../../types';
 import { hexPalette } from '../../../config';
 import valueFormatter from '../../utils/valueFormatter';
@@ -109,8 +110,10 @@ function NameWithTooltip({ record, children }) {
 
 export default function index(props: IProps) {
   const [dashboardMeta] = useGlobalState('dashboardMeta');
+  const { darkMode } = useContext(CommonStateContext);
   const { t } = useTranslation('dashboard');
-  const { time, setRange, values, series, inDashboard = true, chartHeight = '200px', tableHeight = '200px', themeMode = '', onClick } = props;
+  const { time, setRange, values, series, inDashboard = true, chartHeight = '200px', tableHeight = '200px', onClick } = props;
+  const themeMode = props.themeMode || darkMode ? 'dark' : '';
   const { custom, options = {}, targets, overrides } = values;
   const { lineWidth = 1, gradientMode = 'none', scaleDistribution } = custom;
   const [seriesData, setSeriesData] = useState(series);
