@@ -113,7 +113,7 @@ export default function index(props: IProps) {
   const { darkMode } = useContext(CommonStateContext);
   const { t } = useTranslation('dashboard');
   const { time, setRange, values, series, inDashboard = true, chartHeight = '200px', tableHeight = '200px', onClick } = props;
-  const themeMode = props.themeMode || darkMode ? 'dark' : '';
+  const themeMode = props.themeMode || (darkMode ? 'dark' : 'light');
   const { custom, options = {}, targets, overrides } = values;
   const { lineWidth = 1, gradientMode = 'none', scaleDistribution } = custom;
   const [seriesData, setSeriesData] = useState(series);

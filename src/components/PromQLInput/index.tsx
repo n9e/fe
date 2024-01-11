@@ -32,6 +32,7 @@ import { PromQLExtension } from 'codemirror-promql';
 import { baseTheme, lightTheme, darkTheme, promqlHighlighter } from './CMTheme';
 import { N9E_PATHNAME, AccessTokenKey } from '@/utils/constant';
 import { CommonStateContext } from '@/App';
+import './style.less';
 
 export { PromQLInputWithBuilder } from './PromQLInputWithBuilder';
 
