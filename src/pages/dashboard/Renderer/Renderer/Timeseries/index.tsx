@@ -380,9 +380,10 @@ export default function index(props: IProps) {
     tableColumn = [
       ...tableColumn,
       {
-        title: t(`panel.options.legend.${column}`),
+        title: t(`panel.options.legend.${column}`, {
+          lng: 'en_US', // fixed to en_US, optimize column width
+        }),
         dataIndex: column,
-        width: 100,
         sorter: (a, b) => a[column].stat - b[column].stat,
         render: (text) => {
           return text.text;
@@ -435,8 +436,7 @@ export default function index(props: IProps) {
           // height: legendEleSize?.height! + 14,
           width: placement === 'right' ? (isExpanded ? '100%' : 'max-content') : '100%',
           maxWidth: placement === 'right' ? (isExpanded ? '100%' : '40%') : '100%',
-          overflow: 'hidden',
-          overflowY: 'auto',
+          overflow: 'auto',
           display: hasLegend ? 'block' : 'none',
           flexShrink: displayMode === 'table' ? 1 : 0,
           minHeight: 0,
@@ -445,14 +445,14 @@ export default function index(props: IProps) {
         {displayMode === 'table' && (
           <div ref={legendEleRef}>
             <Table
+              tableLayout='auto' // 2024-01-10 对齐 grafana 效果，取消 fixed 改成 auto，开启 x 轴滚动条
               rowKey='id'
               size='small'
-              className='scroll-container-table'
               columns={tableColumn}
               dataSource={legendData}
               pagination={false}
               rowClassName={(record) => {
-                return record.disabled ? 'disabled' : '';
+                return record.disabled ? 'renderer-timeseries-legend-table-row disabled' : 'renderer-timeseries-legend-table-row';
               }}
               onRow={(record) => {
                 return {
