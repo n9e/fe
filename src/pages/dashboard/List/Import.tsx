@@ -91,7 +91,6 @@ function Import(props: IProps & ModalWrapProps) {
                     fontSize: 24,
                     position: 'absolute',
                     top: -12,
-                    color: '#1890ff',
                   }}
                 />
               </div>
