@@ -19,6 +19,13 @@ export interface subscribeItem {
   user_groups: IuserItem[];
   rule_name: string;
   rule_id: number;
+  rule_ids: number[]; // 2024-01-12 支持订阅多个告警规则
+  rule_names: string[]; // 2024-01-12 支持订阅多个告警规则
+  busi_groups: {
+    key: string;
+    func: string;
+    value: string; // TODO in 和 not in 时将 array 转为 string 以空格分隔。这里存在问题业务组名称中可能包含空格，后端让保持现在后面有时间再解决
+  }[];
   create_at?: number;
   create_by?: string;
   update_by: string;

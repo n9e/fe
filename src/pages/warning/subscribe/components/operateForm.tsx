@@ -15,11 +15,12 @@
  *
  */
 import React, { useState, useEffect, useCallback, useContext } from 'react';
-import { Form, Card, Select, Col, Button, Row, message, Checkbox, Tooltip, Radio, Modal, Space, InputNumber, Input, Switch } from 'antd';
-import { QuestionCircleFilled, PlusCircleOutlined, EditOutlined, DeleteOutlined, MinusCircleOutlined } from '@ant-design/icons';
+import { Form, Card, Select, Col, Button, Row, message, Checkbox, Tooltip, Radio, Modal, Space, InputNumber, Input, Switch, Tag } from 'antd';
+import { QuestionCircleFilled, PlusCircleOutlined, EditOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router';
+import { Link } from 'react-router-dom';
 import { addSubscribe, editSubscribe, deleteSubscribes } from '@/services/subscribe';
 import { getNotifiesList, getTeamInfoList } from '@/services/manage';
 import { subscribeItem } from '@/store/warningInterface/subscribe';
@@ -34,6 +35,8 @@ import '../index.less';
 
 // @ts-ignore
 import NotifyExtra from 'plus:/parcels/AlertSubscribes/Extra';
+// @ts-ignore
+import NotifyChannelsTpl from 'plus:/parcels/AlertRule/NotifyChannelsTpl';
 
 const { Option } = Select;
 interface Props {
@@ -48,24 +51,26 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
   const { groupedDatasourceList, isPlus, businessGroup } = useContext(CommonStateContext);
   const curBusiId = detail.group_id || businessGroup.id!; // 修改和克隆是用 detail.group_id , 新增用 businessGroup.id
   const [ruleModalShow, setRuleModalShow] = useState<boolean>(false);
-  const [ruleCur, setRuleCur] = useState<any>();
+  const [selectedRules, setSelectedRules] = useState<any[]>([]); // 选中的规则
   const [contactList, setInitContactList] = useState([]);
   const [notifyGroups, setNotifyGroups] = useState<any[]>([]);
   const redefineSeverity = Form.useWatch(['redefine_severity'], form);
   const redefineChannels = Form.useWatch(['redefine_channels'], form);
   const redefineWebhooks = Form.useWatch(['redefine_webhooks'], form);
+  const new_channels = Form.useWatch(['new_channels'], form);
 
   useEffect(() => {
     getNotifyChannel();
     getGroups('');
+    setSelectedRules(
+      _.map(detail.rule_ids, (id, idx) => {
+        return {
+          id,
+          name: detail.rule_names[idx],
+        };
+      }),
+    );
   }, []);
-
-  useEffect(() => {
-    setRuleCur({
-      id: detail.rule_id || 0,
-      name: detail.rule_name,
-    });
-  }, [detail.rule_id]);
 
   const notifyGroupsOptions = (detail.user_groups ? detail.user_groups.filter((item) => !notifyGroups.find((i) => item.id === i.id)) : []).concat(notifyGroups).map((ng: any) => (
     <Option value={String(ng.id)} key={ng.id}>
@@ -100,6 +105,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
         value: Array.isArray(item.value) ? item.value.join(' ') : item.value,
       };
     });
+
     const params = {
       ...values,
       tags,
@@ -107,7 +113,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
       redefine_severity: values.redefine_severity ? 1 : 0,
       redefine_channels: values.redefine_channels ? 1 : 0,
       redefine_webhooks: values.redefine_webhooks ? 1 : 0,
-      rule_id: ruleCur.id,
+      rule_ids: _.map(selectedRules, 'id'),
       user_group_ids: values.user_group_ids ? values.user_group_ids.join(' ') : '',
       new_channels: values.new_channels ? values.new_channels.join(' ') : '',
       cluster: '0',
@@ -126,11 +132,8 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
   };
 
   const subscribeRule = (val) => {
+    setSelectedRules(val);
     setRuleModalShow(false);
-    setRuleCur(val);
-    form.setFieldsValue({
-      rile_id: val.id || 0,
-    });
   };
 
   return (
@@ -146,12 +149,18 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
         onFinish={onFinish}
         initialValues={{
           ...detail,
+          busi_groups: _.map(detail.busi_groups, (item) => {
+            return {
+              ...item,
+              value: _.includes(['in', 'not in'], item.func) ? item.value.split(' ') : item.value,
+            };
+          }),
           severities: detail.severities || [1, 2, 3],
           redefine_severity: detail?.redefine_severity ? true : false,
           redefine_channels: detail?.redefine_channels ? true : false,
           redefine_webhooks: detail?.redefine_webhooks ? true : false,
           user_group_ids: detail?.user_group_ids ? detail?.user_group_ids?.split(' ') : [],
-          new_channels: detail?.new_channels?.split(' '),
+          new_channels: detail?.new_channels ? detail?.new_channels?.split(' ') : [],
         }}
       >
         <Card {...panelBaseProps} size='small' title={t('basic_configs')}>
@@ -208,26 +217,28 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
           </Form.Item>
 
           <Form.Item label={t('sub_rule_name')}>
-            {!!ruleCur?.id && (
-              <Button
-                type='primary'
-                ghost
-                style={{ marginRight: '8px' }}
+            <Space>
+              {_.map(selectedRules, (item) => (
+                <Tag
+                  color='purple'
+                  key={item.id}
+                  closable
+                  onClose={() => {
+                    setSelectedRules(selectedRules.filter((row) => row.id !== item.id));
+                  }}
+                >
+                  <Link to={`/alert-rules/edit/${item.id}`} target='_blank'>
+                    {item.name}
+                  </Link>
+                </Tag>
+              ))}
+              <EditOutlined
+                style={{ cursor: 'pointer', fontSize: '18px' }}
                 onClick={() => {
-                  ruleCur?.id && history.push(`/alert-rules/edit/${ruleCur?.id}`);
+                  setRuleModalShow(true);
                 }}
-              >
-                {ruleCur?.name}
-              </Button>
-            )}
-
-            <EditOutlined
-              style={{ cursor: 'pointer', fontSize: '18px' }}
-              onClick={() => {
-                setRuleModalShow(true);
-              }}
-            />
-            {!!ruleCur?.id && <DeleteOutlined style={{ cursor: 'pointer', fontSize: '18px', marginLeft: 5 }} onClick={() => subscribeRule({})} />}
+              />
+            </Space>
           </Form.Item>
 
           <Form.List name='busi_groups' initialValue={[]}>
@@ -313,17 +324,18 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
               </Form.Item>
             </div>
           </div>
-          <div style={{ margin: '16px 0' }}>
-            <Space>
-              {t('redefine_channels')}
-              <Form.Item name='redefine_channels' valuePropName='checked' noStyle>
-                <Switch />
-              </Form.Item>
-            </Space>
+          <div className='mt16'>
+            <div className='mb16'>
+              <Space>
+                {t('redefine_channels')}
+                <Form.Item name='redefine_channels' valuePropName='checked' noStyle>
+                  <Switch />
+                </Form.Item>
+              </Space>
+            </div>
             <div
               style={{
                 display: redefineChannels ? 'block' : 'none',
-                marginTop: 4,
               }}
             >
               <Form.Item name='new_channels' noStyle>
@@ -337,9 +349,12 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
                   })}
                 </Checkbox.Group>
               </Form.Item>
+              <div className='mt16'>
+                <NotifyChannelsTpl contactList={contactList} notify_channels={new_channels} name={['extra_config', 'custom_notify_tpl']} />
+              </div>
             </div>
           </div>
-          <div style={{ margin: '16px 0' }}>
+          <div className='mb16'>
             <Space>
               {t('redefine_webhooks')}
               <Form.Item name='redefine_webhooks' valuePropName='checked' noStyle>
@@ -417,6 +432,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
           setRuleModalShow(false);
         }}
         subscribe={subscribeRule}
+        selectedRules={selectedRules}
       />
     </main>
   );
