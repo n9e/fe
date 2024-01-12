@@ -3,6 +3,7 @@ const zh_HK = {
   search_placeholder: '搜尋規則、標籤、接收組',
   rule_name: '規則名稱',
   sub_rule_name: '訂閱告警規則',
+  sub_rule_selected: '已選規則',
   tags: '訂閱標籤',
   user_groups: '告警接收組',
   tag: {
