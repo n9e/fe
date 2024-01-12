@@ -97,10 +97,10 @@ const Resource: React.FC = () => {
       title: t('common:table.operations'),
       width: '100px',
       render: (text: string, record) => (
-        <a
-          style={{
-            color: 'red',
-          }}
+        <Button
+          type='link'
+          className='p0'
+          danger
           onClick={() => {
             let params = {
               ids: [record.id],
@@ -118,7 +118,7 @@ const Resource: React.FC = () => {
           }}
         >
           {t('common:btn.delete')}
-        </a>
+        </Button>
       ),
     },
   ];

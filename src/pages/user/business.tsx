@@ -68,14 +68,14 @@ const Resource: React.FC = () => {
       title: t('common:table.operations'),
       width: '100px',
       render: (text: string, record) => (
-        <a
-          style={{
-            color: memberList.length > 1 ? 'red' : '#00000040',
-          }}
+        <Button
+          type='link'
+          danger={memberList.length > 1}
+          disabled={memberList.length <= 1}
           onClick={() => {
             if (memberList.length <= 1) return;
 
-            let params = [
+            const params = [
               {
                 user_group_id: record['user_group'].id,
                 busi_group_id: teamId,
@@ -94,7 +94,7 @@ const Resource: React.FC = () => {
           }}
         >
           {t('common:btn.delete')}
-        </a>
+        </Button>
       ),
     },
   ];
