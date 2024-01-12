@@ -29,7 +29,7 @@ function saveLess(filePath, filename) {
         'geekblue-base': '#2b4acb',
         'lime-base': '#8bbb11',
         'gold-base': '#d89614',
-        'primary-color': '#6C53B1',
+        'primary-color': '#8162dc',
         'border-color-base': 'rgb(79, 82, 99)',
         'border-color-split': 'rgb(57, 60, 77)',
         'component-background': 'rgb(39, 42, 56)',
