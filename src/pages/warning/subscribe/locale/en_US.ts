@@ -3,6 +3,7 @@ const en_US = {
   search_placeholder: 'Search rules, tags, and receiving groups',
   rule_name: 'Rule Name',
   sub_rule_name: 'Subscribe Alert Rule',
+  sub_rule_selected: 'Selected Rules',
   tags: 'Tags',
   user_groups: 'Receiving Group',
   tag: {
