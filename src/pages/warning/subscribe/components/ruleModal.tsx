@@ -15,7 +15,7 @@
  *
  */
 import React, { useState, useEffect, useCallback, useContext } from 'react';
-import { Input, Table, Switch, Tag, Select, Modal } from 'antd';
+import { Input, Table, Switch, Tag, Select, Modal, Space } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -35,9 +35,11 @@ interface props {
   visible: boolean;
   ruleModalClose: Function;
   subscribe: Function;
+  selectedRules: any[];
 }
 
-const ruleModal: React.FC<props> = ({ visible, ruleModalClose, subscribe }) => {
+const ruleModal: React.FC<props> = (props) => {
+  const { visible, ruleModalClose, subscribe } = props;
   const { t } = useTranslation('alertSubscribes');
   const pagination = usePagination({ PAGESIZE_KEY: 'alert-rules-pagesize' });
   const { businessGroup, datasourceList } = useContext(CommonStateContext);
@@ -47,6 +49,7 @@ const ruleModal: React.FC<props> = ({ visible, ruleModalClose, subscribe }) => {
   const [currentStrategyData, setCurrentStrategyData] = useState([]);
   const [bgid, setBgid] = useState(curBusiId);
   const [query, setQuery] = useState<string>('');
+  const [selectedRules, setSelectedRules] = useState<any[]>([]);
 
   useEffect(() => {
     setBgid(curBusiId);
@@ -63,6 +66,10 @@ const ruleModal: React.FC<props> = ({ visible, ruleModalClose, subscribe }) => {
   useEffect(() => {
     filterData();
   }, [query, currentStrategyDataAll]);
+
+  useEffect(() => {
+    setSelectedRules(props.selectedRules);
+  }, [props.selectedRules]);
 
   // 获取业务组列表
   const getTeamList = (query: string) => {
@@ -237,26 +244,6 @@ const ruleModal: React.FC<props> = ({ visible, ruleModalClose, subscribe }) => {
         />
       ),
     },
-    {
-      title: t('common:table.operations'),
-      dataIndex: 'operator',
-      fixed: 'right',
-      width: 100,
-      render: (data, record) => {
-        return (
-          <div className='table-operator-area'>
-            <div
-              className='table-operator-area-normal'
-              onClick={() => {
-                handleSubscribe(record);
-              }}
-            >
-              {t('subscribe_btn')}
-            </div>
-          </div>
-        );
-      },
-    },
   ];
 
   const handleSubscribe = (record) => {
@@ -270,15 +257,41 @@ const ruleModal: React.FC<props> = ({ visible, ruleModalClose, subscribe }) => {
   return (
     <>
       <Modal
-        title={t('sub_rule_name')}
-        footer=''
+        destroyOnClose
         forceRender
+        width='80%'
+        title={t('sub_rule_name')}
         visible={visible}
         onCancel={() => {
           modalClose();
+          setSelectedRules([]);
         }}
-        width={'80%'}
+        onOk={() => {
+          handleSubscribe(selectedRules);
+          setSelectedRules([]);
+        }}
       >
+        {!_.isEmpty(selectedRules) && (
+          <div className='mb16'>
+            <Space>
+              <span>{t('sub_rule_selected')}: </span>
+              {_.map(selectedRules, (item) => (
+                <Tag
+                  color='purple'
+                  key={item.id}
+                  closable
+                  onClose={() => {
+                    setSelectedRules(selectedRules.filter((row) => row.id !== item.id));
+                  }}
+                >
+                  <Link to={`/alert-rules/edit/${item.id}`} target='_blank'>
+                    {item.name}
+                  </Link>
+                </Tag>
+              ))}
+            </Space>
+          </div>
+        )}
         <div>
           <Select
             style={{ width: '280px' }}
@@ -298,8 +311,21 @@ const ruleModal: React.FC<props> = ({ visible, ruleModalClose, subscribe }) => {
           </Select>
           <Input style={{ marginLeft: 10, width: '280px' }} onPressEnter={onSearchQuery} prefix={<SearchOutlined />} placeholder={t('alertRules:search_placeholder')} />
         </div>
-        <div className='rule_modal_table'>
-          <Table size='small' rowKey='id' pagination={pagination} dataSource={currentStrategyData} columns={columns} />
+        <div className='rule_modal_table mt16'>
+          <Table
+            size='small'
+            rowKey='id'
+            pagination={pagination}
+            dataSource={currentStrategyData}
+            columns={columns}
+            rowSelection={{
+              type: 'checkbox',
+              selectedRowKeys: selectedRules.map((row) => row.id),
+              onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
+                setSelectedRules(_.unionBy(selectedRules, selectedRows, 'id'));
+              },
+            }}
+          />
         </div>
       </Modal>
     </>

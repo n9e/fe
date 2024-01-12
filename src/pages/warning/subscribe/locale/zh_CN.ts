@@ -3,6 +3,7 @@ const zh_CN = {
   search_placeholder: '搜索规则、标签、接收组',
   rule_name: '规则名称',
   sub_rule_name: '订阅告警规则',
+  sub_rule_selected: '已选规则',
   tags: '订阅标签',
   user_groups: '告警接收组',
   tag: {
