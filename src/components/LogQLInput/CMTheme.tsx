@@ -31,7 +31,7 @@ export const baseTheme = EditorView.theme({
       overflowY: 'hidden',
     },
     '& > ul > li[aria-selected]': {
-      backgroundColor: '#a7d0f2',
+      backgroundColor: '##1d4f78',
       color: 'unset',
     },
     minWidth: '30%',
@@ -81,7 +81,7 @@ export const baseTheme = EditorView.theme({
   '.cm-completionMatchedText': {
     textDecoration: 'none',
     fontWeight: 'bold',
-    color: '#0066bf',
+    color: '#3ba1fb',
   },
 
   '.cm-selectionMatch': {
@@ -104,7 +104,7 @@ export const baseTheme = EditorView.theme({
     fontFamily: 'codicon',
     paddingRight: '0',
     opacity: '1',
-    color: '#007acc',
+    color: '#2ca9fd',
   },
 
   '.cm-completionIcon-function, .cm-completionIcon-method': {
@@ -122,7 +122,7 @@ export const baseTheme = EditorView.theme({
   },
   '.cm-completionIcon-constant': {
     '&:after': { content: "'\\eb5f'" },
-    color: '#007acc',
+    color: '#2ca9fd',
   },
   '.cm-completionIcon-type': {
     '&:after': { content: "'𝑡'" },
@@ -164,17 +164,17 @@ export const lightTheme = EditorView.theme(
     },
 
     '.cm-tooltip.cm-completionInfo': {
-      backgroundColor: '#d6ebff',
+      backgroundColor: '#f5f5f5',
     },
 
     '.cm-tooltip > .cm-completionInfo.cm-completionInfo-right': {
       '&:before': {
-        borderRightColor: '#d6ebff',
+        borderRightColor: '#f5f5f5',
       },
     },
     '.cm-tooltip > .cm-completionInfo.cm-completionInfo-left': {
       '&:before': {
-        borderLeftColor: '#d6ebff',
+        borderLeftColor: '#f5f5f5',
       },
     },
 

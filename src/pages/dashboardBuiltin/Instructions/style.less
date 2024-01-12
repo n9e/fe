@@ -7,10 +7,16 @@
   }
   table th,table td {
     padding: 6px 13px;
-    border: 1px solid #dfe2e5;
+    border: 1px solid var(--fc-border-color);
   }
   table tr:nth-child(2n) {
-    background-color: #f6f8fa;
+    background-color: var(--fc-fill-3);
+  }
+  // TODO toml [[instances]] instances 会被识别为表格
+  pre {
+    .table {
+      display: unset !important;
+    }
   }
 }
 
@@ -24,10 +30,10 @@
     }
     table th,table td {
       padding: 6px 13px;
-      border: 1px solid #dfe2e5;
+      border: 1px solid var(--fc-border-color);
     }
     table tr:nth-child(2n) {
-      background-color: #f6f8fa;
+      background-color: var(--fc-fill-3);
     }
   }
 }
