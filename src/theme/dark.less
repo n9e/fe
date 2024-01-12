@@ -299,5 +299,19 @@
     border: 0 none;
     color: @primary-color;
   }
+  .ant-slider-rail {
+    background-color: var(--fc-fill-3);
+  }
+  .ant-slider-track {
+    background-color: @primary-color;
+  }
+  .ant-slider:hover {
+    .ant-slider-rail {
+      background-color: var(--fc-fill-3);
+    }
+    .ant-slider-track {
+      background-color: fade(@primary-color, 80%);
+    }
+  }
   /* antd */
 }
