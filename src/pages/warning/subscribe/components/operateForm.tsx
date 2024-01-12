@@ -105,6 +105,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
         value: Array.isArray(item.value) ? item.value.join(' ') : item.value,
       };
     });
+
     const params = {
       ...values,
       tags,
@@ -159,7 +160,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
           redefine_channels: detail?.redefine_channels ? true : false,
           redefine_webhooks: detail?.redefine_webhooks ? true : false,
           user_group_ids: detail?.user_group_ids ? detail?.user_group_ids?.split(' ') : [],
-          new_channels: detail?.new_channels?.split(' '),
+          new_channels: detail?.new_channels ? detail?.new_channels?.split(' ') : [],
         }}
       >
         <Card {...panelBaseProps} size='small' title={t('basic_configs')}>
