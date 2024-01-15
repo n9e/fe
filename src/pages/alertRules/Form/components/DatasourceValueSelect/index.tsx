@@ -128,7 +128,6 @@ export default function index({ setFieldsValue, cate, datasourceList, mode, requ
           message: '', // label 右侧已经显示，这里就不显示 error msg
         },
       ]}
-      required
     >
       <Select
         mode={mode}

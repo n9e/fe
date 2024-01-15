@@ -149,6 +149,14 @@ function Card(props: Props, ref) {
       },
     },
     {
+      title: t('first_trigger_time'),
+      dataIndex: 'first_trigger_time',
+      width: 120,
+      render(value) {
+        return moment(value * 1000).format('YYYY-MM-DD HH:mm:ss');
+      },
+    },
+    {
       title: t('trigger_time'),
       dataIndex: 'trigger_time',
       width: 120,
@@ -211,7 +219,7 @@ function Card(props: Props, ref) {
   ];
 
   if (import.meta.env.VITE_IS_PRO === 'true') {
-    columns.splice(4, 0, {
+    columns.splice(5, 0, {
       title: t('status'),
       dataIndex: 'status',
       width: 100,
@@ -219,7 +227,7 @@ function Card(props: Props, ref) {
         return t(`status_${value}`) as string;
       },
     });
-    columns.splice(5, 0, {
+    columns.splice(6, 0, {
       title: t('claimant'),
       dataIndex: 'claimant',
       width: 100,

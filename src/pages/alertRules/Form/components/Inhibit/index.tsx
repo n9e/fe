@@ -15,7 +15,8 @@
  *
  */
 import React from 'react';
-import { Form, Space, Switch } from 'antd';
+import { Form, Space, Switch, Tooltip } from 'antd';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
 interface IProps {
@@ -34,6 +35,9 @@ export default function index(props: IProps) {
           return (
             <Space>
               {t('inhibit')}
+              <Tooltip title={t('inhibit_tip')}>
+                <QuestionCircleOutlined />
+              </Tooltip>
               <Switch
                 checked={getFieldValue(['rule_config', 'inhibit'])}
                 onChange={(checked) => {
