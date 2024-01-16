@@ -216,7 +216,7 @@ const Resource: React.FC = () => {
   return (
     <PageLayout title={t('team.title')} icon={<UserOutlined />}>
       <div className='user-manage-content'>
-        <div style={{ display: 'flex', height: '100%' }}>
+        <div style={{ display: 'flex', gap: 10, height: '100%', background: 'unset' }}>
           <div className='left-tree-area'>
             <div className='sub-title'>
               {t('team.list')}
