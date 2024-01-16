@@ -31,6 +31,30 @@
   /* 其他 */
   --fc-primary-color: var(--fc-text-link);
   --fc-border-color: var(--fc-fill-4);
+
+  /* 红色 */
+  --fc-red-1-color: #fff1f0;
+  --fc-red-2-color: #ffccc7;
+  --fc-red-3-color: #ffa39e;
+  --fc-red-4-color: #ff7875;
+  --fc-red-5-color: #ff4d4f;
+  --fc-red-6-color: #f5222d;
+
+  /* 橘色 */
+  --fc-orange-1-color: #fff7e6;
+  --fc-orange-2-color: #ffe7ba;
+  --fc-orange-3-color: #ffd591;
+  --fc-orange-4-color: #ffc069;
+  --fc-orange-5-color: #ffa940;
+  --fc-orange-6-color: #fa8c16;
+
+  /* 金色 */
+  --fc-gold-1-color: #fffbe6;
+  --fc-gold-2-color: #fff1b8;
+  --fc-gold-3-color: #ffe58f;
+  --fc-gold-4-color: #ffd666;
+  --fc-gold-5-color: #ffc53d;
+  --fc-gold-6-color: #faad14;
 }
 
 /* -------------------  分割线 ------------------- */
@@ -62,4 +86,28 @@
   /* 其他 */
   --fc-primary-color: var(--fc-text-link);
   --fc-border-color: var(--fc-fill-4);
+
+  /* 红色 */
+  --fc-red-1-color: #2a1215;
+  --fc-red-2-color: #431418;
+  --fc-red-3-color: #58181c;
+  --fc-red-4-color: #6f1a20;
+  --fc-red-5-color: #851c24;
+  --fc-red-6-color: #9b1e28;
+
+  /* 橘色 */
+  --fc-orange-1-color: #2a1a0e;
+  --fc-orange-2-color: #431f11;
+  --fc-orange-3-color: #582414;
+  --fc-orange-4-color: #6f2917;
+  --fc-orange-5-color: #85331a;
+  --fc-orange-6-color: #9b3d1d;
+
+  /* 金色 */
+  --fc-gold-1-color: #2a1c0e;
+  --fc-gold-2-color: #432011;
+  --fc-gold-3-color: #582714;
+  --fc-gold-4-color: #6f2b17;
+  --fc-gold-5-color: #853f1a;
+  --fc-gold-6-color: #9b531d;
 }
