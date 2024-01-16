@@ -10,11 +10,8 @@ export const baseTheme = EditorView.theme({
   },
   '.cm-scroller': {
     overflow: 'hidden',
-    fontFamily: 'verdana, Microsoft YaHei, Consolas, Deja Vu Sans Mono, Bitstream Vera Sans Mono;',
   },
   '.cm-matchingBracket': {
-    color: '#000',
-    backgroundColor: '#dedede',
     fontWeight: 'bold',
     outline: '1px dashed transparent',
   },
@@ -23,7 +20,6 @@ export const baseTheme = EditorView.theme({
   '.cm-tooltip.cm-tooltip-autocomplete': {
     '& > ul': {
       maxHeight: '350px',
-      fontFamily: '"DejaVu Sans Mono", monospace',
       maxWidth: 'unset',
     },
     '& > ul > li': {
@@ -45,7 +41,6 @@ export const baseTheme = EditorView.theme({
   '.cm-tooltip.cm-completionInfo': {
     marginTop: '-11px',
     padding: '10px',
-    fontFamily: "'Open Sans', 'Lucida Sans Unicode', 'Lucida Grande', sans-serif;",
     border: 'none',
     minWidth: '250px',
     maxWidth: 'min-content',
@@ -101,7 +96,6 @@ export const baseTheme = EditorView.theme({
     marginRight: '10px',
     verticalAlign: 'top',
     '&:after': { content: "'\\ea88'" },
-    fontFamily: 'codicon',
     paddingRight: '0',
     opacity: '1',
     color: '#2ca9fd',

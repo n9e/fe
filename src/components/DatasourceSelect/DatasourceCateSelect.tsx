@@ -21,7 +21,6 @@ export const ProSvg = ({ type = 'normal' }) => (
       padding: '2px 6px',
       fontSize: 12,
       fontWeight: 'bolder',
-      fontFamily: 'PingFangSC-Regular',
       lineHeight: 1,
       transform: 'scale(0.8)',
     }}
