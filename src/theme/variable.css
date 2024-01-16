@@ -65,6 +65,14 @@
   --fc-green-4-color: #95de64;
   --fc-green-5-color: #73d13d;
   --fc-green-6-color: #52c41a;
+
+  /* 紫色 */
+  --fc-purple-1-color: #f9f0ff;
+  --fc-purple-2-color: #efdbff;
+  --fc-purple-3-color: #d3adf7;
+  --fc-purple-4-color: #b37feb;
+  --fc-purple-5-color: #9254de;
+  --fc-purple-6-color: #722ed1;
 }
 
 /* -------------------  分割线 ------------------- */
@@ -78,7 +86,7 @@
   --fc-fill-5: rgb(64 67 84);
   --fc-fill-6: rgb(71 74 91);
   --fc-fill-7: rgb(79 82 99);
-  /* --fc-fill-primary: 108 83 177; */
+  --fc-fill-primary: rgb(108 83 177);
   --fc-fill-success: rgb(63 196 83);
   --fc-fill-warning: rgb(230 198 39);
   --fc-fill-alert: rgb(250 125 0);
@@ -130,4 +138,12 @@
   --fc-green-4-color: #336f33;
   --fc-green-5-color: #3d853d;
   --fc-green-6-color: #479b47;
+
+  /* 紫色 */
+  --fc-purple-1-color: #1a132a;
+  --fc-purple-2-color: #261f43;
+  --fc-purple-3-color: #2f2958;
+  --fc-purple-4-color: #38336f;
+  --fc-purple-5-color: #414d85;
+  --fc-purple-6-color: #4a579b;
 }
