@@ -20,17 +20,6 @@ import { RequestMethod } from '@/store/common';
 import { N9E_PATHNAME } from '@/utils/constant';
 import { SearchTraceType, SearchTraceIDType } from './type';
 
-export const getDataSourceList = () => {
-  return request(`/api/v1/datasource/list`, {
-    method: RequestMethod.Post,
-    data: {
-      p: 1,
-      limit: 100,
-      category: 'tracing',
-    },
-  }).then((res) => res.data.items.filter((item) => item.status === 'enabled'));
-};
-
 export const getTraceServices = (data_source_id) => {
   return request(`/api/${N9E_PATHNAME}/proxy/${data_source_id}/api/services`, {
     method: RequestMethod.Get,
