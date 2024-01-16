@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import _ from 'lodash';
-import { Select, Space } from 'antd';
+import { Select, Space, Empty } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { RadialGraph } from '@ant-design/graphs';
 import PageLayout from '@/components/pageLayout';
@@ -8,7 +8,6 @@ import { CommonStateContext } from '@/App';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { getTraceDependencies } from '../services';
 import { getRadialData } from './utils';
-import Empty from 'antd/es/empty';
 
 export default function index() {
   const { t } = useTranslation('trace');
@@ -122,7 +121,7 @@ export default function index() {
               </Select>
             </InputGroupWithFormItem>
           </Space>
-          {!_.isEmpty(data) ? <RadialGraph {...config} /> : <Empty />}
+          {!_.isEmpty(data) ? <RadialGraph {...config} /> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
         </div>
       </div>
     </PageLayout>
