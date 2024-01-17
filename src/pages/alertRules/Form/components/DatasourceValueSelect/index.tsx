@@ -20,7 +20,7 @@ import { WarningOutlined, ReloadOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
-import { getDataSourceList } from '@/pages/datasource/services';
+import { getDatasourceBriefList } from '@/services/common';
 
 export const DATASOURCE_ALL = 0;
 
@@ -54,7 +54,7 @@ export default function index({ setFieldsValue, cate, datasourceList, mode, requ
   const datasourceIds = Form.useWatch('datasource_ids');
   const invalidDatasourceIds = getInvalidDatasourceIds(datasourceIds, datasourceList, fullDatasourceList);
   const fetchDatasourceList = () => {
-    getDataSourceList().then((res) => {
+    getDatasourceBriefList().then((res) => {
       setFullDatasourceList(res);
     });
   };
