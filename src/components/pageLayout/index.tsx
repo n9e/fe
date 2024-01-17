@@ -175,9 +175,11 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                       {curLanguage}
                     </a>
                   </Dropdown>
-                  <div style={{ marginRight: 8 }}>
-                    <DarkModeSelect />
-                  </div>
+                  {import.meta.env.VITE_IS_ENT !== 'true' && (
+                    <div style={{ marginRight: 8 }}>
+                      <DarkModeSelect />
+                    </div>
+                  )}
                   <Dropdown overlay={menu} trigger={['click']}>
                     <span className='avator' style={{ cursor: 'pointer' }}>
                       <img src={profile.portrait || '/image/avatar1.png'} alt='' />
