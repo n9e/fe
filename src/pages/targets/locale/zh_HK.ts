@@ -27,7 +27,7 @@ const zh_HK = {
     3分鐘內沒有心跳：紅色
   `,
   remote_addr: '來源 IP',
-  remote_addr_tip: '來源 IP 是從 HTTP Header 中獲取的，如果經過了代理，不一定是真是的來源IP',
+  remote_addr_tip: '來源 IP 是從 HTTP Header 中獲取的，如果經過了代理，不一定是真实的來源IP',
   agent_version: 'Agent 版本',
   note: '備註',
   unknown_tip: '機器元信息的展示，categraf 的版本需要高於 0.2.35',
