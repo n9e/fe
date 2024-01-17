@@ -65,8 +65,8 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
         _step = target.step;
       }
       // TODO: 消除毛刺？
-      start = start - (start % _step!);
-      end = end - (end % _step!);
+      // start = start - (start % _step!);
+      // end = end - (end % _step!);
 
       const realExpr = variableConfig
         ? replaceFieldWithVariable(
