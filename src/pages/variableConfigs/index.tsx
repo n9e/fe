@@ -53,6 +53,7 @@ export default function index() {
           }}
         >
           <div
+            className='mb8'
             style={{
               display: 'flex',
               justifyContent: 'space-between',
