@@ -102,7 +102,7 @@ export default function index() {
   return (
     <PageLayout title={t('title')} icon={<SafetyCertificateOutlined />}>
       <div className='user-manage-content builtin-container'>
-        <div style={{ display: 'flex', height: '100%' }}>
+        <div style={{ display: 'flex', gap: 10, height: '100%', background: 'unset' }}>
           <div className='left-tree-area'>
             <div className='sub-title'>{t('cate')}</div>
             <div style={{ display: 'flex', margin: '5px 0px 12px' }}>
@@ -168,160 +168,162 @@ export default function index() {
             />
           </div>
           <div className='resource-table-content'>
-            <Tabs>
-              <Tabs.TabPane tab={t('tab_list')} key='list'>
-                <>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Space>
-                      <Select
-                        style={{ width: 200 }}
-                        placeholder={t('group')}
-                        value={group}
-                        onChange={(val) => {
-                          updateGroup(val);
-                        }}
-                      >
-                        {_.map(_.groupBy(curRules, '__group__'), (_rules, group) => {
-                          return (
-                            <Select.Option key={group} value={group}>
-                              {group}
-                            </Select.Option>
-                          );
-                        })}
-                      </Select>
-                      <Input
-                        prefix={<SearchOutlined />}
-                        value={ruleSearch}
-                        onChange={(e) => {
-                          updateRuleSearch(e.target.value);
-                        }}
-                        placeholder={t('common:search_placeholder')}
-                        style={{ width: 300 }}
-                        allowClear
-                      />
-                    </Space>
-                    <Space>
-                      <Button
-                        onClick={() => {
-                          Import({
-                            data: JSON.stringify(selectedRows.current, null, 4),
-                            busiGroups,
-                            groupedDatasourceList,
-                          });
-                        }}
-                      >
-                        {t('common:btn.batch_clone')}
-                      </Button>
-                      <Button
-                        onClick={() => {
-                          Export({
-                            data: JSON.stringify(selectedRows.current, null, 4),
-                          });
-                        }}
-                      >
-                        {t('common:btn.batch_export')}
-                      </Button>
-                    </Space>
-                  </div>
-                  <Table
-                    className='mt8'
-                    size='small'
-                    rowKey={(record) => `${record.__cate__}-${record.__group__}-${record.name}`}
-                    dataSource={filteredRules}
-                    rowSelection={{
-                      selectedRowKeys,
-                      onChange: (selectedRowKeys: string[], rows: RuleType[]) => {
-                        setSelectedRowKeys(selectedRowKeys);
-                        selectedRows.current = rows;
-                      },
-                    }}
-                    columns={[
-                      {
-                        title: t('name'),
-                        dataIndex: 'name',
-                        key: 'name',
-                      },
-                      {
-                        title: t('append_tags'),
-                        dataIndex: 'append_tags',
-                        key: 'append_tags',
-                        render: (val) => {
-                          return (
-                            <Space size='middle'>
-                              {_.map(val, (tag, idx) => {
-                                return (
-                                  <Tag
-                                    key={idx}
-                                    color='purple'
-                                    style={{ cursor: 'pointer' }}
-                                    onClick={() => {
-                                      const queryItem = _.compact(_.split(ruleSearch, ' '));
-                                      if (queryItem.includes(tag)) return;
-                                      setRuleSearch((searchVal) => {
-                                        if (searchVal) {
-                                          return searchVal + ' ' + tag;
-                                        }
-                                        return tag;
-                                      });
-                                    }}
-                                  >
-                                    {tag}
-                                  </Tag>
-                                );
-                              })}
-                            </Space>
-                          );
+            <div className='resource-table-content-body'>
+              <Tabs>
+                <Tabs.TabPane tab={t('tab_list')} key='list'>
+                  <>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <Space>
+                        <Select
+                          style={{ width: 200 }}
+                          placeholder={t('group')}
+                          value={group}
+                          onChange={(val) => {
+                            updateGroup(val);
+                          }}
+                        >
+                          {_.map(_.groupBy(curRules, '__group__'), (_rules, group) => {
+                            return (
+                              <Select.Option key={group} value={group}>
+                                {group}
+                              </Select.Option>
+                            );
+                          })}
+                        </Select>
+                        <Input
+                          prefix={<SearchOutlined />}
+                          value={ruleSearch}
+                          onChange={(e) => {
+                            updateRuleSearch(e.target.value);
+                          }}
+                          placeholder={t('common:search_placeholder')}
+                          style={{ width: 300 }}
+                          allowClear
+                        />
+                      </Space>
+                      <Space>
+                        <Button
+                          onClick={() => {
+                            Import({
+                              data: JSON.stringify(selectedRows.current, null, 4),
+                              busiGroups,
+                              groupedDatasourceList,
+                            });
+                          }}
+                        >
+                          {t('common:btn.batch_clone')}
+                        </Button>
+                        <Button
+                          onClick={() => {
+                            Export({
+                              data: JSON.stringify(selectedRows.current, null, 4),
+                            });
+                          }}
+                        >
+                          {t('common:btn.batch_export')}
+                        </Button>
+                      </Space>
+                    </div>
+                    <Table
+                      className='mt8'
+                      size='small'
+                      rowKey={(record) => `${record.__cate__}-${record.__group__}-${record.name}`}
+                      dataSource={filteredRules}
+                      rowSelection={{
+                        selectedRowKeys,
+                        onChange: (selectedRowKeys: string[], rows: RuleType[]) => {
+                          setSelectedRowKeys(selectedRowKeys);
+                          selectedRows.current = rows;
                         },
-                      },
-                      {
-                        title: t('common:table.operations'),
-                        width: 120,
-                        render: (record) => {
-                          const cateValue = encodeURIComponent(active?.name || record?.__cate__);
-                          const nameValue = encodeURIComponent(record?.name);
-                          return (
-                            <Space>
-                              <Link
-                                to={{
-                                  pathname: '/alert-rules-built-in/detail',
-                                  search: `?cate=${cateValue}&name=${nameValue}`,
-                                }}
-                              >
-                                {t('common:btn.view')}
-                              </Link>
-                              <a
-                                onClick={() => {
-                                  Import({
-                                    data: JSON.stringify(record, null, 4),
-                                    busiGroups,
-                                    groupedDatasourceList,
-                                  });
-                                }}
-                              >
-                                {t('common:btn.clone')}
-                              </a>
-                              <a
-                                onClick={() => {
-                                  Export({
-                                    data: JSON.stringify([record], null, 4),
-                                  });
-                                }}
-                              >
-                                {t('common:btn.export')}
-                              </a>
-                            </Space>
-                          );
+                      }}
+                      columns={[
+                        {
+                          title: t('name'),
+                          dataIndex: 'name',
+                          key: 'name',
                         },
-                      },
-                    ]}
-                    pagination={pagination}
-                  />
-                </>
-              </Tabs.TabPane>
-              <Tabs.TabPane tab={t('tab_instructions')} key='makedown'>
-                <Instructions name={(query.cate ? query.cate : active?.name) as string} />
-              </Tabs.TabPane>
-            </Tabs>
+                        {
+                          title: t('append_tags'),
+                          dataIndex: 'append_tags',
+                          key: 'append_tags',
+                          render: (val) => {
+                            return (
+                              <Space size='middle'>
+                                {_.map(val, (tag, idx) => {
+                                  return (
+                                    <Tag
+                                      key={idx}
+                                      color='purple'
+                                      style={{ cursor: 'pointer' }}
+                                      onClick={() => {
+                                        const queryItem = _.compact(_.split(ruleSearch, ' '));
+                                        if (queryItem.includes(tag)) return;
+                                        setRuleSearch((searchVal) => {
+                                          if (searchVal) {
+                                            return searchVal + ' ' + tag;
+                                          }
+                                          return tag;
+                                        });
+                                      }}
+                                    >
+                                      {tag}
+                                    </Tag>
+                                  );
+                                })}
+                              </Space>
+                            );
+                          },
+                        },
+                        {
+                          title: t('common:table.operations'),
+                          width: 120,
+                          render: (record) => {
+                            const cateValue = encodeURIComponent(active?.name || record?.__cate__);
+                            const nameValue = encodeURIComponent(record?.name);
+                            return (
+                              <Space>
+                                <Link
+                                  to={{
+                                    pathname: '/alert-rules-built-in/detail',
+                                    search: `?cate=${cateValue}&name=${nameValue}`,
+                                  }}
+                                >
+                                  {t('common:btn.view')}
+                                </Link>
+                                <a
+                                  onClick={() => {
+                                    Import({
+                                      data: JSON.stringify(record, null, 4),
+                                      busiGroups,
+                                      groupedDatasourceList,
+                                    });
+                                  }}
+                                >
+                                  {t('common:btn.clone')}
+                                </a>
+                                <a
+                                  onClick={() => {
+                                    Export({
+                                      data: JSON.stringify([record], null, 4),
+                                    });
+                                  }}
+                                >
+                                  {t('common:btn.export')}
+                                </a>
+                              </Space>
+                            );
+                          },
+                        },
+                      ]}
+                      pagination={pagination}
+                    />
+                  </>
+                </Tabs.TabPane>
+                <Tabs.TabPane tab={t('tab_instructions')} key='makedown'>
+                  <Instructions name={(query.cate ? query.cate : active?.name) as string} />
+                </Tabs.TabPane>
+              </Tabs>
+            </div>
           </div>
         </div>
       </div>
