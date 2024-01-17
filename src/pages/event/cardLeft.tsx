@@ -102,7 +102,7 @@ export default function CardLeft(props: Props) {
   };
 
   return (
-    <div className='left-area' style={{ width: 240, marginRight: 10 }}>
+    <div className='n9e-biz-group-container' style={{ width: 240, marginRight: 10 }}>
       <div className='event-page-title'>
         <span>{t('aggregate_rule')}</span>
         <a onClick={() => setVisible(true)}>

@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { getBusiGroups } from '@/services/common';
 import { CommonStateContext } from '@/App';
 import { listToTree2, getCollapsedKeys } from './utils';
-import './style.less';
+import '@/components/BusinessGroup/style.less';
 
 export { listToTree2, getCollapsedKeys };
 
@@ -76,7 +76,7 @@ export default function index(props: IProps) {
         localStorage.setItem('leftwidth', curWidth.toString());
       }}
     >
-      <div className={collapse ? 'left-area collapse' : 'left-area'}>
+      <div className={collapse ? 'n9e-biz-group-container collapse' : 'n9e-biz-group-container'}>
         <div
           className='collapse-btn'
           onClick={() => {
@@ -86,9 +86,9 @@ export default function index(props: IProps) {
         >
           {!collapse ? <LeftOutlined /> : <RightOutlined />}
         </div>
-        <div className='left-area-group group-shrink'>
+        <div className='n9e-biz-group-container-group group-shrink'>
           {renderHeadExtra && renderHeadExtra()}
-          <div className='left-area-group-title'>
+          <div className='n9e-biz-group-container-group-title'>
             {title}
             {title === t('common:business_group') && (
               <Link to='/busi-groups' target='_blank'>
@@ -97,7 +97,7 @@ export default function index(props: IProps) {
             )}
           </div>
           <Input
-            className='left-area-group-search'
+            className='n9e-biz-group-container-group-search'
             prefix={<SearchOutlined />}
             onPressEnter={(e) => {
               e.preventDefault();

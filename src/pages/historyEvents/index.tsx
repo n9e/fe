@@ -326,7 +326,7 @@ const Event: React.FC = () => {
   return (
     <PageLayout icon={<AlertOutlined />} title={t('title')}>
       <div className='event-content'>
-        <div className='table-area'>
+        <div className='table-area n9e-border-base'>
           {!query.ids && renderLeftHeader()}
           <Table
             size='small'

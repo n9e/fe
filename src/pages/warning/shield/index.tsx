@@ -336,7 +336,7 @@ const Shield: React.FC = () => {
       <div className='shield-content'>
         <BusinessGroup />
         {businessGroup.ids ? (
-          <div className='shield-index' style={{ height: '100%', overflowY: 'auto' }}>
+          <div className='shield-index n9e-border-base' style={{ height: '100%', overflowY: 'auto' }}>
             <div className='header'>
               <Space>
                 <RefreshIcon

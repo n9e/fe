@@ -339,7 +339,7 @@ const Shield: React.FC = () => {
       <div className='shield-content'>
         <BusinessGroup />
         {businessGroup.ids ? (
-          <div style={{ padding: 10 }}>
+          <div className='n9e-border-base' style={{ padding: 10 }}>
             <div
               style={{
                 display: 'flex',

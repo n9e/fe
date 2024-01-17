@@ -313,7 +313,7 @@ export default function List(props: ListProps) {
   const filteredData = filterData();
 
   return (
-    <div className='alert-rules-list-container' style={{ height: '100%', overflowY: 'auto' }}>
+    <div className='n9e-border-base alert-rules-list-container' style={{ height: '100%', overflowY: 'auto' }}>
       <Row justify='space-between'>
         <Col span={20}>
           <Space>

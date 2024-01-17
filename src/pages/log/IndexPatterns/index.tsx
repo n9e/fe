@@ -50,7 +50,7 @@ export default function Servers() {
   return (
     <PageLayout title={t('title')}>
       <div>
-        <div style={{ padding: 10 }}>
+        <div className='n9e-border-base' style={{ padding: 10 }}>
           {profile.admin ? (
             <div>
               <div style={{ textAlign: 'right' }}>

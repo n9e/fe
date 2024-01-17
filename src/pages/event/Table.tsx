@@ -215,7 +215,7 @@ export default function TableCpt(props: IProps) {
 
   return (
     <div className='event-content'>
-      <div style={{ padding: 16, width: '100%', overflowY: 'auto' }}>
+      <div className='n9e-border-base' style={{ padding: 16, width: '100%', overflowY: 'auto' }}>
         <div style={{ display: 'flex' }}>{header}</div>
         <Table
           size='small'

@@ -23,6 +23,7 @@ export default function index() {
     <PageLayout title={t('ibex.title')}>
       <div>
         <div
+          className='n9e-border-base'
           style={{
             padding: 10,
           }}

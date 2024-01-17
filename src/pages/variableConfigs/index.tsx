@@ -47,6 +47,7 @@ export default function index() {
     <PageLayout title={t('title')} icon={<SettingOutlined />}>
       <div>
         <div
+          className='n9e-border-base'
           style={{
             padding: 16,
           }}

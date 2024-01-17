@@ -66,7 +66,7 @@ export default function index() {
       <div style={{ display: 'flex' }}>
         <BusinessGroup />
         {businessGroup.ids ? (
-          <div className='dashboards-v2'>
+          <div className='n9e-border-base dashboards-v2'>
             <Header
               selectRowKeys={selectRowKeys}
               refreshList={() => {

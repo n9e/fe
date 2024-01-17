@@ -172,7 +172,7 @@ const Resource: React.FC = () => {
   return (
     <PageLayout title={t('user.title')} icon={<UserOutlined />}>
       <div className='user-manage-content'>
-        <div className='user-content'>
+        <div className='user-content n9e-border-base'>
           <Row className='event-table-search'>
             <div className='event-table-search-left'>
               <Input className={'searchInput'} prefix={<SearchOutlined />} onPressEnter={onSearchQuery} placeholder={t('user.search_placeholder')} />
