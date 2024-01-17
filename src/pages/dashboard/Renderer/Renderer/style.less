@@ -2,6 +2,9 @@
   height: 100%;
   background-color: #fff;
   box-shadow: 0px 0px 10px 2px rgba(0,0,0,0.04);
+  .renderer-header-controller {
+    line-height: 24px !important; // 覆盖 antd dark 样式
+  }
   &:hover {
     .renderer-header-desc {
       .anticon-info-circle,
@@ -12,7 +15,7 @@
     .renderer-header-controllers {
       .renderer-header-controller {
         display: flex;
-        background-color: rgba(0,0,0,0.04);
+        background-color: rgba(0,0,0,0.1);
       }
     }
   }
