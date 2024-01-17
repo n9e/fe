@@ -12,7 +12,10 @@ const en_US = {
   append_tags_msg1: 'Tag length should be less than or equal to 64 bits',
   append_tags_msg2: 'Tag format should be key=value. And the key starts with a letter or underscore, and is composed of letters, numbers and underscores.',
   append_tags_placeholder: 'Tag format is key=value, use Enter or Space to separate',
+  group_id: 'Business Group',
   note: 'Note',
+  append_tags_note_tip:
+    'Support configuration variables, such as {{$labels.ident}}. If the monitoring data is `mem_active{ident="dev-backup-01"}`, it will eventually be replaced with dev-backup-01',
   rule_configs: 'Rule Configuration',
   inhibit: 'Inhibit',
   interval: 'Execution Interval',
@@ -42,6 +45,7 @@ const en_US = {
   notify_repeat_step_tip: 'If the alert continues to be unrecovered, the member of the alert receiving group will be reminded again after {{num}} minutes',
   notify_max_number: 'Max Send Times',
   notify_max_number_tip: 'The maximum number of times the alert is sent to the alert receiving group',
+  notify_flashduty_configured: 'Global Flashduty push is configured',
   callbacks: 'Callbacks',
   annotations: 'Annotations',
   annotationsOptions: {
@@ -147,5 +151,9 @@ const en_US = {
   Rule validity check：<br />
   1. Check channels and groups
   `,
+  default_filter: {
+    title: 'Preset filters',
+    all: 'All rules',
+  },
 };
 export default en_US;

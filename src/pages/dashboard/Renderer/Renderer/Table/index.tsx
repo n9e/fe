@@ -31,7 +31,7 @@ import localeCompare from '../../utils/localeCompare';
 import formatToTable from '../../utils/formatToTable';
 import { useGlobalState } from '../../../globalState';
 import { getDetailUrl } from '../../utils/replaceExpressionDetail';
-import { transformColumns, downloadCsv } from './utils';
+import { transformColumns, downloadCsv, useDeepCompareWithRef } from './utils';
 import Cell from './Cell';
 import './style.less';
 
@@ -142,7 +142,7 @@ function TableCpt(props: IProps, ref: any) {
       setTableFields(getColumnsKeys(data));
     }
     setCalculatedValues(data);
-  }, [isPreview, JSON.stringify(series), calc, JSON.stringify(options), displayMode, aggrDimension, JSON.stringify(columns)]);
+  }, [isPreview, useDeepCompareWithRef(series), calc, useDeepCompareWithRef(options), displayMode, aggrDimension, useDeepCompareWithRef(columns)]);
 
   const searchInput = useRef<any>(null);
   const handleSearch = (confirm: (param?: FilterConfirmProps) => void) => {
@@ -261,7 +261,7 @@ function TableCpt(props: IProps, ref: any) {
             if (key === 'value') {
               return a.stat - b.stat;
             }
-            return localeCompare(_.toString(_.get(a.metric, key)), _.toString(_.get(b.metric, key)));
+            return localeCompare(_.get(a.metric, key), _.get(b.metric, key));
           },
           sortOrder: getSortOrder(key, sortObj),
           className: key === 'value' ? 'renderer-table-td-content-value-container' : '',
@@ -430,7 +430,7 @@ function TableCpt(props: IProps, ref: any) {
         tableColumns = transformColumns(tableColumns, values.transformations);
       }
       return tableColumns;
-    }, [JSON.stringify(columns), displayMode, JSON.stringify(calculatedValues), sortObj, themeMode, aggrDimension, overrides, size]),
+    }, [useDeepCompareWithRef(columns), displayMode, useDeepCompareWithRef(calculatedValues), sortObj, themeMode, aggrDimension, overrides, size]),
     columnsState: {
       persistenceType: 'localStorage',
       persistenceKey: `dashboard-table2.1-resizable-${values.id}`,
@@ -498,7 +498,7 @@ function TableCpt(props: IProps, ref: any) {
         },
       };
     },
-    [JSON.stringify(tableDataSource), JSON.stringify(aggrDimension), displayMode, JSON.stringify(values.transformations), JSON.stringify(columns)],
+    [useDeepCompareWithRef(tableDataSource), useDeepCompareWithRef(aggrDimension), displayMode, useDeepCompareWithRef(values.transformations), useDeepCompareWithRef(columns)],
   );
 
   return (
@@ -511,7 +511,9 @@ function TableCpt(props: IProps, ref: any) {
           showSorterTooltip={false}
           showHeader={showHeader}
           dataSource={tableDataSource}
-          columns={resizableColumns}
+          columns={_.map(resizableColumns, (item) => {
+            return _.omit(item, ['ellipsis']);
+          })}
           scroll={{ y: realHeight, x: tableWidth ? tableWidth - 30 : tableWidth }}
           bordered={false}
           pagination={false}
@@ -528,4 +530,6 @@ function TableCpt(props: IProps, ref: any) {
   );
 }
 
-export default forwardRef(TableCpt);
+export default React.memo(forwardRef(TableCpt), (prevProps, nextProps) => {
+  return _.isEqual(prevProps, nextProps);
+});

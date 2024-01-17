@@ -28,7 +28,7 @@ import { highlightSelectionMatches } from '@codemirror/search';
 import { commentKeymap } from '@codemirror/comment';
 import { lintKeymap } from '@codemirror/lint';
 import { autocompletion, completionKeymap } from '@codemirror/autocomplete';
-import { PromQLExtension } from 'codemirror-promql';
+import { PromQLExtension } from '@fc-components/codemirror-promql';
 import { baseTheme, lightTheme, darkTheme, promqlHighlighter } from './CMTheme';
 import { N9E_PATHNAME, AccessTokenKey } from '@/utils/constant';
 import { CommonStateContext } from '@/App';
@@ -52,6 +52,8 @@ export interface CMExpressionInputProps {
   trigger?: ('onBlur' | 'onEnter')[]; // 触发 onChang 的事件
   datasourceValue?: number;
   placeholder?: string | false;
+  extraLabelValues?: string[];
+  rangeVectorCompletion?: boolean;
 }
 
 const ExpressionInput = (
@@ -68,6 +70,8 @@ const ExpressionInput = (
     trigger = ['onBlur', 'onEnter'],
     datasourceValue,
     placeholder = 'Input promql to query. Press Shift+Enter for newlines',
+    extraLabelValues,
+    rangeVectorCompletion,
   }: CMExpressionInputProps,
   ref,
 ) => {
@@ -106,6 +110,8 @@ const ExpressionInput = (
                   });
                 },
               },
+              extraLabelValues,
+              rangeVectorCompletion,
             }
           : undefined,
       );
@@ -200,7 +206,7 @@ const ExpressionInput = (
         }),
       );
     }
-  }, [onChange, JSON.stringify(headers), completeEnabled, datasourceValue, darkMode]);
+  }, [onChange, JSON.stringify(headers), completeEnabled, datasourceValue, darkMode, extraLabelValues]);
 
   useEffect(() => {
     if (realValue.current !== value) {

@@ -196,11 +196,12 @@ function EditItem(props: IProps) {
                       <QuestionCircleOutlined
                         style={{ marginLeft: 5 }}
                         onClick={() => {
-                          if (datasourceCate === 'prometheus') {
-                            window.open('https://grafana.com/docs/grafana/latest/datasources/prometheus/#query-variable', '_blank');
-                          } else if (datasourceCate === 'elasticsearch') {
-                            window.open('https://grafana.com/docs/grafana/latest/datasources/elasticsearch/template-variables', '_blank');
-                          }
+                          window.open('https://flashcat.cloud/media/?type=夜莺监控&source=aHR0cHM6Ly9kb3dubG9hZC5mbGFzaGNhdC5jbG91ZC9uOWUtMTMtZGFzaGJvYXJkLWludHJvLm1wNA==');
+                          // if (datasourceCate === 'prometheus') {
+                          //   window.open('https://grafana.com/docs/grafana/latest/datasources/prometheus/#query-variable', '_blank');
+                          // } else if (datasourceCate === 'elasticsearch') {
+                          //   window.open('https://grafana.com/docs/grafana/latest/datasources/elasticsearch/template-variables', '_blank');
+                          // }
                         }}
                       />
                     </span>
@@ -267,7 +268,7 @@ function EditItem(props: IProps) {
                   </Select>
                 </Form.Item>
                 <Form.Item label={t('var.datasource.regex')} name='regex' tooltip={t('var.datasource.regex_tip')}>
-                  <Input />
+                  <Input placeholder='/vm/' />
                 </Form.Item>
                 <Form.Item shouldUpdate={(prevValues, curValues) => prevValues?.definition !== curValues?.regex || prevValues?.regex} noStyle>
                   {({ getFieldValue }) => {

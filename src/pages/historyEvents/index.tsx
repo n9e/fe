@@ -329,6 +329,7 @@ const Event: React.FC = () => {
         <div className='table-area n9e-border-base'>
           {!query.ids && renderLeftHeader()}
           <Table
+            className='mt8'
             size='small'
             columns={columns}
             {...tableProps}

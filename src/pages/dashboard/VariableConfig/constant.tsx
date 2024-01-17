@@ -111,6 +111,10 @@ function attachVariable2Url(key, value, id: string, vars?: IVariable[]) {
   _.forEach(_.assign({}, varsValue, query, { [key]: value }), (value, key) => {
     newQuery[key] = _.isEmpty(value) && !_.isNumber(value) ? undefined : value;
   });
+  // 当清空变量值时，需要在开启固定变量值模式，以防止变量值又处理默认值逻辑
+  if (value === undefined) {
+    newQuery['__variable_value_fixed'] = 'true';
+  }
   const newurl = `${protocol}//${host}${pathname}?${queryString.stringify(newQuery)}`;
   window.history.replaceState({ path: newurl }, '', newurl);
 }
@@ -129,8 +133,9 @@ export function setVaraiableSelected({
   urlAttach?: boolean;
   vars?: IVariable[];
 }) {
-  if (value === undefined) return;
-  localStorage.setItem(`dashboard_v6_${id}_${name}`, typeof value === 'string' ? value : JSON.stringify(value));
+  if (value !== undefined) {
+    localStorage.setItem(`dashboard_v6_${id}_${name}`, typeof value === 'string' ? value : JSON.stringify(value));
+  }
   urlAttach && attachVariable2Url(name, value, id, vars);
 }
 
@@ -198,7 +203,6 @@ export const replaceExpressionVarsSpecifyRule = (
         const { name, options, reg, value, allValue, type } = formData[i];
         const placeholder = getPlaceholder(name);
         const selected = getVaraiableSelected(name, type, id);
-
         if (vars.includes(placeholder)) {
           if (_.isEqual(selected, ['all'])) {
             if (allValue) {
@@ -211,11 +215,11 @@ export const replaceExpressionVarsSpecifyRule = (
               );
             }
           } else if (Array.isArray(selected)) {
-            const realSelected = _.size(selected) === 1 ? selected[0] : `(${(selected as string[]).join('|')})`;
+            const realSelected = _.size(selected) === 0 ? '' : _.size(selected) === 1 ? selected[0] : `(${(selected as string[]).join('|')})`;
             newExpression = replaceAllPolyfill(newExpression, placeholder, realSelected);
           } else if (typeof selected === 'string') {
             newExpression = replaceAllPolyfill(newExpression, placeholder, selected as string);
-          } else if (selected === null) {
+          } else if (selected === null || selected === undefined) {
             // 未选择或填写变量值时替换为传入的value
             newExpression = replaceAllPolyfill(newExpression, placeholder, value ? (_.isArray(value) ? _.join(value, '|') : value) : '');
             if (type === 'datasource') {
@@ -274,7 +278,13 @@ export function stringStartsAsRegEx(str: string): boolean {
 
 export function stringToRegex(str: string): RegExp | false {
   if (!stringStartsAsRegEx(str)) {
-    return new RegExp(`^${str}$`);
+    let regex;
+    try {
+      regex = new RegExp(`^${str}$`);
+    } catch (e) {
+      return false;
+    }
+    return regex;
   }
 
   const match = str.match(new RegExp('^/(.*?)/(g?i?m?y?)$'));

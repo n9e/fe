@@ -1,6 +1,6 @@
 const en_US = {
   title: 'Host List',
-  default_filter: 'Default',
+  default_filter: 'Preset filters',
   ungrouped_targets: 'Ungrouped hosts',
   all_targets: 'All hosts',
   datasource: 'Datasource',
@@ -10,6 +10,7 @@ const en_US = {
   filterDowntimeMin: '{{count}} minute',
   filterDowntimeMin_plural: '{{count}} minutes',
   not_grouped: 'Ungrouped',
+  host_ip: 'IP',
   tags: 'Tags',
   group_obj: 'Business group',
   target_up: 'Status',
@@ -17,6 +18,7 @@ const en_US = {
   cpu_util: 'CPU',
   cpu_num: 'Cores',
   offset: 'Offset',
+  offset_tip: 'The calculation logic is to subtract the time when the machine is deployed by Nightingale from the time when the machine is deployed by categraf',
   os: 'OS',
   arch: 'CPU Arch',
   update_at: 'Update at',
@@ -26,8 +28,10 @@ const en_US = {
     No heartbeat within 3 minutes: red
   `,
   remote_addr: 'Remote Addr',
+  remote_addr_tip: 'Remote Addr is obtained from HTTP Header, if it is passed through a proxy, it may not be the real Remote Addr',
   agent_version: 'Agent Version',
   note: 'Note',
+  unknown_tip: 'The display of machine meta information requires categraf version to be higher than 0.2.35',
   organize_columns: {
     title: 'Organize Columns',
   },
@@ -71,5 +75,13 @@ const en_US = {
     msg: 'Warning: This operation will permanently delete the hosts from the system, very dangerous, be careful!',
     btn: 'Delete',
   },
+  meta_tip: 'View Meta Info',
+  meta_title: 'Information',
+  meta_desc_key: 'Key',
+  meta_desc_value: 'Value',
+  meta_value_click_to_copy: 'Click to copy',
+  meta_expand: 'Expand',
+  meta_collapse: 'Collapse',
+  meta_no_data: 'No data',
 };
 export default en_US;

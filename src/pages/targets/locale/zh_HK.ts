@@ -9,6 +9,7 @@ const zh_HK = {
   filterDowntime: '無更新超過',
   filterDowntimeMin: '{{count}} 分鐘',
   not_grouped: '未歸組',
+  host_ip: 'IP',
   tags: '標籤',
   group_obj: '業務組',
   target_up: '狀態',
@@ -16,6 +17,7 @@ const zh_HK = {
   cpu_util: 'CPU',
   cpu_num: '核數',
   offset: '時間偏移',
+  offset_tip: '計算邏輯為用 夜鶯部署機器的時間減去 categraf 部署機器的時間',
   os: '作業系統',
   arch: 'CPU 架構',
   update_at: '更新時間',
@@ -25,8 +27,10 @@ const zh_HK = {
     3分鐘內沒有心跳：紅色
   `,
   remote_addr: '來源 IP',
+  remote_addr_tip: '來源 IP 是從 HTTP Header 中獲取的，如果經過了代理，不一定是真是的來源IP',
   agent_version: 'Agent 版本',
   note: '備註',
+  unknown_tip: '機器元信息的展示，categraf 的版本需要高於 0.2.35',
   organize_columns: {
     title: '顯示列',
   },
@@ -70,6 +74,14 @@ const zh_HK = {
     msg: '提示資訊：該操作會把監控機器從系統內中徹底刪除，非常危險，慎重操作！',
     btn: '刪除',
   },
+  meta_tip: '查看元信息',
+  meta_title: '元信息',
+  meta_desc_key: '元信息名稱',
+  meta_desc_value: '元信息值',
+  meta_value_click_to_copy: '點擊複製',
+  meta_expand: '展開',
+  meta_collapse: '收起',
+  meta_no_data: '暫無數據',
 };
 
 export default zh_HK;

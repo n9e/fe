@@ -18,6 +18,8 @@ import _ from 'lodash';
 import moment from 'moment';
 import { utilValMap } from '../config';
 import * as byteConverter from './byteConverter';
+import { toMilliSeconds, toSeconds } from './dateTimeFormatters';
+import { toFixed, FormattedValue } from './valueFormats';
 
 export function timeFormatter(val, type: 'seconds' | 'milliseconds', decimals) {
   if (typeof val !== 'number')
@@ -27,57 +29,20 @@ export function timeFormatter(val, type: 'seconds' | 'milliseconds', decimals) {
       text: val,
       stat: val,
     };
-  const timeMap = [
-    {
-      unit: 'years',
-      value: 31104000,
-    },
-    {
-      unit: 'months',
-      value: 2592000,
-    },
-    {
-      unit: 'weeks',
-      value: 604800,
-    },
-    {
-      unit: 'days',
-      value: 86400,
-    },
-    {
-      unit: 'hours',
-      value: 3600,
-    },
-    {
-      unit: 'mins',
-      value: 60,
-    },
-  ];
-  const shortTypeMap = {
-    seconds: 's',
-    milliseconds: 'ms',
+  let formattedValue: FormattedValue = {
+    text: _.toString(toFixed(val, decimals)),
+    suffix: '',
   };
-  let newVal = val;
-  let unit = shortTypeMap[type];
-  _.forEach(timeMap, (item) => {
-    const _val = val / item.value / (type === 'milliseconds' ? 1000 : 1);
-    if (_val >= 1) {
-      newVal = _val;
-      unit = item.unit;
-      return false;
-    }
-  });
-  if (type === 'milliseconds' && unit === 'ms') {
-    const _val = newVal / 1000;
-    if (_val >= 1) {
-      newVal = _val;
-      unit = 's';
-    }
+  if (type === 'seconds') {
+    formattedValue = toSeconds(val, decimals);
+  }
+  if (type === 'milliseconds') {
+    formattedValue = toMilliSeconds(val, decimals);
   }
   return {
-    value: _.round(newVal, decimals),
-    unit,
-    text: _.round(newVal, decimals) + ' ' + unit,
+    value: _.toNumber(formattedValue.text),
+    unit: formattedValue.suffix,
+    text: _.toNumber(formattedValue.text) + ' ' + formattedValue.suffix,
     stat: val,
   };
 }
@@ -104,6 +69,12 @@ const valueFormatter = ({ unit, decimals = 3, dateFormat = 'YYYY-MM-DD HH:mm:ss'
         base,
         decimals,
         postfix,
+      });
+    }
+    if (unit === 'default') {
+      return byteConverter.format(val, {
+        type: 'si',
+        decimals,
       });
     }
     if (unit === 'none') {

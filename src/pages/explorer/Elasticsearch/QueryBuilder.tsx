@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import _ from 'lodash';
 import { useDebounceFn } from 'ahooks';
 import { useLocation } from 'react-router-dom';
@@ -8,6 +8,7 @@ import { QuestionCircleOutlined } from '@ant-design/icons';
 import TimeRangePicker from '@/components/TimeRangePicker';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { getIndices, getFullFields, Field } from './services';
+import InputFilter from './InputFilter';
 
 interface Props {
   onExecute: () => void;
@@ -25,6 +26,8 @@ export default function QueryBuilder(props: Props) {
   const [indexSearch, setIndexSearch] = useState('');
   const [dateFields, setDateFields] = useState<Field[]>([]);
   const indexValue = Form.useWatch(['query', 'index']);
+  const [allFields, setAllFields] = useState<Field[]>([]);
+  const refInputFilter = useRef<any>();
   const { run: onIndexChange } = useDebounceFn(
     (val) => {
       if (datasourceValue && val) {
@@ -33,6 +36,7 @@ export default function QueryBuilder(props: Props) {
           allowHideSystemIndices,
         }).then((res) => {
           setFields(res.allFields);
+          setAllFields(res.allFields);
           setDateFields(res.fields);
           const query = form.getFieldValue('query');
           const dateField = _.find(res.fields, { name: query.date_field })?.name;
@@ -124,7 +128,7 @@ export default function QueryBuilder(props: Props) {
         }
       >
         <Form.Item name={['query', 'filter']}>
-          <Input />
+          <InputFilter fields={allFields} ref={refInputFilter} onExecute={onExecute} />
         </Form.Item>
       </InputGroupWithFormItem>
       <div style={{ width: 200, flexShrink: 0 }}>
@@ -157,6 +161,9 @@ export default function QueryBuilder(props: Props) {
         <Button
           type='primary'
           onClick={() => {
+            if (refInputFilter.current) {
+              refInputFilter.current.onCallback();
+            }
             onExecute();
           }}
         >

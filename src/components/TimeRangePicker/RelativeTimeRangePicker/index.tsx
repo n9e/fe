@@ -184,7 +184,7 @@ export default function index(props: ITimeRangePickerProps) {
                     />
                     <ul>
                       {_.map(
-                        _.filter(rangeOptions, (item) => {
+                        _.filter(validOptions, (item) => {
                           const display = t(`rangeOptions.${item.display}`);
                           return display.indexOf(searchValue) > -1;
                         }),

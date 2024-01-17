@@ -11,8 +11,9 @@ import { getBusiGroupsRecordingRules, updateRecordingRules } from '@/services/re
 import SearchInput from '@/components/BaseSearchInput';
 import { strategyItem, strategyStatus } from '@/store/warningInterface';
 import { deleteRecordingRule } from '@/services/recording';
-import EditModal from './components/editModal';
 import { CommonStateContext } from '@/App';
+import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
+import EditModal from './components/editModal';
 import Import from './components/Import';
 import Export from './components/Export';
 
@@ -127,6 +128,9 @@ const PageTable: React.FC<Props> = () => {
       {
         title: t('name'),
         dataIndex: 'name',
+        sorter: (a, b) => {
+          return localeCompare(a.name, b.name);
+        },
         render: (data, record) => {
           return (
             <div
@@ -167,6 +171,9 @@ const PageTable: React.FC<Props> = () => {
       {
         title: t('common:table.update_at'),
         dataIndex: 'update_at',
+        sorter: (a, b) => {
+          return a.update_at - b.update_at;
+        },
         render: (text: number) => moment.unix(text).format('YYYY-MM-DD HH:mm:ss'),
       },
       {
@@ -388,6 +395,7 @@ const PageTable: React.FC<Props> = () => {
       </div>
 
       <Table
+        className='mt8'
         size='small'
         rowKey='id'
         pagination={{

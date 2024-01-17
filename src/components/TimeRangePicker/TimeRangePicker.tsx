@@ -123,16 +123,14 @@ const AbsoluteTimePicker = ({
           onBlur={(e) => {
             const val = e.target.value;
             const otherKey = type === 'start' ? 'end' : 'start';
-            // 必须是绝对时间才缓存
-            if (range && !isMathString(val) && moment.isMoment(range[otherKey])) {
-              setAbsoluteHistoryCache(
-                {
-                  ...range,
-                  [type]: val,
-                },
-                dateFormat,
-              );
-            }
+            // 2013-12-21 不再限制只能缓存绝对时间
+            setAbsoluteHistoryCache(
+              {
+                ...range,
+                [type]: val,
+              },
+              dateFormat,
+            );
           }}
         />
         <Popover
@@ -165,12 +163,6 @@ const AbsoluteTimePicker = ({
               showTime={{
                 defaultValue: type === 'start' ? moment().startOf('day') : moment().endOf('day'),
                 showSecond: false,
-              }}
-              disabledDate={(current: Moment) => {
-                if (type === 'start') {
-                  return current && current.valueOf() > moment(range?.end, true).valueOf();
-                }
-                return current && current.valueOf() < moment(range?.start, true).valueOf();
               }}
               value={val.isValid() ? val : undefined}
               onChange={(value) => {

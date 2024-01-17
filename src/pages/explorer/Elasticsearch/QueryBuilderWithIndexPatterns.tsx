@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import _ from 'lodash';
 import { useDebounceFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
-import { Space, Input, Form, Select, Button } from 'antd';
+import { Form, Select, Button } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import TimeRangePicker from '@/components/TimeRangePicker';
 import { getESIndexPatterns } from '@/pages/log/IndexPatterns/services';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { getFullFields, Field } from './services';
+import InputFilter from './InputFilter';
 
 interface Props {
   onExecute: () => void;
@@ -22,14 +23,20 @@ export default function QueryBuilder(props: Props) {
   const { onExecute, datasourceValue, form, setFields, onIndexChange } = props;
   const [indexPatterns, setIndexPatterns] = useState<any[]>([]);
   const indexPattern = Form.useWatch(['query', 'indexPattern']);
+  const [allFields, setAllFields] = useState<Field[]>([]);
+  const refInputFilter = useRef<any>();
   const { run: onIndexPatternChange } = useDebounceFn(
     (indexPattern) => {
       if (datasourceValue && indexPattern) {
-        getFullFields(datasourceValue, indexPattern.name, {
-          allowHideSystemIndices: indexPattern.allow_hide_system_indices,
-        }).then((res) => {
-          setFields(res.allFields);
-        });
+        const finded = _.find(indexPatterns, { id: indexPattern });
+        if (finded) {
+          getFullFields(datasourceValue, finded.name, {
+            allowHideSystemIndices: finded.allow_hide_system_indices,
+          }).then((res) => {
+            setFields(res.allFields);
+            setAllFields(res.allFields);
+          });
+        }
       }
     },
     {
@@ -120,13 +127,7 @@ export default function QueryBuilder(props: Props) {
           }
         >
           <Form.Item name={['query', 'filter']} style={{ minWidth: 300 }}>
-            <Input
-              onKeyDown={(e) => {
-                if (e.keyCode === 13) {
-                  onExecute();
-                }
-              }}
-            />
+            <InputFilter fields={allFields} ref={refInputFilter} onExecute={onExecute} />
           </Form.Item>
         </InputGroupWithFormItem>
         <Form.Item name={['query', 'range']} initialValue={{ start: 'now-1h', end: 'now' }}>
@@ -136,6 +137,9 @@ export default function QueryBuilder(props: Props) {
           <Button
             type='primary'
             onClick={() => {
+              if (refInputFilter.current) {
+                refInputFilter.current.onCallback();
+              }
               onExecute();
             }}
           >

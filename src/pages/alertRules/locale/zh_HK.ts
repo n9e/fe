@@ -12,7 +12,9 @@ const zh_HK = {
   append_tags_msg1: '標籤長度應小於等於 64 位',
   append_tags_msg2: '標籤格式應為 key=value。且 key 以字母或下劃線開頭，由字母、數字和下劃線組成。',
   append_tags_placeholder: '標籤格式為 key=value ，使用回車或空格分隔',
+  group_id: '業務組',
   note: '備註',
+  append_tags_note_tip: '支持配置變數，例如 {{$labels.ident}}，如果監控資料為 `mem_active{ident="dev-backup-01"}` 最後會最終會替換為 dev-backup-01',
   rule_configs: '規則配置',
   inhibit: '級別抑制',
   interval: '執行頻率',
@@ -42,6 +44,7 @@ const zh_HK = {
   notify_repeat_step_tip: '如果告警持續未恢復，間隔 {{num}} 分鐘之後重複提醒告警接收組的成員',
   notify_max_number: '最大發送次數',
   notify_max_number_tip: '如果值為 0，則不做最大發送次數的限制',
+  notify_flashduty_configured: '當前已配置了全局 Flashduty 推送',
   callbacks: '回撥地址',
   annotations: '附加資訊',
   annotationsOptions: {
@@ -147,6 +150,10 @@ const zh_HK = {
   规则有效性检查，包括以下检查项：<br />
   1. 用户联系方式有效性检查
   `,
+  default_filter: {
+    title: '預置篩選',
+    all: '全部規則',
+  },
 };
 
 export default zh_HK;

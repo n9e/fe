@@ -188,6 +188,7 @@ const Resource: React.FC = () => {
             </div>
           </Row>
           <Table
+            className='mt8'
             size='small'
             rowKey='id'
             columns={userColumns}

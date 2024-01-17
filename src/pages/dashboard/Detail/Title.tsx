@@ -166,7 +166,7 @@ export default function Title(props: IProps) {
               const newQuery = _.omit(query, ['viewMode', 'themeMode']);
               if (!viewMode) {
                 newQuery.viewMode = 'fullscreen';
-                newQuery.themeMode = localStorage.getItem('dashboard_themeMode') || 'light';
+                newQuery.themeMode = localStorage.getItem(dashboardThemeModeCacheKey) || 'light';
               }
               history.replace({
                 pathname: location.pathname,

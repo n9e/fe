@@ -15,6 +15,9 @@ const alphabet = 'ABCDEFGHIGKLMNOPQRSTUVWXYZ'.split('');
 
 export default function Prometheus({ chartForm, variableConfig, dashboardId }) {
   const { t } = useTranslation('dashboard');
+  const varNams = _.map(variableConfig, (item) => {
+    return `$${item.name}`;
+  });
 
   return (
     <Form.List name='targets'>
@@ -67,7 +70,7 @@ export default function Prometheus({ chartForm, variableConfig, dashboardId }) {
                               ]}
                               style={{ flex: 1 }}
                             >
-                              <PromQLInputWithBuilder validateTrigger={['onBlur']} datasourceValue={datasourceValue} />
+                              <PromQLInputWithBuilder validateTrigger={['onBlur']} datasourceValue={datasourceValue} extraLabelValues={varNams} rangeVectorCompletion />
                             </Form.Item>
                           );
                         }}
@@ -98,6 +101,7 @@ export default function Prometheus({ chartForm, variableConfig, dashboardId }) {
                             title: t('query.time_tip'),
                           }}
                           normalize={(val) => {
+                            if (val === undefined || val === null || val === '') return undefined;
                             return {
                               start: isMathString(val.start) ? val.start : moment(val.start).format('YYYY-MM-DD HH:mm:ss'),
                               end: isMathString(val.end) ? val.end : moment(val.end).format('YYYY-MM-DD HH:mm:ss'),

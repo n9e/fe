@@ -73,7 +73,7 @@ export const getStrategyGroupSubList = function (params: { id: number }) {
 };
 
 // 查询多个业务组的规则列表 2023-11-24 新增
-export const getBusiGroupsAlertRules = function (gids: string) {
+export const getBusiGroupsAlertRules = function (gids?: string) {
   return request('/api/n9e/busi-groups/alert-rules', {
     method: RequestMethod.Get,
     params: {
@@ -523,4 +523,10 @@ export const getAlertEventList = function (params) {
     method: RequestMethod.Get,
     params,
   }).then((res) => res?.dat?.list || []);
+};
+
+export const getAlertRulesCallbacks = function () {
+  return request('/api/n9e/alert-rules/callbacks', {
+    method: RequestMethod.Get,
+  }).then((res) => res?.dat || []);
 };

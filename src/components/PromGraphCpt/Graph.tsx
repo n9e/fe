@@ -68,7 +68,7 @@ export default function Graph(props: IProps) {
     shared: true,
     sharedSortDirection: 'desc',
     legend: true,
-    unit: undefined,
+    unit: 'default',
     reverseColorOrder: false,
     colorDomainAuto: true,
     colorDomain: [],
@@ -213,7 +213,7 @@ export default function Graph(props: IProps) {
           )}
         </Space>
       </div>
-      <Timeseries inDashboard={false} values={lineGraphProps as any} series={data} themeMode={darkMode ? 'dark' : undefined} />
+      <Timeseries inDashboard={false} values={lineGraphProps as any} series={data} time={range} themeMode={darkMode ? 'dark' : undefined} />
     </div>
   );
 }

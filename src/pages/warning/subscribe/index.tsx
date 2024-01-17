@@ -31,6 +31,7 @@ import { CommonStateContext } from '@/App';
 import { priorityColor } from '@/utils/constant';
 import { DatasourceSelect } from '@/components/DatasourceSelect';
 import { strategyStatus } from '@/store/warningInterface';
+import Tags from '@/components/Tags';
 import { pageSizeOptionsDefault } from '../const';
 import './locale';
 import './index.less';
@@ -42,7 +43,7 @@ const { confirm } = Modal;
 const Shield: React.FC = () => {
   const { t } = useTranslation('alertSubscribes');
   const history = useHistory();
-  const { groupedDatasourceList, businessGroup, busiGroups } = useContext(CommonStateContext);
+  const { datasourceList, businessGroup, busiGroups } = useContext(CommonStateContext);
   const [query, setQuery] = useState<string>('');
   const [currentShieldDataAll, setCurrentShieldDataAll] = useState<Array<subscribeItem>>([]);
   const [currentShieldData, setCurrentShieldData] = useState<Array<subscribeItem>>([]);
@@ -81,22 +82,22 @@ const Shield: React.FC = () => {
       {
         title: t('common:datasource.id'),
         dataIndex: 'datasource_ids',
-        render: (data, record: any) => {
-          if (!data) return '-';
-          return _.map(data, (item) => {
-            if (item === 0) {
-              return (
-                <Tag color='purple' key={item}>
-                  $all
-                </Tag>
-              );
-            }
-            return (
-              <Tag color='purple' key={item}>
-                {_.find(groupedDatasourceList?.[record.cate], { id: item })?.name!}
-              </Tag>
-            );
-          });
+        width: 100,
+        render(value) {
+          if (!value) return '-';
+          return (
+            <Tags
+              width={70}
+              data={_.compact(
+                _.map(value, (item) => {
+                  if (item === 0) return '$all';
+                  const name = _.find(datasourceList, { id: item })?.name;
+                  if (!name) return '';
+                  return name;
+                }),
+              )}
+            />
+          );
         },
       },
       {
@@ -170,17 +171,9 @@ const Shield: React.FC = () => {
       {
         title: t('user_groups'),
         dataIndex: 'user_groups',
-        render: (text: string, record: subscribeItem) => {
-          if (_.isEmpty(record.user_groups)) return '-';
-          return (
-            <>
-              {record.user_groups?.map((item) => (
-                <Tag color='purple' key={item.id}>
-                  {item.name}
-                </Tag>
-              ))}
-            </>
-          );
+        width: 140,
+        render: (data) => {
+          return <Tags width={110} data={_.map(data, 'name')} />;
         },
       },
       {
@@ -377,6 +370,7 @@ const Shield: React.FC = () => {
               )}
             </div>
             <Table
+              className='mt8'
               size='small'
               rowKey='id'
               pagination={{

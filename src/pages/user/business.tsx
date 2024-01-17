@@ -319,6 +319,7 @@ const Resource: React.FC = () => {
               </Row>
 
               <Table
+                className='mt8'
                 size='small'
                 rowKey='id'
                 columns={teamMemberColumns}

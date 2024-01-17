@@ -60,9 +60,11 @@ export default function index(props: IProps) {
   const [width, setWidth] = useState(_.toNumber(localStorage.getItem('leftwidth') || 200));
   const { busiGroups, siteInfo } = useContext(CommonStateContext);
   const [businessGroupTreeData, setBusinessTreeGroupData] = useState<Node[]>([]);
+  const [busiGroupsListData, setBusiGroupsListData] = useState<any[]>([]);
 
   useEffect(() => {
     setBusinessTreeGroupData(listToTree(busiGroups, siteInfo?.businessGroupSeparator));
+    setBusiGroupsListData(busiGroups);
   }, [busiGroups]);
 
   return (
@@ -111,12 +113,13 @@ export default function index(props: IProps) {
               const value = e.currentTarget.value;
               getBusiGroups(value).then((res) => {
                 setBusinessTreeGroupData(listToTree(res.dat || [], siteInfo?.businessGroupSeparator));
+                setBusiGroupsListData(res.dat || []);
               });
             }}
           />
           {siteInfo?.businessGroupDisplayMode == 'list' ? (
             <div className='radio-list'>
-              {_.map(busiGroups, (item) => {
+              {_.map(busiGroupsListData, (item) => {
                 const itemKey = _.toString(item.id);
                 return (
                   <div
@@ -133,6 +136,7 @@ export default function index(props: IProps) {
                         search: queryString.stringify({
                           ...query,
                           ids: itemKey,
+                          isLeaf: true,
                         }),
                       });
                     }}

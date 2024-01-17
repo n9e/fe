@@ -30,7 +30,7 @@ import { CommonStateContext } from '@/App';
 import { IPanel } from '../../../types';
 import { hexPalette } from '../../../config';
 import valueFormatter from '../../utils/valueFormatter';
-import { getLegendValues } from '../../utils/getCalculatedValuesBySeries';
+import { getLegendValues, getMappedTextObj } from '../../utils/getCalculatedValuesBySeries';
 import { getDetailUrl } from '../../utils/replaceExpressionDetail';
 import { useGlobalState } from '../../../globalState';
 import './style.less';
@@ -64,6 +64,7 @@ interface IProps {
   hideResetBtn?: boolean;
   onClick?: (event: any, datetime: Date, value: number, points: any[]) => void;
   onZoomWithoutDefult?: (times: Date[]) => void;
+  isPreview?: boolean;
 }
 
 function getStartAndEndByTargets(targets: any[]) {
@@ -112,7 +113,7 @@ export default function index(props: IProps) {
   const [dashboardMeta] = useGlobalState('dashboardMeta');
   const { darkMode } = useContext(CommonStateContext);
   const { t } = useTranslation('dashboard');
-  const { time, setRange, values, series, inDashboard = true, chartHeight = '200px', tableHeight = '200px', onClick } = props;
+  const { time, setRange, values, series, inDashboard = true, chartHeight = '200px', tableHeight = '200px', onClick, isPreview } = props;
   const themeMode = props.themeMode || (darkMode ? 'dark' : 'light');
   const { custom, options = {}, targets, overrides } = values;
   const { lineWidth = 1, gradientMode = 'none', scaleDistribution } = custom;
@@ -183,6 +184,8 @@ export default function index(props: IProps) {
             dateFormat: options?.standardOptions?.dateFormat,
           },
           hexPalette,
+          undefined,
+          options?.valueMappings,
         ),
       );
     } else {
@@ -232,9 +235,12 @@ export default function index(props: IProps) {
           ...chartRef.current.options.tooltip,
           shared: options.tooltip?.mode === 'all',
           sharedSortDirection: options.tooltip?.sort !== 'none' ? options.tooltip?.sort : undefined,
-          cascade: _.includes(['sharedCrosshair', 'sharedTooltip'], dashboardMeta.graphTooltip),
+          cascade: isPreview === false ? _.includes(['sharedCrosshair', 'sharedTooltip'], dashboardMeta.graphTooltip) : undefined,
           cascadeScope: 'cascadeScope',
           cascadeMode: _.includes(['sharedCrosshair', 'sharedTooltip'], dashboardMeta.graphTooltip) ? dashboardMeta.graphTooltip : undefined,
+          pointNameformatter: (val) => {
+            return getMappedTextObj(val, options?.valueMappings)?.text;
+          },
           pointValueformatter: (val, nearestPoint) => {
             if (overrides?.[0]?.matcher?.value && overrides?.[0]?.matcher?.value === nearestPoint?.serieOptions?.refId) {
               return valueFormatter(
@@ -339,6 +345,7 @@ export default function index(props: IProps) {
           },
           hexPalette,
           custom.stack === 'noraml',
+          options?.valueMappings,
         ),
       );
     } else {
@@ -376,9 +383,10 @@ export default function index(props: IProps) {
     tableColumn = [
       ...tableColumn,
       {
-        title: t(`panel.options.legend.${column}`),
+        title: t(`panel.options.legend.${column}`, {
+          lng: 'en_US', // fixed to en_US, optimize column width
+        }),
         dataIndex: column,
-        width: 100,
         sorter: (a, b) => a[column].stat - b[column].stat,
         render: (text) => {
           return text.text;
@@ -431,8 +439,7 @@ export default function index(props: IProps) {
           // height: legendEleSize?.height! + 14,
           width: placement === 'right' ? (isExpanded ? '100%' : 'max-content') : '100%',
           maxWidth: placement === 'right' ? (isExpanded ? '100%' : '40%') : '100%',
-          overflow: 'hidden',
-          overflowY: 'auto',
+          overflow: 'auto',
           display: hasLegend ? 'block' : 'none',
           flexShrink: displayMode === 'table' ? 1 : 0,
           minHeight: 0,
@@ -441,14 +448,14 @@ export default function index(props: IProps) {
         {displayMode === 'table' && (
           <div ref={legendEleRef}>
             <Table
+              tableLayout='auto' // 2024-01-10 对齐 grafana 效果，取消 fixed 改成 auto，开启 x 轴滚动条
               rowKey='id'
               size='small'
-              className='scroll-container-table'
               columns={tableColumn}
               dataSource={legendData}
               pagination={false}
               rowClassName={(record) => {
-                return record.disabled ? 'disabled' : '';
+                return record.disabled ? 'renderer-timeseries-legend-table-row disabled' : 'renderer-timeseries-legend-table-row';
               }}
               onRow={(record) => {
                 return {

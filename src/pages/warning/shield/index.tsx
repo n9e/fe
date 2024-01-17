@@ -370,6 +370,7 @@ const Shield: React.FC = () => {
               )}
             </div>
             <Table
+              className='mt8'
               size='small'
               rowKey='id'
               tableLayout='fixed'

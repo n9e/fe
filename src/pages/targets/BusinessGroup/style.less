@@ -1,0 +1,100 @@
+.left-area {
+  &.collapse {
+    width: 0px;
+    padding: 0px;
+    margin: 0px;
+    visibility: unset !important; // 解决和 tailwindcss 的 collapse 冲突
+    .collapse-btn {
+      right: 0px;
+    }
+  }
+  box-sizing: border-box;
+  flex-direction: column;
+  height: 100%;
+  flex-shrink: 0;
+  position: relative;
+  padding: 16px;
+  &-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 16px;
+    height: 100%;
+    &-title {
+      color: @fontColorLevel2;
+      font-size: @baseFontSizeSmall;
+      font-weight: bold;
+      line-height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    &-search {
+      margin-bottom: 10px;
+    }
+    .radio-list {
+      flex-shrink: 1;
+      overflow: auto;
+      min-height: 0;
+      height: 100%;
+      .radio-list-group-item {
+        margin-right: 0;
+      }
+      &-group,
+      &-group-space,
+      &-group-item {
+        width: 100%;
+      }
+    }
+    &:last-of-type {
+      margin-bottom: 0;
+    }
+    &.group-shrink {
+      flex: initial;
+      overflow: auto;
+    }
+    .ant-checkbox-group-item {
+      display: flex;
+      margin-bottom: 6px;
+    }
+  }
+  .collapse-btn {
+    cursor: pointer;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    top: 50%;
+    margin-top: -29px;
+    right: -10px;
+    height: 58px;
+    width: 10px;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.1);
+  }
+}
+
+.n9e-biz-group-item {
+  justify-content: space-between;
+  padding: 6px 8px;
+  cursor: pointer;
+  &.active {
+    background-color: fade(@primary-color, 10%);
+  }
+}
+
+.n9e-biz-group-group {
+  padding-bottom: 0;
+  user-select: none;
+  & > .name {
+    margin-bottom: 4px;
+  }
+}
+
+.business-group-tree {
+  .ant-tree-node-content-wrapper {
+    user-select: unset;
+    cursor: default;
+  }
+  .ant-tree-node-content-wrapper-normal {
+    cursor: pointer;
+  }
+}

@@ -13,9 +13,9 @@ interface IProps {
 
 export default function index(props: IProps) {
   const [dashboardMeta] = useGlobalState('dashboardMeta');
-  const { values } = props;
+  const { values, themeMode } = props;
   const { custom } = values;
-  const { textColor, bgColor, textSize, justifyContent, alignItems } = custom as ITextStyles;
+  const { textColor, textDarkColor, bgColor, textSize, justifyContent, alignItems } = custom as ITextStyles;
   const content = replaceFieldWithVariable(custom.content, dashboardMeta.dashboardId, dashboardMeta.variableConfigWithOptions);
 
   return (
@@ -26,9 +26,8 @@ export default function index(props: IProps) {
         overflow: 'auto',
         padding: 10,
         fontSize: textSize,
-        color: textColor,
+        color: themeMode === 'dark' ? textDarkColor : textColor,
         backgroundColor: bgColor,
-        border: `1px solid ${Color('#fff').alpha(0.2).rgb().string()}`,
         display: justifyContent !== 'unset' && alignItems !== 'unset' ? 'flex' : 'block',
         justifyContent,
         alignItems,

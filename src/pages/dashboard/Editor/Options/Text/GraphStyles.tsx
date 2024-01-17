@@ -33,17 +33,22 @@ export default function GraphStyles({ variableConfigWithOptions }) {
             <ColorPicker />
           </Form.Item>
         </Col>
+        <Col span={4}>
+          <Form.Item label={t('panel.custom.text.textDarkColor')} name={[...namePrefix, 'textDarkColor']}>
+            <ColorPicker />
+          </Form.Item>
+        </Col>
         <Col span={3}>
           <Form.Item label={t('panel.custom.text.bgColor')} name={[...namePrefix, 'bgColor']}>
             <ColorPicker />
           </Form.Item>
         </Col>
-        <Col span={6}>
+        <Col span={4}>
           <Form.Item label={t('panel.custom.text.textSize')} name={[...namePrefix, 'textSize']}>
             <InputNumber />
           </Form.Item>
         </Col>
-        <Col span={6}>
+        <Col span={5}>
           <Form.Item label={t('panel.custom.text.justifyContent.name')} name={[...namePrefix, 'justifyContent']}>
             <Select>
               <Select.Option value='unset'>{t('panel.custom.text.justifyContent.unset')}</Select.Option>
@@ -53,7 +58,7 @@ export default function GraphStyles({ variableConfigWithOptions }) {
             </Select>
           </Form.Item>
         </Col>
-        <Col span={6}>
+        <Col span={5}>
           <Form.Item label={t('panel.custom.text.alignItems.name')} name={[...namePrefix, 'alignItems']}>
             <Select>
               <Select.Option value='unset'>{t('panel.custom.text.alignItems.unset')}</Select.Option>

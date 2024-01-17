@@ -29,11 +29,12 @@ import { CommonStateContext } from '@/App';
 import { priorityColor } from '@/utils/constant';
 import Tags from '@/components/Tags';
 import { DatasourceSelect, ProdSelect } from '@/components/DatasourceSelect';
+import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
 import { AlertRuleType, AlertRuleStatus } from '../types';
 import MoreOperations from './MoreOperations';
 
 interface ListProps {
-  bgid?: number;
+  gids?: string;
 }
 
 interface Filter {
@@ -46,6 +47,7 @@ interface Filter {
 
 export default function List(props: ListProps) {
   const { businessGroup, busiGroups } = useContext(CommonStateContext);
+  const { gids } = props;
   const { t } = useTranslation('alertRules');
   const history = useHistory();
   const { datasourceList } = useContext(CommonStateContext);
@@ -56,7 +58,7 @@ export default function List(props: ListProps) {
   const [data, setData] = useState<AlertRuleType<any>[]>([]);
   const [loading, setLoading] = useState(false);
   const columns: ColumnType<AlertRuleType<any>>[] = _.concat(
-    businessGroup.isLeaf
+    businessGroup.isLeaf && gids !== undefined // TODO 如果是全部规则筛选是显示 业务组 列
       ? []
       : ([
           {
@@ -101,6 +103,9 @@ export default function List(props: ListProps) {
       {
         title: t('name_severities_appendtags'),
         dataIndex: 'name',
+        sorter: (a, b) => {
+          return localeCompare(a.name, b.name);
+        },
         render: (data, record) => {
           return (
             <div
@@ -181,6 +186,9 @@ export default function List(props: ListProps) {
         title: t('common:table.update_at'),
         dataIndex: 'update_at',
         width: 90,
+        sorter: (a, b) => {
+          return a.update_at - b.update_at;
+        },
         render: (text: string) => {
           return <div className='table-text'>{moment.unix(Number(text)).format('YYYY-MM-DD HH:mm:ss')}</div>;
         },
@@ -295,21 +303,18 @@ export default function List(props: ListProps) {
     });
   };
   const fetchData = async () => {
-    if (businessGroup.ids) {
-      setLoading(true);
-      const { success, dat } = await getBusiGroupsAlertRules(businessGroup.ids);
-      if (success) {
-        setData(dat || []);
-        setLoading(false);
-      }
+    setLoading(true);
+    const { success, dat } = await getBusiGroupsAlertRules(gids);
+    if (success) {
+      setData(dat || []);
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchData();
-  }, [businessGroup.ids]);
+  }, [gids]);
 
-  if (!businessGroup.ids) return null;
   const filteredData = filterData();
 
   return (
@@ -373,7 +378,7 @@ export default function List(props: ListProps) {
             />
           </Space>
         </Col>
-        {businessGroup.isLeaf && (
+        {businessGroup.isLeaf && gids && (
           <Col>
             <Space>
               <Button
@@ -391,6 +396,7 @@ export default function List(props: ListProps) {
         )}
       </Row>
       <Table
+        className='mt8'
         tableLayout='fixed'
         size='small'
         rowKey='id'

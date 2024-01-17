@@ -118,10 +118,18 @@ const getCalculatedValuesBySeries = (series: any[], calc: string, { unit, decima
       count: () => _.size(serie.data),
     };
     const stat = results[calc] ? results[calc]() : NaN;
+
     return {
       id: serie.id,
-      name: serie.name,
-      metric: serie.metric,
+      name: getMappedTextObj(serie.name, valueMappings)?.text,
+      metric: _.reduce(
+        serie.metric,
+        (pre, curVal, curKey) => {
+          pre[curKey] = getMappedTextObj(curVal, valueMappings)?.text;
+          return pre;
+        },
+        {},
+      ),
       fields: {
         ...serie.metric,
         refId: serie.refId,
@@ -133,7 +141,7 @@ const getCalculatedValuesBySeries = (series: any[], calc: string, { unit, decima
   return values;
 };
 
-export const getLegendValues = (series: any[], { unit, decimals, dateFormat }, hexPalette: string[], stack = false) => {
+export const getLegendValues = (series: any[], { unit, decimals, dateFormat }, hexPalette: string[], stack = false, valueMappings?: IValueMapping[]) => {
   const newSeries = stack ? _.reverse(_.clone(series)) : series;
   const values = _.map(newSeries, (serie, idx) => {
     const results = {
@@ -145,8 +153,15 @@ export const getLegendValues = (series: any[], { unit, decimals, dateFormat }, h
     };
     return {
       id: serie.id,
-      name: serie.name,
-      metric: serie.metric,
+      name: getMappedTextObj(serie.name, valueMappings)?.text,
+      metric: _.reduce(
+        serie.metric,
+        (pre, curVal, curKey) => {
+          pre[curKey] = getMappedTextObj(curVal, valueMappings)?.text;
+          return pre;
+        },
+        {},
+      ),
       offset: serie.offset,
       color: hexPalette[idx % hexPalette.length],
       disabled: serie.visible === false ? true : undefined,

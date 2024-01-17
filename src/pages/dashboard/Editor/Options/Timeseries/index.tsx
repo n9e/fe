@@ -21,6 +21,7 @@ import GraphStyles from './GraphStyles';
 import StandardOptions from '../../Fields/StandardOptions';
 import Thresholds from '../../Fields/Thresholds';
 import Overrides from './Overrides';
+import ValueMappings from './ValueMappings';
 
 export default function Timeseries({ targets }) {
   return (
@@ -28,6 +29,7 @@ export default function Timeseries({ targets }) {
       <Tooltip />
       <Legend />
       <GraphStyles />
+      <ValueMappings />
       <StandardOptions />
       <Thresholds />
       <Overrides targets={targets} />
