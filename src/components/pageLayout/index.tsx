@@ -203,8 +203,11 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
       >
         <div>
           <div>
-            <div className='text-lg font-semibold dark:text-slate-50 text-l1'>主题配置</div>
-            <div className='text-sm text-hint mt-1'>配置仅对当前用户生效</div>
+            <div className='text-lg font-semibold dark:text-slate-50 text-l1'>{t('theme.title')}</div>
+            <div className='text-sm text-hint mt-1'>{t('theme.title_help')}</div>
+          </div>
+          <div className='mt-6'>
+            <span className='font-semibold'>{t('theme.sideMenu')}</span> <span className='ml-2 text-hint'>{t('theme.sideMenu_help')}</span>
           </div>
           <div className='m-2'>
             <SideMenuColorSetting />
