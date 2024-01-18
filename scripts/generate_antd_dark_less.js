@@ -1,10 +1,16 @@
+/**
+ * Generate antd.dark.less
+ * 1. 定义暗黑模式的 less 变量
+ * 2. 重写 customize.less 阻止 antd drawer 组件覆盖 table 组件的样式
+ */
 var fs = require('fs');
 var path = require('path');
 var less = require('less');
+var { exec } = require('child_process');
 
 var options = less.options;
 
-function saveLess(filePath, filename) {
+function saveLess(filePath, filename, callback) {
   var lessCode = fs.readFileSync(filePath, 'utf8');
   less
     .render(lessCode, {
@@ -43,7 +49,15 @@ function saveLess(filePath, filename) {
     })
     .then(function (output) {
       fs.writeFileSync(filename, `.theme-dark { ${output.css} }`);
+      callback();
     });
 }
 
-saveLess('node_modules/antd/dist/antd.dark.less', 'src/theme/antd.dark.less');
+var customizeFilePath = 'node_modules/antd/lib/style/mixins/customize.less';
+
+exec(`cp ${customizeFilePath} ${customizeFilePath}.copy`, () => {
+  fs.writeFileSync(customizeFilePath, '.popover-customize-bg(@containerClass, @background: @popover-background, @prefix: @ant-prefix) when (@theme = dark) {}');
+  saveLess('node_modules/antd/dist/antd.dark.less', 'src/theme/antd.dark.less', () => {
+    exec(`mv ${customizeFilePath}.copy ${customizeFilePath}`);
+  });
+});
