@@ -94,7 +94,10 @@ export default function index({ setFieldsValue, cate, datasourceList, mode, requ
                         timeseries: 'datasource',
                         logging: 'logsource',
                       };
-                      url = `/settings/${cateMap[result.category]}/edit/${result.plugin_type}/${result.id}`;
+                      url = `/settings/${cateMap[result.category]}/edit/${result.id}`;
+                      if (result.category === 'logging') {
+                        url = `/settings/${cateMap[result.category]}/edit/${result.plugin_type}/${result.id}`;
+                      }
                     }
                     return (
                       <Link style={{ paddingLeft: 8 }} target='_blank' to={url}>
