@@ -127,6 +127,9 @@ const TableSource = (props: IPropsType) => {
       onFilter: (value: string, record) => {
         return record.plugin_type === value;
       },
+      render: (val) => {
+        return _.find(pluginList, { type: val })?.name;
+      },
     },
     {
       title: t('common:table.operations'),
