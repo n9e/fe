@@ -324,15 +324,13 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
               </Form.Item>
             </div>
           </div>
-          <div className='mt16'>
-            <div className='mb16'>
-              <Space>
-                {t('redefine_channels')}
-                <Form.Item name='redefine_channels' valuePropName='checked' noStyle>
-                  <Switch />
-                </Form.Item>
-              </Space>
-            </div>
+          <div className='mt16 mb16'>
+            <Space>
+              {t('redefine_channels')}
+              <Form.Item name='redefine_channels' valuePropName='checked' noStyle>
+                <Switch />
+              </Form.Item>
+            </Space>
             <div
               style={{
                 display: redefineChannels ? 'block' : 'none',
