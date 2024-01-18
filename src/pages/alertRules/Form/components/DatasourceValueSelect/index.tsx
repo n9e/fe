@@ -94,7 +94,7 @@ export default function index({ setFieldsValue, cate, datasourceList, mode, requ
                         timeseries: 'datasource',
                         logging: 'logsource',
                       };
-                      url = `/settings/${cateMap[result.category]}/edit/${result.id}`;
+                      url = `/settings/${cateMap[result.category]}/edit/${result.plugin_type}/${result.id}`;
                     }
                     return (
                       <Link style={{ paddingLeft: 8 }} target='_blank' to={url}>
