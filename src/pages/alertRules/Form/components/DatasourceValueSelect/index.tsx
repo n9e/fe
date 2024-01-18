@@ -92,7 +92,7 @@ export default function index({ setFieldsValue, cate, datasourceList, mode, requ
                     if (import.meta.env.VITE_IS_ENT === 'true') {
                       const cateMap = {
                         timeseries: 'datasource',
-                        log: 'logging',
+                        logging: 'logging',
                       };
                       url = `/settings/${cateMap[result.category]}/edit/${result.id}`;
                     }
