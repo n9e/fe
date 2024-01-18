@@ -218,17 +218,17 @@ export const darkTheme = EditorView.theme(
 );
 
 export const promqlHighlighter = HighlightStyle.define([
-  { tag: tags.name, color: '#000' },
-  { tag: tags.number, color: '#09885a' },
-  { tag: tags.string, color: '#a31515' },
-  { tag: tags.keyword, color: '#008080' },
-  { tag: tags.function(tags.variableName), color: '#008080' },
-  { tag: tags.labelName, color: '#800000' },
+  { tag: tags.name, class: 'cmt-name' },
+  { tag: tags.number, class: 'cmt-number' },
+  { tag: tags.string, class: 'cmt-string' },
+  { tag: tags.keyword, class: 'cmt-keyword' },
+  { tag: tags.function(tags.variableName), class: 'cmt-variableName' },
+  { tag: tags.labelName, class: 'cmt-labelName' },
   { tag: tags.operator },
-  { tag: tags.modifier, color: '#008080' },
+  { tag: tags.modifier, class: 'cmt-modifier' },
   { tag: tags.paren },
   { tag: tags.squareBracket },
   { tag: tags.brace },
-  { tag: tags.invalid, color: 'red' },
-  { tag: tags.comment, color: '#888', fontStyle: 'italic' },
+  { tag: tags.invalid, class: 'cmt-invalid' },
+  { tag: tags.comment, class: 'cmt-comment' },
 ]);
