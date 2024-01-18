@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { Table, Tag, Tooltip, Space, Input, Dropdown, Menu, Button, Modal, message, Select } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { SearchOutlined, DownOutlined, ReloadOutlined, CopyOutlined, ApartmentOutlined, QuestionCircleOutlined, InfoCircleOutlined } from '@ant-design/icons';
@@ -9,6 +9,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import { BusiGroupItem } from '@/store/commonInterface';
 import { getMonObjectList } from '@/services/targets';
 import { timeFormatter } from '@/pages/dashboard/Renderer/utils/valueFormatter';
+import { CommonStateContext } from '@/App';
 import clipboard from './clipboard';
 import OrganizeColumns from './OrganizeColumns';
 import { getDefaultColumnsConfigs, setDefaultColumnsConfigs } from './utils';
@@ -59,7 +60,8 @@ interface IProps {
 const GREEN_COLOR = '#3FC453';
 const YELLOW_COLOR = '#FF9919';
 const RED_COLOR = '#FF656B';
-const LOST_COLOR = '#CCCCCC';
+const LOST_COLOR_LIGHT = '#CCCCCC';
+const LOST_COLOR_DARK = '#929090';
 const downtimeOptions = [1, 2, 3, 5, 10, 30];
 const Unknown = () => {
   const { t } = useTranslation('targets');
@@ -77,6 +79,8 @@ export default function List(props: IProps) {
   const [collectsDrawerIdent, setCollectsDrawerIdent] = useState('');
   const [downtime, setDowntime] = useState();
   const [agentVersions, setAgentVersions] = useState<string>();
+  const { darkMode } = useContext(CommonStateContext);
+  const LOST_COLOR = darkMode ? LOST_COLOR_DARK : LOST_COLOR_LIGHT;
   const columns: ColumnsType<any> = [
     {
       title: (
