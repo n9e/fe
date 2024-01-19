@@ -27,7 +27,7 @@ export const baseTheme = EditorView.theme({
       overflowY: 'hidden',
     },
     '& > ul > li[aria-selected]': {
-      backgroundColor: '##1d4f78',
+      backgroundColor: '#1d4f78',
       color: 'unset',
     },
     minWidth: '30%',

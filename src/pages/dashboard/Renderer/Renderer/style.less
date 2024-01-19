@@ -1,6 +1,6 @@
 .renderer-container {
   height: 100%;
-  background-color: #fff;
+  background-color: var(--fc-fill-2);
   box-shadow: 0px 0px 10px 2px rgba(0,0,0,0.04);
   .renderer-header-controller {
     line-height: 24px !important; // 覆盖 antd dark 样式
@@ -38,13 +38,6 @@
   align-items: center;
   border: 0 none !important;
   background-color: unset;
-}
-.renderer-header-desc {
-  .anticon-info-circle,
-  .anticon-link {
-    // margin-left: 8px;
-    color: #666;
-  }
 }
 .renderer-header-desc,.renderer-header-error {
   text-align: center;
@@ -102,5 +95,5 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #999;
+  color: var(--fc-text-3);
 }

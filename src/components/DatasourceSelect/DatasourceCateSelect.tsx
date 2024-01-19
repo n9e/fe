@@ -1,8 +1,10 @@
 import React, { useContext } from 'react';
 import { Select, SelectProps } from 'antd';
 import _ from 'lodash';
+import classNames from 'classnames';
 import { Cate } from '@/components/AdvancedWrap';
 import { CommonStateContext } from '@/App';
+import './style.less';
 
 interface IProps extends SelectProps {
   scene: 'graph' | 'alert';
@@ -12,18 +14,10 @@ interface IProps extends SelectProps {
 
 export const ProSvg = ({ type = 'normal' }) => (
   <div
-    style={{
-      border: `1px solid ${type === 'selected' ? '#fff' : '#6C53B1'}`,
-      color: '#fff',
-      background: '#6C53B1',
-      display: 'inline-block',
-      borderRadius: 2,
-      padding: '2px 6px',
-      fontSize: 12,
-      fontWeight: 'bolder',
-      lineHeight: 1,
-      transform: 'scale(0.8)',
-    }}
+    className={classNames({
+      'n9e-pro-tag': true,
+      'n9e-pro-tag-selected': type === 'selected',
+    })}
   >
     Pro
   </div>

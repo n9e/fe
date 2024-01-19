@@ -52,7 +52,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  background-color: #f9f9f9 !important; // 覆盖 pageLayout 上面约定的样式
+  background-color: var(--fc-fill-1) !important; // 覆盖 pageLayout 上面约定的样式
   box-shadow: unset !important;
   overflow: auto;
   overflow-x: hidden;
@@ -69,7 +69,7 @@
 
   .ant-affix {
     .dashboard-detail-content-header-container {
-      background-color: #f9f9f9;
+      background-color: var(--fc-fill-1);
       box-shadow: 0 4px 4px rgba(0, 0, 0, .12);
     }
     .dashboard-detail-content-header {
@@ -165,23 +165,5 @@
   .scroll-container::-webkit-scrollbar-track {
     border-radius: 10px;
     background: unset;
-  }
-}
-
-// 现在仪表盘里面边框线太多了，尝试去掉 collapse 的所有边框线
-.n9e-dashboard-group {
-  .ant-collapse,
-  .ant-collapse-item,
-  .ant-collapse-content {
-    border: 0 none;
-    background-color: #f9f9f9;
-  }
-  .ant-collapse-extra {
-    display: none;
-  }
-  .ant-collapse-header:hover {
-    .ant-collapse-extra {
-      display: block;
-    }
   }
 }

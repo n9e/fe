@@ -180,22 +180,6 @@ export default function Title(props: IProps) {
           >
             {viewMode === 'fullscreen' ? t('exit_full_screen') : t('full_screen')}
           </Button>
-          {/* <Select
-            options={[
-              { label: 'light', value: 'light' },
-              { label: 'dark', value: 'dark' },
-            ]}
-            value={themeMode || 'light'}
-            onChange={(val) => {
-              const newQuery = _.omit(query, ['themeMode']);
-              newQuery.themeMode = val;
-              history.replace({
-                pathname: location.pathname,
-                search: querystring.stringify(newQuery),
-              });
-              window.localStorage.setItem(dashboardThemeModeCacheKey, val);
-            }}
-          /> */}
         </Space>
       </div>
     </div>
