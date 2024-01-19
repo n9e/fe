@@ -16,7 +16,7 @@
  */
 import React from 'react';
 import _ from 'lodash';
-import { Input, Modal } from 'antd';
+import { Input, Modal, Button } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
@@ -43,22 +43,22 @@ function Export(props: ModalWrapProps & IProps) {
       onCancel={() => {
         destroy();
       }}
-      footer={null}
+      footer={[
+        <Button
+          key='download'
+          onClick={() => {
+            download([data], 'download.json');
+          }}
+        >
+          {t('common:download_json')}
+        </Button>,
+        <Button key='copy' style={{ float: 'right' }} onClick={() => copyToClipBoard(data)}>
+          <CopyOutlined />
+          {t('common:batch.export.copy')}
+        </Button>,
+      ]}
     >
       <>
-        <div style={{ marginBottom: 10 }}>
-          <a
-            onClick={() => {
-              download([data], 'download.json');
-            }}
-          >
-            Download.json
-          </a>
-          <a style={{ float: 'right' }} onClick={() => copyToClipBoard(data, t)}>
-            <CopyOutlined />
-            {t('copy')}
-          </a>
-        </div>
         <Input.TextArea value={str} rows={10} />
       </>
     </Modal>

@@ -81,26 +81,6 @@ export default function Title(props: IProps) {
         message: (
           <div>
             <div>{t('detail.fullscreen.notification.esc')}</div>
-            <div>
-              <Space>
-                {t('detail.fullscreen.notification.theme')}
-                <Switch
-                  checkedChildren='dark'
-                  unCheckedChildren='light'
-                  defaultChecked={themeMode === 'dark'}
-                  onChange={(checked) => {
-                    const newQuery = _.omit(query, ['themeMode']);
-                    newQuery.themeMode = checked ? 'dark' : 'light';
-                    localStorage.setItem('dashboard_themeMode', checked ? 'dark' : 'light');
-                    history.replace({
-                      pathname: location.pathname,
-                      search: querystring.stringify(newQuery),
-                    });
-                    window.localStorage.setItem(dashboardThemeModeCacheKey, newQuery.themeMode);
-                  }}
-                />
-              </Space>
-            </div>
           </div>
         ),
         duration: 3,

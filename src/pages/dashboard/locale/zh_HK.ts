@@ -370,7 +370,6 @@ const zh_HK = {
     fullscreen: {
       notification: {
         esc: '按 ESC 鍵退出全螢幕模式',
-        theme: '主題模式',
       },
     },
   },

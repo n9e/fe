@@ -17,6 +17,7 @@
 import { message } from 'antd';
 import React, { ReactNode, Component } from 'react';
 import { useLocation } from 'react-router-dom';
+import i18next from 'i18next';
 import { IStore } from '@/store/common';
 export { getDefaultDatasourceValue, setDefaultDatasourceValue } from './datasource';
 
@@ -36,7 +37,7 @@ export const download = function (stringList: Array<string> | string, name: stri
 /**
  * 将文本添加到剪贴板
  */
-export const copyToClipBoard = (text: string, t, spliter?: string): boolean => {
+export const copyToClipBoard = (text: string, spliter?: string): boolean => {
   const fakeElem = document.createElement('textarea');
   fakeElem.style.border = '0';
   fakeElem.style.padding = '0';
@@ -54,12 +55,12 @@ export const copyToClipBoard = (text: string, t, spliter?: string): boolean => {
   try {
     succeeded = document.execCommand('copy');
     if (spliter && text.includes(spliter)) {
-      message.success(`${t('复制')}${text.split('\n').length}${t('条数据到剪贴板')}`);
+      message.success(`${i18next.t('复制')}${text.split('\n').length}${i18next.t('条数据到剪贴板')}`);
     } else {
-      message.success(t('复制到剪贴板'));
+      message.success(i18next.t('复制到剪贴板'));
     }
   } catch (err) {
-    message.error(t('复制失败'));
+    message.error(i18next.t('复制失败'));
     succeeded = false;
   }
   if (succeeded) {

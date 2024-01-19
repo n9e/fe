@@ -89,6 +89,12 @@ const en_US = {
     2: 'S2',
     3: 'S3',
   },
+  download_json: 'Download JSON',
+  batch: {
+    export: {
+      copy: 'Copy JSON to clipboard',
+    },
+  },
 
   tpl: 'Self-healing',
   'tpl.create': 'Create',

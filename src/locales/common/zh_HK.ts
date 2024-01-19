@@ -89,6 +89,13 @@ const zh_HK = {
     '2': '二級報警',
     '3': '三級報警',
   },
+  download_json: '下載 JSON',
+  batch: {
+    export: {
+      copy: '複製 JSON 到剪貼板',
+    },
+  },
+
   tpl: '自愈腳本',
   'tpl.create': '創建',
   'tpl.tag.bind': '繫結標籤',

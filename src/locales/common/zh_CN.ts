@@ -89,6 +89,12 @@ const zh_CN = {
     2: '二级报警',
     3: '三级报警',
   },
+  download_json: '下载 JSON',
+  batch: {
+    export: {
+      copy: '复制 JSON 到剪贴板',
+    },
+  },
 
   // 临时把 task 的翻译放在这里
   tpl: '自愈脚本',
