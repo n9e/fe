@@ -18,6 +18,7 @@ import React, { useContext, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import querystring from 'query-string';
 import _ from 'lodash';
+import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import { Button, Space, Dropdown, Menu, Switch, notification, Select } from 'antd';
 import { RollbackOutlined, SettingOutlined } from '@ant-design/icons';
@@ -160,7 +161,19 @@ export default function Title(props: IProps) {
               }}
             />
           )}
-          <TimeRangePickerWithRefresh localKey={dashboardTimeCacheKey} dateFormat='YYYY-MM-DD HH:mm:ss' value={range} onChange={setRange} />
+          <TimeRangePickerWithRefresh
+            localKey={dashboardTimeCacheKey}
+            dateFormat='YYYY-MM-DD HH:mm:ss'
+            value={range}
+            onChange={(val) => {
+              history.replace({
+                pathname: location.pathname,
+                // 重新设置时间范围时，清空 __from 和 __to
+                search: querystring.stringify(_.omit(querystring.parse(location.search), ['__from', '__to'])),
+              });
+              setRange(val);
+            }}
+          />
           <Button
             onClick={() => {
               const newQuery = _.omit(query, ['viewMode', 'themeMode']);
