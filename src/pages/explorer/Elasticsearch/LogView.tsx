@@ -41,7 +41,7 @@ export default function LogView(props: Props) {
       tabBarExtraContent={
         <Space
           onClick={() => {
-            copyToClipBoard(jsonValue, t);
+            copyToClipBoard(jsonValue);
           }}
           style={{ cursor: 'pointer' }}
         >
