@@ -16,14 +16,14 @@
  */
 import React, { ReactNode, useContext, useState, useEffect } from 'react';
 import { useHistory, Link } from 'react-router-dom';
-import Icon, { RollbackOutlined } from '@ant-design/icons';
+import { RollbackOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { Menu, Dropdown, Space, Drawer } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { Logout } from '@/services/login';
 import AdvancedWrap, { License } from '@/components/AdvancedWrap';
 import { CommonStateContext } from '@/App';
-import { AccessTokenKey } from '@/utils/constant';
+import { AccessTokenKey, IS_ENT } from '@/utils/constant';
 import DarkModeSelect from '@/components/DarkModeSelect';
 import Version from './Version';
 import SideMenuColorSetting from './SideMenuColorSetting';
@@ -68,7 +68,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
       >
         {t('profile')}
       </Menu.Item>
-      {import.meta.env.VITE_IS_ENT !== 'true' && (
+      {!IS_ENT && (
         <Menu.Item
           onClick={() => {
             setThemeVisible(true);
@@ -102,7 +102,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
             <div className={'page-top-header'}>{customArea}</div>
           ) : (
             <div className={'page-top-header'}>
-              <div className={`page-header-content ${import.meta.env.VITE_IS_ENT !== 'true' ? 'n9e-page-header-content' : ''}`}>
+              <div className={`page-header-content ${!IS_ENT ? 'n9e-page-header-content' : ''}`}>
                 <div className={'page-header-title'}>
                   {showBack && (
                     <RollbackOutlined
@@ -135,7 +135,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                   <Version />
 
                   {/* 整合版本关闭文档链接 */}
-                  {import.meta.env.VITE_IS_ENT !== 'true' && (
+                  {!IS_ENT && (
                     <Space style={{ marginRight: 16 }}>
                       <div style={{ marginRight: 8, position: 'relative' }}>
                         <a target='_blank' href={siteInfo?.document_url || 'https://flashcat.cloud/docs/'}>
@@ -176,7 +176,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                       {curLanguage}
                     </a>
                   </Dropdown>
-                  {import.meta.env.VITE_IS_ENT !== 'true' && (
+                  {!IS_ENT && (
                     <div style={{ marginRight: 8 }}>
                       <DarkModeSelect />
                     </div>

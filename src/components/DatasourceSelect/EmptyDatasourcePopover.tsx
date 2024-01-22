@@ -4,6 +4,7 @@ import { Popover } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import { IS_ENT } from '@/utils/constant';
 
 interface IProps {
   datasourceList: any[];
@@ -14,7 +15,7 @@ export default function EmptyDatasourcePopover(props: IProps) {
   const { t } = useTranslation();
   const { profile } = useContext(CommonStateContext);
   const { datasourceList, children } = props;
-  const linkUrl = import.meta.env.VITE_IS_ENT === 'true' ? '/settings/source/timeseries' : '/help/source';
+  const linkUrl = IS_ENT ? '/settings/source/timeseries' : '/help/source';
 
   return (
     <Popover

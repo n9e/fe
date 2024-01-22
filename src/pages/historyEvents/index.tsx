@@ -29,6 +29,7 @@ import { CommonStateContext } from '@/App';
 import { getProdOptions } from '@/pages/alertRules/Form/components/ProdSelect';
 import DatasourceSelect from '@/components/DatasourceSelect/DatasourceSelect';
 import TimeRangePicker, { IRawTimeRange, parseRange, getDefaultValue } from '@/components/TimeRangePicker';
+import { IS_ENT } from '@/utils/constant';
 import exportEvents, { downloadFile } from './exportEvents';
 import { getEvents, getEventsByIds } from './services';
 import { SeverityColor } from '../event';
@@ -139,7 +140,7 @@ const Event: React.FC = () => {
   );
 
   let prodOptions = getProdOptions(feats);
-  if (import.meta.env.VITE_IS_ENT === 'true') {
+  if (IS_ENT) {
     prodOptions = [
       ...prodOptions,
       {

@@ -8,6 +8,7 @@ import { getMenuPerm } from '@/services/common';
 import { ScrollArea } from '@/components/ScrollArea';
 import { CommonStateContext } from '@/App';
 import { getSideMenuBgColor } from '@/components/pageLayout/SideMenuColorSetting';
+import { IS_ENT } from '@/utils/constant';
 import IconFont from '../../IconFont';
 import { cn } from './utils';
 import SideMenuHeader from './Header';
@@ -311,9 +312,10 @@ const SideMenu = () => {
       >
         <div
           className={cn(
-            'z-20 flex h-full select-none flex-col justify-between border-0 border-r border-solid border-fc-300 transition-width',
+            'z-20 flex h-full select-none flex-col justify-between border-0 border-r border-solid transition-width',
             collapsed ? 'w-[64px]' : uncollapsedWidth,
             collapsedHover ? `absolute ${uncollapsedWidth} shadow-mf` : '',
+            !IS_ENT ? 'border-fc-300' : '',
           )}
           style={{ background: sideMenuBgColor }}
         >

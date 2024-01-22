@@ -25,7 +25,8 @@ import { AutoRefresh } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
 import { getProdOptions } from '@/pages/alertRules/Form/components/ProdSelect';
 import DatasourceSelect from '@/components/DatasourceSelect/DatasourceSelect';
-import TimeRangePicker, { IRawTimeRange, getDefaultValue } from '@/components/TimeRangePicker';
+import TimeRangePicker, { IRawTimeRange } from '@/components/TimeRangePicker';
+import { IS_ENT } from '@/utils/constant';
 import Card from './card';
 import Table from './Table';
 import './locale';
@@ -77,7 +78,7 @@ const Event: React.FC = () => {
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
   let prodOptions = getProdOptions(feats);
-  if (import.meta.env.VITE_IS_ENT === 'true') {
+  if (IS_ENT) {
     prodOptions = [
       ...prodOptions,
       {

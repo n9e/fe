@@ -21,7 +21,7 @@ import type { MetricListRes, strategyGroup, strategyStatus, TagKeysRes, TagValue
 import { PAGE_SIZE } from '@/utils/constant';
 import React from 'react';
 import queryString from 'query-string';
-import { N9E_PATHNAME } from '@/utils/constant';
+import { N9E_PATHNAME, IS_ENT } from '@/utils/constant';
 
 // 获得策略分组列表
 export const getStrategyGroupList = function (query?: string, p = 1) {
@@ -267,7 +267,7 @@ export const getHistoryEvents = function (data) {
 // 获取告警详情
 export function getAlertEventsById(eventId) {
   let url = '/api/n9e/alert-cur-event';
-  if (import.meta.env.VITE_IS_ENT === 'true') {
+  if (IS_ENT) {
     url = '/api/n9e-plus/alert-cur-event';
   }
   return request(`${url}/${eventId}`, {
@@ -277,7 +277,7 @@ export function getAlertEventsById(eventId) {
 
 export function getHistoryEventsById(eventId) {
   let url = '/api/n9e/alert-his-event';
-  if (import.meta.env.VITE_IS_ENT === 'true') {
+  if (IS_ENT) {
     url = '/api/n9e-plus/alert-his-event';
   }
   return request(`${url}/${eventId}`, {

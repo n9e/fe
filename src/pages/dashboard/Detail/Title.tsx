@@ -24,6 +24,7 @@ import { RollbackOutlined, SettingOutlined } from '@ant-design/icons';
 import { useKeyPress } from 'ahooks';
 import { TimeRangePickerWithRefresh, IRawTimeRange } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
+import { IS_ENT } from '@/utils/constant';
 import { AddPanelIcon } from '../config';
 import { visualizations } from '../Editor/config';
 import { dashboardTimeCacheKey } from './Detail';
@@ -45,14 +46,14 @@ interface IProps {
 const cachePageTitle = document.title || 'Nightingale';
 
 export default function Title(props: IProps) {
-  const { t, i18n } = useTranslation('dashboard');
+  const { t } = useTranslation('dashboard');
   const { dashboard, range, setRange, onAddPanel, isPreview, isBuiltin, isAuthorized } = props;
   const history = useHistory();
   const location = useLocation();
   const { siteInfo } = useContext(CommonStateContext);
   const query = querystring.parse(location.search);
   const { viewMode } = query;
-  const themeMode = getDefaultThemeMode(query);
+  const themeMode = getDefaultThemeMode(query); // only for ENT version
 
   useEffect(() => {
     document.title = `${dashboard.name} - ${siteInfo?.page_title || cachePageTitle}`;
@@ -81,6 +82,28 @@ export default function Title(props: IProps) {
         message: (
           <div>
             <div>{t('detail.fullscreen.notification.esc')}</div>
+            {IS_ENT && (
+              <div>
+                <Space>
+                  {t('detail.fullscreen.notification.theme')}
+                  <Switch
+                    checkedChildren='dark'
+                    unCheckedChildren='light'
+                    defaultChecked={themeMode === 'dark'}
+                    onChange={(checked) => {
+                      const newQuery = _.omit(query, ['themeMode']);
+                      newQuery.themeMode = checked ? 'dark' : 'light';
+                      localStorage.setItem('dashboard_themeMode', checked ? 'dark' : 'light');
+                      history.replace({
+                        pathname: location.pathname,
+                        search: querystring.stringify(newQuery),
+                      });
+                      window.localStorage.setItem(dashboardThemeModeCacheKey, newQuery.themeMode);
+                    }}
+                  />
+                </Space>
+              </div>
+            )}
           </div>
         ),
         duration: 3,
@@ -90,7 +113,7 @@ export default function Title(props: IProps) {
 
   return (
     <div
-      className={`dashboard-detail-header ${import.meta.env.VITE_IS_ENT !== 'true' ? 'n9e-page-header-content' : ''}`}
+      className={`dashboard-detail-header ${!IS_ENT ? 'n9e-page-header-content' : ''}`}
       style={{
         display: query.viewMode === 'fullscreen' ? 'none' : 'flex',
       }}
@@ -160,6 +183,24 @@ export default function Title(props: IProps) {
           >
             {viewMode === 'fullscreen' ? t('exit_full_screen') : t('full_screen')}
           </Button>
+          {IS_ENT && (
+            <Select
+              options={[
+                { label: 'light', value: 'light' },
+                { label: 'dark', value: 'dark' },
+              ]}
+              value={themeMode || 'light'}
+              onChange={(val) => {
+                const newQuery = _.omit(query, ['themeMode']);
+                newQuery.themeMode = val;
+                history.replace({
+                  pathname: location.pathname,
+                  search: querystring.stringify(newQuery),
+                });
+                window.localStorage.setItem(dashboardThemeModeCacheKey, val);
+              }}
+            />
+          )}
         </Space>
       </div>
     </div>
