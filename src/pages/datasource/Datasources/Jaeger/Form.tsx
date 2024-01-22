@@ -17,7 +17,7 @@ export default function FormCpt({ data, onFinish, submitLoading }: any) {
   return (
     <Form form={form} layout='vertical' onFinish={onFinish} initialValues={data} className='settings-source-form'>
       <Name />
-      <HTTP />
+      <HTTP placeholder='http://127.0.0.1:16686' />
       <BasicAuth />
       <SkipTLSVerify />
       <Headers />

@@ -4,7 +4,7 @@
   }
   &-search {
     .ant-form-item {
-      margin-bottom: 8px;
+      margin-bottom: 8px !important;
     }
     .ellipse-when-overflow {
       .ant-select-selection-item {
@@ -87,7 +87,7 @@
 }
 
 .GraphTick {
-  stroke: #aaa;
+  stroke: var(--fc-border-color);
   stroke-width: 1px;
 }
 
@@ -123,9 +123,9 @@
 }
 
 .LabeledList {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+  list-style: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 .LabeledList--item {
@@ -153,8 +153,8 @@
   height: 1rem;
 }
 .TimelineHeaderRow {
-  background: #ececec;
-  border-bottom: 1px solid #ccc;
+  background: var(--fc-fill-4);
+  border-bottom: 1px solid var(--fc-border-color);
   height: 38px;
   line-height: 38px;
   width: 100%;
@@ -179,7 +179,7 @@
   position: absolute;
   height: 100%;
   width: 1px;
-  background: #d8d8d8;
+  background: var(--fc-fill-6);
 }
 
 .Ticks--tick:last-child {

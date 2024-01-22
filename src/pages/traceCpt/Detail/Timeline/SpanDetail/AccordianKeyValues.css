@@ -23,7 +23,7 @@ limitations under the License.
 }
 
 .AccordianKeyValues--header:hover {
-  background: #e8e8e8;
+  background: var(--fc-fill-4);
 }
 
 .AccordianKeyValues--header.is-empty {
@@ -49,7 +49,7 @@ limitations under the License.
   display: inline;
   margin-left: 0.7em;
   padding-right: 0.5rem;
-  border-right: 1px solid #ddd;
+  border-right: 1px solid var(--fc-fill-6);
 }
 
 .AccordianKeyValues--summaryItem:last-child {

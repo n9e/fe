@@ -20,7 +20,7 @@ limitations under the License.
 }
 
 .SpanTreeOffset.is-parent:hover {
-  background-color: #e8e8e8;
+  background-color: var(--fc-fill-4);
   cursor: pointer;
 }
 
@@ -35,7 +35,7 @@ limitations under the License.
 .SpanTreeOffset--indentGuide:before {
   content: '';
   padding-left: 1px;
-  background-color: lightgrey;
+  background-color: var(--fc-fill-6);
 }
 
 .SpanTreeOffset--indentGuide.is-active {

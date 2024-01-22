@@ -15,7 +15,7 @@ limitations under the License.
 */
 
 .SpanDetail--divider {
-  background: #ddd;
+  background: var(--fc-fill-6);
 }
 
 .SpanDetail--debugInfo {

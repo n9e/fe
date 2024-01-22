@@ -1,8 +1,8 @@
 const zh_CN = {
-  title: '对象列表',
+  title: '机器列表',
   default_filter: '预置筛选',
-  ungrouped_targets: '未归组对象',
-  all_targets: '全部对象',
+  ungrouped_targets: '未归组机器',
+  all_targets: '全部机器',
   datasource: '数据源',
   search_placeholder: '模糊搜索表格内容(多个关键词请用空格分隔)',
   filterDowntime: '无更新超过',

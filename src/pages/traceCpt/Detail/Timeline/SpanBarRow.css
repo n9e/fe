@@ -39,7 +39,7 @@ limitations under the License.
 }
 
 .span-name-wrapper {
-  background: #f8f8f8;
+  background: var(--fc-fill-2);
   line-height: 27px;
   overflow: hidden;
   display: flex;
@@ -50,24 +50,24 @@ limitations under the License.
 }
 
 .span-name-wrapper:hover {
-  border-right: 1px solid #bbb;
+  border-right: 1px solid var(--fc-border-color);
   float: left;
   min-width: calc(100% + 1px);
   overflow: visible;
 }
 
 .span-row:hover .span-name-wrapper {
-  background: #f8f8f8;
-  background: linear-gradient(90deg, #fafafa, #f8f8f8 75%, #eee);
+  background: var(--fc-fill-4);
+  /* background: linear-gradient(90deg, #fafafa, #f8f8f8 75%, #eee); */
 }
 
 .span-row.is-matching-filter:hover .span-name-wrapper {
-  background: linear-gradient(90deg, #fff5e1, #fff5e1 75%, #ffe6c9);
+  /* background: linear-gradient(90deg, #fff5e1, #fff5e1 75%, #ffe6c9); */
 }
 
 .span-row.is-expanded .span-name-wrapper {
-  background: #f0f0f0;
-  box-shadow: 0 1px 0 #ddd;
+  background: var(--fc-fill-3);
+  box-shadow: 0 1px 0 var(--fc-border-color);
 }
 
 .span-row.is-expanded .span-name-wrapper.is-matching-filter {
@@ -116,11 +116,11 @@ limitations under the License.
 }
 
 .endpoint-name {
-  color: #808080;
+  color: var(--fc-text-2);
 }
 
 .span-name:hover > .endpoint-name {
-  color: #000;
+  color: var(--fc-text-3);
 }
 
 .span-svc-name {
@@ -138,8 +138,8 @@ limitations under the License.
 }
 
 .span-row:hover .span-view {
-  background-color: #f5f5f5;
-  outline: 1px solid #ddd;
+  background-color: var(--fc-fill-4);
+  outline: 1px solid var(--fc-border-color);
 }
 
 .span-row.is-matching-filter:hover .span-view {
@@ -148,17 +148,17 @@ limitations under the License.
 }
 
 .span-row.is-expanded .span-view {
-  background: #f8f8f8;
-  outline: 1px solid #ddd;
+  background: var(--fc-fill-3);;
+  outline: 1px solid var(--fc-border-color);;
 }
 
 .span-row.is-expanded.is-matching-filter .span-view {
   background: #fff3d7;
-  outline: 1px solid #ddd;
+  outline: 1px solid var(--fc-border-color);;
 }
 
 .span-row.is-expanded:hover .span-view {
-  background: #eee;
+  background: var(--fc-fill-4);
 }
 
 .span-row.is-expanded.is-matching-filter:hover .span-view {
