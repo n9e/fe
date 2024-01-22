@@ -1,6 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
-import { Row, Col, Button } from 'antd';
+import { Row, Col, Button, Space } from 'antd';
 import { PlayCircleOutlined } from '@ant-design/icons';
 import queryString from 'query-string';
 import moment from 'moment';
@@ -22,35 +22,35 @@ export default function PrometheusDetail(props: IProps) {
         const queries = _.get(ruleConfig, 'queries', []);
         return (
           <div style={{ width: '100%' }}>
-            {_.map(queries, (query) => {
+            {_.map(queries, () => {
               const prom_ql = eventDetail.prom_ql;
               return (
-                <Row className='promql-row' key={prom_ql}>
-                  <Col span={20}>
-                    <PromQLInput value={prom_ql} readonly />
-                  </Col>
-                  <Col span={4}>
-                    <Button
-                      className='run-btn'
-                      type='link'
-                      onClick={() => {
-                        history.push({
-                          pathname: '/metric/explorer',
-                          search: queryString.stringify({
-                            prom_ql,
-                            data_source_name: 'prometheus',
-                            data_source_id: eventDetail.datasource_id,
-                            mode: 'graph',
-                            start: moment.unix(eventDetail.trigger_time).subtract(30, 'minutes').unix(),
-                            end: moment.unix(eventDetail.trigger_time).add(30, 'minutes').unix(),
-                          }),
-                        });
-                      }}
-                    >
-                      <PlayCircleOutlined className='run-con' />
-                    </Button>
-                  </Col>
-                </Row>
+                <Space align='baseline' size={2}>
+                  <Button
+                    className='p0'
+                    style={{
+                      position: 'relative',
+                      top: 1,
+                    }}
+                    type='link'
+                    onClick={() => {
+                      history.push({
+                        pathname: '/metric/explorer',
+                        search: queryString.stringify({
+                          prom_ql,
+                          data_source_name: 'prometheus',
+                          data_source_id: eventDetail.datasource_id,
+                          mode: 'graph',
+                          start: moment.unix(eventDetail.trigger_time).subtract(30, 'minutes').unix(),
+                          end: moment.unix(eventDetail.trigger_time).add(30, 'minutes').unix(),
+                        }),
+                      });
+                    }}
+                  >
+                    <PlayCircleOutlined />
+                  </Button>
+                  <PromQLInput value={prom_ql} readonly />
+                </Space>
               );
             })}
           </div>
