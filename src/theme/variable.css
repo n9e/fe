@@ -25,7 +25,8 @@
   --fc-text-3: #666666;
   --fc-text-4: #999999;
   --fc-text-5: #d1d1d9;
-  --fc-text-link: #6c53b1;
+  --fc-text-link: #8162dc;
+  --fc-text-link-rgb: 129, 98, 220;
   --fc-text-placeholder: #bfbfbf;
 
   /* 其他 */
@@ -98,7 +99,8 @@
   --fc-text-3: #bfbfc5;
   --fc-text-4: #9999a2;
   --fc-text-5: #737380;
-  --fc-text-link: #6c53b1;
+  --fc-text-link: #8162dc;
+  --fc-text-link-rgb: 129, 98, 220;
   --fc-text-placeholder: #bfbfbf;
 
   /* 其他 */
