@@ -244,6 +244,9 @@ function App() {
   useEffect(() => {
     if (!location.pathname.startsWith('/login')) {
       document.body.className = commonState.darkMode ? 'theme-dark' : 'theme-light';
+      // TODO: 临时兼容 Class 组件的写法
+      localStorage.setItem('n9e-dark-mode', _.toString(commonState.darkMode));
+      window.dispatchEvent(new Event('n9e-dark-mode-update'));
     }
   }, [commonState.darkMode]);
 
