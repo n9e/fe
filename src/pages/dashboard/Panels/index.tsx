@@ -43,7 +43,7 @@ import {
 import Renderer from '../Renderer/Renderer/index';
 import Row from './Row';
 import EditorModal from './EditorModal';
-import { getDefaultThemeMode } from '../Detail/utils';
+import { getDefaultThemeMode, ROW_HEIGHT } from '../Detail/utils';
 import './style.less';
 
 interface IProps {
@@ -75,7 +75,7 @@ function index(props: IProps) {
   const layoutInitialized = useRef(false);
   const allowUpdateDashboardConfigs = useRef(false);
   const reactGridLayoutDefaultProps = {
-    rowHeight: 40,
+    rowHeight: ROW_HEIGHT,
     cols: 24,
     useCSSTransforms: false,
     draggableHandle: '.dashboards-panels-item-drag-handle',

@@ -42,6 +42,7 @@ import Editor from '../Editor';
 import { defaultCustomValuesMap, defaultOptionsValuesMap } from '../Editor/config';
 import { sortPanelsByGridLayout, panelsMergeToConfigs, updatePanelsInsertNewPanelToGlobal } from '../Panels/utils';
 import { useGlobalState } from '../globalState';
+import { scrollToLastPanel } from './utils';
 import './style.less';
 
 interface URLParam {
@@ -242,6 +243,7 @@ export default function DetailV2(props: IProps) {
                 'row',
               );
               setPanels(newPanels);
+              scrollToLastPanel(newPanels);
               handleUpdateDashboardConfigs(dashboard.id, {
                 configs: panelsMergeToConfigs(dashboard.configs, newPanels),
               });
@@ -373,9 +375,12 @@ export default function DetailV2(props: IProps) {
         dashboardId={id}
         time={range}
         initialValues={editorData.initialValues}
-        onOK={(values) => {
+        onOK={(values, mode) => {
           const newPanels = updatePanelsInsertNewPanelToGlobal(panels, values, 'chart');
           setPanels(newPanels);
+          if (mode === 'add') {
+            scrollToLastPanel(newPanels);
+          }
           handleUpdateDashboardConfigs(dashboard.id, {
             configs: panelsMergeToConfigs(dashboard.configs, newPanels),
           });
