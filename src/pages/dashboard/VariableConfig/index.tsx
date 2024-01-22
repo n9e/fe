@@ -136,7 +136,7 @@ function index(props: IProps) {
             const selected = getVaraiableSelected(item.name, item.type, id);
             if (query.__variable_value_fixed === undefined) {
               if (selected === null || (selected && !_.isEmpty(regFilterOptions) && !includes(regFilterOptions, selected))) {
-                const head = regFilterOptions?.[0];
+                const head = regFilterOptions?.[0] || ''; // 2014-01-22 添加默认值（空字符）
                 const defaultVal = item.multi ? (item.allOption ? ['all'] : head ? [head] : []) : head;
                 setVaraiableSelected({ name: item.name, value: defaultVal, id, urlAttach: true });
               }
