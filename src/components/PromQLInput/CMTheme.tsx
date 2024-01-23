@@ -26,6 +26,7 @@ export const baseTheme = EditorView.theme({
   },
   '.cm-scroller': {
     overflow: 'hidden',
+    fontFamily: 'Helvetica Neue,sans-serif,PingFangSC-Regular,microsoft yahei ui,microsoft yahei,simsun,"sans-serif"',
   },
   '.cm-matchingBracket': {
     fontWeight: 'bold',

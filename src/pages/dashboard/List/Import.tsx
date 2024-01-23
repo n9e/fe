@@ -14,16 +14,17 @@
  * limitations under the License.
  *
  */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
-import { Modal, Input, Tabs, Form, Button, Alert, message } from 'antd';
-import Icon from '@ant-design/icons';
+import { Modal, Input, Tabs, Form, Button, Alert, message, Select, Table, Space, Tag } from 'antd';
+import Icon, { SearchOutlined } from '@ant-design/icons';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { createDashboard } from '@/services/dashboardV2';
+import { getDashboardCates, getDashboardDetail } from '@/pages/dashboardBuiltin/services';
 import { getValidImportData, convertDashboardGrafanaToN9E, JSONParse, checkGrafanaDashboardVersion } from './utils';
 
-type ModalType = 'Import' | 'ImportGrafana';
+type ModalType = 'Import' | 'ImportGrafana' | 'ImportBuiltin';
 interface IProps {
   busiId: number;
   type: ModalType;
@@ -52,6 +53,160 @@ const BetaSvg = () => (
   </svg>
 );
 const BetaIcon = (props) => <Icon component={BetaSvg} {...props} />;
+const ImportBuiltinContent = ({ busiId, onOk }) => {
+  const { t } = useTranslation('dashboard');
+  const [builtinDashboards, setBuiltinDashboards] = useState<any[]>([]);
+  const [boardSearch, setBoardSearch] = useState<string>('');
+  const [form] = Form.useForm();
+  const cate = Form.useWatch('cate', form);
+  const selectedBoards = Form.useWatch('selectedBoards', form);
+
+  useEffect(() => {
+    getDashboardCates().then((res) => {
+      setBuiltinDashboards(res);
+    });
+  }, []);
+
+  return (
+    <Form
+      layout='vertical'
+      form={form}
+      onFinish={(vals) => {
+        const requests = _.map(vals.selectedBoards, (item) => {
+          return getDashboardDetail(item);
+        });
+        Promise.all(requests).then((res) => {
+          const requests = _.map(res, (item) => {
+            return createDashboard(busiId, {
+              ...item,
+              configs: JSON.stringify(item.configs),
+            });
+          });
+          Promise.all(requests).then((res) => {
+            // TODO 目前这个失败处理是不成立的，接口请求失败直接走的 catch，内置仪表盘页面也存在这个问题
+            const failed = _.filter(res, (item) => {
+              return item.err;
+            });
+            if (!_.isEmpty(failed)) {
+              Modal.error({
+                title: t('common:error.clone'),
+                content: (
+                  <div>
+                    {_.map(failed, (item) => {
+                      return <div key={item.err}>{item.err}</div>;
+                    })}
+                  </div>
+                ),
+              });
+              return;
+            } else {
+              onOk();
+            }
+          });
+        });
+      }}
+    >
+      <Form.Item
+        label={t('dashboardBuiltin:cate')}
+        name='cate'
+        rules={[
+          {
+            required: true,
+          },
+        ]}
+      >
+        <Select
+          showSearch
+          options={_.map(builtinDashboards, (item) => {
+            return {
+              label: item.name,
+              value: item.name,
+            };
+          })}
+          onChange={() => {
+            form.setFieldsValue({
+              selectedBoards: undefined,
+            });
+          }}
+        />
+      </Form.Item>
+      <Form.Item name='selectedBoards' label={t('batch.import_builtin_board')} hidden={!cate}>
+        <>
+          <Input
+            prefix={<SearchOutlined />}
+            value={boardSearch}
+            onChange={(e) => {
+              setBoardSearch(e.target.value);
+            }}
+            style={{ marginBottom: 8 }}
+            allowClear
+          />
+          <Table
+            size='small'
+            rowKey='name'
+            columns={[
+              {
+                title: t('dashboardBuiltin:name'),
+                dataIndex: 'name',
+              },
+              {
+                title: t('dashboardBuiltin:tags'),
+                dataIndex: 'tags',
+                render: (val) => {
+                  const tags = _.compact(_.split(val, ' '));
+                  return (
+                    <Space size='middle'>
+                      {_.map(tags, (tag, idx) => {
+                        return (
+                          <Tag
+                            key={idx}
+                            color='purple'
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => {
+                              const queryItem = _.compact(_.split(boardSearch, ' '));
+                              if (queryItem.includes(tag)) return;
+                              setBoardSearch((searchVal) => {
+                                if (searchVal) {
+                                  return searchVal + ' ' + tag;
+                                }
+                                return tag;
+                              });
+                            }}
+                          >
+                            {tag}
+                          </Tag>
+                        );
+                      })}
+                    </Space>
+                  );
+                },
+              },
+            ]}
+            dataSource={_.filter(_.find(builtinDashboards, (item) => item.name === cate)?.boards, (item) => {
+              return _.includes(_.toLower(item.name), _.toLower(boardSearch));
+            })}
+            rowSelection={{
+              type: 'checkbox',
+              selectedRowKeys: _.map(selectedBoards, 'name'),
+              onChange(_selectedRowKeys, selectedRows) {
+                form.setFieldsValue({
+                  selectedBoards: selectedRows,
+                });
+              },
+            }}
+            scroll={{ y: 300 }}
+            pagination={false}
+          />
+        </>
+      </Form.Item>
+      <Form.Item>
+        <Button type='primary' htmlType='submit'>
+          {t('common:btn.import')}
+        </Button>
+      </Form.Item>
+    </Form>
+  );
+};
 
 function Import(props: IProps & ModalWrapProps) {
   const { t } = useTranslation('dashboard');
@@ -74,9 +229,11 @@ function Import(props: IProps & ModalWrapProps) {
 
   return (
     <Modal
+      width={600}
       className='dashboard-import-modal'
       title={
         <Tabs activeKey={modalType} onChange={(e: ModalType) => setModalType(e)} className='custom-import-alert-title'>
+          <TabPane tab={t('batch.import_builtin')} key='ImportBuiltin'></TabPane>
           <TabPane tab={t('batch.import')} key='Import'></TabPane>
           <TabPane
             tab={
@@ -138,6 +295,16 @@ function Import(props: IProps & ModalWrapProps) {
             </Button>
           </Form.Item>
         </Form>
+      ) : null}
+      {modalType === 'ImportBuiltin' ? (
+        <ImportBuiltinContent
+          busiId={busiId}
+          onOk={() => {
+            message.success(t('common:success.import'));
+            refreshList();
+            destroy();
+          }}
+        />
       ) : null}
       {modalType === 'ImportGrafana' ? (
         <Form

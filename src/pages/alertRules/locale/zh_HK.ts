@@ -105,6 +105,7 @@ const zh_HK = {
       result: '匯入結果',
       errmsg: '錯誤資訊',
     },
+    import_builtin: '匯入內置告警規則',
     export: {
       title: '匯出告警規則',
       copy: '複製 JSON 內容到剪貼簿',

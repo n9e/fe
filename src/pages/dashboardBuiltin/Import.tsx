@@ -81,9 +81,10 @@ function Import(props: IProps & ModalWrapProps) {
                 ),
               });
               return;
+            } else {
+              message.success(t('common:success.clone'));
+              destroy();
             }
-            message.success(t('common:success.clone'));
-            destroy();
           });
         }}
       >

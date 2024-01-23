@@ -106,6 +106,7 @@ const en_US = {
       result: 'Result',
       errmsg: 'Error message',
     },
+    import_builtin: 'Import built-in alert rules',
     export: {
       title: 'Export Alert Rules',
       copy: 'Copy JSON content to clipboard',

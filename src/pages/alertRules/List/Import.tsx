@@ -14,32 +14,261 @@
  * limitations under the License.
  *
  */
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Modal, Input, Form, Table, Button, Divider, message, Select, Row, Col, Switch } from 'antd';
-import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { Modal, Input, Form, Table, Button, Divider, message, Select, Row, Col, Switch, Space, Tag, Tabs } from 'antd';
+import { CheckCircleOutlined, CloseCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { importStrategy } from '@/services/warning';
 import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
+import { getRuleCates, createRule } from '@/pages/alertRulesBuiltin/services';
+import { CommonStateContext } from '@/App';
 
+type ModalType = 'Import' | 'ImportBuiltin';
 interface IProps {
   busiId: number;
   refreshList: () => void;
   groupedDatasourceList: any;
   datasourceCateOptions: any;
+  type?: ModalType;
 }
+
+const TabPane = Tabs.TabPane;
+
+const ImportBuiltinContent = ({ busiId, groupedDatasourceList, datasourceCateOptions, onOk }) => {
+  const { t } = useTranslation('dashboard');
+  const [builtinRules, setBuiltinRules] = useState<any[]>([]);
+  const [boardSearch, setBoardSearch] = useState<string>('');
+  const [form] = Form.useForm();
+  const cate = Form.useWatch('cate', form);
+  const group = Form.useWatch('group', form);
+  const selectedRules = Form.useWatch('selectedRules', form);
+  const datasourceCate = Form.useWatch('datasource_cate', form);
+  const datasourceCates = _.filter(datasourceCateOptions, (item) => _.includes(item.type, 'metric'));
+
+  useEffect(() => {
+    getRuleCates().then((res) => {
+      setBuiltinRules(res);
+    });
+  }, []);
+
+  return (
+    <Form
+      layout='vertical'
+      form={form}
+      onFinish={(vals) => {
+        createRule(
+          busiId,
+          _.map(vals.selectedRules, (item) => {
+            return {
+              ...item,
+              cate: vals.datasource_cate,
+              datasource_ids: vals.datasource_ids,
+              disabled: vals.enabled ? 0 : 1,
+            };
+          }),
+        ).then((res) => {
+          const failed = _.some(res, (val) => {
+            return !!val;
+          });
+          if (failed) {
+            Modal.error({
+              title: t('common:error.clone'),
+              content: (
+                <div>
+                  {_.map(res, (val, key) => {
+                    return (
+                      <div key={key}>
+                        {key}: {val}
+                      </div>
+                    );
+                  })}
+                </div>
+              ),
+            });
+          } else {
+            onOk();
+          }
+        });
+      }}
+      initialValues={{
+        datasource_cate: 'prometheus',
+        datasource_ids: [0],
+        enabled: false,
+      }}
+    >
+      <Form.Item
+        label={t('alertRulesBuiltin:cate')}
+        name='cate'
+        rules={[
+          {
+            required: true,
+          },
+        ]}
+      >
+        <Select
+          showSearch
+          options={_.map(builtinRules, (item) => {
+            return {
+              label: item.name,
+              value: item.name,
+            };
+          })}
+          onChange={() => {
+            form.setFieldsValue({
+              group: undefined,
+              selectedRules: undefined,
+            });
+          }}
+        />
+      </Form.Item>
+      <Form.Item
+        label={t('alertRulesBuiltin:group')}
+        name='group'
+        rules={[
+          {
+            required: true,
+          },
+        ]}
+        hidden={!cate}
+      >
+        <Select
+          showSearch
+          options={_.map(_.find(builtinRules, (item) => item.name === cate)?.alert_rules, (val, key) => {
+            return {
+              label: key,
+              value: key,
+            };
+          })}
+          onChange={() => {
+            form.setFieldsValue({
+              selectedRules: undefined,
+            });
+          }}
+        />
+      </Form.Item>
+      <Form.Item name='selectedRules' label={t('alertRulesBuiltin:tab_list')} hidden={!cate}>
+        <>
+          <Input
+            prefix={<SearchOutlined />}
+            value={boardSearch}
+            onChange={(e) => {
+              setBoardSearch(e.target.value);
+            }}
+            style={{ marginBottom: 8 }}
+            allowClear
+          />
+          <Table
+            size='small'
+            rowKey='name'
+            columns={[
+              {
+                title: t('alertRulesBuiltin:name'),
+                dataIndex: 'name',
+              },
+              {
+                title: t('alertRulesBuiltin:tags'),
+                dataIndex: 'tags',
+                render: (val) => {
+                  const tags = _.compact(_.split(val, ' '));
+                  return (
+                    <Space size='middle'>
+                      {_.map(tags, (tag, idx) => {
+                        return (
+                          <Tag
+                            key={idx}
+                            color='purple'
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => {
+                              const queryItem = _.compact(_.split(boardSearch, ' '));
+                              if (queryItem.includes(tag)) return;
+                              setBoardSearch((searchVal) => {
+                                if (searchVal) {
+                                  return searchVal + ' ' + tag;
+                                }
+                                return tag;
+                              });
+                            }}
+                          >
+                            {tag}
+                          </Tag>
+                        );
+                      })}
+                    </Space>
+                  );
+                },
+              },
+            ]}
+            dataSource={_.filter(_.find(builtinRules, (item) => item.name === cate)?.alert_rules?.[group], (item) => {
+              return _.includes(_.toLower(item.name), _.toLower(boardSearch));
+            })}
+            rowSelection={{
+              type: 'checkbox',
+              selectedRowKeys: _.map(selectedRules, 'name'),
+              onChange(_selectedRowKeys, selectedRows) {
+                form.setFieldsValue({
+                  selectedRules: selectedRows,
+                });
+              },
+            }}
+            scroll={{ y: 300 }}
+            pagination={false}
+          />
+        </>
+      </Form.Item>
+      <Row gutter={10}>
+        <Col span={8}>
+          <Form.Item label={t('common:datasource.type')} name='datasource_cate'>
+            <Select>
+              {_.map(datasourceCates, (item) => {
+                return (
+                  <Select.Option key={item.value} value={item.value}>
+                    {item.label}
+                  </Select.Option>
+                );
+              })}
+            </Select>
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.datasourceCate !== curValues.datasourceCate} noStyle>
+            {({ setFieldsValue }) => {
+              return <DatasourceValueSelect mode='multiple' setFieldsValue={setFieldsValue} cate={datasourceCate} datasourceList={groupedDatasourceList[datasourceCate] || []} />;
+            }}
+          </Form.Item>
+        </Col>
+        <Col span={4}>
+          <Form.Item label={t('common:table.enabled')} name='enabled' valuePropName='checked'>
+            <Switch />
+          </Form.Item>
+        </Col>
+      </Row>
+      <Form.Item>
+        <Button type='primary' htmlType='submit'>
+          {t('common:btn.import')}
+        </Button>
+      </Form.Item>
+    </Form>
+  );
+};
 
 function Import(props: IProps & ModalWrapProps) {
   const { t } = useTranslation('alertRules');
-  const { visible, destroy, busiId, refreshList, groupedDatasourceList, datasourceCateOptions } = props;
+  const { visible, destroy, busiId, refreshList, groupedDatasourceList, datasourceCateOptions, type = 'ImportBuiltin' } = props;
+  const [modalType, setModalType] = useState(type);
   const [importResult, setImportResult] = useState<{ name: string; msg: string }[]>();
   const datasourceCates = _.filter(datasourceCateOptions, (item) => !!item.alertRule);
 
   return (
     <Modal
       className='dashboard-import-modal'
-      title={`${t('batch.import.title')} JSON`}
+      title={
+        <Tabs activeKey={modalType} onChange={(e: ModalType) => setModalType(e)} className='custom-import-alert-title'>
+          <TabPane tab={t('batch.import_builtin')} key='ImportBuiltin'></TabPane>
+          <TabPane tab={t('batch.import.title')} key='Import'></TabPane>
+        </Tabs>
+      }
       visible={visible}
       onCancel={() => {
         refreshList();
@@ -47,86 +276,99 @@ function Import(props: IProps & ModalWrapProps) {
       }}
       footer={null}
     >
-      <Form
-        layout='vertical'
-        onFinish={async (vals) => {
-          try {
-            const importData = _.map(JSON.parse(vals.import), (item) => {
-              return {
-                ...item,
-                cate: vals.cate,
-                datasource_ids: vals.datasource_ids,
-                disabled: vals.enabled ? 0 : 1,
-              };
-            });
-            const { dat } = await importStrategy(importData, busiId);
-            const dataSource = _.map(dat, (val, key) => {
-              return {
-                name: key,
-                msg: val,
-              };
-            });
-            setImportResult(dataSource);
-            if (_.every(dataSource, (item) => !item.msg)) {
-              message.success(t('common:success.import'));
-              refreshList();
-              destroy();
+      {modalType === 'Import' && (
+        <Form
+          layout='vertical'
+          onFinish={async (vals) => {
+            try {
+              const importData = _.map(JSON.parse(vals.import), (item) => {
+                return {
+                  ...item,
+                  cate: vals.cate,
+                  datasource_ids: vals.datasource_ids,
+                  disabled: vals.enabled ? 0 : 1,
+                };
+              });
+              const { dat } = await importStrategy(importData, busiId);
+              const dataSource = _.map(dat, (val, key) => {
+                return {
+                  name: key,
+                  msg: val,
+                };
+              });
+              setImportResult(dataSource);
+              if (_.every(dataSource, (item) => !item.msg)) {
+                message.success(t('common:success.import'));
+                refreshList();
+                destroy();
+              }
+            } catch (error) {
+              message.error(t('common:error.import') + error);
             }
-          } catch (error) {
-            message.error(t('common:error.import') + error);
-          }
-        }}
-        initialValues={{
-          cate: 'prometheus',
-          datasource_ids: [0],
-          enabled: false,
-        }}
-      >
-        <Row gutter={10}>
-          <Col span={24}>
-            <Form.Item label={t('common:datasource.type')} name='cate'>
-              <Select>
-                {_.map(datasourceCates, (item) => {
-                  return (
-                    <Select.Option key={item.value} value={item.value}>
-                      {item.label}
-                    </Select.Option>
-                  );
-                })}
-              </Select>
-            </Form.Item>
-          </Col>
-          <Col span={24}>
-            <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.cate !== curValues.cate} noStyle>
-              {({ getFieldValue, setFieldsValue }) => {
-                const cate = getFieldValue('cate');
-                return <DatasourceValueSelect mode='multiple' setFieldsValue={setFieldsValue} cate={cate} datasourceList={groupedDatasourceList[cate] || []} />;
-              }}
-            </Form.Item>
-          </Col>
-          <Col span={24}>
-            <Form.Item label={t('common:table.enabled')} name='enabled' valuePropName='checked'>
-              <Switch />
-            </Form.Item>
-          </Col>
-        </Row>
-        <Form.Item
-          label={`${t('batch.import.name')} JSON`}
-          name='import'
-          rules={[
-            {
-              required: true,
-            },
-          ]}
+          }}
+          initialValues={{
+            cate: 'prometheus',
+            datasource_ids: [0],
+            enabled: false,
+          }}
         >
-          <Input.TextArea className='code-area' rows={16} />
-        </Form.Item>
-        <Form.Item>
-          <Button type='primary' htmlType='submit'>
-            {t('common:btn.import')}
-          </Button>
-        </Form.Item>
-      </Form>
+          <Row gutter={10}>
+            <Col span={24}>
+              <Form.Item label={t('common:datasource.type')} name='cate'>
+                <Select>
+                  {_.map(datasourceCates, (item) => {
+                    return (
+                      <Select.Option key={item.value} value={item.value}>
+                        {item.label}
+                      </Select.Option>
+                    );
+                  })}
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={24}>
+              <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.cate !== curValues.cate} noStyle>
+                {({ getFieldValue, setFieldsValue }) => {
+                  const cate = getFieldValue('cate');
+                  return <DatasourceValueSelect mode='multiple' setFieldsValue={setFieldsValue} cate={cate} datasourceList={groupedDatasourceList[cate] || []} />;
+                }}
+              </Form.Item>
+            </Col>
+            <Col span={24}>
+              <Form.Item label={t('common:table.enabled')} name='enabled' valuePropName='checked'>
+                <Switch />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Form.Item
+            label={`${t('batch.import.name')} JSON`}
+            name='import'
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <Input.TextArea className='code-area' rows={16} />
+          </Form.Item>
+          <Form.Item>
+            <Button type='primary' htmlType='submit'>
+              {t('common:btn.import')}
+            </Button>
+          </Form.Item>
+        </Form>
+      )}
+      {modalType === 'ImportBuiltin' && (
+        <ImportBuiltinContent
+          busiId={busiId}
+          groupedDatasourceList={groupedDatasourceList}
+          datasourceCateOptions={datasourceCateOptions}
+          onOk={() => {
+            refreshList();
+            destroy();
+          }}
+        />
+      )}
       {importResult && (
         <>
           <Divider />

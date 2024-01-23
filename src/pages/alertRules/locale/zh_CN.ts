@@ -105,6 +105,7 @@ const zh_CN = {
       result: '导入结果',
       errmsg: '错误信息',
     },
+    import_builtin: '导入内置告警规则',
     export: {
       title: '导出告警规则',
       copy: '复制 JSON 内容到剪贴板',
