@@ -18,7 +18,6 @@ limitations under the License.
   cursor: vertical-text;
   position: relative;
   z-index: 1;
-  background: var(--fc-fill-2);
 }
 
 .ViewingLayer--graph {
@@ -64,13 +63,14 @@ limitations under the License.
 }
 
 .ViewingLayer--resetZoom {
-  display: none;
-  position: absolute;
+  display: none !important;
+  position: absolute !important;
   right: 1%;
   top: 10%;
   z-index: 1;
+  background-color: var(--fc-fill-2) !important;
 }
 
 .ViewingLayer:hover > .ViewingLayer--resetZoom {
-  display: unset;
+  display: unset !important;
 }

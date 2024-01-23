@@ -75,7 +75,7 @@ limitations under the License.
 }
 
 .span-name {
-  color: #000;
+  color: var(--fc-text-1) !important;
   cursor: pointer;
   flex: 1 1 auto;
   outline: none;
@@ -116,7 +116,7 @@ limitations under the License.
 }
 
 .endpoint-name {
-  color: var(--fc-text-2);
+  color: var(--fc-text-4);
 }
 
 .span-name:hover > .endpoint-name {

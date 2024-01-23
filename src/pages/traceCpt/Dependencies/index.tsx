@@ -11,17 +11,26 @@ import { getRadialData } from './utils';
 
 export default function index() {
   const { t } = useTranslation('trace');
-  const { groupedDatasourceList } = useContext(CommonStateContext);
+  const { groupedDatasourceList, darkMode } = useContext(CommonStateContext);
   const [datasourceValue, setDatasourceValue] = useState<number | undefined>(_.get(groupedDatasourceList, 'jaeger[0].id') as any);
   const [data, setData] = useState<any>([]);
+  const [redrawKey, setRedrawKey] = useState<string>(_.uniqueId('redrawKey_'));
   const chartRef = useRef();
   const config = {
     data: data,
     autoFit: true,
+    theme: {
+      styleSheet: {
+        backgroundColor: '#000',
+      },
+    },
     layout: {
       unitRadius: 80,
       nodeSize: 20,
       nodeSpacing: 10,
+    },
+    style: {
+      backgroundColor: darkMode ? '#272a38' : '#fff',
     },
     nodeCfg: {
       size: 20,
@@ -33,13 +42,13 @@ export default function index() {
         });
       },
       style: {
-        fill: '#d9cbff',
-        stroke: '#d9cbff',
+        fill: darkMode ? '#a192c8' : '#d9cbff',
+        stroke: darkMode ? '#a192c8' : '#d9cbff',
       },
       labelCfg: {
         style: {
           fontSize: 6,
-          fill: '#000',
+          fill: darkMode ? '#fff' : '#000',
         },
       },
       nodeStateStyles: {
@@ -57,7 +66,7 @@ export default function index() {
       label: {
         style: {
           fontSize: 6,
-          fill: '#666',
+          fill: darkMode ? '#ccc' : '#666',
         },
       },
       endArrow: {
@@ -84,6 +93,10 @@ export default function index() {
       });
     }
   }, [datasourceValue]);
+
+  useEffect(() => {
+    setRedrawKey(_.uniqueId('redrawKey_'));
+  }, [darkMode]);
 
   return (
     <PageLayout title={t('dependencies')}>
@@ -121,7 +134,7 @@ export default function index() {
               </Select>
             </InputGroupWithFormItem>
           </Space>
-          {!_.isEmpty(data) ? <RadialGraph {...config} /> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
+          {!_.isEmpty(data) ? <RadialGraph key={redrawKey} {...config} /> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
         </div>
       </div>
     </PageLayout>
