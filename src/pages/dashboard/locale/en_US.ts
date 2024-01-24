@@ -352,6 +352,14 @@ const en_US = {
     datasource_msg: 'Please select datasource',
     time: 'Time',
     time_tip: 'Default is the global time range of the dashboard',
+    prometheus: {
+      maxDataPoints: {
+        tip: 'Maximum number of points per series, Calculation step = (end - start) / maxDataPoints, default value is 240 step = 15s in the last 1 hour',
+      },
+      minStep: {
+        tip: 'An additional lower limit for the step parameter of the Prometheus query, Calculate step = max(step, minStep, safeStep), safeStep = (end - start) / 11000',
+      },
+    },
   },
   detail: {
     datasource_empty: 'Please configure the data source first',
