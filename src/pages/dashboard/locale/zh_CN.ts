@@ -375,6 +375,9 @@ const zh_CN = {
       minStep: {
         tip: '最小的 step，用于计算 step = max(step, minStep, safeStep)，safeStep = (end - start) / 11000',
       },
+      step: {
+        tag_tip: '计算 step = max((end - start) / maxDataPoints, minStep, safeStep), safeStep = (end - start) / 11000',
+      },
     },
   },
   detail: {

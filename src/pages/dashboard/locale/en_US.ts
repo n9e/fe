@@ -359,6 +359,9 @@ const en_US = {
       minStep: {
         tip: 'An additional lower limit for the step parameter of the Prometheus query, Calculate step = max(step, minStep, safeStep), safeStep = (end - start) / 11000',
       },
+      step: {
+        tag_tip: 'Calculate step = max((end - start) / maxDataPoints, minStep, safeStep), safeStep = (end - start) / 11000',
+      },
     },
   },
   detail: {
