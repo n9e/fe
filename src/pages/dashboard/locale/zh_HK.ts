@@ -364,10 +364,13 @@ const zh_HK = {
     time_tip: '可指定時間範圍，預設為儀表盤全域性時間範圍',
     prometheus: {
       maxDataPoints: {
-        tip: '每條曲線最多的點數，用於計算 step = (end - start) / maxDataPoints，預設值為 240 在最近 1 小時內的 step = 15s',
+        tip: '每條曲線最多的點數，計算 step = (end - start) / maxDataPoints，預設值為 240 在最近 1 小時內的 step = 15s',
       },
       minStep: {
-        tip: '最小的 step，用於計算 step = max(step, minStep, safeStep)，safeStep = (end - start) / 11000',
+        tip: '最小的 step，計算 step = max(step, minStep, safeStep)，safeStep = (end - start) / 11000',
+      },
+      step: {
+        tag_tip: '計算 step = max((end - start) / maxDataPoints, minStep, safeStep), safeStep = (end - start) / 11000',
       },
     },
   },

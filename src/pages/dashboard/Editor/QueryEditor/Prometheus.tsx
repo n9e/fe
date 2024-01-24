@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Row, Col, Input, Button, Switch, InputNumber, Space, Tag } from 'antd';
+import { Form, Row, Col, Input, Button, Switch, InputNumber, Space, Tag, Tooltip } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import moment from 'moment';
@@ -38,7 +38,11 @@ export default function Prometheus({ chartForm, variableConfig, dashboardId, tim
                           return (
                             <Space>
                               {name}
-                              {step ? <Tag color='purple'>{`step=${step}s`}</Tag> : null}
+                              {step ? (
+                                <Tooltip placement='right' title={t('query.prometheus.step.tag_tip')}>
+                                  <Tag color='purple'>{`step=${step}s`}</Tag>
+                                </Tooltip>
+                              ) : null}
                             </Space>
                           );
                         }}
