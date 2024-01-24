@@ -370,10 +370,10 @@ const zh_CN = {
     time_tip: '可指定时间范围，默认为仪表盘全局时间范围',
     prometheus: {
       maxDataPoints: {
-        tip: '每条曲线最多的点数，用于计算 step = (end - start) / maxDataPoints，默认值为 240 在最近 1 小时内的 step = 15s',
+        tip: '每条曲线最多的点数，计算 step = (end - start) / maxDataPoints，默认值为 240 在最近 1 小时内的 step = 15s',
       },
       minStep: {
-        tip: '最小的 step，用于计算 step = max(step, minStep, safeStep)，safeStep = (end - start) / 11000',
+        tip: '最小的 step，计算 step = max(step, minStep, safeStep)，safeStep = (end - start) / 11000',
       },
       step: {
         tag_tip: '计算 step = max((end - start) / maxDataPoints, minStep, safeStep), safeStep = (end - start) / 11000',
