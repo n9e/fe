@@ -4,9 +4,12 @@ import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import _ from 'lodash';
 import TimeRangePicker, { isMathString } from '@/components/TimeRangePicker';
+import DateField from '../DateField';
+import { replaceExpressionVars } from '../../../../VariableConfig/constant';
 
-export default function index({ prefixField = {}, prefixNameField = [], chartForm }: any) {
+export default function index({ prefixField = {}, prefixNameField = [], chartForm, variableConfig, dashboardId }: any) {
   const { t } = useTranslation('datasource');
+
   return (
     <>
       <Row gutter={10}>
@@ -20,17 +23,13 @@ export default function index({ prefixField = {}, prefixNameField = [], chartFor
 
       <Row gutter={10}>
         <Col span={8}>
-          <Form.Item
-            {...prefixField}
-            name={[...prefixNameField, 'query', 'date_field']}
-            rules={[
-              {
-                required: true,
-                message: t('datasource:es.date_field_msg'),
-              },
-            ]}
-          >
-            <Input placeholder={t('datasource:es.date_field')} />
+          <Form.Item shouldUpdate noStyle>
+            {({ getFieldValue }) => {
+              let datasourceValue = getFieldValue('datasourceValue');
+              datasourceValue = replaceExpressionVars(datasourceValue as any, variableConfig, variableConfig.length, dashboardId);
+              const index = getFieldValue(['targets', ...prefixNameField, 'query', 'index']);
+              return <DateField datasourceValue={datasourceValue} index={index} prefixField={prefixField} prefixNames={[...prefixNameField, 'query']} />;
+            }}
           </Form.Item>
         </Col>
         <Col span={8}>
