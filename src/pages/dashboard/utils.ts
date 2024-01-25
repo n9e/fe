@@ -251,7 +251,8 @@ function convertOptionsGrafanaToN9E(panel: any) {
       placement: options?.legend?.placement,
     },
     tooltip: {
-      mode: options?.tooltip === 'single' ? 'single' : 'multi',
+      mode: options?.tooltip === 'single' || options?.tooltip?.mode === 'single' ? 'single' : 'all',
+      sort: options?.tooltip?.sort ? options?.tooltip?.sort : 'none',
     },
   };
 }
