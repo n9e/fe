@@ -185,6 +185,7 @@ function index(props: IProps) {
             }
           }
         }
+
         // 设置变量默认值，优先从 url 中获取，其次是 localStorage
         result = _.map(_.compact(result), (item) => {
           return {
@@ -242,6 +243,7 @@ function index(props: IProps) {
           if (v) {
             onChange(v, true);
             setData(v);
+            setRefreshFlag(_.uniqueId('refreshFlag_'));
           }
         }}
         range={range}
