@@ -84,6 +84,7 @@ export default function index() {
             </Button>
           </div>
           <Table
+            className='mt8'
             rowKey='id'
             size='small'
             columns={[
