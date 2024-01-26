@@ -242,8 +242,7 @@ function index(props: IProps) {
         onChange={(v: IVariable[]) => {
           if (v) {
             onChange(v, true);
-            setData(v);
-            setRefreshFlag(_.uniqueId('refreshFlag_'));
+            setRefreshFlag(_.uniqueId('refreshFlag_')); // 2023-01-25 变量配置修改后，重新初始化后再设置变量值
           }
         }}
         range={range}
