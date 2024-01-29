@@ -155,5 +155,6 @@ const en_US = {
     title: 'Preset filters',
     all: 'All rules',
   },
+  ruleConfigPromVersion: 'Version',
 };
 export default en_US;
