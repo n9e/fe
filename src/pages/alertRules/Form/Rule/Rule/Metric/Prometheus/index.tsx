@@ -59,6 +59,30 @@ export default function index(props: { form: any; datasourceCate: string; dataso
               value: 'v2',
             },
           ]}
+          onChange={(val) => {
+            if (val === 'v2') {
+              const rule_config = form.getFieldValue('rule_config');
+              form.setFieldsValue({
+                rule_config: {
+                  ...rule_config,
+                  triggers: [
+                    {
+                      mode: 0,
+                      expressions: [
+                        {
+                          ref: 'A',
+                          comparisonOperator: '>',
+                          value: 0,
+                          logicalOperator: '&&',
+                        },
+                      ],
+                      severity: 2,
+                    },
+                  ],
+                },
+              });
+            }
+          }}
         />
       </Form.Item>
       {ruleConfigVersion === 'v2' ? (

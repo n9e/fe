@@ -157,5 +157,10 @@ const en_US = {
     all: 'All rules',
   },
   ruleConfigPromVersion: 'Version',
+  ruleConfigPromVersionV2: {
+    query: {
+      title: 'Query',
+    },
+  },
 };
 export default en_US;
