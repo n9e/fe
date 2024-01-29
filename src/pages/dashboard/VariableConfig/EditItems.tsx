@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import EditItem from './EditItem';
 import { IVariable } from './definition';
+import { setVaraiableSelected } from './constant';
 
 interface IProps {
   id: string;
@@ -214,6 +215,19 @@ export default function EditItems(props: IProps) {
                 }
                 return item;
               });
+              // TODO 2023-01-25 如果修改了数据源变量的默认值，更新该变量的已选值
+              if (val.type === 'datasource' && val.defaultValue) {
+                const preDefaultValue = _.find(data, { name: val.name })?.defaultValue;
+                if (preDefaultValue !== val.defaultValue) {
+                  setVaraiableSelected({
+                    name: val.name,
+                    value: val.defaultValue,
+                    id,
+                    urlAttach: true,
+                    vars: newData,
+                  });
+                }
+              }
             }
             setData(newData);
             onChange(newData);
