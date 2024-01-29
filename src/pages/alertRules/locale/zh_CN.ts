@@ -155,5 +155,6 @@ const zh_CN = {
     title: '预置筛选',
     all: '全部规则',
   },
+  ruleConfigPromVersion: '版本',
 };
 export default zh_CN;

@@ -18,9 +18,23 @@ export const defaultRuleConfig = {
     ],
   },
   metric: {
+    version: 'v2',
     queries: [
       {
-        prom_ql: '',
+        query: '',
+      },
+    ],
+    triggers: [
+      {
+        mode: 0,
+        expressions: [
+          {
+            ref: 'A',
+            comparisonOperator: '>',
+            value: 0,
+            logicalOperator: '&&',
+          },
+        ],
         severity: 2,
       },
     ],

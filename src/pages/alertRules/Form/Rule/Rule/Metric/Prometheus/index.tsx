@@ -16,7 +16,7 @@
  */
 
 import React, { useContext } from 'react';
-import { Form, Row, Col, Card, Space } from 'antd';
+import { Form, Row, Col, Card, Space, Select } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -26,6 +26,7 @@ import Severity from '@/pages/alertRules/Form/components/Severity';
 import Inhibit from '@/pages/alertRules/Form/components/Inhibit';
 import { FormStateContext } from '@/pages/alertRules/Form';
 import GraphPreview from './GraphPreview';
+import PrometheusV2 from './PrometheusV2';
 import './style.less';
 
 const DATASOURCE_ALL = 0;
@@ -41,52 +42,80 @@ export default function index(props: { form: any; datasourceCate: string; dataso
   const { disabled } = useContext(FormStateContext);
   const curDatasourceList = groupedDatasourceList[datasourceCate] || [];
   const datasourceId = getFirstDatasourceId(datasourceValue, curDatasourceList);
+  const ruleConfigVersion = Form.useWatch(['rule_config', 'version']);
 
   return (
-    <Form.List name={['rule_config', 'queries']}>
-      {(fields, { add, remove }) => (
-        <Card
-          title={
-            <Space>
-              <span>{t('metric.query.title')}</span>
-              <PlusCircleOutlined
-                onClick={() =>
-                  add({
-                    prom_ql: '',
-                    severity: 3,
-                  })
-                }
-              />
-              <Inhibit triggersKey='queries' />
-            </Space>
-          }
-          size='small'
-        >
-          <div className='alert-rule-triggers-container'>
-            {fields.map((field) => (
-              <div key={field.key} className='alert-rule-trigger-container'>
-                <Row>
-                  <Col flex='80px'>
-                    <div style={{ marginTop: 6 }}>PromQL</div>
-                  </Col>
-                  <Col flex='auto'>
-                    <Form.Item {...field} name={[field.name, 'prom_ql']} validateTrigger={['onBlur']} trigger='onChange' rules={[{ required: true, message: t('请输入PromQL') }]}>
-                      <PromQLInputWithBuilder readonly={disabled} datasourceValue={datasourceId} />
-                    </Form.Item>
-                  </Col>
-                </Row>
-                <div>
-                  <Severity field={field} />
-                </div>
-                <div style={{ marginTop: 8 }}>
-                  <GraphPreview form={form} fieldName={field.name} />
-                </div>
-                <MinusCircleOutlined className='alert-rule-trigger-remove' onClick={() => remove(field.name)} />
+    <>
+      <Form.Item label={t('ruleConfigPromVersion')} name={['rule_config', 'version']} initialValue='v1'>
+        <Select
+          disabled={disabled}
+          options={[
+            {
+              label: 'v1',
+              value: 'v1',
+            },
+            {
+              label: 'v2',
+              value: 'v2',
+            },
+          ]}
+        />
+      </Form.Item>
+      {ruleConfigVersion === 'v2' ? (
+        <PrometheusV2 {...props} />
+      ) : (
+        <Form.List name={['rule_config', 'queries']}>
+          {(fields, { add, remove }) => (
+            <Card
+              title={
+                <Space>
+                  <span>{t('metric.query.title')}</span>
+                  <PlusCircleOutlined
+                    onClick={() =>
+                      add({
+                        prom_ql: '',
+                        severity: 3,
+                      })
+                    }
+                  />
+                  <Inhibit triggersKey='queries' />
+                </Space>
+              }
+              size='small'
+            >
+              <div className='alert-rule-triggers-container'>
+                {fields.map((field) => (
+                  <div key={field.key} className='alert-rule-trigger-container'>
+                    <Row>
+                      <Col flex='80px'>
+                        <div style={{ marginTop: 6 }}>PromQL</div>
+                      </Col>
+                      <Col flex='auto'>
+                        <Form.Item
+                          {...field}
+                          name={[field.name, 'prom_ql']}
+                          validateTrigger={['onBlur']}
+                          trigger='onChange'
+                          rules={[{ required: true, message: t('请输入PromQL') }]}
+                        >
+                          <PromQLInputWithBuilder readonly={disabled} datasourceValue={datasourceId} />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                    <div>
+                      <Severity field={field} />
+                    </div>
+                    <div style={{ marginTop: 8 }}>
+                      <GraphPreview form={form} fieldName={field.name} />
+                    </div>
+                    <MinusCircleOutlined className='alert-rule-trigger-remove' onClick={() => remove(field.name)} />
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </Card>
+            </Card>
+          )}
+        </Form.List>
       )}
-    </Form.List>
+    </>
   );
 }
