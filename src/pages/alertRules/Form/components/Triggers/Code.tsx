@@ -26,14 +26,15 @@ interface IProps {
   fullPrefixName?: (string | number)[]; // 完整的前置字段名，用于 getFieldValue 获取指定字段的值
   prefixName?: (string | number)[]; // 列表字段名
   disabled?: boolean;
+  placeholder?: string;
 }
 
 export default function Code(props: IProps) {
-  const { prefixField = {}, fullPrefixName = [], prefixName = [], disabled } = props;
+  const { prefixField = {}, fullPrefixName = [], prefixName = [], disabled, placeholder = '$A > 0 && $B < $A' } = props;
 
   return (
     <Form.Item {...prefixField} name={[...prefixName, 'exp']}>
-      <Input disabled={disabled} placeholder='$A.count > 0 && $B.count < $A.count' />
+      <Input disabled={disabled} placeholder={placeholder} />
     </Form.Item>
   );
 }
