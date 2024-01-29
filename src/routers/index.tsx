@@ -69,6 +69,9 @@ import MigrateDashboards from '@/pages/help/migrate';
 import IBEX from '@/pages/help/NotificationSettings/IBEX';
 import VariableConfigs from '@/pages/variableConfigs';
 import SiteSettings from '@/pages/siteSettings';
+import NewPages from '@/pages/newPages';
+
+
 import { dynamicPackages, Entry } from '@/utils';
 // @ts-ignore
 import { Jobs as StrategyBrain } from 'plus:/datasource/anomaly';
@@ -130,6 +133,8 @@ export default function Content() {
   return (
     <div className={`content ${themeClassName}`}>
       <Switch>
+        <Route path='/newpages' component={NewPages} />
+
         <Route path='/demo' component={Demo} />
         <Route path='/overview' component={Overview} />
         <Route path='/login' component={Login} exact />

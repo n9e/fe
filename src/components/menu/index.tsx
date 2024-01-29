@@ -35,6 +35,20 @@ import getPlusMenu from 'plus:/menu';
 const getMenuList = (t) => {
   const menuList = [
     {
+      key: 'newpages',
+      icon: <IconFont type='icon-Menu_Dashboard' />,
+      activeIcon: <Icon component={menuIcon.Dashboard as any} />,
+      label: t('newpages'),
+      children: [
+        {
+          key: '/newpages',
+          label: t('新页面'),
+        }
+      ]
+    },
+
+
+    {
       key: 'dashboard',
       icon: <IconFont type='icon-Menu_Dashboard' />,
       activeIcon: <Icon component={menuIcon.Dashboard as any} />,
