@@ -31,6 +31,7 @@ import Inhibit from '@/pages/alertRules/Form/components/Inhibit';
 import Triggers from '@/pages/alertRules/Form/components/Triggers';
 import { FormStateContext } from '@/pages/alertRules/Form';
 import GraphPreview from './GraphPreview';
+import query from '@/plus/datasource/zabbix/datasource';
 
 interface Props {
   form: any;
@@ -61,16 +62,14 @@ export default function PrometheusV2(props: Props) {
           <Card
             title={
               <Space>
-                <span>{t('metric.query.title')}</span>
+                <span>{t('ruleConfigPromVersionV2.query.title')}</span>
                 <PlusCircleOutlined
                   onClick={() =>
                     add({
-                      prom_ql: '',
-                      severity: 3,
+                      query: '',
                     })
                   }
                 />
-                {/* <Inhibit triggersKey='queries' /> */}
               </Space>
             }
             size='small'
@@ -92,9 +91,6 @@ export default function PrometheusV2(props: Props) {
                       </InputGroupWithFormItem>
                     </Col>
                   </Row>
-                  {/* <div>
-                    <Severity field={field} />
-                  </div> */}
                   <div style={{ marginTop: 8 }}>
                     <GraphPreview form={form} fieldName={field.name} promqlFieldName='query' />
                   </div>
