@@ -132,6 +132,7 @@ export default function DetailV2(props: IProps) {
   });
   const [migrationVisible, setMigrationVisible] = useState(false);
   const [migrationModalOpen, setMigrationModalOpen] = useState(false);
+  const [variableConfigRefreshFlag, setVariableConfigRefreshFlag] = useState<string>(_.uniqueId('variableConfigRefreshFlag_'));
   const containerRef = useRef<HTMLDivElement>(null);
   let updateAtRef = useRef<number>();
   const refresh = async (cbk?: () => void) => {
@@ -219,56 +220,7 @@ export default function DetailV2(props: IProps) {
   }, 2000);
 
   return (
-    <PageLayout
-      customArea={
-        <Title
-          isPreview={isPreview}
-          isBuiltin={isBuiltin}
-          isAuthorized={isAuthorized}
-          gobackPath={gobackPath}
-          dashboard={dashboard}
-          range={range}
-          setRange={(v) => {
-            setRange(v);
-          }}
-          onAddPanel={(type) => {
-            if (type === 'row') {
-              const newPanels = updatePanelsInsertNewPanelToGlobal(
-                panels,
-                {
-                  type: 'row',
-                  id: uuidv4(),
-                  name: i18n.language === 'en_US' ? 'Row' : '分组',
-                  collapsed: true,
-                },
-                'row',
-              );
-              setPanels(newPanels);
-              handleUpdateDashboardConfigs(dashboard.id, {
-                configs: panelsMergeToConfigs(dashboard.configs, newPanels),
-              });
-            } else {
-              setEditorData({
-                visible: true,
-                id: uuidv4(),
-                initialValues: {
-                  name: 'Panel Title',
-                  type,
-                  targets: [
-                    {
-                      refId: 'A',
-                      expr: '',
-                    },
-                  ],
-                  custom: defaultCustomValuesMap[type],
-                  options: defaultOptionsValuesMap[type],
-                },
-              });
-            }
-          }}
-        />
-      }
-    >
+    <PageLayout customArea={<div />}>
       <div className='dashboard-detail-container'>
         <div className='dashboard-detail-content scroll-container' ref={containerRef}>
           <Affix
@@ -282,6 +234,52 @@ export default function DetailV2(props: IProps) {
                 display: query.viewMode !== 'fullscreen' ? 'block' : 'none',
               }}
             >
+              <Title
+                isPreview={isPreview}
+                isBuiltin={isBuiltin}
+                isAuthorized={isAuthorized}
+                gobackPath={gobackPath}
+                dashboard={dashboard}
+                range={range}
+                setRange={(v) => {
+                  setRange(v);
+                }}
+                onAddPanel={(type) => {
+                  if (type === 'row') {
+                    const newPanels = updatePanelsInsertNewPanelToGlobal(
+                      panels,
+                      {
+                        type: 'row',
+                        id: uuidv4(),
+                        name: i18n.language === 'en_US' ? 'Row' : '分组',
+                        collapsed: true,
+                      },
+                      'row',
+                    );
+                    setPanels(newPanels);
+                    handleUpdateDashboardConfigs(dashboard.id, {
+                      configs: panelsMergeToConfigs(dashboard.configs, newPanels),
+                    });
+                  } else {
+                    setEditorData({
+                      visible: true,
+                      id: uuidv4(),
+                      initialValues: {
+                        name: 'Panel Title',
+                        type,
+                        targets: [
+                          {
+                            refId: 'A',
+                            expr: '',
+                          },
+                        ],
+                        custom: defaultCustomValuesMap[type],
+                        options: defaultOptionsValuesMap[type],
+                      },
+                    });
+                  }
+                }}
+              />
               {!editable && (
                 <div style={{ padding: '0px 10px', marginBottom: 8 }}>
                   <Alert type='warning' message='仪表盘已经被别人修改，为避免相互覆盖，请刷新仪表盘查看最新配置和数据' />
@@ -290,7 +288,15 @@ export default function DetailV2(props: IProps) {
               <div className='dashboard-detail-content-header'>
                 <div className='variable-area'>
                   {variableConfig && (
-                    <VariableConfig isPreview={!isAuthorized} onChange={handleVariableChange} value={variableConfig} range={range} id={id} onOpenFire={stopAutoRefresh} />
+                    <VariableConfig
+                      isPreview={!isAuthorized}
+                      onChange={handleVariableChange}
+                      value={variableConfig}
+                      range={range}
+                      id={id}
+                      onOpenFire={stopAutoRefresh}
+                      variableConfigRefreshFlag={variableConfigRefreshFlag}
+                    />
                   )}
                 </div>
                 <DashboardLinks
@@ -357,6 +363,7 @@ export default function DetailV2(props: IProps) {
                 updateAtRef.current = res.update_at;
                 refresh();
               }}
+              setVariableConfigRefreshFlag={setVariableConfigRefreshFlag}
             />
           )}
         </div>

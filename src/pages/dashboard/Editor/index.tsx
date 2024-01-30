@@ -37,6 +37,7 @@ interface IProps {
   dashboardId: string;
   time: IRawTimeRange;
   onOK: (formData: any, mode: string) => void;
+  onCancel?: () => void;
 }
 
 function index(props: IProps) {
@@ -124,6 +125,7 @@ function index(props: IProps) {
               style={{ fontSize: 18 }}
               onClick={() => {
                 setVisible(false);
+                props.onCancel && props.onCancel();
               }}
             />
           </Space>
@@ -138,6 +140,7 @@ function index(props: IProps) {
           key='cancel'
           onClick={() => {
             setVisible(false);
+            props.onCancel && props.onCancel();
           }}
         >
           {t('common:btn.cancel')}
@@ -154,6 +157,7 @@ function index(props: IProps) {
       ]}
       onCancel={() => {
         setVisible(false);
+        props.onCancel && props.onCancel();
       }}
       bodyStyle={{
         padding: '10px 24px 24px 24px',
