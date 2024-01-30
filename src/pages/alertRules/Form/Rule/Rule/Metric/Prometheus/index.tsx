@@ -25,6 +25,7 @@ import { PromQLInputWithBuilder } from '@/components/PromQLInput';
 import Severity from '@/pages/alertRules/Form/components/Severity';
 import Inhibit from '@/pages/alertRules/Form/components/Inhibit';
 import { FormStateContext } from '@/pages/alertRules/Form';
+import { IS_PLUS } from '@/utils/constant';
 import GraphPreview from './GraphPreview';
 import PrometheusV2 from './PrometheusV2';
 import './style.less';
@@ -46,45 +47,47 @@ export default function index(props: { form: any; datasourceCate: string; dataso
 
   return (
     <>
-      <Form.Item label={t('ruleConfigPromVersion')} name={['rule_config', 'version']} initialValue='v1'>
-        <Select
-          disabled={disabled}
-          options={[
-            {
-              label: 'v1',
-              value: 'v1',
-            },
-            {
-              label: 'v2',
-              value: 'v2',
-            },
-          ]}
-          onChange={(val) => {
-            if (val === 'v2') {
-              const rule_config = form.getFieldValue('rule_config');
-              form.setFieldsValue({
-                rule_config: {
-                  ...rule_config,
-                  triggers: [
-                    {
-                      mode: 0,
-                      expressions: [
-                        {
-                          ref: 'A',
-                          comparisonOperator: '>',
-                          value: 0,
-                          logicalOperator: '&&',
-                        },
-                      ],
-                      severity: 2,
-                    },
-                  ],
-                },
-              });
-            }
-          }}
-        />
-      </Form.Item>
+      {IS_PLUS && (
+        <Form.Item label={t('ruleConfigPromVersion')} name={['rule_config', 'version']} initialValue='v1'>
+          <Select
+            disabled={disabled}
+            options={[
+              {
+                label: 'v1',
+                value: 'v1',
+              },
+              {
+                label: 'v2',
+                value: 'v2',
+              },
+            ]}
+            onChange={(val) => {
+              if (val === 'v2') {
+                const rule_config = form.getFieldValue('rule_config');
+                form.setFieldsValue({
+                  rule_config: {
+                    ...rule_config,
+                    triggers: [
+                      {
+                        mode: 0,
+                        expressions: [
+                          {
+                            ref: 'A',
+                            comparisonOperator: '>',
+                            value: 0,
+                            logicalOperator: '&&',
+                          },
+                        ],
+                        severity: 2,
+                      },
+                    ],
+                  },
+                });
+              }
+            }}
+          />
+        </Form.Item>
+      )}
       {ruleConfigVersion === 'v2' ? (
         <PrometheusV2 {...props} />
       ) : (
