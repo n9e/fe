@@ -122,7 +122,7 @@ const zh_HK = {
   'tpl.args.help': '附於腳本之後的引數，多個引數之間用雙逗號,,分隔，比如 arg1,,arg2,,arg3',
   'tpl.modify': '編輯腳本',
   'tpl.create.task': '創建任務',
-  'tpl.callback': '警告自癒回呼地址:',
+  'tpl.callback': '警告自癒回呼地址',
 
   task: '執行歷史',
   'task.create': '創建任務',

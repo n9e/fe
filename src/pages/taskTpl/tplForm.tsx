@@ -14,11 +14,12 @@
  * limitations under the License.
  *
  */
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import _ from 'lodash';
 import { withRouter } from 'react-router-dom';
 import { Button, Form, Input, InputNumber, Select, Space, Tag } from 'antd';
 import { useTranslation } from 'react-i18next';
+import { CommonStateContext } from '@/App';
 import Editor from './editor';
 import hostsFilterModal from './hostsFilterModal';
 import './style.less';
@@ -29,6 +30,7 @@ const { TextArea } = Input;
 const TplForm = (props) => {
   const { t } = useTranslation('common');
   const [form] = Form.useForm();
+  const { businessGroup } = useContext(CommonStateContext);
 
   useEffect(() => {
     // 获取服务列表
@@ -138,6 +140,7 @@ const TplForm = (props) => {
                   style={{ padding: 0 }}
                   onClick={() => {
                     hostsFilterModal({
+                      group_id: businessGroup.id!,
                       onOk: (hosts) => {
                         form.setFieldsValue({
                           hosts: _.join(_.map(hosts, 'ident'), '\n'),

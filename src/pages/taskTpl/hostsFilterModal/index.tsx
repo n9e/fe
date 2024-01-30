@@ -9,14 +9,15 @@ import ValuesSelect from './ValuesSelect';
 import Preview from './Preview';
 
 interface Props {
+  group_id: number;
   onOk: (hosts: any[]) => void;
 }
 
-const queryKeyOptions = [{ value: 'group_ids' }, { value: 'tags' }, { value: 'hosts' }];
+const queryKeyOptions = ['all_hosts', 'tags', 'hosts'];
 
 function hostsFilterModal(props: Props & ModalWrapProps) {
   const { t } = useTranslation('alertRules');
-  const { visible, destroy, onOk } = props;
+  const { visible, destroy, group_id, onOk } = props;
   const [form] = Form.useForm();
 
   return (
@@ -25,9 +26,7 @@ function hostsFilterModal(props: Props & ModalWrapProps) {
         name='queries'
         initialValue={[
           {
-            key: 'group_ids',
-            op: '==',
-            values: [],
+            key: 'all_hosts',
           },
         ]}
       >
@@ -39,7 +38,7 @@ function hostsFilterModal(props: Props & ModalWrapProps) {
                 <PlusCircleOutlined
                   onClick={() =>
                     add({
-                      key: 'group_ids',
+                      key: 'hosts',
                       op: '==',
                       values: [],
                     })
@@ -51,6 +50,11 @@ function hostsFilterModal(props: Props & ModalWrapProps) {
             onOk={() => {
               form.validateFields().then((values) => {
                 const { queries } = values;
+                queries.push({
+                  key: 'group_ids',
+                  op: '==',
+                  values: [group_id],
+                });
                 getTargetList({
                   p: 1,
                   limit: 100000, // TODO 临时解决方案，limit 100000 认为是获取全部
@@ -80,8 +84,8 @@ function hostsFilterModal(props: Props & ModalWrapProps) {
                       }}
                     >
                       {queryKeyOptions.map((item) => (
-                        <Select.Option key={item.value} value={item.value}>
-                          {t(`host.query.key.${item.value}`)}
+                        <Select.Option key={item} value={item}>
+                          {t(`host.query.key.${item}`)}
                         </Select.Option>
                       ))}
                     </Select>
@@ -141,7 +145,12 @@ function hostsFilterModal(props: Props & ModalWrapProps) {
             ))}
             <Form.Item shouldUpdate noStyle>
               {({ getFieldValue }) => {
-                const queries = getFieldValue(['queries']);
+                const queries = _.cloneDeep(getFieldValue(['queries']));
+                queries.push({
+                  key: 'group_ids',
+                  op: '==',
+                  values: [group_id],
+                });
                 return <Preview queries={queries} />;
               }}
             </Form.Item>

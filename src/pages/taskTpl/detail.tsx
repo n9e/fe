@@ -16,8 +16,8 @@
  */
 import React, { useState, useEffect, useContext } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import { Button, Spin, Divider, Card, Breadcrumb } from 'antd';
-import { RollbackOutlined } from '@ant-design/icons';
+import { Button, Spin, Divider, Card, Space } from 'antd';
+import { RollbackOutlined, CopyOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
@@ -27,6 +27,7 @@ import api from '@/utils/api';
 import Editor from './editor';
 import { Tpl } from './interface';
 import { CommonStateContext } from '@/App';
+import { copyToClipBoard } from '@/utils';
 
 const Detail = (props: any) => {
   const history = useHistory();
@@ -123,6 +124,19 @@ const Detail = (props: any) => {
                             {_.map(data.hosts, (host) => {
                               return <div key={host}>{host}</div>;
                             })}
+                          </td>
+                        </tr>
+                        <tr className='ant-table-row ant-table-row-level-0'>
+                          <td>{t('tpl.callback')}</td>
+                          <td>
+                            <Space>
+                              <span>{`\${ibex}/${id}`}</span>
+                              <CopyOutlined
+                                onClick={() => {
+                                  copyToClipBoard(`\${ibex}/${id}`, (val) => val);
+                                }}
+                              />
+                            </Space>
                           </td>
                         </tr>
                       </tbody>

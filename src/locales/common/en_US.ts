@@ -123,7 +123,7 @@ const en_US = {
   'tpl.args.help': 'Parameters attached to the script, separated by double commas, such as arg1,,arg2,,arg3',
   'tpl.modify': 'Modify the template',
   'tpl.create.task': 'Create a new task',
-  'tpl.callback': 'Self-healing callback address:',
+  'tpl.callback': 'Self-healing callback address',
 
   task: 'Execution History',
   'task.create': 'Create task',
