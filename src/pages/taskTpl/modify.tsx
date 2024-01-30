@@ -85,7 +85,7 @@ const Modify = (props: any) => {
                   <>
                     <div style={{ marginBottom: 16 }}>
                       <Space>
-                        <strong>{t('tpl.callback')}</strong>
+                        <strong>{t('tpl.callback')}:</strong>
                         <span>{`\${ibex}/${id}`}</span>
                         <CopyOutlined
                           onClick={() => {

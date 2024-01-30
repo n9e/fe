@@ -124,7 +124,7 @@ const zh_CN = {
   'tpl.args.help': '附于脚本之后的参数，多个参数之间用双逗号,,分隔，比如arg1,,arg2,,arg3',
   'tpl.modify': '编辑脚本',
   'tpl.create.task': '创建任务',
-  'tpl.callback': '告警自愈回调地址:',
+  'tpl.callback': '告警自愈回调地址',
 
   task: '自愈任务',
   'task.create': '创建任务',
