@@ -54,8 +54,8 @@ function Item(props) {
   };
 
   return (
-    <div className='renderer-bar-gauge-item' key={item.name}>
-      <Tooltip title={item.name}>
+    <Tooltip title={item.name}>
+      <div className='renderer-bar-gauge-item' key={item.name}>
         <div
           className='renderer-bar-gauge-item-name'
           style={{
@@ -70,47 +70,48 @@ function Item(props) {
             item.name
           )}
         </div>
-      </Tooltip>
-      <div
-        className='renderer-bar-gauge-item-value'
-        style={{
-          width: `${100 - serieWidth}%`,
-        }}
-      >
+
         <div
-          className='renderer-bar-gauge-item-value-bg'
+          className='renderer-bar-gauge-item-value'
           style={{
-            backgroundColor: themeMode === 'dark' ? '#20222E' : '#F6F6F6',
-          }}
-        />
-        <div
-          ref={bgRef}
-          className='renderer-bar-gauge-item-value-color-bg'
-          style={{
-            color: themeMode === 'dark' ? '#fff' : '#20222E',
-            borderRight: `2px solid ${color}`,
-            backgroundColor: Color(color)
-              .alpha(displayMode === 'basic' ? 0.2 : 1)
-              .rgb()
-              .string(),
-            width: `${(item.stat / maxValue) * 100}%`,
+            width: `${100 - serieWidth}%`,
           }}
         >
-          {displayMode === 'basic' && (
-            <div
-              ref={textRef}
-              className='renderer-bar-gauge-item-value-text'
-              style={{
-                color: color,
-                right: getTextRight(),
-              }}
-            >
-              {item.text}
-            </div>
-          )}
+          <div
+            className='renderer-bar-gauge-item-value-bg'
+            style={{
+              backgroundColor: themeMode === 'dark' ? '#20222E' : '#F6F6F6',
+            }}
+          />
+          <div
+            ref={bgRef}
+            className='renderer-bar-gauge-item-value-color-bg'
+            style={{
+              color: themeMode === 'dark' ? '#fff' : '#20222E',
+              borderRight: `2px solid ${color}`,
+              backgroundColor: Color(color)
+                .alpha(displayMode === 'basic' ? 0.2 : 1)
+                .rgb()
+                .string(),
+              width: `${(item.stat / maxValue) * 100}%`,
+            }}
+          >
+            {displayMode === 'basic' && (
+              <div
+                ref={textRef}
+                className='renderer-bar-gauge-item-value-text'
+                style={{
+                  color: color,
+                  right: getTextRight(),
+                }}
+              >
+                {item.text}
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </Tooltip>
   );
 }
 

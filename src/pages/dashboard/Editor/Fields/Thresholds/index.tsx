@@ -22,7 +22,12 @@ import { useTranslation } from 'react-i18next';
 import { Panel } from '../../Components/Collapse';
 import ColorPicker from '../../../Components/ColorPicker';
 
-export default function index() {
+interface Props {
+  hideBase?: boolean;
+}
+
+export default function index(props: Props) {
+  const { hideBase } = props;
   const { t } = useTranslation('dashboard');
   const namePrefix = ['options', 'thresholds'];
 
@@ -33,16 +38,21 @@ export default function index() {
           <>
             {fields.map(({ key, name, ...restField }) => {
               return (
-                <Input.Group key={key} compact style={{ marginBottom: 5 }}>
-                  <Form.Item noStyle {...restField} name={[name, 'color']}>
-                    <ColorPicker />
-                  </Form.Item>
-                  <Form.Item shouldUpdate noStyle>
-                    {({ getFieldValue }) => {
-                      const type = getFieldValue([...namePrefix, 'steps', name, 'type']);
-                      const width = type === 'base' ? 'calc(100% - 32px)' : 'calc(100% - 82px)';
-                      return (
-                        <>
+                <Form.Item key={key} shouldUpdate noStyle>
+                  {({ getFieldValue }) => {
+                    const type = getFieldValue([...namePrefix, 'steps', name, 'type']);
+                    const width = type === 'base' ? 'calc(100% - 32px)' : 'calc(100% - 82px)';
+
+                    return (
+                      <div
+                        style={{
+                          display: hideBase && type === 'base' ? 'none' : 'block',
+                        }}
+                      >
+                        <Input.Group key={key} compact style={{ marginBottom: 5 }}>
+                          <Form.Item noStyle {...restField} name={[name, 'color']}>
+                            <ColorPicker />
+                          </Form.Item>
                           <Form.Item noStyle {...restField} name={[name, 'type']} hidden>
                             <div />
                           </Form.Item>
@@ -58,11 +68,11 @@ export default function index() {
                               }}
                             />
                           )}
-                        </>
-                      );
-                    }}
-                  </Form.Item>
-                </Input.Group>
+                        </Input.Group>
+                      </div>
+                    );
+                  }}
+                </Form.Item>
               );
             })}
             <Button

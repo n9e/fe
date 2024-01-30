@@ -126,6 +126,7 @@ export default function Graph(props: IProps) {
           });
 
           setData(series);
+          setErrorContent('');
         })
         .catch((err) => {
           const msg = _.get(err, 'message');

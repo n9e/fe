@@ -18,35 +18,6 @@ import _ from 'lodash';
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 
-// 获取数据源列表
-export function getDatasourceList(pluginTypes?: string[]): Promise<{ name: string; id: number; plugin_type: string }[]> {
-  let url = '/api/n9e/datasource/list';
-  return request(url, {
-    method: RequestMethod.Post,
-    data: {
-      p: 1,
-      limit: 5000, // TODO: 假设 n9e 里面需要选择的数据源不会超过 5000 个
-    },
-  })
-    .then((res) => {
-      return _.map(
-        _.filter(res.data.items || res.data, (item) => {
-          return pluginTypes ? _.includes(pluginTypes, item.plugin_type) : true;
-        }),
-        (item) => {
-          return {
-            ...item,
-            // 兼容 common ds
-            plugin_type: item.category ? _.replace(item.plugin_type, `.${item.category}`, '') : item.plugin_type,
-          };
-        },
-      );
-    })
-    .catch(() => {
-      return [];
-    });
-}
-
 // 匿名获取数据源列表
 export function getDatasourceBriefList(): Promise<{ name: string; id: number; plugin_type: string }[]> {
   const url = '/api/n9e/datasource/brief';

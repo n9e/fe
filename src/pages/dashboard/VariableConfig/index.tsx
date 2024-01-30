@@ -37,6 +37,7 @@ interface IProps {
   onChange: (data: IVariable[], needSave: boolean, options?: IVariable[]) => void;
   onOpenFire?: () => void;
   isPreview?: boolean;
+  variableConfigRefreshFlag?: string;
 }
 
 function includes(source, target) {
@@ -101,6 +102,12 @@ function index(props: IProps) {
   };
 
   useEffect(() => {
+    if (props.variableConfigRefreshFlag) {
+      setRefreshFlag(_.uniqueId('refreshFlag_'));
+    }
+  }, [props.variableConfigRefreshFlag]);
+
+  useEffect(() => {
     if (value) {
       let result: IVariable[] = [];
       (async () => {
@@ -136,7 +143,7 @@ function index(props: IProps) {
             const selected = getVaraiableSelected(item.name, item.type, id);
             if (query.__variable_value_fixed === undefined) {
               if (selected === null || (selected && !_.isEmpty(regFilterOptions) && !includes(regFilterOptions, selected))) {
-                const head = regFilterOptions?.[0];
+                const head = regFilterOptions?.[0] || ''; // 2014-01-22 添加默认值（空字符）
                 const defaultVal = item.multi ? (item.allOption ? ['all'] : head ? [head] : []) : head;
                 setVaraiableSelected({ name: item.name, value: defaultVal, id, urlAttach: true });
               }
@@ -185,6 +192,7 @@ function index(props: IProps) {
             }
           }
         }
+
         // 设置变量默认值，优先从 url 中获取，其次是 localStorage
         result = _.map(_.compact(result), (item) => {
           return {
@@ -241,7 +249,7 @@ function index(props: IProps) {
         onChange={(v: IVariable[]) => {
           if (v) {
             onChange(v, true);
-            setData(v);
+            setRefreshFlag(_.uniqueId('refreshFlag_')); // 2023-01-25 变量配置修改后，重新初始化后再设置变量值
           }
         }}
         range={range}

@@ -117,7 +117,7 @@ function FormCpt(props: IProps, ref) {
                           value={variableConfigWithOptions}
                           editable={false}
                           range={range}
-                          id={id}
+                          id={dashboardId}
                         />
                       </div>
                       <QueryEditor chartForm={chartForm} type={type} variableConfig={variableConfigWithOptions} dashboardId={dashboardId} />

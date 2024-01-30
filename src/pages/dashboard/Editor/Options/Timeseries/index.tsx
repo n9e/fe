@@ -31,7 +31,7 @@ export default function Timeseries({ targets }) {
       <GraphStyles />
       <ValueMappings />
       <StandardOptions />
-      <Thresholds />
+      <Thresholds hideBase />
       <Overrides targets={targets} />
     </>
   );

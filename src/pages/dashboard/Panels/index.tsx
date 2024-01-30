@@ -58,6 +58,7 @@ interface IProps {
   setPanels: React.Dispatch<React.SetStateAction<any[]>>;
   onShareClick: (panel: any) => void;
   onUpdated: (res: any) => void;
+  setVariableConfigRefreshFlag: (flag: string) => void;
 }
 
 const ReactGridLayout = WidthProvider(RGL);
@@ -301,6 +302,7 @@ function index(props: IProps) {
         setPanels={setPanels}
         updateDashboardConfigs={updateDashboardConfigs}
         onUpdated={onUpdated}
+        setVariableConfigRefreshFlag={props.setVariableConfigRefreshFlag}
       />
     </div>
   );
