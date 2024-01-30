@@ -132,6 +132,7 @@ export default function DetailV2(props: IProps) {
   });
   const [migrationVisible, setMigrationVisible] = useState(false);
   const [migrationModalOpen, setMigrationModalOpen] = useState(false);
+  const [variableConfigRefreshFlag, setVariableConfigRefreshFlag] = useState<string>(_.uniqueId('variableConfigRefreshFlag_'));
   const containerRef = useRef<HTMLDivElement>(null);
   let updateAtRef = useRef<number>();
   const refresh = async (cbk?: () => void) => {
@@ -290,7 +291,15 @@ export default function DetailV2(props: IProps) {
               <div className='dashboard-detail-content-header'>
                 <div className='variable-area'>
                   {variableConfig && (
-                    <VariableConfig isPreview={!isAuthorized} onChange={handleVariableChange} value={variableConfig} range={range} id={id} onOpenFire={stopAutoRefresh} />
+                    <VariableConfig
+                      isPreview={!isAuthorized}
+                      onChange={handleVariableChange}
+                      value={variableConfig}
+                      range={range}
+                      id={id}
+                      onOpenFire={stopAutoRefresh}
+                      variableConfigRefreshFlag={variableConfigRefreshFlag}
+                    />
                   )}
                 </div>
                 <DashboardLinks
@@ -357,6 +366,7 @@ export default function DetailV2(props: IProps) {
                 updateAtRef.current = res.update_at;
                 refresh();
               }}
+              setVariableConfigRefreshFlag={setVariableConfigRefreshFlag}
             />
           )}
         </div>
