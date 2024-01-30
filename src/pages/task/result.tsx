@@ -26,6 +26,7 @@ import FieldCopy from './FieldCopy';
 import request from '@/utils/request';
 import api from '@/utils/api';
 import { CommonStateContext } from '@/App';
+import AutoRefresh from '@/components/TimeRangePicker/AutoRefresh';
 
 interface HostItem {
   host: string;
@@ -170,13 +171,11 @@ const index = (props: any) => {
         <Card
           title={data.title}
           extra={
-            <a
-              onClick={() => {
+            <AutoRefresh
+              onRefresh={() => {
                 getTableData();
               }}
-            >
-              {t('task.refresh')}
-            </a>
+            />
           }
         >
           <Row style={{ marginBottom: 20 }}>

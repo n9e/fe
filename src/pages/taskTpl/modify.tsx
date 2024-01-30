@@ -16,8 +16,8 @@
  */
 import React, { useState, useEffect, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Button, Spin, Card, message } from 'antd';
-import { RollbackOutlined } from '@ant-design/icons';
+import { Button, Spin, Card, message, Space } from 'antd';
+import { RollbackOutlined, CopyOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import PageLayout from '@/components/pageLayout';
@@ -25,6 +25,7 @@ import request from '@/utils/request';
 import api from '@/utils/api';
 import TplForm from './tplForm';
 import { CommonStateContext } from '@/App';
+import { copyToClipBoard } from '@/utils';
 
 const Modify = (props: any) => {
   const history = useHistory();
@@ -81,9 +82,22 @@ const Modify = (props: any) => {
                 onSubmit={handleSubmit}
                 initialValues={data}
                 footer={
-                  <Button type='primary' htmlType='submit'>
-                    {t('btn.submit')}
-                  </Button>
+                  <>
+                    <div style={{ marginBottom: 16 }}>
+                      <Space>
+                        <strong>{t('tpl.callback')}</strong>
+                        <span>{`\${ibex}/${id}`}</span>
+                        <CopyOutlined
+                          onClick={() => {
+                            copyToClipBoard(`\${ibex}/${id}`, (val) => val);
+                          }}
+                        />
+                      </Space>
+                    </div>
+                    <Button type='primary' htmlType='submit'>
+                      {t('btn.submit')}
+                    </Button>
+                  </>
                 }
               />
             ) : null}
