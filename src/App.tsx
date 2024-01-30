@@ -219,7 +219,7 @@ function App() {
             };
           });
         } else {
-          const datasourceList = !location.pathname.startsWith('/login') ? await getDatasourceBriefList() : [];
+          const datasourceList = !_.some(['/login', '/callback'], (route) => location.pathname.startsWith(route)) ? await getDatasourceBriefList() : [];
           initialized.current = true;
           setCommonState((state) => {
             return {
