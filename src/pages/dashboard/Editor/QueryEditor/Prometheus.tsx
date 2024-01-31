@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Row, Col, Input, Button, Switch } from 'antd';
+import { Form, Row, Col, Input, Button, Switch, InputNumber, Space, Tag, Tooltip } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import moment from 'moment';
@@ -7,13 +7,14 @@ import { useTranslation } from 'react-i18next';
 import TimeRangePicker, { isMathString } from '@/components/TimeRangePicker';
 import Resolution from '@/components/Resolution';
 import { PromQLInputWithBuilder } from '@/components/PromQLInput';
+import { getRealStep } from '@/pages/dashboard/Renderer/datasource/prometheus';
 import Collapse, { Panel } from '../Components/Collapse';
 import getFirstUnusedLetter from '../../Renderer/utils/getFirstUnusedLetter';
 import { replaceExpressionVars } from '../../VariableConfig/constant';
 
 const alphabet = 'ABCDEFGHIGKLMNOPQRSTUVWXYZ'.split('');
 
-export default function Prometheus({ chartForm, variableConfig, dashboardId }) {
+export default function Prometheus({ chartForm, variableConfig, dashboardId, time }) {
   const { t } = useTranslation('dashboard');
   const varNams = _.map(variableConfig, (item) => {
     return `$${item.name}`;
@@ -31,7 +32,19 @@ export default function Prometheus({ chartForm, variableConfig, dashboardId }) {
                     header={
                       <Form.Item noStyle shouldUpdate>
                         {({ getFieldValue }) => {
-                          return getFieldValue(['targets', field.name, 'refId']) || alphabet[index];
+                          const target = getFieldValue(['targets', field.name]);
+                          const step = getRealStep(time, target);
+                          const name = target?.refId || alphabet[index];
+                          return (
+                            <Space>
+                              {name}
+                              {step ? (
+                                <Tooltip placement='right' title={t('query.prometheus.step.tag_tip')}>
+                                  <Tag color='purple'>{`step=${step}s`}</Tag>
+                                </Tooltip>
+                              ) : null}
+                            </Space>
+                          );
                         }}
                       </Form.Item>
                     }
@@ -122,8 +135,13 @@ export default function Prometheus({ chartForm, variableConfig, dashboardId }) {
                           />
                         </Form.Item>
                       </Col>
+                      <Col flex='120px'>
+                        <Form.Item label='Max data points' tooltip={t('query.prometheus.maxDataPoints.tip')} {...field} name={[field.name, 'maxDataPoints']} initialValue={240}>
+                          <InputNumber style={{ width: '100%' }} placeholder='240' min={1} />
+                        </Form.Item>
+                      </Col>
                       <Col flex='72px'>
-                        <Form.Item label='Step' {...field} name={[field.name, 'step']}>
+                        <Form.Item label='Min step' tooltip={t('query.prometheus.minStep.tip')} {...field} name={[field.name, 'step']}>
                           <Resolution />
                         </Form.Item>
                       </Col>

@@ -25,8 +25,35 @@ interface IOptions {
   type?: string;
 }
 
-const getDefaultStepByStartAndEnd = (start: number, end: number) => {
-  return Math.max(Math.floor((end - start) / 240), 1);
+const getDefaultStepByStartAndEnd = (start: number, end: number, maxDataPoints?: number) => {
+  maxDataPoints = maxDataPoints ?? 240;
+  return Math.max(Math.floor((end - start) / maxDataPoints), 1);
+};
+
+const adjustStep = (step: number, minStep: number, range: number) => {
+  // Prometheus 限制最大点数是 11000
+  let safeStep = range / 11000;
+  if (safeStep > 1) {
+    safeStep = Math.ceil(safeStep);
+  }
+  return Math.max(step, minStep, safeStep);
+};
+
+export const getRealStep = (time: IRawTimeRange, target: ITarget) => {
+  const parsedRange = parseRange(time);
+  let start = moment(parsedRange.start).unix();
+  let end = moment(parsedRange.end).unix();
+  let step: any = getDefaultStepByStartAndEnd(start, end, target?.maxDataPoints);
+  if (target.time) {
+    const parsedRange = parseRange(target.time);
+    const start = moment(parsedRange.start).unix();
+    const end = moment(parsedRange.end).unix();
+    step = getDefaultStepByStartAndEnd(start, end, target.maxDataPoints);
+  }
+  if (target.step) {
+    step = adjustStep(step, target.step, end - start);
+  }
+  return step;
 };
 
 interface Result {
@@ -40,7 +67,6 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
   const parsedRange = parseRange(time);
   let start = moment(parsedRange.start).unix();
   let end = moment(parsedRange.end).unix();
-  let _step: any = getDefaultStepByStartAndEnd(start, end);
 
   const series: any[] = [];
   let batchQueryParams: any[] = [];
@@ -55,15 +81,8 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
       if (!target.refId) {
         target.refId = alphabet[idx];
       }
-      if (target.time) {
-        const parsedRange = parseRange(target.time);
-        start = moment(parsedRange.start).unix();
-        end = moment(parsedRange.end).unix();
-        _step = getDefaultStepByStartAndEnd(start, end);
-      }
-      if (target.step) {
-        _step = target.step;
-      }
+      const _step = getRealStep(time, target);
+
       // TODO: 消除毛刺？
       // start = start - (start % _step!);
       // end = end - (end % _step!);
@@ -117,6 +136,12 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
           };
           const target = _.find(targets, (t) => t.refId === item.refId);
           _.forEach(item.result, (serie) => {
+            let _step = 15;
+            if (!spanNulls) {
+              if (target) {
+                _step = getRealStep(time, target);
+              }
+            }
             series.push({
               id: _.uniqueId('series_'),
               refId: item.refId,
