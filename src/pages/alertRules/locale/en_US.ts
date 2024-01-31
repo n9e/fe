@@ -155,5 +155,11 @@ const en_US = {
     title: 'Preset filters',
     all: 'All rules',
   },
+  ruleConfigPromVersion: 'Version',
+  ruleConfigPromVersionV2: {
+    query: {
+      title: 'Query',
+    },
+  },
 };
 export default en_US;
