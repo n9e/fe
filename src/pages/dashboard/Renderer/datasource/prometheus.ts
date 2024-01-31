@@ -25,7 +25,8 @@ interface IOptions {
   type?: string;
 }
 
-const getDefaultStepByStartAndEnd = (start: number, end: number, maxDataPoints = 240) => {
+const getDefaultStepByStartAndEnd = (start: number, end: number, maxDataPoints?: number) => {
+  maxDataPoints = maxDataPoints ?? 240;
   return Math.max(Math.floor((end - start) / maxDataPoints), 1);
 };
 
