@@ -12,7 +12,7 @@ const getDefaultStepByStartAndEnd = (start: number, end: number) => {
   return Math.max(Math.floor((end - start) / 240), 1);
 };
 
-export default function GraphPreview({ form, fieldName }) {
+export default function GraphPreview({ form, fieldName, promqlFieldName = 'prom_ql' }) {
   const { t } = useTranslation();
   const divRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
@@ -37,7 +37,7 @@ export default function GraphPreview({ form, fieldName }) {
           datasource_id,
           queries: [
             {
-              query: query.prom_ql,
+              query: query[promqlFieldName],
               start: from,
               end: to,
               step: getDefaultStepByStartAndEnd(from, to),

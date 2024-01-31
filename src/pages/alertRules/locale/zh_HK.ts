@@ -154,6 +154,12 @@ const zh_HK = {
     title: '預置篩選',
     all: '全部規則',
   },
+  ruleConfigPromVersion: '版本',
+  ruleConfigPromVersionV2: {
+    query: {
+      title: '查詢條件',
+    },
+  },
 };
 
 export default zh_HK;
