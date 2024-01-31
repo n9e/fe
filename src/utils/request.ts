@@ -1,5 +1,5 @@
 /** Request 网络请求工具 更详细的 api 文档: https://github.com/umijs/umi-request */
-import { extend } from 'umi-request';
+import { ResponseError, extend } from 'umi-request';
 import { notification } from 'antd';
 import _ from 'lodash';
 import { UpdateAccessToken } from '@/services/login';
@@ -7,12 +7,15 @@ import { N9E_PATHNAME, AccessTokenKey } from '@/utils/constant';
 import i18next from 'i18next';
 
 /** 异常处理程序，所有的error都被这里处理，页面无法感知具体error */
-const errorHandler = (error: Error): Response => {
+const errorHandler = (error: ResponseError<any>): Response => {
   // 忽略掉 setting getter-only property "data" 的错误
   // 这是 umi-request 的一个 bug，当触发 abort 时 catch callback 里面不能 set data
   if (error.name !== 'AbortError' && error.message !== 'setting getter-only property "data"') {
+    if (error.request.options.sourcePathname === location.pathname) {
+      throw error;
+    }
     // @ts-ignore
-    if (!error.silence) {
+    else if (!error.silence) {
       notification.error({
         message: error.message,
       });
@@ -59,7 +62,7 @@ request.interceptors.request.use((url, options) => {
   headers['X-Language'] = i18next.language;
   return {
     url,
-    options: { ...options, headers },
+    options: { ...options, headers, sourcePathname: location.pathname },
   };
 });
 
