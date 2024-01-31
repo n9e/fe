@@ -11,7 +11,7 @@ const errorHandler = (error: ResponseError<any>): Response => {
   // 忽略掉 setting getter-only property "data" 的错误
   // 这是 umi-request 的一个 bug，当触发 abort 时 catch callback 里面不能 set data
   if (error.name !== 'AbortError' && error.message !== 'setting getter-only property "data"') {
-    if (error.request.options.sourcePathname === location.pathname) {
+    if (error.request.options.sourcePathname !== location.pathname) {
       throw error;
     }
     // @ts-ignore
