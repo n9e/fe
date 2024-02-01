@@ -31,7 +31,14 @@ export default function Script() {
           <InputNumber style={{ width: '100%' }} />
         </Form.Item>
         <Form.Item name='type'>
-          <Radio.Group optionType='button'>
+          <Radio.Group
+            optionType='button'
+            onChange={() => {
+              form.setFieldsValue({
+                content: '',
+              });
+            }}
+          >
             <Radio value={0}>{t('script.type.0')}</Radio>
             <Radio value={1}>{t('script.type.1')}</Radio>
           </Radio.Group>
@@ -66,7 +73,7 @@ export default function Script() {
               return (
                 <>
                   <Form.Item label={t('script.path')} name='content'>
-                    <Input />
+                    <Input placeholder='/opt/n9e/etc/scripts/notify.py' />
                   </Form.Item>
                 </>
               );
