@@ -36,7 +36,7 @@ export const processFormValues = (values) => {
   const tags = values?.tags?.map((item) => {
     return {
       ...item,
-      value: Array.isArray(item.value) ? item.value.join(' ') : item.value,
+      value: _.trim(Array.isArray(item.value) ? item.value.join(' ') : item.value),
     };
   });
   return {
