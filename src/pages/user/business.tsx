@@ -194,7 +194,7 @@ const Resource: React.FC = () => {
             >
               {!collapse ? <LeftOutlined /> : <RightOutlined />}
             </div>
-            <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
               <div className='sub-title'>
                 {t('business.list')}
                 <Button
