@@ -194,7 +194,7 @@ const Resource: React.FC = () => {
             >
               {!collapse ? <LeftOutlined /> : <RightOutlined />}
             </div>
-            <div className='left-tree-area'>
+            <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
               <div className='sub-title'>
                 {t('business.list')}
                 <Button
