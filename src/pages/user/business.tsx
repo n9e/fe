@@ -18,9 +18,10 @@ import React, { useContext, useEffect, useState } from 'react';
 import moment from 'moment';
 import _ from 'lodash';
 import classNames from 'classnames';
+import { Resizable } from 're-resizable';
 import PageLayout from '@/components/pageLayout';
 import { Button, Table, Input, message, Row, Col, Modal, Space, Tree } from 'antd';
-import { EditOutlined, DeleteOutlined, SearchOutlined, UserOutlined, InfoCircleOutlined, DownOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined, SearchOutlined, UserOutlined, InfoCircleOutlined, DownOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import UserInfoModal from './component/createModal';
 import { deleteBusinessTeamMember, getBusinessTeamList, getBusinessTeamInfo, deleteBusinessTeam } from '@/services/manage';
 import { Team, ActionType } from '@/store/manageInterface';
@@ -48,6 +49,8 @@ const Resource: React.FC = () => {
   const [teamList, setTeamList] = useState<Team[]>([]);
   const [memberLoading, setMemberLoading] = useState<boolean>(false);
   const [searchMemberValue, setSearchMemberValue] = useState<string>('');
+  const [collapse, setCollapse] = useState(localStorage.getItem('leftlist') === '1');
+  const [width, setWidth] = useState(_.toNumber(localStorage.getItem('leftwidth') || 200));
   const teamMemberColumns: ColumnsType<any> = [
     {
       title: t('team.name'),
@@ -163,183 +166,210 @@ const Resource: React.FC = () => {
 
   return (
     <PageLayout title={t('business.title')} icon={<UserOutlined />}>
-      <div className='user-manage-content'>
-        <div style={{ display: 'flex', height: '100%' }}>
-          <div className='left-tree-area'>
-            <div className='sub-title'>
-              {t('business.list')}
-              <Button
+      <div className='user-manage-content' style={{ display: 'flex' }}>
+        <Resizable
+          style={{
+            marginRight: collapse ? 0 : 10,
+          }}
+          size={{ width: collapse ? 0 : width, height: '100%' }}
+          enable={{
+            right: collapse ? false : true,
+          }}
+          onResizeStop={(e, direction, ref, d) => {
+            let curWidth = width + d.width;
+            if (curWidth < 200) {
+              curWidth = 200;
+            }
+            setWidth(curWidth);
+            localStorage.setItem('leftwidth', curWidth.toString());
+          }}
+        >
+          <div className={collapse ? 'left-area collapse' : 'left-area'}>
+            <div
+              className='collapse-btn'
+              onClick={() => {
+                localStorage.setItem('leftlist', !collapse ? '1' : '0');
+                setCollapse(!collapse);
+              }}
+            >
+              {!collapse ? <LeftOutlined /> : <RightOutlined />}
+            </div>
+            <div className='left-tree-area'>
+              <div className='sub-title'>
+                {t('business.list')}
+                <Button
+                  style={{
+                    height: '30px',
+                  }}
+                  size='small'
+                  type='link'
+                  onClick={() => {
+                    handleClick(ActionType.CreateBusiness);
+                  }}
+                >
+                  {t('common:btn.add')}
+                </Button>
+              </div>
+              <div style={{ display: 'flex', margin: '5px 0px 12px' }}>
+                <Input
+                  prefix={<SearchOutlined />}
+                  placeholder={t('business.search_placeholder')}
+                  onPressEnter={(e: any) => {
+                    getTeamList(e.target.value);
+                  }}
+                  onBlur={(e: any) => {
+                    getTeamList(e.target.value);
+                  }}
+                />
+              </div>
+              {siteInfo?.businessGroupDisplayMode == 'list' ? (
+                <div className='radio-list' style={{ overflowY: 'auto' }}>
+                  {_.map(teamList, (item) => {
+                    return (
+                      <div
+                        className={classNames({
+                          'n9e-metric-views-list-content-item': true,
+                          active: item.id == teamId,
+                        })}
+                        key={item.id}
+                        onClick={() => {
+                          if (item.id !== teamId) {
+                            setTeamId(item.id as any);
+                          }
+                        }}
+                      >
+                        <span className='name'>{item.name}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className='radio-list' style={{ overflowY: 'auto' }}>
+                  {!_.isEmpty(teamList) && (
+                    <Tree
+                      rootClassName='business-group-tree'
+                      showLine={{
+                        showLeafIcon: false,
+                      }}
+                      defaultExpandParent={false}
+                      defaultExpandedKeys={getCollapsedKeys(listToTree(teamList as any, siteInfo?.businessGroupSeparator), getLocaleExpandedKeys(), teamId as any)}
+                      selectedKeys={teamId ? [_.toString(teamId)] : []}
+                      blockNode
+                      switcherIcon={<DownOutlined />}
+                      onSelect={(_selectedKeys, e: any) => {
+                        const nodeId = e.node.id;
+                        setTeamId(nodeId as any);
+                      }}
+                      onExpand={(expandedKeys: string[]) => {
+                        setLocaleExpandedKeys(expandedKeys);
+                      }}
+                      treeData={listToTree(teamList as any, siteInfo?.businessGroupSeparator)}
+                    />
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </Resizable>
+        {teamList.length > 0 ? (
+          <div className='resource-table-content'>
+            <Row className='team-info'>
+              <Col
+                span='24'
                 style={{
-                  height: '30px',
-                }}
-                size='small'
-                type='link'
-                onClick={() => {
-                  handleClick(ActionType.CreateBusiness);
+                  color: '#000',
+                  fontSize: '14px',
+                  fontWeight: 'bold',
+                  display: 'inline',
                 }}
               >
-                {t('common:btn.add')}
-              </Button>
-            </div>
-            <div style={{ display: 'flex', margin: '5px 0px 12px' }}>
-              <Input
-                prefix={<SearchOutlined />}
-                placeholder={t('business.search_placeholder')}
-                onPressEnter={(e: any) => {
-                  getTeamList(e.target.value);
-                }}
-                onBlur={(e: any) => {
-                  getTeamList(e.target.value);
-                }}
-              />
-            </div>
-            {siteInfo?.businessGroupDisplayMode == 'list' ? (
-              <div className='radio-list' style={{ overflowY: 'auto' }}>
-                {_.map(teamList, (item) => {
-                  return (
-                    <div
-                      className={classNames({
-                        'n9e-metric-views-list-content-item': true,
-                        active: item.id == teamId,
-                      })}
-                      key={item.id}
-                      onClick={() => {
-                        if (item.id !== teamId) {
-                          setTeamId(item.id as any);
-                        }
-                      }}
-                    >
-                      <span className='name'>{item.name}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className='radio-list' style={{ overflowY: 'auto' }}>
-                {!_.isEmpty(teamList) && (
-                  <Tree
-                    rootClassName='business-group-tree'
-                    showLine={{
-                      showLeafIcon: false,
-                    }}
-                    defaultExpandParent={false}
-                    defaultExpandedKeys={getCollapsedKeys(listToTree(teamList as any, siteInfo?.businessGroupSeparator), getLocaleExpandedKeys(), teamId as any)}
-                    selectedKeys={teamId ? [_.toString(teamId)] : []}
-                    blockNode
-                    switcherIcon={<DownOutlined />}
-                    onSelect={(_selectedKeys, e: any) => {
-                      const nodeId = e.node.id;
-                      setTeamId(nodeId as any);
-                    }}
-                    onExpand={(expandedKeys: string[]) => {
-                      setLocaleExpandedKeys(expandedKeys);
-                    }}
-                    treeData={listToTree(teamList as any, siteInfo?.businessGroupSeparator)}
-                  />
-                )}
-              </div>
-            )}
-          </div>
-          {teamList.length > 0 ? (
-            <div className='resource-table-content'>
-              <Row className='team-info'>
-                <Col
-                  span='24'
+                {teamInfo && teamInfo.name}
+                <EditOutlined
                   style={{
-                    color: '#000',
+                    marginLeft: '8px',
                     fontSize: '14px',
-                    fontWeight: 'bold',
-                    display: 'inline',
                   }}
-                >
-                  {teamInfo && teamInfo.name}
-                  <EditOutlined
-                    style={{
-                      marginLeft: '8px',
-                      fontSize: '14px',
-                    }}
-                    onClick={() => handleClick(ActionType.EditBusiness)}
-                  ></EditOutlined>
-                  <DeleteOutlined
-                    style={{
-                      marginLeft: '8px',
-                      fontSize: '14px',
-                    }}
-                    onClick={() => {
-                      confirm({
-                        title: t('common:confirm.delete'),
-                        onOk: () => {
-                          deleteBusinessTeam(teamId).then((_) => {
-                            message.success(t('common:success.delete'));
-                            handleClose('delete');
-                          });
-                        },
-                        onCancel: () => {},
-                      });
-                    }}
-                  />
-                </Col>
-                <Col
+                  onClick={() => handleClick(ActionType.EditBusiness)}
+                ></EditOutlined>
+                <DeleteOutlined
                   style={{
-                    marginTop: '8px',
-                    color: '#666',
+                    marginLeft: '8px',
+                    fontSize: '14px',
                   }}
-                >
-                  <Space>
-                    <span>ID：{teamInfo?.id}</span>
-                    <span>
-                      {t('common:table.note')}：{t('business.note_content')}
-                    </span>
-                    <span>
-                      {t('common:table.update_by')}：{teamInfo?.update_by ? teamInfo.update_by : '-'}
-                    </span>
-                    <span>
-                      {t('common:table.update_at')}：{teamInfo?.update_at ? moment.unix(teamInfo.update_at).format('YYYY-MM-DD HH:mm:ss') : '-'}
-                    </span>
-                  </Space>
-                </Col>
-              </Row>
-              <Row justify='space-between' align='middle'>
-                <Col span='12'>
-                  <Input
-                    prefix={<SearchOutlined />}
-                    value={searchMemberValue}
-                    className={'searchInput'}
-                    onChange={(e) => setSearchMemberValue(e.target.value)}
-                    placeholder={t('business.team_search_placeholder')}
-                  />
-                </Col>
-                <Button
-                  type='primary'
                   onClick={() => {
-                    handleClick(ActionType.AddBusinessMember);
+                    confirm({
+                      title: t('common:confirm.delete'),
+                      onOk: () => {
+                        deleteBusinessTeam(teamId).then((_) => {
+                          message.success(t('common:success.delete'));
+                          handleClose('delete');
+                        });
+                      },
+                      onCancel: () => {},
+                    });
                   }}
-                >
-                  {t('business.add_team')}
-                </Button>
-              </Row>
+                />
+              </Col>
+              <Col
+                style={{
+                  marginTop: '8px',
+                  color: '#666',
+                }}
+              >
+                <Space>
+                  <span>ID：{teamInfo?.id}</span>
+                  <span>
+                    {t('common:table.note')}：{t('business.note_content')}
+                  </span>
+                  <span>
+                    {t('common:table.update_by')}：{teamInfo?.update_by ? teamInfo.update_by : '-'}
+                  </span>
+                  <span>
+                    {t('common:table.update_at')}：{teamInfo?.update_at ? moment.unix(teamInfo.update_at).format('YYYY-MM-DD HH:mm:ss') : '-'}
+                  </span>
+                </Space>
+              </Col>
+            </Row>
+            <Row justify='space-between' align='middle'>
+              <Col span='12'>
+                <Input
+                  prefix={<SearchOutlined />}
+                  value={searchMemberValue}
+                  className={'searchInput'}
+                  onChange={(e) => setSearchMemberValue(e.target.value)}
+                  placeholder={t('business.team_search_placeholder')}
+                />
+              </Col>
+              <Button
+                type='primary'
+                onClick={() => {
+                  handleClick(ActionType.AddBusinessMember);
+                }}
+              >
+                {t('business.add_team')}
+              </Button>
+            </Row>
 
-              <Table
-                className='mt8'
-                size='small'
-                rowKey='id'
-                columns={teamMemberColumns}
-                dataSource={memberList && memberList.length > 0 ? memberList.filter((item) => item.user_group && item.user_group.name.indexOf(searchMemberValue) !== -1) : []}
-                loading={memberLoading}
-              />
-            </div>
-          ) : (
-            <div className='blank-busi-holder'>
-              <p style={{ textAlign: 'left', fontWeight: 'bold' }}>
-                <InfoCircleOutlined style={{ color: '#1473ff' }} /> {t('Tips')}
-              </p>
-              <p>
-                {t('business.empty')}&nbsp;
-                <a onClick={() => handleClick(ActionType.CreateBusiness)}>{t('business.create')}</a>
-              </p>
-            </div>
-          )}
-        </div>
+            <Table
+              className='mt8'
+              size='small'
+              rowKey='id'
+              columns={teamMemberColumns}
+              dataSource={memberList && memberList.length > 0 ? memberList.filter((item) => item.user_group && item.user_group.name.indexOf(searchMemberValue) !== -1) : []}
+              loading={memberLoading}
+            />
+          </div>
+        ) : (
+          <div className='blank-busi-holder'>
+            <p style={{ textAlign: 'left', fontWeight: 'bold' }}>
+              <InfoCircleOutlined style={{ color: '#1473ff' }} /> {t('Tips')}
+            </p>
+            <p>
+              {t('business.empty')}&nbsp;
+              <a onClick={() => handleClick(ActionType.CreateBusiness)}>{t('business.create')}</a>
+            </p>
+          </div>
+        )}
       </div>
       <UserInfoModal
         visible={visible}

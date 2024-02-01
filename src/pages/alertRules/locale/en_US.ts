@@ -36,6 +36,7 @@ const en_US = {
   enable_in_bg_tip: 'Determine the ownership relationship based on the ident in the alert event',
   notify_configs: 'Notify Configuration',
   notify_channels: 'Channels',
+  notify_channels_doc: 'Document',
   notify_channels_tpl: 'Channels Template',
   notify_channels_tpl_tip: 'If empty, use the default template',
   notify_recovered: 'Recovered',

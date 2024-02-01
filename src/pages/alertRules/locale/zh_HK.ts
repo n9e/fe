@@ -35,6 +35,7 @@ const zh_HK = {
   enable_in_bg_tip: '根據告警事件中的 ident 歸屬關係判斷',
   notify_configs: '通知配置',
   notify_channels: '通知媒介',
+  notify_channels_doc: '使用文檔',
   notify_channels_tpl: '通知媒介模板',
   notify_channels_tpl_tip: '為空則使用默認模板',
   notify_recovered: '啟用恢復通知',

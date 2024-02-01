@@ -88,7 +88,17 @@ export default function index({ disabled, hideAdvanced }: { disabled?: boolean; 
             display: notifyTargetCollapsed ? 'none' : 'block',
           }}
         >
-          <Form.Item label={t('notify_channels')} name='notify_channels'>
+          <Form.Item
+            label={
+              <Space>
+                {t('notify_channels')}
+                <a target='_blank' href='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v6/usage/alert/alert-notify/'>
+                  {t('notify_channels_doc')}
+                </a>
+              </Space>
+            }
+            name='notify_channels'
+          >
             <Checkbox.Group disabled={disabled}>
               {contactList.map((item) => {
                 return (

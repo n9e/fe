@@ -48,7 +48,6 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    // margin-top: 16px;
   }
   .load-more {
     font-size: 24px;
@@ -65,20 +64,6 @@
   .left-tree-area {
     position: relative;
     box-sizing: border-box;
-    width: 200px;
-
-    &:before {
-      content: '';
-      display: block;
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      right: 0;
-      width: 10px;
-      margin-left: 0;
-      background: #f6f5f6;
-      z-index: 2;
-    }
   }
   position: relative;
   .user-manage-title {
@@ -122,10 +107,8 @@
 }
 .ant-list-item {
   color: #666;
-  // justify-content: center;
   &:hover {
     cursor: pointer;
-    // background-color: @colorGray2;
     .left-tree-item-control-area {
       visibility: visible;
       transform: translate(0);
@@ -133,12 +116,6 @@
   }
 }
 .is-active {
-  // border: none;
-  // color: #2f81f9;
-  // border-color: #6c9ff3;
-  // background-color: #f3f7fe;
-  // box-shadow: inset 1px 0 0 #6c9ff3, inset 0 1px 0 #6c9ff3,
-  //   inset -1px 0 0 #6c9ff3, inset 0 -1px 0 #6c9ff3;
   background: fade(@primary-color, 10%);
 }
 .team-info {
@@ -158,16 +135,5 @@
 .resource-table-content {
   padding: 10px;
   flex: 1;
-  width: calc(100% - 370px);
   overflow: auto;
-}
-
-.left-tree-area {
-  display: flex;
-  flex-direction: column;
-  width: 200px;
-  flex-shrink: 0;
-  position: relative;
-  padding: 16px;
-  padding-right: 26px;
 }
