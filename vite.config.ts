@@ -21,6 +21,22 @@ import plusResolve from './plugins/plusResolve';
 
 const reactSvgPlugin = require('./plugins/svg');
 
+const chunk2 = [
+  '@codemirror/autocomplete',
+  '@codemirror/highlight',
+  '@codemirror/lint',
+  '@codemirror/language',
+  '@codemirror/state',
+  '@codemirror/view',
+  'codemirror-promql',
+  '@codemirror/basic-setup',
+];
+const chunk3 = ['react-ace'];
+const chunk1 = ['react', 'react-router-dom', 'react-dom', 'moment', '@ant-design/icons', 'umi-request', 'lodash', 'react-grid-layout', 'd3', 'ahooks', 'color'];
+const antdChunk = ['antd'];
+
+/**
+ * 
 const chunk1 = ['@codemirror', 'antd', 'react', 'react-router-dom', 'react-dom', 'moment', '@ant-design/icons', 'umi-request', 'lodash', 'react-grid-layout', 'd3', 'ahooks', 'color','refractor','lodash-es','pinyin-pro','@dnd-kit'];
 const flowChunk = ['@logicflow','@reactflow','@ant-design','mapbox-gl']
 
@@ -49,6 +65,7 @@ function manualChunks(namePath) {
     return 'n9e';
   }
 }
+*/
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -89,7 +106,13 @@ export default defineConfig(({ mode }) => {
       sourcemap: false,
       rollupOptions: {
         output: {
-          manualChunks
+          manualChunks: {
+            vendor: chunk1,
+            vendor1: chunk2,
+            vendor2: chunk3,
+            antdChunk: antdChunk,
+          },
+          // manualChunks
         },
       },
     },
