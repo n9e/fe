@@ -15,6 +15,8 @@ const en_US = {
     enable: 'Enable successfully',
     disable: 'Disable successfully',
   },
+  add_title: 'Add data source',
+  edit_title: 'Edit data source',
   rename_title: 'Rename',
   type_btn_add: 'Add',
   default: 'Set as default',

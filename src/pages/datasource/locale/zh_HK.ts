@@ -15,6 +15,8 @@ const zh_HK = {
     enable: '啟用成功',
     disable: '禁用成功',
   },
+  add_title: '創建數據源',
+  edit_title: '修改數據源',
   rename_title: '修改數據源名稱',
   type_btn_add: '新增',
   default: '設置為默認數據源',

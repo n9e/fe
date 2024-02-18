@@ -1,3 +1,5 @@
+import { add } from 'lodash';
+
 const zh_CN = {
   title: '数据源管理',
   list_title: '已接入的数据源',
@@ -15,6 +17,8 @@ const zh_CN = {
     enable: '启用成功',
     disable: '禁用成功',
   },
+  add_title: '创建数据源',
+  edit_title: '修改数据源',
   rename_title: '修改数据源名称',
   type_btn_add: '添加',
   default: '设置为默认数据源',
