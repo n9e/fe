@@ -116,7 +116,7 @@ const zh_CN = {
   'tpl.batch.help': '并发度，默认是0，表示全并发执行，1表示顺序执行，2表示每次执行2台',
   'tpl.tolerance.help': '容忍几台机器失败，默认是0，表示一台都不容忍，只要失败了，立马暂停',
   'tpl.timeout.help': '单机脚本执行的超时时间，单位是秒',
-  'tpl.pause.help': '暂停点，做完某台之后暂停一下，要暂停多台，写多个 host，逗号分隔',
+  'tpl.pause.help': '暂停点，做完某台之后暂停一下',
   'tpl.host.help': '要执行的机器列表',
   'tpl.host.help2': '前置依赖：目标机器上需要部署 categraf，并将 ibex 配置 enable 设置为 true',
   'tpl.host.filter_btn': '筛选机器',
