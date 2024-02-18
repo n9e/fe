@@ -19,6 +19,7 @@ const zh_HK = {
   type_btn_add: '新增',
   default: '設置為默認數據源',
   default_msg: '該數據源類型下的默認集群',
+  default_tip: '網絡探測功能採集的時序數據，會上報到此數據源中',
   auth: {
     name: '授權',
     'not-support': '暫不支援',
@@ -44,7 +45,8 @@ const zh_HK = {
     url_no_spaces_msg: '請勿輸入空格',
     prom: {
       write_addr_tip: '記錄規則產生的資料的回寫地址',
-      read_addr_tip: '時序庫內網地址',
+      read_addr: '時序庫內網地址',
+      read_addr_tip: '通常用於邊緣機房下沉部署告警引擎的場景，如果該欄位不為空，n9e-edge 會使用該地址訪問時序庫，如果該欄位為空，n9e-edge 會使用上面的 URL 訪問時序庫',
       url_tip: '常見時序數據庫配置示例（兼容 Prometheus 查詢 API）：',
     },
     es: {

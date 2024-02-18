@@ -17,8 +17,9 @@ const zh_CN = {
   },
   rename_title: '修改数据源名称',
   type_btn_add: '添加',
-  default:"设置为默认数据源",
-  default_msg:"该数据源类型下的默认集群",
+  default: '设置为默认数据源',
+  default_msg: '该数据源类型下的默认集群',
+  default_tip: '网络探测功能采集的时序数据，会上报到此数据源中',
   auth: {
     name: '授权',
     'not-support': '暂不支持',
@@ -44,7 +45,8 @@ const zh_CN = {
     url_no_spaces_msg: 'URL不能包含空格',
     prom: {
       write_addr_tip: '记录规则产生的数据的回写地址',
-      read_addr_tip: '时序库内网地址',
+      read_addr: '时序库内网地址',
+      read_addr_tip: '通常用于边缘机房下沉部署告警引擎的场景，如果该字段不为空，n9e-edge 会使用该地址访问时序库，如果该字段为空，n9e-edge 会使用上面的 URL 访问时序库',
       url_tip: '常见时序数据库配置示例（兼容 Prometheus 查询 API）：',
     },
     es: {

@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
-import { Form, Input, Checkbox } from 'antd';
+import { Form, Input, Checkbox, Space, Tooltip } from 'antd';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import Name from '../../components/items/Name';
@@ -10,6 +11,7 @@ import Headers from '../../components/items/Headers';
 import Description from '../../components/items/Description';
 import Footer from '../../components/items/Footer';
 import Cluster from '../../components/items/Cluster';
+import { IS_PLUS } from '@/utils/constant';
 
 export default function FormCpt({ data, onFinish, submitLoading }: any) {
   const { t } = useTranslation('datasourceManage');
@@ -57,12 +59,21 @@ export default function FormCpt({ data, onFinish, submitLoading }: any) {
       <Form.Item label='Remote Write URL' tooltip={t('form.prom.write_addr_tip')} name={['settings', 'write_addr']}>
         <Input />
       </Form.Item>
-      <Form.Item label='Remote Read URL' tooltip={t('form.prom.read_addr_tip')} name={['settings', 'internal_addr']}>
+      <Form.Item label={t('form.prom.read_addr')} tooltip={t('form.prom.read_addr_tip')} name={['settings', 'internal_addr']}>
         <Input />
       </Form.Item>
       <Cluster form={form} clusterRef={clusterRef} />
-      <Form.Item valuePropName='checked' name={[`is_default`]}>
-        <Checkbox>{t('default')}</Checkbox>
+      <Form.Item valuePropName='checked' name={[`is_default`]} hidden={!IS_PLUS}>
+        <Checkbox>
+          {t('default')}
+          <Tooltip title={t('default_tip')}>
+            <div className='ant-form-item-label' style={{ padding: 0 }}>
+              <label>
+                <QuestionCircleOutlined className='ant-form-item-tooltip' />
+              </label>
+            </div>
+          </Tooltip>
+        </Checkbox>
       </Form.Item>
       <Description />
       <div className='mt16'>
