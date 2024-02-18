@@ -9,5 +9,6 @@ const zh_CN = {
   detail_no_result: '查询的内置规则不存在',
   tab_list: '规则列表',
   tab_instructions: '采集说明',
+  search_placeholder: '请输入搜索关键字',
 };
 export default zh_CN;

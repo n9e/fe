@@ -9,5 +9,6 @@ const en_US = {
   detail_no_result: 'The built-in rule for the query does not exist',
   tab_list: 'Rule List',
   tab_instructions: 'Instructions',
+  search_placeholder: 'Please enter search keywords',
 };
 export default en_US;

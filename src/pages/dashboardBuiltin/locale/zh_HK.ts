@@ -8,6 +8,7 @@ const zh_HK = {
   detail_no_result: '查詢的內建儀表盤不存在',
   tab_list: '儀表盤列表',
   tab_instructions: '採集說明',
+  search_placeholder: '請輸入搜索關鍵字',
 };
 
 export default zh_HK;
