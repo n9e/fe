@@ -31,6 +31,7 @@ const TplForm = (props) => {
   const { t } = useTranslation('common');
   const [form] = Form.useForm();
   const { businessGroup } = useContext(CommonStateContext);
+  const hosts = Form.useWatch('hosts', form);
 
   useEffect(() => {
     // 获取服务列表
@@ -169,9 +170,18 @@ const TplForm = (props) => {
             </span>
           }
           name='pause'
-          initialValue={initialValues.pause}
+          initialValue={initialValues.pause ? _.split(initialValues.pause, ',') : []}
         >
-          <Input />
+          <Select
+            mode='multiple'
+            options={
+              hosts
+                ? _.map(_.split(hosts, '\n'), (item) => {
+                    return { label: item, value: item };
+                  })
+                : []
+            }
+          />
         </FormItem>
         <FormItem
           label={

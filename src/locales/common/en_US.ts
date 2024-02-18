@@ -115,7 +115,7 @@ const en_US = {
   'tpl.batch.help': 'Concurrency, default is 0, indicating full concurrent execution, 1 means sequential execution, 2 means that each time two execute',
   'tpl.tolerance.help': 'Tolerate several machines failing, the default is 0, which means no tolerance, once failed, immediately suspend',
   'tpl.timeout.help': 'Timeout for stand-alone script execution, in seconds',
-  'tpl.pause.help': 'Pause after completed, pause multiple hosts, write multiple hosts, separated by commas',
+  'tpl.pause.help': 'Pause after completed',
   'tpl.host.help': 'List of hosts to be executed',
   'tpl.host.help2': 'Pre-requisite: categraf needs to be deployed on the target machine, and the ibex configuration enable is set to true',
   'tpl.host.filter_btn': 'Filter hosts',
