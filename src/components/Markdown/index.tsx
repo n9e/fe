@@ -18,6 +18,7 @@ import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import gfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
+import classNames from 'classnames';
 
 import './index.less';
 interface IMarkDownPros {
@@ -28,7 +29,27 @@ interface IMarkDownPros {
 // https://github.com/vitejs/vite/issues/3592 bug solve 记录
 const Markdown: React.FC<IMarkDownPros> = ({ content, style = {} }) => (
   <div className='markdown-wrapper' style={style}>
-    <ReactMarkdown remarkPlugins={[gfm]} children={content} rehypePlugins={[rehypeRaw]} />
+    <ReactMarkdown
+      remarkPlugins={[gfm]}
+      children={content}
+      rehypePlugins={[rehypeRaw]}
+      components={{
+        code({ node, inline, className, children, ...props }) {
+          return (
+            <code
+              {...props}
+              className={classNames({
+                [className || '']: !!className,
+                'base-code': true,
+                'base-code-inline': inline,
+              })}
+            >
+              {children}
+            </code>
+          );
+        },
+      }}
+    />
   </div>
 );
 

@@ -1,6 +1,8 @@
 const en_US = {
   title: 'Notification Settings',
   webhooks: {
+    help_content:
+      'Callback mechanism, used for integration between Nightingale and other systems. After Nightingale generates an alarm event, it will be pushed to various callback addresses. You can develop an HTTP API by yourself and configure it here to receive Nightingale alarm events and then do some automated, customized logic. The HTTP method used by Nightingale when calling back is POST, and the content of the alarm event will be placed in the HTTP Request Body in JSON format. Please refer to here for the event data structure. You can find a machine that is networked with Nightingale (assuming its IP is 10.1.2.3), start a port on it with nc, for example, `nc -k -l 4321` can use nc to listen on port 4321, then you configure `http://10.1.2.3:4321` into the callback address, then go to create an alarm rule, once triggered, Nightingale will call back this address, you can see the detailed data format of Nightingale callback in the output of the nc command.',
     title: 'Callbacks',
     enable: 'Enable',
     note: 'Note',
@@ -8,7 +10,7 @@ const en_US = {
     timeout: 'Timeout (unit: s)',
     basic_auth_user: 'Username (Basic Auth)',
     basic_auth_password: 'Password (Basic Auth)',
-    skip_verify: 'Skip SSL verification',
+    skip_verify: 'Skip SSL',
     add: 'Add',
     help: `
       Dear Nightingale users, if you want to forward all Nightingale alarm events to another platform for processing, you can do it with callbacks.

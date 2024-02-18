@@ -1,6 +1,8 @@
 const zh_HK = {
   title: '通知設定',
   webhooks: {
+    help_content:
+      '回調機制，用於夜鶯和其他系統之間的集成。夜鶯產生告警事件之後，會推送給各個回調地址，您可以自己開發一個 HTTP API 配置到這裡，接收夜鶯告警事件，進而做一些自動化的、定制化的邏輯。夜鶯回調時使用的 HTTP 方法是 POST，會把告警事件的內容以 JSON 格式放到 HTTP Request Body 中，事件數據結構請參考[這裡](',
     title: '回撥地址',
     enable: '啟用',
     note: '備註',

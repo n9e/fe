@@ -6,35 +6,21 @@
   h5 {
     margin: 0;
   }
-  h1 {
-    font-size: 16px;
-    line-height: 24px;
-  }
-  h3 {
-    // font-size: @baseFontSizeTiny;
-  }
   p {
     margin-bottom: 0;
-  }
-  img {
-    // width: 90%;
+    line-height: 1.4;
   }
   pre {
     box-sizing: border-box;
     width: 100%;
     padding: 12px;
-    background: var(--fc-fill-2);
+    background: var(--fc-fill-3);
     border-radius: 2px;
     margin-right: 0;
     code {
       color: #9254de;
-      // font-size: @baseFontSizeTiny;
       line-height: 1.2;
     }
-  }
-  p {
-    // font-size: @baseFontSizeTiny;
-    line-height: 1.2;
   }
   table {
     width: 100%;
@@ -43,7 +29,6 @@
       height: 36px;
       background: @baseTableHeaderBgColor;
       th {
-        // font-size: @baseFontSizeTiny;
         line-height: 1.2;
         padding: 0 0 0 16px;
         text-align: left;
@@ -54,7 +39,6 @@
         height: 36px;
         border-bottom: 1px solid @baseContentBgColor;
         td {
-          // font-size: @baseFontSizeTiny;
           line-height: 1.2;
           padding: 0 0 0 16px;
           text-align: left;
@@ -105,5 +89,12 @@
   }
   ul {
     padding-inline-start: 24px;
+  }
+
+  .base-code-inline {
+    padding: 2px 4px;
+    background: var(--fc-fill-2);
+    border-radius: 2px;
+    color: var(--fc-text-1);
   }
 }

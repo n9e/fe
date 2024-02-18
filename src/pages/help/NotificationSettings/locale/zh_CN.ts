@@ -1,6 +1,8 @@
 const zh_CN = {
   title: '通知设置',
   webhooks: {
+    help_content:
+      '回调机制，用于夜莺和其他系统之间的集成。夜莺产生告警事件之后，会推送给各个回调地址，您可以自己开发一个 HTTP API 配置到这里，接收夜莺告警事件，进而做一些自动化的、定制化的逻辑。夜莺回调时使用的 HTTP 方法是 POST，会把告警事件的内容以 JSON 格式放到 HTTP Request Body 中，事件数据结构请参考[这里](https://github.com/ccfos/nightingale/blob/main/models/alert_cur_event.go#L19)。您可以找一台和夜莺网络互通的机器（假设其 IP 是 10.1.2.3），在上面用 nc 起一个端口，比如 `nc -k -l 4321` 即可用 nc 监听在 4321 端口，然后您把 `http://10.1.2.3:4321` 配置到回调地址里，然后去创建个告警规则，一旦触发，夜莺就会回调这个地址，您就可以在 nc 命令的输出中看到夜莺回调过来的详细数据格式了。',
     title: '回调地址',
     enable: '启用',
     note: '备注',
