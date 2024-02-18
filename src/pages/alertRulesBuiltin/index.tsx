@@ -271,6 +271,7 @@ export default function indexV2() {
                               pathname: '/alert-rules-built-in/detail',
                               search: `?cate=${cateValue}&name=${nameValue}`,
                             }}
+                            target='_blank'
                           >
                             {t('common:btn.view')}
                           </Link>

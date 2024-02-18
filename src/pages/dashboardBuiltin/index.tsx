@@ -234,7 +234,7 @@ export default function indexV2() {
                               pathname: '/dashboards-built-in/detail',
                               search: `__built-in-cate=${cateValue}&__built-in-name=${nameValue}`,
                             }}
-                            target='__blank'
+                            target='_blank'
                           >
                             {t('common:btn.view')}
                           </Link>
