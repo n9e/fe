@@ -204,6 +204,8 @@ function App() {
           }
           const defaultBusiId = commonState.curBusiId || busiGroups?.[0]?.id;
           window.localStorage.setItem('curBusiId', String(defaultBusiId));
+          const defaultBusinessGroupKey = commonState.businessGroup.key || busiGroups?.[0]?.id;
+          window.localStorage.setItem('businessGroupKey', defaultBusinessGroupKey);
           initialized.current = true;
           setCommonState((state) => {
             return {
