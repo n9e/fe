@@ -204,7 +204,8 @@ export default function Webhooks() {
                 ns='notificationSettings'
                 i18nKey='webhooks.help'
                 components={{
-                  a: <a href='https://console.flashcat.cloud/?from=n9e' target='_blank' />,
+                  a1: <a href='https://www.pagerduty.com/' target='_blank' />,
+                  a2: <a href='https://flashcat.cloud/product/flashduty/' target='_blank' />,
                   br: <br />,
                 }}
               />

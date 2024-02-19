@@ -13,15 +13,16 @@ const en_US = {
     skip_verify: 'Skip SSL',
     add: 'Add',
     help: `
-      Dear Nightingale users, if you want to forward all Nightingale alarm events to another platform for processing, you can do it with callbacks.
+      If you want to forward all Nightingale alarm events to another platform for processing, you can achieve this through the global callback address here.
       <br />
       <br />
-      FlashDuty from the Flashcat Team is an OnCall product that has started public testing. You can push the alarm events of each monitoring system to FlashDuty, and enjoy the one-stop experience of alarm aggregation, noise reduction, scheduling, claiming, upgrading, and collaborative processing.
+      Generally speaking, the monitoring system focuses on data collection, storage, analysis, and alarm event generation. For the subsequent distribution, noise reduction, recognition, upgrade, scheduling, and collaboration of events, it is usually solved by a separate product, which is collectively called an event OnCall product. OnCall products are widely used in companies that practice the SRE concept.
       <br />
       <br />
-      <a href='https://console.flashcat.cloud/?from=n9e' target='_blank'>
-      Free Trial
-      </a>
+      OnCall products usually can connect to various monitoring systems, such as Prometheus, Nightingale, Zabbix, ElastAlert, Blue Whale, various cloud monitoring, etc. Each monitoring system pushes alarm events to the OnCall center through WebHook, and users complete subsequent distribution, noise reduction, and processing in the OnCall center.
+      <br />
+      <br />
+      The OnCall product is first launched overseas with <a1>PagerDuty</a1> and domestically with <a2>FlashDuty</a2>, Everyone can register for a free trial。
     `,
   },
   script: {

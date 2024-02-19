@@ -13,15 +13,16 @@ const zh_CN = {
     skip_verify: '跳过 SSL 验证',
     add: '添加',
     help: `
-      尊敬的夜莺老铁，您好，如果您想把夜莺告警事件全部转发到另一个平台处理，可以通过这里的全局回调地址来实现。
+      如果您想把夜莺告警事件全部转发到另一个平台处理，可以通过这里的全局回调地址来实现。
       <br />
       <br />
-      近期快猫团队提供的事件OnCall产品FlashDuty也开始公测了，欢迎体验，把各个监控系统的告警事件统一推给FlashDuty，享受告警聚合降噪、排班、认领、升级、协同处理一站式体验。
+      通常来讲，监控系统专注在数据采集、存储、分析、告警事件生成，对于事件的后续分发、降噪、认领、升级、排班、协同，通常由单独的产品来解决，这类产品统一称为事件 OnCall 类产品，OnCall 产品被广泛应用在践行 SRE 理念的公司。
       <br />
       <br />
-      <a href='https://console.flashcat.cloud/?from=n9e' target='_blank'>
-        免费体验地址
-      </a>
+      OnCall 产品通常可以对接各类监控系统，比如 Prometheus、Nightingale、Zabbix、ElastAlert、蓝鲸、各类云监控，各个监控系统通过 WebHook 的方式把告警事件推给 OnCall 中心，用户在 OnCall 中心完成后续的分发、降噪、处理。
+      <br />
+      <br />
+      OnCall 产品国外首推 <a1>PagerDuty</a1>，国内首推 <a2>FlashDuty</a2>，大家可以免费注册试用。
     `,
   },
   script: {
