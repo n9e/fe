@@ -35,37 +35,6 @@ const chunk3 = ['react-ace'];
 const chunk1 = ['react', 'react-router-dom', 'react-dom', 'moment', '@ant-design/icons', 'umi-request', 'lodash', 'react-grid-layout', 'd3', 'ahooks', 'color'];
 const antdChunk = ['antd'];
 
-/**
- * 
-const chunk1 = ['@codemirror', 'antd', 'react', 'react-router-dom', 'react-dom', 'moment', '@ant-design/icons', 'umi-request', 'lodash', 'react-grid-layout', 'd3', 'ahooks', 'color','refractor','lodash-es','pinyin-pro','@dnd-kit'];
-const flowChunk = ['@logicflow','@reactflow','@ant-design','mapbox-gl']
-
-
-function manualChunks(namePath) {
-
-  if(namePath.includes('regl')  || namePath.includes('@antv')){
-    return '@antv';
-  }
-  if(chunk1.some(i=> namePath.includes('/'+i+'/'))){
-    return 'chunk1';
-  }
-  if(flowChunk.some(i=> namePath.includes('/'+i+'/'))){
-    return 'flowChunk';
-  }
-  if(namePath.includes('node_modules')){
-    return 'vendor';
-  }
-  if(namePath.includes('/src/Packages/')){
-    return 'srm';
-  }
-  if(namePath.includes('/src/plus/')){
-    return 'plus';
-  }
-  if(namePath.includes('/src/')){
-    return 'n9e';
-  }
-}
-*/
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -112,7 +81,6 @@ export default defineConfig(({ mode }) => {
             vendor2: chunk3,
             antdChunk: antdChunk,
           },
-          // manualChunks
         },
       },
     },
