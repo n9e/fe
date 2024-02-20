@@ -14,6 +14,7 @@ const errorHandler = (error: Error): Response => {
     // @ts-ignore
     if (!error.silence) {
       notification.error({
+        key: error.message,
         message: error.message,
       });
     }
