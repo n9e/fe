@@ -14,7 +14,7 @@ const zh_CN = {
   append_tags_placeholder: '标签格式为 key=value ，使用回车或空格分隔',
   group_id: '业务组',
   note: '备注',
-  append_tags_note_tip: '支持配置变量，例如 {{$labels.ident}}，如果监控数据为 `mem_active{ident="dev-backup-01"}` 最后会最终会替换为 dev-backup-01',
+  append_tags_note_tip: '附加到该规则产生的所有告警事件上，未来可以使用这些标签做事件筛选',
   rule_configs: '规则配置',
   inhibit: '级别抑制',
   interval: '执行频率',

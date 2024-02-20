@@ -14,7 +14,7 @@ const zh_HK = {
   append_tags_placeholder: '標籤格式為 key=value ，使用回車或空格分隔',
   group_id: '業務組',
   note: '備註',
-  append_tags_note_tip: '支持配置變數，例如 {{$labels.ident}}，如果監控資料為 `mem_active{ident="dev-backup-01"}` 最後會最終會替換為 dev-backup-01',
+  append_tags_note_tip: '附加到該規則產生的所有告警事件上，未來可以使用這些標籤做事件篩選',
   rule_configs: '規則配置',
   inhibit: '級別抑制',
   interval: '執行頻率',
