@@ -26,12 +26,9 @@ import _ from 'lodash';
 import { CommonStateContext } from '@/App';
 import { PromQLInputWithBuilder } from '@/components/PromQLInput';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
-import Severity from '@/pages/alertRules/Form/components/Severity';
-import Inhibit from '@/pages/alertRules/Form/components/Inhibit';
 import Triggers from '@/pages/alertRules/Form/components/Triggers';
 import { FormStateContext } from '@/pages/alertRules/Form';
 import GraphPreview from './GraphPreview';
-import query from '@/plus/datasource/zabbix/datasource';
 
 interface Props {
   form: any;
