@@ -84,40 +84,35 @@ export default function PrometheusDetail(props: IProps) {
       label: 'PromQL',
       key: 'rule_config',
       render(ruleConfig) {
-        const queries = _.get(ruleConfig, 'queries', []);
+        const prom_ql = eventDetail.prom_ql;
         return (
           <div style={{ width: '100%' }}>
-            {_.map(queries, () => {
-              const prom_ql = eventDetail.prom_ql;
-              return (
-                <Space align='baseline' size={2}>
-                  <Button
-                    className='p0'
-                    style={{
-                      position: 'relative',
-                      top: 1,
-                    }}
-                    type='link'
-                    onClick={() => {
-                      history.push({
-                        pathname: '/metric/explorer',
-                        search: queryString.stringify({
-                          prom_ql,
-                          data_source_name: 'prometheus',
-                          data_source_id: eventDetail.datasource_id,
-                          mode: 'graph',
-                          start: moment.unix(eventDetail.trigger_time).subtract(30, 'minutes').unix(),
-                          end: moment.unix(eventDetail.trigger_time).add(30, 'minutes').unix(),
-                        }),
-                      });
-                    }}
-                  >
-                    <PlayCircleOutlined />
-                  </Button>
-                  <PromQLInput value={prom_ql} readonly />
-                </Space>
-              );
-            })}
+            <Space align='baseline' size={2}>
+              <Button
+                className='p0'
+                style={{
+                  position: 'relative',
+                  top: 1,
+                }}
+                type='link'
+                onClick={() => {
+                  history.push({
+                    pathname: '/metric/explorer',
+                    search: queryString.stringify({
+                      prom_ql,
+                      data_source_name: 'prometheus',
+                      data_source_id: eventDetail.datasource_id,
+                      mode: 'graph',
+                      start: moment.unix(eventDetail.trigger_time).subtract(30, 'minutes').unix(),
+                      end: moment.unix(eventDetail.trigger_time).add(30, 'minutes').unix(),
+                    }),
+                  });
+                }}
+              >
+                <PlayCircleOutlined />
+              </Button>
+              <PromQLInput value={prom_ql} readonly />
+            </Space>
           </div>
         );
       },
