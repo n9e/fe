@@ -144,9 +144,9 @@ function Add(props: Props & ModalWrapProps) {
                     if (!value) {
                       return Promise.reject(new Error(t('name_msg1')));
                     }
-                    if (_.find(indexPatterns, { name: value })) {
-                      return Promise.reject(new Error(t('name_msg2')));
-                    }
+                    // if (_.find(indexPatterns, { name: value })) {
+                    //   return Promise.reject(new Error(t('name_msg2')));
+                    // }
                     return Promise.resolve();
                   },
                 },
