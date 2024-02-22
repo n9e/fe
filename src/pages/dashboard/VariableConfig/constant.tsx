@@ -208,11 +208,7 @@ export const replaceExpressionVarsSpecifyRule = (
             if (allValue) {
               newExpression = replaceAllPolyfill(newExpression, placeholder, allValue);
             } else {
-              newExpression = replaceAllPolyfill(
-                newExpression,
-                placeholder,
-                `(${_.trim((options as string[]).filter((i) => !reg || !stringToRegex(reg) || (stringToRegex(reg) as RegExp).test(i)).join('|'), '|')})`,
-              );
+              newExpression = replaceAllPolyfill(newExpression, placeholder, `(${_.trim((options as string[]).join('|'), '|')})`);
             }
           } else if (Array.isArray(selected)) {
             const realSelected = _.size(selected) === 0 ? '' : _.size(selected) === 1 ? selected[0] : `(${_.trim((selected as string[]).join('|'), '|')})`;
