@@ -37,6 +37,7 @@ const Add = (props: any) => {
   const [data, setData] = useState({} as Tpl);
 
   const handleSubmit = (values: any) => {
+    values.pause = _.join(values.pause, ',');
     request(`${api.tasktpls(values.group_id)}`, {
       method: 'POST',
       body: JSON.stringify(values),
