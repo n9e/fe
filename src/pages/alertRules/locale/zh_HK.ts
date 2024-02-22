@@ -17,6 +17,7 @@ const zh_HK = {
   append_tags_note_tip: '支持配置變數，例如 {{$labels.ident}}，如果監控資料為 `mem_active{ident="dev-backup-01"}` 最後會最終會替換為 dev-backup-01',
   rule_configs: '規則配置',
   inhibit: '級別抑制',
+  inhibit_tip: '只有 metricName 和 labels 完全相同的曲線產生的告警事件，才會進行級別抑制，1級>2級>3級',
   interval: '執行頻率',
   duration: '持續時長',
   severity_label: '觸發告警',

@@ -2,6 +2,7 @@ const zh_HK = {
   title: '歷史告警',
   rule_name: '規則標題 & 事件標籤',
   search_placeholder: '模糊搜尋規則和標籤 (多個關鍵詞請用空格分隔)',
+  first_trigger_time: '首次觸發時間',
   last_eval_time: '觸發時間',
   hours: {
     '6': '最近 6 小時',

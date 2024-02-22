@@ -37,5 +37,12 @@ const en_US = {
       msg: 'value is required',
     },
   },
+  quick_template: {
+    title: 'Quick template',
+    all: 'All alerts in this group',
+    target_miss: 'Target Miss Muting',
+    __name__: 'Metric Muting',
+    ident: 'Ident Muting',
+  },
 };
 export default en_US;

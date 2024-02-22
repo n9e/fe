@@ -39,5 +39,12 @@ const zh_CN = {
       msg: 'value不能为空',
     },
   },
+  quick_template: {
+    title: '快捷模板',
+    all: '本组全部告警屏蔽',
+    target_miss: '机器失联屏蔽',
+    __name__: '屏蔽 Metric',
+    ident: '屏蔽 Ident',
+  },
 };
 export default zh_CN;

@@ -27,7 +27,7 @@ export default function FormCpt({ data, onFinish, submitLoading }: any) {
       className='settings-source-form'
     >
       <Name />
-      <HTTP />
+      <HTTP placeholder='http://localhost:3100/loki' />
       <BasicAuth />
       <SkipTLSVerify />
       <Headers />
