@@ -163,6 +163,7 @@ const zh_HK = {
       title: '查詢條件',
     },
   },
+  preview: '數據預覽',
 };
 
 export default zh_HK;

@@ -163,5 +163,6 @@ const zh_CN = {
       title: '查询条件',
     },
   },
+  preview: '数据预览',
 };
 export default zh_CN;

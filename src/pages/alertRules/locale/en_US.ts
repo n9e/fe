@@ -163,5 +163,6 @@ const en_US = {
       title: 'Query',
     },
   },
+  preview: 'Data Preview',
 };
 export default en_US;
