@@ -71,6 +71,7 @@ export interface ITimeRangePickerProps {
   extraFooter?: (fn: Function) => React.ReactElement;
   disabled?: boolean;
   size?: SizeType;
+  ajustTimeOptions?: (options: ITimeOption[]) => ITimeOption[];
 }
 
 export interface ITimeRangePickerWithRefreshProps extends ITimeRangePickerProps {

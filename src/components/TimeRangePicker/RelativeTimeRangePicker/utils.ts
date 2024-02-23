@@ -11,14 +11,42 @@ interface TimeOption {
 
 const regex = /^now$|^now\-(\d{1,10})([wdhms])$/;
 
-export const mapOptionToRelativeTimeRange = (option: TimeOption): RelativeTimeRange | undefined => {
+export const mapOptionToRelativeTimeRange = (
+  option: TimeOption,
+):
+  | (RelativeTimeRange & {
+      cumulative_window_from?: string;
+      cumulative_window_to?: string;
+    })
+  | undefined => {
+  // TODO 部分相对时间范围会插入 "今天" 选项，这里单独处理
+  if (option.start === 'now/d' && option.end === 'now/d') {
+    return {
+      start: 0,
+      end: 0,
+      cumulative_window_from: option.start,
+      cumulative_window_to: option.end,
+    };
+  }
   return {
     start: relativeToSeconds(option.start),
     end: relativeToSeconds(option.end),
   };
 };
 
-export const mapRelativeTimeRangeToOption = (range: RelativeTimeRange): TimeOption => {
+export const mapRelativeTimeRangeToOption = (
+  range: RelativeTimeRange & {
+    cumulative_window_from?: string;
+    cumulative_window_to?: string;
+  },
+): TimeOption => {
+  if (range.cumulative_window_from && range.cumulative_window_to) {
+    return {
+      start: range.cumulative_window_from,
+      end: range.cumulative_window_to,
+      display: `${range.cumulative_window_from} to ${range.cumulative_window_to}`,
+    };
+  }
   const start = secondsToRelativeFormat(range.start);
   const end = secondsToRelativeFormat(range.end);
 
