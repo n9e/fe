@@ -211,17 +211,17 @@ export const replaceExpressionVarsSpecifyRule = (
               newExpression = replaceAllPolyfill(
                 newExpression,
                 placeholder,
-                `(${(options as string[]).filter((i) => !reg || !stringToRegex(reg) || (stringToRegex(reg) as RegExp).test(i)).join('|')})`,
+                `(${_.trim((options as string[]).filter((i) => !reg || !stringToRegex(reg) || (stringToRegex(reg) as RegExp).test(i)).join('|'), '|')})`,
               );
             }
           } else if (Array.isArray(selected)) {
-            const realSelected = _.size(selected) === 0 ? '' : _.size(selected) === 1 ? selected[0] : `(${(selected as string[]).join('|')})`;
+            const realSelected = _.size(selected) === 0 ? '' : _.size(selected) === 1 ? selected[0] : `(${_.trim((selected as string[]).join('|'), '|')})`;
             newExpression = replaceAllPolyfill(newExpression, placeholder, realSelected);
           } else if (typeof selected === 'string') {
             newExpression = replaceAllPolyfill(newExpression, placeholder, selected as string);
           } else if (selected === null || selected === undefined) {
             // 未选择或填写变量值时替换为传入的value
-            newExpression = replaceAllPolyfill(newExpression, placeholder, value ? (_.isArray(value) ? _.join(value, '|') : value) : '');
+            newExpression = replaceAllPolyfill(newExpression, placeholder, value ? (_.isArray(value) ? _.trim(_.join(value, '|'), '|') : value) : '');
             if (type === 'datasource') {
               newExpression = !_.isNaN(_.toNumber(newExpression)) ? (_.toNumber(newExpression) as any) : newExpression;
             }

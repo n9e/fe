@@ -17,6 +17,7 @@ const zh_CN = {
   append_tags_note_tip: '附加到该规则产生的所有告警事件上，未来可以使用这些标签做事件筛选',
   rule_configs: '规则配置',
   inhibit: '级别抑制',
+  inhibit_tip: '只有 metricName 和 labels 完全相同的曲线产生的告警事件，才会进行级别抑制，1级>2级>3级',
   interval: '执行频率',
   duration: '持续时长',
   severity_label: '触发告警',
@@ -34,6 +35,7 @@ const zh_CN = {
   enable_in_bg_tip: '根据告警事件中的ident归属关系判断',
   notify_configs: '通知配置',
   notify_channels: '通知媒介',
+  notify_channels_doc: '使用文档',
   notify_channels_tpl: '通知媒介模板',
   notify_channels_tpl_tip: '为空则使用默认模板',
   notify_recovered: '启用恢复通知',
@@ -154,6 +156,12 @@ const zh_CN = {
   default_filter: {
     title: '预置筛选',
     all: '全部规则',
+  },
+  ruleConfigPromVersion: '版本',
+  ruleConfigPromVersionV2: {
+    query: {
+      title: '查询条件',
+    },
   },
 };
 export default zh_CN;

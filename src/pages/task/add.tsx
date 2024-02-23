@@ -38,6 +38,7 @@ const Add = (props: any) => {
   const [action, setAction] = useState('');
   const handleSubmit = (values: any) => {
     if (action) {
+      values.pause = _.join(values.pause, ',');
       request(api.tasks(curBusiId), {
         method: 'POST',
         body: JSON.stringify({

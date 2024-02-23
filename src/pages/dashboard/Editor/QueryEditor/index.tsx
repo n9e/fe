@@ -11,7 +11,7 @@ import Prometheus from './Prometheus';
 import Elasticsearch from './Elasticsearch';
 import { QueryBuilder as TDengine } from '@/plugins/TDengine';
 
-export default function index({ chartForm, type, variableConfig, dashboardId }) {
+export default function index({ chartForm, type, variableConfig, dashboardId, time }) {
   const { t } = useTranslation('dashboard');
   const [mode, setMode] = useState('query');
 
@@ -41,7 +41,7 @@ export default function index({ chartForm, type, variableConfig, dashboardId }) 
           {({ getFieldValue }) => {
             const cate = getFieldValue('datasourceCate') || 'prometheus';
             if (cate === DatasourceCateEnum.prometheus) {
-              return <Prometheus chartForm={chartForm} variableConfig={variableConfig} dashboardId={dashboardId} />;
+              return <Prometheus chartForm={chartForm} variableConfig={variableConfig} dashboardId={dashboardId} time={time} />;
             }
             if (cate === DatasourceCateEnum.elasticsearch) {
               return <Elasticsearch chartForm={chartForm} variableConfig={variableConfig} dashboardId={dashboardId} />;

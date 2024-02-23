@@ -14,12 +14,14 @@
  * limitations under the License.
  *
  */
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import _ from 'lodash';
 import { withRouter } from 'react-router-dom';
-import { Form, Input, InputNumber, Select } from 'antd';
+import { Button, Form, Input, InputNumber, Select, Space, Tag } from 'antd';
 import { useTranslation } from 'react-i18next';
+import { CommonStateContext } from '@/App';
 import Editor from './editor';
+import hostsFilterModal from './hostsFilterModal';
 import './style.less';
 
 const FormItem = Form.Item;
@@ -28,6 +30,8 @@ const { TextArea } = Input;
 const TplForm = (props) => {
   const { t } = useTranslation('common');
   const [form] = Form.useForm();
+  const { businessGroup } = useContext(CommonStateContext);
+  const hosts = Form.useWatch('hosts', form);
 
   useEffect(() => {
     // 获取服务列表
@@ -128,50 +132,28 @@ const TplForm = (props) => {
         </FormItem>
         <FormItem
           label={
-            <span>
-              <strong>Pause:</strong>
-              {t('tpl.pause.help')}
-            </span>
-          }
-          name='pause'
-          initialValue={initialValues.pause}
-        >
-          <Input />
-        </FormItem>
-        {/* {
-          type !== 'tpl' ?
             <>
-              <FormItem
-                label={
-                  <span>
-                    <strong>节点:</strong>
-                  </span>
-                }
-              >
-                <TreeSelect
-                  showSearch
-                  allowClear
-                  treeNodeFilterProp="path"
-                  treeNodeLabelProp="path"
-                  dropdownStyle={{ maxHeight: 200, overflow: 'auto' }}
-                  onChange={(value: number) => {
-                    request(`${api.node}/${value}/resources?limit=1000`).then((res) => {
-                      setFieldsValue({
-                        hosts: _.join(_.map(res.list, 'ident'), '\n'),
-                      });
+              <strong>Host:</strong>
+              <Space>
+                {t('tpl.host.help')}
+                <Button
+                  type='link'
+                  style={{ padding: 0 }}
+                  onClick={() => {
+                    hostsFilterModal({
+                      group_id: businessGroup.id!,
+                      onOk: (hosts) => {
+                        form.setFieldsValue({
+                          hosts: _.join(_.map(hosts, 'ident'), '\n'),
+                        });
+                      },
                     });
                   }}
                 >
-                  {renderTreeNodes(this.state.treeData, 'treeSelect')}
-                </TreeSelect>
-              </FormItem>
-            </> : null
-        } */}
-        <FormItem
-          label={
-            <>
-              <strong>Host:</strong>
-              {t('tpl.host.help')}
+                  {t('tpl.host.filter_btn')}
+                </Button>
+                <Tag color='orange'>{t('tpl.host.help2')}</Tag>
+              </Space>
             </>
           }
           name='hosts'
@@ -179,6 +161,27 @@ const TplForm = (props) => {
           rules={[{ required: type !== 'tpl', message: '必填项！' }]}
         >
           <TextArea autoSize={{ minRows: 3, maxRows: 8 }} />
+        </FormItem>
+        <FormItem
+          label={
+            <span>
+              <strong>Pause:</strong>
+              {t('tpl.pause.help')}
+            </span>
+          }
+          name='pause'
+          initialValue={initialValues.pause ? _.split(initialValues.pause, ',') : []}
+        >
+          <Select
+            mode='multiple'
+            options={
+              hosts
+                ? _.map(_.split(hosts, '\n'), (item) => {
+                    return { label: item, value: item };
+                  })
+                : []
+            }
+          />
         </FormItem>
         <FormItem
           label={

@@ -17,6 +17,7 @@ const zh_HK = {
   append_tags_note_tip: '附加到該規則產生的所有告警事件上，未來可以使用這些標籤做事件篩選',
   rule_configs: '規則配置',
   inhibit: '級別抑制',
+  inhibit_tip: '只有 metricName 和 labels 完全相同的曲線產生的告警事件，才會進行級別抑制，1級>2級>3級',
   interval: '執行頻率',
   duration: '持續時長',
   severity_label: '觸發告警',
@@ -34,6 +35,7 @@ const zh_HK = {
   enable_in_bg_tip: '根據告警事件中的 ident 歸屬關係判斷',
   notify_configs: '通知配置',
   notify_channels: '通知媒介',
+  notify_channels_doc: '使用文檔',
   notify_channels_tpl: '通知媒介模板',
   notify_channels_tpl_tip: '為空則使用默認模板',
   notify_recovered: '啟用恢復通知',
@@ -154,6 +156,12 @@ const zh_HK = {
   default_filter: {
     title: '預置篩選',
     all: '全部規則',
+  },
+  ruleConfigPromVersion: '版本',
+  ruleConfigPromVersionV2: {
+    query: {
+      title: '查詢條件',
+    },
   },
 };
 

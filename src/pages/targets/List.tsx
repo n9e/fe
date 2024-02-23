@@ -437,7 +437,7 @@ export default function List(props: IProps) {
 
   const { tableProps, run } = useAntdTable(featchData, {
     manual: true,
-    defaultPageSize: 30,
+    defaultPageSize: localStorage.getItem('targetsListPageSize') ? _.toNumber(localStorage.getItem('targetsListPageSize')) : 30,
   });
 
   useEffect(() => {
@@ -445,7 +445,14 @@ export default function List(props: IProps) {
       current: 1,
       pageSize: tableProps.pagination.pageSize,
     });
-  }, [tableQueryContent, gids, refreshFlag, downtime, agentVersions]);
+  }, [tableQueryContent, gids, downtime, agentVersions]);
+
+  useEffect(() => {
+    run({
+      current: tableProps.pagination.current,
+      pageSize: tableProps.pagination.pageSize,
+    });
+  }, [refreshFlag]);
 
   return (
     <div>
@@ -558,6 +565,9 @@ export default function List(props: IProps) {
           showSizeChanger: true,
           showQuickJumper: true,
           pageSizeOptions: pageSizeOptions,
+          onChange(page, pageSize) {
+            localStorage.setItem('targetsListPageSize', _.toString(pageSize));
+          },
         }}
         scroll={{ x: 'max-content' }}
       />

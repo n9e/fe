@@ -120,7 +120,7 @@ function FormCpt(props: IProps, ref) {
                           id={dashboardId}
                         />
                       </div>
-                      <QueryEditor chartForm={chartForm} type={type} variableConfig={variableConfigWithOptions} dashboardId={dashboardId} />
+                      <QueryEditor chartForm={chartForm} type={type} variableConfig={variableConfigWithOptions} dashboardId={dashboardId} time={range} />
                     </div>
                   );
                 }

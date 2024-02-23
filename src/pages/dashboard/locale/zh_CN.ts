@@ -370,6 +370,17 @@ const zh_CN = {
     datasource_msg: '请选择数据源',
     time: '时间选择',
     time_tip: '可指定时间范围，默认为仪表盘全局时间范围',
+    prometheus: {
+      maxDataPoints: {
+        tip: '每条曲线最多的点数，计算 step = (end - start) / maxDataPoints，默认值为 240 在最近 1 小时内的 step = 15s',
+      },
+      minStep: {
+        tip: '最小的 step，计算 step = max(step, minStep, safeStep)，safeStep = (end - start) / 11000',
+      },
+      step: {
+        tag_tip: '计算 step = max((end - start) / maxDataPoints, minStep, safeStep), safeStep = (end - start) / 11000',
+      },
+    },
   },
   detail: {
     datasource_empty: '没有数据源信息，请先配置数据源',

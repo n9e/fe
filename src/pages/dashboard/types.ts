@@ -29,7 +29,8 @@ export interface ITarget {
   expr: string; // promQL
   legendFormat: string;
   time?: IRawTimeRange; // 固定时间范围
-  step?: number; // 固定时间间隔
+  step?: number; // 2024-01-24 从固定 step 改成 min step (v7)
+  maxDataPoints?: number; // 2024-01-24 新增 maxDataPoints 用于计算默认的 step (v7)
   query?: {
     index: string;
     filters: string;
