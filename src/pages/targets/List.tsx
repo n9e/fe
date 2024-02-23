@@ -136,6 +136,7 @@ export default function List(props: IProps) {
         </Space>
       ),
       dataIndex: 'ident',
+      className: 'n9e-hosts-table-column-ident',
       render: (text, record) => {
         return (
           <Space>
@@ -162,12 +163,14 @@ export default function List(props: IProps) {
       columns.push({
         title: t('host_ip'),
         dataIndex: 'host_ip',
+        className: 'n9e-hosts-table-column-ip',
       });
     }
     if (item.name === 'tags') {
       columns.push({
         title: t('tags'),
         dataIndex: 'tags',
+        className: 'n9e-hosts-table-column-tags',
         ellipsis: {
           showTitle: false,
         },
@@ -204,6 +207,7 @@ export default function List(props: IProps) {
       columns.push({
         title: t('group_obj'),
         dataIndex: 'group_obj',
+        className: 'n9e-hosts-table-column-groups',
         render(groupObj: BusiGroupItem | null) {
           return groupObj ? groupObj.name : t('not_grouped');
         },
