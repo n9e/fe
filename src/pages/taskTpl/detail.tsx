@@ -133,7 +133,7 @@ const Detail = (props: any) => {
                               <span>{`\${ibex}/${id}`}</span>
                               <CopyOutlined
                                 onClick={() => {
-                                  copyToClipBoard(`\${ibex}/${id}`, (val) => val);
+                                  copyToClipBoard(`\${ibex}/${id}`);
                                 }}
                               />
                             </Space>
