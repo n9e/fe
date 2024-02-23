@@ -39,6 +39,13 @@ const zh_HK = {
       msg: 'value 不能為空',
     },
   },
+  quick_template: {
+    title: '快捷模板',
+    all: '本組全部告警屏蔽',
+    target_miss: '機器失聯屏蔽',
+    __name__: '屏蔽 Metric',
+    ident: '屏蔽 Ident',
+  },
 };
 
 export default zh_HK;

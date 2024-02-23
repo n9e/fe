@@ -16,6 +16,7 @@ const en_US = {
   severity: 'Severity',
   eventType: 'Event Type',
   rule_name: 'Rule Name & Event Tags',
+  first_trigger_time: 'First Triggered',
   trigger_time: 'Triggered',
   shield: 'Shield',
   aggregate_rule: 'Aggregate Rule',
