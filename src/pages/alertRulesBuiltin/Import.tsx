@@ -14,13 +14,11 @@
  * limitations under the License.
  *
  */
-import React, { useContext } from 'react';
+import React from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Modal, Input, Form, Button, Select, Row, Col, Switch, message } from 'antd';
+import { Modal, Input, Form, Button, Select, Switch, message } from 'antd';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
-import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
-import { CommonStateContext } from '@/App';
 import { createRule } from './services';
 
 interface IProps {
@@ -31,9 +29,7 @@ interface IProps {
 
 function Import(props: IProps & ModalWrapProps) {
   const { t } = useTranslation('alertRulesBuiltin');
-  const { visible, destroy, data, busiGroups, groupedDatasourceList } = props;
-  const { datasourceCateOptions } = useContext(CommonStateContext);
-  const datasourceCates = _.filter(datasourceCateOptions, (item) => _.includes(item.type, 'metric'));
+  const { visible, destroy, data, busiGroups } = props;
 
   return (
     <Modal
@@ -64,8 +60,6 @@ function Import(props: IProps & ModalWrapProps) {
               const record = _.omit(item, ['id', 'group_id', 'create_at', 'create_by', 'update_at', 'update_by']);
               return {
                 ...record,
-                cate: vals.cate,
-                datasource_ids: vals.datasource_ids,
                 disabled: vals.enabled ? 0 : 1,
               };
             });
@@ -118,34 +112,9 @@ function Import(props: IProps & ModalWrapProps) {
             })}
           </Select>
         </Form.Item>
-        <Row gutter={10}>
-          <Col span={8}>
-            <Form.Item label={t('common:datasource.type')} name='cate'>
-              <Select>
-                {_.map(datasourceCates, (item) => {
-                  return (
-                    <Select.Option key={item.value} value={item.value}>
-                      {item.label}
-                    </Select.Option>
-                  );
-                })}
-              </Select>
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.cate !== curValues.cate} noStyle>
-              {({ getFieldValue, setFieldsValue }) => {
-                const cate = getFieldValue('cate');
-                return <DatasourceValueSelect mode='multiple' setFieldsValue={setFieldsValue} cate={cate} datasourceList={groupedDatasourceList[cate] || []} />;
-              }}
-            </Form.Item>
-          </Col>
-          <Col span={4}>
-            <Form.Item label={t('common:table.enabled')} name='enabled' valuePropName='checked'>
-              <Switch />
-            </Form.Item>
-          </Col>
-        </Row>
+        <Form.Item label={t('common:table.enabled')} name='enabled' valuePropName='checked'>
+          <Switch />
+        </Form.Item>
         <Form.Item
           label={t('json_label')}
           name='import'
