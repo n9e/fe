@@ -21,6 +21,7 @@ import _ from 'lodash';
 import { getMenuPerm } from '@/services/common';
 import { CommonStateContext } from '@/App';
 import Page403 from '@/pages/notFound/Page403';
+import OutOfService from '@/pages/notFound/OutOfService';
 import NotFound from '@/pages/notFound';
 import Login from '@/pages/login';
 import Overview from '@/pages/login/overview';
@@ -220,6 +221,7 @@ export default function Content() {
         </Route>
         <Route path='/403' component={Page403} />
         <Route path='/404' component={NotFound} />
+        <Route path='/out-of-service' component={OutOfService} />
         <Route path='*' component={NotFound} />
       </Switch>
     </div>
