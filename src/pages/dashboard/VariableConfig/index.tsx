@@ -38,6 +38,7 @@ interface IProps {
   onOpenFire?: () => void;
   isPreview?: boolean;
   variableConfigRefreshFlag?: string;
+  urlAttach?: boolean;
 }
 
 function includes(source, target) {
@@ -51,7 +52,7 @@ function index(props: IProps) {
   const { t } = useTranslation('dashboard');
   const { groupedDatasourceList } = useContext(CommonStateContext);
   const query = queryString.parse(useLocation().search);
-  const { id, editable = true, range, onChange, onOpenFire, isPreview = false } = props;
+  const { id, editable = true, range, onChange, onOpenFire, isPreview = false, urlAttach = true } = props;
   const [editing, setEditing] = useState<boolean>(false);
   const [data, setData] = useState<IVariable[]>([]);
   const dataWithoutConstant = _.filter(data, (item) => item.type !== 'constant');
@@ -145,7 +146,7 @@ function index(props: IProps) {
               if (selected === null || (selected && !_.isEmpty(regFilterOptions) && !includes(regFilterOptions, selected))) {
                 const head = regFilterOptions?.[0] || ''; // 2014-01-22 添加默认值（空字符）
                 const defaultVal = item.multi ? (item.allOption ? ['all'] : head ? [head] : []) : head;
-                setVaraiableSelected({ name: item.name, value: defaultVal, id, urlAttach: true });
+                setVaraiableSelected({ name: item.name, value: defaultVal, id, urlAttach });
               }
             }
           } else if (item.type === 'custom') {
@@ -155,19 +156,19 @@ function index(props: IProps) {
             if (selected === null && query.__variable_value_fixed === undefined) {
               const head = _.head(result[idx].options)!;
               const defaultVal = item.multi ? (item.allOption ? ['all'] : head ? [head] : []) : head;
-              setVaraiableSelected({ name: item.name, value: defaultVal, id, urlAttach: true });
+              setVaraiableSelected({ name: item.name, value: defaultVal, id, urlAttach });
             }
           } else if (item.type === 'textbox') {
             result[idx] = item;
             const selected = getVaraiableSelected(item.name, item.type, id);
             if (selected === null && query.__variable_value_fixed === undefined) {
-              setVaraiableSelected({ name: item.name, value: item.defaultValue!, id, urlAttach: true });
+              setVaraiableSelected({ name: item.name, value: item.defaultValue!, id, urlAttach });
             }
           } else if (item.type === 'constant') {
             result[idx] = item;
             const selected = getVaraiableSelected(item.name, item.type, id);
             if (selected === null && query.__variable_value_fixed === undefined) {
-              setVaraiableSelected({ name: item.name, value: item.definition, id, urlAttach: true });
+              setVaraiableSelected({ name: item.name, value: item.definition, id, urlAttach });
             }
           } else if (item.type === 'datasource') {
             const options = item.definition ? (groupedDatasourceList[item.definition] as any) : [];
@@ -183,10 +184,10 @@ function index(props: IProps) {
             const selected = getVaraiableSelected(item.name, item.type, id);
             if (selected === null) {
               if (item.defaultValue) {
-                setVaraiableSelected({ name: item.name, value: item.defaultValue, id, urlAttach: true });
+                setVaraiableSelected({ name: item.name, value: item.defaultValue, id, urlAttach });
               } else {
                 if (query.__variable_value_fixed === undefined) {
-                  setVaraiableSelected({ name: item.name, value: options[0]?.id, id, urlAttach: true });
+                  setVaraiableSelected({ name: item.name, value: options[0]?.id, id, urlAttach });
                 }
               }
             }
@@ -221,7 +222,7 @@ function index(props: IProps) {
                   name: item.name,
                   value: val,
                   id,
-                  urlAttach: true,
+                  urlAttach,
                   vars: dataWithoutConstant,
                 });
                 setData(
