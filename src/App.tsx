@@ -101,6 +101,7 @@ export interface ICommonState {
   siteInfo?: { [index: string]: string };
   sideMenuBgMode: string;
   setSideMenuBgMode: (color: string) => void;
+  dashboardDefaultRangeIndex?: string;
 }
 
 // 可以匿名访问的路由 TODO: job-task output 应该也可以匿名访问
