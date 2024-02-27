@@ -16,8 +16,9 @@
  */
 import React, { useEffect, useState, createContext, useRef } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 // Modal 会被注入的代码所使用，请不要删除
-import { ConfigProvider, Modal } from 'antd';
+import { ConfigProvider, Modal, Spin } from 'antd';
 import zhCN from 'antd/lib/locale/zh_CN';
 import enUS from 'antd/lib/locale/en_US';
 import 'antd/dist/antd.less';
@@ -112,6 +113,7 @@ export const CommonStateContext = createContext({} as ICommonState);
 
 function App() {
   const { t, i18n } = useTranslation();
+  const history = useHistory();
   const isPlus = useIsPlus();
   const initialized = useRef(false);
   const defaultBusinessGroupKey = getDefaultBusinessGroupKey();
@@ -230,12 +232,15 @@ function App() {
       })();
     } catch (error) {
       console.error(error);
+      history.push('/out-of-service');
     }
   }, []);
 
   // 初始化中不渲染任何内容
   if (!initialized.current) {
-    return null;
+    return <div style={{display:'flex',justifyContent:'center', alignItems:'center',height:'100%'}}>
+      <Spin size="large"/>
+      </div>;
   }
 
   return (
