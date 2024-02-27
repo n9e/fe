@@ -45,7 +45,7 @@ import { useGlobalState } from '../globalState';
 import './style.less';
 import './dark.antd.less';
 import './dark.less';
-
+import { rangeOptions } from '@/components/TimeRangePicker/config';
 interface URLParam {
   id: string;
 }
@@ -78,7 +78,14 @@ const builtinParamsToID = (builtinParams) => {
 message.config({
   maxCount: 1,
 });
-const getDefaultTimeRange = (query, t) => {
+const getDefaultTimeRange = (query, t, dashboardDefaultRangeIndex?) => {
+  const defaultRange =
+    dashboardDefaultRangeIndex !== undefined
+      ? rangeOptions[dashboardDefaultRangeIndex]
+      : {
+          start: 'now-1h',
+          end: 'now',
+        };
   if (query.__from && query.__to) {
     if (isValid(query.__from) && isValid(query.__to)) {
       return {
@@ -93,22 +100,16 @@ const getDefaultTimeRange = (query, t) => {
       };
     }
     message.error(t('detail.invalidTimeRange'));
-    return getDefaultValue(dashboardTimeCacheKey, {
-      start: 'now-1h',
-      end: 'now',
-    });
+    return getDefaultValue(dashboardTimeCacheKey, defaultRange);
   }
-  return getDefaultValue(dashboardTimeCacheKey, {
-    start: 'now-1h',
-    end: 'now',
-  });
+  return getDefaultValue(dashboardTimeCacheKey, defaultRange);
 };
 
 export default function DetailV2(props: IProps) {
   const { isPreview = false, isBuiltin = false, gobackPath, builtinParams } = props;
   const { t, i18n } = useTranslation('dashboard');
   const history = useHistory();
-  const { datasourceList, profile } = useContext(CommonStateContext);
+  const { datasourceList, profile, dashboardDefaultRangeIndex } = useContext(CommonStateContext);
   const roles = _.get(profile, 'roles', []);
   const isAuthorized = !_.some(roles, (item) => item === 'Guest') && !isPreview;
   const [dashboardMeta, setDashboardMeta] = useGlobalState('dashboardMeta');
@@ -123,7 +124,7 @@ export default function DetailV2(props: IProps) {
   const [variableConfigWithOptions, setVariableConfigWithOptions] = useState<IVariable[]>();
   const [dashboardLinks, setDashboardLinks] = useState<ILink[]>();
   const [panels, setPanels] = useState<any[]>([]);
-  const [range, setRange] = useState<IRawTimeRange>(getDefaultTimeRange(query, t));
+  const [range, setRange] = useState<IRawTimeRange>(getDefaultTimeRange(query, t, dashboardDefaultRangeIndex));
   const [editable, setEditable] = useState(true);
   const [editorData, setEditorData] = useState({
     visible: false,
