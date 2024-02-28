@@ -16,7 +16,7 @@
  */
 import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { Form, Card, Select, Col, Button, Row, message, Checkbox, Tooltip, Radio, Modal, Space, InputNumber, Input, Switch, Tag } from 'antd';
-import { QuestionCircleFilled, PlusCircleOutlined, EditOutlined, MinusCircleOutlined } from '@ant-design/icons';
+import { QuestionCircleOutlined, PlusCircleOutlined, EditOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router';
@@ -277,7 +277,12 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
                     <Space align='baseline'>
                       <span>{t('tag.key.label')}</span>
                       <Tooltip title={t(`tag.key.tip`)}>
-                        <QuestionCircleFilled />
+                        <QuestionCircleOutlined
+                          style={{
+                            color: 'rgba(0, 0, 0, 0.45)',
+                            cursor: 'help',
+                          }}
+                        />
                       </Tooltip>
                       <PlusCircleOutlined className='control-icon-normal' onClick={() => add()} />
                     </Space>
@@ -293,7 +298,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
             )}
           </Form.List>
 
-          <Form.Item label={t('for_duration')} name='for_duration'>
+          <Form.Item label={t('for_duration')} tooltip={t('for_duration_tip')} name='for_duration'>
             <InputNumber style={{ width: '100%' }} />
           </Form.Item>
           <Form.Item label={t('user_group_ids')} name='user_group_ids'>

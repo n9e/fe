@@ -17,7 +17,7 @@
 import React, { useEffect, useState, createContext, useRef } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 // Modal 会被注入的代码所使用，请不要删除
-import { ConfigProvider, Modal } from 'antd';
+import { ConfigProvider, Modal, Spin } from 'antd';
 import zhCN from 'antd/lib/locale/zh_CN';
 import enUS from 'antd/lib/locale/en_US';
 import 'antd/dist/antd.less';
@@ -176,6 +176,11 @@ function App() {
   });
 
   useEffect(() => {
+    if (location.pathname === '/out-of-service') {
+      initialized.current = true;
+      setCommonState({ ...commonState }); // 为了触发重新渲染
+      return;
+    }
     try {
       (async () => {
         const iconLink = document.querySelector("link[rel~='icon']") as any;
@@ -240,6 +245,7 @@ function App() {
       })();
     } catch (error) {
       console.error(error);
+      location.href = '/out-of-service';
     }
   }, []);
 
@@ -254,7 +260,9 @@ function App() {
 
   // 初始化中不渲染任何内容
   if (!initialized.current) {
-    return null;
+    return <div style={{display:'flex',justifyContent:'center', alignItems:'center',height:'100%'}}>
+      <Spin size="large"/>
+      </div>;
   }
 
   return (
@@ -266,7 +274,7 @@ function App() {
               <Route exact path='/job-task/:busiId/output/:taskId/:outputType' component={TaskOutput} />
               <Route exact path='/job-task/:busiId/output/:taskId/:host/:outputType' component={TaskHostOutput} />
               <>
-                <HeaderMenu />
+                {location.pathname !== '/out-of-service' && <HeaderMenu />}
                 <Content />
               </>
             </Switch>
