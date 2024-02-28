@@ -80,7 +80,7 @@ message.config({
 });
 const getDefaultTimeRange = (query, t, dashboardDefaultRangeIndex?) => {
   const defaultRange =
-    dashboardDefaultRangeIndex !== undefined
+    dashboardDefaultRangeIndex !== undefined && dashboardDefaultRangeIndex !== ''
       ? rangeOptions[dashboardDefaultRangeIndex]
       : {
           start: 'now-1h',
