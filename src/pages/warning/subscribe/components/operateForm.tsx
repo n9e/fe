@@ -312,7 +312,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
             <div
               style={{
                 display: redefineSeverity ? 'block' : 'none',
-                marginTop: 4,
+                marginTop: 10,
               }}
             >
               <Form.Item name='new_severity' noStyle initialValue={2}>
@@ -334,6 +334,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
             <div
               style={{
                 display: redefineChannels ? 'block' : 'none',
+                marginTop: 10,
               }}
             >
               <Form.Item name='new_channels' noStyle>
@@ -362,7 +363,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
             <div
               style={{
                 display: redefineWebhooks ? 'block' : 'none',
-                marginTop: 4,
+                marginTop: 10,
               }}
             >
               <Form.List name='webhooks' initialValue={[]}>
