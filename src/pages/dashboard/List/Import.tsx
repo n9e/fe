@@ -220,11 +220,15 @@ function Import(props: IProps & ModalWrapProps) {
       ...data,
       tags: '',
       configs: JSON.stringify(data.configs),
-    }).then(() => {
-      message.success(t('common:success.import'));
-      refreshList();
-      destroy();
-    });
+    })
+      .then(() => {
+        message.success(t('common:success.import'));
+        refreshList();
+        destroy();
+      })
+      .finally(() => {
+        setCheckedVerisonResult(undefined);
+      });
   };
 
   return (

@@ -88,7 +88,7 @@ const en_US = {
     definition_msg1: 'Please enter variable definition',
     definition_msg2: 'Variable definition must be valid JSON',
     reg: 'Regex',
-    reg_tip: 'Optional, can filter options or extract values by regex',
+    reg_tip: 'Optional, can filter options or extract values by regex。Using a <a>regular expression literal</a>, which consists of a pattern enclosed between slashes',
     multi: 'Multi select',
     allOption: 'Include all option',
     allValue: 'Custom all value',
@@ -107,7 +107,7 @@ const en_US = {
       definition: 'Datasource type',
       defaultValue: 'Default value',
       regex: 'Datasource name filter',
-      regex_tip: 'Optional, can filter options or extract values by regex',
+      regex_tip: 'Optional, can filter options, Using a <a>regular expression literal</a>, which consists of a pattern enclosed between slashes',
     },
   },
   row: {

@@ -88,7 +88,7 @@ const zh_HK = {
     definition_msg1: '請輸入變數定義',
     definition_msg2: '變數定義必須是合法的JSON',
     reg: '正則',
-    reg_tip: '可選，可通過正則來過濾可選項，或提取值',
+    reg_tip: '可選，可通過正則來過濾可選項，或提取值。這裡是填寫的<a>正規表示式字面量</a>，其由包含在斜線之間的模式組成',
     multi: '多選',
     allOption: '包含全選',
     allValue: '自定義全選值',
@@ -107,7 +107,7 @@ const zh_HK = {
       definition: '數據源類型',
       defaultValue: '預設值',
       regex: '數據源過濾',
-      regex_tip: '可選，可通過正則來過濾可選項，或提取值',
+      regex_tip: '可選，可通過正則來過濾可選項。這裡是填寫的<a>正規表示式字面量</a>，其由包含在斜線之間的模式組成',
     },
   },
   row: {
