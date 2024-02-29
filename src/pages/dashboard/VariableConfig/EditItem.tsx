@@ -239,7 +239,7 @@ function EditItem(props: IProps) {
                     <Trans
                       ns='dashboard'
                       i18nKey='var.reg_tip'
-                      components={{ a: <a href='https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions' /> }}
+                      components={{ a: <a target='_blank' href='https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions' /> }}
                     />
                   }
                   rules={[{ pattern: new RegExp('^/(.*?)/(g?i?m?y?)$'), message: 'invalid regex' }]}
@@ -285,7 +285,7 @@ function EditItem(props: IProps) {
                     <Trans
                       ns='dashboard'
                       i18nKey='var.datasource.regex_tip'
-                      components={{ a: <a href='https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions' /> }}
+                      components={{ a: <a target='_blank' href='https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions' /> }}
                     />
                   }
                   rules={[{ pattern: new RegExp('^/(.*?)/(g?i?m?y?)$'), message: 'invalid regex' }]}
