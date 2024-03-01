@@ -381,12 +381,14 @@ export default function index(props: IProps) {
         return (
           <Space>
             <div className='renderer-timeseries-legend-color-symbol' style={{ backgroundColor: record.color }} />
-            <NameWithTooltip record={record}>
-              <div className='ant-table-cell-ellipsis'>
-                {record.offset && record.offset !== 'current' ? <span style={{ paddingRight: 5 }}>offfset {record.offset}</span> : ''}
-                <span>{text}</span>
-              </div>
-            </NameWithTooltip>
+            <div className='ant-table-cell-ellipsis'>
+              <NameWithTooltip record={record}>
+                <span>
+                  {record.offset && record.offset !== 'current' ? <span style={{ paddingRight: 5 }}>offfset {record.offset}</span> : ''}
+                  <span>{text}</span>
+                </span>
+              </NameWithTooltip>
+            </div>
           </Space>
         );
       },
