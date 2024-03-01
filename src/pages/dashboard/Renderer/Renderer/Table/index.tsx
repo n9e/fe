@@ -23,6 +23,7 @@ import type { FilterConfirmProps } from 'antd/es/table/interface';
 import { useSize } from 'ahooks';
 import { useAntdResizableHeader } from '@fc-components/use-antd-resizable-header';
 import '@fc-components/use-antd-resizable-header/dist/style.css';
+import { useTranslation } from 'react-i18next';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { IPanel } from '../../../types';
 import getCalculatedValuesBySeries, { getSerieTextObj, getMappedTextObj } from '../../utils/getCalculatedValuesBySeries';
@@ -86,6 +87,7 @@ const getColor = (color, colorMode, themeMode) => {
 };
 
 function TableCpt(props: IProps, ref: any) {
+  const { t } = useTranslation('dashboard');
   const [dashboardMeta] = useGlobalState('dashboardMeta');
   const eleRef = useRef<HTMLDivElement>(null);
   const size = useSize(eleRef);
@@ -139,8 +141,8 @@ function TableCpt(props: IProps, ref: any) {
     );
     if (isPreview) {
       setTableRefIds(groupNames);
-      setTableFields(getColumnsKeys(data));
     }
+    setTableFields(getColumnsKeys(data));
     setCalculatedValues(data);
   }, [isPreview, useDeepCompareWithRef(series), calc, useDeepCompareWithRef(options), displayMode, aggrDimension, useDeepCompareWithRef(columns)]);
 
@@ -391,7 +393,7 @@ function TableCpt(props: IProps, ref: any) {
 
     if (isAppendLinkColumn) {
       tableColumns.push({
-        title: '链接',
+        title: t('panel.base.link.label'),
         render: (_val, record) => {
           return (
             <Space>
