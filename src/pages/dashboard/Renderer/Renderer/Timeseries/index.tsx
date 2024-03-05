@@ -20,7 +20,7 @@ import moment from 'moment';
 import classNames from 'classnames';
 import querystring from 'query-string';
 import { useTranslation } from 'react-i18next';
-import { Table, Tooltip } from 'antd';
+import { Space, Table, Tooltip } from 'antd';
 import { ColumnProps } from 'antd/lib/table';
 import { useHistory, useLocation } from 'react-router-dom';
 import { VerticalRightOutlined, VerticalLeftOutlined } from '@ant-design/icons';
@@ -379,12 +379,17 @@ export default function index(props: IProps) {
       },
       render: (text, record: any) => {
         return (
-          <NameWithTooltip record={record}>
+          <Space>
+            <div className='renderer-timeseries-legend-color-symbol' style={{ backgroundColor: record.color }} />
             <div className='ant-table-cell-ellipsis'>
-              {record.offset && record.offset !== 'current' ? <span style={{ paddingRight: 5 }}>offfset {record.offset}</span> : ''}
-              <span>{text}</span>
+              <NameWithTooltip record={record}>
+                <span>
+                  {record.offset && record.offset !== 'current' ? <span style={{ paddingRight: 5 }}>offfset {record.offset}</span> : ''}
+                  <span>{text}</span>
+                </span>
+              </NameWithTooltip>
             </div>
-          </NameWithTooltip>
+          </Space>
         );
       },
     },
