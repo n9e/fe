@@ -10,6 +10,7 @@ const en_US = {
     export_title: 'Export',
     name: 'Name',
     isPublic: 'Is it public',
+    filters_title: 'Filters',
     filters: 'Filters',
     dynamicLabels: 'Dynamic Labels',
     dimensionLabels: 'Dimension Labels',

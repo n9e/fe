@@ -26,6 +26,7 @@ import { CommonStateContext } from '@/App';
 import { IMatch } from '../types';
 import Form from './Form';
 import Export from './Export';
+import Collapse from './components/Collapse';
 
 interface IProps {
   datasourceValue: number;
@@ -40,6 +41,7 @@ export default function List(props: IProps) {
   const [search, setSearch] = useState('');
   const [refreshFlag, setRefreshFlag] = useState(_.uniqueId('refreshFlag_'));
   const { profile } = useContext(CommonStateContext);
+
   useEffect(() => {
     const defaultMetricViewId = localStorage.getItem('metric-view-id') !== null ? Number(localStorage.getItem('metric-view-id')) : null;
     getList().then((res) => {
@@ -69,148 +71,150 @@ export default function List(props: IProps) {
   }, [refreshFlag, props.datasourceValue]);
 
   return (
-    <div className='n9e-metric-views-list'>
-      <div className='n9e-metric-views-list-header'>
-        <div className='metric-page-title'>{t('list.title')}</div>
-        <a>
-          <PlusSquareOutlined
-            onClick={() => {
-              Form({
-                datasourceValue: props.datasourceValue,
-                admin: profile.admin,
-                action: 'add',
-                range: props.range,
-                onOk: (record) => {
-                  localStorage.setItem('metric-view-id', record.id);
-                  setRefreshFlag(_.uniqueId('refreshFlag_'));
-                },
-              });
-            }}
-          />
-        </a>
-      </div>
-      <Input
-        prefix={<SearchOutlined />}
-        value={search}
-        onChange={(e) => {
-          setSearch(e.target.value);
-        }}
-      />
-      <div className='n9e-metric-views-list-content'>
-        {_.isEmpty(list)
-          ? 'No Data'
-          : _.map(
-              _.filter(list, (item) => {
-                if (search) {
-                  let result = true;
-                  try {
-                    const reg = new RegExp(search, 'gi');
-                    result = reg.test(item.name);
-                  } catch (e) {
-                    console.log(e);
+    <Collapse collapseLocalStorageKey='quick_view_list_collapse' widthLocalStorageKey='quick_view_list_width' defaultWidth={240} tooltip={t('list.title')}>
+      <div className='n9e-metric-views-list'>
+        <div className='n9e-metric-views-list-header'>
+          <div className='metric-page-title'>{t('list.title')}</div>
+          <a>
+            <PlusSquareOutlined
+              onClick={() => {
+                Form({
+                  datasourceValue: props.datasourceValue,
+                  admin: profile.admin,
+                  action: 'add',
+                  range: props.range,
+                  onOk: (record) => {
+                    localStorage.setItem('metric-view-id', record.id);
+                    setRefreshFlag(_.uniqueId('refreshFlag_'));
+                  },
+                });
+              }}
+            />
+          </a>
+        </div>
+        <Input
+          prefix={<SearchOutlined />}
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+          }}
+        />
+        <div className='n9e-metric-views-list-content'>
+          {_.isEmpty(list)
+            ? 'No Data'
+            : _.map(
+                _.filter(list, (item) => {
+                  if (search) {
+                    let result = true;
+                    try {
+                      const reg = new RegExp(search, 'gi');
+                      result = reg.test(item.name);
+                    } catch (e) {
+                      console.log(e);
+                    }
+                    return result;
                   }
-                  return result;
-                }
-                return true;
-              }),
-              (item) => {
-                return (
-                  <div
-                    className={classNames({
-                      'n9e-metric-views-list-content-item': true,
-                      active: item.id === active,
-                    })}
-                    key={item.id}
-                    onClick={() => {
-                      setActive(item.id);
-                      localStorage.setItem('metric-view-id', item.id);
-                      const curItem = _.find(list, { id: item.id });
-                      let configs = {} as IMatch;
-                      try {
-                        configs = JSON.parse(curItem.configs);
-                        configs.id = item.id;
-                      } catch (e) {
-                        console.error(e);
-                      }
-                      props.onSelect({
-                        ...configs,
-                      });
-                    }}
-                  >
-                    <span className='name'>{item.name}</span>
-                    {item.cate === 1 || profile.admin ? (
-                      <span>
-                        {item.cate === 0 && (
-                          <span className='n9e-metric-views-list-content-item-cate' style={{ color: '#ccc' }}>
-                            {t('list.public')}
-                          </span>
-                        )}
-                        <div className='n9e-metric-views-list-content-item-opes'>
-                          <EditOutlined
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              let configs = {} as any;
-                              try {
-                                configs = JSON.parse(item.configs);
-                                configs.dynamicLabels = _.map(configs.dynamicLabels, 'label');
-                                configs.dimensionLabels = _.map(configs.dimensionLabels, 'label');
-                              } catch (e) {
-                                console.error(e);
-                              }
-                              const initialValues = {
-                                id: item.id,
-                                name: item.name,
-                                cate: item.cate === 0,
-                                ...configs,
-                              };
-                              Form({
-                                datasourceValue: props.datasourceValue,
-                                admin: profile.admin,
-                                action: 'edit',
-                                range: props.range,
-                                initialValues,
-                                onOk: () => {
-                                  localStorage.setItem('metric-view-id', item.id);
-                                  setRefreshFlag(_.uniqueId('refreshFlag_'));
-                                },
-                              });
-                            }}
-                          />
-                          <DeleteOutlined
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              Modal.confirm({
-                                title: t('common:confirm.delete'),
-                                onOk: () => {
-                                  deleteMetricView({
-                                    ids: [item.id],
-                                  }).then(() => {
-                                    message.success(t('common:success.delete'));
+                  return true;
+                }),
+                (item) => {
+                  return (
+                    <div
+                      className={classNames({
+                        'n9e-metric-views-list-content-item': true,
+                        active: item.id === active,
+                      })}
+                      key={item.id}
+                      onClick={() => {
+                        setActive(item.id);
+                        localStorage.setItem('metric-view-id', item.id);
+                        const curItem = _.find(list, { id: item.id });
+                        let configs = {} as IMatch;
+                        try {
+                          configs = JSON.parse(curItem.configs);
+                          configs.id = item.id;
+                        } catch (e) {
+                          console.error(e);
+                        }
+                        props.onSelect({
+                          ...configs,
+                        });
+                      }}
+                    >
+                      <span className='name'>{item.name}</span>
+                      {item.cate === 1 || profile.admin ? (
+                        <span>
+                          {item.cate === 0 && (
+                            <span className='n9e-metric-views-list-content-item-cate' style={{ color: '#ccc' }}>
+                              {t('list.public')}
+                            </span>
+                          )}
+                          <div className='n9e-metric-views-list-content-item-opes'>
+                            <EditOutlined
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                let configs = {} as any;
+                                try {
+                                  configs = JSON.parse(item.configs);
+                                  configs.dynamicLabels = _.map(configs.dynamicLabels, 'label');
+                                  configs.dimensionLabels = _.map(configs.dimensionLabels, 'label');
+                                } catch (e) {
+                                  console.error(e);
+                                }
+                                const initialValues = {
+                                  id: item.id,
+                                  name: item.name,
+                                  cate: item.cate === 0,
+                                  ...configs,
+                                };
+                                Form({
+                                  datasourceValue: props.datasourceValue,
+                                  admin: profile.admin,
+                                  action: 'edit',
+                                  range: props.range,
+                                  initialValues,
+                                  onOk: () => {
+                                    localStorage.setItem('metric-view-id', item.id);
                                     setRefreshFlag(_.uniqueId('refreshFlag_'));
-                                  });
-                                },
-                              });
-                            }}
-                          />
-                          <Tooltip title={t('title.export')} placement='right'>
-                            <ExportOutlined
-                              onClick={() => {
-                                Export({
-                                  data: item.configs,
+                                  },
                                 });
                               }}
                             />
-                          </Tooltip>
-                        </div>
-                      </span>
-                    ) : (
-                      <span style={{ color: '#ccc' }}>{t('title.public')}</span>
-                    )}
-                  </div>
-                );
-              },
-            )}
+                            <DeleteOutlined
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                Modal.confirm({
+                                  title: t('common:confirm.delete'),
+                                  onOk: () => {
+                                    deleteMetricView({
+                                      ids: [item.id],
+                                    }).then(() => {
+                                      message.success(t('common:success.delete'));
+                                      setRefreshFlag(_.uniqueId('refreshFlag_'));
+                                    });
+                                  },
+                                });
+                              }}
+                            />
+                            <Tooltip title={t('title.export')} placement='right'>
+                              <ExportOutlined
+                                onClick={() => {
+                                  Export({
+                                    data: item.configs,
+                                  });
+                                }}
+                              />
+                            </Tooltip>
+                          </div>
+                        </span>
+                      ) : (
+                        <span style={{ color: '#ccc' }}>{t('title.public')}</span>
+                      )}
+                    </div>
+                  );
+                },
+              )}
+        </div>
       </div>
-    </div>
+    </Collapse>
   );
 }

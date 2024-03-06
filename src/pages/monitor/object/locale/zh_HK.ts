@@ -10,6 +10,7 @@ const zh_CN = {
     export_title: '匯出配寘',
     name: '視圖名稱',
     isPublic: '是否公開',
+    filters_title: '過濾條件',
     filters: '前置過濾條件',
     dynamicLabels: '動態過濾標籤',
     dimensionLabels: '展開維度標籤',
