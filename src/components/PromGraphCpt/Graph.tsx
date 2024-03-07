@@ -42,6 +42,8 @@ interface IProps {
     enabled: boolean;
   };
   refreshFlag: string;
+  loading: boolean;
+  setLoading: (loading: boolean) => void;
 }
 
 enum ChartType {
@@ -62,8 +64,7 @@ const getSerieName = (metric: any) => {
 
 export default function Graph(props: IProps) {
   const { datasourceList } = useContext(CommonStateContext);
-  const { url, datasourceValue, promql, setQueryStats, setErrorContent, contentMaxHeight, range, setRange, step, setStep, graphOperates, refreshFlag } = props;
-  const [loading, setLoading] = useState(false);
+  const { url, datasourceValue, promql, setQueryStats, setErrorContent, contentMaxHeight, range, setRange, step, setStep, graphOperates, refreshFlag, loading, setLoading } = props;
   const [data, setData] = useState<any[]>([]);
   const [highLevelConfig, setHighLevelConfig] = useState({
     shared: true,
