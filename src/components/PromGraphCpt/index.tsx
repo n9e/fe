@@ -87,6 +87,7 @@ export default function index(props: IProps) {
   const [metricsExplorerVisible, setMetricsExplorerVisible] = useState(false);
   const [completeEnabled, setCompleteEnabled] = useState(true);
   const promQLInputRef = useRef<any>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (typeof defaultTime === 'number') {
@@ -193,6 +194,7 @@ export default function index(props: IProps) {
           >
             <Button
               type='primary'
+              loading={loading}
               onClick={() => {
                 setRefreshFlag(_.uniqueId('refreshFlag_'));
                 setPromql(value);
@@ -232,6 +234,8 @@ export default function index(props: IProps) {
                 setTimestamp(val);
               }}
               refreshFlag={refreshFlag}
+              loading={loading}
+              setLoading={setLoading}
             />
           </TabPane>
           <TabPane tab='Graph' key='graph'>
@@ -251,6 +255,8 @@ export default function index(props: IProps) {
               setStep={setStep}
               graphOperates={graphOperates}
               refreshFlag={refreshFlag}
+              loading={loading}
+              setLoading={setLoading}
             />
           </TabPane>
         </Tabs>
