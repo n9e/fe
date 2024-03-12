@@ -82,7 +82,7 @@ export default function List(props: ListProps) {
           if (val === 'host') {
             logoSrc = '/image/logos/host.png';
           }
-          return <img alt={val} src={logoSrc} height={24} />;
+          return <img alt={val} src={logoSrc} height={20} />;
         },
       });
     }
