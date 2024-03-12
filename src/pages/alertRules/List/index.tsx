@@ -148,12 +148,32 @@ export default function List(props: ListProps) {
         dataIndex: 'notify_groups_obj',
         render: (data) => {
           return (
-            <Tags
-              width={110}
-              data={_.map(data, (user) => {
-                return user.nickname || user.username || user.name;
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: 4,
+              }}
+            >
+              {_.map(data, (user) => {
+                const val = user.nickname || user.username || user.name;
+                return (
+                  <Tooltip key={val} title={val}>
+                    <Tag color='purple' style={{ maxWidth: '100%', marginRight: 0 }}>
+                      <div
+                        style={{
+                          maxWidth: 'max-content',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
+                        {val}
+                      </div>
+                    </Tag>
+                  </Tooltip>
+                );
               })}
-            />
+            </div>
           );
         },
       });
