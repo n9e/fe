@@ -112,23 +112,33 @@ export default function List(props: ListProps) {
         title: t('table.append_tags'),
         dataIndex: 'append_tags',
         render(value) {
-          return _.map(value, (item) => {
-            return (
-              <Tooltip key={item} title={item}>
-                <Tag color='purple' style={{ maxWidth: '100%', marginRight: 0 }}>
-                  <div
-                    style={{
-                      maxWidth: 'max-content',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                    }}
-                  >
-                    {item}
-                  </div>
-                </Tag>
-              </Tooltip>
-            );
-          });
+          return (
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: 4,
+              }}
+            >
+              {_.map(value, (item) => {
+                return (
+                  <Tooltip key={item} title={item}>
+                    <Tag color='purple' style={{ maxWidth: '100%', marginRight: 0 }}>
+                      <div
+                        style={{
+                          maxWidth: 'max-content',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
+                        {item}
+                      </div>
+                    </Tag>
+                  </Tooltip>
+                );
+              })}
+            </div>
+          );
         },
       });
     }
