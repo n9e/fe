@@ -272,14 +272,10 @@ const Resource: React.FC = () => {
                 {!_.isEmpty(teamList) && (
                   <Tree
                     rootClassName='business-group-tree'
-                    showLine={{
-                      showLeafIcon: false,
-                    }}
                     defaultExpandParent={false}
                     defaultExpandedKeys={getLocaleExpandedKeys()}
                     selectedKeys={teamId ? [_.toString(teamId)] : []}
                     blockNode
-                    switcherIcon={<DownOutlined />}
                     onSelect={(_selectedKeys, e: any) => {
                       const nodeId = e.node.id;
                       setTeamId(nodeId as any);

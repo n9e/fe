@@ -151,14 +151,10 @@ export default function index(props: IProps) {
               {!_.isEmpty(businessGroupTreeData) && (
                 <Tree
                   rootClassName='business-group-tree'
-                  showLine={{
-                    showLeafIcon: false,
-                  }}
                   defaultExpandParent={false}
                   defaultExpandedKeys={getCollapsedKeys(businessGroupTreeData, getLocaleExpandedKeys(), businessGroup.key)}
                   selectedKeys={showSelected && businessGroup.key ? [businessGroup.key] : undefined}
                   blockNode
-                  switcherIcon={<DownOutlined />}
                   onSelect={(_selectedKeys, e) => {
                     const itemKey = e.node.key;
                     businessGroupOnChange(itemKey);

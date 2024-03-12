@@ -111,14 +111,10 @@ export default function index(props: IProps) {
             {!_.isEmpty(businessGroupData) && (
               <Tree
                 rootClassName='business-group-tree'
-                showLine={{
-                  showLeafIcon: false,
-                }}
                 defaultExpandParent={false}
                 defaultExpandedKeys={getCollapsedKeys(businessGroupData, getLocaleExpandedKeys(), curBusiId)}
                 selectedKeys={curBusiId ? [curBusiId] : undefined}
                 blockNode
-                switcherIcon={<DownOutlined />}
                 onSelect={(_selectedKeys, e) => {
                   const nodeId = e.node.id;
                   if (nodeId !== curBusiId) {
