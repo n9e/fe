@@ -164,5 +164,15 @@ const zh_CN = {
     },
   },
   preview: '数据预览',
+  table: {
+    group_id: '业务组',
+    cate: '类型',
+    name: '名称',
+    append_tags: '附加标签',
+    notify_groups_obj: '告警接收组',
+    update_at: '更新时间',
+    update_by: '更新人',
+    disabled: '启用',
+  },
 };
 export default zh_CN;

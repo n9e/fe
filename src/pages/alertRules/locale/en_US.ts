@@ -164,5 +164,15 @@ const en_US = {
     },
   },
   preview: 'Data Preview',
+  table: {
+    group_id: 'Business Group',
+    cate: 'Type',
+    name: 'Name',
+    append_tags: 'Tags',
+    notify_groups_obj: 'Notify Groups',
+    update_at: 'Updated',
+    update_by: 'Updated By',
+    disabled: 'Enable',
+  },
 };
 export default en_US;

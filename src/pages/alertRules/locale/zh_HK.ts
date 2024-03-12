@@ -164,6 +164,16 @@ const zh_HK = {
     },
   },
   preview: '數據預覽',
+  table: {
+    group_id: '業務組',
+    cate: '類型',
+    name: '名稱',
+    append_tags: '附加標籤',
+    notify_groups_obj: '告警接收組',
+    update_at: '更新時間',
+    update_by: '更新者',
+    disabled: '啟用',
+  },
 };
 
 export default zh_HK;
