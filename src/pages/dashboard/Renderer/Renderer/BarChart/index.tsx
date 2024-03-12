@@ -86,6 +86,10 @@ export default function Bar(props: IProps) {
           return items[0];
         } else {
           const yAxisFieldValues = _.map(items, (item) => {
+            const val = item[yAxisField];
+            if (_.isString(val) && !_.isNaN(_.toNumber(val))) {
+              return _.toNumber(val);
+            }
             return item[yAxisField];
           });
           const yAxisFieldValue = _.sum(yAxisFieldValues);
