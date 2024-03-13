@@ -91,7 +91,6 @@ export default function List(props: ListProps) {
         title: t('table.datasource_ids'),
         dataIndex: 'datasource_ids',
         render(value) {
-          console.log('value', value);
           if (!value) return '';
           return (
             <Tags
