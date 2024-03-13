@@ -167,6 +167,7 @@ const en_US = {
   table: {
     group_id: 'Business Group',
     cate: 'Type',
+    datasource_ids: 'Datasource',
     name: 'Name',
     append_tags: 'Tags',
     notify_groups_obj: 'Notify Groups',

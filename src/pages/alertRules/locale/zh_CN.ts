@@ -167,6 +167,7 @@ const zh_CN = {
   table: {
     group_id: '业务组',
     cate: '类型',
+    datasource_ids: '数据源',
     name: '名称',
     append_tags: '附加标签',
     notify_groups_obj: '告警接收组',

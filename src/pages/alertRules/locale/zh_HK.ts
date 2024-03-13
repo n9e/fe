@@ -167,6 +167,7 @@ const zh_HK = {
   table: {
     group_id: '業務組',
     cate: '類型',
+    datasource_ids: '數據源',
     name: '名稱',
     append_tags: '附加標籤',
     notify_groups_obj: '告警接收組',

@@ -78,6 +78,10 @@ export const getDefaultColumnsConfigs = () => {
       visible: true,
     },
     {
+      name: 'datasource_ids',
+      visible: false,
+    },
+    {
       name: 'name',
       visible: true,
     },

@@ -86,6 +86,29 @@ export default function List(props: ListProps) {
         },
       });
     }
+    if (item.name === 'datasource_ids') {
+      columns.push({
+        title: t('table.datasource_ids'),
+        dataIndex: 'datasource_ids',
+        render(value) {
+          console.log('value', value);
+          if (!value) return '';
+          return (
+            <Tags
+              width={70}
+              data={_.compact(
+                _.map(value, (item) => {
+                  if (item === 0) return '$all';
+                  const name = _.find(datasourceList, { id: item })?.name;
+                  if (!name) return '';
+                  return name;
+                }),
+              )}
+            />
+          );
+        },
+      });
+    }
     if (item.name === 'name') {
       columns.push({
         title: t('table.name'),
