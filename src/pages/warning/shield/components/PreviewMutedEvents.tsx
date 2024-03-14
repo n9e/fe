@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import { previewMutedEvents } from '@/services/shield';
 import { CommonStateContext } from '@/App';
 import { deleteAlertEventsModal, SeverityColor } from '@/pages/event';
+import { scrollToFirstError } from '@/utils';
 import { processFormValues } from './utils';
 
 interface Props {
@@ -88,10 +89,13 @@ export default function PreviewMutedEvents(props: Props) {
     <>
       <Button
         onClick={() => {
-          form.validateFields().then((values: any) => {
-            setVisible(true);
-            fetchData(values);
-          });
+          form
+            .validateFields()
+            .then((values: any) => {
+              setVisible(true);
+              fetchData(values);
+            })
+            .catch(scrollToFirstError);
         }}
       >
         屏蔽预览

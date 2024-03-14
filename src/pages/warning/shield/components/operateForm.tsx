@@ -26,11 +26,11 @@ import { shieldItem } from '@/store/warningInterface';
 import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
 import { CommonStateContext } from '@/App';
 import { daysOfWeek } from '@/pages/alertRules/constants';
-import ProdSelect from '@/pages/alertRules/Form/components/ProdSelect';
 import { DatasourceCateSelect } from '@/components/DatasourceSelect';
+import { scrollToFirstError } from '@/utils';
 import TagItem from './tagItem';
 import { timeLensDefault } from '../../const';
-import { getDefaultValuesByProd, processFormValues } from './utils';
+import { processFormValues } from './utils';
 import PreviewMutedEvents from './PreviewMutedEvents';
 import '../index.less';
 
@@ -112,6 +112,9 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
       layout='vertical'
       className='operate-form'
       onFinish={onFinish}
+      onFinishFailed={() => {
+        scrollToFirstError();
+      }}
       initialValues={{
         ...detail,
         tags: detail?.tags?.map((item) => {

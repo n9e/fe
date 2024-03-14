@@ -191,3 +191,9 @@ export function warning(message: string) {
     console.error(`Warning: ${message}`);
   }
 }
+
+export const scrollToFirstError = () => {
+  setTimeout(() => {
+    document.querySelector('.ant-form-item-has-error')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 200);
+};
