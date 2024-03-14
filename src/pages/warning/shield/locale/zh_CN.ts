@@ -1,3 +1,5 @@
+import { add } from 'lodash';
+
 const zh_CN = {
   title: '屏蔽规则',
   search_placeholder: '搜索标签、屏蔽原因',
@@ -5,7 +7,7 @@ const zh_CN = {
   datasource_id: '数据源',
   cause: '屏蔽原因',
   time: '屏蔽时间',
-  note: '规则备注',
+  note: '规则说明',
   btime: '屏蔽开始时间',
   duration: '屏蔽时长',
   etime: '屏蔽结束时间',
@@ -38,6 +40,7 @@ const zh_CN = {
       placeholder2: '请输入正则表达式匹配标签value',
       msg: 'value不能为空',
     },
+    add: '添加标签',
   },
   quick_template: {
     title: '快捷模板',
@@ -46,5 +49,9 @@ const zh_CN = {
     __name__: '屏蔽 Metric',
     ident: '屏蔽 Ident',
   },
+  basic_configs: '基本信息',
+  filter_configs: '筛选条件',
+  filter_configs_tip: '符合筛选条件的告警事件会命中屏蔽规则，进而被屏蔽。筛选条件本质就是对告警事件的筛选，通过事件的数据源、等级、标签等信息进行筛选',
+  mute_configs: '屏蔽时长',
 };
 export default zh_CN;

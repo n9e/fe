@@ -5,7 +5,7 @@ const zh_HK = {
   datasource_id: '數據源',
   cause: '屏蔽原因',
   time: '屏蔽時間',
-  note: '規則備註',
+  note: '規則說明',
   btime: '屏蔽開始時間',
   duration: '屏蔽時長',
   etime: '屏蔽結束時間',
@@ -38,6 +38,7 @@ const zh_HK = {
       placeholder2: '請輸入正規表示式匹配標籤 value',
       msg: 'value 不能為空',
     },
+    add: '添加標籤',
   },
   quick_template: {
     title: '快捷模板',
@@ -46,6 +47,10 @@ const zh_HK = {
     __name__: '屏蔽 Metric',
     ident: '屏蔽 Ident',
   },
+  basic_configs: '基本信息',
+  filter_configs: '篩選條件',
+  filter_configs_tip: '符合篩選條件的告警事件會命中屏蔽規則，進而被屏蔽。篩選條件本質就是對告警事件的篩選，通過事件的數據源、等級、標籤等信息進行篩選',
+  mute_configs: '屏蔽時長',
 };
 
 export default zh_HK;
