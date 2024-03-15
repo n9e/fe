@@ -10,8 +10,8 @@ const zh_HK = {
   duration: '屏蔽時長',
   etime: '屏蔽結束時間',
   prod: '監控類型',
-  severities: '屏蔽事件等級',
-  severities_msg: '屏蔽事件等級不能為空',
+  severities: '事件等級',
+  severities_msg: '事件等級不能為空',
   mute_type: {
     '0': '固定時間',
     '1': '週期時間',
@@ -38,19 +38,21 @@ const zh_HK = {
       placeholder2: '請輸入正規表示式匹配標籤 value',
       msg: 'value 不能為空',
     },
-    add: '添加標籤',
+    add: '新增標籤過濾條件',
   },
   quick_template: {
-    title: '快捷模板',
+    title: '快捷標籤過濾模板',
     all: '本組全部告警屏蔽',
     target_miss: '機器失聯屏蔽',
-    __name__: '屏蔽 Metric',
-    ident: '屏蔽 Ident',
+    __name__: '屏蔽某個指標',
+    ident: '屏蔽某個機器',
   },
   basic_configs: '基本信息',
   filter_configs: '篩選條件',
   filter_configs_tip: '符合篩選條件的告警事件會命中屏蔽規則，進而被屏蔽。篩選條件本質就是對告警事件的篩選，通過事件的數據源、等級、標籤等信息進行篩選',
   mute_configs: '屏蔽時長',
+  alert_content: '為了防止誤配屏蔽規則屏蔽掉公司所有的告警，此屏蔽規則只會生效於特定業務組下的告警事件',
+  preview_muted_btn: '預覽並刪除相關事件',
 };
 
 export default zh_HK;

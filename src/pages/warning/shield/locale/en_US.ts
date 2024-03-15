@@ -36,7 +36,7 @@ const en_US = {
       placeholder2: 'Please enter a regular expression to match the tag value',
       msg: 'value is required',
     },
-    add: 'Add tag',
+    add: 'Add tag filter condition',
   },
   quick_template: {
     title: 'Quick template',
@@ -50,5 +50,8 @@ const en_US = {
   filter_configs_tip:
     'The alert events that meet the filter conditions will be muted by the mute rule, and then be muted. The filter condition is essentially to filter the alert event, and filter the event data source, level, tag, etc. through the filter condition',
   mute_configs: 'Mute duration',
+  alert_content:
+    'In order to prevent the misalignment of the mute rule from muting all the alerts of the company, this mute rule will only take effect on the alerts of a specific business group',
+  preview_muted_btn: 'Preview and delete related events',
 };
 export default en_US;

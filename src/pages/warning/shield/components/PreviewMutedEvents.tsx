@@ -88,6 +88,7 @@ export default function PreviewMutedEvents(props: Props) {
   return (
     <>
       <Button
+        type='primary'
         onClick={() => {
           form
             .validateFields()
@@ -98,10 +99,10 @@ export default function PreviewMutedEvents(props: Props) {
             .catch(scrollToFirstError);
         }}
       >
-        屏蔽预览
+        {t('alertMutes:preview_muted_btn')}
       </Button>
       <Modal
-        title='屏蔽预览'
+        title={t('alertMutes:preview_muted_btn')}
         visible={visible}
         footer={[
           <Button
@@ -110,7 +111,7 @@ export default function PreviewMutedEvents(props: Props) {
               setVisible(false);
             }}
           >
-            取消
+            {t('common:btn.cancel')}
           </Button>,
           <Button
             key='delete'
@@ -127,7 +128,7 @@ export default function PreviewMutedEvents(props: Props) {
               );
             }}
           >
-            删除
+            {t('common:btn.delete')}
           </Button>,
         ]}
         onCancel={() => {

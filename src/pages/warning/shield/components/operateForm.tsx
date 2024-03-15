@@ -16,7 +16,7 @@
  */
 import React, { useState, useEffect, useContext } from 'react';
 import { Form, Input, Card, Select, Col, Button, Row, message, DatePicker, Tooltip, Space, Radio, TimePicker, Checkbox, Alert, Affix } from 'antd';
-import { QuestionCircleOutlined, PlusCircleOutlined, CaretDownOutlined, MinusCircleOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { QuestionCircleOutlined, PlusCircleOutlined, CaretDownOutlined, MinusCircleOutlined, InfoCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -149,17 +149,6 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
       }}
     >
       <Card className='mb2' title={t('basic_configs')}>
-        <Form.Item label={t('common:business_group')} name='group_id' required>
-          <Select
-            disabled={type == 1}
-            options={_.map(busiGroups, (item) => {
-              return {
-                label: item.name,
-                value: item.id,
-              };
-            })}
-          />
-        </Form.Item>
         <Form.Item
           label={t('note')}
           name='note'
@@ -186,7 +175,18 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
           </Space>
         }
       >
-        <Alert type='info' message='此屏蔽规则只会生效于本业务组关联的告警规则' style={{ marginBottom: 16 }} />
+        <Alert type='info' message={t('alert_content')} style={{ marginBottom: 16 }} />
+        <Form.Item label={t('common:business_group')} name='group_id' required>
+          <Select
+            disabled={type == 1}
+            options={_.map(busiGroups, (item) => {
+              return {
+                label: item.name,
+                value: item.id,
+              };
+            })}
+          />
+        </Form.Item>
         <Row gutter={10}>
           <Col span={12}>
             <Form.Item label={t('common:datasource.type')} name='cate' initialValue='prometheus'>
@@ -251,6 +251,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
                 <TagItem count={fields.length} field={field} key={index} remove={remove} form={form} />
               ))}
               <Button type='dashed' style={{ width: '100%' }} onClick={() => add()}>
+                <PlusOutlined />
                 {t('tag.add')}
               </Button>
             </>
@@ -259,7 +260,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
         <div className='mt2'>
           <Space>
             <span>{t('quick_template.title')}</span>
-            <a
+            {/* <a
               onClick={() => {
                 form.setFieldsValue({
                   tags: [
@@ -273,7 +274,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
               }}
             >
               {t('quick_template.all')}
-            </a>
+            </a> */}
             <a
               onClick={() => {
                 form.setFieldsValue({
