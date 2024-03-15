@@ -22,12 +22,7 @@ export default function index() {
   return (
     <PageLayout title={t('ibex.title')}>
       <div>
-        <div
-          className='n9e-border-base'
-          style={{
-            padding: 10,
-          }}
-        >
+        <div className='n9e-border-base p2'>
           <Form form={form} layout='vertical'>
             <Form.Item name='ckey' hidden>
               <div />

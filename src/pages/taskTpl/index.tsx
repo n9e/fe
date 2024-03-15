@@ -182,7 +182,7 @@ const index = (_props: any) => {
       <div style={{ display: 'flex' }}>
         <BusinessGroup />
         {businessGroup.ids ? (
-          <div className='n9e-border-base' style={{ flex: 1, padding: 10 }}>
+          <div className='n9e-border-base p2' style={{ flex: 1 }}>
             <Row>
               <Col span={14} className='mb10'>
                 <Input

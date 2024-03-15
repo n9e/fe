@@ -25,7 +25,7 @@ export default function index() {
     <PageLayout title={t('title')}>
       <main
         style={{
-          padding: '10px 12px',
+          padding: 16,
         }}
       >
         <Global SSOConfigs={data} />
