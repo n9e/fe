@@ -26,7 +26,7 @@ const zh_CN = {
   },
   tag: {
     key: {
-      label: '屏蔽事件标签Key',
+      label: '事件标签Key',
       tip: '这里的标签是指告警事件的标签，通过如下标签匹配规则过滤告警事件',
       msg: 'key不能为空',
     },

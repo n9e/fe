@@ -24,7 +24,7 @@ const zh_HK = {
   },
   tag: {
     key: {
-      label: '屏蔽事件標籤 Key',
+      label: '事件標籤 Key',
       tip: '這裏的標籤是指告警事件的標籤，通過如下標籤匹配規則過濾告警事件',
       msg: 'key 不能為空',
     },
