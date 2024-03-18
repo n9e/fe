@@ -137,7 +137,7 @@ const ExpressionInput = (
           keymap.of([...closeBracketsKeymap, ...defaultKeymap, ...historyKeymap, ...commentKeymap, ...completionKeymap, ...lintKeymap]),
           placeholderFunc(placeholder === false ? '' : placeholder),
           promqlExtension.asExtension(),
-          EditorView.editable.of(!readonly),
+          EditorView.editable.of(!readonly && !disabled),
           keymap.of([
             {
               key: 'Escape',

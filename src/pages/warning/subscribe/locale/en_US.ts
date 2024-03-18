@@ -35,6 +35,8 @@ const en_US = {
   redefine_webhooks: 'Redefine Webhooks',
   user_group_ids: 'Receiving Group',
   for_duration: 'Duration (seconds)',
+  for_duration_tip:
+    'For example: If 300 is configured, the same alarm event will not match the subscription when it is subscribed for the first time. When it is subscribed again later, the trigger time of the current event and the time when this event was subscribed for the first time will be calculated. The difference in trigger time. If the obtained value exceeds 300 seconds, it will meet the subscription conditions and the relevant notification logic will be used. If it is less than 300 seconds, the subscription will not be matched. This function can be used as an alarm upgrade. The person in charge of the team can configure a subscription with a duration of more than 1 hour (3600s), and the recipient is configured as himself. As the person in charge, it is guaranteed that someone will follow up on the alarm.',
   webhooks: 'New Webhooks',
   webhooks_msg: 'Webhook is required',
   prod: 'Type',
