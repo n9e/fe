@@ -18,7 +18,6 @@ import React, { useContext, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import querystring from 'query-string';
 import _ from 'lodash';
-import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import { Button, Space, Dropdown, Menu, Switch, notification, Select } from 'antd';
 import { RollbackOutlined, SettingOutlined } from '@ant-design/icons';
@@ -92,7 +91,7 @@ export default function Title(props: IProps) {
                     unCheckedChildren='light'
                     defaultChecked={themeMode === 'dark'}
                     onChange={(checked) => {
-                      const newQuery = _.omit(query, ['themeMode']);
+                      const newQuery = _.omit(querystring.parse(window.location.search), ['themeMode']);
                       newQuery.themeMode = checked ? 'dark' : 'light';
                       localStorage.setItem('dashboard_themeMode', checked ? 'dark' : 'light');
                       history.replace({
@@ -172,14 +171,14 @@ export default function Title(props: IProps) {
               history.replace({
                 pathname: location.pathname,
                 // 重新设置时间范围时，清空 __from 和 __to
-                search: querystring.stringify(_.omit(querystring.parse(location.search), ['__from', '__to'])),
+                search: querystring.stringify(_.omit(querystring.parse(window.location.search), ['__from', '__to'])),
               });
               setRange(val);
             }}
           />
           <Button
             onClick={() => {
-              const newQuery = _.omit(query, ['viewMode', 'themeMode']);
+              const newQuery = _.omit(querystring.parse(window.location.search), ['viewMode', 'themeMode']);
               if (!viewMode) {
                 newQuery.viewMode = 'fullscreen';
                 newQuery.themeMode = localStorage.getItem(dashboardThemeModeCacheKey) || 'light';
@@ -196,24 +195,22 @@ export default function Title(props: IProps) {
           >
             {viewMode === 'fullscreen' ? t('exit_full_screen') : t('full_screen')}
           </Button>
-          {IS_ENT && (
-            <Select
-              options={[
-                { label: 'light', value: 'light' },
-                { label: 'dark', value: 'dark' },
-              ]}
-              value={themeMode || 'light'}
-              onChange={(val) => {
-                const newQuery = _.omit(query, ['themeMode']);
-                newQuery.themeMode = val;
-                history.replace({
-                  pathname: location.pathname,
-                  search: querystring.stringify(newQuery),
-                });
-                window.localStorage.setItem(dashboardThemeModeCacheKey, val);
-              }}
-            />
-          )}
+          <Select
+            options={[
+              { label: 'light', value: 'light' },
+              { label: 'dark', value: 'dark' },
+            ]}
+            value={themeMode || 'light'}
+            onChange={(val) => {
+              const newQuery = _.omit(query, ['themeMode']);
+              newQuery.themeMode = val;
+              history.replace({
+                pathname: location.pathname,
+                search: querystring.stringify(newQuery),
+              });
+              window.localStorage.setItem(dashboardThemeModeCacheKey, val);
+            }}
+          />
         </Space>
       </div>
     </div>

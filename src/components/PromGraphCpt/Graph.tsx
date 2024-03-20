@@ -17,7 +17,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import moment from 'moment';
 import _ from 'lodash';
-import { Space, InputNumber, Radio, Button, Popover } from 'antd';
+import { Space, InputNumber, Radio, Button, Popover, Spin } from 'antd';
 import { LineChartOutlined, AreaChartOutlined, SettingOutlined, ShareAltOutlined } from '@ant-design/icons';
 import TimeRangePicker, { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import LineGraphStandardOptions from './components/GraphStandardOptions';
@@ -42,6 +42,8 @@ interface IProps {
     enabled: boolean;
   };
   refreshFlag: string;
+  loading: boolean;
+  setLoading: (loading: boolean) => void;
 }
 
 enum ChartType {
@@ -62,7 +64,7 @@ const getSerieName = (metric: any) => {
 
 export default function Graph(props: IProps) {
   const { datasourceList, darkMode } = useContext(CommonStateContext);
-  const { url, datasourceValue, promql, setQueryStats, setErrorContent, contentMaxHeight, range, setRange, step, setStep, graphOperates, refreshFlag } = props;
+  const { url, datasourceValue, promql, setQueryStats, setErrorContent, contentMaxHeight, range, setRange, step, setStep, graphOperates, refreshFlag, loading, setLoading } = props;
   const [data, setData] = useState<any[]>([]);
   const [highLevelConfig, setHighLevelConfig] = useState({
     shared: true,
@@ -104,6 +106,7 @@ export default function Graph(props: IProps) {
       let realStep = step;
       if (!step) realStep = Math.max(Math.floor((end - start) / 240), 1);
       const queryStart = Date.now();
+      setLoading(true);
       getPromData(`${url}/${datasourceValue}/api/v1/query_range`, {
         query: promql,
         start: moment(parsedRange.start).unix(),
@@ -131,6 +134,9 @@ export default function Graph(props: IProps) {
         .catch((err) => {
           const msg = _.get(err, 'message');
           setErrorContent(`Error executing query: ${msg}`);
+        })
+        .finally(() => {
+          setLoading(false);
         });
     }
   }, [JSON.stringify(range), step, datasourceValue, promql, refreshFlag]);
