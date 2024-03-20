@@ -39,7 +39,7 @@ export default function index(props: Props) {
         localStorage.setItem(widthLocalStorageKey, curWidth.toString());
       }}
     >
-      <div className={collapse ? 'n9e-sidebar-collapse' : ''}>
+      <div className={collapse ? 'n9e-sidebar-collapse' : ''} style={{ height: '100%' }}>
         <Tooltip
           title={tooltip}
           visible={tooltipVisible}
@@ -58,7 +58,9 @@ export default function index(props: Props) {
             {!collapse ? <LeftOutlined /> : <RightOutlined />}
           </div>
         </Tooltip>
-        <div className='n9e-sidebar-collapse-content'>{children}</div>
+        <div className='n9e-sidebar-collapse-content' style={{ height: '100%' }}>
+          {children}
+        </div>
       </div>
     </Resizable>
   );
