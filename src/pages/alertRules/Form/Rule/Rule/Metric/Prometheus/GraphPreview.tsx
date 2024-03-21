@@ -8,6 +8,7 @@ import Timeseries from '@/pages/dashboard/Renderer/Renderer/Timeseries';
 import { getSerieName } from '@/pages/dashboard/Renderer/datasource/utils';
 import { fetchHistoryRangeBatch } from '@/services/dashboardV2';
 import { CommonStateContext } from '@/App';
+import { completeBreakpoints } from '@/pages/dashboard/Renderer/datasource/utils';
 
 const getDefaultStepByStartAndEnd = (start: number, end: number) => {
   return Math.max(Math.floor((end - start) / 240), 1);
@@ -33,6 +34,7 @@ export default function GraphPreview({ form, fieldName, promqlFieldName = 'prom_
 
     if (datasourceId) {
       setLoading(true);
+      const step = getDefaultStepByStartAndEnd(from, to);
       fetchHistoryRangeBatch(
         {
           datasource_id: datasourceId,
@@ -41,7 +43,7 @@ export default function GraphPreview({ form, fieldName, promqlFieldName = 'prom_
               query: query[promqlFieldName],
               start: from,
               end: to,
-              step: getDefaultStepByStartAndEnd(from, to),
+              step,
             },
           ],
         },
@@ -63,7 +65,7 @@ export default function GraphPreview({ form, fieldName, promqlFieldName = 'prom_
                 name: getSerieName(serie.metric),
                 metric: serie.metric,
                 expr: item.expr,
-                data: serie.values,
+                data: completeBreakpoints(step, serie.values),
               });
             });
           }
