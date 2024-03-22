@@ -29,4 +29,4 @@ sudo ./categraf  --status
 
 ### 4. categraf 启动成功之后，会出现在机器列表页面，需要选中之后，将机器挂载到自己所在的业务组
 
-<img width='100%' src='/docs/network-devices/image01.png' />
+<img width='100%' src='/docs/categraf/image01.png' />

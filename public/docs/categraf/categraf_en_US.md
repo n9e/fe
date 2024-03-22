@@ -29,4 +29,4 @@ sudo ./categraf --status
 
 ### 4. After categraf is started successfully, it will appear on the machine list page. You need to select it and mount the machine to your business group.
 
-<img width='100%' src='/docs/network-devices/image01.png' />
+<img width='100%' src='/docs/categraf/image01.png' />

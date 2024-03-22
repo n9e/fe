@@ -29,5 +29,5 @@ sudo ./categraf --status
 
 ### 4. categraf 啟動成功之後，會出現在機器清單頁面，需要選取之後，將機器掛載到自己所在的業務群組
 
-<img width='100%' src='/docs/network-devices/image01.png' />
+<img width='100%' src='/docs/categraf/image01.png' />
 ```
