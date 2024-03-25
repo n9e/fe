@@ -19,7 +19,7 @@ export default function Cluster({ form, clusterRef }) {
     });
   }, []);
   return (
-    <Form.Item label={t('form.cluster')} name='cluster_name'>
+    <Form.Item label={t('form.cluster')} name='cluster_name' tooltip={t('form.cluster_tip')}>
       <Select ref={clusterRef} allowClear>
         {_.map(clusters, (item) => {
           return (

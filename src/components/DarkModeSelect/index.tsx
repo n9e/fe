@@ -97,7 +97,6 @@ export default function DarkModeSelect() {
             },
           ]}
           onClick={({ key }) => {
-            console.log(key);
             if (key === 'light') {
               setDarkMode(false);
             } else if (key === 'dark') {

@@ -6,7 +6,7 @@ const zh_HK = {
   description: '備註',
   type: '數據源類型',
   enable: '啟用',
-  disable: '禁用',
+  disable: '停用',
   confirm: {
     enable: '確定啟用該數據源嗎？',
     disable: '確定禁用該數據源嗎？',
@@ -20,11 +20,16 @@ const zh_HK = {
   rename_title: '修改數據源名稱',
   type_btn_add: '新增',
   default: '設置為默認數據源',
-  default_msg: '該數據源類型下的默認集群',
+  default_msg: '該數據源類型下的默認集群，網絡探測功能採集的時序數據，會上報到此數據源中',
   default_tip: '網絡探測功能採集的時序數據，會上報到此數據源中',
   auth: {
     name: '授權',
     'not-support': '暫不支援',
+  },
+  status: {
+    title: '狀態',
+    enabled: '啟用中',
+    disabled: '停用中',
   },
   form: {
     other: '其他',
@@ -41,15 +46,19 @@ const zh_HK = {
     headers: '自定義 HTTP 標頭',
     description: '備註',
     cluster: '關聯告警引擎叢集',
+    cluster_tip: '在多個機房的架構下，有時會部署多個告警引擎叢集，對應邊緣機房的數據源，需要關聯相應機房的告警引擎叢集，如果只有一個叢集，保持默認即可',
     cluster_confirm: '發現你的數據源沒有關聯告警引擎叢集，將無法用來做告警，是否去關聯下告警引擎叢集？',
     cluster_confirm_ok: '不做關聯',
     cluster_confirm_cancel: '去做關聯',
     url_no_spaces_msg: '請勿輸入空格',
     prom: {
-      write_addr_tip: '記錄規則產生的資料的回寫地址',
+      write_addr_tip: '記錄規則產生的資料的回寫地址，常見時序資料庫配置示例',
       read_addr: '時序庫內網地址',
       read_addr_tip: '通常用於邊緣機房下沉部署告警引擎的場景，如果該欄位不為空，n9e-edge 會使用該地址訪問時序庫，如果該欄位為空，n9e-edge 會使用上面的 URL 訪問時序庫',
       url_tip: '常見時序數據庫配置示例（兼容 Prometheus 查詢 API）：',
+      help_content: '沒有部署時序庫？可參考 <a>安裝手冊</a> 安裝部署',
+      prom_installation_title: '安裝手冊',
+      prom_installation: '到夜鶯部署的機器上，執行如下命令，安裝 Prometheus 時序庫，生產環境，建議部署集群版的 VictoriaMetrics，可參考 <a>官方文檔</a>',
     },
     es: {
       version: '版本',
@@ -68,6 +77,7 @@ const zh_HK = {
       title: '服務入口',
       endpoint: '訪問域名（私網域名/公網域名/跨域域名）',
       access: '授權',
+      endpoint_link: '配置說明',
     },
     os: {
       title: 'OpenSearch 基本資訊',
