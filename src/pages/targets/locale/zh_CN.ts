@@ -82,5 +82,6 @@ const zh_CN = {
   meta_expand: '展开',
   meta_collapse: '收起',
   meta_no_data: '暂无数据',
+  all_no_data: '没有部署采集器？可参考 <a>安装手册</a> 安装部署',
 };
 export default zh_CN;

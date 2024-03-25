@@ -27,6 +27,7 @@ import './index.less';
 interface IMarkDownPros {
   content: string;
   style?: any;
+  darkMode?: boolean;
 }
 
 dark['pre[class*="language-"]'] = {
@@ -37,8 +38,8 @@ dark['pre[class*="language-"]'] = {
 };
 
 // https://github.com/vitejs/vite/issues/3592 bug solve 记录
-const Markdown: React.FC<IMarkDownPros> = ({ content, style = {} }) => {
-  const { darkMode } = useContext(CommonStateContext);
+const Markdown: React.FC<IMarkDownPros> = ({ content, style = {}, darkMode }) => {
+  const currentDarkMode = darkMode ?? useContext(CommonStateContext)?.darkMode;
 
   return (
     <div className='markdown-wrapper' style={style}>
@@ -50,7 +51,7 @@ const Markdown: React.FC<IMarkDownPros> = ({ content, style = {} }) => {
           code({ node, inline, className, children, ...props }) {
             const match = /language-(\w+)/.exec(className || '');
             return !inline && match ? (
-              <SyntaxHighlighter {...props} children={String(children).replace(/\n$/, '')} language={match[1]} PreTag='div' style={darkMode ? dark : undefined} />
+              <SyntaxHighlighter {...props} children={String(children).replace(/\n$/, '')} language={match[1]} PreTag='div' style={currentDarkMode ? dark : undefined} />
             ) : (
               <div
                 className={classNames({

@@ -95,7 +95,7 @@ export default function indexV2() {
     <PageLayout title={t('title')} icon={<SafetyCertificateOutlined />}>
       <div>
         <div style={{ background: 'unset' }}>
-          <div style={{ margin: '8px 0 16px 0' }}>
+          <div className='mb2'>
             <Input
               prefix={<SearchOutlined />}
               style={{ width: 300 }}
