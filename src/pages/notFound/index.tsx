@@ -17,17 +17,19 @@
 import { Button, Result } from 'antd';
 import React from 'react';
 import { useHistory } from 'react-router';
+import { useTranslation } from 'react-i18next';
 
 const NotFound: React.FC = () => {
+  const { t } = useTranslation();
   const history = useHistory();
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
       <Result
         title='404'
-        subTitle='你访问的页面不存在!'
+        subTitle={t('common:auth.404')}
         extra={
           <Button type='primary' onClick={() => history.replace('/')}>
-            回到首页
+            {t('common:auth.404_btn')}
           </Button>
         }
       />
@@ -36,3 +38,4 @@ const NotFound: React.FC = () => {
 };
 
 export default NotFound;
+'你访问的页面不存在!'
