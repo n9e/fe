@@ -65,9 +65,6 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
   const { dashboardId, id, time, targets, variableConfig, spanNulls, scopedVars, type } = options;
   if (!time.start) return Promise.resolve({ series: [] });
   const parsedRange = parseRange(time);
-  let start = moment(parsedRange.start).unix();
-  let end = moment(parsedRange.end).unix();
-
   const series: any[] = [];
   let batchQueryParams: any[] = [];
   let batchInstantParams: any[] = [];
@@ -81,6 +78,8 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
       if (!target.refId) {
         target.refId = alphabet[idx];
       }
+      let start = moment(parsedRange.start).unix();
+      let end = moment(parsedRange.end).unix();
       if (target.time) {
         const parsedRange = parseRange(target.time);
         start = moment(parsedRange.start).unix();
@@ -101,7 +100,7 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
                 dashboardId,
                 variableConfigWithOptions: variableConfig,
               },
-              time,
+              target.time ? target.time : time,
               _step,
             ),
             scopedVars,
