@@ -13,21 +13,22 @@
   pre {
     box-sizing: border-box;
     width: 100%;
-    padding: 12px;
-    background: var(--fc-fill-3);
-    border-radius: 2px;
     margin-right: 0;
     code {
-      color: #9254de;
       line-height: 1.2;
     }
+  }
+  img {
+    max-width: 100%;
+  }
+  table {
+    margin-bottom: 1em;
   }
   table {
     width: 100%;
     thead {
       width: 100%;
       height: 36px;
-      background: @baseTableHeaderBgColor;
       th {
         line-height: 1.2;
         padding: 0 0 0 16px;
@@ -37,7 +38,6 @@
     tbody {
       tr {
         height: 36px;
-        border-bottom: 1px solid @baseContentBgColor;
         td {
           line-height: 1.2;
           padding: 0 0 0 16px;
@@ -90,11 +90,44 @@
   ul {
     padding-inline-start: 24px;
   }
-
+  .base-code {
+    padding: 12px;
+    background: rgb(245, 242, 240);
+    border-radius: 0.5em;
+  }
   .base-code-inline {
+    display: inline-block;
     padding: 2px 4px;
-    background: var(--fc-fill-2);
     border-radius: 2px;
-    color: var(--fc-text-1);
+  }
+}
+
+.markdown-wrapper {
+  table th,table td {
+    padding: 6px 13px;
+    border: 1px solid var(--fc-border-color);
+  }
+  table tr:nth-child(2n) {
+    background-color: var(--fc-fill-3);
+  }
+  // TODO toml [[instances]] instances 会被识别为表格
+  pre {
+    .table {
+      display: unset !important;
+    }
+  }
+}
+
+.theme-dark {
+  .markdown-wrapper {
+    .base-code {
+      background: rgb(22, 27, 34);
+    }
+    table th,table td {
+      border: 1px solid var(--fc-border-color);
+    }
+    table tr:nth-child(2n) {
+      background-color: var(--fc-fill-3);
+    }
   }
 }
