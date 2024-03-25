@@ -81,6 +81,11 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
       if (!target.refId) {
         target.refId = alphabet[idx];
       }
+      if (target.time) {
+        const parsedRange = parseRange(target.time);
+        start = moment(parsedRange.start).unix();
+        end = moment(parsedRange.end).unix();
+      }
       const _step = getRealStep(time, target);
 
       // TODO: 消除毛刺？
