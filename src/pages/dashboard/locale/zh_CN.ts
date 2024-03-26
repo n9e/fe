@@ -87,7 +87,7 @@ const zh_CN = {
     definition_msg1: '请输入变量定义',
     definition_msg2: '变量定义必须是合法的JSON',
     reg: '正则',
-    reg_tip: '可选，可通过正则来过滤可选项，或提取值',
+    reg_tip: '可选，可通过正则来过滤可选项，或提取值。这里是填写的<a>正则表达式字面量</a>，其由包含在斜杠之间的模式组成',
     multi: '多选',
     allOption: '包含全选',
     allValue: '自定义全选值',
@@ -106,7 +106,7 @@ const zh_CN = {
       definition: '数据源类型',
       defaultValue: '默认值',
       regex: '数据源过滤',
-      regex_tip: '可选，可通过正则来过滤可选项',
+      regex_tip: '可选，可通过正则来过滤可选项。这里是填写的<a>正则表达式字面量</a>，其由包含在斜杠之间的模式组成。',
     },
   },
   row: {

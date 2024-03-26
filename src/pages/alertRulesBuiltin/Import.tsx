@@ -64,8 +64,6 @@ function Import(props: IProps & ModalWrapProps) {
               const record = _.omit(item, ['id', 'group_id', 'create_at', 'create_by', 'update_at', 'update_by']);
               return {
                 ...record,
-                cate: vals.cate,
-                datasource_ids: vals.datasource_ids,
                 disabled: vals.enabled ? 0 : 1,
               };
             });
@@ -118,7 +116,7 @@ function Import(props: IProps & ModalWrapProps) {
             })}
           </Select>
         </Form.Item>
-        <Row gutter={10}>
+        {/* <Row gutter={10}>
           <Col span={8}>
             <Form.Item label={t('common:datasource.type')} name='cate'>
               <Select>
@@ -145,7 +143,10 @@ function Import(props: IProps & ModalWrapProps) {
               <Switch />
             </Form.Item>
           </Col>
-        </Row>
+        </Row> */}
+        <Form.Item label={t('common:table.enabled')} name='enabled' valuePropName='checked'>
+          <Switch />
+        </Form.Item>
         <Form.Item
           label={t('json_label')}
           name='import'

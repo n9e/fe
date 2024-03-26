@@ -10,6 +10,7 @@ const zh_CN = {
     export_title: '导出配置',
     name: '视图名称',
     isPublic: '是否公开',
+    filters_title: '过滤条件',
     filters: '前置过滤条件',
     dynamicLabels: '动态过滤标签',
     dimensionLabels: '展开维度标签',

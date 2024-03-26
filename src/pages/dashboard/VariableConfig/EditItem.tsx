@@ -18,7 +18,7 @@ import React, { useContext } from 'react';
 import { Form, Input, Row, Col, Select, Switch, Button, Space } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import IndexSelect from '@/pages/dashboard/Editor/QueryEditor/Elasticsearch/IndexSelect';
 import ClusterSelect from '@/pages/dashboard/Editor/QueryEditor/components/ClusterSelect';
@@ -232,7 +232,18 @@ function EditItem(props: IProps) {
                 >
                   <Input />
                 </Form.Item>
-                <Form.Item label={t('var.reg')} name='reg' tooltip={t('var.reg_tip')} rules={[{ pattern: new RegExp('^/(.*?)/(g?i?m?y?)$'), message: 'invalid regex' }]}>
+                <Form.Item
+                  label={t('var.reg')}
+                  name='reg'
+                  tooltip={
+                    <Trans
+                      ns='dashboard'
+                      i18nKey='var.reg_tip'
+                      components={{ a: <a target='_blank' href='https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions' /> }}
+                    />
+                  }
+                  rules={[{ pattern: new RegExp('^/(.*?)/(g?i?m?y?)$'), message: 'invalid regex' }]}
+                >
                   <Input placeholder='/*.hna/' />
                 </Form.Item>
               </>
@@ -267,7 +278,18 @@ function EditItem(props: IProps) {
                     ))}
                   </Select>
                 </Form.Item>
-                <Form.Item label={t('var.datasource.regex')} name='regex' tooltip={t('var.datasource.regex_tip')}>
+                <Form.Item
+                  label={t('var.datasource.regex')}
+                  name='regex'
+                  tooltip={
+                    <Trans
+                      ns='dashboard'
+                      i18nKey='var.datasource.regex_tip'
+                      components={{ a: <a target='_blank' href='https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions' /> }}
+                    />
+                  }
+                  rules={[{ pattern: new RegExp('^/(.*?)/(g?i?m?y?)$'), message: 'invalid regex' }]}
+                >
                   <Input placeholder='/vm/' />
                 </Form.Item>
                 <Form.Item shouldUpdate={(prevValues, curValues) => prevValues?.definition !== curValues?.regex || prevValues?.regex} noStyle>
