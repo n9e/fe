@@ -101,6 +101,7 @@ export interface ICommonState {
   siteInfo?: { [index: string]: string };
   sideMenuBgMode: string;
   setSideMenuBgMode: (color: string) => void;
+  esIndexMode?: string;
 }
 
 // 可以匿名访问的路由 TODO: job-task output 应该也可以匿名访问
@@ -166,6 +167,7 @@ function App() {
       window.localStorage.setItem('sideMenuBgMode', mode);
       setCommonState((state) => ({ ...state, sideMenuBgMode: mode }));
     },
+    esIndexMode: 'all',
   });
 
   useEffect(() => {
@@ -241,9 +243,11 @@ function App() {
 
   // 初始化中不渲染任何内容
   if (!initialized.current) {
-    return <div style={{display:'flex',justifyContent:'center', alignItems:'center',height:'100%'}}>
-      <Spin size="large"/>
-      </div>;
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+        <Spin size='large' />
+      </div>
+    );
   }
 
   return (
