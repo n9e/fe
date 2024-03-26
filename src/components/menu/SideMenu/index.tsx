@@ -69,6 +69,10 @@ export const getMenuList = (t) => {
           key: '/log/index-patterns',
           label: t('索引模式'),
         },
+        {
+          key: '/log-extraction',
+          label: t('日志提取'),
+        },
       ],
     },
     {

@@ -51,6 +51,7 @@ const zh_HK = {
   quickOpenClose: '打開/關閉',
   quickSearchPlaceholder: '輸入內容以檢索...',
   quickMenus: '快捷選單',
+  日志提取: '日誌提取'
 };
 
 export default zh_HK;
