@@ -118,9 +118,9 @@ export default function index() {
         {({ getFieldValue }) => {
           if (getFieldValue('cate') === 'prometheus') {
             return (
-              <Form.Item label={t('enable_in_bg')}>
+              <Form.Item label={t('enable_in_bg')} noStyle>
                 <Space align='baseline'>
-                  <Form.Item name='enable_in_bg' valuePropName='checked'>
+                  <Form.Item name='enable_in_bg' valuePropName='checked' noStyle>
                     <Switch />
                   </Form.Item>
                   {t('enable_in_bg_tip')}
