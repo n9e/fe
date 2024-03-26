@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { createPortal } from 'react-dom';
 import _ from 'lodash';
 import moment from 'moment';
@@ -11,6 +11,7 @@ import { useLocation } from 'react-router-dom';
 import { getLogsQuery } from './services';
 import { parseRange } from '@/components/TimeRangePicker';
 import Timeseries from '@/pages/dashboard/Renderer/Renderer/Timeseries';
+import { CommonStateContext } from '@/App';
 import metricQuery from './metricQuery';
 import { getColumnsFromFields, Field, dslBuilder, Filter, getFieldLabel } from './utils';
 import FieldsSidebar from './FieldsSidebar';
@@ -41,6 +42,10 @@ enum IMode {
 
 const ModeRadio = ({ mode, setMode, allowHideSystemIndices, setAllowHideSystemIndices }) => {
   const { t } = useTranslation('explorer');
+  const { esIndexMode } = useContext(CommonStateContext);
+
+  if (esIndexMode === 'index-patterns' || esIndexMode === 'indices') return null;
+
   return (
     <Space>
       <Radio.Group
@@ -89,8 +94,11 @@ const getFilterByQuery = (query: ParsedQuery<string>) => {
   }
 };
 
-const getDefaultMode = (query, isOpenSearch, value?) => {
+const getDefaultMode = (query, isOpenSearch, esIndexMode, value?) => {
   if (isOpenSearch) return IMode.indices;
+  if (esIndexMode === 'index-patterns') {
+    return IMode.indexPatterns;
+  }
   if (query?.data_source_id && query?.index_name) {
     return IMode.indices;
   }
@@ -99,6 +107,7 @@ const getDefaultMode = (query, isOpenSearch, value?) => {
 
 export default function index(props: IProps) {
   const { t } = useTranslation('explorer');
+  const { esIndexMode } = useContext(CommonStateContext);
   const { headerExtra, datasourceValue, form, isOpenSearch = false, defaultFormValuesControl } = props;
   const query = queryString.parse(useLocation().search);
   const [loading, setLoading] = useState(false);
@@ -120,7 +129,7 @@ export default function index(props: IProps) {
       start: number;
       end: number;
     }>();
-  const [mode, setMode] = useState<IMode>(getDefaultMode(query, isOpenSearch));
+  const [mode, setMode] = useState<IMode>(getDefaultMode(query, isOpenSearch, esIndexMode));
   const [allowHideSystemIndices, setAllowHideSystemIndices] = useState<boolean>(false);
 
   const fetchSeries = (values) => {
@@ -225,7 +234,7 @@ export default function index(props: IProps) {
     if (defaultFormValuesControl?.defaultFormValues && defaultFormValuesControl?.isInited === false) {
       form.setFieldsValue(defaultFormValuesControl.defaultFormValues);
       defaultFormValuesControl.setIsInited();
-      setMode(getDefaultMode(query, isOpenSearch, defaultFormValuesControl.defaultFormValues?.query?.mode));
+      setMode(getDefaultMode(query, isOpenSearch, esIndexMode, defaultFormValuesControl.defaultFormValues?.query?.mode));
     }
   }, []);
 
