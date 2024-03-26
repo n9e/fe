@@ -112,6 +112,34 @@ function Import(props: IProps & ModalWrapProps) {
             })}
           </Select>
         </Form.Item>
+        {/* <Row gutter={10}>
+          <Col span={8}>
+            <Form.Item label={t('common:datasource.type')} name='cate'>
+              <Select>
+                {_.map(datasourceCates, (item) => {
+                  return (
+                    <Select.Option key={item.value} value={item.value}>
+                      {item.label}
+                    </Select.Option>
+                  );
+                })}
+              </Select>
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.cate !== curValues.cate} noStyle>
+              {({ getFieldValue, setFieldsValue }) => {
+                const cate = getFieldValue('cate');
+                return <DatasourceValueSelect mode='multiple' setFieldsValue={setFieldsValue} cate={cate} datasourceList={groupedDatasourceList[cate] || []} />;
+              }}
+            </Form.Item>
+          </Col>
+          <Col span={4}>
+            <Form.Item label={t('common:table.enabled')} name='enabled' valuePropName='checked'>
+              <Switch />
+            </Form.Item>
+          </Col>
+        </Row> */}
         <Form.Item label={t('common:table.enabled')} name='enabled' valuePropName='checked'>
           <Switch />
         </Form.Item>
