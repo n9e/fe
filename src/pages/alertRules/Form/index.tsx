@@ -21,6 +21,7 @@ import { useHistory, useParams, Link } from 'react-router-dom';
 import _ from 'lodash';
 import { CommonStateContext } from '@/App';
 import { addStrategy, EditStrategy } from '@/services/warning';
+import { scrollToFirstError } from '@/utils';
 import Base from './Base';
 import Rule from './Rule';
 import Effective from './Effective';
@@ -142,6 +143,7 @@ export default function index(props: IProps) {
                         })
                         .catch((err) => {
                           console.error(err);
+                          scrollToFirstError();
                         });
                     }}
                   >
