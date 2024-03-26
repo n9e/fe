@@ -48,12 +48,22 @@ export const baseCates: Cate[] = [
   {
     value: 'loki',
     label: 'Loki',
-    type: ['loki', 'logging'],
+    type: ['loki', 'logging'], // loki 是历史版本里一个过度的分类，后续会废弃
     alertRule: true,
     dashboard: false,
     graphPro: false,
     alertPro: false,
     logo: '/image/logos/loki.png',
+  },
+  {
+    value: 'jaeger',
+    label: 'Jaeger',
+    type: ['tracing'],
+    alertRule: false,
+    dashboard: false,
+    graphPro: false,
+    alertPro: false,
+    logo: '/image/logos/jaeger.png',
   },
 ];
 

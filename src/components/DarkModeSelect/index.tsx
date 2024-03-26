@@ -1,15 +1,17 @@
 import React, { useContext } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Menu, Dropdown, Button, Space } from 'antd';
 import Icon from '@ant-design/icons';
 import type { CustomIconComponentProps } from '@ant-design/icons/lib/components/Icon';
 import { CommonStateContext } from '@/App';
+import './locale';
 
 const ComputerSvg = () => (
   <svg width='1em' height='1em' viewBox='0 0 48 48' fill='currentColor' xmlns='http://www.w3.org/2000/svg'>
-    <rect x='19' y='32' width='10' height='9' stroke='currentColor' stroke-width='4' stroke-linecap='round' stroke-linejoin='round' />
-    <rect x='5' y='8' width='38' height='24' rx='2' fill='none' stroke='currentColor' stroke-width='4' />
-    <path d='M22 27H26' stroke='currentColor' stroke-width='4' stroke-linecap='round' stroke-linejoin='round' />
-    <path d='M14 41L34 41' stroke='currentColor' stroke-width='4' stroke-linecap='round' stroke-linejoin='round' />
+    <rect x='19' y='32' width='10' height='9' stroke='currentColor' strokeWidth='4' strokeLinecap='round' strokeLinejoin='round' />
+    <rect x='5' y='8' width='38' height='24' rx='2' fill='none' stroke='currentColor' strokeWidth='4' />
+    <path d='M22 27H26' stroke='currentColor' strokeWidth='4' strokeLinecap='round' strokeLinejoin='round' />
+    <path d='M14 41L34 41' stroke='currentColor' strokeWidth='4' strokeLinecap='round' strokeLinejoin='round' />
   </svg>
 );
 
@@ -21,8 +23,8 @@ const DarkSvg = () => (
       d='M28.0527 4.41085C22.5828 5.83695 18.5455 10.8106 18.5455 16.7273C18.5455 23.7564 24.2436 29.4545 31.2727 29.4545C37.1894 29.4545 42.1631 25.4172 43.5891 19.9473C43.8585 21.256 44 22.6115 44 24C44 35.0457 35.0457 44 24 44C12.9543 44 4 35.0457 4 24C4 12.9543 12.9543 4 24 4C25.3885 4 26.744 4.14149 28.0527 4.41085Z'
       fill='none'
       stroke='currentColor'
-      stroke-width='4'
-      stroke-linejoin='round'
+      strokeWidth='4'
+      strokeLinejoin='round'
     />
   </svg>
 );
@@ -35,8 +37,8 @@ const BrightSvg = () => (
       d='M24 37C31.1797 37 37 31.1797 37 24C37 16.8203 31.1797 11 24 11C16.8203 11 11 16.8203 11 24C11 31.1797 16.8203 37 24 37Z'
       fill='none'
       stroke='currentColor'
-      stroke-width='4'
-      stroke-linejoin='round'
+      strokeWidth='4'
+      strokeLinejoin='round'
     />
     <path d='M24 6C25.3807 6 26.5 4.88071 26.5 3.5C26.5 2.11929 25.3807 1 24 1C22.6193 1 21.5 2.11929 21.5 3.5C21.5 4.88071 22.6193 6 24 6Z' fill='currentColor' />
     <path d='M38.5 12C39.8807 12 41 10.8807 41 9.5C41 8.11929 39.8807 7 38.5 7C37.1193 7 36 8.11929 36 9.5C36 10.8807 37.1193 12 38.5 12Z' fill='currentColor' />
@@ -59,43 +61,53 @@ const MODE_ICON = {
 
 export default function DarkModeSelect() {
   const { darkMode, setDarkMode } = useContext(CommonStateContext);
+  const { t } = useTranslation('DarkModeSelect');
 
-  const menu = (
-    <Menu>
-      <Menu.Item
-        onClick={() => {
-          setDarkMode(false);
-        }}
-      >
-        <Space>
-          <BrightIcon />
-          <span>浅色模式</span>
-        </Space>
-      </Menu.Item>
-      <Menu.Item
-        onClick={() => {
-          setDarkMode(true);
-        }}
-      >
-        <Space>
-          <DarkIcon />
-          <span>深色模式</span>
-        </Space>
-      </Menu.Item>
-      <Menu.Item
-        onClick={() => {
-          setDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
-        }}
-      >
-        <Space>
-          <ComputerIcon />
-          <span>跟随系统</span>
-        </Space>
-      </Menu.Item>
-    </Menu>
-  );
   return (
-    <Dropdown overlay={menu}>
+    <Dropdown
+      overlay={
+        <Menu
+          items={[
+            {
+              label: (
+                <Space>
+                  <BrightIcon />
+                  <span>{t('light')}</span>
+                </Space>
+              ),
+              key: 'light',
+            },
+            {
+              label: (
+                <Space>
+                  <DarkIcon />
+                  <span>{t('dark')}</span>
+                </Space>
+              ),
+              key: 'dark',
+            },
+            {
+              label: (
+                <Space>
+                  <ComputerIcon />
+                  <span>{t('system')}</span>
+                </Space>
+              ),
+              key: 'system',
+            },
+          ]}
+          onClick={({ key }) => {
+            if (key === 'light') {
+              setDarkMode(false);
+            } else if (key === 'dark') {
+              setDarkMode(true);
+            } else if (key === 'system') {
+              setDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
+            }
+          }}
+        />
+      }
+    >
       <Button size='small' type='text'>
         {MODE_ICON[darkMode ? 'dark' : 'light']}
       </Button>

@@ -65,7 +65,7 @@ const Detail = (props: any) => {
         </>
       }
     >
-      <div style={{ padding: 10 }}>
+      <div className='p2'>
         <Card title={t('common:btn.detail')}>
           <Spin spinning={loading}>
             <div className='job-task-table'>

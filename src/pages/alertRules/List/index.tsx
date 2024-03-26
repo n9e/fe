@@ -26,7 +26,6 @@ import SearchInput from '@/components/BaseSearchInput';
 import usePagination from '@/components/usePagination';
 import { getBusiGroupsAlertRules, updateAlertRules, deleteStrategy } from '@/services/warning';
 import { CommonStateContext } from '@/App';
-import { priorityColor } from '@/utils/constant';
 import Tags from '@/components/Tags';
 import { DatasourceSelect, ProdSelect } from '@/components/DatasourceSelect';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';

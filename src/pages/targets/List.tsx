@@ -14,6 +14,8 @@ import clipboard from './clipboard';
 import OrganizeColumns from './OrganizeColumns';
 import { getDefaultColumnsConfigs, setDefaultColumnsConfigs } from './utils';
 import TargetMetaDrawer from './TargetMetaDrawer';
+import categrafInstallationDrawer from './components/categrafInstallationDrawer';
+
 // @ts-ignore
 import CollectsDrawer from 'plus:/pages/collects/CollectsDrawer';
 // @ts-ignore
@@ -574,6 +576,24 @@ export default function List(props: IProps) {
           },
         }}
         scroll={{ x: 'max-content' }}
+        locale={{
+          emptyText:
+            gids === undefined ? (
+              <Trans
+                ns='targets'
+                i18nKey='all_no_data'
+                components={{
+                  a: (
+                    <a
+                      onClick={() => {
+                        categrafInstallationDrawer({ darkMode });
+                      }}
+                    />
+                  ),
+                }}
+              />
+            ) : undefined,
+        }}
       />
       <CollectsDrawer visible={collectsDrawerVisible} setVisible={setCollectsDrawerVisible} ident={collectsDrawerIdent} />
     </div>
