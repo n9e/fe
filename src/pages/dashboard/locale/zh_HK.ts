@@ -386,6 +386,13 @@ const zh_HK = {
     },
     saved: '保存成功',
     expired: '儀表板已經被別人修改，為避免相互覆蓋，請刷新儀表板查看最新配置和數據',
+    prompt: {
+      title: '有更改未儲存',
+      message: '您想儲存變更嗎？',
+      cancelText: '取消',
+      discardText: '放棄',
+      okText: '儲存',
+    },
   },
   settings: {
     graphTooltip: {

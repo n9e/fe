@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useState, useRef, useEffect, useContext, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
 import semver from 'semver';
@@ -22,6 +22,7 @@ import { useTranslation } from 'react-i18next';
 import { useInterval } from 'ahooks';
 import { v4 as uuidv4 } from 'uuid';
 import { useParams, useHistory, useLocation } from 'react-router-dom';
+import { useBeforeunload } from 'react-beforeunload';
 import queryString from 'query-string';
 import { Alert, Modal, Button, Affix, message } from 'antd';
 import PageLayout from '@/components/pageLayout';
@@ -31,9 +32,10 @@ import { getDashboard, updateDashboardConfigs, getDashboardPure, getBuiltinDashb
 import { SetTmpChartData } from '@/services/metric';
 import { CommonStateContext } from '@/App';
 import MigrationModal from '@/pages/help/migrate/MigrationModal';
+import RouterPrompt from '@/components/RouterPrompt';
 import VariableConfig, { IVariable } from '../VariableConfig';
 import { replaceExpressionVars, getOptionsList } from '../VariableConfig/constant';
-import { IDashboard, ILink, IDashboardConfig } from '../types';
+import { ILink, IDashboardConfig } from '../types';
 import DashboardLinks from '../DashboardLinks';
 import Panels from '../Panels';
 import Title from './Title';
@@ -134,8 +136,10 @@ export default function DetailV2(props: IProps) {
   const [migrationVisible, setMigrationVisible] = useState(false);
   const [migrationModalOpen, setMigrationModalOpen] = useState(false);
   const [variableConfigRefreshFlag, setVariableConfigRefreshFlag] = useState<string>(_.uniqueId('variableConfigRefreshFlag_'));
+  const [allowedLeave, setAllowedLeave] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
   let updateAtRef = useRef<number>();
+  const routerPromptRef = useRef<any>();
   const refresh = async (cbk?: () => void) => {
     fetchDashboard({
       id,
@@ -187,7 +191,7 @@ export default function DetailV2(props: IProps) {
       } catch (e) {
         console.error(e);
       }
-      console.log('configs', configs.var);
+      setAllowedLeave(false);
       setDashboard({
         ...dashboard,
         configs,
@@ -238,8 +242,62 @@ export default function DetailV2(props: IProps) {
     }
   }, 2000);
 
+  useBeforeunload(!allowedLeave && import.meta.env.PROD ? () => t('detail.prompt.message') : undefined);
+
   return (
-    <PageLayout customArea={<div />}>
+    <PageLayout
+      customArea={
+        <Title
+          isPreview={isPreview}
+          isBuiltin={isBuiltin}
+          isAuthorized={isAuthorized}
+          editable={editable}
+          updateAtRef={updateAtRef}
+          setAllowedLeave={setAllowedLeave}
+          gobackPath={gobackPath}
+          dashboard={dashboard}
+          range={range}
+          setRange={(v) => {
+            setRange(v);
+          }}
+          onAddPanel={(type) => {
+            if (type === 'row') {
+              const newPanels = updatePanelsInsertNewPanelToGlobal(
+                panels,
+                {
+                  type: 'row',
+                  id: uuidv4(),
+                  name: i18n.language === 'en_US' ? 'Row' : '分组',
+                  collapsed: true,
+                },
+                'row',
+              );
+              setPanels(newPanels);
+              handleUpdateDashboardConfigs(dashboard.id, {
+                configs: panelsMergeToConfigs(dashboard.configs, newPanels),
+              });
+            } else {
+              setEditorData({
+                visible: true,
+                id: uuidv4(),
+                initialValues: {
+                  name: 'Panel Title',
+                  type,
+                  targets: [
+                    {
+                      refId: 'A',
+                      expr: '',
+                    },
+                  ],
+                  custom: defaultCustomValuesMap[type],
+                  options: defaultOptionsValuesMap[type],
+                },
+              });
+            }
+          }}
+        />
+      }
+    >
       <div className='dashboard-detail-container'>
         <div className='dashboard-detail-content scroll-container' ref={containerRef}>
           <Affix
@@ -259,6 +317,7 @@ export default function DetailV2(props: IProps) {
                 isAuthorized={isAuthorized}
                 editable={editable}
                 updateAtRef={updateAtRef}
+                setAllowedLeave={setAllowedLeave}
                 gobackPath={gobackPath}
                 dashboard={dashboard}
                 range={range}
@@ -344,6 +403,7 @@ export default function DetailV2(props: IProps) {
               setPanels={setPanels}
               dashboard={dashboard}
               setDashboard={setDashboard}
+              setAllowedLeave={setAllowedLeave}
               range={range}
               setRange={setRange}
               variableConfig={variableConfigWithOptions}
@@ -467,6 +527,48 @@ export default function DetailV2(props: IProps) {
         onOk={() => {
           refresh();
         }}
+      />
+      <RouterPrompt
+        ref={routerPromptRef}
+        when={!allowedLeave}
+        title={t('detail.prompt.title')}
+        message={<div style={{ fontSize: 16 }}>{t('detail.prompt.message')}</div>}
+        footer={[
+          <Button
+            key='cancel'
+            onClick={() => {
+              routerPromptRef.current.hidePrompt();
+            }}
+          >
+            {t('detail.prompt.cancelText')}
+          </Button>,
+          <Button
+            key='discard'
+            type='primary'
+            danger
+            onClick={() => {
+              routerPromptRef.current.redirect();
+            }}
+          >
+            {t('detail.prompt.discardText')}
+          </Button>,
+          <Button
+            key='ok'
+            type='primary'
+            onClick={() => {
+              routerPromptRef.current.hidePrompt();
+              updateDashboardConfigs(dashboard.id, {
+                configs: JSON.stringify(dashboard.configs),
+              }).then((res) => {
+                updateAtRef.current = res.update_at;
+                message.success(t('detail.saved'));
+                setAllowedLeave(true);
+              });
+            }}
+          >
+            {t('detail.prompt.okText')}
+          </Button>,
+        ]}
       />
     </PageLayout>
   );
