@@ -384,6 +384,8 @@ const zh_HK = {
         theme: '主題模式',
       },
     },
+    saved: '保存成功',
+    expired: '儀表板已經被別人修改，為避免相互覆蓋，請刷新儀表板查看最新配置和數據',
   },
   settings: {
     graphTooltip: {

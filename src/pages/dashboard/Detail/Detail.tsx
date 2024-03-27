@@ -33,7 +33,7 @@ import { CommonStateContext } from '@/App';
 import MigrationModal from '@/pages/help/migrate/MigrationModal';
 import VariableConfig, { IVariable } from '../VariableConfig';
 import { replaceExpressionVars, getOptionsList } from '../VariableConfig/constant';
-import { ILink } from '../types';
+import { IDashboard, ILink, IDashboardConfig } from '../types';
 import DashboardLinks from '../DashboardLinks';
 import Panels from '../Panels';
 import Title from './Title';
@@ -108,7 +108,7 @@ export default function DetailV2(props: IProps) {
   const { isPreview = false, isBuiltin = false, gobackPath, builtinParams } = props;
   const { t, i18n } = useTranslation('dashboard');
   const history = useHistory();
-  const { datasourceList, profile } = useContext(CommonStateContext);
+  const { datasourceList, profile, dashboardSaveMode } = useContext(CommonStateContext);
   const roles = _.get(profile, 'roles', []);
   const isAuthorized = !_.some(roles, (item) => item === 'Guest') && !isPreview;
   const [dashboardMeta, setDashboardMeta] = useGlobalState('dashboardMeta');
@@ -177,15 +177,33 @@ export default function DetailV2(props: IProps) {
       }
     });
   };
-  const handleUpdateDashboardConfigs = (id, configs) => {
-    updateDashboardConfigs(id, configs).then((res) => {
-      updateAtRef.current = res.update_at;
-      refresh();
-    });
+  const handleUpdateDashboardConfigs = (id, updateData) => {
+    if (dashboardSaveMode === 'manual') {
+      let configs = {} as IDashboardConfig;
+      try {
+        configs = JSON.parse(updateData.configs);
+      } catch (e) {
+        console.error(e);
+      }
+      console.log('configs', configs.var);
+      setDashboard({
+        ...dashboard,
+        configs,
+      });
+    } else {
+      updateDashboardConfigs(id, updateData).then((res) => {
+        updateAtRef.current = res.update_at;
+        refresh();
+      });
+    }
   };
   const handleVariableChange = (value, b, valueWithOptions) => {
     const dashboardConfigs: any = dashboard.configs;
     dashboardConfigs.var = value;
+    // TODO: 手动模式需要在这里更新变量配置，自动模式会在获取大盘配置时更新
+    if (dashboardSaveMode === 'manual') {
+      setVariableConfig(value);
+    }
     // 更新变量配置
     b && handleUpdateDashboardConfigs(dashboard.id, { configs: JSON.stringify(dashboardConfigs) });
     // 更新变量配置状态
@@ -225,6 +243,8 @@ export default function DetailV2(props: IProps) {
           isPreview={isPreview}
           isBuiltin={isBuiltin}
           isAuthorized={isAuthorized}
+          editable={editable}
+          updateAtRef={updateAtRef}
           gobackPath={gobackPath}
           dashboard={dashboard}
           range={range}
@@ -284,7 +304,7 @@ export default function DetailV2(props: IProps) {
             >
               {!editable && (
                 <div style={{ padding: '0px 10px', marginBottom: 8 }}>
-                  <Alert type='warning' message='仪表盘已经被别人修改，为避免相互覆盖，请刷新仪表盘查看最新配置和数据' />
+                  <Alert type='warning' message={t('detail.expired')} />
                 </div>
               )}
               <div className='dashboard-detail-content-header'>
@@ -316,6 +336,7 @@ export default function DetailV2(props: IProps) {
               panels={panels}
               setPanels={setPanels}
               dashboard={dashboard}
+              setDashboard={setDashboard}
               range={range}
               setRange={setRange}
               variableConfig={variableConfigWithOptions}
