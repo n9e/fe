@@ -390,6 +390,8 @@ const zh_CN = {
         theme: '主题切换',
       },
     },
+    saved: '保存成功',
+    expired: '仪表盘已经被别人修改，为避免相互覆盖，请刷新仪表盘查看最新配置和数据',
   },
   settings: {
     graphTooltip: {

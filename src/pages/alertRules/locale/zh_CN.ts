@@ -157,6 +157,8 @@ const zh_CN = {
     all: '全部规则',
   },
   ruleConfigPromVersion: '版本',
+  ruleConfigPromVersion_tip:
+    'v1 版本，在 PromQL 中配置告警阈值，查询条件 和 阈值设置 在一起，没有特殊需求，使用 v1 即可<br />v2 版本，查询条件 和 阈值设置 分开，如果有多个查询条件需要做加减乘除计算，可以使用 v2，在告警事件的现场值中会将每个查询条件的值展示出来',
   ruleConfigPromVersionV2: {
     query: {
       title: '查询条件',

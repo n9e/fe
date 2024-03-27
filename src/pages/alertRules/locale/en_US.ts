@@ -158,6 +158,8 @@ const en_US = {
     all: 'All rules',
   },
   ruleConfigPromVersion: 'Version',
+  ruleConfigPromVersion_tip:
+    'v1 version, configure the trigger in PromQL, queries and triggers are set together.<br />v2 version, queries and triggers settings are separated, if there are multiple query conditions, addition and subtraction are required for multiplication and division calculations, v2 can be used. The value of each query condition will be displayed in the on-site value of the alarm event.',
   ruleConfigPromVersionV2: {
     query: {
       title: 'Query',

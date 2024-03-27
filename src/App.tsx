@@ -102,7 +102,8 @@ export interface ICommonState {
   sideMenuBgMode: string;
   setSideMenuBgMode: (color: string) => void;
   dashboardDefaultRangeIndex?: string;
-  esIndexMode?: string;
+  esIndexMode: string;
+  dashboardSaveMode: 'auto' | 'manual';
 }
 
 // 可以匿名访问的路由 TODO: job-task output 应该也可以匿名访问
@@ -169,6 +170,7 @@ function App() {
       setCommonState((state) => ({ ...state, sideMenuBgMode: mode }));
     },
     esIndexMode: 'all',
+    dashboardSaveMode: 'manual',
   });
 
   useEffect(() => {
