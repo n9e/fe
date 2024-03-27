@@ -256,7 +256,12 @@ function App() {
     <div className='App'>
       <CommonStateContext.Provider value={commonState}>
         <ConfigProvider locale={i18n.language == 'en_US' ? enUS : zhCN}>
-          <Router>
+          <Router
+            getUserConfirmation={(message, callback) => {
+              if (message === 'CUSTOM') return;
+              window.confirm(message) ? callback(true) : callback(false);
+            }}
+          >
             <Switch>
               <Route exact path='/job-task/:busiId/output/:taskId/:outputType' component={TaskOutput} />
               <Route exact path='/job-task/:busiId/output/:taskId/:host/:outputType' component={TaskHostOutput} />

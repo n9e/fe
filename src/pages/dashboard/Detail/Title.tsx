@@ -43,13 +43,14 @@ interface IProps {
   gobackPath?: string;
   editable: boolean;
   updateAtRef: React.MutableRefObject<number | undefined>;
+  setAllowedLeave: (allowed: boolean) => void;
 }
 
 const cachePageTitle = document.title || 'Nightingale';
 
 export default function Title(props: IProps) {
   const { t, i18n } = useTranslation('dashboard');
-  const { dashboard, range, setRange, onAddPanel, isPreview, isBuiltin, isAuthorized, editable, updateAtRef } = props;
+  const { dashboard, range, setRange, onAddPanel, isPreview, isBuiltin, isAuthorized, editable, updateAtRef, setAllowedLeave } = props;
   const history = useHistory();
   const location = useLocation();
   const { siteInfo, dashboardSaveMode } = useContext(CommonStateContext);
@@ -159,6 +160,7 @@ export default function Title(props: IProps) {
                   }).then((res) => {
                     updateAtRef.current = res.update_at;
                     message.success(t('detail.saved'));
+                    setAllowedLeave(true);
                   });
                 } else {
                   message.warning(t('detail.expired'));

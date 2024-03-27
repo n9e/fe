@@ -52,6 +52,7 @@ interface IProps {
   editable: boolean;
   dashboard: Dashboard;
   setDashboard: React.Dispatch<React.SetStateAction<Dashboard>>;
+  setAllowedLeave: (flag: boolean) => void;
   range: IRawTimeRange;
   setRange: (range: IRawTimeRange) => void;
   variableConfig: any;
@@ -69,7 +70,7 @@ function index(props: IProps) {
   const { profile, dashboardSaveMode } = useContext(CommonStateContext);
   const location = useLocation();
   const themeMode = getDefaultThemeMode(querystring.parse(location.search));
-  const { editable, dashboard, setDashboard, range, variableConfig, panels, isPreview, setPanels, onShareClick, onUpdated } = props;
+  const { editable, dashboard, setDashboard, setAllowedLeave, range, variableConfig, panels, isPreview, setPanels, onShareClick, onUpdated } = props;
   const roles = _.get(profile, 'roles', []);
   const isAuthorized = !_.some(roles, (item) => item === 'Guest') && !isPreview;
   const layoutInitialized = useRef(false);
@@ -88,6 +89,7 @@ function index(props: IProps) {
       } catch (e) {
         console.error(e);
       }
+      setAllowedLeave(false);
       setDashboard((dashboard) => {
         return {
           ...dashboard,
