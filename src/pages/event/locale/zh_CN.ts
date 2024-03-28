@@ -70,6 +70,8 @@ const zh_CN = {
       trigger: '触发',
     },
     trigger: '触发',
+    firemap_ql_label: '卡片',
+    northstar_ql_label: '指标',
   },
 };
 export default zh_CN;
