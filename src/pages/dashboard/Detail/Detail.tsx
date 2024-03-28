@@ -245,59 +245,7 @@ export default function DetailV2(props: IProps) {
   useBeforeunload(!allowedLeave && import.meta.env.PROD ? () => t('detail.prompt.message') : undefined);
 
   return (
-    <PageLayout
-      customArea={
-        <Title
-          isPreview={isPreview}
-          isBuiltin={isBuiltin}
-          isAuthorized={isAuthorized}
-          editable={editable}
-          updateAtRef={updateAtRef}
-          setAllowedLeave={setAllowedLeave}
-          gobackPath={gobackPath}
-          dashboard={dashboard}
-          range={range}
-          setRange={(v) => {
-            setRange(v);
-          }}
-          onAddPanel={(type) => {
-            if (type === 'row') {
-              const newPanels = updatePanelsInsertNewPanelToGlobal(
-                panels,
-                {
-                  type: 'row',
-                  id: uuidv4(),
-                  name: i18n.language === 'en_US' ? 'Row' : '分组',
-                  collapsed: true,
-                },
-                'row',
-              );
-              setPanels(newPanels);
-              handleUpdateDashboardConfigs(dashboard.id, {
-                configs: panelsMergeToConfigs(dashboard.configs, newPanels),
-              });
-            } else {
-              setEditorData({
-                visible: true,
-                id: uuidv4(),
-                initialValues: {
-                  name: 'Panel Title',
-                  type,
-                  targets: [
-                    {
-                      refId: 'A',
-                      expr: '',
-                    },
-                  ],
-                  custom: defaultCustomValuesMap[type],
-                  options: defaultOptionsValuesMap[type],
-                },
-              });
-            }
-          }}
-        />
-      }
-    >
+    <PageLayout customArea={<div />}>
       <div className='dashboard-detail-container'>
         <div className='dashboard-detail-content scroll-container' ref={containerRef}>
           <Affix
