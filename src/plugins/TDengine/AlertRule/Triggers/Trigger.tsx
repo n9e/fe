@@ -19,7 +19,7 @@ export default function Trigger(props: IProps) {
   const { prefixField = {}, fullPrefixName = [], prefixName = [], queries, disabled } = props;
 
   return (
-    <div style={{ backgroundColor: '#fafafa', padding: 10 }}>
+    <div className='n9e-fill-color-3' style={{ padding: 10 }}>
       <Form.Item {...prefixField} name={[...prefixName, 'mode']}>
         <Radio.Group buttonStyle='solid' size='small' disabled={disabled}>
           <Radio.Button value={0}>{t('datasource:es.alert.trigger.builder')}</Radio.Button>

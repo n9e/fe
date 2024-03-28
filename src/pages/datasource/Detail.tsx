@@ -22,7 +22,6 @@ export default function TimeSeriesDetail(props: Props) {
       className='settings-data-source-detail-drawer'
       bodyStyle={{
         padding: '0 15px 15px',
-        background: '#fff',
       }}
       title=''
       placement='right'

@@ -15,7 +15,7 @@
  *
  */
 import React, { useState, useEffect, useCallback, useContext } from 'react';
-import { Form, Card, Select, Col, Button, Row, message, Checkbox, Tooltip, Radio, Modal, Space, InputNumber, Input, Switch, Tag } from 'antd';
+import { Form, Card, Select, Col, Button, Row, message, Checkbox, Tooltip, Radio, Modal, Space, InputNumber, Input, Switch, Tag, Affix } from 'antd';
 import { QuestionCircleOutlined, PlusCircleOutlined, EditOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -28,6 +28,7 @@ import DatasourceValueSelect from '@/pages/alertRules/Form/components/Datasource
 import { CommonStateContext } from '@/App';
 import { DatasourceCateSelect } from '@/components/DatasourceSelect';
 import { panelBaseProps } from '@/pages/alertRules/constants';
+import { scrollToFirstError } from '@/utils';
 import RuleModal from './ruleModal';
 import TagItem from './tagItem';
 import BusiGroupsTagItem from './BusiGroupsTagItem';
@@ -138,8 +139,8 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
 
   return (
     <main
+      className='p2'
       style={{
-        padding: '10px 10px 0 10px',
         overflow: 'hidden auto',
       }}
     >
@@ -147,6 +148,9 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
         form={form}
         layout='vertical'
         onFinish={onFinish}
+        onFinishFailed={() => {
+          scrollToFirstError();
+        }}
         initialValues={{
           ...detail,
           busi_groups: _.map(detail.busi_groups, (item) => {
@@ -163,7 +167,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
           new_channels: detail?.new_channels ? detail?.new_channels?.split(' ') : [],
         }}
       >
-        <Card {...panelBaseProps} size='small' title={t('basic_configs')}>
+        <Card {...panelBaseProps} title={t('basic_configs')}>
           <Row gutter={10}>
             <Col span={24}>
               <Form.Item label={t('note')} name='note'>
@@ -317,7 +321,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
             <div
               style={{
                 display: redefineSeverity ? 'block' : 'none',
-                marginTop: 4,
+                marginTop: 10,
               }}
             >
               <Form.Item name='new_severity' noStyle initialValue={2}>
@@ -329,18 +333,17 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
               </Form.Item>
             </div>
           </div>
-          <div className='mt16'>
-            <div className='mb16'>
-              <Space>
-                {t('redefine_channels')}
-                <Form.Item name='redefine_channels' valuePropName='checked' noStyle>
-                  <Switch />
-                </Form.Item>
-              </Space>
-            </div>
+          <div className='mt16 mb16'>
+            <Space>
+              {t('redefine_channels')}
+              <Form.Item name='redefine_channels' valuePropName='checked' noStyle>
+                <Switch />
+              </Form.Item>
+            </Space>
             <div
               style={{
                 display: redefineChannels ? 'block' : 'none',
+                marginTop: 10,
               }}
             >
               <Form.Item name='new_channels' noStyle>
@@ -369,7 +372,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
             <div
               style={{
                 display: redefineWebhooks ? 'block' : 'none',
-                marginTop: 4,
+                marginTop: 10,
               }}
             >
               <Form.List name='webhooks' initialValue={[]}>
@@ -402,34 +405,37 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
           </div>
         </Card>
         <NotifyExtra />
-        <Form.Item style={{ marginTop: 10 }}>
-          <Button type='primary' htmlType='submit' style={{ marginRight: '8px' }}>
-            {type === 1 ? t('common:btn.edit') : type === 2 ? t('common:btn.clone') : t('common:btn.create')}
-          </Button>
-          {type === 1 && (
-            <Button
-              danger
-              style={{ marginRight: '8px' }}
-              onClick={() => {
-                Modal.confirm({
-                  title: t('common:confirm.delete'),
-                  onOk: () => {
-                    detail?.id &&
-                      deleteSubscribes({ ids: [detail.id] }, curBusiId).then(() => {
-                        message.success(t('common:success.delete'));
-                        history.push('/alert-subscribes');
-                      });
-                  },
+        <Affix offsetBottom={0}>
+          <Card size='small' className='affix-bottom-shadow'>
+            <Space>
+              <Button type='primary' htmlType='submit'>
+                {type === 1 ? t('common:btn.edit') : type === 2 ? t('common:btn.clone') : t('common:btn.create')}
+              </Button>
+              {type === 1 && (
+                <Button
+                  danger
+                  onClick={() => {
+                    Modal.confirm({
+                      title: t('common:confirm.delete'),
+                      onOk: () => {
+                        detail?.id &&
+                          deleteSubscribes({ ids: [detail.id] }, curBusiId).then(() => {
+                            message.success(t('common:success.delete'));
+                            history.push('/alert-subscribes');
+                          });
+                      },
 
-                  onCancel() {},
-                });
-              }}
-            >
-              {t('common:btn.delete')}
-            </Button>
-          )}
-          <Button onClick={() => window.history.back()}>{t('common:btn.cancel')}</Button>
-        </Form.Item>
+                      onCancel() {},
+                    });
+                  }}
+                >
+                  {t('common:btn.delete')}
+                </Button>
+              )}
+              <Button onClick={() => window.history.back()}>{t('common:btn.cancel')}</Button>
+            </Space>
+          </Card>
+        </Affix>
       </Form>
       <RuleModal
         visible={ruleModalShow}

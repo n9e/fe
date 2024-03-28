@@ -2,14 +2,14 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  color: #333;
+  // color: #333;
   font-size: 12px;
   font-variant: tabular-nums;
   line-height: 1.5715;
   list-style: none;
   font-feature-settings: 'tnum';
-  background-color: #fafafa;
-  border: 1px solid #d9d9d9;
+  background-color: var(--fc-fill-2);
+  border: 1px solid var(--fc-border-color);
   border-bottom: 0;
   border-radius: 2px;
 }
@@ -19,7 +19,7 @@
   border-radius: 0 0 2px 2px;
 }
 .n9e-collapse .n9e-collapse-item {
-  border-bottom: 1px solid #d9d9d9;
+  border-bottom: 1px solid var(--fc-border-color);
 }
 
 .n9e-collapse .n9e-collapse-item .n9e-collapse-header {
@@ -27,7 +27,7 @@
   position: relative;
   padding: 12px 16px;
   padding-left: 40px;
-  color: rgba(0, 0, 0, 0.85);
+  // color: rgba(0, 0, 0, 0.85);
   line-height: 1.5715;
   cursor: pointer;
   transition: all 0.3s, visibility 0s;
@@ -60,9 +60,9 @@
   border-radius: 0 0 2px 2px;
 }
 .n9e-collapse-content {
-  color: #333;
-  background-color: #fff;
-  border-top: 1px solid #d9d9d9;
+  // color: #333;
+  background-color: var(--fc-fill-2);
+  border-top: 1px solid var(--fc-border-color);
 }
 
 .n9e-collapse-content .n9e-collapse-content-box {
@@ -75,7 +75,7 @@
 
 .n9e-collapse-item-inner {
   .n9e-collapse-item {
-    background-color: #f9f9f9;
+    background-color: var(--fc-fill-3);
     margin-bottom: 5px;
     border: 0 none;
     .n9e-collapse-content {

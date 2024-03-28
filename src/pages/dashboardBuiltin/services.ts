@@ -27,7 +27,7 @@ export const getDashboardCates = function (): Promise<BoardCateType[]> {
   });
 };
 
-export const getDashboardDetail = function (data: BoardType): Promise<BoardType[]> {
+export const getDashboardDetail = function (data: BoardType): Promise<BoardType> {
   return request(`/api/n9e/builtin-boards-detail`, {
     method: RequestMethod.Post,
     data,

@@ -16,7 +16,7 @@
  */
 import React, { useEffect, useState, useImperativeHandle, ReactNode, useCallback, useContext } from 'react';
 import { Form, Input, Select, Switch, Tag, Space, Button } from 'antd';
-import { MinusCircleOutlined, PlusOutlined, CaretDownOutlined } from '@ant-design/icons';
+import { MinusCircleOutlined, PlusOutlined, CaretDownOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import { getBusinessTeamInfo, getTeamInfoList } from '@/services/manage';
 import { TeamProps, Team, ActionType } from '@/store/manageInterface';
 import { useTranslation, Trans } from 'react-i18next';
@@ -156,10 +156,22 @@ const TeamForm = React.forwardRef<ReactNode, TeamProps>((props, ref) => {
       )}
 
       {(action === ActionType.CreateBusiness || action === ActionType.AddBusinessMember) && (
-        <Form.Item label={t('business.team_name')} required>
+        <Form.Item required>
           <Form.List name='members'>
             {(fields, { add, remove }) => (
               <>
+                <div className='mb8'>
+                  <Space>
+                    {t('business.team_name')}
+                    <PlusCircleOutlined
+                      onClick={() =>
+                        add({
+                          perm_flag: true,
+                        })
+                      }
+                    />
+                  </Space>
+                </div>
                 {fields.map(({ key, name, fieldKey, ...restField }) => (
                   <Space key={key} style={{ display: 'flex', marginBottom: 8 }} align='baseline'>
                     <Form.Item style={{ width: 450 }} {...restField} name={[name, 'user_group_id']} rules={[{ required: true, message: t('business.user_group_msg') }]}>
@@ -178,17 +190,23 @@ const TeamForm = React.forwardRef<ReactNode, TeamProps>((props, ref) => {
                         ))}
                       </Select>
                     </Form.Item>
-                    <Form.Item {...restField} name={[name, 'perm_flag']} valuePropName='checked'>
-                      <Switch checkedChildren={t('business.perm_flag_1')} unCheckedChildren={t('business.perm_flag_0')} />
+                    <Form.Item {...restField} name={[name, 'perm_flag']}>
+                      <Select
+                        options={[
+                          {
+                            label: t('business.perm_flag_1'),
+                            value: true,
+                          },
+                          {
+                            label: t('business.perm_flag_0'),
+                            value: false,
+                          },
+                        ]}
+                      />
                     </Form.Item>
                     <MinusCircleOutlined onClick={() => remove(name)} />
                   </Space>
                 ))}
-                <Form.Item>
-                  <Button type='dashed' onClick={() => add()} block icon={<PlusOutlined />}>
-                    {t('business.add_team')}
-                  </Button>
-                </Form.Item>
               </>
             )}
           </Form.List>

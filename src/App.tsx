@@ -101,6 +101,8 @@ export interface ICommonState {
   siteInfo?: { [index: string]: string };
   sideMenuBgMode: string;
   setSideMenuBgMode: (color: string) => void;
+  darkMode: boolean;
+  setDarkMode: (mode: boolean) => void;
   dashboardDefaultRangeIndex?: string;
   esIndexMode: string;
   dashboardSaveMode: 'auto' | 'manual';
@@ -169,6 +171,11 @@ function App() {
       window.localStorage.setItem('sideMenuBgMode', mode);
       setCommonState((state) => ({ ...state, sideMenuBgMode: mode }));
     },
+    darkMode: localStorage.getItem('darkMode') === 'true',
+    setDarkMode: (mode: boolean) => {
+      window.localStorage.setItem('darkMode', String(mode));
+      setCommonState((state) => ({ ...state, darkMode: mode }));
+    },
     esIndexMode: 'all',
     dashboardSaveMode: 'auto',
   });
@@ -207,12 +214,15 @@ function App() {
           }
           const defaultBusiId = commonState.curBusiId || busiGroups?.[0]?.id;
           window.localStorage.setItem('curBusiId', String(defaultBusiId));
+          const defaultBusinessGroupKey = commonState.businessGroup.key || busiGroups?.[0]?.id;
+          window.localStorage.setItem('businessGroupKey', defaultBusinessGroupKey);
           initialized.current = true;
           setCommonState((state) => {
             return {
               ...state,
               profile,
               busiGroups,
+              // busiGroups: _.sortBy(busiGroups, 'name'),
               datasourceCateOptions: getAuthorizedDatasourceCates(feats, isPlus),
               groupedDatasourceList: _.groupBy(datasourceList, 'plugin_type'),
               datasourceList: datasourceList,
@@ -243,6 +253,15 @@ function App() {
       location.href = '/out-of-service';
     }
   }, []);
+
+  useEffect(() => {
+    if (!location.pathname.startsWith('/login')) {
+      document.body.className = commonState.darkMode ? 'theme-dark' : 'theme-light';
+      // TODO: 临时兼容 Class 组件的写法
+      localStorage.setItem('n9e-dark-mode', _.toString(commonState.darkMode));
+      window.dispatchEvent(new Event('n9e-dark-mode-update'));
+    }
+  }, [commonState.darkMode]);
 
   // 初始化中不渲染任何内容
   if (!initialized.current) {

@@ -1,8 +1,8 @@
 const zh_CN = {
-  title: '对象列表',
+  title: '机器列表',
   default_filter: '预置筛选',
-  ungrouped_targets: '未归组对象',
-  all_targets: '全部对象',
+  ungrouped_targets: '未归组机器',
+  all_targets: '全部机器',
   datasource: '数据源',
   search_placeholder: '模糊搜索表格内容(多个关键词请用空格分隔)',
   filterDowntime: '无更新超过',
@@ -82,5 +82,6 @@ const zh_CN = {
   meta_expand: '展开',
   meta_collapse: '收起',
   meta_no_data: '暂无数据',
+  all_no_data: '没有部署采集器？可参考 <a>安装手册</a> 安装部署',
 };
 export default zh_CN;

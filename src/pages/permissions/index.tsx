@@ -38,7 +38,7 @@ export default function index() {
   return (
     <PageLayout title={t('title')} icon={<SafetyCertificateOutlined />}>
       <div className='user-manage-content'>
-        <div style={{ display: 'flex', height: '100%' }}>
+        <div style={{ display: 'flex', gap: 10, height: '100%', background: 'unset' }}>
           <div className='left-tree-area'>
             <div className='sub-title'>
               {t('roles')}

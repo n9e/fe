@@ -1,8 +1,8 @@
 import React, { useRef } from 'react';
-import { Form } from 'antd';
+import { Form, Card } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import AdvancedWrap from '@/components/AdvancedWrap';
+import { scrollToFirstError } from '@/utils';
 import Name from '../../components/items/Name';
 import HTTP from '../../components/items/HTTP';
 import BasicAuth from '../../components/items/BasicAuth';
@@ -12,7 +12,7 @@ import Description from '../../components/items/Description';
 import Footer from '../../components/items/Footer';
 import Cluster from '../../components/items/Cluster';
 
-export default function FormCpt({ data, onFinish, submitLoading }: any) {
+export default function FormCpt({ action, data, onFinish, submitLoading }: any) {
   const { t } = useTranslation('datasourceManage');
   const [form] = Form.useForm();
   const clusterRef = useRef<any>();
@@ -24,19 +24,22 @@ export default function FormCpt({ data, onFinish, submitLoading }: any) {
       onFinish={(values) => {
         onFinish(values, clusterRef.current);
       }}
+      onFinishFailed={() => {
+        scrollToFirstError();
+      }}
       initialValues={data}
       className='settings-source-form'
     >
-      <Name />
-      <HTTP placeholder='http://localhost:6041' />
-      <BasicAuth />
-      <SkipTLSVerify />
-      <Headers />
-      <Cluster form={form} clusterRef={clusterRef} />
-      <Description />
-      <div className='mt16'>
-        <Footer id={data?.id} submitLoading={submitLoading} />
-      </div>
+      <Card title={t(`${action}_title`)}>
+        <Name />
+        <HTTP placeholder='http://localhost:6041' />
+        <BasicAuth />
+        <SkipTLSVerify />
+        <Headers />
+        <Cluster form={form} clusterRef={clusterRef} />
+        <Description />
+      </Card>
+      <Footer id={data?.id} submitLoading={submitLoading} />
     </Form>
   );
 }

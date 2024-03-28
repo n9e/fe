@@ -167,7 +167,7 @@ const index = (props: any) => {
         </>
       }
     >
-      <div style={{ padding: 10 }} className={taskResultCls}>
+      <div className={`${taskResultCls} p2`}>
         <Card
           title={data.title}
           extra={

@@ -81,9 +81,10 @@ function Import(props: IProps & ModalWrapProps) {
                 ),
               });
               return;
+            } else {
+              message.success(t('common:success.clone'));
+              destroy();
             }
-            message.success(t('common:success.clone'));
-            destroy();
           });
         }}
       >
@@ -96,7 +97,7 @@ function Import(props: IProps & ModalWrapProps) {
             },
           ]}
         >
-          <Select>
+          <Select showSearch optionFilterProp='children'>
             {_.map(busiGroups, (item) => {
               return (
                 <Select.Option key={item.id} value={item.id}>

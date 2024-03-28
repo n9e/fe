@@ -53,7 +53,7 @@ const zh_CN = {
     prod: '监控类型',
     name: '数据源',
     type: '数据源类型',
-    id: '关联数据源',
+    id: '数据源',
     id_required: '请选择数据源',
     empty_modal: {
       title: '暂无数据源配置，请联系管理员去添加数据源',
@@ -93,6 +93,12 @@ const zh_CN = {
     1: '一级报警',
     2: '二级报警',
     3: '三级报警',
+  },
+  download_json: '下载 JSON',
+  batch: {
+    export: {
+      copy: '复制 JSON 到剪贴板',
+    },
   },
 
   // 临时把 task 的翻译放在这里

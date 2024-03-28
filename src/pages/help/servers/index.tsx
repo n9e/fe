@@ -55,7 +55,7 @@ export default function Servers() {
       }
     >
       <div>
-        <div style={{ padding: 20 }}>
+        <div className='n9e-border-base' style={{ padding: 20 }}>
           {profile.admin ? (
             <div>
               <Table

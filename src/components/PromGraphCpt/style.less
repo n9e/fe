@@ -1,4 +1,4 @@
-@border-color: #d9d9d9;
+@border-color: var(--fc-border-color);
 
 .prom-graph-container {
   height: 100%;
@@ -16,8 +16,9 @@
     color: #c1c1c1;
   }
   .ant-tabs-card.ant-tabs-top > .ant-tabs-nav .ant-tabs-tab-active {
-    border-bottom-color: #fff;
+    border-bottom-color: var(--fc-fill-2);
     border-top: 2px solid  @primary-color;
+    background-color: var(--fc-fill-2);
   }
   .ant-tabs-top > .ant-tabs-nav {
     margin-bottom: 0;
@@ -73,8 +74,8 @@
     max-height: unset !important;
   }
   .ant-list-items {
-    border-top: 1px solid #f0f0f0;
-    border-bottom: 1px solid #f0f0f0;
+    border-top: 1px solid var(--fc-border-color);
+    border-bottom: 1px solid var(--fc-border-color);
   }
   .ant-list-item {
     padding: 8px;
@@ -107,6 +108,6 @@
   padding: 6px 8px;
   cursor: pointer;
   &:hover {
-    background-color: #f0f0f0;
+    background-color: var(--fc-fill-3);
   }
 }

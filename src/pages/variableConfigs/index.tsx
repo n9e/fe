@@ -47,11 +47,13 @@ export default function index() {
     <PageLayout title={t('title')} icon={<SettingOutlined />}>
       <div>
         <div
+          className='n9e-border-base'
           style={{
             padding: 16,
           }}
         >
           <div
+            className='mb8'
             style={{
               display: 'flex',
               justifyContent: 'space-between',

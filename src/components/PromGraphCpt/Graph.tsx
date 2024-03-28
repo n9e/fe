@@ -63,7 +63,7 @@ const getSerieName = (metric: any) => {
 };
 
 export default function Graph(props: IProps) {
-  const { datasourceList } = useContext(CommonStateContext);
+  const { datasourceList, darkMode } = useContext(CommonStateContext);
   const { url, datasourceValue, promql, setQueryStats, setErrorContent, contentMaxHeight, range, setRange, step, setStep, graphOperates, refreshFlag, loading, setLoading } = props;
   const [data, setData] = useState<any[]>([]);
   const [highLevelConfig, setHighLevelConfig] = useState({
@@ -142,87 +142,85 @@ export default function Graph(props: IProps) {
   }, [JSON.stringify(range), step, datasourceValue, promql, refreshFlag]);
 
   return (
-    <Spin spinning={loading}>
-      <div className='prom-graph-graph-container'>
-        <div className='prom-graph-graph-controls'>
-          <Space>
-            <TimeRangePicker value={range} onChange={setRange} dateFormat='YYYY-MM-DD HH:mm:ss' />
-            <InputNumber
-              placeholder='Res. (s)'
-              value={step}
-              onKeyDown={(e: any) => {
-                if (e.code === 'Enter') {
-                  setStep(_.toNumber(e.target.value));
-                }
-              }}
-              onBlur={(e) => {
+    <div className='prom-graph-graph-container'>
+      <div className='prom-graph-graph-controls'>
+        <Space>
+          <TimeRangePicker value={range} onChange={setRange} dateFormat='YYYY-MM-DD HH:mm:ss' />
+          <InputNumber
+            placeholder='Res. (s)'
+            value={step}
+            onKeyDown={(e: any) => {
+              if (e.code === 'Enter') {
                 setStep(_.toNumber(e.target.value));
-              }}
-            />
-            <Radio.Group
-              options={[
-                { label: <LineChartOutlined />, value: ChartType.Line },
-                { label: <AreaChartOutlined />, value: ChartType.StackArea },
-              ]}
-              onChange={(e) => {
-                e.preventDefault();
-                setChartType(e.target.value);
-              }}
-              value={chartType}
-              optionType='button'
-              buttonStyle='solid'
-            />
-            {graphOperates.enabled && (
-              <>
-                <Popover
-                  placement='left'
-                  content={<LineGraphStandardOptions highLevelConfig={highLevelConfig} setHighLevelConfig={setHighLevelConfig} />}
-                  trigger='click'
-                  autoAdjustOverflow={false}
-                  getPopupContainer={() => document.body}
-                >
-                  <Button icon={<SettingOutlined />} />
-                </Popover>
-                <Button
-                  icon={
-                    <ShareAltOutlined
-                      onClick={() => {
-                        const dataProps = {
-                          type: 'timeseries',
-                          version: '3.0.0',
-                          name: promql,
-                          step,
-                          range,
-                          ...lineGraphProps,
-                          targets: [
-                            {
-                              expr: promql,
-                            },
-                          ],
-                          datasourceCate: 'prometheus',
-                          datasourceName: _.find(datasourceList, { id: datasourceValue })?.name,
-                          datasourceValue,
-                        };
-                        setTmpChartData([
+              }
+            }}
+            onBlur={(e) => {
+              setStep(_.toNumber(e.target.value));
+            }}
+          />
+          <Radio.Group
+            options={[
+              { label: <LineChartOutlined />, value: ChartType.Line },
+              { label: <AreaChartOutlined />, value: ChartType.StackArea },
+            ]}
+            onChange={(e) => {
+              e.preventDefault();
+              setChartType(e.target.value);
+            }}
+            value={chartType}
+            optionType='button'
+            buttonStyle='solid'
+          />
+          {graphOperates.enabled && (
+            <>
+              <Popover
+                placement='left'
+                content={<LineGraphStandardOptions highLevelConfig={highLevelConfig} setHighLevelConfig={setHighLevelConfig} />}
+                trigger='click'
+                autoAdjustOverflow={false}
+                getPopupContainer={() => document.body}
+              >
+                <Button icon={<SettingOutlined />} />
+              </Popover>
+              <Button
+                icon={
+                  <ShareAltOutlined
+                    onClick={() => {
+                      const dataProps = {
+                        type: 'timeseries',
+                        version: '3.0.0',
+                        name: promql,
+                        step,
+                        range,
+                        ...lineGraphProps,
+                        targets: [
                           {
-                            configs: JSON.stringify({
-                              dataProps,
-                            }),
+                            expr: promql,
                           },
-                        ]).then((res) => {
-                          const ids = res.dat;
-                          window.open('/chart/' + ids);
-                        });
-                      }}
-                    />
-                  }
-                />
-              </>
-            )}
-          </Space>
-        </div>
-        <Timeseries inDashboard={false} values={lineGraphProps as any} series={data} time={range} />
+                        ],
+                        datasourceCate: 'prometheus',
+                        datasourceName: _.find(datasourceList, { id: datasourceValue })?.name,
+                        datasourceValue,
+                      };
+                      setTmpChartData([
+                        {
+                          configs: JSON.stringify({
+                            dataProps,
+                          }),
+                        },
+                      ]).then((res) => {
+                        const ids = res.dat;
+                        window.open('/chart/' + ids);
+                      });
+                    }}
+                  />
+                }
+              />
+            </>
+          )}
+        </Space>
       </div>
-    </Spin>
+      <Timeseries inDashboard={false} values={lineGraphProps as any} series={data} time={range} themeMode={darkMode ? 'dark' : undefined} />
+    </div>
   );
 }

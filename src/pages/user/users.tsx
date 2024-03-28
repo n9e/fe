@@ -17,7 +17,7 @@
 import React, { useState, useContext } from 'react';
 import moment from 'moment';
 import _ from 'lodash';
-import { Button, Input, message, Row, Modal, Table } from 'antd';
+import { Button, Input, message, Row, Modal, Table, Space } from 'antd';
 import { SearchOutlined, UserOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/lib/table';
 import { useTranslation } from 'react-i18next';
@@ -82,20 +82,19 @@ const Resource: React.FC = () => {
     },
     {
       title: t('common:table.operations'),
-      width: '240px',
+      width: '200px',
       render: (text: string, record) => (
-        <>
-          <Button className='oper-name' type='link' onClick={() => handleClick(ActionType.EditUser, record.id)}>
+        <Space>
+          <Button className='p0' type='link' onClick={() => handleClick(ActionType.EditUser, record.id)}>
             {t('common:btn.edit')}
           </Button>
-          <Button className='oper-name' type='link' onClick={() => handleClick(ActionType.Reset, record.id)}>
+          <Button className='p0' type='link' onClick={() => handleClick(ActionType.Reset, record.id)}>
             {t('account:password.reset')}
           </Button>
-          <a
-            style={{
-              color: 'red',
-              marginLeft: '16px',
-            }}
+          <Button
+            danger
+            type='link'
+            className='p0'
             onClick={() => {
               confirm({
                 title: t('common:confirm.delete'),
@@ -110,8 +109,8 @@ const Resource: React.FC = () => {
             }}
           >
             {t('common:btn.delete')}
-          </a>
-        </>
+          </Button>
+        </Space>
       ),
     },
   ];
@@ -173,7 +172,7 @@ const Resource: React.FC = () => {
   return (
     <PageLayout title={t('user.title')} icon={<UserOutlined />}>
       <div className='user-manage-content'>
-        <div className='user-content'>
+        <div className='user-content n9e-border-base'>
           <Row className='event-table-search'>
             <div className='event-table-search-left'>
               <Input className={'searchInput'} prefix={<SearchOutlined />} onPressEnter={onSearchQuery} placeholder={t('user.search_placeholder')} />

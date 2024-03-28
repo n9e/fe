@@ -26,6 +26,8 @@ export interface AlertRuleType<T> {
   annotations: any;
   prod: string;
   severities: number[];
+  update_at: number;
+  update_by: number;
 }
 
 export enum AlertRuleStatus {

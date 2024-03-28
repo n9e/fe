@@ -15,11 +15,10 @@ interface IProps {
   prefixFieldNames?: (string | number)[]; // 前缀字段名路径
   datasourceValue: number;
   index: string; // ES 索引
-  backgroundVisible?: boolean;
   disabled?: boolean;
 }
 
-export default function index({ prefixField = {}, prefixFieldNames = [], parentNames = [], datasourceValue, index, backgroundVisible = true, disabled }: IProps) {
+export default function index({ prefixField = {}, prefixFieldNames = [], parentNames = [], datasourceValue, index, disabled }: IProps) {
   const { t } = useTranslation('alertRules');
   const [fieldsOptions, setFieldsOptions] = useState<any[]>([]);
   const { run } = useDebounceFn(
@@ -71,7 +70,7 @@ export default function index({ prefixField = {}, prefixFieldNames = [], parentN
           </div>
           {fields.map((field) => {
             return (
-              <div key={field.key} style={{ marginBottom: backgroundVisible ? 16 : 0 }}>
+              <div key={field.key} style={{ marginBottom: 0 }}>
                 <Form.Item shouldUpdate noStyle>
                   {({ getFieldValue }) => {
                     const cate = getFieldValue([...parentNames, ...prefixFieldNames, 'group_by', field.name, 'cate']);
@@ -80,16 +79,7 @@ export default function index({ prefixField = {}, prefixFieldNames = [], parentN
                     return (
                       <Row gutter={10} align='top'>
                         <Col flex='auto'>
-                          <div
-                            style={
-                              backgroundVisible
-                                ? {
-                                    backgroundColor: '#FAFAFA',
-                                    padding: 16,
-                                  }
-                                : {}
-                            }
-                          >
+                          <div>
                             {cate === 'filters' && <Filters prefixField={field} />}
                             {cate === 'terms' && <Terms prefixField={field} fieldsOptions={fieldsOptions} values={valuesWithoutCount} />}
                             {cate === 'histgram' && <Histgram prefixField={field} />}

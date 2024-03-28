@@ -23,7 +23,12 @@ export default function SideMenuColorSetting() {
 
   return (
     <div>
-      <Radio.Group value={sideMenuBgMode} onChange={(e) => setSideMenuBgMode(e.target.value as SideMenuColors)}>
+      <Radio.Group
+        value={sideMenuBgMode}
+        onChange={(e) => {
+          setSideMenuBgMode(e.target.value as SideMenuColors);
+        }}
+      >
         <div className='mt-2 flex gap-4'>
           {Object.entries(SIDE_MENU_COLORS).map(([item, desc]) => {
             const value: SideMenuColors = item as SideMenuColors;

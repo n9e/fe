@@ -145,9 +145,6 @@ export default function Meta(props: Props) {
           blockNode
           loadData={onLoadData}
           treeData={treeData}
-          showLine={{
-            showLeafIcon: false,
-          }}
           titleRender={(nodeData) => {
             if (nodeData.levelType === 'field' && _.includes(numberTypes, nodeData.type)) {
               return (

@@ -10,6 +10,7 @@ export interface BoardType {
   fname: string;
   name: string;
   tags: string;
+  configs: string;
 }
 
 export interface BoardCateIconType {

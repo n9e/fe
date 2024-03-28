@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react';
-import { Button, Popover, Spin, Empty } from 'antd';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { Button, Popover, Spin, Empty, Space, Select, Form } from 'antd';
 import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
@@ -7,6 +7,7 @@ import { parseRange } from '@/components/TimeRangePicker';
 import Timeseries from '@/pages/dashboard/Renderer/Renderer/Timeseries';
 import { getSerieName } from '@/pages/dashboard/Renderer/datasource/utils';
 import { fetchHistoryRangeBatch } from '@/services/dashboardV2';
+import { CommonStateContext } from '@/App';
 import { completeBreakpoints } from '@/pages/dashboard/Renderer/datasource/utils';
 
 const getDefaultStepByStartAndEnd = (start: number, end: number) => {
@@ -14,15 +15,15 @@ const getDefaultStepByStartAndEnd = (start: number, end: number) => {
 };
 
 export default function GraphPreview({ form, fieldName, promqlFieldName = 'prom_ql' }) {
-  const { t } = useTranslation();
+  const { groupedDatasourceList } = useContext(CommonStateContext);
+  const { t } = useTranslation('alertRules');
   const divRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
+  const [datasourceId, setDatasourceId] = useState<number>();
 
   const fetchData = () => {
-    const datasource_ids = form.getFieldValue('datasource_ids');
-    const datasource_id = _.isArray(datasource_ids) ? datasource_ids?.[0] : datasource_ids;
     const query = form.getFieldValue(['rule_config', 'queries', fieldName]);
     const parsedRange = parseRange({
       start: 'now-24h',
@@ -31,12 +32,12 @@ export default function GraphPreview({ form, fieldName, promqlFieldName = 'prom_
     const from = moment(parsedRange.start).unix();
     const to = moment(parsedRange.end).unix();
 
-    if (datasource_id) {
+    if (datasourceId) {
       setLoading(true);
       const step = getDefaultStepByStartAndEnd(from, to);
       fetchHistoryRangeBatch(
         {
-          datasource_id,
+          datasource_id: datasourceId,
           queries: [
             {
               query: query[promqlFieldName],
@@ -76,6 +77,12 @@ export default function GraphPreview({ form, fieldName, promqlFieldName = 'prom_
     }
   };
 
+  useEffect(() => {
+    if (visible && datasourceId) {
+      fetchData();
+    }
+  }, [visible, datasourceId]);
+
   return (
     <div ref={divRef}>
       <Popover
@@ -83,8 +90,36 @@ export default function GraphPreview({ form, fieldName, promqlFieldName = 'prom_
         visible={visible}
         onVisibleChange={(visible) => {
           setVisible(visible);
+          if (!visible) {
+            setData([]);
+          }
         }}
-        title={t('数据预览')}
+        title={
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+            }}
+          >
+            <div>{t('preview')}</div>
+            <Space>
+              <span>{t('common:datasource.name')}:</span>
+              <Select
+                value={datasourceId}
+                onChange={(value) => {
+                  setDatasourceId(value);
+                }}
+                style={{ width: 200 }}
+                options={_.map(groupedDatasourceList.prometheus, (item) => {
+                  return {
+                    label: item.name,
+                    value: item.id,
+                  };
+                })}
+              />
+            </Space>
+          </div>
+        }
         content={
           <div
             style={{
@@ -127,7 +162,7 @@ export default function GraphPreview({ form, fieldName, promqlFieldName = 'prom_
                     justifyContent: 'center',
                   }}
                 >
-                  <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={t('暂无数据')} />
+                  <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={t('common:nodata')} />
                 </div>
               )}
             </>
@@ -142,12 +177,17 @@ export default function GraphPreview({ form, fieldName, promqlFieldName = 'prom_
           ghost
           onClick={() => {
             if (!visible) {
-              fetchData();
+              const datasource_ids = form.getFieldValue('datasource_ids');
+              let datasource_id = _.isArray(datasource_ids) ? datasource_ids?.[0] : datasource_ids;
+              if (!datasource_id || datasource_id === 0) {
+                datasource_id = groupedDatasourceList.prometheus?.[0]?.id;
+              }
+              setDatasourceId(datasource_id);
               setVisible(true);
             }
           }}
         >
-          {t('数据预览')}
+          {t('preview')}
         </Button>
       </Popover>
     </div>

@@ -4,13 +4,12 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  border-bottom: 1px solid #d2d6dc;
+  border-bottom: 1px solid var(--fc-border-color);
   .ant-tabs {
     .ant-tabs-nav {
       margin-bottom: 0px;
       .ant-tabs-tab {
         font-size: 20px;
-        color: #333;
       }
     }
   }
@@ -22,33 +21,27 @@
   box-sizing: border-box;
 }
 .user-manage-content {
-  .ant-btn-link {
-    color: @primary-color;
-  }
   .user-content {
-    padding: 10px;
+    padding: 16px;
   }
   .event-table-search {
     padding: 0px;
   }
   .title {
     font-size: @baseFontSizeMiddle;
-    color: black;
     font-weight: bold;
     padding-bottom: 10px;
     padding-top: 20px;
     padding-bottom: 20px;
-    border-bottom: 1px solid #e1e1e1;
+    border-bottom: 1px solid var(--fc-border-color);
   }
   .sub-title {
-    color: #333;
     font-size: 14px;
     font-weight: 700;
     line-height: 36px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    // margin-top: 16px;
   }
   .load-more {
     font-size: 24px;
@@ -66,27 +59,15 @@
     position: relative;
     box-sizing: border-box;
     width: 200px;
-
-    &:before {
-      content: '';
-      display: block;
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      right: 0;
-      width: 10px;
-      margin-left: 0;
-      background: #f6f5f6;
-      z-index: 2;
-    }
+    background-color: var(--fc-fill-2);
+    border: 1px solid var(--fc-border-color);
   }
   position: relative;
   .user-manage-title {
     font-size: @baseFontSizeMiddle;
     margin-left: -20px;
     margin-right: -20px;
-    color: black;
-    border-bottom: 1px solid #e1e1e1;
+    border-bottom: 1px solid var(--fc-border-color);
     font-weight: bold;
     padding-bottom: 20px;
     padding-left: 20px;
@@ -107,8 +88,7 @@
     }
   }
   .ant-list-split .ant-list-item {
-    border: none;
-    color: rgba(0, 0, 0, 0.85);
+    border: none !important;
   }
 }
 .oper-name.ant-btn {
@@ -121,11 +101,8 @@
   padding: 0 0 0 48px;
 }
 .ant-list-item {
-  color: #666;
-  // justify-content: center;
   &:hover {
     cursor: pointer;
-    // background-color: @colorGray2;
     .left-tree-item-control-area {
       visibility: visible;
       transform: translate(0);
@@ -133,19 +110,13 @@
   }
 }
 .is-active {
-  // border: none;
-  // color: #2f81f9;
-  // border-color: #6c9ff3;
-  // background-color: #f3f7fe;
-  // box-shadow: inset 1px 0 0 #6c9ff3, inset 0 1px 0 #6c9ff3,
-  //   inset -1px 0 0 #6c9ff3, inset 0 -1px 0 #6c9ff3;
   background: fade(@primary-color, 10%);
 }
 .team-info {
-  border: 1px solid #e0dee2;
-  padding: 10px;
+  border: 1px solid var(--fc-border-color);
+  padding: 16px;
   margin-bottom: 10px;
-  background: #f6f6f6;
+  background: var(--fc-fill-2);
 }
 .operate-wrapper {
   display: flex;
@@ -156,10 +127,16 @@
 }
 
 .resource-table-content {
-  padding: 10px;
-  flex: 1;
-  width: calc(100% - 370px);
+  flex-shrink: 1;
+  width: calc(100% - 210px);
   overflow: auto;
+}
+.resource-table-content-body {
+  height: 100%;
+  padding: 10px;
+  background-color: var(--fc-fill-2);
+  border: 1px solid var(--fc-border-color);
+  overflow: hidden auto;
 }
 
 .left-tree-area {

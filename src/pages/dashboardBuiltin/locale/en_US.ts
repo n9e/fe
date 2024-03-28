@@ -8,5 +8,6 @@ const en_US = {
   detail_no_result: 'The queried built-in dashboard does not exist',
   tab_list: 'Dashboard List',
   tab_instructions: 'Instructions',
+  search_placeholder: 'Please enter search keywords',
 };
 export default en_US;

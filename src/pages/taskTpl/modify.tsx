@@ -75,7 +75,7 @@ const Modify = (props: any) => {
         </>
       }
     >
-      <div style={{ padding: 10 }}>
+      <div className='p2'>
         <Card title={t('common:btn.edit')}>
           <Spin spinning={loading}>
             {data.title ? (
@@ -90,7 +90,7 @@ const Modify = (props: any) => {
                         <span>{`\${ibex}/${id}`}</span>
                         <CopyOutlined
                           onClick={() => {
-                            copyToClipBoard(`\${ibex}/${id}`, (val) => val);
+                            copyToClipBoard(`\${ibex}/${id}`);
                           }}
                         />
                       </Space>

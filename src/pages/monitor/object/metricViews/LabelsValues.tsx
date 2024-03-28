@@ -18,7 +18,7 @@ import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
-import { Select, Input, Tooltip, Button } from 'antd';
+import { Select, Input, Tooltip, Button, Space } from 'antd';
 import { SearchOutlined, ClearOutlined, DownOutlined, UpOutlined } from '@ant-design/icons';
 import { getLabelValues } from '@/services/metricViews';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
@@ -103,7 +103,10 @@ export default function LabelsValues(props: IProps) {
                 });
               }}
             >
-              {t('list.filters')} {expaned.filters ? <UpOutlined /> : <DownOutlined />}
+              <Space>
+                {t('list.filters')}
+                {expaned.filters ? <UpOutlined /> : <DownOutlined />}
+              </Space>
             </div>
             {expaned.filters && <div className='n9e-metric-views-filters'>{filtersStr ? filtersStr : '暂无数据'}</div>}
           </div>
@@ -120,7 +123,10 @@ export default function LabelsValues(props: IProps) {
                 });
               }}
             >
-              {t('list.dynamicLabels')} {expaned.dynamicLabels ? <UpOutlined /> : <DownOutlined />}
+              <Space>
+                {t('list.dynamicLabels')}
+                {expaned.dynamicLabels ? <UpOutlined /> : <DownOutlined />}
+              </Space>
             </div>
             {expaned.dynamicLabels && (
               <div className='n9e-metric-views-dynamicLabels'>

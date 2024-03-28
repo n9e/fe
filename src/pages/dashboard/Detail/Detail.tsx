@@ -33,6 +33,7 @@ import { SetTmpChartData } from '@/services/metric';
 import { CommonStateContext } from '@/App';
 import MigrationModal from '@/pages/help/migrate/MigrationModal';
 import RouterPrompt from '@/components/RouterPrompt';
+import { rangeOptions } from '@/components/TimeRangePicker/config';
 import VariableConfig, { IVariable } from '../VariableConfig';
 import { replaceExpressionVars, getOptionsList } from '../VariableConfig/constant';
 import { ILink, IDashboardConfig } from '../types';
@@ -44,10 +45,8 @@ import Editor from '../Editor';
 import { defaultCustomValuesMap, defaultOptionsValuesMap } from '../Editor/config';
 import { sortPanelsByGridLayout, panelsMergeToConfigs, updatePanelsInsertNewPanelToGlobal } from '../Panels/utils';
 import { useGlobalState } from '../globalState';
+import { scrollToLastPanel } from './utils';
 import './style.less';
-import './dark.antd.less';
-import './dark.less';
-import { rangeOptions } from '@/components/TimeRangePicker/config';
 interface URLParam {
   id: string;
 }
@@ -245,59 +244,7 @@ export default function DetailV2(props: IProps) {
   useBeforeunload(!allowedLeave && import.meta.env.PROD ? () => t('detail.prompt.message') : undefined);
 
   return (
-    <PageLayout
-      customArea={
-        <Title
-          isPreview={isPreview}
-          isBuiltin={isBuiltin}
-          isAuthorized={isAuthorized}
-          editable={editable}
-          updateAtRef={updateAtRef}
-          setAllowedLeave={setAllowedLeave}
-          gobackPath={gobackPath}
-          dashboard={dashboard}
-          range={range}
-          setRange={(v) => {
-            setRange(v);
-          }}
-          onAddPanel={(type) => {
-            if (type === 'row') {
-              const newPanels = updatePanelsInsertNewPanelToGlobal(
-                panels,
-                {
-                  type: 'row',
-                  id: uuidv4(),
-                  name: i18n.language === 'en_US' ? 'Row' : '分组',
-                  collapsed: true,
-                },
-                'row',
-              );
-              setPanels(newPanels);
-              handleUpdateDashboardConfigs(dashboard.id, {
-                configs: panelsMergeToConfigs(dashboard.configs, newPanels),
-              });
-            } else {
-              setEditorData({
-                visible: true,
-                id: uuidv4(),
-                initialValues: {
-                  name: 'Panel Title',
-                  type,
-                  targets: [
-                    {
-                      refId: 'A',
-                      expr: '',
-                    },
-                  ],
-                  custom: defaultCustomValuesMap[type],
-                  options: defaultOptionsValuesMap[type],
-                },
-              });
-            }
-          }}
-        />
-      }
-    >
+    <PageLayout customArea={<div />}>
       <div className='dashboard-detail-container'>
         <div className='dashboard-detail-content scroll-container' ref={containerRef}>
           <Affix
@@ -311,6 +258,55 @@ export default function DetailV2(props: IProps) {
                 display: query.viewMode !== 'fullscreen' ? 'block' : 'none',
               }}
             >
+              <Title
+                isPreview={isPreview}
+                isBuiltin={isBuiltin}
+                isAuthorized={isAuthorized}
+                editable={editable}
+                updateAtRef={updateAtRef}
+                setAllowedLeave={setAllowedLeave}
+                gobackPath={gobackPath}
+                dashboard={dashboard}
+                range={range}
+                setRange={(v) => {
+                  setRange(v);
+                }}
+                onAddPanel={(type) => {
+                  if (type === 'row') {
+                    const newPanels = updatePanelsInsertNewPanelToGlobal(
+                      panels,
+                      {
+                        type: 'row',
+                        id: uuidv4(),
+                        name: i18n.language === 'en_US' ? 'Row' : '分组',
+                        collapsed: true,
+                      },
+                      'row',
+                    );
+                    setPanels(newPanels);
+                    handleUpdateDashboardConfigs(dashboard.id, {
+                      configs: panelsMergeToConfigs(dashboard.configs, newPanels),
+                    });
+                  } else {
+                    setEditorData({
+                      visible: true,
+                      id: uuidv4(),
+                      initialValues: {
+                        name: 'Panel Title',
+                        type,
+                        targets: [
+                          {
+                            refId: 'A',
+                            expr: '',
+                          },
+                        ],
+                        custom: defaultCustomValuesMap[type],
+                        options: defaultOptionsValuesMap[type],
+                      },
+                    });
+                  }
+                }}
+              />
               {!editable && (
                 <div style={{ padding: '0px 10px', marginBottom: 8 }}>
                   <Alert type='warning' message={t('detail.expired')} />
@@ -319,7 +315,15 @@ export default function DetailV2(props: IProps) {
               <div className='dashboard-detail-content-header'>
                 <div className='variable-area'>
                   {variableConfig && (
-                    <VariableConfig isPreview={!isAuthorized} onChange={handleVariableChange} value={variableConfig} range={range} id={id} onOpenFire={stopAutoRefresh} />
+                    <VariableConfig
+                      isPreview={!isAuthorized}
+                      onChange={handleVariableChange}
+                      value={variableConfig}
+                      range={range}
+                      id={id}
+                      onOpenFire={stopAutoRefresh}
+                      variableConfigRefreshFlag={variableConfigRefreshFlag}
+                    />
                   )}
                 </div>
                 <DashboardLinks
@@ -388,6 +392,7 @@ export default function DetailV2(props: IProps) {
                 updateAtRef.current = res.update_at;
                 refresh();
               }}
+              setVariableConfigRefreshFlag={setVariableConfigRefreshFlag}
             />
           )}
         </div>
@@ -406,9 +411,12 @@ export default function DetailV2(props: IProps) {
         dashboardId={id}
         time={range}
         initialValues={editorData.initialValues}
-        onOK={(values) => {
+        onOK={(values, mode) => {
           const newPanels = updatePanelsInsertNewPanelToGlobal(panels, values, 'chart');
           setPanels(newPanels);
+          if (mode === 'add') {
+            scrollToLastPanel(newPanels);
+          }
           handleUpdateDashboardConfigs(dashboard.id, {
             configs: panelsMergeToConfigs(dashboard.configs, newPanels),
           });

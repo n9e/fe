@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Drawer, Tag } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { Tooltip, Space } from 'antd';
 import { DownOutlined, RightOutlined, CopyOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { copyToClipBoard } from '@/utils';
+import { CommonStateContext } from '@/App';
 import { getTargetInformationByIdent } from '../services';
 import './style.less';
 
@@ -62,7 +63,7 @@ function RenderInterfaces({ value }) {
                         <Tag
                           color='#f4f4f5'
                           onClick={() => {
-                            copyToClipBoard(v, t);
+                            copyToClipBoard(v);
                           }}
                         >
                           {v}
@@ -80,6 +81,7 @@ function RenderInterfaces({ value }) {
 }
 
 function RenderFilesystem({ value }) {
+  const { darkMode } = useContext(CommonStateContext);
   return (
     <>
       {_.map(value, (item, index) => {
@@ -90,7 +92,7 @@ function RenderFilesystem({ value }) {
             </div>
             <div className='target-information-filesystem-mounted_on'>mounted on</div>
             <div className='target-information-filesystem-mounted_on-value'>
-              <Tag color='#f4f4f5'>{item.mounted_on}</Tag>
+              <Tag color={darkMode ? 'rgb(50 53 69)' : '#f4f4f5'}>{item.mounted_on}</Tag>
             </div>
             <div className='target-information-filesystem-kb_size'>{bytesToSize(item.kb_size * 1000, 2)}</div>
           </div>
@@ -103,6 +105,7 @@ function RenderFilesystem({ value }) {
 function Group({ name, data }) {
   const { t } = useTranslation('targets');
   const [expand, setExpand] = useState(true);
+  const { darkMode } = useContext(CommonStateContext);
 
   return (
     <div key={name} className='target-information-group'>
@@ -122,7 +125,7 @@ function Group({ name, data }) {
           {data && (
             <CopyOutlined
               onClick={() => {
-                copyToClipBoard(JSON.stringify(data), t);
+                copyToClipBoard(JSON.stringify(data));
               }}
             />
           )}
@@ -146,9 +149,9 @@ function Group({ name, data }) {
                     <div className='target-information-group-content-item-value'>
                       <Tooltip title={t('meta_value_click_to_copy')} placement='right'>
                         <Tag
-                          color='#f4f4f5'
+                          color={darkMode ? 'rgb(50 53 69)' : '#f4f4f5'}
                           onClick={() => {
-                            copyToClipBoard(value, t);
+                            copyToClipBoard(value);
                           }}
                         >
                           {val}

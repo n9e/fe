@@ -15,10 +15,11 @@
  *
  */
 import React, { useEffect, useContext } from 'react';
-import { Switch, Route, useLocation, Redirect, useHistory, useParams } from 'react-router-dom';
+import { Switch, Route, useLocation, Redirect, useHistory } from 'react-router-dom';
 import querystring from 'query-string';
 import _ from 'lodash';
 import { getMenuPerm } from '@/services/common';
+import { IS_ENT } from '@/utils/constant';
 import { CommonStateContext } from '@/App';
 import Page403 from '@/pages/notFound/Page403';
 import OutOfService from '@/pages/notFound/OutOfService';
@@ -100,13 +101,16 @@ export default function Content() {
   const history = useHistory();
   const isPlus = useIsPlus();
   const { profile, siteInfo } = useContext(CommonStateContext);
-  // 仪表盘在全屏和暗黑主题下需要定义个 dark 样式名
+
   let themeClassName = '';
-  if (_.startsWith(location.pathname, '/dashboards/') && !_.endsWith(location.pathname, '/dashboards/')) {
-    const query = querystring.parse(location.search);
-    const themeMode = getDefaultThemeMode(query);
-    if (themeMode === 'dark') {
-      themeClassName = 'theme-dark';
+  if (IS_ENT) {
+    // 仪表盘在全屏和暗黑主题下需要定义个 dark 样式名
+    if (_.startsWith(location.pathname, '/dashboards/') && !_.endsWith(location.pathname, '/dashboards/')) {
+      const query = querystring.parse(location.search);
+      const themeMode = getDefaultThemeMode(query);
+      if (themeMode === 'dark') {
+        themeClassName = 'theme-dark';
+      }
     }
   }
 

@@ -13,6 +13,7 @@ interface Props {
 export default function SourceCard(props: Props) {
   const { t } = useTranslation('datasourceManage');
   const { sourceMap, urlPrefix = 'settings' } = props;
+
   return (
     <Row className='settings-datasource' gutter={[16, 16]}>
       {_.map(sourceMap, (item) => {
@@ -21,7 +22,9 @@ export default function SourceCard(props: Props) {
             <Link to={`/${urlPrefix}/add/${item.type.includes('.') ? _.toLower(item.type).split('.')[0] : _.toLower(item.type)}`}>
               <div className='settings-datasource-item'>
                 <div className='settings-datasource-item-meta'>
-                  <div style={{ height: '45px', lineHeight: '45px' }}>{item.name !== '自定义事件' && item.logo}</div>
+                  <div>
+                    <img src={item.logo} width={48} alt={item.name} />
+                  </div>
                   <div className='settings-datasource-item-name' style={{ height: 20, margin: '8px 0' }}>
                     {item.name}
                   </div>

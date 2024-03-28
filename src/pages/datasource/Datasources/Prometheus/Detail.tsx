@@ -63,7 +63,7 @@ export default function Index(props: Props) {
           </Col>
         </Row>
         <Row gutter={16}>
-          <Col span={24}>Remote Read URL：</Col>
+          <Col span={24}>{t('form.prom.read_addr')}：</Col>
           <Col span={24} className='second-color'>
             {data.settings?.internal_addr || '-'}
           </Col>

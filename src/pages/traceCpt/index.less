@@ -4,7 +4,7 @@
   }
   &-search {
     .ant-form-item {
-      margin-bottom: 8px;
+      margin-bottom: 8px !important;
     }
     .ellipse-when-overflow {
       .ant-select-selection-item {
@@ -13,14 +13,14 @@
     }
     &-chart {
       height: 200px;
-      border: 1px solid #e5e5e5;
+      border: 1px solid var(--fc-border-base);
       border-bottom: none;
       border-radius: 4px 4px 0 0;
     }
     &-result {
       &--headerOverview {
-        background: #f6f6f6;
-        border: 1px solid #e5e5e5;
+        background: var(--fc-fill-3);
+        border: 1px solid var(--fc-border-base);
         border-radius: 0 0 4px 4px;
         height: 52px;
         line-height: 52px;
@@ -30,10 +30,9 @@
         align-items: center;
       }
       &-item {
-        background: #f6f6f6;
-        border: 1px solid #e5e5e5;
+        background: var(--fc-fill-3);
+        border: 1px solid var(--fc-border-base);
         border-radius: 4px 4px 0 0;
-        border: 1px solid #e5e5e5;
         margin-top: 16px;
         &-title {
           height: 36px;
@@ -43,7 +42,7 @@
           position: relative;
           .duration-bar {
             position: absolute;
-            background-color: #ebe8f2;
+            background-color: var(--fc-fill-3);
             height: 100%;
           }
           .label {
@@ -56,9 +55,9 @@
           }
         }
         &-content {
-          border-top: 1px solid #e5e5e5;
-          border-bottom: 1px solid #e5e5e5;
-          background: #fff;
+          border-top: 1px solid var(--fc-border-base);
+          border-bottom: 1px solid var(--fc-border-base);
+          background: var(--fc-fill-1);
           padding: 16px;
           display: flex;
           justify-content: space-between;
@@ -71,11 +70,11 @@
     }
   }
   &-detail {
-    border: 1px solid #dedede;
+    border: 1px solid var(--fc-border-base);
     &-header {
       .title {
-        background: #f6f6f6;
-        border-bottom: 1px solid #dedede;
+        background: var(--fc-fill-3);
+        border-bottom: 1px solid var(--fc-border-base);
         border-radius: 2px 2px 0 0;
         height: 36px;
         line-height: 36px;
@@ -88,7 +87,7 @@
 }
 
 .GraphTick {
-  stroke: #aaa;
+  stroke: var(--fc-border-color);
   stroke-width: 1px;
 }
 
@@ -124,9 +123,9 @@
 }
 
 .LabeledList {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+  list-style: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 .LabeledList--item {
@@ -134,18 +133,18 @@
 }
 
 .LabeledList--label {
-  color: #999;
+  color: var(--fc-text-2);
   margin-right: 0.25rem;
 }
 
 .CanvasSpanGraph {
-  background: #fafafa;
+  background: var(--fc-fill-2);
   height: 60px;
   position: absolute;
   width: 100%;
 }
 .TickLabels--label {
-  color: #717171;
+  color: var(--fc-text-2);
   position: absolute;
   user-select: none;
 }
@@ -154,8 +153,8 @@
   height: 1rem;
 }
 .TimelineHeaderRow {
-  background: #ececec;
-  border-bottom: 1px solid #ccc;
+  background: var(--fc-fill-4);
+  border-bottom: 1px solid var(--fc-border-color);
   height: 38px;
   line-height: 38px;
   width: 100%;
@@ -180,7 +179,7 @@
   position: absolute;
   height: 100%;
   width: 1px;
-  background: #d8d8d8;
+  background: var(--fc-fill-6);
 }
 
 .Ticks--tick:last-child {

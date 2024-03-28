@@ -97,10 +97,10 @@ const Resource: React.FC = () => {
       title: t('common:table.operations'),
       width: '100px',
       render: (text: string, record) => (
-        <a
-          style={{
-            color: 'red',
-          }}
+        <Button
+          type='link'
+          className='p0'
+          danger
           onClick={() => {
             let params = {
               ids: [record.id],
@@ -118,7 +118,7 @@ const Resource: React.FC = () => {
           }}
         >
           {t('common:btn.delete')}
-        </a>
+        </Button>
       ),
     },
   ];
@@ -216,7 +216,7 @@ const Resource: React.FC = () => {
   return (
     <PageLayout title={t('team.title')} icon={<UserOutlined />}>
       <div className='user-manage-content'>
-        <div style={{ display: 'flex', height: '100%' }}>
+        <div style={{ display: 'flex', gap: 10, height: '100%', background: 'unset' }}>
           <div className='left-tree-area'>
             <div className='sub-title'>
               {t('team.list')}
@@ -272,14 +272,10 @@ const Resource: React.FC = () => {
                 {!_.isEmpty(teamList) && (
                   <Tree
                     rootClassName='business-group-tree'
-                    showLine={{
-                      showLeafIcon: false,
-                    }}
                     defaultExpandParent={false}
                     defaultExpandedKeys={getLocaleExpandedKeys()}
                     selectedKeys={teamId ? [_.toString(teamId)] : []}
                     blockNode
-                    switcherIcon={<DownOutlined />}
                     onSelect={(_selectedKeys, e: any) => {
                       const nodeId = e.node.id;
                       setTeamId(nodeId as any);
@@ -299,7 +295,6 @@ const Resource: React.FC = () => {
                 <Col
                   span='24'
                   style={{
-                    color: '#000',
                     fontSize: '14px',
                     fontWeight: 'bold',
                     display: 'inline',
@@ -335,7 +330,7 @@ const Resource: React.FC = () => {
                 <Col
                   style={{
                     marginTop: '8px',
-                    color: '#666',
+                    // color: '#666',
                   }}
                 >
                   <Space>

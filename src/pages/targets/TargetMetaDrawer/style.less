@@ -14,7 +14,7 @@
   user-select: none;
 }
 .target-information-group-header-title {
-  color: rgba(18, 26, 31, 0.98);
+  color: var(--fc-text-1);
   font-weight: 800;
 }
 .target-information-group-content {
@@ -26,9 +26,9 @@
 }
 .target-information-group-content-item-key,.target-information-interface-item-key {
   flex-shrink: 0;
-  color: rgba(28, 43, 52, .68);
+  color: var(--fc-text-3);
 }
-.target-information-group-content-item-value,.target-information-interface-item-value {
+.target-information-group-content-item-value,.target-information-interface-item-value,.target-information-filesystem-mounted_on-value {
   .ant-tag-has-color {
     color: #6C53B1;
     cursor: pointer;
@@ -58,7 +58,7 @@
   margin-bottom: 4px;
 }
 .target-information-filesystem-name {
-  color: rgba(28, 43, 52, .68);
+  color: var(--fc-text-3);
 }
 .target-information-filesystem-mounted_on-value {
   .ant-tag-has-color {
@@ -66,4 +66,7 @@
     padding: 0 2px;
     margin-right: 0;
   }
+}
+.target-information-filesystem-mounted_on,.target-information-filesystem-kb_size {
+  white-space: nowrap;
 }

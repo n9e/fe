@@ -102,7 +102,7 @@ const Add = (props: any) => {
         )
       }
     >
-      <div style={{ padding: 10 }}>
+      <div className='p2'>
         <div style={{ background: 'none' }}>
           <Row gutter={20}>
             <Col span={18}>

@@ -75,11 +75,9 @@ const TagItem: React.FC<Itag> = ({ count, field, remove, form }) => {
             )}
           </Form.Item>
         </Col>
-        {count > 1 && (
-          <Col>
-            <MinusCircleOutlined style={{ marginTop: '8px' }} onClick={() => remove(field.name)} />
-          </Col>
-        )}
+        <Col>
+          <MinusCircleOutlined style={{ marginTop: '8px' }} onClick={() => remove(field.name)} />
+        </Col>
       </Row>
     </>
   );

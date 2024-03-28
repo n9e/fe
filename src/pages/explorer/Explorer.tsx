@@ -108,7 +108,7 @@ const Panel = ({ type, defaultCate, panelIdx, defaultFormValuesControl }: IProps
               {({ getFieldValue }) => {
                 const cate = getFieldValue('datasourceCate');
                 return (
-                  <EmptyDatasourcePopover datasourceList={groupedDatasourceList[cate]}>
+                  <EmptyDatasourcePopover datasourceCate={cate} datasourceList={groupedDatasourceList[cate]}>
                     <Input.Group compact>
                       <span
                         className='ant-input-group-addon'

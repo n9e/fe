@@ -15,17 +15,18 @@
  *
  */
 import React, { useContext, useEffect, createContext } from 'react';
-import { Form, Space, Button, notification, message, Tooltip } from 'antd';
-import { Trans, useTranslation } from 'react-i18next';
+import { Form, Space, Button, message, Affix, Card } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { useHistory, useParams, Link } from 'react-router-dom';
 import _ from 'lodash';
 import { CommonStateContext } from '@/App';
-import { addStrategy, EditStrategy, prometheusQuery, validateRule } from '@/services/warning';
+import { addStrategy, EditStrategy } from '@/services/warning';
+import { scrollToFirstError } from '@/utils';
 import Base from './Base';
 import Rule from './Rule';
 import Effective from './Effective';
 import Notify from './Notify';
-import { getFirstDatasourceId, processFormValues, processInitialValues } from './utils';
+import { processFormValues, processInitialValues } from './utils';
 import { defaultValues } from './constants';
 
 interface IProps {
@@ -109,72 +110,52 @@ export default function index(props: IProps) {
       }}
     >
       <Form form={form} layout='vertical' disabled={disabled} style={{ overflow: 'hidden auto' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: '10px 10px 0 10px', marginBottom: 24 }}>
-          <Form.Item name='disabled' hidden>
-            <div />
-          </Form.Item>
-          <Base />
-          <Rule form={form} />
-          <Effective />
-          <Notify disabled={disabled} />
-          {!disabled && (
-            <Space>
-              <Button
-                type='primary'
-                onClick={() => {
-                  form
-                    .validateFields()
-                    .then(async (values) => {
-                      handleCheck(values);
-                      const data = processFormValues(values) as any;
-                      if (type === 1) {
-                        const res = await EditStrategy(data, initialValues.group_id, initialValues.id);
-                        handleMessage(res);
-                      } else {
-                        const curBusiId = initialValues?.group_id || Number(bgid);
-                        const res = await addStrategy([data], curBusiId);
-                        handleMessage(res);
-                      }
-                    })
-                    .catch((err) => {
-                      console.error(err);
-                    });
-                }}
-              >
-                {t('common:btn.save')}
-              </Button>
-              {/* <Tooltip
-                title={
-                  <Trans
-                    ns='alertRules'
-                    i18nKey='testTip'
-                    components={{
-                      br: <br />,
+        <div className='p2'>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <Form.Item name='disabled' hidden>
+              <div />
+            </Form.Item>
+            <Base />
+            <Rule form={form} />
+            <Effective />
+            <Notify disabled={disabled} />
+          </div>
+          <Affix offsetBottom={0}>
+            <Card size='small' className='affix-bottom-shadow'>
+              {!disabled && (
+                <Space>
+                  <Button
+                    type='primary'
+                    onClick={() => {
+                      form
+                        .validateFields()
+                        .then(async (values) => {
+                          handleCheck(values);
+                          const data = processFormValues(values) as any;
+                          if (type === 1) {
+                            const res = await EditStrategy(data, initialValues.group_id, initialValues.id);
+                            handleMessage(res);
+                          } else {
+                            const curBusiId = initialValues?.group_id || Number(bgid);
+                            const res = await addStrategy([data], curBusiId);
+                            handleMessage(res);
+                          }
+                        })
+                        .catch((err) => {
+                          console.error(err);
+                          scrollToFirstError();
+                        });
                     }}
-                  />
-                }
-              >
-                <Button
-                  onClick={() => {
-                    form
-                      .validateFields()
-                      .then(async (values) => {
-                        const data = processFormValues(values) as any;
-                        validateRule(data);
-                      })
-                      .catch((err) => {
-                        console.error(err);
-                      });
-                  }}
-                >
-                  {t('common:btn.test')}
-                </Button>
-              </Tooltip> */}
-              <Link to='/alert-rules'>
-                <Button>{t('common:btn.cancel')}</Button>
-              </Link>
-            </Space>
-          )}
+                  >
+                    {t('common:btn.save')}
+                  </Button>
+                  <Link to='/alert-rules'>
+                    <Button>{t('common:btn.cancel')}</Button>
+                  </Link>
+                </Space>
+              )}
+            </Card>
+          </Affix>
         </div>
       </Form>
     </FormStateContext.Provider>

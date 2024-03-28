@@ -27,7 +27,13 @@ export default function GraphStyles({ variableConfigWithOptions }) {
   return (
     <Panel header={t('panel.custom.title')}>
       <Form.Item label={t('panel.custom.iframe.src')} name={[...namePrefix, 'src']}>
-        <Mentions prefix='$' rows={1}>
+        <Mentions
+          prefix='$'
+          autoSize={{
+            minRows: 1,
+            maxRows: 6,
+          }}
+        >
           {_.map(variableConfigWithOptions, (item) => {
             return (
               <Mentions.Option key={item.name} value={item.name}>

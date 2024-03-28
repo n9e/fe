@@ -10,6 +10,7 @@ import HTML from './Editor/HTML';
 import Markdown from './Editor/Markdown';
 import FormModal from './FormModal';
 import { putNotifyTplContent } from './services';
+import './style.less';
 import './locale';
 
 export default function index() {
@@ -34,9 +35,9 @@ export default function index() {
 
   return (
     <PageLayout title={t('title')} icon={<SoundOutlined />}>
-      <div className='user-manage-content'>
-        <div style={{ display: 'flex', height: '100%' }}>
-          <div className='left-tree-area'>
+      <div>
+        <div className='n9e-notification-tpls user-manage-content'>
+          <div className='n9e-notification-tpls-sidebar left-tree-area'>
             <div className='sub-title'>
               {t('list')}
               <Button
@@ -92,7 +93,7 @@ export default function index() {
               )}
             />
           </div>
-          <div className='resource-table-content'>
+          <div className='n9e-notification-tpls-main resource-table-content'>
             <div className='team-info'>
               <Space
                 style={{

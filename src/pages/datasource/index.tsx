@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import PageLayout from '@/components/pageLayout';
-import { sourceLogoMap } from './config';
+import { allCates } from '@/components/AdvancedWrap/utils';
 import { getDataSourcePluginList } from './services';
 import SourceCards from './components/SourceCards';
 import TableSource from './components/TableSource';
@@ -22,11 +22,12 @@ export default function index() {
     getDataSourcePluginList().then((res) => {
       setPluginList(
         _.map(res, (item) => {
+          const logoSrc = _.find(allCates, { value: item.plugin_type })?.logo;
           return {
             name: item.plugin_type_name,
             category: item.category,
             type: item.plugin_type,
-            logo: sourceLogoMap[item.plugin_type],
+            logo: logoSrc,
           };
         }),
       );

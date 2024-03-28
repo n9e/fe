@@ -30,7 +30,7 @@ import BusinessGroup2, { getCleanBusinessGroupIds } from '@/components/BusinessG
 import './locale';
 import './index.less';
 
-export { BusinessGroup };
+export { BusinessGroup }; // TODO 部分页面使用的老的业务组组件，后续逐步替换
 
 enum OperateType {
   BindTag = 'bindTag',
@@ -358,7 +358,7 @@ const Targets: React.FC = () => {
           renderHeadExtra={() => {
             return (
               <div>
-                <div className='left-area-group-title'>{t('default_filter')}</div>
+                <div className='n9e-biz-group-container-group-title'>{t('default_filter')}</div>
                 <div
                   className={classNames({
                     'n9e-biz-group-item': true,
@@ -390,7 +390,7 @@ const Targets: React.FC = () => {
           }}
         />
         <div
-          className='table-area'
+          className='table-area n9e-border-base'
           style={{
             height: '100%',
             overflowY: 'auto',

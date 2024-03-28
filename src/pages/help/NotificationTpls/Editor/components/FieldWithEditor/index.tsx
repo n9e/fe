@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
-import CodeMirror from '@uiw/react-codemirror';
+import CodeMirror from '@/components/CodeMirror';
 import _ from 'lodash';
 import { previewTemplate } from '../../../services';
 import './style.less';

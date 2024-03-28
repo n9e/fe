@@ -1,8 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useContext } from 'react';
 import classNames from 'classnames';
 import _ from 'lodash';
 import { EditorView, highlightSpecialChars, keymap, ViewUpdate, placeholder } from '@codemirror/view';
-import { EditorState, Prec } from '@codemirror/state';
+import { EditorState, Prec, Compartment } from '@codemirror/state';
 import { indentOnInput } from '@codemirror/language';
 import { history, historyKeymap } from '@codemirror/history';
 import { defaultKeymap, insertNewlineAndIndent } from '@codemirror/commands';
@@ -13,9 +13,11 @@ import { commentKeymap } from '@codemirror/comment';
 import { lintKeymap } from '@codemirror/lint';
 import { autocompletion, completionKeymap } from '@codemirror/autocomplete';
 import { PromQLExtension } from 'codemirror-promql';
-import { baseTheme, promqlHighlighter } from './CMTheme';
+import { baseTheme, lightTheme, darkTheme, promqlHighlighter } from './CMTheme';
 import { N9E_PATHNAME, AccessTokenKey } from '@/utils/constant';
+import { CommonStateContext } from '@/App';
 
+const dynamicConfigCompartment = new Compartment();
 const promqlExtension = new PromQLExtension();
 
 export interface CMExpressionInputProps {
@@ -46,6 +48,7 @@ const ExpressionInput = (
   }: CMExpressionInputProps,
   ref,
 ) => {
+  const { darkMode } = useContext(CommonStateContext);
   const containerRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
   const executeQueryCallback = useRef(executeQuery);
@@ -85,6 +88,7 @@ const ExpressionInput = (
       );
 
     // Create or reconfigure the editor.
+    const dynamicConfig = [darkMode ? darkTheme : lightTheme];
     const view = viewRef.current;
     if (view === null) {
       // If the editor does not exist yet, create it.
@@ -110,6 +114,7 @@ const ExpressionInput = (
           placeholder('Enter a Loki query. Prease Input {} to autocomplete'),
           promqlExtension.asExtension(),
           EditorView.editable.of(!readonly),
+          dynamicConfigCompartment.of(dynamicConfig),
           keymap.of([
             {
               key: 'Escape',
@@ -165,6 +170,12 @@ const ExpressionInput = (
       }
 
       view.focus();
+    } else {
+      view.dispatch(
+        view.state.update({
+          effects: dynamicConfigCompartment.reconfigure(dynamicConfig),
+        }),
+      );
     }
   }, [onChange, JSON.stringify(headers), completeEnabled]);
 

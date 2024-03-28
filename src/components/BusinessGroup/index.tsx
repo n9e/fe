@@ -85,7 +85,7 @@ export default function index(props: IProps) {
         localStorage.setItem('leftwidth', curWidth.toString());
       }}
     >
-      <div className={collapse ? 'left-area collapse' : 'left-area'}>
+      <div className={collapse ? 'n9e-biz-group-container collapse' : 'n9e-biz-group-container'}>
         <div
           className='collapse-btn'
           onClick={() => {
@@ -95,9 +95,9 @@ export default function index(props: IProps) {
         >
           {!collapse ? <LeftOutlined /> : <RightOutlined />}
         </div>
-        <div className='left-area-group group-shrink'>
+        <div className='n9e-biz-group-container-group group-shrink'>
           {renderHeadExtra && renderHeadExtra()}
-          <div className='left-area-group-title'>
+          <div className='n9e-biz-group-container-group-title'>
             {title}
             {title === t('common:business_group') && (
               <Link to='/busi-groups' target='_blank'>
@@ -106,7 +106,7 @@ export default function index(props: IProps) {
             )}
           </div>
           <Input
-            className='left-area-group-search'
+            className='n9e-biz-group-container-group-search'
             prefix={<SearchOutlined />}
             onPressEnter={(e) => {
               e.preventDefault();
@@ -151,14 +151,10 @@ export default function index(props: IProps) {
               {!_.isEmpty(businessGroupTreeData) && (
                 <Tree
                   rootClassName='business-group-tree'
-                  showLine={{
-                    showLeafIcon: false,
-                  }}
                   defaultExpandParent={false}
                   defaultExpandedKeys={getCollapsedKeys(businessGroupTreeData, getLocaleExpandedKeys(), businessGroup.key)}
                   selectedKeys={showSelected && businessGroup.key ? [businessGroup.key] : undefined}
                   blockNode
-                  switcherIcon={<DownOutlined />}
                   onSelect={(_selectedKeys, e) => {
                     const itemKey = e.node.key;
                     businessGroupOnChange(itemKey);

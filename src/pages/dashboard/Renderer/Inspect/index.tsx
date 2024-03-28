@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Select, Tabs } from 'antd';
-import CodeMirror from '@uiw/react-codemirror';
 import { json } from '@codemirror/lang-json';
 import { defaultHighlightStyle } from '@codemirror/highlight';
 import { EditorView } from '@codemirror/view';
+import CodeMirror from '@/components/CodeMirror';
 import './style.less';
 
 interface Props {
@@ -45,7 +45,6 @@ export default function index(props: Props) {
         <div style={{ height: multipleQuery ? 'calc(100% - 42px)' : '100%' }}>
           <CodeMirror
             height='100%'
-            theme='light'
             basicSetup
             editable
             extensions={[
@@ -68,7 +67,6 @@ export default function index(props: Props) {
       <Tabs.TabPane tab={t('panel.inspect.json')} key='json'>
         <CodeMirror
           height='100%'
-          theme='light'
           basicSetup
           editable
           extensions={[

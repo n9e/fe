@@ -1,6 +1,7 @@
 import React from 'react';
 import { Input, Form, InputNumber } from 'antd';
 import { useTranslation } from 'react-i18next';
+import _ from 'lodash';
 
 interface IProps {
   urlExtra?: React.ReactNode;
@@ -22,7 +23,7 @@ export default function HTTP(props: IProps) {
         rules={[
           { required: true },
           {
-            validator: (_, value) => (!value.includes(' ') ? Promise.resolve() : Promise.reject(new Error(t('form.url_no_spaces_msg')))),
+            validator: (_rule, value) => (!_.includes(value, ' ') ? Promise.resolve() : Promise.reject(new Error(t('form.url_no_spaces_msg')))),
           },
         ]}
       >

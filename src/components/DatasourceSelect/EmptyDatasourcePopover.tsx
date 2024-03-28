@@ -4,8 +4,10 @@ import { Popover } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import { IS_ENT } from '@/utils/constant';
 
 interface IProps {
+  datasourceCate?: string;
   datasourceList: any[];
   children: React.ReactNode;
 }
@@ -13,8 +15,11 @@ interface IProps {
 export default function EmptyDatasourcePopover(props: IProps) {
   const { t } = useTranslation();
   const { profile } = useContext(CommonStateContext);
-  const { datasourceList, children } = props;
-  const linkUrl = import.meta.env.VITE_IS_ENT === 'true' ? '/settings/source/timeseries' : '/help/source';
+  const { datasourceCate, datasourceList, children } = props;
+  let linkUrl = IS_ENT ? '/settings/source/timeseries' : '/help/source';
+  if (datasourceCate === 'prometheus') {
+    linkUrl = IS_ENT ? '/settings/datasource/add/prometheus' : '/help/source/add/prometheus';
+  }
 
   return (
     <Popover

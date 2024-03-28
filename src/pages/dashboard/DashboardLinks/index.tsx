@@ -37,7 +37,7 @@ export default function index(props: IProps) {
       <Space align='baseline'>
         {editable && (
           <EditOutlined
-            style={{ fontSize: 18 }}
+            style={{ fontSize: 18, position: 'relative', top: 4 }}
             className='icon'
             onClick={() => {
               Edit({

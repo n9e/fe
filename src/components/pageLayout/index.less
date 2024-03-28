@@ -1,5 +1,3 @@
-@import '@/global.variable.less';
-
 .page-wrapper {
   height: 100%;
   display: flex;
@@ -11,7 +9,6 @@
     .page-header-title {
       display: flex;
       align-items: center;
-      color: black;
       font-weight: bold;
       font-size: 16px;
       .anticon {
@@ -36,7 +33,6 @@
           margin-right: 10px;
           vertical-align: text-bottom;
           display: inline-block;
-          // background: url('/image/avatar1.png') 100% 100% / cover;
         }
         .display-name {
           padding-left: 10px;
@@ -54,19 +50,20 @@
       align-items: center;
     }
     .n9e-page-header-content {
-      border-bottom: 1px solid #d9d9d9; // 2023-11-03 n9e 单独新增
-      background-color: #fff; // 2023-11-03 n9e 单独新增
+      border-bottom: 1px solid var(--fc-border-color); // 2023-11-03 n9e 单独新增
+      background-color: var(--fc-fill-2); // 2023-11-03 n9e 单独新增
     }
 
     & + div {
       overflow-x: hidden;
       overflow-y: auto;
-      padding: 10px 6px 12px 12px; // 将原来 paddingRight 10px 拆开，以兼容出现滚动条的时候有距离右侧 6px 的间距
-      margin-right: 6px;
+      padding: 16px 6px 16px 16px; // 将原来 paddingRight 10px 拆开，以兼容出现滚动条的时候有距离右侧 6px 的间距
+      margin-right: 8px;
       height: 100%;
       &:not(.srm) > * {
-        background: #fff;
-        box-shadow: 0px 1px 8px 0 rgb(0 0 0 / 10%);
+        background: var(--fc-fill-2);
+        // border: 1px solid var(--fc-border-color);
+        // box-shadow: 0px 1px 8px 0 rgb(0 0 0 / 10%);
       }
     }
   }

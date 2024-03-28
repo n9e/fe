@@ -85,7 +85,7 @@ export default function Header(props: IProps) {
                         if (businessGroup.id) {
                           Import({
                             busiId: businessGroup.id,
-                            type: 'Import',
+                            type: 'ImportBuiltin',
                             refreshList,
                           });
                         }
