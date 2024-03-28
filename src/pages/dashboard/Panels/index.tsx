@@ -23,6 +23,7 @@ import { useLocation } from 'react-router-dom';
 import querystring from 'query-string';
 import RGL, { WidthProvider } from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
+import { useTranslation } from 'react-i18next';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { updateDashboardConfigs as updateDashboardConfigsFunc } from '@/services/dashboardV2';
 import { Dashboard } from '@/store/dashboardInterface';
@@ -44,12 +45,15 @@ import Renderer from '../Renderer/Renderer/index';
 import Row from './Row';
 import EditorModal from './EditorModal';
 import { getDefaultThemeMode, ROW_HEIGHT } from '../Detail/utils';
+import { IDashboardConfig } from '../types';
 import './style.less';
 
 interface IProps {
   dashboardId: string;
   editable: boolean;
   dashboard: Dashboard;
+  setDashboard: React.Dispatch<React.SetStateAction<Dashboard>>;
+  setAllowedLeave: (flag: boolean) => void;
   range: IRawTimeRange;
   setRange: (range: IRawTimeRange) => void;
   variableConfig: any;
@@ -64,13 +68,14 @@ interface IProps {
 const ReactGridLayout = WidthProvider(RGL);
 
 function index(props: IProps) {
-  const { profile, darkMode } = useContext(CommonStateContext);
+  const { t } = useTranslation('dashboard');
+  const { profile, darkMode, dashboardSaveMode } = useContext(CommonStateContext);
   const location = useLocation();
   let themeMode = darkMode ? 'dark' : 'light';
   if (IS_ENT) {
     themeMode = getDefaultThemeMode(querystring.parse(location.search));
   }
-  const { editable, dashboard, range, variableConfig, panels, isPreview, setPanels, onShareClick, onUpdated } = props;
+  const { editable, dashboard, setDashboard, setAllowedLeave, range, variableConfig, panels, isPreview, setPanels, onShareClick, onUpdated } = props;
   const roles = _.get(profile, 'roles', []);
   const isAuthorized = !_.some(roles, (item) => item === 'Guest') && !isPreview;
   const layoutInitialized = useRef(false);
@@ -82,13 +87,30 @@ function index(props: IProps) {
     draggableHandle: '.dashboards-panels-item-drag-handle',
   };
   const updateDashboardConfigs = (dashboardId, options) => {
-    if (!editable) {
-      message.warning('仪表盘已经被别人修改，为避免相互覆盖，请刷新仪表盘查看最新配置和数据');
+    if (dashboardSaveMode === 'manual') {
+      let configs = {} as IDashboardConfig;
+      try {
+        configs = JSON.parse(options.configs);
+      } catch (e) {
+        console.error(e);
+      }
+      setAllowedLeave(false);
+      setDashboard((dashboard) => {
+        return {
+          ...dashboard,
+          configs,
+        };
+      });
+      return Promise.reject();
+    } else {
+      if (!editable) {
+        message.warning(t('detail.expired'));
+      }
+      if (!_.isEmpty(roles) && isAuthorized && editable) {
+        return updateDashboardConfigsFunc(dashboardId, options);
+      }
+      return Promise.reject();
     }
-    if (!_.isEmpty(roles) && isAuthorized && editable) {
-      return updateDashboardConfigsFunc(dashboardId, options);
-    }
-    return Promise.reject();
   };
   const editorRef = useRef<any>(null);
 

@@ -19,12 +19,13 @@ import { useHistory, useLocation } from 'react-router-dom';
 import querystring from 'query-string';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Button, Space, Dropdown, Menu, Switch, notification, Select } from 'antd';
-import { RollbackOutlined, SettingOutlined } from '@ant-design/icons';
+import { Button, Space, Dropdown, Menu, Switch, notification, Select, message } from 'antd';
+import { RollbackOutlined, SettingOutlined, SaveOutlined } from '@ant-design/icons';
 import { useKeyPress } from 'ahooks';
 import { TimeRangePickerWithRefresh, IRawTimeRange } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
 import { IS_ENT } from '@/utils/constant';
+import { updateDashboardConfigs } from '@/services/dashboardV2';
 import { AddPanelIcon } from '../config';
 import { visualizations } from '../Editor/config';
 import { dashboardTimeCacheKey } from './Detail';
@@ -41,16 +42,19 @@ interface IProps {
   isBuiltin: boolean;
   isAuthorized: boolean;
   gobackPath?: string;
+  editable: boolean;
+  updateAtRef: React.MutableRefObject<number | undefined>;
+  setAllowedLeave: (allowed: boolean) => void;
 }
 
 const cachePageTitle = document.title || 'Nightingale';
 
 export default function Title(props: IProps) {
   const { t } = useTranslation('dashboard');
-  const { dashboard, range, setRange, onAddPanel, isPreview, isBuiltin, isAuthorized } = props;
+  const { dashboard, range, setRange, onAddPanel, isPreview, isBuiltin, isAuthorized, editable, updateAtRef, setAllowedLeave } = props;
   const history = useHistory();
   const location = useLocation();
-  const { siteInfo } = useContext(CommonStateContext);
+  const { siteInfo, dashboardSaveMode } = useContext(CommonStateContext);
   const query = querystring.parse(location.search);
   const { viewMode } = query;
   const themeMode = getDefaultThemeMode(query); // only for ENT version
@@ -149,6 +153,24 @@ export default function Title(props: IProps) {
               </Button>
             </Dropdown>
           )}
+          {isAuthorized && dashboardSaveMode === 'manual' && (
+            <Button
+              icon={<SaveOutlined />}
+              onClick={() => {
+                if (editable) {
+                  updateDashboardConfigs(dashboard.id, {
+                    configs: JSON.stringify(dashboard.configs),
+                  }).then((res) => {
+                    updateAtRef.current = res.update_at;
+                    message.success(t('detail.saved'));
+                    setAllowedLeave(true);
+                  });
+                } else {
+                  message.warning(t('detail.expired'));
+                }
+              }}
+            />
+          )}
           {isAuthorized && (
             <Button
               icon={<SettingOutlined />}
@@ -195,22 +217,24 @@ export default function Title(props: IProps) {
           >
             {viewMode === 'fullscreen' ? t('exit_full_screen') : t('full_screen')}
           </Button>
-          <Select
-            options={[
-              { label: 'light', value: 'light' },
-              { label: 'dark', value: 'dark' },
-            ]}
-            value={themeMode || 'light'}
-            onChange={(val) => {
-              const newQuery = _.omit(query, ['themeMode']);
-              newQuery.themeMode = val;
-              history.replace({
-                pathname: location.pathname,
-                search: querystring.stringify(newQuery),
-              });
-              window.localStorage.setItem(dashboardThemeModeCacheKey, val);
-            }}
-          />
+          {IS_ENT && (
+            <Select
+              options={[
+                { label: 'light', value: 'light' },
+                { label: 'dark', value: 'dark' },
+              ]}
+              value={themeMode || 'light'}
+              onChange={(val) => {
+                const newQuery = _.omit(query, ['themeMode']);
+                newQuery.themeMode = val;
+                history.replace({
+                  pathname: location.pathname,
+                  search: querystring.stringify(newQuery),
+                });
+                window.localStorage.setItem(dashboardThemeModeCacheKey, val);
+              }}
+            />
+          )}
         </Space>
       </div>
     </div>

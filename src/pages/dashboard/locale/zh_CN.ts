@@ -391,6 +391,15 @@ const zh_CN = {
         esc: '按 ESC 键退出全屏模式',
       },
     },
+    saved: '保存成功',
+    expired: '仪表盘已经被别人修改，为避免相互覆盖，请刷新仪表盘查看最新配置和数据',
+    prompt: {
+      title: '有更改未保存',
+      message: '您想保存更改吗？',
+      cancelText: '取消',
+      discardText: '放弃',
+      okText: '保存',
+    },
   },
   settings: {
     graphTooltip: {

@@ -375,6 +375,15 @@ const en_US = {
         esc: 'Press ESC to exit full screen mode',
       },
     },
+    saved: 'Dashboard saved',
+    expired: 'The dashboard has been modified by others. To avoid overwriting each other, please refresh the dashboard to view the latest configuration and data',
+    prompt: {
+      title: 'Unsaved changes',
+      message: 'Do you want to save your changes?',
+      cancelText: 'Cancel',
+      discardText: 'Discard',
+      okText: 'Save',
+    },
   },
   settings: {
     graphTooltip: {
