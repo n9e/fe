@@ -170,7 +170,7 @@ function App() {
       setCommonState((state) => ({ ...state, sideMenuBgMode: mode }));
     },
     esIndexMode: 'all',
-    dashboardSaveMode: 'manual',
+    dashboardSaveMode: 'auto',
   });
 
   useEffect(() => {
