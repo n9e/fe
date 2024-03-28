@@ -68,6 +68,8 @@ const zh_HK = {
       trigger: '觸發',
     },
     trigger: '觸發',
+    firemap_ql_label: '卡片',
+    northstar_ql_label: '指標',
   },
 };
 

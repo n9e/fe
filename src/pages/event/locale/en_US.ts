@@ -70,6 +70,8 @@ const en_US = {
       trigger: 'Trigger',
     },
     trigger: 'Trigger',
+    firemap_ql_label: 'Card',
+    northstar_ql_label: 'Indicator',
   },
 };
 export default en_US;

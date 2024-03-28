@@ -1,4 +1,9 @@
 const zh_CN = {
+  auth:{
+    403:'你没有权限访问该页面, 请联系管理员!',
+    404:'你访问的页面不存在!',
+    '404_btn': '回到首页'
+  },
   business_group: '业务组',
   search_placeholder: '搜索',
   nodata: '暂无数据',

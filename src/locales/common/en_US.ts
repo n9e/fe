@@ -1,4 +1,9 @@
 const en_US = {
+  auth:{
+    403:'You do not have permission to access this page, please contact the administrator!',
+    404:'The page you visited does not exist!',
+    '404_btn': 'Back to Home',
+  },
   business_group: 'Business Group',
   search_placeholder: 'Search',
   nodata: 'No Data',

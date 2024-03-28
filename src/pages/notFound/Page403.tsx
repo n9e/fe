@@ -17,15 +17,14 @@
 import { Button, Result } from 'antd';
 import React from 'react';
 import { useHistory } from 'react-router';
+import { useTranslation } from 'react-i18next';
 
 const NotFound: React.FC = () => {
+  const { t } = useTranslation();
   const history = useHistory();
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-      <Result
-        title='403'
-        subTitle='你没有权限访问该页面, 请联系管理员!'
-      />
+      <Result title='403' subTitle={t('common:auth.403')} />
     </div>
   );
 };

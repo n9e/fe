@@ -184,7 +184,18 @@ const EventDetailPage: React.FC = () => {
       label: t('detail.cate'),
       key: 'cate',
     },
-    ...(eventDetail?.cate === 'prometheus'
+    ...(_.includes(['firemap', 'northstar'], eventDetail?.rule_prod)
+      ? [
+          {
+            label: t(`detail.${eventDetail?.rule_prod}_ql_label`),
+            key: 'prom_ql',
+            render: (val) => {
+              return val;
+            },
+          },
+        ]
+      : [false]),
+    ...(eventDetail?.cate === 'prometheus' && !_.includes(['firemap', 'northstar'], eventDetail?.rule_prod)
       ? PrometheusDetail({
           eventDetail,
           history,
