@@ -115,7 +115,12 @@ function convertVariablesGrafanaToN9E(templates: any, __inputs: any[], data: any
     })
     .map((item) => {
       if (item.type === 'query') {
-        let definition = item.definition || _.get(item, 'query') || _.get(item, 'query.query');
+        let definition = item.definition;
+        if (typeof item.query === 'string') {
+          definition = item.query;
+        } else if (typeof item.query?.query === 'string') {
+          definition = item.query.query;
+        }
         _.forEach(varWithUnitMap, (val, key) => {
           definition = _.replace(definition, key, val);
         });
