@@ -389,6 +389,7 @@ const zh_CN = {
     fullscreen: {
       notification: {
         esc: '按 ESC 键退出全屏模式',
+        theme: '主题切换',
       },
     },
     saved: '保存成功',

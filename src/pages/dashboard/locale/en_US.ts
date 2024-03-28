@@ -373,6 +373,7 @@ const en_US = {
     fullscreen: {
       notification: {
         esc: 'Press ESC to exit full screen mode',
+        theme: 'Switch theme',
       },
     },
     saved: 'Dashboard saved',
