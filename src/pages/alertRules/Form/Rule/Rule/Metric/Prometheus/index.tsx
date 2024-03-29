@@ -16,7 +16,7 @@
  */
 
 import React, { useContext } from 'react';
-import { Form, Row, Col, Card, Space, Select, Tooltip } from 'antd';
+import { Form, Row, Col, Card, Space, Select, Tooltip, Radio } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { Trans, useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -70,19 +70,10 @@ export default function index(props: { form: any; datasourceCate: string; dataso
           name={['rule_config', 'version']}
           initialValue='v1'
         >
-          <Select
+          <Radio.Group
             disabled={disabled}
-            options={[
-              {
-                label: 'v1',
-                value: 'v1',
-              },
-              {
-                label: 'v2',
-                value: 'v2',
-              },
-            ]}
-            onChange={(val) => {
+            onChange={(e) => {
+              const val = e.target.value;
               if (val === 'v2') {
                 const rule_config = form.getFieldValue('rule_config');
                 form.setFieldsValue({
@@ -106,7 +97,10 @@ export default function index(props: { form: any; datasourceCate: string; dataso
                 });
               }
             }}
-          />
+          >
+            <Radio value='v1'>{t('ruleConfigPromVersion_v1')}</Radio>
+            <Radio value='v2'>{t('ruleConfigPromVersion_v2')}</Radio>
+          </Radio.Group>
         </Form.Item>
       )}
       {ruleConfigVersion === 'v2' ? (

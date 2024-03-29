@@ -1,6 +1,7 @@
 const en_US = {
   title: 'Notification Template Management',
   list: 'List',
+  name: 'Name',
   channel: 'Channel',
   contact_key_name: 'Contact Name',
   contact_key: 'Contact Key',
@@ -11,5 +12,7 @@ const en_US = {
     1: 'Yes',
   },
   content_prompt: 'The content has been modified. Do you want to discard the changes?',
+  post_title: 'Add Notification Template',
+  update_title: 'Edit Notification Template',
 };
 export default en_US;
