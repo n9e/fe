@@ -157,9 +157,11 @@ const en_US = {
     title: 'Preset filters',
     all: 'All rules',
   },
-  ruleConfigPromVersion: 'Version',
+  ruleConfigPromVersion: 'Mode',
+  ruleConfigPromVersion_v1: 'Normal mode',
+  ruleConfigPromVersion_v2: 'Advanced mode',
   ruleConfigPromVersion_tip:
-    'v1 version, configure the trigger in PromQL, queries and triggers are set together.<br />v2 version, queries and triggers settings are separated, if there are multiple query conditions, addition and subtraction are required for multiplication and division calculations, v2 can be used. The value of each query condition will be displayed in the on-site value of the alarm event.',
+    'Normal mode: configure the trigger in PromQL, queries and triggers are set together.<br />Advanced mode: queries and triggers settings are separated, if there are multiple query conditions, addition and subtraction are required for multiplication and division calculations, you can use the advanced mode. The value of each query condition will be displayed in the on-site value of the alarm event.',
   ruleConfigPromVersionV2: {
     query: {
       title: 'Query',
