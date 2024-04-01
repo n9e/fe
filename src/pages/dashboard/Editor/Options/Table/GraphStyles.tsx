@@ -28,6 +28,7 @@ export default function GraphStyles({ chartForm, variableConfigWithOptions }) {
   const namePrefix = ['custom'];
   const [tableFields, setTableFields] = useGlobalState('tableFields');
   const [tableRefIds, setTableRefIds] = useGlobalState('tableRefIds');
+  const calc = Form.useWatch([...namePrefix, 'calc']);
 
   useEffect(() => {
     return () => {
@@ -56,13 +57,19 @@ export default function GraphStyles({ chartForm, variableConfigWithOptions }) {
         </Row>
         <Form.Item label={t('panel.custom.calc')} name={[...namePrefix, 'calc']} tooltip={t('panel.custom.calc_tip')}>
           <Select>
-            {_.map(calcsOptions, (item, key) => {
-              return (
-                <Select.Option key={key} value={key}>
-                  {t(`calcs.${key}`)}
-                </Select.Option>
-              );
-            })}
+            {_.map(
+              {
+                ...calcsOptions,
+                origin: 'origin',
+              },
+              (item, key) => {
+                return (
+                  <Select.Option key={key} value={key}>
+                    {t(`calcs.${key}`)}
+                  </Select.Option>
+                );
+              },
+            )}
           </Select>
         </Form.Item>
         <Row gutter={10}>
@@ -90,7 +97,7 @@ export default function GraphStyles({ chartForm, variableConfigWithOptions }) {
                   <Col span={12}>
                     <Form.Item label={t('panel.custom.table.columns')} name={[...namePrefix, 'columns']}>
                       <Select mode='multiple' placeholder=''>
-                        {_.map(_.concat(tableFields, 'value'), (item) => {
+                        {_.map(_.concat(calc === 'origin' ? '__time__' : [], tableFields, 'value'), (item) => {
                           return (
                             <Select.Option key={item} value={item}>
                               {item}
@@ -107,7 +114,7 @@ export default function GraphStyles({ chartForm, variableConfigWithOptions }) {
                   <Col span={12}>
                     <Form.Item label={t('panel.custom.table.aggrDimension')} name={[...namePrefix, 'aggrDimension']}>
                       <Select mode='multiple'>
-                        {_.map(tableFields, (item) => {
+                        {_.map(_.concat(calc === 'origin' ? '__time__' : [], tableFields), (item) => {
                           return (
                             <Select.Option key={item} value={item}>
                               {item}
@@ -140,6 +147,7 @@ export default function GraphStyles({ chartForm, variableConfigWithOptions }) {
                 } else if (displayMode === 'labelValuesToRows') {
                   keys = _.concat(_.isEmpty(aggrDimension) ? ['name'] : aggrDimension, tableRefIds);
                 }
+
                 return (
                   <Form.Item label={t('panel.custom.table.sortColumn')} name={[...namePrefix, 'sortColumn']}>
                     <Select
