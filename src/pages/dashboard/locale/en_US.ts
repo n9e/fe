@@ -423,6 +423,7 @@ const en_US = {
     avg: 'Avg',
     sum: 'Sum',
     count: 'Count',
+    origin: 'Origin',
   },
 };
 export default en_US;

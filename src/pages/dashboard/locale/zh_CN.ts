@@ -439,6 +439,7 @@ const zh_CN = {
     avg: '平均值',
     sum: '总和',
     count: '数量',
+    origin: '原始值',
   },
 };
 export default zh_CN;

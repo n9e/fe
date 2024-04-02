@@ -105,6 +105,34 @@ export const getMappedTextObj = (textValue: string, valueMappings?: IValueMappin
 };
 
 const getCalculatedValuesBySeries = (series: any[], calc: string, { unit, decimals, dateFormat }, valueMappings?: IValueMapping[], thresholds?: IThresholds) => {
+  if (calc === 'origin') {
+    let values: any[] = [];
+    _.forEach(series, (serie) => {
+      _.forEach(serie.data, (item) => {
+        values.push({
+          id: `${serie.id}_${item[0]}`,
+          name: getMappedTextObj(serie.name, valueMappings)?.text,
+          __time__: item[0],
+          metric: _.reduce(
+            serie.metric,
+            (pre, curVal, curKey) => {
+              pre[curKey] = getMappedTextObj(curVal, valueMappings)?.text;
+              return pre;
+            },
+            {},
+          ),
+          fields: {
+            ...serie.metric,
+            refId: serie.refId,
+            __time__: item[0],
+          },
+          stat: item[1],
+          ...getSerieTextObj(item[1], { unit, decimals, dateFormat }, valueMappings, thresholds),
+        });
+      });
+    });
+    return values;
+  }
   const values = _.map(series, (serie) => {
     const results = {
       lastNotNull: () => _.get(_.last(_.filter(serie.data, (item) => item[1] !== null && !_.isNaN(_.toNumber(item[1])))), 1),
