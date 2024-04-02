@@ -256,7 +256,7 @@ function TableCpt(props: IProps, ref: any) {
     if (calc === 'origin') {
       tableColumns = _.concat(
         {
-          title: 'Time',
+          title: '__time__',
           key: 'name',
           dataIndex: '__time__',
           sorter: (a, b) => {
@@ -277,7 +277,7 @@ function TableCpt(props: IProps, ref: any) {
       const columnsKeys: any[] = _.isEmpty(columns) ? _.concat(getColumnsKeys(calculatedValues), 'value') : columns;
       tableColumns = _.map(columnsKeys, (key, idx) => {
         return {
-          title: key === '__time__' ? 'Time' : key,
+          title: key,
           dataIndex: key,
           key: key,
           width: idx < columnsKeys.length - 1 ? size?.width! / columnsKeys.length - 14 : undefined,
@@ -350,7 +350,7 @@ function TableCpt(props: IProps, ref: any) {
       );
       tableColumns = _.map(aggrDimensions, (aggrDimension) => {
         return {
-          title: aggrDimension === '__time__' ? 'Time' : aggrDimension,
+          title: aggrDimension,
           dataIndex: aggrDimension,
           key: aggrDimension,
           width: size?.width! / (groupNames.length + aggrDimensions.length) - 14,
