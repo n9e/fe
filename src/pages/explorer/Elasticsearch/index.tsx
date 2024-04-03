@@ -19,6 +19,8 @@ import QueryBuilder from './QueryBuilder';
 import QueryBuilderWithIndexPatterns from './QueryBuilderWithIndexPatterns';
 import LogView from './LogView';
 import './style.less';
+// @ts-ignore
+import LogDownload from 'plus:/datasource/elasticsearch/components/LogDownload';
 
 interface IProps {
   headerExtra: HTMLDivElement | null;
@@ -107,7 +109,7 @@ const getDefaultMode = (query, isOpenSearch, esIndexMode, value?) => {
 
 export default function index(props: IProps) {
   const { t } = useTranslation('explorer');
-  const { esIndexMode } = useContext(CommonStateContext);
+  const { esIndexMode, isPlus } = useContext(CommonStateContext);
   const { headerExtra, datasourceValue, form, isOpenSearch = false, defaultFormValuesControl } = props;
   const query = queryString.parse(useLocation().search);
   const [loading, setLoading] = useState(false);
@@ -413,6 +415,7 @@ export default function index(props: IProps) {
                       >
                         {chartVisible ? t('log.hideChart') : t('log.showChart')}
                       </a>
+                      {isPlus && <LogDownload queryData={{ ...form.getFieldsValue(), total }} />}
                     </div>
                   </div>
                   {chartVisible && (
