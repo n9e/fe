@@ -18,6 +18,8 @@ import { defineConfig, loadEnv } from 'vite';
 import reactRefresh from '@vitejs/plugin-react-refresh';
 import { md } from './plugins/md';
 import plusResolve from './plugins/plusResolve';
+import prefixPlugin from './plugins/vite-plugin-prefix';
+import Inspect from 'vite-plugin-inspect';
 
 const reactSvgPlugin = require('./plugins/svg');
 
@@ -35,9 +37,11 @@ const chunk3 = ['react-ace'];
 const chunk1 = ['react', 'react-router-dom', 'react-dom', 'moment', '@ant-design/icons', 'umi-request', 'lodash', 'react-grid-layout', 'd3', 'ahooks', 'color'];
 const antdChunk = ['antd'];
 
-
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => {
+export default defineConfig((data) => {
+  const { mode } = data;
+  console.log('mode,process.cwd()', data, mode, process.cwd());
+
   const env = loadEnv(mode, process.cwd(), '');
   // 后端接口地址
   // 也可以通过环境变量来设置，创建 `.env` 文件，内容为 `PROXY=http://localhost:8080`
@@ -47,8 +51,14 @@ export default defineConfig(({ mode }) => {
   } else if (env.VITE_IS_ENT) {
     proxyURL = env.PROXY_ENT;
   }
+  // console.log('env', env);
+
+  const baseName = env.VITE_PREFIX || '';
+  console.log('baseName', baseName);
+
   return {
-    plugins: [md(), reactRefresh(), plusResolve(), reactSvgPlugin({ defaultExport: 'component' })],
+    base: baseName,
+    plugins: [Inspect(), md(), reactRefresh(), plusResolve(), reactSvgPlugin({ defaultExport: 'component' }), prefixPlugin(env.VITE_PREFIX || '')],
     define: {},
     resolve: {
       alias: [

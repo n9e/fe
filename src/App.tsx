@@ -106,8 +106,10 @@ export interface ICommonState {
   dashboardSaveMode: 'auto' | 'manual';
 }
 
+const basePrefix = import.meta.env.VITE_PREFIX;
+
 // 可以匿名访问的路由 TODO: job-task output 应该也可以匿名访问
-const anonymousRoutes = ['/login', '/callback', '/chart', '/dashboards/share/'];
+const anonymousRoutes = [`${basePrefix}/login`, `${basePrefix}/callback`, `${basePrefix}/chart`, `${basePrefix}/dashboards/share/`];
 // 判断是否是匿名访问的路由
 const anonymous = _.some(anonymousRoutes, (route) => location.pathname.startsWith(route));
 // 初始化数据 context
@@ -226,7 +228,7 @@ function App() {
             };
           });
         } else {
-          const datasourceList = !_.some(['/login', '/callback'], (route) => location.pathname.startsWith(route)) ? await getDatasourceBriefList() : [];
+          const datasourceList = !_.some([`${basePrefix}/login`, `${basePrefix}/callback`], (route) => location.pathname.startsWith(route)) ? await getDatasourceBriefList() : [];
           initialized.current = true;
           setCommonState((state) => {
             return {
@@ -262,6 +264,7 @@ function App() {
               if (message === 'CUSTOM') return;
               window.confirm(message) ? callback(true) : callback(false);
             }}
+            basename={basePrefix}
           >
             <Switch>
               <Route exact path='/job-task/:busiId/output/:taskId/:outputType' component={TaskOutput} />
