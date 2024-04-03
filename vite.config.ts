@@ -57,7 +57,7 @@ export default defineConfig((data) => {
 
   return {
     base: baseName,
-    plugins: [Inspect(), md(), reactRefresh(), plusResolve(), reactSvgPlugin({ defaultExport: 'component' }), prefixPlugin(env.VITE_PREFIX || '')],
+    plugins: [md(), reactRefresh(), plusResolve(), reactSvgPlugin({ defaultExport: 'component' }), prefixPlugin(env.VITE_PREFIX || '')],
     define: {},
     resolve: {
       alias: [
