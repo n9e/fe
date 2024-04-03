@@ -19,7 +19,6 @@ import reactRefresh from '@vitejs/plugin-react-refresh';
 import { md } from './plugins/md';
 import plusResolve from './plugins/plusResolve';
 import prefixPlugin from './plugins/vite-plugin-prefix';
-import Inspect from 'vite-plugin-inspect';
 
 const reactSvgPlugin = require('./plugins/svg');
 
