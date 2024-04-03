@@ -400,6 +400,17 @@ export default function List(props: ListProps) {
 
         <Col>
           <Space>
+            {businessGroup.isLeaf && gids && (
+              <Button
+                type='primary'
+                onClick={() => {
+                  history.push(`/alert-rules/add/${businessGroup.id}`);
+                }}
+                className='strategy-table-search-right-create'
+              >
+                {t('common:btn.add')}
+              </Button>
+            )}
             <Button
               onClick={() => {
                 OrganizeColumns({
@@ -413,19 +424,8 @@ export default function List(props: ListProps) {
             >
               {t('targets:organize_columns.title')}
             </Button>
-            {businessGroup.isLeaf && gids && (
-              <Space>
-                <Button
-                  type='primary'
-                  onClick={() => {
-                    history.push(`/alert-rules/add/${businessGroup.id}`);
-                  }}
-                  className='strategy-table-search-right-create'
-                >
-                  {t('common:btn.add')}
-                </Button>
-                {businessGroup.id && <MoreOperations bgid={businessGroup.id} selectRowKeys={selectRowKeys} selectedRows={selectedRows} getAlertRules={fetchData} />}
-              </Space>
+            {businessGroup.isLeaf && gids && businessGroup.id && (
+              <MoreOperations bgid={businessGroup.id} selectRowKeys={selectRowKeys} selectedRows={selectedRows} getAlertRules={fetchData} />
             )}
           </Space>
         </Col>
