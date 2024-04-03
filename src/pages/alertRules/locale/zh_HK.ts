@@ -156,9 +156,11 @@ const zh_HK = {
     title: '預置篩選',
     all: '全部規則',
   },
-  ruleConfigPromVersion: '版本',
+  ruleConfigPromVersion: '規則模式',
+  ruleConfigPromVersion_v1: '普通模式',
+  ruleConfigPromVersion_v2: '高級模式',
   ruleConfigPromVersion_tip:
-    'v1 版本，在 PromQL 中配置相同閾值，查詢條件和閾值設定在一起，沒有特殊需求，使用 v1 即可<br />v2 版本，查詢條件和閾值設定分開條件，如果有多個查詢需要做加減乘除計算，可以使用v2，在同一事件的現場值中將每個查詢條件的值顯示出來',
+    '普通模式：在PromQL 中配置警告閾值，查詢條件和閾值設定在一起，沒有特殊需求，使用普通模式即可<br />高級模式：查詢條件和閾值設定分開，如果有多個查詢條件需要做加減乘除計算，可以使用進階模式，在警告事件的現場值中會將每個查詢條件的數值顯示出來',
   ruleConfigPromVersionV2: {
     query: {
       title: '查詢條件',

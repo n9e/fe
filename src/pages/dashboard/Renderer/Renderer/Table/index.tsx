@@ -35,6 +35,7 @@ import { getDetailUrl } from '../../utils/replaceExpressionDetail';
 import { transformColumns, downloadCsv, useDeepCompareWithRef } from './utils';
 import Cell from './Cell';
 import './style.less';
+import moment from 'moment';
 
 interface IProps {
   values: IPanel;
@@ -131,7 +132,8 @@ function TableCpt(props: IProps, ref: any) {
       fields = _.isArray(aggrDimension) ? aggrDimension : [aggrDimension];
     }
     setDisplayedTableFields(fields);
-    tableDataSource = formatToTable(data, aggrDimension, 'refId');
+    const aggrDimensions = _.isArray(aggrDimension) ? aggrDimension : [aggrDimension];
+    const tableDataSource = formatToTable(data, aggrDimensions, 'refId');
     const groupNames = _.reduce(
       tableDataSource,
       (pre, item) => {
@@ -190,12 +192,13 @@ function TableCpt(props: IProps, ref: any) {
   let tableDataSource = calculatedValues;
   let tableColumns: any[] = [];
   if (!_.isEmpty(calculatedValues)) {
+    const timeColWidth = calc === 'origin' ? 180 : 0;
     tableColumns = [
       {
         title: 'name',
         dataIndex: 'name',
         key: 'name',
-        width: size?.width! - (isAppendLinkColumn ? 240 : 120),
+        width: size?.width! - (isAppendLinkColumn ? 240 + timeColWidth : 120 + timeColWidth),
         sorter: (a, b) => {
           return localeCompare(a.name, b.name);
         },
@@ -250,6 +253,25 @@ function TableCpt(props: IProps, ref: any) {
         ...getColumnSearchProps(['text']),
       },
     ];
+    if (calc === 'origin') {
+      tableColumns = _.concat(
+        {
+          title: '__time__',
+          key: 'name',
+          dataIndex: '__time__',
+          sorter: (a, b) => {
+            return localeCompare(a.__time__, b.__time__);
+          },
+          sortOrder: getSortOrder('__time__', sortObj),
+          render: (text, record) => {
+            const textObj = getMappedTextObj(moment.unix(text).format('YYYY-MM-DD HH:mm:ss'), options?.valueMappings);
+            return <Cell {...textObj} panel={values} time={time} record={record} />;
+          },
+          ...getColumnSearchProps(['__time__']),
+        },
+        tableColumns,
+      );
+    }
 
     if (displayMode === 'labelsOfSeriesToRows') {
       const columnsKeys: any[] = _.isEmpty(columns) ? _.concat(getColumnsKeys(calculatedValues), 'value') : columns;
@@ -290,7 +312,11 @@ function TableCpt(props: IProps, ref: any) {
                 </div>
               );
             }
-            let textObj = getMappedTextObj(record.metric?.[key], options?.valueMappings);
+            let text = record.metric?.[key] || record.fields?.[key]; // TODO metric or fields
+            if (key === '__time__') {
+              text = moment.unix(text).format('YYYY-MM-DD HH:mm:ss');
+            }
+            let textObj = getMappedTextObj(text, options?.valueMappings);
             const overrideProps = getOverridePropertiesByName(overrides, 'byName', key);
             if (!_.isEmpty(overrideProps)) {
               textObj = getSerieTextObj(_.toNumber(textObj.text), overrideProps?.standardOptions, overrideProps?.valueMappings);
@@ -333,6 +359,9 @@ function TableCpt(props: IProps, ref: any) {
           },
           sortOrder: getSortOrder(aggrDimension, sortObj),
           render: (text, record) => {
+            if (aggrDimension === '__time__') {
+              text = moment.unix(text).format('YYYY-MM-DD HH:mm:ss');
+            }
             const textObj = getMappedTextObj(text, options?.valueMappings);
             return <Cell {...textObj} panel={values} time={time} record={record} />;
             return (

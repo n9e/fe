@@ -115,7 +115,12 @@ function convertVariablesGrafanaToN9E(templates: any, __inputs: any[], data: any
     })
     .map((item) => {
       if (item.type === 'query') {
-        let definition = item.definition || _.get(item, 'query') || _.get(item, 'query.query');
+        let definition = item.definition;
+        if (typeof item.query === 'string') {
+          definition = item.query;
+        } else if (typeof item.query?.query === 'string') {
+          definition = item.query.query;
+        }
         _.forEach(varWithUnitMap, (val, key) => {
           definition = _.replace(definition, key, val);
         });
@@ -129,7 +134,7 @@ function convertVariablesGrafanaToN9E(templates: any, __inputs: any[], data: any
           reg: item.regex,
           hide: item.hide === 0 ? false : true,
         };
-        const datasource = convertDatasourceGrafanaToN9E(item);
+        const datasource = convertDatasourceGrafanaToN9E(item, templates.list);
         varObj.datasource = {
           cate: datasource.datasourceCate,
           value: datasource.datasourceValue,
@@ -310,12 +315,17 @@ function convertTextGrafanaToN9E(panel: any) {
   };
 }
 
-function convertDatasourceGrafanaToN9E(panel: any) {
+function convertDatasourceGrafanaToN9E(panel: any, vars: any[]) {
+  const firstDatasource = _.find(vars, { type: 'datasource' });
+  let defaultDatasourceValue = '${datasource}';
+  if (firstDatasource && firstDatasource.name) {
+    defaultDatasourceValue = `\${${firstDatasource.name}}`;
+  }
   const reg = /^\${[0-9a-zA-Z_]+}$/;
   if (_.toLower(panel?.datasource?.type) === 'prometheus') {
     return {
       datasourceCate: 'prometheus',
-      datasourceValue: reg.test(panel.datasource.uid) ? panel.datasource.uid : '${datasource}',
+      datasourceValue: reg.test(panel.datasource.uid) ? panel.datasource.uid : defaultDatasourceValue,
     };
   }
   if (typeof panel.datasource === 'string' && reg.test(panel.datasource)) {
@@ -326,11 +336,11 @@ function convertDatasourceGrafanaToN9E(panel: any) {
   }
   return {
     datasourceCate: 'prometheus',
-    datasourceValue: '${datasource}',
+    datasourceValue: defaultDatasourceValue,
   };
 }
 
-function convertPanlesGrafanaToN9E(panels: any) {
+function convertPanlesGrafanaToN9E(panels: any, vars: any) {
   const chartsMap = {
     graph: {
       // 旧版本的时间序列折线图
@@ -392,7 +402,7 @@ function convertPanlesGrafanaToN9E(panels: any) {
             ...item.gridPos,
             i: uid,
           },
-          panels: convertPanlesGrafanaToN9E(item.panels),
+          panels: convertPanlesGrafanaToN9E(item.panels, vars),
         };
       }
       return {
@@ -423,7 +433,7 @@ function convertPanlesGrafanaToN9E(panels: any) {
         custom: chartsMap[item.type] ? chartsMap[item.type].fn(item) : {},
         maxPerRow: item.maxPerRow || 4,
         repeat: item.repeat,
-        ...convertDatasourceGrafanaToN9E(item),
+        ...convertDatasourceGrafanaToN9E(item, vars),
       };
     })
     .value();
@@ -440,7 +450,7 @@ export function convertDashboardGrafanaToN9E(data) {
       version: '3.0.0',
       links: convertLinksGrafanaToN9E(data.links),
       var: convertVariablesGrafanaToN9E(data.templating, data.__inputs, data) as IVariable[],
-      panels: convertPanlesGrafanaToN9E(data.panels),
+      panels: convertPanlesGrafanaToN9E(data.panels, data.templating?.list),
     } as IDashboardConfig,
   };
   return dashboard;
