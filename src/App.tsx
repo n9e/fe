@@ -226,7 +226,7 @@ function App() {
               businessGroup: commonState.businessGroup.key
                 ? commonState.businessGroup
                 : {
-                    key: defaultBusinessGroupKey,
+                    key: _.toString(defaultBusinessGroupKey),
                     ids,
                     id: _.map(_.split(ids, ','), _.toNumber)?.[0],
                     isLeaf: !_.startsWith(defaultBusinessGroupKey, 'group,'),
