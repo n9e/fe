@@ -138,7 +138,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                   {!IS_ENT && (
                     <Space style={{ marginRight: 16 }}>
                       <div style={{ marginRight: 8, position: 'relative' }}>
-                        <a target='_blank' href={siteInfo?.document_url || 'https://flashcat.cloud/docs/'}>
+                        <a target='_blank' href={siteInfo?.document_url || 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/introduction/'}>
                           {t('docs')}
                         </a>
                       </div>
