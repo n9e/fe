@@ -250,10 +250,14 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
               {fields.map((field, index) => (
                 <TagItem count={fields.length} field={field} key={index} remove={remove} form={form} />
               ))}
-              <Button type='dashed' style={{ width: '100%' }} onClick={() => add()}>
-                <PlusOutlined />
-                {t('tag.add')}
-              </Button>
+              <Row>
+                <Col span={23}>
+                  <Button type='dashed' style={{ width: '100%' }} onClick={() => add()}>
+                    <PlusOutlined />
+                    {t('tag.add')}
+                  </Button>
+                </Col>
+              </Row>
             </>
           )}
         </Form.List>
