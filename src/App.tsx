@@ -216,13 +216,21 @@ function App() {
           window.localStorage.setItem('curBusiId', String(defaultBusiId));
           const defaultBusinessGroupKey = commonState.businessGroup.key || busiGroups?.[0]?.id;
           window.localStorage.setItem('businessGroupKey', defaultBusinessGroupKey);
+          const ids = getCleanBusinessGroupIds(defaultBusinessGroupKey);
           initialized.current = true;
           setCommonState((state) => {
             return {
               ...state,
               profile,
               busiGroups,
-              // busiGroups: _.sortBy(busiGroups, 'name'),
+              businessGroup: commonState.businessGroup.key
+                ? commonState.businessGroup
+                : {
+                    key: defaultBusinessGroupKey,
+                    ids,
+                    id: _.map(_.split(ids, ','), _.toNumber)?.[0],
+                    isLeaf: !_.startsWith(defaultBusinessGroupKey, 'group,'),
+                  },
               datasourceCateOptions: getAuthorizedDatasourceCates(feats, isPlus),
               groupedDatasourceList: _.groupBy(datasourceList, 'plugin_type'),
               datasourceList: datasourceList,
