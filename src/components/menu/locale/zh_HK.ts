@@ -46,7 +46,7 @@ const zh_HK = {
   采集模板: '採集模板',
   拨测管理: '撥測管理',
   拨测状态: '撥測狀態',
-  Pingmesh配置: 'Pingmesh配置',
+  网络探测: '網路探測',
   quickJump: '快速跳轉',
   quickOpenClose: '打開/關閉',
   quickSearchPlaceholder: '輸入內容以檢索...',
