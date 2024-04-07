@@ -157,6 +157,9 @@ export default function Graph(props: IProps) {
             onBlur={(e) => {
               setStep(_.toNumber(e.target.value));
             }}
+            onStep={(value) => {
+              setStep(value);
+            }}
           />
           <Radio.Group
             options={[
