@@ -486,7 +486,7 @@ export default function List(props: IProps) {
           <Select
             allowClear
             placeholder={t('filterDowntime')}
-            style={{ width: 200 }}
+            style={{ width: 120 }}
             options={_.map(downtimeOptions, (item) => {
               return {
                 label: t('filterDowntimeMin', { count: item }),
