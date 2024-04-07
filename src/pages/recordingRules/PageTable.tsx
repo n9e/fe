@@ -112,17 +112,22 @@ const PageTable: React.FC<Props> = () => {
       {
         title: t('common:datasource.name'),
         dataIndex: 'datasource_ids',
-        render: (data, record) => {
-          return _.map(data, (item) => {
-            if (item === 0) {
-              return (
-                <Tag color='purple' key={item}>
-                  $all
-                </Tag>
-              );
-            }
-            return <Tag key={item}>{_.find(groupedDatasourceList.prometheus, { id: item })?.name!}</Tag>;
-          });
+        render: (data) => {
+          return _.map(
+            _.filter(data, (item) => {
+              return _.find(groupedDatasourceList.prometheus, { id: item });
+            }),
+            (item) => {
+              if (item === 0) {
+                return (
+                  <Tag color='purple' key={item}>
+                    $all
+                  </Tag>
+                );
+              }
+              return <Tag key={item}>{_.find(groupedDatasourceList.prometheus, { id: item })?.name!}</Tag>;
+            },
+          );
         },
       },
       {
