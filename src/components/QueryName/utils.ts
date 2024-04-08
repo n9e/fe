@@ -25,7 +25,7 @@ export const validator = (value: string, preValue?: string, existingNames?: stri
   if (!value) {
     return Promise.reject(i18next.t('QueryName:required'));
   }
-  if (!value.match(/^[a-zA-Z][a-zA-Z0-9]*$/)) {
+  if (!value.match(/^[a-zA-Z][a-zA-Z0-9_]*$/)) {
     return Promise.reject(i18next.t('QueryName:invalidName'));
   }
   if (value !== preValue && _.includes(names, value)) {
