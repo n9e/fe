@@ -5,6 +5,7 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import AdvancedSettings from '@/plugins/TDengine/components/AdvancedSettings';
+import QueryName, { generateQueryName } from '@/components/QueryName';
 import GraphPreview from './GraphPreview';
 import SqlTemplates from '../../components/SqlTemplates';
 import { MetaModal } from '../../components/Meta';
@@ -24,6 +25,7 @@ const alphabet = 'ABCDEFGHIGKLMNOPQRSTUVWXYZ'.split('');
 export default function index({ form, prefixField = {}, fullPrefixName = [], prefixName = [], disabled, datasourceValue }: IProps) {
   const { t } = useTranslation('db_tdengine');
   const datasourceID = _.isArray(datasourceValue) ? datasourceValue[0] : datasourceValue;
+  const queries = Form.useWatch(['rule_config', 'queries']);
 
   return (
     <>
@@ -45,7 +47,6 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
                   style={{ cursor: 'pointer' }}
                   onClick={() => {
                     add({
-                      ref: alphabet[fields.length],
                       interval: 1,
                       interval_unit: 'min',
                     });
@@ -60,8 +61,8 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
                 <div key={field.key} style={{ backgroundColor: '#fafafa', padding: 16, marginBottom: 16, position: 'relative' }}>
                   <Row gutter={8}>
                     <Col flex='32px'>
-                      <Form.Item>
-                        <Input readOnly style={{ width: 32 }} value={alphabet[index]} />
+                      <Form.Item {...field} name={[field.name, 'ref']} initialValue={generateQueryName(_.map(queries, 'ref'))}>
+                        <QueryName existingNames={_.map(queries, 'ref')} />
                       </Form.Item>
                     </Col>
                     <Col flex='auto'>
