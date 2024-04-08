@@ -435,6 +435,7 @@ const zh_HK = {
     avg: '平均值',
     sum: '總和',
     count: '數量',
+    origin: '原始值',
   },
 };
 
