@@ -1,5 +1,5 @@
 /** Request 网络请求工具 更详细的 api 文档: https://github.com/umijs/umi-request */
-import { extend } from 'umi-request';
+import Request, { ResponseError, extend } from 'umi-request';
 import { notification } from 'antd';
 import _ from 'lodash';
 import { UpdateAccessToken } from '@/services/login';
@@ -10,7 +10,7 @@ import i18next from 'i18next';
 const errorHandler = (error: Error): Response => {
   // 忽略掉 setting getter-only property "data" 的错误
   // 这是 umi-request 的一个 bug，当触发 abort 时 catch callback 里面不能 set data
-  if (error.name !== 'AbortError' && error.message !== 'setting getter-only property "data"') {
+  if (error.name !== 'AbortError' && error.message !== 'setting getter-only property "data"' && !Request.isCancel(error)) {
     // @ts-ignore
     if (!error.silence) {
       notification.error({
