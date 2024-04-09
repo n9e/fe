@@ -5,8 +5,8 @@ import _ from 'lodash';
 import { UpdateAccessToken } from '@/services/login';
 import { N9E_PATHNAME, AccessTokenKey } from '@/utils/constant';
 import i18next from 'i18next';
+import { basePrefix } from '@/App';
 
-const basePrefix = import.meta.env.VITE_PREFIX;
 /** 异常处理程序，所有的error都被这里处理，页面无法感知具体error */
 const errorHandler = (error: Error): Response => {
   // 忽略掉 setting getter-only property "data" 的错误

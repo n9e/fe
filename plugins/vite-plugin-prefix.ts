@@ -1,44 +1,54 @@
+import jscodeshift from 'jscodeshift';
+
 export default function prefixPlugin(prefix: string) {
   return {
     name: 'prefix-plugin',
     // apply: 'serve',
 
-    transformIndexHtml(html) {
-      // 在 index.html 中的静态资源链接上添加前缀
-      // console.log('html222', html);
-      console.log('prefix222', prefix);
+    transform(code, id) {
+      if (id.endsWith('tsx')) {
+        const ast = jscodeshift(code);
+        const prefixValue = jscodeshift.literal(prefix);
+        ast.find(jscodeshift.CallExpression).forEach((path) => {
+          const callee = path.node.callee;
+          if (
+            callee.type === 'MemberExpression' &&
+            callee.object.name === 'React' &&
+            callee.property.name === 'createElement' &&
+            path.node.arguments.length >= 2 &&
+            path.node.arguments[0].type === 'Literal' &&
+            path.node.arguments[0].value === 'img'
+          ) {
+            // console.log('Found img element:', path);
+            const props = path.node.arguments[1].properties;
+            // console.log('props', props);
 
-      // const handleHtml = html.replace(/src="\/(.*?\.(js|css|svg|png|jpg))"/g, `src="${prefix}/$1"`);
+            props.forEach((prop) => {
+              if (prop.key.name === 'src') {
+                if (prop.value.type === 'Identifier' || prop.value.type === 'MemberExpression') {
+                  // 如果 src 是变量或表达式
+                  // const prefixValue = 'MemberExpression';
+                  prop.value = jscodeshift.template.expression`${jscodeshift.literal(prefix)} + ${prop.value}`;
+                } else if (prop.value.type === 'TemplateLiteral') {
+                  // 如果 src 是模板字符串
+                  // const prefixValue = 'TemplateLiteral';
+                  prop.value = jscodeshift.template.expression`\`\${${jscodeshift.literal(prefix)}}\${${prop.value}}\``;
+                } else if (prop.value.type === 'LogicalExpression' || prop.value.type === 'ConditionalExpression') {
+                  // 如果 src 是逻辑表达式或条件表达式
+                  // const prefixValue = 'LogicalExpression';
+                  prop.value = jscodeshift.template.expression`${jscodeshift.literal(prefix)} + ${prop.value}`;
+                } else if (prop.value.type === 'Literal') {
+                  // 如果 src 是字符串字面量
+                  // const prefixValue = 'Literal';
+                  prop.value.value = `${prefix}${prop.value.value}`;
+                }
+              }
+            });
+          }
+        });
 
-      const handleHtml = html.replace(/<img([^>]+?src="([^"]+)")/g, (match, attr, src) => {
-        // 获取 Vite 处理后的 URL
-        const transformedSrc = this.resolve(src);
-
-        // 判断是否需要添加前缀
-        if (!transformedSrc.startsWith(prefix)) {
-          // 添加前缀给 img 标签的 src 属性
-          const prefixedSrc = `${prefix}${transformedSrc}`;
-          return `<img${attr.replace(src, prefixedSrc)}"`; // 替换原始 src 属性为带前缀的 src
-        }
-
-        return match; // 已经添加过前缀，直接返回原始匹配的内容
-      });
-
-      console.log('handleHtml', handleHtml);
-
-      return handleHtml;
+        return ast.toSource();
+      }
     },
-    // transform(code, id) {
-    //   if (id.includes('/login/')) {
-    //     console.log('code', code);
-    //     console.log('id', id);
-    //   }
-
-    //   // if (id.endsWith('.js')) {
-    //   //   // 在 JavaScript 文件中的静态资源链接上添加前缀
-    //   //   return code.replace(/import\s*['"]\/(.*?)['"]/g, `import '${prefix}/$1'`);
-    //   // }
-    //   return code.replace(/img src="\/(.*?\.(js|css|svg|png|jpg))"/g, `src="${prefix}/$1"`);
-    // },
   };
 }
