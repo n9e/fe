@@ -11,7 +11,7 @@ export default function PlusResolve() {
     resolveId(id, importer, resolveOptions) {
       if (id.indexOf(plusModuleId) === 0) {
         let updatedId = id;
-        if (_.endsWith(env.npm_lifecycle_event, ':advanced')) {
+        if (_.endsWith(env.npm_lifecycle_event, ':advanced') || _.endsWith(env.npm_lifecycle_event, ':prefix')) {
           updatedId = id.replace(plusModuleId, '/src/plus');
         } else {
           updatedId = '/plugins/PlusPlaceholder';
