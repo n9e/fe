@@ -30,7 +30,7 @@ import { IRawTimeRange, getDefaultValue, isValid } from '@/components/TimeRangeP
 import { Dashboard } from '@/store/dashboardInterface';
 import { getDashboard, updateDashboardConfigs, getDashboardPure, getBuiltinDashboard } from '@/services/dashboardV2';
 import { SetTmpChartData } from '@/services/metric';
-import { CommonStateContext } from '@/App';
+import { CommonStateContext, basePrefix } from '@/App';
 import MigrationModal from '@/pages/help/migrate/MigrationModal';
 import RouterPrompt from '@/components/RouterPrompt';
 import VariableConfig, { IVariable } from '../VariableConfig';
@@ -381,7 +381,7 @@ export default function DetailV2(props: IProps) {
                   },
                 ]).then((res) => {
                   const ids = res.dat;
-                  window.open('/chart/' + ids);
+                  window.open(basePrefix + '/chart/' + ids);
                 });
               }}
               onUpdated={(res) => {

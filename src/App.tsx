@@ -242,7 +242,7 @@ function App() {
       })();
     } catch (error) {
       console.error(error);
-      location.href = '/out-of-service';
+      location.href = basePrefix + '/out-of-service';
     }
   }, []);
 
@@ -270,7 +270,7 @@ function App() {
               <Route exact path='/job-task/:busiId/output/:taskId/:outputType' component={TaskOutput} />
               <Route exact path='/job-task/:busiId/output/:taskId/:host/:outputType' component={TaskHostOutput} />
               <>
-                {location.pathname !== '/out-of-service' && <HeaderMenu />}
+                {location.pathname !== `${basePrefix}/out-of-service` && <HeaderMenu />}
                 <Content />
               </>
             </Switch>
