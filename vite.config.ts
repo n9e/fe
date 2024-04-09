@@ -48,10 +48,8 @@ export default defineConfig(({ mode }) => {
   } else if (env.VITE_IS_ENT) {
     proxyURL = env.PROXY_ENT;
   }
-  // console.log('env', env);
 
   const baseName = env.VITE_PREFIX || '';
-  console.log('baseName', baseName);
 
   return {
     base: baseName + '/',
