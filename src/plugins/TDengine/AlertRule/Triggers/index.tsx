@@ -30,7 +30,7 @@ export default function index(props: IProps) {
                     mode: 0,
                     expressions: [
                       {
-                        ref: 'A',
+                        ref: queries?.[0]?.ref || 'A',
                         comparisonOperator: '==',
                         logicalOperator: '&&',
                       },
