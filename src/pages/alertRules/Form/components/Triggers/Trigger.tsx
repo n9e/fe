@@ -54,49 +54,6 @@ export default function Trigger(props: IProps) {
           }
         }}
       </Form.Item>
-      {/* <Form.List {...prefixField} name={[...prefixName, 'relation_key']}>
-        {(fields, { add, remove }) => (
-          <div>
-            <div style={{ marginBottom: 8 }}>
-              {t('datasource:es.alert.trigger.label')}:{' '}
-              <PlusCircleOutlined
-                onClick={() => {
-                  add({
-                    op: '==',
-                  });
-                }}
-              />
-            </div>
-            {fields.map((field) => {
-              return (
-                <Space align='start' key={field.key}>
-                  <Form.Item {...field} name={[field.name, 'left_key']}>
-                    <Input style={{ width: 197 }} />
-                  </Form.Item>
-                  <Form.Item {...field} name={[field.name, 'op']}>
-                    <Input disabled style={{ width: 64 }} />
-                  </Form.Item>
-                  <Form.Item {...field} name={[field.name, 'right_key']}>
-                    <Input style={{ width: 200 }} />
-                  </Form.Item>
-                  <Space
-                    style={{
-                      height: 32,
-                      lineHeight: ' 32px',
-                    }}
-                  >
-                    <MinusCircleOutlined
-                      onClick={() => {
-                        remove(field.name);
-                      }}
-                    />
-                  </Space>
-                </Space>
-              );
-            })}
-          </div>
-        )}
-      </Form.List> */}
       <Severity field={prefixField} disabled={disabled} />
     </div>
   );

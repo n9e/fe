@@ -28,6 +28,7 @@ import { PromQLInputWithBuilder } from '@/components/PromQLInput';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import Triggers from '@/pages/alertRules/Form/components/Triggers';
 import { FormStateContext } from '@/pages/alertRules/Form';
+import QueryName, { generateQueryName } from '@/components/QueryName';
 import GraphPreview from './GraphPreview';
 
 interface Props {
@@ -37,7 +38,6 @@ interface Props {
 }
 
 const DATASOURCE_ALL = 0;
-const alphabet = 'ABCDEFGHIGKLMNOPQRSTUVWXYZ'.split('');
 
 export function getFirstDatasourceId(datasourceIds: number[] = [], datasourceList: { id: number }[] = []) {
   return _.isEqual(datasourceIds, [DATASOURCE_ALL]) && datasourceList.length > 0 ? datasourceList[0]?.id : datasourceIds?.[0];
@@ -76,8 +76,8 @@ export default function PrometheusV2(props: Props) {
                 <div key={field.key} className='alert-rule-trigger-container'>
                   <Row gutter={8}>
                     <Col flex='32px'>
-                      <Form.Item {...field} name={[field.name, 'ref']} initialValue={alphabet[field.name]}>
-                        <Input readOnly style={{ width: '32px' }} />
+                      <Form.Item {...field} name={[field.name, 'ref']} initialValue={generateQueryName(_.map(queries, 'ref'))}>
+                        <QueryName existingNames={_.map(queries, 'ref')} />
                       </Form.Item>
                     </Col>
                     <Col flex='auto'>

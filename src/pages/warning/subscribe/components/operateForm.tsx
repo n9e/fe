@@ -217,7 +217,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
           </Form.Item>
 
           <Form.Item label={t('sub_rule_name')}>
-            <Space>
+            <Space wrap>
               {_.map(selectedRules, (item) => (
                 <Tag
                   color='purple'
