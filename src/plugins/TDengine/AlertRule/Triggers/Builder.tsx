@@ -15,8 +15,6 @@ interface IProps {
   disabled?: boolean;
 }
 
-const alphabet = 'ABCDEFGHIGKLMNOPQRSTUVWXYZ'.split('');
-
 export default function Builder(props: IProps) {
   const { t } = useTranslation();
   const { prefixField = {}, fullPrefixName = [], prefixName = [], queries, disabled } = props;
@@ -32,10 +30,10 @@ export default function Builder(props: IProps) {
                   <Space align='start'>
                     <Form.Item {...field} name={[field.name, 'ref']}>
                       <Select disabled={disabled}>
-                        {_.map(queries, (_query, index) => {
+                        {_.map(queries, (query) => {
                           return (
-                            <Select.Option value={alphabet[index]} key={alphabet[index]}>
-                              {alphabet[index]}
+                            <Select.Option value={query.ref} key={query.ref}>
+                              {query.ref}
                             </Select.Option>
                           );
                         })}
@@ -80,7 +78,7 @@ export default function Builder(props: IProps) {
                       <PlusCircleOutlined
                         onClick={() => {
                           add({
-                            ref: alphabet[fields.length],
+                            ref: queries?.[0]?.ref || 'A',
                             comparisonOperator: '==',
                           });
                         }}
