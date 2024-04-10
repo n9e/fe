@@ -67,7 +67,7 @@ export default defineConfig(({ mode }) => {
       alias: [
         {
           find: '@assets',
-          replacement: path.join(__dirname, baseName),
+          replacement: baseName,
         },
         {
           find: '@',
