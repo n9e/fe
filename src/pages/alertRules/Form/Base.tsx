@@ -87,7 +87,7 @@ export default function Base() {
         </Col>
         <Col span={24}>
           <Form.Item label={t('note')} name='note' tooltip={t('append_tags_note_tip')}>
-            <Input.TextArea />
+            <Input.TextArea autoSize />
           </Form.Item>
         </Col>
       </Row>
