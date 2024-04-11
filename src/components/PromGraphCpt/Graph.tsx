@@ -23,7 +23,7 @@ import TimeRangePicker, { IRawTimeRange, parseRange } from '@/components/TimeRan
 import LineGraphStandardOptions from './components/GraphStandardOptions';
 import Timeseries from '@/pages/dashboard/Renderer/Renderer/Timeseries';
 import { completeBreakpoints } from '@/pages/dashboard/Renderer/datasource/utils';
-import { CommonStateContext } from '@/App';
+import { CommonStateContext, basePrefix } from '@/App';
 import { getPromData, setTmpChartData } from './services';
 import { QueryStats } from './components/QueryStatsView';
 
@@ -211,7 +211,7 @@ export default function Graph(props: IProps) {
                           },
                         ]).then((res) => {
                           const ids = res.dat;
-                          window.open('/chart/' + ids);
+                          window.open(basePrefix + '/chart/' + ids);
                         });
                       }}
                     />

@@ -25,10 +25,13 @@ export default function SideMenuHeader(props: Props) {
   const { collapsed, collapsedHover, sideMenuBgMode } = props;
   const { siteInfo } = useContext(CommonStateContext);
 
+  const noCollapsedLogo = getLogoSrc(false, sideMenuBgMode, siteInfo);
+  const collapsedLogo = getLogoSrc(true, sideMenuBgMode, siteInfo);
+
   return (
     <div className={cn('relative mt-6 h-10 w-full shrink-0 overflow-hidden transition-spacing', 'pl-3.5')}>
       <img
-        src={getLogoSrc(false, sideMenuBgMode, siteInfo)}
+        src={noCollapsedLogo}
         width={120}
         height={38}
         className='max-w-[120px]'
@@ -37,7 +40,7 @@ export default function SideMenuHeader(props: Props) {
         }}
       />
       <img
-        src={getLogoSrc(true, sideMenuBgMode, siteInfo)}
+        src={collapsedLogo}
         width={36}
         height={38}
         className='max-w-[120px]'

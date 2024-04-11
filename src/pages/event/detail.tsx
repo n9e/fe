@@ -26,7 +26,7 @@ import PageLayout from '@/components/pageLayout';
 import { getAlertEventsById, getHistoryEventsById } from '@/services/warning';
 import { priorityColor } from '@/utils/constant';
 import { deleteAlertEventsModal } from '.';
-import { CommonStateContext } from '@/App';
+import { CommonStateContext, basePrefix } from '@/App';
 // @ts-ignore
 import plusEventDetail from 'plus:/parcels/Event/eventDetail';
 // @ts-ignore
@@ -47,7 +47,7 @@ const EventDetailPage: React.FC = () => {
   const { busiGroups, datasourceList } = commonState;
   const handleNavToWarningList = (id) => {
     if (busiGroups.find((item) => item.id === id)) {
-      window.open(`/alert-rules?ids=${id}&isLeaf=true`);
+      window.open(`${basePrefix}/alert-rules?ids=${id}&isLeaf=true`);
     } else {
       message.error(t('detail.buisness_not_exist'));
     }

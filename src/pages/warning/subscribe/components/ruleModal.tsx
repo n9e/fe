@@ -273,7 +273,7 @@ const ruleModal: React.FC<props> = (props) => {
       >
         {!_.isEmpty(selectedRules) && (
           <div className='mb16'>
-            <Space>
+            <Space wrap>
               <span>{t('sub_rule_selected')}: </span>
               {_.map(selectedRules, (item) => (
                 <Tag
