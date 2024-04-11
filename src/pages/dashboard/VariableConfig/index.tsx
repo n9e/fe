@@ -197,7 +197,7 @@ function index(props: IProps) {
         onChange(value, false, result);
       })();
     }
-  }, [JSON.stringify(value), refreshFlag]);
+  }, [JSON.stringify(value), refreshFlag, range]);
 
   return (
     <div className='tag-area'>
