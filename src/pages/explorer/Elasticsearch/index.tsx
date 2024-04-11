@@ -4,7 +4,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import queryString, { ParsedQuery } from 'query-string';
 import { useTranslation } from 'react-i18next';
-import { Table, Empty, Spin, InputNumber, Select, Radio, Space, Checkbox, Tag, Form } from 'antd';
+import { Table, Empty, Spin, InputNumber, Select, Radio, Space, Checkbox, Tag, Form, Button } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
 import { DownOutlined, RightOutlined, LeftOutlined } from '@ant-design/icons';
 import { useLocation } from 'react-router-dom';
@@ -19,6 +19,9 @@ import QueryBuilder from './QueryBuilder';
 import QueryBuilderWithIndexPatterns from './QueryBuilderWithIndexPatterns';
 import LogView from './LogView';
 import './style.less';
+// @ts-ignore
+import DownloadModal from 'plus:/datasource/elasticsearch/components/LogDownload/DownloadModal';
+import ExportModal from 'plus:/datasource/elasticsearch/components/LogDownload/ExportModal';
 
 interface IProps {
   headerExtra: HTMLDivElement | null;
@@ -42,33 +45,40 @@ enum IMode {
 
 const ModeRadio = ({ mode, setMode, allowHideSystemIndices, setAllowHideSystemIndices }) => {
   const { t } = useTranslation('explorer');
-  const { esIndexMode } = useContext(CommonStateContext);
+  const { esIndexMode, isPlus } = useContext(CommonStateContext);
 
   if (esIndexMode === 'index-patterns' || esIndexMode === 'indices') return null;
 
   return (
-    <Space>
-      <Radio.Group
-        value={mode}
-        onChange={(e) => {
-          setMode(e.target.value);
-        }}
-        buttonStyle='solid'
-      >
-        <Radio.Button value={IMode.indexPatterns}>{t('log.mode.indexPatterns')}</Radio.Button>
-        <Radio.Button value={IMode.indices}>{t('log.mode.indices')}</Radio.Button>
-      </Radio.Group>
-      {mode === IMode.indices && (
-        <Checkbox
-          checked={allowHideSystemIndices}
+    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <Space>
+        <Radio.Group
+          value={mode}
           onChange={(e) => {
-            setAllowHideSystemIndices(e.target.checked);
+            setMode(e.target.value);
           }}
+          buttonStyle='solid'
         >
-          {t('es-index-patterns:allow_hide_system_indices')}
-        </Checkbox>
+          <Radio.Button value={IMode.indexPatterns}>{t('log.mode.indexPatterns')}</Radio.Button>
+          <Radio.Button value={IMode.indices}>{t('log.mode.indices')}</Radio.Button>
+        </Radio.Group>
+        {mode === IMode.indices && (
+          <Checkbox
+            checked={allowHideSystemIndices}
+            onChange={(e) => {
+              setAllowHideSystemIndices(e.target.checked);
+            }}
+          >
+            {t('es-index-patterns:allow_hide_system_indices')}
+          </Checkbox>
+        )}
+      </Space>
+      {isPlus && (
+        <div>
+          <ExportModal />
+        </div>
       )}
-    </Space>
+    </div>
   );
 };
 
@@ -107,7 +117,7 @@ const getDefaultMode = (query, isOpenSearch, esIndexMode, value?) => {
 
 export default function index(props: IProps) {
   const { t } = useTranslation('explorer');
-  const { esIndexMode } = useContext(CommonStateContext);
+  const { esIndexMode, isPlus } = useContext(CommonStateContext);
   const { headerExtra, datasourceValue, form, isOpenSearch = false, defaultFormValuesControl } = props;
   const query = queryString.parse(useLocation().search);
   const [loading, setLoading] = useState(false);
@@ -413,6 +423,7 @@ export default function index(props: IProps) {
                       >
                         {chartVisible ? t('log.hideChart') : t('log.showChart')}
                       </a>
+                      {isPlus && <DownloadModal queryData={{ ...form.getFieldsValue(), total }} />}
                     </div>
                   </div>
                   {chartVisible && (
