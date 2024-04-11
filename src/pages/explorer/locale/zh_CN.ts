@@ -55,6 +55,7 @@ const zh_CN = {
       delSuccess: '任务已删除',
       del_btn_tips: '确认删除吗?',
       del_btn: '删除',
+      emptyText: '暂无导出记录，请点击查询日志，然后点击下载',
     },
   },
 };
