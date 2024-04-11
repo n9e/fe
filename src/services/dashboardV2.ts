@@ -221,6 +221,23 @@ export const getMetricSeries = function (data, datasourceValue: number) {
   });
 };
 
+export const getMetricSeriesV2 = function (data, datasourceValue: number) {
+  return request(`/api/${N9E_PATHNAME}/proxy/${datasourceValue}/api/v1/query`, {
+    method: RequestMethod.Get,
+    params: {
+      query: `last_over_time(${data.metric}[${data.end - data.start}s])`,
+      time: data.end,
+    },
+    silence: true,
+  }).then((res) => {
+    return {
+      data: _.map(res?.data?.result, (item) => {
+        return item.metric;
+      }),
+    };
+  });
+};
+
 export const getMetric = function (data = {}, datasourceValue: number) {
   return request(`/api/${N9E_PATHNAME}/proxy/${datasourceValue}/api/v1/label/__name__/values`, {
     method: RequestMethod.Get,
