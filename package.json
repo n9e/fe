@@ -6,6 +6,7 @@
     "dev:advanced": "vite --port 8765 --host --mode advanced",
     "build": "tsc && cross-env NODE_OPTIONS=--max-old-space-size=6096 vite build",
     "build:advanced": "node comb_feats ${npm_config_custom_options} && tsc && cross-env NODE_OPTIONS=--max-old-space-size=6096 vite build --mode advanced",
+    "build:prefix": "node comb_feats ${npm_config_custom_options} && tsc && cross-env NODE_OPTIONS=--max-old-space-size=6096 VITE_PREFIX=/flashcat vite build --mode advanced",
     "serve": "vite preview"
   },
   "dependencies": {
@@ -92,6 +93,7 @@
     "@vitejs/plugin-react-refresh": "^1.3.1",
     "autoprefixer": "^10.4.16",
     "cross-env": "^7.0.3",
+    "jscodeshift": "^0.11.0",
     "less": "^4.1.1",
     "postcss": "^8.4.31",
     "postcss-nested": "^5.0.5",
