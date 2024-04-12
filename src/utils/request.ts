@@ -5,6 +5,7 @@ import _ from 'lodash';
 import { UpdateAccessToken } from '@/services/login';
 import { N9E_PATHNAME, AccessTokenKey } from '@/utils/constant';
 import i18next from 'i18next';
+import { basePrefix } from '@/App';
 
 /** 异常处理程序，所有的error都被这里处理，页面无法感知具体error */
 const errorHandler = (error: ResponseError<any>): Response => {
@@ -62,8 +63,11 @@ request.interceptors.request.use((url, options) => {
   headers['Authorization'] = `Bearer ${localStorage.getItem(AccessTokenKey) || ''}`;
   headers['X-Language'] = i18next.language;
   return {
-    url,
-    options: { ...options, headers },
+    url: basePrefix + url,
+    options: {
+      ...options,
+      headers,
+    },
   };
 });
 
@@ -123,21 +127,21 @@ request.interceptors.response.use(
         });
     } else if (status === 401 && !_.includes(response.url, '/api/n9e-plus/proxy') && !_.includes(response.url, '/api/n9e/proxy')) {
       if (response.url.indexOf('/api/n9e/auth/refresh') > 0) {
-        location.href = `/login${location.pathname != '/' ? '?redirect=' + location.pathname + location.search : ''}`;
+        location.href = `${basePrefix}/login${location.pathname != '/' ? '?redirect=' + location.pathname + location.search : ''}`;
       } else {
         localStorage.getItem('refresh_token')
           ? UpdateAccessToken().then((res) => {
               console.log('401 err', res);
               if (res.err) {
-                location.href = `/login${location.pathname != '/' ? '?redirect=' + location.pathname + location.search : ''}`;
+                location.href = `${basePrefix}/login${location.pathname != '/' ? '?redirect=' + location.pathname + location.search : ''}`;
               } else {
                 const { access_token, refresh_token } = res.dat;
                 localStorage.setItem(AccessTokenKey, access_token);
                 localStorage.setItem('refresh_token', refresh_token);
-                location.href = `${location.pathname}${location.search}`;
+                location.href = `${basePrefix}${location.pathname}${location.search}`;
               }
             })
-          : (location.href = `/login${location.pathname != '/' ? '?redirect=' + location.pathname + location.search : ''}`);
+          : (location.href = `${basePrefix}/login${location.pathname != '/' ? '?redirect=' + location.pathname + location.search : ''}`);
       }
     } else if (
       status === 403 &&
@@ -150,7 +154,7 @@ request.interceptors.response.use(
         .clone()
         .json()
         .then((data) => {
-          location.href = '/403';
+          location.href = `${basePrefix}/403`;
           if (data.error && data.error.message) throw new Error(data.error.message);
         });
     } else {

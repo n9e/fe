@@ -18,6 +18,8 @@ import { defineConfig, loadEnv } from 'vite';
 import reactRefresh from '@vitejs/plugin-react-refresh';
 import { md } from './plugins/md';
 import plusResolve from './plugins/plusResolve';
+import prefixPlugin from './plugins/vite-plugin-prefix';
+import path from 'path';
 
 const reactSvgPlugin = require('./plugins/svg');
 
@@ -35,7 +37,6 @@ const chunk3 = ['react-ace'];
 const chunk1 = ['react', 'react-router-dom', 'react-dom', 'moment', '@ant-design/icons', 'umi-request', 'lodash', 'react-grid-layout', 'd3', 'ahooks', 'color'];
 const antdChunk = ['antd'];
 
-
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
@@ -47,11 +48,26 @@ export default defineConfig(({ mode }) => {
   } else if (env.VITE_IS_ENT) {
     proxyURL = env.PROXY_ENT;
   }
+
+  const baseName = env.VITE_PREFIX || '';
+
   return {
-    plugins: [md(), reactRefresh(), plusResolve(), reactSvgPlugin({ defaultExport: 'component' })],
+    base: baseName + '/',
+    plugins: [
+      md(),
+      reactRefresh(),
+      plusResolve(),
+      reactSvgPlugin({ defaultExport: 'component' }),
+      //
+      prefixPlugin(baseName),
+    ],
     define: {},
     resolve: {
       alias: [
+        {
+          find: '@assets',
+          replacement: baseName,
+        },
         {
           find: '@',
           replacement: '/src',

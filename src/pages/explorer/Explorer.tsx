@@ -20,7 +20,7 @@
  * data_source_id: string
  */
 import React, { useRef, useContext } from 'react';
-import { Card, Space, Input, Form, Select } from 'antd';
+import { Card, Space, Input, Form, Select, Row, Col } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useHistory } from 'react-router-dom';
@@ -72,105 +72,111 @@ const Panel = ({ type, defaultCate, panelIdx, defaultFormValuesControl }: IProps
         }}
       >
         <div className='explorer-content'>
-          <Space align='start'>
-            <InputGroupWithFormItem label={t('common:datasource.type')}>
-              <Form.Item name='datasourceCate' noStyle>
-                <DatasourceCateSelect
-                  scene='graph'
-                  filterCates={(cates) => {
-                    return _.filter(cates, (item) => _.includes(item.type, type));
-                  }}
-                  dropdownMatchSelectWidth={false}
-                  style={{ minWidth: 70 }}
-                  onChange={(val) => {
-                    form.setFieldsValue({
-                      datasourceValue: getDefaultDatasourceValue(val, groupedDatasourceList),
-                      query: undefined,
-                    });
-                    form.setFieldsValue({
-                      query: {
-                        range: {
-                          start: 'now-1h',
-                          end: 'now',
-                        },
-                      },
-                    });
-                    if (panelIdx === 0) {
-                      history.replace({
-                        search: `?data_source_name=${val}&data_source_id=${getDefaultDatasourceValue(val, groupedDatasourceList)}`,
+          <Row gutter={8}>
+            <Col>
+              <InputGroupWithFormItem label={t('common:datasource.type')}>
+                <Form.Item name='datasourceCate' noStyle>
+                  <DatasourceCateSelect
+                    scene='graph'
+                    filterCates={(cates) => {
+                      return _.filter(cates, (item) => _.includes(item.type, type));
+                    }}
+                    dropdownMatchSelectWidth={false}
+                    style={{ minWidth: 70 }}
+                    onChange={(val) => {
+                      form.setFieldsValue({
+                        datasourceValue: getDefaultDatasourceValue(val, groupedDatasourceList),
+                        query: undefined,
                       });
-                    }
-                  }}
-                />
-              </Form.Item>
-            </InputGroupWithFormItem>
-            <Form.Item shouldUpdate={(prev, curr) => prev.datasourceCate !== curr.datasourceCate} noStyle>
-              {({ getFieldValue }) => {
-                const cate = getFieldValue('datasourceCate');
-                return (
-                  <EmptyDatasourcePopover datasourceCate={cate} datasourceList={groupedDatasourceList[cate]}>
-                    <Input.Group compact>
-                      <span
-                        className='ant-input-group-addon'
-                        style={{
-                          width: 'max-content',
-                          height: 32,
-                          lineHeight: '32px',
-                        }}
-                      >
-                        {t('common:datasource.id')}
-                      </span>
-
-                      <Form.Item
-                        name='datasourceValue'
-                        rules={[
-                          {
-                            required: true,
-                            message: t('common:datasource.id_required'),
+                      form.setFieldsValue({
+                        query: {
+                          range: {
+                            start: 'now-1h',
+                            end: 'now',
                           },
-                        ]}
-                      >
-                        <Select
-                          style={{ minWidth: 70 }}
-                          dropdownMatchSelectWidth={false}
-                          onChange={(val: string) => {
-                            setDefaultDatasourceValue(cate, val);
-                            if (cate !== 'prometheus') {
-                              form.setFieldsValue({
-                                query: undefined,
-                              });
-                              form.setFieldsValue({
-                                query: {
-                                  range: {
-                                    start: 'now-1h',
-                                    end: 'now',
-                                  },
-                                },
-                              });
-                            }
-                            if (panelIdx === 0) {
-                              history.replace({
-                                search: `?data_source_name=${cate}&data_source_id=${val}`,
-                              });
-                            }
+                        },
+                      });
+                      if (panelIdx === 0) {
+                        history.replace({
+                          search: `?data_source_name=${val}&data_source_id=${getDefaultDatasourceValue(val, groupedDatasourceList)}`,
+                        });
+                      }
+                    }}
+                  />
+                </Form.Item>
+              </InputGroupWithFormItem>
+            </Col>
+            <Col>
+              <Form.Item shouldUpdate={(prev, curr) => prev.datasourceCate !== curr.datasourceCate} noStyle>
+                {({ getFieldValue }) => {
+                  const cate = getFieldValue('datasourceCate');
+                  return (
+                    <EmptyDatasourcePopover datasourceCate={cate} datasourceList={groupedDatasourceList[cate]}>
+                      <Input.Group compact>
+                        <span
+                          className='ant-input-group-addon'
+                          style={{
+                            width: 'max-content',
+                            height: 32,
+                            lineHeight: '32px',
                           }}
-                          showSearch
-                          optionFilterProp='children'
                         >
-                          {_.map(groupedDatasourceList[cate], (item) => (
-                            <Select.Option value={item.id} key={item.id}>
-                              {item.name}
-                            </Select.Option>
-                          ))}
-                        </Select>
-                      </Form.Item>
-                    </Input.Group>
-                  </EmptyDatasourcePopover>
-                );
-              }}
-            </Form.Item>
-            <div ref={headerExtraRef} />
-          </Space>
+                          {t('common:datasource.id')}
+                        </span>
+
+                        <Form.Item
+                          name='datasourceValue'
+                          rules={[
+                            {
+                              required: true,
+                              message: t('common:datasource.id_required'),
+                            },
+                          ]}
+                        >
+                          <Select
+                            style={{ minWidth: 70 }}
+                            dropdownMatchSelectWidth={false}
+                            onChange={(val: string) => {
+                              setDefaultDatasourceValue(cate, val);
+                              if (cate !== 'prometheus') {
+                                form.setFieldsValue({
+                                  query: undefined,
+                                });
+                                form.setFieldsValue({
+                                  query: {
+                                    range: {
+                                      start: 'now-1h',
+                                      end: 'now',
+                                    },
+                                  },
+                                });
+                              }
+                              if (panelIdx === 0) {
+                                history.replace({
+                                  search: `?data_source_name=${cate}&data_source_id=${val}`,
+                                });
+                              }
+                            }}
+                            showSearch
+                            optionFilterProp='children'
+                          >
+                            {_.map(groupedDatasourceList[cate], (item) => (
+                              <Select.Option value={item.id} key={item.id}>
+                                {item.name}
+                              </Select.Option>
+                            ))}
+                          </Select>
+                        </Form.Item>
+                      </Input.Group>
+                    </EmptyDatasourcePopover>
+                  );
+                }}
+              </Form.Item>
+            </Col>
+            <Col flex={'1'}>
+              <div ref={headerExtraRef} />
+            </Col>
+          </Row>
           <div style={{ minHeight: 0, height: '100%' }}>
             <Form.Item shouldUpdate noStyle>
               {({ getFieldValue }) => {

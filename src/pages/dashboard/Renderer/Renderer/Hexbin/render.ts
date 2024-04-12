@@ -19,6 +19,7 @@ import { transition, min, select, event } from 'd3';
 import { hexbin as d3Hexbin } from 'd3-hexbin';
 import _ from 'lodash';
 import { bestFitElemCountPerRow, getTextSizeForWidthAndHeight, getMapColumnsAndRows } from './utils';
+import { basePrefix } from '@/App';
 
 const xmlns = 'http://www.w3.org/2000/svg';
 const minFont = 6;
@@ -166,7 +167,7 @@ function renderHoneyComb(
     })
     .on('mousedown', (_d, i) => {
       if (detailUrl) {
-        window.open(detailFormatter(data[i]), '_blank');
+        window.open(basePrefix + detailFormatter(data[i]), '_blank');
       }
     })
     .attr('stroke', (_d, i) => {

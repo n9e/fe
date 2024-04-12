@@ -18,7 +18,7 @@ import React from 'react';
 import moment from 'moment';
 import _ from 'lodash';
 import queryString from 'query-string';
-import { getLabelNames, getMetricSeries, getLabelValues, getMetric, getQueryResult, getESVariableResult } from '@/services/dashboardV2';
+import { getLabelNames, getMetricSeries, getMetricSeriesV2, getLabelValues, getMetric, getQueryResult, getESVariableResult } from '@/services/dashboardV2';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { IVariable } from './definition';
 import { normalizeESQueryRequestBody } from './utils';
@@ -37,7 +37,9 @@ export const convertExpressionToQuery = (expression: string, range: IRawTimeRang
   if (datasource?.cate === 'elasticsearch' && datasourceValue) {
     try {
       const query = JSON.parse(expression);
-      return getESVariableResult(datasourceValue, config?.index!, normalizeESQueryRequestBody(query));
+      const start = moment(parsedRange.start).valueOf();
+      const end = moment(parsedRange.end).valueOf();
+      return getESVariableResult(datasourceValue, config?.index!, normalizeESQueryRequestBody(query, config?.date_field, start, end));
     } catch (e) {
       return Promise.resolve([]);
     }
@@ -50,7 +52,10 @@ export const convertExpressionToQuery = (expression: string, range: IRawTimeRang
         let metricsAndLabel = expression.substring('label_values('.length, expression.length - 1).split(',');
         const label = metricsAndLabel.pop();
         const metric = metricsAndLabel.join(', ');
-        return getMetricSeries({ 'match[]': metric.trim(), start, end }, datasourceValue).then((res) => Array.from(new Set(_.map(res.data, (item) => item[label!.trim()]))));
+        if (end - start >= 86400) {
+          return getMetricSeries({ 'match[]': metric.trim(), start, end }, datasourceValue).then((res) => Array.from(new Set(_.map(res.data, (item) => item[label!.trim()]))));
+        }
+        return getMetricSeriesV2({ metric, start, end }, datasourceValue).then((res) => Array.from(new Set(_.map(res.data, (item) => item[label!.trim()]))));
       } else {
         const label = expression.substring('label_values('.length, expression.length - 1);
         return getLabelValues(label, { start, end }, datasourceValue).then((res) => res.data);

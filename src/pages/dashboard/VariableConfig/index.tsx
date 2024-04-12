@@ -103,7 +103,7 @@ function index(props: IProps) {
 
   useEffect(() => {
     if (props.variableConfigRefreshFlag) {
-      setRefreshFlag(_.uniqueId('refreshFlag_'));
+      // setRefreshFlag(_.uniqueId('refreshFlag_'));
     }
   }, [props.variableConfigRefreshFlag]);
 
@@ -204,7 +204,7 @@ function index(props: IProps) {
         onChange(value, false, result);
       })();
     }
-  }, [JSON.stringify(value), refreshFlag]);
+  }, [JSON.stringify(value), refreshFlag, range]);
 
   return (
     <div className='tag-area'>

@@ -239,7 +239,7 @@ export default function index({ disabled }) {
                   </Col>
                   <Col flex='auto'>
                     <Form.Item {...field} name={[field.name, 'value']}>
-                      <Input />
+                      <Input.TextArea autoSize />
                     </Form.Item>
                   </Col>
                   <Col flex='40px'>
