@@ -67,6 +67,7 @@ request.interceptors.request.use((url, options) => {
     options: {
       ...options,
       headers,
+      sourcePathname: location.pathname,
     },
   };
 });
