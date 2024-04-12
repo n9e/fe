@@ -36,6 +36,7 @@ export interface IVariable {
   config?: {
     // v5.14.3 新增 config 字段，用于存储一些非常规的配置
     index: string; // elasticsearch 源的索引配置
+    date_field: string; // elasticsearch 源的时间字段配置
   };
   value: string | string[];
   hide?: boolean; // v6 新增，用于隐藏变量

@@ -37,7 +37,9 @@ export const convertExpressionToQuery = (expression: string, range: IRawTimeRang
   if (datasource?.cate === 'elasticsearch' && datasourceValue) {
     try {
       const query = JSON.parse(expression);
-      return getESVariableResult(datasourceValue, config?.index!, normalizeESQueryRequestBody(query));
+      const start = moment(parsedRange.start).valueOf();
+      const end = moment(parsedRange.end).valueOf();
+      return getESVariableResult(datasourceValue, config?.index!, normalizeESQueryRequestBody(query, config?.date_field, start, end));
     } catch (e) {
       return Promise.resolve([]);
     }
