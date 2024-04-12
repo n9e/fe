@@ -108,7 +108,7 @@ export default function Login() {
         localStorage.setItem(AccessTokenKey, access_token);
         localStorage.setItem('refresh_token', refresh_token);
         if (!err) {
-          window.location.href = redirect ? redirect.replace(basePrefix, '') : '/';
+          window.location.href = redirect || '/';
         }
       })
       .catch(() => {
