@@ -64,11 +64,7 @@ request.interceptors.request.use((url, options) => {
   headers['X-Language'] = i18next.language;
   return {
     url: basePrefix + url,
-    options: {
-      ...options,
-      headers,
-      sourcePathname: location.pathname,
-    },
+    options: { ...options, headers, sourcePathname: location.pathname },
   };
 });
 
