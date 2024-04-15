@@ -21,6 +21,7 @@ import LogView from './LogView';
 import './style.less';
 // @ts-ignore
 import DownloadModal from 'plus:/datasource/elasticsearch/components/LogDownload/DownloadModal';
+// @ts-ignore
 import ExportModal from 'plus:/datasource/elasticsearch/components/LogDownload/ExportModal';
 
 interface IProps {
