@@ -1,5 +1,5 @@
 const en_US = {
-  title: 'Metrics Built-in',
+  title: 'Built-in Metrics',
   name: 'Name',
   collector: 'Collector',
   typ: 'Type',
