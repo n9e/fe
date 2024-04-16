@@ -1,11 +1,11 @@
 const zh_HK = {
-  auth:{
-    403:'您沒有權限訪問該頁面，請聯絡管理員！',
-    404:'您訪問的頁面不存在！',
-    '404_btn': '回到首頁'
+  auth: {
+    403: '您沒有權限訪問該頁面，請聯絡管理員！',
+    404: '您訪問的頁面不存在！',
+    '404_btn': '回到首頁',
   },
   business_group: '業務組',
-  search_placeholder: '搜尋',
+  search_placeholder: '請輸入搜索關鍵字',
   nodata: '暫無數據',
   btn: {
     add: '新增',

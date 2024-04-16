@@ -55,6 +55,10 @@ export const getMenuList = (t) => {
           key: '/recording-rules',
           label: t('记录规则'),
         },
+        {
+          key: '/metrics-built-in',
+          label: t('metricsBuiltin:title'),
+        },
       ],
     },
     {
