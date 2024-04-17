@@ -58,6 +58,7 @@ export default function Prometheus(props: IProps) {
       executeQuery={() => {
         form.validateFields();
       }}
+      showBuiltinMetrics
     />
   );
 }

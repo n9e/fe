@@ -31,6 +31,7 @@ import Table from './Table';
 import Graph from './Graph';
 import QueryStatsView, { QueryStats } from './components/QueryStatsView';
 import MetricsExplorer from './components/MetricsExplorer';
+import BuiltinMetrics from './components/BuiltinMetrics';
 import './locale';
 import './style.less';
 
@@ -51,6 +52,7 @@ interface IProps {
   };
   headerExtra?: HTMLDivElement | null;
   executeQuery?: (promQL?: string) => void;
+  showBuiltinMetrics?: boolean;
 }
 
 const TabPane = Tabs.TabPane;
@@ -74,6 +76,7 @@ export default function index(props: IProps) {
     },
     headerExtra,
     executeQuery,
+    showBuiltinMetrics,
   } = props;
   const [value, setValue] = useState<string | undefined>(promQL); // for promQLInput
   const [promql, setPromql] = useState<string | undefined>(promQL);
@@ -141,6 +144,14 @@ export default function index(props: IProps) {
 
       <div className='prom-graph-expression-input'>
         <Input.Group>
+          {showBuiltinMetrics && (
+            <BuiltinMetrics
+              onSelect={(newValue) => {
+                setValue(newValue);
+                setPromql(newValue);
+              }}
+            />
+          )}
           <span className='ant-input-affix-wrapper'>
             <PromQLInput
               ref={promQLInputRef}
