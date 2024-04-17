@@ -44,7 +44,7 @@ enum IMode {
   indices = 'indices',
 }
 
-const ModeRadio = ({ mode, setMode, allowHideSystemIndices, setAllowHideSystemIndices }) => {
+const ModeRadio = ({ mode, setMode, allowHideSystemIndices, setAllowHideSystemIndices, datasourceValue }) => {
   const { t } = useTranslation('explorer');
   const { esIndexMode, isPlus } = useContext(CommonStateContext);
 
@@ -76,7 +76,7 @@ const ModeRadio = ({ mode, setMode, allowHideSystemIndices, setAllowHideSystemIn
       </Space>
       {isPlus && (
         <div>
-          <ExportModal />
+          <ExportModal datasourceValue={datasourceValue} />
         </div>
       )}
     </div>
@@ -269,6 +269,7 @@ export default function index(props: IProps) {
                 }}
                 allowHideSystemIndices={allowHideSystemIndices}
                 setAllowHideSystemIndices={setAllowHideSystemIndices}
+                datasourceValue={datasourceValue}
               />,
               headerExtra,
             )
@@ -285,6 +286,7 @@ export default function index(props: IProps) {
               }}
               allowHideSystemIndices={allowHideSystemIndices}
               setAllowHideSystemIndices={setAllowHideSystemIndices}
+              datasourceValue={datasourceValue}
             />
           )}
         </>
