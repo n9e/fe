@@ -96,6 +96,7 @@ export const baseTheme = EditorView.theme({
     marginRight: '10px',
     verticalAlign: 'top',
     '&:after': { content: "'\\ea88'" },
+    fontFamily: 'codicon',
     paddingRight: '0',
     opacity: '1',
     color: '#2ca9fd',
