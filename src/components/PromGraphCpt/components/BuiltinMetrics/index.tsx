@@ -118,7 +118,7 @@ export default function index(props: Props) {
             </div>
             {activeMetric && (
               <div className='promql-dropdown-built-in-metrics-detail'>
-                <div className='promql-dropdown-built-in-metrics-detail-title'>{activeMetric?.expression}</div>
+                <div className='promql-dropdown-built-in-metrics-detail-title'>{activeMetric?.name}</div>
                 <div className='promql-dropdown-built-in-metrics-detail-row'>
                   <div className='promql-dropdown-built-in-metrics-detail-label'>{t('metricsBuiltin:expression')}</div>
                   <div className='promql-dropdown-built-in-metrics-detail-value'>{activeMetric?.expression}</div>

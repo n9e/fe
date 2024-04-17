@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { Skeleton, List, Divider } from 'antd';
-import { useDebounceFn } from 'ahooks';
+import { useThrottleFn } from 'ahooks';
 import _ from 'lodash';
 import { getMetrics, Filter, Record } from '@/pages/metricsBuiltin/services';
 import classNames from 'classnames';
@@ -9,7 +9,7 @@ import classNames from 'classnames';
 interface Props {
   filter: Filter;
   activeMetric?: Record;
-  setActiveMetric: (metric: Record) => void;
+  setActiveMetric: (metric?: Record) => void;
   onSelect: (expression: string) => void;
 }
 
@@ -19,7 +19,7 @@ export default function MetricsList(props: Props) {
   const [total, setTotal] = useState(0);
   const [data, setData] = useState<any[]>([]);
   const currentPage = useRef(1);
-  const { run: loadMoreData } = useDebounceFn(
+  const { run: loadMoreData } = useThrottleFn(
     (currentFilter) => {
       if (loading) {
         return;
@@ -27,9 +27,6 @@ export default function MetricsList(props: Props) {
       setLoading(true);
       getMetrics({ ...currentFilter, p: currentPage.current, limit: 10 })
         .then((res) => {
-          if (currentPage.current === 1) {
-            setActiveMetric(res.list[0]);
-          }
           currentPage.current += 1;
           setData([...data, ...res.list]);
           setTotal(res.total);
@@ -56,6 +53,9 @@ export default function MetricsList(props: Props) {
       style={{
         height: 380,
         overflow: 'auto',
+      }}
+      onMouseLeave={() => {
+        setActiveMetric(undefined);
       }}
     >
       <InfiniteScroll
@@ -85,7 +85,7 @@ export default function MetricsList(props: Props) {
                   onSelect(item.expression);
                 }}
               >
-                {item.expression}
+                {item.name}
               </List.Item>
             );
           }}
