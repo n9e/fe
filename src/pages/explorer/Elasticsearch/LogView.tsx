@@ -52,12 +52,17 @@ export default function LogView(props: Props) {
     >
       <Tabs.TabPane tab='Table' key='table'>
         <Table
-          dataSource={_.map(value, (val, key) => {
-            return {
-              field: key,
-              value: val,
-            };
-          })}
+          dataSource={_.filter(
+            _.map(value, (val, key) => {
+              return {
+                field: key,
+                value: val,
+              };
+            }),
+            (item) => {
+              return item.value !== undefined && item.value !== null && item.value !== '';
+            },
+          )}
           columns={[
             {
               title: 'Field',
@@ -67,7 +72,7 @@ export default function LogView(props: Props) {
                 const finded = _.find(fields, { name: text });
                 return (
                   <Space>
-                    <span className='es-discover-fields-item-icon'>{finded ? typeIconMap[typeMap[finded.type]] || <QuestionOutlined /> : <QuestionOutlined />}</span>
+                    <span className='n9e-es-discover-fields-item-icon'>{finded ? typeIconMap[typeMap[finded.type]] || <QuestionOutlined /> : <QuestionOutlined />}</span>
                     {getFieldLabel(text, fieldConfig)}
                   </Space>
                 );
