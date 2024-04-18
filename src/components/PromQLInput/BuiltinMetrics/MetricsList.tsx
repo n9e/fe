@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { Skeleton, List, Divider } from 'antd';
+import { Skeleton, List, Divider, Spin } from 'antd';
 import { useThrottleFn } from 'ahooks';
 import _ from 'lodash';
 import { getMetrics, Filter, Record } from '@/pages/metricsBuiltin/services';
@@ -15,25 +15,25 @@ interface Props {
 
 export default function MetricsList(props: Props) {
   const { filter, activeMetric, setActiveMetric, onSelect } = props;
-  const [loading, setLoading] = useState(false);
+  const loadingRef = useRef(false);
   const [total, setTotal] = useState(0);
   const [data, setData] = useState<any[]>([]);
   const currentPage = useRef(1);
   const { run: loadMoreData } = useThrottleFn(
     (currentFilter, currentData) => {
-      if (loading) {
+      if (loadingRef.current) {
         return;
       }
-      setLoading(true);
+      loadingRef.current = true;
       getMetrics({ ...currentFilter, p: currentPage.current, limit: 10 })
         .then((res) => {
+          loadingRef.current = false;
           currentPage.current += 1;
           setData([...currentData, ...res.list]);
           setTotal(res.total);
-          setLoading(false);
         })
         .catch(() => {
-          setLoading(false);
+          loadingRef.current = false;
         });
     },
     {
@@ -49,13 +49,11 @@ export default function MetricsList(props: Props) {
 
   return (
     <div
+      key={JSON.stringify(filter)}
       id='promql-dropdown-built-in-metrics-list-scrollable'
       style={{
         height: 288,
         overflow: 'auto',
-      }}
-      onMouseLeave={() => {
-        setActiveMetric(undefined);
       }}
     >
       <InfiniteScroll
@@ -64,7 +62,7 @@ export default function MetricsList(props: Props) {
           loadMoreData(filter, data);
         }}
         hasMore={data.length < total}
-        loader={<Skeleton paragraph={{ rows: 1 }} active />}
+        loader={<Spin spinning style={{ paddingLeft: 16 }} />}
         endMessage={!_.isEmpty(data) ? <Divider plain>It is all, nothing more 🤐</Divider> : null}
         scrollableTarget='promql-dropdown-built-in-metrics-list-scrollable'
       >

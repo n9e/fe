@@ -4,6 +4,7 @@ import { SearchOutlined } from '@ant-design/icons';
 import { Input, Row, Col, Select, Tag } from 'antd';
 import _ from 'lodash';
 import { Filter, getTypes, getCollectors, getDefaultTypes, Record } from '@/pages/metricsBuiltin/services';
+import Markdown from '@/components/Markdown';
 import MetricsList from './MetricsList';
 
 interface Props {
@@ -130,9 +131,21 @@ export default function Content(props: Props) {
               <div className='promql-dropdown-built-in-metrics-detail-label'>{t('metricsBuiltin:unit')}</div>
               <div className='promql-dropdown-built-in-metrics-detail-value'>{activeMetric?.unit || '-'}</div>
             </div>
-            <div className='promql-dropdown-built-in-metrics-detail-row'>
+            <div
+              className='promql-dropdown-built-in-metrics-detail-row'
+              style={{
+                overflow: 'hidden',
+              }}
+            >
               <div className='promql-dropdown-built-in-metrics-detail-label'>{t('metricsBuiltin:note')}</div>
-              <div className='promql-dropdown-built-in-metrics-detail-value'>{activeMetric?.note || '-'}</div>
+              <div
+                className='promql-dropdown-built-in-metrics-detail-value'
+                style={{
+                  overflowY: 'auto',
+                }}
+              >
+                {activeMetric?.note ? <Markdown content={activeMetric?.note}></Markdown> : '-'}
+              </div>
             </div>
           </div>
         )}
