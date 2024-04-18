@@ -52,7 +52,7 @@ export default function index() {
       debounceWait: 500,
     },
   );
-  const columns: ColumnType<Record>[] = [
+  const columns: (ColumnType<Record> & { RC_TABLE_INTERNAL_COL_DEFINE?: any })[] = [
     {
       title: t('name'),
       dataIndex: 'name',
@@ -64,6 +64,11 @@ export default function index() {
     {
       title: t('typ'),
       dataIndex: 'typ',
+      RC_TABLE_INTERNAL_COL_DEFINE: {
+        style: {
+          minWidth: 70,
+        },
+      },
     },
     {
       title: t('unit'),
@@ -72,6 +77,7 @@ export default function index() {
     {
       title: t('note'),
       dataIndex: 'note',
+      width: 600,
     },
     {
       title: t('common:table.operations'),
@@ -154,14 +160,6 @@ export default function index() {
             }}
           >
             <Space>
-              <Input
-                placeholder={t('common:search_placeholder')}
-                style={{ width: 300 }}
-                value={filter.query}
-                onChange={(e) => {
-                  setFilter({ ...filter, query: e.target.value });
-                }}
-              />
               <Select
                 value={filter.typ}
                 onChange={(val) => {
@@ -195,6 +193,14 @@ export default function index() {
                 placeholder={t('collector')}
                 style={{ width: 200 }}
                 allowClear
+              />
+              <Input
+                placeholder={t('common:search_placeholder')}
+                style={{ width: 300 }}
+                value={filter.query}
+                onChange={(e) => {
+                  setFilter({ ...filter, query: e.target.value });
+                }}
               />
             </Space>
             <Space>
