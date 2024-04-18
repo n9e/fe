@@ -16,7 +16,7 @@
  */
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
-import { useAntdTable } from 'ahooks';
+import { useAntdTable, useDebounceFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import { Space, Table, Button, Input, Dropdown, Select, message, Modal } from 'antd';
 import { SettingOutlined, DownOutlined } from '@ant-design/icons';
@@ -49,7 +49,6 @@ export default function index() {
     {
       refreshDeps: [refreshFlag, JSON.stringify(filter)],
       defaultPageSize: pagination.pageSize,
-      debounceWait: 500,
     },
   );
   const columns: (ColumnType<Record> & { RC_TABLE_INTERNAL_COL_DEFINE?: any })[] = [
@@ -134,6 +133,15 @@ export default function index() {
     },
   ];
 
+  const { run: queryChange } = useDebounceFn(
+    (query) => {
+      setFilter({ ...filter, query });
+    },
+    {
+      wait: 500,
+    },
+  );
+
   useEffect(() => {
     getTypes().then((res) => {
       setTypesList(res);
@@ -199,7 +207,7 @@ export default function index() {
                 style={{ width: 300 }}
                 value={filter.query}
                 onChange={(e) => {
-                  setFilter({ ...filter, query: e.target.value });
+                  queryChange(e.target.value);
                 }}
               />
             </Space>
