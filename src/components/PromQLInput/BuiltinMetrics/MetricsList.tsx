@@ -20,7 +20,7 @@ export default function MetricsList(props: Props) {
   const [data, setData] = useState<any[]>([]);
   const currentPage = useRef(1);
   const { run: loadMoreData } = useThrottleFn(
-    (currentFilter) => {
+    (currentFilter, currentData) => {
       if (loading) {
         return;
       }
@@ -28,7 +28,7 @@ export default function MetricsList(props: Props) {
       getMetrics({ ...currentFilter, p: currentPage.current, limit: 10 })
         .then((res) => {
           currentPage.current += 1;
-          setData([...data, ...res.list]);
+          setData([...currentData, ...res.list]);
           setTotal(res.total);
           setLoading(false);
         })
@@ -44,14 +44,14 @@ export default function MetricsList(props: Props) {
   useEffect(() => {
     currentPage.current = 1;
     setData([]);
-    loadMoreData(filter);
+    loadMoreData(filter, []);
   }, [filter]);
 
   return (
     <div
       id='promql-dropdown-built-in-metrics-list-scrollable'
       style={{
-        height: 380,
+        height: 288,
         overflow: 'auto',
       }}
       onMouseLeave={() => {
@@ -61,7 +61,7 @@ export default function MetricsList(props: Props) {
       <InfiniteScroll
         dataLength={data.length}
         next={() => {
-          loadMoreData(filter);
+          loadMoreData(filter, data);
         }}
         hasMore={data.length < total}
         loader={<Skeleton paragraph={{ rows: 1 }} active />}

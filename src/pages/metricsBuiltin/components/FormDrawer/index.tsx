@@ -17,7 +17,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
-import { Col, Drawer, Form, Input, Row, Select, Space, Button, message } from 'antd';
+import { Col, Drawer, Form, Input, Row, Select, Space, Button, AutoComplete, message } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 import { postMetrics, putMetric } from '../../services';
 
@@ -42,6 +42,7 @@ export default function index(props: Props) {
       <div
         onClick={() => {
           setOpen(true);
+          form.setFieldsValue(initialValues);
         }}
       >
         {children}
@@ -51,6 +52,7 @@ export default function index(props: Props) {
           width={600}
           closable={false}
           title={title}
+          destroyOnClose
           extra={
             <CloseOutlined
               onClick={() => {
@@ -86,7 +88,6 @@ export default function index(props: Props) {
           <Form
             layout='vertical'
             form={form}
-            initialValues={initialValues}
             onFinish={(values) => {
               if (mode === 'add' || mode === 'clone') {
                 postMetrics([_.omit(values, ['id', 'created_at', 'created_by', 'updated_at', 'updated_by'])]).then(() => {
@@ -126,29 +127,6 @@ export default function index(props: Props) {
             <Row gutter={16}>
               <Col span={12}>
                 <Form.Item
-                  label={t('collector')}
-                  name='collector'
-                  rules={[
-                    {
-                      required: true,
-                    },
-                  ]}
-                >
-                  <Select
-                    options={_.map(collectorsList, (item) => {
-                      return {
-                        label: item,
-                        value: item,
-                      };
-                    })}
-                    showSearch
-                    optionFilterProp='label'
-                    placeholder={t('collector')}
-                  />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item
                   label={t('typ')}
                   name='typ'
                   rules={[
@@ -157,7 +135,7 @@ export default function index(props: Props) {
                     },
                   ]}
                 >
-                  <Select
+                  <AutoComplete
                     options={_.map(typesList, (item) => {
                       return {
                         label: item,
@@ -167,6 +145,29 @@ export default function index(props: Props) {
                     showSearch
                     optionFilterProp='label'
                     placeholder={t('typ')}
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  label={t('collector')}
+                  name='collector'
+                  rules={[
+                    {
+                      required: true,
+                    },
+                  ]}
+                >
+                  <AutoComplete
+                    options={_.map(collectorsList, (item) => {
+                      return {
+                        label: item,
+                        value: item,
+                      };
+                    })}
+                    showSearch
+                    optionFilterProp='label'
+                    placeholder={t('collector')}
                   />
                 </Form.Item>
               </Col>

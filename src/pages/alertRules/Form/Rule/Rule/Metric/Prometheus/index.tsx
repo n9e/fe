@@ -128,22 +128,9 @@ export default function index(props: { form: any; datasourceCate: string; dataso
               <div className='alert-rule-triggers-container'>
                 {fields.map((field) => (
                   <div key={field.key} className='alert-rule-trigger-container'>
-                    <Row>
-                      <Col flex='80px'>
-                        <div style={{ marginTop: 6 }}>PromQL</div>
-                      </Col>
-                      <Col flex='auto'>
-                        <Form.Item
-                          {...field}
-                          name={[field.name, 'prom_ql']}
-                          validateTrigger={['onBlur']}
-                          trigger='onChange'
-                          rules={[{ required: true, message: t('请输入PromQL') }]}
-                        >
-                          <PromQLInputWithBuilder readonly={disabled} datasourceValue={datasourceId} />
-                        </Form.Item>
-                      </Col>
-                    </Row>
+                    <Form.Item {...field} name={[field.name, 'prom_ql']} validateTrigger={['onBlur']} trigger='onChange' rules={[{ required: true, message: t('请输入PromQL') }]}>
+                      <PromQLInputWithBuilder readonly={disabled} datasourceValue={datasourceId} showBuiltinMetrics />
+                    </Form.Item>
                     <div>
                       <Severity field={field} />
                     </div>
