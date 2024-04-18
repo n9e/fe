@@ -34,6 +34,7 @@ export default function index() {
   const [refreshFlag, setRefreshFlag] = useState(_.uniqueId('refreshFlag_'));
   const [selectedRows, setSelectedRows] = useState<Record[]>([]);
   const [filter, setFilter] = useState({} as Filter);
+  const [queryValue, setQueryValue] = useState('');
   const [typesList, setTypesList] = useState<string[]>([]);
   const [collectorsList, setCollectorsList] = useState<string[]>([]);
   const { tableProps } = useAntdTable(
@@ -205,8 +206,9 @@ export default function index() {
               <Input
                 placeholder={t('common:search_placeholder')}
                 style={{ width: 300 }}
-                value={filter.query}
+                value={queryValue}
                 onChange={(e) => {
+                  setQueryValue(e.target.value);
                   queryChange(e.target.value);
                 }}
               />
