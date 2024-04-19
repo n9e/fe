@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import _ from 'lodash';
 import { useDebounceFn } from 'ahooks';
 import { useLocation } from 'react-router-dom';
@@ -28,6 +28,7 @@ export default function QueryBuilder(props: Props) {
   const indexValue = Form.useWatch(['query', 'index']);
   const [allFields, setAllFields] = useState<Field[]>([]);
   const refInputFilter = useRef<any>();
+  const initialized = useRef<boolean>(false);
   const { run: onIndexChange } = useDebounceFn(
     (val) => {
       if (datasourceValue && val) {
@@ -38,6 +39,11 @@ export default function QueryBuilder(props: Props) {
           setFields(res.allFields);
           setAllFields(res.allFields);
           setDateFields(res.fields);
+          // 如果没有初始化过，并且 URL 携带了 index_name 和 timestamp，则不需要初始化 date_field 字段值
+          if (!initialized.current && params.get('timestamp') && params.get('index_name')) {
+            initialized.current = true;
+            return;
+          }
           const query = form.getFieldValue('query');
           const dateField = _.find(res.fields, { name: query.date_field })?.name;
           const defaultDateField = _.find(res.fields, { name: '@timestamp' })?.name || res.fields[0]?.name;
@@ -69,8 +75,10 @@ export default function QueryBuilder(props: Props) {
   }, [datasourceValue, allowHideSystemIndices]);
 
   useEffect(() => {
-    // 假设携带数据源值时会同时携带其他的参数，并且触发一次查询
-    onIndexChange(params.get('index_name'));
+    // 假设 URL 携带了 index_name 和 timestamp，则触发一次查询
+    if (params.get('timestamp') && params.get('index_name')) {
+      onExecute();
+    }
   }, []);
 
   useEffect(() => {
@@ -155,7 +163,14 @@ export default function QueryBuilder(props: Props) {
         </InputGroupWithFormItem>
       </div>
       <Form.Item name={['query', 'range']} initialValue={{ start: 'now-1h', end: 'now' }}>
-        <TimeRangePicker />
+        <TimeRangePicker
+          onChange={() => {
+            if (refInputFilter.current) {
+              refInputFilter.current.onCallback();
+            }
+            onExecute();
+          }}
+        />
       </Form.Item>
       <Form.Item>
         <Button

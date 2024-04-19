@@ -50,7 +50,6 @@ export default defineConfig(({ mode }) => {
   }
 
   const baseName = env.VITE_PREFIX || '';
-  console.log('baseName', baseName);
 
   return {
     base: baseName + '/',

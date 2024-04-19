@@ -36,12 +36,12 @@ const FieldBooleanIcon = (props: Partial<CustomIconComponentProps>) => <Icon com
 
 export const typeIconMap = {
   string: (
-    <span className='es-discover-fields-item-field' style={{ color: '#4a7194' }}>
+    <span className='n9e-es-discover-fields-item-field' style={{ color: '#4a7194' }}>
       t
     </span>
   ),
   number: (
-    <span className='es-discover-fields-item-field' style={{ color: '#387765' }}>
+    <span className='n9e-es-discover-fields-item-field' style={{ color: '#387765' }}>
       #
     </span>
   ),
@@ -69,19 +69,19 @@ export default function Field(props: Props) {
       visible={top5Visible}
       title={fieldLabel}
       content={
-        <div className='es-discover-field-values-topn'>
+        <div className='n9e-es-discover-field-values-topn'>
           <strong>{t('log.fieldValues_topn')}</strong>
           <Spin spinning={top5Loading}>
-            <div className='es-discover-field-values-topn-list'>
+            <div className='n9e-es-discover-field-values-topn-list'>
               {_.isEmpty(top5Data) && t('log.fieldValues_topnNoData')}
               {_.map(top5Data, (item) => {
                 const percent = _.floor(item.value * 100, 2);
                 return (
-                  <div key={item.label} className='es-discover-field-values-topn-item'>
+                  <div key={item.label} className='n9e-es-discover-field-values-topn-item'>
                     <div style={{ width: 'calc(100% - 40px)' }}>
-                      <div className='es-discover-field-values-topn-item-content'>
-                        <div className='es-discover-field-values-topn-item-label'>{item.label || '(empty)'}</div>
-                        <div className='es-discover-field-values-topn-item-percent'>{percent}%</div>
+                      <div className='n9e-es-discover-field-values-topn-item-content'>
+                        <div className='n9e-es-discover-field-values-topn-item-label'>{item.label || '(empty)'}</div>
+                        <div className='n9e-es-discover-field-values-topn-item-percent'>{percent}%</div>
                       </div>
                       <Progress percent={percent} size='small' showInfo={false} strokeColor='#6c53b1' />
                     </div>
@@ -149,11 +149,11 @@ export default function Field(props: Props) {
         }
       }}
     >
-      <div className='es-discover-fields-item' key={item}>
-        <span className='es-discover-fields-item-icon'>{typeIconMap[typeMap[record.type]] || <QuestionOutlined />}</span>
-        <span className='es-discover-fields-item-content'>{fieldLabel}</span>
+      <div className='n9e-es-discover-fields-item' key={item}>
+        <span className='n9e-es-discover-fields-item-icon'>{typeIconMap[typeMap[record.type]] || <QuestionOutlined />}</span>
+        <span className='n9e-es-discover-fields-item-content'>{fieldLabel}</span>
         <span
-          className='es-discover-fields-item-oper'
+          className='n9e-es-discover-fields-item-oper'
           onClick={() => {
             if (type === 'selected' && onRemove) {
               onRemove(item);

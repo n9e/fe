@@ -20,11 +20,11 @@ import { QuestionCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
-import IndexSelect from '@/pages/dashboard/Editor/QueryEditor/Elasticsearch/IndexSelect';
 import ClusterSelect from '@/pages/dashboard/Editor/QueryEditor/components/ClusterSelect';
 import { CommonStateContext } from '@/App';
 import { IVariable } from './definition';
-import { convertExpressionToQuery, replaceExpressionVars, filterOptionsByReg, setVaraiableSelected, stringToRegex } from './constant';
+import { stringToRegex } from './constant';
+import ElasticsearchSettings from './datasource/elasticsearch';
 
 interface IProps {
   id: string;
@@ -136,7 +136,7 @@ function EditItem(props: IProps) {
                   const datasourceCate = getFieldValue(['datasource', 'cate']) || 'prometheus';
                   return (
                     <Row gutter={16}>
-                      <Col span={8}>
+                      <Col span={12}>
                         <Form.Item label={t('common:datasource.type')} name={['datasource', 'cate']} rules={[{ required: true }]} initialValue='prometheus'>
                           <Select
                             dropdownMatchSelectWidth={false}
@@ -157,22 +157,9 @@ function EditItem(props: IProps) {
                           </Select>
                         </Form.Item>
                       </Col>
-                      <Col span={8}>
+                      <Col span={12}>
                         <ClusterSelect cate={datasourceCate} label={t('common:datasource.id')} name={['datasource', 'value']} datasourceVars={datasourceVars} />
                       </Col>
-                      {datasourceCate === 'elasticsearch' && (
-                        <>
-                          <Col span={8}>
-                            <Form.Item shouldUpdate={(prevValues, curValues) => prevValues?.datasource?.value !== curValues?.datasource?.value} noStyle>
-                              {({ getFieldValue }) => {
-                                let datasourceValue = getFieldValue(['datasource', 'value']);
-                                datasourceValue = replaceExpressionVars(datasourceValue as any, vars, vars.length, id);
-                                return <IndexSelect name={['config', 'index']} cate={datasourceCate} datasourceValue={datasourceValue} />;
-                              }}
-                            </Form.Item>
-                          </Col>
-                        </>
-                      )}
                     </Row>
                   );
                 }}
@@ -189,6 +176,7 @@ function EditItem(props: IProps) {
           if (type === 'query') {
             return (
               <>
+                {datasourceCate === 'elasticsearch' && <ElasticsearchSettings vars={vars} id={id} />}
                 <Form.Item
                   label={
                     <span>

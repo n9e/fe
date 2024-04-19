@@ -131,7 +131,14 @@ export default function QueryBuilder(props: Props) {
           </Form.Item>
         </InputGroupWithFormItem>
         <Form.Item name={['query', 'range']} initialValue={{ start: 'now-1h', end: 'now' }}>
-          <TimeRangePicker />
+          <TimeRangePicker
+            onChange={() => {
+              if (refInputFilter.current) {
+                refInputFilter.current.onCallback();
+              }
+              onExecute();
+            }}
+          />
         </Form.Item>
         <Form.Item>
           <Button

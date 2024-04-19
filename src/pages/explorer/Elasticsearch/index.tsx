@@ -21,6 +21,7 @@ import LogView from './LogView';
 import './style.less';
 // @ts-ignore
 import DownloadModal from 'plus:/datasource/elasticsearch/components/LogDownload/DownloadModal';
+// @ts-ignore
 import ExportModal from 'plus:/datasource/elasticsearch/components/LogDownload/ExportModal';
 
 interface IProps {
@@ -319,11 +320,17 @@ export default function index(props: IProps) {
             {_.map(filters, (filter) => {
               return (
                 <Tag
+                  key={JSON.stringify(filter)}
                   closable
                   color={filter.operator === 'is not' ? 'red' : undefined}
                   onClose={(e) => {
                     e.preventDefault();
-                    setFilters(_.filter(filters, (item) => item.key !== filter.key));
+                    setFilters(
+                      _.filter(filters, (item) => {
+                        if (item.key === filter.key && item.value === filter.value) return false;
+                        return true;
+                      }),
+                    );
                   }}
                 >
                   {getFieldLabel(filter.key, fieldConfig)} {filter.operator === 'is not' ? '!=' : '='} {filter.value}
@@ -345,7 +352,7 @@ export default function index(props: IProps) {
                   params={{ form, timesRef, datasourceValue, limit: LOGS_LIMIT }}
                   filters={filters}
                   onValueFilter={({ key, value, operator }) => {
-                    if (!_.find(filters, { key })) {
+                    if (operator === 'is not' || !_.find(filters, { key })) {
                       setFilters([...(filters || []), { key, value, operator }]);
                     } else {
                       setFilters(
@@ -448,6 +455,19 @@ export default function index(props: IProps) {
                             },
                           } as any
                         }
+                        hideResetBtn
+                        onZoomWithoutDefult={(times) => {
+                          form.setFieldsValue({
+                            query: {
+                              ...query,
+                              range: {
+                                start: moment(times[0]),
+                                end: moment(times[1]),
+                              },
+                            },
+                          });
+                          fetchData();
+                        }}
                       />
                     </div>
                   )}
