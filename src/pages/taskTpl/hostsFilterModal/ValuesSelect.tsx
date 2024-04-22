@@ -10,10 +10,11 @@ interface IProps {
   queryKey: string;
   queryOp: string;
   field: any;
+  group_id: number;
 }
 
 export default function ValuesSelect(props: IProps) {
-  const { queryKey, queryOp, field } = props;
+  const { queryKey, queryOp, field, group_id } = props;
   const { groupedDatasourceList } = useContext(CommonStateContext);
   const datasourceList = _.reduce(
     groupedDatasourceList,
@@ -29,8 +30,8 @@ export default function ValuesSelect(props: IProps) {
       setFetching(true);
       getMonObjectList({
         p: 1,
-        limit: 100,
-        bgid: -1,
+        limit: 5000,
+        bgid: group_id,
         query,
       })
         .then((res) => {
