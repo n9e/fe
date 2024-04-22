@@ -116,19 +116,19 @@ export default function Content(props: Props) {
           <div className='promql-dropdown-built-in-metrics-detail'>
             <div className='promql-dropdown-built-in-metrics-detail-title'>{activeMetric?.name}</div>
             <div className='promql-dropdown-built-in-metrics-detail-row'>
-              <div className='promql-dropdown-built-in-metrics-detail-label'>{t('metricsBuiltin:typ')}</div>
+              <div className='promql-dropdown-built-in-metrics-detail-label'>{t('metricsBuiltin:typ')}：</div>
               <div className='promql-dropdown-built-in-metrics-detail-value'>{activeMetric?.typ}</div>
             </div>
             <div className='promql-dropdown-built-in-metrics-detail-row'>
-              <div className='promql-dropdown-built-in-metrics-detail-label'>{t('metricsBuiltin:collector')}</div>
+              <div className='promql-dropdown-built-in-metrics-detail-label'>{t('metricsBuiltin:collector')}：</div>
               <div className='promql-dropdown-built-in-metrics-detail-value'>{activeMetric?.collector}</div>
             </div>
             <div className='promql-dropdown-built-in-metrics-detail-row'>
-              <div className='promql-dropdown-built-in-metrics-detail-label'>{t('metricsBuiltin:expression')}</div>
+              <div className='promql-dropdown-built-in-metrics-detail-label'>{t('metricsBuiltin:expression')}：</div>
               <div className='promql-dropdown-built-in-metrics-detail-value'>{activeMetric?.expression}</div>
             </div>
             <div className='promql-dropdown-built-in-metrics-detail-row'>
-              <div className='promql-dropdown-built-in-metrics-detail-label'>{t('metricsBuiltin:unit')}</div>
+              <div className='promql-dropdown-built-in-metrics-detail-label'>{t('metricsBuiltin:unit')}：</div>
               <div className='promql-dropdown-built-in-metrics-detail-value'>{activeMetric?.unit || '-'}</div>
             </div>
             <div
@@ -137,7 +137,7 @@ export default function Content(props: Props) {
                 overflow: 'hidden',
               }}
             >
-              <div className='promql-dropdown-built-in-metrics-detail-label'>{t('metricsBuiltin:note')}</div>
+              <div className='promql-dropdown-built-in-metrics-detail-label'>{t('metricsBuiltin:note')}：</div>
               <div
                 className='promql-dropdown-built-in-metrics-detail-value'
                 style={{
