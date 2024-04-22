@@ -35,8 +35,8 @@ const zh_HK = {
     dBm: '分貝-毫瓦',
     percent: '百分比(值範圍0-100)',
     percentUnit: '百分比(值範圍0.0-1.0)',
-    seconds: '秒',
-    milliseconds: '毫秒',
+    seconds: '時間單位: 秒',
+    milliseconds: '時間單位: 毫秒',
   },
 };
 
