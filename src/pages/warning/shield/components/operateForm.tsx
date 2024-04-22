@@ -186,6 +186,8 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
                 value: item.id,
               };
             })}
+            showSearch
+            optionFilterProp='label'
           />
         </Form.Item>
         <Row gutter={10}>

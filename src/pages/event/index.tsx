@@ -156,6 +156,8 @@ const Event: React.FC = () => {
               });
             }}
             dropdownMatchSelectWidth={false}
+            showSearch
+            optionFilterProp='children'
           >
             {_.map(busiGroups, (item) => {
               return (
