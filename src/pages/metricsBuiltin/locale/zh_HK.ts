@@ -5,6 +5,7 @@ const zh_HK = {
   typ: '指標類型',
   unit: '單位',
   note: '描述',
+  expression: '表達式',
   add_btn: '新增指標',
   clone_title: '克隆指標',
   edit_title: '編輯指標',

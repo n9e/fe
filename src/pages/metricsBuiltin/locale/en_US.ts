@@ -5,6 +5,7 @@ const en_US = {
   typ: 'Type',
   unit: 'Unit',
   note: 'Description',
+  expression: 'Expression',
   add_btn: 'Add Metric',
   clone_title: 'Clone Metric',
   edit_title: 'Edit Metric',

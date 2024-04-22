@@ -31,7 +31,7 @@ import Export from './components/Export';
 import Import from './components/Import';
 
 export default function index() {
-  const { t } = useTranslation('metricsBuiltin');
+  const { t, i18n } = useTranslation('metricsBuiltin');
   const pagination = usePagination({ PAGESIZE_KEY: 'metricsBuiltin-pagesize' });
   const [refreshFlag, setRefreshFlag] = useState(_.uniqueId('refreshFlag_'));
   const [selectedRows, setSelectedRows] = useState<Record[]>([]);
@@ -51,7 +51,7 @@ export default function index() {
       return getMetrics({ ...filter, limit: pageSize, p: current });
     },
     {
-      refreshDeps: [refreshFlag, JSON.stringify(filter)],
+      refreshDeps: [refreshFlag, JSON.stringify(filter), i18n.language],
       defaultPageSize: pagination.pageSize,
     },
   );
