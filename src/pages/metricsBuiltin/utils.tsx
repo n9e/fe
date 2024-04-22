@@ -37,7 +37,15 @@ export const ajustUnitOptions = (showLabel = true) => {
         }),
       };
     }
-    return item;
+    return {
+      ...item,
+      label: (
+        <span>
+          {showLabel && item.label}
+          <span className='built-in-metrics-form-unit-option-desc'>{i18next.t(`metricsBuiltin:unitDesc.${item.value}`)}</span>
+        </span>
+      ),
+    };
   });
 };
 

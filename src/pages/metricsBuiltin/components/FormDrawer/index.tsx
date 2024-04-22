@@ -39,7 +39,6 @@ export default function index(props: Props) {
   const [open, setOpen] = useState(false);
   const [form] = Form.useForm();
   const note = Form.useWatch('note', form);
-  const source = _.replace(note, /\n/gi, '\n &nbsp; \n');
 
   return (
     <>
@@ -199,7 +198,7 @@ export default function index(props: Props) {
             </Form.Item>
             {note ? (
               <Form.Item label={t('note_preview')}>
-                <Markdown content={source}></Markdown>
+                <Markdown content={_.replace(note, /\n/gi, '\n &nbsp; \n')}></Markdown>
               </Form.Item>
             ) : null}
           </Form>
