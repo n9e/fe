@@ -26,6 +26,7 @@ export interface IGridPos {
 // query interface
 export interface ITarget {
   refId: string;
+  __mode__: '__expr__' | '__query__';
   expr: string; // promQL
   legendFormat: string;
   time?: IRawTimeRange; // 固定时间范围
