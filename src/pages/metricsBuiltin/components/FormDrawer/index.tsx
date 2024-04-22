@@ -183,36 +183,60 @@ export default function index(props: Props) {
             >
               <Input.TextArea autoSize />
             </Form.Item>
-            <Form.Item label={t('unit')} name='unit'>
+            <Form.Item label={t('unit')} name='unit' tooltip={t('unit_tip')}>
               <Select placeholder='SI prefixes' allowClear showSearch>
                 <Select.Option value='none'>none</Select.Option>
                 <Select.OptGroup label='Data'>
-                  <Select.Option value='bitsSI'>bits(SI)</Select.Option>
-                  <Select.Option value='bytesSI'>bytes(SI)</Select.Option>
-                  <Select.Option value='bitsIEC'>bits(IEC)</Select.Option>
-                  <Select.Option value='bytesIEC'>bytes(IEC)</Select.Option>
+                  <Select.Option value='bitsSI'>
+                    bits(SI)<span className='built-in-metrics-form-unit-option-desc'>{t('bitsSI')}</span>
+                  </Select.Option>
+                  <Select.Option value='bytesSI'>
+                    bytes(SI)<span className='built-in-metrics-form-unit-option-desc'>{t('bytesSI')}</span>
+                  </Select.Option>
+                  <Select.Option value='bitsIEC'>
+                    bits(IEC)<span className='built-in-metrics-form-unit-option-desc'>{t('bitsIEC')}</span>
+                  </Select.Option>
+                  <Select.Option value='bytesIEC'>
+                    bytes(IEC)<span className='built-in-metrics-form-unit-option-desc'>{t('bytesIEC')}</span>
+                  </Select.Option>
                 </Select.OptGroup>
                 <Select.OptGroup label='Data rate'>
-                  <Select.Option value='packetsSec'>packets/sec</Select.Option>
-                  <Select.Option value='bitsSecSI'>bits/sec(SI)</Select.Option>
-                  <Select.Option value='bytesSecSI'>bytes/sec(SI)</Select.Option>
-                  <Select.Option value='bitsSecIEC'>bits/sec(IEC)</Select.Option>
-                  <Select.Option value='bytesSecIEC'>bytes/sec(IEC)</Select.Option>
+                  <Select.Option value='packetsSec'>
+                    packets/sec<span className='built-in-metrics-form-unit-option-desc'>{t('packetsSec')}</span>
+                  </Select.Option>
+                  <Select.Option value='bitsSecSI'>
+                    bits/sec(SI)<span className='built-in-metrics-form-unit-option-desc'>{t('bitsSecSI')}</span>
+                  </Select.Option>
+                  <Select.Option value='bytesSecSI'>
+                    bytes/sec(SI)<span className='built-in-metrics-form-unit-option-desc'>{t('bytesSecSI')}</span>
+                  </Select.Option>
+                  <Select.Option value='bitsSecIEC'>
+                    bits/sec(IEC)<span className='built-in-metrics-form-unit-option-desc'>{t('bitsSecIEC')}</span>
+                  </Select.Option>
+                  <Select.Option value='bytesSecIEC'>
+                    bytes/sec(IEC)<span className='built-in-metrics-form-unit-option-desc'>{t('bytesSecIEC')}</span>
+                  </Select.Option>
                 </Select.OptGroup>
                 <Select.OptGroup label='Energy'>
-                  <Select.Option value='dBm'>Decibel-milliwatt(dBm)</Select.Option>
+                  <Select.Option value='dBm'>
+                    Decibel-milliwatt(dBm)<span className='built-in-metrics-form-unit-option-desc'>{t('dBm')}</span>
+                  </Select.Option>
                 </Select.OptGroup>
                 <Select.OptGroup label='Percent'>
-                  <Select.Option value='percent'>percent(0-100)</Select.Option>
-                  <Select.Option value='percentUnit'>percent(0.0-1.0)</Select.Option>
+                  <Select.Option value='percent'>
+                    percent(0-100)<span className='built-in-metrics-form-unit-option-desc'>{t('percent')}</span>
+                  </Select.Option>
+                  <Select.Option value='percentUnit'>
+                    percent(0.0-1.0)<span className='built-in-metrics-form-unit-option-desc'>{t('percentUnit')}</span>
+                  </Select.Option>
                 </Select.OptGroup>
                 <Select.OptGroup label='Time'>
-                  <Select.Option value='seconds'>seconds</Select.Option>
-                  <Select.Option value='milliseconds'>milliseconds</Select.Option>
-                  <Select.Option value='humantimeSeconds'>humanize(seconds)</Select.Option>
-                  <Select.Option value='humantimeMilliseconds'>humanize(milliseconds)</Select.Option>
-                  <Select.Option value='datetimeSeconds'>datetime(seconds)</Select.Option>
-                  <Select.Option value='datetimeMilliseconds'>datetime(milliseconds)</Select.Option>
+                  <Select.Option value='seconds'>
+                    seconds<span className='built-in-metrics-form-unit-option-desc'>{t('seconds')}</span>
+                  </Select.Option>
+                  <Select.Option value='milliseconds'>
+                    milliseconds<span className='built-in-metrics-form-unit-option-desc'>{t('milliseconds')}</span>
+                  </Select.Option>
                 </Select.OptGroup>
               </Select>
             </Form.Item>
