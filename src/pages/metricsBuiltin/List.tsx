@@ -57,14 +57,6 @@ export default function index() {
   );
   const columns: (ColumnType<Record> & { RC_TABLE_INTERNAL_COL_DEFINE?: any })[] = [
     {
-      title: t('name'),
-      dataIndex: 'name',
-    },
-    {
-      title: t('collector'),
-      dataIndex: 'collector',
-    },
-    {
       title: t('typ'),
       dataIndex: 'typ',
       RC_TABLE_INTERNAL_COL_DEFINE: {
@@ -72,6 +64,14 @@ export default function index() {
           minWidth: 70,
         },
       },
+    },
+    {
+      title: t('name'),
+      dataIndex: 'name',
+    },
+    {
+      title: t('collector'),
+      dataIndex: 'collector',
     },
     {
       title: t('unit'),
