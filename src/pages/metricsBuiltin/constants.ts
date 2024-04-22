@@ -15,3 +15,30 @@
  *
  */
 export const pathname = '/metrics-built-in';
+export const LOCAL_STORAGE_KEY = 'metrics_built_in_columns_configs';
+export const defaultColumnsConfigs = [
+  {
+    name: 'name',
+    visible: true,
+  },
+  {
+    name: 'collector',
+    visible: true,
+  },
+  {
+    name: 'typ',
+    visible: true,
+  },
+  {
+    name: 'unit',
+    visible: true,
+  },
+  {
+    name: 'expression',
+    visible: true,
+  },
+  {
+    name: 'note',
+    visible: false,
+  },
+];
