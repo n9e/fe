@@ -19,7 +19,9 @@ import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import { Col, Drawer, Form, Input, Row, Select, Space, Button, AutoComplete, message } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
+import Markdown from '@/components/Markdown';
 import { postMetrics, putMetric } from '../../services';
+import { ajustUnitOptions } from '../../utils';
 
 interface Props {
   mode: 'add' | 'edit' | 'clone';
@@ -36,6 +38,8 @@ export default function index(props: Props) {
   const { mode, title, children, typesList, collectorsList, initialValues, onOk } = props;
   const [open, setOpen] = useState(false);
   const [form] = Form.useForm();
+  const note = Form.useWatch('note', form);
+  const source = _.replace(note, /\n/gi, '\n &nbsp; \n');
 
   return (
     <>
@@ -184,61 +188,7 @@ export default function index(props: Props) {
               <Input.TextArea autoSize />
             </Form.Item>
             <Form.Item label={t('unit')} name='unit' tooltip={t('unit_tip')}>
-              <Select placeholder='SI prefixes' allowClear showSearch>
-                <Select.Option value='none'>none</Select.Option>
-                <Select.OptGroup label='Data'>
-                  <Select.Option value='bitsSI'>
-                    bits(SI)<span className='built-in-metrics-form-unit-option-desc'>{t('unitDesc.bitsSI')}</span>
-                  </Select.Option>
-                  <Select.Option value='bytesSI'>
-                    bytes(SI)<span className='built-in-metrics-form-unit-option-desc'>{t('unitDesc.bytesSI')}</span>
-                  </Select.Option>
-                  <Select.Option value='bitsIEC'>
-                    bits(IEC)<span className='built-in-metrics-form-unit-option-desc'>{t('unitDesc.bitsIEC')}</span>
-                  </Select.Option>
-                  <Select.Option value='bytesIEC'>
-                    bytes(IEC)<span className='built-in-metrics-form-unit-option-desc'>{t('unitDesc.bytesIEC')}</span>
-                  </Select.Option>
-                </Select.OptGroup>
-                <Select.OptGroup label='Data rate'>
-                  <Select.Option value='packetsSec'>
-                    packets/sec<span className='built-in-metrics-form-unit-option-desc'>{t('unitDesc.packetsSec')}</span>
-                  </Select.Option>
-                  <Select.Option value='bitsSecSI'>
-                    bits/sec(SI)<span className='built-in-metrics-form-unit-option-desc'>{t('unitDesc.bitsSecSI')}</span>
-                  </Select.Option>
-                  <Select.Option value='bytesSecSI'>
-                    bytes/sec(SI)<span className='built-in-metrics-form-unit-option-desc'>{t('unitDesc.bytesSecSI')}</span>
-                  </Select.Option>
-                  <Select.Option value='bitsSecIEC'>
-                    bits/sec(IEC)<span className='built-in-metrics-form-unit-option-desc'>{t('unitDesc.bitsSecIEC')}</span>
-                  </Select.Option>
-                  <Select.Option value='bytesSecIEC'>
-                    bytes/sec(IEC)<span className='built-in-metrics-form-unit-option-desc'>{t('unitDesc.bytesSecIEC')}</span>
-                  </Select.Option>
-                </Select.OptGroup>
-                <Select.OptGroup label='Energy'>
-                  <Select.Option value='dBm'>
-                    Decibel-milliwatt(dBm)<span className='built-in-metrics-form-unit-option-desc'>{t('unitDesc.dBm')}</span>
-                  </Select.Option>
-                </Select.OptGroup>
-                <Select.OptGroup label='Percent'>
-                  <Select.Option value='percent'>
-                    percent(0-100)<span className='built-in-metrics-form-unit-option-desc'>{t('unitDesc.percent')}</span>
-                  </Select.Option>
-                  <Select.Option value='percentUnit'>
-                    percent(0.0-1.0)<span className='built-in-metrics-form-unit-option-desc'>{t('unitDesc.percentUnit')}</span>
-                  </Select.Option>
-                </Select.OptGroup>
-                <Select.OptGroup label='Time'>
-                  <Select.Option value='seconds'>
-                    seconds<span className='built-in-metrics-form-unit-option-desc'>{t('unitDesc.seconds')}</span>
-                  </Select.Option>
-                  <Select.Option value='milliseconds'>
-                    milliseconds<span className='built-in-metrics-form-unit-option-desc'>{t('unitDesc.milliseconds')}</span>
-                  </Select.Option>
-                </Select.OptGroup>
-              </Select>
+              <Select placeholder='SI prefixes' allowClear showSearch options={ajustUnitOptions()}></Select>
             </Form.Item>
             <Form.Item label={t('note')} name='note'>
               <Input.TextArea
@@ -247,6 +197,11 @@ export default function index(props: Props) {
                 }}
               />
             </Form.Item>
+            {note ? (
+              <Form.Item label={t('note_preview')}>
+                <Markdown content={source}></Markdown>
+              </Form.Item>
+            ) : null}
           </Form>
         </Drawer>
       )}

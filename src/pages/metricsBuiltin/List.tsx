@@ -18,7 +18,7 @@ import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { useAntdTable, useDebounceFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
-import { Space, Table, Button, Input, Dropdown, Select, message, Modal } from 'antd';
+import { Space, Table, Button, Input, Dropdown, Select, message, Modal, Tooltip } from 'antd';
 import { SettingOutlined, DownOutlined, SearchOutlined } from '@ant-design/icons';
 import { ColumnType } from 'antd/lib/table';
 import PageLayout from '@/components/pageLayout';
@@ -29,6 +29,7 @@ import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
 import FormDrawer from './components/FormDrawer';
 import Export from './components/Export';
 import Import from './components/Import';
+import { getUnitLabel } from './utils';
 
 export default function index() {
   const { t, i18n } = useTranslation('metricsBuiltin');
@@ -66,16 +67,23 @@ export default function index() {
       },
     },
     {
-      title: t('name'),
-      dataIndex: 'name',
-    },
-    {
       title: t('collector'),
       dataIndex: 'collector',
     },
     {
+      title: t('name'),
+      dataIndex: 'name',
+    },
+    {
       title: t('unit'),
       dataIndex: 'unit',
+      render: (val) => {
+        return (
+          <Tooltip overlayClassName='built-in-metrics-table-unit-option-desc' title={getUnitLabel(val, true, false)}>
+            <span>{getUnitLabel(val, false)}</span>
+          </Tooltip>
+        );
+      },
     },
     {
       title: t('expression'),

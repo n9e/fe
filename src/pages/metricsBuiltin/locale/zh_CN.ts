@@ -6,6 +6,7 @@ const zh_CN = {
   unit: '单位',
   unit_tip: '绘图时，根据指标单位自动格式化值',
   note: '描述',
+  note_preview: '描述预览',
   expression: '表达式',
   add_btn: '新增指标',
   clone_title: '克隆指标',
@@ -23,6 +24,7 @@ const zh_CN = {
     },
   },
   unitDesc: {
+    none: '原始值, 不做单位转换',
     bitsSI: '原始数据单位是 bit, 使用 SI 标准换算, 比如 1K=1000',
     bytesSI: '原始数据单位是 byte, 使用 SI 标准换算, 比如 1K=1000',
     bitsIEC: '原始数据单位是 bit, 使用 IEC 标准换算, 比如 1K=1024',

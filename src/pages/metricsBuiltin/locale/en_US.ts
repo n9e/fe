@@ -6,6 +6,7 @@ const en_US = {
   unit: 'Unit',
   unit_tip: 'When drawing, the value is automatically formatted according to the unit of the metric',
   note: 'Description',
+  note_preview: 'Description Preview',
   expression: 'Expression',
   add_btn: 'Add Metric',
   clone_title: 'Clone Metric',
@@ -23,6 +24,7 @@ const en_US = {
     },
   },
   unitDesc: {
+    none: 'raw value, no unit conversion',
     bitsSI: 'bit, using the SI standard for conversion. e.g. 1K equals 1000.',
     bytesSI: 'byte, using the SI standard for conversion. e.g. 1K equals 1000.',
     bitsIEC: 'bit, using the IEC standard for conversion. e.g. 1K equals 1024.',

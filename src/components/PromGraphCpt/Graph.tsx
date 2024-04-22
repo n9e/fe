@@ -67,7 +67,7 @@ export default function Graph(props: IProps) {
   const { url, datasourceValue, promql, setQueryStats, setErrorContent, contentMaxHeight, range, setRange, step, setStep, graphOperates, refreshFlag, loading, setLoading } = props;
   const [data, setData] = useState<any[]>([]);
   const [highLevelConfig, setHighLevelConfig] = useState({
-    shared: true,
+    shared: false,
     sharedSortDirection: 'desc',
     legend: true,
     unit: 'default',

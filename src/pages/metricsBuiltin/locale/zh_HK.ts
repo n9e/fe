@@ -6,6 +6,7 @@ const zh_HK = {
   unit: '單位',
   unit_tip: '繪圖時，根據指標單位自動格式化值',
   note: '描述',
+  note_preview: '描述預覽',
   expression: '表達式',
   add_btn: '新增指標',
   clone_title: '克隆指標',
@@ -23,6 +24,7 @@ const zh_HK = {
     },
   },
   unitDesc: {
+    none: '原始值, 不做單位轉換',
     bitsSI: '原始數據單位係 bit, 使用 SI 標準換算, 例如 1K=1000',
     bytesSI: '原始數據單位係 byte, 使用 SI 標準換算, 例如 1K=1000',
     bitsIEC: '原始數據單位係 bit, 使用 IEC 標準換算, 例如 1K=1024',

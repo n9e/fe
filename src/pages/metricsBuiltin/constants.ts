@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  */
+import i18next from 'i18next';
 export const pathname = '/metrics-built-in';
 export const LOCAL_STORAGE_KEY = 'metrics_built_in_columns_configs';
 export const defaultColumnsConfigs = [
@@ -22,11 +23,11 @@ export const defaultColumnsConfigs = [
     visible: true,
   },
   {
-    name: 'name',
+    name: 'collector',
     visible: true,
   },
   {
-    name: 'collector',
+    name: 'name',
     visible: true,
   },
   {
@@ -40,5 +41,92 @@ export const defaultColumnsConfigs = [
   {
     name: 'note',
     visible: false,
+  },
+];
+export const units: any = [
+  {
+    label: 'None',
+    value: 'none',
+  },
+  {
+    label: 'Data',
+    options: [
+      {
+        label: 'bits(SI)',
+        value: 'bitsSI',
+      },
+      {
+        label: 'bytes(SI)',
+        value: 'bytesSI',
+      },
+      {
+        label: 'bits(IEC)',
+        value: 'bitsIEC',
+      },
+      {
+        label: 'bytes(IEC)',
+        value: 'bytesIEC',
+      },
+    ],
+  },
+  {
+    label: 'Data rate',
+    options: [
+      {
+        label: 'packets/sec',
+        value: 'packetsSec',
+      },
+      {
+        label: 'bits/sec(SI)',
+        value: 'bitsSecSI',
+      },
+      {
+        label: 'bytes/sec(SI)',
+        value: 'bytesSecSI',
+      },
+      {
+        label: 'bits/sec(IEC)',
+        value: 'bitsSecIEC',
+      },
+      {
+        label: 'bytes/sec(IEC)',
+        value: 'bytesSecIEC',
+      },
+    ],
+  },
+  {
+    label: 'Energy',
+    options: [
+      {
+        label: 'Decibel-milliwatt(dBm)',
+        value: 'dBm',
+      },
+    ],
+  },
+  {
+    label: 'Percent',
+    options: [
+      {
+        label: 'percent(0-100)',
+        value: 'percent',
+      },
+      {
+        label: 'percent(0.0-1.0)',
+        value: 'percentUnit',
+      },
+    ],
+  },
+  {
+    label: 'Time',
+    options: [
+      {
+        label: 'seconds',
+        value: 'seconds',
+      },
+      {
+        label: 'milliseconds',
+        value: 'milliseconds',
+      },
+    ],
   },
 ];
