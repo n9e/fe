@@ -187,7 +187,7 @@ export default function index(props: Props) {
               <Input.TextArea autoSize />
             </Form.Item>
             <Form.Item label={t('unit')} name='unit' tooltip={t('unit_tip')}>
-              <Select placeholder='SI prefixes' allowClear showSearch options={ajustUnitOptions()}></Select>
+              <Select allowClear showSearch options={ajustUnitOptions()}></Select>
             </Form.Item>
             <Form.Item label={t('note')} name='note'>
               <Input.TextArea
