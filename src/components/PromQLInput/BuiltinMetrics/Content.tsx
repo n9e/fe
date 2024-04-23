@@ -80,7 +80,11 @@ export default function Content(props: Props) {
                 value={filter.collector}
                 onChange={(val) => {
                   setFilter({ ...filter, collector: val });
-                  localStorage.setItem('promQLInput_builtiinMetrics_defaultCollector', val);
+                  if (val) {
+                    localStorage.setItem('promQLInput_builtiinMetrics_defaultCollector', val);
+                  } else {
+                    localStorage.removeItem('promQLInput_builtiinMetrics_defaultCollector');
+                  }
                 }}
                 options={_.map(collectorsList, (item) => {
                   return {
