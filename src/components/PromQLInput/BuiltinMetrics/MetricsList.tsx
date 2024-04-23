@@ -21,7 +21,7 @@ export default function MetricsList(props: Props) {
   const currentPage = useRef(1);
   const { run: loadMoreData } = useThrottleFn(
     (currentFilter, currentData) => {
-      if (loadingRef.current && currentPage.current > total / 10) {
+      if (loadingRef.current || currentPage.current > total / 10) {
         return;
       }
       loadingRef.current = true;
