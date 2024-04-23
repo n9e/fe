@@ -25,6 +25,7 @@ const zh_CN = {
   },
   unitDesc: {
     none: '原始值, 不做单位转换',
+    sishort: '使用 SI 标准换算, 比如 1K=1000',
     bitsSI: '原始数据单位是 bit, 使用 SI 标准换算, 比如 1K=1000',
     bytesSI: '原始数据单位是 byte, 使用 SI 标准换算, 比如 1K=1000',
     bitsIEC: '原始数据单位是 bit, 使用 IEC 标准换算, 比如 1K=1024',

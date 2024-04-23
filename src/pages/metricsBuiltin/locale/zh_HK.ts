@@ -25,6 +25,7 @@ const zh_HK = {
   },
   unitDesc: {
     none: '原始值, 不做單位轉換',
+    sishort: '使用 SI 標準換算, 例如 1K=1000',
     bitsSI: '原始數據單位係 bit, 使用 SI 標準換算, 例如 1K=1000',
     bytesSI: '原始數據單位係 byte, 使用 SI 標準換算, 例如 1K=1000',
     bitsIEC: '原始數據單位係 bit, 使用 IEC 標準換算, 例如 1K=1024',

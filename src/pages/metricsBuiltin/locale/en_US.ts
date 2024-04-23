@@ -25,6 +25,7 @@ const en_US = {
   },
   unitDesc: {
     none: 'raw value, no unit conversion',
+    sishort: 'using the SI standard for conversion. e.g. 1K equals 1000.',
     bitsSI: 'bit, using the SI standard for conversion. e.g. 1K equals 1000.',
     bytesSI: 'byte, using the SI standard for conversion. e.g. 1K equals 1000.',
     bitsIEC: 'bit, using the IEC standard for conversion. e.g. 1K equals 1024.',

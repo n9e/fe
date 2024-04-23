@@ -49,6 +49,10 @@ export const units: any = [
     value: 'none',
   },
   {
+    label: 'SI short',
+    value: 'sishort',
+  },
+  {
     label: 'Data',
     options: [
       {
