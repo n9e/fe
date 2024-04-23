@@ -198,7 +198,7 @@ export default function index(props: Props) {
             </Form.Item>
             {note ? (
               <Form.Item label={t('note_preview')}>
-                <Markdown content={_.replace(note, /\n/gi, '\n &nbsp; \n')}></Markdown>
+                <Markdown content={note}></Markdown>
               </Form.Item>
             ) : null}
           </Form>

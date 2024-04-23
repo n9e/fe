@@ -145,7 +145,7 @@ export default function Content(props: Props) {
                   overflowY: 'auto',
                 }}
               >
-                {activeMetric?.note ? <Markdown content={_.replace(activeMetric?.note, /\n/gi, '\n &nbsp; \n')}></Markdown> : '-'}
+                {activeMetric?.note ? <Markdown content={activeMetric?.note}></Markdown> : '-'}
               </div>
             </div>
           </div>
