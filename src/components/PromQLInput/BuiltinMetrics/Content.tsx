@@ -13,10 +13,14 @@ interface Props {
   setOpen: (open: boolean) => void;
 }
 
+const defaultCollector = localStorage.getItem('promQLInput_builtiinMetrics_defaultCollector') || undefined;
+
 export default function Content(props: Props) {
   const { t } = useTranslation('promQLInput');
   const { onSelect, setOpen } = props;
-  const [filter, setFilter] = useState({} as Filter);
+  const [filter, setFilter] = useState({
+    collector: defaultCollector,
+  } as Filter);
   const [typesList, setTypesList] = useState<string[]>([]);
   const [collectorsList, setCollectorsList] = useState<string[]>([]);
   const [defaultTypesList, setDefaultTypesList] = useState<string[]>([]);
@@ -28,6 +32,9 @@ export default function Content(props: Props) {
     });
     getCollectors().then((res) => {
       setCollectorsList(res);
+      if (!filter.collector) {
+        setFilter({ ...filter, collector: res[0] });
+      }
     });
     getDefaultTypes().then((res) => {
       setDefaultTypesList(res);
@@ -73,6 +80,7 @@ export default function Content(props: Props) {
                 value={filter.collector}
                 onChange={(val) => {
                   setFilter({ ...filter, collector: val });
+                  localStorage.setItem('promQLInput_builtiinMetrics_defaultCollector', val);
                 }}
                 options={_.map(collectorsList, (item) => {
                   return {

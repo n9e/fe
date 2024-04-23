@@ -45,7 +45,7 @@ export const defaultColumnsConfigs = [
 ];
 export const units: any = [
   {
-    label: 'None',
+    label: 'none',
     value: 'none',
   },
   {
