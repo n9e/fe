@@ -18,9 +18,7 @@ const defaultCollector = localStorage.getItem('promQLInput_builtiinMetrics_defau
 export default function Content(props: Props) {
   const { t } = useTranslation('promQLInput');
   const { onSelect, setOpen } = props;
-  const [filter, setFilter] = useState({
-    collector: defaultCollector,
-  } as Filter);
+  const [filter, setFilter] = useState({} as Filter);
   const [typesList, setTypesList] = useState<string[]>([]);
   const [collectorsList, setCollectorsList] = useState<string[]>([]);
   const [defaultTypesList, setDefaultTypesList] = useState<string[]>([]);
@@ -29,15 +27,17 @@ export default function Content(props: Props) {
   useEffect(() => {
     getTypes().then((res) => {
       setTypesList(res);
-    });
-    getCollectors().then((res) => {
-      setCollectorsList(res);
-      if (!filter.collector) {
-        setFilter({ ...filter, collector: res[0] });
-      }
-    });
-    getDefaultTypes().then((res) => {
-      setDefaultTypesList(res);
+      getCollectors().then((res) => {
+        setCollectorsList(res);
+        if (!defaultCollector) {
+          setFilter({ ...filter, collector: res[0] });
+        } else {
+          setFilter({ ...filter, collector: defaultCollector });
+        }
+        getDefaultTypes().then((res) => {
+          setDefaultTypesList(res);
+        });
+      });
     });
   }, []);
 
@@ -115,15 +115,17 @@ export default function Content(props: Props) {
               );
             })}
           </div>
-          <MetricsList
-            filter={filter}
-            activeMetric={activeMetric}
-            setActiveMetric={setActiveMetric}
-            onSelect={(expression) => {
-              onSelect(expression);
-              setOpen(false);
-            }}
-          />
+          {!_.isEmpty(filter) && (
+            <MetricsList
+              filter={filter}
+              activeMetric={activeMetric}
+              setActiveMetric={setActiveMetric}
+              onSelect={(expression) => {
+                onSelect(expression);
+                setOpen(false);
+              }}
+            />
+          )}
         </div>
         {activeMetric && (
           <div className='promql-dropdown-built-in-metrics-detail'>
