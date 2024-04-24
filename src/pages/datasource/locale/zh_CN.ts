@@ -1,8 +1,7 @@
-import { add } from 'lodash';
-
 const zh_CN = {
   title: '数据源管理',
-  list_title: '已接入的数据源',
+  search_placeholder: '请输入搜索关键字',
+  chooseDataSourceType: '选择数据源类型',
   name: '数据源名称',
   id: '数据源ID',
   description: '备注',

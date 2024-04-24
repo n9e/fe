@@ -1,6 +1,7 @@
 const en_US = {
   title: 'Data sources',
-  list_title: 'List',
+  search_placeholder: 'Please enter search keywords',
+  chooseDataSourceType: 'Choose data source type',
   name: 'Data source name',
   id: 'Data source ID',
   description: 'Description',

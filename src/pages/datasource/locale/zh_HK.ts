@@ -1,6 +1,7 @@
 const zh_HK = {
   title: '數據源管理',
-  list_title: '已接入的數據源',
+  search_placeholder: '請輸入搜索關鍵字',
+  chooseDataSourceType: '選擇數據源類型',
   name: '數據源名稱',
   id: '數據源 ID',
   description: '備註',

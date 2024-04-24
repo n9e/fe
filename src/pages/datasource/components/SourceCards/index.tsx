@@ -29,11 +29,6 @@ export default function SourceCard(props: Props) {
                     {item.name}
                   </div>
                 </div>
-                <div>
-                  <Button size='small' type='primary' ghost style={{ borderRadius: 4 }}>
-                    {t('type_btn_add')}
-                  </Button>
-                </div>
               </div>
             </Link>
           </Col>
