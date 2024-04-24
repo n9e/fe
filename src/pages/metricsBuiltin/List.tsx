@@ -19,7 +19,7 @@ import _ from 'lodash';
 import { useAntdTable, useDebounceFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import { Space, Table, Button, Input, Dropdown, Select, message, Modal, Tooltip } from 'antd';
-import { SettingOutlined, DownOutlined, SearchOutlined } from '@ant-design/icons';
+import { SettingOutlined, DownOutlined, SearchOutlined, EyeOutlined } from '@ant-design/icons';
 import { ColumnType } from 'antd/lib/table';
 import PageLayout from '@/components/pageLayout';
 import usePagination from '@/components/usePagination';
@@ -246,20 +246,6 @@ export default function index() {
               >
                 <Button type='primary'>{t('add_btn')}</Button>
               </FormDrawer>
-              <Button
-                onClick={() => {
-                  OrganizeColumns({
-                    i18nNs: 'metricsBuiltin',
-                    value: columnsConfigs,
-                    onChange: (val) => {
-                      setColumnsConfigs(val);
-                      setDefaultColumnsConfigs(val, LOCAL_STORAGE_KEY);
-                    },
-                  });
-                }}
-              >
-                {t('targets:organize_columns.title')}
-              </Button>
               <Dropdown
                 overlay={
                   <ul className='ant-dropdown-menu'>
@@ -328,6 +314,19 @@ export default function index() {
                   />
                 </Button>
               </Dropdown>
+              <Button
+                onClick={() => {
+                  OrganizeColumns({
+                    i18nNs: 'metricsBuiltin',
+                    value: columnsConfigs,
+                    onChange: (val) => {
+                      setColumnsConfigs(val);
+                      setDefaultColumnsConfigs(val, LOCAL_STORAGE_KEY);
+                    },
+                  });
+                }}
+                icon={<EyeOutlined />}
+              />
             </Space>
           </div>
           <Table

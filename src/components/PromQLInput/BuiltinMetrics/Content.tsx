@@ -13,8 +13,6 @@ interface Props {
   setOpen: (open: boolean) => void;
 }
 
-const defaultCollector = localStorage.getItem('promQLInput_builtiinMetrics_defaultCollector') || undefined;
-
 export default function Content(props: Props) {
   const { t } = useTranslation('promQLInput');
   const { onSelect, setOpen } = props;
@@ -23,6 +21,7 @@ export default function Content(props: Props) {
   const [collectorsList, setCollectorsList] = useState<string[]>([]);
   const [defaultTypesList, setDefaultTypesList] = useState<string[]>([]);
   const [activeMetric, setActiveMetric] = useState<Record>();
+  const defaultCollector = localStorage.getItem('promQLInput_builtiinMetrics_defaultCollector') || undefined;
 
   useEffect(() => {
     getTypes().then((res) => {

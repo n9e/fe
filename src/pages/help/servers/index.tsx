@@ -27,15 +27,101 @@ import SystemInfoSvg from '../../../../public/image/system-info.svg';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
 import './locale';
 
+const convertDataToRowSpan = (data: any[] = [], columns: any[] = []) => {
+  const keys = columns.map((item) => item.dataIndex);
+  for (const key of keys) {
+    for (let i = 0; i < data.length; i++) {
+      let count = 1;
+      let r = i;
+
+      for (let j = i + 1; j < data.length; j++) {
+        if (data[i][key] === data[j][key]) {
+          count++;
+          i = j;
+          if (!data[j].row_span_map) {
+            data[j].row_span_map = {};
+          }
+          data[j].row_span_map[key] = 0;
+        } else {
+          break;
+        }
+      }
+
+      if (!data[r].row_span_map) {
+        data[r].row_span_map = {};
+      }
+
+      data[r].row_span_map[key] = count;
+    }
+  }
+
+  return data;
+};
+
 export default function Servers() {
   const { t } = useTranslation('servers');
   const { profile, datasourceList } = useContext(CommonStateContext);
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const columns = [
+    {
+      title: t('cluster'),
+      dataIndex: 'cluster',
+      key: 'cluster',
+      sorter: (a: any, b: any) => {
+        return localeCompare(a.cluster, b.cluster);
+      },
+      onCell: (record) => {
+        return {
+          rowSpan: record.row_span_map?.['cluster'],
+        };
+      },
+    },
+    {
+      title: t('instance'),
+      dataIndex: 'instance',
+      key: 'instance',
+      sorter: (a: any, b: any) => {
+        return localeCompare(a.instance, b.instance);
+      },
+      onCell: (record) => {
+        return {
+          rowSpan: record.row_span_map?.['instance'],
+        };
+      },
+    },
+    {
+      title: t('datasource'),
+      dataIndex: 'datasource_id',
+      key: 'datasource_id',
+      sorter: (a: any, b: any) => {
+        return localeCompare(a.datasource_id, b.datasource_id);
+      },
+      render: (text) => {
+        return _.get(_.find(datasourceList, { id: text }), 'name');
+      },
+      onCell: (record) => {
+        return {
+          rowSpan: record.row_span_map?.['datasource_id'],
+        };
+      },
+    },
+    {
+      title: t('clock'),
+      dataIndex: 'clock',
+      key: 'clock',
+      sorter: (a: any, b: any) => {
+        return localeCompare(a.clock, b.clock);
+      },
+      render: (text) => {
+        return moment.unix(text).format('YYYY-MM-DD HH:mm:ss');
+      },
+    },
+  ];
   const fetchData = () => {
     getN9EServers()
       .then((res) => {
-        setData(res.dat);
+        setData(convertDataToRowSpan(res.dat, columns));
       })
       .finally(() => {
         setLoading(false);
@@ -58,54 +144,7 @@ export default function Servers() {
         <div className='n9e-border-base' style={{ padding: 20 }}>
           {profile.admin ? (
             <div>
-              <Table
-                size='small'
-                rowKey='id'
-                tableLayout='fixed'
-                loading={loading}
-                dataSource={data}
-                pagination={false}
-                columns={[
-                  {
-                    title: t('instance'),
-                    dataIndex: 'instance',
-                    key: 'instance',
-                    sorter: (a: any, b: any) => {
-                      return localeCompare(a.instance, b.instance);
-                    },
-                  },
-                  {
-                    title: t('cluster'),
-                    dataIndex: 'cluster',
-                    key: 'cluster',
-                    sorter: (a: any, b: any) => {
-                      return localeCompare(a.cluster, b.cluster);
-                    },
-                  },
-                  {
-                    title: t('datasource'),
-                    dataIndex: 'datasource_id',
-                    key: 'datasource_id',
-                    sorter: (a: any, b: any) => {
-                      return localeCompare(a.datasource_id, b.datasource_id);
-                    },
-                    render: (text) => {
-                      return _.get(_.find(datasourceList, { id: text }), 'name');
-                    },
-                  },
-                  {
-                    title: t('clock'),
-                    dataIndex: 'clock',
-                    key: 'clock',
-                    sorter: (a: any, b: any) => {
-                      return localeCompare(a.clock, b.clock);
-                    },
-                    render: (text) => {
-                      return moment.unix(text).format('YYYY-MM-DD HH:mm:ss');
-                    },
-                  },
-                ]}
-              />
+              <Table bordered size='small' rowKey='id' tableLayout='fixed' loading={loading} dataSource={data} pagination={false} columns={columns} />
             </div>
           ) : (
             <div>{t('unauthorized')}</div>
