@@ -42,58 +42,65 @@ export default function index() {
 
   return (
     <PageLayout title={t('title')}>
-      <div className='srm'>
+      <div>
         <div
-          className='mb2'
+          className='n9e-border-base'
           style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
+            padding: 16,
           }}
         >
-          <Input
-            prefix={<SearchOutlined />}
-            style={{ width: 300 }}
-            placeholder={t('search_placeholder')}
-            value={searchVal}
-            onChange={(e) => {
-              setSearchVal(e.target.value);
-            }}
-          />
-          <Button
-            type='primary'
-            onClick={() => {
-              setChooseDataSourceTypeModalVisible(true);
+          <div
+            className='mb2'
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
             }}
           >
-            {t('common:btn.add')}
-          </Button>
+            <Input
+              prefix={<SearchOutlined />}
+              style={{ width: 300 }}
+              placeholder={t('search_placeholder')}
+              value={searchVal}
+              onChange={(e) => {
+                setSearchVal(e.target.value);
+              }}
+            />
+            <Button
+              type='primary'
+              onClick={() => {
+                setChooseDataSourceTypeModalVisible(true);
+              }}
+            >
+              {t('common:btn.add')}
+            </Button>
+          </div>
+          {pluginList && (
+            <TableSource
+              debouncedSearchValue={debouncedSearchValue}
+              pluginList={pluginList}
+              nameClick={(record) => {
+                setDetailVisible(true);
+                setDetailData(record);
+              }}
+            />
+          )}
+          {detailVisible && (
+            <Detail
+              visible={detailVisible}
+              data={detailData}
+              onClose={() => {
+                setDetailVisible(false);
+              }}
+            />
+          )}
         </div>
-        {pluginList && (
-          <TableSource
-            debouncedSearchValue={debouncedSearchValue}
-            pluginList={pluginList}
-            nameClick={(record) => {
-              setDetailVisible(true);
-              setDetailData(record);
-            }}
-          />
-        )}
-        {detailVisible && (
-          <Detail
-            visible={detailVisible}
-            data={detailData}
-            onClose={() => {
-              setDetailVisible(false);
-            }}
-          />
-        )}
       </div>
       <Modal
         title={t('chooseDataSourceType')}
         visible={chooseDataSourceTypeModalVisible}
         destroyOnClose
-        width={800}
+        width={960}
         footer={null}
         onCancel={() => {
           setChooseDataSourceTypeModalVisible(false);
