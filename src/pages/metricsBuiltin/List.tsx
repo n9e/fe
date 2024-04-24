@@ -42,7 +42,7 @@ export default function index() {
   const [typesList, setTypesList] = useState<string[]>([]);
   const [collectorsList, setCollectorsList] = useState<string[]>([]);
   const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
-  const { tableProps } = useAntdTable(
+  const { tableProps, run: fetchData } = useAntdTable(
     ({
       current,
       pageSize,
@@ -186,7 +186,7 @@ export default function index() {
             <Space>
               <RefreshIcon
                 onClick={() => {
-                  setRefreshFlag(_.uniqueId('refreshFlag_'));
+                  fetchData({ current: tableProps.pagination.current, pageSize: pagination.pageSize });
                 }}
               />
               <Select
