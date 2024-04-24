@@ -70,6 +70,12 @@ export default function Index(props: Props) {
           <Col span={8} className='second-color'>
             {data.settings?.min_interval || '-'}
           </Col>
+          <Col span={24} className='mt8'>
+            {t('写配置')}:
+          </Col>
+          <Col span={24} className='second-color'>
+            {data.settings['es.enable_write'] ? t('允许写入') : t('不允许写入')}
+          </Col>
         </Row>
         <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
           <Row gutter={16}>

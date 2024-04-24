@@ -48,6 +48,7 @@ const zh_CN = {
       url_tip: '常见时序数据库配置示例（兼容 Prometheus 查询 API）：',
     },
     es: {
+      enable_write: '允许写入',
       version: '版本',
       max_shard: '最大并发分片请求数',
       min_interval: '最小时间间隔(s)',

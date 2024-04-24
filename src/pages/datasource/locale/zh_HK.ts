@@ -48,6 +48,7 @@ const zh_HK = {
       url_tip: '常見時序數據庫配置示例（兼容 Prometheus 查詢 API）：',
     },
     es: {
+      enable_write: '允許寫入',
       version: '版本',
       max_shard: '最大併發分片請求數',
       min_interval: '最小時間間隔 (s)',
