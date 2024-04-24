@@ -23,6 +23,7 @@ import { SettingOutlined, DownOutlined, SearchOutlined } from '@ant-design/icons
 import { ColumnType } from 'antd/lib/table';
 import PageLayout from '@/components/pageLayout';
 import usePagination from '@/components/usePagination';
+import RefreshIcon from '@/components/RefreshIcon';
 import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
 import { getMetrics, Record, Filter, getTypes, getCollectors, deleteMetrics } from './services';
 import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
@@ -183,6 +184,11 @@ export default function index() {
             }}
           >
             <Space>
+              <RefreshIcon
+                onClick={() => {
+                  setRefreshFlag(_.uniqueId('refreshFlag_'));
+                }}
+              />
               <Select
                 value={filter.typ}
                 onChange={(val) => {
