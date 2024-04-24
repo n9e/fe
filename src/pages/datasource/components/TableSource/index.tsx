@@ -68,6 +68,32 @@ const TableSource = (props: IPropsType) => {
 
   const defaultColumns: ColumnProps<any>[] = [
     {
+      title: t('type'),
+      width: 300,
+      dataIndex: 'plugin_type',
+      filters: pluginList?.map((el) => {
+        let temp = {
+          text: <span style={{ marginLeft: 8 }}>{el.name}</span>,
+          value: el.type,
+        };
+        return temp;
+      }),
+      onFilter: (value: string, record) => {
+        return record.plugin_type === value;
+      },
+      sorter: (a, b) => localeCompare(a.plugin_type, b.plugin_type),
+      defaultSortOrder: 'ascend',
+      render: (val) => {
+        const finded = _.find(allCates, { value: val });
+        return (
+          <Space>
+            <img alt={val} src={finded?.logo} height={20} />
+            <span>{finded?.label}</span>
+          </Space>
+        );
+      },
+    },
+    {
       title: t('name'),
       dataIndex: 'name',
       sorter: (a, b) => localeCompare(a.name, b.name),
@@ -136,31 +162,7 @@ const TableSource = (props: IPropsType) => {
         );
       },
     },
-    {
-      title: t('type'),
-      width: 300,
-      dataIndex: 'plugin_type',
-      filters: pluginList?.map((el) => {
-        let temp = {
-          text: <span style={{ marginLeft: 8 }}>{el.name}</span>,
-          value: el.type,
-        };
-        return temp;
-      }),
-      onFilter: (value: string, record) => {
-        return record.plugin_type === value;
-      },
-      sorter: (a, b) => localeCompare(a.plugin_type, b.plugin_type),
-      render: (val) => {
-        const finded = _.find(allCates, { value: val });
-        return (
-          <Space>
-            <img alt={val} src={finded?.logo} height={20} />
-            <span>{finded?.label}</span>
-          </Space>
-        );
-      },
-    },
+
     {
       title: t('common:table.operations'),
       width: 100,
