@@ -73,7 +73,7 @@ export default function FormCpt({ data, onFinish, submitLoading }: any) {
       <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
         <Space className='mb8'>
           <span >{t('form.es.enable_write')}</span>
-          <Form.Item name={['settings', `es.enable_write`]} valuePropName='checked' noStyle>
+          <Form.Item name={['settings', `enable_write`]} valuePropName='checked' noStyle>
             <Switch />
           </Form.Item>
         </Space>
