@@ -51,10 +51,15 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
   let exps: any[] = [];
   let series: any[] = [];
   let signalKey = `${id}`;
-  const isInvalid = _.some(targets, (target) => {
-    const query: any = target.query || {};
-    return !query.index || !query.date_field;
-  });
+  const isInvalid = _.some(
+    _.filter(targets, (item) => {
+      return item.__mode__ !== '__expr__';
+    }),
+    (target) => {
+      const query: any = target.query || {};
+      return !query.index || !query.date_field;
+    },
+  );
   const datasourceValue = variableConfig
     ? (replaceExpressionVars(options.datasourceValue as any, variableConfig, variableConfig.length, dashboardId) as any)
     : options.datasourceValue;
