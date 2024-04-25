@@ -12,7 +12,7 @@ interface FormValue {
 /**
  * 从 URL query 中获取 filter
  * 存在 query_string 时直接作为 filter 值
- * 否则排查掉 data_source_name, data_source_id, index_name, timestamp 之后的参数合并为 filter
+ * 否则排查掉 data_source_name, data_source_id, index_name, timestamp, index_pattern 之后的参数合并为 filter
  * 合并后的 filter 为 AND 关系
  */
 
@@ -21,7 +21,7 @@ const getESFilterByQuery = (query: { [index: string]: string | null }) => {
     return query?.query_string;
   } else {
     const filtersArr: string[] = [];
-    const validParmas = _.omit(query, ['data_source_name', 'data_source_id', 'index_name', 'timestamp']);
+    const validParmas = _.omit(query, ['data_source_name', 'data_source_id', 'index_name', 'timestamp', 'index_pattern']);
     _.forEach(validParmas, (value, key) => {
       if (value) {
         filtersArr.push(`${key}:"${value}"`);
@@ -73,6 +73,7 @@ export const getFormValuesBySearch = (params: { [index: string]: string | null }
     }
     if (data_source_name === 'elasticsearch') {
       const index = _.get(params, 'index_name');
+      const indexPattern = _.get(params, 'index_pattern');
       const timestamp = _.get(params, 'timestamp', '@timestamp');
       if (index) {
         return {
@@ -81,6 +82,14 @@ export const getFormValuesBySearch = (params: { [index: string]: string | null }
             index,
             filter: getESFilterByQuery(params),
             date_field: timestamp,
+          },
+        };
+      } else if (indexPattern) {
+        return {
+          ...formValues,
+          query: {
+            filter: getESFilterByQuery(params),
+            indexPattern,
           },
         };
       }
