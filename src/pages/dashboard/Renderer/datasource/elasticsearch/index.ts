@@ -106,6 +106,7 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
                 ds_id: datasourceValue,
                 ds_cate: 'elasticsearch',
                 query: {
+                  ref: target.refId,
                   index: query.index,
                   filter,
                   value: item,
