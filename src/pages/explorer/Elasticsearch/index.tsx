@@ -110,6 +110,9 @@ const getDefaultMode = (query, isOpenSearch, esIndexMode, value?) => {
   if (esIndexMode === 'index-patterns') {
     return IMode.indexPatterns;
   }
+  if(query?.mode==='Pattern'){
+    return IMode.indexPatterns;
+  }
   if (query?.data_source_id && query?.index_name) {
     return IMode.indices;
   }
