@@ -15,7 +15,7 @@
  *
  */
 import React, { useState, useEffect } from 'react';
-import { Button, Input, Table, Space, message, Select } from 'antd';
+import { Button, Input, Table, Space, message, Select, Checkbox } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
@@ -36,6 +36,7 @@ export default function Fields() {
     >();
   const [tablePageCurrent, setTablePageCurrent] = useState<number>(1);
   const [fields, setFields] = useState<any[]>([]);
+  const [formated, setFormated] = useState(false)
   const [fieldsTypes, setFieldsTypes] = useState<any[]>([]);
   const [query, setQuery] =
     useState<{
@@ -101,9 +102,11 @@ export default function Fields() {
                   setTablePageCurrent(1);
                 }}
               />
+              <Checkbox checked={formated} onChange={e=> setFormated(e.target.checked)} />{t('已设置展示格式')}
             </Space>
           </div>
           <Table
+           style={{ marginTop: 16}}
             size='small'
             columns={[
               {
@@ -168,6 +171,9 @@ export default function Fields() {
               }
               if (query?.type) {
                 flag = flag && item.type === query.type;
+              }
+              if(formated){
+                flag = flag && !!data?.fieldConfig?.formatMap?.[item.name]?.type
               }
               return flag;
             })}
