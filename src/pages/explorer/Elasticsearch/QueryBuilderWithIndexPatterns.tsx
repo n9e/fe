@@ -30,6 +30,23 @@ export default function QueryBuilder(props: Props) {
       if (datasourceValue && indexPattern) {
         const finded = _.find(indexPatterns, { id: indexPattern });
         if (finded) {
+          const formValuesQuery = form.getFieldValue('query');
+          let fieldConfig;
+          try {
+            if (finded.fields_format) {
+              fieldConfig = JSON.parse(finded.fields_format);
+            }
+          } catch (error) {
+            console.warn(error);
+          }
+
+          formValuesQuery.date_field = finded.time_field;
+          formValuesQuery.index = finded.name;
+          form.setFieldsValue({
+            query: formValuesQuery,
+            fieldConfig,
+          });
+          onIndexChange();
           getFullFields(datasourceValue, finded.name, {
             allowHideSystemIndices: finded.allow_hide_system_indices,
           }).then((res) => {
@@ -90,28 +107,6 @@ export default function QueryBuilder(props: Props) {
                   };
                 })}
                 dropdownMatchSelectWidth={false}
-                onChange={(val) => {
-                  const indexPattern = _.find(indexPatterns, (item) => item.id === val);
-                  if (indexPattern) {
-                    const formValuesQuery = form.getFieldValue('query');
-                    let fieldConfig;
-                    try {
-                      if (indexPattern.fields_format) {
-                        fieldConfig = JSON.parse(indexPattern.fields_format);
-                      }
-                    } catch (error) {
-                      console.warn(error);
-                    }
-
-                    formValuesQuery.date_field = indexPattern.time_field;
-                    formValuesQuery.index = indexPattern.name;
-                    form.setFieldsValue({
-                      query: formValuesQuery,
-                      fieldConfig,
-                    });
-                    onIndexChange();
-                  }
-                }}
               />
             </Form.Item>
           </InputGroupWithFormItem>
