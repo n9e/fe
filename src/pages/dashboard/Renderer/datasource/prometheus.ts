@@ -193,10 +193,11 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
                   _step = getRealStep(time, target);
                 }
               }
+              const isExp = _.find(exps, (exp) => exp.ref === serie.ref);
               series.push({
                 id: _.uniqueId('series_'),
                 refId: refId,
-                name: target?.legend ? replaceExpressionBracket(target?.legend, serie.metric) : getSerieName(serie.metric),
+                name: target?.legend ? replaceExpressionBracket(target?.legend, serie.metric) : getSerieName(serie.metric, isExp ? serie.ref : undefined),
                 metric: serie.metric,
                 expr,
                 data: !spanNulls ? completeBreakpoints(_step, serie.values) : serie.values,
