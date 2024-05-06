@@ -29,6 +29,8 @@ import Version from './Version';
 import SideMenuColorSetting from './SideMenuColorSetting';
 import './index.less';
 import './locale';
+// @ts-ignore
+import FeatureNotification from '@/plus/pages/FeatureNotification';
 
 interface IPageLayoutProps {
   icon?: ReactNode;
@@ -131,6 +133,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                   )}
 
                   <Version />
+                  
 
                   <Space style={{ marginRight: 16 }}>
                     {/* 整合版本关闭文档链接 */}
@@ -152,6 +155,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
 
                   <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
                     <License />
+                    <FeatureNotification />
                   </AdvancedWrap>
 
                   <Dropdown
