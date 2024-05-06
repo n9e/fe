@@ -207,6 +207,8 @@ const zh_HK = {
       min: '最小值',
       max: '最大值',
       decimals: '小數位數',
+      displayName: '顯示名稱',
+      displayName_tip: '自定義顯示名稱',
     },
     overrides: {
       matcher: {

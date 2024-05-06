@@ -79,6 +79,7 @@ export interface IOptions {
     max?: number;
     decimals?: number;
     dateFormat?: string;
+    displayName?: string;
   };
   legend?: {
     // TODO: 目前不支持这么复杂的自定义

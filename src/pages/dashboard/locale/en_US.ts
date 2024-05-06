@@ -201,6 +201,8 @@ const en_US = {
       min: 'Min',
       max: 'Max',
       decimals: 'Decimals',
+      displayName: 'Display name',
+      displayName_tip: 'Change the series name',
     },
     overrides: {
       matcher: {

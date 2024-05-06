@@ -241,16 +241,26 @@ export default function index(props: IProps) {
           cascade: isPreview === false ? _.includes(['sharedCrosshair', 'sharedTooltip'], dashboardMeta.graphTooltip) : undefined,
           cascadeScope: 'cascadeScope',
           cascadeMode: _.includes(['sharedCrosshair', 'sharedTooltip'], dashboardMeta.graphTooltip) ? dashboardMeta.graphTooltip : undefined,
-          pointNameformatter: (val) => {
-            return getMappedTextObj(val, options?.valueMappings)?.text;
+          pointNameformatter: (val, nearestPoint) => {
+            let name = val;
+            if (options?.standardOptions?.displayName) {
+              name = options?.standardOptions?.displayName;
+            }
+            const override = _.find(overrides, (item) => item.matcher.value === nearestPoint?.serieOptions?.refId);
+            if (override && override?.properties?.standardOptions?.displayName) {
+              name = override?.properties?.standardOptions?.displayName;
+            }
+            console.log('name', name);
+            return getMappedTextObj(name, options?.valueMappings)?.text;
           },
           pointValueformatter: (val, nearestPoint) => {
-            if (overrides?.[0]?.matcher?.value && overrides?.[0]?.matcher?.value === nearestPoint?.serieOptions?.refId) {
+            const override = _.find(overrides, (item) => item.matcher.value === nearestPoint?.serieOptions?.refId);
+            if (override) {
               return valueFormatter(
                 {
-                  unit: overrides?.[0]?.properties?.standardOptions?.util,
-                  decimals: overrides?.[0]?.properties?.standardOptions?.decimals,
-                  dateFormat: overrides?.[0]?.properties?.standardOptions?.dateFormat,
+                  unit: override?.properties?.standardOptions?.util,
+                  decimals: override?.properties?.standardOptions?.decimals,
+                  dateFormat: override?.properties?.standardOptions?.dateFormat,
                 },
                 val,
               ).text;

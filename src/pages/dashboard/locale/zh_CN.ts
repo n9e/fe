@@ -213,6 +213,8 @@ const zh_CN = {
       min: '最小值',
       max: '最大值',
       decimals: '小数位数',
+      displayName: '显示名称',
+      displayName_tip: '自定义系列名称',
     },
     overrides: {
       matcher: {
