@@ -73,7 +73,6 @@ function renderHoneyComb(
 ) {
   const t = transition().duration(750);
   const { columns: mapColumns, rows: mapRows } = getMapColumnsAndRows(width, height, data.length);
-  console.log(mapColumns, mapRows);
   const hexRadius = Math.floor(min([width / ((mapColumns + 0.5) * Math.sqrt(3)), height / ((mapRows + 1 / 3) * 1.5), width / 7]));
   const hexbinWidth = Math.sin((60 * Math.PI) / 180) * hexRadius * 2;
   const points = getPlaceHolderElems(mapRows, mapColumns, data.length, hexRadius);

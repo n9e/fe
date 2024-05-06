@@ -86,13 +86,15 @@ function getStartAndEndByTargets(targets: any[]) {
 }
 
 function NameWithTooltip({ record, children }) {
+  const name = _.get(record, 'name');
+  const metric = _.get(record, 'metric.__name__');
   return (
     <Tooltip
       placement='left'
       title={
         <div>
           <div>{_.get(record, 'name')}</div>
-          <div>{_.get(record, 'metric.__name__')}</div>
+          {name !== metric && <div>{_.get(record, 'metric.__name__')}</div>}
           <div>{record.offset && record.offset !== 'current' ? `offfset ${record.offset}` : ''}</div>
           {_.map(_.omit(record.metric, '__name__'), (val, key) => {
             return (
