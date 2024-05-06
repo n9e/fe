@@ -373,6 +373,7 @@ const zh_HK = {
         tag_tip: '計算 step = max((end - start) / maxDataPoints, minStep, safeStep), safeStep = (end - start) / 11000',
       },
     },
+    expression_placeholder: '對一個或多個查詢進行數學運算。您透過 ${refId} 引用查詢，即 $A、$B、$C 等。兩個標量值的總和：$A + $B > 10',
   },
   detail: {
     datasource_empty: '沒有數據源資訊，請先配置數據源',

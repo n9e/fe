@@ -379,6 +379,7 @@ const zh_CN = {
         tag_tip: '计算 step = max((end - start) / maxDataPoints, minStep, safeStep), safeStep = (end - start) / 11000',
       },
     },
+    expression_placeholder: '对一个或多个查询进行数学运算。您通过 ${refId} 引用查询，即 $A、$B、$C 等。两个标量值的总和：$A + $B > 10',
   },
   detail: {
     datasource_empty: '没有数据源信息，请先配置数据源',
