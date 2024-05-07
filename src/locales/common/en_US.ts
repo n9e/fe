@@ -180,5 +180,7 @@ const en_US = {
   'msg.clone.success': 'Successfully cloned',
   'msg.clone.error': 'Cloning failed',
   'msg.sort.success': 'Successfully sorted',
+
+  copy_success: 'Successful copy {{num}} items',
 };
 export default en_US;

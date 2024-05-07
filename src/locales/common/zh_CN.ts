@@ -180,5 +180,7 @@ const zh_CN = {
   'msg.clone.success': '克隆成功',
   'msg.clone.error': '克隆失败',
   'msg.sort.success': '排序成功',
+
+  copy_success: '复制成功 {{num}} 条记录',
 };
 export default zh_CN;

@@ -177,6 +177,7 @@ const zh_HK = {
   'msg.clone.success': '克隆成功',
   'msg.clone.error': '克隆失敗',
   'msg.sort.success': '排序成功',
+  copy_success: '複製成功 {{num}} 條記錄',
 };
 
 export default zh_HK;
