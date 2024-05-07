@@ -10,7 +10,7 @@ interface Props {
   filter: Filter;
   activeMetric?: Record;
   setActiveMetric: (metric?: Record) => void;
-  onSelect: (expression: string) => void;
+  onSelect: (expression: string, metric: Record) => void;
 }
 
 export default function MetricsList(props: Props) {
@@ -80,7 +80,7 @@ export default function MetricsList(props: Props) {
                   setActiveMetric(item);
                 }}
                 onClick={() => {
-                  onSelect(item.expression);
+                  onSelect(item.expression, item);
                 }}
               >
                 {item.name}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import queryString from 'query-string';
 import moment from 'moment';
@@ -14,23 +14,28 @@ interface IProps {
   datasourceValue: number;
   form: FormInstance;
   panelIdx?: number;
+  showBuiltinMetrics?: boolean;
+  allowReplaceHistory?: boolean;
+  promQL?: string;
+  defaultUnit?: string;
 }
 
 export default function Prometheus(props: IProps) {
-  const { headerExtra, datasourceValue, form, panelIdx = 0 } = props;
+  const { headerExtra, datasourceValue, form, panelIdx = 0, showBuiltinMetrics = true, allowReplaceHistory, promQL, defaultUnit } = props;
   const history = useHistory();
   const { search } = useLocation();
   const query = queryString.parse(search, queryStringOptions);
-  const defaultPromQL = _.isString(query.prom_ql) ? query.prom_ql : '';
+  const defaultPromQL = promQL ? promQL : _.isString(query.prom_ql) ? query.prom_ql : '';
+  const [defaultTime, setDefaultTime] = useState<undefined | IRawTimeRange>();
 
-  let defaultTime: undefined | IRawTimeRange;
-
-  if (typeof query.start === 'string' && typeof query.end === 'string') {
-    defaultTime = {
-      start: isMathString(query.start) ? query.start : moment.unix(_.toNumber(query.start)),
-      end: isMathString(query.end) ? query.end : moment.unix(_.toNumber(query.end)),
-    };
-  }
+  useEffect(() => {
+    if (typeof query.start === 'string' && typeof query.end === 'string') {
+      setDefaultTime({
+        start: isMathString(query.start) ? query.start : moment.unix(_.toNumber(query.start)),
+        end: isMathString(query.end) ? query.end : moment.unix(_.toNumber(query.end)),
+      });
+    }
+  }, []);
 
   return (
     <PromGraph
@@ -43,7 +48,7 @@ export default function Prometheus(props: IProps) {
           start = parsedRange.start as any;
           end = parsedRange.end as any;
         }
-        if (panelIdx === 0) {
+        if (panelIdx === 0 && allowReplaceHistory) {
           history.replace({
             pathname: '/metric/explorer',
             search: queryString.stringify({ ...query, start, end }),
@@ -58,7 +63,9 @@ export default function Prometheus(props: IProps) {
       executeQuery={() => {
         form.validateFields();
       }}
-      showBuiltinMetrics
+      showBuiltinMetrics={showBuiltinMetrics}
+      graphStandardOptionsType='horizontal'
+      defaultUnit={defaultUnit}
     />
   );
 }

@@ -3,12 +3,13 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { RightOutlined, DownOutlined } from '@ant-design/icons';
 import { Space, Dropdown, Modal } from 'antd';
+import { Record } from '@/pages/metricsBuiltin/services';
 import Content from './Content';
 import './style.less';
 
 interface Props {
   mode: 'dropdown' | 'modal';
-  onSelect: (expression: string) => void;
+  onSelect: (expression: string, metric: Record) => void;
 }
 
 export default function index(props: Props) {

@@ -44,6 +44,8 @@ interface IProps {
   refreshFlag: string;
   loading: boolean;
   setLoading: (loading: boolean) => void;
+  graphStandardOptionsType?: 'vertical' | 'horizontal';
+  defaultUnit?: string;
 }
 
 enum ChartType {
@@ -64,7 +66,24 @@ const getSerieName = (metric: any) => {
 
 export default function Graph(props: IProps) {
   const { datasourceList, darkMode } = useContext(CommonStateContext);
-  const { url, datasourceValue, promql, setQueryStats, setErrorContent, contentMaxHeight, range, setRange, step, setStep, graphOperates, refreshFlag, loading, setLoading } = props;
+  const {
+    url,
+    datasourceValue,
+    promql,
+    setQueryStats,
+    setErrorContent,
+    contentMaxHeight,
+    range,
+    setRange,
+    step,
+    setStep,
+    graphOperates,
+    refreshFlag,
+    loading,
+    setLoading,
+    graphStandardOptionsType,
+    defaultUnit,
+  } = props;
   const [data, setData] = useState<any[]>([]);
   const [highLevelConfig, setHighLevelConfig] = useState({
     shared: false,
@@ -97,6 +116,15 @@ export default function Graph(props: IProps) {
       },
     },
   };
+
+  useEffect(() => {
+    if (defaultUnit) {
+      setHighLevelConfig({
+        ...highLevelConfig,
+        unit: defaultUnit,
+      });
+    }
+  }, [defaultUnit]);
 
   useEffect(() => {
     if (datasourceValue && promql) {
@@ -176,15 +204,6 @@ export default function Graph(props: IProps) {
           />
           {graphOperates.enabled && (
             <>
-              <Popover
-                placement='left'
-                content={<LineGraphStandardOptions highLevelConfig={highLevelConfig} setHighLevelConfig={setHighLevelConfig} />}
-                trigger='click'
-                autoAdjustOverflow={false}
-                getPopupContainer={() => document.body}
-              >
-                <Button icon={<SettingOutlined />} />
-              </Popover>
               <Button
                 icon={
                   <ShareAltOutlined
@@ -219,6 +238,19 @@ export default function Graph(props: IProps) {
                   />
                 }
               />
+              {graphStandardOptionsType === 'horizontal' ? (
+                <LineGraphStandardOptions highLevelConfig={highLevelConfig} setHighLevelConfig={setHighLevelConfig} type={graphStandardOptionsType} />
+              ) : (
+                <Popover
+                  placement='left'
+                  content={<LineGraphStandardOptions highLevelConfig={highLevelConfig} setHighLevelConfig={setHighLevelConfig} />}
+                  trigger='click'
+                  autoAdjustOverflow={false}
+                  getPopupContainer={() => document.body}
+                >
+                  <Button icon={<SettingOutlined />} />
+                </Popover>
+              )}
             </>
           )}
         </Space>

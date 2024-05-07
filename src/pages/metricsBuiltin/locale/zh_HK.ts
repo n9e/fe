@@ -11,6 +11,7 @@ const zh_HK = {
   add_btn: '新增指標',
   clone_title: '克隆指標',
   edit_title: '編輯指標',
+  explorer: '查詢',
   batch: {
     not_select: '請先選擇指標',
     export: {

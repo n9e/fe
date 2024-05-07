@@ -185,7 +185,7 @@ const Panel = ({ type, defaultCate, panelIdx, defaultFormValuesControl }: IProps
                 if (datasourceCate === DatasourceCateEnum.elasticsearch) {
                   return <Elasticsearch headerExtra={headerExtraRef.current} datasourceValue={datasourceValue} form={form} defaultFormValuesControl={defaultFormValuesControl} />;
                 } else if (datasourceCate === DatasourceCateEnum.prometheus) {
-                  return <Prometheus headerExtra={headerExtraRef.current} datasourceValue={datasourceValue} form={form} panelIdx={panelIdx} />;
+                  return <Prometheus headerExtra={headerExtraRef.current} datasourceValue={datasourceValue} form={form} panelIdx={panelIdx} allowReplaceHistory />;
                 } else if (datasourceCate === DatasourceCateEnum.tdengine) {
                   return <TDengine datasourceValue={datasourceValue} form={form} />;
                 } else if (datasourceCate === DatasourceCateEnum.loki) {

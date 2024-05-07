@@ -9,7 +9,7 @@ import { getUnitLabel } from '@/pages/metricsBuiltin/utils';
 import MetricsList from './MetricsList';
 
 interface Props {
-  onSelect: (expression: string) => void;
+  onSelect: (expression: string, metric: Record) => void;
   setOpen: (open: boolean) => void;
 }
 
@@ -119,8 +119,8 @@ export default function Content(props: Props) {
               filter={filter}
               activeMetric={activeMetric}
               setActiveMetric={setActiveMetric}
-              onSelect={(expression) => {
-                onSelect(expression);
+              onSelect={(expression, metric) => {
+                onSelect(expression, metric);
                 setOpen(false);
               }}
             />

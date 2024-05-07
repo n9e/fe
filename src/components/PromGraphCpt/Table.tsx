@@ -182,7 +182,11 @@ export default function Table(props: IProps) {
         dataSource={data ? data.result : []}
         renderItem={(item) => {
           return (
-            <List.Item>
+            <List.Item
+              style={{
+                wordBreak: 'break-all',
+              }}
+            >
               {data?.resultType != 'streams' && <div>{getListItemLabel(data?.resultType, item)}</div>}
               <div>{getListItemValue(data?.resultType, item)}</div>
             </List.Item>

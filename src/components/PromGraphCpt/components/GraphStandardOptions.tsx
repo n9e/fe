@@ -16,10 +16,11 @@
  */
 import React from 'react';
 import _ from 'lodash';
-import { Menu, Checkbox, Dropdown } from 'antd';
+import { Menu, Checkbox, Dropdown, Space, Divider } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 
 interface IProps {
+  type?: 'vertical' | 'horizontal';
   highLevelConfig: any;
   setHighLevelConfig: (val: any) => void;
 }
@@ -76,7 +77,7 @@ export const units = [
 ];
 
 export default function GraphStandardOptions(props: IProps) {
-  const { highLevelConfig, setHighLevelConfig } = props;
+  const { type, highLevelConfig, setHighLevelConfig } = props;
   const aggrFuncMenu = (
     <Menu
       onClick={(sort) => {
@@ -100,6 +101,46 @@ export default function GraphStandardOptions(props: IProps) {
       })}
     </Menu>
   );
+
+  if (type === 'horizontal') {
+    return (
+      <Space>
+        <span>Unit</span>
+        <Dropdown overlay={precisionMenu}>
+          <a className='ant-dropdown-link' onClick={(e) => e.preventDefault()}>
+            {_.get(_.find(units, { value: highLevelConfig.unit }), 'label')} <DownOutlined />
+          </a>
+        </Dropdown>
+        <Divider type='vertical' />
+        <Checkbox
+          checked={highLevelConfig.legend}
+          onChange={(e) => {
+            setHighLevelConfig({ ...highLevelConfig, legend: e.target.checked });
+          }}
+          className='n9e-checkbox-padding-right-0'
+        >
+          Show Legend
+        </Checkbox>
+        <Divider type='vertical' />
+        <span>
+          <Checkbox
+            checked={highLevelConfig.shared}
+            onChange={(e) => {
+              setHighLevelConfig({ ...highLevelConfig, shared: e.target.checked });
+            }}
+          >
+            Multi Tooltip, order value
+          </Checkbox>
+          <Dropdown overlay={aggrFuncMenu}>
+            <a className='ant-dropdown-link' onClick={(e) => e.preventDefault()}>
+              {highLevelConfig.sharedSortDirection} <DownOutlined />
+            </a>
+          </Dropdown>
+        </span>
+      </Space>
+    );
+  }
+
   return (
     <div>
       <Checkbox

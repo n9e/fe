@@ -53,6 +53,8 @@ interface IProps {
   headerExtra?: HTMLDivElement | null;
   executeQuery?: (promQL?: string) => void;
   showBuiltinMetrics?: boolean;
+  graphStandardOptionsType?: 'vertical' | 'horizontal';
+  defaultUnit?: string;
 }
 
 const TabPane = Tabs.TabPane;
@@ -77,6 +79,7 @@ export default function index(props: IProps) {
     headerExtra,
     executeQuery,
     showBuiltinMetrics,
+    graphStandardOptionsType,
   } = props;
   const [value, setValue] = useState<string | undefined>(promQL); // for promQLInput
   const [promql, setPromql] = useState<string | undefined>(promQL);
@@ -91,6 +94,9 @@ export default function index(props: IProps) {
   const [completeEnabled, setCompleteEnabled] = useState(true);
   const promQLInputRef = useRef<any>(null);
   const [loading, setLoading] = useState(false);
+  const [defaultUnit, setDefaultUnit] = useState<string | undefined>(props.defaultUnit);
+
+  console.log('defaultUnit', defaultUnit);
 
   useEffect(() => {
     if (typeof defaultTime === 'number') {
@@ -147,9 +153,10 @@ export default function index(props: IProps) {
           {showBuiltinMetrics && (
             <BuiltinMetrics
               mode='dropdown'
-              onSelect={(newValue) => {
+              onSelect={(newValue, metric) => {
                 setValue(newValue);
                 setPromql(newValue);
+                setDefaultUnit(metric.unit);
               }}
             />
           )}
@@ -269,6 +276,8 @@ export default function index(props: IProps) {
               refreshFlag={refreshFlag}
               loading={loading}
               setLoading={setLoading}
+              graphStandardOptionsType={graphStandardOptionsType}
+              defaultUnit={defaultUnit}
             />
           </TabPane>
         </Tabs>

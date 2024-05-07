@@ -18,7 +18,7 @@ import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { useAntdTable, useDebounceFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
-import { Space, Table, Button, Input, Dropdown, Select, message, Modal, Tooltip } from 'antd';
+import { Space, Table, Button, Input, Dropdown, Select, message, Modal, Tooltip, Drawer } from 'antd';
 import { SettingOutlined, DownOutlined, SearchOutlined, EyeOutlined } from '@ant-design/icons';
 import { ColumnType } from 'antd/lib/table';
 import PageLayout from '@/components/pageLayout';
@@ -31,6 +31,7 @@ import FormDrawer from './components/FormDrawer';
 import Export from './components/Export';
 import Import from './components/Import';
 import { getUnitLabel } from './utils';
+import ExplorerDrawer from './ExplorerDrawer';
 
 export default function index() {
   const { t, i18n } = useTranslation('metricsBuiltin');
@@ -42,6 +43,8 @@ export default function index() {
   const [typesList, setTypesList] = useState<string[]>([]);
   const [collectorsList, setCollectorsList] = useState<string[]>([]);
   const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
+  const [explorerDrawerVisible, setExplorerDrawerVisible] = useState(false);
+  const [explorerDrawerData, setExplorerDrawerData] = useState<Record>();
   const { tableProps, run: fetchData } = useAntdTable(
     ({
       current,
@@ -97,10 +100,20 @@ export default function index() {
     {
       title: t('common:table.operations'),
       dataIndex: 'operator',
-      width: 120,
+      width: 140,
       render: (data, record: any) => {
         return (
           <Space>
+            <Button
+              type='link'
+              style={{ padding: 0 }}
+              onClick={() => {
+                setExplorerDrawerVisible(true);
+                setExplorerDrawerData(record);
+              }}
+            >
+              {t('explorer')}
+            </Button>
             <FormDrawer
               mode='clone'
               initialValues={record}
@@ -348,6 +361,14 @@ export default function index() {
           />
         </div>
       </div>
+      <ExplorerDrawer
+        visible={explorerDrawerVisible}
+        onClose={() => {
+          setExplorerDrawerVisible(false);
+          setExplorerDrawerData(undefined);
+        }}
+        data={explorerDrawerData}
+      />
     </PageLayout>
   );
 }

@@ -11,6 +11,7 @@ const en_US = {
   add_btn: 'Add Metric',
   clone_title: 'Clone Metric',
   edit_title: 'Edit Metric',
+  explorer: 'Explorer',
   batch: {
     not_select: 'Please select the metric first',
     export: {
