@@ -27,8 +27,9 @@ const zh_CN = {
         },
         url: {
           urlTemplate: 'URL 模板',
-          urlTemplateTip: '使用 {{value}} 作为占位符',
-          urlTemplatePlaceholder: 'https://www.example.com/?q={{value}}',
+          urlTemplateTip: '可用{{value}}代表该字段的值',
+          urlTemplateTip1: '如跳转tracing系统：http://flashcat.cloud/trace?traceId={{value}}&dataSourceName=traceSystemName',
+          urlTemplatePlaceholder: 'http://flashcat.cloud/trace?traceId={{value}}&dataSourceName=traceSystemName',
           labelTemplate: '标签模板',
           labelTemplatePlaceholder: '{{value}}',
         },

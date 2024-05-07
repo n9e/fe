@@ -9,6 +9,7 @@ import { getESIndexPatterns } from '@/pages/log/IndexPatterns/services';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { getFullFields, Field } from './services';
 import InputFilter from './InputFilter';
+import { useLocation } from 'react-router-dom';
 
 interface Props {
   onExecute: () => void;
@@ -20,9 +21,11 @@ interface Props {
 
 export default function QueryBuilder(props: Props) {
   const { t } = useTranslation('explorer');
+  const params = new URLSearchParams(useLocation().search);
   const { onExecute, datasourceValue, form, setFields, onIndexChange } = props;
   const [indexPatterns, setIndexPatterns] = useState<any[]>([]);
   const indexPattern = Form.useWatch(['query', 'indexPattern']);
+  
   const [allFields, setAllFields] = useState<Field[]>([]);
   const refInputFilter = useRef<any>();
   const { run: onIndexPatternChange } = useDebounceFn(
@@ -65,6 +68,28 @@ export default function QueryBuilder(props: Props) {
     if (datasourceValue) {
       getESIndexPatterns(datasourceValue).then((res) => {
         setIndexPatterns(res);
+        if (params.get('index_pattern')) {
+          const indexPattern = _.find(res, (item) => item.name === params.get('index_pattern'));
+          if (indexPattern) {
+            const formValuesQuery = form.getFieldValue('query');
+            let fieldConfig;
+            try {
+              if (indexPattern.fields_format) {
+                fieldConfig = JSON.parse(indexPattern.fields_format);
+              }
+            } catch (error) {
+              console.warn(error);
+            }
+
+            formValuesQuery.date_field = indexPattern.time_field;
+            formValuesQuery.index = indexPattern.name;
+            form.setFieldsValue({
+              query: formValuesQuery,
+              fieldConfig,
+            });
+            onExecute();
+          }
+        }
       });
     }
   }, [datasourceValue]);

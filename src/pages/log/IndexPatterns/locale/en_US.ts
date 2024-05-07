@@ -28,6 +28,7 @@ const en_US = {
         url: {
           urlTemplate: 'URL template',
           urlTemplateTip: 'Use {{value}} as a placeholder',
+          urlTemplateTip1: 'Just as tracing：http://flashcat.cloud/trace?traceId={{value}}&dataSourceName=traceSystemName',
           urlTemplatePlaceholder: 'https://www.example.com/?q={{value}}',
           labelTemplate: 'Label template',
           labelTemplatePlaceholder: '{{value}}',
