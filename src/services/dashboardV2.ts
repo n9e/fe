@@ -180,6 +180,23 @@ export const fetchHistoryRangeBatch = (data, signalKey) => {
   });
 };
 
+export const fetchHistoryRangeBatch2 = (data, signalKey) => {
+  const controller = new AbortController();
+  const { signal } = controller;
+  if (signalKey && signals[signalKey] && signals[signalKey].abort) {
+    signals[signalKey].abort();
+  }
+  signals[signalKey] = controller;
+  return request('/api/n9e-plus/query-batch', {
+    method: RequestMethod.Post,
+    data,
+    signal,
+    silence: true,
+  }).finally(() => {
+    delete signals[signalKey];
+  });
+};
+
 export const fetchHistoryInstantBatch = (data, signalKey) => {
   const controller = new AbortController();
   const { signal } = controller;
