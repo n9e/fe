@@ -44,7 +44,15 @@ export default function GraphStyles() {
       <>
         <Row gutter={10}>
           <Col span={8}>
-            <Form.Item label={t('panel.custom.barchart.xAxisField')} name={[...namePrefix, 'xAxisField']}>
+            <Form.Item
+              label={t('panel.custom.barchart.xAxisField')}
+              name={[...namePrefix, 'xAxisField']}
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
               <Select options={fieldsOptions} />
             </Form.Item>
           </Col>
@@ -58,6 +66,11 @@ export default function GraphStyles() {
                   <div>{t('panel.custom.valueField_tip')}</div>
                 </div>
               }
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
             >
               <Select
                 options={_.map(_.compact(_.concat(statFields, 'Value')), (item) => {

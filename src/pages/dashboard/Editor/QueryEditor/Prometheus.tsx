@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Row, Col, Input, Button, Switch, InputNumber, Space, Tag, Tooltip } from 'antd';
+import { Form, Row, Col, Input, Switch, InputNumber, Space, Tag, Tooltip } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import moment from 'moment';
@@ -9,7 +9,8 @@ import Resolution from '@/components/Resolution';
 import { PromQLInputWithBuilder } from '@/components/PromQLInput';
 import { getRealStep } from '@/pages/dashboard/Renderer/datasource/prometheus';
 import Collapse, { Panel } from '../Components/Collapse';
-import getFirstUnusedLetter from '../../Renderer/utils/getFirstUnusedLetter';
+import ExpressionPanel from '../Components/ExpressionPanel';
+import AddQueryButtons from '../Components/AddQueryButtons';
 import { replaceExpressionVars } from '../../VariableConfig/constant';
 
 const alphabet = 'ABCDEFGHIGKLMNOPQRSTUVWXYZ'.split('');
@@ -19,6 +20,7 @@ export default function Prometheus({ chartForm, variableConfig, dashboardId, tim
   const varNams = _.map(variableConfig, (item) => {
     return `$${item.name}`;
   });
+  const targets = Form.useWatch('targets');
 
   return (
     <Form.List name='targets'>
@@ -27,6 +29,10 @@ export default function Prometheus({ chartForm, variableConfig, dashboardId, tim
           <>
             <Collapse>
               {_.map(fields, (field, index) => {
+                const { __mode__ } = targets?.[field.name] || {};
+                if (__mode__ === '__expr__') {
+                  return <ExpressionPanel key={field.key} fields={fields} remove={remove} field={field} />;
+                }
                 return (
                   <Panel
                     header={
@@ -157,14 +163,12 @@ export default function Prometheus({ chartForm, variableConfig, dashboardId, tim
 
               <Form.ErrorList errors={errors} />
             </Collapse>
-            <Button
-              style={{ width: '100%', marginTop: 10 }}
-              onClick={() => {
-                add({ expr: '', refId: getFirstUnusedLetter(_.map(chartForm.getFieldValue('targets'), 'refId')) });
+            <AddQueryButtons
+              add={add}
+              addQuery={(newRefId) => {
+                add({ expr: '', __mode__: '__query__', refId: newRefId });
               }}
-            >
-              + add query
-            </Button>
+            />
           </>
         );
       }}

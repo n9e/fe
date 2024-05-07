@@ -37,24 +37,24 @@ export default function index({ targets }) {
               key={key}
               isInner
               header='Override'
-              // extra={
-              //   <Space>
-              //     <PlusCircleOutlined
-              //       onClick={() => {
-              //         add({
-              //           type: 'special',
-              //         });
-              //       }}
-              //     />
-              //     {fields.length > 1 && (
-              //       <MinusCircleOutlined
-              //         onClick={() => {
-              //           remove(name);
-              //         }}
-              //       />
-              //     )}
-              //   </Space>
-              // }
+              extra={
+                <Space>
+                  <PlusCircleOutlined
+                    onClick={() => {
+                      add({
+                        type: 'special',
+                      });
+                    }}
+                  />
+                  {fields.length > 1 && (
+                    <MinusCircleOutlined
+                      onClick={() => {
+                        remove(name);
+                      }}
+                    />
+                  )}
+                </Space>
+              }
             >
               <Row gutter={10}>
                 <Col span={12}>
@@ -112,15 +112,17 @@ export default function index({ targets }) {
                   </Form.Item>
                 </Col>
               </Row>
-              <Panel header={t('panel.custom.timeseries.yAxis.title')}>
-                <Form.Item label={t('panel.custom.timeseries.yAxis.rightYAxis.label')} name={[name, 'properties', 'rightYAxisDisplay']} initialValue='off'>
-                  <Radio.Group buttonStyle='solid'>
-                    <Radio.Button value='noraml'>{t('panel.custom.timeseries.yAxis.rightYAxis.noraml')}</Radio.Button>
-                    <Radio.Button value='off'>{t('panel.custom.timeseries.yAxis.rightYAxis.off')}</Radio.Button>
-                  </Radio.Group>
-                </Form.Item>
-              </Panel>
-              <StandardOptions preNamePrefix={namePrefix} namePrefix={[name, 'properties', 'standardOptions']} />
+              {name === 0 && (
+                <Panel header={t('panel.custom.timeseries.yAxis.title')}>
+                  <Form.Item label={t('panel.custom.timeseries.yAxis.rightYAxis.label')} name={[name, 'properties', 'rightYAxisDisplay']} initialValue='off'>
+                    <Radio.Group buttonStyle='solid'>
+                      <Radio.Button value='noraml'>{t('panel.custom.timeseries.yAxis.rightYAxis.noraml')}</Radio.Button>
+                      <Radio.Button value='off'>{t('panel.custom.timeseries.yAxis.rightYAxis.off')}</Radio.Button>
+                    </Radio.Group>
+                  </Form.Item>
+                </Panel>
+              )}
+              <StandardOptions preNamePrefix={namePrefix} namePrefix={[name, 'properties', 'standardOptions']} showMinMax={false} showDisplayName />
             </Panel>
           );
         })
