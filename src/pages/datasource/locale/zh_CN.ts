@@ -1,5 +1,3 @@
-import { add } from 'lodash';
-
 const zh_CN = {
   title: '数据源管理',
   list_title: '已接入的数据源',
