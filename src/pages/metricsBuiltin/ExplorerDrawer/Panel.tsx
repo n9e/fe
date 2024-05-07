@@ -24,7 +24,7 @@ export default function Panel(props: Props) {
   const headerExtraRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div key={panel.id} className='n9e-fill-color-2 n9e-border-base' style={{ padding: 16, height: 650, marginBottom: 16, position: 'relative' }}>
+    <div key={panel.id} className='n9e-fill-color-2 n9e-border-base' style={{ padding: 16, maxHeight: 650, marginBottom: 16, position: 'relative', display: 'flex' }}>
       <div className='explorer-container'>
         <Form
           form={form}
