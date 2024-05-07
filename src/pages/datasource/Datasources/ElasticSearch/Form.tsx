@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Form, Select, InputNumber, Tooltip, Row, Col, Card } from 'antd';
+import { Form, Select, InputNumber, Tooltip, Row, Col, Card, Space, Switch } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -76,6 +76,12 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
           </Col>
         </Row>
         <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
+          <Space className='mb8'>
+            <span>{t('form.es.enable_write')}</span>
+            <Form.Item name={['settings', `enable_write`]} valuePropName='checked' noStyle>
+              <Switch />
+            </Form.Item>
+          </Space>
           <Cluster form={form} clusterRef={clusterRef} />
         </AdvancedWrap>
         <Description />
