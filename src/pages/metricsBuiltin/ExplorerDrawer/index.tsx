@@ -20,14 +20,35 @@ export default function ExplorerDrawer(props: Props) {
 
   useEffect(() => {
     if (data) {
-      setPanels([data]);
+      const finded = _.find(panels, (panel) => panel.id === data.id);
+      if (!finded) {
+        setPanels([data, ...panels]);
+      }
     }
   }, [data]);
 
   return (
     <Drawer title={t('explorer')} width={1060} visible={visible} onClose={onClose}>
-      {_.map(panels, (panel) => {
-        return <Panel panel={panel} panels={panels} setPanels={setPanels} />;
+      {_.map(panels, (panel, idx) => {
+        return (
+          <>
+            <Panel panel={panel} panels={panels} setPanels={setPanels} />
+            {idx === 0 && panels.length > 1 && (
+              <Button
+                danger
+                ghost
+                type='dashed'
+                className='mb2'
+                style={{ width: '100%' }}
+                onClick={() => {
+                  setPanels([panels[0]]);
+                }}
+              >
+                {t('closePanelsBelow')}
+              </Button>
+            )}
+          </>
+        );
       })}
       <Button
         style={{ width: '100%' }}
@@ -35,7 +56,7 @@ export default function ExplorerDrawer(props: Props) {
           setPanels([...panels, { id: moment().unix() } as Record]);
         }}
       >
-        Add Panel
+        {t('addPanel')}
       </Button>
     </Drawer>
   );

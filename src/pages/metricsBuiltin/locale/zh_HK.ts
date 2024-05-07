@@ -12,6 +12,8 @@ const zh_HK = {
   clone_title: '克隆指標',
   edit_title: '編輯指標',
   explorer: '查詢',
+  closePanelsBelow: '關閉下方面板',
+  addPanel: '添加面板',
   batch: {
     not_select: '請先選擇指標',
     export: {

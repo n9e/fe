@@ -12,6 +12,8 @@ const en_US = {
   clone_title: 'Clone Metric',
   edit_title: 'Edit Metric',
   explorer: 'Explorer',
+  closePanelsBelow: 'Close panels below',
+  addPanel: 'Add Panel',
   batch: {
     not_select: 'Please select the metric first',
     export: {

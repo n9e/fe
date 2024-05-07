@@ -62,7 +62,7 @@ const MetricExplorerPage = () => {
                 setPanels([...panels, { uuid: _.uniqueId('panel_') }]);
               }}
             >
-              Add Panel
+              {t('addPanel')}
             </Button>
           </div>
         </div>

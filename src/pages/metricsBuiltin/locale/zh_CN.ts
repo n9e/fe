@@ -12,6 +12,8 @@ const zh_CN = {
   clone_title: '克隆指标',
   edit_title: '编辑指标',
   explorer: '查询',
+  closePanelsBelow: '关闭下方面板',
+  addPanel: '添加面板',
   batch: {
     not_select: '请先选择指标',
     export: {
