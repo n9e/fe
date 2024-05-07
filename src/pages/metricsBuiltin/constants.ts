@@ -131,6 +131,14 @@ export const units: any = [
         label: 'milliseconds',
         value: 'milliseconds',
       },
+      {
+        label: 'datetime(seconds)',
+        value: 'datetimeSeconds',
+      },
+      {
+        label: 'datetime(milliseconds)',
+        value: 'datetimeMilliseconds',
+      },
     ],
   },
 ];
