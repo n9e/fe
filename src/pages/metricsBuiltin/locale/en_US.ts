@@ -41,6 +41,8 @@ const en_US = {
     percentUnit: 'percent(0.0-1.0) e.g. 0.235 -> 23.5%',
     seconds: 'time unit: seconds',
     milliseconds: 'time unit: milliseconds',
+    datetimeSeconds: 'timestamp unit: seconds, e.g. 1612345678 -> 2021-02-03 04:05:06',
+    datetimeMilliseconds: 'timestamp unit: milliseconds, e.g. 1612345678000 -> 2021-02-03 04:05:06',
   },
 };
 export default en_US;

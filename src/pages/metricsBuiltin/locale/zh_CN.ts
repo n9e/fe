@@ -41,6 +41,8 @@ const zh_CN = {
     percentUnit: '百分比(值范围0.0-1.0) 比如 0.235 渲染为 23.5%',
     seconds: '时间单位: 秒',
     milliseconds: '时间单位: 毫秒',
+    datetimeSeconds: '时间戳单位: 秒, 比如 1612345678 渲染为 2021-02-03 04:05:06',
+    datetimeMilliseconds: '时间戳单位: 毫秒, 比如 1612345678000 渲染为 2021-02-03 04:05:06',
   },
 };
 export default zh_CN;
