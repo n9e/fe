@@ -94,7 +94,7 @@ export default function MoreOperations(props: MoreOperationsProps) {
                     title: t('batch.delete_confirm'),
                     onOk: () => {
                       deleteStrategy(selectRowKeys as number[], bgid).then(() => {
-                        message.success(t('batch.delete.success'));
+                        message.success(t('batch.delete_success'));
                         getAlertRules();
                       });
                     },
