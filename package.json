@@ -30,7 +30,7 @@
     "@fc-components/codemirror-promql": "^0.19.9",
     "@fc-components/menu": "^1.1.23",
     "@fc-components/use-antd-resizable-header": "^2.8.16",
-    "@fc-plot/ts-graph": "^0.25.1",
+    "@fc-plot/ts-graph": "^0.26.2",
     "@radix-ui/react-scroll-area": "^1.0.5",
     "@uiw/react-codemirror": "4.6.0",
     "ahooks": "3.1.5",

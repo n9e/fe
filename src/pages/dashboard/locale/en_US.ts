@@ -203,6 +203,8 @@ const en_US = {
       min: 'Min',
       max: 'Max',
       decimals: 'Decimals',
+      displayName: 'Display name',
+      displayName_tip: 'Change the series name',
     },
     overrides: {
       matcher: {
@@ -365,6 +367,7 @@ const en_US = {
         tag_tip: 'Calculate step = max((end - start) / maxDataPoints, minStep, safeStep), safeStep = (end - start) / 11000',
       },
     },
+    expression_placeholder: 'Math operations on one or more queries. You reference the query by ${refId} ie. $A, $B, $C etc. The sum of two scalar values: $A + $B > 10',
   },
   detail: {
     datasource_empty: 'Please configure the data source first',

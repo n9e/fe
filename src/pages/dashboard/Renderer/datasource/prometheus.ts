@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import moment from 'moment';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
-import { fetchHistoryRangeBatch, fetchHistoryInstantBatch } from '@/services/dashboardV2';
+import { fetchHistoryRangeBatch, fetchHistoryInstantBatch, fetchHistoryRangeBatch2 } from '@/services/dashboardV2';
 import i18next from 'i18next';
 import { ITarget } from '../../types';
 import { IVariable } from '../../VariableConfig/definition';
@@ -10,7 +10,7 @@ import { completeBreakpoints, getSerieName } from './utils';
 import replaceFieldWithVariable from '../utils/replaceFieldWithVariable';
 import { replaceExpressionVars, getOptionsList } from '../../VariableConfig/constant';
 import { alphabet } from '../utils/getFirstUnusedLetter';
-import { N9E_PATHNAME } from '@/utils/constant';
+import { N9E_PATHNAME, IS_PLUS } from '@/utils/constant';
 
 interface IOptions {
   id?: string; // panelId
@@ -68,6 +68,7 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
   const series: any[] = [];
   let batchQueryParams: any[] = [];
   let batchInstantParams: any[] = [];
+  let exps: any[] = []; // 表达式查询条件
   let exprs: string[] = [];
   let refIds: string[] = [];
   let signalKey = `${id}`;
@@ -91,70 +92,118 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
       // start = start - (start % _step!);
       // end = end - (end % _step!);
 
-      const realExpr = variableConfig
-        ? replaceFieldWithVariable(
-            dashboardId,
-            target.expr,
-            getOptionsList(
-              {
-                dashboardId,
-                variableConfigWithOptions: variableConfig,
-              },
-              target.time ? target.time : time,
-              _step,
-            ),
-            scopedVars,
-          )
-        : target.expr;
-      if (realExpr) {
-        if (target.instant) {
-          batchInstantParams.push({
-            time: end,
-            query: realExpr,
-            refId: target.refId,
-          });
-        } else {
-          batchQueryParams.push({
-            end,
-            start,
-            query: realExpr,
-            step: _step,
-            refId: target.refId,
-          });
+      if (target.__mode__ === '__expr__') {
+        exps.push({
+          ref: target.refId,
+          exp: target.expr,
+        });
+      } else {
+        const realExpr = variableConfig
+          ? replaceFieldWithVariable(
+              dashboardId,
+              target.expr,
+              getOptionsList(
+                {
+                  dashboardId,
+                  variableConfigWithOptions: variableConfig,
+                },
+                target.time ? target.time : time,
+                _step,
+              ),
+              scopedVars,
+            )
+          : target.expr;
+        if (realExpr) {
+          if (target.instant) {
+            batchInstantParams.push({
+              time: end,
+              query: realExpr,
+              refId: target.refId,
+            });
+          } else {
+            if (!IS_PLUS) {
+              batchQueryParams.push({
+                end,
+                start,
+                query: realExpr,
+                step: _step,
+                refId: target.refId,
+              });
+            } else {
+              batchQueryParams.push({
+                ref: target.refId,
+                ds_id: datasourceValue,
+                ds_cate: 'prometheus',
+                query: {
+                  end,
+                  start,
+                  ql: realExpr,
+                  step: _step,
+                },
+              });
+            }
+          }
+          exprs.push(target.expr);
+          refIds.push(target.refId);
+          signalKey += `-${target.expr}`;
         }
-        exprs.push(target.expr);
-        refIds.push(target.refId);
-        signalKey += `-${target.expr}`;
       }
     });
     try {
       let batchQueryRes: any = {};
       if (!_.isEmpty(batchQueryParams)) {
-        batchQueryRes = await fetchHistoryRangeBatch({ queries: batchQueryParams, datasource_id: datasourceValue }, signalKey);
-        const dat = batchQueryRes.dat || [];
-        for (let i = 0; i < dat?.length; i++) {
-          var item = {
-            result: dat[i],
-            expr: batchQueryParams[i]?.query,
-            refId: batchQueryParams[i]?.refId,
-          };
-          const target = _.find(targets, (t) => t.refId === item.refId);
-          _.forEach(item.result, (serie) => {
-            let _step = 15;
-            if (!spanNulls) {
-              if (target) {
-                _step = getRealStep(time, target);
+        if (!IS_PLUS) {
+          batchQueryRes = await fetchHistoryRangeBatch({ queries: batchQueryParams, datasource_id: datasourceValue }, signalKey);
+          const dat = batchQueryRes.dat || [];
+          for (let i = 0; i < dat?.length; i++) {
+            var item = {
+              result: dat[i],
+              expr: batchQueryParams[i]?.query,
+              refId: batchQueryParams[i]?.refId,
+            };
+            const target = _.find(targets, (t) => t.refId === item.refId);
+            _.forEach(item.result, (serie) => {
+              let _step = 15;
+              if (!spanNulls) {
+                if (target) {
+                  _step = getRealStep(time, target);
+                }
               }
-            }
-            series.push({
-              id: _.uniqueId('series_'),
-              refId: item.refId,
-              name: target?.legend ? replaceExpressionBracket(target?.legend, serie.metric) : getSerieName(serie.metric),
-              metric: serie.metric,
-              expr: item.expr,
-              data: !spanNulls ? completeBreakpoints(_step, serie.values) : serie.values,
+              series.push({
+                id: _.uniqueId('series_'),
+                refId: item.refId,
+                name: target?.legend ? replaceExpressionBracket(target?.legend, serie.metric) : getSerieName(serie.metric),
+                metric: serie.metric,
+                expr: item.expr,
+                data: !spanNulls ? completeBreakpoints(_step, serie.values) : serie.values,
+              });
             });
-          });
+          }
+        } else {
+          batchQueryRes = await fetchHistoryRangeBatch2({ queries: batchQueryParams, exps }, signalKey);
+          const dat = batchQueryRes.dat || [];
+          for (let i = 0; i < dat?.length; i++) {
+            const refId = dat[i]?.ref;
+            const expr = _.find(batchQueryParams, { ref: dat[i]?.ref })?.ql;
+            const target = _.find(targets, (t) => t.refId === refId);
+            _.forEach(dat[i]?.data, (serie) => {
+              let _step = 15;
+              if (!spanNulls) {
+                if (target) {
+                  _step = getRealStep(time, target);
+                }
+              }
+              const isExp = _.find(exps, (exp) => exp.ref === serie.ref);
+              series.push({
+                id: _.uniqueId('series_'),
+                refId: refId,
+                name: target?.legend ? replaceExpressionBracket(target?.legend, serie.metric) : getSerieName(serie.metric, isExp ? serie.ref : undefined),
+                metric: serie.metric,
+                expr,
+                data: !spanNulls ? completeBreakpoints(_step, serie.values) : serie.values,
+              });
+            });
+          }
         }
       }
       let batchInstantRes: any = {};

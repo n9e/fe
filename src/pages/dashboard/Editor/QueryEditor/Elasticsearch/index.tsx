@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Row, Col, Input, Button, InputNumber } from 'antd';
+import { Form, Row, Col, Input, InputNumber } from 'antd';
 import { DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -8,13 +8,15 @@ import Values from './Values';
 import GroupBy from './GroupBy';
 import Time from './Time';
 import Collapse, { Panel } from '../../Components/Collapse';
-import getFirstUnusedLetter from '../../../Renderer/utils/getFirstUnusedLetter';
+import ExpressionPanel from '../../Components/ExpressionPanel';
+import AddQueryButtons from '../../Components/AddQueryButtons';
 import { replaceExpressionVars } from '../../../VariableConfig/constant';
 
 const alphabet = 'ABCDEFGHIGKLMNOPQRSTUVWXYZ'.split('');
 
 export default function Elasticsearch({ chartForm, variableConfig, dashboardId }) {
   const { t } = useTranslation('dashboard');
+  const targets = Form.useWatch('targets');
 
   return (
     <Form.List name='targets'>
@@ -24,6 +26,10 @@ export default function Elasticsearch({ chartForm, variableConfig, dashboardId }
             <Collapse>
               {_.map(fields, (field, index) => {
                 const prefixName = ['targets', field.name];
+                const { __mode__ } = targets?.[field.name] || {};
+                if (__mode__ === '__expr__') {
+                  return <ExpressionPanel key={field.key} fields={fields} remove={remove} field={field} />;
+                }
                 return (
                   <Panel
                     header={
@@ -164,9 +170,9 @@ export default function Elasticsearch({ chartForm, variableConfig, dashboardId }
 
               <Form.ErrorList errors={errors} />
             </Collapse>
-            <Button
-              style={{ width: '100%', marginTop: 10 }}
-              onClick={() => {
+            <AddQueryButtons
+              add={add}
+              addQuery={(newRefId) => {
                 add({
                   query: {
                     values: [
@@ -178,12 +184,10 @@ export default function Elasticsearch({ chartForm, variableConfig, dashboardId }
                     interval: 1,
                     interval_unit: 'min',
                   },
-                  refId: getFirstUnusedLetter(_.map(chartForm.getFieldValue('targets'), 'refId')),
+                  refId: newRefId,
                 });
               }}
-            >
-              + add query
-            </Button>
+            />
           </>
         );
       }}

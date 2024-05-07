@@ -4,13 +4,15 @@ import semver from 'semver';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { getDsQuery, getESVersion } from '@/services/warning';
 import { normalizeTime } from '@/pages/alertRules/utils';
+import { fetchHistoryRangeBatch2 } from '@/services/dashboardV2';
+import { getSerieName } from '@/pages/dashboard/Renderer/datasource/utils';
 import { ITarget } from '../../../types';
 import { IVariable } from '../../../VariableConfig/definition';
 import { replaceExpressionVars } from '../../../VariableConfig/constant';
 import { getSeriesQuery, getLogsQuery } from './queryBuilder';
 import { processResponseToSeries } from './processResponse';
 import { flattenHits } from '@/pages/explorer/Elasticsearch/utils';
-import { N9E_PATHNAME } from '@/utils/constant';
+import { N9E_PATHNAME, IS_PLUS } from '@/utils/constant';
 
 interface IOptions {
   dashboardId: string;
@@ -39,18 +41,25 @@ interface Result {
 }
 
 export default async function elasticSearchQuery(options: IOptions): Promise<Result> {
-  const { dashboardId, time, targets, variableConfig } = options;
+  const { id, dashboardId, time, targets, variableConfig } = options;
   if (!time.start) return Promise.resolve({ series: [] });
   const parsedRange = parseRange(time);
   let start = moment(parsedRange.start).valueOf();
   let end = moment(parsedRange.end).valueOf();
   let batchDsParams: any[] = [];
   let batchLogParams: any[] = [];
+  let exps: any[] = [];
   let series: any[] = [];
-  const isInvalid = _.some(targets, (target) => {
-    const query: any = target.query || {};
-    return !query.index || !query.date_field;
-  });
+  let signalKey = `${id}`;
+  const isInvalid = _.some(
+    _.filter(targets, (item) => {
+      return item.__mode__ !== '__expr__';
+    }),
+    (target) => {
+      const query: any = target.query || {};
+      return !query.index || !query.date_field;
+    },
+  );
   const datasourceValue = variableConfig
     ? (replaceExpressionVars(options.datasourceValue as any, variableConfig, variableConfig.length, dashboardId) as any)
     : options.datasourceValue;
@@ -63,57 +72,104 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
       }
       const query: any = target.query || {};
       const filter = variableConfig ? replaceExpressionVars(query.filter, variableConfig, variableConfig.length, dashboardId) : query.filter;
-      if (isRawDataQuery(target)) {
-        batchLogParams.push({
-          index: query.index,
-          filter,
-          date_field: query.date_field,
-          limit: query.limit,
-          start,
-          end,
+      if (target.__mode__ === '__expr__') {
+        exps.push({
+          ref: target.refId,
+          exp: target.expr,
         });
       } else {
-        batchDsParams.push({
-          index: query.index,
-          filter,
-          values: query?.values,
-          group_by: query.group_by,
-          date_field: query.date_field,
-          interval: `${normalizeTime(query.interval, query.interval_unit)}s`,
-          start,
-          end,
-        });
+        if (isRawDataQuery(target)) {
+          batchLogParams.push({
+            index: query.index,
+            filter,
+            date_field: query.date_field,
+            limit: query.limit,
+            start,
+            end,
+          });
+        } else {
+          if (!IS_PLUS) {
+            batchDsParams.push({
+              index: query.index,
+              filter,
+              values: query?.values,
+              group_by: query.group_by,
+              date_field: query.date_field,
+              interval: `${normalizeTime(query.interval, query.interval_unit)}s`,
+              start,
+              end,
+            });
+          } else {
+            _.map(query?.values, (item) => {
+              batchDsParams.push({
+                ref: target.refId,
+                ds_id: datasourceValue,
+                ds_cate: 'elasticsearch',
+                query: {
+                  ref: target.refId,
+                  index: query.index,
+                  filter,
+                  value: item,
+                  group_by: query.group_by,
+                  date_field: query.date_field,
+                  interval: normalizeTime(query.interval, query.interval_unit),
+                  start: moment(parsedRange.start).unix(),
+                  end: moment(parsedRange.end).unix(),
+                },
+              });
+            });
+          }
+        }
       }
+      signalKey += target.refId;
     });
     let dsRes;
     let dsPlayload = '';
     if (!_.isEmpty(batchDsParams)) {
-      let intervalkey = 'interval';
-      try {
-        const version = await getESVersion(datasourceValue);
-        if (semver.gte(version, '8.0.0')) {
-          intervalkey = 'fixed_interval';
+      if (!IS_PLUS) {
+        let intervalkey = 'interval';
+        try {
+          const version = await getESVersion(datasourceValue);
+          if (semver.gte(version, '8.0.0')) {
+            intervalkey = 'fixed_interval';
+          }
+        } catch (e) {
+          console.error(new Error('get es version error'));
         }
-      } catch (e) {
-        console.error(new Error('get es version error'));
-      }
-      _.forEach(batchDsParams, (item) => {
-        const esQuery = JSON.stringify(getSeriesQuery(item, intervalkey));
-        const header = JSON.stringify({
-          search_type: 'query_then_fetch',
-          ignore_unavailable: true,
-          index: item.index,
+        _.forEach(batchDsParams, (item) => {
+          const esQuery = JSON.stringify(getSeriesQuery(item, intervalkey));
+          const header = JSON.stringify({
+            search_type: 'query_then_fetch',
+            ignore_unavailable: true,
+            index: item.index,
+          });
+          dsPlayload += header + '\n';
+          dsPlayload += esQuery + '\n';
         });
-        dsPlayload += header + '\n';
-        dsPlayload += esQuery + '\n';
-      });
-      dsRes = await getDsQuery(datasourceValue, dsPlayload);
-      series = _.map(processResponseToSeries(dsRes, batchDsParams), (item) => {
-        return {
-          id: _.uniqueId('series_'),
-          ...item,
-        };
-      });
+        dsRes = await getDsQuery(datasourceValue, dsPlayload);
+        series = _.map(processResponseToSeries(dsRes, batchDsParams), (item) => {
+          return {
+            id: _.uniqueId('series_'),
+            ...item,
+          };
+        });
+      } else {
+        dsRes = await fetchHistoryRangeBatch2({ queries: batchDsParams, exps }, signalKey);
+        const dat = dsRes.dat || [];
+        for (let i = 0; i < dat?.length; i++) {
+          const refId = dat[i]?.ref;
+          _.forEach(dat[i]?.data, (serie) => {
+            const isExp = _.find(exps, (exp) => exp.ref === serie.ref);
+            series.push({
+              id: _.uniqueId('series_'),
+              refId: refId,
+              name: getSerieName(serie.metric, isExp ? serie.ref : undefined),
+              metric: serie.metric,
+              data: serie.values,
+            });
+          });
+        }
+      }
     }
     let logRes;
     let logPlayload = '';

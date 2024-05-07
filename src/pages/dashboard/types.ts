@@ -26,6 +26,7 @@ export interface IGridPos {
 // query interface
 export interface ITarget {
   refId: string;
+  __mode__: '__expr__' | '__query__';
   expr: string; // promQL
   legendFormat: string;
   time?: IRawTimeRange; // 固定时间范围
@@ -78,6 +79,7 @@ export interface IOptions {
     max?: number;
     decimals?: number;
     dateFormat?: string;
+    displayName?: string;
   };
   legend?: {
     // TODO: 目前不支持这么复杂的自定义

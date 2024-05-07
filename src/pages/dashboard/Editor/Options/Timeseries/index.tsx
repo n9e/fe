@@ -30,7 +30,7 @@ export default function Timeseries({ targets }) {
       <Legend />
       <GraphStyles />
       <ValueMappings />
-      <StandardOptions />
+      <StandardOptions showDisplayName />
       <Thresholds hideBase />
       <Overrides targets={targets} />
     </>
