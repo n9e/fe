@@ -1,5 +1,5 @@
 const zh_CN = {
-  title: '指标管理',
+  title: '指标视图',
   name: '指标名称',
   collector: '采集器',
   typ: '类型',

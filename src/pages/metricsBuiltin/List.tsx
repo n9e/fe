@@ -26,6 +26,7 @@ import usePagination from '@/components/usePagination';
 import RefreshIcon from '@/components/RefreshIcon';
 import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
 import { getUnitLabel } from '@/pages/dashboard/Components/UnitPicker/utils';
+import { getMenuPerm } from '@/services/common';
 import { getMetrics, Record, Filter, getTypes, getCollectors, deleteMetrics, buildLabelFilterAndExpression } from './services';
 import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
 import FormDrawer from './components/FormDrawer';
@@ -46,6 +47,11 @@ export default function index() {
   const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
   const [explorerDrawerVisible, setExplorerDrawerVisible] = useState(false);
   const [explorerDrawerData, setExplorerDrawerData] = useState<Record>();
+  const [actionAuth, setActionAuth] = useState({
+    add: false,
+    edit: false,
+    delete: false,
+  });
   const filtersRef = useRef<any>(null);
   const { tableProps, run: fetchData } = useAntdTable(
     ({
@@ -62,7 +68,7 @@ export default function index() {
       defaultPageSize: pagination.pageSize,
     },
   );
-  const columns: (ColumnType<Record> & { RC_TABLE_INTERNAL_COL_DEFINE?: any })[] = [
+  let columns: (ColumnType<Record> & { RC_TABLE_INTERNAL_COL_DEFINE?: any })[] = [
     {
       title: t('typ'),
       dataIndex: 'typ',
@@ -161,53 +167,63 @@ export default function index() {
       render: (data, record: any) => {
         return (
           <Space>
-            <FormDrawer
-              mode='clone'
-              initialValues={record}
-              title={t('clone_title')}
-              typesList={typesList}
-              collectorsList={collectorsList}
-              onOk={() => {
-                setRefreshFlag(_.uniqueId('refreshFlag_'));
-              }}
-            >
-              <a>{t('common:btn.clone')}</a>
-            </FormDrawer>
-            <FormDrawer
-              mode='edit'
-              initialValues={record}
-              title={t('edit_title')}
-              typesList={typesList}
-              collectorsList={collectorsList}
-              onOk={() => {
-                setRefreshFlag(_.uniqueId('refreshFlag_'));
-              }}
-            >
-              <a>{t('common:btn.edit')}</a>
-            </FormDrawer>
-            <Button
-              danger
-              type='link'
-              style={{ padding: 0 }}
-              onClick={() => {
-                Modal.confirm({
-                  title: t('common:confirm.delete'),
-                  onOk() {
-                    deleteMetrics([record.id]).then(() => {
-                      message.success(t('common:success.delete'));
-                      setRefreshFlag(_.uniqueId('refreshFlag_'));
-                    });
-                  },
-                });
-              }}
-            >
-              {t('common:btn.delete')}
-            </Button>
+            {actionAuth.add && (
+              <FormDrawer
+                mode='clone'
+                initialValues={record}
+                title={t('clone_title')}
+                typesList={typesList}
+                collectorsList={collectorsList}
+                onOk={() => {
+                  setRefreshFlag(_.uniqueId('refreshFlag_'));
+                }}
+              >
+                <a>{t('common:btn.clone')}</a>
+              </FormDrawer>
+            )}
+            {actionAuth.edit && (
+              <FormDrawer
+                mode='edit'
+                initialValues={record}
+                title={t('edit_title')}
+                typesList={typesList}
+                collectorsList={collectorsList}
+                onOk={() => {
+                  setRefreshFlag(_.uniqueId('refreshFlag_'));
+                }}
+              >
+                <a>{t('common:btn.edit')}</a>
+              </FormDrawer>
+            )}
+            {actionAuth.delete && (
+              <Button
+                danger
+                type='link'
+                style={{ padding: 0 }}
+                onClick={() => {
+                  Modal.confirm({
+                    title: t('common:confirm.delete'),
+                    onOk() {
+                      deleteMetrics([record.id]).then(() => {
+                        message.success(t('common:success.delete'));
+                        setRefreshFlag(_.uniqueId('refreshFlag_'));
+                      });
+                    },
+                  });
+                }}
+              >
+                {t('common:btn.delete')}
+              </Button>
+            )}
           </Space>
         );
       },
     },
   ];
+
+  if (!actionAuth.add && !actionAuth.edit && !actionAuth.delete) {
+    columns = _.filter(columns, (column) => column.dataIndex !== 'operator');
+  }
 
   const { run: queryChange } = useDebounceFn(
     (query) => {
@@ -224,6 +240,14 @@ export default function index() {
     });
     getCollectors().then((res) => {
       setCollectorsList(res);
+    });
+    getMenuPerm().then((res) => {
+      const { dat } = res;
+      setActionAuth({
+        add: _.includes(dat, '/builtin-metrics/add'),
+        edit: _.includes(dat, '/builtin-metrics/put'),
+        delete: _.includes(dat, '/builtin-metrics/del'),
+      });
     });
   }, []);
 
@@ -295,85 +319,95 @@ export default function index() {
               />
             </Space>
             <Space>
-              <FormDrawer
-                mode='add'
-                title={t('add_btn')}
-                typesList={typesList}
-                collectorsList={collectorsList}
-                onOk={() => {
-                  setRefreshFlag(_.uniqueId('refreshFlag_'));
-                }}
-              >
-                <Button type='primary'>{t('add_btn')}</Button>
-              </FormDrawer>
-              <Dropdown
-                overlay={
-                  <ul className='ant-dropdown-menu'>
-                    <li
-                      className='ant-dropdown-menu-item'
-                      onClick={() => {
-                        Import({
-                          onOk: () => {
-                            setRefreshFlag(_.uniqueId('refreshFlag_'));
-                          },
-                        });
-                      }}
-                    >
-                      <span>{t('collect-tpls:batch.import.title')}</span>
-                    </li>
-                    <li
-                      className='ant-dropdown-menu-item'
-                      onClick={() => {
-                        if (selectedRows.length) {
-                          Export({
-                            data: JSON.stringify(
-                              _.map(selectedRows, (item) => {
-                                return _.omit(item, ['id', 'created_at', 'created_by', 'updated_at', 'updated_by']);
-                              }),
-                              null,
-                              2,
-                            ),
-                          });
-                        } else {
-                          message.warning(t('batch.not_select'));
-                        }
-                      }}
-                    >
-                      <span>{t('collect-tpls:batch.export.title')}</span>
-                    </li>
-                    <li
-                      className='ant-dropdown-menu-item'
-                      onClick={() => {
-                        if (selectedRows.length) {
-                          Modal.confirm({
-                            title: t('common:confirm.delete'),
-                            onOk() {
-                              deleteMetrics(_.map(selectedRows, (item) => item.id)).then(() => {
-                                message.success(t('common:success.delete'));
+              {actionAuth.add && (
+                <FormDrawer
+                  mode='add'
+                  title={t('add_btn')}
+                  typesList={typesList}
+                  collectorsList={collectorsList}
+                  onOk={() => {
+                    setRefreshFlag(_.uniqueId('refreshFlag_'));
+                  }}
+                >
+                  <Button type='primary'>{t('add_btn')}</Button>
+                </FormDrawer>
+              )}
+              {(actionAuth.add || actionAuth.delete) && (
+                <Dropdown
+                  overlay={
+                    <ul className='ant-dropdown-menu'>
+                      {actionAuth.add && (
+                        <li
+                          className='ant-dropdown-menu-item'
+                          onClick={() => {
+                            Import({
+                              onOk: () => {
                                 setRefreshFlag(_.uniqueId('refreshFlag_'));
+                              },
+                            });
+                          }}
+                        >
+                          <span>{t('collect-tpls:batch.import.title')}</span>
+                        </li>
+                      )}
+                      {actionAuth.add && (
+                        <li
+                          className='ant-dropdown-menu-item'
+                          onClick={() => {
+                            if (selectedRows.length) {
+                              Export({
+                                data: JSON.stringify(
+                                  _.map(selectedRows, (item) => {
+                                    return _.omit(item, ['id', 'created_at', 'created_by', 'updated_at', 'updated_by']);
+                                  }),
+                                  null,
+                                  2,
+                                ),
                               });
-                            },
-                          });
-                        } else {
-                          message.warning(t('batch.not_select'));
-                        }
+                            } else {
+                              message.warning(t('batch.not_select'));
+                            }
+                          }}
+                        >
+                          <span>{t('collect-tpls:batch.export.title')}</span>
+                        </li>
+                      )}
+                      {actionAuth.delete && (
+                        <li
+                          className='ant-dropdown-menu-item'
+                          onClick={() => {
+                            if (selectedRows.length) {
+                              Modal.confirm({
+                                title: t('common:confirm.delete'),
+                                onOk() {
+                                  deleteMetrics(_.map(selectedRows, (item) => item.id)).then(() => {
+                                    message.success(t('common:success.delete'));
+                                    setRefreshFlag(_.uniqueId('refreshFlag_'));
+                                  });
+                                },
+                              });
+                            } else {
+                              message.warning(t('batch.not_select'));
+                            }
+                          }}
+                        >
+                          <span>{t('common:btn.batch_delete')}</span>
+                        </li>
+                      )}
+                    </ul>
+                  }
+                  trigger={['click']}
+                >
+                  <Button onClick={(e) => e.stopPropagation()}>
+                    {t('common:btn.more')}
+                    <DownOutlined
+                      style={{
+                        marginLeft: 2,
                       }}
-                    >
-                      <span>{t('common:btn.batch_delete')}</span>
-                    </li>
-                  </ul>
-                }
-                trigger={['click']}
-              >
-                <Button onClick={(e) => e.stopPropagation()}>
-                  {t('common:btn.more')}
-                  <DownOutlined
-                    style={{
-                      marginLeft: 2,
-                    }}
-                  />
-                </Button>
-              </Dropdown>
+                    />
+                  </Button>
+                </Dropdown>
+              )}
               <Button
                 onClick={() => {
                   OrganizeColumns({
