@@ -96,7 +96,7 @@ export default function index() {
       render: (val, record) => {
         const recordClone = _.cloneDeep(record);
         return (
-          <Tooltip overlayClassName='ant-tooltip-auto-width ant-tooltip-with-link' title={record.note ? <Markdown content={record.note} /> : undefined}>
+          <Tooltip overlayClassName='ant-tooltip-max-width-600 ant-tooltip-with-link' title={record.note ? <Markdown content={record.note} /> : undefined}>
             <Button
               type='link'
               style={{ padding: 0 }}
