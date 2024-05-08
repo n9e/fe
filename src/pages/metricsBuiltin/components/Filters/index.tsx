@@ -122,11 +122,6 @@ function index(_props: any, ref: any) {
                 >
                   <span className='name'>{item.name}</span>
                   <span>
-                    {item.cate === 0 && (
-                      <span className='n9e-metric-views-list-content-item-cate' style={{ color: '#ccc' }}>
-                        {t('list.public')}
-                      </span>
-                    )}
                     <div className='n9e-metric-views-list-content-item-opes'>
                       <EditOutlined
                         onClick={(e) => {
