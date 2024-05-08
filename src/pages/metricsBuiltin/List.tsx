@@ -21,6 +21,7 @@ import { useTranslation } from 'react-i18next';
 import { Space, Table, Button, Input, Dropdown, Select, message, Modal, Tooltip, Menu } from 'antd';
 import { SettingOutlined, DownOutlined, SearchOutlined, EyeOutlined, MoreOutlined } from '@ant-design/icons';
 import { ColumnType } from 'antd/lib/table';
+import Markdown from '@/components/Markdown';
 import PageLayout from '@/components/pageLayout';
 import usePagination from '@/components/usePagination';
 import RefreshIcon from '@/components/RefreshIcon';
@@ -95,42 +96,44 @@ export default function index() {
       render: (val, record) => {
         const recordClone = _.cloneDeep(record);
         return (
-          <Button
-            type='link'
-            style={{ padding: 0 }}
-            onClick={() => {
-              const curFilter = filtersRef.current?.getActive();
-              let label_filter = '';
-              try {
-                if (curFilter && curFilter.configs) {
-                  label_filter = filtersToStr(JSON.parse(curFilter.configs));
+          <Tooltip overlayClassName='ant-tooltip-auto-width' title={record.note ? <Markdown content={record.note} /> : undefined}>
+            <Button
+              type='link'
+              style={{ padding: 0 }}
+              onClick={() => {
+                const curFilter = filtersRef.current?.getActive();
+                let label_filter = '';
+                try {
+                  if (curFilter && curFilter.configs) {
+                    label_filter = filtersToStr(JSON.parse(curFilter.configs));
+                  }
+                } catch (e) {
+                  console.error(e);
                 }
-              } catch (e) {
-                console.error(e);
-              }
-              if (label_filter) {
-                buildLabelFilterAndExpression({
-                  label_filter,
-                  promql: record.expression,
-                })
-                  .then((res) => {
-                    recordClone.expression = res;
-                    setExplorerDrawerVisible(true);
-                    setExplorerDrawerData(recordClone);
+                if (label_filter) {
+                  buildLabelFilterAndExpression({
+                    label_filter,
+                    promql: record.expression,
                   })
-                  .catch(() => {
-                    message.warning(t('filter.build_labelfilter_and_expression_error'));
-                    setExplorerDrawerVisible(true);
-                    setExplorerDrawerData(recordClone);
-                  });
-              } else {
-                setExplorerDrawerVisible(true);
-                setExplorerDrawerData(recordClone);
-              }
-            }}
-          >
-            {val}
-          </Button>
+                    .then((res) => {
+                      recordClone.expression = res;
+                      setExplorerDrawerVisible(true);
+                      setExplorerDrawerData(recordClone);
+                    })
+                    .catch(() => {
+                      message.warning(t('filter.build_labelfilter_and_expression_error'));
+                      setExplorerDrawerVisible(true);
+                      setExplorerDrawerData(recordClone);
+                    });
+                } else {
+                  setExplorerDrawerVisible(true);
+                  setExplorerDrawerData(recordClone);
+                }
+              }}
+            >
+              {val}
+            </Button>
+          </Tooltip>
         );
       },
     },

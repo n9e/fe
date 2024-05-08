@@ -185,10 +185,17 @@ export default function Table(props: IProps) {
             <List.Item
               style={{
                 wordBreak: 'break-all',
+                gap: 40,
               }}
             >
               {data?.resultType != 'streams' && <div>{getListItemLabel(data?.resultType, item)}</div>}
-              <div>{getListItemValue(data?.resultType, item)}</div>
+              <div
+                style={{
+                  flexShrink: 0,
+                }}
+              >
+                {getListItemValue(data?.resultType, item)}
+              </div>
             </List.Item>
           );
         }}

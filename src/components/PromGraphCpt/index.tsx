@@ -56,6 +56,7 @@ interface IProps {
   graphStandardOptionsType?: 'vertical' | 'horizontal';
   defaultUnit?: string;
   showGlobalMetrics?: boolean;
+  showBuilder?: boolean;
 }
 
 const TabPane = Tabs.TabPane;
@@ -82,6 +83,7 @@ export default function index(props: IProps) {
     showBuiltinMetrics,
     graphStandardOptionsType,
     showGlobalMetrics = true,
+    showBuilder = true,
   } = props;
   const [value, setValue] = useState<string | undefined>(promQL); // for promQLInput
   const [promql, setPromql] = useState<string | undefined>(promQL);
@@ -184,27 +186,29 @@ export default function index(props: IProps) {
               </span>
             )}
           </span>
-          <span
-            className='ant-input-group-addon'
-            style={{
-              border: 0,
-              padding: '0 0 0 10px',
-              background: 'none',
-            }}
-          >
-            <Button
-              onClick={() => {
-                PromQueryBuilderModal({
-                  range,
-                  datasourceValue,
-                  value,
-                  onChange: setValue,
-                });
+          {showBuilder && (
+            <span
+              className='ant-input-group-addon'
+              style={{
+                border: 0,
+                padding: '0 0 0 10px',
+                background: 'none',
               }}
             >
-              {t('builder_btn')}
-            </Button>
-          </span>
+              <Button
+                onClick={() => {
+                  PromQueryBuilderModal({
+                    range,
+                    datasourceValue,
+                    value,
+                    onChange: setValue,
+                  });
+                }}
+              >
+                {t('builder_btn')}
+              </Button>
+            </span>
+          )}
           <span
             className='ant-input-group-addon'
             style={{
