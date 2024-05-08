@@ -71,7 +71,8 @@ const valueFormatter = ({ unit, decimals = 3, dateFormat = 'YYYY-MM-DD HH:mm:ss'
         postfix,
       });
     }
-    if (unit === 'default') {
+    // 2024-05-08 新增 'sishort' 单位为原 'default' 单位
+    if (unit === 'default' || unit === 'sishort') {
       return byteConverter.format(val, {
         type: 'si',
         decimals,

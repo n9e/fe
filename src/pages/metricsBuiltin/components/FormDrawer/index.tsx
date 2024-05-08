@@ -17,11 +17,11 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
-import { Col, Drawer, Form, Input, Row, Select, Space, Button, AutoComplete, message } from 'antd';
+import { Col, Drawer, Form, Input, Row, Space, Button, AutoComplete, message } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 import Markdown from '@/components/Markdown';
+import UnitPicker from '@/pages/dashboard/Components/UnitPicker';
 import { postMetrics, putMetric } from '../../services';
-import { ajustUnitOptions } from '../../utils';
 
 interface Props {
   mode: 'add' | 'edit' | 'clone';
@@ -187,7 +187,7 @@ export default function index(props: Props) {
               <Input.TextArea autoSize />
             </Form.Item>
             <Form.Item label={t('unit')} name='unit' tooltip={t('unit_tip')}>
-              <Select allowClear showSearch options={ajustUnitOptions()}></Select>
+              <UnitPicker allowClear showSearch />
             </Form.Item>
             <Form.Item label={t('note')} name='note'>
               <Input.TextArea

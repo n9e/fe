@@ -18,19 +18,19 @@ import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { useAntdTable, useDebounceFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
-import { Space, Table, Button, Input, Dropdown, Select, message, Modal, Tooltip, Drawer } from 'antd';
+import { Space, Table, Button, Input, Dropdown, Select, message, Modal, Tooltip } from 'antd';
 import { SettingOutlined, DownOutlined, SearchOutlined, EyeOutlined } from '@ant-design/icons';
 import { ColumnType } from 'antd/lib/table';
 import PageLayout from '@/components/pageLayout';
 import usePagination from '@/components/usePagination';
 import RefreshIcon from '@/components/RefreshIcon';
 import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
+import { getUnitLabel } from '@/pages/dashboard/Components/UnitPicker/utils';
 import { getMetrics, Record, Filter, getTypes, getCollectors, deleteMetrics } from './services';
 import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
 import FormDrawer from './components/FormDrawer';
 import Export from './components/Export';
 import Import from './components/Import';
-import { getUnitLabel } from './utils';
 import ExplorerDrawer from './ExplorerDrawer';
 
 export default function index() {
@@ -83,7 +83,7 @@ export default function index() {
       dataIndex: 'unit',
       render: (val) => {
         return (
-          <Tooltip overlayClassName='built-in-metrics-table-unit-option-desc' title={getUnitLabel(val, true, false)}>
+          <Tooltip overlayClassName='built-in-metrics-table-unit-option-desc' title={getUnitLabel(val, true, true)}>
             <span>{getUnitLabel(val, false)}</span>
           </Tooltip>
         );

@@ -89,7 +89,7 @@ export default function Graph(props: IProps) {
     shared: false,
     sharedSortDirection: 'desc',
     legend: true,
-    unit: 'default',
+    unit: 'sishort', // 2024-05-08 从 'default' 改为 'sishort'
     reverseColorOrder: false,
     colorDomainAuto: true,
     colorDomain: [],

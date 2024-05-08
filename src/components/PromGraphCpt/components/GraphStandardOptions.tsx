@@ -16,8 +16,8 @@
  */
 import React from 'react';
 import _ from 'lodash';
-import { Menu, Checkbox, Dropdown, Space, Divider } from 'antd';
-import { DownOutlined } from '@ant-design/icons';
+import { Checkbox, Space, Divider, Select } from 'antd';
+import UnitPicker from '@/pages/dashboard/Components/UnitPicker';
 
 interface IProps {
   type?: 'vertical' | 'horizontal';
@@ -25,119 +25,74 @@ interface IProps {
   setHighLevelConfig: (val: any) => void;
 }
 
-export const units = [
-  {
-    label: 'SI prefixes',
-    value: 'default',
-  },
-  {
-    label: 'none',
-    value: 'none',
-  },
-  {
-    label: 'bits(SI)',
-    value: 'bitsSI',
-  },
-  {
-    label: 'bytes(SI)',
-    value: 'bytesSI',
-  },
-  {
-    label: 'bits(IEC)',
-    value: 'bitsIEC',
-  },
-  {
-    label: 'bytes(IEC)',
-    value: 'bytesIEC',
-  },
-  {
-    label: '百分比(0-100)',
-    value: 'percent',
-  },
-  {
-    label: '百分比(0.0-1.0)',
-    value: 'percentUnit',
-  },
-  {
-    label: 'seconds',
-    value: 'seconds',
-  },
-  {
-    label: 'milliseconds',
-    value: 'milliseconds',
-  },
-  {
-    label: 'humanize(seconds)',
-    value: 'humantimeSeconds',
-  },
-  {
-    label: 'humanize(milliseconds)',
-    value: 'humantimeMilliseconds',
-  },
-];
-
 export default function GraphStandardOptions(props: IProps) {
   const { type, highLevelConfig, setHighLevelConfig } = props;
-  const aggrFuncMenu = (
-    <Menu
-      onClick={(sort) => {
-        setHighLevelConfig({ ...highLevelConfig, sharedSortDirection: (sort as { key: 'desc' | 'asc' }).key });
-      }}
-      selectedKeys={[highLevelConfig.sharedSortDirection]}
-    >
-      <Menu.Item key='desc'>desc</Menu.Item>
-      <Menu.Item key='asc'>asc</Menu.Item>
-    </Menu>
-  );
-  const precisionMenu = (
-    <Menu
-      onClick={(e) => {
-        setHighLevelConfig({ ...highLevelConfig, unit: e.key });
-      }}
-      selectedKeys={[highLevelConfig.unit]}
-    >
-      {_.map(units, (item) => {
-        return <Menu.Item key={item.value}>{item.label}</Menu.Item>;
-      })}
-    </Menu>
-  );
 
   if (type === 'horizontal') {
     return (
-      <Space>
-        <span>Unit</span>
-        <Dropdown overlay={precisionMenu}>
-          <a className='ant-dropdown-link' onClick={(e) => e.preventDefault()}>
-            {_.get(_.find(units, { value: highLevelConfig.unit }), 'label')} <DownOutlined />
-          </a>
-        </Dropdown>
-        <Divider type='vertical' />
-        <Checkbox
-          checked={highLevelConfig.legend}
-          onChange={(e) => {
-            setHighLevelConfig({ ...highLevelConfig, legend: e.target.checked });
+      <>
+        <span
+          style={{
+            // 2024-05-08 解决 antd v4 无边框的的 select 组件左右有无法去除的 padding 问题
+            position: 'relative',
+            right: -4,
           }}
-          className='n9e-checkbox-padding-right-0'
         >
-          Show Legend
-        </Checkbox>
-        <Divider type='vertical' />
-        <span>
-          <Checkbox
-            checked={highLevelConfig.shared}
-            onChange={(e) => {
-              setHighLevelConfig({ ...highLevelConfig, shared: e.target.checked });
+          Unit
+          <UnitPicker
+            size='small'
+            optionLabelProp='cleanLabelLink'
+            bordered={false}
+            dropdownMatchSelectWidth={false}
+            value={highLevelConfig.unit}
+            onChange={(val) => {
+              setHighLevelConfig({ ...highLevelConfig, unit: val });
             }}
-          >
-            Multi Tooltip, order value
-          </Checkbox>
-          <Dropdown overlay={aggrFuncMenu}>
-            <a className='ant-dropdown-link' onClick={(e) => e.preventDefault()}>
-              {highLevelConfig.sharedSortDirection} <DownOutlined />
-            </a>
-          </Dropdown>
+          />
         </span>
-      </Space>
+        <Space>
+          <Divider type='vertical' />
+          <Checkbox
+            checked={highLevelConfig.legend}
+            onChange={(e) => {
+              setHighLevelConfig({ ...highLevelConfig, legend: e.target.checked });
+            }}
+            className='n9e-checkbox-padding-right-0'
+          >
+            Show Legend
+          </Checkbox>
+          <Divider type='vertical' />
+          <span>
+            <Checkbox
+              checked={highLevelConfig.shared}
+              onChange={(e) => {
+                setHighLevelConfig({ ...highLevelConfig, shared: e.target.checked });
+              }}
+              className='n9e-checkbox-padding-right-0'
+            >
+              Multi Tooltip, order value
+            </Checkbox>
+            <Select
+              size='small'
+              bordered={false}
+              options={[
+                {
+                  label: <a>desc</a>,
+                  value: 'desc',
+                },
+                {
+                  label: <a>asc</a>,
+                  value: 'asc',
+                },
+              ]}
+              value={highLevelConfig.sharedSortDirection}
+              onChange={(val) => {
+                setHighLevelConfig({ ...highLevelConfig, sharedSortDirection: val });
+              }}
+            />
+          </span>
+        </Space>
+      </>
     );
   }
 
@@ -151,11 +106,24 @@ export default function GraphStandardOptions(props: IProps) {
       >
         Multi Series in Tooltip, order value
       </Checkbox>
-      <Dropdown overlay={aggrFuncMenu}>
-        <a className='ant-dropdown-link' onClick={(e) => e.preventDefault()}>
-          {highLevelConfig.sharedSortDirection} <DownOutlined />
-        </a>
-      </Dropdown>
+      <Select
+        size='small'
+        bordered={false}
+        options={[
+          {
+            label: <a>desc</a>,
+            value: 'desc',
+          },
+          {
+            label: <a>asc</a>,
+            value: 'asc',
+          },
+        ]}
+        value={highLevelConfig.sharedSortDirection}
+        onChange={(val) => {
+          setHighLevelConfig({ ...highLevelConfig, sharedSortDirection: val });
+        }}
+      />
       <br />
       <Checkbox
         checked={highLevelConfig.legend}
@@ -167,11 +135,16 @@ export default function GraphStandardOptions(props: IProps) {
       </Checkbox>
       <br />
       Value format with:{' '}
-      <Dropdown overlay={precisionMenu}>
-        <a className='ant-dropdown-link' onClick={(e) => e.preventDefault()}>
-          {_.get(_.find(units, { value: highLevelConfig.unit }), 'label')} <DownOutlined />
-        </a>
-      </Dropdown>
+      <UnitPicker
+        size='small'
+        optionLabelProp='cleanLabelLink'
+        bordered={false}
+        dropdownMatchSelectWidth={false}
+        value={highLevelConfig.unit}
+        onChange={(val) => {
+          setHighLevelConfig({ ...highLevelConfig, unit: val });
+        }}
+      />
     </div>
   );
 }

@@ -5,7 +5,7 @@ import { Input, Row, Col, Select, Tag } from 'antd';
 import _ from 'lodash';
 import { Filter, getTypes, getCollectors, getDefaultTypes, Record } from '@/pages/metricsBuiltin/services';
 import Markdown from '@/components/Markdown';
-import { getUnitLabel } from '@/pages/metricsBuiltin/utils';
+import { getUnitLabel } from '@/pages/dashboard/Components/UnitPicker/utils';
 import MetricsList from './MetricsList';
 
 interface Props {

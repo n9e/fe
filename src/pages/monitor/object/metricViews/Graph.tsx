@@ -29,7 +29,7 @@ import Timeseries from '../../../dashboard/Renderer/Renderer/Timeseries';
 import Hexbin from '../../../dashboard/Renderer/Renderer/Hexbin';
 import { calcsOptions } from '../../../dashboard/Editor/config';
 import { colors } from '../../../dashboard/Components/ColorRangeMenu/config';
-import LineGraphStandardOptions from './graphStandardOptions/Line';
+import LineGraphStandardOptions from '@/components/PromGraphCpt/components/GraphStandardOptions';
 import HexbinGraphStandardOptions from './graphStandardOptions/Hexbin';
 import { HexbinIcon } from './config';
 
@@ -61,7 +61,7 @@ export default function Graph(props: IProps) {
     shared: true,
     sharedSortDirection: 'desc',
     legend: true,
-    unit: 'default',
+    unit: 'sishort', // 2024-05-08 从 'default' 改为 'sishort'
     colorRange: colors[1].value,
     reverseColorOrder: false,
     colorDomainAuto: true,
