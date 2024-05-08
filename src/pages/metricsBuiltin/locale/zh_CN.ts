@@ -26,5 +26,23 @@ const zh_CN = {
       errmsg: '错误信息',
     },
   },
+  filter: {
+    title: '过滤条件',
+    title_tip:
+      '过滤条件 的作用是，在点击右侧指标，查看指标的监控数据时，缩小查询监控数据的范围。如果配置并选择了过滤条件 {ident="n9e01"}，则在查询 cpu_usage_idle 时，发起的查询是 cpu_usage_idle{ident="n9e01"}，会极大降低查询曲线的数量',
+    add_title: '新增过滤条件',
+    edit_title: '编辑过滤条件',
+    import_title: '导入过滤条件',
+    name: '名称',
+    datasource: '数据源',
+    datasource_tip: '辅助查询过滤条件的数据源',
+    configs: '过滤条件',
+    groups_perm: '授权团队',
+    perm: {
+      1: '读写',
+      0: '只读',
+    },
+    build_labelfilter_and_expression_error: '构建标签过滤条件和表达式失败',
+  },
 };
 export default zh_CN;

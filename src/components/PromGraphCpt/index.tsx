@@ -96,8 +96,6 @@ export default function index(props: IProps) {
   const [loading, setLoading] = useState(false);
   const [defaultUnit, setDefaultUnit] = useState<string | undefined>(props.defaultUnit);
 
-  console.log('defaultUnit', defaultUnit);
-
   useEffect(() => {
     if (typeof defaultTime === 'number') {
       if (tabActiveKey == 'table') {

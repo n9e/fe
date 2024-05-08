@@ -79,3 +79,37 @@ export const getCollectors = function (params?: { typ?: string; query?: string }
     params,
   }).then((res) => res.dat);
 };
+
+export const getFilters = function (): Promise<any[]> {
+  return request('/api/n9e/builtin-metric-filters', {
+    method: RequestMethod.Get,
+  }).then((res) => res.dat);
+};
+
+export const postFilter = function (data): Promise<any> {
+  return request('/api/n9e/builtin-metric-filters', {
+    method: RequestMethod.Post,
+    data,
+  }).then((res) => res.dat);
+};
+
+export const putFilter = function (data): Promise<any> {
+  return request('/api/n9e/builtin-metric-filters', {
+    method: RequestMethod.Put,
+    data,
+  }).then((res) => res.dat);
+};
+
+export const deleteFilter = function (data): Promise<any> {
+  return request('/api/n9e/builtin-metric-filters', {
+    method: RequestMethod.Delete,
+    data,
+  }).then((res) => res.dat);
+};
+
+export const buildLabelFilterAndExpression = function (data): Promise<any> {
+  return request('/api/n9e/builtin-metric-promql', {
+    method: RequestMethod.Post,
+    data,
+  }).then((res) => res.dat);
+};

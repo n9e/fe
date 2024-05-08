@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import _ from 'lodash';
 import { useAntdTable, useDebounceFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
@@ -26,11 +26,12 @@ import usePagination from '@/components/usePagination';
 import RefreshIcon from '@/components/RefreshIcon';
 import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
 import { getUnitLabel } from '@/pages/dashboard/Components/UnitPicker/utils';
-import { getMetrics, Record, Filter, getTypes, getCollectors, deleteMetrics } from './services';
+import { getMetrics, Record, Filter, getTypes, getCollectors, deleteMetrics, buildLabelFilterAndExpression } from './services';
 import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
 import FormDrawer from './components/FormDrawer';
 import Export from './components/Export';
 import Import from './components/Import';
+import Filters, { filtersToStr } from './components/Filters';
 import ExplorerDrawer from './ExplorerDrawer';
 
 export default function index() {
@@ -45,6 +46,7 @@ export default function index() {
   const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
   const [explorerDrawerVisible, setExplorerDrawerVisible] = useState(false);
   const [explorerDrawerData, setExplorerDrawerData] = useState<Record>();
+  const filtersRef = useRef<any>(null);
   const { tableProps, run: fetchData } = useAntdTable(
     ({
       current,
@@ -77,6 +79,41 @@ export default function index() {
     {
       title: t('name'),
       dataIndex: 'name',
+      render: (val, record) => {
+        return (
+          <Button
+            type='link'
+            style={{ padding: 0 }}
+            onClick={() => {
+              const curFilter = filtersRef.current?.getActive();
+              let label_filter = '';
+              try {
+                if (curFilter && curFilter.configs) {
+                  label_filter = filtersToStr(JSON.parse(curFilter.configs));
+                }
+              } catch (e) {
+                console.error(e);
+              }
+              buildLabelFilterAndExpression({
+                label_filter,
+                promql: record.expression,
+              })
+                .then((res) => {
+                  record.expression = res;
+                  setExplorerDrawerVisible(true);
+                  setExplorerDrawerData(record);
+                })
+                .catch(() => {
+                  message.warning(t('filter.build_labelfilter_and_expression_error'));
+                  setExplorerDrawerVisible(true);
+                  setExplorerDrawerData(record);
+                });
+            }}
+          >
+            {val}
+          </Button>
+        );
+      },
     },
     {
       title: t('unit'),
@@ -100,20 +137,10 @@ export default function index() {
     {
       title: t('common:table.operations'),
       dataIndex: 'operator',
-      width: 140,
+      width: 120,
       render: (data, record: any) => {
         return (
           <Space>
-            <Button
-              type='link'
-              style={{ padding: 0 }}
-              onClick={() => {
-                setExplorerDrawerVisible(true);
-                setExplorerDrawerData(record);
-              }}
-            >
-              {t('explorer')}
-            </Button>
             <FormDrawer
               mode='clone'
               initialValues={record}
@@ -182,13 +209,11 @@ export default function index() {
 
   return (
     <PageLayout title={t('title')} icon={<SettingOutlined />}>
-      <div>
-        <div
-          className='n9e-border-base'
-          style={{
-            padding: 16,
-          }}
-        >
+      <div className='built-in-metrics-container'>
+        <div className='n9e-border-base p2 built-in-metrics-filter'>
+          <Filters ref={filtersRef} />
+        </div>
+        <div className='n9e-border-base p2 built-in-metrics-main'>
           <div
             className='mb8'
             style={{
@@ -216,8 +241,9 @@ export default function index() {
                 showSearch
                 optionFilterProp='label'
                 placeholder={t('typ')}
-                style={{ width: 200 }}
+                style={{ width: 180 }}
                 allowClear
+                dropdownMatchSelectWidth={false}
               />
               <Select
                 value={filter.collector}
@@ -233,8 +259,9 @@ export default function index() {
                 showSearch
                 optionFilterProp='label'
                 placeholder={t('collector')}
-                style={{ width: 200 }}
+                style={{ width: 140 }}
                 allowClear
+                dropdownMatchSelectWidth={false}
               />
               <Input
                 placeholder={t('common:search_placeholder')}
