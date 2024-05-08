@@ -108,20 +108,25 @@ export default function index() {
               } catch (e) {
                 console.error(e);
               }
-              buildLabelFilterAndExpression({
-                label_filter,
-                promql: record.expression,
-              })
-                .then((res) => {
-                  recordClone.expression = res;
-                  setExplorerDrawerVisible(true);
-                  setExplorerDrawerData(recordClone);
+              if (label_filter) {
+                buildLabelFilterAndExpression({
+                  label_filter,
+                  promql: record.expression,
                 })
-                .catch(() => {
-                  message.warning(t('filter.build_labelfilter_and_expression_error'));
-                  setExplorerDrawerVisible(true);
-                  setExplorerDrawerData(recordClone);
-                });
+                  .then((res) => {
+                    recordClone.expression = res;
+                    setExplorerDrawerVisible(true);
+                    setExplorerDrawerData(recordClone);
+                  })
+                  .catch(() => {
+                    message.warning(t('filter.build_labelfilter_and_expression_error'));
+                    setExplorerDrawerVisible(true);
+                    setExplorerDrawerData(recordClone);
+                  });
+              } else {
+                setExplorerDrawerVisible(true);
+                setExplorerDrawerData(recordClone);
+              }
             }}
           >
             {val}

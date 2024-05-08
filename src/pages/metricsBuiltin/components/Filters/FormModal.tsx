@@ -64,7 +64,10 @@ export default function FormModal(props: IProps) {
     if (visible) {
       form.setFieldsValue(
         initialValues || {
-          filters: [{ oper: '=' }],
+          id: undefined,
+          name: undefined,
+          configs: [{ oper: '=' }],
+          groups_perm: [],
         },
       );
     }

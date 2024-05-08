@@ -17,7 +17,7 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { useTranslation } from 'react-i18next';
 import { InfoCircleOutlined, PlusSquareOutlined, SearchOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Input, Space, Tooltip, Modal, Empty, message } from 'antd';
+import { Input, Space, Tooltip, Modal, Empty, message, Alert } from 'antd';
 import _ from 'lodash';
 import classNames from 'classnames';
 import { getFilters, deleteFilter } from '../../services';
@@ -85,9 +85,10 @@ function index(_props: any, ref: any) {
       />
       <div className='n9e-metric-views-list-content'>
         {_.isEmpty(list) ? (
-          <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}>
-            <div style={{ textAlign: 'left' }}>{t('filter.title_tip')}</div>
-          </Empty>
+          <>
+            <Alert message={t('filter.title_tip')} type='info' />
+            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+          </>
         ) : (
           _.map(
             _.filter(list, (item) => {

@@ -55,6 +55,7 @@ interface IProps {
   showBuiltinMetrics?: boolean;
   graphStandardOptionsType?: 'vertical' | 'horizontal';
   defaultUnit?: string;
+  showGlobalMetrics?: boolean;
 }
 
 const TabPane = Tabs.TabPane;
@@ -80,6 +81,7 @@ export default function index(props: IProps) {
     executeQuery,
     showBuiltinMetrics,
     graphStandardOptionsType,
+    showGlobalMetrics = true,
   } = props;
   const [value, setValue] = useState<string | undefined>(promQL); // for promQLInput
   const [promql, setPromql] = useState<string | undefined>(promQL);
@@ -171,14 +173,16 @@ export default function index(props: IProps) {
               completeEnabled={completeEnabled}
               datasourceValue={datasourceValue}
             />
-            <span className='ant-input-suffix'>
-              <GlobalOutlined
-                className='prom-graph-metrics-target'
-                onClick={() => {
-                  setMetricsExplorerVisible(true);
-                }}
-              />
-            </span>
+            {showGlobalMetrics && (
+              <span className='ant-input-suffix'>
+                <GlobalOutlined
+                  className='prom-graph-metrics-target'
+                  onClick={() => {
+                    setMetricsExplorerVisible(true);
+                  }}
+                />
+              </span>
+            )}
           </span>
           <span
             className='ant-input-group-addon'

@@ -133,6 +133,7 @@ export default function Panel(props: Props) {
                       showBuiltinMetrics={false}
                       promQL={panel.expression}
                       defaultUnit={panel.unit}
+                      showGlobalMetrics={false}
                     />
                   );
                 }}
