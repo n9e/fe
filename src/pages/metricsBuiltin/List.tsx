@@ -129,6 +129,22 @@ export default function index() {
     {
       title: t('expression'),
       dataIndex: 'expression',
+      render: (val) => {
+        const splitArr = _.split(val, '\n');
+        return _.map(splitArr, (item, index) => {
+          return (
+            <div
+              key={index}
+              style={{
+                wordBreak: 'break-all',
+              }}
+            >
+              {item}
+              {index !== splitArr.length - 1 && <br />}
+            </div>
+          );
+        });
+      },
     },
     {
       title: t('note'),
@@ -137,7 +153,11 @@ export default function index() {
     {
       title: t('common:table.operations'),
       dataIndex: 'operator',
-      width: 120,
+      RC_TABLE_INTERNAL_COL_DEFINE: {
+        style: {
+          minWidth: 120,
+        },
+      },
       render: (data, record: any) => {
         return (
           <Space>
