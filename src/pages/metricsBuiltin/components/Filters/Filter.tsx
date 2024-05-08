@@ -18,6 +18,7 @@ import React, { useEffect, useState } from 'react';
 import { Form, Input, Select, Space } from 'antd';
 import { MinusCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { getLabelValues } from '@/services/metricViews';
 
 interface Props {
@@ -39,6 +40,7 @@ const getLabelsOptions = (labels) => {
 };
 
 export default function Filter(props: Props) {
+  const { t } = useTranslation('metricsBuiltin');
   const { datasourceValue, range, name, labels, remove } = props;
   const label = Form.useWatch(['configs', name, 'label']);
   const oper = Form.useWatch(['configs', name, 'oper']);
@@ -54,12 +56,12 @@ export default function Filter(props: Props) {
 
   return (
     <Space>
-      <Form.Item name={[name, 'label']} rules={[{ required: true }]}>
+      <Form.Item name={[name, 'label']} rules={[{ required: true, message: t('filter.filter_label_msg') }]}>
         <Select allowClear showSearch style={{ width: 170 }}>
           {getLabelsOptions(labels)}
         </Select>
       </Form.Item>
-      <Form.Item name={[name, 'oper']} rules={[{ required: true }]}>
+      <Form.Item name={[name, 'oper']} rules={[{ required: true, message: t('filter.filter_oper_msg') }]}>
         <Select style={{ width: 60 }}>
           <Select.Option value='='>=</Select.Option>
           <Select.Option value='!='>!=</Select.Option>
@@ -67,7 +69,7 @@ export default function Filter(props: Props) {
           <Select.Option value='!~'>!~</Select.Option>
         </Select>
       </Form.Item>
-      <Form.Item name={[name, 'value']} rules={[{ required: true }]}>
+      <Form.Item name={[name, 'value']} rules={[{ required: true, message: t('filter.filter_value_msg') }]}>
         {oper === '=~' || oper === '!~' ? (
           <Input style={{ width: 200 }} />
         ) : (

@@ -60,6 +60,16 @@ export default function FormModal(props: IProps) {
     });
   }, []);
 
+  useEffect(() => {
+    if (visible) {
+      form.setFieldsValue(
+        initialValues || {
+          filters: [{ oper: '=' }],
+        },
+      );
+    }
+  }, [visible]);
+
   return (
     <Modal
       className='built-in-metrics-filter-form-modal'
@@ -91,16 +101,9 @@ export default function FormModal(props: IProps) {
           }
         });
       }}
+      destroyOnClose
     >
-      <Form
-        layout='vertical'
-        initialValues={
-          initialValues || {
-            filters: [{ oper: '=' }],
-          }
-        }
-        form={form}
-      >
+      <Form layout='vertical' form={form}>
         <Form.Item name='id' hidden>
           <Input />
         </Form.Item>
@@ -154,7 +157,7 @@ export default function FormModal(props: IProps) {
               {fields.map(({ key, name }) => {
                 return (
                   <Space key={key}>
-                    <Form.Item name={[name, 'gid']} rules={[{ required: true }]}>
+                    <Form.Item name={[name, 'gid']} rules={[{ required: true, message: t('filter.groups_perm_gid_msg') }]}>
                       <Select
                         allowClear
                         showSearch

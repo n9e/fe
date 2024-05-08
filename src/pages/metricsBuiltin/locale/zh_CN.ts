@@ -38,11 +38,15 @@ const zh_CN = {
     datasource_tip: '辅助查询过滤条件的数据源',
     configs: '过滤条件',
     groups_perm: '授权团队',
+    groups_perm_gid_msg: '请选择授权团队',
     perm: {
       1: '读写',
       0: '只读',
     },
     build_labelfilter_and_expression_error: '构建标签过滤条件和表达式失败',
+    filter_label_msg: '标签不能为空',
+    filter_oper_msg: '操作符不能为空',
+    filter_value_msg: '标签值不能为空',
   },
 };
 export default zh_CN;

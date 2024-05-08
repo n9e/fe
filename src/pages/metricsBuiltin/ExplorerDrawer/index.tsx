@@ -23,6 +23,10 @@ export default function ExplorerDrawer(props: Props) {
       const finded = _.find(panels, (panel) => panel.id === data.id);
       if (!finded) {
         setPanels([data, ...panels]);
+      } else {
+        // 存在的面板再次点击后，移动到最前面
+        const newPanels = _.filter(panels, (panel) => panel.id !== data.id);
+        setPanels([data, ...newPanels]);
       }
     }
   }, [data]);
@@ -31,7 +35,7 @@ export default function ExplorerDrawer(props: Props) {
     <Drawer title={t('explorer')} width={1060} visible={visible} onClose={onClose}>
       {_.map(panels, (panel, idx) => {
         return (
-          <>
+          <div key={panel.id}>
             <Panel panel={panel} panels={panels} setPanels={setPanels} />
             {idx === 0 && panels.length > 1 && (
               <Button
@@ -47,7 +51,7 @@ export default function ExplorerDrawer(props: Props) {
                 {t('closePanelsBelow')}
               </Button>
             )}
-          </>
+          </div>
         );
       })}
       <Button

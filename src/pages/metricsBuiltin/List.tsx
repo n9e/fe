@@ -86,6 +86,7 @@ export default function index() {
       title: t('name'),
       dataIndex: 'name',
       render: (val, record) => {
+        const recordClone = _.cloneDeep(record);
         return (
           <Button
             type='link'
@@ -105,14 +106,14 @@ export default function index() {
                 promql: record.expression,
               })
                 .then((res) => {
-                  record.expression = res;
+                  recordClone.expression = res;
                   setExplorerDrawerVisible(true);
-                  setExplorerDrawerData(record);
+                  setExplorerDrawerData(recordClone);
                 })
                 .catch(() => {
                   message.warning(t('filter.build_labelfilter_and_expression_error'));
                   setExplorerDrawerVisible(true);
-                  setExplorerDrawerData(record);
+                  setExplorerDrawerData(recordClone);
                 });
             }}
           >

@@ -38,11 +38,15 @@ const en_US = {
     datasource_tip: 'Auxiliary data source for querying filter conditions',
     configs: 'Filter Conditions',
     groups_perm: 'Authorized Teams',
+    groups_perm_gid_msg: 'Please select the authorized team',
     perm: {
       1: 'Read and Write',
       0: 'Read Only',
     },
     build_labelfilter_and_expression_error: 'Failed to build label filter conditions and expressions',
+    filter_label_msg: 'Label is required',
+    filter_oper_msg: 'Operator is required',
+    filter_value_msg: 'Label value is required',
   },
 };
 export default en_US;

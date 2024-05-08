@@ -38,11 +38,15 @@ const zh_HK = {
     datasource_tip: '輔助查詢過濾條件的數據源',
     configs: '過濾條件',
     groups_perm: '授權團隊',
+    groups_perm_gid_msg: '請選擇授權團隊',
     perm: {
       1: '讀寫',
       0: '只讀',
     },
     build_labelfilter_and_expression_error: '構建標籤過濾條件和表達式失敗',
+    filter_label_msg: '標籤不能為空',
+    filter_oper_msg: '操作符不能為空',
+    filter_value_msg: '標籤值不能為空',
   },
 };
 

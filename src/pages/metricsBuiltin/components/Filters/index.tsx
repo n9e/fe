@@ -85,7 +85,9 @@ function index(_props: any, ref: any) {
       />
       <div className='n9e-metric-views-list-content'>
         {_.isEmpty(list) ? (
-          <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+          <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}>
+            <div style={{ textAlign: 'left' }}>{t('filter.title_tip')}</div>
+          </Empty>
         ) : (
           _.map(
             _.filter(list, (item) => {
@@ -110,7 +112,12 @@ function index(_props: any, ref: any) {
                   })}
                   key={item.id}
                   onClick={() => {
-                    setActive(item.id);
+                    if (item.id === active) {
+                      setActive(undefined);
+                    } else {
+                      setActive(item.id);
+                      localStorage.setItem(LOCALE_KEY, item.id);
+                    }
                   }}
                 >
                   <span className='name'>{item.name}</span>
@@ -170,6 +177,7 @@ function index(_props: any, ref: any) {
         onOk={(record) => {
           if (record) {
             localStorage.setItem(LOCALE_KEY, record.id);
+            setActive(record.id);
           }
           setRefreshFlag(_.uniqueId('refreshFlag_'));
         }}
