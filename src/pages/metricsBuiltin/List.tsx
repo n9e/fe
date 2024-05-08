@@ -41,14 +41,14 @@ export default function index() {
   const pagination = usePagination({ PAGESIZE_KEY: 'metricsBuiltin-pagesize' });
   const [refreshFlag, setRefreshFlag] = useState(_.uniqueId('refreshFlag_'));
   const [selectedRows, setSelectedRows] = useState<Record[]>([]);
-  let defaultFilter = {};
+  let defaultFilter = {} as Filter;
   try {
     defaultFilter = JSON.parse(window.localStorage.getItem('metricsBuiltin-filter') || '{}');
   } catch (e) {
     console.error(e);
   }
   const [filter, setFilter] = useState(defaultFilter as Filter);
-  const [queryValue, setQueryValue] = useState('');
+  const [queryValue, setQueryValue] = useState(defaultFilter.query || '');
   const [typesList, setTypesList] = useState<string[]>([]);
   const [collectorsList, setCollectorsList] = useState<string[]>([]);
   const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
