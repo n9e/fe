@@ -18,8 +18,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import _ from 'lodash';
 import { useAntdTable, useDebounceFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
-import { Space, Table, Button, Input, Dropdown, Select, message, Modal, Tooltip } from 'antd';
-import { SettingOutlined, DownOutlined, SearchOutlined, EyeOutlined } from '@ant-design/icons';
+import { Space, Table, Button, Input, Dropdown, Select, message, Modal, Tooltip, Menu } from 'antd';
+import { SettingOutlined, DownOutlined, SearchOutlined, EyeOutlined, MoreOutlined } from '@ant-design/icons';
 import { ColumnType } from 'antd/lib/table';
 import PageLayout from '@/components/pageLayout';
 import usePagination from '@/components/usePagination';
@@ -27,6 +27,7 @@ import RefreshIcon from '@/components/RefreshIcon';
 import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
 import { getUnitLabel } from '@/pages/dashboard/Components/UnitPicker/utils';
 import { getMenuPerm } from '@/services/common';
+import Collapse from '@/pages/monitor/object/metricViews/components/Collapse';
 import { getMetrics, Record, Filter, getTypes, getCollectors, deleteMetrics, buildLabelFilterAndExpression } from './services';
 import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
 import FormDrawer from './components/FormDrawer';
@@ -40,7 +41,13 @@ export default function index() {
   const pagination = usePagination({ PAGESIZE_KEY: 'metricsBuiltin-pagesize' });
   const [refreshFlag, setRefreshFlag] = useState(_.uniqueId('refreshFlag_'));
   const [selectedRows, setSelectedRows] = useState<Record[]>([]);
-  const [filter, setFilter] = useState({} as Filter);
+  let defaultFilter = {};
+  try {
+    defaultFilter = JSON.parse(window.localStorage.getItem('metricsBuiltin-filter') || '{}');
+  } catch (e) {
+    console.error(e);
+  }
+  const [filter, setFilter] = useState(defaultFilter as Filter);
   const [queryValue, setQueryValue] = useState('');
   const [typesList, setTypesList] = useState<string[]>([]);
   const [collectorsList, setCollectorsList] = useState<string[]>([]);
@@ -160,63 +167,70 @@ export default function index() {
     {
       title: t('common:table.operations'),
       dataIndex: 'operator',
-      RC_TABLE_INTERNAL_COL_DEFINE: {
-        style: {
-          minWidth: 120,
-        },
-      },
       render: (data, record: any) => {
         return (
-          <Space>
-            {actionAuth.add && (
-              <FormDrawer
-                mode='clone'
-                initialValues={record}
-                title={t('clone_title')}
-                typesList={typesList}
-                collectorsList={collectorsList}
-                onOk={() => {
-                  setRefreshFlag(_.uniqueId('refreshFlag_'));
-                }}
-              >
-                <a>{t('common:btn.clone')}</a>
-              </FormDrawer>
-            )}
-            {actionAuth.edit && (
-              <FormDrawer
-                mode='edit'
-                initialValues={record}
-                title={t('edit_title')}
-                typesList={typesList}
-                collectorsList={collectorsList}
-                onOk={() => {
-                  setRefreshFlag(_.uniqueId('refreshFlag_'));
-                }}
-              >
-                <a>{t('common:btn.edit')}</a>
-              </FormDrawer>
-            )}
-            {actionAuth.delete && (
-              <Button
-                danger
-                type='link'
-                style={{ padding: 0 }}
-                onClick={() => {
-                  Modal.confirm({
-                    title: t('common:confirm.delete'),
-                    onOk() {
-                      deleteMetrics([record.id]).then(() => {
-                        message.success(t('common:success.delete'));
+          <Dropdown
+            overlay={
+              <Menu>
+                {actionAuth.add && (
+                  <Menu.Item>
+                    <FormDrawer
+                      mode='clone'
+                      initialValues={record}
+                      title={t('clone_title')}
+                      typesList={typesList}
+                      collectorsList={collectorsList}
+                      onOk={() => {
                         setRefreshFlag(_.uniqueId('refreshFlag_'));
-                      });
-                    },
-                  });
-                }}
-              >
-                {t('common:btn.delete')}
-              </Button>
-            )}
-          </Space>
+                      }}
+                    >
+                      <a>{t('common:btn.clone')}</a>
+                    </FormDrawer>
+                  </Menu.Item>
+                )}
+                {actionAuth.edit && (
+                  <Menu.Item>
+                    <FormDrawer
+                      mode='edit'
+                      initialValues={record}
+                      title={t('edit_title')}
+                      typesList={typesList}
+                      collectorsList={collectorsList}
+                      onOk={() => {
+                        setRefreshFlag(_.uniqueId('refreshFlag_'));
+                      }}
+                    >
+                      <a>{t('common:btn.edit')}</a>
+                    </FormDrawer>
+                  </Menu.Item>
+                )}
+                {actionAuth.delete && (
+                  <Menu.Item>
+                    <Button
+                      danger
+                      type='link'
+                      style={{ padding: 0 }}
+                      onClick={() => {
+                        Modal.confirm({
+                          title: t('common:confirm.delete'),
+                          onOk() {
+                            deleteMetrics([record.id]).then(() => {
+                              message.success(t('common:success.delete'));
+                              setRefreshFlag(_.uniqueId('refreshFlag_'));
+                            });
+                          },
+                        });
+                      }}
+                    >
+                      {t('common:btn.delete')}
+                    </Button>
+                  </Menu.Item>
+                )}
+              </Menu>
+            }
+          >
+            <Button type='link' icon={<MoreOutlined />} />
+          </Dropdown>
         );
       },
     },
@@ -228,7 +242,9 @@ export default function index() {
 
   const { run: queryChange } = useDebounceFn(
     (query) => {
-      setFilter({ ...filter, query });
+      const newFilter = { ...filter, query };
+      setFilter(newFilter);
+      window.localStorage.setItem('metricsBuiltin-filter', JSON.stringify(newFilter));
     },
     {
       wait: 500,
@@ -255,9 +271,11 @@ export default function index() {
   return (
     <PageLayout title={t('title')} icon={<SettingOutlined />}>
       <div className='built-in-metrics-container'>
-        <div className='n9e-border-base p2 built-in-metrics-filter'>
-          <Filters ref={filtersRef} />
-        </div>
+        <Collapse collapseLocalStorageKey='built-in-metrics-filters-collapse' widthLocalStorageKey='built-in-metrics-filters-width' defaultWidth={240} tooltip={t('filter.title')}>
+          <div className='n9e-border-base p2 built-in-metrics-filter'>
+            <Filters ref={filtersRef} />
+          </div>
+        </Collapse>
         <div className='n9e-border-base p2 built-in-metrics-main'>
           <div
             className='mb8'
@@ -275,7 +293,9 @@ export default function index() {
               <Select
                 value={filter.typ}
                 onChange={(val) => {
-                  setFilter({ ...filter, typ: val });
+                  const newFilter = { ...filter, typ: val };
+                  setFilter(newFilter);
+                  window.localStorage.setItem('metricsBuiltin-filter', JSON.stringify(newFilter));
                 }}
                 options={_.map(typesList, (item) => {
                   return {
@@ -293,7 +313,9 @@ export default function index() {
               <Select
                 value={filter.collector}
                 onChange={(val) => {
-                  setFilter({ ...filter, collector: val });
+                  const newFilter = { ...filter, collector: val };
+                  setFilter(newFilter);
+                  window.localStorage.setItem('metricsBuiltin-filter', JSON.stringify(newFilter));
                 }}
                 options={_.map(collectorsList, (item) => {
                   return {
