@@ -26,6 +26,7 @@
   --fc-text-4: #999999;
   --fc-text-5: #d1d1d9;
   --fc-text-link: #8162dc;
+  --fc-text-link-light: #a186f4; /* 用于 tooltip 里加亮链接颜色 */
   --fc-text-link-rgb: 129, 98, 220;
   --fc-text-placeholder: #bfbfbf;
 
