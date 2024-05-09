@@ -29,6 +29,7 @@ import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, aj
 import { getUnitLabel, buildUnitOptions } from '@/pages/dashboard/Components/UnitPicker/utils';
 import { getMenuPerm } from '@/services/common';
 import Collapse from '@/pages/monitor/object/metricViews/components/Collapse';
+import { getDashboardCates } from '@/pages/dashboardBuiltin/services';
 import { getMetrics, Record, Filter, getTypes, getCollectors, deleteMetrics, buildLabelFilterAndExpression } from './services';
 import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
 import FormDrawer from './components/FormDrawer';
@@ -60,6 +61,7 @@ export default function index() {
     edit: false,
     delete: false,
   });
+  const [typsMeta, setTypsMeta] = useState<{ name: String; icon_url: string }[]>([]);
   const filtersRef = useRef<any>(null);
   const { tableProps, run: fetchData } = useAntdTable(
     ({
@@ -84,6 +86,14 @@ export default function index() {
         style: {
           minWidth: 70,
         },
+      },
+      render: (val) => {
+        return (
+          <Space>
+            <img src={_.find(typsMeta, (meta) => meta.name === val)?.icon_url} alt={val} style={{ width: 16, height: 16 }} />
+            {val}
+          </Space>
+        );
       },
     },
     {
@@ -260,6 +270,9 @@ export default function index() {
   );
 
   useEffect(() => {
+    getDashboardCates().then((res) => {
+      setTypsMeta(res);
+    });
     getTypes().then((res) => {
       setTypesList(res);
     });
@@ -307,7 +320,13 @@ export default function index() {
                 }}
                 options={_.map(typesList, (item) => {
                   return {
-                    label: item,
+                    label: (
+                      <Space>
+                        <img src={_.find(typsMeta, (meta) => meta.name === item)?.icon_url} alt={item} style={{ width: 16, height: 16 }} />
+                        {item}
+                      </Space>
+                    ),
+                    cleanLabel: item,
                     value: item,
                   };
                 })}
@@ -317,6 +336,7 @@ export default function index() {
                 style={{ width: 140 }}
                 allowClear
                 dropdownMatchSelectWidth={false}
+                optionLabelProp='cleanLabel'
               />
               <Select
                 value={filter.collector}

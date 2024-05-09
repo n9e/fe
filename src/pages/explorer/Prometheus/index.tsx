@@ -21,10 +21,24 @@ interface IProps {
   showGlobalMetrics?: boolean;
   showBuilder?: boolean;
   onChange?: (promQL: string) => void;
+  promQLInputTooltip?: string;
 }
 
 export default function Prometheus(props: IProps) {
-  const { headerExtra, datasourceValue, form, panelIdx = 0, showBuiltinMetrics = true, allowReplaceHistory, promQL, defaultUnit, showGlobalMetrics, showBuilder, onChange } = props;
+  const {
+    headerExtra,
+    datasourceValue,
+    form,
+    panelIdx = 0,
+    showBuiltinMetrics = true,
+    allowReplaceHistory,
+    promQL,
+    defaultUnit,
+    showGlobalMetrics,
+    showBuilder,
+    onChange,
+    promQLInputTooltip,
+  } = props;
   const history = useHistory();
   const { search } = useLocation();
   const query = queryString.parse(search, queryStringOptions);
@@ -72,6 +86,7 @@ export default function Prometheus(props: IProps) {
       showGlobalMetrics={showGlobalMetrics}
       showBuilder={showBuilder}
       onChange={onChange}
+      promQLInputTooltip={promQLInputTooltip}
     />
   );
 }

@@ -134,6 +134,7 @@ export default function Panel(props: Props) {
                       onChange={(promQL) => {
                         onChange(promQL);
                       }}
+                      promQLInputTooltip={panel.name}
                     />
                   );
                 }}

@@ -58,6 +58,7 @@ interface IProps {
   showGlobalMetrics?: boolean;
   showBuilder?: boolean;
   onChange?: (promQL?: string) => void;
+  promQLInputTooltip?: string;
 }
 
 const TabPane = Tabs.TabPane;
@@ -86,6 +87,7 @@ export default function index(props: IProps) {
     showGlobalMetrics = true,
     showBuilder = true,
     onChange,
+    promQLInputTooltip,
   } = props;
   const [value, setValue] = useState<string | undefined>(promQL); // for promQLInput
   const [promql, setPromql] = useState<string | undefined>(promQL);
@@ -179,6 +181,7 @@ export default function index(props: IProps) {
               }}
               completeEnabled={completeEnabled}
               datasourceValue={datasourceValue}
+              tooltip={promQLInputTooltip}
             />
             {showGlobalMetrics && (
               <span className='ant-input-suffix'>
