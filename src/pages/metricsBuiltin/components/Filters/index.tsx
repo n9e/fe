@@ -135,15 +135,16 @@ function index(_props: any, ref: any) {
                       <EditOutlined
                         onClick={(e) => {
                           e.stopPropagation();
+                          let initialValues = _.cloneDeep(item);
                           try {
-                            item.configs = JSON.parse(item.configs);
+                            initialValues.configs = JSON.parse(item.configs);
                           } catch (e) {
                             console.error(e);
                           }
                           setFormModalProps({
                             visible: true,
                             action: 'edit',
-                            initialValues: item,
+                            initialValues,
                           });
                         }}
                       />

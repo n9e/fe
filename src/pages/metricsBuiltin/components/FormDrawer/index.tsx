@@ -151,7 +151,7 @@ export default function index(props: Props) {
                       return {
                         label: (
                           <Space>
-                            <img src={_.find(typsMeta, (meta) => meta.name === item)?.icon_url} alt={item} style={{ width: 16, height: 16 }} />
+                            <img src={_.find(typsMeta, (meta) => meta.name === item)?.icon_url || '/image/default.png'} alt={item} style={{ width: 16, height: 16 }} />
                             {item}
                           </Space>
                         ),

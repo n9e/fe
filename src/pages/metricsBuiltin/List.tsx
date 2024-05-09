@@ -90,7 +90,7 @@ export default function index() {
       render: (val) => {
         return (
           <Space>
-            <img src={_.find(typsMeta, (meta) => meta.name === val)?.icon_url} alt={val} style={{ width: 16, height: 16 }} />
+            <img src={_.find(typsMeta, (meta) => meta.name === val)?.icon_url || '/image/default.png'} alt={val} style={{ width: 16, height: 16 }} />
             {val}
           </Space>
         );
@@ -322,7 +322,7 @@ export default function index() {
                   return {
                     label: (
                       <Space>
-                        <img src={_.find(typsMeta, (meta) => meta.name === item)?.icon_url} alt={item} style={{ width: 16, height: 16 }} />
+                        <img src={_.find(typsMeta, (meta) => meta.name === item)?.icon_url || '/image/default.png'} alt={item} style={{ width: 16, height: 16 }} />
                         {item}
                       </Space>
                     ),
