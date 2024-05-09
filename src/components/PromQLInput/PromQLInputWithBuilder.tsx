@@ -34,7 +34,7 @@ export function PromQLInputWithBuilder(props: CMExpressionInputProps & { datasou
           </Input.Group>
         </div>
       </Col>
-      {props.showBuilder === false ? null : (
+      {props.showBuilder && (
         <Col flex='74px'>
           <Button
             onClick={() => {
