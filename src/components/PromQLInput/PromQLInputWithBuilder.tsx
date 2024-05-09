@@ -7,7 +7,7 @@ import BuiltinMetrics from './BuiltinMetrics';
 import PromQLInput, { CMExpressionInputProps } from './index';
 import './locale';
 
-export function PromQLInputWithBuilder(props: CMExpressionInputProps & { datasourceValue: number; showBuiltinMetrics?: boolean }) {
+export function PromQLInputWithBuilder(props: CMExpressionInputProps & { datasourceValue: number; showBuiltinMetrics?: boolean; showBuilder?: boolean }) {
   const { t } = useTranslation('promQLInput');
   const inputProps: any = { ...props };
 
@@ -34,27 +34,29 @@ export function PromQLInputWithBuilder(props: CMExpressionInputProps & { datasou
           </Input.Group>
         </div>
       </Col>
-      <Col flex='74px'>
-        <Button
-          onClick={() => {
-            PromQueryBuilderModal({
-              // TODO: PromQL 默认是最近12小时，这块应该从使用组件的环境获取实际的时间范围
-              range: {
-                start: 'now-12h',
-                end: 'now',
-              },
-              datasourceValue: props.datasourceValue,
-              value: props.value,
-              onChange: (val) => {
-                props.onChange && props.onChange(val);
-              },
-            });
-          }}
-          disabled={props.readonly}
-        >
-          {t('builder_btn')}
-        </Button>
-      </Col>
+      {props.showBuilder === false ? null : (
+        <Col flex='74px'>
+          <Button
+            onClick={() => {
+              PromQueryBuilderModal({
+                // TODO: PromQL 默认是最近12小时，这块应该从使用组件的环境获取实际的时间范围
+                range: {
+                  start: 'now-12h',
+                  end: 'now',
+                },
+                datasourceValue: props.datasourceValue,
+                value: props.value,
+                onChange: (val) => {
+                  props.onChange && props.onChange(val);
+                },
+              });
+            }}
+            disabled={props.readonly}
+          >
+            {t('builder_btn')}
+          </Button>
+        </Col>
+      )}
     </Row>
   );
 }

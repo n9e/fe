@@ -89,6 +89,7 @@ export default function Prometheus({ chartForm, variableConfig, dashboardId, tim
                                 extraLabelValues={varNams}
                                 rangeVectorCompletion
                                 showBuiltinMetrics
+                                showBuilder={false}
                               />
                             </Form.Item>
                           );
