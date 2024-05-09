@@ -30,7 +30,7 @@ import { GetProfile } from '@/services/account';
 import { getBusiGroups, getDatasourceBriefList } from '@/services/common';
 import { getLicense } from '@/components/AdvancedWrap';
 import { getVersions } from '@/components/pageLayout/Version/services';
-import { getCleanBusinessGroupIds, getDefaultBusinessGroupKey } from '@/components/BusinessGroup';
+import { getCleanBusinessGroupIds, getDefaultBusiness } from '@/components/BusinessGroup';
 import { getN9eConfig } from '@/pages/siteSettings/services';
 import HeaderMenu from './components/menu/SideMenu';
 import Content from './routers';
@@ -121,7 +121,6 @@ function App() {
   const { t, i18n } = useTranslation();
   const isPlus = useIsPlus();
   const initialized = useRef(false);
-  const defaultBusinessGroupKey = getDefaultBusinessGroupKey();
   const [commonState, setCommonState] = useState<ICommonState>({
     datasourceCateOptions: [],
     groupedDatasourceList: {},
@@ -138,12 +137,7 @@ function App() {
       window.localStorage.setItem('curBusiId', String(id));
       setCommonState((state) => ({ ...state, curBusiId: id }));
     },
-    businessGroup: {
-      key: defaultBusinessGroupKey,
-      ids: getCleanBusinessGroupIds(defaultBusinessGroupKey),
-      id: _.map(_.split(getCleanBusinessGroupIds(defaultBusinessGroupKey), ','), _.toNumber)?.[0],
-      isLeaf: !_.startsWith(defaultBusinessGroupKey, 'group,'),
-    },
+    businessGroup: {},
     businessGroupOnChange: (key: string) => {
       window.localStorage.setItem('businessGroupKey', key);
       const ids = getCleanBusinessGroupIds(key);
@@ -214,25 +208,18 @@ function App() {
           if (!isPlus) {
             versions = await getVersions();
           }
+          /* 兼容旧的业务组组件 */
           const defaultBusiId = commonState.curBusiId || busiGroups?.[0]?.id;
           window.localStorage.setItem('curBusiId', String(defaultBusiId));
-          const defaultBusinessGroupKey = commonState.businessGroup.key || busiGroups?.[0]?.id;
-          window.localStorage.setItem('businessGroupKey', defaultBusinessGroupKey);
-          const ids = getCleanBusinessGroupIds(defaultBusinessGroupKey);
+          /* 兼容旧的业务组组件 */
           initialized.current = true;
+
           setCommonState((state) => {
             return {
               ...state,
               profile,
               busiGroups,
-              businessGroup: commonState.businessGroup.key
-                ? commonState.businessGroup
-                : {
-                    key: _.toString(defaultBusinessGroupKey),
-                    ids,
-                    id: _.map(_.split(ids, ','), _.toNumber)?.[0],
-                    isLeaf: !_.startsWith(defaultBusinessGroupKey, 'group,'),
-                  },
+              businessGroup: getDefaultBusiness(busiGroups),
               datasourceCateOptions: getAuthorizedDatasourceCates(feats, isPlus),
               groupedDatasourceList: _.groupBy(datasourceList, 'plugin_type'),
               datasourceList: datasourceList,

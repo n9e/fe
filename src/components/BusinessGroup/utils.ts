@@ -109,3 +109,32 @@ export function getDefaultBusinessGroupKey() {
     undefined;
   return defaultBusinessGroupKey;
 }
+
+export function getDefaultBusiness(busiGroups) {
+  let defaultBusinessGroupKey = getDefaultBusinessGroupKey();
+  let ids = getCleanBusinessGroupIds(defaultBusinessGroupKey);
+  let idsArr = _.map(_.compact(_.split(ids, ',')), _.toNumber);
+  const isValid = _.every(idsArr, (id) => {
+    if (!_.find(busiGroups, { id })) {
+      window.localStorage.removeItem('businessGroupKey');
+      return false;
+    }
+    return true;
+  });
+  // 缓存的节点信息无效时，取第一个节点
+  if (!isValid) {
+    defaultBusinessGroupKey = busiGroups?.[0]?.id;
+    ids = getCleanBusinessGroupIds(defaultBusinessGroupKey);
+    idsArr = _.map(_.compact(_.split(ids, ',')), _.toNumber);
+  }
+  if (defaultBusinessGroupKey) {
+    window.localStorage.setItem('businessGroupKey', defaultBusinessGroupKey);
+    return {
+      key: _.toString(defaultBusinessGroupKey),
+      ids,
+      id: _.map(_.split(ids, ','), _.toNumber)?.[0],
+      isLeaf: !_.startsWith(defaultBusinessGroupKey, 'group,'),
+    };
+  }
+  return {};
+}
