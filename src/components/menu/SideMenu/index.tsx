@@ -48,16 +48,16 @@ export const getMenuList = (t) => {
           label: t('即时查询'),
         },
         {
+          key: '/metrics-built-in',
+          label: t('metricsBuiltin:title'),
+        },
+        {
           key: '/object/explorer',
           label: t('快捷视图'),
         },
         {
           key: '/recording-rules',
           label: t('记录规则'),
-        },
-        {
-          key: '/metrics-built-in',
-          label: t('metricsBuiltin:title'),
         },
       ],
     },
