@@ -20,10 +20,11 @@ interface IProps {
   defaultUnit?: string;
   showGlobalMetrics?: boolean;
   showBuilder?: boolean;
+  onChange?: (promQL: string) => void;
 }
 
 export default function Prometheus(props: IProps) {
-  const { headerExtra, datasourceValue, form, panelIdx = 0, showBuiltinMetrics = true, allowReplaceHistory, promQL, defaultUnit, showGlobalMetrics, showBuilder } = props;
+  const { headerExtra, datasourceValue, form, panelIdx = 0, showBuiltinMetrics = true, allowReplaceHistory, promQL, defaultUnit, showGlobalMetrics, showBuilder, onChange } = props;
   const history = useHistory();
   const { search } = useLocation();
   const query = queryString.parse(search, queryStringOptions);
@@ -70,6 +71,7 @@ export default function Prometheus(props: IProps) {
       defaultUnit={defaultUnit}
       showGlobalMetrics={showGlobalMetrics}
       showBuilder={showBuilder}
+      onChange={onChange}
     />
   );
 }

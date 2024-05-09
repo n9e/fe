@@ -22,11 +22,17 @@ export default function ExplorerDrawer(props: Props) {
     if (data) {
       const finded = _.find(panels, (panel) => panel.id === data.id && panel.expression === data.expression);
       if (!finded) {
-        setPanels([data, ...panels]);
+        setPanels([
+          {
+            ...data,
+            uid: moment().unix(),
+          },
+          ...panels,
+        ]);
       } else {
         // 存在的面板再次点击后，移动到最前面
         const newPanels = _.filter(panels, (panel) => panel.id !== data.id || panel.expression !== data.expression);
-        setPanels([data, ...newPanels]);
+        setPanels([finded, ...newPanels]);
       }
     }
   }, [data]);
@@ -35,7 +41,7 @@ export default function ExplorerDrawer(props: Props) {
     <Drawer title={t('explorer')} width={1060} visible={visible} onClose={onClose}>
       {_.map(panels, (panel, idx) => {
         return (
-          <div key={`${panel.id}${panel.expression}`}>
+          <div key={panel.uid}>
             <Panel panel={panel} panels={panels} setPanels={setPanels} />
             {idx === 0 && panels.length > 1 && (
               <Button
@@ -57,7 +63,7 @@ export default function ExplorerDrawer(props: Props) {
       <Button
         style={{ width: '100%' }}
         onClick={() => {
-          setPanels([...panels, { id: moment().unix() } as Record]);
+          setPanels([...panels, { uid: moment().unix() } as Record]);
         }}
       >
         {t('addPanel')}

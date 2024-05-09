@@ -24,7 +24,7 @@ export default function Panel(props: Props) {
   const headerExtraRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div key={panel.id} className='n9e-fill-color-2 n9e-border-base' style={{ padding: 16, maxHeight: 650, marginBottom: 16, position: 'relative', display: 'flex' }}>
+    <div className='n9e-fill-color-2 n9e-border-base' style={{ padding: 16, maxHeight: 650, marginBottom: 16, position: 'relative', display: 'flex' }}>
       <div className='explorer-container'>
         <Form
           form={form}
@@ -130,6 +130,18 @@ export default function Panel(props: Props) {
                       defaultUnit={panel.unit}
                       showGlobalMetrics={false}
                       showBuilder={false}
+                      onChange={(promQL) => {
+                        const newPanels = _.map(panels, (item) => {
+                          if (item.uid === panel.uid) {
+                            return {
+                              ...item,
+                              expression: promQL,
+                            };
+                          }
+                          return item;
+                        });
+                        setPanels(newPanels);
+                      }}
                     />
                   );
                 }}
@@ -148,7 +160,7 @@ export default function Panel(props: Props) {
             fontSize: 14,
           }}
           onClick={() => {
-            setPanels(_.filter(panels, (item) => item.id !== panel.id));
+            setPanels(_.filter(panels, (item) => item.uid !== panel.uid));
           }}
         />
       )}

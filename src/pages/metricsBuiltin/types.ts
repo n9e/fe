@@ -1,4 +1,5 @@
 export interface Record {
+  uid: number; // 只是用于 panel 的 id
   id: number;
   collector: string;
   typ: string;

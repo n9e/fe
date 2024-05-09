@@ -17,7 +17,9 @@
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import _ from 'lodash';
-import { Input, DatePicker, List } from 'antd';
+import { Input, DatePicker, List, Space } from 'antd';
+import UnitPicker from '@/pages/dashboard/Components/UnitPicker';
+import valueFormatter from '@/pages/dashboard/Renderer/utils/valueFormatter';
 import { getPromData } from './services';
 import { QueryStats } from './components/QueryStatsView';
 
@@ -33,6 +35,7 @@ interface IProps {
   refreshFlag: string;
   loading: boolean;
   setLoading: (loading: boolean) => void;
+  defaultUnit?: string;
 }
 type ResultType = 'matrix' | 'vector' | 'scalar' | 'string' | 'streams';
 
@@ -66,10 +69,19 @@ function toFixedNoRound(num, fixed) {
   return num.toString();
 }
 
-function getListItemValue(resultType, record) {
-  if (resultType === 'scalar' || resultType === 'string') return _.get(record, '[1]') || '-';
+function formatValue(val, unit) {
+  const num = _.toNumber(val);
+  if (_.isNaN(num)) return '-';
+  const { text } = valueFormatter({ unit }, num);
+  return text;
+}
+
+function getListItemValue(resultType, record, unit) {
+  if (resultType === 'scalar' || resultType === 'string') {
+    return formatValue(_.get(record, '[1]'), unit);
+  }
   if (resultType === 'vector') {
-    return _.get(record, 'value[1]', '-');
+    return formatValue(_.get(record, 'value[1]'), unit);
   }
   if (resultType === 'matrix' || resultType === 'streams') {
     const values = _.get(record, 'values');
@@ -79,7 +91,7 @@ function getListItemValue(resultType, record) {
           const timestamp = _.get(value, 0);
           return (
             <div key={i} style={{ display: 'table-row' }}>
-              <span style={{ display: 'table-cell', padding: '0 4px' }}>{_.get(value, 1, '-')}</span>
+              <span style={{ display: 'table-cell', padding: '0 4px' }}>{formatValue(_.get(value, 1), unit)}</span>
               <span style={{ display: 'table-cell', padding: '0 4px' }}>@{timestamp || '-'}</span>
               <span style={{ display: 'table-cell', padding: '0 4px' }}>{moment.unix(timestamp).format('YYYY-MM-DD HH:mm:ss')}</span>
               <span style={{ display: 'table-cell', padding: '0 4px' }}>{i > 0 ? `+${toFixedNoRound(timestamp - _.get(values[i - 1], 0), 0)}` : ''}</span>
@@ -92,7 +104,7 @@ function getListItemValue(resultType, record) {
 }
 
 export default function Table(props: IProps) {
-  const { url, datasourceValue, promql, setQueryStats, setErrorContent, contentMaxHeight, timestamp, setTimestamp, refreshFlag, loading, setLoading } = props;
+  const { url, datasourceValue, promql, setQueryStats, setErrorContent, contentMaxHeight, timestamp, setTimestamp, refreshFlag, loading, setLoading, defaultUnit } = props;
   const [data, setData] = useState<{
     resultType: ResultType;
     result: any[];
@@ -100,6 +112,7 @@ export default function Table(props: IProps) {
     resultType: 'matrix',
     result: [],
   });
+  const [unit, setUnit] = useState(defaultUnit || 'sishort');
 
   useEffect(() => {
     if (datasourceValue && promql) {
@@ -155,22 +168,40 @@ export default function Table(props: IProps) {
     }
   }, [timestamp, datasourceValue, promql, refreshFlag]);
 
+  useEffect(() => {
+    if (defaultUnit) {
+      setUnit(defaultUnit);
+    }
+  }, [defaultUnit]);
+
   return (
     <div className='prom-graph-table-container'>
       <div className='prom-graph-table-controls'>
-        <Input.Group>
-          <span className='ant-input-group-addon'>Time</span>
-          <DatePicker
-            value={timestamp ? moment.unix(timestamp) : undefined}
-            onChange={(val) => {
-              setTimestamp(val ? val.unix() : undefined);
-            }}
-            showTime
-            placeholder='Evaluation time'
-            getPopupContainer={() => document.body}
-            disabledDate={(current) => current > moment()}
-          />
-        </Input.Group>
+        <Space>
+          <Input.Group>
+            <span className='ant-input-group-addon'>Time</span>
+            <DatePicker
+              value={timestamp ? moment.unix(timestamp) : undefined}
+              onChange={(val) => {
+                setTimestamp(val ? val.unix() : undefined);
+              }}
+              showTime
+              placeholder='Evaluation time'
+              getPopupContainer={() => document.body}
+              disabledDate={(current) => current > moment()}
+            />
+          </Input.Group>
+          <Input.Group>
+            <span className='ant-input-group-addon'>Unit</span>
+            <UnitPicker
+              dropdownMatchSelectWidth={false}
+              value={unit}
+              onChange={(val) => {
+                setUnit(val);
+              }}
+            />
+          </Input.Group>
+        </Space>
       </div>
       <List
         className='prom-graph-table-list'
@@ -194,7 +225,7 @@ export default function Table(props: IProps) {
                   flexShrink: 0,
                 }}
               >
-                {getListItemValue(data?.resultType, item)}
+                {getListItemValue(data?.resultType, item, unit)}
               </div>
             </List.Item>
           );

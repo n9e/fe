@@ -57,6 +57,7 @@ interface IProps {
   defaultUnit?: string;
   showGlobalMetrics?: boolean;
   showBuilder?: boolean;
+  onChange?: (promQL?: string) => void;
 }
 
 const TabPane = Tabs.TabPane;
@@ -84,6 +85,7 @@ export default function index(props: IProps) {
     graphStandardOptionsType,
     showGlobalMetrics = true,
     showBuilder = true,
+    onChange,
   } = props;
   const [value, setValue] = useState<string | undefined>(promQL); // for promQLInput
   const [promql, setPromql] = useState<string | undefined>(promQL);
@@ -167,7 +169,10 @@ export default function index(props: IProps) {
               ref={promQLInputRef}
               url={url}
               value={value}
-              onChange={setValue}
+              onChange={(newVal) => {
+                setValue(newVal);
+                onChange && onChange(newVal);
+              }}
               executeQuery={(val) => {
                 setPromql(val);
                 executeQuery && executeQuery(val);
@@ -261,6 +266,7 @@ export default function index(props: IProps) {
               refreshFlag={refreshFlag}
               loading={loading}
               setLoading={setLoading}
+              defaultUnit={defaultUnit}
             />
           </TabPane>
           <TabPane tab='Graph' key='graph'>
