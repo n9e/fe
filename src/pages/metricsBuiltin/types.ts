@@ -15,5 +15,6 @@ export type PutRecord = Record;
 export interface Filter {
   collector?: string;
   typ?: string;
+  unit?: string[];
   query?: string;
 }

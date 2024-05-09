@@ -32,7 +32,10 @@ export const getMetrics = function (
 }> {
   return request('/api/n9e/builtin-metrics', {
     method: RequestMethod.Get,
-    params,
+    params: {
+      ...params,
+      unit: _.join(params.unit, ','),
+    },
   }).then((res) => res.dat);
 };
 

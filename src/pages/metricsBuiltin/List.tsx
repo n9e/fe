@@ -16,7 +16,6 @@
  */
 import React, { useState, useEffect, useRef } from 'react';
 import _ from 'lodash';
-import moment from 'moment';
 import { useAntdTable, useDebounceFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import { Space, Table, Button, Input, Dropdown, Select, message, Modal, Tooltip, Menu } from 'antd';
@@ -27,7 +26,7 @@ import PageLayout from '@/components/pageLayout';
 import usePagination from '@/components/usePagination';
 import RefreshIcon from '@/components/RefreshIcon';
 import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
-import { getUnitLabel } from '@/pages/dashboard/Components/UnitPicker/utils';
+import { getUnitLabel, buildUnitOptions } from '@/pages/dashboard/Components/UnitPicker/utils';
 import { getMenuPerm } from '@/services/common';
 import Collapse from '@/pages/monitor/object/metricViews/components/Collapse';
 import { getMetrics, Record, Filter, getTypes, getCollectors, deleteMetrics, buildLabelFilterAndExpression } from './services';
@@ -315,7 +314,7 @@ export default function index() {
                 showSearch
                 optionFilterProp='label'
                 placeholder={t('typ')}
-                style={{ width: 180 }}
+                style={{ width: 140 }}
                 allowClear
                 dropdownMatchSelectWidth={false}
               />
@@ -339,9 +338,27 @@ export default function index() {
                 allowClear
                 dropdownMatchSelectWidth={false}
               />
+              <Select
+                value={filter.unit}
+                onChange={(val) => {
+                  const newFilter = { ...filter, unit: val };
+                  setFilter(newFilter);
+                  window.localStorage.setItem('metricsBuiltin-filter', JSON.stringify(newFilter));
+                }}
+                options={buildUnitOptions()}
+                showSearch
+                optionFilterProp='label'
+                placeholder={t('unit')}
+                style={{ width: 140 }}
+                allowClear
+                dropdownMatchSelectWidth={false}
+                optionLabelProp='cleanLabel'
+                mode='multiple'
+                maxTagCount='responsive'
+              />
               <Input
                 placeholder={t('common:search_placeholder')}
-                style={{ width: 300 }}
+                style={{ width: 200 }}
                 value={queryValue}
                 onChange={(e) => {
                   setQueryValue(e.target.value);
