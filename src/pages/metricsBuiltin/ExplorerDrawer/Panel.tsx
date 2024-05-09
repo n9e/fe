@@ -14,12 +14,13 @@ interface Props {
   panel: Record;
   panels: Record[];
   setPanels: (panels: Record[]) => void;
+  onChange: (promql?: string) => void;
 }
 
 export default function Panel(props: Props) {
   const { t } = useTranslation('metricsBuiltin');
   const { groupedDatasourceList } = useContext(CommonStateContext);
-  const { panel, panels, setPanels } = props;
+  const { panel, panels, setPanels, onChange } = props;
   const [form] = Form.useForm();
   const headerExtraRef = useRef<HTMLDivElement>(null);
 
@@ -131,16 +132,7 @@ export default function Panel(props: Props) {
                       showGlobalMetrics={false}
                       showBuilder={false}
                       onChange={(promQL) => {
-                        const newPanels = _.map(panels, (item) => {
-                          if (item.uid === panel.uid) {
-                            return {
-                              ...item,
-                              expression: promQL,
-                            };
-                          }
-                          return item;
-                        });
-                        setPanels(newPanels);
+                        onChange(promQL);
                       }}
                     />
                   );

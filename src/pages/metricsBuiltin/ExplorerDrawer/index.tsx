@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import moment from 'moment';
 import { Button } from 'antd';
+import { useGetState } from 'ahooks';
 import { Record } from '../services';
 import Panel from './Panel';
 
@@ -16,7 +17,7 @@ interface Props {
 export default function ExplorerDrawer(props: Props) {
   const { t } = useTranslation('metricsBuiltin');
   const { visible, onClose, data } = props;
-  const [panels, setPanels] = useState<Record[]>([]);
+  const [panels, setPanels, getPanels] = useGetState<Record[]>([]);
 
   useEffect(() => {
     if (data) {
@@ -42,7 +43,23 @@ export default function ExplorerDrawer(props: Props) {
       {_.map(panels, (panel, idx) => {
         return (
           <div key={panel.uid}>
-            <Panel panel={panel} panels={panels} setPanels={setPanels} />
+            <Panel
+              panel={panel}
+              panels={panels}
+              setPanels={setPanels}
+              onChange={(promQL) => {
+                const newPanels = _.map(getPanels(), (item) => {
+                  if (item.uid === panel.uid) {
+                    return {
+                      ...item,
+                      expression: promQL,
+                    };
+                  }
+                  return item;
+                });
+                setPanels(newPanels);
+              }}
+            />
             {idx === 0 && panels.length > 1 && (
               <Button
                 danger

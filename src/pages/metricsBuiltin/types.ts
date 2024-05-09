@@ -6,7 +6,7 @@ export interface Record {
   name: string;
   unit: string;
   note: string;
-  expression: string;
+  expression?: string;
 }
 
 export type PostRecord = Omit<Record, 'id'>;
