@@ -20,12 +20,12 @@ export default function ExplorerDrawer(props: Props) {
 
   useEffect(() => {
     if (data) {
-      const finded = _.find(panels, (panel) => panel.id === data.id);
+      const finded = _.find(panels, (panel) => panel.id === data.id && panel.expression === data.expression);
       if (!finded) {
         setPanels([data, ...panels]);
       } else {
         // 存在的面板再次点击后，移动到最前面
-        const newPanels = _.filter(panels, (panel) => panel.id !== data.id);
+        const newPanels = _.filter(panels, (panel) => panel.id !== data.id || panel.expression !== data.expression);
         setPanels([data, ...newPanels]);
       }
     }
@@ -35,7 +35,7 @@ export default function ExplorerDrawer(props: Props) {
     <Drawer title={t('explorer')} width={1060} visible={visible} onClose={onClose}>
       {_.map(panels, (panel, idx) => {
         return (
-          <div key={panel.id}>
+          <div key={`${panel.id}${panel.expression}`}>
             <Panel panel={panel} panels={panels} setPanels={setPanels} />
             {idx === 0 && panels.length > 1 && (
               <Button

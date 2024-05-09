@@ -75,6 +75,14 @@
   --fc-purple-4-color: #b37feb;
   --fc-purple-5-color: #9254de;
   --fc-purple-6-color: #722ed1;
+
+  /* Geek Blue / 极客蓝 */
+  --fc-geekblue-1-color: #f0f5ff;
+  --fc-geekblue-2-color: #d6e4ff;
+  --fc-geekblue-3-color: #adc6ff;
+  --fc-geekblue-4-color: #85a5ff;
+  --fc-geekblue-5-color: #597ef7;
+  --fc-geekblue-6-color: #2f54eb;
 }
 
 /* -------------------  分割线 ------------------- */
@@ -149,4 +157,12 @@
   --fc-purple-4-color: #38336f;
   --fc-purple-5-color: #414d85;
   --fc-purple-6-color: #4a579b;
+
+  /* Geek Blue / 极客蓝 */
+  --fc-geekblue-1-color: #131a2a;
+  --fc-geekblue-2-color: #1f2643;
+  --fc-geekblue-3-color: #292f58;
+  --fc-geekblue-4-color: #33336f;
+  --fc-geekblue-5-color: #3d414d;
+  --fc-geekblue-6-color: #474a57;
 }

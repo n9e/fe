@@ -95,11 +95,6 @@ export default function Panel(props: Props) {
                                     },
                                   });
                                 }
-                                // if (idx === 0) {
-                                //   history.replace({
-                                //     search: `?data_source_name=${cate}&data_source_id=${val}`,
-                                //   });
-                                // }
                               }}
                               showSearch
                               optionFilterProp='children'

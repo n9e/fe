@@ -46,15 +46,15 @@ function getListItemLabel(resultType, record) {
     .filter((ml) => ml !== '__name__')
     .map((label, i, labels) => (
       <span key={i}>
-        <strong>{label}</strong>="{metric[label]}"{i === labels.length - 1 ? '' : ', '}
+        <strong className='prom-graph-table-label-key'>{label}</strong>="{metric[label]}"{i === labels.length - 1 ? '' : ', '}
       </span>
     ));
   return (
     <>
-      {metricName}
-      {'{'}
+      <span className='prom-graph-table-metric-name'>{metricName}</span>
+      <span className='prom-graph-table-bracket'>{'{'}</span>
       {labels}
-      {'}'}
+      <span className='prom-graph-table-bracket'>{'}'}</span>
     </>
   );
 }
