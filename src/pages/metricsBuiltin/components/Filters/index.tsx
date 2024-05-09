@@ -30,6 +30,7 @@ const LOCALE_KEY = 'built-in-metrics-filter-id';
 
 function index(_props: any, ref: any) {
   const { t } = useTranslation('metricsBuiltin');
+  const [loading, setLoading] = useState(false);
   const [list, setList] = useState<any[]>([]);
   const [active, setActive] = useState<number>();
   const [search, setSearch] = useState('');
@@ -40,12 +41,17 @@ function index(_props: any, ref: any) {
 
   useEffect(() => {
     const defaultId = localStorage.getItem(LOCALE_KEY) !== null ? Number(localStorage.getItem(LOCALE_KEY)) : null;
-    getFilters().then((res) => {
-      setList(res);
-      if (!active && defaultId) {
-        setActive(defaultId);
-      }
-    });
+    setLoading(true);
+    getFilters()
+      .then((res) => {
+        setList(res);
+        if (!active && defaultId) {
+          setActive(defaultId);
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, [refreshFlag]);
 
   useImperativeHandle(ref, () => {
@@ -55,6 +61,8 @@ function index(_props: any, ref: any) {
       },
     };
   });
+
+  if (loading) return null;
 
   return (
     <>
