@@ -1,5 +1,3 @@
-import { add } from 'lodash';
-
 const zh_CN = {
   title: '屏蔽规则',
   search_placeholder: '搜索标签、屏蔽原因',

@@ -67,6 +67,7 @@
     "react-highlight-words": "^0.17.0",
     "react-hooks-global-state": "^2.0.0",
     "react-i18next": "^11.11.1",
+    "react-infinite-scroll-component": "^6.1.0",
     "react-markdown": "^7.0.1",
     "react-router-dom": "^5.2.0",
     "react-sortable-hoc": "^2.0.0",

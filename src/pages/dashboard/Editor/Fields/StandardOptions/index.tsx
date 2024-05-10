@@ -19,6 +19,7 @@ import { Form, Select, InputNumber, Row, Col, Tooltip, Input } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
+import UnitPicker from '@/pages/dashboard/Components/UnitPicker';
 import { Panel } from '../../Components/Collapse';
 
 interface IProps {
@@ -68,37 +69,32 @@ export default function index(props: IProps) {
                     }
                     name={[...namePrefix, 'util']}
                   >
-                    <Select placeholder='SI prefixes' allowClear showSearch>
-                      <Option value='none'>none</Option>
-                      <OptGroup label='Data'>
-                        <Option value='bitsSI'>bits(SI)</Option>
-                        <Option value='bytesSI'>bytes(SI)</Option>
-                        <Option value='bitsIEC'>bits(IEC)</Option>
-                        <Option value='bytesIEC'>bytes(IEC)</Option>
-                      </OptGroup>
-                      <OptGroup label='Data rate'>
-                        <Option value='packetsSec'>packets/sec</Option>
-                        <Option value='bitsSecSI'>bits/sec(SI)</Option>
-                        <Option value='bytesSecSI'>bytes/sec(SI)</Option>
-                        <Option value='bitsSecIEC'>bits/sec(IEC)</Option>
-                        <Option value='bytesSecIEC'>bytes/sec(IEC)</Option>
-                      </OptGroup>
-                      <OptGroup label='Energy'>
-                        <Option value='dBm'>Decibel-milliwatt(dBm)</Option>
-                      </OptGroup>
-                      <OptGroup label='Percent'>
-                        <Option value='percent'>percent(0-100)</Option>
-                        <Option value='percentUnit'>percent(0.0-1.0)</Option>
-                      </OptGroup>
-                      <OptGroup label='Time'>
-                        <Option value='seconds'>seconds</Option>
-                        <Option value='milliseconds'>milliseconds</Option>
-                        <Option value='humantimeSeconds'>humanize(seconds)</Option>
-                        <Option value='humantimeMilliseconds'>humanize(milliseconds)</Option>
-                        <Option value='datetimeSeconds'>datetime(seconds)</Option>
-                        <Option value='datetimeMilliseconds'>datetime(milliseconds)</Option>
-                      </OptGroup>
-                    </Select>
+                    <UnitPicker
+                      placeholder='SI prefixes'
+                      allowClear
+                      showSearch
+                      hideSIOption
+                      ajustUnitOptions={(units) => {
+                        return _.map(units, (item) => {
+                          if (item.label === 'Time') {
+                            return {
+                              ...item,
+                              options: _.concat(item.options, [
+                                {
+                                  label: 'humanize(seconds)',
+                                  value: 'humantimeSeconds',
+                                },
+                                {
+                                  label: 'humanize(milliseconds)',
+                                  value: 'humantimeMilliseconds',
+                                },
+                              ]),
+                            };
+                          }
+                          return item;
+                        });
+                      }}
+                    />
                   </Form.Item>
                 </Col>
                 {unit.indexOf('datetime') > -1 && (

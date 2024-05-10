@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import { Table, Tag, Tooltip, Space, Input, Dropdown, Menu, Button, Modal, message, Select } from 'antd';
 import { ColumnsType } from 'antd/es/table';
-import { SearchOutlined, DownOutlined, ReloadOutlined, CopyOutlined, ApartmentOutlined, QuestionCircleOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { SearchOutlined, DownOutlined, ReloadOutlined, CopyOutlined, ApartmentOutlined, InfoCircleOutlined, EyeOutlined } from '@ant-design/icons';
 import { useAntdTable } from 'ahooks';
 import _ from 'lodash';
 import moment from 'moment';
@@ -506,19 +506,6 @@ export default function List(props: IProps) {
           />
         </Space>
         <Space>
-          <Button
-            onClick={() => {
-              OrganizeColumns({
-                value: columnsConfigs,
-                onChange: (val) => {
-                  setColumnsConfigs(val);
-                  setDefaultColumnsConfigs(val);
-                },
-              });
-            }}
-          >
-            {t('organize_columns.title')}
-          </Button>
           <Dropdown
             trigger={['click']}
             overlay={
@@ -548,6 +535,18 @@ export default function List(props: IProps) {
               {t('common:btn.batch_operations')} <DownOutlined />
             </Button>
           </Dropdown>
+          <Button
+            onClick={() => {
+              OrganizeColumns({
+                value: columnsConfigs,
+                onChange: (val) => {
+                  setColumnsConfigs(val);
+                  setDefaultColumnsConfigs(val);
+                },
+              });
+            }}
+            icon={<EyeOutlined />}
+          />
         </Space>
       </div>
       <Table

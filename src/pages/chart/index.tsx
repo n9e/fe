@@ -25,13 +25,15 @@ import { useTranslation } from 'react-i18next';
 import { GetTmpChartData } from '@/services/metric';
 import { TimeRangePickerWithRefresh, IRawTimeRange, isMathString } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
+import { getAuthorizedDatasourceCates, Cate } from '@/components/AdvancedWrap';
 import Renderer from '../dashboard/Renderer/Renderer';
 import './locale';
 import './index.less';
 
 export default function Chart() {
   const { t } = useTranslation('shareChart');
-  const { datasourceCateOptions, darkMode } = useContext(CommonStateContext);
+  const { darkMode } = useContext(CommonStateContext);
+  const datasourceCateOptions = getAuthorizedDatasourceCates(undefined, true);
   const { ids } =
     useParams<{
       ids: string;

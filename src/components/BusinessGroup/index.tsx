@@ -9,11 +9,11 @@ import { LeftOutlined, RightOutlined, SettingOutlined, SearchOutlined, DownOutli
 import { useTranslation } from 'react-i18next';
 import { getBusiGroups } from '@/services/common';
 import { CommonStateContext } from '@/App';
-import { listToTree, getCollapsedKeys, getCleanBusinessGroupIds, getDefaultBusinessGroupKey } from './utils';
+import { listToTree, getCollapsedKeys, getCleanBusinessGroupIds, getDefaultBusinessGroupKey, getDefaultBusiness } from './utils';
 import BusinessGroupSelect from './BusinessGroupSelect';
 import './style.less';
 
-export { listToTree, getCollapsedKeys, getCleanBusinessGroupIds, BusinessGroupSelect, getDefaultBusinessGroupKey };
+export { listToTree, getCollapsedKeys, getCleanBusinessGroupIds, BusinessGroupSelect, getDefaultBusinessGroupKey, getDefaultBusiness };
 
 interface IProps {
   onSelect?: (key: string, item: any) => void;

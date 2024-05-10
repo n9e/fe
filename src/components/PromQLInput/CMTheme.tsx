@@ -26,7 +26,7 @@ export const baseTheme = EditorView.theme({
   },
   '.cm-scroller': {
     overflow: 'hidden',
-    fontFamily: 'Helvetica Neue,sans-serif,PingFangSC-Regular,microsoft yahei ui,microsoft yahei,simsun,"sans-serif"',
+    fontFamily: 'Consolas,Monaco,sans-serif,PingFangSC-Regular,microsoft yahei ui,microsoft yahei,simsun,"sans-serif"',
   },
   '.cm-matchingBracket': {
     fontWeight: 'bold',
@@ -112,6 +112,7 @@ export const baseTheme = EditorView.theme({
     marginRight: '10px',
     verticalAlign: 'top',
     '&:after': { content: "'\\ea88'" },
+    fontFamily: 'codicon',
     paddingRight: '0',
     opacity: '1',
     color: '#2ca9fd',

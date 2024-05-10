@@ -21,6 +21,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import { Table, Tag, Switch, Modal, Space, Button, Row, Col, message, Select, Tooltip } from 'antd';
 import { ColumnType } from 'antd/lib/table';
+import { EyeOutlined } from '@ant-design/icons';
 import RefreshIcon from '@/components/RefreshIcon';
 import SearchInput from '@/components/BaseSearchInput';
 import usePagination from '@/components/usePagination';
@@ -411,6 +412,9 @@ export default function List(props: ListProps) {
                 {t('common:btn.add')}
               </Button>
             )}
+            {businessGroup.isLeaf && gids && businessGroup.id && (
+              <MoreOperations bgid={businessGroup.id} selectRowKeys={selectRowKeys} selectedRows={selectedRows} getAlertRules={fetchData} />
+            )}
             <Button
               onClick={() => {
                 OrganizeColumns({
@@ -421,12 +425,8 @@ export default function List(props: ListProps) {
                   },
                 });
               }}
-            >
-              {t('targets:organize_columns.title')}
-            </Button>
-            {businessGroup.isLeaf && gids && businessGroup.id && (
-              <MoreOperations bgid={businessGroup.id} selectRowKeys={selectRowKeys} selectedRows={selectedRows} getAlertRules={fetchData} />
-            )}
+              icon={<EyeOutlined />}
+            />
           </Space>
         </Col>
       </Row>

@@ -5,7 +5,7 @@ import { Form, Input, InputNumber, Select, Button, Modal, message, Space, Toolti
 import { useTranslation } from 'react-i18next';
 import { prometheusQuery } from '@/services/warning';
 import { addOrEditRecordingRule, editRecordingRule, deleteRecordingRule } from '@/services/recording';
-import PromQLInput from '@/components/PromQLInput';
+import { PromQLInputWithBuilder } from '@/components/PromQLInput';
 import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
 import { CommonStateContext } from '@/App';
 
@@ -157,13 +157,14 @@ const operateForm: React.FC<Props> = ({ type, detail = {} }) => {
                 const datasourceIds = getFieldValue('datasource_ids');
                 return (
                   <Form.Item label='PromQL' name='prom_ql' validateTrigger={['onBlur']} trigger='onChange' rules={[{ required: true }]}>
-                    <PromQLInput
+                    <PromQLInputWithBuilder
                       datasourceValue={getFirstDatasourceId(datasourceIds, groupedDatasourceList?.prometheus)}
                       onChange={(val) => {
                         if (val) {
                           validateFields(['prom_ql']);
                         }
                       }}
+                      showBuiltinMetrics
                     />
                   </Form.Item>
                 );

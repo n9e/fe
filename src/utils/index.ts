@@ -137,6 +137,11 @@ export const dynamicPackages = (): Entry[] => {
   return Object.values(Packages).map((obj) => obj.default);
 };
 
+export const dynamicPages = (): Entry[] => {
+  const Packages = import.meta.globEager('../pages/*/entry.tsx');
+  return Object.values(Packages).map((obj) => obj.default);
+};
+
 export const generateID = (): string => {
   return `_${Math.random().toString(36).substr(2, 9)}`;
 };

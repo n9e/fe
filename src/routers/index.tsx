@@ -70,7 +70,7 @@ import NotificationSettings from '@/pages/help/NotificationSettings';
 import MigrateDashboards from '@/pages/help/migrate';
 import VariableConfigs from '@/pages/variableConfigs';
 import SiteSettings from '@/pages/siteSettings';
-import { dynamicPackages, Entry } from '@/utils';
+import { dynamicPackages, Entry, dynamicPages } from '@/utils';
 // @ts-ignore
 import { Jobs as StrategyBrain } from 'plus:/datasource/anomaly';
 // @ts-ignore
@@ -82,6 +82,14 @@ const Packages = dynamicPackages();
 let lazyRoutes = Packages.reduce((result: any, module: Entry) => {
   return (result = result.concat(module.routes));
 }, []);
+
+const lazyPagesRoutes = _.reduce(
+  dynamicPages(),
+  (result: any, module: Entry) => {
+    return (result = result.concat(module.routes));
+  },
+  [],
+);
 
 function RouteWithSubRoutes(route) {
   return (
@@ -213,6 +221,9 @@ export default function Content() {
         <Route exact path='/site-settings' component={SiteSettings} />
 
         {lazyRoutes.map((route, i) => (
+          <RouteWithSubRoutes key={i} {...route} />
+        ))}
+        {_.map(lazyPagesRoutes, (route, i) => (
           <RouteWithSubRoutes key={i} {...route} />
         ))}
         {_.map(plusLoader.routes, (route, i) => (

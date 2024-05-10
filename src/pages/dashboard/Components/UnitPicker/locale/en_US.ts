@@ -1,0 +1,25 @@
+const en_US = {
+  unitDesc: {
+    none: 'raw value, no unit conversion',
+    sishort: 'using the SI standard for conversion. e.g. 1K equals 1000.',
+    bitsSI: 'bit, using the SI standard for conversion. e.g. 1K equals 1000.',
+    bytesSI: 'byte, using the SI standard for conversion. e.g. 1K equals 1000.',
+    bitsIEC: 'bit, using the IEC standard for conversion. e.g. 1K equals 1024.',
+    bytesIEC: 'byte, using the IEC standard for conversion. e.g. 1K equals 1024.',
+    packetsSec: 'packets per second',
+    bitsSecSI: 'bits per second, using the SI standard for conversion. e.g. 1K equals 1000.',
+    bytesSecSI: 'bytes per second, using the SI standard for conversion. e.g. 1K equals 1000.',
+    bitsSecIEC: 'bits per second, using the IEC standard for conversion. e.g. 1K equals 1024.',
+    bytesSecIEC: 'bytes per second, using the IEC standard for conversion. e.g. 1K equals 1024.',
+    dBm: 'decibel-milliwatts',
+    percent: 'percent(0-100) e.g. 34.5 -> 34.5%',
+    percentUnit: 'percent(0.0-1.0) e.g. 0.235 -> 23.5%',
+    seconds: 'time unit: seconds',
+    milliseconds: 'time unit: milliseconds',
+    humantimeSeconds: 'time unit: seconds, the unit will be deprecated soon, please use seconds',
+    humantimeMilliseconds: 'time unit: milliseconds, the unit will be deprecated soon, please use milliseconds',
+    datetimeSeconds: 'timestamp unit: seconds, e.g. 1612345678 -> 2021-02-03 04:05:06',
+    datetimeMilliseconds: 'timestamp unit: milliseconds, e.g. 1612345678000 -> 2021-02-03 04:05:06',
+  },
+};
+export default en_US;

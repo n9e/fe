@@ -1,11 +1,11 @@
 const zh_CN = {
-  auth:{
-    403:'你没有权限访问该页面, 请联系管理员!',
-    404:'你访问的页面不存在!',
-    '404_btn': '回到首页'
+  auth: {
+    403: '你没有权限访问该页面, 请联系管理员!',
+    404: '你访问的页面不存在!',
+    '404_btn': '回到首页',
   },
   business_group: '业务组',
-  search_placeholder: '搜索',
+  search_placeholder: '请输入搜索关键字',
   nodata: '暂无数据',
   btn: {
     add: '新增',
@@ -180,5 +180,7 @@ const zh_CN = {
   'msg.clone.success': '克隆成功',
   'msg.clone.error': '克隆失败',
   'msg.sort.success': '排序成功',
+
+  copy_success: '复制成功 {{num}} 条记录',
 };
 export default zh_CN;
