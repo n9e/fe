@@ -416,7 +416,7 @@ export default function index() {
                             });
                           }}
                         >
-                          <span>{t('collect-tpls:batch.import.title')}</span>
+                          <span>{t('batch.import.title')}</span>
                         </li>
                       )}
                       {actionAuth.add && (
@@ -438,7 +438,7 @@ export default function index() {
                             }
                           }}
                         >
-                          <span>{t('collect-tpls:batch.export.title')}</span>
+                          <span>{t('batch.export.title')}</span>
                         </li>
                       )}
                       {actionAuth.delete && (
