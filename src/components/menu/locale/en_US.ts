@@ -46,6 +46,8 @@ const en_US = {
   采集模板: 'Collector Templates',
   拨测管理: 'Probe',
   拨测状态: 'Probe Status',
+  数据采集: "Data Collection",
+  对象列表: "Targets",
   Pingmesh配置: 'Pingmesh Config',
   quickJump: 'Quick Jump',
   quickOpenClose: 'Open/Close',
