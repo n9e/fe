@@ -160,13 +160,16 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
           const refId = dat[i]?.ref;
           _.forEach(dat[i]?.data, (serie) => {
             const isExp = _.find(exps, (exp) => exp.ref === serie.ref);
-            series.push({
-              id: _.uniqueId('series_'),
-              refId: refId,
-              name: getSerieName(serie.metric, isExp ? serie.ref : undefined),
-              metric: serie.metric,
-              data: serie.values,
-            });
+            const currentTarget = _.find(targets, (target) => target.refId === serie.ref);
+            if (!currentTarget?.hide) {
+              series.push({
+                id: _.uniqueId('series_'),
+                refId: refId,
+                name: getSerieName(serie.metric, isExp ? serie.ref : undefined),
+                metric: serie.metric,
+                data: serie.values,
+              });
+            }
           });
         }
       }

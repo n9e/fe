@@ -1,8 +1,10 @@
 import React from 'react';
-import { Form, Row, Col, Input, InputNumber } from 'antd';
+import { Form, Row, Col, Input, InputNumber, Space } from 'antd';
 import { DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
+import HideButton from '@/pages/dashboard/Components/HideButton';
+import { IS_PLUS } from '@/utils/constant';
 import IndexSelect from './IndexSelect';
 import Values from './Values';
 import GroupBy from './GroupBy';
@@ -41,16 +43,20 @@ export default function Elasticsearch({ chartForm, variableConfig, dashboardId }
                     }
                     key={field.key}
                     extra={
-                      <div>
+                      <Space>
+                        {IS_PLUS && (
+                          <Form.Item noStyle {...field} name={[field.name, 'hide']}>
+                            <HideButton />
+                          </Form.Item>
+                        )}
                         {fields.length > 1 ? (
                           <DeleteOutlined
-                            style={{ marginLeft: 10 }}
                             onClick={() => {
                               remove(field.name);
                             }}
                           />
                         ) : null}
-                      </div>
+                      </Space>
                     }
                   >
                     <Form.Item noStyle {...field} name={[field.name, 'refId']} hidden />
