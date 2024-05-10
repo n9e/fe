@@ -1,6 +1,6 @@
 {
   "name": "n9e-fe",
-  "version": "v7.0.0-beta.2",
+  "version": "v7.0.0-beta.3",
   "scripts": {
     "dev": "vite --port 8765 --host",
     "dev:advanced": "vite --port 8765 --host --mode advanced",
