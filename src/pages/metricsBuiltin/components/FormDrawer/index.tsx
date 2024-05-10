@@ -101,15 +101,22 @@ export default function index(props: Props) {
             form={form}
             onFinish={(values) => {
               if (mode === 'add' || mode === 'clone') {
-                postMetrics([_.omit(values, ['id', 'created_at', 'created_by', 'updated_at', 'updated_by'])]).then(() => {
-                  if (mode === 'add') {
-                    message.success(t('common:success.add'));
-                  } else if (mode === 'clone') {
-                    message.success(t('common:success.clone'));
+                postMetrics([_.omit(values, ['id', 'created_at', 'created_by', 'updated_at', 'updated_by'])]).then((res) => {
+                  if (_.isEmpty(res)) {
+                    if (mode === 'add') {
+                      message.success(t('common:success.add'));
+                    } else if (mode === 'clone') {
+                      message.success(t('common:success.clone'));
+                    }
+                    form.resetFields();
+                    setOpen(false);
+                    onOk();
+                  } else {
+                    const msgArr = _.map(res, (value, key) => {
+                      return `${key}: ${value}`;
+                    });
+                    message.error(_.join(msgArr, '; '));
                   }
-                  form.resetFields();
-                  setOpen(false);
-                  onOk();
                 });
               } else if (mode === 'edit') {
                 putMetric(values).then(() => {
