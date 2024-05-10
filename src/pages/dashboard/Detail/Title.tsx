@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import querystring from 'query-string';
 import _ from 'lodash';
@@ -57,6 +57,7 @@ export default function Title(props: IProps) {
   const query = querystring.parse(location.search);
   const { viewMode } = query;
   const themeMode = getDefaultThemeMode(query);
+  const isClickTrigger = useRef(false);
 
   useEffect(() => {
     document.title = `${dashboard.name} - ${siteInfo?.page_title || cachePageTitle}`;
@@ -79,7 +80,7 @@ export default function Title(props: IProps) {
   });
 
   useEffect(() => {
-    if (query.viewMode === 'fullscreen') {
+    if (query.viewMode === 'fullscreen' && isClickTrigger.current) {
       notification.info({
         key: 'dashboard_fullscreen',
         message: (
@@ -201,6 +202,7 @@ export default function Title(props: IProps) {
               if (!viewMode) {
                 newQuery.viewMode = 'fullscreen';
                 newQuery.themeMode = localStorage.getItem(dashboardThemeModeCacheKey) || 'light';
+                isClickTrigger.current = true;
               }
               history.replace({
                 pathname: location.pathname,
