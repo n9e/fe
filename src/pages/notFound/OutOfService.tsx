@@ -15,12 +15,14 @@
  *
  */
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const OutOfService: React.FC = () => {
+  const { t } = useTranslation('notFound');
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', flexDirection: 'column' }}>
       <h3 style={{ fontSize: 40 }}>
-        The {import.meta.env.VITE_IS_ENT ? 'Flashcat' : 'Nightingale'} is <span style={{ color: 'red' }}>out of Service</span>
+         {import.meta.env.VITE_IS_ENT ? t('The Flashcat webpage is') : t('The Nightingale webpage is')}  <span style={{ color: 'red' }}>{t('out of Service')}</span>
       </h3>
       <img src='/image/out-of-service.png' />
     </div>
