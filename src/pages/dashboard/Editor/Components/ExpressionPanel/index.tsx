@@ -1,7 +1,8 @@
 import React from 'react';
-import { Form, Input } from 'antd';
+import { Form, Input, Space } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import HideButton from '@/pages/dashboard/Components/HideButton';
 import { Panel } from '../Collapse';
 
 const alphabet = 'ABCDEFGHIGKLMNOPQRSTUVWXYZ'.split('');
@@ -17,16 +18,18 @@ export default function index({ fields, remove, field }) {
       header={name}
       key={field.key}
       extra={
-        <div>
+        <Space>
+          <Form.Item noStyle {...field} name={[field.name, 'hide']}>
+            <HideButton />
+          </Form.Item>
           {fields.length > 1 ? (
             <DeleteOutlined
-              style={{ marginLeft: 10 }}
               onClick={() => {
                 remove(field.name);
               }}
             />
           ) : null}
-        </div>
+        </Space>
       }
     >
       <Form.Item
