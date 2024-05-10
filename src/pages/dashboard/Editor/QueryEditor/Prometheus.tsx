@@ -8,6 +8,8 @@ import TimeRangePicker, { isMathString } from '@/components/TimeRangePicker';
 import Resolution from '@/components/Resolution';
 import { PromQLInputWithBuilder } from '@/components/PromQLInput';
 import { getRealStep } from '@/pages/dashboard/Renderer/datasource/prometheus';
+import HideButton from '@/pages/dashboard/Components/HideButton';
+import { IS_PLUS } from '@/utils/constant';
 import Collapse, { Panel } from '../Components/Collapse';
 import ExpressionPanel from '../Components/ExpressionPanel';
 import AddQueryButtons from '../Components/AddQueryButtons';
@@ -56,16 +58,20 @@ export default function Prometheus({ chartForm, variableConfig, dashboardId, tim
                     }
                     key={field.key}
                     extra={
-                      <div>
+                      <Space>
+                        {IS_PLUS && (
+                          <Form.Item noStyle {...field} name={[field.name, 'hide']}>
+                            <HideButton />
+                          </Form.Item>
+                        )}
                         {fields.length > 1 ? (
                           <DeleteOutlined
-                            style={{ marginLeft: 10 }}
                             onClick={() => {
                               remove(field.name);
                             }}
                           />
                         ) : null}
-                      </div>
+                      </Space>
                     }
                   >
                     <Form.Item noStyle {...field} name={[field.name, 'refId']}>
