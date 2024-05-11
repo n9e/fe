@@ -71,10 +71,10 @@ export default function Index(props: Props) {
             {data.settings?.min_interval || '-'}
           </Col>
           <Col span={24} className='mt8'>
-            {t('写配置')}:
+            {t('form.es.write_config')}:
           </Col>
           <Col span={24} className='second-color'>
-            {data.settings['es.enable_write'] ? t('允许写入') : t('不允许写入')}
+            {data.settings?.enable_write ? t('form.es.enable_write') : t('form.es.disable_write')}
           </Col>
         </Row>
         <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>

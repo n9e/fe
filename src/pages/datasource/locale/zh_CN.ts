@@ -17,8 +17,8 @@ const zh_CN = {
   },
   rename_title: '修改数据源名称',
   type_btn_add: '添加',
-  default:"设置为默认数据源",
-  default_msg:"该数据源类型下的默认集群",
+  default: '设置为默认数据源',
+  default_msg: '该数据源类型下的默认集群',
   auth: {
     name: '授权',
     'not-support': '暂不支持',
@@ -48,6 +48,8 @@ const zh_CN = {
       url_tip: '常见时序数据库配置示例（兼容 Prometheus 查询 API）：',
     },
     es: {
+      write_config: '写配置',
+      disable_write: '不允许写入',
       enable_write: '允许写入',
       version: '版本',
       max_shard: '最大并发分片请求数',
