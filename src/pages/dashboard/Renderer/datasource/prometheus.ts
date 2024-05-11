@@ -194,14 +194,17 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
                 }
               }
               const isExp = _.find(exps, (exp) => exp.ref === serie.ref);
-              series.push({
-                id: _.uniqueId('series_'),
-                refId: refId,
-                name: target?.legend ? replaceExpressionBracket(target?.legend, serie.metric) : getSerieName(serie.metric, isExp ? serie.ref : undefined),
-                metric: serie.metric,
-                expr,
-                data: !spanNulls ? completeBreakpoints(_step, serie.values) : serie.values,
-              });
+              const currentTarget = _.find(targets, (target) => target.refId === serie.ref);
+              if (!currentTarget?.hide) {
+                series.push({
+                  id: _.uniqueId('series_'),
+                  refId: refId,
+                  name: target?.legend ? replaceExpressionBracket(target?.legend, serie.metric) : getSerieName(serie.metric, isExp ? serie.ref : undefined),
+                  metric: serie.metric,
+                  expr,
+                  data: !spanNulls ? completeBreakpoints(_step, serie.values) : serie.values,
+                });
+              }
             });
           }
         }
