@@ -421,6 +421,7 @@ export default function DetailV2(props: IProps) {
             configs: panelsMergeToConfigs(dashboard.configs, newPanels),
           });
         }}
+        dashboard={dashboard}
       />
       {/*迁移*/}
       <Modal
