@@ -99,7 +99,7 @@ export default function Content() {
   const location = useLocation();
   const history = useHistory();
   const isPlus = useIsPlus();
-  const { profile, siteInfo } = useContext(CommonStateContext);
+  const { profile, siteInfo, perms } = useContext(CommonStateContext);
   // 仪表盘在全屏和暗黑主题下需要定义个 dark 样式名
   let themeClassName = '';
   if (_.startsWith(location.pathname, '/dashboards/') && !_.endsWith(location.pathname, '/dashboards/')) {
@@ -113,17 +113,14 @@ export default function Content() {
   useEffect(() => {
     if (profile?.roles?.length > 0 && location.pathname !== '/') {
       if (profile?.roles.indexOf('Admin') === -1) {
-        getMenuPerm().then((res) => {
-          const { dat } = res;
-          // 如果没有权限则重定向到 403 页面
-          if (
-            _.every(dat, (item) => {
-              return location.pathname.indexOf(item) === -1;
-            })
-          ) {
-            history.push('/403');
-          }
-        });
+        // 如果没有权限则重定向到 403 页面
+        if (
+          _.every(perms, (item) => {
+            return location.pathname.indexOf(item) === -1;
+          })
+        ) {
+          history.push('/403');
+        }
       }
     }
   }, []);

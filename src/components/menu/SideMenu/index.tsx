@@ -211,7 +211,7 @@ export const getMenuList = (t) => {
 
 const SideMenu = () => {
   const { t, i18n } = useTranslation('menu');
-  const { profile, isPlus, sideMenuBgMode } = useContext(CommonStateContext);
+  const { profile, isPlus, sideMenuBgMode, perms } = useContext(CommonStateContext);
   const sideMenuBgColor = getSideMenuBgColor(sideMenuBgMode as any);
   const history = useHistory();
   const location = useLocation();
@@ -253,22 +253,19 @@ const SideMenu = () => {
 
   useEffect(() => {
     if (profile?.roles?.length > 0) {
-      getMenuPerm().then((res) => {
-        const { dat } = res;
-        // 过滤掉没有权限的菜单
-        const newMenus: any = _.filter(
-          _.map(menuList, (menu) => {
-            return {
-              ...menu,
-              children: _.filter(menu.children, (item) => item && dat.includes(item.key)),
-            };
-          }),
-          (item) => {
-            return item.children && item.children.length > 0;
-          },
-        );
-        setMenus(newMenus);
-      });
+      // 过滤掉没有权限的菜单
+      const newMenus: any = _.filter(
+        _.map(menuList, (menu) => {
+          return {
+            ...menu,
+            children: _.filter(menu.children, (item) => item && _.includes(perms, item.key)),
+          };
+        }),
+        (item) => {
+          return item.children && item.children.length > 0;
+        },
+      );
+      setMenus(newMenus);
     }
   }, [profile?.roles, i18n.language]);
 
