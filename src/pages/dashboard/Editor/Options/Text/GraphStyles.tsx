@@ -53,8 +53,8 @@ export default function GraphStyles({ variableConfigWithOptions }) {
             <Select>
               <Select.Option value='unset'>{t('panel.custom.text.justifyContent.unset')}</Select.Option>
               <Select.Option value='flexStart'>{t('panel.custom.text.justifyContent.flexStart')}</Select.Option>
-              <Select.Option value='center'>{t('panel.custom.text.justifyContent.flexStart')}</Select.Option>
-              <Select.Option value='flexEnd'>{t('panel.custom.text.justifyContent.flexStart')}</Select.Option>
+              <Select.Option value='center'>{t('panel.custom.text.justifyContent.center')}</Select.Option>
+              <Select.Option value='flexEnd'>{t('panel.custom.text.justifyContent.flexEnd')}</Select.Option>
             </Select>
           </Form.Item>
         </Col>
