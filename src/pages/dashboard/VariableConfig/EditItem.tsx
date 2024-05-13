@@ -14,14 +14,15 @@
  * limitations under the License.
  *
  */
-import React, { useContext } from 'react';
-import { Form, Input, Row, Col, Select, Switch, Button, Space } from 'antd';
+import React, { useContext, useMemo } from 'react';
+import { Form, Input, Row, Col, Select, Switch, Button, Space, Alert } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import ClusterSelect from '@/pages/dashboard/Editor/QueryEditor/components/ClusterSelect';
 import { CommonStateContext } from '@/App';
+import { Dashboard } from '@/store/dashboardInterface';
 import { IVariable } from './definition';
 import { stringToRegex } from './constant';
 import ElasticsearchSettings from './datasource/elasticsearch';
@@ -35,6 +36,7 @@ interface IProps {
   datasourceVars: IVariable[];
   onOk: (val: IVariable) => void;
   onCancel: () => void;
+  dashboard: Dashboard;
 }
 
 const typeOptions = [
@@ -58,6 +60,14 @@ const typeOptions = [
     label: 'Datasource',
     value: 'datasource',
   },
+  {
+    label: 'Host ident',
+    value: 'hostIdent',
+  },
+  {
+    label: 'Business group ident',
+    value: 'businessGroupIdent',
+  },
 ];
 
 const allOptions = [
@@ -73,9 +83,10 @@ const allOptions = [
 
 function EditItem(props: IProps) {
   const { t } = useTranslation('dashboard');
-  const { data, vars, range, id, index, datasourceVars, onOk, onCancel } = props;
+  const { data, vars, range, id, index, datasourceVars, onOk, onCancel, dashboard } = props;
   const [form] = Form.useForm();
-  const { groupedDatasourceList, datasourceCateOptions } = useContext(CommonStateContext);
+  const { groupedDatasourceList, datasourceCateOptions, busiGroups } = useContext(CommonStateContext);
+  const groupRecord = useMemo(() => _.find(busiGroups, { id: dashboard.group_id }), [busiGroups, dashboard.group_id]);
 
   return (
     <Form layout='vertical' autoComplete='off' preserve={false} form={form} initialValues={data}>
@@ -94,8 +105,9 @@ function EditItem(props: IProps) {
           <Form.Item label={t('var.type')} name='type' rules={[{ required: true }]}>
             <Select
               style={{ width: '100%' }}
-              onChange={() => {
+              onChange={(val) => {
                 form.setFieldsValue({
+                  name: val === 'businessGroupIdent' ? 'busigroup' : '',
                   definition: '',
                   defaultValue: '',
                 });
@@ -104,7 +116,7 @@ function EditItem(props: IProps) {
               {_.map(typeOptions, (item) => {
                 return (
                   <Select.Option value={item.value} key={item.value}>
-                    {item.label}
+                    {t(`var.type_map.${item.value}`)}
                   </Select.Option>
                 );
               })}
@@ -114,7 +126,7 @@ function EditItem(props: IProps) {
         <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.type !== curValues.type} noStyle>
           {({ getFieldValue }) => {
             const type = getFieldValue('type');
-            if (type !== 'constant') {
+            if (type !== 'constant' && type !== 'businessGroupIdent') {
               return (
                 <Col span={6}>
                   <Form.Item label={t('var.hide')} name='hide' valuePropName='checked'>
@@ -308,13 +320,43 @@ function EditItem(props: IProps) {
                 </Form.Item>
               </>
             );
+          } else if (type === 'hostIdent') {
+            return (
+              <Form.Item
+                label={t('var.reg')}
+                name='reg'
+                tooltip={
+                  <Trans
+                    ns='dashboard'
+                    i18nKey='var.reg_tip'
+                    components={{ a: <a target='_blank' href='https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions' /> }}
+                  />
+                }
+                rules={[{ pattern: new RegExp('^/(.*?)/(g?i?m?y?)$'), message: 'invalid regex' }]}
+              >
+                <Input placeholder='/*.hna/' />
+              </Form.Item>
+            );
+          } else if (type === 'businessGroupIdent') {
+            if (groupRecord?.label_value) {
+              return (
+                <Form.Item label={t('var.businessGroupIdent.ident')}>
+                  <Input disabled value={groupRecord.label_value} />
+                </Form.Item>
+              );
+            }
+            return (
+              <Form.Item>
+                <Alert type='warning' message={t('var.businessGroupIdent.invalid')} />
+              </Form.Item>
+            );
           }
         }}
       </Form.Item>
       <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.type !== curValues.type} noStyle>
         {({ getFieldValue }) => {
           const type = getFieldValue('type');
-          if (type === 'query' || type === 'custom') {
+          if (type === 'query' || type === 'custom' || type === 'hostIdent') {
             return (
               <Row gutter={16}>
                 <Col flex='120px'>

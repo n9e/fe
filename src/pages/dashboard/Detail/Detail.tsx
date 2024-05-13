@@ -319,7 +319,15 @@ export default function DetailV2(props: IProps) {
               <div className='dashboard-detail-content-header'>
                 <div className='variable-area'>
                   {variableConfig && (
-                    <VariableConfig isPreview={!isAuthorized} onChange={handleVariableChange} value={variableConfig} range={range} id={id} onOpenFire={stopAutoRefresh} />
+                    <VariableConfig
+                      isPreview={!isAuthorized}
+                      onChange={handleVariableChange}
+                      value={variableConfig}
+                      range={range}
+                      id={id}
+                      onOpenFire={stopAutoRefresh}
+                      dashboard={dashboard}
+                    />
                   )}
                 </div>
                 <DashboardLinks
