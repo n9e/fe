@@ -253,7 +253,6 @@ export default function index(props: IProps) {
             if (override && override?.properties?.standardOptions?.displayName) {
               name = override?.properties?.standardOptions?.displayName;
             }
-            console.log('name', name);
             return getMappedTextObj(name, options?.valueMappings)?.text;
           },
           pointValueformatter: (val, nearestPoint) => {

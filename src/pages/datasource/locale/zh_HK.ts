@@ -61,6 +61,7 @@ const zh_HK = {
       prom_installation: '到夜鶯部署的機器上，執行如下命令，安裝 Prometheus 時序庫，生產環境，建議部署集群版的 VictoriaMetrics，可參考 <a>官方文檔</a>',
     },
     es: {
+      enable_write: '允許寫入',
       version: '版本',
       max_shard: '最大併發分片請求數',
       min_interval: '最小時間間隔 (s)',

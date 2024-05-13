@@ -110,7 +110,7 @@ const getDefaultMode = (query, isOpenSearch, esIndexMode, value?) => {
   if (esIndexMode === 'index-patterns') {
     return IMode.indexPatterns;
   }
-  if(query?.mode==='Pattern'){
+  if (query?.mode === 'Pattern') {
     return IMode.indexPatterns;
   }
   if (query?.data_source_id && query?.index_name) {
@@ -355,12 +355,13 @@ export default function index(props: IProps) {
                   params={{ form, timesRef, datasourceValue, limit: LOGS_LIMIT }}
                   filters={filters}
                   onValueFilter={({ key, value, operator }) => {
-                    if (operator === 'is not' || !_.find(filters, { key })) {
+                    // key + value 作为唯一标识，存在则更新，不存在则新增
+                    if (!_.find(filters, { key, value })) {
                       setFilters([...(filters || []), { key, value, operator }]);
                     } else {
                       setFilters(
                         _.map(filters, (item) => {
-                          if (item.key === key) {
+                          if (item.key === key && item.value === value) {
                             return {
                               ...item,
                               value,

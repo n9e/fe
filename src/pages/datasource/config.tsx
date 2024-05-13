@@ -12,4 +12,6 @@ import React from 'react';
 //   opensearch: <img src={'/logos/opensearch.svg'} alt='' className='datasource-logo' height='52' />,
 //   tdengine: <img src={'/logos/tdengine.svg'} alt='' className='datasource-logo' height='56' />,
 //   loki: <img src={'/logos/loki_logo.svg'} alt='' className='prometheus_logo' height='46' />,
+//   kafka: <img src={'/logos/kafka.svg'} alt='' className='prometheus_logo' />,
+//   doris: <img src={'/logos/doris.svg'} alt='' className='prometheus_logo' />,
 // };

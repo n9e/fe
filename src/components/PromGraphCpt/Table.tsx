@@ -39,7 +39,7 @@ interface IProps {
 }
 type ResultType = 'matrix' | 'vector' | 'scalar' | 'string' | 'streams';
 
-const LIMIT = 10000;
+const LIMIT = 1000;
 function getListItemLabel(resultType, record) {
   const { metric } = record;
   if (resultType === 'scalar') return 'scalar';

@@ -61,6 +61,9 @@ const zh_CN = {
       prom_installation: '到夜莺部署的机器上，执行如下命令，安装 Prometheus 时序库，生产环境，建议部署集群版的 VictoriaMetrics，可参考 <a>官方文档</a>',
     },
     es: {
+      write_config: '写配置',
+      disable_write: '不允许写入',
+      enable_write: '允许写入',
       version: '版本',
       max_shard: '最大并发分片请求数',
       min_interval: '最小时间间隔(s)',

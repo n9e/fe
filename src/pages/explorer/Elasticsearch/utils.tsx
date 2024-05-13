@@ -51,9 +51,15 @@ export function getColumnsFromFields(selectedFields: { name: string; type: strin
         title: 'Document',
         dataIndex: 'fields',
         render(text) {
+          const fields = _.cloneDeep(text);
+          _.forEach(fields, (value, key) => {
+            if (value === undefined || value === null || value === '') {
+              delete fields[key];
+            }
+          });
           return (
             <dl className='es-discover-logs-row'>
-              {_.map(text, (val, key) => {
+              {_.map(fields, (val, key) => {
                 const label = getFieldLabel(key, fieldConfig);
                 const value = _.isArray(val) ? _.join(val, ',') : getFieldValue(key, val, fieldConfig);
                 return (

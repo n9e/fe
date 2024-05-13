@@ -65,6 +65,7 @@ const en_US = {
         'On the machine where n9e is deployed, run the following command to install the Prometheus time series database. For production environments, it is recommended to deploy the cluster version of VictoriaMetrics. Refer to the <a>official documentation</a> for details',
     },
     es: {
+      enable_write: 'Enable Write',
       version: 'Version',
       max_shard: 'Max concurrent Shard Requests',
       min_interval: 'Min time interval(s)',
