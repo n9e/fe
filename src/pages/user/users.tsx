@@ -17,7 +17,8 @@
 import React, { useState, useContext } from 'react';
 import moment from 'moment';
 import _ from 'lodash';
-import { Button, Input, message, Row, Modal, Table } from 'antd';
+import { Link } from 'react-router-dom';
+import { Button, Input, message, Row, Modal, Table, Tooltip, Tag } from 'antd';
 import { SearchOutlined, UserOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/lib/table';
 import { useTranslation } from 'react-i18next';
@@ -34,7 +35,7 @@ import './locale';
 const { confirm } = Modal;
 
 const Resource: React.FC = () => {
-  const { t } = useTranslation('user');
+  const { t, i18n } = useTranslation('user');
   const [visible, setVisible] = useState<boolean>(false);
   const [action, setAction] = useState<ActionType>();
   const [userId, setUserId] = useState<string>('');
@@ -73,6 +74,66 @@ const Resource: React.FC = () => {
       render: (text: []) => text.join(', '),
     },
     {
+      title: t('user.busi_groups'),
+      dataIndex: 'busi_groups',
+      render: (value) => {
+        return _.map(value, (item) => {
+          return (
+            <Tooltip key={item.id} title={item.name}>
+              <Link
+                to={{
+                  pathname: '/busi-groups',
+                  search: `?id=${item.id}`,
+                }}
+              >
+                <Tag color='purple' style={{ maxWidth: '100%', marginRight: 8 }}>
+                  <div
+                    style={{
+                      maxWidth: 'max-content',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                    }}
+                  >
+                    {item.name}
+                  </div>
+                </Tag>
+              </Link>
+            </Tooltip>
+          );
+        });
+      },
+    },
+    {
+      title: t('user.user_groups'),
+      dataIndex: 'user_groups',
+      render: (value) => {
+        return _.map(value, (item) => {
+          return (
+            <Tooltip key={item.id} title={item.name}>
+              <Link
+                to={{
+                  pathname: '/user-groups',
+                  search: `?id=${item.id}`,
+                }}
+              >
+                <Tag color='purple' style={{ maxWidth: '100%', marginRight: 8 }}>
+                  <div
+                    style={{
+                      maxWidth: 'max-content',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                    }}
+                  >
+                    {item.name}
+                  </div>
+                </Tag>
+              </Link>
+            </Tooltip>
+          );
+        });
+      },
+    },
+    {
       title: t('common:table.create_at'),
       dataIndex: 'create_at',
       render: (text) => {
@@ -82,7 +143,7 @@ const Resource: React.FC = () => {
     },
     {
       title: t('common:table.operations'),
-      width: '240px',
+      width: i18n.language === 'en_US' ? 200 : 160,
       render: (text: string, record) => (
         <>
           <Button className='oper-name' type='link' onClick={() => handleClick(ActionType.EditUser, record.id)}>
