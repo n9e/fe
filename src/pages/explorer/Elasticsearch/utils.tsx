@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
+import { useTranslation } from 'react-i18next';
+import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { measureTextWidth } from '@ant-design/plots';
 import flatten from './flatten';
 
@@ -41,6 +43,42 @@ export function normalizeLogs(logs: { [index: string]: string }, fieldConfig?: a
     }
   });
   return logsClone;
+}
+
+export function RenderValue({ value }) {
+  const { t } = useTranslation('db_aliyunSLS');
+  const [expand, setExpand] = useState(false);
+  if (typeof value === 'string' && value.indexOf('\n') > -1) {
+    const valArr = value.split('\n');
+    const lines = !expand ? _.slice(valArr, 0, 18) : valArr;
+    return (
+      <div style={{ display: 'inline-block', wordBreak: 'break-all' }}>
+        {_.map(lines, (v, idx) => {
+          return (
+            <div key={idx}>
+              {v}
+              {idx === lines.length - 1 && valArr.length > 18 && (
+                <a
+                  onClick={() => {
+                    setExpand(!expand);
+                  }}
+                  style={{
+                    marginLeft: 8,
+                  }}
+                >
+                  {expand ? t('logs.collapse') : t('logs.expand')}
+                  {expand ? <LeftOutlined /> : <RightOutlined />}
+                </a>
+              )}
+
+              <br />
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+  return <div style={{ display: 'inline-block', wordBreak: 'break-all' }}>{value}</div>;
 }
 
 export function getColumnsFromFields(selectedFields: { name: string; type: string }[], dateField?: string, fieldConfig?: any, filters?: any[]) {
@@ -86,11 +124,19 @@ export function getColumnsFromFields(selectedFields: { name: string; type: strin
           const value = _.isArray(fieldVal) ? _.join(fieldVal, ',') : fieldVal;
           return (
             <div
-              style={{
-                minWidth: measureTextWidth(label) + 30, // sorter width
-              }}
+              style={
+                {
+                  // minWidth: measureTextWidth(label) + 30, // sorter width
+                }
+              }
             >
-              {_.find(filters, { key: fieldKey, value: fields[fieldKey], operator: 'is' }) ? <mark>{value}</mark> : value}
+              {_.find(filters, { key: fieldKey, value: fields[fieldKey], operator: 'is' }) ? (
+                <mark>
+                  <RenderValue value={value} />
+                </mark>
+              ) : (
+                <RenderValue value={value} />
+              )}
             </div>
           );
         },

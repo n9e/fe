@@ -490,7 +490,10 @@ export default function index(props: IProps) {
                     expandIcon: ({ expanded, onExpand, record }) =>
                       expanded ? <DownOutlined onClick={(e) => onExpand(record, e)} /> : <RightOutlined onClick={(e) => onExpand(record, e)} />,
                   }}
-                  scroll={{ x: _.isEmpty(selectedFields) ? undefined : 'max-content', y: 'calc(100% - 36px)' }}
+                  scroll={{
+                    // x: _.isEmpty(selectedFields) ? undefined : 'max-content',
+                    y: 'calc(100% - 36px)',
+                  }}
                   pagination={false}
                   onChange={(pagination, filters, sorter: any, extra) => {
                     sorterRef.current = _.map(_.isArray(sorter) ? sorter : [sorter], (item) => {
