@@ -339,6 +339,7 @@ const Resource: React.FC = () => {
                   }}
                 >
                   <Space>
+                    <span>ID：{teamInfo?.id ? teamInfo.id : '-'}</span>
                     <span>
                       {t('common:table.note')}：{teamInfo?.note ? teamInfo.note : '-'}
                     </span>

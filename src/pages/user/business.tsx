@@ -34,7 +34,7 @@ import '@/components/BlankBusinessPlaceholder/index.less';
 import './index.less';
 
 const { confirm } = Modal;
-export const PAGE_SIZE = 200;
+export const PAGE_SIZE = 5000;
 
 const Resource: React.FC = () => {
   const { setBusiGroups, siteInfo } = useContext(CommonStateContext);
