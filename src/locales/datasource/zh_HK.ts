@@ -15,6 +15,7 @@ const zh_HK = {
     index_msg: '索引不能為空',
     indexPatterns: '索引模式',
     indexPattern_msg: '索引模式不能為空',
+    indexPatterns_manage: '管理',
     filter: '過濾條件',
     time_label: '時間顆粒度',
     date_field: '日期字段',
