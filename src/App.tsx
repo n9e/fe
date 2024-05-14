@@ -215,7 +215,10 @@ function App() {
               ...state,
               profile,
               busiGroups,
-              datasourceCateOptions: getAuthorizedDatasourceCates(feats, isPlus),
+              datasourceCateOptions: getAuthorizedDatasourceCates(feats, isPlus, (cate) => {
+                const groupedDatasourceList = _.groupBy(datasourceList, 'plugin_type');
+                return !_.isEmpty(groupedDatasourceList[cate.value]);
+              }),
               groupedDatasourceList: _.groupBy(datasourceList, 'plugin_type'),
               datasourceList: datasourceList,
               curBusiId: defaultBusiId,
