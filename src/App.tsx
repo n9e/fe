@@ -27,7 +27,7 @@ import TaskOutput from '@/pages/taskOutput';
 import TaskHostOutput from '@/pages/taskOutput/host';
 import { getAuthorizedDatasourceCates, Cate } from '@/components/AdvancedWrap';
 import { GetProfile } from '@/services/account';
-import { getBusiGroups, getDatasourceBriefList } from '@/services/common';
+import { getBusiGroups, getDatasourceBriefList, getMenuPerm } from '@/services/common';
 import { getLicense } from '@/components/AdvancedWrap';
 import { getVersions } from '@/components/pageLayout/Version/services';
 import { getCleanBusinessGroupIds, getDefaultBusiness } from '@/components/BusinessGroup';
@@ -106,6 +106,7 @@ export interface ICommonState {
   dashboardDefaultRangeIndex?: string;
   esIndexMode: string;
   dashboardSaveMode: 'auto' | 'manual';
+  perms?: string[];
 }
 
 export const basePrefix = import.meta.env.VITE_PREFIX || '';
@@ -202,6 +203,7 @@ function App() {
         if (!anonymous) {
           const { dat: profile } = await GetProfile();
           const { dat: busiGroups } = await getBusiGroups();
+          const { dat: perms } = await getMenuPerm();
           const datasourceList = await getDatasourceBriefList();
           const { licenseRulesRemaining, licenseExpireDays, feats } = await getLicense(t);
           let versions = { version: '', github_verison: '', newVersion: false };
@@ -233,6 +235,7 @@ function App() {
               versions,
               feats,
               siteInfo,
+              perms,
             };
           });
         } else {

@@ -110,9 +110,8 @@ export default function DetailV2(props: IProps) {
   const { isPreview = false, isBuiltin = false, gobackPath, builtinParams } = props;
   const { t, i18n } = useTranslation('dashboard');
   const history = useHistory();
-  const { datasourceList, profile, dashboardDefaultRangeIndex, dashboardSaveMode } = useContext(CommonStateContext);
-  const roles = _.get(profile, 'roles', []);
-  const isAuthorized = !_.some(roles, (item) => item === 'Guest') && !isPreview;
+  const { datasourceList, profile, dashboardDefaultRangeIndex, dashboardSaveMode, perms } = useContext(CommonStateContext);
+  const isAuthorized = _.includes(perms, '/dashboards/put') && !isPreview;
   const [dashboardMeta, setDashboardMeta] = useGlobalState('dashboardMeta');
   let { id } = useParams<URLParam>();
   const query = queryString.parse(useLocation().search);
