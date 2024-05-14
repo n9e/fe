@@ -5,6 +5,8 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import HideButton from '@/pages/dashboard/Components/HideButton';
 import { IS_PLUS } from '@/utils/constant';
+import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
+import DateField from './DateField';
 import IndexSelect from './IndexSelect';
 import Values from './Values';
 import GroupBy from './GroupBy';
@@ -145,29 +147,26 @@ export default function Elasticsearch({ chartForm, variableConfig, dashboardId }
                           return (
                             <Row gutter={10}>
                               <Col span={12}>
-                                <Form.Item
-                                  label={t('datasource:es.date_field')}
-                                  {...field}
-                                  name={[field.name, 'query', 'date_field']}
-                                  rules={[
-                                    {
-                                      required: true,
-                                      message: t('datasource:es.date_field_msg'),
-                                    },
-                                  ]}
-                                >
-                                  <Input />
+                                <Form.Item shouldUpdate noStyle>
+                                  {({ getFieldValue }) => {
+                                    let datasourceValue = getFieldValue('datasourceValue');
+                                    datasourceValue = replaceExpressionVars(datasourceValue as any, variableConfig, variableConfig.length, dashboardId);
+                                    const index = getFieldValue(['targets', field.name, 'query', 'index']);
+                                    return <DateField datasourceValue={datasourceValue} index={index} prefixField={field} prefixNames={[field.name, 'query']} />;
+                                  }}
                                 </Form.Item>
                               </Col>
                               <Col span={12}>
-                                <Form.Item label={t('datasource:es.raw.limit')} {...field} name={[field.name, 'query', 'limit']}>
-                                  <InputNumber style={{ width: '100%' }} />
-                                </Form.Item>
+                                <InputGroupWithFormItem label={t('datasource:es.raw.limit')}>
+                                  <Form.Item {...field} name={[field.name, 'query', 'limit']}>
+                                    <InputNumber style={{ width: '100%' }} />
+                                  </Form.Item>
+                                </InputGroupWithFormItem>
                               </Col>
                             </Row>
                           );
                         }
-                        return <Time prefixField={field} prefixNameField={[field.name]} chartForm={chartForm} />;
+                        return <Time prefixField={field} prefixNameField={[field.name]} chartForm={chartForm} variableConfig={variableConfig} dashboardId={dashboardId} />;
                       }}
                     </Form.Item>
                   </Panel>
