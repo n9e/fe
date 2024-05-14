@@ -35,6 +35,9 @@ const errorHandler = (error: ResponseError<any>): Response => {
 
 /** 处理后端返回的错误信息 */
 const processError = (res: any): string => {
+  if (res?.error?.message) {
+    return _.isString(res?.error?.message) ? res?.error?.message : JSON.stringify(res?.error?.message);
+  }
   if (res?.error) {
     return _.isString(res?.error) ? res.error : JSON.stringify(res?.error);
   }
