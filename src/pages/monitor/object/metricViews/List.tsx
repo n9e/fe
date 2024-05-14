@@ -207,7 +207,7 @@ export default function List(props: IProps) {
                           </div>
                         </span>
                       ) : (
-                        <span style={{ color: '#ccc' }}>{t('title.public')}</span>
+                        <span style={{ color: '#ccc' }}>{t('list.public')}</span>
                       )}
                     </div>
                   );
