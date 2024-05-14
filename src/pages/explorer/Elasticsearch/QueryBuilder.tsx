@@ -150,15 +150,15 @@ export default function QueryBuilder(props: Props) {
               },
             ]}
           >
-            <Select dropdownMatchSelectWidth={false} showSearch>
-              {_.map(dateFields, (item) => {
-                return (
-                  <Select.Option key={item.name} value={item.name}>
-                    {item.name}
-                  </Select.Option>
-                );
+            <AutoComplete
+              dropdownMatchSelectWidth={false}
+              style={{ width: '100%' }}
+              options={_.map(dateFields, (item) => {
+                return {
+                  value: item.name,
+                };
               })}
-            </Select>
+            />
           </Form.Item>
         </InputGroupWithFormItem>
       </div>
