@@ -78,6 +78,7 @@ function hostsFilterModal(props: Props & ModalWrapProps) {
                         const queries = form.getFieldValue(['queries']);
                         const query = queries[field.name];
                         query.values = [];
+                        query.op = '==';
                         form.setFieldsValue({
                           queries,
                         });
@@ -134,7 +135,7 @@ function hostsFilterModal(props: Props & ModalWrapProps) {
                               }}
                             />
                           </Form.Item>
-                          <ValuesSelect queryKey={queryKey} queryOp={queryOp} field={field} />
+                          <ValuesSelect queryKey={queryKey} queryOp={queryOp} field={field} group_id={group_id} />
                         </Space>
                       );
                     }}

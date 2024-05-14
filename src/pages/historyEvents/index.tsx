@@ -228,6 +228,8 @@ const Event: React.FC = () => {
               });
             }}
             dropdownMatchSelectWidth={false}
+            showSearch
+            optionFilterProp='children'
           >
             {_.map(busiGroups, (item) => {
               return <Select.Option value={item.id}>{item.name}</Select.Option>;

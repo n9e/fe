@@ -49,7 +49,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
   const [form] = Form.useForm(null as any);
   const history = useHistory();
   const [timeLen, setTimeLen] = useState('1h');
-  const { groupedDatasourceList, busiGroups, isPlus } = useContext(CommonStateContext);
+  const { groupedDatasourceList, busiGroups, isPlus, businessGroupOnChange } = useContext(CommonStateContext);
 
   useEffect(() => {
     timeChange();
@@ -79,7 +79,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
     const curBusiItemId = form.getFieldValue('group_id');
     const historyPushOptions = {
       pathname: '/alert-mutes',
-      search: `?id=${curBusiItemId}`,
+      search: `?ids=${curBusiItemId}&isLeaf=true`,
     };
     if (type == 1) {
       editShield(params, curBusiItemId, detail.id).then((_) => {
@@ -87,6 +87,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
         history.push(historyPushOptions);
       });
     } else {
+      businessGroupOnChange(_.toString(curBusiItemId));
       addShield(params, curBusiItemId).then((_) => {
         message.success(t('common:success.add'));
         history.push(historyPushOptions);
@@ -185,6 +186,8 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
                 value: item.id,
               };
             })}
+            showSearch
+            optionFilterProp='label'
           />
         </Form.Item>
         <Row gutter={10}>
