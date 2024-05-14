@@ -17,8 +17,7 @@
 import React, { useState, useContext } from 'react';
 import moment from 'moment';
 import _ from 'lodash';
-import { Link } from 'react-router-dom';
-import { Button, Input, message, Row, Modal, Table, Tooltip, Tag } from 'antd';
+import { Button, Input, message, Row, Modal, Table } from 'antd';
 import { SearchOutlined, UserOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/lib/table';
 import { useTranslation } from 'react-i18next';
@@ -29,6 +28,7 @@ import { getUserInfoList, deleteUser } from '@/services/manage';
 import { User, UserType, ActionType } from '@/store/manageInterface';
 import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
+import Tags from './component/Tags';
 import './index.less';
 import './locale';
 
@@ -77,60 +77,34 @@ const Resource: React.FC = () => {
       title: t('user.busi_groups'),
       dataIndex: 'busi_groups',
       render: (value) => {
-        return _.map(value, (item) => {
-          return (
-            <Tooltip key={item.id} title={item.name}>
-              <Link
-                to={{
-                  pathname: '/busi-groups',
-                  search: `?id=${item.id}`,
-                }}
-              >
-                <Tag color='purple' style={{ maxWidth: '100%', marginRight: 8 }}>
-                  <div
-                    style={{
-                      maxWidth: 'max-content',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                    }}
-                  >
-                    {item.name}
-                  </div>
-                </Tag>
-              </Link>
-            </Tooltip>
-          );
-        });
+        return (
+          <Tags
+            data={value}
+            tagLinkTo={(item) => {
+              return {
+                pathname: '/busi-groups',
+                search: `?id=${item.id}`,
+              };
+            }}
+          />
+        );
       },
     },
     {
       title: t('user.user_groups'),
       dataIndex: 'user_groups',
       render: (value) => {
-        return _.map(value, (item) => {
-          return (
-            <Tooltip key={item.id} title={item.name}>
-              <Link
-                to={{
-                  pathname: '/user-groups',
-                  search: `?id=${item.id}`,
-                }}
-              >
-                <Tag color='purple' style={{ maxWidth: '100%', marginRight: 8 }}>
-                  <div
-                    style={{
-                      maxWidth: 'max-content',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                    }}
-                  >
-                    {item.name}
-                  </div>
-                </Tag>
-              </Link>
-            </Tooltip>
-          );
-        });
+        return (
+          <Tags
+            data={value}
+            tagLinkTo={(item) => {
+              return {
+                pathname: '/user-groups',
+                search: `?id=${item.id}`,
+              };
+            }}
+          />
+        );
       },
     },
     {
