@@ -17,6 +17,8 @@
 import React, { useEffect, useState, useContext } from 'react';
 import moment from 'moment';
 import _ from 'lodash';
+import { useLocation } from 'react-router-dom';
+import queryString from 'query-string';
 import PageLayout from '@/components/pageLayout';
 import { Button, Table, Input, message, List, Row, Col, Modal, Space, Tree } from 'antd';
 import { EditOutlined, DeleteOutlined, SearchOutlined, UserOutlined, InfoCircleOutlined, DownOutlined } from '@ant-design/icons';
@@ -56,9 +58,11 @@ export function setLocaleExpandedKeys(nodes: string[]) {
 const Resource: React.FC = () => {
   const { siteInfo } = useContext(CommonStateContext);
   const { t } = useTranslation('user');
+  const location = useLocation();
+  const query = queryString.parse(location.search);
   const [visible, setVisible] = useState<boolean>(false);
   const [action, setAction] = useState<ActionType>();
-  const [teamId, setTeamId] = useState<string>('');
+  const [teamId, setTeamId] = useState<string>((query.id as string) ?? '');
   const [memberId, setMemberId] = useState<string>('');
   const [memberList, setMemberList] = useState<User[]>([]);
   const [allMemberList, setAllMemberList] = useState<User[]>([]);
@@ -124,8 +128,8 @@ const Resource: React.FC = () => {
   ];
 
   useEffect(() => {
-    getList(true);
-  }, []); //teamId变化触发
+    getList();
+  }, []);
 
   useEffect(() => {
     if (teamId) {
@@ -261,7 +265,7 @@ const Resource: React.FC = () => {
                   dataSource={teamList}
                   size='small'
                   renderItem={(item) => (
-                    <List.Item key={item.id} className={teamId === item.id ? 'is-active' : ''} onClick={() => setTeamId(item.id)}>
+                    <List.Item key={item.id} className={_.toNumber(teamId) === _.toNumber(item.id) ? 'is-active' : ''} onClick={() => setTeamId(item.id)}>
                       {item.name}
                     </List.Item>
                   )}
