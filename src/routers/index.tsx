@@ -111,16 +111,14 @@ export default function Content() {
   }
 
   useEffect(() => {
-    if (profile?.roles?.length > 0 && location.pathname !== '/') {
-      if (profile?.roles.indexOf('Admin') === -1) {
-        // 如果没有权限则重定向到 403 页面
-        if (
-          _.every(perms, (item) => {
-            return location.pathname.indexOf(item) === -1;
-          })
-        ) {
-          history.push('/403');
-        }
+    if (!_.includes(['/', '/account/profile/info', '/account/profile/pwd'], location.pathname)) {
+      // 如果没有权限则重定向到 403 页面
+      if (
+        _.every(perms, (item) => {
+          return location.pathname.indexOf(item) === -1;
+        })
+      ) {
+        history.push('/403');
       }
     }
   }, []);
