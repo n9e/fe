@@ -43,6 +43,11 @@ const zh_CN = {
     import_grafana_tip_version_warning: '导入小于 v8 版本的仪表盘配置，可能会有部分图表不支持，以及图表无法正常渲染问题',
     continueToImport: '继续导入',
     noSelected: '请选择仪表盘',
+    clone: {
+      name: '名称',
+      result: '结果',
+      errmsg: '错误信息',
+    },
   },
   link: {
     title: '仪表盘链接',
