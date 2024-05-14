@@ -8,7 +8,7 @@ import { json } from '@codemirror/lang-json';
 import { defaultHighlightStyle } from '@codemirror/highlight';
 import { copyToClipBoard } from '@/utils';
 import CodeMirror from '@/components/CodeMirror';
-import { Field, getFieldLabel, getFieldValue } from './utils';
+import { Field, getFieldLabel, getFieldValue, RenderValue } from './utils';
 import { typeIconMap } from './FieldsSidebar/Field';
 import { typeMap } from '../Elasticsearch/services';
 
@@ -86,7 +86,11 @@ export default function LogView(props: Props) {
                 const field = record.field;
                 const fieldVal = getFieldValue(field, val, fieldConfig);
                 const value = _.isArray(fieldVal) ? _.join(fieldVal, ',') : fieldVal;
-                return <div>{value}</div>;
+                return (
+                  <div>
+                    <RenderValue value={value} />
+                  </div>
+                );
               },
             },
           ]}
