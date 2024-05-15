@@ -65,6 +65,7 @@ export default function Servers() {
                   onChange={(e) => {
                     setSearch(e.target.value);
                   }}
+                  placeholder='Search index pattern'
                 />
                 <Button
                   type='primary'
