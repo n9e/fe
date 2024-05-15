@@ -18,7 +18,7 @@ import React, { useState, useContext } from 'react';
 import moment from 'moment';
 import _ from 'lodash';
 import { Button, Input, message, Row, Modal, Table, Space } from 'antd';
-import { SearchOutlined, UserOutlined } from '@ant-design/icons';
+import { SearchOutlined, UserOutlined, EyeOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/lib/table';
 import { useTranslation } from 'react-i18next';
 import { useAntdTable } from 'ahooks';
@@ -28,6 +28,8 @@ import { getUserInfoList, deleteUser } from '@/services/manage';
 import { User, UserType, ActionType } from '@/store/manageInterface';
 import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
+import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
+import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
 import Tags from './component/Tags';
 import './index.less';
 import './locale';
@@ -43,6 +45,7 @@ const Resource: React.FC = () => {
   const [query, setQuery] = useState<string>('');
   const { profile } = useContext(CommonStateContext);
   const pagination = usePagination({ PAGESIZE_KEY: 'users' });
+  const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
   const userColumn: ColumnsType<User> = [
     {
       title: t('account:profile.username'),
@@ -213,20 +216,35 @@ const Resource: React.FC = () => {
               <Input className={'searchInput'} prefix={<SearchOutlined />} onPressEnter={onSearchQuery} placeholder={t('user.search_placeholder')} />
             </div>
             <div className='event-table-search-right'>
-              {profile.roles?.includes('Admin') && (
-                <div className='user-manage-operate'>
-                  <Button type='primary' onClick={() => handleClick(ActionType.CreateUser)}>
-                    {t('common:btn.add')}
-                  </Button>
-                </div>
-              )}
+              <Space>
+                {profile.roles?.includes('Admin') && (
+                  <div className='user-manage-operate'>
+                    <Button type='primary' onClick={() => handleClick(ActionType.CreateUser)}>
+                      {t('common:btn.add')}
+                    </Button>
+                  </div>
+                )}
+                <Button
+                  onClick={() => {
+                    OrganizeColumns({
+                      i18nNs: 'user',
+                      value: columnsConfigs,
+                      onChange: (val) => {
+                        setColumnsConfigs(val);
+                        setDefaultColumnsConfigs(val, LOCAL_STORAGE_KEY);
+                      },
+                    });
+                  }}
+                  icon={<EyeOutlined />}
+                />
+              </Space>
             </div>
           </Row>
           <Table
             className='mt8'
             size='small'
             rowKey='id'
-            columns={userColumns}
+            columns={ajustColumns(userColumns, columnsConfigs)}
             {...tableProps}
             pagination={{
               ...tableProps.pagination,
