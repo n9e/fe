@@ -83,6 +83,15 @@ const en_US = {
     name_msg: 'Only support number and character underline',
     label: 'Label',
     type: 'Type',
+    type_map: {
+      query: 'Query',
+      custom: 'Custom',
+      textbox: 'Text box',
+      constant: 'Constant',
+      datasource: 'Datasource',
+      hostIdent: 'Host ident',
+      businessGroupIdent: 'Business group ident',
+    },
     hide: 'Hide',
     definition: 'Definition',
     definition_msg1: 'Please enter variable definition',
@@ -108,6 +117,10 @@ const en_US = {
       defaultValue: 'Default value',
       regex: 'Datasource name filter',
       regex_tip: 'Optional, can filter options, Using a <a>regular expression literal</a>, which consists of a pattern enclosed between slashes',
+    },
+    businessGroupIdent: {
+      ident: 'Business group ident',
+      invalid: 'Invalid business group ident, Please go to the business group management settings first.',
     },
   },
   row: {

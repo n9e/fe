@@ -21,6 +21,7 @@ import _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import { useTranslation } from 'react-i18next';
 import TimeRangePicker, { IRawTimeRange } from '@/components/TimeRangePicker';
+import { Dashboard } from '@/store/dashboardInterface';
 import { visualizations, defaultValues, defaultCustomValuesMap, defaultOptionsValuesMap } from './config';
 import { IVariable } from '../VariableConfig';
 import FormCpt from './Form';
@@ -38,12 +39,13 @@ interface IProps {
   time: IRawTimeRange;
   onOK: (formData: any, mode: string) => void;
   onCancel?: () => void;
+  dashboard: Dashboard;
 }
 
 function index(props: IProps) {
   const { t, i18n } = useTranslation('dashboard');
   const formRef = useRef<any>();
-  const { mode, visible, setVisible, variableConfigWithOptions, id, dashboardId, time } = props;
+  const { mode, visible, setVisible, variableConfigWithOptions, id, dashboardId, time, dashboard } = props;
   const [initialValues, setInitialValues] = useState<IPanel>(_.cloneDeep(props.initialValues));
   const [range, setRange] = useState<IRawTimeRange>(time);
   const handleAddChart = async () => {
@@ -172,6 +174,7 @@ function index(props: IProps) {
           id={id}
           dashboardId={dashboardId}
           key={initialValues.type} // 每次切换图表类型，都重新渲染
+          dashboard={dashboard}
         />
       )}
     </Modal>

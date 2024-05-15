@@ -322,6 +322,7 @@ export default function DetailV2(props: IProps) {
                       id={id}
                       onOpenFire={stopAutoRefresh}
                       variableConfigRefreshFlag={variableConfigRefreshFlag}
+                      dashboard={dashboard}
                     />
                   )}
                 </div>
@@ -420,6 +421,7 @@ export default function DetailV2(props: IProps) {
             configs: panelsMergeToConfigs(dashboard.configs, newPanels),
           });
         }}
+        dashboard={dashboard}
       />
       {/*迁移*/}
       <Modal

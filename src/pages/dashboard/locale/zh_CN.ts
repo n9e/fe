@@ -84,6 +84,15 @@ const zh_CN = {
     name_msg: '仅支持数字和字符下划线',
     label: '显示名称',
     type: '变量类型',
+    type_map: {
+      query: '查询 (Query)',
+      custom: '自定义 (Custom)',
+      textbox: '文本框 (Text box)',
+      constant: '常量 (Constant)',
+      datasource: '数据源 (Datasource)',
+      hostIdent: '机器标识 (Host ident)',
+      businessGroupIdent: '业务组标识 (Business group ident)',
+    },
     hide: '隐藏变量',
     definition: '变量定义',
     definition_msg1: '请输入变量定义',
@@ -109,6 +118,10 @@ const zh_CN = {
       defaultValue: '默认值',
       regex: '数据源过滤',
       regex_tip: '可选，可通过正则来过滤可选项。这里是填写的<a>正则表达式字面量</a>，其由包含在斜杠之间的模式组成。',
+    },
+    businessGroupIdent: {
+      ident: '业务组标识',
+      invalid: '没有找到当前业务组的标识，请先先去业务组管理设置',
     },
   },
   row: {

@@ -83,6 +83,15 @@ const zh_HK = {
     name_msg: '僅支援數字和字元下劃線',
     label: '顯示名稱',
     type: '變數類型',
+    type_map: {
+      query: '查詢',
+      custom: '自定義',
+      textbox: '文本框',
+      constant: '常量',
+      datasource: '數據源',
+      hostIdent: '主機標識',
+      businessGroupIdent: '業務組標識',
+    },
     hide: '隱藏變數',
     definition: '變數定義',
     definition_msg1: '請輸入變數定義',
@@ -108,6 +117,10 @@ const zh_HK = {
       defaultValue: '預設值',
       regex: '數據源過濾',
       regex_tip: '可選，可通過正則來過濾可選項。這裡是填寫的<a>正規表示式字面量</a>，其由包含在斜線之間的模式組成',
+    },
+    businessGroupIdent: {
+      ident: '業務組標識',
+      invalid: '沒有找到目前業務組的標識，請先去業務組管理設置',
     },
   },
   row: {

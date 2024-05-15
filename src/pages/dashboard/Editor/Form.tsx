@@ -20,6 +20,7 @@ import { DeleteOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { CommonStateContext } from '@/App';
+import { Dashboard } from '@/store/dashboardInterface';
 import { defaultValues, defaultCustomValuesMap } from './config';
 import Options from './Options';
 import Collapse, { Panel } from './Components/Collapse';
@@ -33,13 +34,14 @@ interface IProps {
   range: any;
   id: string;
   dashboardId: string;
+  dashboard: Dashboard;
 }
 
 function FormCpt(props: IProps, ref) {
   const { t } = useTranslation('dashboard');
   const { darkMode } = useContext(CommonStateContext);
   const [chartForm] = Form.useForm();
-  const { initialValues, range, id, dashboardId } = props;
+  const { initialValues, range, id, dashboardId, dashboard } = props;
   const [variableConfigWithOptions, setVariableConfigWithOptions] = useState<IVariable[] | undefined>(props.variableConfigWithOptions);
 
   defaultValues.custom = defaultCustomValuesMap[initialValues?.type || defaultValues.type];
@@ -118,6 +120,7 @@ function FormCpt(props: IProps, ref) {
                           editable={false}
                           range={range}
                           id={dashboardId}
+                          dashboard={dashboard}
                         />
                       </div>
                       <QueryEditor chartForm={chartForm} type={type} variableConfig={variableConfigWithOptions} dashboardId={dashboardId} time={range} />

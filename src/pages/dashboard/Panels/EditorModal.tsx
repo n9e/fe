@@ -62,6 +62,7 @@ function EditorModal(props: Props, ref) {
       onCancel={() => {
         props.setVariableConfigRefreshFlag(_.uniqueId('refreshFlag_')); // TODO 2024-01-30 临时解决编辑状态下变量值修改后没有同步预览视图的问题，后续需要重构变量值方案，抛弃不能状态驱动的 localStorage 方案
       }}
+      dashboard={dashboard}
     />
   );
 }
