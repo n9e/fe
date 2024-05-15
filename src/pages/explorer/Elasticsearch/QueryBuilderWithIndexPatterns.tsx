@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import _ from 'lodash';
 import { useDebounceFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import { Form, Select, Button, Space } from 'antd';
-import { QuestionCircleOutlined } from '@ant-design/icons';
+import { QuestionCircleOutlined, SettingOutlined } from '@ant-design/icons';
 import TimeRangePicker from '@/components/TimeRangePicker';
 import { getESIndexPatterns } from '@/pages/log/IndexPatterns/services';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
-import AuthorizationWrapper from '@/components/AuthorizationWrapper';
+import AuthorizationWrapper, { useIsAuthorized } from '@/components/AuthorizationWrapper';
 import { getFullFields, Field } from './services';
 import InputFilter from './InputFilter';
 import { Link, useLocation } from 'react-router-dom';
@@ -26,7 +26,7 @@ export default function QueryBuilder(props: Props) {
   const { onExecute, datasourceValue, form, setFields, onIndexChange } = props;
   const [indexPatterns, setIndexPatterns] = useState<any[]>([]);
   const indexPattern = Form.useWatch(['query', 'indexPattern']);
-
+  const indexPatternsAuthorized = useIsAuthorized(['/log/index-patterns']);
   const [allFields, setAllFields] = useState<Field[]>([]);
   const refInputFilter = useRef<any>();
   const { run: onIndexPatternChange } = useDebounceFn(
@@ -115,13 +115,13 @@ export default function QueryBuilder(props: Props) {
       <div style={{ display: 'flex', gap: 8 }}>
         <div style={{ width: 290, flexShrink: 0 }}>
           <InputGroupWithFormItem
-            label={
-              <Space>
-                {t('datasource:es.indexPatterns')}
-                <AuthorizationWrapper allowedPerms={['/log/index-patterns']}>
-                  <Link to='/log/index-patterns'>{t('datasource:es.indexPatterns_manage')}</Link>
-                </AuthorizationWrapper>
-              </Space>
+            label={t('datasource:es.indexPatterns')}
+            addonAfter={
+              indexPatternsAuthorized ? (
+                <Link to='/log/index-patterns'>
+                  <SettingOutlined />
+                </Link>
+              ) : undefined
             }
           >
             <Form.Item
