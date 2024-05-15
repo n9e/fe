@@ -44,6 +44,11 @@ const en_US = {
     noSelected: 'Please select any dashboard',
     import_builtin: 'Import built-in dashboard',
     import_builtin_board: 'Built-in dashboard',
+    clone: {
+      name: 'Name',
+      result: 'Result',
+      errmsg: 'Error message',
+    },
   },
   link: {
     title: 'Links',
