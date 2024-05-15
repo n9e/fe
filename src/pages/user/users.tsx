@@ -126,34 +126,31 @@ const Resource: React.FC = () => {
           <Dropdown
             overlay={
               <Menu>
-                <Menu.Item>
-                  <Button className='p0' type='link' onClick={() => handleClick(ActionType.EditUser, record.id)}>
+                <Menu.Item onClick={() => handleClick(ActionType.EditUser, record.id)}>
+                  <Button className='p0' type='link'>
                     {t('common:btn.edit')}
                   </Button>
                 </Menu.Item>
-                <Menu.Item>
-                  <Button className='p0' type='link' onClick={() => handleClick(ActionType.Reset, record.id)}>
+                <Menu.Item onClick={() => handleClick(ActionType.Reset, record.id)}>
+                  <Button className='p0' type='link'>
                     {t('account:password.reset')}
                   </Button>
                 </Menu.Item>
-                <Menu.Item>
-                  <Button
-                    danger
-                    type='link'
-                    className='p0'
-                    onClick={() => {
-                      confirm({
-                        title: t('common:confirm.delete'),
-                        onOk: () => {
-                          deleteUser(record.id).then((_) => {
-                            message.success(t('common:success.delete'));
-                            handleClose();
-                          });
-                        },
-                        onCancel: () => {},
-                      });
-                    }}
-                  >
+                <Menu.Item
+                  onClick={() => {
+                    confirm({
+                      title: t('common:confirm.delete'),
+                      onOk: () => {
+                        deleteUser(record.id).then((_) => {
+                          message.success(t('common:success.delete'));
+                          handleClose();
+                        });
+                      },
+                      onCancel: () => {},
+                    });
+                  }}
+                >
+                  <Button danger type='link' className='p0'>
                     {t('common:btn.delete')}
                   </Button>
                 </Menu.Item>
