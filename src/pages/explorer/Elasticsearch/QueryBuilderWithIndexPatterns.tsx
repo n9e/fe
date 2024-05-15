@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import _ from 'lodash';
 import { useDebounceFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
-import { Form, Select, Button, Space } from 'antd';
+import { Form, Select, Button, Space, Tooltip } from 'antd';
 import { QuestionCircleOutlined, SettingOutlined } from '@ant-design/icons';
 import TimeRangePicker from '@/components/TimeRangePicker';
 import { getESIndexPatterns } from '@/pages/log/IndexPatterns/services';
@@ -118,9 +118,11 @@ export default function QueryBuilder(props: Props) {
             label={t('datasource:es.indexPatterns')}
             addonAfter={
               indexPatternsAuthorized ? (
-                <Link to='/log/index-patterns'>
-                  <SettingOutlined />
-                </Link>
+                <Tooltip title={t('datasource:es.indexPatterns_manage')}>
+                  <Link to='/log/index-patterns'>
+                    <SettingOutlined />
+                  </Link>
+                </Tooltip>
               ) : undefined
             }
           >
