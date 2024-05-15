@@ -17,8 +17,8 @@
 import React, { useState, useContext } from 'react';
 import moment from 'moment';
 import _ from 'lodash';
-import { Button, Input, message, Row, Modal, Table, Space } from 'antd';
-import { SearchOutlined, UserOutlined, EyeOutlined } from '@ant-design/icons';
+import { Button, Input, message, Row, Modal, Table, Space, Dropdown, Menu } from 'antd';
+import { SearchOutlined, UserOutlined, EyeOutlined, MoreOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/lib/table';
 import { useTranslation } from 'react-i18next';
 import { useAntdTable } from 'ahooks';
@@ -120,36 +120,50 @@ const Resource: React.FC = () => {
     },
     {
       title: t('common:table.operations'),
-      width: i18n.language === 'en_US' ? 200 : 160,
-      render: (text: string, record) => (
-        <Space>
-          <Button className='p0' type='link' onClick={() => handleClick(ActionType.EditUser, record.id)}>
-            {t('common:btn.edit')}
-          </Button>
-          <Button className='p0' type='link' onClick={() => handleClick(ActionType.Reset, record.id)}>
-            {t('account:password.reset')}
-          </Button>
-          <Button
-            danger
-            type='link'
-            className='p0'
-            onClick={() => {
-              confirm({
-                title: t('common:confirm.delete'),
-                onOk: () => {
-                  deleteUser(record.id).then((_) => {
-                    message.success(t('common:success.delete'));
-                    handleClose();
-                  });
-                },
-                onCancel: () => {},
-              });
-            }}
+      width: i18n.language === 'en_US' ? 80 : 40,
+      render: (text: string, record) => {
+        return (
+          <Dropdown
+            overlay={
+              <Menu>
+                <Menu.Item>
+                  <Button className='p0' type='link' onClick={() => handleClick(ActionType.EditUser, record.id)}>
+                    {t('common:btn.edit')}
+                  </Button>
+                </Menu.Item>
+                <Menu.Item>
+                  <Button className='p0' type='link' onClick={() => handleClick(ActionType.Reset, record.id)}>
+                    {t('account:password.reset')}
+                  </Button>
+                </Menu.Item>
+                <Menu.Item>
+                  <Button
+                    danger
+                    type='link'
+                    className='p0'
+                    onClick={() => {
+                      confirm({
+                        title: t('common:confirm.delete'),
+                        onOk: () => {
+                          deleteUser(record.id).then((_) => {
+                            message.success(t('common:success.delete'));
+                            handleClose();
+                          });
+                        },
+                        onCancel: () => {},
+                      });
+                    }}
+                  >
+                    {t('common:btn.delete')}
+                  </Button>
+                </Menu.Item>
+              </Menu>
+            }
           >
-            {t('common:btn.delete')}
-          </Button>
-        </Space>
-      ),
+            <Button type='link' icon={<MoreOutlined />} />
+          </Dropdown>
+        );
+      },
     },
   ];
 
