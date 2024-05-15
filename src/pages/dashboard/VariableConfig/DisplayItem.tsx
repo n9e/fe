@@ -34,7 +34,8 @@ export default function DisplayItem(props: IProps) {
     setSelected(value);
   }, [JSON.stringify(value)]);
 
-  if (type === 'constant' || type === 'businessGroupIdent' || hide) return null;
+  // 兼容旧数据，businessGroupIdent 和 constant 的 hide 默认为 true
+  if (hide || ((type === 'businessGroupIdent' || type === 'constant') && hide === undefined)) return null;
 
   return (
     <div className='tag-content-close-item'>
@@ -190,6 +191,8 @@ export default function DisplayItem(props: IProps) {
             ))}
           </Select>
         ) : null}
+        {type === 'businessGroupIdent' ? <Input disabled value={value} /> : null}
+        {type === 'constant' ? <Input disabled value={value} /> : null}
       </Input.Group>
     </div>
   );

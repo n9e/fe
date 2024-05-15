@@ -110,6 +110,7 @@ function EditItem(props: IProps) {
                   name: val === 'businessGroupIdent' ? 'busigroup' : '',
                   definition: '',
                   defaultValue: '',
+                  hide: val === 'constant' || val === 'businessGroupIdent' ? true : false,
                 });
               }}
             >
@@ -126,15 +127,14 @@ function EditItem(props: IProps) {
         <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.type !== curValues.type} noStyle>
           {({ getFieldValue }) => {
             const type = getFieldValue('type');
-            if (type !== 'constant' && type !== 'businessGroupIdent') {
-              return (
-                <Col span={6}>
-                  <Form.Item label={t('var.hide')} name='hide' valuePropName='checked'>
-                    <Switch />
-                  </Form.Item>
-                </Col>
-              );
-            }
+            // initialValue 值为了兼容旧的 constant 和 businessGroupIdent 默认值为 true
+            return (
+              <Col span={6}>
+                <Form.Item label={t('var.hide')} name='hide' valuePropName='checked' initialValue={type === 'constant' || type === 'businessGroupIdent' ? true : false}>
+                  <Switch />
+                </Form.Item>
+              </Col>
+            );
           }}
         </Form.Item>
       </Row>
