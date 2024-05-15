@@ -18,7 +18,7 @@ import React from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Button, Space, Dropdown, Menu } from 'antd';
-import { DownOutlined, EditOutlined } from '@ant-design/icons';
+import { EditOutlined, LinkOutlined } from '@ant-design/icons';
 import Edit from './Edit';
 import { ILink } from '../types';
 import './style.less';
@@ -35,42 +35,39 @@ export default function index(props: IProps) {
   return (
     <div className='dashboard-detail-links'>
       <Space align='baseline'>
-        {editable && (
-          <EditOutlined
-            style={{ fontSize: 18, position: 'relative', top: 4 }}
-            className='icon'
-            onClick={() => {
-              Edit({
-                initialValues: value,
-                onOk: (newValue) => {
-                  props.onChange(newValue);
-                },
-              });
-            }}
-          />
-        )}
         <Dropdown
           overlay={
             <Menu>
-              {_.isEmpty(value) ? (
-                <div style={{ textAlign: 'center' }}>{t('common:nodata')}</div>
-              ) : (
-                _.map(value, (item, idx) => {
-                  return (
-                    <Menu.Item key={idx}>
-                      <a href={item.url} target={item.targetBlank ? '_blank' : '_self'}>
-                        {item.title}
-                      </a>
-                    </Menu.Item>
-                  );
-                })
+              {editable && (
+                <Menu.Item
+                  onClick={() => {
+                    Edit({
+                      initialValues: value,
+                      onOk: (newValue) => {
+                        props.onChange(newValue);
+                      },
+                    });
+                  }}
+                >
+                  <Space>
+                    <EditOutlined />
+                    {t('common:btn.edit')}
+                  </Space>
+                </Menu.Item>
               )}
+              {_.map(value, (item, idx) => {
+                return (
+                  <Menu.Item key={idx}>
+                    <a href={item.url} target={item.targetBlank ? '_blank' : '_self'}>
+                      {item.title}
+                    </a>
+                  </Menu.Item>
+                );
+              })}
             </Menu>
           }
         >
-          <Button>
-            {t('link.title')} <DownOutlined />
-          </Button>
+          <Button icon={<LinkOutlined />} />
         </Dropdown>
       </Space>
     </div>
