@@ -37,7 +37,6 @@ import { rangeOptions } from '@/components/TimeRangePicker/config';
 import VariableConfig, { IVariable } from '../VariableConfig';
 import { replaceExpressionVars, getOptionsList } from '../VariableConfig/constant';
 import { ILink, IDashboardConfig } from '../types';
-import DashboardLinks from '../DashboardLinks';
 import Panels from '../Panels';
 import Title from './Title';
 import { JSONParse } from '../utils';
@@ -266,6 +265,9 @@ export default function DetailV2(props: IProps) {
                 setAllowedLeave={setAllowedLeave}
                 gobackPath={gobackPath}
                 dashboard={dashboard}
+                dashboardLinks={dashboardLinks}
+                setDashboardLinks={setDashboardLinks}
+                handleUpdateDashboardConfigs={handleUpdateDashboardConfigs}
                 range={range}
                 setRange={(v) => {
                   setRange(v);
@@ -326,18 +328,6 @@ export default function DetailV2(props: IProps) {
                     />
                   )}
                 </div>
-                <DashboardLinks
-                  editable={isAuthorized}
-                  value={dashboardLinks}
-                  onChange={(v) => {
-                    const dashboardConfigs: any = dashboard.configs;
-                    dashboardConfigs.links = v;
-                    handleUpdateDashboardConfigs(id, {
-                      configs: JSON.stringify(dashboardConfigs),
-                    });
-                    setDashboardLinks(v);
-                  }}
-                />
               </div>
             </div>
           </Affix>

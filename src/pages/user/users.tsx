@@ -17,8 +17,8 @@
 import React, { useState, useContext } from 'react';
 import moment from 'moment';
 import _ from 'lodash';
-import { Button, Input, message, Row, Modal, Table, Space } from 'antd';
-import { SearchOutlined, UserOutlined } from '@ant-design/icons';
+import { Button, Input, message, Row, Modal, Table, Space, Dropdown, Menu } from 'antd';
+import { SearchOutlined, UserOutlined, EyeOutlined, MoreOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/lib/table';
 import { useTranslation } from 'react-i18next';
 import { useAntdTable } from 'ahooks';
@@ -28,13 +28,16 @@ import { getUserInfoList, deleteUser } from '@/services/manage';
 import { User, UserType, ActionType } from '@/store/manageInterface';
 import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
+import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
+import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
+import Tags from './component/Tags';
 import './index.less';
 import './locale';
 
 const { confirm } = Modal;
 
 const Resource: React.FC = () => {
-  const { t } = useTranslation('user');
+  const { t, i18n } = useTranslation('user');
   const [visible, setVisible] = useState<boolean>(false);
   const [action, setAction] = useState<ActionType>();
   const [userId, setUserId] = useState<string>('');
@@ -42,6 +45,7 @@ const Resource: React.FC = () => {
   const [query, setQuery] = useState<string>('');
   const { profile } = useContext(CommonStateContext);
   const pagination = usePagination({ PAGESIZE_KEY: 'users' });
+  const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
   const userColumn: ColumnsType<User> = [
     {
       title: t('account:profile.username'),
@@ -73,6 +77,40 @@ const Resource: React.FC = () => {
       render: (text: []) => text.join(', '),
     },
     {
+      title: t('user.busi_groups'),
+      dataIndex: 'busi_groups',
+      render: (value) => {
+        return (
+          <Tags
+            data={value}
+            tagLinkTo={(item) => {
+              return {
+                pathname: '/busi-groups',
+                search: `?id=${item.id}`,
+              };
+            }}
+          />
+        );
+      },
+    },
+    {
+      title: t('user.user_groups'),
+      dataIndex: 'user_groups',
+      render: (value) => {
+        return (
+          <Tags
+            data={value}
+            tagLinkTo={(item) => {
+              return {
+                pathname: '/user-groups',
+                search: `?id=${item.id}`,
+              };
+            }}
+          />
+        );
+      },
+    },
+    {
       title: t('common:table.create_at'),
       dataIndex: 'create_at',
       render: (text) => {
@@ -82,36 +120,50 @@ const Resource: React.FC = () => {
     },
     {
       title: t('common:table.operations'),
-      width: '200px',
-      render: (text: string, record) => (
-        <Space>
-          <Button className='p0' type='link' onClick={() => handleClick(ActionType.EditUser, record.id)}>
-            {t('common:btn.edit')}
-          </Button>
-          <Button className='p0' type='link' onClick={() => handleClick(ActionType.Reset, record.id)}>
-            {t('account:password.reset')}
-          </Button>
-          <Button
-            danger
-            type='link'
-            className='p0'
-            onClick={() => {
-              confirm({
-                title: t('common:confirm.delete'),
-                onOk: () => {
-                  deleteUser(record.id).then((_) => {
-                    message.success(t('common:success.delete'));
-                    handleClose();
-                  });
-                },
-                onCancel: () => {},
-              });
-            }}
+      width: i18n.language === 'en_US' ? 80 : 40,
+      render: (text: string, record) => {
+        return (
+          <Dropdown
+            overlay={
+              <Menu>
+                <Menu.Item>
+                  <Button className='p0' type='link' onClick={() => handleClick(ActionType.EditUser, record.id)}>
+                    {t('common:btn.edit')}
+                  </Button>
+                </Menu.Item>
+                <Menu.Item>
+                  <Button className='p0' type='link' onClick={() => handleClick(ActionType.Reset, record.id)}>
+                    {t('account:password.reset')}
+                  </Button>
+                </Menu.Item>
+                <Menu.Item>
+                  <Button
+                    danger
+                    type='link'
+                    className='p0'
+                    onClick={() => {
+                      confirm({
+                        title: t('common:confirm.delete'),
+                        onOk: () => {
+                          deleteUser(record.id).then((_) => {
+                            message.success(t('common:success.delete'));
+                            handleClose();
+                          });
+                        },
+                        onCancel: () => {},
+                      });
+                    }}
+                  >
+                    {t('common:btn.delete')}
+                  </Button>
+                </Menu.Item>
+              </Menu>
+            }
           >
-            {t('common:btn.delete')}
-          </Button>
-        </Space>
-      ),
+            <Button type='link' icon={<MoreOutlined />} />
+          </Dropdown>
+        );
+      },
     },
   ];
 
@@ -178,20 +230,35 @@ const Resource: React.FC = () => {
               <Input className={'searchInput'} prefix={<SearchOutlined />} onPressEnter={onSearchQuery} placeholder={t('user.search_placeholder')} />
             </div>
             <div className='event-table-search-right'>
-              {profile.roles?.includes('Admin') && (
-                <div className='user-manage-operate'>
-                  <Button type='primary' onClick={() => handleClick(ActionType.CreateUser)}>
-                    {t('common:btn.add')}
-                  </Button>
-                </div>
-              )}
+              <Space>
+                {profile.roles?.includes('Admin') && (
+                  <div className='user-manage-operate'>
+                    <Button type='primary' onClick={() => handleClick(ActionType.CreateUser)}>
+                      {t('common:btn.add')}
+                    </Button>
+                  </div>
+                )}
+                <Button
+                  onClick={() => {
+                    OrganizeColumns({
+                      i18nNs: 'user',
+                      value: columnsConfigs,
+                      onChange: (val) => {
+                        setColumnsConfigs(val);
+                        setDefaultColumnsConfigs(val, LOCAL_STORAGE_KEY);
+                      },
+                    });
+                  }}
+                  icon={<EyeOutlined />}
+                />
+              </Space>
             </div>
           </Row>
           <Table
             className='mt8'
             size='small'
             rowKey='id'
-            columns={userColumns}
+            columns={ajustColumns(userColumns, columnsConfigs)}
             {...tableProps}
             pagination={{
               ...tableProps.pagination,

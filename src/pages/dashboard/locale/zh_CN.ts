@@ -45,6 +45,11 @@ const zh_CN = {
     noSelected: '请选择仪表盘',
     import_builtin: '导入内置仪表盘',
     import_builtin_board: '内置仪表盘',
+    clone: {
+      name: '名称',
+      result: '结果',
+      errmsg: '错误信息',
+    },
   },
   link: {
     title: '仪表盘链接',

@@ -1,15 +1,16 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import _ from 'lodash';
 import { useDebounceFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
-import { Form, Select, Button } from 'antd';
-import { QuestionCircleOutlined } from '@ant-design/icons';
+import { Form, Select, Button, Space, Tooltip } from 'antd';
+import { QuestionCircleOutlined, SettingOutlined } from '@ant-design/icons';
 import TimeRangePicker from '@/components/TimeRangePicker';
 import { getESIndexPatterns } from '@/pages/log/IndexPatterns/services';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
+import AuthorizationWrapper, { useIsAuthorized } from '@/components/AuthorizationWrapper';
 import { getFullFields, Field } from './services';
 import InputFilter from './InputFilter';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 interface Props {
   onExecute: () => void;
@@ -25,7 +26,7 @@ export default function QueryBuilder(props: Props) {
   const { onExecute, datasourceValue, form, setFields, onIndexChange } = props;
   const [indexPatterns, setIndexPatterns] = useState<any[]>([]);
   const indexPattern = Form.useWatch(['query', 'indexPattern']);
-  
+  const indexPatternsAuthorized = useIsAuthorized(['/log/index-patterns']);
   const [allFields, setAllFields] = useState<Field[]>([]);
   const refInputFilter = useRef<any>();
   const { run: onIndexPatternChange } = useDebounceFn(
@@ -113,7 +114,18 @@ export default function QueryBuilder(props: Props) {
       </Form.Item>
       <div style={{ display: 'flex', gap: 8 }}>
         <div style={{ width: 290, flexShrink: 0 }}>
-          <InputGroupWithFormItem label={t('datasource:es.indexPatterns')}>
+          <InputGroupWithFormItem
+            label={t('datasource:es.indexPatterns')}
+            addonAfter={
+              indexPatternsAuthorized ? (
+                <Tooltip title={t('datasource:es.indexPatterns_manage')}>
+                  <Link to='/log/index-patterns'>
+                    <SettingOutlined />
+                  </Link>
+                </Tooltip>
+              ) : undefined
+            }
+          >
             <Form.Item
               name={['query', 'indexPattern']}
               rules={[

@@ -20,21 +20,25 @@ import querystring from 'query-string';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Button, Space, Dropdown, Menu, Switch, notification, Select, message } from 'antd';
-import { RollbackOutlined, SettingOutlined, SaveOutlined } from '@ant-design/icons';
+import { RollbackOutlined, SettingOutlined, SaveOutlined, FullscreenOutlined } from '@ant-design/icons';
 import { useKeyPress } from 'ahooks';
 import { TimeRangePickerWithRefresh, IRawTimeRange } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
 import { IS_ENT } from '@/utils/constant';
 import { updateDashboardConfigs } from '@/services/dashboardV2';
+import DashboardLinks from '../DashboardLinks';
 import { AddPanelIcon } from '../config';
 import { visualizations } from '../Editor/config';
 import { dashboardTimeCacheKey } from './Detail';
 import FormModal from '../List/FormModal';
-import { IDashboard } from '../types';
+import { IDashboard, ILink } from '../types';
 import { dashboardThemeModeCacheKey, getDefaultThemeMode } from './utils';
 
 interface IProps {
   dashboard: IDashboard;
+  dashboardLinks?: ILink[];
+  setDashboardLinks: (links: ILink[]) => void;
+  handleUpdateDashboardConfigs: (id: number, params: any) => void;
   range: IRawTimeRange;
   setRange: (range: IRawTimeRange) => void;
   onAddPanel: (type: string) => void;
@@ -51,7 +55,21 @@ const cachePageTitle = document.title || 'Nightingale';
 
 export default function Title(props: IProps) {
   const { t } = useTranslation('dashboard');
-  const { dashboard, range, setRange, onAddPanel, isPreview, isBuiltin, isAuthorized, editable, updateAtRef, setAllowedLeave } = props;
+  const {
+    dashboard,
+    dashboardLinks,
+    setDashboardLinks,
+    handleUpdateDashboardConfigs,
+    range,
+    setRange,
+    onAddPanel,
+    isPreview,
+    isBuiltin,
+    isAuthorized,
+    editable,
+    updateAtRef,
+    setAllowedLeave,
+  } = props;
   const history = useHistory();
   const location = useLocation();
   const { siteInfo, dashboardSaveMode } = useContext(CommonStateContext);
@@ -154,6 +172,19 @@ export default function Title(props: IProps) {
               </Button>
             </Dropdown>
           )}
+          <TimeRangePickerWithRefresh
+            localKey={dashboardTimeCacheKey}
+            dateFormat='YYYY-MM-DD HH:mm:ss'
+            value={range}
+            onChange={(val) => {
+              history.replace({
+                pathname: location.pathname,
+                // 重新设置时间范围时，清空 __from 和 __to
+                search: querystring.stringify(_.omit(querystring.parse(window.location.search), ['__from', '__to'])),
+              });
+              setRange(val);
+            }}
+          />
           {isAuthorized && dashboardSaveMode === 'manual' && (
             <Button
               icon={<SaveOutlined />}
@@ -186,17 +217,16 @@ export default function Title(props: IProps) {
               }}
             />
           )}
-          <TimeRangePickerWithRefresh
-            localKey={dashboardTimeCacheKey}
-            dateFormat='YYYY-MM-DD HH:mm:ss'
-            value={range}
-            onChange={(val) => {
-              history.replace({
-                pathname: location.pathname,
-                // 重新设置时间范围时，清空 __from 和 __to
-                search: querystring.stringify(_.omit(querystring.parse(window.location.search), ['__from', '__to'])),
+          <DashboardLinks
+            editable={isAuthorized}
+            value={dashboardLinks}
+            onChange={(v) => {
+              const dashboardConfigs: any = dashboard.configs;
+              dashboardConfigs.links = v;
+              handleUpdateDashboardConfigs(dashboard.id, {
+                configs: JSON.stringify(dashboardConfigs),
               });
-              setRange(val);
+              setDashboardLinks(v);
             }}
           />
           <Button
@@ -216,9 +246,8 @@ export default function Title(props: IProps) {
                 window.dispatchEvent(new Event('resize'));
               }, 500);
             }}
-          >
-            {viewMode === 'fullscreen' ? t('exit_full_screen') : t('full_screen')}
-          </Button>
+            icon={<FullscreenOutlined />}
+          />
           {IS_ENT && (
             <Select
               options={[

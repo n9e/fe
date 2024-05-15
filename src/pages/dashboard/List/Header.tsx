@@ -16,12 +16,15 @@
  */
 import React, { useContext } from 'react';
 import { Input, Button, Dropdown, Modal, Space, message } from 'antd';
-import { SearchOutlined, DownOutlined } from '@ant-design/icons';
+import { SearchOutlined, DownOutlined, EyeOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { removeDashboards } from '@/services/dashboardV2';
 import RefreshIcon from '@/components/RefreshIcon';
+import OrganizeColumns, { setDefaultColumnsConfigs } from '@/components/OrganizeColumns';
+import { LOCAL_STORAGE_KEY } from './constants';
 import FormModal from './FormModal';
 import Import from './Import';
+import BatchClone from './BatchClone';
 import { CommonStateContext } from '@/App';
 
 interface IProps {
@@ -30,12 +33,14 @@ interface IProps {
   refreshList: () => void;
   searchVal: string;
   onSearchChange: (val) => void;
+  columnsConfigs: { name: string; visible: boolean }[];
+  setColumnsConfigs: (val: { name: string; visible: boolean }[]) => void;
 }
 
 export default function Header(props: IProps) {
-  const { businessGroup } = useContext(CommonStateContext);
+  const { businessGroup, busiGroups } = useContext(CommonStateContext);
   const { t } = useTranslation('dashboard');
-  const { gids, selectRowKeys, refreshList, searchVal, onSearchChange } = props;
+  const { gids, selectRowKeys, refreshList, searchVal, onSearchChange, columnsConfigs, setColumnsConfigs } = props;
 
   return (
     <>
@@ -97,6 +102,21 @@ export default function Header(props: IProps) {
                       className='ant-dropdown-menu-item'
                       onClick={() => {
                         if (selectRowKeys.length) {
+                          BatchClone({
+                            board_ids: selectRowKeys,
+                            busiGroups,
+                          });
+                        } else {
+                          message.warning(t('batch.noSelected'));
+                        }
+                      }}
+                    >
+                      <span>{t('common:btn.batch_clone')}</span>
+                    </li>
+                    <li
+                      className='ant-dropdown-menu-item'
+                      onClick={() => {
+                        if (selectRowKeys.length) {
                           Modal.confirm({
                             title: t('common:confirm.delete'),
                             onOk: async () => {
@@ -130,6 +150,19 @@ export default function Header(props: IProps) {
                 </Button>
               </Dropdown>
             </div>
+            <Button
+              onClick={() => {
+                OrganizeColumns({
+                  i18nNs: 'dashboard',
+                  value: columnsConfigs,
+                  onChange: (val) => {
+                    setColumnsConfigs(val);
+                    setDefaultColumnsConfigs(val, LOCAL_STORAGE_KEY);
+                  },
+                });
+              }}
+              icon={<EyeOutlined />}
+            />
           </Space>
         )}
       </div>

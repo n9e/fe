@@ -44,6 +44,11 @@ const zh_HK = {
     noSelected: '請選擇儀表盤',
     import_builtin: '匯入內置儀表盤',
     import_builtin_board: '內置儀表盤',
+    clone: {
+      name: '名稱',
+      result: '結果',
+      errmsg: '錯誤信息',
+    },
   },
   link: {
     title: '儀表盤連結',
