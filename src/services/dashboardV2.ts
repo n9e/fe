@@ -284,3 +284,10 @@ export function getESVariableResult(datasourceValue: number, index, requestBody)
     return dat;
   });
 }
+
+export const boardsClones = function (data: { board_ids: number[]; bgids: number[] }) {
+  return request('/api/n9e/busi-groups/boards/clones', {
+    method: RequestMethod.Post,
+    data,
+  });
+};

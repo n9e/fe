@@ -42,6 +42,11 @@ const zh_HK = {
     import_grafana_tip_version_warning: '匯入的儀表盤配置版本小於 v8，部分圖表可能無法正常顯示，是否繼續匯入？',
     continueToImport: '繼續匯入',
     noSelected: '請選擇儀表盤',
+    clone: {
+      name: '名稱',
+      result: '結果',
+      errmsg: '錯誤信息',
+    },
   },
   link: {
     title: '儀表盤連結',

@@ -42,6 +42,11 @@ const en_US = {
     import_grafana_tip_version_warning: 'The imported dashboard config version is less than v8, some panels may not be displayed properly, do you want to continue importing?',
     continueToImport: 'Continue to import',
     noSelected: 'Please select any dashboard',
+    clone: {
+      name: 'Name',
+      result: 'Result',
+      errmsg: 'Error message',
+    },
   },
   link: {
     title: 'Links',

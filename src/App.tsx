@@ -204,6 +204,7 @@ function App() {
           const { dat: busiGroups } = await getBusiGroups();
           const { dat: perms } = await getMenuPerm();
           const datasourceList = await getDatasourceBriefList();
+          const { dat: perms } = await getMenuPerm();
           const { licenseRulesRemaining, licenseExpireDays, feats } = await getLicense(t);
           let versions = { version: '', github_verison: '', newVersion: false };
           if (!isPlus) {
