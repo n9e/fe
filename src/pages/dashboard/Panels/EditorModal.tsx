@@ -57,6 +57,7 @@ function EditorModal(props: Props, ref) {
           onUpdated(res);
         });
       }}
+      dashboard={dashboard}
     />
   );
 }

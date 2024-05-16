@@ -1,5 +1,6 @@
+import _ from 'lodash';
+
 export function normalizeESQueryRequestBody(params: any, date_field: string | undefined, start: number, end: number) {
-  console.log('params', params);
   let orderBy = '_key';
   if (params?.orderBy === 'doc_count') {
     orderBy = '_count';
@@ -47,4 +48,8 @@ export function normalizeESQueryRequestBody(params: any, date_field: string | un
   }
 
   return body;
+}
+
+export function getGroupIdent(groupID, groups) {
+  return _.find(groups, { id: groupID })?.label_value;
 }
