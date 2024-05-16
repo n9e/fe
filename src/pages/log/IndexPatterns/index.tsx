@@ -15,22 +15,26 @@
  *
  */
 import React, { useState, useEffect, useContext } from 'react';
-import { Button, Popconfirm, Space, Table, Tag, message } from 'antd';
+import { Button, Input, Popconfirm, Space, Table, Tag, message } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import PageLayout from '@/components/pageLayout';
+import AuthorizationWrapper from '@/components/AuthorizationWrapper';
 import { CommonStateContext } from '@/App';
+import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
 import { getESIndexPatterns, deleteESIndexPattern } from './services';
 import Add from './Add';
 import { IndexPattern } from './types';
 import './locale';
+import { SearchOutlined } from '@ant-design/icons';
 
 export { default as Fields } from './Fields';
 
 export default function Servers() {
   const { t } = useTranslation('es-index-patterns');
-  const { profile, groupedDatasourceList, datasourceList } = useContext(CommonStateContext);
+  const { groupedDatasourceList, datasourceList } = useContext(CommonStateContext);
+  const [search, setSearch] = useState('');
   const [data, setData] = useState<IndexPattern[]>([]);
   const [loading, setLoading] = useState(false);
   const fetchData = () => {
@@ -51,9 +55,18 @@ export default function Servers() {
     <PageLayout title={t('title')}>
       <div>
         <div style={{ padding: 10 }}>
-          {profile.admin ? (
+          <AuthorizationWrapper allowedPerms={['/log/index-patterns']} showUnauthorized>
             <div>
-              <div style={{ textAlign: 'right' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Input
+                  prefix={<SearchOutlined />}
+                  style={{ width: 300 }}
+                  value={search}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                  }}
+                  placeholder='Search index pattern'
+                />
                 <Button
                   type='primary'
                   onClick={() => {
@@ -75,7 +88,7 @@ export default function Servers() {
                 rowKey='id'
                 tableLayout='fixed'
                 loading={loading}
-                dataSource={data}
+                dataSource={_.filter(data, (item) => _.includes(_.toLower(item.name), _.toLower(search)))}
                 pagination={false}
                 columns={[
                   {
@@ -88,6 +101,9 @@ export default function Servers() {
                       }
                       return null;
                     },
+                    sorter: (a, b) => {
+                      return localeCompare(_.get(_.find(datasourceList, { id: a.datasource_id }), 'name'), _.get(_.find(datasourceList, { id: b.datasource_id }), 'name'));
+                    },
                   },
                   {
                     title: t('name'),
@@ -95,6 +111,7 @@ export default function Servers() {
                     render: (val, record) => {
                       return <Link to={`/log/index-patterns/${record.id}`}>{val}</Link>;
                     },
+                    sorter: (a, b) => localeCompare(a.name, b.name),
                   },
                   {
                     title: t('time_field'),
@@ -127,9 +144,7 @@ export default function Servers() {
                 ]}
               />
             </div>
-          ) : (
-            <div>{t('unauthorized')}</div>
-          )}
+          </AuthorizationWrapper>
         </div>
       </div>
     </PageLayout>
