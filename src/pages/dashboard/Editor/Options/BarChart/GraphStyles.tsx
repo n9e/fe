@@ -83,10 +83,10 @@ export default function GraphStyles() {
             </Form.Item>
           </Col>
           <Col span={8}>
-            <Form.Item label={t('panel.custom.barchart.colorField')} name={[...namePrefix, 'colorField']}>
+            <Form.Item label={t('panel.custom.barchart.colorField')} name={[...namePrefix, 'colorField']} tooltip={t('panel.custom.barchart.colorField_tip')}>
               <Select
                 allowClear
-                options={_.map(statFields, (item) => {
+                options={_.map(_.compact(_.concat(statFields, 'Name')), (item) => {
                   return {
                     label: item,
                     value: item,
