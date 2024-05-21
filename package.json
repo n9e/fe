@@ -69,6 +69,7 @@
     "react-hooks-global-state": "^2.0.0",
     "react-i18next": "^11.11.1",
     "react-markdown": "^7.0.1",
+    "react-quill": "^2.0.0",
     "react-router-dom": "^5.2.0",
     "react-sortable-hoc": "^2.0.0",
     "react-syntax-highlighter": "^15.5.0",
