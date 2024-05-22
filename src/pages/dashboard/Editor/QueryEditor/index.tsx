@@ -49,7 +49,7 @@ export default function index({ chartForm, type, variableConfig, dashboardId, ti
             if (cate === DatasourceCateEnum.tdengine) {
               return <TDengine chartForm={chartForm} variableConfig={variableConfig} dashboardId={dashboardId} />;
             }
-            return <PlusQueryBuilder cate={cate} form={chartForm} variableConfig={variableConfig} dashboardId={dashboardId} />;
+            return <PlusQueryBuilder cate={cate} form={chartForm} variableConfig={variableConfig} dashboardId={dashboardId} time={time} />;
           }}
         </Form.Item>
       </div>
