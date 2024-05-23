@@ -31,6 +31,7 @@ import { getBusiGroups, getDatasourceBriefList, getMenuPerm } from '@/services/c
 import { getLicense } from '@/components/AdvancedWrap';
 import { getVersions } from '@/components/pageLayout/Version/services';
 import { getCleanBusinessGroupIds, getDefaultBusiness } from '@/components/BusinessGroup';
+import Feedback from '@/components/Feedback';
 import { getN9eConfig } from '@/pages/siteSettings/services';
 import HeaderMenu from './components/menu/SideMenu';
 import Content from './routers';
@@ -298,6 +299,7 @@ function App() {
           </Router>
         </ConfigProvider>
       </CommonStateContext.Provider>
+      <Feedback />
       {/* {import.meta.env.VITE_IS_ENT !== 'true' && import.meta.env.VITE_IS_PRO === 'true' && <CustomerServiceFloatButton />} */}
     </div>
   );
