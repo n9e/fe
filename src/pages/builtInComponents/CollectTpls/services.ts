@@ -17,9 +17,9 @@
 import _ from 'lodash';
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
-import { RuleType } from './types';
+import { Record } from './types';
 
-export const createRule = function (id: number, data: RuleType[]) {
+export const createRule = function (id: number, data: Record[]) {
   return request(`/api/n9e/busi-group/${id}/alert-rules/import`, {
     method: RequestMethod.Post,
     data,
