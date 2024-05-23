@@ -296,10 +296,10 @@ function App() {
                 <Content />
               </>
             </Switch>
+            <Feedback />
           </Router>
         </ConfigProvider>
       </CommonStateContext.Provider>
-      <Feedback />
       {/* {import.meta.env.VITE_IS_ENT !== 'true' && import.meta.env.VITE_IS_PRO === 'true' && <CustomerServiceFloatButton />} */}
     </div>
   );
