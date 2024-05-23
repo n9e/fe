@@ -227,7 +227,7 @@ export default function index() {
                     <Button
                       danger
                       type='link'
-                      style={{ padding: 0 }}
+                      className='p0 height-auto'
                       onClick={() => {
                         Modal.confirm({
                           title: t('common:confirm.delete'),

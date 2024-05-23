@@ -14,31 +14,17 @@
  * limitations under the License.
  *
  */
-export const pathname = '/metrics-built-in';
-export const LOCAL_STORAGE_KEY = 'metrics_built_in_columns_configs';
-export const defaultColumnsConfigs = [
-  {
-    name: 'typ',
-    visible: true,
-  },
-  {
-    name: 'collector',
-    visible: true,
-  },
-  {
-    name: 'name',
-    visible: true,
-  },
-  {
-    name: 'unit',
-    visible: true,
-  },
-  {
-    name: 'expression',
-    visible: true,
-  },
-  {
-    name: 'note',
-    visible: false,
-  },
-];
+import _ from 'lodash';
+import request from '@/utils/request';
+import { RequestMethod } from '@/store/common';
+import { RuleType } from './types';
+
+export const createRule = function (id: number, data: RuleType[]) {
+  return request(`/api/n9e/busi-group/${id}/alert-rules/import`, {
+    method: RequestMethod.Post,
+    data,
+    silence: true,
+  }).then((res) => {
+    return res.dat;
+  });
+};

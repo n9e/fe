@@ -1,0 +1,37 @@
+.builtin-container {
+  .cate-list-item {
+    padding: 8px;
+    .cate-list-item-extra {
+      display: none;
+      font-size: 14px;
+    }
+    &:hover {
+      .cate-list-item-extra {
+        display: block;
+      }
+    }
+  }
+  .cate-list-item.is-last-favorite {
+    border-bottom: 1px solid var(--fc-border-color) !important;
+  }
+}
+
+.builtin-cates-grid {
+  display: grid;
+  grid-template-columns: repeat(5,minmax(0,1fr))!important;
+  gap: 16px;
+}
+.builtin-cates-grid-item {
+  background-color: var(--fc-fill-2);
+  border: 1px solid var(--fc-border-color);
+  border-radius: 6px;
+  padding: 24px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  &:hover {
+    background-color: var(--fc-fill-3);
+  }
+}

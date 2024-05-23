@@ -14,13 +14,8 @@
  * limitations under the License.
  *
  */
-export const pathname = '/metrics-built-in';
-export const LOCAL_STORAGE_KEY = 'metrics_built_in_columns_configs';
+export const LOCAL_STORAGE_KEY = 'built_in_components_metrics_columns_configs';
 export const defaultColumnsConfigs = [
-  {
-    name: 'typ',
-    visible: true,
-  },
   {
     name: 'collector',
     visible: true,

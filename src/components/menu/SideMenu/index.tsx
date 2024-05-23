@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState, useContext } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { MenuUnfoldOutlined, MenuFoldOutlined, NotificationFilled } from '@ant-design/icons';
+import Icon, { MenuUnfoldOutlined, MenuFoldOutlined, NotificationFilled } from '@ant-design/icons';
 import _ from 'lodash';
 import querystring from 'query-string';
 import { useTranslation } from 'react-i18next';
@@ -10,6 +10,7 @@ import { CommonStateContext } from '@/App';
 import { getSideMenuBgColor } from '@/components/pageLayout/SideMenuColorSetting';
 import { IS_ENT } from '@/utils/constant';
 import IconFont from '../../IconFont';
+import menuIcon from '@/components/menu/configs';
 import { cn } from './utils';
 import SideMenuHeader from './Header';
 import MenuList from './MenuList';
@@ -168,14 +169,26 @@ export const getMenuList = (t) => {
       ],
     },
     {
-      key: 'help',
-      icon: <IconFont type='icon-Menu_SystemInformation' />,
-      label: t('系统配置'),
+      key: 'integrations',
+      icon: <IconFont type='icon-shujujicheng' />,
+      activeIcon: <Icon component={menuIcon.EmbedsSvgHover as any} />,
+      label: t('integrations'),
       children: [
         {
           key: '/help/source',
           label: t('数据源'),
         },
+        {
+          key: '/built-in-components',
+          label: t('built_in_components'),
+        },
+      ],
+    },
+    {
+      key: 'help',
+      icon: <IconFont type='icon-Menu_SystemInformation' />,
+      label: t('系统配置'),
+      children: [
         {
           key: '/help/variable-configs',
           label: t('变量设置'),
@@ -192,10 +205,6 @@ export const getMenuList = (t) => {
           key: '/site-settings',
           label: t('siteInfo:title'),
         },
-        // {
-        //   key: '/help/migrate',
-        //   label: t('仪表盘迁移'),
-        // },
         {
           key: '/help/version',
           label: t('系统版本'),

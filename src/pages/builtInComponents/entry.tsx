@@ -14,31 +14,29 @@
  * limitations under the License.
  *
  */
-export const pathname = '/metrics-built-in';
-export const LOCAL_STORAGE_KEY = 'metrics_built_in_columns_configs';
-export const defaultColumnsConfigs = [
-  {
-    name: 'typ',
-    visible: true,
-  },
-  {
-    name: 'collector',
-    visible: true,
-  },
-  {
-    name: 'name',
-    visible: true,
-  },
-  {
-    name: 'unit',
-    visible: true,
-  },
-  {
-    name: 'expression',
-    visible: true,
-  },
-  {
-    name: 'note',
-    visible: false,
-  },
-];
+import { pathname } from './constants';
+import List from './List';
+import AlertDetail from './AlertRules/Detail';
+import DashboardDetail from './Dashboards/Detail';
+import './locale';
+import './style.less';
+
+export default {
+  routes: [
+    {
+      path: pathname,
+      component: List,
+      exact: true,
+    },
+    {
+      path: `${pathname}/alert/detail`,
+      component: AlertDetail,
+      exact: true,
+    },
+    {
+      path: `${pathname}/dashboard/detail`,
+      component: DashboardDetail,
+      exact: true,
+    },
+  ],
+};
