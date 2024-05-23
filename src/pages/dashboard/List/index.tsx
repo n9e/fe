@@ -273,7 +273,7 @@ export default function index() {
                                   <Menu.Item>
                                     <Button
                                       type='link'
-                                      className='p0'
+                                      className='p0 height-auto'
                                       onClick={() => {
                                         FormModal({
                                           action: 'edit',
@@ -293,7 +293,7 @@ export default function index() {
                                   <Menu.Item>
                                     <Button
                                       type='link'
-                                      className='p0'
+                                      className='p0 height-auto'
                                       onClick={async () => {
                                         Modal.confirm({
                                           title: t('common:confirm.clone'),
@@ -314,7 +314,7 @@ export default function index() {
                                 <Menu.Item>
                                   <Button
                                     type='link'
-                                    className='p0'
+                                    className='p0 height-auto'
                                     onClick={async () => {
                                       const exportData = await getDashboard(record.id);
                                       Export({
@@ -330,7 +330,7 @@ export default function index() {
                                     <Button
                                       danger
                                       type='link'
-                                      className='p0'
+                                      className='p0 height-auto'
                                       onClick={async () => {
                                         Modal.confirm({
                                           title: t('common:confirm.delete'),

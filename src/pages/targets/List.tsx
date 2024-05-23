@@ -15,6 +15,7 @@ import OrganizeColumns from './OrganizeColumns';
 import { getDefaultColumnsConfigs, setDefaultColumnsConfigs } from './utils';
 import TargetMetaDrawer from './TargetMetaDrawer';
 import categrafInstallationDrawer from './components/categrafInstallationDrawer';
+import Explorer from './components/Explorer';
 
 // @ts-ignore
 import CollectsDrawer from 'plus:/pages/collects/CollectsDrawer';
@@ -535,18 +536,21 @@ export default function List(props: IProps) {
               {t('common:btn.batch_operations')} <DownOutlined />
             </Button>
           </Dropdown>
-          <Button
-            onClick={() => {
-              OrganizeColumns({
-                value: columnsConfigs,
-                onChange: (val) => {
-                  setColumnsConfigs(val);
-                  setDefaultColumnsConfigs(val);
-                },
-              });
-            }}
-            icon={<EyeOutlined />}
-          />
+          <Space>
+            <Explorer selectedIdents={selectedIdents} />
+            <Button
+              onClick={() => {
+                OrganizeColumns({
+                  value: columnsConfigs,
+                  onChange: (val) => {
+                    setColumnsConfigs(val);
+                    setDefaultColumnsConfigs(val);
+                  },
+                });
+              }}
+              icon={<EyeOutlined />}
+            />
+          </Space>
         </Space>
       </div>
       <Table

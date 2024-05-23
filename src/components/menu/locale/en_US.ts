@@ -54,5 +54,7 @@ const en_US = {
   quickOpenClose: 'Open/Close',
   quickSearchPlaceholder: 'Search...',
   quickMenus: 'Quick Menus',
+  integrations: 'Integrations',
+  built_in_components: 'Built-in Components',
 };
 export default en_US;

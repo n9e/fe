@@ -8,6 +8,7 @@ import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import EmptyDatasourcePopover from '@/components/DatasourceSelect/EmptyDatasourcePopover';
 import { getDefaultDatasourceValue, setDefaultDatasourceValue } from '@/utils';
 import { CommonStateContext } from '@/App';
+import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { Record } from '../services';
 
 interface Props {
@@ -15,12 +16,16 @@ interface Props {
   panels: Record[];
   setPanels: (panels: Record[]) => void;
   onChange: (promql?: string) => void;
+  defaultType?: 'table' | 'graph';
+  onDefaultTypeChange?: (newMode: 'table' | 'graph') => void;
+  defaultTime?: IRawTimeRange;
+  onDefaultTimeChange?: (newRange: IRawTimeRange) => void;
 }
 
 export default function Panel(props: Props) {
   const { t } = useTranslation('metricsBuiltin');
   const { groupedDatasourceList } = useContext(CommonStateContext);
-  const { panel, panels, setPanels, onChange } = props;
+  const { panel, panels, setPanels, onChange, defaultType, onDefaultTypeChange, defaultTime, onDefaultTimeChange } = props;
   const [form] = Form.useForm();
   const headerExtraRef = useRef<HTMLDivElement>(null);
 
@@ -135,6 +140,10 @@ export default function Panel(props: Props) {
                         onChange(promQL);
                       }}
                       promQLInputTooltip={panel.name}
+                      defaultType={defaultType}
+                      onDefaultTypeChange={onDefaultTypeChange}
+                      defaultTime={defaultTime}
+                      onDefaultTimeChange={onDefaultTimeChange}
                     />
                   );
                 }}

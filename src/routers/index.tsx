@@ -30,7 +30,6 @@ import LoginCallback from '@/pages/loginCallback';
 import LoginCallbackCAS from '@/pages/loginCallback/cas';
 import LoginCallbackOAuth from '@/pages/loginCallback/oauth';
 import AlertRules, { Add as AlertRuleAdd, Edit as AlertRuleEdit } from '@/pages/alertRules';
-import AlertRulesBuiltin, { Detail as AlertRulesBuiltinDetail } from '@/pages/alertRulesBuiltin';
 import Profile from '@/pages/account/profile';
 import { List as Dashboard, Detail as DashboardDetail, Share as DashboardShare } from '@/pages/dashboard';
 import { getDefaultThemeMode } from '@/pages/dashboard/Detail/utils';
@@ -62,7 +61,6 @@ import Servers from '@/pages/help/servers';
 import Datasource, { Form as DatasourceAdd } from '@/pages/datasource';
 import RecordingRule, { Add as RecordingRuleAdd, Edit as RecordingRuleEdit } from '@/pages/recordingRules';
 import TraceExplorer, { Dependencies as TraceDependencies } from '@/pages/traceCpt/Explorer';
-import DashboardBuiltin, { Detail as DashboardBuiltinDetail } from '@/pages/dashboardBuiltin';
 import Permissions from '@/pages/permissions';
 import SSOConfigs from '@/pages/help/SSOConfigs';
 import NotificationTpls from '@/pages/help/NotificationTpls';
@@ -163,15 +161,11 @@ export default function Content() {
         <Route path='/dashboards/:id' exact component={DashboardDetail} />
         <Route path='/dashboards/share/:id' component={DashboardShare} />
         <Route path='/dashboards' component={Dashboard} />
-        <Route path='/dashboards-built-in' exact component={DashboardBuiltin} />
-        <Route path='/dashboards-built-in/detail' exact component={DashboardBuiltinDetail} />
         <Route path='/chart/:ids' component={Chart} />
 
         <Route exact path='/alert-rules/add/:bgid' component={AlertRuleAdd} />
         <Route exact path='/alert-rules/edit/:id' component={AlertRuleEdit} />
         <Route exact path='/alert-rules' component={AlertRules} />
-        <Route exact path='/alert-rules-built-in' component={AlertRulesBuiltin} />
-        <Route exact path='/alert-rules-built-in/detail' component={AlertRulesBuiltinDetail} />
         <Route exact path='/alert-rules/brain/:id' component={StrategyBrain} />
         <Route exact path='/alert-mutes' component={Shield} />
         <Route exact path='/alert-mutes/add/:from?' component={AddShield} />

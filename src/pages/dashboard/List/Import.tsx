@@ -21,7 +21,8 @@ import { Modal, Input, Tabs, Form, Button, Alert, message, Select, Table, Space,
 import Icon, { SearchOutlined } from '@ant-design/icons';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { createDashboard } from '@/services/dashboardV2';
-import { getDashboardCates, getDashboardDetail } from '@/pages/dashboardBuiltin/services';
+import { getComponents, getPayloads, Component, Payload } from '@/pages/builtInComponents/services';
+import { TypeEnum } from '@/pages/builtInComponents/types';
 import { getValidImportData, convertDashboardGrafanaToN9E, JSONParse, checkGrafanaDashboardVersion } from './utils';
 
 type ModalType = 'Import' | 'ImportGrafana' | 'ImportBuiltin';
@@ -55,17 +56,30 @@ const BetaSvg = () => (
 const BetaIcon = (props) => <Icon component={BetaSvg} {...props} />;
 const ImportBuiltinContent = ({ busiId, onOk }) => {
   const { t } = useTranslation('dashboard');
-  const [builtinDashboards, setBuiltinDashboards] = useState<any[]>([]);
-  const [boardSearch, setBoardSearch] = useState<string>('');
+  const [filter, setFilter] = useState<{
+    query?: string;
+  }>({ query: undefined });
+  const [components, setComponents] = useState<Component[]>([]);
+  const [dashboards, setDashboards] = useState<Payload[]>([]);
   const [form] = Form.useForm();
-  const cate = Form.useWatch('cate', form);
+  const component = Form.useWatch('component', form);
   const selectedBoards = Form.useWatch('selectedBoards', form);
 
   useEffect(() => {
-    getDashboardCates().then((res) => {
-      setBuiltinDashboards(res);
+    getComponents().then((res) => {
+      setComponents(res);
     });
   }, []);
+
+  useEffect(() => {
+    getPayloads<Payload[]>({
+      component,
+      type: TypeEnum.dashboard,
+      query: filter.query,
+    }).then((res) => {
+      setDashboards(res);
+    });
+  }, [component, filter.query]);
 
   return (
     <Form
@@ -73,42 +87,43 @@ const ImportBuiltinContent = ({ busiId, onOk }) => {
       form={form}
       onFinish={(vals) => {
         const requests = _.map(vals.selectedBoards, (item) => {
-          return getDashboardDetail(item);
+          try {
+            const content = JSON.parse(item.content);
+            return createDashboard(busiId, {
+              ...content,
+              configs: JSON.stringify(content.configs),
+            });
+          } catch (e) {
+            console.error(e);
+            return null;
+          }
         });
         Promise.all(requests).then((res) => {
-          const requests = _.map(res, (item) => {
-            return createDashboard(busiId, {
-              ...item,
-              configs: JSON.stringify(item.configs),
-            });
+          // TODO 目前这个失败处理是不成立的，接口请求失败直接走的 catch，内置仪表盘页面也存在这个问题
+          const failed = _.filter(res, (item) => {
+            return item.err;
           });
-          Promise.all(requests).then((res) => {
-            // TODO 目前这个失败处理是不成立的，接口请求失败直接走的 catch，内置仪表盘页面也存在这个问题
-            const failed = _.filter(res, (item) => {
-              return item.err;
+          if (!_.isEmpty(failed)) {
+            Modal.error({
+              title: t('common:error.clone'),
+              content: (
+                <div>
+                  {_.map(failed, (item) => {
+                    return <div key={item.err}>{item.err}</div>;
+                  })}
+                </div>
+              ),
             });
-            if (!_.isEmpty(failed)) {
-              Modal.error({
-                title: t('common:error.clone'),
-                content: (
-                  <div>
-                    {_.map(failed, (item) => {
-                      return <div key={item.err}>{item.err}</div>;
-                    })}
-                  </div>
-                ),
-              });
-              return;
-            } else {
-              onOk();
-            }
-          });
+            return;
+          } else {
+            onOk();
+          }
         });
       }}
     >
       <Form.Item
-        label={t('dashboardBuiltin:cate')}
-        name='cate'
+        label={t('builtInComponents:component')}
+        name='component'
         rules={[
           {
             required: true,
@@ -117,10 +132,10 @@ const ImportBuiltinContent = ({ busiId, onOk }) => {
       >
         <Select
           showSearch
-          options={_.map(builtinDashboards, (item) => {
+          options={_.map(components, (item) => {
             return {
-              label: item.name,
-              value: item.name,
+              label: item.ident,
+              value: item.ident,
             };
           })}
           onChange={() => {
@@ -130,13 +145,13 @@ const ImportBuiltinContent = ({ busiId, onOk }) => {
           }}
         />
       </Form.Item>
-      <Form.Item name='selectedBoards' label={t('batch.import_builtin_board')} hidden={!cate}>
+      <Form.Item name='selectedBoards' label={t('builtInComponents:payloads')} hidden={!component}>
         <>
           <Input
             prefix={<SearchOutlined />}
-            value={boardSearch}
+            value={filter.query}
             onChange={(e) => {
-              setBoardSearch(e.target.value);
+              setFilter({ ...filter, query: e.target.value });
             }}
             style={{ marginBottom: 8 }}
             allowClear
@@ -146,11 +161,11 @@ const ImportBuiltinContent = ({ busiId, onOk }) => {
             rowKey='name'
             columns={[
               {
-                title: t('dashboardBuiltin:name'),
+                title: t('builtInComponents:name'),
                 dataIndex: 'name',
               },
               {
-                title: t('dashboardBuiltin:tags'),
+                title: t('builtInComponents:tags'),
                 dataIndex: 'tags',
                 render: (val) => {
                   const tags = _.compact(_.split(val, ' '));
@@ -163,13 +178,13 @@ const ImportBuiltinContent = ({ busiId, onOk }) => {
                             color='purple'
                             style={{ cursor: 'pointer' }}
                             onClick={() => {
-                              const queryItem = _.compact(_.split(boardSearch, ' '));
-                              if (queryItem.includes(tag)) return;
-                              setBoardSearch((searchVal) => {
-                                if (searchVal) {
-                                  return searchVal + ' ' + tag;
-                                }
-                                return tag;
+                              const queryItem = _.compact(_.split(filter.query, ' '));
+                              if (_.includes(queryItem, tag)) return;
+                              setFilter((filter) => {
+                                return {
+                                  ...filter,
+                                  query: filter.query ? filter.query + ' ' + tag : tag,
+                                };
                               });
                             }}
                           >
@@ -182,9 +197,7 @@ const ImportBuiltinContent = ({ busiId, onOk }) => {
                 },
               },
             ]}
-            dataSource={_.filter(_.find(builtinDashboards, (item) => item.name === cate)?.boards, (item) => {
-              return _.includes(_.toLower(item.name), _.toLower(boardSearch));
-            })}
+            dataSource={dashboards}
             rowSelection={{
               type: 'checkbox',
               selectedRowKeys: _.map(selectedBoards, 'name'),
