@@ -5,6 +5,15 @@ const zh_CN = {
   tab_collectTpls: '采集模板',
   tab_metrics: '指标说明',
   tab_dashboards: '仪表盘模板',
+  ident: '组件名称',
+  logo: '图标',
+  select_builtin_logos: '选择内置图标',
+  readme: '采集说明',
+  componentFormModal: {
+    edit: '编辑组件模板',
+    create: '创建组件模板',
+  },
+  logo_picker_title: '选择图标',
   name: '名称',
   cate: '分类',
   content: '内容',
@@ -12,7 +21,7 @@ const zh_CN = {
   format_failed: '格式化失败，请检查内容是否符合 JSON 格式',
   formModal: {
     edit: '编辑模板',
-    create: '新建模板',
+    create: '创建模板',
   },
 };
 export default zh_CN;

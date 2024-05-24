@@ -17,11 +17,11 @@
 import _ from 'lodash';
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
-import { Record, PayloadQuery, TypeEnum, PayloadPost, PayloadPut } from './types';
+import { Component, ComponentPost, ComponentPut, PayloadQuery, TypeEnum, PayloadPost, PayloadPut } from './types';
 
-export type { Record, TypeEnum };
+export type { Component, TypeEnum };
 
-export const getComponents = function (): Promise<Record[]> {
+export const getComponents = function (): Promise<Component[]> {
   return request('/api/n9e/builtin-components', {
     method: RequestMethod.Get,
   }).then((res) => {
@@ -66,6 +66,33 @@ export const putPayload = (data: PayloadPut): Promise<any> => {
 
 export const deletePayloads = (ids: number[]): Promise<any> => {
   return request('/api/n9e/builtin-payloads', {
+    method: RequestMethod.Delete,
+    data: { ids },
+  }).then((res) => {
+    return res.dat;
+  });
+};
+
+export const postComponents = (data: ComponentPost[]): Promise<any> => {
+  return request('/api/n9e/builtin-components', {
+    method: RequestMethod.Post,
+    data,
+  }).then((res) => {
+    return res.dat;
+  });
+};
+
+export const putComponent = (data: ComponentPut): Promise<any> => {
+  return request('/api/n9e/builtin-payloads', {
+    method: RequestMethod.Put,
+    data,
+  }).then((res) => {
+    return res.dat;
+  });
+};
+
+export const deleteComponents = (ids: number[]): Promise<any> => {
+  return request('/api/n9e/builtin-components', {
     method: RequestMethod.Delete,
     data: { ids },
   }).then((res) => {

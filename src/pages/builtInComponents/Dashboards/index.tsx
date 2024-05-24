@@ -127,6 +127,19 @@ export default function index(props: Props) {
             title: t('common:table.name'),
             dataIndex: 'name',
             key: 'name',
+            render: (value, record) => {
+              return (
+                <Link
+                  to={{
+                    pathname: `${pathname}/dashboard/detail`,
+                    search: `?id=${record.id}`,
+                  }}
+                  target='_blank'
+                >
+                  {value}
+                </Link>
+              );
+            },
           },
           {
             title: t('common:table.operations'),
@@ -136,17 +149,6 @@ export default function index(props: Props) {
                 <Dropdown
                   overlay={
                     <Menu>
-                      <Menu.Item>
-                        <Link
-                          to={{
-                            pathname: `${pathname}/dashboard/detail`,
-                            search: `?id=${record.id}`,
-                          }}
-                          target='_blank'
-                        >
-                          {t('common:btn.view')}
-                        </Link>
-                      </Menu.Item>
                       <Menu.Item>
                         <a
                           onClick={() => {

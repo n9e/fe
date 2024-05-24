@@ -30,7 +30,7 @@ export default function index(props: Props) {
   const selectedRows = useRef<Payload[]>([]);
   const fetchData = () => {
     setLoading(true);
-    getPayloads<Payload[]>({ component, type: TypeEnum.collect, cate: filter.cate, name: filter.name })
+    getPayloads<Payload[]>({ component, type: TypeEnum.collect, name: filter.name })
       .then((res) => {
         setData(res);
         // 初始化 cateList 和 filter

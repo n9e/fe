@@ -25,10 +25,20 @@ function index(props: Props & ModalWrapProps) {
   const [form] = Form.useForm();
 
   useEffect(() => {
-    form.setFieldsValue({
+    const values: any = {
       cate: _.head(cateList),
-    });
+    };
+    if (action === 'edit' && !_.isEmpty(initialValues)) {
+      try {
+        values.content = contentMode === 'json' ? JSON.stringify(JSON.parse(form.getFieldValue('content')), null, 4) : initialValues.content;
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    form.setFieldsValue(values);
   }, []);
+
+  console.log(initialValues, contentMode);
 
   return (
     <Modal
@@ -45,7 +55,6 @@ function index(props: Props & ModalWrapProps) {
                 destroy();
                 onOk(values);
               });
-              return;
             } else if (action === 'create') {
               postPayloads([values]).then((res) => {
                 if (_.isEmpty(res)) {

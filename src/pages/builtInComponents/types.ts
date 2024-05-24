@@ -1,9 +1,12 @@
-export interface Record {
+export interface Component {
   id: number;
   ident: string;
   logo: string;
   readme: string;
 }
+
+export type ComponentPost = Omit<Component, 'id'>;
+export type ComponentPut = Component;
 
 export enum TypeEnum {
   alert = 'alert',

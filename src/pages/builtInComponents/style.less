@@ -22,6 +22,7 @@
   gap: 16px;
 }
 .builtin-cates-grid-item {
+  position: relative;
   background-color: var(--fc-fill-2);
   border: 1px solid var(--fc-border-color);
   border-radius: 6px;
@@ -31,7 +32,18 @@
   align-items: center;
   gap: 16px;
   cursor: pointer;
+  .builtin-cates-grid-item-operations {
+    display: none;
+  }
   &:hover {
     background-color: var(--fc-fill-3);
+    .builtin-cates-grid-item-operations {
+      display: block;
+    }
   }
+}
+.builtin-cates-grid-item-operations {
+  position: absolute;
+  right: 8px;
+  top: 8px;
 }
