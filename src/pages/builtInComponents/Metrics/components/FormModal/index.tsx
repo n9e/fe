@@ -14,13 +14,12 @@
  * limitations under the License.
  *
  */
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import { Modal, Form, Input, Space, Button, AutoComplete, message } from 'antd';
 import Markdown from '@/components/Markdown';
 import UnitPicker from '@/pages/dashboard/Components/UnitPicker';
-import { getDashboardCates } from '@/pages/dashboardBuiltin/services';
 import { postMetrics, putMetric } from '@/pages/metricsBuiltin/services';
 
 interface Props {
@@ -39,13 +38,6 @@ export default function index(props: Props) {
   const [open, setOpen] = useState(false);
   const [form] = Form.useForm();
   const note = Form.useWatch('note', form);
-  const [typsMeta, setTypsMeta] = useState<{ name: String; icon_url: string }[]>([]);
-
-  useEffect(() => {
-    getDashboardCates().then((res) => {
-      setTypsMeta(res);
-    });
-  }, []);
 
   return (
     <>

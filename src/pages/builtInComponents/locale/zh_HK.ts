@@ -15,6 +15,7 @@ const zh_HK = {
   logo_picker_title: '選擇圖標',
   name: '名稱',
   tags: '標籤',
+  component: '組件',
   cate: '分類',
   content: '內容',
   format: '格式化',
@@ -23,6 +24,7 @@ const zh_HK = {
     edit: '編輯模板',
     create: '創建模板',
   },
+  payloads: '模板',
 };
 
 export default zh_HK;

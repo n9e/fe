@@ -15,6 +15,7 @@ const en_US = {
   logo_picker_title: 'Select Logo',
   name: 'Name',
   tags: 'Tags',
+  component: 'Component',
   cate: 'Category',
   content: 'Content',
   format: 'Format',
@@ -23,5 +24,6 @@ const en_US = {
     edit: 'Edit Template',
     create: 'Create Template',
   },
+  payloads: 'Templates',
 };
 export default en_US;

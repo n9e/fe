@@ -15,6 +15,7 @@ const zh_CN = {
   logo_picker_title: '选择图标',
   name: '名称',
   tags: '标签',
+  component: '组件',
   cate: '分类',
   content: '内容',
   format: '格式化',
@@ -23,5 +24,6 @@ const zh_CN = {
     edit: '编辑模板',
     create: '创建模板',
   },
+  payloads: '模板',
 };
 export default zh_CN;

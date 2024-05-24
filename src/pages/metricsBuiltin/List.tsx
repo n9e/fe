@@ -29,7 +29,7 @@ import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, aj
 import { getUnitLabel, buildUnitOptions } from '@/pages/dashboard/Components/UnitPicker/utils';
 import { getMenuPerm } from '@/services/common';
 import Collapse from '@/pages/monitor/object/metricViews/components/Collapse';
-import { getDashboardCates } from '@/pages/dashboardBuiltin/services';
+import { getComponents, Component } from '@/pages/builtInComponents/services';
 import { getMetrics, Record, Filter, getTypes, getCollectors, deleteMetrics, buildLabelFilterAndExpression } from './services';
 import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
 import FormDrawer from './components/FormDrawer';
@@ -61,7 +61,7 @@ export default function index() {
     edit: false,
     delete: false,
   });
-  const [typsMeta, setTypsMeta] = useState<{ name: String; icon_url: string }[]>([]);
+  const [typsMeta, setTypsMeta] = useState<Component[]>([]);
   const filtersRef = useRef<any>(null);
   const { tableProps, run: fetchData } = useAntdTable(
     ({
@@ -90,7 +90,7 @@ export default function index() {
       render: (val) => {
         return (
           <Space>
-            <img src={_.find(typsMeta, (meta) => meta.name === val)?.icon_url || '/image/default.png'} alt={val} style={{ width: 16, height: 16 }} />
+            <img src={_.find(typsMeta, (meta) => meta.ident === val)?.logo || '/image/default.png'} alt={val} style={{ width: 16, height: 16 }} />
             {val}
           </Space>
         );
@@ -270,7 +270,7 @@ export default function index() {
   );
 
   useEffect(() => {
-    getDashboardCates().then((res) => {
+    getComponents().then((res) => {
       setTypsMeta(res);
     });
     getTypes().then((res) => {
@@ -322,7 +322,7 @@ export default function index() {
                   return {
                     label: (
                       <Space>
-                        <img src={_.find(typsMeta, (meta) => meta.name === item)?.icon_url || '/image/default.png'} alt={item} style={{ width: 16, height: 16 }} />
+                        <img src={_.find(typsMeta, (meta) => meta.ident === item)?.logo || '/image/default.png'} alt={item} style={{ width: 16, height: 16 }} />
                         {item}
                       </Space>
                     ),

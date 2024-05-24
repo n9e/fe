@@ -21,7 +21,7 @@ import { Col, Drawer, Form, Input, Row, Space, Button, AutoComplete, message } f
 import { CloseOutlined } from '@ant-design/icons';
 import Markdown from '@/components/Markdown';
 import UnitPicker from '@/pages/dashboard/Components/UnitPicker';
-import { getDashboardCates } from '@/pages/dashboardBuiltin/services';
+import { getComponents, Component } from '@/pages/builtInComponents/services';
 import { postMetrics, putMetric } from '../../services';
 
 interface Props {
@@ -40,10 +40,10 @@ export default function index(props: Props) {
   const [open, setOpen] = useState(false);
   const [form] = Form.useForm();
   const note = Form.useWatch('note', form);
-  const [typsMeta, setTypsMeta] = useState<{ name: String; icon_url: string }[]>([]);
+  const [typsMeta, setTypsMeta] = useState<Component[]>([]);
 
   useEffect(() => {
-    getDashboardCates().then((res) => {
+    getComponents().then((res) => {
       setTypsMeta(res);
     });
   }, []);
@@ -158,7 +158,7 @@ export default function index(props: Props) {
                       return {
                         label: (
                           <Space>
-                            <img src={_.find(typsMeta, (meta) => meta.name === item)?.icon_url || '/image/default.png'} alt={item} style={{ width: 16, height: 16 }} />
+                            <img src={_.find(typsMeta, (meta) => meta.ident === item)?.logo || '/image/default.png'} alt={item} style={{ width: 16, height: 16 }} />
                             {item}
                           </Space>
                         ),

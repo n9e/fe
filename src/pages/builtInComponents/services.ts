@@ -17,9 +17,9 @@
 import _ from 'lodash';
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
-import { Component, ComponentPost, ComponentPut, PayloadQuery, TypeEnum, PayloadPost, PayloadPut } from './types';
+import { Component, ComponentPost, ComponentPut, PayloadQuery, TypeEnum, Payload, PayloadPost, PayloadPut } from './types';
 
-export type { Component, TypeEnum };
+export type { Component, TypeEnum, Payload };
 
 export const getComponents = function (): Promise<Component[]> {
   return request('/api/n9e/builtin-components', {
@@ -29,7 +29,16 @@ export const getComponents = function (): Promise<Component[]> {
   });
 };
 
-export const getPayloads = <T>(params: PayloadQuery): Promise<{ [index: string]: T }> => {
+export const getCates = function (params: { component: string; type: TypeEnum }): Promise<string[]> {
+  return request('/api/n9e/builtin-payloads/cates', {
+    method: RequestMethod.Get,
+    params,
+  }).then((res) => {
+    return res.dat;
+  });
+};
+
+export const getPayloads = <T>(params: PayloadQuery): Promise<T> => {
   return request('/api/n9e/builtin-payloads', {
     method: RequestMethod.Get,
     params,

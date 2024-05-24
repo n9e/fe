@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext } from 'react';
+import React, { useState, useRef, useContext, useEffect } from 'react';
 import _ from 'lodash';
 import { Table, Space, Button, Input, Select, Dropdown, Menu, Modal } from 'antd';
 import { SearchOutlined, MoreOutlined } from '@ant-design/icons';
@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useDebounceEffect } from 'ahooks';
 import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
-import { getPayloads, deletePayloads } from '../services';
+import { getPayloads, deletePayloads, getCates } from '../services';
 import { TypeEnum, Payload } from '../types';
 import PayloadFormModal from '../components/PayloadFormModal';
 
@@ -24,23 +24,15 @@ export default function index(props: Props) {
   }>({ cate: undefined, query: undefined });
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [data, setData] = useState<{ [index: string]: Payload[] }>();
+  const [data, setData] = useState<Payload[]>();
   const [cateList, setCateList] = useState<string[]>([]);
   const pagination = usePagination({ PAGESIZE_KEY: 'dashboard-builtin-pagesize' });
   const selectedRows = useRef<Payload[]>([]);
   const fetchData = () => {
     setLoading(true);
-    getPayloads<Payload[]>({ component, type: TypeEnum.collect, query: filter.query })
+    getPayloads<Payload[]>({ component, type: TypeEnum.collect, cate: filter.cate, query: filter.query })
       .then((res) => {
         setData(res);
-        // 初始化 cateList 和 filter
-        if (_.isEmpty(cateList)) {
-          setCateList(_.keys(res));
-          setFilter({
-            ...filter,
-            cate: _.head(_.keys(res)),
-          });
-        }
       })
       .finally(() => {
         setLoading(false);
@@ -51,11 +43,24 @@ export default function index(props: Props) {
     () => {
       fetchData();
     },
-    [component, filter.query],
+    [component, filter.cate, filter.query],
     {
       wait: 500,
     },
   );
+
+  useEffect(() => {
+    getCates({
+      component,
+      type: TypeEnum.collect,
+    }).then((res) => {
+      setCateList(res);
+      setFilter({
+        ...filter,
+        cate: _.head(res),
+      });
+    });
+  }, []);
 
   return (
     <>
@@ -117,7 +122,7 @@ export default function index(props: Props) {
         size='small'
         rowKey='id'
         loading={loading}
-        dataSource={filter.cate ? _.get(data, filter.cate, []) : []}
+        dataSource={data}
         rowSelection={{
           selectedRowKeys,
           onChange: (selectedRowKeys: string[], rows: Payload[]) => {

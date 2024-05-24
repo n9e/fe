@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Modal, Input, Form, Table, Button, Divider, message, Select, Row, Col, Switch, Space, Tag, Tabs } from 'antd';
@@ -22,8 +22,9 @@ import { CheckCircleOutlined, CloseCircleOutlined, SearchOutlined } from '@ant-d
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { importStrategy } from '@/services/warning';
 import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
-import { getRuleCates, createRule } from '@/pages/alertRulesBuiltin/services';
-import { CommonStateContext } from '@/App';
+import { getComponents, getPayloads, Component, Payload } from '@/pages/builtInComponents/services';
+import { TypeEnum } from '@/pages/builtInComponents/types';
+import { createRule } from '@/pages/builtInComponents/AlertRules/services';
 
 type ModalType = 'Import' | 'ImportBuiltin';
 interface IProps {
@@ -38,18 +39,31 @@ const TabPane = Tabs.TabPane;
 
 const ImportBuiltinContent = ({ busiId, onOk }) => {
   const { t } = useTranslation('dashboard');
-  const [builtinRules, setBuiltinRules] = useState<any[]>([]);
-  const [boardSearch, setBoardSearch] = useState<string>('');
+  const [filter, setFilter] = useState<{
+    query?: string;
+  }>({ query: undefined });
+  const [components, setComponents] = useState<Component[]>([]);
+  const [data, setData] = useState<Payload[]>([]);
   const [form] = Form.useForm();
+  const component = Form.useWatch('component', form);
   const cate = Form.useWatch('cate', form);
-  const group = Form.useWatch('group', form);
   const selectedRules = Form.useWatch('selectedRules', form);
 
   useEffect(() => {
-    getRuleCates().then((res) => {
-      setBuiltinRules(res);
+    getComponents().then((res) => {
+      setComponents(res);
     });
   }, []);
+
+  useEffect(() => {
+    getPayloads<Payload[]>({
+      component,
+      type: TypeEnum.alert,
+      query: filter.query,
+    }).then((res) => {
+      setData(res);
+    });
+  }, [component, filter.query]);
 
   return (
     <Form
@@ -59,8 +73,9 @@ const ImportBuiltinContent = ({ busiId, onOk }) => {
         createRule(
           busiId,
           _.map(vals.selectedRules, (item) => {
+            const content = JSON.parse(item.content);
             return {
-              ...item,
+              ...content,
               disabled: vals.enabled ? 0 : 1,
             };
           }),
@@ -95,8 +110,8 @@ const ImportBuiltinContent = ({ busiId, onOk }) => {
       }}
     >
       <Form.Item
-        label={t('alertRulesBuiltin:cate')}
-        name='cate'
+        label={t('builtInComponents:component')}
+        name='component'
         rules={[
           {
             required: true,
@@ -105,52 +120,27 @@ const ImportBuiltinContent = ({ busiId, onOk }) => {
       >
         <Select
           showSearch
-          options={_.map(builtinRules, (item) => {
+          options={_.map(components, (item) => {
             return {
-              label: item.name,
-              value: item.name,
+              label: item.ident,
+              value: item.ident,
             };
           })}
           onChange={() => {
             form.setFieldsValue({
-              group: undefined,
-              selectedRules: undefined,
+              cate: undefined,
+              selectedBoards: undefined,
             });
           }}
         />
       </Form.Item>
-      <Form.Item
-        label={t('alertRulesBuiltin:group')}
-        name='group'
-        rules={[
-          {
-            required: true,
-          },
-        ]}
-        hidden={!cate}
-      >
-        <Select
-          showSearch
-          options={_.map(_.find(builtinRules, (item) => item.name === cate)?.alert_rules, (val, key) => {
-            return {
-              label: key,
-              value: key,
-            };
-          })}
-          onChange={() => {
-            form.setFieldsValue({
-              selectedRules: undefined,
-            });
-          }}
-        />
-      </Form.Item>
-      <Form.Item name='selectedRules' label={t('alertRulesBuiltin:tab_list')} hidden={!cate}>
+      <Form.Item name='selectedRules' label={t('builtInComponents:payloads')} hidden={!component}>
         <>
           <Input
             prefix={<SearchOutlined />}
-            value={boardSearch}
+            value={filter.query}
             onChange={(e) => {
-              setBoardSearch(e.target.value);
+              setFilter({ ...filter, query: e.target.value });
             }}
             style={{ marginBottom: 8 }}
             allowClear
@@ -160,11 +150,11 @@ const ImportBuiltinContent = ({ busiId, onOk }) => {
             rowKey='name'
             columns={[
               {
-                title: t('alertRulesBuiltin:name'),
+                title: t('builtInComponents:name'),
                 dataIndex: 'name',
               },
               {
-                title: t('alertRulesBuiltin:tags'),
+                title: t('builtInComponents:tags'),
                 dataIndex: 'tags',
                 render: (val) => {
                   const tags = _.compact(_.split(val, ' '));
@@ -177,13 +167,13 @@ const ImportBuiltinContent = ({ busiId, onOk }) => {
                             color='purple'
                             style={{ cursor: 'pointer' }}
                             onClick={() => {
-                              const queryItem = _.compact(_.split(boardSearch, ' '));
-                              if (queryItem.includes(tag)) return;
-                              setBoardSearch((searchVal) => {
-                                if (searchVal) {
-                                  return searchVal + ' ' + tag;
-                                }
-                                return tag;
+                              const queryItem = _.compact(_.split(filter.query, ' '));
+                              if (_.includes(queryItem, tag)) return;
+                              setFilter((filter) => {
+                                return {
+                                  ...filter,
+                                  query: filter.query ? filter.query + ' ' + tag : tag,
+                                };
                               });
                             }}
                           >
@@ -196,9 +186,7 @@ const ImportBuiltinContent = ({ busiId, onOk }) => {
                 },
               },
             ]}
-            dataSource={_.filter(_.find(builtinRules, (item) => item.name === cate)?.alert_rules?.[group], (item) => {
-              return _.includes(_.toLower(item.name), _.toLower(boardSearch));
-            })}
+            dataSource={data}
             rowSelection={{
               type: 'checkbox',
               selectedRowKeys: _.map(selectedRules, 'name'),

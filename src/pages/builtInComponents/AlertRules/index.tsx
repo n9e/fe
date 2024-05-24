@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext } from 'react';
+import React, { useState, useRef, useContext, useEffect } from 'react';
 import _ from 'lodash';
 import { Table, Space, Button, Input, Select, Dropdown, Menu, Modal, Tag } from 'antd';
 import { SearchOutlined, MoreOutlined } from '@ant-design/icons';
@@ -10,7 +10,7 @@ import Export from '@/pages/dashboard/List/Export';
 import { CommonStateContext } from '@/App';
 import { RuleType } from './types';
 import Import from './Import';
-import { getPayloads, deletePayloads } from '../services';
+import { getPayloads, deletePayloads, getCates } from '../services';
 import { pathname } from '../constants';
 import { TypeEnum } from '../types';
 import { formatBeautifyJson, formatBeautifyJsons } from '../utils';
@@ -30,23 +30,15 @@ export default function index(props: Props) {
   }>({ cate: undefined, query: undefined });
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [data, setData] = useState<{ [index: string]: RuleType[] }>();
+  const [data, setData] = useState<RuleType[]>();
   const [cateList, setCateList] = useState<string[]>([]);
   const pagination = usePagination({ PAGESIZE_KEY: 'dashboard-builtin-pagesize' });
   const selectedRows = useRef<RuleType[]>([]);
   const fetchData = () => {
     setLoading(true);
-    getPayloads<RuleType[]>({ component, type: TypeEnum.alert, query: filter.query })
+    getPayloads<RuleType[]>({ component, type: TypeEnum.alert, cate: filter.cate, query: filter.query })
       .then((res) => {
         setData(res);
-        // 初始化 cateList 和 filter
-        if (_.isEmpty(cateList)) {
-          setCateList(_.keys(res));
-          setFilter({
-            ...filter,
-            cate: _.head(_.keys(res)),
-          });
-        }
       })
       .finally(() => {
         setLoading(false);
@@ -57,11 +49,24 @@ export default function index(props: Props) {
     () => {
       fetchData();
     },
-    [component, filter.query],
+    [component, filter.cate, filter.query],
     {
       wait: 500,
     },
   );
+
+  useEffect(() => {
+    getCates({
+      component,
+      type: TypeEnum.alert,
+    }).then((res) => {
+      setCateList(res);
+      setFilter({
+        ...filter,
+        cate: _.head(res),
+      });
+    });
+  }, []);
 
   return (
     <>
@@ -143,7 +148,7 @@ export default function index(props: Props) {
         size='small'
         rowKey='id'
         loading={loading}
-        dataSource={filter.cate ? _.get(data, filter.cate, []) : []}
+        dataSource={data}
         rowSelection={{
           selectedRowKeys,
           onChange: (selectedRowKeys: string[], rows: RuleType[]) => {

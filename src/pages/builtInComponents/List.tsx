@@ -152,7 +152,7 @@ export default function index() {
         {currentComponent && (
           <Tabs>
             <Tabs.TabPane tab={t('tab_instructions')} key='tab_instructions'>
-              <Instructions name={currentComponent} />
+              <Instructions readme={active?.readme} />
             </Tabs.TabPane>
             <Tabs.TabPane tab={t('tab_collectTpls')} key='tab_collectTpls'>
               <CollectTpls component={currentComponent} />

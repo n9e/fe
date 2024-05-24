@@ -35,7 +35,7 @@ export default function index(props: Props) {
     setLoading(true);
     getPayloads<Payload[]>({ component, type: TypeEnum.dashboard, query: filter.query })
       .then((res) => {
-        setData(_.get(res, '', []));
+        setData(res);
       })
       .finally(() => {
         setLoading(false);
