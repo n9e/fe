@@ -14,7 +14,7 @@ export default function Instructions(props: Props) {
 
   return (
     <div className='builtin-w-md-editor' data-color-mode={darkMode ? 'dark' : 'light'}>
-      <Markdown source={readme} style={{ whiteSpace: 'pre-wrap' }} />
+      <Markdown source={readme} />
     </div>
   );
 }
