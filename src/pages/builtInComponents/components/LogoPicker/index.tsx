@@ -19,7 +19,7 @@ export default function index(props: Props) {
   return (
     <>
       <Modal
-        width={800}
+        width={700}
         visible={visible}
         title={t('logo_picker_title')}
         onCancel={() => {

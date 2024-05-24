@@ -20,8 +20,8 @@ export default function index(props: Props) {
   const { darkMode } = useContext(CommonStateContext);
   const [filter, setFilter] = useState<{
     cate?: string;
-    name?: string;
-  }>({ cate: undefined, name: undefined });
+    query?: string;
+  }>({ cate: undefined, query: undefined });
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [data, setData] = useState<{ [index: string]: Payload[] }>();
@@ -30,7 +30,7 @@ export default function index(props: Props) {
   const selectedRows = useRef<Payload[]>([]);
   const fetchData = () => {
     setLoading(true);
-    getPayloads<Payload[]>({ component, type: TypeEnum.collect, name: filter.name })
+    getPayloads<Payload[]>({ component, type: TypeEnum.collect, query: filter.query })
       .then((res) => {
         setData(res);
         // 初始化 cateList 和 filter
@@ -51,7 +51,7 @@ export default function index(props: Props) {
     () => {
       fetchData();
     },
-    [component, filter.name],
+    [component, filter.query],
     {
       wait: 500,
     },
@@ -80,9 +80,9 @@ export default function index(props: Props) {
           </Select>
           <Input
             prefix={<SearchOutlined />}
-            value={filter.name}
+            value={filter.query}
             onChange={(e) => {
-              setFilter({ ...filter, name: e.target.value });
+              setFilter({ ...filter, query: e.target.value });
             }}
             placeholder={t('common:search_placeholder')}
             style={{ width: 300 }}

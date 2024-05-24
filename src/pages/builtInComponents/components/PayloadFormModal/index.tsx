@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import _ from 'lodash';
-import { Modal, Form, Select, Input, Space, message } from 'antd';
+import { Modal, Form, Select, Input, Space, message, AutoComplete } from 'antd';
 import { useTranslation } from 'react-i18next';
 import CodeMirror from '@uiw/react-codemirror';
 import { StreamLanguage } from '@codemirror/stream-parser';
@@ -110,13 +110,11 @@ function index(props: Props & ModalWrapProps) {
               },
             ]}
           >
-            <Select>
-              {_.map(cateList, (item) => (
-                <Select.Option key={item} value={item}>
-                  {item}
-                </Select.Option>
-              ))}
-            </Select>
+            <AutoComplete
+              options={_.map(cateList, (item) => {
+                return { value: item };
+              })}
+            />
           </Form.Item>
         )}
 

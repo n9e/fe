@@ -7,7 +7,6 @@ const zh_CN = {
   tab_dashboards: '仪表盘模板',
   ident: '组件名称',
   logo: '图标',
-  select_builtin_logos: '选择内置图标',
   readme: '采集说明',
   componentFormModal: {
     edit: '编辑组件模板',
@@ -15,6 +14,7 @@ const zh_CN = {
   },
   logo_picker_title: '选择图标',
   name: '名称',
+  tags: '标签',
   cate: '分类',
   content: '内容',
   format: '格式化',

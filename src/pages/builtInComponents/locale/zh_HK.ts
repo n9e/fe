@@ -7,7 +7,6 @@ const zh_HK = {
   tab_dashboards: '儀表板模板',
   ident: '組件名稱',
   logo: '圖標',
-  select_builtin_logos: '選擇內置圖標',
   readme: '採集說明',
   componentFormModal: {
     edit: '編輯組件模板',
@@ -15,6 +14,7 @@ const zh_HK = {
   },
   logo_picker_title: '選擇圖標',
   name: '名稱',
+  tags: '標籤',
   cate: '分類',
   content: '內容',
   format: '格式化',

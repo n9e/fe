@@ -78,7 +78,7 @@ function index(props: Props & ModalWrapProps) {
             <Space>
               {t('logo')}
               <LogoPicker components={components} onSelect={(logoURL) => form.setFieldsValue({ logo: logoURL })}>
-                <a>{t('select_builtin_logos')}</a>
+                <a>{t('logo_picker_title')}</a>
               </LogoPicker>
             </Space>
           }

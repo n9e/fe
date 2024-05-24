@@ -1,6 +1,6 @@
 import React, { useState, useRef, useContext } from 'react';
 import _ from 'lodash';
-import { Table, Space, Button, Input, Select, Dropdown, Menu, Modal } from 'antd';
+import { Table, Space, Button, Input, Select, Dropdown, Menu, Modal, Tag } from 'antd';
 import { SearchOutlined, MoreOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -22,12 +22,12 @@ interface Props {
 
 export default function index(props: Props) {
   const { component } = props;
-  const { t } = useTranslation();
+  const { t } = useTranslation('builtInComponents');
   const { busiGroups, groupedDatasourceList, darkMode } = useContext(CommonStateContext);
   const [filter, setFilter] = useState<{
     cate?: string;
-    name?: string;
-  }>({ cate: undefined, name: undefined });
+    query?: string;
+  }>({ cate: undefined, query: undefined });
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [data, setData] = useState<{ [index: string]: RuleType[] }>();
@@ -36,7 +36,7 @@ export default function index(props: Props) {
   const selectedRows = useRef<RuleType[]>([]);
   const fetchData = () => {
     setLoading(true);
-    getPayloads<RuleType[]>({ component, type: TypeEnum.alert, name: filter.name })
+    getPayloads<RuleType[]>({ component, type: TypeEnum.alert, query: filter.query })
       .then((res) => {
         setData(res);
         // 初始化 cateList 和 filter
@@ -57,7 +57,7 @@ export default function index(props: Props) {
     () => {
       fetchData();
     },
-    [component, filter.name],
+    [component, filter.query],
     {
       wait: 500,
     },
@@ -86,9 +86,9 @@ export default function index(props: Props) {
           </Select>
           <Input
             prefix={<SearchOutlined />}
-            value={filter.name}
+            value={filter.query}
             onChange={(e) => {
-              setFilter({ ...filter, name: e.target.value });
+              setFilter({ ...filter, query: e.target.value });
             }}
             placeholder={t('common:search_placeholder')}
             style={{ width: 300 }}
@@ -167,6 +167,38 @@ export default function index(props: Props) {
                 >
                   {value}
                 </Link>
+              );
+            },
+          },
+          {
+            title: t('tags'),
+            dataIndex: 'tags',
+            render: (val) => {
+              const tags = _.compact(_.split(val, ' '));
+              return (
+                <Space size={0}>
+                  {_.map(tags, (tag, idx) => {
+                    return (
+                      <Tag
+                        key={idx}
+                        color='purple'
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => {
+                          const queryItem = _.compact(_.split(filter.query, ' '));
+                          if (_.includes(queryItem, tag)) return;
+                          setFilter((filter) => {
+                            return {
+                              ...filter,
+                              query: filter.query ? filter.query + ' ' + tag : tag,
+                            };
+                          });
+                        }}
+                      >
+                        {tag}
+                      </Tag>
+                    );
+                  })}
+                </Space>
               );
             },
           },

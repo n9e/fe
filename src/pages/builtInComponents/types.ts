@@ -18,7 +18,7 @@ export interface PayloadQuery {
   component: string;
   type: TypeEnum;
   cate?: string; // 某些组件有子分类
-  name?: string; // 名称模糊查询
+  query?: string; // 名称模糊查询
 }
 
 export interface Payload {

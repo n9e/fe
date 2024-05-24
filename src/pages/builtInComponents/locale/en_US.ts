@@ -7,7 +7,6 @@ const en_US = {
   tab_dashboards: 'Dashboards',
   ident: 'Component Name',
   logo: 'Logo',
-  select_builtin_logos: 'Select Built-in Logos',
   readme: 'Instructions',
   componentFormModal: {
     edit: 'Edit Component Template',
@@ -15,6 +14,7 @@ const en_US = {
   },
   logo_picker_title: 'Select Logo',
   name: 'Name',
+  tags: 'Tags',
   cate: 'Category',
   content: 'Content',
   format: 'Format',
