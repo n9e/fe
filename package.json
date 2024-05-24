@@ -108,5 +108,8 @@
     "typescript": "4.9.4",
     "vite": "^2.1.5",
     "vite-plugin-react-svg": "^0.2.0"
+  },
+  "overrides": {
+    "@types/react": "^17.0.14"
   }
 }
