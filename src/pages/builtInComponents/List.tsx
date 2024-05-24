@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import _ from 'lodash';
 import queryString from 'query-string';
-import { Input, Drawer, Space, Tabs, Button, Popconfirm, Modal } from 'antd';
+import { Input, Drawer, Space, Tabs, Button, Modal } from 'antd';
 import { SafetyCertificateOutlined, SearchOutlined, CloseOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
+import { CommonStateContext } from '@/App';
 import PageLayout from '@/components/pageLayout';
 import Instructions from './Instructions';
 import AlertRules from './AlertRules';
@@ -15,6 +16,7 @@ import { getComponents, Component, deleteComponents } from './services';
 import ComponentFormModal from './components/ComponentFormModal';
 
 export default function index() {
+  const { darkMode } = useContext(CommonStateContext);
   const { t } = useTranslation('builtInComponents');
   const { search } = useLocation();
   const query = queryString.parse(search);
@@ -53,6 +55,7 @@ export default function index() {
               type='primary'
               onClick={() => {
                 ComponentFormModal({
+                  darkMode,
                   components: data,
                   action: 'create',
                   onOk: () => {
@@ -90,6 +93,7 @@ export default function index() {
                           onClick={(e) => {
                             e.stopPropagation();
                             ComponentFormModal({
+                              darkMode,
                               components: data,
                               action: 'edit',
                               initialValues: item,

@@ -33,6 +33,7 @@
     "@fc-plot/ts-graph": "^0.26.2",
     "@radix-ui/react-scroll-area": "^1.0.5",
     "@uiw/react-codemirror": "4.6.0",
+    "@uiw/react-md-editor": "^4.0.4",
     "ahooks": "3.1.5",
     "ansi_up": "^6.0.2",
     "antd": "4.21.0",

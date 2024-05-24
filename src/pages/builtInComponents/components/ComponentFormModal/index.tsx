@@ -2,11 +2,13 @@ import React from 'react';
 import _ from 'lodash';
 import { Modal, Form, Input, Space, message } from 'antd';
 import { useTranslation } from 'react-i18next';
+import MDEditor from '@uiw/react-md-editor';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { postComponents, putComponent, Component } from '../../services';
 import LogoPicker from '../LogoPicker';
 
 interface Props {
+  darkMode: boolean;
   components: Component[];
   action: 'create' | 'edit';
   initialValues?: any;
@@ -15,13 +17,15 @@ interface Props {
 
 function index(props: Props & ModalWrapProps) {
   const { t } = useTranslation('builtInComponents');
-  const { components, action, initialValues, onOk, visible, destroy } = props;
+  const { darkMode, components, action, initialValues, onOk, visible, destroy } = props;
   const [form] = Form.useForm();
   const logo = Form.useWatch('logo', form);
 
   return (
     <Modal
-      width={600}
+      keyboard={false}
+      maskClosable={false}
+      width={900}
       title={t(`componentFormModal.${action}`)}
       visible={visible}
       onOk={() => {
@@ -92,9 +96,11 @@ function index(props: Props & ModalWrapProps) {
           <Input />
         </Form.Item>
         {logo && <img src={logo} className='mb2' style={{ height: 42, maxWidth: '60%' }} />}
-        <Form.Item label={t('readme')} name='readme'>
-          <Input.TextArea autoSize={{ minRows: 2 }} />
-        </Form.Item>
+        <div className='builtin-w-md-editor' data-color-mode={darkMode ? 'dark' : 'light'}>
+          <Form.Item label={t('readme')} name='readme'>
+            <MDEditor />
+          </Form.Item>
+        </div>
       </Form>
     </Modal>
   );
