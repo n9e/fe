@@ -33,10 +33,6 @@ export const getMenuList = (t) => {
           key: '/dashboards',
           label: t('监控仪表盘'),
         },
-        {
-          key: '/dashboards-built-in',
-          label: t('内置仪表盘'),
-        },
       ],
     },
     {
@@ -81,10 +77,6 @@ export const getMenuList = (t) => {
         {
           key: '/alert-rules',
           label: t('告警规则'),
-        },
-        {
-          key: '/alert-rules-built-in',
-          label: t('内置规则'),
         },
         {
           key: '/alert-mutes',
