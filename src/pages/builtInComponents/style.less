@@ -49,6 +49,11 @@
 }
 
 .builtin-w-md-editor {
+  height: 100%;
+  .w-md-editor {
+    border: 1px solid var(--fc-border-color);
+    border-radius: 4px;
+  }
   // 解决 antd 的样式导致的污染问题
   textarea {
     resize: unset !important;
@@ -62,5 +67,15 @@
     .table {
       display: unset !important;
     }
+  }
+}
+.builtin-drawer-tabs {
+  height: 100%;
+  .ant-tabs-content-holder {
+    height: 100%;
+    overflow-y: auto;
+  }
+  .ant-tabs-content {
+    height: 100%;
   }
 }

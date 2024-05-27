@@ -12,8 +12,10 @@ import AlertRules from './AlertRules';
 import CollectTpls from './CollectTpls';
 import Metrics from './Metrics';
 import Dashboards from './Dashboards';
-import { getComponents, Component, deleteComponents } from './services';
+import { getComponents, Component, deleteComponents, putComponent } from './services';
 import ComponentFormModal from './components/ComponentFormModal';
+
+const BUILT_IN_ACTIVE_TAB_KEY = 'builtin-drawer-active-tab';
 
 export default function index() {
   const { darkMode } = useContext(CommonStateContext);
@@ -22,10 +24,13 @@ export default function index() {
   const query = queryString.parse(search);
   const [searchValue, setSearchValue] = useState('');
   const [data, setData] = useState<Component[]>([]);
-  const [active, setActive] = useState<Component>();
+  const [activeComponent, setActiveComponent] = useState<Component>();
+  const [readme, setReadme] = useState('');
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState(localStorage.getItem(BUILT_IN_ACTIVE_TAB_KEY) || 'tab_instructions');
+  const [readmeEditabled, setReadmeEditabled] = useState(false);
   const defaultComponent = query.component as string;
-  const currentComponent = defaultComponent || active?.ident;
+  const currentComponent = defaultComponent || activeComponent?.ident;
   const fetchData = () => {
     getComponents().then((res) => {
       setData(res);
@@ -78,7 +83,8 @@ export default function index() {
                     key={item.ident}
                     className='builtin-cates-grid-item'
                     onClick={() => {
-                      setActive(item);
+                      setActiveComponent(item);
+                      setReadme(item.readme);
                       setDrawerOpen(true);
                     }}
                   >
@@ -138,8 +144,8 @@ export default function index() {
         destroyOnClose
         title={
           <Space>
-            <img src={active?.logo} style={{ height: 24, width: 24 }} />
-            <div>{active?.ident}</div>
+            <img src={activeComponent?.logo} style={{ height: 24, width: 24 }} />
+            <div>{activeComponent?.ident}</div>
           </Space>
         }
         extra={
@@ -151,12 +157,65 @@ export default function index() {
         }
         onClose={() => {
           setDrawerOpen(false);
+          setReadmeEditabled(false);
+          setReadme(activeComponent?.readme || '');
         }}
+        footer={
+          activeTab === 'tab_instructions' &&
+          (readmeEditabled ? (
+            <Space>
+              <Button
+                type='primary'
+                onClick={() => {
+                  if (activeComponent) {
+                    putComponent({ ...activeComponent, readme }).then(() => {
+                      fetchData();
+                    });
+                    setReadmeEditabled(!readmeEditabled);
+                  }
+                }}
+              >
+                {t('common:btn.save')}
+              </Button>
+              <Button
+                onClick={() => {
+                  setReadmeEditabled(!readmeEditabled);
+                  setReadme(activeComponent?.readme || '');
+                }}
+              >
+                {t('common:btn.cancel')}
+              </Button>
+            </Space>
+          ) : (
+            <Button
+              type='primary'
+              onClick={() => {
+                setReadmeEditabled(!readmeEditabled);
+              }}
+            >
+              {t('common:btn.edit')}
+            </Button>
+          ))
+        }
       >
         {currentComponent && (
-          <Tabs>
-            <Tabs.TabPane tab={t('tab_instructions')} key='tab_instructions'>
-              <Instructions readme={active?.readme} />
+          <Tabs
+            className='builtin-drawer-tabs'
+            activeKey={activeTab}
+            onChange={(activeKey) => {
+              setActiveTab(activeKey);
+              localStorage.setItem(BUILT_IN_ACTIVE_TAB_KEY, activeKey);
+            }}
+          >
+            <Tabs.TabPane tab={t('tab_instructions')} key='tab_instructions' className='builtin-drawer-tab-pane'>
+              <Instructions
+                value={readme}
+                onChange={(newValue) => {
+                  setReadme(newValue);
+                }}
+                editabled={readmeEditabled}
+                setReadmeEditabled={setReadmeEditabled}
+              />
             </Tabs.TabPane>
             <Tabs.TabPane tab={t('tab_collectTpls')} key='tab_collectTpls'>
               <CollectTpls component={currentComponent} />

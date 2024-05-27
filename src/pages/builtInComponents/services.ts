@@ -92,7 +92,7 @@ export const postComponents = (data: ComponentPost[]): Promise<any> => {
 };
 
 export const putComponent = (data: ComponentPut): Promise<any> => {
-  return request('/api/n9e/builtin-payloads', {
+  return request('/api/n9e/builtin-components', {
     method: RequestMethod.Put,
     data,
   }).then((res) => {
