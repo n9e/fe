@@ -8,6 +8,7 @@ import { useDebounceEffect } from 'ahooks';
 import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
 import Export from '@/pages/dashboard/List/Export';
+import AuthorizationWrapper from '@/components/AuthorizationWrapper';
 import { getPayloads, deletePayloads } from '../services';
 import { TypeEnum, Payload } from '../types';
 import PayloadFormModal from '../components/PayloadFormModal';
@@ -68,26 +69,29 @@ export default function index(props: Props) {
           />
         </Space>
         <Space>
-          <Button
-            type='primary'
-            onClick={() => {
-              PayloadFormModal({
-                darkMode,
-                action: 'create',
-                cateList: [],
-                contentMode: 'json',
-                initialValues: {
-                  type: TypeEnum.dashboard,
-                  component,
-                },
-                onOk: () => {
-                  fetchData();
-                },
-              });
-            }}
-          >
-            {t('common:btn.create')}
-          </Button>
+          <AuthorizationWrapper allowedPerms={['/built-in-components/add']}>
+            <Button
+              type='primary'
+              onClick={() => {
+                PayloadFormModal({
+                  darkMode,
+                  action: 'create',
+                  cateList: [],
+                  contentMode: 'json',
+                  showTags: true,
+                  initialValues: {
+                    type: TypeEnum.dashboard,
+                    component,
+                  },
+                  onOk: () => {
+                    fetchData();
+                  },
+                });
+              }}
+            >
+              {t('common:btn.create')}
+            </Button>
+          </AuthorizationWrapper>
           <Button
             onClick={() => {
               Import({
@@ -204,43 +208,48 @@ export default function index(props: Props) {
                           {t('common:btn.export')}
                         </a>
                       </Menu.Item>
-                      <Menu.Item>
-                        <a
-                          onClick={() => {
-                            PayloadFormModal({
-                              darkMode,
-                              action: 'edit',
-                              cateList: [],
-                              contentMode: 'json',
-                              initialValues: record,
-                              onOk: () => {
-                                fetchData();
-                              },
-                            });
-                          }}
-                        >
-                          {t('common:btn.edit')}
-                        </a>
-                      </Menu.Item>
-                      <Menu.Item>
-                        <Button
-                          type='link'
-                          danger
-                          className='p0 height-auto'
-                          onClick={() => {
-                            Modal.confirm({
-                              title: t('common:confirm.delete'),
-                              onOk() {
-                                deletePayloads([record.id]).then(() => {
+                      <AuthorizationWrapper allowedPerms={['/built-in-components/put']}>
+                        <Menu.Item>
+                          <a
+                            onClick={() => {
+                              PayloadFormModal({
+                                darkMode,
+                                action: 'edit',
+                                cateList: [],
+                                contentMode: 'json',
+                                showTags: true,
+                                initialValues: record,
+                                onOk: () => {
                                   fetchData();
-                                });
-                              },
-                            });
-                          }}
-                        >
-                          {t('common:btn.delete')}
-                        </Button>
-                      </Menu.Item>
+                                },
+                              });
+                            }}
+                          >
+                            {t('common:btn.edit')}
+                          </a>
+                        </Menu.Item>
+                      </AuthorizationWrapper>
+                      <AuthorizationWrapper allowedPerms={['/built-in-components/del']}>
+                        <Menu.Item>
+                          <Button
+                            type='link'
+                            danger
+                            className='p0 height-auto'
+                            onClick={() => {
+                              Modal.confirm({
+                                title: t('common:confirm.delete'),
+                                onOk() {
+                                  deletePayloads([record.id]).then(() => {
+                                    fetchData();
+                                  });
+                                },
+                              });
+                            }}
+                          >
+                            {t('common:btn.delete')}
+                          </Button>
+                        </Menu.Item>
+                      </AuthorizationWrapper>
                     </Menu>
                   }
                 >

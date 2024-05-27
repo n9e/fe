@@ -8,6 +8,7 @@ import { toml } from '@codemirror/legacy-modes/mode/toml';
 import { json } from '@codemirror/legacy-modes/mode/javascript';
 import { EditorView } from '@codemirror/view';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
+import KVTagSelect, { validatorOfKVTagSelect } from '@/components/KVTagSelect';
 import { postPayloads, putPayload } from '../../services';
 
 interface Props {
@@ -16,12 +17,14 @@ interface Props {
   cateList: string[];
   initialValues?: any;
   contentMode: 'json' | 'yaml';
+  showCate?: boolean;
+  showTags?: boolean;
   onOk: (values: any) => void;
 }
 
 function index(props: Props & ModalWrapProps) {
   const { t } = useTranslation('builtInComponents');
-  const { darkMode, action, cateList, initialValues, contentMode, onOk, visible, destroy } = props;
+  const { darkMode, action, cateList, initialValues, contentMode, showCate, showTags, onOk, visible, destroy } = props;
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -47,6 +50,7 @@ function index(props: Props & ModalWrapProps) {
         form
           .validateFields()
           .then((values) => {
+            values.tags = _.isArray(values.tags) ? _.join(values.tags, ' ') : _.toString(values.tags);
             if (action === 'edit') {
               putPayload(values).then(() => {
                 message.success(t('common:success.modify'));
@@ -98,7 +102,7 @@ function index(props: Props & ModalWrapProps) {
         >
           <Input />
         </Form.Item>
-        {_.isEmpty(cateList) ? null : (
+        {showCate && (
           <Form.Item
             label={t('cate')}
             name='cate'
@@ -115,7 +119,11 @@ function index(props: Props & ModalWrapProps) {
             />
           </Form.Item>
         )}
-
+        {showTags && (
+          <Form.Item label={t('common:table.tag')} name='tags'>
+            <Select mode='tags' open={false} placeholder={t('tags_placeholder')} />
+          </Form.Item>
+        )}
         {contentMode === 'json' ? (
           <Form.Item
             label={

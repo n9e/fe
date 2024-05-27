@@ -6,9 +6,11 @@ import { useTranslation } from 'react-i18next';
 import { useDebounceEffect } from 'ahooks';
 import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
+import AuthorizationWrapper from '@/components/AuthorizationWrapper';
 import { getPayloads, deletePayloads, getCates } from '../services';
 import { TypeEnum, Payload } from '../types';
 import PayloadFormModal from '../components/PayloadFormModal';
+import GroupSelectModal from './GroupSelectModal';
 
 interface Props {
   component: string;
@@ -16,8 +18,8 @@ interface Props {
 
 export default function index(props: Props) {
   const { component } = props;
-  const { t } = useTranslation();
-  const { darkMode } = useContext(CommonStateContext);
+  const { t } = useTranslation('builtInComponents');
+  const { darkMode, busiGroups } = useContext(CommonStateContext);
   const [filter, setFilter] = useState<{
     cate?: string;
     query?: string;
@@ -100,28 +102,30 @@ export default function index(props: Props) {
           />
         </Space>
         <Space>
-          <Button
-            type='primary'
-            onClick={() => {
-              PayloadFormModal({
-                darkMode,
-                action: 'create',
-                cateList,
-                contentMode: 'yaml',
-                initialValues: {
-                  type: TypeEnum.collect,
-                  component,
-                  cate: filter.cate,
-                },
-                onOk: () => {
-                  fetchData();
-                  // fetchCates();
-                },
-              });
-            }}
-          >
-            {t('common:btn.create')}
-          </Button>
+          <AuthorizationWrapper allowedPerms={['/built-in-components/add']}>
+            <Button
+              type='primary'
+              onClick={() => {
+                PayloadFormModal({
+                  darkMode,
+                  action: 'create',
+                  cateList,
+                  contentMode: 'yaml',
+                  initialValues: {
+                    type: TypeEnum.collect,
+                    component,
+                    cate: filter.cate,
+                  },
+                  onOk: () => {
+                    fetchData();
+                    // fetchCates();
+                  },
+                });
+              }}
+            >
+              {t('common:btn.create')}
+            </Button>
+          </AuthorizationWrapper>
         </Space>
       </div>
       <Table
@@ -154,42 +158,60 @@ export default function index(props: Props) {
                       <Menu.Item>
                         <a
                           onClick={() => {
-                            PayloadFormModal({
-                              darkMode,
-                              action: 'edit',
-                              cateList,
-                              contentMode: 'yaml',
-                              initialValues: record,
-                              onOk: () => {
-                                fetchData();
-                                // fetchCates();
+                            GroupSelectModal({
+                              busiGroups,
+                              onOk: (group_id) => {
+                                window.open(`/collects/add/${group_id}?component=${component}&payloadName=${record.name}`, '_blank');
                               },
                             });
                           }}
                         >
-                          {t('common:btn.edit')}
+                          {t('collect_create')}
                         </a>
                       </Menu.Item>
-                      <Menu.Item>
-                        <Button
-                          type='link'
-                          danger
-                          className='p0 height-auto'
-                          onClick={() => {
-                            Modal.confirm({
-                              title: t('common:confirm.delete'),
-                              onOk() {
-                                deletePayloads([record.id]).then(() => {
+                      <AuthorizationWrapper allowedPerms={['/built-in-components/put']}>
+                        <Menu.Item>
+                          <a
+                            onClick={() => {
+                              PayloadFormModal({
+                                darkMode,
+                                action: 'edit',
+                                cateList,
+                                contentMode: 'yaml',
+                                initialValues: record,
+                                onOk: () => {
                                   fetchData();
                                   // fetchCates();
-                                });
-                              },
-                            });
-                          }}
-                        >
-                          {t('common:btn.delete')}
-                        </Button>
-                      </Menu.Item>
+                                },
+                              });
+                            }}
+                          >
+                            {t('common:btn.edit')}
+                          </a>
+                        </Menu.Item>
+                      </AuthorizationWrapper>
+                      <AuthorizationWrapper allowedPerms={['/built-in-components/del']}>
+                        <Menu.Item>
+                          <Button
+                            type='link'
+                            danger
+                            className='p0 height-auto'
+                            onClick={() => {
+                              Modal.confirm({
+                                title: t('common:confirm.delete'),
+                                onOk() {
+                                  deletePayloads([record.id]).then(() => {
+                                    fetchData();
+                                    // fetchCates();
+                                  });
+                                },
+                              });
+                            }}
+                          >
+                            {t('common:btn.delete')}
+                          </Button>
+                        </Menu.Item>
+                      </AuthorizationWrapper>
                     </Menu>
                   }
                 >

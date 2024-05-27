@@ -25,6 +25,9 @@ const zh_HK = {
     create: '創建模板',
   },
   payloads: '模板',
+  tags_placeholder: '使用回車或空格分隔',
+  collect_create: '創建採集',
+  collect_busiGroup_select: '業務組選擇',
 };
 
 export default zh_HK;

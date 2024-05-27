@@ -22,7 +22,7 @@ import { CheckCircleOutlined, CloseCircleOutlined, SearchOutlined } from '@ant-d
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { importStrategy } from '@/services/warning';
 import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
-import { getComponents, getPayloads, Component, Payload } from '@/pages/builtInComponents/services';
+import { getComponents, getCates, getPayloads, Component, Payload } from '@/pages/builtInComponents/services';
 import { TypeEnum } from '@/pages/builtInComponents/types';
 import { createRule } from '@/pages/builtInComponents/AlertRules/services';
 
@@ -44,6 +44,7 @@ const ImportBuiltinContent = ({ busiId, onOk }) => {
   }>({ query: undefined });
   const [components, setComponents] = useState<Component[]>([]);
   const [data, setData] = useState<Payload[]>([]);
+  const [cateList, setCateList] = useState<string[]>([]);
   const [form] = Form.useForm();
   const component = Form.useWatch('component', form);
   const cate = Form.useWatch('cate', form);
@@ -56,14 +57,27 @@ const ImportBuiltinContent = ({ busiId, onOk }) => {
   }, []);
 
   useEffect(() => {
+    getCates({
+      component,
+      type: TypeEnum.alert,
+    }).then((res) => {
+      setCateList(res);
+      form.setFieldsValue({
+        cate: cate || _.head(res),
+      });
+    });
+  }, [component]);
+
+  useEffect(() => {
     getPayloads<Payload[]>({
       component,
       type: TypeEnum.alert,
+      cate: cate,
       query: filter.query,
     }).then((res) => {
       setData(res);
     });
-  }, [component, filter.query]);
+  }, [component, cate, filter.query]);
 
   return (
     <Form
@@ -129,6 +143,30 @@ const ImportBuiltinContent = ({ busiId, onOk }) => {
           onChange={() => {
             form.setFieldsValue({
               cate: undefined,
+              selectedBoards: undefined,
+            });
+          }}
+        />
+      </Form.Item>
+      <Form.Item
+        label={t('builtInComponents:cate')}
+        name='cate'
+        rules={[
+          {
+            required: true,
+          },
+        ]}
+      >
+        <Select
+          showSearch
+          options={_.map(cateList, (item) => {
+            return {
+              label: item,
+              value: item,
+            };
+          })}
+          onChange={() => {
+            form.setFieldsValue({
               selectedBoards: undefined,
             });
           }}

@@ -25,5 +25,8 @@ const en_US = {
     create: 'Create Template',
   },
   payloads: 'Templates',
+  tags_placeholder: 'Use Enter or Space to separate',
+  collect_create: 'Create Collect',
+  collect_busiGroup_select: 'Business Group Select',
 };
 export default en_US;
