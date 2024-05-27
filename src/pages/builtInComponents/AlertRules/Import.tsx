@@ -19,22 +19,24 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Modal, Input, Form, Button, Select, Switch, message } from 'antd';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
+import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
 import { createRule } from './services';
 
 interface IProps {
   data: any;
   busiGroups: any;
   groupedDatasourceList: any;
+  datasourceCateOptions: any;
 }
 
 function Import(props: IProps & ModalWrapProps) {
-  const { t } = useTranslation('alertRulesBuiltin');
-  const { visible, destroy, data, busiGroups } = props;
+  const { t } = useTranslation('builtInComponents');
+  const { visible, destroy, data, busiGroups, groupedDatasourceList, datasourceCateOptions } = props;
+  const datasourceCates = _.filter(datasourceCateOptions, (item) => !!item.alertRule);
 
   return (
     <Modal
-      className='dashboard-import-modal'
-      title={t('common:btn.clone')}
+      title={t('common:btn.import')}
       visible={visible}
       onCancel={() => {
         destroy();
@@ -60,6 +62,8 @@ function Import(props: IProps & ModalWrapProps) {
               const record = _.omit(item, ['id', 'group_id', 'create_at', 'create_by', 'update_at', 'update_by']);
               return {
                 ...record,
+                cate: vals.cate,
+                datasource_ids: vals.datasource_ids,
                 disabled: vals.enabled ? 0 : 1,
               };
             });
@@ -112,11 +116,28 @@ function Import(props: IProps & ModalWrapProps) {
             })}
           </Select>
         </Form.Item>
+        <Form.Item label={t('common:datasource.type')} name='cate'>
+          <Select>
+            {_.map(datasourceCates, (item) => {
+              return (
+                <Select.Option key={item.value} value={item.value}>
+                  {item.label}
+                </Select.Option>
+              );
+            })}
+          </Select>
+        </Form.Item>
+        <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.cate !== curValues.cate} noStyle>
+          {({ getFieldValue, setFieldsValue }) => {
+            const cate = getFieldValue('cate');
+            return <DatasourceValueSelect mode='multiple' setFieldsValue={setFieldsValue} cate={cate} datasourceList={groupedDatasourceList[cate] || []} />;
+          }}
+        </Form.Item>
         <Form.Item label={t('common:table.enabled')} name='enabled' valuePropName='checked'>
           <Switch />
         </Form.Item>
         <Form.Item
-          label={t('json_label')}
+          label={t('content')}
           name='import'
           rules={[
             {

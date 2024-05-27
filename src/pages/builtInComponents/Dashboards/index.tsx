@@ -96,7 +96,7 @@ export default function index(props: Props) {
               });
             }}
           >
-            {t('common:btn.batch_clone')}
+            {t('common:btn.batch_import')}
           </Button>
           <Button
             onClick={() => {
@@ -190,7 +190,7 @@ export default function index(props: Props) {
                             });
                           }}
                         >
-                          {t('common:btn.clone')}
+                          {t('common:btn.import')}
                         </a>
                       </Menu.Item>
                       <Menu.Item>

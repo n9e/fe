@@ -1,7 +1,7 @@
 const zh_CN = {
   title: '模板中心',
   tab_instructions: '采集说明',
-  tab_alertRules: '告警模板',
+  tab_alertRules: '告警规则',
   tab_collectTpls: '采集模板',
   tab_metrics: '指标说明',
   tab_dashboards: '仪表盘模板',

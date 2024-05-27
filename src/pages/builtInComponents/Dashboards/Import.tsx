@@ -27,13 +27,12 @@ interface IProps {
 }
 
 function Import(props: IProps & ModalWrapProps) {
-  const { t } = useTranslation('dashboardBuiltin');
+  const { t } = useTranslation('builtInComponents');
   const { visible, destroy, data, busiGroups } = props;
 
   return (
     <Modal
-      className='dashboard-import-modal'
-      title={t('common:btn.clone')}
+      title={t('common:btn.import')}
       visible={visible}
       onCancel={() => {
         destroy();
@@ -108,7 +107,7 @@ function Import(props: IProps & ModalWrapProps) {
           </Select>
         </Form.Item>
         <Form.Item
-          label={t('json_label')}
+          label={t('content')}
           name='import'
           rules={[
             {

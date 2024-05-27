@@ -1,7 +1,7 @@
 const zh_HK = {
   title: '模板中心',
   tab_instructions: '採集說明',
-  tab_alertRules: '告警模板',
+  tab_alertRules: '告警規則',
   tab_collectTpls: '採集模板',
   tab_metrics: '指標說明',
   tab_dashboards: '儀表板模板',

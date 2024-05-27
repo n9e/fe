@@ -23,7 +23,7 @@ interface Props {
 export default function index(props: Props) {
   const { component } = props;
   const { t } = useTranslation('builtInComponents');
-  const { busiGroups, groupedDatasourceList, darkMode } = useContext(CommonStateContext);
+  const { busiGroups, groupedDatasourceList, datasourceCateOptions, darkMode } = useContext(CommonStateContext);
   const [filter, setFilter] = useState<{
     cate?: string;
     query?: string;
@@ -134,10 +134,11 @@ export default function index(props: Props) {
                 data: formatBeautifyJsons(_.map(selectedRows.current, 'content')),
                 busiGroups,
                 groupedDatasourceList,
+                datasourceCateOptions,
               });
             }}
           >
-            {t('common:btn.batch_clone')}
+            {t('common:btn.batch_import')}
           </Button>
           <Button
             onClick={() => {
@@ -229,10 +230,11 @@ export default function index(props: Props) {
                               data: formatBeautifyJson(record.content),
                               busiGroups,
                               groupedDatasourceList,
+                              datasourceCateOptions,
                             });
                           }}
                         >
-                          {t('common:btn.clone')}
+                          {t('common:btn.import')}
                         </a>
                       </Menu.Item>
                       <Menu.Item>
