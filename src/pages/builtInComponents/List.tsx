@@ -4,7 +4,7 @@ import queryString from 'query-string';
 import { Input, Drawer, Space, Tabs, Button, Modal } from 'antd';
 import { SafetyCertificateOutlined, SearchOutlined, CloseOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useHistory } from 'react-router-dom';
 import { CommonStateContext } from '@/App';
 import PageLayout from '@/components/pageLayout';
 import Instructions from './Instructions';
@@ -20,25 +20,33 @@ const BUILT_IN_ACTIVE_TAB_KEY = 'builtin-drawer-active-tab';
 export default function index() {
   const { darkMode } = useContext(CommonStateContext);
   const { t } = useTranslation('builtInComponents');
+  const history = useHistory();
   const { search } = useLocation();
   const query = queryString.parse(search);
+  const defaultComponent = query.component as string;
   const [searchValue, setSearchValue] = useState('');
   const [data, setData] = useState<Component[]>([]);
   const [activeComponent, setActiveComponent] = useState<Component>();
   const [readme, setReadme] = useState('');
-  const [drawerOpen, setDrawerOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(localStorage.getItem(BUILT_IN_ACTIVE_TAB_KEY) || 'tab_instructions');
   const [readmeEditabled, setReadmeEditabled] = useState(false);
-  const defaultComponent = query.component as string;
-  const currentComponent = defaultComponent || activeComponent?.ident;
   const fetchData = () => {
-    getComponents().then((res) => {
+    return getComponents().then((res) => {
       setData(res);
+      return res;
     });
   };
 
   useEffect(() => {
-    fetchData();
+    fetchData().then((res) => {
+      if (defaultComponent) {
+        const component = _.find(res, { ident: defaultComponent });
+        if (component) {
+          setActiveComponent(component);
+          setReadme(component.readme);
+        }
+      }
+    });
   }, []);
 
   return (
@@ -83,9 +91,14 @@ export default function index() {
                     key={item.ident}
                     className='builtin-cates-grid-item'
                     onClick={() => {
+                      history.replace({
+                        search: queryString.stringify({
+                          ...query,
+                          component: item.ident,
+                        }),
+                      });
                       setActiveComponent(item);
                       setReadme(item.readme);
-                      setDrawerOpen(true);
                     }}
                   >
                     <img src={item.logo} style={{ height: 42, maxWidth: '60%' }} />
@@ -139,7 +152,7 @@ export default function index() {
       </div>
       <Drawer
         width={1000}
-        visible={drawerOpen}
+        visible={!!activeComponent}
         closable={false}
         destroyOnClose
         title={
@@ -151,12 +164,26 @@ export default function index() {
         extra={
           <CloseOutlined
             onClick={() => {
-              setDrawerOpen(false);
+              history.replace({
+                search: queryString.stringify({
+                  ...query,
+                  component: undefined,
+                }),
+              });
+              setActiveComponent(undefined);
+              setReadmeEditabled(false);
+              setReadme(activeComponent?.readme || '');
             }}
           />
         }
         onClose={() => {
-          setDrawerOpen(false);
+          history.replace({
+            search: queryString.stringify({
+              ...query,
+              component: undefined,
+            }),
+          });
+          setActiveComponent(undefined);
           setReadmeEditabled(false);
           setReadme(activeComponent?.readme || '');
         }}
@@ -198,7 +225,7 @@ export default function index() {
           ))
         }
       >
-        {currentComponent && (
+        {activeComponent && (
           <Tabs
             className='builtin-drawer-tabs'
             activeKey={activeTab}
@@ -218,16 +245,16 @@ export default function index() {
               />
             </Tabs.TabPane>
             <Tabs.TabPane tab={t('tab_collectTpls')} key='tab_collectTpls'>
-              <CollectTpls component={currentComponent} />
+              <CollectTpls component={activeComponent.ident} />
             </Tabs.TabPane>
             <Tabs.TabPane tab={t('tab_metrics')} key='tab_metrics'>
-              <Metrics component={currentComponent} />
+              <Metrics component={activeComponent.ident} />
             </Tabs.TabPane>
             <Tabs.TabPane tab={t('tab_dashboards')} key='tab_dashboards'>
-              <Dashboards component={currentComponent} />
+              <Dashboards component={activeComponent.ident} />
             </Tabs.TabPane>
             <Tabs.TabPane tab={t('tab_alertRules')} key='tab_alertRules'>
-              <AlertRules component={currentComponent} />
+              <AlertRules component={activeComponent.ident} />
             </Tabs.TabPane>
           </Tabs>
         )}

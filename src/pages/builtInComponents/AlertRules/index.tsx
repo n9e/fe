@@ -44,6 +44,18 @@ export default function index(props: Props) {
         setLoading(false);
       });
   };
+  const fetchCates = () => {
+    getCates({
+      component,
+      type: TypeEnum.alert,
+    }).then((res) => {
+      setCateList(res);
+      setFilter({
+        ...filter,
+        cate: filter.cate || _.head(res),
+      });
+    });
+  };
 
   useDebounceEffect(
     () => {
@@ -56,16 +68,7 @@ export default function index(props: Props) {
   );
 
   useEffect(() => {
-    getCates({
-      component,
-      type: TypeEnum.alert,
-    }).then((res) => {
-      setCateList(res);
-      setFilter({
-        ...filter,
-        cate: _.head(res),
-      });
-    });
+    fetchCates();
   }, []);
 
   return (
@@ -77,6 +80,8 @@ export default function index(props: Props) {
             value={filter.cate}
             loading={loading}
             placeholder={t('builtInComponents:cate')}
+            showSearch
+            optionFilterProp='children'
             onChange={(val) => {
               setFilter({ ...filter, cate: val });
             }}
@@ -112,9 +117,11 @@ export default function index(props: Props) {
                 initialValues: {
                   type: TypeEnum.alert,
                   component,
+                  cate: filter.cate,
                 },
                 onOk: () => {
                   fetchData();
+                  fetchCates();
                 },
               });
             }}
@@ -250,6 +257,7 @@ export default function index(props: Props) {
                               initialValues: record,
                               onOk: () => {
                                 fetchData();
+                                fetchCates();
                               },
                             });
                           }}
@@ -268,6 +276,7 @@ export default function index(props: Props) {
                               onOk() {
                                 deletePayloads([record.id]).then(() => {
                                   fetchData();
+                                  fetchCates();
                                 });
                               },
                             });

@@ -26,7 +26,7 @@ function index(props: Props & ModalWrapProps) {
 
   useEffect(() => {
     const values: any = {
-      cate: _.head(cateList),
+      cate: initialValues.cate || _.head(cateList),
     };
     if (action === 'edit' && !_.isEmpty(initialValues)) {
       try {
@@ -37,8 +37,6 @@ function index(props: Props & ModalWrapProps) {
     }
     form.setFieldsValue(values);
   }, []);
-
-  console.log(initialValues, contentMode);
 
   return (
     <Modal

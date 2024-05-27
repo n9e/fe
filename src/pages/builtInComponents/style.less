@@ -50,6 +50,9 @@
 
 .builtin-w-md-editor {
   height: 100%;
+  .wmde-markdown {
+    font-family: unset !important;
+  }
   .w-md-editor {
     border: 1px solid var(--fc-border-color);
     border-radius: 4px;
@@ -59,7 +62,7 @@
     resize: unset !important;
   }
   .wmde-markdown {
-    font-size: 14px !important;
+    font-size: 12px !important;
     background-color: transparent !important;
   }
   // TODO toml [[instances]] instances 会被识别为表格

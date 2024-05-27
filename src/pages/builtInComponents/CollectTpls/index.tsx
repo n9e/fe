@@ -38,6 +38,18 @@ export default function index(props: Props) {
         setLoading(false);
       });
   };
+  // const fetchCates = () => {
+  //   getCates({
+  //     component,
+  //     type: TypeEnum.collect,
+  //   }).then((res) => {
+  //     setCateList(res);
+  //     setFilter({
+  //       ...filter,
+  //       cate: filter.cate || _.head(res),
+  //     });
+  //   });
+  // };
 
   useDebounceEffect(
     () => {
@@ -50,27 +62,20 @@ export default function index(props: Props) {
   );
 
   useEffect(() => {
-    getCates({
-      component,
-      type: TypeEnum.collect,
-    }).then((res) => {
-      setCateList(res);
-      setFilter({
-        ...filter,
-        cate: _.head(res),
-      });
-    });
+    // fetchCates();
   }, []);
 
   return (
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <Space>
-          <Select
+          {/* <Select
             style={{ width: 200 }}
             value={filter.cate}
             loading={loading}
             placeholder={t('builtInComponents:cate')}
+            showSearch
+            optionFilterProp='children'
             onChange={(val) => {
               setFilter({ ...filter, cate: val });
             }}
@@ -82,7 +87,7 @@ export default function index(props: Props) {
                 </Select.Option>
               );
             })}
-          </Select>
+          </Select> */}
           <Input
             prefix={<SearchOutlined />}
             value={filter.query}
@@ -106,9 +111,11 @@ export default function index(props: Props) {
                 initialValues: {
                   type: TypeEnum.collect,
                   component,
+                  cate: filter.cate,
                 },
                 onOk: () => {
                   fetchData();
+                  // fetchCates();
                 },
               });
             }}
@@ -155,6 +162,7 @@ export default function index(props: Props) {
                               initialValues: record,
                               onOk: () => {
                                 fetchData();
+                                // fetchCates();
                               },
                             });
                           }}
@@ -173,6 +181,7 @@ export default function index(props: Props) {
                               onOk() {
                                 deletePayloads([record.id]).then(() => {
                                   fetchData();
+                                  // fetchCates();
                                 });
                               },
                             });
