@@ -8,6 +8,7 @@ import { useLocation, useHistory } from 'react-router-dom';
 import { CommonStateContext } from '@/App';
 import PageLayout from '@/components/pageLayout';
 import AuthorizationWrapper from '@/components/AuthorizationWrapper';
+import { IS_PLUS } from '@/utils/constant';
 import Instructions from './Instructions';
 import AlertRules from './AlertRules';
 import CollectTpls from './CollectTpls';
@@ -253,9 +254,11 @@ export default function index() {
                 setReadmeEditabled={setReadmeEditabled}
               />
             </Tabs.TabPane>
-            <Tabs.TabPane tab={t('tab_collectTpls')} key='tab_collectTpls'>
-              <CollectTpls component={activeComponent.ident} />
-            </Tabs.TabPane>
+            {IS_PLUS && (
+              <Tabs.TabPane tab={t('tab_collectTpls')} key='tab_collectTpls'>
+                <CollectTpls component={activeComponent.ident} />
+              </Tabs.TabPane>
+            )}
             <Tabs.TabPane tab={t('tab_metrics')} key='tab_metrics'>
               <Metrics component={activeComponent.ident} />
             </Tabs.TabPane>
