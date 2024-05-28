@@ -38,7 +38,7 @@ export default function Script() {
             </Form.Item>
           </Space>
         </div>
-        <Form.Item label={t('script.timeout')} name='timeout' initialValue={5}>
+        <Form.Item label={t('script.timeout')} name='timeout' initialValue={10}>
           <InputNumber style={{ width: '100%' }} />
         </Form.Item>
         <Form.Item name='type'>
