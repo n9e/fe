@@ -28,5 +28,7 @@ const en_US = {
   tags_placeholder: 'Use Enter or Space to separate',
   collect_create: 'Create Collect',
   collect_busiGroup_select: 'Business Group Select',
+  import_to_buisGroup: 'Import to Business Group',
+  please_select_playloads: 'Please select the template',
 };
 export default en_US;

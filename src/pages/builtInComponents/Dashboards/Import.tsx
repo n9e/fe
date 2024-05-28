@@ -32,7 +32,7 @@ function Import(props: IProps & ModalWrapProps) {
 
   return (
     <Modal
-      title={t('common:btn.import')}
+      title={t('import_to_buisGroup')}
       visible={visible}
       onCancel={() => {
         destroy();

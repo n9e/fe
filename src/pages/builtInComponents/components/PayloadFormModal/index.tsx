@@ -10,6 +10,7 @@ import { EditorView } from '@codemirror/view';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import KVTagSelect, { validatorOfKVTagSelect } from '@/components/KVTagSelect';
 import { postPayloads, putPayload } from '../../services';
+import { tags } from '@codemirror/highlight';
 
 interface Props {
   darkMode: boolean;
@@ -30,6 +31,7 @@ function index(props: Props & ModalWrapProps) {
   useEffect(() => {
     const values: any = {
       cate: initialValues.cate || _.head(cateList),
+      tags: initialValues.tags ? _.split(initialValues.tags, ' ') : [],
     };
     if (action === 'edit' && !_.isEmpty(initialValues)) {
       try {
@@ -51,6 +53,19 @@ function index(props: Props & ModalWrapProps) {
           .validateFields()
           .then((values) => {
             values.tags = _.isArray(values.tags) ? _.join(values.tags, ' ') : _.toString(values.tags);
+            // 可能粘贴进来的是数组，这里只取第一个
+            try {
+              if (contentMode === 'json') {
+                const contentArr = JSON.parse(values.content);
+                if (_.isArray(contentArr)) {
+                  values.content = JSON.stringify(contentArr[0]);
+                }
+              }
+            } catch (e) {
+              message.error(t('format_failed'));
+              console.error(e);
+              return;
+            }
             if (action === 'edit') {
               putPayload(values).then(() => {
                 message.success(t('common:success.modify'));
@@ -121,7 +136,7 @@ function index(props: Props & ModalWrapProps) {
         )}
         {showTags && (
           <Form.Item label={t('common:table.tag')} name='tags'>
-            <Select mode='tags' open={false} placeholder={t('tags_placeholder')} />
+            <Select mode='tags' open={false} tokenSeparators={[' ']} placeholder={t('tags_placeholder')} />
           </Form.Item>
         )}
         {contentMode === 'json' ? (

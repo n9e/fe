@@ -28,5 +28,7 @@ const zh_CN = {
   tags_placeholder: '使用回车或空格分隔',
   collect_create: '创建采集',
   collect_busiGroup_select: '业务组选择',
+  import_to_buisGroup: '导入业务组',
+  please_select_playloads: '请先选择模板',
 };
 export default zh_CN;

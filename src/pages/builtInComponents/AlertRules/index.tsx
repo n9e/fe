@@ -1,6 +1,6 @@
 import React, { useState, useRef, useContext, useEffect } from 'react';
 import _ from 'lodash';
-import { Table, Space, Button, Input, Select, Dropdown, Menu, Modal, Tag } from 'antd';
+import { Table, Space, Button, Input, Select, Dropdown, Menu, Modal, Tag, message } from 'antd';
 import { SearchOutlined, MoreOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -135,6 +135,10 @@ export default function index(props: Props) {
           </AuthorizationWrapper>
           <Button
             onClick={() => {
+              if (_.isEmpty(selectedRows.current)) {
+                message.warning(t('please_select_playloads'));
+                return;
+              }
               Import({
                 data: formatBeautifyJsons(_.map(selectedRows.current, 'content')),
                 busiGroups,
@@ -143,10 +147,14 @@ export default function index(props: Props) {
               });
             }}
           >
-            {t('common:btn.batch_import')}
+            {t('import_to_buisGroup')}
           </Button>
           <Button
             onClick={() => {
+              if (_.isEmpty(selectedRows.current)) {
+                message.warning(t('please_select_playloads'));
+                return;
+              }
               Export({
                 data: formatBeautifyJsons(_.map(selectedRows.current, 'content')),
               });
@@ -239,7 +247,7 @@ export default function index(props: Props) {
                             });
                           }}
                         >
-                          {t('common:btn.import')}
+                          {t('import_to_buisGroup')}
                         </a>
                       </Menu.Item>
                       <Menu.Item>

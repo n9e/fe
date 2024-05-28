@@ -28,6 +28,8 @@ const zh_HK = {
   tags_placeholder: '使用回車或空格分隔',
   collect_create: '創建採集',
   collect_busiGroup_select: '業務組選擇',
+  import_to_buisGroup: '導入業務組',
+  please_select_playloads: '請先選擇模板',
 };
 
 export default zh_HK;
