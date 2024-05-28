@@ -16,7 +16,7 @@
  */
 import React, { useState, useEffect, useContext } from 'react';
 import { Button, Input, Table, message, Modal, Space, Switch, Tag } from 'antd';
-import { CopyOutlined, ExclamationCircleOutlined, SearchOutlined } from '@ant-design/icons';
+import { CopyOutlined, ExclamationCircleOutlined, SearchOutlined, EyeOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/lib/table';
 import { useHistory, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -32,6 +32,8 @@ import { priorityColor } from '@/utils/constant';
 import { DatasourceSelect } from '@/components/DatasourceSelect';
 import { strategyStatus } from '@/store/warningInterface';
 import Tags from '@/components/Tags';
+import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
+import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
 import { pageSizeOptionsDefault } from '../const';
 import './locale';
 import './index.less';
@@ -44,6 +46,7 @@ const Shield: React.FC = () => {
   const { t } = useTranslation('alertSubscribes');
   const history = useHistory();
   const { datasourceList, businessGroup, busiGroups } = useContext(CommonStateContext);
+  const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
   const [query, setQuery] = useState<string>('');
   const [currentShieldDataAll, setCurrentShieldDataAll] = useState<Array<subscribeItem>>([]);
   const [currentShieldData, setCurrentShieldData] = useState<Array<subscribeItem>>([]);
@@ -131,10 +134,10 @@ const Shield: React.FC = () => {
       },
       {
         title: t('rule_name'),
-        dataIndex: 'rule_name',
+        dataIndex: 'rule_names',
         render: (data) => {
           if (!data) return '-';
-          return <div>{data}</div>;
+          return _.join(data, ', ');
         },
       },
       {
@@ -355,19 +358,34 @@ const Shield: React.FC = () => {
                 />
                 <Input style={{ minWidth: 400 }} onPressEnter={onSearchQuery} prefix={<SearchOutlined />} placeholder={t('search_placeholder')} />
               </Space>
-              {businessGroup.isLeaf && (
-                <div>
-                  <Button
-                    type='primary'
-                    className='add'
-                    onClick={() => {
-                      history.push('/alert-subscribes/add');
-                    }}
-                  >
-                    {t('common:btn.add')}
-                  </Button>
-                </div>
-              )}
+              <Space>
+                {businessGroup.isLeaf && (
+                  <div>
+                    <Button
+                      type='primary'
+                      className='add'
+                      onClick={() => {
+                        history.push('/alert-subscribes/add');
+                      }}
+                    >
+                      {t('common:btn.add')}
+                    </Button>
+                  </div>
+                )}
+                <Button
+                  onClick={() => {
+                    OrganizeColumns({
+                      i18nNs: 'alertSubscribes',
+                      value: columnsConfigs,
+                      onChange: (val) => {
+                        setColumnsConfigs(val);
+                        setDefaultColumnsConfigs(val, LOCAL_STORAGE_KEY);
+                      },
+                    });
+                  }}
+                  icon={<EyeOutlined />}
+                />
+              </Space>
             </div>
             <Table
               className='mt8'
@@ -385,7 +403,7 @@ const Shield: React.FC = () => {
               }}
               loading={loading}
               dataSource={currentShieldData}
-              columns={columns}
+              columns={ajustColumns(columns, columnsConfigs)}
             />
           </div>
         ) : (
