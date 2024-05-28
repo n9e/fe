@@ -22,6 +22,7 @@ interface IProps {
   showBuilder?: boolean;
   onChange?: (promQL: string) => void;
   promQLInputTooltip?: string;
+  graphStandardOptionsType?: 'vertical' | 'horizontal';
 }
 
 export default function Prometheus(props: IProps) {
@@ -38,6 +39,7 @@ export default function Prometheus(props: IProps) {
     showBuilder,
     onChange,
     promQLInputTooltip,
+    graphStandardOptionsType = 'horizontal',
   } = props;
   const history = useHistory();
   const { search } = useLocation();
@@ -81,7 +83,7 @@ export default function Prometheus(props: IProps) {
         form.validateFields();
       }}
       showBuiltinMetrics={showBuiltinMetrics}
-      graphStandardOptionsType='horizontal'
+      graphStandardOptionsType={graphStandardOptionsType}
       defaultUnit={defaultUnit}
       showGlobalMetrics={showGlobalMetrics}
       showBuilder={showBuilder}

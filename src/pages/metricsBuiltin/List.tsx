@@ -331,7 +331,7 @@ export default function index() {
                   };
                 })}
                 showSearch
-                optionFilterProp='label'
+                optionFilterProp='cleanLabel'
                 placeholder={t('typ')}
                 style={{ width: 140 }}
                 allowClear
