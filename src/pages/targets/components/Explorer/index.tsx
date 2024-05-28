@@ -29,7 +29,7 @@ export default function index(props: Props) {
       <Drawer
         visible={visible}
         title={t('metricsBuiltin:title')}
-        width={1200}
+        width='90%'
         onClose={() => {
           setVisible(false);
           setExplorerDrawerData(undefined);
