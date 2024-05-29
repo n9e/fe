@@ -242,6 +242,7 @@ export const getMetricSeries = function (data, datasourceValue: number) {
 export const getStatusBuildinfo = (datasourceValue: number) => {
   return request(`/api/${N9E_PATHNAME}/proxy/${datasourceValue}/api/v1/status/buildinfo`, {
     method: RequestMethod.Get,
+    silence: true,
   });
 };
 
