@@ -27,6 +27,7 @@ import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, aj
 import { getUnitLabel, buildUnitOptions } from '@/pages/dashboard/Components/UnitPicker/utils';
 import { getMenuPerm } from '@/services/common';
 import { getMetrics, Record, Filter, getCollectors, deleteMetrics } from '@/pages/metricsBuiltin/services';
+import Markdown from '@/components/Markdown';
 import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
 import FormModal from './components/FormModal';
 import Export from '@/pages/metricsBuiltin/components/Export';
@@ -82,6 +83,13 @@ export default function index(props: Props) {
     {
       title: t('name'),
       dataIndex: 'name',
+      render: (value, record) => {
+        return (
+          <Tooltip overlayClassName='ant-tooltip-max-width-600 ant-tooltip-with-link' title={record.note ? <Markdown content={record.note} /> : undefined}>
+            <span>{value}</span>
+          </Tooltip>
+        );
+      },
     },
     {
       title: t('unit'),
