@@ -40,18 +40,18 @@ export default function index(props: Props) {
         setLoading(false);
       });
   };
-  // const fetchCates = () => {
-  //   getCates({
-  //     component,
-  //     type: TypeEnum.collect,
-  //   }).then((res) => {
-  //     setCateList(res);
-  //     setFilter({
-  //       ...filter,
-  //       cate: filter.cate || _.head(res),
-  //     });
-  //   });
-  // };
+  const fetchCates = () => {
+    getCates({
+      component,
+      type: TypeEnum.collect,
+    }).then((res) => {
+      setCateList(res);
+      setFilter({
+        ...filter,
+        cate: filter.cate || _.head(res),
+      });
+    });
+  };
 
   useDebounceEffect(
     () => {
@@ -64,7 +64,7 @@ export default function index(props: Props) {
   );
 
   useEffect(() => {
-    // fetchCates();
+    fetchCates();
   }, []);
 
   return (
@@ -109,7 +109,10 @@ export default function index(props: Props) {
                 PayloadFormModal({
                   darkMode,
                   action: 'create',
+                  showName: true,
+                  showCate: true,
                   cateList,
+                  cateI18nKey: 'collects:cate',
                   contentMode: 'yaml',
                   initialValues: {
                     type: TypeEnum.collect,
@@ -118,7 +121,7 @@ export default function index(props: Props) {
                   },
                   onOk: () => {
                     fetchData();
-                    // fetchCates();
+                    fetchCates();
                   },
                 });
               }}
@@ -148,7 +151,7 @@ export default function index(props: Props) {
             key: 'cate',
           },
           {
-            title: t('common:table.name'),
+            title: t('payload_name'),
             dataIndex: 'name',
             key: 'name',
           },
@@ -181,12 +184,15 @@ export default function index(props: Props) {
                               PayloadFormModal({
                                 darkMode,
                                 action: 'edit',
+                                showName: true,
+                                showCate: true,
                                 cateList,
+                                cateI18nKey: 'collects:cate',
                                 contentMode: 'yaml',
                                 initialValues: record,
                                 onOk: () => {
                                   fetchData();
-                                  // fetchCates();
+                                  fetchCates();
                                 },
                               });
                             }}
@@ -207,7 +213,7 @@ export default function index(props: Props) {
                                 onOk() {
                                   deletePayloads([record.id]).then(() => {
                                     fetchData();
-                                    // fetchCates();
+                                    fetchCates();
                                   });
                                 },
                               });

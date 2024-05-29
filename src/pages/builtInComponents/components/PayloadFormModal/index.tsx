@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import _ from 'lodash';
-import { Modal, Form, Space, message, AutoComplete } from 'antd';
+import { Modal, Form, Space, message, AutoComplete, Input } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import CodeMirror from '@uiw/react-codemirror';
@@ -17,13 +17,15 @@ interface Props {
   cateList: string[];
   initialValues?: any;
   contentMode: 'json' | 'yaml';
+  showName?: boolean;
   showCate?: boolean;
+  cateI18nKey?: string;
   onOk: (values: any) => void;
 }
 
 function index(props: Props & ModalWrapProps) {
   const { t } = useTranslation('builtInComponents');
-  const { darkMode, action, cateList, initialValues, contentMode, showCate, onOk, visible, destroy } = props;
+  const { darkMode, action, cateList, initialValues, contentMode, showName, showCate, cateI18nKey, onOk, visible, destroy } = props;
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -91,7 +93,7 @@ function index(props: Props & ModalWrapProps) {
         </Form.Item>
         {showCate && (
           <Form.Item
-            label={t('cate')}
+            label={t(cateI18nKey || 'cate')}
             name='cate'
             rules={[
               {
@@ -104,6 +106,19 @@ function index(props: Props & ModalWrapProps) {
                 return { value: item };
               })}
             />
+          </Form.Item>
+        )}
+        {showName && (
+          <Form.Item
+            label={t('name')}
+            name='name'
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <Input />
           </Form.Item>
         )}
         {contentMode === 'json' ? (

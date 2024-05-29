@@ -14,6 +14,7 @@ const en_US = {
   },
   logo_picker_title: 'Select Logo',
   name: 'Name',
+  payload_name: 'Templete Name',
   tags: 'Tags',
   component: 'Component',
   cate: 'Category',

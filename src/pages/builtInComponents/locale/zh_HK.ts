@@ -14,6 +14,7 @@ const zh_HK = {
   },
   logo_picker_title: '選擇圖標',
   name: '名稱',
+  payload_name: '模板名稱',
   tags: '標籤',
   component: '組件',
   cate: '分類',

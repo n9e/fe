@@ -14,6 +14,7 @@ const zh_CN = {
   },
   logo_picker_title: '选择图标',
   name: '名称',
+  payload_name: '模板名称',
   tags: '标签',
   component: '组件',
   cate: '分类',
