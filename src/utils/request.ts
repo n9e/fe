@@ -16,7 +16,7 @@ const errorHandler = (error: ResponseError<any>): Response => {
       throw error;
     }
     // @ts-ignore
-    if (!error.silence) {
+    else if (!error.silence) {
       notification.error({
         key: error.message,
         message: error.message,
@@ -157,6 +157,10 @@ request.interceptors.response.use(
           location.href = `${basePrefix}/403`;
           if (data.error && data.error.message) throw new Error(data.error.message);
         });
+    } else if ([502, 503, 504].includes(status)) {
+      throw {
+        message: i18next.t('网络请求超时，请稍后重试'),
+      };
     } else {
       return response
         .clone()
