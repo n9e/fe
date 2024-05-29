@@ -29,7 +29,6 @@ function index(props: Props & ModalWrapProps) {
   useEffect(() => {
     const values: any = {
       cate: initialValues.cate || _.head(cateList),
-      tags: initialValues.tags ? _.split(initialValues.tags, ' ') : [],
     };
     if (action === 'edit' && !_.isEmpty(initialValues)) {
       try {
@@ -50,7 +49,6 @@ function index(props: Props & ModalWrapProps) {
         form
           .validateFields()
           .then((values) => {
-            values.tags = _.isArray(values.tags) ? _.join(values.tags, ' ') : _.toString(values.tags);
             if (action === 'edit') {
               putPayload(values).then(() => {
                 message.success(t('common:success.modify'));

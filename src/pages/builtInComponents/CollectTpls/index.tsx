@@ -143,14 +143,14 @@ export default function index(props: Props) {
         }}
         columns={[
           {
+            title: t('collects:cate'),
+            dataIndex: 'cate',
+            key: 'cate',
+          },
+          {
             title: t('common:table.name'),
             dataIndex: 'name',
             key: 'name',
-          },
-          {
-            title: t('cate'),
-            dataIndex: 'cate',
-            key: 'cate',
           },
           {
             title: t('common:table.operations'),
@@ -166,7 +166,7 @@ export default function index(props: Props) {
                             GroupSelectModal({
                               busiGroups,
                               onOk: (group_id) => {
-                                window.open(`/collects/add/${group_id}?component=${component}&payloadID=${record.id}`, '_blank');
+                                window.open(`/collects/add/${group_id}?component=${component}&cate=${record.cate}&payloadID=${record.id}`, '_blank');
                               },
                             });
                           }}
