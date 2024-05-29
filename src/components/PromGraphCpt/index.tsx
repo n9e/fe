@@ -39,6 +39,7 @@ interface IProps {
   url?: string;
   datasourceValue: number;
   contentMaxHeight?: number;
+  defaultType?: 'table' | 'graph';
   type?: 'table' | 'graph';
   onTypeChange?: (type: 'table' | 'graph') => void;
   defaultTime?: IRawTimeRange | number;
@@ -70,7 +71,8 @@ export default function index(props: IProps) {
     datasourceValue,
     promQL,
     contentMaxHeight = 300,
-    type = 'table',
+    defaultType,
+    type,
     onTypeChange,
     defaultTime,
     onTimeChange,
@@ -93,7 +95,7 @@ export default function index(props: IProps) {
   const [promql, setPromql] = useState<string | undefined>(promQL);
   const [queryStats, setQueryStats] = useState<QueryStats | null>(null);
   const [errorContent, setErrorContent] = useState('');
-  const [tabActiveKey, setTabActiveKey] = useState(type);
+  const [tabActiveKey, setTabActiveKey] = useState(type || defaultType || 'table');
   const [timestamp, setTimestamp] = useState<number>(); // for table
   const [refreshFlag, setRefreshFlag] = useState(_.uniqueId('refreshFlag_')); // for table
   const [range, setRange] = useState<IRawTimeRange>({ start: 'now-1h', end: 'now' }); // for graph
@@ -117,7 +119,9 @@ export default function index(props: IProps) {
   }, [defaultTime]);
 
   useEffect(() => {
-    setTabActiveKey(type);
+    if (type) {
+      setTabActiveKey(type);
+    }
   }, [type]);
 
   useEffect(() => {

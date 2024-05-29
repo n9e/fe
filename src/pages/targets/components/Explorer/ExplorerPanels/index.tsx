@@ -26,8 +26,8 @@ export default function ExplorerDrawer(props: Props) {
   const { t } = useTranslation('metricsBuiltin');
   const { data } = props;
   const [panels, setPanels, getPanels] = useGetState<Record[]>([]);
-  const [type, setType] = useState<'table' | 'graph'>('table');
-  const [time, setTime] = useState<undefined | IRawTimeRange>();
+  const [defaultType, setDefaultType] = useState<'table' | 'graph'>('table');
+  const [defaultTime, setDefaultTime] = useState<undefined | IRawTimeRange>();
 
   useEffect(() => {
     if (data) {
@@ -69,10 +69,10 @@ export default function ExplorerDrawer(props: Props) {
                 });
                 setPanels(newPanels);
               }}
-              type={type}
-              setType={setType}
-              time={time}
-              setTime={setTime}
+              defaultType={defaultType}
+              onDefaultTypeChange={setDefaultType}
+              defaultTime={defaultTime}
+              onDefaultTimeChange={setDefaultTime}
             />
             {idx === 0 && panels.length > 1 && (
               <Button

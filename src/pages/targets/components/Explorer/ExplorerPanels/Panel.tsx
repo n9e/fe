@@ -16,16 +16,16 @@ interface Props {
   panels: Record[];
   setPanels: (panels: Record[]) => void;
   onChange: (promql?: string) => void;
-  type: 'table' | 'graph';
-  setType: (type: 'table' | 'graph') => void;
-  time?: IRawTimeRange;
-  setTime: (time: IRawTimeRange) => void;
+  defaultType?: 'table' | 'graph';
+  onDefaultTypeChange?: (newMode: 'table' | 'graph') => void;
+  defaultTime?: IRawTimeRange;
+  onDefaultTimeChange?: (newRange: IRawTimeRange) => void;
 }
 
 export default function Panel(props: Props) {
   const { t } = useTranslation('metricsBuiltin');
   const { groupedDatasourceList } = useContext(CommonStateContext);
-  const { panel, panels, setPanels, onChange, type, setType, time, setTime } = props;
+  const { panel, panels, setPanels, onChange, defaultType, onDefaultTypeChange, defaultTime, onDefaultTimeChange } = props;
   const [form] = Form.useForm();
   const headerExtraRef = useRef<HTMLDivElement>(null);
 
@@ -141,10 +141,10 @@ export default function Panel(props: Props) {
                       }}
                       promQLInputTooltip={panel.name}
                       graphStandardOptionsType='vertical'
-                      type={type}
-                      onTypeChange={setType}
-                      time={time}
-                      onTimeChange={setTime}
+                      defaultType={defaultType}
+                      onDefaultTypeChange={onDefaultTypeChange}
+                      defaultTime={defaultTime}
+                      onDefaultTimeChange={onDefaultTimeChange}
                     />
                   );
                 }}
