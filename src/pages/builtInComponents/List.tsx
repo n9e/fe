@@ -1,11 +1,10 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import queryString from 'query-string';
 import { Input, Drawer, Space, Tabs, Button, Modal } from 'antd';
 import { SafetyCertificateOutlined, SearchOutlined, CloseOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useHistory } from 'react-router-dom';
-import { CommonStateContext } from '@/App';
 import PageLayout from '@/components/pageLayout';
 import AuthorizationWrapper from '@/components/AuthorizationWrapper';
 import { IS_PLUS } from '@/utils/constant';
@@ -20,7 +19,6 @@ import ComponentFormModal from './components/ComponentFormModal';
 const BUILT_IN_ACTIVE_TAB_KEY = 'builtin-drawer-active-tab';
 
 export default function index() {
-  const { darkMode } = useContext(CommonStateContext);
   const { t } = useTranslation('builtInComponents');
   const history = useHistory();
   const { search } = useLocation();
@@ -71,7 +69,6 @@ export default function index() {
                 type='primary'
                 onClick={() => {
                   ComponentFormModal({
-                    darkMode,
                     components: data,
                     action: 'create',
                     onOk: () => {
@@ -117,7 +114,6 @@ export default function index() {
                             onClick={(e) => {
                               e.stopPropagation();
                               ComponentFormModal({
-                                darkMode,
                                 components: data,
                                 action: 'edit',
                                 initialValues: item,

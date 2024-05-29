@@ -21,15 +21,30 @@ const zh_HK = {
   format: '格式化',
   format_failed: '格式化失敗，請檢查內容是否符合 JSON 格式',
   formModal: {
-    edit: '編輯模板',
-    create: '創建模板',
+    edit: {
+      alert: '編輯告警規則',
+      dashboard: '編輯儀表板',
+      collect: '編輯採集模板',
+    },
+    create: {
+      alert: '創建告警規則',
+      dashboard: '創建儀表板',
+      collect: '創建採集模板',
+    },
+    no_select: {
+      alert: '請選擇告警規則',
+      dashboard: '請選擇儀表板',
+    },
+    help: {
+      alert: '在您自己的業務群組下方建立並編輯警告規則，完善後匯出警告規則 JSON，填入下方即可',
+      dashboard: '在您自己的業務群組下方建立並編輯儀表板，完善後匯出儀表板 JSON，填入下方即可',
+    },
   },
   payloads: '模板',
   tags_placeholder: '使用回車或空格分隔',
   collect_create: '創建採集',
   collect_busiGroup_select: '業務組選擇',
   import_to_buisGroup: '導入業務組',
-  please_select_playloads: '請先選擇模板',
 };
 
 export default zh_HK;

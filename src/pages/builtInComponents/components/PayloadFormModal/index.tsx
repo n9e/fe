@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import _ from 'lodash';
-import { Modal, Form, Select, Input, Space, message, AutoComplete } from 'antd';
+import { Modal, Form, Space, message, AutoComplete } from 'antd';
+import { InfoCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import CodeMirror from '@uiw/react-codemirror';
 import { StreamLanguage } from '@codemirror/stream-parser';
@@ -8,9 +9,7 @@ import { toml } from '@codemirror/legacy-modes/mode/toml';
 import { json } from '@codemirror/legacy-modes/mode/javascript';
 import { EditorView } from '@codemirror/view';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
-import KVTagSelect, { validatorOfKVTagSelect } from '@/components/KVTagSelect';
 import { postPayloads, putPayload } from '../../services';
-import { tags } from '@codemirror/highlight';
 
 interface Props {
   darkMode: boolean;
@@ -19,13 +18,12 @@ interface Props {
   initialValues?: any;
   contentMode: 'json' | 'yaml';
   showCate?: boolean;
-  showTags?: boolean;
   onOk: (values: any) => void;
 }
 
 function index(props: Props & ModalWrapProps) {
   const { t } = useTranslation('builtInComponents');
-  const { darkMode, action, cateList, initialValues, contentMode, showCate, showTags, onOk, visible, destroy } = props;
+  const { darkMode, action, cateList, initialValues, contentMode, showCate, onOk, visible, destroy } = props;
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -46,26 +44,13 @@ function index(props: Props & ModalWrapProps) {
   return (
     <Modal
       width={800}
-      title={t(`formModal.${action}`)}
+      title={t(`formModal.${action}.${initialValues.type}`)}
       visible={visible}
       onOk={() => {
         form
           .validateFields()
           .then((values) => {
             values.tags = _.isArray(values.tags) ? _.join(values.tags, ' ') : _.toString(values.tags);
-            // 可能粘贴进来的是数组，这里只取第一个
-            try {
-              if (contentMode === 'json') {
-                const contentArr = JSON.parse(values.content);
-                if (_.isArray(contentArr)) {
-                  values.content = JSON.stringify(contentArr[0]);
-                }
-              }
-            } catch (e) {
-              message.error(t('format_failed'));
-              console.error(e);
-              return;
-            }
             if (action === 'edit') {
               putPayload(values).then(() => {
                 message.success(t('common:success.modify'));
@@ -106,17 +91,6 @@ function index(props: Props & ModalWrapProps) {
         <Form.Item name='component' hidden>
           <div />
         </Form.Item>
-        <Form.Item
-          label={t('name')}
-          name='name'
-          rules={[
-            {
-              required: true,
-            },
-          ]}
-        >
-          <Input />
-        </Form.Item>
         {showCate && (
           <Form.Item
             label={t('cate')}
@@ -132,11 +106,6 @@ function index(props: Props & ModalWrapProps) {
                 return { value: item };
               })}
             />
-          </Form.Item>
-        )}
-        {showTags && (
-          <Form.Item label={t('common:table.tag')} name='tags'>
-            <Select mode='tags' open={false} tokenSeparators={[' ']} placeholder={t('tags_placeholder')} />
           </Form.Item>
         )}
         {contentMode === 'json' ? (
@@ -158,6 +127,9 @@ function index(props: Props & ModalWrapProps) {
                 >
                   {t('format')}
                 </a>
+                <span className='second-color'>
+                  <InfoCircleOutlined /> {t(`formModal.help.${initialValues.type}`)}
+                </span>
               </Space>
             }
             name='content'

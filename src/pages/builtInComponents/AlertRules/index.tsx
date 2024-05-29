@@ -117,7 +117,6 @@ export default function index(props: Props) {
                   cateList,
                   contentMode: 'json',
                   showCate: true,
-                  showTags: true,
                   initialValues: {
                     type: TypeEnum.alert,
                     component,
@@ -136,7 +135,7 @@ export default function index(props: Props) {
           <Button
             onClick={() => {
               if (_.isEmpty(selectedRows.current)) {
-                message.warning(t('please_select_playloads'));
+                message.warning(t('formModal.no_select.alert'));
                 return;
               }
               Import({
@@ -152,7 +151,7 @@ export default function index(props: Props) {
           <Button
             onClick={() => {
               if (_.isEmpty(selectedRows.current)) {
-                message.warning(t('please_select_playloads'));
+                message.warning(t('formModal.no_select.alert'));
                 return;
               }
               Export({
@@ -271,7 +270,6 @@ export default function index(props: Props) {
                                 cateList,
                                 contentMode: 'json',
                                 showCate: true,
-                                showTags: true,
                                 initialValues: record,
                                 onOk: () => {
                                   fetchData();

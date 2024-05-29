@@ -148,6 +148,11 @@ export default function index(props: Props) {
             key: 'name',
           },
           {
+            title: t('cate'),
+            dataIndex: 'cate',
+            key: 'cate',
+          },
+          {
             title: t('common:table.operations'),
             width: 100,
             render: (record) => {

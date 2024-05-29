@@ -78,7 +78,6 @@ export default function index(props: Props) {
                   action: 'create',
                   cateList: [],
                   contentMode: 'json',
-                  showTags: true,
                   initialValues: {
                     type: TypeEnum.dashboard,
                     component,
@@ -95,7 +94,7 @@ export default function index(props: Props) {
           <Button
             onClick={() => {
               if (_.isEmpty(selectedRows.current)) {
-                message.warning(t('please_select_playloads'));
+                message.warning(t('formModal.no_select.dashboard'));
                 return;
               }
               Import({
@@ -109,7 +108,7 @@ export default function index(props: Props) {
           <Button
             onClick={() => {
               if (_.isEmpty(selectedRows.current)) {
-                message.warning(t('please_select_playloads'));
+                message.warning(t('formModal.no_select.dashboard'));
                 return;
               }
               Export({
@@ -225,7 +224,6 @@ export default function index(props: Props) {
                                 action: 'edit',
                                 cateList: [],
                                 contentMode: 'json',
-                                showTags: true,
                                 initialValues: record,
                                 onOk: () => {
                                   fetchData();
