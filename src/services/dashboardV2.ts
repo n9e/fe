@@ -246,27 +246,31 @@ export const getStatusBuildinfo = (datasourceValue: number) => {
 };
 
 export const getMetricSeriesV2 = function (data, datasourceValue: number) {
-  return getStatusBuildinfo(datasourceValue).then((res) => {
-    const version = _.get(res, 'data.version');
-    // 如果版本大于 2.26.0，使用新接口则使用 /api/v1/query 接口，否则降级用 /api/v1/series 接口
-    if (semver.valid(version) && semver.gte(version, '2.26.0')) {
-      return request(`/api/${N9E_PATHNAME}/proxy/${datasourceValue}/api/v1/query`, {
-        method: RequestMethod.Get,
-        params: {
-          query: `last_over_time(${data.metric}[${data.end - data.start}s])`,
-          time: data.end,
-        },
-        silence: true,
-      }).then((res) => {
-        return {
-          data: _.map(res?.data?.result, (item) => {
-            return item.metric;
-          }),
-        };
-      });
-    }
-    return getMetricSeries({ 'match[]': _.trim(data.metric), start: data.start, end: data.end }, datasourceValue);
-  });
+  return getStatusBuildinfo(datasourceValue)
+    .then((res) => {
+      const version = _.get(res, 'data.version');
+      // 如果版本大于 2.26.0，使用新接口则使用 /api/v1/query 接口，否则降级用 /api/v1/series 接口
+      if (semver.valid(version) && semver.gte(version, '2.26.0')) {
+        return request(`/api/${N9E_PATHNAME}/proxy/${datasourceValue}/api/v1/query`, {
+          method: RequestMethod.Get,
+          params: {
+            query: `last_over_time(${data.metric}[${data.end - data.start}s])`,
+            time: data.end,
+          },
+          silence: true,
+        }).then((res) => {
+          return {
+            data: _.map(res?.data?.result, (item) => {
+              return item.metric;
+            }),
+          };
+        });
+      }
+      return getMetricSeries({ 'match[]': _.trim(data.metric), start: data.start, end: data.end }, datasourceValue);
+    })
+    .catch(() => {
+      return getMetricSeries({ 'match[]': _.trim(data.metric), start: data.start, end: data.end }, datasourceValue);
+    });
 };
 
 export const getMetric = function (data = {}, datasourceValue: number) {
