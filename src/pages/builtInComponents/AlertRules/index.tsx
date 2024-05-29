@@ -129,7 +129,7 @@ export default function index(props: Props) {
                 });
               }}
             >
-              {t('common:btn.add')}
+              {t('common:btn.create')}
             </Button>
           </AuthorizationWrapper>
           <Button

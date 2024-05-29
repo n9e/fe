@@ -296,13 +296,13 @@ export default function index(props: Props) {
             <FormModal
               component={component}
               mode='add'
-              title={t('add_btn')}
+              title={t('common:btn.create')}
               collectorsList={collectorsList}
               onOk={() => {
                 setRefreshFlag(_.uniqueId('refreshFlag_'));
               }}
             >
-              <Button type='primary'>{t('add_btn')}</Button>
+              <Button type='primary'>{t('common:btn.create')}</Button>
             </FormModal>
           )}
           {(actionAuth.add || actionAuth.delete) && (
