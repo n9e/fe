@@ -6,6 +6,7 @@ import { CloseCircleOutlined } from '@ant-design/icons';
 import PrometheusExplorer from '@/pages/explorer/Prometheus';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import EmptyDatasourcePopover from '@/components/DatasourceSelect/EmptyDatasourcePopover';
+import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { getDefaultDatasourceValue, setDefaultDatasourceValue } from '@/utils';
 import { CommonStateContext } from '@/App';
 import { Record } from './index';
@@ -15,12 +16,16 @@ interface Props {
   panels: Record[];
   setPanels: (panels: Record[]) => void;
   onChange: (promql?: string) => void;
+  type: 'table' | 'graph';
+  setType: (type: 'table' | 'graph') => void;
+  time?: IRawTimeRange;
+  setTime: (time: IRawTimeRange) => void;
 }
 
 export default function Panel(props: Props) {
   const { t } = useTranslation('metricsBuiltin');
   const { groupedDatasourceList } = useContext(CommonStateContext);
-  const { panel, panels, setPanels, onChange } = props;
+  const { panel, panels, setPanels, onChange, type, setType, time, setTime } = props;
   const [form] = Form.useForm();
   const headerExtraRef = useRef<HTMLDivElement>(null);
 
@@ -136,6 +141,10 @@ export default function Panel(props: Props) {
                       }}
                       promQLInputTooltip={panel.name}
                       graphStandardOptionsType='vertical'
+                      type={type}
+                      onTypeChange={setType}
+                      time={time}
+                      onTimeChange={setTime}
                     />
                   );
                 }}

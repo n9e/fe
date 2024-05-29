@@ -23,6 +23,10 @@ interface IProps {
   onChange?: (promQL: string) => void;
   promQLInputTooltip?: string;
   graphStandardOptionsType?: 'vertical' | 'horizontal';
+  type?: IMode; // 受控的 mode 和 querystring (mode) 是互斥的
+  onTypeChange?: (newMode: IMode) => void;
+  time?: IRawTimeRange; // 受控的 time 和 allowReplaceHistory 的 querystring (start, end) 是互斥的
+  onTimeChange?: (newRange: IRawTimeRange) => void;
 }
 
 export default function Prometheus(props: IProps) {
@@ -40,6 +44,10 @@ export default function Prometheus(props: IProps) {
     onChange,
     promQLInputTooltip,
     graphStandardOptionsType = 'horizontal',
+    type,
+    onTypeChange,
+    time,
+    onTimeChange,
   } = props;
   const history = useHistory();
   const { search } = useLocation();
@@ -48,17 +56,21 @@ export default function Prometheus(props: IProps) {
   const [defaultTime, setDefaultTime] = useState<undefined | IRawTimeRange>();
 
   useEffect(() => {
-    if (typeof query.start === 'string' && typeof query.end === 'string') {
-      setDefaultTime({
-        start: isMathString(query.start) ? query.start : moment.unix(_.toNumber(query.start)),
-        end: isMathString(query.end) ? query.end : moment.unix(_.toNumber(query.end)),
-      });
+    if (!time) {
+      if (typeof query.start === 'string' && typeof query.end === 'string') {
+        setDefaultTime({
+          start: isMathString(query.start) ? query.start : moment.unix(_.toNumber(query.start)),
+          end: isMathString(query.end) ? query.end : moment.unix(_.toNumber(query.end)),
+        });
+      }
+    } else {
+      setDefaultTime(time);
     }
   }, []);
 
   return (
     <PromGraph
-      type={query.mode as IMode}
+      type={type || (query.mode as IMode)}
       defaultTime={defaultTime}
       onTimeChange={(newRange) => {
         let { start, end } = newRange;
@@ -69,9 +81,11 @@ export default function Prometheus(props: IProps) {
         }
         if (panelIdx === 0 && allowReplaceHistory) {
           history.replace({
-            pathname: '/metric/explorer',
             search: queryString.stringify({ ...query, start, end }),
           });
+        }
+        if (onTimeChange) {
+          onTimeChange(newRange);
         }
       }}
       promQL={defaultPromQL as any}
@@ -89,6 +103,11 @@ export default function Prometheus(props: IProps) {
       showBuilder={showBuilder}
       onChange={onChange}
       promQLInputTooltip={promQLInputTooltip}
+      onTypeChange={(newType) => {
+        if (onTypeChange) {
+          onTypeChange(newType);
+        }
+      }}
     />
   );
 }
