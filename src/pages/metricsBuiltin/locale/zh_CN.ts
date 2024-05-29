@@ -8,7 +8,7 @@ const zh_CN = {
   note: '描述',
   note_preview: '描述预览',
   expression: '表达式',
-  add_btn: '新增指标',
+  add_btn: '创建指标',
   clone_title: '克隆指标',
   edit_title: '编辑指标',
   explorer: '查询',

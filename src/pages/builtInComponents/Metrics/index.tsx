@@ -296,7 +296,7 @@ export default function index(props: Props) {
             <FormModal
               component={component}
               mode='add'
-              title={t('common:btn.create')}
+              title={t('add_btn')}
               collectorsList={collectorsList}
               onOk={() => {
                 setRefreshFlag(_.uniqueId('refreshFlag_'));
