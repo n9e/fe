@@ -54,7 +54,6 @@ export default function Prometheus(props: IProps) {
   const query = queryString.parse(search, queryStringOptions);
   const defaultPromQL = promQL ? promQL : _.isString(query.prom_ql) ? query.prom_ql : '';
   const [defaultTimeState, setDefaultTimeState] = useState<undefined | IRawTimeRange>();
-  const [defaultTypeState, setDefaultTypeState] = useState<undefined | IMode>(defaultType);
 
   useEffect(() => {
     if (!defaultTime) {
