@@ -255,7 +255,7 @@ const Resource: React.FC = () => {
               />
             </div>
             {siteInfo?.teamDisplayMode == 'list' ? (
-              <div className='radio-list' style={{ overflowY: 'auto' }}>
+              <div className='radio-list' style={{ overflowY: 'auto', height: '100%' }}>
                 <List
                   style={{
                     marginBottom: '12px',
@@ -272,7 +272,7 @@ const Resource: React.FC = () => {
                 />
               </div>
             ) : (
-              <div className='radio-list' style={{ overflowY: 'auto' }}>
+              <div className='radio-list' style={{ overflowY: 'auto', height: '100%' }}>
                 {!_.isEmpty(teamList) && (
                   <Tree
                     rootClassName='business-group-tree'
