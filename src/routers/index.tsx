@@ -115,8 +115,9 @@ export default function Content() {
      * 这里是一个很脆弱的权限控制，期望的效果是菜单配置的路径和权限点匹配，如果没有权限则重定向到 403 页面
      * 但是目前无法把菜单配置和perms权限点一一对应
      * 所以这里现在只能通过白名单的方式来单独处理个别未配置权限点的路径
+     * /docs/等页面不进行权限校验
      */
-    if (profile?.roles?.length > 0 && !_.includes(['/', '/account/profile/info', '/account/profile/pwd'], location.pathname)) {
+    if (profile?.roles?.length > 0 && !_.includes(['/', '/account/profile/info', '/account/profile/pwd'], location.pathname) && !location.pathname.includes('/docs/')) {
       if (profile?.roles.indexOf('Admin') === -1) {
         // 如果没有权限则重定向到 403 页面
         if (
