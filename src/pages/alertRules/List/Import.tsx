@@ -37,7 +37,7 @@ interface IProps {
 
 const TabPane = Tabs.TabPane;
 
-const ImportBuiltinContent = ({ busiId, onOk }) => {
+const ImportBuiltinContent = ({ busiId, onOk, groupedDatasourceList, datasourceCateOptions }) => {
   const { t } = useTranslation('dashboard');
   const [filter, setFilter] = useState<{
     query?: string;
@@ -49,6 +49,7 @@ const ImportBuiltinContent = ({ busiId, onOk }) => {
   const component = Form.useWatch('component', form);
   const cate = Form.useWatch('cate', form);
   const selectedRules = Form.useWatch('selectedRules', form);
+  const datasourceCates = _.filter(datasourceCateOptions, (item) => !!item.alertRule);
 
   useEffect(() => {
     getComponents().then((res) => {
@@ -69,6 +70,7 @@ const ImportBuiltinContent = ({ busiId, onOk }) => {
   }, [component]);
 
   useEffect(() => {
+    if (!component || !cate) return;
     getPayloads<Payload[]>({
       component,
       type: TypeEnum.alert,
@@ -90,6 +92,8 @@ const ImportBuiltinContent = ({ busiId, onOk }) => {
             const content = JSON.parse(item.content);
             return {
               ...content,
+              cate: vals.datasource_cate,
+              datasource_ids: vals.datasource_ids,
               disabled: vals.enabled ? 0 : 1,
             };
           }),
@@ -239,6 +243,23 @@ const ImportBuiltinContent = ({ busiId, onOk }) => {
           />
         </>
       </Form.Item>
+      <Form.Item label={t('common:datasource.type')} name='datasource_cate'>
+        <Select>
+          {_.map(datasourceCates, (item) => {
+            return (
+              <Select.Option key={item.value} value={item.value}>
+                {item.label}
+              </Select.Option>
+            );
+          })}
+        </Select>
+      </Form.Item>
+      <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.cate !== curValues.cate} noStyle>
+        {({ getFieldValue, setFieldsValue }) => {
+          const datasourceCate = getFieldValue('datasource_cate');
+          return <DatasourceValueSelect mode='multiple' setFieldsValue={setFieldsValue} cate={datasourceCate} datasourceList={groupedDatasourceList[datasourceCate] || []} />;
+        }}
+      </Form.Item>
       <Form.Item label={t('common:table.enabled')} name='enabled' valuePropName='checked'>
         <Switch />
       </Form.Item>
@@ -363,6 +384,8 @@ function Import(props: IProps & ModalWrapProps) {
             refreshList();
             destroy();
           }}
+          groupedDatasourceList={groupedDatasourceList}
+          datasourceCateOptions={datasourceCateOptions}
         />
       )}
       {importResult && (
