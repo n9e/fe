@@ -15,6 +15,7 @@
  *
  */
 import _ from 'lodash';
+import semver from 'semver';
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 import { N9E_PATHNAME } from '@/utils/constant';
@@ -238,21 +239,53 @@ export const getMetricSeries = function (data, datasourceValue: number) {
   });
 };
 
-export const getMetricSeriesV2 = function (data, datasourceValue: number) {
-  return request(`/api/${N9E_PATHNAME}/proxy/${datasourceValue}/api/v1/query`, {
+export const getStatusBuildinfo = (datasourceValue: number) => {
+  return request(`/api/${N9E_PATHNAME}/proxy/${datasourceValue}/api/v1/status/buildinfo`, {
     method: RequestMethod.Get,
-    params: {
-      query: `last_over_time(${data.metric}[${data.end - data.start}s])`,
-      time: data.end,
-    },
     silence: true,
-  }).then((res) => {
-    return {
-      data: _.map(res?.data?.result, (item) => {
-        return item.metric;
-      }),
-    };
   });
+};
+
+export const getMetricSeriesV2 = function (data, datasourceValue: number) {
+  return getStatusBuildinfo(datasourceValue)
+    .then((res) => {
+      const version = _.get(res, 'data.version');
+      // 如果版本小于 2.26.0，使用 /api/v1/series 接口，否则用 /api/v1/query 接口
+      if (semver.valid(version) && semver.lt(version, '2.26.0')) {
+        return getMetricSeries({ 'match[]': _.trim(data.metric), start: data.start, end: data.end }, datasourceValue);
+      }
+      return request(`/api/${N9E_PATHNAME}/proxy/${datasourceValue}/api/v1/query`, {
+        method: RequestMethod.Get,
+        params: {
+          query: `last_over_time(${data.metric}[${data.end - data.start}s])`,
+          time: data.end,
+        },
+        silence: true,
+      }).then((res) => {
+        return {
+          data: _.map(res?.data?.result, (item) => {
+            return item.metric;
+          }),
+        };
+      });
+    })
+    .catch(() => {
+      return request(`/api/${N9E_PATHNAME}/proxy/${datasourceValue}/api/v1/query`, {
+        method: RequestMethod.Get,
+        params: {
+          query: `last_over_time(${data.metric}[${data.end - data.start}s])`,
+          time: data.end,
+        },
+        silence: true,
+      }).then((res) => {
+        return {
+          data: _.map(res?.data?.result, (item) => {
+            return item.metric;
+          }),
+        };
+      });
+      return getMetricSeries({ 'match[]': _.trim(data.metric), start: data.start, end: data.end }, datasourceValue);
+    });
 };
 
 export const getMetric = function (data = {}, datasourceValue: number) {
