@@ -1,6 +1,6 @@
 {
   "name": "n9e-fe",
-  "version": "v7.0.0-beta.4",
+  "version": "v7.0.0-beta.5",
   "scripts": {
     "dev": "vite --port 8765 --host",
     "dev:advanced": "vite --port 8765 --host --mode advanced",
@@ -71,6 +71,7 @@
     "react-i18next": "^11.11.1",
     "react-infinite-scroll-component": "^6.1.0",
     "react-markdown": "^7.0.1",
+    "react-quill": "^2.0.0",
     "react-router-dom": "^5.2.0",
     "react-sortable-hoc": "^2.0.0",
     "react-syntax-highlighter": "^15.5.0",
