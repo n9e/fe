@@ -18,10 +18,10 @@ import _ from 'lodash';
 import moment from 'moment';
 import { utilValMap } from '../config';
 import * as byteConverter from './byteConverter';
-import { toMilliSeconds, toSeconds } from './dateTimeFormatters';
+import { toNanoSeconds, toMicroSeconds, toMilliSeconds, toSeconds } from './dateTimeFormatters';
 import { toFixed, FormattedValue } from './valueFormats';
 
-export function timeFormatter(val, type: 'seconds' | 'milliseconds', decimals) {
+export function timeFormatter(val, type: 'seconds' | 'milliseconds' | 'microseconds' | 'nanoseconds', decimals) {
   if (typeof val !== 'number')
     return {
       value: val,
@@ -38,6 +38,12 @@ export function timeFormatter(val, type: 'seconds' | 'milliseconds', decimals) {
   }
   if (type === 'milliseconds') {
     formattedValue = toMilliSeconds(val, decimals);
+  }
+  if (type === 'microseconds') {
+    formattedValue = toMicroSeconds(val, decimals);
+  }
+  if (type === 'nanoseconds') {
+    formattedValue = toNanoSeconds(val, decimals);
   }
   return {
     value: _.toNumber(formattedValue.text),
@@ -122,6 +128,12 @@ const valueFormatter = ({ unit, decimals = 3, dateFormat = 'YYYY-MM-DD HH:mm:ss'
       return timeFormatter(val, unit, decimals);
     }
     if (unit === 'milliseconds') {
+      return timeFormatter(val, unit, decimals);
+    }
+    if (unit === 'microseconds') {
+      return timeFormatter(val, unit, decimals);
+    }
+    if (unit === 'nanoseconds') {
       return timeFormatter(val, unit, decimals);
     }
     if (unit === 'datetimeSeconds') {

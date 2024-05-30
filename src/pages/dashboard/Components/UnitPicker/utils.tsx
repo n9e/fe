@@ -99,12 +99,20 @@ export const units: any = [
     label: 'Time',
     options: [
       {
-        label: 'seconds',
+        label: 'seconds (s)',
         value: 'seconds',
       },
       {
-        label: 'milliseconds',
+        label: 'milliseconds (ms)',
         value: 'milliseconds',
+      },
+      {
+        label: 'microseconds (µs)',
+        value: 'microseconds',
+      },
+      {
+        label: 'nanoseconds (ns)',
+        value: 'nanoseconds',
       },
       {
         label: 'datetime(seconds)',
