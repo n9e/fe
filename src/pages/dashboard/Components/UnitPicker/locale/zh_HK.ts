@@ -16,6 +16,8 @@ const zh_HK = {
     percentUnit: '百分比(值範圍0.0-1.0)',
     seconds: '時間單位: 秒',
     milliseconds: '時間單位: 毫秒',
+    microseconds: '時間單位: 微秒',
+    nanoseconds: '時間單位: 納秒',
     humantimeSeconds: '時間單位: 秒，即將廢棄的單位，請使用 seconds',
     humantimeMilliseconds: '時間單位: 毫秒，即將廢棄的單位，請使用 milliseconds',
     datetimeSeconds: '時間戳單位: 秒, 例如 1612345678 渲染為 2021-02-03 04:05:06',

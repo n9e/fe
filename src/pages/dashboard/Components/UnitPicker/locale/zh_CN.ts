@@ -16,6 +16,8 @@ const zh_CN = {
     percentUnit: '百分比(值范围0.0-1.0) 比如 0.235 渲染为 23.5%',
     seconds: '时间单位: 秒',
     milliseconds: '时间单位: 毫秒',
+    microseconds: '时间单位: 微秒',
+    nanoseconds: '时间单位: 纳秒',
     humantimeSeconds: '时间单位: 秒，即将废弃的单位，请使用 seconds',
     humantimeMilliseconds: '时间单位: 毫秒，即将废弃的单位，请使用 milliseconds',
     datetimeSeconds: '时间戳单位: 秒, 比如 1612345678 渲染为 2021-02-03 04:05:06',

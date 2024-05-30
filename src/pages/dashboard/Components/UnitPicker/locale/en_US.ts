@@ -16,6 +16,8 @@ const en_US = {
     percentUnit: 'percent(0.0-1.0) e.g. 0.235 -> 23.5%',
     seconds: 'time unit: seconds',
     milliseconds: 'time unit: milliseconds',
+    microseconds: 'time unit: microseconds',
+    nanoseconds: 'time unit: nanoseconds',
     humantimeSeconds: 'time unit: seconds, the unit will be deprecated soon, please use seconds',
     humantimeMilliseconds: 'time unit: milliseconds, the unit will be deprecated soon, please use milliseconds',
     datetimeSeconds: 'timestamp unit: seconds, e.g. 1612345678 -> 2021-02-03 04:05:06',
