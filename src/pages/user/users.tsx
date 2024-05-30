@@ -17,7 +17,7 @@
 import React, { useState, useContext } from 'react';
 import moment from 'moment';
 import _ from 'lodash';
-import { Button, Input, message, Row, Modal, Table } from 'antd';
+import { Button, Input, message, Row, Modal, Table, Space } from 'antd';
 import { SearchOutlined, UserOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/lib/table';
 import { useTranslation } from 'react-i18next';
@@ -28,6 +28,7 @@ import { getUserInfoList, deleteUser } from '@/services/manage';
 import { User, UserType, ActionType } from '@/store/manageInterface';
 import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
+import TimeRangePicker, { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import Tags from './component/Tags';
 import './index.less';
 import './locale';
@@ -41,6 +42,7 @@ const Resource: React.FC = () => {
   const [userId, setUserId] = useState<string>('');
   const [memberId, setMemberId] = useState<string>('');
   const [query, setQuery] = useState<string>('');
+  const [range, setRange] = useState<IRawTimeRange>();
   const { profile } = useContext(CommonStateContext);
   const pagination = usePagination({ PAGESIZE_KEY: 'users' });
   const userColumn: ColumnsType<User> = [
@@ -113,7 +115,18 @@ const Resource: React.FC = () => {
       render: (text) => {
         return moment.unix(text).format('YYYY-MM-DD HH:mm:ss');
       },
-      sorter: (a, b) => a.create_at - b.create_at,
+      sorter: true,
+    },
+    {
+      title: t('user.last_active_time'),
+      dataIndex: 'last_active_time',
+      render: (text) => {
+        if (!text) {
+          return '-';
+        }
+        return moment.unix(text).format('YYYY-MM-DD HH:mm:ss');
+      },
+      sorter: true,
     },
     {
       title: t('common:table.operations'),
@@ -184,11 +197,18 @@ const Resource: React.FC = () => {
   };
 
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_flag'));
-  const getTableData = ({ current, pageSize }): Promise<any> => {
-    const params = {
+  const getTableData = ({ current, pageSize, sorter }): Promise<any> => {
+    const params: any = {
       p: current,
       limit: pageSize,
+      order: sorter?.field,
+      desc: sorter?.order === 'descend' ? 'true' : undefined,
     };
+    if (range) {
+      const parsedRange = parseRange(range);
+      params.stime = moment(parsedRange.start).unix();
+      params.etime = moment(parsedRange.end).unix();
+    }
 
     return getUserInfoList({
       ...params,
@@ -202,7 +222,7 @@ const Resource: React.FC = () => {
   };
   const { tableProps } = useAntdTable(getTableData, {
     defaultPageSize: pagination.pageSize,
-    refreshDeps: [query, refreshFlag],
+    refreshDeps: [query, refreshFlag, range],
   });
 
   return (
@@ -211,7 +231,17 @@ const Resource: React.FC = () => {
         <div className='user-content'>
           <Row className='event-table-search'>
             <div className='event-table-search-left'>
-              <Input className={'searchInput'} prefix={<SearchOutlined />} onPressEnter={onSearchQuery} placeholder={t('user.search_placeholder')} />
+              <Space>
+                <Input className={'searchInput'} prefix={<SearchOutlined />} onPressEnter={onSearchQuery} placeholder={t('user.search_placeholder')} />
+                <TimeRangePicker
+                  allowClear
+                  placeholder={t('user.last_active_time')}
+                  value={range}
+                  onChange={(newVal) => {
+                    setRange(newVal);
+                  }}
+                />
+              </Space>
             </div>
             <div className='event-table-search-right'>
               {profile.roles?.includes('Admin') && (

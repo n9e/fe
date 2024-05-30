@@ -34,6 +34,7 @@ export interface User {
   create_by: number;
   update_at: number;
   update_by: number;
+  last_active_time: number;
 }
 export interface Team {
   id: string;
