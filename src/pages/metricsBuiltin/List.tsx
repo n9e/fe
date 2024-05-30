@@ -62,6 +62,12 @@ export default function index() {
     delete: false,
   });
   const [typsMeta, setTypsMeta] = useState<Component[]>([]);
+  const [formDrawerData, setFormDrawerData] = useState<{
+    open?: boolean;
+    title?: string;
+    mode?: 'add' | 'edit' | 'clone';
+    initialValues?: Record;
+  }>();
   const filtersRef = useRef<any>(null);
   const { tableProps, run: fetchData } = useAntdTable(
     ({
@@ -192,34 +198,34 @@ export default function index() {
               <Menu>
                 {actionAuth.add && (
                   <Menu.Item>
-                    <FormDrawer
-                      mode='clone'
-                      initialValues={record}
-                      title={t('clone_title')}
-                      typesList={typesList}
-                      collectorsList={collectorsList}
-                      onOk={() => {
-                        setRefreshFlag(_.uniqueId('refreshFlag_'));
+                    <a
+                      onClick={() => {
+                        setFormDrawerData({
+                          open: true,
+                          mode: 'clone',
+                          title: t('clone_title'),
+                          initialValues: record,
+                        });
                       }}
                     >
-                      <a>{t('common:btn.clone')}</a>
-                    </FormDrawer>
+                      {t('common:btn.clone')}
+                    </a>
                   </Menu.Item>
                 )}
                 {actionAuth.edit && (
                   <Menu.Item>
-                    <FormDrawer
-                      mode='edit'
-                      initialValues={record}
-                      title={t('edit_title')}
-                      typesList={typesList}
-                      collectorsList={collectorsList}
-                      onOk={() => {
-                        setRefreshFlag(_.uniqueId('refreshFlag_'));
+                    <a
+                      onClick={() => {
+                        setFormDrawerData({
+                          open: true,
+                          mode: 'edit',
+                          title: t('edit_title'),
+                          initialValues: record,
+                        });
                       }}
                     >
-                      <a>{t('common:btn.edit')}</a>
-                    </FormDrawer>
+                      {t('common:btn.edit')}
+                    </a>
                   </Menu.Item>
                 )}
                 {actionAuth.delete && (
@@ -389,17 +395,18 @@ export default function index() {
             </Space>
             <Space>
               {actionAuth.add && (
-                <FormDrawer
-                  mode='add'
-                  title={t('add_btn')}
-                  typesList={typesList}
-                  collectorsList={collectorsList}
-                  onOk={() => {
-                    setRefreshFlag(_.uniqueId('refreshFlag_'));
+                <Button
+                  type='primary'
+                  onClick={() => {
+                    setFormDrawerData({
+                      open: true,
+                      mode: 'add',
+                      title: t('add_btn'),
+                    });
                   }}
                 >
-                  <Button type='primary'>{t('add_btn')}</Button>
-                </FormDrawer>
+                  {t('add_btn')}
+                </Button>
               )}
               {(actionAuth.add || actionAuth.delete) && (
                 <Dropdown
@@ -518,6 +525,20 @@ export default function index() {
           setExplorerDrawerData(undefined);
         }}
         data={explorerDrawerData}
+      />
+      <FormDrawer
+        open={formDrawerData?.open}
+        onOpenChange={(open) => {
+          setFormDrawerData({ ...(formDrawerData || {}), open });
+        }}
+        mode={formDrawerData?.mode}
+        initialValues={formDrawerData?.initialValues}
+        title={formDrawerData?.title}
+        typesList={typesList}
+        collectorsList={collectorsList}
+        onOk={() => {
+          setRefreshFlag(_.uniqueId('refreshFlag_'));
+        }}
       />
     </PageLayout>
   );
