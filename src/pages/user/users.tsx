@@ -240,6 +240,9 @@ const Resource: React.FC = () => {
                   onChange={(newVal) => {
                     setRange(newVal);
                   }}
+                  onClear={() => {
+                    setRange(undefined);
+                  }}
                 />
               </Space>
             </div>
