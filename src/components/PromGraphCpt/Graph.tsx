@@ -65,7 +65,7 @@ const getSerieName = (metric: any) => {
 };
 
 export default function Graph(props: IProps) {
-  const { datasourceList, darkMode } = useContext(CommonStateContext);
+  const { datasourceList, darkMode, siteInfo } = useContext(CommonStateContext);
   const {
     url,
     datasourceValue,
@@ -106,6 +106,7 @@ export default function Graph(props: IProps) {
     options: {
       legend: {
         displayMode: highLevelConfig.legend ? 'table' : 'hidden',
+        columns: _.isEmpty(siteInfo?.explorer_timeseries_legend_columns) ? ['last'] : siteInfo?.explorer_timeseries_legend_columns,
       },
       tooltip: {
         mode: highLevelConfig.shared ? 'all' : 'single',

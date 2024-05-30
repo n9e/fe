@@ -1,0 +1,91 @@
+.builtin-container {
+  .cate-list-item {
+    padding: 8px;
+    .cate-list-item-extra {
+      display: none;
+      font-size: 14px;
+    }
+    &:hover {
+      .cate-list-item-extra {
+        display: block;
+      }
+    }
+  }
+  .cate-list-item.is-last-favorite {
+    border-bottom: 1px solid var(--fc-border-color) !important;
+  }
+}
+
+.builtin-cates-grid {
+  display: grid;
+  grid-template-columns: repeat(5,minmax(0,1fr))!important;
+  gap: 16px;
+}
+.builtin-cates-grid-item {
+  position: relative;
+  background-color: var(--fc-fill-2);
+  border: 1px solid var(--fc-border-color);
+  border-radius: 6px;
+  padding: 24px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  .builtin-cates-grid-item-operations {
+    display: none;
+  }
+  &:hover {
+    background-color: var(--fc-fill-3);
+    .builtin-cates-grid-item-operations {
+      display: block;
+    }
+  }
+}
+.builtin-cates-grid-item-operations {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+}
+
+.builtin-w-md-editor {
+  height: 100%;
+  .wmde-markdown {
+    font-family: unset !important;
+  }
+  .w-md-editor {
+    border: 1px solid var(--fc-border-color);
+    border-radius: 4px;
+    font-family: unset !important;
+    --md-editor-font-family: unset !important;
+  }
+  // 解决 antd 的样式导致的污染问题
+  textarea {
+    resize: unset !important;
+  }
+  .wmde-markdown {
+    font-size: 12px !important;
+    background-color: transparent !important;
+  }
+  // TODO toml [[instances]] instances 会被识别为表格
+  pre {
+    .table {
+      display: unset !important;
+    }
+  }
+  .w-md-editor-text-pre > code {
+    font-size: 12px !important;
+    font-family: unset !important;
+    line-height: unset !important;
+  }
+}
+.builtin-drawer-tabs {
+  height: 100%;
+  .ant-tabs-content-holder {
+    height: 100%;
+    overflow-y: auto;
+  }
+  .ant-tabs-content {
+    height: 100%;
+  }
+}

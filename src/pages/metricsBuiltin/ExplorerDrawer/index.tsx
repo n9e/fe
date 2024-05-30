@@ -1,10 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import moment from 'moment';
 import { Button } from 'antd';
 import { useGetState } from 'ahooks';
+import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { Record } from '../services';
 import Panel from './Panel';
 
@@ -18,6 +19,8 @@ export default function ExplorerDrawer(props: Props) {
   const { t } = useTranslation('metricsBuiltin');
   const { visible, onClose, data } = props;
   const [panels, setPanels, getPanels] = useGetState<Record[]>([]);
+  const [defaultType, setDefaultType] = useState<'table' | 'graph'>('table');
+  const [defaultTime, setDefaultTime] = useState<undefined | IRawTimeRange>();
 
   useEffect(() => {
     if (data) {
@@ -59,6 +62,10 @@ export default function ExplorerDrawer(props: Props) {
                 });
                 setPanels(newPanels);
               }}
+              defaultType={defaultType}
+              onDefaultTypeChange={setDefaultType}
+              defaultTime={defaultTime}
+              onDefaultTimeChange={setDefaultTime}
             />
             {idx === 0 && panels.length > 1 && (
               <Button

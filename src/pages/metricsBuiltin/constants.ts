@@ -14,7 +14,6 @@
  * limitations under the License.
  *
  */
-import i18next from 'i18next';
 export const pathname = '/metrics-built-in';
 export const LOCAL_STORAGE_KEY = 'metrics_built_in_columns_configs';
 export const defaultColumnsConfigs = [

@@ -24,6 +24,8 @@ const zh_HK = {
   teamSeparator: '團隊分隔符',
   darkTheme: '深色主題',
   lightTheme: '淺色主題',
+  explorer_timeseries_legend_columns: '時序圖的圖列管理',
+  explorer_timeseries_legend_columns_placeholder: '默認值為 Last',
 };
 
 export default zh_HK;
