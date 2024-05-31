@@ -49,9 +49,13 @@ export default function ImportBase({ busiId, onOk, groupedDatasourceList, dataso
             datasource_cate: cates[0],
           });
           setAllowSubmit(true);
-        } else {
+          return;
+        } else if (cates.length > 1) {
           setAllowSubmit(false);
         }
+        form.setFieldsValue({
+          datasource_cate: undefined,
+        });
       } catch (e) {
         console.error(e);
       }
@@ -68,8 +72,8 @@ export default function ImportBase({ busiId, onOk, groupedDatasourceList, dataso
             const importData = _.map(JSON.parse(vals.import), (item) => {
               return {
                 ...item,
-                cate: vals.datasource_cate,
-                datasource_ids: vals.datasource_ids,
+                cate: item.cate === 'host' ? 'host' : vals.datasource_cate,
+                datasource_ids: item.cate === 'host' ? item.datasource_ids : vals.datasource_ids,
                 disabled: vals.enabled ? 0 : 1,
               };
             });
@@ -107,7 +111,7 @@ export default function ImportBase({ busiId, onOk, groupedDatasourceList, dataso
         </Form.Item>
         {importContent && (
           <>
-            <Form.Item label={t('common:datasource.type')} name='datasource_cate'>
+            <Form.Item label={t('common:datasource.type')} name='datasource_cate' hidden={!datasourceCate}>
               <Select disabled>
                 {_.map(datasourceCates, (item) => {
                   return (
@@ -118,7 +122,9 @@ export default function ImportBase({ busiId, onOk, groupedDatasourceList, dataso
                 })}
               </Select>
             </Form.Item>
-            <DatasourceValueSelect mode='multiple' setFieldsValue={form.setFieldsValue} cate={datasourceCate} datasourceList={groupedDatasourceList[datasourceCate] || []} />
+            {datasourceCate && (
+              <DatasourceValueSelect mode='multiple' setFieldsValue={form.setFieldsValue} cate={datasourceCate} datasourceList={groupedDatasourceList[datasourceCate] || []} />
+            )}
             <Form.Item label={t('common:table.enabled')} name='enabled' valuePropName='checked'>
               <Switch />
             </Form.Item>

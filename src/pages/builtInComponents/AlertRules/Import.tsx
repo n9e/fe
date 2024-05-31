@@ -35,7 +35,8 @@ function Import(props: IProps & ModalWrapProps) {
   const datasourceCates = _.filter(datasourceCateOptions, (item) => !!item.alertRule);
   const [allowSubmit, setAllowSubmit] = React.useState(true);
   const [form] = Form.useForm();
-  const datasourceCate = useMemo(() => {
+  const datasourceCate = Form.useWatch('datasource_cate', form);
+  const defaultDatasourceCate = useMemo(() => {
     try {
       const parsed = JSON.parse(data);
       const dataList = _.isArray(parsed) ? parsed : [parsed];
@@ -49,8 +50,9 @@ function Import(props: IProps & ModalWrapProps) {
       );
       if (cates.length === 1) {
         return cates[0];
+      } else if (cates.length > 1) {
+        setAllowSubmit(false);
       }
-      setAllowSubmit(false);
       return undefined;
     } catch (e) {
       console.error(e);
@@ -73,7 +75,7 @@ function Import(props: IProps & ModalWrapProps) {
         form={form}
         initialValues={{
           import: data,
-          datasource_cate: datasourceCate,
+          datasource_cate: defaultDatasourceCate,
           enabled: false,
         }}
         onFinish={(vals) => {
@@ -87,8 +89,8 @@ function Import(props: IProps & ModalWrapProps) {
               const record = _.omit(item, ['id', 'group_id', 'create_at', 'create_by', 'update_at', 'update_by']);
               return {
                 ...record,
-                cate: vals.datasource_cate,
-                datasource_ids: vals.datasource_ids,
+                cate: record.cate === 'host' ? 'host' : vals.datasource_cate,
+                datasource_ids: record.cate === 'host' ? record.datasource_ids : vals.datasource_ids,
                 disabled: vals.enabled ? 0 : 1,
               };
             });
@@ -141,7 +143,7 @@ function Import(props: IProps & ModalWrapProps) {
             })}
           </Select>
         </Form.Item>
-        <Form.Item label={t('common:datasource.type')} name='datasource_cate'>
+        <Form.Item label={t('common:datasource.type')} name='datasource_cate' hidden={!datasourceCate}>
           <Select disabled>
             {_.map(datasourceCates, (item) => {
               return (
@@ -152,7 +154,9 @@ function Import(props: IProps & ModalWrapProps) {
             })}
           </Select>
         </Form.Item>
-        <DatasourceValueSelect mode='multiple' setFieldsValue={form.setFieldsValue} cate={datasourceCate} datasourceList={groupedDatasourceList[datasourceCate] || []} />
+        {datasourceCate && (
+          <DatasourceValueSelect mode='multiple' setFieldsValue={form.setFieldsValue} cate={datasourceCate} datasourceList={groupedDatasourceList[datasourceCate] || []} />
+        )}
         <Form.Item label={t('common:table.enabled')} name='enabled' valuePropName='checked'>
           <Switch />
         </Form.Item>

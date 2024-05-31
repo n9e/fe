@@ -81,8 +81,8 @@ export default function ImportBuiltinContent({ busiId, onOk, groupedDatasourceLi
             const content = JSON.parse(item.content);
             return {
               ...content,
-              cate: vals.datasource_cate,
-              datasource_ids: vals.datasource_ids,
+              cate: content.cate === 'host' ? 'host' : vals.datasource_cate,
+              datasource_ids: content.cate === 'host' ? content.datasource_ids : vals.datasource_ids,
               disabled: vals.enabled ? 0 : 1,
             };
           }),
@@ -238,12 +238,14 @@ export default function ImportBuiltinContent({ busiId, onOk, groupedDatasourceLi
                     datasource_cate: cates[0],
                   });
                   setAllowSubmit(true);
-                } else {
-                  form.setFieldsValue({
-                    selectedRules: selectedRows,
-                  });
+                  return;
+                } else if (cates.length > 1) {
                   setAllowSubmit(false);
                 }
+                form.setFieldsValue({
+                  selectedRules: selectedRows,
+                  datasource_cate: undefined,
+                });
               },
             }}
             scroll={{ y: 300 }}
@@ -253,7 +255,7 @@ export default function ImportBuiltinContent({ busiId, onOk, groupedDatasourceLi
       </Form.Item>
       {!_.isEmpty(selectedRules) && (
         <>
-          <Form.Item label={t('common:datasource.type')} name='datasource_cate'>
+          <Form.Item label={t('common:datasource.type')} name='datasource_cate' hidden={!datasourceCate}>
             <Select disabled>
               {_.map(datasourceCates, (item) => {
                 return (
@@ -264,7 +266,9 @@ export default function ImportBuiltinContent({ busiId, onOk, groupedDatasourceLi
               })}
             </Select>
           </Form.Item>
-          <DatasourceValueSelect mode='multiple' setFieldsValue={form.setFieldsValue} cate={datasourceCate} datasourceList={groupedDatasourceList[datasourceCate] || []} />
+          {datasourceCate && (
+            <DatasourceValueSelect mode='multiple' setFieldsValue={form.setFieldsValue} cate={datasourceCate} datasourceList={groupedDatasourceList[datasourceCate] || []} />
+          )}
         </>
       )}
 
