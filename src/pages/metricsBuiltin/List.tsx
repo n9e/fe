@@ -113,9 +113,7 @@ export default function index() {
         const recordClone = _.cloneDeep(record);
         return (
           <Tooltip overlayClassName='ant-tooltip-max-width-600 ant-tooltip-with-link' title={record.note ? <Markdown content={record.note} /> : undefined}>
-            <Button
-              type='link'
-              style={{ padding: 0 }}
+            <a
               onClick={() => {
                 const curFilter = filtersRef.current?.getActive();
                 let label_filter = '';
@@ -148,7 +146,7 @@ export default function index() {
               }}
             >
               {val}
-            </Button>
+            </a>
           </Tooltip>
         );
       },
