@@ -232,25 +232,30 @@ export default function index(props: ITimeRangePickerProps) {
                     <div className='flashcat-timeRangePicker-absolute-history'>
                       <span>{t('history')}</span>
                       <ul style={{ marginTop: 8 }}>
-                        {_.map(absoluteHistoryCache, (range, idx) => {
-                          return (
-                            <li
-                              key={range.start + range.end + idx}
-                              onClick={() => {
-                                const newValue = {
-                                  start: isMathString(range.start) ? range.start : moment(range.start),
-                                  end: isMathString(range.end) ? range.end : moment(range.end),
-                                };
-                                setRange(newValue);
-                                onChange(newValue);
-                                setAbsoluteHistoryCache(newValue, dateFormat);
-                                setVisible(false);
-                              }}
-                            >
-                              {describeTimeRange(range, dateFormat)}
-                            </li>
-                          );
-                        })}
+                        {_.map(
+                          _.filter(absoluteHistoryCache, (item) => {
+                            return item?.start && item?.end;
+                          }),
+                          (range, idx) => {
+                            return (
+                              <li
+                                key={range.start + range.end + idx}
+                                onClick={() => {
+                                  const newValue = {
+                                    start: isMathString(range.start) ? range.start : moment(range.start),
+                                    end: isMathString(range.end) ? range.end : moment(range.end),
+                                  };
+                                  setRange(newValue);
+                                  onChange(newValue);
+                                  setAbsoluteHistoryCache(newValue, dateFormat);
+                                  setVisible(false);
+                                }}
+                              >
+                                {describeTimeRange(range, dateFormat)}
+                              </li>
+                            );
+                          },
+                        )}
                       </ul>
                     </div>
                   </div>

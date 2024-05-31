@@ -96,6 +96,20 @@ export default function index() {
                   </Form.Item>
                 </Space>
               </div>
+              <Form.Item name={['explorer_timeseries_legend_columns']} label={t('explorer_timeseries_legend_columns')}>
+                <Select
+                  mode='multiple'
+                  placeholder={t('explorer_timeseries_legend_columns_placeholder')}
+                  options={_.map(['max', 'min', 'avg', 'sum', 'last'], (item) => {
+                    return {
+                      label: t(`dashboard:panel.options.legend.${item}`, {
+                        lng: 'en_US',
+                      }),
+                      value: item,
+                    };
+                  })}
+                />
+              </Form.Item>
               <Button type='primary' htmlType='submit'>
                 {t('common:btn.save')}
               </Button>

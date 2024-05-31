@@ -25,12 +25,13 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import PromQueryBuilderModal from '@/components/PromQueryBuilder/PromQueryBuilderModal';
+import BuiltinMetrics from '@/components/PromQLInput/BuiltinMetrics';
+import { N9E_PATHNAME } from '@/utils/constant';
 import PromQLInput from '../PromQLInput';
 import Table from './Table';
 import Graph from './Graph';
 import QueryStatsView, { QueryStats } from './components/QueryStatsView';
 import MetricsExplorer from './components/MetricsExplorer';
-import { N9E_PATHNAME } from '@/utils/constant';
 import './locale';
 import './style.less';
 
@@ -38,6 +39,7 @@ interface IProps {
   url?: string;
   datasourceValue: number;
   contentMaxHeight?: number;
+  defaultType?: 'table' | 'graph';
   type?: 'table' | 'graph';
   onTypeChange?: (type: 'table' | 'graph') => void;
   defaultTime?: IRawTimeRange | number;
@@ -51,6 +53,13 @@ interface IProps {
   };
   headerExtra?: HTMLDivElement | null;
   executeQuery?: (promQL?: string) => void;
+  showBuiltinMetrics?: boolean;
+  graphStandardOptionsType?: 'vertical' | 'horizontal';
+  defaultUnit?: string;
+  showGlobalMetrics?: boolean;
+  showBuilder?: boolean;
+  onChange?: (promQL?: string) => void;
+  promQLInputTooltip?: string;
 }
 
 const TabPane = Tabs.TabPane;
@@ -62,7 +71,8 @@ export default function index(props: IProps) {
     datasourceValue,
     promQL,
     contentMaxHeight = 300,
-    type = 'table',
+    defaultType,
+    type,
     onTypeChange,
     defaultTime,
     onTimeChange,
@@ -74,12 +84,18 @@ export default function index(props: IProps) {
     },
     headerExtra,
     executeQuery,
+    showBuiltinMetrics,
+    graphStandardOptionsType,
+    showGlobalMetrics = true,
+    showBuilder = true,
+    onChange,
+    promQLInputTooltip,
   } = props;
   const [value, setValue] = useState<string | undefined>(promQL); // for promQLInput
   const [promql, setPromql] = useState<string | undefined>(promQL);
   const [queryStats, setQueryStats] = useState<QueryStats | null>(null);
   const [errorContent, setErrorContent] = useState('');
-  const [tabActiveKey, setTabActiveKey] = useState(type);
+  const [tabActiveKey, setTabActiveKey] = useState(type || defaultType || 'table');
   const [timestamp, setTimestamp] = useState<number>(); // for table
   const [refreshFlag, setRefreshFlag] = useState(_.uniqueId('refreshFlag_')); // for table
   const [range, setRange] = useState<IRawTimeRange>({ start: 'now-1h', end: 'now' }); // for graph
@@ -88,6 +104,7 @@ export default function index(props: IProps) {
   const [completeEnabled, setCompleteEnabled] = useState(true);
   const promQLInputRef = useRef<any>(null);
   const [loading, setLoading] = useState(false);
+  const [defaultUnit, setDefaultUnit] = useState<string | undefined>(props.defaultUnit);
 
   useEffect(() => {
     if (typeof defaultTime === 'number') {
@@ -102,7 +119,9 @@ export default function index(props: IProps) {
   }, [defaultTime]);
 
   useEffect(() => {
-    setTabActiveKey(type);
+    if (type) {
+      setTabActiveKey(type);
+    }
   }, [type]);
 
   useEffect(() => {
@@ -141,49 +160,67 @@ export default function index(props: IProps) {
 
       <div className='prom-graph-expression-input'>
         <Input.Group>
+          {showBuiltinMetrics && (
+            <BuiltinMetrics
+              mode='dropdown'
+              onSelect={(newValue, metric) => {
+                setValue(newValue);
+                setPromql(newValue);
+                setDefaultUnit(metric.unit);
+              }}
+            />
+          )}
           <span className='ant-input-affix-wrapper'>
             <PromQLInput
               ref={promQLInputRef}
               url={url}
               value={value}
-              onChange={setValue}
+              onChange={(newVal) => {
+                setValue(newVal);
+                onChange && onChange(newVal);
+              }}
               executeQuery={(val) => {
                 setPromql(val);
                 executeQuery && executeQuery(val);
               }}
               completeEnabled={completeEnabled}
               datasourceValue={datasourceValue}
+              tooltip={promQLInputTooltip}
             />
-            <span className='ant-input-suffix'>
-              <GlobalOutlined
-                className='prom-graph-metrics-target'
-                onClick={() => {
-                  setMetricsExplorerVisible(true);
-                }}
-              />
-            </span>
+            {showGlobalMetrics && (
+              <span className='ant-input-suffix'>
+                <GlobalOutlined
+                  className='prom-graph-metrics-target'
+                  onClick={() => {
+                    setMetricsExplorerVisible(true);
+                  }}
+                />
+              </span>
+            )}
           </span>
-          <span
-            className='ant-input-group-addon'
-            style={{
-              border: 0,
-              padding: '0 0 0 10px',
-              background: 'none',
-            }}
-          >
-            <Button
-              onClick={() => {
-                PromQueryBuilderModal({
-                  range,
-                  datasourceValue,
-                  value,
-                  onChange: setValue,
-                });
+          {showBuilder && (
+            <span
+              className='ant-input-group-addon'
+              style={{
+                border: 0,
+                padding: '0 0 0 10px',
+                background: 'none',
               }}
             >
-              {t('builder_btn')}
-            </Button>
-          </span>
+              <Button
+                onClick={() => {
+                  PromQueryBuilderModal({
+                    range,
+                    datasourceValue,
+                    value,
+                    onChange: setValue,
+                  });
+                }}
+              >
+                {t('builder_btn')}
+              </Button>
+            </span>
+          )}
           <span
             className='ant-input-group-addon'
             style={{
@@ -236,6 +273,7 @@ export default function index(props: IProps) {
               refreshFlag={refreshFlag}
               loading={loading}
               setLoading={setLoading}
+              defaultUnit={defaultUnit}
             />
           </TabPane>
           <TabPane tab='Graph' key='graph'>
@@ -257,6 +295,8 @@ export default function index(props: IProps) {
               refreshFlag={refreshFlag}
               loading={loading}
               setLoading={setLoading}
+              graphStandardOptionsType={graphStandardOptionsType}
+              defaultUnit={defaultUnit}
             />
           </TabPane>
         </Tabs>

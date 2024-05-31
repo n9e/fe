@@ -3,6 +3,7 @@ const en_US = {
   add_btn: 'Add a query panel',
   query_btn: 'Execute',
   query_tab: 'Query',
+  addPanel: 'Add Panel',
   log: {
     search_placeholder: 'Search field',
     available: 'Available fields',

@@ -44,6 +44,8 @@ interface IProps {
   refreshFlag: string;
   loading: boolean;
   setLoading: (loading: boolean) => void;
+  graphStandardOptionsType?: 'vertical' | 'horizontal';
+  defaultUnit?: string;
 }
 
 enum ChartType {
@@ -63,14 +65,31 @@ const getSerieName = (metric: any) => {
 };
 
 export default function Graph(props: IProps) {
-  const { datasourceList } = useContext(CommonStateContext);
-  const { url, datasourceValue, promql, setQueryStats, setErrorContent, contentMaxHeight, range, setRange, step, setStep, graphOperates, refreshFlag, loading, setLoading } = props;
+  const { datasourceList, darkMode, siteInfo } = useContext(CommonStateContext);
+  const {
+    url,
+    datasourceValue,
+    promql,
+    setQueryStats,
+    setErrorContent,
+    contentMaxHeight,
+    range,
+    setRange,
+    step,
+    setStep,
+    graphOperates,
+    refreshFlag,
+    loading,
+    setLoading,
+    graphStandardOptionsType,
+    defaultUnit,
+  } = props;
   const [data, setData] = useState<any[]>([]);
   const [highLevelConfig, setHighLevelConfig] = useState({
-    shared: true,
+    shared: false,
     sharedSortDirection: 'desc',
     legend: true,
-    unit: 'default',
+    unit: 'sishort', // 2024-05-08 从 'default' 改为 'sishort'
     reverseColorOrder: false,
     colorDomainAuto: true,
     colorDomain: [],
@@ -87,6 +106,7 @@ export default function Graph(props: IProps) {
     options: {
       legend: {
         displayMode: highLevelConfig.legend ? 'table' : 'hidden',
+        columns: _.isEmpty(siteInfo?.explorer_timeseries_legend_columns) ? ['last'] : siteInfo?.explorer_timeseries_legend_columns,
       },
       tooltip: {
         mode: highLevelConfig.shared ? 'all' : 'single',
@@ -97,6 +117,15 @@ export default function Graph(props: IProps) {
       },
     },
   };
+
+  useEffect(() => {
+    if (defaultUnit) {
+      setHighLevelConfig({
+        ...highLevelConfig,
+        unit: defaultUnit,
+      });
+    }
+  }, [defaultUnit]);
 
   useEffect(() => {
     if (datasourceValue && promql) {
@@ -142,38 +171,77 @@ export default function Graph(props: IProps) {
   }, [JSON.stringify(range), step, datasourceValue, promql, refreshFlag]);
 
   return (
-    <Spin spinning={loading}>
-      <div className='prom-graph-graph-container'>
-        <div className='prom-graph-graph-controls'>
-          <Space>
-            <TimeRangePicker value={range} onChange={setRange} dateFormat='YYYY-MM-DD HH:mm:ss' />
-            <InputNumber
-              placeholder='Res. (s)'
-              value={step}
-              onKeyDown={(e: any) => {
-                if (e.code === 'Enter') {
-                  setStep(_.toNumber(e.target.value));
-                }
-              }}
-              onBlur={(e) => {
+    <div className='prom-graph-graph-container'>
+      <div className='prom-graph-graph-controls'>
+        <Space>
+          <TimeRangePicker value={range} onChange={setRange} dateFormat='YYYY-MM-DD HH:mm:ss' />
+          <InputNumber
+            placeholder='Res. (s)'
+            value={step}
+            onKeyDown={(e: any) => {
+              if (e.code === 'Enter') {
                 setStep(_.toNumber(e.target.value));
-              }}
-            />
-            <Radio.Group
-              options={[
-                { label: <LineChartOutlined />, value: ChartType.Line },
-                { label: <AreaChartOutlined />, value: ChartType.StackArea },
-              ]}
-              onChange={(e) => {
-                e.preventDefault();
-                setChartType(e.target.value);
-              }}
-              value={chartType}
-              optionType='button'
-              buttonStyle='solid'
-            />
-            {graphOperates.enabled && (
-              <>
+              }
+            }}
+            onBlur={(e) => {
+              setStep(_.toNumber(e.target.value));
+            }}
+            onStep={(value) => {
+              setStep(value);
+            }}
+          />
+          <Radio.Group
+            options={[
+              { label: <LineChartOutlined />, value: ChartType.Line },
+              { label: <AreaChartOutlined />, value: ChartType.StackArea },
+            ]}
+            onChange={(e) => {
+              e.preventDefault();
+              setChartType(e.target.value);
+            }}
+            value={chartType}
+            optionType='button'
+            buttonStyle='solid'
+          />
+          {graphOperates.enabled && (
+            <>
+              <Button
+                icon={
+                  <ShareAltOutlined
+                    onClick={() => {
+                      const dataProps = {
+                        type: 'timeseries',
+                        version: '3.0.0',
+                        name: promql,
+                        step,
+                        range,
+                        ...lineGraphProps,
+                        targets: [
+                          {
+                            expr: promql,
+                          },
+                        ],
+                        datasourceCate: 'prometheus',
+                        datasourceName: _.find(datasourceList, { id: datasourceValue })?.name,
+                        datasourceValue,
+                      };
+                      setTmpChartData([
+                        {
+                          configs: JSON.stringify({
+                            dataProps,
+                          }),
+                        },
+                      ]).then((res) => {
+                        const ids = res.dat;
+                        window.open(basePrefix + '/chart/' + ids);
+                      });
+                    }}
+                  />
+                }
+              />
+              {graphStandardOptionsType === 'horizontal' ? (
+                <LineGraphStandardOptions highLevelConfig={highLevelConfig} setHighLevelConfig={setHighLevelConfig} type={graphStandardOptionsType} />
+              ) : (
                 <Popover
                   placement='left'
                   content={<LineGraphStandardOptions highLevelConfig={highLevelConfig} setHighLevelConfig={setHighLevelConfig} />}
@@ -183,46 +251,12 @@ export default function Graph(props: IProps) {
                 >
                   <Button icon={<SettingOutlined />} />
                 </Popover>
-                <Button
-                  icon={
-                    <ShareAltOutlined
-                      onClick={() => {
-                        const dataProps = {
-                          type: 'timeseries',
-                          version: '3.0.0',
-                          name: promql,
-                          step,
-                          range,
-                          ...lineGraphProps,
-                          targets: [
-                            {
-                              expr: promql,
-                            },
-                          ],
-                          datasourceCate: 'prometheus',
-                          datasourceName: _.find(datasourceList, { id: datasourceValue })?.name,
-                          datasourceValue,
-                        };
-                        setTmpChartData([
-                          {
-                            configs: JSON.stringify({
-                              dataProps,
-                            }),
-                          },
-                        ]).then((res) => {
-                          const ids = res.dat;
-                          window.open(basePrefix + '/chart/' + ids);
-                        });
-                      }}
-                    />
-                  }
-                />
-              </>
-            )}
-          </Space>
-        </div>
-        <Timeseries inDashboard={false} values={lineGraphProps as any} series={data} time={range} />
+              )}
+            </>
+          )}
+        </Space>
       </div>
-    </Spin>
+      <Timeseries inDashboard={false} values={lineGraphProps as any} series={data} time={range} themeMode={darkMode ? 'dark' : undefined} />
+    </div>
   );
 }

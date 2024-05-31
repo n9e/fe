@@ -1,6 +1,6 @@
 {
   "name": "n9e-fe",
-  "version": "v6.7.1",
+  "version": "v7.0.0-beta.7",
   "scripts": {
     "dev": "vite --port 8765 --host",
     "dev:advanced": "vite --port 8765 --host --mode advanced",
@@ -33,6 +33,7 @@
     "@fc-plot/ts-graph": "^0.26.2",
     "@radix-ui/react-scroll-area": "^1.0.5",
     "@uiw/react-codemirror": "4.6.0",
+    "@uiw/react-md-editor": "^4.0.4",
     "ahooks": "3.1.5",
     "ansi_up": "^6.0.2",
     "antd": "4.21.0",
@@ -68,6 +69,7 @@
     "react-highlight-words": "^0.17.0",
     "react-hooks-global-state": "^2.0.0",
     "react-i18next": "^11.11.1",
+    "react-infinite-scroll-component": "^6.1.0",
     "react-markdown": "^7.0.1",
     "react-quill": "^2.0.0",
     "react-router-dom": "^5.2.0",
@@ -107,5 +109,8 @@
     "typescript": "4.9.4",
     "vite": "^2.1.5",
     "vite-plugin-react-svg": "^0.2.0"
+  },
+  "overrides": {
+    "@types/react": "^17.0.14"
   }
 }

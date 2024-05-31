@@ -11,6 +11,7 @@ export interface Cate {
   dashboard: boolean; // 是否支持仪表盘
   graphPro: boolean; // Pro版本
   alertPro: boolean; // Pro版本
+  logo?: string;
 }
 
 export const baseCates: Cate[] = [
@@ -22,6 +23,7 @@ export const baseCates: Cate[] = [
     dashboard: true,
     graphPro: false,
     alertPro: false,
+    logo: '/image/logos/prometheus.png',
   },
   {
     value: 'elasticsearch',
@@ -31,6 +33,7 @@ export const baseCates: Cate[] = [
     dashboard: true,
     graphPro: false,
     alertPro: true,
+    logo: '/image/logos/elasticsearch.png',
   },
   {
     value: 'tdengine',
@@ -40,15 +43,27 @@ export const baseCates: Cate[] = [
     dashboard: true,
     graphPro: false,
     alertPro: false,
+    logo: '/image/logos/tdengine.png',
   },
   {
     value: 'loki',
     label: 'Loki',
-    type: ['loki', 'logging'],
+    type: ['loki', 'logging'], // loki 是历史版本里一个过度的分类，后续会废弃
     alertRule: true,
     dashboard: false,
     graphPro: false,
     alertPro: false,
+    logo: '/image/logos/loki.png',
+  },
+  {
+    value: 'jaeger',
+    label: 'Jaeger',
+    type: ['tracing'],
+    alertRule: false,
+    dashboard: false,
+    graphPro: false,
+    alertPro: false,
+    logo: '/image/logos/jaeger.png',
   },
 ];
 

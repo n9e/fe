@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState, useContext } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { MenuUnfoldOutlined, MenuFoldOutlined, NotificationFilled } from '@ant-design/icons';
+import Icon, { MenuUnfoldOutlined, MenuFoldOutlined, NotificationFilled } from '@ant-design/icons';
 import _ from 'lodash';
 import querystring from 'query-string';
 import { useTranslation } from 'react-i18next';
@@ -8,7 +8,9 @@ import { getMenuPerm } from '@/services/common';
 import { ScrollArea } from '@/components/ScrollArea';
 import { CommonStateContext } from '@/App';
 import { getSideMenuBgColor } from '@/components/pageLayout/SideMenuColorSetting';
+import { IS_ENT } from '@/utils/constant';
 import IconFont from '../../IconFont';
+import menuIcon from '@/components/menu/configs';
 import { cn } from './utils';
 import SideMenuHeader from './Header';
 import MenuList from './MenuList';
@@ -31,10 +33,6 @@ export const getMenuList = (t) => {
           key: '/dashboards',
           label: t('监控仪表盘'),
         },
-        {
-          key: '/dashboards-built-in',
-          label: t('内置仪表盘'),
-        },
       ],
     },
     {
@@ -45,6 +43,10 @@ export const getMenuList = (t) => {
         {
           key: '/metric/explorer',
           label: t('即时查询'),
+        },
+        {
+          key: '/metrics-built-in',
+          label: t('metricsBuiltin:title'),
         },
         {
           key: '/object/explorer',
@@ -75,10 +77,6 @@ export const getMenuList = (t) => {
         {
           key: '/alert-rules',
           label: t('告警规则'),
-        },
-        {
-          key: '/alert-rules-built-in',
-          label: t('内置规则'),
         },
         {
           key: '/alert-mutes',
@@ -126,10 +124,6 @@ export const getMenuList = (t) => {
           key: '/job-tasks',
           label: t('执行历史'),
         },
-        {
-          key: '/ibex-settings',
-          label: t('自愈配置'),
-        },
       ],
     },
     {
@@ -167,14 +161,26 @@ export const getMenuList = (t) => {
       ],
     },
     {
-      key: 'help',
-      icon: <IconFont type='icon-Menu_SystemInformation' />,
-      label: t('系统配置'),
+      key: 'integrations',
+      icon: <IconFont type='icon-shujujicheng' />,
+      activeIcon: <Icon component={menuIcon.EmbedsSvgHover as any} />,
+      label: t('integrations'),
       children: [
         {
           key: '/help/source',
           label: t('数据源'),
         },
+        {
+          key: '/built-in-components',
+          label: t('built_in_components'),
+        },
+      ],
+    },
+    {
+      key: 'help',
+      icon: <IconFont type='icon-Menu_SystemInformation' />,
+      label: t('系统配置'),
+      children: [
         {
           key: '/help/variable-configs',
           label: t('变量设置'),
@@ -191,10 +197,6 @@ export const getMenuList = (t) => {
           key: '/site-settings',
           label: t('siteInfo:title'),
         },
-        // {
-        //   key: '/help/migrate',
-        //   label: t('仪表盘迁移'),
-        // },
         {
           key: '/help/version',
           label: t('系统版本'),
@@ -207,7 +209,11 @@ export const getMenuList = (t) => {
 
 const SideMenu = () => {
   const { t, i18n } = useTranslation('menu');
-  const { profile, isPlus, sideMenuBgMode, perms } = useContext(CommonStateContext);
+  const { profile, isPlus, darkMode, perms } = useContext(CommonStateContext);
+  let { sideMenuBgMode } = useContext(CommonStateContext);
+  if (darkMode) {
+    sideMenuBgMode = 'dark';
+  }
   const sideMenuBgColor = getSideMenuBgColor(sideMenuBgMode as any);
   const history = useHistory();
   const location = useLocation();
@@ -300,9 +306,10 @@ const SideMenu = () => {
       >
         <div
           className={cn(
-            'z-20 flex h-full select-none flex-col justify-between border-0 transition-width',
+            'z-20 flex h-full select-none flex-col justify-between border-0 border-r border-solid transition-width',
             collapsed ? 'w-[64px]' : uncollapsedWidth,
             collapsedHover ? `absolute ${uncollapsedWidth} shadow-mf` : '',
+            !IS_ENT ? 'border-fc-300' : '',
           )}
           style={{ background: sideMenuBgColor }}
         >

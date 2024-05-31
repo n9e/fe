@@ -46,14 +46,17 @@ const zh_HK = {
   采集模板: '採集模板',
   拨测管理: '撥測管理',
   拨测状态: '撥測狀態',
-  数据采集: "數據採集",
-  对象列表: "對象列錶",
+  网络探测: '網路探測',
+  数据采集: '數據採集',
+  对象列表: '對象列錶',
   Pingmesh配置: 'Pingmesh配置',
   quickJump: '快速跳轉',
   quickOpenClose: '打開/關閉',
   quickSearchPlaceholder: '輸入內容以檢索...',
   quickMenus: '快捷選單',
-  "站内公告": "站內公告",
+  站内公告: '站內公告',
+  integrations: '集成中心',
+  built_in_components: '模板中心',
 };
 
 export default zh_HK;

@@ -21,6 +21,9 @@ export default class CanvasSpanGraph extends React.PureComponent<CanvasSpanGraph
 
   componentDidMount() {
     this._draw();
+    window.addEventListener('n9e-dark-mode-update', () => {
+      this._draw();
+    });
   }
 
   componentDidUpdate() {

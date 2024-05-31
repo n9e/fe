@@ -189,7 +189,7 @@ export default forwardRef(function QuickMenu(props: Props, ref) {
             }}
           />
         </div>
-        <div className='p-2 overflow-hidden text-slate-950' onMouseMove={() => setLockMouseHover(false)}>
+        <div className='p-2 overflow-hidden' onMouseMove={() => setLockMouseHover(false)}>
           <div className='font-bold pl-2.5 pb-1'>{t('quickMenus')}</div>
           <div className='overflow-auto h-[300px] text-sm' ref={menusRef}>
             {_.map(filteredMenus, (item: QuickMenuItem, idx) => {

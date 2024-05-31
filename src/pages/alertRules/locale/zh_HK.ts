@@ -14,7 +14,7 @@ const zh_HK = {
   append_tags_placeholder: '標籤格式為 key=value ，使用回車或空格分隔',
   group_id: '業務組',
   note: '備註',
-  append_tags_note_tip: '支持配置變數，例如 {{$labels.ident}}，如果監控資料為 `mem_active{ident="dev-backup-01"}` 最後會最終會替換為 dev-backup-01',
+  append_tags_note_tip: '附加到該規則產生的所有告警事件上，未來可以使用這些標籤做事件篩選',
   rule_configs: '規則配置',
   inhibit: '級別抑制',
   inhibit_tip: '只有 metricName 和 labels 完全相同的曲線產生的告警事件，才會進行級別抑制，1級>2級>3級',
@@ -107,6 +107,7 @@ const zh_HK = {
       result: '匯入結果',
       errmsg: '錯誤資訊',
     },
+    import_builtin: '匯入內置告警規則',
     export: {
       title: '匯出告警規則',
       copy: '複製 JSON 內容到剪貼簿',
@@ -165,6 +166,18 @@ const zh_HK = {
     query: {
       title: '查詢條件',
     },
+  },
+  preview: '數據預覽',
+  table: {
+    group_id: '業務組',
+    cate: '類型',
+    datasource_ids: '數據源',
+    name: '名稱',
+    append_tags: '附加標籤',
+    notify_groups_obj: '告警接收組',
+    update_at: '更新時間',
+    update_by: '更新者',
+    disabled: '啟用',
   },
 };
 

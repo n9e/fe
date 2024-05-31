@@ -3,11 +3,11 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Space, Table, Tabs } from 'antd';
 import { QuestionOutlined, CopyOutlined } from '@ant-design/icons';
-import CodeMirror from '@uiw/react-codemirror';
 import { EditorView } from '@codemirror/view';
 import { json } from '@codemirror/lang-json';
 import { defaultHighlightStyle } from '@codemirror/highlight';
 import { copyToClipBoard } from '@/utils';
+import CodeMirror from '@/components/CodeMirror';
 import { Field, getFieldLabel, getFieldValue, RenderValue } from './utils';
 import { typeIconMap } from './FieldsSidebar/Field';
 import { typeMap } from '../Elasticsearch/services';
@@ -41,7 +41,7 @@ export default function LogView(props: Props) {
       tabBarExtraContent={
         <Space
           onClick={() => {
-            copyToClipBoard(jsonValue, t);
+            copyToClipBoard(jsonValue);
           }}
           style={{ cursor: 'pointer' }}
         >
@@ -102,7 +102,6 @@ export default function LogView(props: Props) {
         <CodeMirror
           value={jsonValue}
           height='auto'
-          theme='light'
           basicSetup={false}
           editable={false}
           extensions={[

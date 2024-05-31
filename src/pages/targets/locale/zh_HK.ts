@@ -82,6 +82,7 @@ const zh_HK = {
   meta_expand: '展開',
   meta_collapse: '收起',
   meta_no_data: '暫無數據',
+  all_no_data: '沒有部署採集器？可參考 <a>安裝手冊</a> 安裝部署',
 };
 
 export default zh_HK;

@@ -4,6 +4,9 @@ const en_US = {
     search_placeholder: 'Username, email or phone number',
     create: 'Create User',
     edit: 'Edit User',
+    busi_groups: 'Business groups',
+    user_groups: 'Teams',
+    last_active_time: 'Last active time',
   },
   team: {
     title: 'Team Management',

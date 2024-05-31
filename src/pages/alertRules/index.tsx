@@ -44,7 +44,7 @@ export default function index() {
           renderHeadExtra={() => {
             return (
               <div>
-                <div className='left-area-group-title'>{t('default_filter.title')}</div>
+                <div className='n9e-biz-group-container-group-title'>{t('default_filter.title')}</div>
                 <div
                   className={classNames({
                     'n9e-biz-group-item': true,

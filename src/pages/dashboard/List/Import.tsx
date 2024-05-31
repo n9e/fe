@@ -14,16 +14,18 @@
  * limitations under the License.
  *
  */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
-import { Modal, Input, Tabs, Form, Button, Alert, message } from 'antd';
-import Icon from '@ant-design/icons';
+import { Modal, Input, Tabs, Form, Button, Alert, message, Select, Table, Space, Tag } from 'antd';
+import Icon, { SearchOutlined } from '@ant-design/icons';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { createDashboard } from '@/services/dashboardV2';
+import { getComponents, getPayloads, Component, Payload } from '@/pages/builtInComponents/services';
+import { TypeEnum } from '@/pages/builtInComponents/types';
 import { getValidImportData, convertDashboardGrafanaToN9E, JSONParse, checkGrafanaDashboardVersion } from './utils';
 
-type ModalType = 'Import' | 'ImportGrafana';
+type ModalType = 'Import' | 'ImportGrafana' | 'ImportBuiltin';
 interface IProps {
   busiId: number;
   type: ModalType;
@@ -52,6 +54,172 @@ const BetaSvg = () => (
   </svg>
 );
 const BetaIcon = (props) => <Icon component={BetaSvg} {...props} />;
+const ImportBuiltinContent = ({ busiId, onOk }) => {
+  const { t } = useTranslation('dashboard');
+  const [filter, setFilter] = useState<{
+    query?: string;
+  }>({ query: undefined });
+  const [components, setComponents] = useState<Component[]>([]);
+  const [dashboards, setDashboards] = useState<Payload[]>([]);
+  const [form] = Form.useForm();
+  const component = Form.useWatch('component', form);
+  const selectedBoards = Form.useWatch('selectedBoards', form);
+
+  useEffect(() => {
+    getComponents().then((res) => {
+      setComponents(res);
+    });
+  }, []);
+
+  useEffect(() => {
+    getPayloads<Payload[]>({
+      component,
+      type: TypeEnum.dashboard,
+      query: filter.query,
+    }).then((res) => {
+      setDashboards(res);
+    });
+  }, [component, filter.query]);
+
+  return (
+    <Form
+      layout='vertical'
+      form={form}
+      onFinish={(vals) => {
+        const requests = _.map(vals.selectedBoards, (item) => {
+          try {
+            const content = JSON.parse(item.content);
+            return createDashboard(busiId, {
+              ...content,
+              configs: JSON.stringify(content.configs),
+            });
+          } catch (e) {
+            console.error(e);
+            return null;
+          }
+        });
+        Promise.all(requests).then((res) => {
+          // TODO 目前这个失败处理是不成立的，接口请求失败直接走的 catch，内置仪表盘页面也存在这个问题
+          const failed = _.filter(res, (item) => {
+            return item.err;
+          });
+          if (!_.isEmpty(failed)) {
+            Modal.error({
+              title: t('common:error.clone'),
+              content: (
+                <div>
+                  {_.map(failed, (item) => {
+                    return <div key={item.err}>{item.err}</div>;
+                  })}
+                </div>
+              ),
+            });
+            return;
+          } else {
+            onOk();
+          }
+        });
+      }}
+    >
+      <Form.Item
+        label={t('builtInComponents:component')}
+        name='component'
+        rules={[
+          {
+            required: true,
+          },
+        ]}
+      >
+        <Select
+          showSearch
+          options={_.map(components, (item) => {
+            return {
+              label: item.ident,
+              value: item.ident,
+            };
+          })}
+          onChange={() => {
+            form.setFieldsValue({
+              selectedBoards: undefined,
+            });
+          }}
+        />
+      </Form.Item>
+      <Form.Item name='selectedBoards' label={t('builtInComponents:payloads')} hidden={!component}>
+        <>
+          <Input
+            prefix={<SearchOutlined />}
+            value={filter.query}
+            onChange={(e) => {
+              setFilter({ ...filter, query: e.target.value });
+            }}
+            style={{ marginBottom: 8 }}
+            allowClear
+          />
+          <Table
+            size='small'
+            rowKey='name'
+            columns={[
+              {
+                title: t('builtInComponents:name'),
+                dataIndex: 'name',
+              },
+              {
+                title: t('builtInComponents:tags'),
+                dataIndex: 'tags',
+                render: (val) => {
+                  const tags = _.compact(_.split(val, ' '));
+                  return (
+                    <Space size='middle'>
+                      {_.map(tags, (tag, idx) => {
+                        return (
+                          <Tag
+                            key={idx}
+                            color='purple'
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => {
+                              const queryItem = _.compact(_.split(filter.query, ' '));
+                              if (_.includes(queryItem, tag)) return;
+                              setFilter((filter) => {
+                                return {
+                                  ...filter,
+                                  query: filter.query ? filter.query + ' ' + tag : tag,
+                                };
+                              });
+                            }}
+                          >
+                            {tag}
+                          </Tag>
+                        );
+                      })}
+                    </Space>
+                  );
+                },
+              },
+            ]}
+            dataSource={dashboards}
+            rowSelection={{
+              type: 'checkbox',
+              selectedRowKeys: _.map(selectedBoards, 'name'),
+              onChange(_selectedRowKeys, selectedRows) {
+                form.setFieldsValue({
+                  selectedBoards: selectedRows,
+                });
+              },
+            }}
+            scroll={{ y: 300 }}
+            pagination={false}
+          />
+        </>
+      </Form.Item>
+      <Form.Item>
+        <Button type='primary' htmlType='submit'>
+          {t('common:btn.import')}
+        </Button>
+      </Form.Item>
+    </Form>
+  );
+};
 
 function Import(props: IProps & ModalWrapProps) {
   const { t } = useTranslation('dashboard');
@@ -78,9 +246,11 @@ function Import(props: IProps & ModalWrapProps) {
 
   return (
     <Modal
+      width={600}
       className='dashboard-import-modal'
       title={
         <Tabs activeKey={modalType} onChange={(e: ModalType) => setModalType(e)} className='custom-import-alert-title'>
+          <TabPane tab={t('batch.import_builtin')} key='ImportBuiltin'></TabPane>
           <TabPane tab={t('batch.import')} key='Import'></TabPane>
           <TabPane
             tab={
@@ -95,7 +265,6 @@ function Import(props: IProps & ModalWrapProps) {
                     fontSize: 24,
                     position: 'absolute',
                     top: -12,
-                    color: '#1890ff',
                   }}
                 />
               </div>
@@ -143,6 +312,16 @@ function Import(props: IProps & ModalWrapProps) {
             </Button>
           </Form.Item>
         </Form>
+      ) : null}
+      {modalType === 'ImportBuiltin' ? (
+        <ImportBuiltinContent
+          busiId={busiId}
+          onOk={() => {
+            message.success(t('common:success.import'));
+            refreshList();
+            destroy();
+          }}
+        />
       ) : null}
       {modalType === 'ImportGrafana' ? (
         <Form

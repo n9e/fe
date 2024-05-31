@@ -21,17 +21,20 @@ import _ from 'lodash';
 import moment from 'moment';
 import { Table, Tag, Switch, Modal, Space, Button, Row, Col, message, Select, Tooltip } from 'antd';
 import { ColumnType } from 'antd/lib/table';
+import { EyeOutlined } from '@ant-design/icons';
 import RefreshIcon from '@/components/RefreshIcon';
 import SearchInput from '@/components/BaseSearchInput';
 import usePagination from '@/components/usePagination';
 import { getBusiGroupsAlertRules, updateAlertRules, deleteStrategy } from '@/services/warning';
 import { CommonStateContext } from '@/App';
-import { priorityColor } from '@/utils/constant';
 import Tags from '@/components/Tags';
 import { DatasourceSelect, ProdSelect } from '@/components/DatasourceSelect';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
 import { AlertRuleType, AlertRuleStatus } from '../types';
 import MoreOperations from './MoreOperations';
+import OrganizeColumns from './OrganizeColumns';
+import { getDefaultColumnsConfigs, setDefaultColumnsConfigs } from '../utils';
+import { allCates } from '@/components/AdvancedWrap/utils';
 
 interface ListProps {
   gids?: string;
@@ -57,34 +60,38 @@ export default function List(props: ListProps) {
   const [selectedRows, setSelectedRows] = useState<AlertRuleType<any>[]>([]);
   const [data, setData] = useState<AlertRuleType<any>[]>([]);
   const [loading, setLoading] = useState(false);
-  const columns: ColumnType<AlertRuleType<any>>[] = _.concat(
-    businessGroup.isLeaf && gids !== undefined // TODO 如果是全部规则筛选是显示 业务组 列
-      ? []
-      : ([
-          {
-            title: t('common:business_group'),
-            dataIndex: 'group_id',
-            width: 100,
-            render: (id) => {
-              return _.find(busiGroups, { id })?.name;
-            },
-          },
-        ] as any),
-    [
-      {
-        title: t('common:datasource.type'),
-        dataIndex: 'cate',
-        width: 100,
-      },
-      {
-        title: t('common:datasource.name'),
-        dataIndex: 'datasource_ids',
-        width: 100,
-        ellipsis: {
-          showTitle: false,
+  const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs());
+  const columns: ColumnType<AlertRuleType<any>>[] = [];
+  _.forEach(columnsConfigs, (item) => {
+    if (!item.visible) return;
+    if (item.name === 'group_id' && !businessGroup.isLeaf && gids) {
+      columns.push({
+        title: t('table.group_id'),
+        dataIndex: 'group_id',
+        render: (id) => {
+          return _.find(busiGroups, { id })?.name;
         },
+      });
+    }
+    if (item.name === 'cate') {
+      columns.push({
+        title: t('table.cate'),
+        dataIndex: 'cate',
+        render: (val) => {
+          let logoSrc = _.find(allCates, { value: val })?.logo;
+          if (val === 'host') {
+            logoSrc = '/image/logos/host.png';
+          }
+          return <img alt={val} src={logoSrc} height={20} />;
+        },
+      });
+    }
+    if (item.name === 'datasource_ids') {
+      columns.push({
+        title: t('table.datasource_ids'),
+        dataIndex: 'datasource_ids',
         render(value) {
-          if (!value) return '-';
+          if (!value) return '';
           return (
             <Tags
               width={70}
@@ -99,109 +106,122 @@ export default function List(props: ListProps) {
             />
           );
         },
-      },
-      {
-        title: t('name_severities_appendtags'),
+      });
+    }
+    if (item.name === 'name') {
+      columns.push({
+        title: t('table.name'),
         dataIndex: 'name',
         sorter: (a, b) => {
           return localeCompare(a.name, b.name);
         },
         render: (data, record) => {
           return (
+            <Link
+              className='table-text'
+              to={{
+                pathname: `/alert-rules/edit/${record.id}`,
+              }}
+            >
+              {data}
+            </Link>
+          );
+        },
+      });
+    }
+    if (item.name === 'append_tags') {
+      columns.push({
+        title: t('table.append_tags'),
+        dataIndex: 'append_tags',
+        render(value) {
+          return (
             <div
               style={{
                 display: 'flex',
-                flexDirection: 'column',
-                gap: 2,
+                flexWrap: 'wrap',
+                gap: 4,
               }}
             >
-              <div>
-                <Link
-                  className='table-text'
-                  to={{
-                    pathname: `/alert-rules/edit/${record.id}`,
-                  }}
-                >
-                  {data}
-                </Link>
-              </div>
-              <div
-                style={{
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: 4,
-                }}
-              >
-                {_.map(record.severities, (severity) => {
-                  return (
-                    <Tag
-                      key={severity}
-                      color={priorityColor[severity - 1]}
-                      style={{
-                        marginRight: 0,
-                      }}
-                    >
-                      S{severity}
+              {_.map(value, (item) => {
+                return (
+                  <Tooltip key={item} title={item}>
+                    <Tag color='purple' style={{ maxWidth: '100%', marginRight: 0 }}>
+                      <div
+                        style={{
+                          maxWidth: 'max-content',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
+                        {item}
+                      </div>
                     </Tag>
-                  );
-                })}
-                {_.map(record.append_tags, (item) => {
-                  return (
-                    <Tooltip key={item} title={item}>
-                      <Tag color='purple' style={{ maxWidth: '100%', marginRight: 0 }}>
-                        <div
-                          style={{
-                            maxWidth: 'max-content',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                          }}
-                        >
-                          {item}
-                        </div>
-                      </Tag>
-                    </Tooltip>
-                  );
-                })}
-              </div>
+                  </Tooltip>
+                );
+              })}
             </div>
           );
         },
-      },
-      {
-        title: t('notify_groups'),
+      });
+    }
+    if (item.name === 'notify_groups_obj') {
+      columns.push({
+        title: t('table.notify_groups_obj'),
         dataIndex: 'notify_groups_obj',
-        width: 140,
         render: (data) => {
           return (
-            <Tags
-              width={110}
-              data={_.map(data, (user) => {
-                return user.nickname || user.username || user.name;
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: 4,
+              }}
+            >
+              {_.map(data, (user) => {
+                const val = user.nickname || user.username || user.name;
+                return (
+                  <Tooltip key={val} title={val}>
+                    <Tag color='purple' style={{ maxWidth: '100%', marginRight: 0 }}>
+                      <div
+                        style={{
+                          maxWidth: 'max-content',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
+                        {val}
+                      </div>
+                    </Tag>
+                  </Tooltip>
+                );
               })}
-            />
+            </div>
           );
         },
-      },
-      {
-        title: t('common:table.update_at'),
+      });
+    }
+    if (item.name === 'update_at') {
+      columns.push({
+        title: t('table.update_at'),
         dataIndex: 'update_at',
-        width: 90,
         sorter: (a, b) => {
           return a.update_at - b.update_at;
         },
         render: (text: string) => {
           return <div className='table-text'>{moment.unix(Number(text)).format('YYYY-MM-DD HH:mm:ss')}</div>;
         },
-      },
-      {
-        title: t('common:table.update_by'),
+      });
+    }
+    if (item.name === 'update_by') {
+      columns.push({
+        title: t('table.update_by'),
         dataIndex: 'update_by',
-        width: 65,
-      },
-      {
-        title: t('common:table.enabled'),
+      });
+    }
+    if (item.name === 'disabled') {
+      columns.push({
+        title: t('table.disabled'),
         dataIndex: 'disabled',
-        width: 65,
         render: (disabled, record) => (
           <Switch
             checked={disabled === AlertRuleStatus.Enable}
@@ -222,56 +242,56 @@ export default function List(props: ListProps) {
             }}
           />
         ),
-      },
-      {
-        title: t('common:table.operations'),
-        width: 160,
-        render: (record: any) => {
-          return (
-            <Space>
-              <Link
-                className='table-operator-area-normal'
-                to={{
-                  pathname: `/alert-rules/edit/${record.id}?mode=clone`,
-                }}
-                target='_blank'
-              >
-                {t('common:btn.clone')}
-              </Link>
-              <Button
-                size='small'
-                type='link'
-                danger
-                style={{
-                  padding: 0,
-                }}
-                onClick={() => {
-                  Modal.confirm({
-                    title: t('common:confirm.delete'),
-                    onOk: () => {
-                      deleteStrategy([record.id], record.group_id).then(() => {
-                        message.success(t('common:success.delete'));
-                        fetchData();
-                      });
-                    },
-
-                    onCancel() {},
+      });
+    }
+  });
+  columns.push({
+    title: t('common:table.operations'),
+    render: (record: any) => {
+      return (
+        <Space>
+          <Link
+            className='table-operator-area-normal'
+            to={{
+              pathname: `/alert-rules/edit/${record.id}?mode=clone`,
+            }}
+            target='_blank'
+          >
+            {t('common:btn.clone')}
+          </Link>
+          <Button
+            size='small'
+            type='link'
+            danger
+            style={{
+              padding: 0,
+            }}
+            onClick={() => {
+              Modal.confirm({
+                title: t('common:confirm.delete'),
+                onOk: () => {
+                  deleteStrategy([record.id], record.group_id).then(() => {
+                    message.success(t('common:success.delete'));
+                    fetchData();
                   });
-                }}
-              >
-                {t('common:btn.delete')}
-              </Button>
-              {record.prod === 'anomaly' && (
-                <div>
-                  <Link to={{ pathname: `/alert-rules/brain/${record.id}` }}>{t('brain_result_btn')}</Link>
-                </div>
-              )}
-            </Space>
-          );
-        },
-      },
-    ],
-  );
+                },
+
+                onCancel() {},
+              });
+            }}
+          >
+            {t('common:btn.delete')}
+          </Button>
+          {record.prod === 'anomaly' && (
+            <div>
+              <Link to={{ pathname: `/alert-rules/brain/${record.id}` }}>{t('brain_result_btn')}</Link>
+            </div>
+          )}
+        </Space>
+      );
+    },
+  });
+
   const includesProm = (ids?: number[]) => {
     return _.some(ids, (id) => {
       return _.some(datasourceList, (item) => {
@@ -318,9 +338,9 @@ export default function List(props: ListProps) {
   const filteredData = filterData();
 
   return (
-    <div className='alert-rules-list-container' style={{ height: '100%', overflowY: 'auto' }}>
+    <div className='n9e-border-base alert-rules-list-container' style={{ height: '100%', overflowY: 'auto' }}>
       <Row justify='space-between'>
-        <Col span={20}>
+        <Col span={16}>
           <Space>
             <RefreshIcon
               onClick={() => {
@@ -378,9 +398,10 @@ export default function List(props: ListProps) {
             />
           </Space>
         </Col>
-        {businessGroup.isLeaf && gids && (
-          <Col>
-            <Space>
+
+        <Col>
+          <Space>
+            {businessGroup.isLeaf && gids && (
               <Button
                 type='primary'
                 onClick={() => {
@@ -390,14 +411,27 @@ export default function List(props: ListProps) {
               >
                 {t('common:btn.add')}
               </Button>
-              {businessGroup.id && <MoreOperations bgid={businessGroup.id} selectRowKeys={selectRowKeys} selectedRows={selectedRows} getAlertRules={fetchData} />}
-            </Space>
-          </Col>
-        )}
+            )}
+            {businessGroup.isLeaf && gids && businessGroup.id && (
+              <MoreOperations bgid={businessGroup.id} selectRowKeys={selectRowKeys} selectedRows={selectedRows} getAlertRules={fetchData} />
+            )}
+            <Button
+              onClick={() => {
+                OrganizeColumns({
+                  value: columnsConfigs,
+                  onChange: (val) => {
+                    setColumnsConfigs(val);
+                    setDefaultColumnsConfigs(val);
+                  },
+                });
+              }}
+              icon={<EyeOutlined />}
+            />
+          </Space>
+        </Col>
       </Row>
       <Table
         className='mt8'
-        tableLayout='fixed'
         size='small'
         rowKey='id'
         pagination={pagination}

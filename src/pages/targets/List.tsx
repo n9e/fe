@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { Table, Tag, Tooltip, Space, Input, Dropdown, Menu, Button, Modal, message, Select } from 'antd';
 import { ColumnsType } from 'antd/es/table';
-import { SearchOutlined, DownOutlined, ReloadOutlined, CopyOutlined, ApartmentOutlined, QuestionCircleOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { SearchOutlined, DownOutlined, ReloadOutlined, CopyOutlined, ApartmentOutlined, InfoCircleOutlined, EyeOutlined } from '@ant-design/icons';
 import { useAntdTable } from 'ahooks';
 import _ from 'lodash';
 import moment from 'moment';
@@ -9,10 +9,14 @@ import { useTranslation, Trans } from 'react-i18next';
 import { BusiGroupItem } from '@/store/commonInterface';
 import { getMonObjectList } from '@/services/targets';
 import { timeFormatter } from '@/pages/dashboard/Renderer/utils/valueFormatter';
+import { CommonStateContext } from '@/App';
 import clipboard from './clipboard';
 import OrganizeColumns from './OrganizeColumns';
 import { getDefaultColumnsConfigs, setDefaultColumnsConfigs } from './utils';
 import TargetMetaDrawer from './TargetMetaDrawer';
+import categrafInstallationDrawer from './components/categrafInstallationDrawer';
+import Explorer from './components/Explorer';
+
 // @ts-ignore
 import CollectsDrawer from 'plus:/pages/collects/CollectsDrawer';
 // @ts-ignore
@@ -59,7 +63,8 @@ interface IProps {
 const GREEN_COLOR = '#3FC453';
 const YELLOW_COLOR = '#FF9919';
 const RED_COLOR = '#FF656B';
-const LOST_COLOR = '#CCCCCC';
+const LOST_COLOR_LIGHT = '#CCCCCC';
+const LOST_COLOR_DARK = '#929090';
 const downtimeOptions = [1, 2, 3, 5, 10, 30];
 const Unknown = () => {
   const { t } = useTranslation('targets');
@@ -77,6 +82,8 @@ export default function List(props: IProps) {
   const [collectsDrawerIdent, setCollectsDrawerIdent] = useState('');
   const [downtime, setDowntime] = useState();
   const [agentVersions, setAgentVersions] = useState<string>();
+  const { darkMode } = useContext(CommonStateContext);
+  const LOST_COLOR = darkMode ? LOST_COLOR_DARK : LOST_COLOR_LIGHT;
   const columns: ColumnsType<any> = [
     {
       title: (
@@ -132,6 +139,7 @@ export default function List(props: IProps) {
         </Space>
       ),
       dataIndex: 'ident',
+      className: 'n9e-hosts-table-column-ident',
       render: (text, record) => {
         return (
           <Space>
@@ -158,12 +166,14 @@ export default function List(props: IProps) {
       columns.push({
         title: t('host_ip'),
         dataIndex: 'host_ip',
+        className: 'n9e-hosts-table-column-ip',
       });
     }
     if (item.name === 'tags') {
       columns.push({
         title: t('tags'),
         dataIndex: 'tags',
+        className: 'n9e-hosts-table-column-tags',
         ellipsis: {
           showTitle: false,
         },
@@ -200,6 +210,7 @@ export default function List(props: IProps) {
       columns.push({
         title: t('group_obj'),
         dataIndex: 'group_obj',
+        className: 'n9e-hosts-table-column-groups',
         render(groupObj: BusiGroupItem | null) {
           return groupObj ? groupObj.name : t('not_grouped');
         },
@@ -476,7 +487,7 @@ export default function List(props: IProps) {
           <Select
             allowClear
             placeholder={t('filterDowntime')}
-            style={{ width: 200 }}
+            style={{ width: 120 }}
             options={_.map(downtimeOptions, (item) => {
               return {
                 label: t('filterDowntimeMin', { count: item }),
@@ -496,19 +507,6 @@ export default function List(props: IProps) {
           />
         </Space>
         <Space>
-          <Button
-            onClick={() => {
-              OrganizeColumns({
-                value: columnsConfigs,
-                onChange: (val) => {
-                  setColumnsConfigs(val);
-                  setDefaultColumnsConfigs(val);
-                },
-              });
-            }}
-          >
-            {t('organize_columns.title')}
-          </Button>
           <Dropdown
             trigger={['click']}
             overlay={
@@ -538,6 +536,21 @@ export default function List(props: IProps) {
               {t('common:btn.batch_operations')} <DownOutlined />
             </Button>
           </Dropdown>
+          <Space>
+            <Explorer selectedIdents={selectedIdents} />
+            <Button
+              onClick={() => {
+                OrganizeColumns({
+                  value: columnsConfigs,
+                  onChange: (val) => {
+                    setColumnsConfigs(val);
+                    setDefaultColumnsConfigs(val);
+                  },
+                });
+              }}
+              icon={<EyeOutlined />}
+            />
+          </Space>
         </Space>
       </div>
       <Table
@@ -566,6 +579,24 @@ export default function List(props: IProps) {
           },
         }}
         scroll={{ x: 'max-content' }}
+        locale={{
+          emptyText:
+            gids === undefined ? (
+              <Trans
+                ns='targets'
+                i18nKey='all_no_data'
+                components={{
+                  a: (
+                    <a
+                      onClick={() => {
+                        categrafInstallationDrawer({ darkMode });
+                      }}
+                    />
+                  ),
+                }}
+              />
+            ) : undefined,
+        }}
       />
       <CollectsDrawer visible={collectsDrawerVisible} setVisible={setCollectsDrawerVisible} ident={collectsDrawerIdent} />
     </div>
