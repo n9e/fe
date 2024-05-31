@@ -46,5 +46,6 @@ const zh_CN = {
   collect_create: '创建采集',
   collect_busiGroup_select: '业务组选择',
   import_to_buisGroup: '导入业务组',
+  import_to_buisGroup_invaild: '无法导入不同数据源类型的告警规则',
 };
 export default zh_CN;

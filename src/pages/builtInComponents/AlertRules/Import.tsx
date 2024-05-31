@@ -14,16 +14,16 @@
  * limitations under the License.
  *
  */
-import React from 'react';
+import React, { useMemo } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Modal, Input, Form, Button, Select, Switch, message } from 'antd';
+import { Modal, Input, Form, Button, Select, Switch, message, Alert } from 'antd';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
 import { createRule } from './services';
 
 interface IProps {
-  data: any;
+  data: string;
   busiGroups: any;
   groupedDatasourceList: any;
   datasourceCateOptions: any;
@@ -33,6 +33,30 @@ function Import(props: IProps & ModalWrapProps) {
   const { t } = useTranslation('builtInComponents');
   const { visible, destroy, data, busiGroups, groupedDatasourceList, datasourceCateOptions } = props;
   const datasourceCates = _.filter(datasourceCateOptions, (item) => !!item.alertRule);
+  const [allowSubmit, setAllowSubmit] = React.useState(true);
+  const [form] = Form.useForm();
+  const datasourceCate = useMemo(() => {
+    try {
+      const parsed = JSON.parse(data);
+      const dataList = _.isArray(parsed) ? parsed : [parsed];
+      const cates = _.union(
+        _.map(
+          _.filter(dataList, (item) => {
+            return item.cate !== 'host';
+          }),
+          (item) => item.cate,
+        ),
+      );
+      if (cates.length === 1) {
+        return cates[0];
+      }
+      setAllowSubmit(false);
+      return undefined;
+    } catch (e) {
+      console.error(e);
+      return undefined;
+    }
+  }, []);
 
   return (
     <Modal
@@ -43,12 +67,13 @@ function Import(props: IProps & ModalWrapProps) {
       }}
       footer={null}
     >
+      {!allowSubmit && <Alert className='mb1' message={t('import_to_buisGroup_invaild')} type='error' showIcon />}
       <Form
         layout='vertical'
+        form={form}
         initialValues={{
           import: data,
-          cate: 'prometheus',
-          datasource_ids: [0],
+          datasource_cate: datasourceCate,
           enabled: false,
         }}
         onFinish={(vals) => {
@@ -62,7 +87,7 @@ function Import(props: IProps & ModalWrapProps) {
               const record = _.omit(item, ['id', 'group_id', 'create_at', 'create_by', 'update_at', 'update_by']);
               return {
                 ...record,
-                cate: vals.cate,
+                cate: vals.datasource_cate,
                 datasource_ids: vals.datasource_ids,
                 disabled: vals.enabled ? 0 : 1,
               };
@@ -116,8 +141,8 @@ function Import(props: IProps & ModalWrapProps) {
             })}
           </Select>
         </Form.Item>
-        <Form.Item label={t('common:datasource.type')} name='cate'>
-          <Select>
+        <Form.Item label={t('common:datasource.type')} name='datasource_cate'>
+          <Select disabled>
             {_.map(datasourceCates, (item) => {
               return (
                 <Select.Option key={item.value} value={item.value}>
@@ -127,12 +152,7 @@ function Import(props: IProps & ModalWrapProps) {
             })}
           </Select>
         </Form.Item>
-        <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.cate !== curValues.cate} noStyle>
-          {({ getFieldValue, setFieldsValue }) => {
-            const cate = getFieldValue('cate');
-            return <DatasourceValueSelect mode='multiple' setFieldsValue={setFieldsValue} cate={cate} datasourceList={groupedDatasourceList[cate] || []} />;
-          }}
-        </Form.Item>
+        <DatasourceValueSelect mode='multiple' setFieldsValue={form.setFieldsValue} cate={datasourceCate} datasourceList={groupedDatasourceList[datasourceCate] || []} />
         <Form.Item label={t('common:table.enabled')} name='enabled' valuePropName='checked'>
           <Switch />
         </Form.Item>
@@ -148,7 +168,7 @@ function Import(props: IProps & ModalWrapProps) {
           <Input.TextArea className='code-area' rows={16} />
         </Form.Item>
         <Form.Item>
-          <Button type='primary' htmlType='submit'>
+          <Button type='primary' htmlType='submit' disabled={!allowSubmit}>
             {t('common:btn.import')}
           </Button>
         </Form.Item>
