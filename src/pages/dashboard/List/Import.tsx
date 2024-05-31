@@ -72,13 +72,15 @@ const ImportBuiltinContent = ({ busiId, onOk }) => {
   }, []);
 
   useEffect(() => {
-    getPayloads<Payload[]>({
-      component,
-      type: TypeEnum.dashboard,
-      query: filter.query,
-    }).then((res) => {
-      setDashboards(res);
-    });
+    if (component) {
+      getPayloads<Payload[]>({
+        component,
+        type: TypeEnum.dashboard,
+        query: filter.query,
+      }).then((res) => {
+        setDashboards(res);
+      });
+    }
   }, [component, filter.query]);
 
   return (
