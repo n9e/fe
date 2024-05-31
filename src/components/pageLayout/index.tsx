@@ -104,7 +104,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
             <div className={'page-top-header'}>
               <div className={`page-header-content ${!IS_ENT ? 'n9e-page-header-content' : ''}`}>
                 <div className={'page-header-title'}>
-                  {showBack && (
+                  {showBack && window.history.state && (
                     <RollbackOutlined
                       onClick={() => {
                         if (backPath) {

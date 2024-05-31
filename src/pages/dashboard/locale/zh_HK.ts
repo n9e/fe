@@ -366,6 +366,7 @@ const zh_HK = {
         yAxisField: 'Y轴',
         colorField: '颜色字段',
         barMaxWidth: '條形最大寬度',
+        colorField_tip: 'Name 是保留關鍵字，序列名值的欄位名稱',
       },
     },
     inspect: {

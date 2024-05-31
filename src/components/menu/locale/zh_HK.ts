@@ -54,6 +54,7 @@ const zh_HK = {
   quickOpenClose: '打開/關閉',
   quickSearchPlaceholder: '輸入內容以檢索...',
   quickMenus: '快捷選單',
+  站内公告: '站內公告',
   integrations: '集成中心',
   built_in_components: '模板中心',
 };

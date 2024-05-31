@@ -372,6 +372,7 @@ const zh_CN = {
         yAxisField: 'Y轴',
         colorField: '颜色字段',
         barMaxWidth: '条形最大宽度',
+        colorField_tip: 'Name 是保留关键字，作为序列名值的字段名',
       },
     },
     inspect: {

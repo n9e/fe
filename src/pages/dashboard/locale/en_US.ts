@@ -356,6 +356,7 @@ const en_US = {
         yAxisField: 'Y-Axis',
         colorField: 'Color by field',
         barMaxWidth: 'Bar max width',
+        colorField_tip: 'Name is a reserved keyword, used as the field name of the series name',
       },
     },
     inspect: {
