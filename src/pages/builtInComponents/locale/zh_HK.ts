@@ -46,6 +46,7 @@ const zh_HK = {
   collect_create: '創建採集',
   collect_busiGroup_select: '業務組選擇',
   import_to_buisGroup: '導入業務組',
+  import_to_buisGroup_invaild: '無法導入不同數據源類型的告警規則',
 };
 
 export default zh_HK;

@@ -15,18 +15,24 @@ interface Props {
   setExplorerDrawerData: (data: Record) => void;
 }
 
+const FILTER_LOCAL_STORAGE_KEY = 'hosts-metricsBuiltin-filter';
+
 export default function Metrics(props: Props) {
   const { selectedIdents, setExplorerDrawerData } = props;
   const { t, i18n } = useTranslation('metricsBuiltin');
   const pagination = usePagination({ PAGESIZE_KEY: 'hosts-metricsBuiltin-pagesize' });
-  let defaultFilter = {} as Filter;
+  let defaultFilter = {
+    typ: 'Linux',
+  } as Filter;
   try {
-    defaultFilter = JSON.parse(window.localStorage.getItem('metricsBuiltin-filter') || '{}');
+    if (window.localStorage.getItem(FILTER_LOCAL_STORAGE_KEY)) {
+      defaultFilter = JSON.parse(window.localStorage.getItem(FILTER_LOCAL_STORAGE_KEY) || '{}');
+    }
   } catch (e) {
     console.error(e);
   }
   const [filter, setFilter] = useState<Filter>(defaultFilter as Filter);
-  const [queryValue, setQueryValue] = useState('');
+  const [queryValue, setQueryValue] = useState(defaultFilter.query || '');
   const [typsMeta, setTypsMeta] = useState<Component[]>([]);
   const [typesList, setTypesList] = useState<string[]>([]);
   const [collectorsList, setCollectorsList] = useState<string[]>([]);
@@ -107,7 +113,7 @@ export default function Metrics(props: Props) {
     (query) => {
       const newFilter = { ...filter, query };
       setFilter(newFilter);
-      window.localStorage.setItem('metricsBuiltin-filter', JSON.stringify(newFilter));
+      window.localStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
     },
     {
       wait: 500,
@@ -135,7 +141,7 @@ export default function Metrics(props: Props) {
               onChange={(val) => {
                 const newFilter = { ...filter, typ: val };
                 setFilter(newFilter);
-                window.localStorage.setItem('metricsBuiltin-filter', JSON.stringify(newFilter));
+                window.localStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
               }}
               options={_.map(typesList, (item) => {
                 return {
@@ -164,7 +170,7 @@ export default function Metrics(props: Props) {
               onChange={(val) => {
                 const newFilter = { ...filter, collector: val };
                 setFilter(newFilter);
-                window.localStorage.setItem('metricsBuiltin-filter', JSON.stringify(newFilter));
+                window.localStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
               }}
               options={_.map(collectorsList, (item) => {
                 return {
