@@ -18,7 +18,7 @@ import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Input, Card, Row, Col, Space, Button, Tooltip } from 'antd';
-import { SearchOutlined, SyncOutlined } from '@ant-design/icons';
+import { DownOutlined, RightOutlined, SearchOutlined, SyncOutlined } from '@ant-design/icons';
 import TimeRangePicker, { IRawTimeRange } from '@/components/TimeRangePicker';
 import Resolution from '@/components/Resolution';
 import { getMetricValues, getMetricsDesc } from '@/services/metricViews';
@@ -32,11 +32,12 @@ interface IProps {
   setRange: (range: IRawTimeRange) => void;
   match: IMatch;
   metricModeWhenMatchChange?: 'replace' | 'append';
+  parentSource?: string;
 }
 
 export default function Metrics(props: IProps) {
   const { t } = useTranslation('objectExplorer');
-  const { datasourceValue, range, setRange, match, metricModeWhenMatchChange = 'replace' } = props;
+  const { datasourceValue, range, setRange, match, metricModeWhenMatchChange = 'replace', parentSource } = props;
   const [refreshFlag, setRefreshFlag] = useState(_.uniqueId('refreshFlag_'));
   const [search, setSearch] = useState('');
   const [metrics, setMetrics] = useState<any[]>([]);
@@ -45,6 +46,9 @@ export default function Metrics(props: IProps) {
   const [metricPrefixes, setMetricPrefixes] = useState<any[]>([]);
   const [selectedMetrics, setSelectedMetrics] = useState<any[]>([]);
   const [step, setStep] = useState<number>();
+  const [metricFold, setMetricFold] = useState<boolean>(false);
+  const [chartFold, setChartFold] = useState<boolean>(false);
+
   const matchStr = getMatchStr(match);
   const renderMetricList = (metrics: any[] = [], metricTabKey: string) => {
     const filtered = _.filter(metrics, (metric) => {
@@ -122,7 +126,21 @@ export default function Metrics(props: IProps) {
     <div className='n9e-metric-views-metrics'>
       <div>
         <div className='n9e-metric-views-metrics-header'>
-          <div className='metric-page-title'>{t('metrics.title')}</div>
+          {parentSource === 'srm' ? (
+            <div className='page-title' style={{ margin: 0 }}>
+              {t('metrics.title')}
+              <span
+                style={{ cursor: 'pointer', marginLeft: 8 }}
+                onClick={() => {
+                  setMetricFold(!metricFold);
+                }}
+              >
+                {metricFold ? <RightOutlined /> : <DownOutlined />}
+              </span>
+            </div>
+          ) : (
+            <div className='metric-page-title'>{t('metrics.title')}</div>
+          )}
           <Input
             prefix={<SearchOutlined />}
             value={search}
@@ -143,76 +161,95 @@ export default function Metrics(props: IProps) {
         <div>
           {metrics.length > 0 ? (
             <>
-              <Card
-                size='small'
-                style={{ width: '100%' }}
-                tabList={_.map(['all', ...metricPrefixes], (item) => {
-                  return {
-                    key: item,
-                    tab: item,
-                  };
-                })}
-                activeTabKey={activeKey}
-                onTabChange={setActiveKey}
-              >
-                <div>{renderMetricList(metrics, activeKey)}</div>
-              </Card>
-              <Row style={{ padding: '10px 0' }}>
-                <Col span={8}>
-                  <Space>
-                    <TimeRangePicker
-                      value={range}
-                      onChange={(e: IRawTimeRange) => {
-                        setRange(e);
-                      }}
-                    />
-                    <Resolution
-                      onChange={(v) => {
-                        setStep(v === null ? undefined : v);
-                      }}
-                      value={step}
-                    />
-                    <Button
-                      style={{ padding: '4px 8px' }}
-                      onClick={() => {
-                        setRange({
-                          ...range,
-                          refreshFlag: _.uniqueId('refreshFlag_'),
-                        });
-                      }}
-                      icon={<SyncOutlined />}
-                    ></Button>
-                  </Space>
-                </Col>
-                <Col span={16} style={{ textAlign: 'right' }}>
-                  <Button
+              {!metricFold && (
+                <Card
+                  size='small'
+                  style={{ width: '100%' }}
+                  tabList={_.map(['all', ...metricPrefixes], (item) => {
+                    return {
+                      key: item,
+                      tab: item,
+                    };
+                  })}
+                  activeTabKey={activeKey}
+                  onTabChange={setActiveKey}
+                >
+                  <div>{renderMetricList(metrics, activeKey)}</div>
+                </Card>
+              )}
+              {parentSource === 'srm' && (
+                <div className='page-title'>
+                  {t('metrics.chart_title')}
+                  <span
+                    style={{ cursor: 'pointer', marginLeft: 8 }}
                     onClick={() => {
-                      setSelectedMetrics([]);
+                      setChartFold(!chartFold);
                     }}
-                    disabled={!selectedMetrics.length}
-                    style={{ background: '#fff' }}
                   >
-                    {t('metrics.clear')}
-                  </Button>
-                </Col>
-              </Row>
-              {_.map(selectedMetrics, (metric, i) => {
-                return (
-                  <Graph
-                    key={metric}
-                    datasourceValue={datasourceValue}
-                    metric={metric}
-                    match={match}
-                    range={range}
-                    step={step}
-                    onClose={() => {
-                      const newselectedMetrics = [...selectedMetrics];
-                      newselectedMetrics.splice(i, 1);
-                      setSelectedMetrics(newselectedMetrics);
-                    }}
-                  />
-                );
-              })}
+                    {chartFold ? <RightOutlined /> : <DownOutlined />}
+                  </span>
+                </div>
+              )}
+              {!chartFold && (
+                <>
+                  <Row style={{ padding: '10px 0' }}>
+                    <Col span={8}>
+                      <Space>
+                        <TimeRangePicker
+                          value={range}
+                          onChange={(e: IRawTimeRange) => {
+                            setRange(e);
+                          }}
+                        />
+                        <Resolution
+                          onChange={(v) => {
+                            setStep(v === null ? undefined : v);
+                          }}
+                          value={step}
+                        />
+                        <Button
+                          style={{ padding: '4px 8px' }}
+                          onClick={() => {
+                            setRange({
+                              ...range,
+                              refreshFlag: _.uniqueId('refreshFlag_'),
+                            });
+                          }}
+                          icon={<SyncOutlined />}
+                        ></Button>
+                      </Space>
+                    </Col>
+                    <Col span={16} style={{ textAlign: 'right' }}>
+                      <Button
+                        onClick={() => {
+                          setSelectedMetrics([]);
+                        }}
+                        disabled={!selectedMetrics.length}
+                        style={{ background: '#fff' }}
+                      >
+                        {t('metrics.clear')}
+                      </Button>
+                    </Col>
+                  </Row>
+                  {_.map(selectedMetrics, (metric, i) => {
+                    return (
+                      <Graph
+                        key={metric}
+                        datasourceValue={datasourceValue}
+                        metric={metric}
+                        match={match}
+                        range={range}
+                        step={step}
+                        onClose={() => {
+                          const newselectedMetrics = [...selectedMetrics];
+                          newselectedMetrics.splice(i, 1);
+                          setSelectedMetrics(newselectedMetrics);
+                        }}
+                      />
+                    );
+                  })}
+                </>
+              )}
             </>
           ) : (
             <div style={{ marginTop: 12 }}>{t('metrics.noData')}</div>
