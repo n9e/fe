@@ -16,6 +16,7 @@
  */
 import _ from 'lodash';
 import moment from 'moment';
+import { getUnitSymbol } from '@/pages/dashboard/Components/UnitPicker/utils';
 import { utilValMap } from '../config';
 import * as byteConverter from './byteConverter';
 import { toNanoSeconds, toMicroSeconds, toMilliSeconds, toSeconds } from './dateTimeFormatters';
@@ -124,16 +125,7 @@ const valueFormatter = ({ unit, decimals = 3, dateFormat = 'YYYY-MM-DD HH:mm:ss'
         stat: val,
       };
     }
-    if (unit === 'seconds') {
-      return timeFormatter(val, unit, decimals);
-    }
-    if (unit === 'milliseconds') {
-      return timeFormatter(val, unit, decimals);
-    }
-    if (unit === 'microseconds') {
-      return timeFormatter(val, unit, decimals);
-    }
-    if (unit === 'nanoseconds') {
+    if (_.includes(['seconds', 'milliseconds', 'microseconds', 'nanoseconds'], unit)) {
       return timeFormatter(val, unit, decimals);
     }
     if (unit === 'datetimeSeconds') {
@@ -150,6 +142,21 @@ const valueFormatter = ({ unit, decimals = 3, dateFormat = 'YYYY-MM-DD HH:mm:ss'
         unit: '',
         text: moment(val).format(dateFormat),
         stat: val,
+      };
+    }
+    if (
+      _.includes(['cps', 'cpm', 'ops', 'opm', 'reqps', 'reqpm', 'rps', 'rpm', 'wps', 'wpm', 'iops', 'iopm', 'eps', 'epm', 'mps', 'mpm', 'recps', 'recpm', 'rowsps', 'rowspm'], unit)
+    ) {
+      const data = byteConverter.format(val, {
+        type: 'si',
+        decimals,
+      });
+      const symbol = getUnitSymbol(unit);
+      return {
+        value: data.value,
+        unit: data.unit + ' ' + symbol,
+        text: data.text + ' ' + symbol,
+        stat: data.stat,
       };
     }
     return {

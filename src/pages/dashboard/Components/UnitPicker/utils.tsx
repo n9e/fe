@@ -74,6 +74,30 @@ export const units: any = [
     ],
   },
   {
+    label: 'Throughput',
+    options: [
+      { label: 'counts/sec (cps)', value: 'cps', symbol: 'c/s' },
+      { label: 'ops/sec (ops)', value: 'ops', symbol: 'ops/s' },
+      { label: 'requests/sec (rps)', value: 'reqps', symbol: 'req/s' },
+      { label: 'reads/sec (rps)', value: 'rps', symbol: 'rd/s' },
+      { label: 'writes/sec (wps)', value: 'wps', symbol: 'wr/s' },
+      { label: 'I/O ops/sec (iops)', value: 'iops', symbol: 'io/s' },
+      { label: 'events/sec (eps)', value: 'eps', symbol: 'evt/s' },
+      { label: 'messages/sec (mps)', value: 'mps', symbol: 'msg/s' },
+      { label: 'records/sec (rps)', value: 'recps', symbol: 'rec/s' },
+      { label: 'rows/sec (rps)', value: 'rowsps', symbol: 'rows/s' },
+      { label: 'counts/min (cpm)', value: 'cpm', symbol: 'c/m' },
+      { label: 'ops/min (opm)', value: 'opm', symbol: 'ops/m' },
+      { label: 'requests/min (rpm)', value: 'reqpm', symbol: 'req/m' },
+      { label: 'reads/min (rpm)', value: 'rpm', symbol: 'rd/m' },
+      { label: 'writes/min (wpm)', value: 'wpm', symbol: 'wr/m' },
+      { label: 'events/min (epm)', value: 'epm', symbol: 'evts/m' },
+      { label: 'messages/min (mpm)', value: 'mpm', symbol: 'msgs/m' },
+      { label: 'records/min (rpm)', value: 'recpm', symbol: 'rec/m' },
+      { label: 'rows/min (rpm)', value: 'rowspm', symbol: 'rows/m' },
+    ],
+  },
+  {
     label: 'Energy',
     options: [
       {
@@ -184,4 +208,23 @@ export const getUnitLabel = (value: string, withDesc: boolean, hideLabel = false
     return unit.label;
   }
   return value;
+};
+
+export const getUnitSymbol = (value: string) => {
+  const unit = _.find(units, (item) => {
+    if (item.options) {
+      return _.find(item.options, { value });
+    }
+    return item.value === value;
+  });
+  if (unit) {
+    if (unit.options) {
+      const option = _.find(unit.options, { value });
+      if (option) {
+        return option.symbol;
+      }
+    }
+    return '';
+  }
+  return '';
 };
