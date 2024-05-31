@@ -1,6 +1,6 @@
 import React, { useState, useRef, useContext, useEffect } from 'react';
 import _ from 'lodash';
-import { Table, Space, Button, Input, Select, Dropdown, Menu, Modal } from 'antd';
+import { Table, Space, Button, Input, Dropdown, Menu, Modal } from 'antd';
 import { SearchOutlined, MoreOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useDebounceEffect } from 'ahooks';
@@ -21,9 +21,10 @@ export default function index(props: Props) {
   const { t } = useTranslation('builtInComponents');
   const { darkMode, busiGroups } = useContext(CommonStateContext);
   const [filter, setFilter] = useState<{
-    cate?: string;
     query?: string;
-  }>({ cate: undefined, query: undefined });
+  }>({
+    query: undefined,
+  });
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [data, setData] = useState<Payload[]>();
@@ -32,7 +33,11 @@ export default function index(props: Props) {
   const selectedRows = useRef<Payload[]>([]);
   const fetchData = () => {
     setLoading(true);
-    getPayloads<Payload[]>({ component, type: TypeEnum.collect, cate: filter.cate, query: filter.query })
+    getPayloads<Payload[]>({
+      component,
+      type: TypeEnum.collect,
+      query: filter.query,
+    })
       .then((res) => {
         setData(res);
       })
@@ -46,10 +51,6 @@ export default function index(props: Props) {
       type: TypeEnum.collect,
     }).then((res) => {
       setCateList(res);
-      setFilter({
-        ...filter,
-        cate: filter.cate || _.head(res),
-      });
     });
   };
 
@@ -57,7 +58,7 @@ export default function index(props: Props) {
     () => {
       fetchData();
     },
-    [component, filter.cate, filter.query],
+    [component, filter.query],
     {
       wait: 500,
     },
@@ -71,25 +72,6 @@ export default function index(props: Props) {
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <Space>
-          {/* <Select
-            style={{ width: 200 }}
-            value={filter.cate}
-            loading={loading}
-            placeholder={t('builtInComponents:cate')}
-            showSearch
-            optionFilterProp='children'
-            onChange={(val) => {
-              setFilter({ ...filter, cate: val });
-            }}
-          >
-            {_.map(cateList, (item) => {
-              return (
-                <Select.Option key={item} value={item}>
-                  {item}
-                </Select.Option>
-              );
-            })}
-          </Select> */}
           <Input
             prefix={<SearchOutlined />}
             value={filter.query}
@@ -117,7 +99,6 @@ export default function index(props: Props) {
                   initialValues: {
                     type: TypeEnum.collect,
                     component,
-                    cate: filter.cate,
                   },
                   onOk: () => {
                     fetchData();
