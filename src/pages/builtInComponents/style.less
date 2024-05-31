@@ -52,6 +52,7 @@
   height: 100%;
   .wmde-markdown {
     font-family: unset !important;
+    font-size: 12px;
   }
   .w-md-editor {
     border: 1px solid var(--fc-border-color);
@@ -64,32 +65,26 @@
     resize: unset !important;
   }
   .wmde-markdown {
-    // font-size: 12px !important;
+    font-family: unset !important;
+    font-size: 12px !important;
     background-color: transparent !important;
   }
-  .table {
+  .wmde-markdown pre, .wmde-markdown code, .wmde-markdown tt {
+    font-family: unset !important;
+    font-size: 100% !important;
+  }
+  pre .table {
     display: unset !important;
   }
-  // TODO toml [[instances]] instances 会被识别为表格
-  // pre {
-  //   .table {
-  //     display: unset !important;
-  //   }
-  //   code {
-  //     font-size: 12px !important;
-  //   }
-  // }
-  // textarea {
-  //   font-size: 12px !important;
-  //   font-family: unset !important;
-  //   line-height: 18px !important;
-  // }
-  // .w-md-editor-text-pre > code {
-  //   font-size: 12px !important;
-  //   font-family: unset !important;
-  //   line-height: 18px !important;
-  // }
+  .w-md-editor-text-pre,
+  .w-md-editor-text-pre > code,
+  .w-md-editor-text-input {
+    font-family: unset !important;
+    font-size: 12px !important;
+    line-height: 18px !important;
+  }
 }
+
 .builtin-drawer-tabs {
   height: 100%;
   .ant-tabs-content-holder {
