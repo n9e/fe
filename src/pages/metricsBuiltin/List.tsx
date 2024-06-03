@@ -371,7 +371,7 @@ export default function index() {
                 }}
                 options={buildUnitOptions()}
                 showSearch
-                optionFilterProp='label'
+                optionFilterProp='cleanLabel'
                 placeholder={t('unit')}
                 style={{ width: 140 }}
                 allowClear
