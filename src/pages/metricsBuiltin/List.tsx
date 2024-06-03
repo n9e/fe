@@ -185,6 +185,17 @@ export default function index() {
     {
       title: t('note'),
       dataIndex: 'note',
+      render: (value) => {
+        return (
+          <div
+            style={{
+              wordBreak: 'break-all',
+            }}
+          >
+            {value}
+          </div>
+        );
+      },
     },
     {
       title: t('common:table.operations'),
