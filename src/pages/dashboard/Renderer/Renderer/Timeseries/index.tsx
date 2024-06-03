@@ -67,6 +67,7 @@ interface IProps {
   onClick?: (event: any, datetime: Date, value: number, points: any[]) => void;
   onZoomWithoutDefult?: (times: Date[]) => void;
   isPreview?: boolean;
+  colors?: string[];
 }
 
 function getStartAndEndByTargets(targets: any[]) {
@@ -117,7 +118,7 @@ export default function index(props: IProps) {
   const [dashboardMeta] = useGlobalState('dashboardMeta');
   const { darkMode } = useContext(CommonStateContext);
   const { t } = useTranslation('dashboard');
-  const { time, setRange, values, series, inDashboard = true, chartHeight = '200px', tableHeight = '200px', onClick, isPreview } = props;
+  const { time, setRange, values, series, inDashboard = true, chartHeight = '200px', tableHeight = '200px', onClick, isPreview, colors } = props;
   const themeMode = props.themeMode || (darkMode ? 'dark' : 'light');
   const history = useHistory();
   const location = useLocation();
@@ -171,7 +172,7 @@ export default function index(props: IProps) {
         chart: {
           renderTo: chartEleRef.current,
           height: chartEleRef.current.clientHeight,
-          colors: hexPalette,
+          colors: colors || hexPalette,
           marginTop: 0,
         },
         series: [],
@@ -189,7 +190,7 @@ export default function index(props: IProps) {
             decimals: options?.standardOptions?.decimals,
             dateFormat: options?.standardOptions?.dateFormat,
           },
-          hexPalette,
+          colors || hexPalette,
           undefined,
           options?.valueMappings,
         ),
@@ -367,7 +368,7 @@ export default function index(props: IProps) {
             decimals: options?.standardOptions?.decimals,
             dateFormat: options?.standardOptions?.dateFormat,
           },
-          hexPalette,
+          colors || hexPalette,
           custom.stack === 'noraml',
           options?.valueMappings,
         ),

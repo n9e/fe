@@ -138,11 +138,10 @@ export default function index(props: IProps) {
   const [filters, setFilters] = useState<Filter[]>();
   const fieldConfig = Form.useWatch('fieldConfig', form);
   const sorterRef = useRef<any>([]);
-  const timesRef =
-    useRef<{
-      start: number;
-      end: number;
-    }>();
+  const timesRef = useRef<{
+    start: number;
+    end: number;
+  }>();
   const [mode, setMode] = useState<IMode>(getDefaultMode(query, isOpenSearch, esIndexMode));
   const [allowHideSystemIndices, setAllowHideSystemIndices] = useState<boolean>(false);
 
@@ -472,6 +471,7 @@ export default function index(props: IProps) {
                           });
                           fetchData();
                         }}
+                        colors={['#634CD9']}
                       />
                     </div>
                   )}
