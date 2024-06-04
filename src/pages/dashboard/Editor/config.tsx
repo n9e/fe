@@ -15,6 +15,7 @@
  *
  */
 import _ from 'lodash';
+import { PRIMARY_COLOR } from '@/utils/constant';
 import { colors } from '../Components/ColorRangeMenu/config';
 
 export const visualizations = [
@@ -80,7 +81,7 @@ export const calcsOptions = {
 };
 
 export const defaultThreshold = {
-  color: '#634CD9',
+  color: PRIMARY_COLOR,
   value: null,
   type: 'base',
 };

@@ -16,8 +16,9 @@
  */
 import React from 'react';
 import Icon from '@ant-design/icons';
+import { PRIMARY_COLOR } from '@/utils/constant';
 
-export const statHexPalette = ['#634CD9', '#3FC453', '#FF6A00', '#FF656B'];
+export const statHexPalette = [PRIMARY_COLOR, '#3FC453', '#FF6A00', '#FF656B'];
 export const hexPalette = [
   '#7EB26D',
   '#EAB839',

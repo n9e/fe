@@ -4,6 +4,7 @@ import Icon from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { ProSvg } from '@/components/DatasourceSelect';
+import { PRIMARY_COLOR } from '@/utils/constant';
 import { CommonStateContext } from '@/App';
 
 const defaultDatasourceCate = 'prometheus';
@@ -94,7 +95,7 @@ export default function index({ chartForm, variableConfig }) {
             {_.map(cates, (item) => (
               <Select.Option key={item.value} value={item.value}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  {item.graphPro ? <Icon component={ProSvg as any} style={{ color: '#6C53B1', fontSize: 14 }} /> : null}
+                  {item.graphPro ? <Icon component={ProSvg as any} style={{ color: PRIMARY_COLOR, fontSize: 14 }} /> : null}
                   {item.label}
                 </div>
               </Select.Option>
