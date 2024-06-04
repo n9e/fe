@@ -16,6 +16,7 @@ const en_US = {
   mem_util: 'Memory',
   cpu_util: 'CPU',
   cpu_num: 'Cores',
+  disk_percent: 'disk_percent',
   offset: 'Offset',
   os: 'OS',
   arch: 'CPU Arch',
@@ -24,6 +25,11 @@ const en_US = {
     Heartbeat within 1 minute: Green <1 />
     Heartbeat within 3 minutes: yellow <1 />
     No heartbeat within 3 minutes: red
+  `,
+  status: 'Status',
+  status_tip: `
+  up：online <1 />
+  down：offline(Lost connection/downtime) No data reported within 3 minutes <1 />
   `,
   remote_addr: 'Remote Addr',
   note: 'Note',

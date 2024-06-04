@@ -252,6 +252,71 @@ export default function List(props: IProps) {
         },
       });
     }
+    if (item.name === 'status') {
+      columns.push({
+        title:(
+        <Space>
+          {t('status')}
+          <Tooltip title={<Trans ns='targets' i18nKey='status_tip' components={{ 1: <br /> }} />}>
+            <QuestionCircleOutlined />
+          </Tooltip>
+        </Space>
+        ),
+        width: 100,
+        dataIndex: 'status',
+        render: (val, reocrd) => {
+          let backgroundColor = GREEN_COLOR;
+          let status = 'up';
+          if (reocrd.target_up === 0) {
+            backgroundColor = RED_COLOR;
+            status = 'down';
+          } else if (reocrd.target_up === 1) {
+            backgroundColor = YELLOW_COLOR;
+          }
+          return (
+            <div
+              className='table-td-fullBG'
+              style={{
+                backgroundColor,
+              }}
+            >
+              {status}
+            </div>
+          );
+        },
+      });
+    }
+    if (item.name === 'disk_percent') {
+      columns.push({
+        title: t('disk_percent'),
+        width: 100,
+        dataIndex: 'disk_percent',
+        sorter: (a, b) => a.disk_percent - b.disk_percent,
+        render(text, reocrd) {
+          if (reocrd.cpu_num === -1) return 'unknown';
+          let backgroundColor = GREEN_COLOR;
+          if (text > 70) {
+            backgroundColor = YELLOW_COLOR;
+          }
+          if (text > 85) {
+            backgroundColor = RED_COLOR;
+          }
+          if (reocrd.target_up === 0) {
+            backgroundColor = LOST_COLOR;
+          }
+          return (
+            <div
+              className='table-td-fullBG'
+              style={{
+                backgroundColor: backgroundColor,
+              }}
+            >
+              {_.floor(text, 1)}%
+            </div>
+          );
+        },
+      });
+    }
     if (item.name === 'cpu_num') {
       columns.push({
         title: t('cpu_num'),

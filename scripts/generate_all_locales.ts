@@ -24,7 +24,7 @@ const targets = [
   path.resolve(__dirname, '../src/pages/*/locale/zh_CN.ts'),
   path.resolve(__dirname, '../src/pages/help/*/locale/zh_CN.ts'),
   path.resolve(__dirname, '../src/pages/warning/*/locale/zh_CN.ts'),
-  path.resolve(__dirname, '../src/plus/datasource/*/locale/zh_CN.ts'),
+  // path.resolve(__dirname, '../src/plus/datasource/*/locale/zh_CN.ts'),
 ];
 const allfiles: string[] = [];
 

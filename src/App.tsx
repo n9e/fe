@@ -34,11 +34,11 @@ import HeaderMenu from './components/menu/SideMenu';
 import Content from './routers';
 
 // @ts-ignore
-import useIsPlus from 'plus:/components/useIsPlus';
+//  import useIsPlus from 'plus:/components/useIsPlus';
 // @ts-ignore
-import { getN9eConfig } from 'plus:/pages/SiteInfo/services';
+// import { getN9eConfig } from 'plus:/pages/SiteInfo/services';
 // @ts-ignore
-import CustomerServiceFloatButton from 'plus:/components/CustomerServiceFloatButton';
+// import CustomerServiceFloatButton from 'plus:/components/CustomerServiceFloatButton';
 
 import './App.less';
 import './global.variable.less';
@@ -105,7 +105,8 @@ export const CommonStateContext = createContext({} as ICommonState);
 
 function App() {
   const { t, i18n } = useTranslation();
-  const isPlus = useIsPlus();
+  //  const isPlus = useIsPlus();
+    const isPlus = false;
   const initialized = useRef(false);
   const [commonState, setCommonState] = useState<ICommonState>({
     datasourceCateOptions: [],
@@ -146,16 +147,16 @@ function App() {
       (async () => {
         const iconLink = document.querySelector("link[rel~='icon']") as any;
         let siteInfo;
-        if (isPlus) {
-          const siteInfoStr = await getN9eConfig('site_info');
-          if (siteInfoStr) {
-            try {
-              siteInfo = JSON.parse(siteInfoStr);
-            } catch (e) {
-              console.error(e);
-            }
-          }
-        }
+        // if (isPlus) {
+        //   const siteInfoStr = await getN9eConfig('site_info');
+        //   if (siteInfoStr) {
+        //     try {
+        //       siteInfo = JSON.parse(siteInfoStr);
+        //     } catch (e) {
+        //       console.error(e);
+        //     }
+        //   }
+        // }
         document.title = siteInfo?.page_title || 'Nightingale';
         if (iconLink) {
           iconLink.href = siteInfo?.menu_small_logo_url || '/image/favicon.svg';
@@ -229,7 +230,7 @@ function App() {
           </Router>
         </ConfigProvider>
       </CommonStateContext.Provider>
-      {import.meta.env.VITE_IS_ENT !== 'true' && import.meta.env.VITE_IS_PRO === 'true' && <CustomerServiceFloatButton />}
+      {import.meta.env.VITE_IS_ENT !== 'true' && import.meta.env.VITE_IS_PRO === 'true' }
     </div>
   );
 }

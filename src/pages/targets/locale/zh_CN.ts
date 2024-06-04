@@ -16,6 +16,7 @@ const zh_CN = {
   cpu_util: 'CPU',
   cpu_num: '核数',
   offset: '时间偏移',
+  disk_percent: '磁盘',
   os: '操作系统',
   arch: 'CPU架构',
   update_at: '更新时间',
@@ -23,6 +24,11 @@ const zh_CN = {
     1分钟内有过心跳：绿色 <1 />
     3分钟内有过心跳：黄色 <1 />
     3分钟内没有心跳：红色
+  `,
+  status: '状态',
+  status_tip: `
+  up：在线 <1 />
+  down：离线(失联/宕机) 3分钟内未上报有效数据 <1 />
   `,
   remote_addr: '来源IP',
   note: '备注',

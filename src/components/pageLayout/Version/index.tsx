@@ -37,7 +37,7 @@ export default function Version() {
                 cursor: versions.newVersion ? 'pointer' : 'default',
               }}
             >
-              {versions?.version}
+              v6.5.0
             </span>
           </Badge>
         </Tooltip>

@@ -14,7 +14,7 @@ export interface SearchTraceType {
   attributes?: AttributeType;
   duration_max?: string;
   duration_min?: string;
-  num_traces?: number;
+  num_traces?: number | null | undefined;
 }
 
 export interface Span {

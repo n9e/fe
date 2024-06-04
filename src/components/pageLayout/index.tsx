@@ -132,7 +132,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                   <Version />
 
                   {/* 整合版本关闭文档链接 */}
-                  {import.meta.env.VITE_IS_ENT !== 'true' && (
+                  {/* {import.meta.env.VITE_IS_ENT !== 'true' && (
                     <Space style={{ marginRight: 16 }}>
                       <div style={{ marginRight: 32, position: 'relative' }}>
                         <a target='_blank' href={siteInfo?.document_url || 'https://flashcat.cloud/docs/'}>
@@ -158,7 +158,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                         </AdvancedWrap>
                       )}
                     </Space>
-                  )}
+                  )} */}
 
                   {rightArea}
 

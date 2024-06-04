@@ -35,7 +35,7 @@ const chunk1 = ['react', 'react-router-dom', 'react-dom', 'moment', '@ant-design
 const antdChunk = ['antd'];
 
 // https://vitejs.dev/config/
-export default defineConfig({
+const defineConfig = ({
   plugins: [md(), reactRefresh(), plusResolve(), reactSvgPlugin({ defaultExport: 'component' })],
   define: {},
   resolve: {
@@ -49,19 +49,19 @@ export default defineConfig({
   server: {
     proxy: {
       '/api/n9e-plus': {
-        target: 'http://10.206.16.17:17001/',
+        target: 'http://127.0.0.1:17000/',
         changeOrigin: true,
       },
       '/api/n9e/proxy': {
-        target: 'http://10.206.16.17:17001/',
+        target: 'http://127.0.0.1:17000/',
         changeOrigin: true,
       },
       '/api/n9e/datasource': {
-        target: 'http://10.206.16.17:17001/',
+        target: 'http://127.0.0.1:17000/',
         changeOrigin: true,
       },
       '/api/n9e': {
-        target: 'http://10.206.16.17:17001/',
+        target: 'http://127.0.0.1:17000/',
         changeOrigin: true,
       },
       '/api/fc-brain': {
@@ -120,3 +120,4 @@ export default defineConfig({
     },
   },
 });
+export default defineConfig;
