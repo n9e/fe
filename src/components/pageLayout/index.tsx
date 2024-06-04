@@ -134,21 +134,21 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
 
                   <Version />
 
-                  {/* 整合版本关闭文档链接 */}
-                  {!IS_ENT && (
-                    <Space style={{ marginRight: 16 }}>
+                  <Space style={{ marginRight: 16 }}>
+                    {/* 整合版本关闭文档链接 */}
+                    {!IS_ENT && (
                       <div style={{ marginRight: 8, position: 'relative' }}>
                         <a target='_blank' href={siteInfo?.document_url || 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/introduction/'}>
                           {t('docs')}
                         </a>
                       </div>
-                      {profile?.admin && (
-                        <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
-                          <Link to='/audits'>{t('audits:title')}</Link>
-                        </AdvancedWrap>
-                      )}
-                    </Space>
-                  )}
+                    )}
+                    {profile?.admin && (
+                      <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
+                        <Link to='/audits'>{t('audits:title')}</Link>
+                      </AdvancedWrap>
+                    )}
+                  </Space>
 
                   {rightArea}
 
