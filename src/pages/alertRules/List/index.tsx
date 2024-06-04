@@ -32,9 +32,9 @@ import { DatasourceSelect, ProdSelect } from '@/components/DatasourceSelect';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
 import { AlertRuleType, AlertRuleStatus } from '../types';
 import MoreOperations from './MoreOperations';
-import OrganizeColumns from './OrganizeColumns';
-import { getDefaultColumnsConfigs, setDefaultColumnsConfigs } from '../utils';
 import { allCates } from '@/components/AdvancedWrap/utils';
+import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
+import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
 
 interface ListProps {
   gids?: string;
@@ -60,21 +60,22 @@ export default function List(props: ListProps) {
   const [selectedRows, setSelectedRows] = useState<AlertRuleType<any>[]>([]);
   const [data, setData] = useState<AlertRuleType<any>[]>([]);
   const [loading, setLoading] = useState(false);
-  const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs());
-  const columns: ColumnType<AlertRuleType<any>>[] = [];
-  _.forEach(columnsConfigs, (item) => {
-    if (!item.visible) return;
-    if (item.name === 'group_id' && !businessGroup.isLeaf && gids) {
-      columns.push({
-        title: t('table.group_id'),
-        dataIndex: 'group_id',
-        render: (id) => {
-          return _.find(busiGroups, { id })?.name;
-        },
-      });
-    }
-    if (item.name === 'cate') {
-      columns.push({
+  const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
+  const columns: ColumnType<AlertRuleType<any>>[] = _.concat(
+    businessGroup.isLeaf && gids !== '-2'
+      ? []
+      : ([
+          {
+            title: t('common:business_group'),
+            dataIndex: 'group_id',
+            width: 100,
+            render: (id) => {
+              return _.find(busiGroups, { id })?.name;
+            },
+          },
+        ] as any),
+    [
+      {
         title: t('table.cate'),
         dataIndex: 'cate',
         render: (val) => {
@@ -84,10 +85,8 @@ export default function List(props: ListProps) {
           }
           return <img alt={val} src={logoSrc} height={20} />;
         },
-      });
-    }
-    if (item.name === 'datasource_ids') {
-      columns.push({
+      },
+      {
         title: t('table.datasource_ids'),
         dataIndex: 'datasource_ids',
         render(value) {
@@ -106,10 +105,8 @@ export default function List(props: ListProps) {
             />
           );
         },
-      });
-    }
-    if (item.name === 'name') {
-      columns.push({
+      },
+      {
         title: t('table.name'),
         dataIndex: 'name',
         sorter: (a, b) => {
@@ -127,10 +124,8 @@ export default function List(props: ListProps) {
             </Link>
           );
         },
-      });
-    }
-    if (item.name === 'append_tags') {
-      columns.push({
+      },
+      {
         title: t('table.append_tags'),
         dataIndex: 'append_tags',
         render(value) {
@@ -162,10 +157,8 @@ export default function List(props: ListProps) {
             </div>
           );
         },
-      });
-    }
-    if (item.name === 'notify_groups_obj') {
-      columns.push({
+      },
+      {
         title: t('table.notify_groups_obj'),
         dataIndex: 'notify_groups_obj',
         render: (data) => {
@@ -198,10 +191,8 @@ export default function List(props: ListProps) {
             </div>
           );
         },
-      });
-    }
-    if (item.name === 'update_at') {
-      columns.push({
+      },
+      {
         title: t('table.update_at'),
         dataIndex: 'update_at',
         sorter: (a, b) => {
@@ -210,16 +201,12 @@ export default function List(props: ListProps) {
         render: (text: string) => {
           return <div className='table-text'>{moment.unix(Number(text)).format('YYYY-MM-DD HH:mm:ss')}</div>;
         },
-      });
-    }
-    if (item.name === 'update_by') {
-      columns.push({
+      },
+      {
         title: t('table.update_by'),
         dataIndex: 'update_by',
-      });
-    }
-    if (item.name === 'disabled') {
-      columns.push({
+      },
+      {
         title: t('table.disabled'),
         dataIndex: 'disabled',
         render: (disabled, record) => (
@@ -242,55 +229,55 @@ export default function List(props: ListProps) {
             }}
           />
         ),
-      });
-    }
-  });
-  columns.push({
-    title: t('common:table.operations'),
-    render: (record: any) => {
-      return (
-        <Space>
-          <Link
-            className='table-operator-area-normal'
-            to={{
-              pathname: `/alert-rules/edit/${record.id}?mode=clone`,
-            }}
-            target='_blank'
-          >
-            {t('common:btn.clone')}
-          </Link>
-          <Button
-            size='small'
-            type='link'
-            danger
-            style={{
-              padding: 0,
-            }}
-            onClick={() => {
-              Modal.confirm({
-                title: t('common:confirm.delete'),
-                onOk: () => {
-                  deleteStrategy([record.id], record.group_id).then(() => {
-                    message.success(t('common:success.delete'));
-                    fetchData();
-                  });
-                },
+      },
+      {
+        title: t('common:table.operations'),
+        render: (record: any) => {
+          return (
+            <Space>
+              <Link
+                className='table-operator-area-normal'
+                to={{
+                  pathname: `/alert-rules/edit/${record.id}?mode=clone`,
+                }}
+                target='_blank'
+              >
+                {t('common:btn.clone')}
+              </Link>
+              <Button
+                size='small'
+                type='link'
+                danger
+                style={{
+                  padding: 0,
+                }}
+                onClick={() => {
+                  Modal.confirm({
+                    title: t('common:confirm.delete'),
+                    onOk: () => {
+                      deleteStrategy([record.id], record.group_id).then(() => {
+                        message.success(t('common:success.delete'));
+                        fetchData();
+                      });
+                    },
 
-                onCancel() {},
-              });
-            }}
-          >
-            {t('common:btn.delete')}
-          </Button>
-          {record.prod === 'anomaly' && (
-            <div>
-              <Link to={{ pathname: `/alert-rules/brain/${record.id}` }}>{t('brain_result_btn')}</Link>
-            </div>
-          )}
-        </Space>
-      );
-    },
-  });
+                    onCancel() {},
+                  });
+                }}
+              >
+                {t('common:btn.delete')}
+              </Button>
+              {record.prod === 'anomaly' && (
+                <div>
+                  <Link to={{ pathname: `/alert-rules/brain/${record.id}` }}>{t('brain_result_btn')}</Link>
+                </div>
+              )}
+            </Space>
+          );
+        },
+      },
+    ],
+  );
 
   const includesProm = (ids?: number[]) => {
     return _.some(ids, (id) => {
@@ -324,7 +311,8 @@ export default function List(props: ListProps) {
   };
   const fetchData = async () => {
     setLoading(true);
-    const { success, dat } = await getBusiGroupsAlertRules(gids);
+    const ids = gids === '-2' ? undefined : gids;
+    const { success, dat } = await getBusiGroupsAlertRules(ids);
     if (success) {
       setData(dat || []);
       setLoading(false);
@@ -401,7 +389,7 @@ export default function List(props: ListProps) {
 
         <Col>
           <Space>
-            {businessGroup.isLeaf && gids && (
+            {businessGroup.isLeaf && (
               <Button
                 type='primary'
                 onClick={() => {
@@ -412,16 +400,17 @@ export default function List(props: ListProps) {
                 {t('common:btn.add')}
               </Button>
             )}
-            {businessGroup.isLeaf && gids && businessGroup.id && (
+            {businessGroup.isLeaf && businessGroup.id && (
               <MoreOperations bgid={businessGroup.id} selectRowKeys={selectRowKeys} selectedRows={selectedRows} getAlertRules={fetchData} />
             )}
             <Button
               onClick={() => {
                 OrganizeColumns({
+                  i18nNs: 'alertRules',
                   value: columnsConfigs,
                   onChange: (val) => {
                     setColumnsConfigs(val);
-                    setDefaultColumnsConfigs(val);
+                    setDefaultColumnsConfigs(val, LOCAL_STORAGE_KEY);
                   },
                 });
               }}
@@ -444,7 +433,7 @@ export default function List(props: ListProps) {
             setSelectedRows(selectedRows);
           },
         }}
-        columns={columns}
+        columns={ajustColumns(columns, columnsConfigs)}
       />
     </div>
   );

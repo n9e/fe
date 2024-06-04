@@ -67,7 +67,7 @@ export default function index() {
             localStorage.removeItem(N9E_ALERT_NODE_ID);
           }}
         />
-        {businessGroup.ids ? <List gids={gids === '-2' ? undefined : gids} /> : <BlankBusinessPlaceholder text={t('title')} />}
+        {businessGroup.ids ? <List gids={gids} /> : <BlankBusinessPlaceholder text={t('title')} />}
       </div>
     </PageLayout>
   );
