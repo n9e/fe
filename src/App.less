@@ -257,6 +257,15 @@ input::placeholder {
   height: 100%;
 }
 
+// 当 tooltip 内容为 markdown 时，h1~h6 的颜色覆盖默认的颜色为白色
+.ant-tooltip-inner {
+  .markdown-wrapper {
+    h1, h2, h3, h4, h5, h6 {
+      color: #fff;
+    }
+  }
+}
+
 .md-block {
   margin-top: 8px;
   margin-bottom: 16px;

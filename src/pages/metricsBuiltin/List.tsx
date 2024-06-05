@@ -288,12 +288,7 @@ export default function index() {
     getComponents().then((res) => {
       setTypsMeta(res);
     });
-    getTypes().then((res) => {
-      setTypesList(res);
-    });
-    getCollectors().then((res) => {
-      setCollectorsList(res);
-    });
+
     getMenuPerm().then((res) => {
       const { dat } = res;
       setActionAuth({
@@ -303,6 +298,15 @@ export default function index() {
       });
     });
   }, []);
+
+  useEffect(() => {
+    getTypes().then((res) => {
+      setTypesList(res);
+    });
+    getCollectors().then((res) => {
+      setCollectorsList(res);
+    });
+  }, [refreshFlag]);
 
   return (
     <PageLayout title={t('title')} icon={<SettingOutlined />}>
