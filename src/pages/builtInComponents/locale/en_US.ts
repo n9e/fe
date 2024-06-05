@@ -47,5 +47,6 @@ const en_US = {
   collect_busiGroup_select: 'Business Group Select',
   import_to_buisGroup: 'Import to Business Group',
   import_to_buisGroup_invaild: 'Cannot import alert rules of different data source types',
+  payload_by_system: 'System',
 };
 export default en_US;

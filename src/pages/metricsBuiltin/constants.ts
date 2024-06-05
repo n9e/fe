@@ -41,4 +41,9 @@ export const defaultColumnsConfigs = [
     name: 'note',
     visible: false,
   },
+  {
+    name: 'created_by',
+    i18nKey: 'common:table.create_by',
+    visible: false,
+  },
 ];
