@@ -86,7 +86,6 @@ const DemoPie = (props: Props) => {
     },
     statistic: {
       title: {
-        offsetY: 16,
         style: {
           color: themeMode === 'dark' ? '#ABADBA' : 'unset',
         },
@@ -100,7 +99,6 @@ const DemoPie = (props: Props) => {
         },
       },
       content: {
-        offsetY: -16,
         style: {
           color: themeMode === 'dark' ? '#fff' : 'unset',
         },

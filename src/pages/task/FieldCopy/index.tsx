@@ -48,11 +48,7 @@ const HostCopyTitle = (props: Props) => {
     const copySucceeded = clipboard(tobeCopyStr);
 
     if (copySucceeded) {
-      if (i18n.language === 'zh') {
-        message.success(`复制成功${tobeCopy.length}条记录`);
-      } else if (i18n.language === 'en') {
-        message.success(`Successful copy ${tobeCopy.length} items`);
-      }
+      message.success(t('copy_success', { num: tobeCopy.length }));
     } else {
       Modal.warning({
         title: t('host.copy.error'),

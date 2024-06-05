@@ -20,20 +20,25 @@ import querystring from 'query-string';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Button, Space, Dropdown, Menu, Switch, notification, Select, message } from 'antd';
-import { RollbackOutlined, SettingOutlined, SaveOutlined } from '@ant-design/icons';
+import { RollbackOutlined, SettingOutlined, SaveOutlined, FullscreenOutlined } from '@ant-design/icons';
 import { useKeyPress } from 'ahooks';
 import { TimeRangePickerWithRefresh, IRawTimeRange } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
+import { IS_ENT } from '@/utils/constant';
 import { updateDashboardConfigs } from '@/services/dashboardV2';
+import DashboardLinks from '../DashboardLinks';
 import { AddPanelIcon } from '../config';
 import { visualizations } from '../Editor/config';
 import { dashboardTimeCacheKey } from './Detail';
 import FormModal from '../List/FormModal';
-import { IDashboard } from '../types';
+import { IDashboard, ILink } from '../types';
 import { dashboardThemeModeCacheKey, getDefaultThemeMode } from './utils';
 
 interface IProps {
   dashboard: IDashboard;
+  dashboardLinks?: ILink[];
+  setDashboardLinks: (links: ILink[]) => void;
+  handleUpdateDashboardConfigs: (id: number, params: any) => void;
   range: IRawTimeRange;
   setRange: (range: IRawTimeRange) => void;
   onAddPanel: (type: string) => void;
@@ -49,14 +54,28 @@ interface IProps {
 const cachePageTitle = document.title || 'Nightingale';
 
 export default function Title(props: IProps) {
-  const { t, i18n } = useTranslation('dashboard');
-  const { dashboard, range, setRange, onAddPanel, isPreview, isBuiltin, isAuthorized, editable, updateAtRef, setAllowedLeave } = props;
+  const { t } = useTranslation('dashboard');
+  const {
+    dashboard,
+    dashboardLinks,
+    setDashboardLinks,
+    handleUpdateDashboardConfigs,
+    range,
+    setRange,
+    onAddPanel,
+    isPreview,
+    isBuiltin,
+    isAuthorized,
+    editable,
+    updateAtRef,
+    setAllowedLeave,
+  } = props;
   const history = useHistory();
   const location = useLocation();
   const { siteInfo, dashboardSaveMode } = useContext(CommonStateContext);
   const query = querystring.parse(location.search);
   const { viewMode } = query;
-  const themeMode = getDefaultThemeMode(query);
+  const themeMode = getDefaultThemeMode(query); // only for ENT version
   const isClickTrigger = useRef(false);
 
   useEffect(() => {
@@ -86,26 +105,28 @@ export default function Title(props: IProps) {
         message: (
           <div>
             <div>{t('detail.fullscreen.notification.esc')}</div>
-            <div>
-              <Space>
-                {t('detail.fullscreen.notification.theme')}
-                <Switch
-                  checkedChildren='dark'
-                  unCheckedChildren='light'
-                  defaultChecked={themeMode === 'dark'}
-                  onChange={(checked) => {
-                    const newQuery = _.omit(querystring.parse(window.location.search), ['themeMode']);
-                    newQuery.themeMode = checked ? 'dark' : 'light';
-                    localStorage.setItem('dashboard_themeMode', checked ? 'dark' : 'light');
-                    history.replace({
-                      pathname: location.pathname,
-                      search: querystring.stringify(newQuery),
-                    });
-                    window.localStorage.setItem(dashboardThemeModeCacheKey, newQuery.themeMode);
-                  }}
-                />
-              </Space>
-            </div>
+            {IS_ENT && (
+              <div>
+                <Space>
+                  {t('detail.fullscreen.notification.theme')}
+                  <Switch
+                    checkedChildren='dark'
+                    unCheckedChildren='light'
+                    defaultChecked={themeMode === 'dark'}
+                    onChange={(checked) => {
+                      const newQuery = _.omit(querystring.parse(window.location.search), ['themeMode']);
+                      newQuery.themeMode = checked ? 'dark' : 'light';
+                      localStorage.setItem('dashboard_themeMode', checked ? 'dark' : 'light');
+                      history.replace({
+                        pathname: location.pathname,
+                        search: querystring.stringify(newQuery),
+                      });
+                      window.localStorage.setItem(dashboardThemeModeCacheKey, newQuery.themeMode);
+                    }}
+                  />
+                </Space>
+              </div>
+            )}
           </div>
         ),
         duration: 3,
@@ -115,7 +136,7 @@ export default function Title(props: IProps) {
 
   return (
     <div
-      className={`dashboard-detail-header ${import.meta.env.VITE_IS_ENT !== 'true' ? 'n9e-page-header-content' : ''}`}
+      className={`dashboard-detail-header ${!IS_ENT ? 'n9e-page-header-content' : ''}`}
       style={{
         display: query.viewMode === 'fullscreen' ? 'none' : 'flex',
       }}
@@ -151,6 +172,19 @@ export default function Title(props: IProps) {
               </Button>
             </Dropdown>
           )}
+          <TimeRangePickerWithRefresh
+            localKey={dashboardTimeCacheKey}
+            dateFormat='YYYY-MM-DD HH:mm:ss'
+            value={range}
+            onChange={(val) => {
+              history.replace({
+                pathname: location.pathname,
+                // 重新设置时间范围时，清空 __from 和 __to
+                search: querystring.stringify(_.omit(querystring.parse(window.location.search), ['__from', '__to'])),
+              });
+              setRange(val);
+            }}
+          />
           {isAuthorized && dashboardSaveMode === 'manual' && (
             <Button
               icon={<SaveOutlined />}
@@ -183,17 +217,16 @@ export default function Title(props: IProps) {
               }}
             />
           )}
-          <TimeRangePickerWithRefresh
-            localKey={dashboardTimeCacheKey}
-            dateFormat='YYYY-MM-DD HH:mm:ss'
-            value={range}
-            onChange={(val) => {
-              history.replace({
-                pathname: location.pathname,
-                // 重新设置时间范围时，清空 __from 和 __to
-                search: querystring.stringify(_.omit(querystring.parse(window.location.search), ['__from', '__to'])),
+          <DashboardLinks
+            editable={isAuthorized}
+            value={dashboardLinks}
+            onChange={(v) => {
+              const dashboardConfigs: any = dashboard.configs;
+              dashboardConfigs.links = v;
+              handleUpdateDashboardConfigs(dashboard.id, {
+                configs: JSON.stringify(dashboardConfigs),
               });
-              setRange(val);
+              setDashboardLinks(v);
             }}
           />
           <Button
@@ -213,25 +246,26 @@ export default function Title(props: IProps) {
                 window.dispatchEvent(new Event('resize'));
               }, 500);
             }}
-          >
-            {viewMode === 'fullscreen' ? t('exit_full_screen') : t('full_screen')}
-          </Button>
-          <Select
-            options={[
-              { label: 'light', value: 'light' },
-              { label: 'dark', value: 'dark' },
-            ]}
-            value={themeMode || 'light'}
-            onChange={(val) => {
-              const newQuery = _.omit(querystring.parse(window.location.search), ['themeMode']);
-              newQuery.themeMode = val;
-              history.replace({
-                pathname: location.pathname,
-                search: querystring.stringify(newQuery),
-              });
-              window.localStorage.setItem(dashboardThemeModeCacheKey, val);
-            }}
+            icon={<FullscreenOutlined />}
           />
+          {IS_ENT && (
+            <Select
+              options={[
+                { label: 'light', value: 'light' },
+                { label: 'dark', value: 'dark' },
+              ]}
+              value={themeMode || 'light'}
+              onChange={(val) => {
+                const newQuery = _.omit(query, ['themeMode']);
+                newQuery.themeMode = val;
+                history.replace({
+                  pathname: location.pathname,
+                  search: querystring.stringify(newQuery),
+                });
+                window.localStorage.setItem(dashboardThemeModeCacheKey, val);
+              }}
+            />
+          )}
         </Space>
       </div>
     </div>

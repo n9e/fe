@@ -21,17 +21,20 @@ import _ from 'lodash';
 import moment from 'moment';
 import { Table, Tag, Switch, Modal, Space, Button, Row, Col, message, Select, Tooltip } from 'antd';
 import { ColumnType } from 'antd/lib/table';
+import { EyeOutlined } from '@ant-design/icons';
 import RefreshIcon from '@/components/RefreshIcon';
 import SearchInput from '@/components/BaseSearchInput';
 import usePagination from '@/components/usePagination';
 import { getBusiGroupsAlertRules, updateAlertRules, deleteStrategy } from '@/services/warning';
 import { CommonStateContext } from '@/App';
-import { priorityColor } from '@/utils/constant';
 import Tags from '@/components/Tags';
 import { DatasourceSelect, ProdSelect } from '@/components/DatasourceSelect';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
 import { AlertRuleType, AlertRuleStatus } from '../types';
 import MoreOperations from './MoreOperations';
+import { allCates } from '@/components/AdvancedWrap/utils';
+import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
+import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
 
 interface ListProps {
   gids?: string;
@@ -57,8 +60,9 @@ export default function List(props: ListProps) {
   const [selectedRows, setSelectedRows] = useState<AlertRuleType<any>[]>([]);
   const [data, setData] = useState<AlertRuleType<any>[]>([]);
   const [loading, setLoading] = useState(false);
+  const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
   const columns: ColumnType<AlertRuleType<any>>[] = _.concat(
-    businessGroup.isLeaf && gids !== undefined // TODO 如果是全部规则筛选是显示 业务组 列
+    businessGroup.isLeaf && gids !== '-2'
       ? []
       : ([
           {
@@ -72,19 +76,21 @@ export default function List(props: ListProps) {
         ] as any),
     [
       {
-        title: t('common:datasource.type'),
+        title: t('table.cate'),
         dataIndex: 'cate',
-        width: 100,
+        render: (val) => {
+          let logoSrc = _.find(allCates, { value: val })?.logo;
+          if (val === 'host') {
+            logoSrc = '/image/logos/host.png';
+          }
+          return <img alt={val} src={logoSrc} height={20} />;
+        },
       },
       {
-        title: t('common:datasource.name'),
+        title: t('table.datasource_ids'),
         dataIndex: 'datasource_ids',
-        width: 100,
-        ellipsis: {
-          showTitle: false,
-        },
         render(value) {
-          if (!value) return '-';
+          if (!value) return '';
           return (
             <Tags
               width={70}
@@ -101,91 +107,94 @@ export default function List(props: ListProps) {
         },
       },
       {
-        title: t('name_severities_appendtags'),
+        title: t('table.name'),
         dataIndex: 'name',
         sorter: (a, b) => {
           return localeCompare(a.name, b.name);
         },
         render: (data, record) => {
           return (
+            <Link
+              className='table-text'
+              to={{
+                pathname: `/alert-rules/edit/${record.id}`,
+              }}
+            >
+              {data}
+            </Link>
+          );
+        },
+      },
+      {
+        title: t('table.append_tags'),
+        dataIndex: 'append_tags',
+        render(value) {
+          return (
             <div
               style={{
                 display: 'flex',
-                flexDirection: 'column',
-                gap: 2,
+                flexWrap: 'wrap',
+                gap: 4,
               }}
             >
-              <div>
-                <Link
-                  className='table-text'
-                  to={{
-                    pathname: `/alert-rules/edit/${record.id}`,
-                  }}
-                >
-                  {data}
-                </Link>
-              </div>
-              <div
-                style={{
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: 4,
-                }}
-              >
-                {_.map(record.severities, (severity) => {
-                  return (
-                    <Tag
-                      key={severity}
-                      color={priorityColor[severity - 1]}
-                      style={{
-                        marginRight: 0,
-                      }}
-                    >
-                      S{severity}
+              {_.map(value, (item) => {
+                return (
+                  <Tooltip key={item} title={item}>
+                    <Tag color='purple' style={{ maxWidth: '100%', marginRight: 0 }}>
+                      <div
+                        style={{
+                          maxWidth: 'max-content',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
+                        {item}
+                      </div>
                     </Tag>
-                  );
-                })}
-                {_.map(record.append_tags, (item) => {
-                  return (
-                    <Tooltip key={item} title={item}>
-                      <Tag color='purple' style={{ maxWidth: '100%', marginRight: 0 }}>
-                        <div
-                          style={{
-                            maxWidth: 'max-content',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                          }}
-                        >
-                          {item}
-                        </div>
-                      </Tag>
-                    </Tooltip>
-                  );
-                })}
-              </div>
+                  </Tooltip>
+                );
+              })}
             </div>
           );
         },
       },
       {
-        title: t('notify_groups'),
+        title: t('table.notify_groups_obj'),
         dataIndex: 'notify_groups_obj',
-        width: 140,
         render: (data) => {
           return (
-            <Tags
-              width={110}
-              data={_.map(data, (user) => {
-                return user.nickname || user.username || user.name;
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: 4,
+              }}
+            >
+              {_.map(data, (user) => {
+                const val = user.nickname || user.username || user.name;
+                return (
+                  <Tooltip key={val} title={val}>
+                    <Tag color='purple' style={{ maxWidth: '100%', marginRight: 0 }}>
+                      <div
+                        style={{
+                          maxWidth: 'max-content',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
+                        {val}
+                      </div>
+                    </Tag>
+                  </Tooltip>
+                );
               })}
-            />
+            </div>
           );
         },
       },
       {
-        title: t('common:table.update_at'),
+        title: t('table.update_at'),
         dataIndex: 'update_at',
-        width: 90,
         sorter: (a, b) => {
           return a.update_at - b.update_at;
         },
@@ -194,14 +203,12 @@ export default function List(props: ListProps) {
         },
       },
       {
-        title: t('common:table.update_by'),
+        title: t('table.update_by'),
         dataIndex: 'update_by',
-        width: 65,
       },
       {
-        title: t('common:table.enabled'),
+        title: t('table.disabled'),
         dataIndex: 'disabled',
-        width: 65,
         render: (disabled, record) => (
           <Switch
             checked={disabled === AlertRuleStatus.Enable}
@@ -225,7 +232,6 @@ export default function List(props: ListProps) {
       },
       {
         title: t('common:table.operations'),
-        width: 160,
         render: (record: any) => {
           return (
             <Space>
@@ -272,6 +278,7 @@ export default function List(props: ListProps) {
       },
     ],
   );
+
   const includesProm = (ids?: number[]) => {
     return _.some(ids, (id) => {
       return _.some(datasourceList, (item) => {
@@ -304,7 +311,8 @@ export default function List(props: ListProps) {
   };
   const fetchData = async () => {
     setLoading(true);
-    const { success, dat } = await getBusiGroupsAlertRules(gids);
+    const ids = gids === '-2' ? undefined : gids;
+    const { success, dat } = await getBusiGroupsAlertRules(ids);
     if (success) {
       setData(dat || []);
       setLoading(false);
@@ -318,9 +326,9 @@ export default function List(props: ListProps) {
   const filteredData = filterData();
 
   return (
-    <div className='alert-rules-list-container' style={{ height: '100%', overflowY: 'auto' }}>
+    <div className='n9e-border-base alert-rules-list-container' style={{ height: '100%', overflowY: 'auto' }}>
       <Row justify='space-between'>
-        <Col span={20}>
+        <Col span={16}>
           <Space>
             <RefreshIcon
               onClick={() => {
@@ -378,9 +386,10 @@ export default function List(props: ListProps) {
             />
           </Space>
         </Col>
-        {businessGroup.isLeaf && gids && (
-          <Col>
-            <Space>
+
+        <Col>
+          <Space>
+            {businessGroup.isLeaf && (
               <Button
                 type='primary'
                 onClick={() => {
@@ -390,14 +399,28 @@ export default function List(props: ListProps) {
               >
                 {t('common:btn.add')}
               </Button>
-              {businessGroup.id && <MoreOperations bgid={businessGroup.id} selectRowKeys={selectRowKeys} selectedRows={selectedRows} getAlertRules={fetchData} />}
-            </Space>
-          </Col>
-        )}
+            )}
+            {businessGroup.isLeaf && businessGroup.id && (
+              <MoreOperations bgid={businessGroup.id} selectRowKeys={selectRowKeys} selectedRows={selectedRows} getAlertRules={fetchData} />
+            )}
+            <Button
+              onClick={() => {
+                OrganizeColumns({
+                  i18nNs: 'alertRules',
+                  value: columnsConfigs,
+                  onChange: (val) => {
+                    setColumnsConfigs(val);
+                    setDefaultColumnsConfigs(val, LOCAL_STORAGE_KEY);
+                  },
+                });
+              }}
+              icon={<EyeOutlined />}
+            />
+          </Space>
+        </Col>
       </Row>
       <Table
         className='mt8'
-        tableLayout='fixed'
         size='small'
         rowKey='id'
         pagination={pagination}
@@ -410,7 +433,7 @@ export default function List(props: ListProps) {
             setSelectedRows(selectedRows);
           },
         }}
-        columns={columns}
+        columns={ajustColumns(columns, columnsConfigs)}
       />
     </div>
   );

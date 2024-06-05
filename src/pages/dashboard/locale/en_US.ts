@@ -34,14 +34,16 @@ const en_US = {
   full_screen: 'Full screen',
   exit_full_screen: 'Exit full screen',
   batch: {
-    import: 'Import dashboard JSON',
+    import: 'Import dashboard',
     label: 'Dashboard JSON',
-    import_grafana: 'Import Grafana dashboard JSON',
+    import_grafana: 'Import Grafana dashboard',
     import_grafana_tip: 'Imported panels only support the chart types and features that n9e currently supports, <a>feedback</a>',
     import_grafana_tip_version_error: 'Import of dashboard config less than v7 version is not supported',
     import_grafana_tip_version_warning: 'The imported dashboard config version is less than v8, some panels may not be displayed properly, do you want to continue importing?',
     continueToImport: 'Continue to import',
     noSelected: 'Please select any dashboard',
+    import_builtin: 'Import built-in dashboard',
+    import_builtin_board: 'Built-in dashboard',
     clone: {
       name: 'Name',
       result: 'Result',
@@ -393,7 +395,7 @@ const en_US = {
     fullscreen: {
       notification: {
         esc: 'Press ESC to exit full screen mode',
-        theme: 'Theme',
+        theme: 'Switch theme',
       },
     },
     saved: 'Dashboard saved',

@@ -1,6 +1,7 @@
 import queryString from 'query-string';
 import _ from 'lodash';
 import { getDefaultDatasourceValue, setDefaultDatasourceValue } from '@/utils';
+import { IPanel } from '@/pages/dashboard/types';
 
 export const getLocalDatasourceValue = (search: string, groupedDatasourceList) => {
   const locationQuery = queryString.parse(search);
@@ -41,4 +42,20 @@ export const setLocalStep = (id, step) => {
 export const dashboardThemeModeCacheKey = 'dashboard-themeMode-value';
 export const getDefaultThemeMode = (query) => {
   return query.themeMode || window.localStorage.getItem(dashboardThemeModeCacheKey) || 'light';
+};
+
+export const ROW_HEIGHT = 40;
+export const scrollToLastPanel = (panels: IPanel[]) => {
+  const lastPanel = _.last(panels);
+  if (lastPanel) {
+    const { y, h } = lastPanel.layout;
+    const scrollTop = (y + h) * ROW_HEIGHT;
+    // TODO: 等待 panels 更新完成后再滚动，这里临时设置 1s 后滚动
+    setTimeout(() => {
+      document.querySelector('.dashboard-detail-content')?.scrollTo({
+        top: scrollTop,
+        behavior: 'smooth',
+      });
+    }, 1000);
+  }
 };

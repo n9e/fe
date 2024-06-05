@@ -29,14 +29,15 @@ import PageLayout from '@/components/pageLayout';
 import { IRawTimeRange, getDefaultValue, isValid } from '@/components/TimeRangePicker';
 import { Dashboard } from '@/store/dashboardInterface';
 import { getDashboard, updateDashboardConfigs, getDashboardPure, getBuiltinDashboard } from '@/services/dashboardV2';
+import { getPayload } from '@/pages/builtInComponents/services';
 import { SetTmpChartData } from '@/services/metric';
 import { CommonStateContext, basePrefix } from '@/App';
 import MigrationModal from '@/pages/help/migrate/MigrationModal';
 import RouterPrompt from '@/components/RouterPrompt';
+import { rangeOptions } from '@/components/TimeRangePicker/config';
 import VariableConfig, { IVariable } from '../VariableConfig';
 import { replaceExpressionVars, getOptionsList } from '../VariableConfig/constant';
 import { ILink, IDashboardConfig } from '../types';
-import DashboardLinks from '../DashboardLinks';
 import Panels from '../Panels';
 import Title from './Title';
 import { JSONParse } from '../utils';
@@ -44,10 +45,8 @@ import Editor from '../Editor';
 import { defaultCustomValuesMap, defaultOptionsValuesMap } from '../Editor/config';
 import { sortPanelsByGridLayout, panelsMergeToConfigs, updatePanelsInsertNewPanelToGlobal } from '../Panels/utils';
 import { useGlobalState } from '../globalState';
+import { scrollToLastPanel } from './utils';
 import './style.less';
-import './dark.antd.less';
-import './dark.less';
-import { rangeOptions } from '@/components/TimeRangePicker/config';
 interface URLParam {
   id: string;
 }
@@ -63,7 +62,15 @@ interface IProps {
 export const dashboardTimeCacheKey = 'dashboard-timeRangePicker-value';
 const fetchDashboard = ({ id, builtinParams }) => {
   if (builtinParams) {
-    return getBuiltinDashboard(builtinParams);
+    return getPayload(builtinParams).then((res) => {
+      let { content } = res;
+      try {
+        content = JSON.parse(content);
+        return content;
+      } catch (e) {
+        console.error(e);
+      }
+    });
   }
   return getDashboard(id);
 };
@@ -244,59 +251,7 @@ export default function DetailV2(props: IProps) {
   useBeforeunload(!allowedLeave && import.meta.env.PROD ? () => t('detail.prompt.message') : undefined);
 
   return (
-    <PageLayout
-      customArea={
-        <Title
-          isPreview={isPreview}
-          isBuiltin={isBuiltin}
-          isAuthorized={isAuthorized}
-          editable={editable}
-          updateAtRef={updateAtRef}
-          setAllowedLeave={setAllowedLeave}
-          gobackPath={gobackPath}
-          dashboard={dashboard}
-          range={range}
-          setRange={(v) => {
-            setRange(v);
-          }}
-          onAddPanel={(type) => {
-            if (type === 'row') {
-              const newPanels = updatePanelsInsertNewPanelToGlobal(
-                panels,
-                {
-                  type: 'row',
-                  id: uuidv4(),
-                  name: i18n.language === 'en_US' ? 'Row' : '分组',
-                  collapsed: true,
-                },
-                'row',
-              );
-              setPanels(newPanels);
-              handleUpdateDashboardConfigs(dashboard.id, {
-                configs: panelsMergeToConfigs(dashboard.configs, newPanels),
-              });
-            } else {
-              setEditorData({
-                visible: true,
-                id: uuidv4(),
-                initialValues: {
-                  name: 'Panel Title',
-                  type,
-                  targets: [
-                    {
-                      refId: 'A',
-                      expr: '',
-                    },
-                  ],
-                  custom: defaultCustomValuesMap[type],
-                  options: defaultOptionsValuesMap[type],
-                },
-              });
-            }
-          }}
-        />
-      }
-    >
+    <PageLayout customArea={<div />}>
       <div className='dashboard-detail-container'>
         <div className='dashboard-detail-content scroll-container' ref={containerRef}>
           <Affix
@@ -310,6 +265,58 @@ export default function DetailV2(props: IProps) {
                 display: query.viewMode !== 'fullscreen' ? 'block' : 'none',
               }}
             >
+              <Title
+                isPreview={isPreview}
+                isBuiltin={isBuiltin}
+                isAuthorized={isAuthorized}
+                editable={editable}
+                updateAtRef={updateAtRef}
+                setAllowedLeave={setAllowedLeave}
+                gobackPath={gobackPath}
+                dashboard={dashboard}
+                dashboardLinks={dashboardLinks}
+                setDashboardLinks={setDashboardLinks}
+                handleUpdateDashboardConfigs={handleUpdateDashboardConfigs}
+                range={range}
+                setRange={(v) => {
+                  setRange(v);
+                }}
+                onAddPanel={(type) => {
+                  if (type === 'row') {
+                    const newPanels = updatePanelsInsertNewPanelToGlobal(
+                      panels,
+                      {
+                        type: 'row',
+                        id: uuidv4(),
+                        name: i18n.language === 'en_US' ? 'Row' : '分组',
+                        collapsed: true,
+                      },
+                      'row',
+                    );
+                    setPanels(newPanels);
+                    handleUpdateDashboardConfigs(dashboard.id, {
+                      configs: panelsMergeToConfigs(dashboard.configs, newPanels),
+                    });
+                  } else {
+                    setEditorData({
+                      visible: true,
+                      id: uuidv4(),
+                      initialValues: {
+                        name: 'Panel Title',
+                        type,
+                        targets: [
+                          {
+                            refId: 'A',
+                            expr: '',
+                          },
+                        ],
+                        custom: defaultCustomValuesMap[type],
+                        options: defaultOptionsValuesMap[type],
+                      },
+                    });
+                  }
+                }}
+              />
               {!editable && (
                 <div style={{ padding: '0px 10px', marginBottom: 8 }}>
                   <Alert type='warning' message={t('detail.expired')} />
@@ -325,22 +332,11 @@ export default function DetailV2(props: IProps) {
                       range={range}
                       id={id}
                       onOpenFire={stopAutoRefresh}
+                      variableConfigRefreshFlag={variableConfigRefreshFlag}
                       dashboard={dashboard}
                     />
                   )}
                 </div>
-                <DashboardLinks
-                  editable={isAuthorized}
-                  value={dashboardLinks}
-                  onChange={(v) => {
-                    const dashboardConfigs: any = dashboard.configs;
-                    dashboardConfigs.links = v;
-                    handleUpdateDashboardConfigs(id, {
-                      configs: JSON.stringify(dashboardConfigs),
-                    });
-                    setDashboardLinks(v);
-                  }}
-                />
               </div>
             </div>
           </Affix>
@@ -395,6 +391,7 @@ export default function DetailV2(props: IProps) {
                 updateAtRef.current = res.update_at;
                 refresh();
               }}
+              setVariableConfigRefreshFlag={setVariableConfigRefreshFlag}
             />
           )}
         </div>
@@ -413,9 +410,12 @@ export default function DetailV2(props: IProps) {
         dashboardId={id}
         time={range}
         initialValues={editorData.initialValues}
-        onOK={(values) => {
+        onOK={(values, mode) => {
           const newPanels = updatePanelsInsertNewPanelToGlobal(panels, values, 'chart');
           setPanels(newPanels);
+          if (mode === 'add') {
+            scrollToLastPanel(newPanels);
+          }
           handleUpdateDashboardConfigs(dashboard.id, {
             configs: panelsMergeToConfigs(dashboard.configs, newPanels),
           });

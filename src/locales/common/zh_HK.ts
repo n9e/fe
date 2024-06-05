@@ -1,11 +1,11 @@
 const zh_HK = {
-  auth:{
-    403:'您沒有權限訪問該頁面，請聯絡管理員！',
-    404:'您訪問的頁面不存在！',
-    '404_btn': '回到首頁'
+  auth: {
+    403: '您沒有權限訪問該頁面，請聯絡管理員！',
+    404: '您訪問的頁面不存在！',
+    '404_btn': '回到首頁',
   },
   business_group: '業務組',
-  search_placeholder: '搜尋',
+  search_placeholder: '請輸入搜索關鍵字',
   nodata: '暫無數據',
   btn: {
     add: '新增',
@@ -94,6 +94,13 @@ const zh_HK = {
     '2': '二級報警',
     '3': '三級報警',
   },
+  download_json: '下載 JSON',
+  batch: {
+    export: {
+      copy: '複製 JSON 到剪貼板',
+    },
+  },
+
   tpl: '自愈腳本',
   'tpl.create': '創建',
   'tpl.tag.bind': '繫結標籤',
@@ -170,6 +177,7 @@ const zh_HK = {
   'msg.clone.success': '克隆成功',
   'msg.clone.error': '克隆失敗',
   'msg.sort.success': '排序成功',
+  copy_success: '複製成功 {{num}} 條記錄',
 };
 
 export default zh_HK;

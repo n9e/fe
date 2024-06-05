@@ -3,6 +3,7 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Tag } from 'antd';
 import { DownOutlined, RightOutlined } from '@ant-design/icons';
+import { PRIMARY_COLOR } from '@/utils/constant';
 import { getFieldLabel } from '../../Elasticsearch/utils';
 import { Field as FieldType, Filter } from '../services';
 import Field from './Field';
@@ -49,7 +50,7 @@ export default function FieldsList(props: IProps) {
             {expanded ? <DownOutlined /> : <RightOutlined />} {t(`log.${type}`)}
           </span>
           <span>
-            <Tag color={fieldsSearch ? '#6C53B1' : ''}>{filteredFields.length}</Tag>
+            <Tag color={fieldsSearch ? PRIMARY_COLOR : ''}>{filteredFields.length}</Tag>
           </span>
         </div>
         {expanded &&

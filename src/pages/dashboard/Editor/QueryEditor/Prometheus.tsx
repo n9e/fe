@@ -95,7 +95,14 @@ export default function Prometheus({ chartForm, variableConfig, dashboardId, tim
                               ]}
                               style={{ flex: 1 }}
                             >
-                              <PromQLInputWithBuilder validateTrigger={['onBlur']} datasourceValue={datasourceValue} extraLabelValues={varNams} rangeVectorCompletion />
+                              <PromQLInputWithBuilder
+                                validateTrigger={['onBlur']}
+                                datasourceValue={datasourceValue}
+                                extraLabelValues={varNams}
+                                rangeVectorCompletion
+                                showBuiltinMetrics
+                                showBuilder={false}
+                              />
                             </Form.Item>
                           );
                         }}

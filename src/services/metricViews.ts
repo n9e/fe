@@ -19,6 +19,8 @@ import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 import { IRawTimeRange, timeRangeUnix } from '@/components/TimeRangePicker';
 import { N9E_PATHNAME } from '@/utils/constant';
+import { getRealStep } from '@/pages/dashboard/Renderer/datasource/prometheus';
+import { completeBreakpoints } from '@/pages/dashboard/Renderer/datasource/utils';
 
 export const getLabelValues = function (datasourceValue: number, label: string, range: IRawTimeRange, match?: string) {
   const params = {
@@ -154,7 +156,7 @@ export const getQueryRange = function (
           offset: item,
           name: `${getSerieName(subItem.metric)}${item !== 'current' ? ` offset ${item}` : ''}`,
           id: _.uniqueId('series_'),
-          data: subItem.values,
+          data: completeBreakpoints(_step, subItem.values),
         });
       });
     });

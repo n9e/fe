@@ -12,6 +12,7 @@ import { getLogsQuery } from './services';
 import { parseRange } from '@/components/TimeRangePicker';
 import Timeseries from '@/pages/dashboard/Renderer/Renderer/Timeseries';
 import { CommonStateContext } from '@/App';
+import { PRIMARY_COLOR } from '@/utils/constant';
 import metricQuery from './metricQuery';
 import { getColumnsFromFields, Field, dslBuilder, Filter, getFieldLabel } from './utils';
 import FieldsSidebar from './FieldsSidebar';
@@ -138,11 +139,10 @@ export default function index(props: IProps) {
   const [filters, setFilters] = useState<Filter[]>();
   const fieldConfig = Form.useWatch('fieldConfig', form);
   const sorterRef = useRef<any>([]);
-  const timesRef =
-    useRef<{
-      start: number;
-      end: number;
-    }>();
+  const timesRef = useRef<{
+    start: number;
+    end: number;
+  }>();
   const [mode, setMode] = useState<IMode>(getDefaultMode(query, isOpenSearch, esIndexMode));
   const [allowHideSystemIndices, setAllowHideSystemIndices] = useState<boolean>(false);
 
@@ -472,6 +472,7 @@ export default function index(props: IProps) {
                           });
                           fetchData();
                         }}
+                        colors={[PRIMARY_COLOR]}
                       />
                     </div>
                   )}

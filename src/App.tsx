@@ -30,7 +30,8 @@ import { GetProfile } from '@/services/account';
 import { getBusiGroups, getDatasourceBriefList, getMenuPerm } from '@/services/common';
 import { getLicense } from '@/components/AdvancedWrap';
 import { getVersions } from '@/components/pageLayout/Version/services';
-import { getCleanBusinessGroupIds, getDefaultBusinessGroupKey } from '@/components/BusinessGroup';
+import { getCleanBusinessGroupIds, getDefaultBusiness } from '@/components/BusinessGroup';
+import Feedback from '@/components/Feedback';
 import { getN9eConfig } from '@/pages/siteSettings/services';
 import HeaderMenu from './components/menu/SideMenu';
 import Content from './routers';
@@ -102,6 +103,8 @@ export interface ICommonState {
   siteInfo?: { [index: string]: string };
   sideMenuBgMode: string;
   setSideMenuBgMode: (color: string) => void;
+  darkMode: boolean;
+  setDarkMode: (mode: boolean) => void;
   dashboardDefaultRangeIndex?: string;
   esIndexMode: string;
   dashboardSaveMode: 'auto' | 'manual';
@@ -121,7 +124,6 @@ function App() {
   const { t, i18n } = useTranslation();
   const isPlus = useIsPlus();
   const initialized = useRef(false);
-  const defaultBusinessGroupKey = getDefaultBusinessGroupKey();
   const [commonState, setCommonState] = useState<ICommonState>({
     datasourceCateOptions: [],
     groupedDatasourceList: {},
@@ -138,12 +140,7 @@ function App() {
       window.localStorage.setItem('curBusiId', String(id));
       setCommonState((state) => ({ ...state, curBusiId: id }));
     },
-    businessGroup: {
-      key: defaultBusinessGroupKey,
-      ids: getCleanBusinessGroupIds(defaultBusinessGroupKey),
-      id: _.map(_.split(getCleanBusinessGroupIds(defaultBusinessGroupKey), ','), _.toNumber)?.[0],
-      isLeaf: !_.startsWith(defaultBusinessGroupKey, 'group,'),
-    },
+    businessGroup: {},
     businessGroupOnChange: (key: string) => {
       window.localStorage.setItem('businessGroupKey', key);
       const ids = getCleanBusinessGroupIds(key);
@@ -173,6 +170,11 @@ function App() {
       window.localStorage.setItem('sideMenuBgMode', mode);
       setCommonState((state) => ({ ...state, sideMenuBgMode: mode }));
     },
+    darkMode: localStorage.getItem('darkMode') === 'true',
+    setDarkMode: (mode: boolean) => {
+      window.localStorage.setItem('darkMode', String(mode));
+      setCommonState((state) => ({ ...state, darkMode: mode }));
+    },
     esIndexMode: 'all',
     dashboardSaveMode: 'auto',
   });
@@ -197,7 +199,7 @@ function App() {
         }
         document.title = siteInfo?.page_title || 'Nightingale';
         if (iconLink) {
-          iconLink.href = siteInfo?.favicon_url || '/image/favicon.svg';
+          iconLink.href = siteInfo?.favicon_url || '/image/favicon.ico';
         }
         // 非匿名访问，需要初始化一些公共数据
         if (!anonymous) {
@@ -210,14 +212,18 @@ function App() {
           if (!isPlus) {
             versions = await getVersions();
           }
+          /* 兼容旧的业务组组件 */
           const defaultBusiId = commonState.curBusiId || busiGroups?.[0]?.id;
           window.localStorage.setItem('curBusiId', String(defaultBusiId));
+          /* 兼容旧的业务组组件 */
           initialized.current = true;
+
           setCommonState((state) => {
             return {
               ...state,
               profile,
               busiGroups,
+              businessGroup: getDefaultBusiness(busiGroups),
               datasourceCateOptions: getAuthorizedDatasourceCates(feats, isPlus, (cate) => {
                 const groupedDatasourceList = _.groupBy(datasourceList, 'plugin_type');
                 return !_.isEmpty(groupedDatasourceList[cate.value]);
@@ -253,6 +259,15 @@ function App() {
     }
   }, []);
 
+  useEffect(() => {
+    if (!location.pathname.startsWith('/login')) {
+      document.body.className = commonState.darkMode ? 'theme-dark' : 'theme-light';
+      // TODO: 临时兼容 Class 组件的写法
+      localStorage.setItem('n9e-dark-mode', _.toString(commonState.darkMode));
+      window.dispatchEvent(new Event('n9e-dark-mode-update'));
+    }
+  }, [commonState.darkMode]);
+
   // 初始化中不渲染任何内容
   if (!initialized.current) {
     return (
@@ -281,6 +296,7 @@ function App() {
                 <Content />
               </>
             </Switch>
+            <Feedback />
           </Router>
         </ConfigProvider>
       </CommonStateContext.Provider>

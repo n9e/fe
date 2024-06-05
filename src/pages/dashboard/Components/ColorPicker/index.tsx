@@ -19,6 +19,7 @@ import _ from 'lodash';
 import { SketchPicker } from 'react-color';
 import { Popover } from 'antd';
 import useOnClickOutside from '@/components/useOnClickOutside';
+import { PRIMARY_COLOR } from '@/utils/constant';
 import './style.less';
 interface IProps {
   value?: string;
@@ -64,7 +65,7 @@ export default function index(props: IProps) {
               '#61D071',
               '#2C9D3D',
               '#9470FF',
-              '#634CD9',
+              PRIMARY_COLOR,
               '#51566B',
               '#FFFFFF',
             ]}

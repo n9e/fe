@@ -6,6 +6,7 @@ const zh_CN = {
     edit: '编辑用户',
     busi_groups: '业务组',
     user_groups: '团队',
+    last_active_time: '最后活跃时间',
   },
   team: {
     title: '团队管理',

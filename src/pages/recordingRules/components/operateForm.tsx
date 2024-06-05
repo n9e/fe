@@ -5,7 +5,7 @@ import { Form, Input, InputNumber, Select, Button, Modal, message, Space, Toolti
 import { useTranslation } from 'react-i18next';
 import { prometheusQuery } from '@/services/warning';
 import { addOrEditRecordingRule, editRecordingRule, deleteRecordingRule } from '@/services/recording';
-import PromQLInput from '@/components/PromQLInput';
+import { PromQLInputWithBuilder } from '@/components/PromQLInput';
 import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
 import { CommonStateContext } from '@/App';
 
@@ -120,116 +120,119 @@ const operateForm: React.FC<Props> = ({ type, detail = {} }) => {
   };
 
   return (
-    <div className='operate_con'>
-      <Form
-        form={form}
-        className='strategy-form'
-        layout='vertical'
-        initialValues={{
-          prom_eval_interval: 30,
-          ...detail,
-          datasource_ids: detail.datasource_ids || [DATASOURCE_ALL],
-        }}
-      >
-        <Space direction='vertical' style={{ width: '100%' }}>
-          <Form.Item
-            required
-            label={t('name')}
-            tooltip={t('name_tip')}
-            name='name'
-            rules={[
-              {
-                required: true,
-              },
-              { pattern: new RegExp(/^[0-9a-zA-Z_:]{1,}$/, 'g'), message: 'name_msg' },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item label={t('note')} name='note'>
-            <Input />
-          </Form.Item>
-          <DatasourceValueSelect mode='multiple' setFieldsValue={form.setFieldsValue} cate='prometheus' datasourceList={groupedDatasourceList?.prometheus || []} />
+    <div>
+      <div className='n9e-border-base p2'>
+        <Form
+          form={form}
+          className='strategy-form'
+          layout='vertical'
+          initialValues={{
+            prom_eval_interval: 30,
+            ...detail,
+            datasource_ids: detail.datasource_ids || [DATASOURCE_ALL],
+          }}
+        >
+          <Space direction='vertical' style={{ width: '100%' }}>
+            <Form.Item
+              required
+              label={t('name')}
+              tooltip={t('name_tip')}
+              name='name'
+              rules={[
+                {
+                  required: true,
+                },
+                { pattern: new RegExp(/^[0-9a-zA-Z_:]{1,}$/, 'g'), message: 'name_msg' },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item label={t('note')} name='note'>
+              <Input />
+            </Form.Item>
+            <DatasourceValueSelect mode='multiple' setFieldsValue={form.setFieldsValue} cate='prometheus' datasourceList={groupedDatasourceList?.prometheus || []} />
 
-          <Form.Item noStyle shouldUpdate={(prevValues, curValues) => prevValues.datasource_ids !== curValues.datasource_ids}>
-            {({ getFieldValue, validateFields }) => {
-              const datasourceIds = getFieldValue('datasource_ids');
-              return (
-                <Form.Item label='PromQL' name='prom_ql' validateTrigger={['onBlur']} trigger='onChange' rules={[{ required: true }]}>
-                  <PromQLInput
-                    datasourceValue={getFirstDatasourceId(datasourceIds, groupedDatasourceList?.prometheus)}
-                    onChange={(val) => {
-                      if (val) {
-                        validateFields(['prom_ql']);
-                      }
+            <Form.Item noStyle shouldUpdate={(prevValues, curValues) => prevValues.datasource_ids !== curValues.datasource_ids}>
+              {({ getFieldValue, validateFields }) => {
+                const datasourceIds = getFieldValue('datasource_ids');
+                return (
+                  <Form.Item label='PromQL' name='prom_ql' validateTrigger={['onBlur']} trigger='onChange' rules={[{ required: true }]}>
+                    <PromQLInputWithBuilder
+                      datasourceValue={getFirstDatasourceId(datasourceIds, groupedDatasourceList?.prometheus)}
+                      onChange={(val) => {
+                        if (val) {
+                          validateFields(['prom_ql']);
+                        }
+                      }}
+                      showBuiltinMetrics
+                    />
+                  </Form.Item>
+                );
+              }}
+            </Form.Item>
+
+            <Form.Item required label={t('prom_eval_interval')} tooltip={t('prom_eval_interval_tip', { num: form.getFieldValue('prom_eval_interval') })}>
+              <Space>
+                <Form.Item
+                  style={{ marginBottom: 0 }}
+                  name='prom_eval_interval'
+                  initialValue={30}
+                  rules={[
+                    {
+                      required: true,
+                    },
+                  ]}
+                >
+                  <InputNumber
+                    min={1}
+                    onChange={() => {
+                      setRefresh(!refresh);
                     }}
                   />
                 </Form.Item>
-              );
-            }}
-          </Form.Item>
+                s
+              </Space>
+            </Form.Item>
+            <Form.Item label={t('append_tags')} name='append_tags' rules={[isValidFormat]}>
+              <Select mode='tags' tokenSeparators={[' ']} open={false} placeholder={t('append_tags_placeholder')} tagRender={tagRender} />
+            </Form.Item>
+            <Form.Item>
+              <Button type='primary' onClick={addSubmit} style={{ marginRight: '8px' }}>
+                {type === 1 ? t('common:btn.edit') : type === 2 ? t('common:btn.clone') : t('common:btn.add')}
+              </Button>
+              {type === 1 && (
+                <Button
+                  danger
+                  style={{ marginRight: '8px' }}
+                  onClick={() => {
+                    Modal.confirm({
+                      title: t('common:confirm.delete'),
+                      onOk: () => {
+                        deleteRecordingRule([detail.id], curBusiId).then(() => {
+                          message.success(t('common:success.delete'));
+                          history.push('/recording-rules');
+                        });
+                      },
 
-          <Form.Item required label={t('prom_eval_interval')} tooltip={t('prom_eval_interval_tip', { num: form.getFieldValue('prom_eval_interval') })}>
-            <Space>
-              <Form.Item
-                style={{ marginBottom: 0 }}
-                name='prom_eval_interval'
-                initialValue={30}
-                rules={[
-                  {
-                    required: true,
-                  },
-                ]}
-              >
-                <InputNumber
-                  min={1}
-                  onChange={() => {
-                    setRefresh(!refresh);
+                      onCancel() {},
+                    });
                   }}
-                />
-              </Form.Item>
-              s
-            </Space>
-          </Form.Item>
-          <Form.Item label={t('append_tags')} name='append_tags' rules={[isValidFormat]}>
-            <Select mode='tags' tokenSeparators={[' ']} open={false} placeholder={t('append_tags_placeholder')} tagRender={tagRender} />
-          </Form.Item>
-          <Form.Item>
-            <Button type='primary' onClick={addSubmit} style={{ marginRight: '8px' }}>
-              {type === 1 ? t('common:btn.edit') : type === 2 ? t('common:btn.clone') : t('common:btn.add')}
-            </Button>
-            {type === 1 && (
-              <Button
-                danger
-                style={{ marginRight: '8px' }}
-                onClick={() => {
-                  Modal.confirm({
-                    title: t('common:confirm.delete'),
-                    onOk: () => {
-                      deleteRecordingRule([detail.id], curBusiId).then(() => {
-                        message.success(t('common:success.delete'));
-                        history.push('/recording-rules');
-                      });
-                    },
+                >
+                  {t('common:btn.delete')}
+                </Button>
+              )}
 
-                    onCancel() {},
-                  });
+              <Button
+                onClick={() => {
+                  history.push('/recording-rules');
                 }}
               >
-                {t('common:btn.delete')}
+                {t('common:btn.cancel')}
               </Button>
-            )}
-
-            <Button
-              onClick={() => {
-                history.push('/recording-rules');
-              }}
-            >
-              {t('common:btn.cancel')}
-            </Button>
-          </Form.Item>
-        </Space>
-      </Form>
+            </Form.Item>
+          </Space>
+        </Form>
+      </div>
     </div>
   );
 };

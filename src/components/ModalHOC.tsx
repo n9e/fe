@@ -19,6 +19,7 @@ export default function ModalHOC<T>(Component: React.FC<T & ModalWrapProps>) {
   ) {
     const div = document.createElement('div');
     document.body.appendChild(div);
+    div.className = 'theme-dark';
 
     function destroy() {
       const unmountResult = ReactDOM.unmountComponentAtNode(div);
