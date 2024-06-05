@@ -224,6 +224,9 @@ export default function index({ disabled }) {
                       <AutoComplete
                         options={[
                           {
+                            value: 'recovery_promql',
+                          },
+                          {
                             value: 'runbook_url',
                           },
                           {
