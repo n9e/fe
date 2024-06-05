@@ -26,12 +26,9 @@ export const baseTheme = EditorView.theme({
   },
   '.cm-scroller': {
     overflow: 'hidden',
-    fontFamily: 'verdana, Microsoft YaHei, Consolas, Deja Vu Sans Mono, Bitstream Vera Sans Mono;',
-    lineHeight: 'unset', // input group 里不能设置 lineHeight
+    fontFamily: 'Consolas,Monaco,sans-serif,PingFangSC-Regular,microsoft yahei ui,microsoft yahei,simsun,"sans-serif"',
   },
   '.cm-matchingBracket': {
-    color: '#000',
-    backgroundColor: '#dedede',
     fontWeight: 'bold',
     outline: '1px dashed transparent',
   },
@@ -40,7 +37,6 @@ export const baseTheme = EditorView.theme({
   '.cm-tooltip.cm-tooltip-autocomplete': {
     '& > ul': {
       maxHeight: '350px',
-      fontFamily: '"DejaVu Sans Mono", monospace',
       maxWidth: 'unset',
     },
     '& > ul > li': {
@@ -48,7 +44,6 @@ export const baseTheme = EditorView.theme({
       overflowY: 'hidden',
     },
     '& > ul > li[aria-selected]': {
-      backgroundColor: '#a7d0f2',
       color: 'unset',
     },
     minWidth: '30%',
@@ -62,7 +57,6 @@ export const baseTheme = EditorView.theme({
   '.cm-tooltip.cm-completionInfo': {
     marginTop: '-11px',
     padding: '10px',
-    fontFamily: "'Open Sans', 'Lucida Sans Unicode', 'Lucida Grande', sans-serif;",
     border: 'none',
     minWidth: '250px',
     maxWidth: 'min-content',
@@ -98,7 +92,7 @@ export const baseTheme = EditorView.theme({
   '.cm-completionMatchedText': {
     textDecoration: 'none',
     fontWeight: 'bold',
-    color: '#0066bf',
+    color: '#3ba1fb',
   },
 
   '.cm-selectionMatch': {
@@ -121,7 +115,7 @@ export const baseTheme = EditorView.theme({
     fontFamily: 'codicon',
     paddingRight: '0',
     opacity: '1',
-    color: '#007acc',
+    color: '#2ca9fd',
   },
 
   '.cm-completionIcon-function, .cm-completionIcon-method': {
@@ -139,7 +133,7 @@ export const baseTheme = EditorView.theme({
   },
   '.cm-completionIcon-constant': {
     '&:after': { content: "'\\eb5f'" },
-    color: '#007acc',
+    color: '#2ca9fd',
   },
   '.cm-completionIcon-type': {
     '&:after': { content: "'𝑡'" },
@@ -181,17 +175,17 @@ export const lightTheme = EditorView.theme(
     },
 
     '.cm-tooltip.cm-completionInfo': {
-      backgroundColor: '#d6ebff',
+      backgroundColor: '#f5f5f5',
     },
 
     '.cm-tooltip > .cm-completionInfo.cm-completionInfo-right': {
       '&:before': {
-        borderRightColor: '#d6ebff',
+        borderRightColor: '#f5f5f5',
       },
     },
     '.cm-tooltip > .cm-completionInfo.cm-completionInfo-left': {
       '&:before': {
-        borderLeftColor: '#d6ebff',
+        borderLeftColor: '#f5f5f5',
       },
     },
 
@@ -241,17 +235,17 @@ export const darkTheme = EditorView.theme(
 );
 
 export const promqlHighlighter = HighlightStyle.define([
-  { tag: tags.name, color: '#000' },
-  { tag: tags.number, color: '#09885a' },
-  { tag: tags.string, color: '#a31515' },
-  { tag: tags.keyword, color: '#008080' },
-  { tag: tags.function(tags.variableName), color: '#008080' },
-  { tag: tags.labelName, color: '#800000' },
+  { tag: tags.name, class: 'cmt-name' },
+  { tag: tags.number, class: 'cmt-number' },
+  { tag: tags.string, class: 'cmt-string' },
+  { tag: tags.keyword, class: 'cmt-keyword' },
+  { tag: tags.function(tags.variableName), class: 'cmt-variableName' },
+  { tag: tags.labelName, class: 'cmt-labelName' },
   { tag: tags.operator },
-  { tag: tags.modifier, color: '#008080' },
+  { tag: tags.modifier, class: 'cmt-modifier' },
   { tag: tags.paren },
   { tag: tags.squareBracket },
   { tag: tags.brace },
-  { tag: tags.invalid, color: 'red' },
-  { tag: tags.comment, color: '#888', fontStyle: 'italic' },
+  { tag: tags.invalid, class: 'cmt-invalid' },
+  { tag: tags.comment, class: 'cmt-comment' },
 ]);

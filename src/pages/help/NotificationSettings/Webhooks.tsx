@@ -1,9 +1,10 @@
 import React, { useContext, useEffect } from 'react';
-import { Alert, Form, Input, Switch, Button, Space, InputNumber, Row, Col, message } from 'antd';
+import { Alert, Form, Input, Switch, Button, InputNumber, Row, Col, message } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined, CloseOutlined } from '@ant-design/icons';
 import { useTranslation, Trans } from 'react-i18next';
 import _ from 'lodash';
 import { CommonStateContext } from '@/App';
+import Markdown from '@/components/Markdown';
 import { getWebhooks, putWebhooks } from './services';
 
 export default function Webhooks() {
@@ -32,6 +33,7 @@ export default function Webhooks() {
   return (
     <div className='webhooks-container'>
       <div className='webhooks-content'>
+        <Alert type='info' message={<Markdown content={t('webhooks.help_content')} />} style={{ marginBottom: 10 }} />
         <Form form={form} layout='vertical'>
           <Form.List name='webhooks'>
             {(fields, { add, remove }) => {
@@ -39,32 +41,50 @@ export default function Webhooks() {
                 <div>
                   {fields.map(({ key, name, ...restField }) => (
                     <div className='webhook-item' key={key}>
-                      <div style={{ marginBottom: 10 }}>
-                        <Space align='baseline'>
-                          {t('webhooks.enable')}
-                          <Form.Item {...restField} name={[name, 'enable']} valuePropName='checked' noStyle>
+                      <Row gutter={10}>
+                        <Col flex='auto'>
+                          <Row gutter={10}>
+                            <Col span={16}>
+                              <Form.Item {...restField} label={t('webhooks.url')} name={[name, 'url']} rules={[{ required: true }]}>
+                                <Input />
+                              </Form.Item>
+                            </Col>
+                            <Col span={8}>
+                              <Form.Item {...restField} label={t('webhooks.note')} name={[name, 'note']}>
+                                <Input />
+                              </Form.Item>
+                            </Col>
+                          </Row>
+                        </Col>
+                        <Col flex='100px'>
+                          <Form.Item {...restField} label={t('webhooks.enable')} name={[name, 'enable']} valuePropName='checked'>
                             <Switch />
                           </Form.Item>
-                        </Space>
-                      </div>
-                      <Form.Item {...restField} label={t('webhooks.note')} name={[name, 'note']}>
-                        <Input />
-                      </Form.Item>
-                      <Form.Item {...restField} label={t('webhooks.url')} name={[name, 'url']} rules={[{ required: true }]}>
-                        <Input />
-                      </Form.Item>
-                      <Form.Item {...restField} label={t('webhooks.timeout')} name={[name, 'timeout']} initialValue={5}>
-                        <InputNumber style={{ width: '100%' }} />
-                      </Form.Item>
-                      <Row gutter={10}>
-                        <Col span={12}>
-                          <Form.Item {...restField} label={t('webhooks.basic_auth_user')} name={[name, 'basic_auth_user']}>
-                            <Input />
-                          </Form.Item>
                         </Col>
-                        <Col span={12}>
-                          <Form.Item {...restField} label={t('webhooks.basic_auth_password')} name={[name, 'basic_auth_pass']}>
-                            <Input.Password />
+                      </Row>
+                      <Row gutter={10}>
+                        <Col flex='auto'>
+                          <Row gutter={10}>
+                            <Col span={8}>
+                              <Form.Item {...restField} label={t('webhooks.basic_auth_user')} name={[name, 'basic_auth_user']}>
+                                <Input />
+                              </Form.Item>
+                            </Col>
+                            <Col span={8}>
+                              <Form.Item {...restField} label={t('webhooks.basic_auth_password')} name={[name, 'basic_auth_pass']}>
+                                <Input.Password />
+                              </Form.Item>
+                            </Col>
+                            <Col span={8}>
+                              <Form.Item {...restField} label={t('webhooks.timeout')} name={[name, 'timeout']} initialValue={5}>
+                                <InputNumber style={{ width: '100%' }} />
+                              </Form.Item>
+                            </Col>
+                          </Row>
+                        </Col>
+                        <Col flex='100px'>
+                          <Form.Item {...restField} label={t('webhooks.skip_verify')} name={[name, 'skip_verify']} valuePropName='checked'>
+                            <Switch />
                           </Form.Item>
                         </Col>
                       </Row>
@@ -123,12 +143,6 @@ export default function Webhooks() {
                           );
                         }}
                       </Form.List>
-                      <Space align='baseline'>
-                        {t('webhooks.skip_verify')}
-                        <Form.Item {...restField} name={[name, 'skip_verify']} noStyle valuePropName='checked'>
-                          <Switch />
-                        </Form.Item>
-                      </Space>
                       {fields.length > 1 && (
                         <div className='webhook-item-remove'>
                           <CloseOutlined
@@ -190,7 +204,8 @@ export default function Webhooks() {
                 ns='notificationSettings'
                 i18nKey='webhooks.help'
                 components={{
-                  a: <a href='https://console.flashcat.cloud/?from=n9e' target='_blank' />,
+                  a1: <a href='https://www.pagerduty.com/' target='_blank' />,
+                  a2: <a href='https://flashcat.cloud/product/flashduty/' target='_blank' />,
                   br: <br />,
                 }}
               />

@@ -19,7 +19,7 @@ export default function index(props: Props) {
   }, [allowedPerms, perms]);
 
   if (authorized) {
-    return children;
+    return React.cloneElement(children, _.omit(props, ['allowedPerms', 'children', 'showUnauthorized']));
   }
   if (showUnauthorized) {
     return <>{t('unauthorized')}</>;

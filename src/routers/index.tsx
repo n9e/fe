@@ -15,10 +15,11 @@
  *
  */
 import React, { useEffect, useContext } from 'react';
-import { Switch, Route, useLocation, Redirect, useHistory, useParams } from 'react-router-dom';
+import { Switch, Route, useLocation, Redirect, useHistory } from 'react-router-dom';
 import querystring from 'query-string';
 import _ from 'lodash';
 import { getMenuPerm } from '@/services/common';
+import { IS_ENT } from '@/utils/constant';
 import { CommonStateContext } from '@/App';
 import Page403 from '@/pages/notFound/Page403';
 import OutOfService from '@/pages/notFound/OutOfService';
@@ -29,7 +30,6 @@ import LoginCallback from '@/pages/loginCallback';
 import LoginCallbackCAS from '@/pages/loginCallback/cas';
 import LoginCallbackOAuth from '@/pages/loginCallback/oauth';
 import AlertRules, { Add as AlertRuleAdd, Edit as AlertRuleEdit } from '@/pages/alertRules';
-import AlertRulesBuiltin, { Detail as AlertRulesBuiltinDetail } from '@/pages/alertRulesBuiltin';
 import Profile from '@/pages/account/profile';
 import { List as Dashboard, Detail as DashboardDetail, Share as DashboardShare } from '@/pages/dashboard';
 import { getDefaultThemeMode } from '@/pages/dashboard/Detail/utils';
@@ -61,16 +61,14 @@ import Servers from '@/pages/help/servers';
 import Datasource, { Form as DatasourceAdd } from '@/pages/datasource';
 import RecordingRule, { Add as RecordingRuleAdd, Edit as RecordingRuleEdit } from '@/pages/recordingRules';
 import TraceExplorer, { Dependencies as TraceDependencies } from '@/pages/traceCpt/Explorer';
-import DashboardBuiltin, { Detail as DashboardBuiltinDetail } from '@/pages/dashboardBuiltin';
 import Permissions from '@/pages/permissions';
 import SSOConfigs from '@/pages/help/SSOConfigs';
 import NotificationTpls from '@/pages/help/NotificationTpls';
 import NotificationSettings from '@/pages/help/NotificationSettings';
 import MigrateDashboards from '@/pages/help/migrate';
-import IBEX from '@/pages/help/NotificationSettings/IBEX';
 import VariableConfigs from '@/pages/variableConfigs';
 import SiteSettings from '@/pages/siteSettings';
-import { dynamicPackages, Entry } from '@/utils';
+import { dynamicPackages, Entry, dynamicPages } from '@/utils';
 // @ts-ignore
 import { Jobs as StrategyBrain } from 'plus:/datasource/anomaly';
 // @ts-ignore
@@ -82,6 +80,14 @@ const Packages = dynamicPackages();
 let lazyRoutes = Packages.reduce((result: any, module: Entry) => {
   return (result = result.concat(module.routes));
 }, []);
+
+const lazyPagesRoutes = _.reduce(
+  dynamicPages(),
+  (result: any, module: Entry) => {
+    return (result = result.concat(module.routes));
+  },
+  [],
+);
 
 function RouteWithSubRoutes(route) {
   return (
@@ -100,13 +106,15 @@ export default function Content() {
   const history = useHistory();
   const isPlus = useIsPlus();
   const { profile, siteInfo, perms } = useContext(CommonStateContext);
-  // 仪表盘在全屏和暗黑主题下需要定义个 dark 样式名
   let themeClassName = '';
-  if (_.startsWith(location.pathname, '/dashboards/') && !_.endsWith(location.pathname, '/dashboards/')) {
-    const query = querystring.parse(location.search);
-    const themeMode = getDefaultThemeMode(query);
-    if (themeMode === 'dark') {
-      themeClassName = 'theme-dark';
+  if (IS_ENT) {
+    // 仪表盘在全屏和暗黑主题下需要定义个 dark 样式名
+    if (_.startsWith(location.pathname, '/dashboards/') && !_.endsWith(location.pathname, '/dashboards/')) {
+      const query = querystring.parse(location.search);
+      const themeMode = getDefaultThemeMode(query);
+      if (themeMode === 'dark') {
+        themeClassName = 'theme-dark';
+      }
     }
   }
 
@@ -153,15 +161,11 @@ export default function Content() {
         <Route path='/dashboards/:id' exact component={DashboardDetail} />
         <Route path='/dashboards/share/:id' component={DashboardShare} />
         <Route path='/dashboards' component={Dashboard} />
-        <Route path='/dashboards-built-in' exact component={DashboardBuiltin} />
-        <Route path='/dashboards-built-in/detail' exact component={DashboardBuiltinDetail} />
         <Route path='/chart/:ids' component={Chart} />
 
         <Route exact path='/alert-rules/add/:bgid' component={AlertRuleAdd} />
         <Route exact path='/alert-rules/edit/:id' component={AlertRuleEdit} />
         <Route exact path='/alert-rules' component={AlertRules} />
-        <Route exact path='/alert-rules-built-in' component={AlertRulesBuiltin} />
-        <Route exact path='/alert-rules-built-in/detail' component={AlertRulesBuiltinDetail} />
         <Route exact path='/alert-rules/brain/:id' component={StrategyBrain} />
         <Route exact path='/alert-mutes' component={Shield} />
         <Route exact path='/alert-mutes/add/:from?' component={AddShield} />
@@ -192,7 +196,6 @@ export default function Content() {
         <Route exact path='/job-tasks/add' component={TaskAdd} />
         <Route exact path='/job-tasks/:id/result' component={TaskResult} />
         <Route exact path='/job-tasks/:id/detail' component={TaskDetail} />
-        <Route exact path='/ibex-settings' component={IBEX} />
 
         <Route exact path='/help/version' component={Version} />
         <Route exact path='/help/servers' component={Servers} />
@@ -213,6 +216,9 @@ export default function Content() {
         <Route exact path='/site-settings' component={SiteSettings} />
 
         {lazyRoutes.map((route, i) => (
+          <RouteWithSubRoutes key={i} {...route} />
+        ))}
+        {_.map(lazyPagesRoutes, (route, i) => (
           <RouteWithSubRoutes key={i} {...route} />
         ))}
         {_.map(plusLoader.routes, (route, i) => (

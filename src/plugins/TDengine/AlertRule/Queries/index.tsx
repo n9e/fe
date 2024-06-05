@@ -58,7 +58,7 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
           >
             {fields.map((field, index) => {
               return (
-                <div key={field.key} style={{ backgroundColor: '#fafafa', padding: 16, marginBottom: 16, position: 'relative' }}>
+                <div key={field.key} className='n9e-fill-color-3' style={{ padding: 16, marginBottom: 16, position: 'relative' }}>
                   <Row gutter={8}>
                     <Col flex='32px'>
                       <Form.Item {...field} name={[field.name, 'ref']} initialValue={generateQueryName(_.map(queries, 'ref'))}>

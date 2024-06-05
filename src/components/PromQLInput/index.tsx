@@ -14,11 +14,13 @@
  * limitations under the License.
  *
  */
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useContext } from 'react';
 import classNames from 'classnames';
 import _ from 'lodash';
+import { Tooltip } from 'antd';
+import { useTimeout } from 'ahooks';
 import { EditorView, highlightSpecialChars, keymap, ViewUpdate, placeholder as placeholderFunc } from '@codemirror/view';
-import { EditorState, Prec } from '@codemirror/state';
+import { EditorState, Prec, Compartment } from '@codemirror/state';
 import { indentOnInput } from '@codemirror/language';
 import { history, historyKeymap } from '@codemirror/history';
 import { defaultKeymap, insertNewlineAndIndent } from '@codemirror/commands';
@@ -29,11 +31,14 @@ import { commentKeymap } from '@codemirror/comment';
 import { lintKeymap } from '@codemirror/lint';
 import { autocompletion, completionKeymap } from '@codemirror/autocomplete';
 import { PromQLExtension } from '@fc-components/codemirror-promql';
-import { baseTheme, promqlHighlighter } from './CMTheme';
+import { baseTheme, lightTheme, darkTheme, promqlHighlighter } from './CMTheme';
 import { N9E_PATHNAME, AccessTokenKey } from '@/utils/constant';
+import { CommonStateContext } from '@/App';
+import './style.less';
 
 export { PromQLInputWithBuilder } from './PromQLInputWithBuilder';
 
+const dynamicConfigCompartment = new Compartment();
 const promqlExtension = new PromQLExtension();
 
 export interface CMExpressionInputProps {
@@ -51,6 +56,7 @@ export interface CMExpressionInputProps {
   placeholder?: string | false;
   extraLabelValues?: string[];
   rangeVectorCompletion?: boolean;
+  tooltip?: string; // input topRight位置显示的tooltip，暂时只用于内置指标展开的即时查询里显示指标名称
 }
 
 const ExpressionInput = (
@@ -69,13 +75,16 @@ const ExpressionInput = (
     placeholder = 'Input promql to query. Press Shift+Enter for newlines',
     extraLabelValues,
     rangeVectorCompletion,
+    tooltip,
   }: CMExpressionInputProps,
   ref,
 ) => {
+  const { darkMode } = useContext(CommonStateContext);
   const containerRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
   const executeQueryCallback = useRef(executeQuery);
   const realValue = useRef<string | undefined>(value || '');
+  const [tooltipVisible, setTooltipVisible] = React.useState(false);
   const defaultHeaders = {
     Authorization: `Bearer ${localStorage.getItem(AccessTokenKey) || ''}`,
   };
@@ -113,6 +122,7 @@ const ExpressionInput = (
       );
 
     // Create or reconfigure the editor.
+    const dynamicConfig = [darkMode ? darkTheme : lightTheme];
     const view = viewRef.current;
     if (view === null) {
       // If the editor does not exist yet, create it.
@@ -138,6 +148,7 @@ const ExpressionInput = (
           placeholderFunc(placeholder === false ? '' : placeholder),
           promqlExtension.asExtension(),
           EditorView.editable.of(!readonly && !disabled),
+          dynamicConfigCompartment.of(dynamicConfig),
           keymap.of([
             {
               key: 'Escape',
@@ -157,6 +168,7 @@ const ExpressionInput = (
                   }
                   if (typeof onChange === 'function' && _.includes(trigger, 'onEnter')) {
                     onChange(realValue.current);
+                    setTooltipVisible(false);
                   }
                   return true;
                 },
@@ -174,6 +186,7 @@ const ExpressionInput = (
                 realValue.current = val;
                 if (_.includes(validateTrigger, 'onChange')) {
                   onChange(val);
+                  setTooltipVisible(false);
                 }
               }
             }
@@ -193,8 +206,14 @@ const ExpressionInput = (
       }
 
       // view.focus();
+    } else {
+      view.dispatch(
+        view.state.update({
+          effects: dynamicConfigCompartment.reconfigure(dynamicConfig),
+        }),
+      );
     }
-  }, [onChange, JSON.stringify(headers), completeEnabled, datasourceValue, extraLabelValues]);
+  }, [onChange, JSON.stringify(headers), completeEnabled, datasourceValue, darkMode, extraLabelValues]);
 
   useEffect(() => {
     if (realValue.current !== value) {
@@ -212,19 +231,35 @@ const ExpressionInput = (
     }
   }, [value]);
 
+  useTimeout(() => {
+    if (!tooltipVisible && tooltip) {
+      setTooltipVisible(true);
+    }
+  }, 500);
+
   return (
-    <div
-      className={classNames({ 'ant-input': true, readonly: readonly, 'promql-input': true, disabled: disabled })}
-      onBlur={() => {
-        if (typeof onChange === 'function' && _.includes(trigger, 'onBlur')) {
-          if (realValue.current !== value) {
-            onChange(realValue.current);
-          }
-        }
+    <Tooltip
+      title={tooltip}
+      placement='topRight'
+      visible={tooltipVisible}
+      getPopupContainer={() => {
+        return containerRef.current || document.body;
       }}
     >
-      <div className='input-content' ref={containerRef} />
-    </div>
+      <div
+        className={classNames({ 'ant-input': true, readonly: readonly, 'promql-input': true, disabled: disabled })}
+        onBlur={() => {
+          if (typeof onChange === 'function' && _.includes(trigger, 'onBlur')) {
+            if (realValue.current !== value) {
+              onChange(realValue.current);
+              setTooltipVisible(false);
+            }
+          }
+        }}
+      >
+        <div className='input-content' ref={containerRef} />
+      </div>
+    </Tooltip>
   );
 };
 

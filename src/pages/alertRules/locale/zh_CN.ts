@@ -14,7 +14,7 @@ const zh_CN = {
   append_tags_placeholder: '标签格式为 key=value ，使用回车或空格分隔',
   group_id: '业务组',
   note: '备注',
-  append_tags_note_tip: '支持配置变量，例如 {{$labels.ident}}，如果监控数据为 `mem_active{ident="dev-backup-01"}` 最后会最终会替换为 dev-backup-01',
+  append_tags_note_tip: '附加到该规则产生的所有告警事件上，未来可以使用这些标签做事件筛选',
   rule_configs: '规则配置',
   inhibit: '级别抑制',
   inhibit_tip: '只有 metricName 和 labels 完全相同的曲线产生的告警事件，才会进行级别抑制，1级>2级>3级',
@@ -107,6 +107,7 @@ const zh_CN = {
       result: '导入结果',
       errmsg: '错误信息',
     },
+    import_builtin: '导入内置告警规则',
     export: {
       title: '导出告警规则',
       copy: '复制 JSON 内容到剪贴板',
@@ -165,6 +166,18 @@ const zh_CN = {
     query: {
       title: '查询条件',
     },
+  },
+  preview: '数据预览',
+  table: {
+    group_id: '业务组',
+    cate: '类型',
+    datasource_ids: '数据源',
+    name: '名称',
+    append_tags: '附加标签',
+    notify_groups_obj: '告警接收组',
+    update_at: '更新时间',
+    update_by: '更新人',
+    disabled: '启用',
   },
 };
 export default zh_CN;

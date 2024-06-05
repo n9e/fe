@@ -119,7 +119,6 @@ export default function Elasticsearch({ chartForm, variableConfig, dashboardId }
                                 }
                                 return (
                                   <GroupBy
-                                    backgroundVisible={false}
                                     parentNames={['targets']}
                                     prefixField={field}
                                     prefixFieldNames={[field.name, 'query']}

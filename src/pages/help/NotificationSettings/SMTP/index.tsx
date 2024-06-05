@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Form, Button, message, Space, Popover, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
-import CodeMirror from '@uiw/react-codemirror';
 import { EditorView } from '@codemirror/view';
+import CodeMirror from '@/components/CodeMirror';
 import { getNotifyConfig, putNotifyConfig, smtpConfigTest } from '../services';
 
 export default function index() {
@@ -29,7 +29,6 @@ export default function index() {
         <Form.Item name='cval'>
           <CodeMirror
             height='400px'
-            theme='light'
             basicSetup
             editable
             extensions={[

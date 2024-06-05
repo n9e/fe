@@ -65,7 +65,7 @@ const Detail = (props: any) => {
         </>
       }
     >
-      <div style={{ padding: 10 }}>
+      <div className='p2'>
         <Card title={t('common:btn.detail')}>
           <Spin spinning={loading}>
             <div className='job-task-table'>
@@ -133,7 +133,7 @@ const Detail = (props: any) => {
                               <span>{`\${ibex}/${id}`}</span>
                               <CopyOutlined
                                 onClick={() => {
-                                  copyToClipBoard(`\${ibex}/${id}`, (val) => val);
+                                  copyToClipBoard(`\${ibex}/${id}`);
                                 }}
                               />
                             </Space>

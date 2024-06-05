@@ -39,6 +39,7 @@ interface IProps {
   onChange: (data: IVariable[], needSave: boolean, options?: IVariable[]) => void;
   onOpenFire?: () => void;
   isPreview?: boolean;
+  variableConfigRefreshFlag?: string;
   dashboard: Dashboard;
 }
 
@@ -102,6 +103,12 @@ function index(props: IProps) {
     }
     return null;
   };
+
+  useEffect(() => {
+    if (props.variableConfigRefreshFlag) {
+      // setRefreshFlag(_.uniqueId('refreshFlag_'));
+    }
+  }, [props.variableConfigRefreshFlag]);
 
   useEffect(() => {
     if (value) {

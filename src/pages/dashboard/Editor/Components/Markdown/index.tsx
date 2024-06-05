@@ -28,7 +28,7 @@ interface IMarkDownPros {
 // https://github.com/vitejs/vite/issues/3592 bug solve 记录
 const Markdown: React.FC<IMarkDownPros> = ({ content, style = {} }) => {
   return (
-    <div className='markdown-wrapper' style={style}>
+    <div className='dashboard-markdown-wrapper' style={style}>
       <ReactMarkdown
         remarkPlugins={[gfm]}
         children={content}

@@ -21,7 +21,7 @@ limitations under the License.
 }
 
 .ViewingLayer--graph {
-  border: 1px solid #999;
+  border: 1px solid var(--fc-border-color);
   /* need !important here to overcome something from semantic UI */
   overflow: visible !important;
   position: relative;
@@ -63,13 +63,14 @@ limitations under the License.
 }
 
 .ViewingLayer--resetZoom {
-  display: none;
-  position: absolute;
+  display: none !important;
+  position: absolute !important;
   right: 1%;
   top: 10%;
   z-index: 1;
+  background-color: var(--fc-fill-2) !important;
 }
 
 .ViewingLayer:hover > .ViewingLayer--resetZoom {
-  display: unset;
+  display: unset !important;
 }

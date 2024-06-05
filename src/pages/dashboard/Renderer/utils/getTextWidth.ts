@@ -1,7 +1,7 @@
 export const defaultFont = {
   fontWeight: 'normal',
   fontSize: '12px',
-  fontFamily: 'verdana, Microsoft YaHei, Consolas, Deja Vu Sans Mono, Bitstream Vera Sans Mono',
+  fontFamily: 'Helvetica Neue,sans-serif,PingFangSC-Regular,microsoft yahei ui,microsoft yahei,simsun,"sans-serif"',
 };
 
 export const getFontStr = (font = defaultFont) => {

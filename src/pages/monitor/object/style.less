@@ -1,4 +1,4 @@
-@margin-base: 10px;
+@margin-base: 16px;
 .metric-page-title {
   font-size: 14px;
   font-weight: 700;
@@ -27,6 +27,7 @@
   padding: @margin-base;
   display: flex;
   flex-direction: column;
+  border: 1px solid var(--fc-border-color);
 }
 .n9e-metric-views-list-header {
   display: flex;
@@ -49,11 +50,14 @@
   cursor: pointer;
   .anticon {
     margin-left: 8px;
-    display: none;
+    display: none !important;
+  }
+  .n9e-metric-views-list-content-item-cate {
+    color: var(--fc-text-5);
   }
   &:hover {
     .anticon {
-      display: inline;
+      display: inline !important;
     }
     .n9e-metric-views-list-content-item-cate {
       display: none;
@@ -64,7 +68,6 @@
   }
   .name {
     display: inline-block;
-    flex: 0 0 140px;
   }
 }
 .n9e-metric-views-labels-values {
@@ -72,6 +75,7 @@
   flex: 0 0 240px;
   padding: @margin-base;
   overflow-y: auto;
+  border: 1px solid var(--fc-border-color);
 }
 .n9e-metric-views-labels-values-item {
   .page-title {
@@ -116,6 +120,7 @@
   flex: 1;
   overflow-y: auto;
   padding: @margin-base;
+  border: 1px solid var(--fc-border-color);
   .ant-tabs-large > .ant-tabs-nav .ant-tabs-tab {
     font-size: 12px;
     padding: 10px 0;
@@ -129,7 +134,7 @@
   justify-content: space-between;
   margin-bottom: 10px;
   .ant-input-group-wrapper {
-    width: 50%;
+    width: 50% !important;
   }
 }
 .n9e-metric-views-metrics-content {

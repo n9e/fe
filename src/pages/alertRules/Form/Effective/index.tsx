@@ -120,7 +120,7 @@ export default function index() {
             return (
               <Form.Item label={t('enable_in_bg')}>
                 <Space align='baseline'>
-                  <Form.Item name='enable_in_bg' valuePropName='checked'>
+                  <Form.Item name='enable_in_bg' valuePropName='checked' noStyle>
                     <Switch />
                   </Form.Item>
                   {t('enable_in_bg_tip')}

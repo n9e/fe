@@ -14,11 +14,12 @@
  * limitations under the License.
  *
  */
-import React from 'react';
+import React, { useContext } from 'react';
 import AceEditor from 'react-ace';
 import 'ace-builds/src-noconflict/mode-sh';
 import 'ace-builds/src-noconflict/theme-monokai';
 import 'ace-builds/src-noconflict/theme-kuroir';
+import { CommonStateContext } from '@/App';
 
 interface Props {
   height: string;
@@ -28,14 +29,14 @@ interface Props {
 }
 
 export default function Editor(props: Props) {
+  const { darkMode } = useContext(CommonStateContext);
   return (
     <AceEditor
       placeholder='Placeholder Text'
       style={{ width: '100%' }}
       height={props.height}
       mode='sh'
-      // theme='monokai'
-      theme='kuroir'
+      theme={darkMode ? 'monokai' : 'kuroir'}
       name='blah2'
       fontSize={14}
       showPrintMargin={false}

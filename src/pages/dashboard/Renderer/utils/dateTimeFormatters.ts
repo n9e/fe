@@ -1,6 +1,42 @@
 import { toFixed, toFixedScaled } from './valueFormats';
 import type { DecimalCount, FormattedValue } from './valueFormats';
 
+export function toNanoSeconds(size: number, decimals?: DecimalCount): FormattedValue {
+  if (size === null) {
+    return { text: '' };
+  }
+
+  if (Math.abs(size) < 1000) {
+    return { text: toFixed(size, decimals), suffix: ' ns' };
+  } else if (Math.abs(size) < 1000000) {
+    return toFixedScaled(size / 1000, decimals, ' µs');
+  } else if (Math.abs(size) < 1000000000) {
+    return toFixedScaled(size / 1000000, decimals, ' ms');
+  } else if (Math.abs(size) < 60000000000) {
+    return toFixedScaled(size / 1000000000, decimals, ' s');
+  } else if (Math.abs(size) < 3600000000000) {
+    return toFixedScaled(size / 60000000000, decimals, ' min');
+  } else if (Math.abs(size) < 86400000000000) {
+    return toFixedScaled(size / 3600000000000, decimals, ' hour');
+  } else {
+    return toFixedScaled(size / 86400000000000, decimals, ' day');
+  }
+}
+
+export function toMicroSeconds(size: number, decimals?: DecimalCount): FormattedValue {
+  if (size === null) {
+    return { text: '' };
+  }
+
+  if (Math.abs(size) < 1000) {
+    return { text: toFixed(size, decimals), suffix: ' µs' };
+  } else if (Math.abs(size) < 1000000) {
+    return toFixedScaled(size / 1000, decimals, ' ms');
+  } else {
+    return toFixedScaled(size / 1000000, decimals, ' s');
+  }
+}
+
 export function toMilliSeconds(size: number, decimals?: DecimalCount): FormattedValue {
   if (size === null) {
     return { text: '' };

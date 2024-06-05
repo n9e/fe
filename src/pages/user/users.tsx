@@ -17,8 +17,8 @@
 import React, { useState, useContext } from 'react';
 import moment from 'moment';
 import _ from 'lodash';
-import { Button, Input, message, Row, Modal, Table } from 'antd';
-import { SearchOutlined, UserOutlined } from '@ant-design/icons';
+import { Button, Input, message, Row, Modal, Table, Space, Dropdown, Menu } from 'antd';
+import { SearchOutlined, UserOutlined, EyeOutlined, MoreOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/lib/table';
 import { useTranslation } from 'react-i18next';
 import { useAntdTable } from 'ahooks';
@@ -28,6 +28,9 @@ import { getUserInfoList, deleteUser } from '@/services/manage';
 import { User, UserType, ActionType } from '@/store/manageInterface';
 import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
+import TimeRangePicker, { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
+import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
+import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
 import Tags from './component/Tags';
 import './index.less';
 import './locale';
@@ -41,8 +44,10 @@ const Resource: React.FC = () => {
   const [userId, setUserId] = useState<string>('');
   const [memberId, setMemberId] = useState<string>('');
   const [query, setQuery] = useState<string>('');
+  const [range, setRange] = useState<IRawTimeRange>();
   const { profile } = useContext(CommonStateContext);
   const pagination = usePagination({ PAGESIZE_KEY: 'users' });
+  const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
   const userColumn: ColumnsType<User> = [
     {
       title: t('account:profile.username'),
@@ -113,41 +118,62 @@ const Resource: React.FC = () => {
       render: (text) => {
         return moment.unix(text).format('YYYY-MM-DD HH:mm:ss');
       },
-      sorter: (a, b) => a.create_at - b.create_at,
+      sorter: true,
+    },
+    {
+      title: t('user.last_active_time'),
+      dataIndex: 'last_active_time',
+      render: (text) => {
+        if (!text) {
+          return '-';
+        }
+        return moment.unix(text).format('YYYY-MM-DD HH:mm:ss');
+      },
+      sorter: true,
     },
     {
       title: t('common:table.operations'),
-      width: i18n.language === 'en_US' ? 200 : 160,
-      render: (text: string, record) => (
-        <>
-          <Button className='oper-name' type='link' onClick={() => handleClick(ActionType.EditUser, record.id)}>
-            {t('common:btn.edit')}
-          </Button>
-          <Button className='oper-name' type='link' onClick={() => handleClick(ActionType.Reset, record.id)}>
-            {t('account:password.reset')}
-          </Button>
-          <a
-            style={{
-              color: 'red',
-              marginLeft: '16px',
-            }}
-            onClick={() => {
-              confirm({
-                title: t('common:confirm.delete'),
-                onOk: () => {
-                  deleteUser(record.id).then((_) => {
-                    message.success(t('common:success.delete'));
-                    handleClose();
-                  });
-                },
-                onCancel: () => {},
-              });
-            }}
+      width: i18n.language === 'en_US' ? 80 : 40,
+      render: (text: string, record) => {
+        return (
+          <Dropdown
+            overlay={
+              <Menu>
+                <Menu.Item onClick={() => handleClick(ActionType.EditUser, record.id)}>
+                  <Button className='p0 height-auto' type='link'>
+                    {t('common:btn.edit')}
+                  </Button>
+                </Menu.Item>
+                <Menu.Item onClick={() => handleClick(ActionType.Reset, record.id)}>
+                  <Button className='p0 height-auto' type='link'>
+                    {t('account:password.reset')}
+                  </Button>
+                </Menu.Item>
+                <Menu.Item
+                  onClick={() => {
+                    confirm({
+                      title: t('common:confirm.delete'),
+                      onOk: () => {
+                        deleteUser(record.id).then((_) => {
+                          message.success(t('common:success.delete'));
+                          handleClose();
+                        });
+                      },
+                      onCancel: () => {},
+                    });
+                  }}
+                >
+                  <Button danger type='link' className='p0 height-auto'>
+                    {t('common:btn.delete')}
+                  </Button>
+                </Menu.Item>
+              </Menu>
+            }
           >
-            {t('common:btn.delete')}
-          </a>
-        </>
-      ),
+            <Button type='link' icon={<MoreOutlined />} />
+          </Dropdown>
+        );
+      },
     },
   ];
 
@@ -184,11 +210,18 @@ const Resource: React.FC = () => {
   };
 
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_flag'));
-  const getTableData = ({ current, pageSize }): Promise<any> => {
-    const params = {
+  const getTableData = ({ current, pageSize, sorter }): Promise<any> => {
+    const params: any = {
       p: current,
       limit: pageSize,
+      order: sorter?.field,
+      desc: sorter?.order === 'descend' ? 'true' : undefined,
     };
+    if (range) {
+      const parsedRange = parseRange(range);
+      params.stime = moment(parsedRange.start).unix();
+      params.etime = moment(parsedRange.end).unix();
+    }
 
     return getUserInfoList({
       ...params,
@@ -202,32 +235,60 @@ const Resource: React.FC = () => {
   };
   const { tableProps } = useAntdTable(getTableData, {
     defaultPageSize: pagination.pageSize,
-    refreshDeps: [query, refreshFlag],
+    refreshDeps: [query, refreshFlag, range],
   });
 
   return (
     <PageLayout title={t('user.title')} icon={<UserOutlined />}>
       <div className='user-manage-content'>
-        <div className='user-content'>
+        <div className='user-content n9e-border-base'>
           <Row className='event-table-search'>
             <div className='event-table-search-left'>
-              <Input className={'searchInput'} prefix={<SearchOutlined />} onPressEnter={onSearchQuery} placeholder={t('user.search_placeholder')} />
+              <Space>
+                <Input className={'searchInput'} prefix={<SearchOutlined />} onPressEnter={onSearchQuery} placeholder={t('user.search_placeholder')} />
+                <TimeRangePicker
+                  allowClear
+                  placeholder={t('user.last_active_time')}
+                  value={range}
+                  onChange={(newVal) => {
+                    setRange(newVal);
+                  }}
+                  onClear={() => {
+                    setRange(undefined);
+                  }}
+                />
+              </Space>
             </div>
             <div className='event-table-search-right'>
-              {profile.roles?.includes('Admin') && (
-                <div className='user-manage-operate'>
-                  <Button type='primary' onClick={() => handleClick(ActionType.CreateUser)}>
-                    {t('common:btn.add')}
-                  </Button>
-                </div>
-              )}
+              <Space>
+                {profile.roles?.includes('Admin') && (
+                  <div className='user-manage-operate'>
+                    <Button type='primary' onClick={() => handleClick(ActionType.CreateUser)}>
+                      {t('common:btn.add')}
+                    </Button>
+                  </div>
+                )}
+                <Button
+                  onClick={() => {
+                    OrganizeColumns({
+                      i18nNs: 'user',
+                      value: columnsConfigs,
+                      onChange: (val) => {
+                        setColumnsConfigs(val);
+                        setDefaultColumnsConfigs(val, LOCAL_STORAGE_KEY);
+                      },
+                    });
+                  }}
+                  icon={<EyeOutlined />}
+                />
+              </Space>
             </div>
           </Row>
           <Table
             className='mt8'
             size='small'
             rowKey='id'
-            columns={userColumns}
+            columns={ajustColumns(userColumns, columnsConfigs)}
             {...tableProps}
             pagination={{
               ...tableProps.pagination,

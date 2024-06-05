@@ -25,5 +25,7 @@ const zh_CN = {
   teamSeparator: '团队分隔符',
   darkTheme: '深色主题',
   lightTheme: '浅色主题',
+  explorer_timeseries_legend_columns: '即时查询的时序图图列管理',
+  explorer_timeseries_legend_columns_placeholder: '默认值为 Last',
 };
 export default zh_CN;

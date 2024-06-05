@@ -64,7 +64,7 @@ const Detail = (props: any) => {
         </>
       }
     >
-      <div style={{ padding: 10 }}>
+      <div className='p2'>
         <Card title={data.title}>
           <Spin spinning={loading}>
             <div className='job-task-table'>

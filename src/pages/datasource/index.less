@@ -1,40 +1,3 @@
-.settings-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.settings-source-selector {
-  width: 440px;
-  height: 240px;
-  .boxShadowMixin();
-  border-radius: 2px;
-  background: #ffffff;
-  font-size: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  color: #8c8c8c;
-  .anticon {
-    font-size: 46px;
-    margin-bottom: 20px;
-  }
-  &:hover {
-    cursor: pointer;
-    background: fade(@primary-color, 10%);
-    color: @primary-color;
-  }
-}
-
-.datasource-list {
-  .enabled {
-    background: #f4f4f4;
-  }
-  .ant-table {
-    margin-top: 0 !important;
-  }
-}
-
 .settings-data-source-detail-drawer .ant-drawer-header {
   display: none;
 }
@@ -42,5 +5,20 @@
 .settings-source-form {
   .page-title {
     margin: 0 0 16px;
+  }
+}
+
+.settings-data-source-list {
+  .settings-data-source-list-name {
+    .anticon-edit {
+      display: none;
+    }
+  }
+  .ant-table-cell-row-hover {
+    .settings-data-source-list-name {
+      .anticon-edit {
+        display: block;
+      }
+    }
   }
 }

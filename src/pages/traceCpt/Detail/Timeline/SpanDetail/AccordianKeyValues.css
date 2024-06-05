@@ -23,7 +23,7 @@ limitations under the License.
 }
 
 .AccordianKeyValues--header:hover {
-  background: #e8e8e8;
+  background: var(--fc-fill-4);
 }
 
 .AccordianKeyValues--header.is-empty {
@@ -32,7 +32,7 @@ limitations under the License.
 }
 
 .AccordianKeyValues--header.is-high-contrast:not(.is-empty):hover {
-  background: #ddd;
+  background: var(--fc-fill-4);;
 }
 
 .AccordianKeyValues--emptyIcon {
@@ -49,7 +49,7 @@ limitations under the License.
   display: inline;
   margin-left: 0.7em;
   padding-right: 0.5rem;
-  border-right: 1px solid #ddd;
+  border-right: 1px solid var(--fc-fill-6);
 }
 
 .AccordianKeyValues--summaryItem:last-child {
@@ -58,10 +58,10 @@ limitations under the License.
 }
 
 .AccordianKeyValues--summaryLabel {
-  color: #777;
+  color: var(--fc-text-4);
 }
 
 .AccordianKeyValues--summaryDelim {
-  color: #bbb;
+  color: var(--fc-text-4);;
   padding: 0 0.2em;
 }

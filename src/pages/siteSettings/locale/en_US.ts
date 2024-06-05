@@ -24,5 +24,7 @@ const en_US = {
   teamSeparator: 'Team Separator',
   darkTheme: 'Dark Theme',
   lightTheme: 'Light Theme',
+  explorer_timeseries_legend_columns: 'Timeseries Legend Columns',
+  explorer_timeseries_legend_columns_placeholder: 'Default value is Last',
 };
 export default en_US;

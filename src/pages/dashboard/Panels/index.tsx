@@ -28,6 +28,7 @@ import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { updateDashboardConfigs as updateDashboardConfigsFunc } from '@/services/dashboardV2';
 import { Dashboard } from '@/store/dashboardInterface';
 import { CommonStateContext } from '@/App';
+import { IS_ENT } from '@/utils/constant';
 import {
   buildLayout,
   sortPanelsByGridLayout,
@@ -43,7 +44,7 @@ import {
 import Renderer from '../Renderer/Renderer/index';
 import Row from './Row';
 import EditorModal from './EditorModal';
-import { getDefaultThemeMode } from '../Detail/utils';
+import { getDefaultThemeMode, ROW_HEIGHT } from '../Detail/utils';
 import { IDashboardConfig } from '../types';
 import './style.less';
 
@@ -61,22 +62,26 @@ interface IProps {
   setPanels: React.Dispatch<React.SetStateAction<any[]>>;
   onShareClick: (panel: any) => void;
   onUpdated: (res: any) => void;
+  setVariableConfigRefreshFlag: (flag: string) => void;
 }
 
 const ReactGridLayout = WidthProvider(RGL);
 
 function index(props: IProps) {
   const { t } = useTranslation('dashboard');
-  const { profile, dashboardSaveMode, perms } = useContext(CommonStateContext);
+  const { profile, darkMode, dashboardSaveMode, perms } = useContext(CommonStateContext);
   const location = useLocation();
-  const themeMode = getDefaultThemeMode(querystring.parse(location.search));
+  let themeMode = darkMode ? 'dark' : 'light';
+  if (IS_ENT) {
+    themeMode = getDefaultThemeMode(querystring.parse(location.search));
+  }
   const { editable, dashboard, setDashboard, setAllowedLeave, range, variableConfig, panels, isPreview, setPanels, onShareClick, onUpdated } = props;
   const roles = _.get(profile, 'roles', []);
   const isAuthorized = _.includes(perms, '/dashboards/put') && !isPreview;
   const layoutInitialized = useRef(false);
   const allowUpdateDashboardConfigs = useRef(false);
   const reactGridLayoutDefaultProps = {
-    rowHeight: 40,
+    rowHeight: ROW_HEIGHT,
     cols: 24,
     useCSSTransforms: false,
     draggableHandle: '.dashboards-panels-item-drag-handle',
@@ -319,6 +324,7 @@ function index(props: IProps) {
         setPanels={setPanels}
         updateDashboardConfigs={updateDashboardConfigs}
         onUpdated={onUpdated}
+        setVariableConfigRefreshFlag={props.setVariableConfigRefreshFlag}
       />
     </div>
   );

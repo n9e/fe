@@ -44,7 +44,7 @@ export default function index() {
           renderHeadExtra={() => {
             return (
               <div>
-                <div className='left-area-group-title'>{t('default_filter.title')}</div>
+                <div className='n9e-biz-group-container-group-title'>{t('default_filter.title')}</div>
                 <div
                   className={classNames({
                     'n9e-biz-group-item': true,
@@ -67,7 +67,7 @@ export default function index() {
             localStorage.removeItem(N9E_ALERT_NODE_ID);
           }}
         />
-        {businessGroup.ids ? <List gids={gids === '-2' ? undefined : gids} /> : <BlankBusinessPlaceholder text={t('title')} />}
+        {businessGroup.ids ? <List gids={gids} /> : <BlankBusinessPlaceholder text={t('title')} />}
       </div>
     </PageLayout>
   );

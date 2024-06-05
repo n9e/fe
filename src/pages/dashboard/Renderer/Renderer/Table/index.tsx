@@ -131,7 +131,6 @@ function TableCpt(props: IProps, ref: any) {
     } else if (displayMode === 'labelValuesToRows') {
       fields = _.isArray(aggrDimension) ? aggrDimension : [aggrDimension];
     }
-    setDisplayedTableFields(fields);
     const aggrDimensions = _.isArray(aggrDimension) ? aggrDimension : [aggrDimension];
     const tableDataSource = formatToTable(data, aggrDimensions, 'refId');
     const groupNames = _.reduce(
@@ -143,8 +142,9 @@ function TableCpt(props: IProps, ref: any) {
     );
     if (isPreview) {
       setTableRefIds(groupNames);
+      setDisplayedTableFields(fields);
+      setTableFields(getColumnsKeys(data));
     }
-    setTableFields(getColumnsKeys(data));
     setCalculatedValues(data);
   }, [isPreview, useDeepCompareWithRef(series), calc, useDeepCompareWithRef(options), displayMode, aggrDimension, useDeepCompareWithRef(columns)]);
 
@@ -434,7 +434,7 @@ function TableCpt(props: IProps, ref: any) {
                 };
                 if (displayMode === 'labelValuesToRows' && aggrDimension) {
                   data.metric = {};
-                  _.forEach(tableFields, (item) => {
+                  _.forEach(getColumnsKeys(calculatedValues), (item) => {
                     data.metric[item] = record[item];
                   });
                 }

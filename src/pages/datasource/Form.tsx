@@ -102,6 +102,7 @@ export default function FormCpt() {
           <Spin spinning={true} />
         ) : (
           <Form
+            action={action}
             data={data}
             onFinish={(values, clusterInstance) => {
               if (
