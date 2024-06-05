@@ -185,6 +185,18 @@ export default function index(props: Props) {
             },
           },
           {
+            title: t('common:table.create_by'),
+            dataIndex: 'created_by',
+            key: 'created_by',
+            render: (value) => {
+              if (!value) return '-';
+              if (value === 'system') {
+                return <Tag>{t('payload_by_system')}</Tag>;
+              }
+              return value;
+            },
+          },
+          {
             title: t('common:table.operations'),
             width: 100,
             render: (record) => {
@@ -235,27 +247,29 @@ export default function index(props: Props) {
                           </a>
                         </Menu.Item>
                       </AuthorizationWrapper>
-                      <AuthorizationWrapper allowedPerms={['/built-in-components/del']}>
-                        <Menu.Item>
-                          <Button
-                            type='link'
-                            danger
-                            className='p0 height-auto'
-                            onClick={() => {
-                              Modal.confirm({
-                                title: t('common:confirm.delete'),
-                                onOk() {
-                                  deletePayloads([record.id]).then(() => {
-                                    fetchData();
-                                  });
-                                },
-                              });
-                            }}
-                          >
-                            {t('common:btn.delete')}
-                          </Button>
-                        </Menu.Item>
-                      </AuthorizationWrapper>
+                      {record.created_by !== 'system' && (
+                        <AuthorizationWrapper allowedPerms={['/built-in-components/del']}>
+                          <Menu.Item>
+                            <Button
+                              type='link'
+                              danger
+                              className='p0 height-auto'
+                              onClick={() => {
+                                Modal.confirm({
+                                  title: t('common:confirm.delete'),
+                                  onOk() {
+                                    deletePayloads([record.id]).then(() => {
+                                      fetchData();
+                                    });
+                                  },
+                                });
+                              }}
+                            >
+                              {t('common:btn.delete')}
+                            </Button>
+                          </Menu.Item>
+                        </AuthorizationWrapper>
+                      )}
                     </Menu>
                   }
                 >
