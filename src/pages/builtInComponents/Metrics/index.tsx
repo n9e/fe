@@ -18,7 +18,7 @@ import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { useAntdTable, useDebounceFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
-import { Space, Table, Button, Input, Dropdown, Select, message, Modal, Tooltip, Menu } from 'antd';
+import { Space, Table, Button, Input, Dropdown, Select, message, Modal, Tooltip, Menu, Tag } from 'antd';
 import { DownOutlined, SearchOutlined, EyeOutlined, MoreOutlined } from '@ant-design/icons';
 import { ColumnType } from 'antd/lib/table';
 import usePagination from '@/components/usePagination';
@@ -127,6 +127,18 @@ export default function index(props: Props) {
       dataIndex: 'note',
     },
     {
+      title: t('common:table.create_by'),
+      dataIndex: 'created_by',
+      key: 'created_by',
+      render: (value) => {
+        if (!value) return '-';
+        if (value === 'system') {
+          return <Tag>{t('builtInComponents:payload_by_system')}</Tag>;
+        }
+        return value;
+      },
+    },
+    {
       title: t('common:table.operations'),
       dataIndex: 'operator',
       render: (data, record: any) => {
@@ -166,7 +178,7 @@ export default function index(props: Props) {
                     </FormModal>
                   </Menu.Item>
                 )}
-                {actionAuth.delete && (
+                {actionAuth.delete && record.created_by !== 'system' && (
                   <Menu.Item>
                     <Button
                       danger
