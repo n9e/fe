@@ -1,6 +1,7 @@
 const zh_CN = {
   title: '通知模板管理',
   list: '通知模板',
+  name: '名称',
   channel: '标识',
   contact_key_name: '联系方式名称',
   contact_key: '联系方式标识',
@@ -11,5 +12,7 @@ const zh_CN = {
     1: '隐藏',
   },
   content_prompt: '内容有修改，是否放弃修改的内容？',
+  post_title: '新增通知模板',
+  update_title: '编辑通知模板',
 };
 export default zh_CN;

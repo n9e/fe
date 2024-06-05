@@ -83,6 +83,7 @@ export default function usePrometheus(props: IProps) {
           setSeries([]);
           setQuery([]);
           setError(e.message);
+          console.error(e);
         })
         .finally(() => {
           setLoading(false);

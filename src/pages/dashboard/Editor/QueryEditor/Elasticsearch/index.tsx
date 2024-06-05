@@ -1,20 +1,26 @@
 import React from 'react';
-import { Form, Row, Col, Input, Button, InputNumber } from 'antd';
+import { Form, Row, Col, Input, InputNumber, Space } from 'antd';
 import { DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
+import HideButton from '@/pages/dashboard/Components/HideButton';
+import { IS_PLUS } from '@/utils/constant';
+import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
+import DateField from './DateField';
 import IndexSelect from './IndexSelect';
 import Values from './Values';
 import GroupBy from './GroupBy';
 import Time from './Time';
 import Collapse, { Panel } from '../../Components/Collapse';
-import getFirstUnusedLetter from '../../../Renderer/utils/getFirstUnusedLetter';
+import ExpressionPanel from '../../Components/ExpressionPanel';
+import AddQueryButtons from '../../Components/AddQueryButtons';
 import { replaceExpressionVars } from '../../../VariableConfig/constant';
 
 const alphabet = 'ABCDEFGHIGKLMNOPQRSTUVWXYZ'.split('');
 
 export default function Elasticsearch({ chartForm, variableConfig, dashboardId }) {
   const { t } = useTranslation('dashboard');
+  const targets = Form.useWatch('targets');
 
   return (
     <Form.List name='targets'>
@@ -24,6 +30,10 @@ export default function Elasticsearch({ chartForm, variableConfig, dashboardId }
             <Collapse>
               {_.map(fields, (field, index) => {
                 const prefixName = ['targets', field.name];
+                const { __mode__ } = targets?.[field.name] || {};
+                if (__mode__ === '__expr__') {
+                  return <ExpressionPanel key={field.key} fields={fields} remove={remove} field={field} />;
+                }
                 return (
                   <Panel
                     header={
@@ -35,16 +45,20 @@ export default function Elasticsearch({ chartForm, variableConfig, dashboardId }
                     }
                     key={field.key}
                     extra={
-                      <div>
+                      <Space>
+                        {IS_PLUS && (
+                          <Form.Item noStyle {...field} name={[field.name, 'hide']}>
+                            <HideButton />
+                          </Form.Item>
+                        )}
                         {fields.length > 1 ? (
                           <DeleteOutlined
-                            style={{ marginLeft: 10 }}
                             onClick={() => {
                               remove(field.name);
                             }}
                           />
                         ) : null}
-                      </div>
+                      </Space>
                     }
                   >
                     <Form.Item noStyle {...field} name={[field.name, 'refId']} hidden />
@@ -134,29 +148,26 @@ export default function Elasticsearch({ chartForm, variableConfig, dashboardId }
                           return (
                             <Row gutter={10}>
                               <Col span={12}>
-                                <Form.Item
-                                  label={t('datasource:es.date_field')}
-                                  {...field}
-                                  name={[field.name, 'query', 'date_field']}
-                                  rules={[
-                                    {
-                                      required: true,
-                                      message: t('datasource:es.date_field_msg'),
-                                    },
-                                  ]}
-                                >
-                                  <Input />
+                                <Form.Item shouldUpdate noStyle>
+                                  {({ getFieldValue }) => {
+                                    let datasourceValue = getFieldValue('datasourceValue');
+                                    datasourceValue = replaceExpressionVars(datasourceValue as any, variableConfig, variableConfig.length, dashboardId);
+                                    const index = getFieldValue(['targets', field.name, 'query', 'index']);
+                                    return <DateField datasourceValue={datasourceValue} index={index} prefixField={field} prefixNames={[field.name, 'query']} />;
+                                  }}
                                 </Form.Item>
                               </Col>
                               <Col span={12}>
-                                <Form.Item label={t('datasource:es.raw.limit')} {...field} name={[field.name, 'query', 'limit']}>
-                                  <InputNumber style={{ width: '100%' }} />
-                                </Form.Item>
+                                <InputGroupWithFormItem label={t('datasource:es.raw.limit')}>
+                                  <Form.Item {...field} name={[field.name, 'query', 'limit']}>
+                                    <InputNumber style={{ width: '100%' }} />
+                                  </Form.Item>
+                                </InputGroupWithFormItem>
                               </Col>
                             </Row>
                           );
                         }
-                        return <Time prefixField={field} prefixNameField={[field.name]} chartForm={chartForm} />;
+                        return <Time prefixField={field} prefixNameField={[field.name]} chartForm={chartForm} variableConfig={variableConfig} dashboardId={dashboardId} />;
                       }}
                     </Form.Item>
                   </Panel>
@@ -165,9 +176,9 @@ export default function Elasticsearch({ chartForm, variableConfig, dashboardId }
 
               <Form.ErrorList errors={errors} />
             </Collapse>
-            <Button
-              style={{ width: '100%', marginTop: 10 }}
-              onClick={() => {
+            <AddQueryButtons
+              add={add}
+              addQuery={(newRefId) => {
                 add({
                   query: {
                     values: [
@@ -179,12 +190,10 @@ export default function Elasticsearch({ chartForm, variableConfig, dashboardId }
                     interval: 1,
                     interval_unit: 'min',
                   },
-                  refId: getFirstUnusedLetter(_.map(chartForm.getFieldValue('targets'), 'refId')),
+                  refId: newRefId,
                 });
               }}
-            >
-              + add query
-            </Button>
+            />
           </>
         );
       }}

@@ -22,9 +22,11 @@ import { removeDashboards } from '@/services/dashboardV2';
 import RefreshIcon from '@/components/RefreshIcon';
 import FormModal from './FormModal';
 import Import from './Import';
+import BatchClone from './BatchClone';
 import { CommonStateContext } from '@/App';
 
 interface IProps {
+  gids?: string;
   selectRowKeys: any[];
   refreshList: () => void;
   searchVal: string;
@@ -32,9 +34,9 @@ interface IProps {
 }
 
 export default function Header(props: IProps) {
-  const { businessGroup } = useContext(CommonStateContext);
+  const { businessGroup, busiGroups } = useContext(CommonStateContext);
   const { t } = useTranslation('dashboard');
-  const { selectRowKeys, refreshList, searchVal, onSearchChange } = props;
+  const { gids, selectRowKeys, refreshList, searchVal, onSearchChange } = props;
 
   return (
     <>
@@ -60,7 +62,7 @@ export default function Header(props: IProps) {
             placeholder={t('search_placeholder')}
           />
         </Space>
-        {businessGroup.isLeaf && (
+        {businessGroup.isLeaf && gids && gids !== '-1' && (
           <Space>
             <Button
               type='primary'
@@ -91,6 +93,21 @@ export default function Header(props: IProps) {
                       }}
                     >
                       <span>{t('common:btn.import')}</span>
+                    </li>
+                    <li
+                      className='ant-dropdown-menu-item'
+                      onClick={() => {
+                        if (selectRowKeys.length) {
+                          BatchClone({
+                            board_ids: selectRowKeys,
+                            busiGroups,
+                          });
+                        } else {
+                          message.warning(t('batch.noSelected'));
+                        }
+                      }}
+                    >
+                      <span>{t('common:btn.batch_clone')}</span>
                     </li>
                     <li
                       className='ant-dropdown-menu-item'

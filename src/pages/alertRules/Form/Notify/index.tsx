@@ -53,7 +53,9 @@ export default function index({ disabled }) {
     getNotifyChannel();
     getWebhooks().then((res) => {
       const globalFlashdutyPushConfigured = _.some(res, (item) => {
-        return _.includes(item.url, '/event/push/alert/n9e') && item.enable;
+        // TODO 糟糕的设计，需要根据 url pathnam 这种匹配来判断是否配置了 flashduty
+        // 2024-03-05 排除掉事件墙的推送
+        return _.includes(item.url, '/event/push/alert/n9e') && !_.includes(item.url, '/api/v1/event/push/alert/n9e') && item.enable;
       });
       setGlobalFlashdutyPushConfigured(globalFlashdutyPushConfigured);
       if (globalFlashdutyPushConfigured) {
@@ -88,7 +90,17 @@ export default function index({ disabled }) {
             display: notifyTargetCollapsed ? 'none' : 'block',
           }}
         >
-          <Form.Item label={t('notify_channels')} name='notify_channels'>
+          <Form.Item
+            label={
+              <Space>
+                {t('notify_channels')}
+                <a target='_blank' href='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v6/usage/alert/alert-notify/'>
+                  {t('notify_channels_doc')}
+                </a>
+              </Space>
+            }
+            name='notify_channels'
+          >
             <Checkbox.Group disabled={disabled}>
               {contactList.map((item) => {
                 return (
@@ -227,7 +239,7 @@ export default function index({ disabled }) {
                   </Col>
                   <Col flex='auto'>
                     <Form.Item {...field} name={[field.name, 'value']}>
-                      <Input />
+                      <Input.TextArea autoSize />
                     </Form.Item>
                   </Col>
                   <Col flex='40px'>

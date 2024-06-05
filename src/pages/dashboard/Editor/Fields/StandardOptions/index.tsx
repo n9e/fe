@@ -25,13 +25,14 @@ interface IProps {
   preNamePrefix?: (string | number)[];
   namePrefix?: (string | number)[];
   showMinMax?: boolean;
+  showDisplayName?: boolean;
 }
 
 const { Option, OptGroup } = Select;
 
 export default function index(props: IProps) {
   const { t } = useTranslation('dashboard');
-  const { preNamePrefix = [], namePrefix = ['options', 'standardOptions'], showMinMax = true } = props;
+  const { preNamePrefix = [], namePrefix = ['options', 'standardOptions'], showMinMax = true, showDisplayName } = props;
 
   return (
     <Panel header={t('panel.standardOptions.title')}>
@@ -132,6 +133,11 @@ export default function index(props: IProps) {
             </Form.Item>
           </Col>
         </Row>
+        {showDisplayName && (
+          <Form.Item label={t('panel.standardOptions.displayName')} name={[...namePrefix, 'displayName']} tooltip={t('panel.standardOptions.displayName_tip')}>
+            <Input />
+          </Form.Item>
+        )}
       </>
     </Panel>
   );

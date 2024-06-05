@@ -7,12 +7,13 @@ import { parseRange } from '@/components/TimeRangePicker';
 import Timeseries from '@/pages/dashboard/Renderer/Renderer/Timeseries';
 import { getSerieName } from '@/pages/dashboard/Renderer/datasource/utils';
 import { fetchHistoryRangeBatch } from '@/services/dashboardV2';
+import { completeBreakpoints } from '@/pages/dashboard/Renderer/datasource/utils';
 
 const getDefaultStepByStartAndEnd = (start: number, end: number) => {
   return Math.max(Math.floor((end - start) / 240), 1);
 };
 
-export default function GraphPreview({ form, fieldName }) {
+export default function GraphPreview({ form, fieldName, promqlFieldName = 'prom_ql' }) {
   const { t } = useTranslation();
   const divRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
@@ -32,15 +33,16 @@ export default function GraphPreview({ form, fieldName }) {
 
     if (datasource_id) {
       setLoading(true);
+      const step = getDefaultStepByStartAndEnd(from, to);
       fetchHistoryRangeBatch(
         {
           datasource_id,
           queries: [
             {
-              query: query.prom_ql,
+              query: query[promqlFieldName],
               start: from,
               end: to,
-              step: getDefaultStepByStartAndEnd(from, to),
+              step,
             },
           ],
         },
@@ -62,7 +64,7 @@ export default function GraphPreview({ form, fieldName }) {
                 name: getSerieName(serie.metric),
                 metric: serie.metric,
                 expr: item.expr,
-                data: serie.values,
+                data: completeBreakpoints(step, serie.values),
               });
             });
           }

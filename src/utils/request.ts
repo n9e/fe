@@ -1,19 +1,24 @@
 /** Request 网络请求工具 更详细的 api 文档: https://github.com/umijs/umi-request */
-import { extend } from 'umi-request';
+import Request, { ResponseError, extend } from 'umi-request';
 import { notification } from 'antd';
 import _ from 'lodash';
 import { UpdateAccessToken } from '@/services/login';
 import { N9E_PATHNAME, AccessTokenKey } from '@/utils/constant';
 import i18next from 'i18next';
+import { basePrefix } from '@/App';
 
 /** 异常处理程序，所有的error都被这里处理，页面无法感知具体error */
-const errorHandler = (error: Error): Response => {
+const errorHandler = (error: ResponseError<any>): Response => {
   // 忽略掉 setting getter-only property "data" 的错误
   // 这是 umi-request 的一个 bug，当触发 abort 时 catch callback 里面不能 set data
-  if (error.name !== 'AbortError' && error.message !== 'setting getter-only property "data"') {
+  if (error.name !== 'AbortError' && error.message !== 'setting getter-only property "data"' && !Request.isCancel(error)) {
+    if (error.request.options.sourcePathname !== location.pathname) {
+      throw error;
+    }
     // @ts-ignore
-    if (!error.silence) {
+    else if (!error.silence) {
       notification.error({
+        key: error.message,
         message: error.message,
       });
     }
@@ -30,6 +35,9 @@ const errorHandler = (error: Error): Response => {
 
 /** 处理后端返回的错误信息 */
 const processError = (res: any): string => {
+  if (res?.error?.message) {
+    return _.isString(res?.error?.message) ? res?.error?.message : JSON.stringify(res?.error?.message);
+  }
   if (res?.error) {
     return _.isString(res?.error) ? res.error : JSON.stringify(res?.error);
   }
@@ -58,8 +66,8 @@ request.interceptors.request.use((url, options) => {
   headers['Authorization'] = `Bearer ${localStorage.getItem(AccessTokenKey) || ''}`;
   headers['X-Language'] = i18next.language;
   return {
-    url,
-    options: { ...options, headers },
+    url: basePrefix + url,
+    options: { ...options, headers, sourcePathname: location.pathname },
   };
 });
 
@@ -119,21 +127,21 @@ request.interceptors.response.use(
         });
     } else if (status === 401 && !_.includes(response.url, '/api/n9e-plus/proxy') && !_.includes(response.url, '/api/n9e/proxy')) {
       if (response.url.indexOf('/api/n9e/auth/refresh') > 0) {
-        location.href = `/login${location.pathname != '/' ? '?redirect=' + location.pathname + location.search : ''}`;
+        location.href = `${basePrefix}/login${location.pathname != '/' ? '?redirect=' + location.pathname + location.search : ''}`;
       } else {
         localStorage.getItem('refresh_token')
           ? UpdateAccessToken().then((res) => {
               console.log('401 err', res);
               if (res.err) {
-                location.href = `/login${location.pathname != '/' ? '?redirect=' + location.pathname + location.search : ''}`;
+                location.href = `${basePrefix}/login${location.pathname != '/' ? '?redirect=' + location.pathname + location.search : ''}`;
               } else {
                 const { access_token, refresh_token } = res.dat;
                 localStorage.setItem(AccessTokenKey, access_token);
                 localStorage.setItem('refresh_token', refresh_token);
-                location.href = `${location.pathname}${location.search}`;
+                location.href = `${basePrefix}${location.pathname}${location.search}`;
               }
             })
-          : (location.href = `/login${location.pathname != '/' ? '?redirect=' + location.pathname + location.search : ''}`);
+          : (location.href = `${basePrefix}/login${location.pathname != '/' ? '?redirect=' + location.pathname + location.search : ''}`);
       }
     } else if (
       status === 403 &&
@@ -146,9 +154,13 @@ request.interceptors.response.use(
         .clone()
         .json()
         .then((data) => {
-          location.href = '/403';
+          location.href = `${basePrefix}/403`;
           if (data.error && data.error.message) throw new Error(data.error.message);
         });
+    } else if ([502, 503, 504].includes(status)) {
+      throw {
+        message: i18next.t('网络请求超时，请稍后重试'),
+      };
     } else {
       return response
         .clone()

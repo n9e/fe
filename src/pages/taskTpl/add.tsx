@@ -32,6 +32,7 @@ const Add = (props: any) => {
   const curBusiId = businessGroup.id!;
   const { t } = useTranslation('common');
   const handleSubmit = (values: any) => {
+    values.pause = _.join(values.pause, ',');
     request(`${api.tasktpls(curBusiId)}`, {
       method: 'POST',
       body: JSON.stringify(values),

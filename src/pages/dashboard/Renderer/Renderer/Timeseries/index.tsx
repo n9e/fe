@@ -17,10 +17,12 @@
 import React, { useRef, useEffect, useState } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
-import { useTranslation } from 'react-i18next';
-import { Table, Tooltip } from 'antd';
-import { ColumnProps } from 'antd/lib/table';
 import classNames from 'classnames';
+import querystring from 'query-string';
+import { useTranslation } from 'react-i18next';
+import { Space, Table, Tooltip } from 'antd';
+import { ColumnProps } from 'antd/lib/table';
+import { useHistory, useLocation } from 'react-router-dom';
 import { VerticalRightOutlined, VerticalLeftOutlined } from '@ant-design/icons';
 import { useSize } from 'ahooks';
 import TsGraph from '@fc-plot/ts-graph';
@@ -84,13 +86,15 @@ function getStartAndEndByTargets(targets: any[]) {
 }
 
 function NameWithTooltip({ record, children }) {
+  const name = _.get(record, 'name');
+  const metric = _.get(record, 'metric.__name__');
   return (
     <Tooltip
       placement='left'
       title={
         <div>
           <div>{_.get(record, 'name')}</div>
-          <div>{_.get(record, 'metric.__name__')}</div>
+          {name !== metric && <div>{_.get(record, 'metric.__name__')}</div>}
           <div>{record.offset && record.offset !== 'current' ? `offfset ${record.offset}` : ''}</div>
           {_.map(_.omit(record.metric, '__name__'), (val, key) => {
             return (
@@ -111,6 +115,8 @@ function NameWithTooltip({ record, children }) {
 export default function index(props: IProps) {
   const [dashboardMeta] = useGlobalState('dashboardMeta');
   const { t } = useTranslation('dashboard');
+  const history = useHistory();
+  const location = useLocation();
   const { time, setRange, values, series, inDashboard = true, chartHeight = '200px', tableHeight = '200px', themeMode = '', onClick, isPreview } = props;
   const { custom, options = {}, targets, overrides } = values;
   const { lineWidth = 1, gradientMode = 'none', scaleDistribution } = custom;
@@ -235,16 +241,25 @@ export default function index(props: IProps) {
           cascade: isPreview === false ? _.includes(['sharedCrosshair', 'sharedTooltip'], dashboardMeta.graphTooltip) : undefined,
           cascadeScope: 'cascadeScope',
           cascadeMode: _.includes(['sharedCrosshair', 'sharedTooltip'], dashboardMeta.graphTooltip) ? dashboardMeta.graphTooltip : undefined,
-          pointNameformatter: (val) => {
-            return getMappedTextObj(val, options?.valueMappings)?.text;
+          pointNameformatter: (val, nearestPoint) => {
+            let name = val;
+            if (options?.standardOptions?.displayName) {
+              name = options?.standardOptions?.displayName;
+            }
+            const override = _.find(overrides, (item) => item.matcher.value === nearestPoint?.serieOptions?.refId);
+            if (override && override?.properties?.standardOptions?.displayName) {
+              name = override?.properties?.standardOptions?.displayName;
+            }
+            return getMappedTextObj(name, options?.valueMappings)?.text;
           },
           pointValueformatter: (val, nearestPoint) => {
-            if (overrides?.[0]?.matcher?.value && overrides?.[0]?.matcher?.value === nearestPoint?.serieOptions?.refId) {
+            const override = _.find(overrides, (item) => item.matcher.value === nearestPoint?.serieOptions?.refId);
+            if (override) {
               return valueFormatter(
                 {
-                  unit: overrides?.[0]?.properties?.standardOptions?.util,
-                  decimals: overrides?.[0]?.properties?.standardOptions?.decimals,
-                  dateFormat: overrides?.[0]?.properties?.standardOptions?.dateFormat,
+                  unit: override?.properties?.standardOptions?.util,
+                  decimals: override?.properties?.standardOptions?.decimals,
+                  dateFormat: override?.properties?.standardOptions?.dateFormat,
                 },
                 val,
               ).text;
@@ -326,6 +341,15 @@ export default function index(props: IProps) {
                   start: moment(times[0]),
                   end: moment(times[1]),
                 });
+                // 开启了缩放后更新全局时间范围时，url 中保存时间范围数据
+                history.replace({
+                  pathname: location.pathname,
+                  search: querystring.stringify({
+                    ...(querystring.parse(location.search) || {}),
+                    __from: moment(times[0]).valueOf(),
+                    __to: moment(times[1]).valueOf(),
+                  }),
+                });
               }
             }
           : undefined,
@@ -366,12 +390,17 @@ export default function index(props: IProps) {
       },
       render: (text, record: any) => {
         return (
-          <NameWithTooltip record={record}>
+          <Space>
+            <div className='renderer-timeseries-legend-color-symbol' style={{ backgroundColor: record.color }} />
             <div className='ant-table-cell-ellipsis'>
-              {record.offset && record.offset !== 'current' ? <span style={{ paddingRight: 5 }}>offfset {record.offset}</span> : ''}
-              <span>{text}</span>
+              <NameWithTooltip record={record}>
+                <span>
+                  {record.offset && record.offset !== 'current' ? <span style={{ paddingRight: 5 }}>offfset {record.offset}</span> : ''}
+                  <span>{text}</span>
+                </span>
+              </NameWithTooltip>
             </div>
-          </NameWithTooltip>
+          </Space>
         );
       },
     },
@@ -380,9 +409,10 @@ export default function index(props: IProps) {
     tableColumn = [
       ...tableColumn,
       {
-        title: t(`panel.options.legend.${column}`),
+        title: t(`panel.options.legend.${column}`, {
+          lng: 'en_US', // fixed to en_US, optimize column width
+        }),
         dataIndex: column,
-        width: 100,
         sorter: (a, b) => a[column].stat - b[column].stat,
         render: (text) => {
           return text.text;
@@ -435,8 +465,7 @@ export default function index(props: IProps) {
           // height: legendEleSize?.height! + 14,
           width: placement === 'right' ? (isExpanded ? '100%' : 'max-content') : '100%',
           maxWidth: placement === 'right' ? (isExpanded ? '100%' : '40%') : '100%',
-          overflow: 'hidden',
-          overflowY: 'auto',
+          overflow: 'auto',
           display: hasLegend ? 'block' : 'none',
           flexShrink: displayMode === 'table' ? 1 : 0,
           minHeight: 0,
@@ -445,14 +474,14 @@ export default function index(props: IProps) {
         {displayMode === 'table' && (
           <div ref={legendEleRef}>
             <Table
+              tableLayout='auto' // 2024-01-10 对齐 grafana 效果，取消 fixed 改成 auto，开启 x 轴滚动条
               rowKey='id'
               size='small'
-              className='scroll-container-table'
               columns={tableColumn}
               dataSource={legendData}
               pagination={false}
               rowClassName={(record) => {
-                return record.disabled ? 'disabled' : '';
+                return record.disabled ? 'renderer-timeseries-legend-table-row disabled' : 'renderer-timeseries-legend-table-row';
               }}
               onRow={(record) => {
                 return {

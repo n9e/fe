@@ -26,7 +26,7 @@ import useSsoWay from 'plus:/parcels/SSOConfigs/useSsoWay';
 
 import { useTranslation } from 'react-i18next';
 import { RsaEncry } from '@/utils/rsa';
-import { CommonStateContext } from '@/App';
+import { CommonStateContext, basePrefix } from '@/App';
 import { AccessTokenKey } from '@/utils/constant';
 
 export interface DisplayName {

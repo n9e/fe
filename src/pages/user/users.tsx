@@ -28,13 +28,14 @@ import { getUserInfoList, deleteUser } from '@/services/manage';
 import { User, UserType, ActionType } from '@/store/manageInterface';
 import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
+import Tags from './component/Tags';
 import './index.less';
 import './locale';
 
 const { confirm } = Modal;
 
 const Resource: React.FC = () => {
-  const { t } = useTranslation('user');
+  const { t, i18n } = useTranslation('user');
   const [visible, setVisible] = useState<boolean>(false);
   const [action, setAction] = useState<ActionType>();
   const [userId, setUserId] = useState<string>('');
@@ -73,6 +74,40 @@ const Resource: React.FC = () => {
       render: (text: []) => text.join(', '),
     },
     {
+      title: t('user.busi_groups'),
+      dataIndex: 'busi_groups',
+      render: (value) => {
+        return (
+          <Tags
+            data={value}
+            tagLinkTo={(item) => {
+              return {
+                pathname: '/busi-groups',
+                search: `?id=${item.id}`,
+              };
+            }}
+          />
+        );
+      },
+    },
+    {
+      title: t('user.user_groups'),
+      dataIndex: 'user_groups',
+      render: (value) => {
+        return (
+          <Tags
+            data={value}
+            tagLinkTo={(item) => {
+              return {
+                pathname: '/user-groups',
+                search: `?id=${item.id}`,
+              };
+            }}
+          />
+        );
+      },
+    },
+    {
       title: t('common:table.create_at'),
       dataIndex: 'create_at',
       render: (text) => {
@@ -82,7 +117,7 @@ const Resource: React.FC = () => {
     },
     {
       title: t('common:table.operations'),
-      width: '240px',
+      width: i18n.language === 'en_US' ? 200 : 160,
       render: (text: string, record) => (
         <>
           <Button className='oper-name' type='link' onClick={() => handleClick(ActionType.EditUser, record.id)}>

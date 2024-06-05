@@ -68,7 +68,7 @@ function MenuItem(props: { item: IMenuItem; isSub?: boolean } & IMenuProps) {
     <div
       onClick={() => onClick(item.key)}
       className={cn(
-        'group flex h-9 cursor-pointer items-center rounded px-3.5 transition-colors transition-spacing duration-75',
+        'group flex h-9 cursor-pointer items-center relative rounded px-3.5 transition-colors transition-spacing duration-75',
         isActive ? (isCustomBg ? 'bg-gray-200/20' : 'bg-fc-200') : '',
         isCustomBg ? 'hover:bg-gray-200/20' : 'hover:bg-fc-200',
       )}
@@ -80,7 +80,16 @@ function MenuItem(props: { item: IMenuItem; isSub?: boolean } & IMenuProps) {
       ) : (
         !collapsed && <div className='mr-[34px]'></div>
       )}
-      {!collapsed && <div className={`overflow-hidden truncate text-l1 tracking-wide ${isActive ? (props.isCustomBg ? 'text-[#fff]' : 'text-title') : ''}`}>{item.label}</div>}
+      {!collapsed && (
+        <div className={`overflow-hidden truncate  text-l1 tracking-wide ${isActive ? (props.isCustomBg ? 'text-[#fff]' : 'text-title') : ''}`}>
+          {item.label}{' '}
+          {item.beta && (
+            <span className='absolute border  text-[9px] px-[3px] py-[1px] right-[25px] top-[4px] h-[18px] scale-75 rounded-full bg-gradient-to-r from-yellow-400 to-yellow-300 text-yellow-700' style={{ lineHeight: '15px' }}>
+              Beta
+            </span>
+          )}
+        </div>
+      )}
     </div>
   );
 }

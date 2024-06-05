@@ -323,7 +323,7 @@ export default function Index(props: IProps) {
                       min={0}
                       style={{ width: '100%' }}
                       value={search.num_traces}
-                      onChange={(num_traces) => setSearch({ ...search, num_traces })}
+                      onChange={(num_traces: number) => setSearch({ ...search, num_traces })}
                       onPressEnter={() => handleSearch(false)}
                     />
                   </LabelField>

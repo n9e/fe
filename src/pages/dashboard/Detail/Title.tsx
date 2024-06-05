@@ -14,16 +14,17 @@
  * limitations under the License.
  *
  */
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import querystring from 'query-string';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Button, Space, Dropdown, Menu, Switch, notification, Select } from 'antd';
-import { RollbackOutlined, SettingOutlined } from '@ant-design/icons';
+import { Button, Space, Dropdown, Menu, Switch, notification, Select, message } from 'antd';
+import { RollbackOutlined, SettingOutlined, SaveOutlined } from '@ant-design/icons';
 import { useKeyPress } from 'ahooks';
 import { TimeRangePickerWithRefresh, IRawTimeRange } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
+import { updateDashboardConfigs } from '@/services/dashboardV2';
 import { AddPanelIcon } from '../config';
 import { visualizations } from '../Editor/config';
 import { dashboardTimeCacheKey } from './Detail';
@@ -40,19 +41,23 @@ interface IProps {
   isBuiltin: boolean;
   isAuthorized: boolean;
   gobackPath?: string;
+  editable: boolean;
+  updateAtRef: React.MutableRefObject<number | undefined>;
+  setAllowedLeave: (allowed: boolean) => void;
 }
 
 const cachePageTitle = document.title || 'Nightingale';
 
 export default function Title(props: IProps) {
   const { t, i18n } = useTranslation('dashboard');
-  const { dashboard, range, setRange, onAddPanel, isPreview, isBuiltin, isAuthorized } = props;
+  const { dashboard, range, setRange, onAddPanel, isPreview, isBuiltin, isAuthorized, editable, updateAtRef, setAllowedLeave } = props;
   const history = useHistory();
   const location = useLocation();
-  const { siteInfo } = useContext(CommonStateContext);
+  const { siteInfo, dashboardSaveMode } = useContext(CommonStateContext);
   const query = querystring.parse(location.search);
   const { viewMode } = query;
   const themeMode = getDefaultThemeMode(query);
+  const isClickTrigger = useRef(false);
 
   useEffect(() => {
     document.title = `${dashboard.name} - ${siteInfo?.page_title || cachePageTitle}`;
@@ -75,7 +80,7 @@ export default function Title(props: IProps) {
   });
 
   useEffect(() => {
-    if (query.viewMode === 'fullscreen') {
+    if (query.viewMode === 'fullscreen' && isClickTrigger.current) {
       notification.info({
         key: 'dashboard_fullscreen',
         message: (
@@ -89,7 +94,7 @@ export default function Title(props: IProps) {
                   unCheckedChildren='light'
                   defaultChecked={themeMode === 'dark'}
                   onChange={(checked) => {
-                    const newQuery = _.omit(query, ['themeMode']);
+                    const newQuery = _.omit(querystring.parse(window.location.search), ['themeMode']);
                     newQuery.themeMode = checked ? 'dark' : 'light';
                     localStorage.setItem('dashboard_themeMode', checked ? 'dark' : 'light');
                     history.replace({
@@ -146,6 +151,24 @@ export default function Title(props: IProps) {
               </Button>
             </Dropdown>
           )}
+          {isAuthorized && dashboardSaveMode === 'manual' && (
+            <Button
+              icon={<SaveOutlined />}
+              onClick={() => {
+                if (editable) {
+                  updateDashboardConfigs(dashboard.id, {
+                    configs: JSON.stringify(dashboard.configs),
+                  }).then((res) => {
+                    updateAtRef.current = res.update_at;
+                    message.success(t('detail.saved'));
+                    setAllowedLeave(true);
+                  });
+                } else {
+                  message.warning(t('detail.expired'));
+                }
+              }}
+            />
+          )}
           {isAuthorized && (
             <Button
               icon={<SettingOutlined />}
@@ -160,13 +183,26 @@ export default function Title(props: IProps) {
               }}
             />
           )}
-          <TimeRangePickerWithRefresh localKey={dashboardTimeCacheKey} dateFormat='YYYY-MM-DD HH:mm:ss' value={range} onChange={setRange} />
+          <TimeRangePickerWithRefresh
+            localKey={dashboardTimeCacheKey}
+            dateFormat='YYYY-MM-DD HH:mm:ss'
+            value={range}
+            onChange={(val) => {
+              history.replace({
+                pathname: location.pathname,
+                // 重新设置时间范围时，清空 __from 和 __to
+                search: querystring.stringify(_.omit(querystring.parse(window.location.search), ['__from', '__to'])),
+              });
+              setRange(val);
+            }}
+          />
           <Button
             onClick={() => {
-              const newQuery = _.omit(query, ['viewMode', 'themeMode']);
+              const newQuery = _.omit(querystring.parse(window.location.search), ['viewMode', 'themeMode']);
               if (!viewMode) {
                 newQuery.viewMode = 'fullscreen';
                 newQuery.themeMode = localStorage.getItem(dashboardThemeModeCacheKey) || 'light';
+                isClickTrigger.current = true;
               }
               history.replace({
                 pathname: location.pathname,
@@ -187,7 +223,7 @@ export default function Title(props: IProps) {
             ]}
             value={themeMode || 'light'}
             onChange={(val) => {
-              const newQuery = _.omit(query, ['themeMode']);
+              const newQuery = _.omit(querystring.parse(window.location.search), ['themeMode']);
               newQuery.themeMode = val;
               history.replace({
                 pathname: location.pathname,

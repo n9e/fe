@@ -34,7 +34,8 @@ export default function DisplayItem(props: IProps) {
     setSelected(value);
   }, [JSON.stringify(value)]);
 
-  if (type === 'constant' || hide) return null;
+  // 兼容旧数据，businessGroupIdent 和 constant 的 hide 默认为 true
+  if (hide || ((type === 'businessGroupIdent' || type === 'constant') && hide === undefined)) return null;
 
   return (
     <div className='tag-content-close-item'>
@@ -136,6 +137,62 @@ export default function DisplayItem(props: IProps) {
             ))}
           </Select>
         ) : null}
+        {type === 'hostIdent' ? (
+          <Select
+            allowClear
+            mode={multi ? 'tags' : undefined}
+            style={{
+              width: '180px',
+            }}
+            maxTagCount='responsive'
+            onChange={(v) => {
+              let val = v;
+              if (_.isArray(v)) {
+                const curVal = _.last(v);
+                if (curVal === 'all') {
+                  val = ['all'];
+                } else if (v.includes('all')) {
+                  val = _.without(v, 'all');
+                }
+              }
+              setSelected(val);
+              onChange(val);
+            }}
+            defaultActiveFirstOption={false}
+            showSearch
+            dropdownMatchSelectWidth={false}
+            value={selected}
+            dropdownClassName='overflow-586'
+            maxTagPlaceholder={(omittedValues) => {
+              return (
+                <Tooltip
+                  title={
+                    <div>
+                      {omittedValues.map((item) => {
+                        return <div key={item.key}>{item.value}</div>;
+                      })}
+                    </div>
+                  }
+                >
+                  <div>+{omittedValues.length}...</div>
+                </Tooltip>
+              );
+            }}
+          >
+            {allOption && (
+              <Select.Option key={'all'} value={'all'}>
+                all
+              </Select.Option>
+            )}
+            {_.map(options, (value) => (
+              <Select.Option key={value} value={value} style={{ maxWidth: 500 }}>
+                {value}
+              </Select.Option>
+            ))}
+          </Select>
+        ) : null}
+        {type === 'businessGroupIdent' ? <Input disabled value={value} /> : null}
+        {type === 'constant' ? <Input disabled value={value} /> : null}
       </Input.Group>
     </div>
   );

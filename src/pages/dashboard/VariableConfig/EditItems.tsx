@@ -21,8 +21,10 @@ import { arrayMoveImmutable } from 'array-move';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
+import { Dashboard } from '@/store/dashboardInterface';
 import EditItem from './EditItem';
 import { IVariable } from './definition';
+import { setVaraiableSelected } from './constant';
 
 interface IProps {
   id: string;
@@ -31,11 +33,12 @@ interface IProps {
   value?: IVariable[];
   range: IRawTimeRange;
   onChange: (v?: IVariable[]) => void;
+  dashboard: Dashboard;
 }
 
 export default function EditItems(props: IProps) {
   const { t } = useTranslation('dashboard');
-  const { visible, setVisible, onChange, value, range, id } = props;
+  const { visible, setVisible, onChange, value, range, id, dashboard } = props;
   const datasourceVars = _.filter(value, { type: 'datasource' });
   const [data, setData] = useState<IVariable[]>(value || []);
   const [record, setRecord] = useState<IVariable>({
@@ -95,7 +98,9 @@ export default function EditItems(props: IProps) {
             {
               title: t('var.type'),
               dataIndex: 'type',
-              width: 100,
+              render: (val) => {
+                return t(`var.type_map.${val}`);
+              },
             },
             {
               title: t('var.definition'),
@@ -214,6 +219,19 @@ export default function EditItems(props: IProps) {
                 }
                 return item;
               });
+              // TODO 2023-01-25 如果修改了数据源变量的默认值，更新该变量的已选值
+              if (val.type === 'datasource' && val.defaultValue) {
+                const preDefaultValue = _.find(data, { name: val.name })?.defaultValue;
+                if (preDefaultValue !== val.defaultValue) {
+                  setVaraiableSelected({
+                    name: val.name,
+                    value: val.defaultValue,
+                    id,
+                    urlAttach: true,
+                    vars: newData,
+                  });
+                }
+              }
             }
             setData(newData);
             onChange(newData);
@@ -224,6 +242,7 @@ export default function EditItems(props: IProps) {
             setMode('list');
             setRecordIndex(-1);
           }}
+          dashboard={dashboard}
         />
       )}
     </Modal>

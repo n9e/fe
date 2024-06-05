@@ -18,7 +18,7 @@ import React from 'react';
 import moment from 'moment';
 import _ from 'lodash';
 import queryString from 'query-string';
-import { getLabelNames, getMetricSeries, getLabelValues, getMetric, getQueryResult, getESVariableResult } from '@/services/dashboardV2';
+import { getLabelNames, getMetricSeries, getMetricSeriesV2, getLabelValues, getMetric, getQueryResult, getESVariableResult } from '@/services/dashboardV2';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { IVariable } from './definition';
 import { normalizeESQueryRequestBody } from './utils';
@@ -37,7 +37,9 @@ export const convertExpressionToQuery = (expression: string, range: IRawTimeRang
   if (datasource?.cate === 'elasticsearch' && datasourceValue) {
     try {
       const query = JSON.parse(expression);
-      return getESVariableResult(datasourceValue, config?.index!, normalizeESQueryRequestBody(query));
+      const start = moment(parsedRange.start).valueOf();
+      const end = moment(parsedRange.end).valueOf();
+      return getESVariableResult(datasourceValue, config?.index!, normalizeESQueryRequestBody(query, config?.date_field, start, end));
     } catch (e) {
       return Promise.resolve([]);
     }
@@ -50,7 +52,10 @@ export const convertExpressionToQuery = (expression: string, range: IRawTimeRang
         let metricsAndLabel = expression.substring('label_values('.length, expression.length - 1).split(',');
         const label = metricsAndLabel.pop();
         const metric = metricsAndLabel.join(', ');
-        return getMetricSeries({ 'match[]': metric.trim(), start, end }, datasourceValue).then((res) => Array.from(new Set(_.map(res.data, (item) => item[label!.trim()]))));
+        if (end - start >= 86400) {
+          return getMetricSeries({ 'match[]': metric.trim(), start, end }, datasourceValue).then((res) => Array.from(new Set(_.map(res.data, (item) => item[label!.trim()]))));
+        }
+        return getMetricSeriesV2({ metric, start, end }, datasourceValue).then((res) => Array.from(new Set(_.map(res.data, (item) => item[label!.trim()]))));
       } else {
         const label = expression.substring('label_values('.length, expression.length - 1);
         return getLabelValues(label, { start, end }, datasourceValue).then((res) => res.data);
@@ -111,6 +116,10 @@ function attachVariable2Url(key, value, id: string, vars?: IVariable[]) {
   _.forEach(_.assign({}, varsValue, query, { [key]: value }), (value, key) => {
     newQuery[key] = _.isEmpty(value) && !_.isNumber(value) ? undefined : value;
   });
+  // 当清空变量值时，需要在开启固定变量值模式，以防止变量值又处理默认值逻辑
+  if (value === undefined) {
+    newQuery['__variable_value_fixed'] = 'true';
+  }
   const newurl = `${protocol}//${host}${pathname}?${queryString.stringify(newQuery)}`;
   window.history.replaceState({ path: newurl }, '', newurl);
 }
@@ -129,8 +138,9 @@ export function setVaraiableSelected({
   urlAttach?: boolean;
   vars?: IVariable[];
 }) {
-  if (value === undefined) return;
-  localStorage.setItem(`dashboard_v6_${id}_${name}`, typeof value === 'string' ? value : JSON.stringify(value));
+  if (value !== undefined) {
+    localStorage.setItem(`dashboard_v6_${id}_${name}`, typeof value === 'string' ? value : JSON.stringify(value));
+  }
   urlAttach && attachVariable2Url(name, value, id, vars);
 }
 
@@ -206,17 +216,17 @@ export const replaceExpressionVarsSpecifyRule = (
               newExpression = replaceAllPolyfill(
                 newExpression,
                 placeholder,
-                `(${(options as string[]).filter((i) => !reg || !stringToRegex(reg) || (stringToRegex(reg) as RegExp).test(i)).join('|')})`,
+                `(${_.trim((options as string[]).filter((i) => !reg || !stringToRegex(reg) || (stringToRegex(reg) as RegExp).test(i)).join('|'), '|')})`,
               );
             }
           } else if (Array.isArray(selected)) {
-            const realSelected = _.size(selected) === 1 ? selected[0] : `(${(selected as string[]).join('|')})`;
+            const realSelected = _.size(selected) === 0 ? '' : _.size(selected) === 1 ? selected[0] : `(${_.trim((selected as string[]).join('|'), '|')})`;
             newExpression = replaceAllPolyfill(newExpression, placeholder, realSelected);
           } else if (typeof selected === 'string') {
             newExpression = replaceAllPolyfill(newExpression, placeholder, selected as string);
-          } else if (selected === null) {
+          } else if (selected === null || selected === undefined) {
             // 未选择或填写变量值时替换为传入的value
-            newExpression = replaceAllPolyfill(newExpression, placeholder, value ? (_.isArray(value) ? _.join(value, '|') : value) : '');
+            newExpression = replaceAllPolyfill(newExpression, placeholder, value ? (_.isArray(value) ? _.trim(_.join(value, '|'), '|') : value) : '');
             if (type === 'datasource') {
               newExpression = !_.isNaN(_.toNumber(newExpression)) ? (_.toNumber(newExpression) as any) : newExpression;
             }

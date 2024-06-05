@@ -16,6 +16,7 @@ const zh_HK = {
   severity: '告警級別',
   eventType: '事件類別',
   rule_name: '規則標題 & 事件標籤',
+  first_trigger_time: '首次觸發時間',
   trigger_time: '觸發時間',
   shield: '屏蔽',
   prod: '監控類型',
@@ -67,6 +68,8 @@ const zh_HK = {
       trigger: '觸發',
     },
     trigger: '觸發',
+    firemap_ql_label: '卡片',
+    northstar_ql_label: '指標',
   },
 };
 

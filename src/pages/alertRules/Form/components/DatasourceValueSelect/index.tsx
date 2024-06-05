@@ -20,7 +20,7 @@ import { WarningOutlined, ReloadOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
-import { getDataSourceList } from '@/pages/datasource/services';
+import { getDatasourceBriefList } from '@/services/common';
 
 export const DATASOURCE_ALL = 0;
 
@@ -54,7 +54,7 @@ export default function index({ setFieldsValue, cate, datasourceList, mode, requ
   const datasourceIds = Form.useWatch('datasource_ids');
   const invalidDatasourceIds = getInvalidDatasourceIds(datasourceIds, datasourceList, fullDatasourceList);
   const fetchDatasourceList = () => {
-    getDataSourceList().then((res) => {
+    getDatasourceBriefList().then((res) => {
       setFullDatasourceList(res);
     });
   };
@@ -88,8 +88,19 @@ export default function index({ setFieldsValue, cate, datasourceList, mode, requ
                 {_.map(invalidDatasourceIds, (item) => {
                   const result = _.find(fullDatasourceList, { id: item });
                   if (result) {
+                    let url = `/help/source/edit/${result.plugin_type}/${result.id}`;
+                    if (import.meta.env.VITE_IS_ENT === 'true') {
+                      const cateMap = {
+                        timeseries: 'datasource',
+                        logging: 'logsource',
+                      };
+                      url = `/settings/${cateMap[result.category]}/edit/${result.id}`;
+                      if (result.category === 'logging') {
+                        url = `/settings/${cateMap[result.category]}/edit/${result.plugin_type}/${result.id}`;
+                      }
+                    }
                     return (
-                      <Link style={{ paddingLeft: 8 }} target='_blank' to={`/help/source/edit/${result.plugin_type}/${result.id}`}>
+                      <Link style={{ paddingLeft: 8 }} target='_blank' to={url}>
                         {result.name}
                       </Link>
                     );
@@ -128,7 +139,6 @@ export default function index({ setFieldsValue, cate, datasourceList, mode, requ
           message: '', // label 右侧已经显示，这里就不显示 error msg
         },
       ]}
-      required
     >
       <Select
         mode={mode}

@@ -23,6 +23,8 @@ import { useTranslation } from 'react-i18next';
 import { EditOutlined } from '@ant-design/icons';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
+import { Dashboard } from '@/store/dashboardInterface';
+import { getMonObjectList } from '@/services/targets';
 import { convertExpressionToQuery, replaceExpressionVars, getVaraiableSelected, setVaraiableSelected, filterOptionsByReg, stringToRegex } from './constant';
 import { IVariable } from './definition';
 import DisplayItem from './DisplayItem';
@@ -37,6 +39,7 @@ interface IProps {
   onChange: (data: IVariable[], needSave: boolean, options?: IVariable[]) => void;
   onOpenFire?: () => void;
   isPreview?: boolean;
+  dashboard: Dashboard;
 }
 
 function includes(source, target) {
@@ -48,9 +51,9 @@ function includes(source, target) {
 
 function index(props: IProps) {
   const { t } = useTranslation('dashboard');
-  const { groupedDatasourceList } = useContext(CommonStateContext);
+  const { groupedDatasourceList, busiGroups } = useContext(CommonStateContext);
   const query = queryString.parse(useLocation().search);
-  const { id, editable = true, range, onChange, onOpenFire, isPreview = false } = props;
+  const { id, editable = true, range, onChange, onOpenFire, isPreview = false, dashboard } = props;
   const [editing, setEditing] = useState<boolean>(false);
   const [data, setData] = useState<IVariable[]>([]);
   const dataWithoutConstant = _.filter(data, (item) => item.type !== 'constant');
@@ -146,7 +149,9 @@ function index(props: IProps) {
             result[idx].options = _.map(_.compact(_.split(item.definition, ',')), _.trim);
             const selected = getVaraiableSelected(item.name, item.type, id);
             if (selected === null && query.__variable_value_fixed === undefined) {
-              setVaraiableSelected({ name: item.name, value: item.defaultValue!, id, urlAttach: true });
+              const head = _.head(result[idx].options)!;
+              const defaultVal = item.multi ? (item.allOption ? ['all'] : head ? [head] : []) : head;
+              setVaraiableSelected({ name: item.name, value: defaultVal, id, urlAttach: true });
             }
           } else if (item.type === 'textbox') {
             result[idx] = item;
@@ -181,8 +186,39 @@ function index(props: IProps) {
                 }
               }
             }
+          } else if (item.type === 'hostIdent') {
+            let options: string[] = [];
+            try {
+              const res = await getMonObjectList({
+                gids: dashboard.group_id,
+                p: 1,
+                limit: 5000,
+              });
+              options = _.sortBy(_.uniq(_.map(res?.dat?.list, 'ident')));
+            } catch (error) {
+              console.error(error);
+            }
+            const regFilterOptions = filterOptionsByReg(options, item.reg, result, idx, id);
+            result[idx] = item;
+            result[idx].options = regFilterOptions;
+            const selected = getVaraiableSelected(item.name, item.type, id);
+            if (query.__variable_value_fixed === undefined) {
+              if (selected === null || (selected && !_.isEmpty(regFilterOptions) && !includes(regFilterOptions, selected))) {
+                const head = regFilterOptions?.[0] || ''; // 2014-01-22 添加默认值（空字符）
+                const defaultVal = item.multi ? (item.allOption ? ['all'] : head ? [head] : []) : head;
+                setVaraiableSelected({ name: item.name, value: defaultVal, id, urlAttach: true });
+              }
+            }
+          } else if (item.type === 'businessGroupIdent') {
+            result[idx] = item;
+            const hostIdent = _.find(busiGroups, { id: dashboard.group_id })?.label_value;
+            const selected = getVaraiableSelected(item.name, item.type, id);
+            if (hostIdent && selected === null && query.__variable_value_fixed === undefined) {
+              setVaraiableSelected({ name: item.name, value: hostIdent, id, urlAttach: true });
+            }
           }
         }
+
         // 设置变量默认值，优先从 url 中获取，其次是 localStorage
         result = _.map(_.compact(result), (item) => {
           return {
@@ -194,7 +230,7 @@ function index(props: IProps) {
         onChange(value, false, result);
       })();
     }
-  }, [JSON.stringify(value), refreshFlag]);
+  }, [JSON.stringify(value), refreshFlag, range]);
 
   return (
     <div className='tag-area'>
@@ -239,11 +275,12 @@ function index(props: IProps) {
         onChange={(v: IVariable[]) => {
           if (v) {
             onChange(v, true);
-            setData(v);
+            setRefreshFlag(_.uniqueId('refreshFlag_')); // 2023-01-25 变量配置修改后，重新初始化后再设置变量值
           }
         }}
         range={range}
         id={id}
+        dashboard={dashboard}
       />
     </div>
   );

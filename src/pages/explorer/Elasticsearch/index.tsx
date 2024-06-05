@@ -1,16 +1,17 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { createPortal } from 'react-dom';
 import _ from 'lodash';
 import moment from 'moment';
 import queryString, { ParsedQuery } from 'query-string';
 import { useTranslation } from 'react-i18next';
-import { Table, Empty, Spin, InputNumber, Select, Radio, Space, Checkbox, Tag, Form } from 'antd';
+import { Table, Empty, Spin, InputNumber, Select, Radio, Space, Checkbox, Tag, Form, Button } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
 import { DownOutlined, RightOutlined, LeftOutlined } from '@ant-design/icons';
 import { useLocation } from 'react-router-dom';
 import { getLogsQuery } from './services';
 import { parseRange } from '@/components/TimeRangePicker';
 import Timeseries from '@/pages/dashboard/Renderer/Renderer/Timeseries';
+import { CommonStateContext } from '@/App';
 import metricQuery from './metricQuery';
 import { getColumnsFromFields, Field, dslBuilder, Filter, getFieldLabel } from './utils';
 import FieldsSidebar from './FieldsSidebar';
@@ -18,6 +19,10 @@ import QueryBuilder from './QueryBuilder';
 import QueryBuilderWithIndexPatterns from './QueryBuilderWithIndexPatterns';
 import LogView from './LogView';
 import './style.less';
+// @ts-ignore
+import DownloadModal from 'plus:/datasource/elasticsearch/components/LogDownload/DownloadModal';
+// @ts-ignore
+import ExportModal from 'plus:/datasource/elasticsearch/components/LogDownload/ExportModal';
 
 interface IProps {
   headerExtra: HTMLDivElement | null;
@@ -39,31 +44,42 @@ enum IMode {
   indices = 'indices',
 }
 
-const ModeRadio = ({ mode, setMode, allowHideSystemIndices, setAllowHideSystemIndices }) => {
+const ModeRadio = ({ mode, setMode, allowHideSystemIndices, setAllowHideSystemIndices, datasourceValue }) => {
   const { t } = useTranslation('explorer');
+  const { esIndexMode, isPlus } = useContext(CommonStateContext);
+
+  if (esIndexMode === 'index-patterns' || esIndexMode === 'indices') return null;
+
   return (
-    <Space>
-      <Radio.Group
-        value={mode}
-        onChange={(e) => {
-          setMode(e.target.value);
-        }}
-        buttonStyle='solid'
-      >
-        <Radio.Button value={IMode.indexPatterns}>{t('log.mode.indexPatterns')}</Radio.Button>
-        <Radio.Button value={IMode.indices}>{t('log.mode.indices')}</Radio.Button>
-      </Radio.Group>
-      {mode === IMode.indices && (
-        <Checkbox
-          checked={allowHideSystemIndices}
+    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <Space>
+        <Radio.Group
+          value={mode}
           onChange={(e) => {
-            setAllowHideSystemIndices(e.target.checked);
+            setMode(e.target.value);
           }}
+          buttonStyle='solid'
         >
-          {t('es-index-patterns:allow_hide_system_indices')}
-        </Checkbox>
+          <Radio.Button value={IMode.indexPatterns}>{t('log.mode.indexPatterns')}</Radio.Button>
+          <Radio.Button value={IMode.indices}>{t('log.mode.indices')}</Radio.Button>
+        </Radio.Group>
+        {mode === IMode.indices && (
+          <Checkbox
+            checked={allowHideSystemIndices}
+            onChange={(e) => {
+              setAllowHideSystemIndices(e.target.checked);
+            }}
+          >
+            {t('es-index-patterns:allow_hide_system_indices')}
+          </Checkbox>
+        )}
+      </Space>
+      {isPlus && (
+        <div>
+          <ExportModal datasourceValue={datasourceValue} />
+        </div>
       )}
-    </Space>
+    </div>
   );
 };
 
@@ -89,8 +105,14 @@ const getFilterByQuery = (query: ParsedQuery<string>) => {
   }
 };
 
-const getDefaultMode = (query, isOpenSearch, value?) => {
+const getDefaultMode = (query, isOpenSearch, esIndexMode, value?) => {
   if (isOpenSearch) return IMode.indices;
+  if (esIndexMode === 'index-patterns') {
+    return IMode.indexPatterns;
+  }
+  if (query?.mode === 'Pattern') {
+    return IMode.indexPatterns;
+  }
   if (query?.data_source_id && query?.index_name) {
     return IMode.indices;
   }
@@ -99,6 +121,7 @@ const getDefaultMode = (query, isOpenSearch, value?) => {
 
 export default function index(props: IProps) {
   const { t } = useTranslation('explorer');
+  const { esIndexMode, isPlus } = useContext(CommonStateContext);
   const { headerExtra, datasourceValue, form, isOpenSearch = false, defaultFormValuesControl } = props;
   const query = queryString.parse(useLocation().search);
   const [loading, setLoading] = useState(false);
@@ -120,7 +143,7 @@ export default function index(props: IProps) {
       start: number;
       end: number;
     }>();
-  const [mode, setMode] = useState<IMode>(getDefaultMode(query, isOpenSearch));
+  const [mode, setMode] = useState<IMode>(getDefaultMode(query, isOpenSearch, esIndexMode));
   const [allowHideSystemIndices, setAllowHideSystemIndices] = useState<boolean>(false);
 
   const fetchSeries = (values) => {
@@ -225,7 +248,7 @@ export default function index(props: IProps) {
     if (defaultFormValuesControl?.defaultFormValues && defaultFormValuesControl?.isInited === false) {
       form.setFieldsValue(defaultFormValuesControl.defaultFormValues);
       defaultFormValuesControl.setIsInited();
-      setMode(getDefaultMode(query, isOpenSearch, defaultFormValuesControl.defaultFormValues?.query?.mode));
+      setMode(getDefaultMode(query, isOpenSearch, esIndexMode, defaultFormValuesControl.defaultFormValues?.query?.mode));
     }
   }, []);
 
@@ -249,6 +272,7 @@ export default function index(props: IProps) {
                 }}
                 allowHideSystemIndices={allowHideSystemIndices}
                 setAllowHideSystemIndices={setAllowHideSystemIndices}
+                datasourceValue={datasourceValue}
               />,
               headerExtra,
             )
@@ -265,6 +289,7 @@ export default function index(props: IProps) {
               }}
               allowHideSystemIndices={allowHideSystemIndices}
               setAllowHideSystemIndices={setAllowHideSystemIndices}
+              datasourceValue={datasourceValue}
             />
           )}
         </>
@@ -298,11 +323,17 @@ export default function index(props: IProps) {
             {_.map(filters, (filter) => {
               return (
                 <Tag
+                  key={JSON.stringify(filter)}
                   closable
                   color={filter.operator === 'is not' ? 'red' : undefined}
                   onClose={(e) => {
                     e.preventDefault();
-                    setFilters(_.filter(filters, (item) => item.key !== filter.key));
+                    setFilters(
+                      _.filter(filters, (item) => {
+                        if (item.key === filter.key && item.value === filter.value) return false;
+                        return true;
+                      }),
+                    );
                   }}
                 >
                   {getFieldLabel(filter.key, fieldConfig)} {filter.operator === 'is not' ? '!=' : '='} {filter.value}
@@ -324,12 +355,13 @@ export default function index(props: IProps) {
                   params={{ form, timesRef, datasourceValue, limit: LOGS_LIMIT }}
                   filters={filters}
                   onValueFilter={({ key, value, operator }) => {
-                    if (!_.find(filters, { key })) {
+                    // key + value 作为唯一标识，存在则更新，不存在则新增
+                    if (!_.find(filters, { key, value })) {
                       setFilters([...(filters || []), { key, value, operator }]);
                     } else {
                       setFilters(
                         _.map(filters, (item) => {
-                          if (item.key === key) {
+                          if (item.key === key && item.value === value) {
                             return {
                               ...item,
                               value,
@@ -404,6 +436,7 @@ export default function index(props: IProps) {
                       >
                         {chartVisible ? t('log.hideChart') : t('log.showChart')}
                       </a>
+                      {isPlus && <DownloadModal queryData={{ ...form.getFieldsValue(), total }} />}
                     </div>
                   </div>
                   {chartVisible && (
@@ -426,6 +459,19 @@ export default function index(props: IProps) {
                             },
                           } as any
                         }
+                        hideResetBtn
+                        onZoomWithoutDefult={(times) => {
+                          form.setFieldsValue({
+                            query: {
+                              ...query,
+                              range: {
+                                start: moment(times[0]),
+                                end: moment(times[1]),
+                              },
+                            },
+                          });
+                          fetchData();
+                        }}
                       />
                     </div>
                   )}
@@ -444,7 +490,10 @@ export default function index(props: IProps) {
                     expandIcon: ({ expanded, onExpand, record }) =>
                       expanded ? <DownOutlined onClick={(e) => onExpand(record, e)} /> : <RightOutlined onClick={(e) => onExpand(record, e)} />,
                   }}
-                  scroll={{ x: _.isEmpty(selectedFields) ? undefined : 'max-content', y: 'calc(100% - 36px)' }}
+                  scroll={{
+                    // x: _.isEmpty(selectedFields) ? undefined : 'max-content',
+                    y: 'calc(100% - 36px)',
+                  }}
                   pagination={false}
                   onChange={(pagination, filters, sorter: any, extra) => {
                     sorterRef.current = _.map(_.isArray(sorter) ? sorter : [sorter], (item) => {

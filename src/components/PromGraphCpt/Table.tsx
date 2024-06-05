@@ -31,10 +31,12 @@ interface IProps {
   timestamp?: number;
   setTimestamp: (timestamp?: number) => void;
   refreshFlag: string;
+  loading: boolean;
+  setLoading: (loading: boolean) => void;
 }
 type ResultType = 'matrix' | 'vector' | 'scalar' | 'string' | 'streams';
 
-const LIMIT = 10000;
+const LIMIT = 1000;
 function getListItemLabel(resultType, record) {
   const { metric } = record;
   if (resultType === 'scalar') return 'scalar';
@@ -90,8 +92,7 @@ function getListItemValue(resultType, record) {
 }
 
 export default function Table(props: IProps) {
-  const { url, datasourceValue, promql, setQueryStats, setErrorContent, contentMaxHeight, timestamp, setTimestamp, refreshFlag } = props;
-  const [isLoading, setIsLoading] = useState(false);
+  const { url, datasourceValue, promql, setQueryStats, setErrorContent, contentMaxHeight, timestamp, setTimestamp, refreshFlag, loading, setLoading } = props;
   const [data, setData] = useState<{
     resultType: ResultType;
     result: any[];
@@ -103,7 +104,7 @@ export default function Table(props: IProps) {
   useEffect(() => {
     if (datasourceValue && promql) {
       const queryStart = Date.now();
-      setIsLoading(true);
+      setLoading(true);
       getPromData(`${url}/${datasourceValue}/api/v1/query`, {
         time: timestamp || moment().unix(),
         query: promql,
@@ -149,7 +150,7 @@ export default function Table(props: IProps) {
           setErrorContent(`Error executing query: ${msg}`);
         })
         .finally(() => {
-          setIsLoading(false);
+          setLoading(false);
         });
     }
   }, [timestamp, datasourceValue, promql, refreshFlag]);
@@ -177,7 +178,7 @@ export default function Table(props: IProps) {
           maxHeight: contentMaxHeight,
         }}
         size='small'
-        loading={isLoading}
+        loading={loading}
         dataSource={data ? data.result : []}
         renderItem={(item) => {
           return (

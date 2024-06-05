@@ -14,14 +14,18 @@ const en_US = {
   inspect_btn: 'Inspect',
   public: {
     name: 'Public',
-    0: {
-      confirm: 'Confirm to public?',
-      success: 'Public success',
+    unpublic: 'Unpublic',
+    cate: {
+      0: 'Anonymous access',
+      1: 'Login access',
+      2: 'Authorized access',
     },
-    1: {
-      confirm: 'Confirm to cancel public?',
-      success: 'Cancel public success',
-    },
+    bgids: 'Authorized business groups',
+  },
+  default_filter: {
+    title: 'Preset filters',
+    public: 'Public dashboards',
+    all: 'All dashboards',
   },
   create_title: 'Create Dashboard',
   edit_title: 'Edit Dashboard',
@@ -38,6 +42,11 @@ const en_US = {
     import_grafana_tip_version_warning: 'The imported dashboard config version is less than v8, some panels may not be displayed properly, do you want to continue importing?',
     continueToImport: 'Continue to import',
     noSelected: 'Please select any dashboard',
+    clone: {
+      name: 'Name',
+      result: 'Result',
+      errmsg: 'Error message',
+    },
   },
   link: {
     title: 'Links',
@@ -77,12 +86,21 @@ const en_US = {
     name_msg: 'Only support number and character underline',
     label: 'Label',
     type: 'Type',
+    type_map: {
+      query: 'Query',
+      custom: 'Custom',
+      textbox: 'Text box',
+      constant: 'Constant',
+      datasource: 'Datasource',
+      hostIdent: 'Host ident',
+      businessGroupIdent: 'Business group ident',
+    },
     hide: 'Hide',
     definition: 'Definition',
     definition_msg1: 'Please enter variable definition',
     definition_msg2: 'Variable definition must be valid JSON',
     reg: 'Regex',
-    reg_tip: 'Optional, can filter options or extract values by regex',
+    reg_tip: 'Optional, can filter options or extract values by regex。Using a <a>regular expression literal</a>, which consists of a pattern enclosed between slashes',
     multi: 'Multi select',
     allOption: 'Include all option',
     allValue: 'Custom all value',
@@ -101,7 +119,11 @@ const en_US = {
       definition: 'Datasource type',
       defaultValue: 'Default value',
       regex: 'Datasource name filter',
-      regex_tip: 'Optional, can filter options or extract values by regex',
+      regex_tip: 'Optional, can filter options, Using a <a>regular expression literal</a>, which consists of a pattern enclosed between slashes',
+    },
+    businessGroupIdent: {
+      ident: 'Business group ident',
+      invalid: 'Invalid business group ident, Please go to the business group management settings first.',
     },
   },
   row: {
@@ -197,6 +219,8 @@ const en_US = {
       min: 'Min',
       max: 'Max',
       decimals: 'Decimals',
+      displayName: 'Display name',
+      displayName_tip: 'Change the series name',
     },
     overrides: {
       matcher: {
@@ -330,6 +354,7 @@ const en_US = {
         yAxisField: 'Y-Axis',
         colorField: 'Color by field',
         barMaxWidth: 'Bar max width',
+        colorField_tip: 'Name is a reserved keyword, used as the field name of the series name',
       },
     },
     inspect: {
@@ -348,6 +373,18 @@ const en_US = {
     datasource_msg: 'Please select datasource',
     time: 'Time',
     time_tip: 'Default is the global time range of the dashboard',
+    prometheus: {
+      maxDataPoints: {
+        tip: 'Maximum number of points per series, Calculation step = (end - start) / maxDataPoints, default value is 240 step = 15s in the last 1 hour',
+      },
+      minStep: {
+        tip: 'An additional lower limit for the step parameter of the Prometheus query, Calculate step = max(step, minStep, safeStep), safeStep = (end - start) / 11000',
+      },
+      step: {
+        tag_tip: 'Calculate step = max((end - start) / maxDataPoints, minStep, safeStep), safeStep = (end - start) / 11000',
+      },
+    },
+    expression_placeholder: 'Math operations on one or more queries. You reference the query by ${refId} ie. $A, $B, $C etc. The sum of two scalar values: $A + $B > 10',
   },
   detail: {
     datasource_empty: 'Please configure the data source first',
@@ -358,6 +395,15 @@ const en_US = {
         esc: 'Press ESC to exit full screen mode',
         theme: 'Theme',
       },
+    },
+    saved: 'Dashboard saved',
+    expired: 'The dashboard has been modified by others. To avoid overwriting each other, please refresh the dashboard to view the latest configuration and data',
+    prompt: {
+      title: 'Unsaved changes',
+      message: 'Do you want to save your changes?',
+      cancelText: 'Cancel',
+      discardText: 'Discard',
+      okText: 'Save',
     },
   },
   settings: {
@@ -399,6 +445,7 @@ const en_US = {
     avg: 'Avg',
     sum: 'Sum',
     count: 'Count',
+    origin: 'Origin',
   },
 };
 export default en_US;

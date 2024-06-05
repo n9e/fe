@@ -14,14 +14,19 @@ const zh_CN = {
   inspect_btn: '排查',
   public: {
     name: '公开',
-    0: {
-      confirm: '确认公开吗？',
-      success: '公开成功',
+    unpublic: '不公开',
+    public_cate: '类型',
+    cate: {
+      0: '匿名访问',
+      1: '登录访问',
+      2: '授权访问',
     },
-    1: {
-      confirm: '确认取消公开吗？',
-      success: '取消公开成功',
-    },
+    bgids: '授权业务组',
+  },
+  default_filter: {
+    title: '预置筛选',
+    public: '公开仪表盘',
+    all: '全部仪表盘',
   },
   create_title: '创建仪表盘',
   edit_title: '编辑仪表盘',
@@ -38,6 +43,11 @@ const zh_CN = {
     import_grafana_tip_version_warning: '导入小于 v8 版本的仪表盘配置，可能会有部分图表不支持，以及图表无法正常渲染问题',
     continueToImport: '继续导入',
     noSelected: '请选择仪表盘',
+    clone: {
+      name: '名称',
+      result: '结果',
+      errmsg: '错误信息',
+    },
   },
   link: {
     title: '仪表盘链接',
@@ -77,12 +87,21 @@ const zh_CN = {
     name_msg: '仅支持数字和字符下划线',
     label: '显示名称',
     type: '变量类型',
+    type_map: {
+      query: '查询 (Query)',
+      custom: '自定义 (Custom)',
+      textbox: '文本框 (Text box)',
+      constant: '常量 (Constant)',
+      datasource: '数据源 (Datasource)',
+      hostIdent: '机器标识 (Host ident)',
+      businessGroupIdent: '业务组标识 (Business group ident)',
+    },
     hide: '隐藏变量',
     definition: '变量定义',
     definition_msg1: '请输入变量定义',
     definition_msg2: '变量定义必须是合法的JSON',
     reg: '正则',
-    reg_tip: '可选，可通过正则来过滤可选项，或提取值',
+    reg_tip: '可选，可通过正则来过滤可选项，或提取值。这里是填写的<a>正则表达式字面量</a>，其由包含在斜杠之间的模式组成',
     multi: '多选',
     allOption: '包含全选',
     allValue: '自定义全选值',
@@ -101,7 +120,11 @@ const zh_CN = {
       definition: '数据源类型',
       defaultValue: '默认值',
       regex: '数据源过滤',
-      regex_tip: '可选，可通过正则来过滤可选项',
+      regex_tip: '可选，可通过正则来过滤可选项。这里是填写的<a>正则表达式字面量</a>，其由包含在斜杠之间的模式组成。',
+    },
+    businessGroupIdent: {
+      ident: '业务组标识',
+      invalid: '没有找到当前业务组的标识，请先先去业务组管理设置',
     },
   },
   row: {
@@ -208,6 +231,8 @@ const zh_CN = {
       min: '最小值',
       max: '最大值',
       decimals: '小数位数',
+      displayName: '显示名称',
+      displayName_tip: '自定义系列名称',
     },
     overrides: {
       matcher: {
@@ -345,6 +370,7 @@ const zh_CN = {
         yAxisField: 'Y轴',
         colorField: '颜色字段',
         barMaxWidth: '条形最大宽度',
+        colorField_tip: 'Name 是保留关键字，作为序列名值的字段名',
       },
     },
     inspect: {
@@ -363,6 +389,18 @@ const zh_CN = {
     datasource_msg: '请选择数据源',
     time: '时间选择',
     time_tip: '可指定时间范围，默认为仪表盘全局时间范围',
+    prometheus: {
+      maxDataPoints: {
+        tip: '每条曲线最多的点数，计算 step = (end - start) / maxDataPoints，默认值为 240 在最近 1 小时内的 step = 15s',
+      },
+      minStep: {
+        tip: '最小的 step，计算 step = max(step, minStep, safeStep)，safeStep = (end - start) / 11000',
+      },
+      step: {
+        tag_tip: '计算 step = max((end - start) / maxDataPoints, minStep, safeStep), safeStep = (end - start) / 11000',
+      },
+    },
+    expression_placeholder: '对一个或多个查询进行数学运算。您通过 ${refId} 引用查询，即 $A、$B、$C 等。两个标量值的总和：$A + $B > 10',
   },
   detail: {
     datasource_empty: '没有数据源信息，请先配置数据源',
@@ -373,6 +411,15 @@ const zh_CN = {
         esc: '按 ESC 键退出全屏模式',
         theme: '主题切换',
       },
+    },
+    saved: '保存成功',
+    expired: '仪表盘已经被别人修改，为避免相互覆盖，请刷新仪表盘查看最新配置和数据',
+    prompt: {
+      title: '有更改未保存',
+      message: '您想保存更改吗？',
+      cancelText: '取消',
+      discardText: '放弃',
+      okText: '保存',
     },
   },
   settings: {
@@ -414,6 +461,7 @@ const zh_CN = {
     avg: '平均值',
     sum: '总和',
     count: '数量',
+    origin: '原始值',
   },
 };
 export default zh_CN;

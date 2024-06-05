@@ -67,16 +67,13 @@ export default function Bar(props: IProps) {
   const render = () => {
     if (!chartRef.current) return;
     let data: any[] = [];
-    if (yAxisField !== 'Value') {
-      data = _.map(calculatedValues, 'metric');
-    } else {
-      data = _.map(calculatedValues, (item) => {
-        return {
-          ...item.metric,
-          Value: item.stat,
-        };
-      });
-    }
+    data = _.map(calculatedValues, (item) => {
+      return {
+        ...item.metric,
+        Value: item.stat,
+        Name: item.name,
+      };
+    });
     data = _.map(
       _.groupBy(data, (item) => {
         return item[xAxisField] + item[colorField];
@@ -86,6 +83,10 @@ export default function Bar(props: IProps) {
           return items[0];
         } else {
           const yAxisFieldValues = _.map(items, (item) => {
+            const val = item[yAxisField];
+            if (_.isString(val) && !_.isNaN(_.toNumber(val))) {
+              return _.toNumber(val);
+            }
             return item[yAxisField];
           });
           const yAxisFieldValue = _.sum(yAxisFieldValues);
@@ -106,6 +107,7 @@ export default function Bar(props: IProps) {
       .interval()
       .data(data)
       .transform({ type: 'dodgeX' })
+      .transform({ type: 'sortX' })
       .encode('x', xAxisField)
       .encode('y', yAxisField)
       .encode('color', colorField)
@@ -127,7 +129,11 @@ export default function Bar(props: IProps) {
         },
       })
       .tooltip({
+        title: 'Name',
         items: [
+          {
+            channel: 'x',
+          },
           {
             channel: 'y',
             valueFormatter: (d) => {

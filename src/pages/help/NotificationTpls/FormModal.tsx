@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { Modal, Input, Form, Button, message } from 'antd';
+import { useTranslation } from 'react-i18next';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { NotifyTplsType } from './types';
 import { putNotifyTpl, postNotifyTpl } from './services';
@@ -10,12 +11,8 @@ interface IProps {
   onOk: () => void;
 }
 
-const titleMap = {
-  post: '新增通知模板',
-  update: '编辑通知模板',
-};
-
 function FormModal(props: IProps & ModalWrapProps) {
+  const { t } = useTranslation('notificationTpls');
   const { mode, visible, destroy, onOk, data = {} as NotifyTplsType } = props;
   const [form] = Form.useForm();
 
@@ -30,7 +27,7 @@ function FormModal(props: IProps & ModalWrapProps) {
   return (
     <Modal
       className='dashboard-import-modal'
-      title={titleMap[mode]}
+      title={t(`${mode}_title`)}
       visible={visible}
       onCancel={() => {
         destroy();
@@ -45,18 +42,25 @@ function FormModal(props: IProps & ModalWrapProps) {
           <div />
         </Form.Item>
         <Form.Item
-          label='名称'
+          label={t('name')}
           name='name'
           rules={[
             {
               required: true,
-              message: '请输入名称',
             },
           ]}
         >
           <Input />
         </Form.Item>
-        <Form.Item label='标识' name='channel'>
+        <Form.Item
+          label={t('channel')}
+          name='channel'
+          rules={[
+            {
+              required: true,
+            },
+          ]}
+        >
           <Input disabled={mode === 'update'} />
         </Form.Item>
         <Form.Item>
@@ -67,7 +71,7 @@ function FormModal(props: IProps & ModalWrapProps) {
               form.validateFields().then((values) => {
                 mode === 'post'
                   ? postNotifyTpl(values).then(() => {
-                      message.success('新增成功');
+                      message.success(t('common:success.add'));
                       onOk();
                       destroy();
                     })
@@ -76,14 +80,14 @@ function FormModal(props: IProps & ModalWrapProps) {
                       hide_contact: values.hide_contact ? 1 : 0,
                       hide_channel: values.hide_channel ? 1 : 0,
                     }).then((res) => {
-                      message.success('保存成功');
+                      message.success(t('common:success.save'));
                       onOk();
                       destroy();
                     });
               });
             }}
           >
-            保存
+            {t('common:btn.save')}
           </Button>
         </Form.Item>
       </Form>

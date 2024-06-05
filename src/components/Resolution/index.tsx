@@ -23,7 +23,7 @@ interface Props {
   onChange?: (num: number | null) => void;
 }
 
-const options = [15, 30, 60, 120, 300].map((num) => ({
+const options = [10, 15, 30, 60, 120, 300].map((num) => ({
   label: num,
   value: num,
 }));

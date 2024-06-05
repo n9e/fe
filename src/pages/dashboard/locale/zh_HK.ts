@@ -13,15 +13,19 @@ const zh_HK = {
   clear_cache_btn_tip: '清除表格列寬缓存，刷新頁面後生效',
   inspect_btn: '排查',
   public: {
-    '0': {
-      confirm: '確認公開嗎？',
-      success: '公開成功',
-    },
-    '1': {
-      confirm: '確認取消公開嗎？',
-      success: '取消公開成功',
-    },
     name: '公開',
+    unpublic: '未公開',
+    cate: {
+      0: '匿名訪問',
+      1: '登錄訪問',
+      2: '授權訪問',
+    },
+    bgids: '授權業務組',
+  },
+  default_filter: {
+    title: '預置篩選',
+    public: '公開儀表盤',
+    all: '全部儀表盤',
   },
   create_title: '創建儀表盤',
   edit_title: '編輯儀表盤',
@@ -38,6 +42,11 @@ const zh_HK = {
     import_grafana_tip_version_warning: '匯入的儀表盤配置版本小於 v8，部分圖表可能無法正常顯示，是否繼續匯入？',
     continueToImport: '繼續匯入',
     noSelected: '請選擇儀表盤',
+    clone: {
+      name: '名稱',
+      result: '結果',
+      errmsg: '錯誤信息',
+    },
   },
   link: {
     title: '儀表盤連結',
@@ -77,12 +86,21 @@ const zh_HK = {
     name_msg: '僅支援數字和字元下劃線',
     label: '顯示名稱',
     type: '變數類型',
+    type_map: {
+      query: '查詢',
+      custom: '自定義',
+      textbox: '文本框',
+      constant: '常量',
+      datasource: '數據源',
+      hostIdent: '主機標識',
+      businessGroupIdent: '業務組標識',
+    },
     hide: '隱藏變數',
     definition: '變數定義',
     definition_msg1: '請輸入變數定義',
     definition_msg2: '變數定義必須是合法的JSON',
     reg: '正則',
-    reg_tip: '可選，可通過正則來過濾可選項，或提取值',
+    reg_tip: '可選，可通過正則來過濾可選項，或提取值。這裡是填寫的<a>正規表示式字面量</a>，其由包含在斜線之間的模式組成',
     multi: '多選',
     allOption: '包含全選',
     allValue: '自定義全選值',
@@ -101,7 +119,11 @@ const zh_HK = {
       definition: '數據源類型',
       defaultValue: '預設值',
       regex: '數據源過濾',
-      regex_tip: '可選，可通過正則來過濾可選項，或提取值',
+      regex_tip: '可選，可通過正則來過濾可選項。這裡是填寫的<a>正規表示式字面量</a>，其由包含在斜線之間的模式組成',
+    },
+    businessGroupIdent: {
+      ident: '業務組標識',
+      invalid: '沒有找到目前業務組的標識，請先去業務組管理設置',
     },
   },
   row: {
@@ -203,6 +225,8 @@ const zh_HK = {
       min: '最小值',
       max: '最大值',
       decimals: '小數位數',
+      displayName: '顯示名稱',
+      displayName_tip: '自定義顯示名稱',
     },
     overrides: {
       matcher: {
@@ -340,6 +364,7 @@ const zh_HK = {
         yAxisField: 'Y轴',
         colorField: '颜色字段',
         barMaxWidth: '條形最大寬度',
+        colorField_tip: 'Name 是保留關鍵字，序列名值的欄位名稱',
       },
     },
     inspect: {
@@ -358,6 +383,18 @@ const zh_HK = {
     datasource_msg: '請選擇數據源',
     time: '時間選擇',
     time_tip: '可指定時間範圍，預設為儀表盤全域性時間範圍',
+    prometheus: {
+      maxDataPoints: {
+        tip: '每條曲線最多的點數，計算 step = (end - start) / maxDataPoints，預設值為 240 在最近 1 小時內的 step = 15s',
+      },
+      minStep: {
+        tip: '最小的 step，計算 step = max(step, minStep, safeStep)，safeStep = (end - start) / 11000',
+      },
+      step: {
+        tag_tip: '計算 step = max((end - start) / maxDataPoints, minStep, safeStep), safeStep = (end - start) / 11000',
+      },
+    },
+    expression_placeholder: '對一個或多個查詢進行數學運算。您透過 ${refId} 引用查詢，即 $A、$B、$C 等。兩個標量值的總和：$A + $B > 10',
   },
   detail: {
     datasource_empty: '沒有數據源資訊，請先配置數據源',
@@ -368,6 +405,15 @@ const zh_HK = {
         esc: '按 ESC 鍵退出全螢幕模式',
         theme: '主題模式',
       },
+    },
+    saved: '保存成功',
+    expired: '儀表板已經被別人修改，為避免相互覆蓋，請刷新儀表板查看最新配置和數據',
+    prompt: {
+      title: '有更改未儲存',
+      message: '您想儲存變更嗎？',
+      cancelText: '取消',
+      discardText: '放棄',
+      okText: '儲存',
     },
   },
   settings: {
@@ -409,6 +455,7 @@ const zh_HK = {
     avg: '平均值',
     sum: '總和',
     count: '數量',
+    origin: '原始值',
   },
 };
 

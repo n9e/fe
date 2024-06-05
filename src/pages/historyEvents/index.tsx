@@ -117,7 +117,14 @@ const Event: React.FC = () => {
         );
       },
     },
-
+    {
+      title: t('first_trigger_time'),
+      dataIndex: 'first_trigger_time',
+      width: 120,
+      render(value) {
+        return moment((value ? value : 0) * 1000).format('YYYY-MM-DD HH:mm:ss');
+      },
+    },
     {
       title: t('last_eval_time'),
       dataIndex: 'last_eval_time',
@@ -220,6 +227,8 @@ const Event: React.FC = () => {
               });
             }}
             dropdownMatchSelectWidth={false}
+            showSearch
+            optionFilterProp='children'
           >
             {_.map(busiGroups, (item) => {
               return <Select.Option value={item.id}>{item.name}</Select.Option>;

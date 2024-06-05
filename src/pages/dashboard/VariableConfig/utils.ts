@@ -1,34 +1,55 @@
-export function normalizeESQueryRequestBody(params: any) {
-  const query = {
-    bool: {
-      filter: [
-        {
-          query_string: {
-            analyze_wildcard: true,
-            query: params?.query,
-          },
-        },
-      ],
-    },
-  };
-  const body = {
+import _ from 'lodash';
+
+export function normalizeESQueryRequestBody(params: any, date_field: string | undefined, start: number, end: number) {
+  let orderBy = '_key';
+  if (params?.orderBy === 'doc_count') {
+    orderBy = '_count';
+  }
+  const body: any = {
     size: 0,
+    query: {
+      bool: {
+        filter: [
+          {
+            range: {
+              [date_field || '@timestamp']: {
+                gte: start,
+                lte: end,
+                format: 'epoch_millis',
+              },
+            },
+          },
+        ],
+      },
+    },
     aggs: {
       A: {
         [params?.find]: {
           field: `${params?.field}`,
           size: params.size || 500,
           order: {
-            _key: 'asc',
+            [orderBy]: params.order || 'desc',
           },
         },
       },
     },
   };
 
-  if (params?.query) {
-    body['query'] = query;
+  if (params.query && params.query !== '') {
+    body.query.bool.filter = [
+      ...body.query.bool.filter,
+      {
+        query_string: {
+          analyze_wildcard: true,
+          query: params?.query,
+        },
+      },
+    ];
   }
 
   return body;
+}
+
+export function getGroupIdent(groupID, groups) {
+  return _.find(groups, { id: groupID })?.label_value;
 }

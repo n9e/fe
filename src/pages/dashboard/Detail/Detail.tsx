@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useState, useRef, useEffect, useContext, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
 import semver from 'semver';
@@ -22,6 +22,7 @@ import { useTranslation } from 'react-i18next';
 import { useInterval } from 'ahooks';
 import { v4 as uuidv4 } from 'uuid';
 import { useParams, useHistory, useLocation } from 'react-router-dom';
+import { useBeforeunload } from 'react-beforeunload';
 import queryString from 'query-string';
 import { Alert, Modal, Button, Affix, message } from 'antd';
 import PageLayout from '@/components/pageLayout';
@@ -29,11 +30,12 @@ import { IRawTimeRange, getDefaultValue, isValid } from '@/components/TimeRangeP
 import { Dashboard } from '@/store/dashboardInterface';
 import { getDashboard, updateDashboardConfigs, getDashboardPure, getBuiltinDashboard } from '@/services/dashboardV2';
 import { SetTmpChartData } from '@/services/metric';
-import { CommonStateContext } from '@/App';
+import { CommonStateContext, basePrefix } from '@/App';
 import MigrationModal from '@/pages/help/migrate/MigrationModal';
+import RouterPrompt from '@/components/RouterPrompt';
 import VariableConfig, { IVariable } from '../VariableConfig';
 import { replaceExpressionVars, getOptionsList } from '../VariableConfig/constant';
-import { ILink } from '../types';
+import { ILink, IDashboardConfig } from '../types';
 import DashboardLinks from '../DashboardLinks';
 import Panels from '../Panels';
 import Title from './Title';
@@ -45,7 +47,7 @@ import { useGlobalState } from '../globalState';
 import './style.less';
 import './dark.antd.less';
 import './dark.less';
-
+import { rangeOptions } from '@/components/TimeRangePicker/config';
 interface URLParam {
   id: string;
 }
@@ -78,7 +80,14 @@ const builtinParamsToID = (builtinParams) => {
 message.config({
   maxCount: 1,
 });
-const getDefaultTimeRange = (query, t) => {
+const getDefaultTimeRange = (query, t, dashboardDefaultRangeIndex?) => {
+  const defaultRange =
+    dashboardDefaultRangeIndex !== undefined && dashboardDefaultRangeIndex !== ''
+      ? rangeOptions[dashboardDefaultRangeIndex]
+      : {
+          start: 'now-1h',
+          end: 'now',
+        };
   if (query.__from && query.__to) {
     if (isValid(query.__from) && isValid(query.__to)) {
       return {
@@ -93,24 +102,17 @@ const getDefaultTimeRange = (query, t) => {
       };
     }
     message.error(t('detail.invalidTimeRange'));
-    return getDefaultValue(dashboardTimeCacheKey, {
-      start: 'now-1h',
-      end: 'now',
-    });
+    return getDefaultValue(dashboardTimeCacheKey, defaultRange);
   }
-  return getDefaultValue(dashboardTimeCacheKey, {
-    start: 'now-1h',
-    end: 'now',
-  });
+  return getDefaultValue(dashboardTimeCacheKey, defaultRange);
 };
 
 export default function DetailV2(props: IProps) {
   const { isPreview = false, isBuiltin = false, gobackPath, builtinParams } = props;
   const { t, i18n } = useTranslation('dashboard');
   const history = useHistory();
-  const { datasourceList, profile } = useContext(CommonStateContext);
-  const roles = _.get(profile, 'roles', []);
-  const isAuthorized = !_.some(roles, (item) => item === 'Guest') && !isPreview;
+  const { datasourceList, profile, dashboardDefaultRangeIndex, dashboardSaveMode, perms } = useContext(CommonStateContext);
+  const isAuthorized = _.includes(perms, '/dashboards/put') && !isPreview;
   const [dashboardMeta, setDashboardMeta] = useGlobalState('dashboardMeta');
   let { id } = useParams<URLParam>();
   const query = queryString.parse(useLocation().search);
@@ -123,7 +125,7 @@ export default function DetailV2(props: IProps) {
   const [variableConfigWithOptions, setVariableConfigWithOptions] = useState<IVariable[]>();
   const [dashboardLinks, setDashboardLinks] = useState<ILink[]>();
   const [panels, setPanels] = useState<any[]>([]);
-  const [range, setRange] = useState<IRawTimeRange>(getDefaultTimeRange(query, t));
+  const [range, setRange] = useState<IRawTimeRange>(getDefaultTimeRange(query, t, dashboardDefaultRangeIndex));
   const [editable, setEditable] = useState(true);
   const [editorData, setEditorData] = useState({
     visible: false,
@@ -132,8 +134,11 @@ export default function DetailV2(props: IProps) {
   });
   const [migrationVisible, setMigrationVisible] = useState(false);
   const [migrationModalOpen, setMigrationModalOpen] = useState(false);
+  const [variableConfigRefreshFlag, setVariableConfigRefreshFlag] = useState<string>(_.uniqueId('variableConfigRefreshFlag_'));
+  const [allowedLeave, setAllowedLeave] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
   let updateAtRef = useRef<number>();
+  const routerPromptRef = useRef<any>();
   const refresh = async (cbk?: () => void) => {
     fetchDashboard({
       id,
@@ -177,15 +182,33 @@ export default function DetailV2(props: IProps) {
       }
     });
   };
-  const handleUpdateDashboardConfigs = (id, configs) => {
-    updateDashboardConfigs(id, configs).then((res) => {
-      updateAtRef.current = res.update_at;
-      refresh();
-    });
+  const handleUpdateDashboardConfigs = (id, updateData) => {
+    if (dashboardSaveMode === 'manual') {
+      let configs = {} as IDashboardConfig;
+      try {
+        configs = JSON.parse(updateData.configs);
+      } catch (e) {
+        console.error(e);
+      }
+      setAllowedLeave(false);
+      setDashboard({
+        ...dashboard,
+        configs,
+      });
+    } else {
+      updateDashboardConfigs(id, updateData).then((res) => {
+        updateAtRef.current = res.update_at;
+        refresh();
+      });
+    }
   };
   const handleVariableChange = (value, b, valueWithOptions) => {
     const dashboardConfigs: any = dashboard.configs;
     dashboardConfigs.var = value;
+    // TODO: 手动模式需要在这里更新变量配置，自动模式会在获取大盘配置时更新
+    if (dashboardSaveMode === 'manual') {
+      setVariableConfig(value);
+    }
     // 更新变量配置
     b && handleUpdateDashboardConfigs(dashboard.id, { configs: JSON.stringify(dashboardConfigs) });
     // 更新变量配置状态
@@ -218,6 +241,8 @@ export default function DetailV2(props: IProps) {
     }
   }, 2000);
 
+  useBeforeunload(!allowedLeave && import.meta.env.PROD ? () => t('detail.prompt.message') : undefined);
+
   return (
     <PageLayout
       customArea={
@@ -225,6 +250,9 @@ export default function DetailV2(props: IProps) {
           isPreview={isPreview}
           isBuiltin={isBuiltin}
           isAuthorized={isAuthorized}
+          editable={editable}
+          updateAtRef={updateAtRef}
+          setAllowedLeave={setAllowedLeave}
           gobackPath={gobackPath}
           dashboard={dashboard}
           range={range}
@@ -284,13 +312,21 @@ export default function DetailV2(props: IProps) {
             >
               {!editable && (
                 <div style={{ padding: '0px 10px', marginBottom: 8 }}>
-                  <Alert type='warning' message='仪表盘已经被别人修改，为避免相互覆盖，请刷新仪表盘查看最新配置和数据' />
+                  <Alert type='warning' message={t('detail.expired')} />
                 </div>
               )}
               <div className='dashboard-detail-content-header'>
                 <div className='variable-area'>
                   {variableConfig && (
-                    <VariableConfig isPreview={!isAuthorized} onChange={handleVariableChange} value={variableConfig} range={range} id={id} onOpenFire={stopAutoRefresh} />
+                    <VariableConfig
+                      isPreview={!isAuthorized}
+                      onChange={handleVariableChange}
+                      value={variableConfig}
+                      range={range}
+                      id={id}
+                      onOpenFire={stopAutoRefresh}
+                      dashboard={dashboard}
+                    />
                   )}
                 </div>
                 <DashboardLinks
@@ -316,6 +352,8 @@ export default function DetailV2(props: IProps) {
               panels={panels}
               setPanels={setPanels}
               dashboard={dashboard}
+              setDashboard={setDashboard}
+              setAllowedLeave={setAllowedLeave}
               range={range}
               setRange={setRange}
               variableConfig={variableConfigWithOptions}
@@ -350,7 +388,7 @@ export default function DetailV2(props: IProps) {
                   },
                 ]).then((res) => {
                   const ids = res.dat;
-                  window.open('/chart/' + ids);
+                  window.open(basePrefix + '/chart/' + ids);
                 });
               }}
               onUpdated={(res) => {
@@ -382,6 +420,7 @@ export default function DetailV2(props: IProps) {
             configs: panelsMergeToConfigs(dashboard.configs, newPanels),
           });
         }}
+        dashboard={dashboard}
       />
       {/*迁移*/}
       <Modal
@@ -438,6 +477,48 @@ export default function DetailV2(props: IProps) {
         onOk={() => {
           refresh();
         }}
+      />
+      <RouterPrompt
+        ref={routerPromptRef}
+        when={!allowedLeave}
+        title={t('detail.prompt.title')}
+        message={<div style={{ fontSize: 16 }}>{t('detail.prompt.message')}</div>}
+        footer={[
+          <Button
+            key='cancel'
+            onClick={() => {
+              routerPromptRef.current.hidePrompt();
+            }}
+          >
+            {t('detail.prompt.cancelText')}
+          </Button>,
+          <Button
+            key='discard'
+            type='primary'
+            danger
+            onClick={() => {
+              routerPromptRef.current.redirect();
+            }}
+          >
+            {t('detail.prompt.discardText')}
+          </Button>,
+          <Button
+            key='ok'
+            type='primary'
+            onClick={() => {
+              routerPromptRef.current.hidePrompt();
+              updateDashboardConfigs(dashboard.id, {
+                configs: JSON.stringify(dashboard.configs),
+              }).then((res) => {
+                updateAtRef.current = res.update_at;
+                message.success(t('detail.saved'));
+                setAllowedLeave(true);
+              });
+            }}
+          >
+            {t('detail.prompt.okText')}
+          </Button>,
+        ]}
       />
     </PageLayout>
   );

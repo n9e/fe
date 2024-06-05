@@ -16,6 +16,7 @@ const zh_CN = {
   severity: '告警级别',
   eventType: '事件类别',
   rule_name: '规则标题&事件标签',
+  first_trigger_time: '首次触发时间',
   trigger_time: '触发时间',
   shield: '屏蔽',
   prod: '监控类型',
@@ -69,6 +70,8 @@ const zh_CN = {
       trigger: '触发',
     },
     trigger: '触发',
+    firemap_ql_label: '卡片',
+    northstar_ql_label: '指标',
   },
 };
 export default zh_CN;

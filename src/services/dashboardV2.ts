@@ -15,6 +15,7 @@
  *
  */
 import _ from 'lodash';
+import semver from 'semver';
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 import { N9E_PATHNAME } from '@/utils/constant';
@@ -28,13 +29,30 @@ export const getDashboards = function (id: number | string) {
   });
 };
 
-// 或许多个业务组的仪表盘列表
-export const getBusiGroupsDashboards = function (gids: string) {
-  return request(`/api/n9e/busi-groups/boards`, {
+// 多个业务组的仪表盘列表
+export const getBusiGroupsDashboards = function (gids?: string) {
+  return request('/api/n9e/busi-groups/boards', {
     method: RequestMethod.Get,
     params: {
       gids,
     },
+  }).then((res) => {
+    return res.dat;
+  });
+};
+
+export const getBusiGroupsPublicDashboards = function () {
+  return request('/api/n9e/busi-groups/public-boards', {
+    method: RequestMethod.Get,
+  }).then((res) => {
+    return res.dat;
+  });
+};
+
+export const updateBoardPublic = function (id: number, data: any) {
+  return request(`/api/n9e/board/${id}/public`, {
+    method: RequestMethod.Put,
+    data,
   }).then((res) => {
     return res.dat;
   });
@@ -163,6 +181,23 @@ export const fetchHistoryRangeBatch = (data, signalKey) => {
   });
 };
 
+export const fetchHistoryRangeBatch2 = (data, signalKey) => {
+  const controller = new AbortController();
+  const { signal } = controller;
+  if (signalKey && signals[signalKey] && signals[signalKey].abort) {
+    signals[signalKey].abort();
+  }
+  signals[signalKey] = controller;
+  return request('/api/n9e-plus/query-batch', {
+    method: RequestMethod.Post,
+    data,
+    signal,
+    silence: true,
+  }).finally(() => {
+    delete signals[signalKey];
+  });
+};
+
 export const fetchHistoryInstantBatch = (data, signalKey) => {
   const controller = new AbortController();
   const { signal } = controller;
@@ -204,6 +239,55 @@ export const getMetricSeries = function (data, datasourceValue: number) {
   });
 };
 
+export const getStatusBuildinfo = (datasourceValue: number) => {
+  return request(`/api/${N9E_PATHNAME}/proxy/${datasourceValue}/api/v1/status/buildinfo`, {
+    method: RequestMethod.Get,
+    silence: true,
+  });
+};
+
+export const getMetricSeriesV2 = function (data, datasourceValue: number) {
+  return getStatusBuildinfo(datasourceValue)
+    .then((res) => {
+      const version = _.get(res, 'data.version');
+      // 如果版本小于 2.26.0，使用 /api/v1/series 接口，否则用 /api/v1/query 接口
+      if (semver.valid(version) && semver.lt(version, '2.26.0')) {
+        return getMetricSeries({ 'match[]': _.trim(data.metric), start: data.start, end: data.end }, datasourceValue);
+      }
+      return request(`/api/${N9E_PATHNAME}/proxy/${datasourceValue}/api/v1/query`, {
+        method: RequestMethod.Get,
+        params: {
+          query: `last_over_time(${data.metric}[${data.end - data.start}s])`,
+          time: data.end,
+        },
+        silence: true,
+      }).then((res) => {
+        return {
+          data: _.map(res?.data?.result, (item) => {
+            return item.metric;
+          }),
+        };
+      });
+    })
+    .catch(() => {
+      return request(`/api/${N9E_PATHNAME}/proxy/${datasourceValue}/api/v1/query`, {
+        method: RequestMethod.Get,
+        params: {
+          query: `last_over_time(${data.metric}[${data.end - data.start}s])`,
+          time: data.end,
+        },
+        silence: true,
+      }).then((res) => {
+        return {
+          data: _.map(res?.data?.result, (item) => {
+            return item.metric;
+          }),
+        };
+      });
+      return getMetricSeries({ 'match[]': _.trim(data.metric), start: data.start, end: data.end }, datasourceValue);
+    });
+};
+
 export const getMetric = function (data = {}, datasourceValue: number) {
   return request(`/api/${N9E_PATHNAME}/proxy/${datasourceValue}/api/v1/label/__name__/values`, {
     method: RequestMethod.Get,
@@ -233,3 +317,10 @@ export function getESVariableResult(datasourceValue: number, index, requestBody)
     return dat;
   });
 }
+
+export const boardsClones = function (data: { board_ids: number[]; bgids: number[] }) {
+  return request('/api/n9e/busi-groups/boards/clones', {
+    method: RequestMethod.Post,
+    data,
+  });
+};

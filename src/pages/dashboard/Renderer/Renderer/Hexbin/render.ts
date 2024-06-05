@@ -19,6 +19,7 @@ import { transition, min, select, event } from 'd3';
 import { hexbin as d3Hexbin } from 'd3-hexbin';
 import _ from 'lodash';
 import { bestFitElemCountPerRow, getTextSizeForWidthAndHeight, getMapColumnsAndRows } from './utils';
+import { basePrefix } from '@/App';
 
 const xmlns = 'http://www.w3.org/2000/svg';
 const minFont = 6;
@@ -72,7 +73,6 @@ function renderHoneyComb(
 ) {
   const t = transition().duration(750);
   const { columns: mapColumns, rows: mapRows } = getMapColumnsAndRows(width, height, data.length);
-  console.log(mapColumns, mapRows);
   const hexRadius = Math.floor(min([width / ((mapColumns + 0.5) * Math.sqrt(3)), height / ((mapRows + 1 / 3) * 1.5), width / 7]));
   const hexbinWidth = Math.sin((60 * Math.PI) / 180) * hexRadius * 2;
   const points = getPlaceHolderElems(mapRows, mapColumns, data.length, hexRadius);
@@ -166,7 +166,7 @@ function renderHoneyComb(
     })
     .on('mousedown', (_d, i) => {
       if (detailUrl) {
-        window.open(detailFormatter(data[i]), '_blank');
+        window.open(basePrefix + detailFormatter(data[i]), '_blank');
       }
     })
     .attr('stroke', (_d, i) => {

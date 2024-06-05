@@ -15,9 +15,11 @@
  *
  */
 
-import React from 'react';
+import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Input, Select, Card, Row, Col, Tag, Tooltip } from 'antd';
+import _ from 'lodash';
+import { CommonStateContext } from '@/App';
 import { panelBaseProps } from '../constants';
 
 // 校验单个标签格式是否正确
@@ -31,6 +33,8 @@ function isTagValid(tag) {
 
 export default function Base() {
   const { t } = useTranslation('alertRules');
+  const { busiGroups } = useContext(CommonStateContext);
+  const group_id = Form.useWatch('group_id');
   // 渲染标签
   function tagRender(content) {
     const { isCorrectFormat, isLengthAllowed } = isTagValid(content.value);
@@ -66,19 +70,24 @@ export default function Base() {
   return (
     <Card {...panelBaseProps} title={t('basic_configs')}>
       <Row gutter={10}>
-        <Col span={12}>
+        <Col span={8}>
           <Form.Item label={t('name')} name='name' rules={[{ required: true }]}>
             <Input />
           </Form.Item>
         </Col>
-        <Col span={12}>
-          <Form.Item label={t('append_tags')} name='append_tags' rules={[isValidFormat]}>
+        <Col span={8}>
+          <Form.Item label={t('append_tags')} name='append_tags' rules={[isValidFormat]} tooltip={t('append_tags_note_tip')}>
             <Select mode='tags' tokenSeparators={[' ']} open={false} placeholder={t('append_tags_placeholder')} tagRender={tagRender} />
           </Form.Item>
         </Col>
+        <Col span={8}>
+          <Form.Item label={t('group_id')} name='group_id'>
+            <div className='ant-form-text'>{_.find(busiGroups, { id: group_id })?.name}</div>
+          </Form.Item>
+        </Col>
         <Col span={24}>
-          <Form.Item label={t('note')} name='note'>
-            <Input.TextArea />
+          <Form.Item label={t('note')} name='note' tooltip={t('append_tags_note_tip')}>
+            <Input.TextArea autoSize />
           </Form.Item>
         </Col>
       </Row>

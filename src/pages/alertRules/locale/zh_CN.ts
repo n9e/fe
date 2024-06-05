@@ -12,9 +12,12 @@ const zh_CN = {
   append_tags_msg1: '标签长度应小于等于 64 位',
   append_tags_msg2: '标签格式应为 key=value。且 key 以字母或下划线开头，由字母、数字和下划线组成。',
   append_tags_placeholder: '标签格式为 key=value ，使用回车或空格分隔',
+  group_id: '业务组',
   note: '备注',
+  append_tags_note_tip: '支持配置变量，例如 {{$labels.ident}}，如果监控数据为 `mem_active{ident="dev-backup-01"}` 最后会最终会替换为 dev-backup-01',
   rule_configs: '规则配置',
   inhibit: '级别抑制',
+  inhibit_tip: '只有 metricName 和 labels 完全相同的曲线产生的告警事件，才会进行级别抑制，1级>2级>3级',
   interval: '执行频率',
   duration: '持续时长',
   severity_label: '触发告警',
@@ -32,6 +35,7 @@ const zh_CN = {
   enable_in_bg_tip: '根据告警事件中的ident归属关系判断',
   notify_configs: '通知配置',
   notify_channels: '通知媒介',
+  notify_channels_doc: '使用文档',
   notify_channels_tpl: '通知媒介模板',
   notify_channels_tpl_tip: '为空则使用默认模板',
   notify_recovered: '启用恢复通知',
@@ -148,5 +152,19 @@ const zh_CN = {
   规则有效性检查，包括以下检查项：<br />
   1. 用户联系方式有效性检查
   `,
+  default_filter: {
+    title: '预置筛选',
+    all: '全部规则',
+  },
+  ruleConfigPromVersion: '规则模式',
+  ruleConfigPromVersion_v1: '普通模式',
+  ruleConfigPromVersion_v2: '高级模式',
+  ruleConfigPromVersion_tip:
+    '普通模式：在 PromQL 中配置告警阈值，查询条件 和 阈值设置 在一起，没有特殊需求，使用普通模式即可<br />高级模式：查询条件 和 阈值设置 分开，如果有多个查询条件需要做加减乘除计算，可以使用高级模式，在告警事件的现场值中会将每个查询条件的值展示出来',
+  ruleConfigPromVersionV2: {
+    query: {
+      title: '查询条件',
+    },
+  },
 };
 export default zh_CN;

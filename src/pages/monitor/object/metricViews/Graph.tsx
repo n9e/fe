@@ -22,7 +22,7 @@ import { Card, Space, Dropdown, Menu, Tag, Popover, Divider, Tooltip } from 'ant
 import { ShareAltOutlined, SyncOutlined, CloseCircleOutlined, DownOutlined, PlusCircleOutlined, SettingOutlined, LineChartOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { getLabels, getQueryRange, getExprs, setTmpChartData } from '@/services/metricViews';
-import { CommonStateContext } from '@/App';
+import { CommonStateContext, basePrefix } from '@/App';
 import { getMatchStr } from './utils';
 import { IMatch } from '../types';
 import Timeseries from '../../../dashboard/Renderer/Renderer/Timeseries';
@@ -233,7 +233,7 @@ export default function Graph(props: IProps) {
                   },
                 ]).then((res) => {
                   const ids = res.dat;
-                  window.open('/chart/' + ids);
+                  window.open(basePrefix + '/chart/' + ids);
                 });
               }}
             />

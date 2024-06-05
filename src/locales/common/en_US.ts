@@ -1,4 +1,9 @@
 const en_US = {
+  auth:{
+    403:'You do not have permission to access this page, please contact the administrator!',
+    404:'The page you visited does not exist!',
+    '404_btn': 'Back to Home',
+  },
   business_group: 'Business Group',
   search_placeholder: 'Search',
   nodata: 'No Data',
@@ -115,12 +120,15 @@ const en_US = {
   'tpl.batch.help': 'Concurrency, default is 0, indicating full concurrent execution, 1 means sequential execution, 2 means that each time two execute',
   'tpl.tolerance.help': 'Tolerate several machines failing, the default is 0, which means no tolerance, once failed, immediately suspend',
   'tpl.timeout.help': 'Timeout for stand-alone script execution, in seconds',
-  'tpl.pause.help': 'Pause after completed, pause multiple hosts, write multiple hosts, separated by commas',
+  'tpl.pause.help': 'Pause after completed',
   'tpl.host.help': 'List of hosts to be executed',
+  'tpl.host.help2': 'Pre-requisite: categraf needs to be deployed on the target machine, and the ibex configuration enable is set to true',
+  'tpl.host.filter_btn': 'Filter hosts',
   'tpl.script.help': 'Script content to be executed',
   'tpl.args.help': 'Parameters attached to the script, separated by double commas, such as arg1,,arg2,,arg3',
   'tpl.modify': 'Modify the template',
   'tpl.create.task': 'Create a new task',
+  'tpl.callback': 'Self-healing callback address',
 
   task: 'Execution History',
   'task.create': 'Create task',

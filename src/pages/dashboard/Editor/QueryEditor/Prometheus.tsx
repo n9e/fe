@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Row, Col, Input, Button, Switch } from 'antd';
+import { Form, Row, Col, Input, Switch, InputNumber, Space, Tag, Tooltip } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import moment from 'moment';
@@ -7,17 +7,22 @@ import { useTranslation } from 'react-i18next';
 import TimeRangePicker, { isMathString } from '@/components/TimeRangePicker';
 import Resolution from '@/components/Resolution';
 import { PromQLInputWithBuilder } from '@/components/PromQLInput';
+import { getRealStep } from '@/pages/dashboard/Renderer/datasource/prometheus';
+import HideButton from '@/pages/dashboard/Components/HideButton';
+import { IS_PLUS } from '@/utils/constant';
 import Collapse, { Panel } from '../Components/Collapse';
-import getFirstUnusedLetter from '../../Renderer/utils/getFirstUnusedLetter';
+import ExpressionPanel from '../Components/ExpressionPanel';
+import AddQueryButtons from '../Components/AddQueryButtons';
 import { replaceExpressionVars } from '../../VariableConfig/constant';
 
 const alphabet = 'ABCDEFGHIGKLMNOPQRSTUVWXYZ'.split('');
 
-export default function Prometheus({ chartForm, variableConfig, dashboardId }) {
+export default function Prometheus({ chartForm, variableConfig, dashboardId, time }) {
   const { t } = useTranslation('dashboard');
   const varNams = _.map(variableConfig, (item) => {
     return `$${item.name}`;
   });
+  const targets = Form.useWatch('targets');
 
   return (
     <Form.List name='targets'>
@@ -26,27 +31,47 @@ export default function Prometheus({ chartForm, variableConfig, dashboardId }) {
           <>
             <Collapse>
               {_.map(fields, (field, index) => {
+                const { __mode__ } = targets?.[field.name] || {};
+                if (__mode__ === '__expr__') {
+                  return <ExpressionPanel key={field.key} fields={fields} remove={remove} field={field} />;
+                }
                 return (
                   <Panel
                     header={
                       <Form.Item noStyle shouldUpdate>
                         {({ getFieldValue }) => {
-                          return getFieldValue(['targets', field.name, 'refId']) || alphabet[index];
+                          const target = getFieldValue(['targets', field.name]);
+                          const step = getRealStep(time, target);
+                          const name = target?.refId || alphabet[index];
+                          return (
+                            <Space>
+                              {name}
+                              {step ? (
+                                <Tooltip placement='right' title={t('query.prometheus.step.tag_tip')}>
+                                  <Tag color='purple'>{`step=${step}s`}</Tag>
+                                </Tooltip>
+                              ) : null}
+                            </Space>
+                          );
                         }}
                       </Form.Item>
                     }
                     key={field.key}
                     extra={
-                      <div>
+                      <Space>
+                        {IS_PLUS && (
+                          <Form.Item noStyle {...field} name={[field.name, 'hide']}>
+                            <HideButton />
+                          </Form.Item>
+                        )}
                         {fields.length > 1 ? (
                           <DeleteOutlined
-                            style={{ marginLeft: 10 }}
                             onClick={() => {
                               remove(field.name);
                             }}
                           />
                         ) : null}
-                      </div>
+                      </Space>
                     }
                   >
                     <Form.Item noStyle {...field} name={[field.name, 'refId']}>
@@ -101,6 +126,7 @@ export default function Prometheus({ chartForm, variableConfig, dashboardId }) {
                             title: t('query.time_tip'),
                           }}
                           normalize={(val) => {
+                            if (val === undefined || val === null || val === '') return undefined;
                             return {
                               start: isMathString(val.start) ? val.start : moment(val.start).format('YYYY-MM-DD HH:mm:ss'),
                               end: isMathString(val.end) ? val.end : moment(val.end).format('YYYY-MM-DD HH:mm:ss'),
@@ -121,8 +147,13 @@ export default function Prometheus({ chartForm, variableConfig, dashboardId }) {
                           />
                         </Form.Item>
                       </Col>
+                      <Col flex='120px'>
+                        <Form.Item label='Max data points' tooltip={t('query.prometheus.maxDataPoints.tip')} {...field} name={[field.name, 'maxDataPoints']} initialValue={240}>
+                          <InputNumber style={{ width: '100%' }} placeholder='240' min={1} />
+                        </Form.Item>
+                      </Col>
                       <Col flex='72px'>
-                        <Form.Item label='Step' {...field} name={[field.name, 'step']}>
+                        <Form.Item label='Min step' tooltip={t('query.prometheus.minStep.tip')} {...field} name={[field.name, 'step']}>
                           <Resolution />
                         </Form.Item>
                       </Col>
@@ -138,14 +169,12 @@ export default function Prometheus({ chartForm, variableConfig, dashboardId }) {
 
               <Form.ErrorList errors={errors} />
             </Collapse>
-            <Button
-              style={{ width: '100%', marginTop: 10 }}
-              onClick={() => {
-                add({ expr: '', refId: getFirstUnusedLetter(_.map(chartForm.getFieldValue('targets'), 'refId')) });
+            <AddQueryButtons
+              add={add}
+              addQuery={(newRefId) => {
+                add({ expr: '', __mode__: '__query__', refId: newRefId });
               }}
-            >
-              + add query
-            </Button>
+            />
           </>
         );
       }}

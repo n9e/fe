@@ -26,10 +26,12 @@ export interface IGridPos {
 // query interface
 export interface ITarget {
   refId: string;
+  __mode__: '__expr__' | '__query__';
   expr: string; // promQL
   legendFormat: string;
   time?: IRawTimeRange; // 固定时间范围
-  step?: number; // 固定时间间隔
+  step?: number; // 2024-01-24 从固定 step 改成 min step (v7)
+  maxDataPoints?: number; // 2024-01-24 新增 maxDataPoints 用于计算默认的 step (v7)
   query?: {
     index: string;
     filters: string;
@@ -39,6 +41,7 @@ export interface ITarget {
   };
   legend?: string;
   instant?: boolean;
+  hide?: boolean;
 }
 
 export type IType = 'row' | 'timeseries' | 'stat' | 'table' | 'pie' | 'hexbin' | 'barGauge' | 'text' | 'gauge' | 'iframe';
@@ -77,6 +80,7 @@ export interface IOptions {
     max?: number;
     decimals?: number;
     dateFormat?: string;
+    displayName?: string;
   };
   legend?: {
     // TODO: 目前不支持这么复杂的自定义

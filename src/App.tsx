@@ -17,7 +17,7 @@
 import React, { useEffect, useState, createContext, useRef } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 // Modal 会被注入的代码所使用，请不要删除
-import { ConfigProvider, Modal } from 'antd';
+import { ConfigProvider, Modal, Spin } from 'antd';
 import zhCN from 'antd/lib/locale/zh_CN';
 import enUS from 'antd/lib/locale/en_US';
 import 'antd/dist/antd.less';
@@ -27,7 +27,7 @@ import TaskOutput from '@/pages/taskOutput';
 import TaskHostOutput from '@/pages/taskOutput/host';
 import { getAuthorizedDatasourceCates, Cate } from '@/components/AdvancedWrap';
 import { GetProfile } from '@/services/account';
-import { getBusiGroups, getDatasourceBriefList } from '@/services/common';
+import { getBusiGroups, getDatasourceBriefList, getMenuPerm } from '@/services/common';
 import { getLicense } from '@/components/AdvancedWrap';
 import { getVersions } from '@/components/pageLayout/Version/services';
 import { getCleanBusinessGroupIds, getDefaultBusinessGroupKey } from '@/components/BusinessGroup';
@@ -72,6 +72,7 @@ export interface ICommonState {
   busiGroups: {
     name: string;
     id: number;
+    label_value?: string;
   }[];
   setBusiGroups: (groups: { name: string; id: number }[]) => void;
   curBusiId: number;
@@ -101,10 +102,16 @@ export interface ICommonState {
   siteInfo?: { [index: string]: string };
   sideMenuBgMode: string;
   setSideMenuBgMode: (color: string) => void;
+  dashboardDefaultRangeIndex?: string;
+  esIndexMode: string;
+  dashboardSaveMode: 'auto' | 'manual';
+  perms?: string[];
 }
 
+export const basePrefix = import.meta.env.VITE_PREFIX || '';
+
 // 可以匿名访问的路由 TODO: job-task output 应该也可以匿名访问
-const anonymousRoutes = ['/login', '/callback', '/chart', '/dashboards/share/'];
+const anonymousRoutes = [`${basePrefix}/login`, `${basePrefix}/callback`, `${basePrefix}/chart`, `${basePrefix}/dashboards/share/`];
 // 判断是否是匿名访问的路由
 const anonymous = _.some(anonymousRoutes, (route) => location.pathname.startsWith(route));
 // 初始化数据 context
@@ -166,9 +173,16 @@ function App() {
       window.localStorage.setItem('sideMenuBgMode', mode);
       setCommonState((state) => ({ ...state, sideMenuBgMode: mode }));
     },
+    esIndexMode: 'all',
+    dashboardSaveMode: 'auto',
   });
 
   useEffect(() => {
+    if (location.pathname === '/out-of-service') {
+      initialized.current = true;
+      setCommonState({ ...commonState }); // 为了触发重新渲染
+      return;
+    }
     try {
       (async () => {
         const iconLink = document.querySelector("link[rel~='icon']") as any;
@@ -189,6 +203,7 @@ function App() {
         if (!anonymous) {
           const { dat: profile } = await GetProfile();
           const { dat: busiGroups } = await getBusiGroups();
+          const { dat: perms } = await getMenuPerm();
           const datasourceList = await getDatasourceBriefList();
           const { licenseRulesRemaining, licenseExpireDays, feats } = await getLicense(t);
           let versions = { version: '', github_verison: '', newVersion: false };
@@ -203,7 +218,10 @@ function App() {
               ...state,
               profile,
               busiGroups,
-              datasourceCateOptions: getAuthorizedDatasourceCates(feats, isPlus),
+              datasourceCateOptions: getAuthorizedDatasourceCates(feats, isPlus, (cate) => {
+                const groupedDatasourceList = _.groupBy(datasourceList, 'plugin_type');
+                return !_.isEmpty(groupedDatasourceList[cate.value]);
+              }),
               groupedDatasourceList: _.groupBy(datasourceList, 'plugin_type'),
               datasourceList: datasourceList,
               curBusiId: defaultBusiId,
@@ -213,10 +231,11 @@ function App() {
               versions,
               feats,
               siteInfo,
+              perms,
             };
           });
         } else {
-          const datasourceList = !location.pathname.startsWith('/login') ? await getDatasourceBriefList() : [];
+          const datasourceList = !_.some([`${basePrefix}/login`, `${basePrefix}/callback`], (route) => location.pathname.startsWith(route)) ? await getDatasourceBriefList() : [];
           initialized.current = true;
           setCommonState((state) => {
             return {
@@ -230,31 +249,42 @@ function App() {
       })();
     } catch (error) {
       console.error(error);
+      location.href = basePrefix + '/out-of-service';
     }
   }, []);
 
   // 初始化中不渲染任何内容
   if (!initialized.current) {
-    return null;
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+        <Spin size='large' />
+      </div>
+    );
   }
 
   return (
     <div className='App'>
       <CommonStateContext.Provider value={commonState}>
         <ConfigProvider locale={i18n.language == 'en_US' ? enUS : zhCN}>
-          <Router>
+          <Router
+            getUserConfirmation={(message, callback) => {
+              if (message === 'CUSTOM') return;
+              window.confirm(message) ? callback(true) : callback(false);
+            }}
+            basename={basePrefix}
+          >
             <Switch>
               <Route exact path='/job-task/:busiId/output/:taskId/:outputType' component={TaskOutput} />
               <Route exact path='/job-task/:busiId/output/:taskId/:host/:outputType' component={TaskHostOutput} />
               <>
-                <HeaderMenu />
+                {location.pathname !== `${basePrefix}/out-of-service` && <HeaderMenu />}
                 <Content />
               </>
             </Switch>
           </Router>
         </ConfigProvider>
       </CommonStateContext.Provider>
-      {import.meta.env.VITE_IS_ENT !== 'true' && import.meta.env.VITE_IS_PRO === 'true' && <CustomerServiceFloatButton />}
+      {/* {import.meta.env.VITE_IS_ENT !== 'true' && import.meta.env.VITE_IS_PRO === 'true' && <CustomerServiceFloatButton />} */}
     </div>
   );
 }

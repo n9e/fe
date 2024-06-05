@@ -50,7 +50,6 @@ function EditField(props: Props & ModalWrapProps) {
     <Drawer
       width={1000}
       destroyOnClose
-      maskClosable={false}
       title={
         <Space>
           {t('field.edit_title')}
@@ -96,7 +95,15 @@ function EditField(props: Props & ModalWrapProps) {
                 <Form.Item
                   label={t('field.format.params.url.urlTemplate')}
                   name={['formatMap', field.name, 'params', 'urlTemplate']}
-                  tooltip={t('field.format.params.url.urlTemplateTip', { skipInterpolation: true })}
+                  tooltip={{
+                    title: (
+                      <div>
+                        {t('field.format.params.url.urlTemplateTip', { skipInterpolation: true })}
+                        <div>{t('field.format.params.url.urlTemplateTip1', { skipInterpolation: true })}</div>
+                      </div>
+                    ),
+                    overlayInnerStyle: { width: 550 },
+                  }}
                 >
                   <Input placeholder={t('field.format.params.url.urlTemplatePlaceholder', { skipInterpolation: true })} />
                 </Form.Item>

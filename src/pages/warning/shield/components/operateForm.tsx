@@ -65,7 +65,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
   const [form] = Form.useForm(null as any);
   const history = useHistory();
   const [timeLen, setTimeLen] = useState('1h');
-  const { groupedDatasourceList, busiGroups, isPlus } = useContext(CommonStateContext);
+  const { groupedDatasourceList, busiGroups, isPlus, businessGroupOnChange } = useContext(CommonStateContext);
 
   useEffect(() => {
     timeChange();
@@ -95,7 +95,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
     const curBusiItemId = form.getFieldValue('group_id');
     const historyPushOptions = {
       pathname: '/alert-mutes',
-      search: `?id=${curBusiItemId}`,
+      search: `?ids=${curBusiItemId}&isLeaf=true`,
     };
     if (type == 1) {
       editShield(params, curBusiItemId, detail.id).then((_) => {
@@ -103,6 +103,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
         history.push(historyPushOptions);
       });
     } else {
+      businessGroupOnChange(_.toString(curBusiItemId));
       addShield(params, curBusiItemId).then((_) => {
         message.success(t('common:success.add'));
         history.push(historyPushOptions);
@@ -185,53 +186,37 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
                 value: item.id,
               };
             })}
+            showSearch
+            optionFilterProp='label'
           />
         </Form.Item>
-        <ProdSelect
-          label={t('prod')}
-          onChange={(prod) => {
-            form.setFieldsValue({
-              ...getDefaultValuesByProd(prod, isPlus),
-              datasource_ids: [],
-            });
-          }}
-        />
-        <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.prod !== curValues.prod} noStyle>
-          {({ getFieldValue }) => {
-            const prod = getFieldValue('prod');
-            if (prod !== 'host') {
-              return (
-                <Row gutter={10}>
-                  <Col span={12}>
-                    <Form.Item label={t('common:datasource.type')} name='cate' initialValue='prometheus'>
-                      <DatasourceCateSelect
-                        scene='alert'
-                        filterCates={(cates) => {
-                          return _.filter(cates, (item) => {
-                            return _.includes(item.type, prod) && !!item.alertRule && (item.alertPro ? isPlus : true);
-                          });
-                        }}
-                        onChange={() => {
-                          form.setFieldsValue({
-                            datasource_ids: [],
-                          });
-                        }}
-                      />
-                    </Form.Item>
-                  </Col>
-                  <Col span={12}>
-                    <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.cate !== curValues.cate} noStyle>
-                      {({ getFieldValue, setFieldsValue }) => {
-                        const cate = getFieldValue('cate');
-                        return <DatasourceValueSelect mode='multiple' setFieldsValue={setFieldsValue} cate={cate} datasourceList={groupedDatasourceList[cate] || []} />;
-                      }}
-                    </Form.Item>
-                  </Col>
-                </Row>
-              );
-            }
-          }}
-        </Form.Item>
+        <Row gutter={10}>
+          <Col span={12}>
+            <Form.Item label={t('common:datasource.type')} name='cate' initialValue='prometheus'>
+              <DatasourceCateSelect
+                scene='alert'
+                filterCates={(cates) => {
+                  return _.filter(cates, (item) => {
+                    return !!item.alertRule && (item.alertPro ? isPlus : true);
+                  });
+                }}
+                onChange={() => {
+                  form.setFieldsValue({
+                    datasource_ids: [],
+                  });
+                }}
+              />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.cate !== curValues.cate} noStyle>
+              {({ getFieldValue, setFieldsValue }) => {
+                const cate = getFieldValue('cate');
+                return <DatasourceValueSelect mode='multiple' setFieldsValue={setFieldsValue} cate={cate} datasourceList={groupedDatasourceList[cate] || []} required={false} />;
+              }}
+            </Form.Item>
+          </Col>
+        </Row>
         <Form.Item label={t('severities')} name='severities' initialValue={[1, 2, 3]} rules={[{ required: true, message: t('severities_msg') }]}>
           <Checkbox.Group
             options={[
@@ -256,7 +241,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
             <Radio value={1}>{t('mute_type.1')}</Radio>
           </Radio.Group>
         </Form.Item>
-        <Form.Item shouldUpdate>
+        <Form.Item shouldUpdate noStyle>
           {({ getFieldValue }) => {
             const mute_type = getFieldValue('mute_time_type');
             return (
@@ -367,7 +352,75 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
             );
           }}
         </Form.Item>
-
+        <div style={{ marginBottom: 16 }}>
+          <Space>
+            <span>{t('quick_template.title')}</span>
+            <Button
+              size='small'
+              onClick={() => {
+                form.setFieldsValue({
+                  tags: [
+                    {
+                      key: 'rulename',
+                      func: '=~',
+                      value: '.*',
+                    },
+                  ],
+                });
+              }}
+            >
+              {t('quick_template.all')}
+            </Button>
+            <Button
+              size='small'
+              onClick={() => {
+                form.setFieldsValue({
+                  tags: [
+                    {
+                      key: '__name__',
+                      func: '==',
+                      value: 'target_miss',
+                    },
+                  ],
+                });
+              }}
+            >
+              {t('quick_template.target_miss')}
+            </Button>
+            <Button
+              size='small'
+              onClick={() => {
+                form.setFieldsValue({
+                  tags: [
+                    {
+                      key: '__name__',
+                      func: '==',
+                      value: '',
+                    },
+                  ],
+                });
+              }}
+            >
+              {t('quick_template.__name__')}
+            </Button>
+            <Button
+              size='small'
+              onClick={() => {
+                form.setFieldsValue({
+                  tags: [
+                    {
+                      key: 'ident',
+                      func: '==',
+                      value: '',
+                    },
+                  ],
+                });
+              }}
+            >
+              {t('quick_template.ident')}
+            </Button>
+          </Space>
+        </div>
         <Form.List name='tags' initialValue={[{}]}>
           {(fields, { add, remove }) => (
             <>

@@ -70,6 +70,12 @@ export default function Index(props: Props) {
           <Col span={8} className='second-color'>
             {data.settings?.min_interval || '-'}
           </Col>
+          <Col span={24} className='mt8'>
+            {t('form.es.write_config')}:
+          </Col>
+          <Col span={24} className='second-color'>
+            {data.settings?.enable_write ? t('form.es.enable_write') : t('form.es.disable_write')}
+          </Col>
         </Row>
         <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
           <Row gutter={16}>

@@ -21,6 +21,7 @@ import _ from 'lodash';
 import { getMenuPerm } from '@/services/common';
 import { CommonStateContext } from '@/App';
 import Page403 from '@/pages/notFound/Page403';
+import OutOfService from '@/pages/notFound/OutOfService';
 import NotFound from '@/pages/notFound';
 import Login from '@/pages/login';
 import Overview from '@/pages/login/overview';
@@ -98,7 +99,7 @@ export default function Content() {
   const location = useLocation();
   const history = useHistory();
   const isPlus = useIsPlus();
-  const { profile, siteInfo } = useContext(CommonStateContext);
+  const { profile, siteInfo, perms } = useContext(CommonStateContext);
   // 仪表盘在全屏和暗黑主题下需要定义个 dark 样式名
   let themeClassName = '';
   if (_.startsWith(location.pathname, '/dashboards/') && !_.endsWith(location.pathname, '/dashboards/')) {
@@ -110,19 +111,21 @@ export default function Content() {
   }
 
   useEffect(() => {
-    if (profile?.roles?.length > 0 && location.pathname !== '/') {
+    /**
+     * 这里是一个很脆弱的权限控制，期望的效果是菜单配置的路径和权限点匹配，如果没有权限则重定向到 403 页面
+     * 但是目前无法把菜单配置和perms权限点一一对应
+     * 所以这里现在只能通过白名单的方式来单独处理个别未配置权限点的路径
+     */
+    if (profile?.roles?.length > 0 && !_.includes(['/', '/account/profile/info', '/account/profile/pwd'], location.pathname)) {
       if (profile?.roles.indexOf('Admin') === -1) {
-        getMenuPerm().then((res) => {
-          const { dat } = res;
-          // 如果没有权限则重定向到 403 页面
-          if (
-            _.every(dat, (item) => {
-              return location.pathname.indexOf(item) === -1;
-            })
-          ) {
-            history.push('/403');
-          }
-        });
+        // 如果没有权限则重定向到 403 页面
+        if (
+          _.every(perms, (item) => {
+            return location.pathname.indexOf(item) === -1;
+          })
+        ) {
+          history.push('/403');
+        }
       }
     }
   }, []);
@@ -220,6 +223,7 @@ export default function Content() {
         </Route>
         <Route path='/403' component={Page403} />
         <Route path='/404' component={NotFound} />
+        <Route path='/out-of-service' component={OutOfService} />
         <Route path='*' component={NotFound} />
       </Switch>
     </div>

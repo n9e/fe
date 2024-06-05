@@ -156,7 +156,7 @@ export function getDsQuery(datasourceValue: number, requestBody) {
 }
 
 export function getESVersion(datasourceValue: number) {
-  return request(`/api/${N9E_PATHNAME}/proxy/${datasourceValue}`, {
+  return request(`/api/${N9E_PATHNAME}/proxy/${datasourceValue}/`, {
     method: RequestMethod.Get,
   }).then((res) => {
     const dat = _.get(res, 'version.number');
@@ -197,4 +197,25 @@ export function getFieldValues(datasourceValue, requestBody, field) {
       5,
     );
   });
+}
+
+export function addLogsDownloadTask(requestBody) {
+  return request(`/api/${N9E_PATHNAME}/logs/download/task`, {
+    method: RequestMethod.Post,
+    data: requestBody,
+  }).then((res) => res.dat);
+}
+
+export function getLogsDownloadTasks(params) {
+  return request(`/api/${N9E_PATHNAME}/logs/download/tasks`, {
+    method: RequestMethod.Get,
+    params,
+  }).then((res) => res.dat);
+}
+
+export function delDownloadTask(data: { ids: number[] }) {
+  return request(`/api/${N9E_PATHNAME}/logs/download/task`, {
+    method: RequestMethod.Delete,
+    data,
+  }).then((res) => res.dat);
 }

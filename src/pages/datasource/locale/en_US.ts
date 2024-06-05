@@ -49,6 +49,7 @@ const en_US = {
       url_tip: 'Common time series database configuration examples (compatible with Prometheus query API):',
     },
     es: {
+      enable_write: 'Enable Write',
       version: 'Version',
       max_shard: 'Max concurrent Shard Requests',
       min_interval: 'Min time interval(s)',

@@ -5,4 +5,5 @@ export interface IMenuItem {
   activeIcon?: any;
   // permissions?: IAccountPermission[];
   children?: IMenuItem[] | undefined;
+  beta?: boolean;
 }

@@ -27,7 +27,8 @@ const zh_HK = {
         },
         url: {
           urlTemplate: 'URL 模板',
-          urlTemplateTip: '使用 {{value}} 作為占位符',
+          urlTemplateTip: '可用{{value}}代表该字段的值',
+          urlTemplateTip1: '如跳转tracing系统：http://flashcat.cloud/trace?traceId={{value}}&dataSourceName=traceSystemName',
           urlTemplatePlaceholder: 'https://www.example.com/?q={{value}}',
           labelTemplate: '標籤模板',
           labelTemplatePlaceholder: '{{value}}',

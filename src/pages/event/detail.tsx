@@ -26,7 +26,7 @@ import PageLayout from '@/components/pageLayout';
 import { getAlertEventsById, getHistoryEventsById } from '@/services/warning';
 import { priorityColor } from '@/utils/constant';
 import { deleteAlertEventsModal } from '.';
-import { CommonStateContext } from '@/App';
+import { CommonStateContext, basePrefix } from '@/App';
 // @ts-ignore
 import plusEventDetail from 'plus:/parcels/Event/eventDetail';
 // @ts-ignore
@@ -47,7 +47,7 @@ const EventDetailPage: React.FC = () => {
   const { busiGroups, datasourceList } = commonState;
   const handleNavToWarningList = (id) => {
     if (busiGroups.find((item) => item.id === id)) {
-      window.open(`/alert-rules?ids=${id}&isLeaf=true`);
+      window.open(`${basePrefix}/alert-rules?ids=${id}&isLeaf=true`);
     } else {
       message.error(t('detail.buisness_not_exist'));
     }
@@ -184,7 +184,18 @@ const EventDetailPage: React.FC = () => {
       label: t('detail.cate'),
       key: 'cate',
     },
-    ...(eventDetail?.cate === 'prometheus'
+    ...(_.includes(['firemap', 'northstar'], eventDetail?.rule_prod)
+      ? [
+          {
+            label: t(`detail.${eventDetail?.rule_prod}_ql_label`),
+            key: 'prom_ql',
+            render: (val) => {
+              return val;
+            },
+          },
+        ]
+      : [false]),
+    ...(eventDetail?.cate === 'prometheus' && !_.includes(['firemap', 'northstar'], eventDetail?.rule_prod)
       ? PrometheusDetail({
           eventDetail,
           history,

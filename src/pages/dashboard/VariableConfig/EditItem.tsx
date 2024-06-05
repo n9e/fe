@@ -14,17 +14,18 @@
  * limitations under the License.
  *
  */
-import React, { useContext } from 'react';
-import { Form, Input, Row, Col, Select, Switch, Button, Space } from 'antd';
+import React, { useContext, useMemo } from 'react';
+import { Form, Input, Row, Col, Select, Switch, Button, Space, Alert } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
-import IndexSelect from '@/pages/dashboard/Editor/QueryEditor/Elasticsearch/IndexSelect';
 import ClusterSelect from '@/pages/dashboard/Editor/QueryEditor/components/ClusterSelect';
 import { CommonStateContext } from '@/App';
+import { Dashboard } from '@/store/dashboardInterface';
 import { IVariable } from './definition';
-import { convertExpressionToQuery, replaceExpressionVars, filterOptionsByReg, setVaraiableSelected, stringToRegex } from './constant';
+import { stringToRegex } from './constant';
+import ElasticsearchSettings from './datasource/elasticsearch';
 
 interface IProps {
   id: string;
@@ -35,6 +36,7 @@ interface IProps {
   datasourceVars: IVariable[];
   onOk: (val: IVariable) => void;
   onCancel: () => void;
+  dashboard: Dashboard;
 }
 
 const typeOptions = [
@@ -58,6 +60,14 @@ const typeOptions = [
     label: 'Datasource',
     value: 'datasource',
   },
+  {
+    label: 'Host ident',
+    value: 'hostIdent',
+  },
+  {
+    label: 'Business group ident',
+    value: 'businessGroupIdent',
+  },
 ];
 
 const allOptions = [
@@ -73,9 +83,10 @@ const allOptions = [
 
 function EditItem(props: IProps) {
   const { t } = useTranslation('dashboard');
-  const { data, vars, range, id, index, datasourceVars, onOk, onCancel } = props;
+  const { data, vars, range, id, index, datasourceVars, onOk, onCancel, dashboard } = props;
   const [form] = Form.useForm();
-  const { groupedDatasourceList, datasourceCateOptions } = useContext(CommonStateContext);
+  const { groupedDatasourceList, datasourceCateOptions, busiGroups } = useContext(CommonStateContext);
+  const groupRecord = useMemo(() => _.find(busiGroups, { id: dashboard.group_id }), [busiGroups, dashboard.group_id]);
 
   return (
     <Form layout='vertical' autoComplete='off' preserve={false} form={form} initialValues={data}>
@@ -94,17 +105,19 @@ function EditItem(props: IProps) {
           <Form.Item label={t('var.type')} name='type' rules={[{ required: true }]}>
             <Select
               style={{ width: '100%' }}
-              onChange={() => {
+              onChange={(val) => {
                 form.setFieldsValue({
+                  name: val === 'businessGroupIdent' ? 'busigroup' : '',
                   definition: '',
                   defaultValue: '',
+                  hide: val === 'constant' || val === 'businessGroupIdent' ? true : false,
                 });
               }}
             >
               {_.map(typeOptions, (item) => {
                 return (
                   <Select.Option value={item.value} key={item.value}>
-                    {item.label}
+                    {t(`var.type_map.${item.value}`)}
                   </Select.Option>
                 );
               })}
@@ -114,15 +127,14 @@ function EditItem(props: IProps) {
         <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.type !== curValues.type} noStyle>
           {({ getFieldValue }) => {
             const type = getFieldValue('type');
-            if (type !== 'constant') {
-              return (
-                <Col span={6}>
-                  <Form.Item label={t('var.hide')} name='hide' valuePropName='checked'>
-                    <Switch />
-                  </Form.Item>
-                </Col>
-              );
-            }
+            // initialValue 值为了兼容旧的 constant 和 businessGroupIdent 默认值为 true
+            return (
+              <Col span={6}>
+                <Form.Item label={t('var.hide')} name='hide' valuePropName='checked' initialValue={type === 'constant' || type === 'businessGroupIdent' ? true : false}>
+                  <Switch />
+                </Form.Item>
+              </Col>
+            );
           }}
         </Form.Item>
       </Row>
@@ -136,7 +148,7 @@ function EditItem(props: IProps) {
                   const datasourceCate = getFieldValue(['datasource', 'cate']) || 'prometheus';
                   return (
                     <Row gutter={16}>
-                      <Col span={8}>
+                      <Col span={12}>
                         <Form.Item label={t('common:datasource.type')} name={['datasource', 'cate']} rules={[{ required: true }]} initialValue='prometheus'>
                           <Select
                             dropdownMatchSelectWidth={false}
@@ -157,22 +169,9 @@ function EditItem(props: IProps) {
                           </Select>
                         </Form.Item>
                       </Col>
-                      <Col span={8}>
+                      <Col span={12}>
                         <ClusterSelect cate={datasourceCate} label={t('common:datasource.id')} name={['datasource', 'value']} datasourceVars={datasourceVars} />
                       </Col>
-                      {datasourceCate === 'elasticsearch' && (
-                        <>
-                          <Col span={8}>
-                            <Form.Item shouldUpdate={(prevValues, curValues) => prevValues?.datasource?.value !== curValues?.datasource?.value} noStyle>
-                              {({ getFieldValue }) => {
-                                let datasourceValue = getFieldValue(['datasource', 'value']);
-                                datasourceValue = replaceExpressionVars(datasourceValue as any, vars, vars.length, id);
-                                return <IndexSelect name={['config', 'index']} cate={datasourceCate} datasourceValue={datasourceValue} />;
-                              }}
-                            </Form.Item>
-                          </Col>
-                        </>
-                      )}
                     </Row>
                   );
                 }}
@@ -189,6 +188,7 @@ function EditItem(props: IProps) {
           if (type === 'query') {
             return (
               <>
+                {datasourceCate === 'elasticsearch' && <ElasticsearchSettings vars={vars} id={id} />}
                 <Form.Item
                   label={
                     <span>
@@ -196,11 +196,12 @@ function EditItem(props: IProps) {
                       <QuestionCircleOutlined
                         style={{ marginLeft: 5 }}
                         onClick={() => {
-                          if (datasourceCate === 'prometheus') {
-                            window.open('https://grafana.com/docs/grafana/latest/datasources/prometheus/#query-variable', '_blank');
-                          } else if (datasourceCate === 'elasticsearch') {
-                            window.open('https://grafana.com/docs/grafana/latest/datasources/elasticsearch/template-variables', '_blank');
-                          }
+                          window.open('https://flashcat.cloud/media/?type=夜莺监控&source=aHR0cHM6Ly9kb3dubG9hZC5mbGFzaGNhdC5jbG91ZC9uOWUtMTMtZGFzaGJvYXJkLWludHJvLm1wNA==');
+                          // if (datasourceCate === 'prometheus') {
+                          //   window.open('https://grafana.com/docs/grafana/latest/datasources/prometheus/#query-variable', '_blank');
+                          // } else if (datasourceCate === 'elasticsearch') {
+                          //   window.open('https://grafana.com/docs/grafana/latest/datasources/elasticsearch/template-variables', '_blank');
+                          // }
                         }}
                       />
                     </span>
@@ -231,7 +232,18 @@ function EditItem(props: IProps) {
                 >
                   <Input />
                 </Form.Item>
-                <Form.Item label={t('var.reg')} name='reg' tooltip={t('var.reg_tip')} rules={[{ pattern: new RegExp('^/(.*?)/(g?i?m?y?)$'), message: 'invalid regex' }]}>
+                <Form.Item
+                  label={t('var.reg')}
+                  name='reg'
+                  tooltip={
+                    <Trans
+                      ns='dashboard'
+                      i18nKey='var.reg_tip'
+                      components={{ a: <a target='_blank' href='https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions' /> }}
+                    />
+                  }
+                  rules={[{ pattern: new RegExp('^/(.*?)/(g?i?m?y?)$'), message: 'invalid regex' }]}
+                >
                   <Input placeholder='/*.hna/' />
                 </Form.Item>
               </>
@@ -266,7 +278,18 @@ function EditItem(props: IProps) {
                     ))}
                   </Select>
                 </Form.Item>
-                <Form.Item label={t('var.datasource.regex')} name='regex' tooltip={t('var.datasource.regex_tip')}>
+                <Form.Item
+                  label={t('var.datasource.regex')}
+                  name='regex'
+                  tooltip={
+                    <Trans
+                      ns='dashboard'
+                      i18nKey='var.datasource.regex_tip'
+                      components={{ a: <a target='_blank' href='https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions' /> }}
+                    />
+                  }
+                  rules={[{ pattern: new RegExp('^/(.*?)/(g?i?m?y?)$'), message: 'invalid regex' }]}
+                >
                   <Input placeholder='/vm/' />
                 </Form.Item>
                 <Form.Item shouldUpdate={(prevValues, curValues) => prevValues?.definition !== curValues?.regex || prevValues?.regex} noStyle>
@@ -297,13 +320,43 @@ function EditItem(props: IProps) {
                 </Form.Item>
               </>
             );
+          } else if (type === 'hostIdent') {
+            return (
+              <Form.Item
+                label={t('var.reg')}
+                name='reg'
+                tooltip={
+                  <Trans
+                    ns='dashboard'
+                    i18nKey='var.reg_tip'
+                    components={{ a: <a target='_blank' href='https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions' /> }}
+                  />
+                }
+                rules={[{ pattern: new RegExp('^/(.*?)/(g?i?m?y?)$'), message: 'invalid regex' }]}
+              >
+                <Input placeholder='/*.hna/' />
+              </Form.Item>
+            );
+          } else if (type === 'businessGroupIdent') {
+            if (groupRecord?.label_value) {
+              return (
+                <Form.Item label={t('var.businessGroupIdent.ident')}>
+                  <Input disabled value={groupRecord.label_value} />
+                </Form.Item>
+              );
+            }
+            return (
+              <Form.Item>
+                <Alert type='warning' message={t('var.businessGroupIdent.invalid')} />
+              </Form.Item>
+            );
           }
         }}
       </Form.Item>
       <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.type !== curValues.type} noStyle>
         {({ getFieldValue }) => {
           const type = getFieldValue('type');
-          if (type === 'query' || type === 'custom') {
+          if (type === 'query' || type === 'custom' || type === 'hostIdent') {
             return (
               <Row gutter={16}>
                 <Col flex='120px'>
