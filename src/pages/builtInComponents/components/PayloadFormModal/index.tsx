@@ -105,6 +105,7 @@ function index(props: Props & ModalWrapProps) {
               options={_.map(cateList, (item) => {
                 return { value: item };
               })}
+              disabled={initialValues?.created_by === 'system'}
             />
           </Form.Item>
         )}
@@ -118,7 +119,7 @@ function index(props: Props & ModalWrapProps) {
               },
             ]}
           >
-            <Input />
+            <Input disabled={initialValues?.created_by === 'system'} />
           </Form.Item>
         )}
         {contentMode === 'json' ? (

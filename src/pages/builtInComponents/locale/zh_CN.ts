@@ -25,12 +25,12 @@ const zh_CN = {
     edit: {
       alert: '编辑告警规则',
       dashboard: '编辑仪表盘',
-      collect: '编辑采集',
+      collect: '编辑采集模板',
     },
     create: {
       alert: '创建告警规则',
       dashboard: '创建仪表盘',
-      collect: '创建采集',
+      collect: '创建采集模板',
     },
     no_select: {
       alert: '请选择告警规则',
@@ -47,5 +47,6 @@ const zh_CN = {
   collect_busiGroup_select: '业务组选择',
   import_to_buisGroup: '导入业务组',
   import_to_buisGroup_invaild: '无法导入不同数据源类型的告警规则',
+  payload_by_system: '系统内置',
 };
 export default zh_CN;
