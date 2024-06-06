@@ -17,21 +17,18 @@
 import _ from 'lodash';
 import { IFieldConfig } from './types';
 
-const GAUGE_DEFAULT_MINIMUM = 0;
-const GAUGE_DEFAULT_MAXIMUM = 100;
-
-export const getFormattedThresholds = (field: IFieldConfig) => {
-  const min = GAUGE_DEFAULT_MINIMUM;
-  const max = GAUGE_DEFAULT_MAXIMUM;
+export const getFormattedThresholds = (field: IFieldConfig, min = 0, max = 100) => {
   const { steps } = field;
   const sorted = _.sortBy(steps, (item) => {
     return Number(item.value);
   });
   const thresholdsArray = _.map(sorted, ({ value, color, type }, index) => {
     const nextStep = sorted[index + 1];
+    const start = value ?? (type === 'base' ? min : max);
+    const end = typeof nextStep?.value === 'number' ? nextStep.value : max;
     return {
-      start: value ?? (type === 'base' ? min : max),
-      end: nextStep ? nextStep.value : max,
+      start: start - min < 0 ? 0 : start - min,
+      end: end - min > max ? max : end - min,
       color,
     };
   });
