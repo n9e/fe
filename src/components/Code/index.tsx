@@ -1,6 +1,7 @@
 import React, { ReactNode, useState, isValidElement } from 'react';
 import { copy2ClipBoard } from '@/utils';
 import './index.less';
+import { useTranslation } from 'react-i18next';
 interface Props {
   children: ReactNode;
 }
@@ -13,6 +14,7 @@ interface Props {
 //    <pre>http://yunyan.flashcat.cloud/v1/event/push \</pre>
 //  </Code>
 export default function Code(props: Props) {
+  const { t } = useTranslation();
   const { children } = props;
   const [copied, setCopied] = useState(false);
 
@@ -37,7 +39,7 @@ export default function Code(props: Props) {
     <div className='code-area'>
       <span className='code-text'>{children}</span>
       <span className='copy-btn' onClick={handleCopy}>
-        {copied ? '复制成功' : '复制'}
+        {copied ? t('复制成功') : t('复制')}
       </span>
     </div>
   );

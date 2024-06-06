@@ -27,6 +27,7 @@ const zh_CN = {
     search_placeholder: '蒐索,空格分隔多個關鍵字',
     clear: '清空圖表',
     noData: '暫無名額數據,請選擇Labels',
+    chart_title: '趨勢圖',
   },
   graph: {
     function: '計算函數',
