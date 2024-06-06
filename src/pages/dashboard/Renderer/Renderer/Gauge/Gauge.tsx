@@ -78,7 +78,7 @@ export default function index(props: Iprops) {
       }
       const thresholdFanWidth = valueFanWidth / 10 > 5 ? 5 : valueFanWidth / 10;
       const valueWidth = (width - (valueFanWidth + thresholdFanWidth) * 2) * 0.8;
-      const valueHeight = height / 2;
+      const valueHeight = radius / 2;
       const valueAndUnitFontSize = getMaxFontSize(valueAndUnit, valueWidth, valueHeight);
       setValueAndUnitFontSize(valueAndUnitFontSize);
 
@@ -144,15 +144,10 @@ export default function index(props: Iprops) {
         style={{
           top: width / 2 - 12,
           color: color,
+          fontSize: valueAndUnitFontSize,
         }}
       >
-        <span
-          style={{
-            fontSize: valueAndUnitFontSize,
-          }}
-        >
-          {valueAndUnit}
-        </span>
+        {valueAndUnit}
       </div>
     </div>
   );
