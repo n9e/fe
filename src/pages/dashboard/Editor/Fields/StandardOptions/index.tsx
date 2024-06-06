@@ -15,7 +15,7 @@
  *
  */
 import React from 'react';
-import { Form, Select, InputNumber, Row, Col, Tooltip, Input } from 'antd';
+import { Form, InputNumber, Row, Col, Tooltip, Input } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
@@ -27,13 +27,13 @@ interface IProps {
   namePrefix?: (string | number)[];
   showMinMax?: boolean;
   showDisplayName?: boolean;
+  defaultMin?: number;
+  defaultMax?: number;
 }
-
-const { Option, OptGroup } = Select;
 
 export default function index(props: IProps) {
   const { t } = useTranslation('dashboard');
-  const { preNamePrefix = [], namePrefix = ['options', 'standardOptions'], showMinMax = true, showDisplayName } = props;
+  const { preNamePrefix = [], namePrefix = ['options', 'standardOptions'], showMinMax = true, showDisplayName, defaultMin, defaultMax } = props;
 
   return (
     <Panel header={t('panel.standardOptions.title')}>
@@ -111,14 +111,14 @@ export default function index(props: IProps) {
         <Row gutter={10}>
           {showMinMax && (
             <Col span={8}>
-              <Form.Item label={t('panel.standardOptions.min')} name={[...namePrefix, 'min']}>
+              <Form.Item label={t('panel.standardOptions.min')} name={[...namePrefix, 'min']} initialValue={defaultMin}>
                 <InputNumber placeholder='auto' style={{ width: '100%' }} />
               </Form.Item>
             </Col>
           )}
           {showMinMax && (
             <Col span={8}>
-              <Form.Item label={t('panel.standardOptions.max')} name={[...namePrefix, 'max']}>
+              <Form.Item label={t('panel.standardOptions.max')} name={[...namePrefix, 'max']} initialValue={defaultMax}>
                 <InputNumber placeholder='auto' style={{ width: '100%' }} />
               </Form.Item>
             </Col>

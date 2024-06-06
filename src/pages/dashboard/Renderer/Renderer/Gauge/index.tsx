@@ -53,6 +53,8 @@ function GaugeItemContent(props) {
   return (
     <div className='renderer-gauge-item-content-chart'>
       <Gauge
+        min={options?.standardOptions?.min}
+        max={options?.standardOptions?.max}
         value={item.stat}
         formatedValue={item.value}
         valueUnit={item.unit}
