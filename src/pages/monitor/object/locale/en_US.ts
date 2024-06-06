@@ -27,6 +27,7 @@ const en_US = {
     search_placeholder: 'Enter Space to separate different keywords',
     clear: 'Clear',
     noData: 'No data, please select the Labels',
+    chart_title: 'Trend chart',
   },
   graph: {
     function: 'Function',

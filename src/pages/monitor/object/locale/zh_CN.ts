@@ -27,6 +27,7 @@ const zh_CN = {
     search_placeholder: '搜索，空格分隔多个关键字',
     clear: '清空图表',
     noData: '暂无指标数据，请选择 Labels',
+    chart_title: '趋势图',
   },
   graph: {
     function: '计算函数',
