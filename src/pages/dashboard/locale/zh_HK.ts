@@ -261,6 +261,8 @@ const zh_HK = {
       valueField_tip: 'Value 是保留關鍵字，作為時序資料取值計算後的字段名',
       valueField_tip2: '需選擇值為數值類型的字段',
       colSpan: '每行最多顯示',
+      colSpanTip: '即將廢棄，選擇"自動"選項將使用下方的佈局方向設置',
+      colSpanAuto: '自動',
       textSize: {
         title: '標題字型大小',
         value: '值字型大小',
@@ -276,6 +278,13 @@ const zh_HK = {
         graphMode: '圖表模式',
         none: '無',
         area: '迷你圖',
+        orientation: '佈局方向',
+        orientationTip: '選擇"自動"選項將根據圖表類型自動選擇佈局方向',
+        orientationValueMap: {
+          auto: '自動',
+          vertical: '垂直',
+          horizontal: '水平',
+        },
       },
       pie: {
         legengPosition: '圖例位置',
