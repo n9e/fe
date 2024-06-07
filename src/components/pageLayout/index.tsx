@@ -16,9 +16,9 @@
  */
 import React, { ReactNode, useContext, useState, useEffect } from 'react';
 import { useHistory, Link } from 'react-router-dom';
-import { RollbackOutlined } from '@ant-design/icons';
+import { RollbackOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { Menu, Dropdown, Space, Drawer } from 'antd';
+import { Menu, Dropdown, Space, Drawer, Tooltip } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { Logout } from '@/services/login';
 import AdvancedWrap, { License } from '@/components/AdvancedWrap';
@@ -58,7 +58,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
   useEffect(() => {
     setCurLanguage(i18nMap[i18n.language] || '中文');
   }, [i18n.language]);
-
+  
   const menu = (
     <Menu>
       <Menu.Item
@@ -176,11 +176,32 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                       {curLanguage}
                     </a>
                   </Dropdown>
-                  {!IS_ENT && (
-                    <div style={{ marginRight: 8 }}>
-                      <DarkModeSelect />
-                    </div>
-                  )}
+
+                  <div style={{ marginRight: 8 }}>
+                    <DarkModeSelect />
+                    {IS_ENT && (
+                      <Tooltip
+                        title={
+                          <div>
+                            <div style={{marginBottom:8}}>
+                              <b>注意</b>：企业版 暗黑功能测试中
+                            </div>
+                            <hr />
+                            <div>测试模块：</div>
+                            <ul>
+                              <li>北极星</li>
+                            </ul>
+                            <div>
+                              <b>如果发现样式问题， 请及时反馈</b>
+                            </div>
+                          </div>
+                        }
+                      >
+                        <QuestionCircleOutlined style={{ marginRight: 8 }}/>
+                      </Tooltip>
+                    )}
+                  </div>
+
                   <Dropdown overlay={menu} trigger={['click']}>
                     <span className='avator' style={{ cursor: 'pointer' }}>
                       <img src={profile.portrait || '/image/avatar1.png'} alt='' />
