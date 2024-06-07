@@ -265,4 +265,5 @@ export interface IDashboard {
   update_by: string;
   configs: IDashboardConfig;
   public?: number;
+  group_id: number;
 }

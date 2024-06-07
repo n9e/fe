@@ -14,18 +14,18 @@
  * limitations under the License.
  *
  */
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import querystring from 'query-string';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Button, Space, Dropdown, Menu, Switch, notification, Select, message } from 'antd';
-import { RollbackOutlined, SettingOutlined, SaveOutlined, FullscreenOutlined } from '@ant-design/icons';
+import { Button, Space, Dropdown, Menu, Switch, notification, Select, Input, message } from 'antd';
+import { RollbackOutlined, SettingOutlined, SaveOutlined, FullscreenOutlined, DownOutlined } from '@ant-design/icons';
 import { useKeyPress } from 'ahooks';
 import { TimeRangePickerWithRefresh, IRawTimeRange } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
 import { IS_ENT } from '@/utils/constant';
-import { updateDashboardConfigs } from '@/services/dashboardV2';
+import { updateDashboardConfigs, getBusiGroupsDashboards } from '@/services/dashboardV2';
 import DashboardLinks from '../DashboardLinks';
 import { AddPanelIcon } from '../config';
 import { visualizations } from '../Editor/config';
@@ -77,6 +77,9 @@ export default function Title(props: IProps) {
   const { viewMode } = query;
   const themeMode = getDefaultThemeMode(query); // only for ENT version
   const isClickTrigger = useRef(false);
+  const [dashboardList, setDashboardList] = useState<IDashboard[]>([]);
+  const [dashboardListDropdownSearch, setDashboardListDropdownSearch] = useState('');
+  const [dashboardListDropdownVisible, setDashboardListDropdownVisible] = useState(false);
 
   useEffect(() => {
     document.title = `${dashboard.name} - ${siteInfo?.page_title || cachePageTitle}`;
@@ -134,6 +137,14 @@ export default function Title(props: IProps) {
     }
   }, [query.viewMode]);
 
+  useEffect(() => {
+    if (dashboard.group_id && isPreview === false) {
+      getBusiGroupsDashboards(_.toString(dashboard.group_id)).then((res) => {
+        setDashboardList(res);
+      });
+    }
+  }, [dashboard?.group_id]);
+
   return (
     <div
       className={`dashboard-detail-header ${!IS_ENT ? 'n9e-page-header-content' : ''}`}
@@ -143,7 +154,55 @@ export default function Title(props: IProps) {
     >
       <div className='dashboard-detail-header-left'>
         {isPreview && !isBuiltin ? null : <RollbackOutlined className='back' onClick={() => history.push(props.gobackPath || '/dashboards')} />}
-        <div className='title'>{dashboard.name}</div>
+        {isPreview === true ? (
+          <div className='title'>{dashboard.name}</div>
+        ) : (
+          <Dropdown
+            trigger={['click']}
+            visible={dashboardListDropdownVisible}
+            onVisibleChange={(visible) => {
+              setDashboardListDropdownVisible(visible);
+            }}
+            overlay={
+              <div className='collects-payloads-dropdown-overlay p2 n9e-fill-color-2 n9e-border-base n9e-border-radius-base n9e-base-shadow'>
+                <Input
+                  className='mb1'
+                  placeholder={t('common:search_placeholder')}
+                  value={dashboardListDropdownSearch}
+                  onChange={(e) => {
+                    setDashboardListDropdownSearch(e.target.value);
+                  }}
+                />
+                <Menu>
+                  {_.map(
+                    _.filter(dashboardList, (item) => {
+                      return _.includes(_.toLower(item.name), _.toLower(dashboardListDropdownSearch));
+                    }),
+                    (item) => {
+                      return (
+                        <Menu.Item
+                          key={item.id}
+                          onClick={() => {
+                            history.push(`/dashboards/${item.ident || item.id}`);
+                            setDashboardListDropdownVisible(false);
+                            setDashboardListDropdownSearch('');
+                          }}
+                        >
+                          {item.name}
+                        </Menu.Item>
+                      );
+                    },
+                  )}
+                </Menu>
+              </div>
+            }
+          >
+            <Space style={{ cursor: 'pointer' }}>
+              <div className='title'>{dashboard.name}</div>
+              <DownOutlined />
+            </Space>
+          </Dropdown>
+        )}
       </div>
       <div className='dashboard-detail-header-right'>
         <Space>
