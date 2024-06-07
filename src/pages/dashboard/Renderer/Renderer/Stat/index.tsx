@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import _ from 'lodash';
 import classNames from 'classnames';
 import { useSize } from 'ahooks';
@@ -25,6 +25,8 @@ import { statHexPalette } from '../../../config';
 import getCalculatedValuesBySeries from '../../utils/getCalculatedValuesBySeries';
 import { calculateGridDimensions } from '../../utils/squares';
 import { useGlobalState } from '../../../globalState';
+import { getMinFontSizeByList, IGrid } from './utils';
+import StatItemByColSpan from './StatItemByColSpan';
 import StatItem from './StatItem';
 import './style.less';
 
@@ -36,14 +38,6 @@ interface IProps {
   };
   themeMode?: 'dark';
   isPreview?: boolean;
-}
-
-interface IGrid {
-  height: number;
-  width: number;
-  widthOnLastRow: number;
-  xCount: number;
-  yCount: number;
 }
 
 const ITEM_SPACIING = 2;
@@ -63,7 +57,6 @@ export default function Stat(props: IProps) {
   const { values, series, bodyWrapRef, isPreview } = props;
   const { custom, options } = values;
   const { calc, textMode, colorMode, colSpan, textSize, valueField, graphMode, orientation } = custom;
-  console.log('custom', custom);
   const calculatedValues = getCalculatedValuesBySeries(
     series,
     calc,
@@ -82,6 +75,15 @@ export default function Stat(props: IProps) {
   const [grid, setGrid] = useState<IGrid>();
   let xGrid = 0;
   let yGrid = 0;
+  const minFontSize = useMemo(() => {
+    if (eleSize?.width && eleSize?.height) {
+      return getMinFontSizeByList(calculatedValues, eleSize?.width, eleSize?.height, grid, orientation);
+    }
+    return {
+      name: 12,
+      valueAndUnit: 12,
+    };
+  }, [calculatedValues, eleSize?.width, eleSize?.height, grid, orientation]);
 
   // 只有单个序列值且是背景色模式，则填充整个卡片的背景色
   useEffect(() => {
@@ -107,11 +109,11 @@ export default function Stat(props: IProps) {
   }, [isPreview, JSON.stringify(calculatedValues), colorMode]);
 
   useEffect(() => {
-    if (eleSize?.width) {
+    if (eleSize?.width && colSpan === 0 && orientation === 'auto') {
       const grid = calculateGridDimensions(eleSize.width, eleSize.height, ITEM_SPACIING, calculatedValues.length);
       setGrid(grid);
     }
-  }, [eleSize?.width]);
+  }, [eleSize?.width, eleSize?.height, calculatedValues.length]);
 
   return (
     <div className='renderer-stat-container'>
@@ -125,7 +127,8 @@ export default function Stat(props: IProps) {
             'renderer-stat-container-box-flexwrap': colSpan !== 0,
           })}
         >
-          {colSpan === 0 &&
+          {eleSize?.width &&
+            colSpan === 0 &&
             orientation === 'auto' &&
             grid &&
             _.map(calculatedValues, (item, idx) => {
@@ -152,6 +155,9 @@ export default function Stat(props: IProps) {
                   graphMode={graphMode}
                   serie={_.find(series, { id: item.id })}
                   options={options}
+                  width={itemWidth}
+                  height={itemHeight}
+                  minFontSize={minFontSize}
                   style={{
                     position: 'absolute',
                     left: xPos,
@@ -162,7 +168,8 @@ export default function Stat(props: IProps) {
                 />
               );
             })}
-          {colSpan === 0 &&
+          {eleSize?.width &&
+            colSpan === 0 &&
             orientation !== 'auto' &&
             _.map(calculatedValues, (item, idx) => {
               return (
@@ -178,6 +185,9 @@ export default function Stat(props: IProps) {
                   graphMode={graphMode}
                   serie={_.find(series, { id: item.id })}
                   options={options}
+                  width={orientation === 'horizontal' ? (eleSize?.width as number) * (100 / calculatedValues.length / 100) : eleSize?.width}
+                  height={orientation === 'vertical' ? (eleSize?.height as number) * (100 / calculatedValues.length / 100) : eleSize?.height}
+                  minFontSize={minFontSize}
                   style={
                     orientation === 'horizontal'
                       ? {
@@ -195,7 +205,7 @@ export default function Stat(props: IProps) {
           {colSpan !== 0 &&
             _.map(calculatedValues, (item, idx) => {
               return (
-                <StatItem
+                <StatItemByColSpan
                   key={item.id}
                   item={item}
                   idx={idx}

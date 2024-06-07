@@ -1,17 +1,22 @@
 import React, { useRef, useEffect } from 'react';
 import _ from 'lodash';
+import { useSize } from 'ahooks';
 import TsGraph from '@fc-plot/ts-graph';
 import { getSerieTextObj } from '../../utils/getCalculatedValuesBySeries';
+import { getMaxFontSize } from '../../utils/getTextWidth';
 
+const MIN_SIZE = 12;
 const UNIT_PADDING = 4;
 const getTextColor = (color, colorMode) => {
   return colorMode === 'value' ? color : '#fff';
 };
 
 export default function StatItem(props) {
+  const ele = useRef(null);
+  const eleSize = useSize(ele);
   const chartEleRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<TsGraph>(null);
-  const { textMode, colorMode, textSize, isFullSizeBackground, valueField = 'Value', graphMode, serie, options, style, width, height, minFontSize } = props;
+  const { textMode, colorMode, textSize, isFullSizeBackground, valueField = 'Value', graphMode, serie, options, style } = props;
   let item = props.item;
 
   if (valueField !== 'Value') {
@@ -37,8 +42,17 @@ export default function StatItem(props) {
 
   const color = item.color;
   const backgroundColor = colorMode === 'background' ? color : 'transparent';
-  const headerFontSize = textSize?.title ?? minFontSize?.name;
-  const valueAndUnitFontSize = textSize?.value ?? minFontSize?.value;
+  const valueAndUnit = `${item.value} ${item.unit}`;
+  let headerFontSize = textSize?.title ?? MIN_SIZE;
+  let valueAndUnitFontSize = textSize?.value ?? MIN_SIZE;
+  if (eleSize) {
+    if (!textSize?.title) {
+      headerFontSize = getMaxFontSize(item.name, (eleSize?.width - 20) * 0.8, eleSize?.height / 2 / 3);
+    }
+    if (!textSize?.value) {
+      valueAndUnitFontSize = getMaxFontSize(valueAndUnit, (eleSize?.width - 20) * 0.8, (eleSize?.height / 2 / 3) * 2);
+    }
+  }
 
   useEffect(() => {
     if (chartEleRef.current) {
@@ -80,6 +94,7 @@ export default function StatItem(props) {
   return (
     <div
       className='renderer-stat-item'
+      ref={ele}
       style={{
         ...style,
         backgroundColor: isFullSizeBackground ? 'transparent' : backgroundColor,
