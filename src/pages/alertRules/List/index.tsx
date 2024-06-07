@@ -18,10 +18,11 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, Link } from 'react-router-dom';
 import _ from 'lodash';
+import { useDebounceFn } from 'ahooks';
 import moment from 'moment';
-import { Table, Tag, Switch, Modal, Space, Button, Row, Col, message, Select, Tooltip } from 'antd';
+import { Table, Tag, Switch, Modal, Space, Button, Row, Col, message, Select, Tooltip, Input } from 'antd';
 import { ColumnType } from 'antd/lib/table';
-import { EyeOutlined } from '@ant-design/icons';
+import { EyeOutlined, SearchOutlined } from '@ant-design/icons';
 import RefreshIcon from '@/components/RefreshIcon';
 import SearchInput from '@/components/BaseSearchInput';
 import usePagination from '@/components/usePagination';
@@ -48,6 +49,8 @@ interface Filter {
   severities?: number[];
 }
 
+const FILTER_LOCAL_STORAGE_KEY = 'alert-rules-filter';
+
 export default function List(props: ListProps) {
   const { businessGroup, busiGroups } = useContext(CommonStateContext);
   const { gids } = props;
@@ -55,7 +58,14 @@ export default function List(props: ListProps) {
   const history = useHistory();
   const { datasourceList } = useContext(CommonStateContext);
   const pagination = usePagination({ PAGESIZE_KEY: 'alert-rules-pagesize' });
-  const [filter, setFilter] = useState<Filter>({});
+  let defaultFilter = {} as Filter;
+  try {
+    defaultFilter = JSON.parse(window.localStorage.getItem(FILTER_LOCAL_STORAGE_KEY) || '{}');
+  } catch (e) {
+    console.error(e);
+  }
+  const [filter, setFilter] = useState<Filter>(defaultFilter as Filter);
+  const [queryValue, setQueryValue] = useState(defaultFilter.search || '');
   const [selectRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
   const [selectedRows, setSelectedRows] = useState<AlertRuleType<any>[]>([]);
   const [data, setData] = useState<AlertRuleType<any>[]>([]);
@@ -289,7 +299,7 @@ export default function List(props: ListProps) {
 
   const filterData = () => {
     return data.filter((item) => {
-      const { cate, datasourceIds, search, prod, severities } = filter;
+      const { datasourceIds, search, prod, severities } = filter;
       const lowerCaseQuery = search?.toLowerCase() || '';
       return (
         (item.name.toLowerCase().indexOf(lowerCaseQuery) > -1 || item.append_tags.join(' ').toLowerCase().indexOf(lowerCaseQuery) > -1) &&
@@ -323,6 +333,17 @@ export default function List(props: ListProps) {
     fetchData();
   }, [gids]);
 
+  const { run: searchChange } = useDebounceFn(
+    (search) => {
+      const newFilter = { ...filter, search };
+      setFilter(newFilter);
+      window.localStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
+    },
+    {
+      wait: 500,
+    },
+  );
+
   const filteredData = filterData();
 
   return (
@@ -339,10 +360,12 @@ export default function List(props: ListProps) {
               style={{ width: 90 }}
               value={filter.prod}
               onChange={(val) => {
-                setFilter({
+                const newFilter = {
                   ...filter,
                   prod: val,
-                });
+                };
+                setFilter(newFilter);
+                window.localStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
               }}
             />
             <DatasourceSelect
@@ -350,10 +373,12 @@ export default function List(props: ListProps) {
               filterKey='alertRule'
               value={filter.datasourceIds}
               onChange={(val) => {
-                setFilter({
+                const newFilter = {
                   ...filter,
                   datasourceIds: val,
-                });
+                };
+                setFilter(newFilter);
+                window.localStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
               }}
             />
             <Select
@@ -363,26 +388,27 @@ export default function List(props: ListProps) {
               maxTagCount='responsive'
               value={filter.severities}
               onChange={(val) => {
-                setFilter({
+                const newFilter = {
                   ...filter,
                   severities: val,
-                });
+                };
+                setFilter(newFilter);
+                window.localStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
               }}
             >
               <Select.Option value={1}>S1</Select.Option>
               <Select.Option value={2}>S2</Select.Option>
               <Select.Option value={3}>S3</Select.Option>
             </Select>
-            <SearchInput
+            <Input
               placeholder={t('search_placeholder')}
-              onSearch={(val) => {
-                setFilter({
-                  ...filter,
-                  search: val,
-                });
-              }}
-              allowClear
               style={{ width: 300 }}
+              value={queryValue}
+              onChange={(e) => {
+                setQueryValue(e.target.value);
+                searchChange(e.target.value);
+              }}
+              prefix={<SearchOutlined />}
             />
           </Space>
         </Col>
