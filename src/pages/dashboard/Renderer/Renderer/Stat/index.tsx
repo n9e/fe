@@ -218,8 +218,8 @@ export default function Stat(props: IProps) {
                   serie={_.find(series, { id: item.id })}
                   options={options}
                   style={{
-                    width: `${100 / colSpan}%`,
-                    flexBasis: `${100 / colSpan}%`,
+                    width: `calc(${100 / colSpan}% - 2px)`,
+                    flexBasis: `calc(${100 / colSpan}% - 2px)`,
                   }}
                 />
               );
