@@ -29,6 +29,8 @@ import { Record } from './types';
 import FormModal from './FormModal';
 import { adjustURL } from './utils';
 
+const LOCAL_STORAGE_KEY = 'embeddedDashboards_id';
+
 export default function index() {
   const { darkMode } = useContext(CommonStateContext);
   const { t } = useTranslation('embeddedDashboards');
@@ -49,7 +51,11 @@ export default function index() {
       } else {
         if (data && !_.isEmpty(data)) {
           const headRecord = data[0];
-          history.replace(`/embedded-dashboards?id=${headRecord.id}`);
+          let id = headRecord.id;
+          if (_.find(data, (item) => item.id === localStorage.getItem(LOCAL_STORAGE_KEY))) {
+            id = localStorage.getItem(LOCAL_STORAGE_KEY) as string;
+          }
+          history.replace(`/embedded-dashboards?id=${id}`);
         } else {
           setActiveRecord(undefined);
         }
@@ -65,7 +71,11 @@ export default function index() {
 
         if (res && !_.isEmpty(res) && !activeRecord) {
           const headRecord = res[0];
-          history.replace(`/embedded-dashboards?id=${headRecord.id}`);
+          let id = headRecord.id;
+          if (_.find(res, (item) => item.id === localStorage.getItem(LOCAL_STORAGE_KEY))) {
+            id = localStorage.getItem(LOCAL_STORAGE_KEY) as string;
+          }
+          history.replace(`/embedded-dashboards?id=${id}`);
         }
       })
       .finally(() => {
@@ -115,6 +125,7 @@ export default function index() {
                               history.push(`/embedded-dashboards?id=${item.id}`);
                               setDashboardListDropdownVisible(false);
                               setDashboardListDropdownSearch('');
+                              localStorage.setItem(LOCAL_STORAGE_KEY, item.id);
                             }}
                           >
                             {item.name}
