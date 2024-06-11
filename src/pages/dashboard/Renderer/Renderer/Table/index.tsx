@@ -389,7 +389,7 @@ function TableCpt(props: IProps, ref: any) {
           // TODO: 暂时关闭维度值列的伸缩，降低对目前不太理想的列伸缩交互的理解和操作成本
           width: idx < groupNames.length - 1 ? size?.width! / (groupNames.length + aggrDimensions.length) - 14 : undefined,
           sorter: (a, b) => {
-            return _.get(a[name], 'stat') - _.get(b[name], 'stat');
+            return localeCompare(a[name]?.stat, b[name]?.stat);
           },
           sortOrder: getSortOrder(name, sortObj),
           className: 'renderer-table-td-content-value-container',
