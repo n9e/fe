@@ -80,7 +80,7 @@ export default forwardRef(function QuickMenu(props: Props, ref) {
   }, [
     _.join(
       _.map(menuList, (item) => {
-        return _.concat([item.key, _.map(item.children, (child) => child.key)]);
+        return _.concat([item.label, _.map(item.children, (child) => child.label)]);
       }),
     ),
   ]);

@@ -23,6 +23,7 @@ import { Space, Empty, Spin, Dropdown, Input, Menu } from 'antd';
 import { SettingOutlined, DownOutlined } from '@ant-design/icons';
 import { CommonStateContext } from '@/App';
 import PageLayout from '@/components/pageLayout';
+import AuthorizationWrapper from '@/components/AuthorizationWrapper';
 import { getEmbeddedDashboards } from './services';
 import { Record } from './types';
 import FormModal from './FormModal';
@@ -130,16 +131,18 @@ export default function index() {
                 <DownOutlined style={{ marginRight: 0, fontSize: 12 }} />
               </Space>
             </Dropdown>
-            <SettingOutlined
-              onClick={() => {
-                FormModal({
-                  initialValues: data,
-                  onOk: (newData) => {
-                    setData(newData);
-                  },
-                });
-              }}
-            />
+            <AuthorizationWrapper allowedPerms={['/embedded-dashboards/put']}>
+              <SettingOutlined
+                onClick={() => {
+                  FormModal({
+                    initialValues: data,
+                    onOk: (newData) => {
+                      setData(newData);
+                    },
+                  });
+                }}
+              />
+            </AuthorizationWrapper>
           </Space>
         ) : (
           t('title')
@@ -162,18 +165,20 @@ export default function index() {
               description={
                 <Space>
                   {t('common:nodata')}
-                  <a
-                    onClick={() => {
-                      FormModal({
-                        initialValues: data,
-                        onOk: (newData) => {
-                          setData(newData);
-                        },
-                      });
-                    }}
-                  >
-                    {t('common:btn.edit')}
-                  </a>
+                  <AuthorizationWrapper allowedPerms={['/embedded-dashboards/put']}>
+                    <a
+                      onClick={() => {
+                        FormModal({
+                          initialValues: data,
+                          onOk: (newData) => {
+                            setData(newData);
+                          },
+                        });
+                      }}
+                    >
+                      {t('edit_btn')}
+                    </a>
+                  </AuthorizationWrapper>
                 </Space>
               }
             />
