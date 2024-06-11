@@ -33,6 +33,10 @@ export const getMenuList = (t) => {
           key: '/dashboards',
           label: t('监控仪表盘'),
         },
+        {
+          key: '/embedded-dashboards',
+          label: t('embeddedDashboards:title'),
+        },
       ],
     },
     {
