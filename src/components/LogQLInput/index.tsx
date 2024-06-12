@@ -12,7 +12,7 @@ import { highlightSelectionMatches } from '@codemirror/search';
 import { commentKeymap } from '@codemirror/comment';
 import { lintKeymap } from '@codemirror/lint';
 import { autocompletion, completionKeymap } from '@codemirror/autocomplete';
-import { PromQLExtension } from 'codemirror-promql';
+import { PromQLExtension } from '@fc-components/codemirror-promql';
 import { baseTheme, lightTheme, darkTheme, promqlHighlighter } from './CMTheme';
 import { N9E_PATHNAME, AccessTokenKey } from '@/utils/constant';
 import { CommonStateContext } from '@/App';
