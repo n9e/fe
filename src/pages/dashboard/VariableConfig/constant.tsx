@@ -25,7 +25,7 @@ import { normalizeESQueryRequestBody } from './utils';
 
 // https://grafana.com/docs/grafana/latest/datasources/prometheus/#query-variable 根据文档解析表达式
 // 每一个promtheus接口都接受start和end参数来限制返回值
-export const convertExpressionToQuery = (expression: string, range: IRawTimeRange, item: IVariable, dashboardId) => {
+export const convertExpressionToQuery = (expression: string, range: IRawTimeRange, item: IVariable, dashboardId, groupedDatasourceList: { [index: string]: any[] }) => {
   const { type, datasource, config } = item;
   const parsedRange = parseRange(range);
   const start = moment(parsedRange.start).unix();
@@ -52,10 +52,17 @@ export const convertExpressionToQuery = (expression: string, range: IRawTimeRang
         let metricsAndLabel = expression.substring('label_values('.length, expression.length - 1).split(',');
         const label = metricsAndLabel.pop();
         const metric = metricsAndLabel.join(', ');
-        if (end - start >= 86400) {
-          return getMetricSeries({ 'match[]': metric.trim(), start, end }, datasourceValue).then((res) => Array.from(new Set(_.map(res.data, (item) => item[label!.trim()]))));
+        const prometheusDatasourceList = groupedDatasourceList.prometheus;
+        const currentDatasource = _.find(prometheusDatasourceList, { id: datasourceValue });
+        // 如果查询时间小于一天并且开始时间在一天内并且是 VictoriaMetrics 类型的时序库，可能存在数据延迟，需要使用 last_over_time 查询
+        if (
+          end - start < 86400 &&
+          end >= moment().subtract(1, 'day').unix() &&
+          (currentDatasource?.settings?.['prometheus.tsdb_type'] === 'VictoriaMetrics' || currentDatasource?.settings?.tsdb_type === 'VictoriaMetrics')
+        ) {
+          return getMetricSeriesV2({ metric, start, end }, datasourceValue).then((res) => Array.from(new Set(_.map(res.data, (item) => item[label!.trim()]))));
         }
-        return getMetricSeriesV2({ metric, start, end }, datasourceValue).then((res) => Array.from(new Set(_.map(res.data, (item) => item[label!.trim()]))));
+        return getMetricSeries({ 'match[]': metric.trim(), start, end }, datasourceValue).then((res) => Array.from(new Set(_.map(res.data, (item) => item[label!.trim()]))));
       } else {
         const label = expression.substring('label_values('.length, expression.length - 1);
         return getLabelValues(label, { start, end }, datasourceValue).then((res) => res.data);
