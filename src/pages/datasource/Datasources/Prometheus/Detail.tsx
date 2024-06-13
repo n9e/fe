@@ -74,6 +74,12 @@ export default function Index(props: Props) {
             {data?.cluster_name || '-'}
           </Col>
         </Row>
+        <Row gutter={16}>
+          <Col span={24}>{t('form.prom.tsdb_type')}：</Col>
+          <Col span={24} className='second-color'>
+            {data.settings?.['prometheus.tsdb_type'] || '-'}
+          </Col>
+        </Row>
       </div>
     </div>
   );
