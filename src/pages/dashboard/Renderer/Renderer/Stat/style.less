@@ -6,11 +6,38 @@
 .renderer-stat-container-box {
   width: 100%;
   height: 100%;
-  display: flex;
-  flex-wrap: wrap;
   padding: 10px;
   font-size: 22px;
+}
+.renderer-stat-container-box-content {
+  width: 100%;
+  height: 100%;
+}
+.renderer-stat-container-box-flexwrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
   overflow-y: auto;
+}
+.renderer-stat-container-box-position {
+  position: relative;
+}
+.renderer-stat-container-box-flexRow {
+  display: flex;
+  flex-direction: row;
+  gap: 2px;
+}
+.renderer-stat-container-box-flexColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  .renderer-stat-item-content {
+    display: flex;
+    flex-flow: wrap;
+    flex-grow: 1;
+    align-items: center;
+    justify-content: space-between;
+  }
 }
 .renderer-stat-item {
   text-align: center;
@@ -19,6 +46,8 @@
   display: flex;
   align-items: center;
   position: relative;
+  overflow: hidden;
+  border-radius: 4px;
 }
 .renderer-stat-item-graph {
   position: absolute;
@@ -35,7 +64,6 @@
 .renderer-stat-value {
   white-space: nowrap;
 }
-
 .renderer-stat-value {
   font-weight: 400;
   line-height: 1;

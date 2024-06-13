@@ -28,7 +28,7 @@ import { Alert, Modal, Button, Affix, message } from 'antd';
 import PageLayout from '@/components/pageLayout';
 import { IRawTimeRange, getDefaultValue, isValid } from '@/components/TimeRangePicker';
 import { Dashboard } from '@/store/dashboardInterface';
-import { getDashboard, updateDashboardConfigs, getDashboardPure, getBuiltinDashboard } from '@/services/dashboardV2';
+import { getDashboard, updateDashboardConfigs, getDashboardPure } from '@/services/dashboardV2';
 import { getPayload } from '@/pages/builtInComponents/services';
 import { SetTmpChartData } from '@/services/metric';
 import { CommonStateContext, basePrefix } from '@/App';

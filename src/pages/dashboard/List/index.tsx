@@ -33,7 +33,7 @@ import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
 import { CommonStateContext } from '@/App';
 import BusinessGroup, { getCleanBusinessGroupIds } from '@/components/BusinessGroup';
 import usePagination from '@/components/usePagination';
-import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
+import { getDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
 import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
 import Header from './Header';
 import FormModal from './FormModal';
@@ -43,6 +43,7 @@ import PublicForm from './PublicForm';
 import './style.less';
 
 const N9E_BOARD_NODE_ID = 'N9E_BOARD_NODE_ID';
+const SEARCH_LOCAL_STORAGE_KEY = 'n9e_dashboard_search';
 
 export default function index() {
   const { t } = useTranslation('dashboard');
@@ -51,7 +52,7 @@ export default function index() {
   const [list, setList] = useState<any[]>([]);
   const [selectRowKeys, setSelectRowKeys] = useState<number[]>([]);
   const [refreshKey, setRefreshKey] = useState(_.uniqueId('refreshKey_'));
-  const [searchVal, setsearchVal] = useState<string>('');
+  const [searchVal, setsearchVal] = useState<string>(localStorage.getItem(SEARCH_LOCAL_STORAGE_KEY) || '');
   const pagination = usePagination({ PAGESIZE_KEY: 'dashboard-pagesize' });
   const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
 
@@ -73,7 +74,10 @@ export default function index() {
 
   const data = _.filter(list, (item) => {
     if (searchVal) {
-      return _.includes(item.name.toLowerCase(), searchVal.toLowerCase()) || item.tags.toLowerCase().includes(searchVal.toLowerCase());
+      return (
+        _.includes(item.name.toLowerCase(), searchVal.toLowerCase()) ||
+        _.includes(_.join(_.sortBy(_.split(item.tags.toLowerCase(), ' ')), ' '), _.join(_.sortBy(_.split(searchVal.toLowerCase(), ' ')), ' '))
+      );
     }
     return true;
   });
@@ -129,7 +133,10 @@ export default function index() {
                 setRefreshKey(_.uniqueId('refreshKey_'));
               }}
               searchVal={searchVal}
-              onSearchChange={setsearchVal}
+              onSearchChange={(val) => {
+                setsearchVal(val);
+                localStorage.setItem(SEARCH_LOCAL_STORAGE_KEY, val);
+              }}
               columnsConfigs={columnsConfigs}
               setColumnsConfigs={setColumnsConfigs}
             />
@@ -187,8 +194,10 @@ export default function index() {
                                   if (queryItem.includes(tag)) return;
                                   setsearchVal((searchVal) => {
                                     if (searchVal) {
+                                      localStorage.setItem(SEARCH_LOCAL_STORAGE_KEY, searchVal + ' ' + tag);
                                       return searchVal + ' ' + tag;
                                     }
+                                    localStorage.setItem(SEARCH_LOCAL_STORAGE_KEY, tag);
                                     return tag;
                                   });
                                 }}

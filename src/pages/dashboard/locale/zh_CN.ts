@@ -267,6 +267,8 @@ const zh_CN = {
       valueField_tip: 'Value 是保留关键字，作为时序数据取值计算后的字段名',
       valueField_tip2: '需选择值为数值类型的字段',
       colSpan: '每行最多显示',
+      colSpanTip: '即将废弃，选择"自动"选项将使用下方的布局方向设置',
+      colSpanAuto: '自动',
       textSize: {
         title: '标题字体大小',
         value: '值字体大小',
@@ -282,6 +284,13 @@ const zh_CN = {
         graphMode: '图表模式',
         none: '不显示',
         area: '迷你图',
+        orientation: '布局方向',
+        orientationTip: '选择"自动"时，会根据图表的宽高自动选择布局方向',
+        orientationValueMap: {
+          auto: '自动',
+          vertical: '垂直',
+          horizontal: '水平',
+        },
       },
       pie: {
         legengPosition: '图例位置', // pie

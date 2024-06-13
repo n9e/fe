@@ -255,6 +255,8 @@ const en_US = {
       valueField_tip: 'Value is a reserved keyword, used as the field name after time series data value calculation',
       valueField_tip2: 'You need to select a column whose value is a numeric type',
       colSpan: 'Col span',
+      colSpanTip: 'Deprecated soon, selecting the "Auto" option will use the layout direction settings below',
+      colSpanAuto: 'Auto',
       textSize: {
         title: 'Title textsize',
         value: 'Value textsize',
@@ -270,6 +272,13 @@ const en_US = {
         graphMode: 'Graph mode',
         none: 'None',
         area: 'Mini graph',
+        orientation: 'Orientation',
+        orientationTip: 'Selecting "Auto" will automatically select the layout direction based on the width and height of the chart.',
+        orientationValueMap: {
+          auto: 'Auto',
+          vertical: 'Vertical',
+          horizontal: 'Horizontal',
+        },
       },
       pie: {
         legengPosition: 'Legend position',

@@ -53,6 +53,8 @@ function GaugeItemContent(props) {
   return (
     <div className='renderer-gauge-item-content-chart'>
       <Gauge
+        min={options?.standardOptions?.min}
+        max={options?.standardOptions?.max}
         value={item.stat}
         formatedValue={item.value}
         valueUnit={item.unit}
@@ -113,7 +115,7 @@ function GaugeItem(props) {
   }
 
   return (
-    <Tooltip title={textMode === 'valueAndName' ? item.name : undefined}>
+    <Tooltip title={item.name}>
       <div key={item.name} className='renderer-gauge-item' ref={ele} style={style}>
         <div className='renderer-gauge-item-content'>
           <GaugeItemContent {...props} eleSize={eleSize} realHeaderFontSize={realHeaderFontSize} />
