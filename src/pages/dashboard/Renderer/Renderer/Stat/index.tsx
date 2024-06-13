@@ -14,16 +14,20 @@
  * limitations under the License.
  *
  */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import _ from 'lodash';
-import * as d3 from 'd3';
+import classNames from 'classnames';
 import { useSize } from 'ahooks';
-import TsGraph from '@fc-plot/ts-graph';
+import * as d3 from 'd3';
 import '@fc-plot/ts-graph/dist/index.css';
 import { IPanel } from '../../../types';
 import { statHexPalette } from '../../../config';
-import getCalculatedValuesBySeries, { getSerieTextObj } from '../../utils/getCalculatedValuesBySeries';
+import getCalculatedValuesBySeries from '../../utils/getCalculatedValuesBySeries';
+import { calculateGridDimensions } from '../../utils/squares';
 import { useGlobalState } from '../../../globalState';
+import { getMinFontSizeByList, IGrid } from './utils';
+import StatItemByColSpan from './StatItemByColSpan';
+import StatItem from './StatItem';
 import './style.less';
 
 interface IProps {
@@ -36,130 +40,7 @@ interface IProps {
   isPreview?: boolean;
 }
 
-const UNIT_SIZE = 12;
-const MIN_SIZE = 12;
-const UNIT_PADDING = 4;
-const getTextColor = (color, colorMode) => {
-  return colorMode === 'value' ? color : '#fff';
-};
-
-function StatItem(props) {
-  const ele = useRef(null);
-  const eleSize = useSize(ele);
-  const chartEleRef = useRef<HTMLDivElement>(null);
-  const chartRef = useRef<TsGraph>(null);
-  const { colSpan, textMode, colorMode, textSize, isFullSizeBackground, valueField = 'Value', graphMode, serie, options } = props;
-  let item = props.item;
-
-  if (valueField !== 'Value') {
-    const value = _.get(item, ['metric', valueField]);
-    if (!_.isNaN(_.toNumber(value))) {
-      const result = getSerieTextObj(
-        value,
-        {
-          unit: options?.standardOptions?.util,
-          decimals: options?.standardOptions?.decimals,
-          dateFormat: options?.standardOptions?.dateFormat,
-        },
-        options?.valueMappings,
-        options?.thresholds,
-      );
-      item.value = result?.value;
-      item.unit = result?.unit;
-      item.color = result?.color;
-    } else {
-      item.value = value;
-    }
-  }
-
-  const headerFontSize = textSize?.title ? textSize?.title : eleSize?.width! / _.toString(item.name).length || MIN_SIZE;
-  let statFontSize = textSize?.value ? textSize?.value : (eleSize?.width! - item.unit.length * UNIT_SIZE - UNIT_PADDING) / _.toString(item.value).length || MIN_SIZE;
-  const color = item.color;
-  const backgroundColor = colorMode === 'background' ? color : 'transparent';
-
-  if (statFontSize > eleSize?.height! - 20) {
-    statFontSize = eleSize?.height! - 20;
-  }
-
-  useEffect(() => {
-    if (chartEleRef.current) {
-      if (chartRef.current) {
-        chartRef.current.destroy();
-      }
-      chartRef.current = new TsGraph({
-        timestamp: 'X',
-        xkey: 0,
-        ykey: 1,
-        ykey2: 2,
-        ykeyFormatter: (value) => Number(value),
-        chart: {
-          renderTo: chartEleRef.current,
-          height: chartEleRef.current.clientHeight,
-          marginTop: 0,
-          marginRight: 0,
-          marginBottom: 0,
-          marginLeft: 0,
-          colors: [colorMode === 'background' ? 'rgba(255, 255, 255, 0.5)' : color],
-        },
-        series: [serie],
-        line: {
-          width: 1,
-        },
-        xAxis: {
-          visible: false,
-        },
-        yAxis: {
-          visible: false,
-        },
-        area: {
-          opacity: 0.2,
-        },
-      });
-    }
-  }, [colorMode, graphMode]);
-
-  return (
-    <div
-      className='renderer-stat-item'
-      ref={ele}
-      style={{
-        width: `${100 / colSpan}%`,
-        flexBasis: `${100 / colSpan}%`,
-        backgroundColor: isFullSizeBackground ? 'transparent' : backgroundColor,
-      }}
-    >
-      <div style={{ width: '100%' }}>
-        {graphMode === 'area' && (
-          <div className='renderer-stat-item-graph'>
-            <div ref={chartEleRef} style={{ height: '100%', width: '100%' }} />
-          </div>
-        )}
-        <div className='renderer-stat-item-content'>
-          {textMode === 'valueAndName' && (
-            <div
-              className='renderer-stat-header'
-              style={{
-                fontSize: headerFontSize > 100 ? 100 : headerFontSize,
-              }}
-            >
-              {item.name}
-            </div>
-          )}
-          <div
-            className='renderer-stat-value'
-            style={{
-              color: getTextColor(color, colorMode),
-              fontSize: statFontSize > 100 ? 100 : statFontSize,
-            }}
-          >
-            {item.value}
-            <span style={{ fontSize: UNIT_SIZE, paddingLeft: UNIT_PADDING }}>{item.unit}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+const ITEM_SPACIING = 2;
 
 const getColumnsKeys = (data: any[]) => {
   const keys = _.reduce(
@@ -175,7 +56,7 @@ const getColumnsKeys = (data: any[]) => {
 export default function Stat(props: IProps) {
   const { values, series, bodyWrapRef, isPreview } = props;
   const { custom, options } = values;
-  const { calc, textMode, colorMode, colSpan, textSize, valueField, graphMode } = custom;
+  const { calc, textMode, colorMode, colSpan, textSize, valueField, graphMode, orientation } = custom;
   const calculatedValues = getCalculatedValuesBySeries(
     series,
     calc,
@@ -189,6 +70,20 @@ export default function Stat(props: IProps) {
   );
   const [isFullSizeBackground, setIsFullSizeBackground] = useState(false);
   const [statFields, setStatFields] = useGlobalState('statFields');
+  const ele = useRef(null);
+  const eleSize = useSize(ele);
+  const [grid, setGrid] = useState<IGrid>();
+  let xGrid = 0;
+  let yGrid = 0;
+  const minFontSize = useMemo(() => {
+    if (eleSize?.width && eleSize?.height) {
+      return getMinFontSizeByList(calculatedValues, eleSize?.width, eleSize?.height, grid, orientation);
+    }
+    return {
+      name: 12,
+      valueAndUnit: 12,
+    };
+  }, [calculatedValues, eleSize?.width, eleSize?.height, grid, orientation]);
 
   // 只有单个序列值且是背景色模式，则填充整个卡片的背景色
   useEffect(() => {
@@ -213,27 +108,123 @@ export default function Stat(props: IProps) {
     }
   }, [isPreview, JSON.stringify(calculatedValues), colorMode]);
 
+  useEffect(() => {
+    if (eleSize?.width && colSpan === 0 && orientation === 'auto') {
+      const grid = calculateGridDimensions(eleSize.width, eleSize.height, ITEM_SPACIING, calculatedValues.length);
+      setGrid(grid);
+    }
+  }, [eleSize?.width, eleSize?.height, calculatedValues.length]);
+
   return (
     <div className='renderer-stat-container'>
-      <div className='renderer-stat-container-box scroll-container'>
-        {_.map(calculatedValues, (item, idx) => {
-          return (
-            <StatItem
-              key={item.id}
-              item={item}
-              idx={idx}
-              colSpan={colSpan}
-              textMode={textMode}
-              colorMode={colorMode}
-              textSize={textSize}
-              isFullSizeBackground={isFullSizeBackground}
-              valueField={valueField}
-              graphMode={graphMode}
-              serie={_.find(series, { id: item.id })}
-              options={options}
-            />
-          );
-        })}
+      <div className='renderer-stat-container-box'>
+        <div
+          ref={ele}
+          className={classNames('renderer-stat-container-box-content scroll-container', {
+            'renderer-stat-container-box-position': colSpan === 0 && orientation === 'auto',
+            'renderer-stat-container-box-flexRow': colSpan === 0 && orientation === 'horizontal',
+            'renderer-stat-container-box-flexColumn': colSpan === 0 && orientation === 'vertical',
+            'renderer-stat-container-box-flexwrap': colSpan !== 0,
+          })}
+        >
+          {eleSize?.width &&
+            colSpan === 0 &&
+            orientation === 'auto' &&
+            grid &&
+            _.map(calculatedValues, (item, idx) => {
+              const isLastRow = yGrid === grid.yCount - 1;
+              const itemWidth = isLastRow ? grid.widthOnLastRow : grid.width;
+              const itemHeight = grid.height;
+              const xPos = xGrid * itemWidth + ITEM_SPACIING * xGrid;
+              const yPos = yGrid * itemHeight + ITEM_SPACIING * yGrid;
+              xGrid++;
+              if (xGrid === grid.xCount) {
+                xGrid = 0;
+                yGrid++;
+              }
+              return (
+                <StatItem
+                  key={item.id}
+                  item={item}
+                  idx={idx}
+                  textMode={textMode}
+                  colorMode={colorMode}
+                  textSize={textSize}
+                  isFullSizeBackground={isFullSizeBackground}
+                  valueField={valueField}
+                  graphMode={graphMode}
+                  serie={_.find(series, { id: item.id })}
+                  options={options}
+                  width={itemWidth}
+                  height={itemHeight}
+                  minFontSize={minFontSize}
+                  style={{
+                    position: 'absolute',
+                    left: xPos,
+                    top: yPos,
+                    width: `${itemWidth}px`,
+                    height: `${itemHeight}px`,
+                  }}
+                />
+              );
+            })}
+          {eleSize?.width &&
+            colSpan === 0 &&
+            orientation !== 'auto' &&
+            _.map(calculatedValues, (item, idx) => {
+              return (
+                <StatItem
+                  key={item.id}
+                  item={item}
+                  idx={idx}
+                  textMode={textMode}
+                  colorMode={colorMode}
+                  textSize={textSize}
+                  isFullSizeBackground={isFullSizeBackground}
+                  valueField={valueField}
+                  graphMode={graphMode}
+                  serie={_.find(series, { id: item.id })}
+                  options={options}
+                  width={orientation === 'horizontal' ? (eleSize?.width as number) * (100 / calculatedValues.length / 100) : eleSize?.width}
+                  height={orientation === 'vertical' ? (eleSize?.height as number) * (100 / calculatedValues.length / 100) : eleSize?.height}
+                  minFontSize={minFontSize}
+                  style={
+                    orientation === 'horizontal'
+                      ? {
+                          width: `${100 / calculatedValues.length}%`,
+                          flexBasis: `${100 / calculatedValues.length}%`,
+                        }
+                      : {
+                          height: `${100 / calculatedValues.length}%`,
+                          flexBasis: `${100 / calculatedValues.length}%`,
+                        }
+                  }
+                />
+              );
+            })}
+          {colSpan !== 0 &&
+            _.map(calculatedValues, (item, idx) => {
+              return (
+                <StatItemByColSpan
+                  key={item.id}
+                  item={item}
+                  idx={idx}
+                  textMode={textMode}
+                  colorMode={colorMode}
+                  textSize={textSize}
+                  isFullSizeBackground={isFullSizeBackground}
+                  valueField={valueField}
+                  graphMode={graphMode}
+                  serie={_.find(series, { id: item.id })}
+                  options={options}
+                  style={{
+                    width: `calc(${100 / colSpan}% - 2px)`,
+                    flexBasis: `calc(${100 / colSpan}% - 2px)`,
+                  }}
+                />
+              );
+            })}
+        </div>
       </div>
     </div>
   );
