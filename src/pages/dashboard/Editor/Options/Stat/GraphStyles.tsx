@@ -50,10 +50,10 @@ export default function GraphStyles() {
             </Form.Item>
           </Col>
           <Col span={8}>
-            <Form.Item label='图表模式' name={[...namePrefix, 'graphMode']}>
+            <Form.Item label={t('panel.custom.stat.graphMode')} name={[...namePrefix, 'graphMode']}>
               <Radio.Group buttonStyle='solid'>
-                <Radio.Button value='none'>不显示</Radio.Button>
-                <Radio.Button value='area'>迷你图</Radio.Button>
+                <Radio.Button value='none'>{t('panel.custom.stat.none')}</Radio.Button>
+                <Radio.Button value='area'>{t('panel.custom.stat.area')}</Radio.Button>
               </Radio.Group>
             </Form.Item>
           </Col>

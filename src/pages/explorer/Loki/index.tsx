@@ -64,11 +64,10 @@ export default function index(props: IProps) {
       end: isMathString(params.end) ? params.end : moment.unix(_.toNumber(params.end)),
     };
   }
-  const timesRef =
-    useRef<{
-      start: number;
-      end: number;
-    }>();
+  const timesRef = useRef<{
+    start: number;
+    end: number;
+  }>();
   const logQLInputRef = useRef<any>(null);
 
   useEffect(() => {
