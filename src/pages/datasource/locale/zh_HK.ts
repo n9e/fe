@@ -60,6 +60,7 @@ const zh_HK = {
       help_content: '沒有部署時序庫？可參考 <a>安裝手冊</a> 安裝部署',
       prom_installation_title: '安裝手冊',
       prom_installation: '到夜鶯部署的機器上，執行如下命令，安裝 Prometheus 時序庫，生產環境，建議部署集群版的 VictoriaMetrics，可參考 <a>官方文檔</a>',
+      tsdb_type: '時序庫類型',
     },
     es: {
       enable_write: '允許寫入',

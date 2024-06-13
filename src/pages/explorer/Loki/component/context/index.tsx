@@ -93,6 +93,9 @@ function LogContext(props: IProps & ModalWrapProps) {
               <Select.Option value={10}>上下10条日志</Select.Option>
               <Select.Option value={20}>上下20条日志</Select.Option>
               <Select.Option value={50}>上下50条日志</Select.Option>
+              <Select.Option value={100}>上下100条日志</Select.Option>
+              <Select.Option value={200}>上下200条日志</Select.Option>
+              <Select.Option value={500}>上下500条日志</Select.Option>
             </Select>
           </Input.Group>
           <SelectSort onChange={(v) => setSortOrder(v)} />

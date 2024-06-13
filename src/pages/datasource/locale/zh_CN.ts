@@ -60,6 +60,7 @@ const zh_CN = {
       help_content: '没有部署时序库？可参考 <a>安装手册</a> 安装部署',
       prom_installation_title: '安装手册',
       prom_installation: '到夜莺部署的机器上，执行如下命令，安装 Prometheus 时序库，生产环境，建议部署集群版的 VictoriaMetrics，可参考 <a>官方文档</a>',
+      tsdb_type: '时序库类型',
     },
     es: {
       write_config: '写配置',

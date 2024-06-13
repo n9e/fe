@@ -132,6 +132,7 @@ function index(props: IProps) {
                   },
                 },
                 id,
+                groupedDatasourceList,
               );
               options = _.sortBy(_.uniq(options));
             } catch (error) {

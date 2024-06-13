@@ -1,5 +1,5 @@
 import React, { useContext, useRef, useState } from 'react';
-import { Form, Input, Checkbox, Card, Tooltip, Alert, Drawer, Space } from 'antd';
+import { Form, Input, Checkbox, Card, Tooltip, Alert, Drawer, Space, Select } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { Trans, useTranslation } from 'react-i18next';
@@ -127,6 +127,14 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
               </div>
             </Tooltip>
           </Checkbox>
+        </Form.Item>
+        <Form.Item label={t('form.prom.tsdb_type')} name={['settings', 'prometheus.tsdb_type']}>
+          <Select
+            options={_.map(['Prometheus', 'Thanos', 'VictoriaMetrics', 'M3', 'SLS'], (item) => {
+              return { label: item, value: item };
+            })}
+            showSearch
+          />
         </Form.Item>
         <Description />
       </Card>

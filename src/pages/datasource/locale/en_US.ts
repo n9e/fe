@@ -64,6 +64,7 @@ const en_US = {
       prom_installation_title: 'Installation',
       prom_installation:
         'On the machine where n9e is deployed, run the following command to install the Prometheus time series database. For production environments, it is recommended to deploy the cluster version of VictoriaMetrics. Refer to the <a>official documentation</a> for details',
+      tsdb_type: 'Time series database type',
     },
     es: {
       enable_write: 'Enable Write',
