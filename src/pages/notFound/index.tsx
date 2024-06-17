@@ -38,4 +38,3 @@ const NotFound: React.FC = () => {
 };
 
 export default NotFound;
-'你访问的页面不存在!'
