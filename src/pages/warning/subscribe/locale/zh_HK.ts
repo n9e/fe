@@ -1,7 +1,7 @@
 const zh_HK = {
   title: '訂閱規則',
-  search_placeholder: '搜尋規則、標籤、接收組',
-  rule_name: '規則名稱',
+  search_placeholder: '搜索訂閱名稱、訂閱的規則、訂閱標籤、告警接收組',
+  rule_name: '訂閱的規則',
   sub_rule_name: '訂閱告警規則',
   sub_rule_selected: '已選規則',
   tags: '訂閱標籤',
@@ -45,7 +45,7 @@ const zh_HK = {
   severities: '訂閱事件等級',
   severities_msg: '訂閱事件等級不能為空',
   tags_groups_require: '標籤和接收組至少填寫一項',
-  note: '規則備註',
+  note: '訂閱名稱',
 };
 
 export default zh_HK;

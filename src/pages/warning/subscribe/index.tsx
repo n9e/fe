@@ -15,8 +15,8 @@
  *
  */
 import React, { useState, useEffect, useContext } from 'react';
-import { Button, Input, Table, message, Modal, Space, Switch, Tag } from 'antd';
-import { CopyOutlined, ExclamationCircleOutlined, SearchOutlined, EyeOutlined } from '@ant-design/icons';
+import { Button, Input, Table, message, Modal, Space, Switch, Tag, Dropdown, Menu } from 'antd';
+import { CopyOutlined, ExclamationCircleOutlined, SearchOutlined, EyeOutlined, MoreOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/lib/table';
 import { useHistory, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -41,17 +41,32 @@ import './index.less';
 export { default as Add } from './add';
 export { default as Edit } from './edit';
 
+const QUERY_LOCAL_STORAGE_KEY = 'alertSubscribes_filter_query';
+const DATASOURCE_IDS_LOCAL_STORAGE_KEY = 'alertSubscribes_filter_datasource_ids';
+
 const { confirm } = Modal;
 const Shield: React.FC = () => {
   const { t } = useTranslation('alertSubscribes');
   const history = useHistory();
   const { datasourceList, businessGroup, busiGroups } = useContext(CommonStateContext);
   const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
-  const [query, setQuery] = useState<string>('');
+  const [query, setQuery] = useState<string>(localStorage.getItem(QUERY_LOCAL_STORAGE_KEY) || '');
   const [currentShieldDataAll, setCurrentShieldDataAll] = useState<Array<subscribeItem>>([]);
   const [currentShieldData, setCurrentShieldData] = useState<Array<subscribeItem>>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [datasourceIds, setDatasourceIds] = useState<number[]>();
+  const cacheDefaultDatasourceIds = localStorage.getItem(DATASOURCE_IDS_LOCAL_STORAGE_KEY);
+  let defaultDatasourceIds: number[] | undefined = undefined;
+  try {
+    if (cacheDefaultDatasourceIds) {
+      const parsed = JSON.parse(cacheDefaultDatasourceIds);
+      if (_.isArray(parsed)) {
+        defaultDatasourceIds = parsed;
+      }
+    }
+  } catch (e) {
+    console.error(e);
+  }
+  const [datasourceIds, setDatasourceIds] = useState<number[] | undefined>(defaultDatasourceIds);
   const columns: ColumnsType = _.concat(
     businessGroup.isLeaf
       ? []
@@ -224,56 +239,63 @@ const Shield: React.FC = () => {
       },
       {
         title: t('common:table.operations'),
-        width: 140,
         dataIndex: 'operation',
-        render: (text: undefined, record: subscribeItem) => {
+        render: (text: string, record: subscribeItem) => {
           return (
-            <>
-              <Space>
-                <Link
-                  to={{
-                    pathname: `/alert-subscribes/edit/${record.id}`,
-                  }}
-                >
-                  {t('common:btn.edit')}
-                </Link>
-                <div
-                  className='table-operator-area-normal'
-                  style={{
-                    cursor: 'pointer',
-                    display: 'inline-block',
-                  }}
-                  onClick={() => {
-                    history.push(`/alert-subscribes/edit/${record.id}?mode=clone`);
-                  }}
-                >
-                  {t('common:btn.clone')}
-                </div>
-                <div
-                  className='table-operator-area-warning'
-                  onClick={() => {
-                    confirm({
-                      title: t('common:confirm.delete'),
-                      icon: <ExclamationCircleOutlined />,
-                      onOk: () => {
-                        deleteSubscribes({ ids: [record.id] }, record.group_id).then((res) => {
-                          refreshList();
-                          if (res.err) {
-                            message.success(res.err);
-                          } else {
-                            message.success(t('common:success.delete'));
-                          }
-                        });
-                      },
+            <Dropdown
+              overlay={
+                <Menu>
+                  <Menu.Item>
+                    <Link
+                      to={{
+                        pathname: `/alert-subscribes/edit/${record.id}`,
+                      }}
+                    >
+                      {t('common:btn.edit')}
+                    </Link>
+                  </Menu.Item>
+                  <Menu.Item>
+                    <Link
+                      to={{
+                        pathname: `/alert-subscribes/edit/${record.id}`,
+                        search: 'mode=clone',
+                      }}
+                    >
+                      {t('common:btn.clone')}
+                    </Link>
+                  </Menu.Item>
+                  <Menu.Item>
+                    <Button
+                      danger
+                      type='link'
+                      className='p0 height-auto'
+                      onClick={async () => {
+                        confirm({
+                          title: t('common:confirm.delete'),
+                          icon: <ExclamationCircleOutlined />,
+                          onOk: () => {
+                            deleteSubscribes({ ids: [record.id] }, record.group_id).then((res) => {
+                              refreshList();
+                              if (res.err) {
+                                message.success(res.err);
+                              } else {
+                                message.success(t('common:success.delete'));
+                              }
+                            });
+                          },
 
-                      onCancel() {},
-                    });
-                  }}
-                >
-                  {t('common:btn.delete')}
-                </div>
-              </Space>
-            </>
+                          onCancel() {},
+                        });
+                      }}
+                    >
+                      {t('common:btn.delete')}
+                    </Button>
+                  </Menu.Item>
+                </Menu>
+              }
+            >
+              <Button type='link' icon={<MoreOutlined />} />
+            </Dropdown>
           );
         },
       },
@@ -297,8 +319,11 @@ const Shield: React.FC = () => {
       const groupFind = item?.user_groups?.find((item) => {
         return item?.name?.indexOf(query) > -1;
       });
+      const rulesFind = _.find(item?.rule_names, (rule) => {
+        return _.includes(rule, query);
+      });
       return (
-        (item?.rule_name?.indexOf(query) > -1 || item?.note?.indexOf(query) > -1 || !!tagFind || !!groupFind) &&
+        (item?.note?.indexOf(query) > -1 || !!tagFind || !!groupFind || !!rulesFind) &&
         (_.some(item.datasource_ids, (id) => {
           if (id === 0) return true;
           return _.includes(datasourceIds, id);
@@ -325,17 +350,17 @@ const Shield: React.FC = () => {
     getList();
   };
 
-  const onSearchQuery = (e) => {
-    let val = e.target.value;
-    setQuery(val);
-  };
-
   return (
     <PageLayout title={t('title')} icon={<CopyOutlined />}>
       <div className='shield-content'>
         <BusinessGroup />
         {businessGroup.ids ? (
-          <div className='n9e-border-base p2'>
+          <div
+            className='n9e-border-base p2'
+            style={{
+              width: '100%',
+            }}
+          >
             <div
               style={{
                 display: 'flex',
@@ -354,9 +379,23 @@ const Shield: React.FC = () => {
                   value={datasourceIds}
                   onChange={(val) => {
                     setDatasourceIds(val);
+                    if (_.isEmpty(val)) {
+                      localStorage.removeItem(DATASOURCE_IDS_LOCAL_STORAGE_KEY);
+                    } else {
+                      localStorage.setItem(DATASOURCE_IDS_LOCAL_STORAGE_KEY, JSON.stringify(val));
+                    }
                   }}
                 />
-                <Input style={{ minWidth: 400 }} onPressEnter={onSearchQuery} prefix={<SearchOutlined />} placeholder={t('search_placeholder')} />
+                <Input
+                  style={{ minWidth: 400 }}
+                  value={query}
+                  onChange={(e) => {
+                    setQuery(e.target.value);
+                    localStorage.setItem(QUERY_LOCAL_STORAGE_KEY, e.target.value);
+                  }}
+                  prefix={<SearchOutlined />}
+                  placeholder={t('search_placeholder')}
+                />
               </Space>
               <Space>
                 {businessGroup.isLeaf && (
