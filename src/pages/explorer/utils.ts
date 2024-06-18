@@ -217,7 +217,7 @@ export const getLocalItems = (params) => {
           : undefined;
       // 当命中缓存时，url search中的start和end 如存在，则优先级更高
       if (item && searchRange) {
-        _.set(item, 'query.range', searchRange);
+        _.set(item, 'formValues.query.range', searchRange);
       }
     } else {
       items = [
