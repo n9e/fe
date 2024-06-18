@@ -32,7 +32,7 @@ export default function QueryBuilder(props: Props) {
   const { run: onIndexPatternChange } = useDebounceFn(
     (indexPattern) => {
       if (datasourceValue && indexPattern) {
-        const finded = _.find(indexPatterns, { id: indexPattern });
+        const finded = indexPatterns.find(i=> i.id=== indexPattern || i.name===indexPattern); //从url上带过来时indexPattern不是id，是name，兼容下这种情况
         if (finded) {
           const formValuesQuery = form.getFieldValue('query');
           let fieldConfig;
