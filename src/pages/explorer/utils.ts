@@ -203,7 +203,22 @@ export const getLocalItems = (params) => {
   }
   const formValues = getFormValuesBySearch(params);
   if (formValues) {
-    if (!formValuesIsInItems(formValues, items)) {
+    if (formValuesIsInItems(formValues, items)) {
+      const range_start = _.get(params, 'start');
+      const range_end = _.get(params, 'end');
+      const item = _.find(items, (item) => {
+        return formValuesIsInItems(formValues, [item]);
+      });
+
+      const searchRange =
+        range_start && range_end
+          ? { start: !isMathString(range_start) ? moment.unix(Number(range_start)) : range_start, end: !isMathString(range_end) ? moment.unix(Number(range_end)) : range_end }
+          : undefined;
+      // 当命中缓存时，url search中的start和end 如存在，则优先级更高
+      if (item && searchRange) {
+        _.set(item, 'formValues.query.range', searchRange);
+      }
+    } else {
       items = [
         ...items,
         {
