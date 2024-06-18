@@ -1,7 +1,7 @@
 const en_US = {
   title: 'Alert Subscribes',
-  search_placeholder: 'Search rules, tags, and receiving groups',
-  rule_name: 'Rule Name',
+  search_placeholder: 'Search by name, subscribed rules, subscribed tags, and receiving groups',
+  rule_name: 'Subscription rules',
   sub_rule_name: 'Subscribe Alert Rule',
   sub_rule_selected: 'Selected Rules',
   tags: 'Tags',
@@ -45,6 +45,6 @@ const en_US = {
   severities: 'Severity',
   severities_msg: 'Severity is required',
   tags_groups_require: 'Tags and receiving groups must fill in at least one item',
-  note: 'Note',
+  note: 'Name',
 };
 export default en_US;
