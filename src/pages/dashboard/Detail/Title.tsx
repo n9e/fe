@@ -236,11 +236,14 @@ export default function Title(props: IProps) {
             dateFormat='YYYY-MM-DD HH:mm:ss'
             value={range}
             onChange={(val) => {
-              history.replace({
-                pathname: location.pathname,
-                // 重新设置时间范围时，清空 __from 和 __to
-                search: querystring.stringify(_.omit(querystring.parse(window.location.search), ['__from', '__to'])),
-              });
+              // 以下 history replace 会触发 beforeunload，在手动保存模式下暂时关闭
+              if (dashboardSaveMode !== 'manual') {
+                history.replace({
+                  pathname: location.pathname,
+                  // 重新设置时间范围时，清空 __from 和 __to
+                  search: querystring.stringify(_.omit(querystring.parse(window.location.search), ['__from', '__to'])),
+                });
+              }
               setRange(val);
             }}
           />
