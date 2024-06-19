@@ -66,7 +66,7 @@ export default function Header(props: IProps) {
             placeholder={t('search_placeholder')}
           />
         </Space>
-        {businessGroup.isLeaf && gids && gids !== '-1' && (
+        {businessGroup.isLeaf && gids && gids !== '-1' && gids !== '-2' && (
           <Space>
             <Button
               type='primary'
