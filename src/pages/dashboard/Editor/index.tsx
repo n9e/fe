@@ -91,7 +91,7 @@ function index(props: IProps) {
       width='100%'
       title={
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          <div>{initialValues ? t('panel.title.add') : t('panel.title.edit')}</div>
+          <div>{mode === 'add' ? t('panel.title.add') : t('panel.title.edit')}</div>
           <Space style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', fontSize: 12, lineHeight: '20px' }}>
             <Select
               dropdownMatchSelectWidth={false}
