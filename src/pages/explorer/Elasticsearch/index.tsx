@@ -299,6 +299,7 @@ export default function index(props: IProps) {
       </Form.Item>
       {mode === IMode.indices && (
         <QueryBuilder
+          loading={loading}
           key={datasourceValue}
           onExecute={fetchData}
           datasourceValue={datasourceValue}
@@ -309,6 +310,7 @@ export default function index(props: IProps) {
       )}
       {mode === IMode.indexPatterns && (
         <QueryBuilderWithIndexPatterns
+          loading={loading}
           key={datasourceValue}
           onExecute={fetchData}
           datasourceValue={datasourceValue}
