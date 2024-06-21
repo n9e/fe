@@ -1,7 +1,7 @@
 const zh_CN = {
   title: '订阅规则',
-  search_placeholder: '搜索规则、标签、接收组',
-  rule_name: '规则名称',
+  search_placeholder: '搜索订阅名称、订阅的规则、订阅标签、告警接收组',
+  rule_name: '订阅的规则',
   sub_rule_name: '订阅告警规则',
   sub_rule_selected: '已选规则',
   tags: '订阅标签',
@@ -45,6 +45,6 @@ const zh_CN = {
   severities: '订阅事件等级',
   severities_msg: '订阅事件等级不能为空',
   tags_groups_require: '标签和接收组至少填写一项',
-  note: '规则备注',
+  note: '订阅名称',
 };
 export default zh_CN;

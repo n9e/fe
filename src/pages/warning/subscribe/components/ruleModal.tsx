@@ -322,7 +322,7 @@ const ruleModal: React.FC<props> = (props) => {
               type: 'checkbox',
               selectedRowKeys: selectedRules.map((row) => row.id),
               onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
-                setSelectedRules(_.unionBy(selectedRules, selectedRows, 'id'));
+                setSelectedRules(_.unionBy(selectedRows, 'id'));
               },
             }}
           />
