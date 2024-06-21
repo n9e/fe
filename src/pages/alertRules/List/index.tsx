@@ -33,6 +33,7 @@ import { DatasourceSelect, ProdSelect } from '@/components/DatasourceSelect';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
 import { AlertRuleType, AlertRuleStatus } from '../types';
 import MoreOperations from './MoreOperations';
+import Import from './Import';
 import { allCates } from '@/components/AdvancedWrap/utils';
 import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
 import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
@@ -56,7 +57,7 @@ export default function List(props: ListProps) {
   const { gids } = props;
   const { t } = useTranslation('alertRules');
   const history = useHistory();
-  const { datasourceList } = useContext(CommonStateContext);
+  const { datasourceList, groupedDatasourceList, datasourceCateOptions } = useContext(CommonStateContext);
   const pagination = usePagination({ PAGESIZE_KEY: 'alert-rules-pagesize' });
   let defaultFilter = {} as Filter;
   try {
@@ -402,7 +403,7 @@ export default function List(props: ListProps) {
             </Select>
             <Input
               placeholder={t('search_placeholder')}
-              style={{ width: 300 }}
+              style={{ width: 200 }}
               value={queryValue}
               onChange={(e) => {
                 setQueryValue(e.target.value);
@@ -415,7 +416,7 @@ export default function List(props: ListProps) {
 
         <Col>
           <Space>
-            {businessGroup.isLeaf && (
+            {businessGroup.isLeaf && gids !== '-2' && (
               <Button
                 type='primary'
                 onClick={() => {
@@ -424,6 +425,22 @@ export default function List(props: ListProps) {
                 className='strategy-table-search-right-create'
               >
                 {t('common:btn.add')}
+              </Button>
+            )}
+            {businessGroup.isLeaf && businessGroup.id && gids !== '-2' && (
+              <Button
+                onClick={() => {
+                  if (businessGroup.id) {
+                    Import({
+                      busiId: businessGroup.id,
+                      refreshList: fetchData,
+                      groupedDatasourceList,
+                      datasourceCateOptions,
+                    });
+                  }
+                }}
+              >
+                {t('common:btn.import')}
               </Button>
             )}
             {businessGroup.isLeaf && businessGroup.id && (

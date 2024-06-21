@@ -66,8 +66,8 @@ export default function Header(props: IProps) {
             placeholder={t('search_placeholder')}
           />
         </Space>
-        {businessGroup.isLeaf && gids && gids !== '-1' && gids !== '-2' && (
-          <Space>
+        <Space>
+          {businessGroup.isLeaf && gids && gids !== '-1' && gids !== '-2' && (
             <Button
               type='primary'
               onClick={() => {
@@ -80,24 +80,27 @@ export default function Header(props: IProps) {
             >
               {t('common:btn.add')}
             </Button>
+          )}
+          {businessGroup.isLeaf && gids && gids !== '-1' && gids !== '-2' && (
+            <Button
+              onClick={() => {
+                if (businessGroup.id) {
+                  Import({
+                    busiId: businessGroup.id,
+                    type: 'ImportBuiltin',
+                    refreshList,
+                  });
+                }
+              }}
+            >
+              {t('common:btn.import')}
+            </Button>
+          )}
+          {businessGroup.isLeaf && gids && gids !== '-1' && (
             <div className={'table-more-options'}>
               <Dropdown
                 overlay={
                   <ul className='ant-dropdown-menu'>
-                    <li
-                      className='ant-dropdown-menu-item'
-                      onClick={() => {
-                        if (businessGroup.id) {
-                          Import({
-                            busiId: businessGroup.id,
-                            type: 'ImportBuiltin',
-                            refreshList,
-                          });
-                        }
-                      }}
-                    >
-                      <span>{t('common:btn.import')}</span>
-                    </li>
                     <li
                       className='ant-dropdown-menu-item'
                       onClick={() => {
@@ -150,21 +153,21 @@ export default function Header(props: IProps) {
                 </Button>
               </Dropdown>
             </div>
-            <Button
-              onClick={() => {
-                OrganizeColumns({
-                  i18nNs: 'dashboard',
-                  value: columnsConfigs,
-                  onChange: (val) => {
-                    setColumnsConfigs(val);
-                    setDefaultColumnsConfigs(val, LOCAL_STORAGE_KEY);
-                  },
-                });
-              }}
-              icon={<EyeOutlined />}
-            />
-          </Space>
-        )}
+          )}
+          <Button
+            onClick={() => {
+              OrganizeColumns({
+                i18nNs: 'dashboard',
+                value: columnsConfigs,
+                onChange: (val) => {
+                  setColumnsConfigs(val);
+                  setDefaultColumnsConfigs(val, LOCAL_STORAGE_KEY);
+                },
+              });
+            }}
+            icon={<EyeOutlined />}
+          />
+        </Space>
       </div>
     </>
   );
