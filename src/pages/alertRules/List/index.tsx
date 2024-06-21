@@ -24,7 +24,6 @@ import { Table, Tag, Switch, Modal, Space, Button, Row, Col, message, Select, To
 import { ColumnType } from 'antd/lib/table';
 import { EyeOutlined, SearchOutlined } from '@ant-design/icons';
 import RefreshIcon from '@/components/RefreshIcon';
-import SearchInput from '@/components/BaseSearchInput';
 import usePagination from '@/components/usePagination';
 import { getBusiGroupsAlertRules, updateAlertRules, deleteStrategy } from '@/services/warning';
 import { CommonStateContext } from '@/App';
@@ -443,7 +442,7 @@ export default function List(props: ListProps) {
                 {t('common:btn.import')}
               </Button>
             )}
-            {businessGroup.isLeaf && businessGroup.id && (
+            {businessGroup.isLeaf && businessGroup.id && gids !== '-2' && (
               <MoreOperations bgid={businessGroup.id} selectRowKeys={selectRowKeys} selectedRows={selectedRows} getAlertRules={fetchData} />
             )}
             <Button

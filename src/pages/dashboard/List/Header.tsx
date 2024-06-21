@@ -96,7 +96,7 @@ export default function Header(props: IProps) {
               {t('common:btn.import')}
             </Button>
           )}
-          {businessGroup.isLeaf && gids && gids !== '-1' && (
+          {businessGroup.isLeaf && gids && gids !== '-1' && gids !== '-2' && (
             <div className={'table-more-options'}>
               <Dropdown
                 overlay={
