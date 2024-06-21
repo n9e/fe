@@ -18,12 +18,13 @@ interface Props {
   form: any;
   setFields: (fields: Field[]) => void;
   onIndexChange: () => void;
+  loading: boolean;
 }
 
 export default function QueryBuilder(props: Props) {
   const { t } = useTranslation('explorer');
   const params = new URLSearchParams(useLocation().search);
-  const { onExecute, datasourceValue, form, setFields, onIndexChange } = props;
+  const { onExecute, datasourceValue, form, setFields, onIndexChange, loading } = props;
   const [indexPatterns, setIndexPatterns] = useState<any[]>([]);
   const indexPattern = Form.useWatch(['query', 'indexPattern']);
   const indexPatternsAuthorized = useIsAuthorized(['/log/index-patterns']);
@@ -174,6 +175,7 @@ export default function QueryBuilder(props: Props) {
         </Form.Item>
         <Form.Item>
           <Button
+            loading={loading}
             type='primary'
             onClick={() => {
               if (refInputFilter.current) {

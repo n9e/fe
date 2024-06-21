@@ -16,11 +16,12 @@ interface Props {
   setFields: (fields: Field[]) => void;
   allowHideSystemIndices?: boolean;
   form: FormInstance;
+  loading: boolean;
 }
 
 export default function QueryBuilder(props: Props) {
   const { t } = useTranslation('explorer');
-  const { onExecute, datasourceValue, setFields, allowHideSystemIndices = false, form } = props;
+  const { onExecute, datasourceValue, setFields, allowHideSystemIndices = false, form, loading } = props;
   const params = new URLSearchParams(useLocation().search);
   const [indexOptions, setIndexOptions] = useState<any[]>([]);
   const [indexSearch, setIndexSearch] = useState('');
@@ -174,6 +175,7 @@ export default function QueryBuilder(props: Props) {
       </Form.Item>
       <Form.Item>
         <Button
+          loading={loading}
           type='primary'
           onClick={() => {
             if (refInputFilter.current) {
