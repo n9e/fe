@@ -16,6 +16,7 @@
  */
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Modal, Input, Form, Table, Button, Select, Switch, Space, Tag, Alert } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
@@ -182,6 +183,19 @@ export default function ImportBuiltinContent({ busiId, onOk, groupedDatasourceLi
               {
                 title: t('builtInComponents:name'),
                 dataIndex: 'name',
+                render: (value, record) => {
+                  return (
+                    <Link
+                      to={{
+                        pathname: '/built-in-components/alert/detail',
+                        search: `?id=${record.id}`,
+                      }}
+                      target='_blank'
+                    >
+                      {value}
+                    </Link>
+                  );
+                },
               },
               {
                 title: t('builtInComponents:tags'),
