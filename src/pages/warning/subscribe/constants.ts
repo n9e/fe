@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-export const LOCAL_STORAGE_KEY = 'alert_subscribes_columns_configs';
+export const LOCAL_STORAGE_KEY = 'alert_subscribes_columns_configs_01';
 export const defaultColumnsConfigs = [
   {
     name: 'note',
@@ -23,7 +23,7 @@ export const defaultColumnsConfigs = [
   {
     name: 'datasource_ids',
     i18nKey: 'common:datasource.id',
-    visible: true,
+    visible: false,
   },
   {
     name: 'severities',
@@ -50,12 +50,12 @@ export const defaultColumnsConfigs = [
   {
     name: 'new_severity',
     i18nKey: 'redefine_severity',
-    visible: true,
+    visible: false,
   },
   {
     name: 'update_by',
     i18nKey: 'common:table.create_by',
-    visible: true,
+    visible: false,
   },
   {
     name: 'disabled',

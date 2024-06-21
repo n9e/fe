@@ -74,7 +74,7 @@ export default function Title(props: IProps) {
   const location = useLocation();
   const { siteInfo, dashboardSaveMode } = useContext(CommonStateContext);
   const query = querystring.parse(location.search);
-  const { viewMode } = query;
+  const { viewMode, __public__ } = query;
   const themeMode = getDefaultThemeMode(query); // only for ENT version
   const isClickTrigger = useRef(false);
   const [dashboardList, setDashboardList] = useState<IDashboard[]>([]);
@@ -138,12 +138,13 @@ export default function Title(props: IProps) {
   }, [query.viewMode]);
 
   useEffect(() => {
-    if (dashboard.group_id && isPreview === false) {
+    // __public__: true 为公开仪表盘，公开仪表盘不需要获取分组下的仪表盘列表
+    if (__public__ !== 'true' && dashboard.group_id && isPreview === false) {
       getBusiGroupsDashboards(_.toString(dashboard.group_id)).then((res) => {
         setDashboardList(res);
       });
     }
-  }, [dashboard?.group_id]);
+  }, [__public__, dashboard?.group_id]);
 
   return (
     <div
@@ -154,7 +155,8 @@ export default function Title(props: IProps) {
     >
       <div className='dashboard-detail-header-left'>
         {isPreview && !isBuiltin ? null : <RollbackOutlined className='back' onClick={() => history.push(props.gobackPath || '/dashboards')} />}
-        {isPreview === true ? (
+        {isPreview === true || __public__ === 'true' ? (
+          // 公开仪表盘不显示下拉
           <div className='title'>{dashboard.name}</div>
         ) : (
           <Dropdown
@@ -236,11 +238,14 @@ export default function Title(props: IProps) {
             dateFormat='YYYY-MM-DD HH:mm:ss'
             value={range}
             onChange={(val) => {
-              history.replace({
-                pathname: location.pathname,
-                // 重新设置时间范围时，清空 __from 和 __to
-                search: querystring.stringify(_.omit(querystring.parse(window.location.search), ['__from', '__to'])),
-              });
+              // 以下 history replace 会触发 beforeunload，在手动保存模式下暂时关闭
+              if (dashboardSaveMode !== 'manual') {
+                history.replace({
+                  pathname: location.pathname,
+                  // 重新设置时间范围时，清空 __from 和 __to
+                  search: querystring.stringify(_.omit(querystring.parse(window.location.search), ['__from', '__to'])),
+                });
+              }
               setRange(val);
             }}
           />

@@ -45,7 +45,8 @@ interface IProps {
 
 function includes(source, target) {
   if (_.isArray(target)) {
-    return _.intersection(source, target);
+    // 不为空则有交集
+    return !_.isEmpty(_.intersection(source, target));
   }
   return _.includes(source, target);
 }

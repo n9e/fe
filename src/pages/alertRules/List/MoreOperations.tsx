@@ -21,7 +21,6 @@ import { DownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { deleteStrategy, updateAlertRules, updateServiceCal, updateNotifyChannels } from '@/services/warning';
 import { CommonStateContext } from '@/App';
-import Import from './Import';
 import Export from './Export';
 import EditModal from './EditModal';
 
@@ -49,26 +48,13 @@ export default function MoreOperations(props: MoreOperationsProps) {
   const { t } = useTranslation('alertRules');
   const { bgid, selectRowKeys, selectedRows, getAlertRules } = props;
   const [isModalVisible, setisModalVisible] = useState<boolean>(false);
-  const { groupedDatasourceList, datasourceCateOptions, isPlus } = useContext(CommonStateContext);
+  const { isPlus } = useContext(CommonStateContext);
 
   return (
     <>
       <Dropdown
         overlay={
           <ul className='ant-dropdown-menu'>
-            <li
-              className='ant-dropdown-menu-item'
-              onClick={() => {
-                Import({
-                  busiId: bgid,
-                  refreshList: getAlertRules,
-                  groupedDatasourceList,
-                  datasourceCateOptions,
-                });
-              }}
-            >
-              <span>{t('batch.import.title')}</span>
-            </li>
             <li
               className='ant-dropdown-menu-item'
               onClick={() => {
