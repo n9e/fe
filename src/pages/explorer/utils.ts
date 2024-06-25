@@ -77,6 +77,10 @@ export const getFormValuesBySearch = (params: { [index: string]: string | null }
       const timestamp = _.get(params, 'timestamp', '@timestamp');
       const range_start = _.get(params, 'start');
       const range_end = _.get(params, 'end');
+      const defaultRange =
+        range_start && range_end
+          ? { start: !isMathString(range_start) ? moment(Number(range_start)) : range_start, end: !isMathString(range_end) ? moment(Number(range_end)) : range_end }
+          : undefined;
       if (index) {
         return {
           ...formValues,
@@ -84,7 +88,7 @@ export const getFormValuesBySearch = (params: { [index: string]: string | null }
             index,
             filter: getESFilterByQuery(params),
             date_field: timestamp,
-            range: range_start && range_end ? { start: moment.unix(Number(range_start)), end: moment.unix(Number(range_end)) } : undefined,
+            range: defaultRange,
           },
         };
       } else if (indexPattern) {
@@ -93,7 +97,7 @@ export const getFormValuesBySearch = (params: { [index: string]: string | null }
           query: {
             filter: getESFilterByQuery(params),
             indexPattern,
-            range: range_start && range_end ? { start: moment.unix(Number(range_start)), end: moment.unix(Number(range_end)) } : undefined,
+            range: defaultRange,
           },
         };
       }
@@ -114,12 +118,16 @@ export const getFormValuesBySearch = (params: { [index: string]: string | null }
     if (data_source_name === 'doris') {
       const range_start = _.get(params, 'start');
       const range_end = _.get(params, 'end');
+      const defaultRange =
+        range_start && range_end
+          ? { start: !isMathString(range_start) ? moment(Number(range_start)) : range_start, end: !isMathString(range_end) ? moment(Number(range_end)) : range_end }
+          : undefined;
       return {
         ...formValues,
         query: {
           condition: _.get(params, 'condition'),
           time_field: _.get(params, 'time_field'),
-          range: range_start && range_end ? { start: moment.unix(Number(range_start)), end: moment.unix(Number(range_end)) } : undefined,
+          range: defaultRange,
         },
       };
     }
