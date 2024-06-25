@@ -79,7 +79,7 @@ export const getFormValuesBySearch = (params: { [index: string]: string | null }
       const range_end = _.get(params, 'end');
       const defaultRange =
         range_start && range_end
-          ? { start: !isMathString(range_start) ? moment.unix(Number(range_start)) : range_start, end: !isMathString(range_end) ? moment.unix(Number(range_end)) : range_end }
+          ? { start: !isMathString(range_start) ? moment(Number(range_start)) : range_start, end: !isMathString(range_end) ? moment(Number(range_end)) : range_end }
           : undefined;
       if (index) {
         return {
@@ -120,7 +120,7 @@ export const getFormValuesBySearch = (params: { [index: string]: string | null }
       const range_end = _.get(params, 'end');
       const defaultRange =
         range_start && range_end
-          ? { start: !isMathString(range_start) ? moment.unix(Number(range_start)) : range_start, end: !isMathString(range_end) ? moment.unix(Number(range_end)) : range_end }
+          ? { start: !isMathString(range_start) ? moment(Number(range_start)) : range_start, end: !isMathString(range_end) ? moment(Number(range_end)) : range_end }
           : undefined;
       return {
         ...formValues,
