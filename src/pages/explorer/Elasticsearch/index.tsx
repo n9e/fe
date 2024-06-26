@@ -4,7 +4,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import queryString, { ParsedQuery } from 'query-string';
 import { useTranslation } from 'react-i18next';
-import { Table, Empty, Spin, InputNumber, Select, Radio, Space, Checkbox, Tag, Form, Button } from 'antd';
+import { Table, Empty, Spin, InputNumber, Select, Radio, Space, Checkbox, Tag, Form, Alert } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
 import { DownOutlined, RightOutlined, LeftOutlined } from '@ant-design/icons';
 import { useLocation } from 'react-router-dom';
@@ -137,6 +137,7 @@ export default function index(props: IProps) {
   const [chartVisible, setChartVisible] = useState(true);
   const [collapsed, setCollapsed] = useState(true);
   const [filters, setFilters] = useState<Filter[]>();
+  const [errorContent, setErrorContent] = useState();
   const fieldConfig = Form.useWatch('fieldConfig', form);
   const sorterRef = useRef<any>([]);
   const timesRef = useRef<{
@@ -177,45 +178,54 @@ export default function index(props: IProps) {
           query: values.query,
         });
       }
-      getLogsQuery(
-        values.datasourceValue,
-        dslBuilder({
-          index: values.query.index,
-          ...timesRef.current,
-          date_field: values.query.date_field,
-          filters,
-          syntax: values.query.syntax,
-          query_string: values.query.filter,
-          kuery: values.query.filter,
-          limit: LOGS_LIMIT,
-          sorter: _.isEmpty(sorterRef.current)
-            ? [
-                {
-                  field: values.query.date_field,
-                  order: 'desc',
-                },
-              ]
-            : sorterRef.current,
-          _source: true,
-        }),
-      )
-        .then((res) => {
-          const newData = _.map(res.list, (item) => {
-            return {
-              id: _.uniqueId(),
-              fields: item.fields,
-              json: item._source,
-            };
+      try {
+        getLogsQuery(
+          values.datasourceValue,
+          dslBuilder({
+            index: values.query.index,
+            ...timesRef.current,
+            date_field: values.query.date_field,
+            filters,
+            syntax: values.query.syntax,
+            query_string: values.query.filter,
+            kuery: values.query.filter,
+            limit: LOGS_LIMIT,
+            sorter: _.isEmpty(sorterRef.current)
+              ? [
+                  {
+                    field: values.query.date_field,
+                    order: 'desc',
+                  },
+                ]
+              : sorterRef.current,
+            _source: true,
+          }),
+        )
+          .then((res) => {
+            const newData = _.map(res.list, (item) => {
+              return {
+                id: _.uniqueId(),
+                fields: item.fields,
+                json: item._source,
+              };
+            });
+            setData(newData);
+            setTotal(res.total);
+            const tableEleNodes = document.querySelectorAll(`.es-discover-logs-table .ant-table-body`)[0];
+            tableEleNodes?.scrollTo(0, 0);
+          })
+          .finally(() => {
+            setLoading(false);
           });
-          setData(newData);
-          setTotal(res.total);
-          const tableEleNodes = document.querySelectorAll(`.es-discover-logs-table .ant-table-body`)[0];
-          tableEleNodes?.scrollTo(0, 0);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-      fetchSeries(values);
+        fetchSeries(values);
+      } catch (e: any) {
+        console.error(e);
+        setErrorContent(_.get(e, 'message', t('datasource:es.queryFailed')));
+        setLoading(false);
+        setData([]);
+        setTotal(0);
+        setSeries([]);
+      }
     });
   };
   const handlerModeChange = (mode, isOpenSearch) => {
@@ -484,7 +494,7 @@ export default function index(props: IProps) {
                   className='es-discover-logs-table'
                   tableLayout='fixed'
                   rowKey='id'
-                  columns={getColumnsFromFields(selectedFields, form.getFieldValue(['query', 'date_field']), form.getFieldValue(['fieldConfig']), filters)}
+                  columns={getColumnsFromFields(selectedFields, form.getFieldValue(['query']), form.getFieldValue(['fieldConfig']), filters)}
                   dataSource={data}
                   expandable={{
                     expandedRowRender: (record) => {
@@ -523,8 +533,10 @@ export default function index(props: IProps) {
               style={{
                 display: 'flex',
                 justifyContent: 'center',
+                flexDirection: 'column',
               }}
             >
+              {errorContent && <Alert style={{ marginBottom: 16 }} message={errorContent} type='error' />}
               <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
             </div>
           )}

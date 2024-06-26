@@ -125,27 +125,32 @@ export default function Field(props: Props) {
         if (visible) {
           setTop5Loading(true);
           const values = form.getFieldsValue();
-          getFieldValues(
-            datasourceValue,
-            dslBuilder({
-              index: values.query.index,
-              date_field: values.query.date_field,
-              ...timesRef.current,
-              filters,
-              syntax: values.query.syntax,
-              query_string: values.query.filter,
-              kuery: values.query.filter,
-              limit,
-              fields: [item],
-            }),
-            item,
-          )
-            .then((res) => {
-              setTop5Data(res);
-            })
-            .finally(() => {
-              setTop5Loading(false);
-            });
+          try {
+            getFieldValues(
+              datasourceValue,
+              dslBuilder({
+                index: values.query.index,
+                date_field: values.query.date_field,
+                ...timesRef.current,
+                filters,
+                syntax: values.query.syntax,
+                query_string: values.query.filter,
+                kuery: values.query.filter,
+                limit,
+                fields: [item],
+              }),
+              item,
+            )
+              .then((res) => {
+                setTop5Data(res);
+              })
+              .finally(() => {
+                setTop5Loading(false);
+              });
+          } catch (e) {
+            console.error(e);
+            setTop5Loading(false);
+          }
         } else {
           setTop5Data([]);
         }

@@ -15,7 +15,7 @@ const parser = LRParser.deserialize({
   skippedNodes: [0, 1],
   repeatNodeCount: 0,
   tokenData:
-    "(y~Rbrs!Zst!}xy#Yyz#_z{#d!Q![#i![!]$z!^!_%P!`!a%^!b!c%k!c!d&P!d!q%k!q!r'm!r!}%k#R#S%k#T#o%k#o#p(o#q#r(t~!`Ub~OY!ZZr!Zrs!rs#O!Z#O#P!w#P~!Z~!wOb~~!zPO~!Z~#SQP~OY!}Z~!}~#_Og~~#dOh~~#iOa~~#nSc~!O!P#z!Q![#i!g!h$`#X#Y$`~#}P!Q![$Q~$VRc~!Q![$Q!g!h$`#X#Y$`~$cR{|$l}!O$l!Q![$r~$oP!Q![$r~$wPc~!Q![$r~%POZ~~%UP^~!_!`%X~%^O_~~%cP[~!_!`%f~%kO]~P%pTXP!O!P%k!Q![%k!c!}%k#R#S%k#T#o%kR&UVXP!O!P%k!Q![%k!c!p%k!p!q&k!q!}%k#R#S%k#T#o%kR&pVXP!O!P%k!Q![%k!c!f%k!f!g'V!g!}%k#R#S%k#T#o%kR'^TTQXP!O!P%k!Q![%k!c!}%k#R#S%k#T#o%kR'rVXP!O!P%k!Q![%k!c!t%k!t!u(X!u!}%k#R#S%k#T#o%kR(`TXPUQ!O!P%k!Q![%k!c!}%k#R#S%k#T#o%k~(tOi~~(yOj~",
+    "*t~Rers!dst#Wxy#cyz#hz{#m!Q![#r![!]%T!^!_%Y!`!a%g!b!c%t!c!d&Y!d!q%t!q!r'v!r!}%t#R#S%t#T#U(x#U#c%t#c#d*O#d#o%t#o#p*j#q#r*o~!iUb~OY!dZr!drs!{s#O!d#O#P#Q#P~!d~#QOb~~#TPO~!d~#]QP~OY#WZ~#W~#hOg~~#mOh~~#rOa~~#wSc~!O!P$T!Q![#r!g!h$i#X#Y$i~$WP!Q![$Z~$`Rc~!Q![$Z!g!h$i#X#Y$i~$lR{|$u}!O$u!Q![${~$xP!Q![${~%QPc~!Q![${~%YOZ~~%_P^~!_!`%b~%gO_~~%lP[~!_!`%o~%tO]~P%yTXP!O!P%t!Q![%t!c!}%t#R#S%t#T#o%tR&_VXP!O!P%t!Q![%t!c!p%t!p!q&t!q!}%t#R#S%t#T#o%tR&yVXP!O!P%t!Q![%t!c!f%t!f!g'`!g!}%t#R#S%t#T#o%tR'gTTQXP!O!P%t!Q![%t!c!}%t#R#S%t#T#o%tR'{VXP!O!P%t!Q![%t!c!t%t!t!u(b!u!}%t#R#S%t#T#o%tR(iTXPUQ!O!P%t!Q![%t!c!}%t#R#S%t#T#o%tR(}VXP!O!P%t!Q![%t!c!}%t#R#S%t#T#b%t#b#c)d#c#o%tR)iVXP!O!P%t!Q![%t!c!}%t#R#S%t#T#W%t#W#X'`#X#o%tR*TVXP!O!P%t!Q![%t!c!}%t#R#S%t#T#f%t#f#g(b#g#o%t~*oOi~~*tOj~",
   tokenizers: [0, 1],
   topRules: { KQL: [0, 2] },
   tokenPrec: 0,
