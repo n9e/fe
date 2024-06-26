@@ -53,6 +53,7 @@ const zh_HK = {
       groupBy: `根據 {{field}} 分組，匹配個數 {{size}}, 文檔最小值 {{min_value}}`,
     },
     syntaxOptions: '語法選項',
+    queryFailed: '查詢失敗，請稍後重試',
   },
 };
 

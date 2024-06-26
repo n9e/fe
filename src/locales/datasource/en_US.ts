@@ -53,6 +53,7 @@ const en_US = {
       groupBy: `Group by {{field}}, number of matches {{size}}, document minimum value {{min_value}}`,
     },
     syntaxOptions: 'Syntax Options',
+    queryFailed: 'Query failed, please try again later',
   },
 };
 export default en_US;

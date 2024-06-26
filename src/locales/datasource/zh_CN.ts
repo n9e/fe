@@ -53,6 +53,7 @@ const zh_CN = {
       groupBy: `根据 {{field}} 分组，匹配个数 {{size}}, 文档最小值 {{min_value}}`,
     },
     syntaxOptions: '语法选项',
+    queryFailed: '查询失败，请稍后重试',
   },
 };
 export default zh_CN;

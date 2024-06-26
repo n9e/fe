@@ -3,7 +3,6 @@ import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
-import { measureTextWidth } from '@ant-design/plots';
 import { buildESQueryFromKuery, getQueryAST } from '@fc-components/es-query';
 import flatten from './flatten';
 
@@ -82,7 +81,51 @@ export function RenderValue({ value }) {
   return <div style={{ display: 'inline-block', wordBreak: 'break-all' }}>{value}</div>;
 }
 
-export function getColumnsFromFields(selectedFields: { name: string; type: string }[], dateField?: string, fieldConfig?: any, filters?: any[]) {
+function findAllIsFunctionNodes(queryAST) {
+  let functionNodes: any[] = [];
+
+  function traverse(node) {
+    if (node.type === 'function' && node.function === 'is') {
+      functionNodes.push(node);
+    }
+
+    if (node.type === 'function' && (node.function === 'and' || node.function === 'or') && node.arguments.length > 0) {
+      _.forEach(node.arguments, (arg) => {
+        traverse(arg);
+      });
+    }
+  }
+
+  traverse(queryAST);
+
+  return functionNodes;
+}
+
+function isMark(key, val, filters, allIsFunctionNodes) {
+  let mark = false;
+  if (_.find(filters, { key, value: val, operator: 'is' })) {
+    mark = true;
+  }
+  _.forEach(allIsFunctionNodes, (node) => {
+    const [field, value] = node.arguments;
+    if (field.type === 'literal' && (field.value === key || field.value === null) && value.type === 'literal' && value.value === val) {
+      mark = true;
+    }
+  });
+  return mark;
+}
+
+export function getColumnsFromFields(selectedFields: { name: string; type: string }[], queryValue: any, fieldConfig?: any, filters?: any[]) {
+  const { date_field: dateField, filter, syntax } = queryValue;
+  let allIsFunctionNodes: any[] = [];
+  if (syntax === 'kuery') {
+    try {
+      const ast = getQueryAST(filter);
+      allIsFunctionNodes = findAllIsFunctionNodes(ast);
+    } catch (e) {
+      console.error(e);
+    }
+  }
   let columns: any[] = [];
   if (_.isEmpty(selectedFields)) {
     columns = [
@@ -96,14 +139,19 @@ export function getColumnsFromFields(selectedFields: { name: string; type: strin
               delete fields[key];
             }
           });
+          const fieldKeys = _.sortBy(_.keys(fields), (key) => {
+            const val = fields[key];
+            return isMark(key, val, filters, allIsFunctionNodes) ? 0 : 1;
+          });
           return (
             <dl className='es-discover-logs-row'>
-              {_.map(fields, (val, key) => {
+              {_.map(fieldKeys, (key) => {
+                const val = fields[key];
                 const label = getFieldLabel(key, fieldConfig);
                 const value = _.isArray(val) ? _.join(val, ',') : getFieldValue(key, val, fieldConfig);
                 return (
                   <React.Fragment key={label}>
-                    <dt>{label}:</dt> <dd>{_.find(filters, { key, value: val, operator: 'is' }) ? <mark>{value}</mark> : value}</dd>
+                    <dt>{label}:</dt> <dd>{isMark(key, val, filters, allIsFunctionNodes) ? <mark>{value}</mark> : value}</dd>
                   </React.Fragment>
                 );
               })}
@@ -131,7 +179,7 @@ export function getColumnsFromFields(selectedFields: { name: string; type: strin
                 }
               }
             >
-              {_.find(filters, { key: fieldKey, value: fields[fieldKey], operator: 'is' }) ? (
+              {isMark(fieldKey, fields[fieldKey], filters, allIsFunctionNodes) ? (
                 <mark>
                   <RenderValue value={value} />
                 </mark>
