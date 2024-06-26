@@ -29,7 +29,8 @@ import Version from './Version';
 import SideMenuColorSetting from './SideMenuColorSetting';
 import './index.less';
 import './locale';
-
+// @ts-ignore
+import FeatureNotification from '@/plus/pages/FeatureNotification';
 interface IPageLayoutProps {
   icon?: ReactNode;
   title?: String | JSX.Element;
@@ -152,6 +153,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
 
                   <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
                     <License />
+                    <FeatureNotification />
                   </AdvancedWrap>
 
                   <Dropdown
