@@ -52,6 +52,7 @@ const en_US = {
     event: {
       groupBy: `Group by {{field}}, number of matches {{size}}, document minimum value {{min_value}}`,
     },
+    syntaxOptions: 'Syntax Options',
   },
 };
 export default en_US;

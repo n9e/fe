@@ -52,6 +52,7 @@ const zh_HK = {
     event: {
       groupBy: `根據 {{field}} 分組，匹配個數 {{size}}, 文檔最小值 {{min_value}}`,
     },
+    syntaxOptions: '語法選項',
   },
 };
 
