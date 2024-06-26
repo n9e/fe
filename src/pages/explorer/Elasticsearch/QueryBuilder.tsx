@@ -1,12 +1,14 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import _ from 'lodash';
 import { useDebounceFn } from 'ahooks';
 import { useLocation } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
-import { Input, Tooltip, Form, AutoComplete, Select, Button, FormInstance } from 'antd';
+import { Tooltip, Form, AutoComplete, Button, FormInstance, Select } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import TimeRangePicker from '@/components/TimeRangePicker';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
+import KQLInput from '@/components/KQLInput';
+import { getLocalQueryHistory, setLocalQueryHistory } from '@/components/KQLInput/utils';
 import { getIndices, getFullFields, Field } from './services';
 import InputFilter from './InputFilter';
 
@@ -27,6 +29,8 @@ export default function QueryBuilder(props: Props) {
   const [indexSearch, setIndexSearch] = useState('');
   const [dateFields, setDateFields] = useState<Field[]>([]);
   const indexValue = Form.useWatch(['query', 'index']);
+  const date_field = Form.useWatch(['query', 'date_field']);
+  const syntax = Form.useWatch(['query', 'syntax']);
   const [allFields, setAllFields] = useState<Field[]>([]);
   const refInputFilter = useRef<any>();
   const initialized = useRef<boolean>(false);
@@ -130,15 +134,60 @@ export default function QueryBuilder(props: Props) {
         label={
           <>
             {t('datasource:es.filter')}{' '}
-            <a href='https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax ' target='_blank'>
+            <a
+              href={
+                syntax === 'Lucene'
+                  ? 'https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax'
+                  : 'https://www.elastic.co/guide/en/kibana/current/kuery-query.html'
+              }
+              target='_blank'
+            >
               <QuestionCircleOutlined />
             </a>
           </>
         }
+        addonAfter={
+          <Form.Item name={['query', 'syntax']} noStyle initialValue='lucene'>
+            <Select
+              bordered={false}
+              options={[
+                {
+                  label: 'Lucene',
+                  value: 'lucene',
+                },
+                {
+                  label: 'KQL',
+                  value: 'kuery',
+                },
+              ]}
+              dropdownMatchSelectWidth={false}
+              onChange={() => {
+                form.setFieldsValue({
+                  query: {
+                    filter: '',
+                  },
+                });
+              }}
+            />
+          </Form.Item>
+        }
       >
-        <Form.Item name={['query', 'filter']}>
-          <InputFilter fields={allFields} ref={refInputFilter} onExecute={onExecute} />
-        </Form.Item>
+        {syntax === 'lucene' ? (
+          <Form.Item name={['query', 'filter']}>
+            <InputFilter fields={allFields} ref={refInputFilter} onExecute={onExecute} />
+          </Form.Item>
+        ) : (
+          <Form.Item name={['query', 'filter']}>
+            <KQLInput
+              datasourceValue={datasourceValue}
+              query={{
+                index: indexValue,
+                date_field: date_field,
+              }}
+              historicalRecords={getLocalQueryHistory(datasourceValue)}
+            />
+          </Form.Item>
+        )}
       </InputGroupWithFormItem>
       <div style={{ width: 200, flexShrink: 0 }}>
         <InputGroupWithFormItem label={t('datasource:es.date_field')}>
@@ -169,6 +218,7 @@ export default function QueryBuilder(props: Props) {
             if (refInputFilter.current) {
               refInputFilter.current.onCallback();
             }
+            setLocalQueryHistory(datasourceValue, form.getFieldValue(['query', 'filter']));
             onExecute();
           }}
         />
@@ -181,6 +231,7 @@ export default function QueryBuilder(props: Props) {
             if (refInputFilter.current) {
               refInputFilter.current.onCallback();
             }
+            setLocalQueryHistory(datasourceValue, form.getFieldValue(['query', 'filter']));
             onExecute();
           }}
         >

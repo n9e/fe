@@ -4,6 +4,7 @@ import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { measureTextWidth } from '@ant-design/plots';
+import { buildESQueryFromKuery, getQueryAST } from '@fc-components/es-query';
 import flatten from './flatten';
 
 function localeCompareFunc(a, b) {
@@ -321,7 +322,9 @@ export function dslBuilder(params: {
   start: number;
   end: number;
   filters?: Filter[];
+  syntax?: string; // lucene | kuery
   query_string?: string;
+  kuery?: string;
   limit?: number;
   order?: string;
   orderField?: string;
@@ -336,6 +339,7 @@ export function dslBuilder(params: {
     intervalkey: string;
   };
 }) {
+  const syntax = params.syntax || 'lucene';
   const header = {
     search_type: 'query_then_fetch',
     ignore_unavailable: true,
@@ -415,13 +419,17 @@ export function dslBuilder(params: {
       }
     });
   }
-  if (params.query_string) {
+  if (syntax === 'lucene') {
     body.query.bool.filter.push({
       query_string: {
         analyze_wildcard: true,
         query: params.query_string || '*',
       },
     });
+  }
+  if (syntax === 'kuery' && params.kuery) {
+    const query = buildESQueryFromKuery(params.kuery);
+    body.query.bool.filter = _.concat(body.query.bool.filter, query.filter);
   }
   if (params.date_histogram) {
     _.set(body, 'aggs.A', {

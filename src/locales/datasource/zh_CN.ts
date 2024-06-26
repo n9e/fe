@@ -52,6 +52,7 @@ const zh_CN = {
     event: {
       groupBy: `根据 {{field}} 分组，匹配个数 {{size}}, 文档最小值 {{min_value}}`,
     },
+    syntaxOptions: '语法选项',
   },
 };
 export default zh_CN;
