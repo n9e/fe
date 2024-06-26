@@ -23,12 +23,14 @@ export function KQLLanguage(top: LanguageType): LRLanguage {
           NumberLiteral: tags.number,
           'And Or': tags.logicOperator,
           '( )': tags.paren,
+          '{ }': tags.brace,
+          Asterisk: tags.operator,
           '⚠': tags.invalid,
         }),
       ],
     }),
     languageData: {
-      closeBrackets: { brackets: ['(', '"'] },
+      closeBrackets: { brackets: ['(', '{', '"'] },
       commentTokens: { line: '#' },
     },
   });

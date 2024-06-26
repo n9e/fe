@@ -35,7 +35,9 @@ export default async function metricQuery(options: IOptions) {
       start: start,
       end: end,
       filters,
+      syntax: query.syntax,
       query_string: query.filter,
+      kuery: query.filter,
       date_histogram: {
         intervalkey,
         interval: `${normalizeTime(interval, intervalUnit)}s`,

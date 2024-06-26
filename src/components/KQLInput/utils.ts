@@ -61,5 +61,5 @@ export const getLocalQueryHistory = (datasourceValue?: number) => {
   for (const x of queryHistoryMap.entries()) {
     queryHistory.push(x);
   }
-  return _.slice(_.reverse(_.sortBy(queryHistory, (item) => item[1])), 0, 10);
+  return _.slice(_.reverse(_.sortBy(queryHistory, (item) => item[1])), 0, 5);
 };

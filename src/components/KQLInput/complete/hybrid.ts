@@ -6,7 +6,7 @@ import { syntaxTree } from '@codemirror/language';
 import { EditorState } from '@codemirror/state';
 import { Client } from '../client';
 import { CompleteStrategy } from '.';
-import { KQL, Expr, VectorSelector, FieldName, MatchOperator, Colon, Gtr, Gte, Lss, Lte, FieldValue, StringLiteral, And, Or } from '../grammar/parser';
+import { KQL, Expr, VectorSelector, FieldName, MatchOperator, Colon, BinaryExpr, FieldValue, StringLiteral, And, Or } from '../grammar/parser';
 
 export enum ContextKind {
   FieldName = 'fieldName',
@@ -64,7 +64,10 @@ export function computeStartCompletePosition(node: SyntaxNode, pos: number): num
   } else if (
     node.type.id === FieldValue ||
     (node.type.id === StringLiteral && node.parent?.type.id === FieldValue) ||
+    (node.type.id === 0 && node.prevSibling?.type.id === VectorSelector) ||
     (node.type.id === 0 && node.prevSibling?.type.id === Expr) ||
+    (node.type.id === 0 && node.prevSibling?.type.id === FieldName) ||
+    (node.type.id === 0 && node.prevSibling?.type.id === MatchOperator) ||
     node.type.id === Colon
   ) {
     start++;
@@ -86,6 +89,19 @@ export function analyzeCompletion(state: EditorState, node: SyntaxNode): Context
           break;
         } else if (prevSibling.type.id === And || prevSibling.type.id === Or) {
           result.push({ kind: ContextKind.FieldName });
+          break;
+        } else if (prevSibling.type.id === FieldName) {
+          result.push({ kind: ContextKind.MatchOperator });
+          break;
+        } else if (prevSibling.type.id === MatchOperator) {
+          const firstChild = prevSibling.firstChild;
+          let prevSibling02 = prevSibling.prevSibling;
+          if (prevSibling02 && prevSibling02.type.id === 0) {
+            prevSibling02 = prevSibling02.prevSibling;
+          }
+          if (firstChild && firstChild.type.id === Colon && prevSibling02 && prevSibling02.type.id === FieldName) {
+            result.push({ kind: ContextKind.FieldValue, fieldName: state.sliceDoc(prevSibling02.from, prevSibling02.to), quoted: true });
+          }
           break;
         }
       }
@@ -128,7 +144,10 @@ export function analyzeCompletion(state: EditorState, node: SyntaxNode): Context
           }
           if (prevSibling01 && prevSibling01.type.id === MatchOperator) {
             const firstChild = prevSibling01.firstChild;
-            const prevSibling02 = prevSibling01.prevSibling;
+            let prevSibling02 = prevSibling01.prevSibling;
+            if (prevSibling02 && prevSibling02.type.id === 0) {
+              prevSibling02 = prevSibling02.prevSibling;
+            }
             if (firstChild && firstChild.type.id === Colon && prevSibling02 && prevSibling02.type.id === FieldName) {
               result.push({ kind: ContextKind.FieldValue, fieldName: state.sliceDoc(prevSibling02.from, prevSibling02.to) });
             }
@@ -178,6 +197,18 @@ export class HybridComplete implements CompleteStrategy {
             return _.concat(result, [
               { label: 'AND', type: 'keyword', detail: i18next.t('kql:combiningKeyword'), boost: 0 },
               { label: 'OR', type: 'keyword', detail: i18next.t('kql:combiningKeyword'), boost: 0 },
+            ]);
+          });
+          break;
+        case ContextKind.MatchOperator:
+          asyncResult = asyncResult.then((result) => {
+            return _.concat(result, [
+              { label: ':', type: 'keyword', detail: i18next.t('kql:matchOperator'), boost: 0 },
+              { label: '<=', type: 'keyword', detail: i18next.t('kql:matchOperator'), boost: 0 },
+              { label: '>=', type: 'keyword', detail: i18next.t('kql:matchOperator'), boost: 0 },
+              { label: '<', type: 'keyword', detail: i18next.t('kql:matchOperator'), boost: 0 },
+              { label: '>', type: 'keyword', detail: i18next.t('kql:matchOperator'), boost: 0 },
+              { label: ': *', type: 'keyword', detail: i18next.t('kql:matchOperator'), boost: 0 },
             ]);
           });
           break;

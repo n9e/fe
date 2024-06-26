@@ -184,7 +184,9 @@ export default function index(props: IProps) {
           ...timesRef.current,
           date_field: values.query.date_field,
           filters,
+          syntax: values.query.syntax,
           query_string: values.query.filter,
+          kuery: values.query.filter,
           limit: LOGS_LIMIT,
           sorter: _.isEmpty(sorterRef.current)
             ? [

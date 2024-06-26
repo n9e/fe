@@ -156,7 +156,7 @@ export default function QueryBuilder(props: Props) {
                 },
                 {
                   label: 'KQL',
-                  value: 'kql',
+                  value: 'kuery',
                 },
               ]}
               dropdownMatchSelectWidth={false}

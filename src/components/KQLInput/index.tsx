@@ -17,11 +17,8 @@ import { autocompletion, completionKeymap, startCompletion, closeCompletion } fr
 import { CommonStateContext } from '@/App';
 import { kQLExtension } from './kql';
 import { baseTheme, lightTheme, darkTheme, highlighter } from './CMTheme';
-import { buildESQueryFromKuery, getQueryAST } from '@fc-components/es-query';
 import './style.less';
 import './locale';
-
-console.log(buildESQueryFromKuery('http_host.*: logs AND (method.keyword: * OR @timestamp > 100) AND user:{ first: "Alice" and last: "White" }'));
 
 const dynamicConfigCompartment = new Compartment();
 const QLExtension = new kQLExtension();
@@ -43,6 +40,7 @@ export interface Props {
   completeEnabled?: boolean;
   trigger?: ('onBlur' | 'onEnter')[]; // 触发 onChang 的事件
   placeholder?: string | false;
+  onEnter?: () => void;
 }
 
 export default function index(props: Props) {
@@ -58,6 +56,7 @@ export default function index(props: Props) {
     completeEnabled = true,
     trigger = ['onBlur', 'onEnter'],
     placeholder,
+    onEnter,
   } = props;
   const containerRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
@@ -130,6 +129,9 @@ export default function index(props: Props) {
                   }
                   if (typeof onChange === 'function' && _.includes(trigger, 'onEnter')) {
                     onChange(realValue.current);
+                  }
+                  if (onEnter) {
+                    onEnter();
                   }
                   return true;
                 },
