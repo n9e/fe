@@ -54,7 +54,7 @@ export function timeFormatter(val, type: 'seconds' | 'milliseconds' | 'microseco
   };
 }
 
-const valueFormatter = ({ unit, decimals = 3, dateFormat = 'YYYY-MM-DD HH:mm:ss' }, val) => {
+const valueFormatter = ({ unit, decimals = 6, dateFormat = 'YYYY-MM-DD HH:mm:ss' }, val) => {
   if (val === null || val === '' || val === undefined) {
     return {
       value: '',
@@ -63,7 +63,7 @@ const valueFormatter = ({ unit, decimals = 3, dateFormat = 'YYYY-MM-DD HH:mm:ss'
       stat: '',
     };
   }
-  if (decimals === null) decimals = 3;
+  if (decimals === null) decimals = 6;
   if (typeof val !== 'number') {
     val = _.toNumber(val);
   }
