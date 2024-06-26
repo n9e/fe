@@ -6,7 +6,7 @@ import { Record } from './types';
 const CONFIG_KEY = 'embedded-dashboards';
 
 export const getEmbeddedDashboards = (): Promise<Record[] | undefined> => {
-  return request(`/api/n9e/config?key=${CONFIG_KEY}`, {
+  return request(`/api/n9e/embedded-dashboards?key=${CONFIG_KEY}`, {
     method: RequestMethod.Get,
   }).then((res) => {
     try {
@@ -18,7 +18,7 @@ export const getEmbeddedDashboards = (): Promise<Record[] | undefined> => {
 };
 
 export const setEmbeddedDashboards = (data: Record[]) => {
-  return request(`/api/n9e/config`, {
+  return request(`/api/n9e/embedded-dashboards`, {
     method: RequestMethod.Put,
     data: {
       ckey: CONFIG_KEY,

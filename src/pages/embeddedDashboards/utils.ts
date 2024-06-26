@@ -5,8 +5,12 @@
  */
 export const adjustURL = (url: string, darkMode: boolean) => {
   const theme = darkMode ? 'dark' : 'light';
-  const urlObj = new URL(url);
-  const searchParams = urlObj.searchParams;
-  searchParams.set('theme', theme);
-  return urlObj.toString();
+  try {
+    const urlObj = new URL(url);
+    const searchParams = urlObj.searchParams;
+    searchParams.set('theme', theme);
+    return urlObj.toString();
+  } catch (e) {
+    return url;
+  }
 };
