@@ -178,6 +178,7 @@ const zh_CN = {
     update_at: '更新时间',
     update_by: '更新人',
     disabled: '启用',
+    severity: '级别',
   },
 };
 export default zh_CN;
