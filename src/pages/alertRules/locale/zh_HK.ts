@@ -178,6 +178,7 @@ const zh_HK = {
     update_at: '更新時間',
     update_by: '更新者',
     disabled: '啟用',
+    severity: '級別',
   },
 };
 

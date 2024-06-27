@@ -35,6 +35,11 @@ export const defaultColumnsConfigs = [
     visible: true,
   },
   {
+    name: 'severities',
+    i18nKey: 'table.severity',
+    visible: false,
+  },
+  {
     name: 'append_tags',
     i18nKey: 'table.append_tags',
     visible: false,
