@@ -35,6 +35,8 @@ import {
 } from '@/services/manage';
 import { ModalProps, User, Team, UserType, ActionType, Contacts } from '@/store/manageInterface';
 import { useTranslation } from 'react-i18next';
+import { getRSAConfig } from '@/services/login';
+import { RsaEncry } from '@/utils/rsa';
 
 const CreateModal: React.FC<ModalProps> = (props: ModalProps) => {
   const { t } = useTranslation('user');
@@ -56,9 +58,16 @@ const CreateModal: React.FC<ModalProps> = (props: ModalProps) => {
       let params = { ...values, contacts: _.mapValues(_.keyBy(values.contacts, 'key'), 'value'), confirm: undefined };
 
       if (action === ActionType.CreateUser) {
-        createUser(params).then((_) => {
-          message.success(t('common:success.add'));
-          onClose(true);
+        getRSAConfig().then((res) => {
+          const { OpenRSA, RSAPublicKey } = res.dat || {};
+          const authPassWord = OpenRSA ? RsaEncry(values.password, RSAPublicKey) : values.password;
+          createUser({
+            ...params,
+            password: authPassWord,
+          }).then((_) => {
+            message.success(t('common:success.add'));
+            onClose(true);
+          });
         });
       }
 
@@ -98,9 +107,18 @@ const CreateModal: React.FC<ModalProps> = (props: ModalProps) => {
       let form = passwordRef.current.form;
       const values = await form.validateFields();
       let params = { ...values };
-      changeUserPassword(userId, params).then((_) => {
-        message.success(t('account:password.resetSuccess'));
-        onClose();
+      getRSAConfig().then((res) => {
+        const { OpenRSA, RSAPublicKey } = res.dat || {};
+        const authPassWord = OpenRSA ? RsaEncry(values.password, RSAPublicKey) : values.password;
+        const authConfirm = OpenRSA ? RsaEncry(values.confirm, RSAPublicKey) : values.confirm;
+        changeUserPassword(userId, {
+          ...params,
+          password: authPassWord,
+          confirm: authConfirm,
+        }).then((_) => {
+          message.success(t('account:password.resetSuccess'));
+          onClose();
+        });
       });
     }
 

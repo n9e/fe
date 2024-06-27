@@ -18,6 +18,8 @@ import React from 'react';
 import { Form, Input, Button, message } from 'antd';
 import { UpdatePwd } from '@/services/login';
 import { useTranslation } from 'react-i18next';
+import { getRSAConfig } from '@/services/login';
+import { RsaEncry } from '@/utils/rsa';
 
 export default function ChangePassword() {
   const { t } = useTranslation('account');
@@ -34,8 +36,13 @@ export default function ChangePassword() {
 
   const modifyPassword = () => {
     const { oldpass, newpass } = form.getFieldsValue();
-    UpdatePwd(oldpass, newpass).then(() => {
-      message.success(t('password.changeSuccess'));
+    getRSAConfig().then((res) => {
+      const { OpenRSA, RSAPublicKey } = res.dat || {};
+      const authOldpass = OpenRSA ? RsaEncry(oldpass, RSAPublicKey) : oldpass;
+      const authNewpass = OpenRSA ? RsaEncry(newpass, RSAPublicKey) : newpass;
+      UpdatePwd(authOldpass, authNewpass).then(() => {
+        message.success(t('password.changeSuccess'));
+      });
     });
   };
 
