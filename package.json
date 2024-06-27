@@ -47,6 +47,7 @@
     "diff": "^4.0.2",
     "dompurify": "^2.4.4",
     "i18next": "20.3.2",
+    "js-encrypt": "^2.3.4",
     "jsencrypt": "^3.3.2",
     "json-2-csv": "^3.18.0",
     "lezer": "^0.13.5",
