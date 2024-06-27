@@ -167,7 +167,7 @@ export default function index() {
                           className='table-active-text'
                           to={{
                             pathname: `/dashboards/${record.ident || record.id}`,
-                            search: '__public__=true', // 加上 __public__ 参数，用于在详情页判断是否为公开仪表盘
+                            search: gids === '-1' ? '__public__=true' : '', // 加上 __public__ 参数，用于在详情页判断是否为公开仪表盘
                           }}
                         >
                           {text}
