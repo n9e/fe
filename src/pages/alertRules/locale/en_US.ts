@@ -178,6 +178,7 @@ const en_US = {
     update_at: 'Updated',
     update_by: 'Updated By',
     disabled: 'Enable',
+    severity: 'Severity',
   },
 };
 export default en_US;

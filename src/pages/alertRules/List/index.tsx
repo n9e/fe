@@ -36,6 +36,7 @@ import Import from './Import';
 import { allCates } from '@/components/AdvancedWrap/utils';
 import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
 import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
+import { priorityColor } from '@/utils/constant';
 
 interface ListProps {
   gids?: string;
@@ -132,6 +133,35 @@ export default function List(props: ListProps) {
             >
               {data}
             </Link>
+          );
+        },
+      },
+      {
+        title: t('table.severity'),
+        dataIndex: 'severities',
+        render: (data) => {
+          return (
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: 4,
+              }}
+            >
+              {_.map(data, (severity) => {
+                return (
+                  <Tag
+                    key={severity}
+                    color={priorityColor[severity - 1]}
+                    style={{
+                      marginRight: 0,
+                    }}
+                  >
+                    S{severity}
+                  </Tag>
+                );
+              })}
+            </div>
           );
         },
       },
