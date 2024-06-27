@@ -100,6 +100,7 @@ const zh_HK = {
       copy: '複製 JSON 到剪貼板',
     },
   },
+  invalidDatasource: '無效的數據源',
 
   tpl: '自愈腳本',
   'tpl.create': '創建',

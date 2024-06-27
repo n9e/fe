@@ -18,6 +18,7 @@ import { message } from 'antd';
 import React, { ReactNode, Component } from 'react';
 import { useLocation } from 'react-router-dom';
 import i18next from 'i18next';
+import { JSEncrypt } from 'js-encrypt';
 import { IStore } from '@/store/common';
 export { getDefaultDatasourceValue, setDefaultDatasourceValue } from './datasource';
 
@@ -201,4 +202,25 @@ export const scrollToFirstError = () => {
   setTimeout(() => {
     document.querySelector('.ant-form-item-has-error')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }, 200);
+};
+
+export const RSAEncrypt = (str: string): string => {
+  if (!str) return '';
+  var encrypt = new JSEncrypt();
+  let result: string | boolean = '';
+  encrypt.setPublicKey(`-----BEGIN PUBLIC KEY-----
+  MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoEyQB7GhjPdmHZ7gpvG7
+  QMuI224WL3L+CGEtl6E0ypxp1czaLV2TN8POSmRZmjsmaHthkIHiZg2uRvijYX+F
+  2a7XrRh3xZ+s51dtxrbhufYhMvYQFmXpAkYUjMrKn3hGzssONBoOxauJyec3bIFj
+  lcz2nnTRT/xW+mqCoFPoAx2fwOhVurRQSvP2d4mBEDjmCt+frDTj1EW1HjA1QujX
+  XX55KvL+VUmqjU8auj4Pm/4yn8tL8mkv2wCOrYOwylwEYNx1oc2Rczze4B6Rup6B
+  wAQBLBZ/TQPFtUDBF/b3i+nWrR77onffeDplXrzXgfmOE5TclMFfhELBRCoiTvSY
+  YQIDAQAB
+  -----END PUBLIC KEY-----`);
+  result = encrypt.encrypt(str);
+  if (result === false) {
+    message.error('密码过长，加密失败, 最长64位');
+    throw new Error('密码过长，加密失败');
+  }
+  return encrypt.encrypt(str);
 };
