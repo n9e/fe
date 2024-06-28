@@ -32,6 +32,7 @@ import { CommonStateContext } from '@/App';
 import { IPanel } from '../../../types';
 import { hexPalette } from '../../../config';
 import valueFormatter from '../../utils/valueFormatter';
+import getSerieName from '../../utils/getSerieName';
 import { getLegendValues, getMappedTextObj } from '../../utils/getCalculatedValuesBySeries';
 import { getDetailUrl } from '../../utils/replaceExpressionDetail';
 import { useGlobalState } from '../../../globalState';
@@ -124,7 +125,7 @@ export default function index(props: IProps) {
   const location = useLocation();
   const { custom, options = {}, targets, overrides } = values;
   const { lineWidth = 1, gradientMode = 'none', scaleDistribution } = custom;
-  const [seriesData, setSeriesData] = useState(series);
+  const [seriesData, setSeriesData] = useState<any[]>([]);
   const [activeLegend, setActiveLegend] = useState('');
   const chartEleRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<TsGraph>(null);
@@ -206,7 +207,16 @@ export default function index(props: IProps) {
   }, [hasLegend]);
 
   useEffect(() => {
-    setSeriesData(series);
+    setSeriesData(
+      _.map(series, (item) => {
+        return {
+          ...item,
+          // 2024-06-28 serie.name 放到这里处理，原 datasource 里的 name 都删除掉
+          // 目前只有 mysql 源生效
+          name: item.name === undefined ? getSerieName(item.metric, { legend: item.target?.legend, ref: item.isExp ? item.refId : undefined }) : item.name,
+        };
+      }),
+    );
   }, [JSON.stringify(series)]);
 
   useEffect(() => {
