@@ -44,9 +44,10 @@ interface IProps {
   scopedVars?: any;
   inspect?: boolean;
   type?: string;
+  custom: any;
 }
 
-export default function usePrometheus(props: IProps) {
+export default function useQuery(props: IProps) {
   const { dashboardId, datasourceCate, time, targets, variableConfig, inViewPort, spanNulls, datasourceValue } = props;
   const [series, setSeries] = useState<any[]>([]);
   const [query, setQuery] = useState<any[]>([]);
