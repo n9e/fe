@@ -31,7 +31,7 @@ export default function Cell(props: Props) {
   };
 
   return (
-    <Tooltip title={nowrap ? text : undefined}>
+    <Tooltip placement='topLeft' title={nowrap ? text : undefined}>
       <div
         className='renderer-table-td-content'
         style={{
