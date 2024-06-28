@@ -311,6 +311,12 @@ const zh_HK = {
           cellLink: '單元格連結',
           appendLinkColumn: '追加連結列',
         },
+        tableLayout: {
+          label: '表格佈局',
+          auto: '自動',
+          fixed: '固定',
+        },
+        nowrap: '單元格不換行',
       },
       text: {
         textColor: '文字顏色',

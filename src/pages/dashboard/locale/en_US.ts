@@ -305,6 +305,12 @@ const en_US = {
           cellLink: 'Cell link',
           appendLinkColumn: 'Append link column',
         },
+        tableLayout: {
+          label: 'Table layout',
+          auto: 'Auto',
+          fixed: 'Fixed',
+        },
+        nowrap: 'No wrap',
       },
       text: {
         textColor: 'TextColor',

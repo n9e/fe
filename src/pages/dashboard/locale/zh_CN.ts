@@ -1,3 +1,5 @@
+import { layout } from '@/pages/user/const';
+
 const zh_CN = {
   title: '监控仪表盘',
   name: '仪表盘名称',
@@ -317,6 +319,12 @@ const zh_CN = {
           cellLink: '单元格链接',
           appendLinkColumn: '追加链接列',
         },
+        tableLayout: {
+          label: '表格布局',
+          auto: '自动',
+          fixed: '固定',
+        },
+        nowrap: '单元格不换行',
       },
       text: {
         textColor: '文字颜色',

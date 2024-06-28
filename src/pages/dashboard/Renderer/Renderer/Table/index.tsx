@@ -94,7 +94,7 @@ function TableCpt(props: IProps, ref: any) {
   const size = useSize(eleRef);
   const { values, series, themeMode, time, isPreview } = props;
   const { custom, options, overrides } = values;
-  const { showHeader, calc, aggrDimension, displayMode, columns, sortColumn, sortOrder, colorMode = 'value' } = custom;
+  const { showHeader, calc, aggrDimension, displayMode, columns, sortColumn, sortOrder, colorMode = 'value', tableLayout = 'fixed' } = custom;
   const [calculatedValues, setCalculatedValues] = useState<any[]>([]);
   const [sortObj, setSortObj] = useState({
     sortColumn,
@@ -191,7 +191,7 @@ function TableCpt(props: IProps, ref: any) {
 
   let tableDataSource = calculatedValues;
   let tableColumns: any[] = [];
-  if (!_.isEmpty(calculatedValues)) {
+  if (!_.isEmpty(calculatedValues) && size?.width && size?.height) {
     const timeColWidth = calc === 'origin' ? 180 : 0;
     tableColumns = [
       {
@@ -280,7 +280,8 @@ function TableCpt(props: IProps, ref: any) {
           title: key,
           dataIndex: key,
           key: key,
-          width: idx < columnsKeys.length - 1 ? size?.width! / columnsKeys.length - 14 : undefined,
+          width: tableLayout === 'fixed' ? (idx < columnsKeys.length - 1 ? size?.width! / columnsKeys.length - 14 : undefined) : 150,
+          ellipsis: true,
           sorter: (a, b) => {
             if (key === 'value') {
               return a.stat - b.stat;
@@ -353,7 +354,7 @@ function TableCpt(props: IProps, ref: any) {
           title: aggrDimension,
           dataIndex: aggrDimension,
           key: aggrDimension,
-          width: size?.width! / (groupNames.length + aggrDimensions.length) - 14,
+          width: tableLayout === 'fixed' ? size?.width! / (groupNames.length + aggrDimensions.length) - 14 : 150,
           sorter: (a, b) => {
             return localeCompare(a[aggrDimension], b[aggrDimension]);
           },
@@ -387,7 +388,7 @@ function TableCpt(props: IProps, ref: any) {
           dataIndex: name,
           key: name,
           // TODO: 暂时关闭维度值列的伸缩，降低对目前不太理想的列伸缩交互的理解和操作成本
-          width: idx < groupNames.length - 1 ? size?.width! / (groupNames.length + aggrDimensions.length) - 14 : undefined,
+          width: tableLayout === 'fixed' ? (idx < groupNames.length - 1 ? size?.width! / (groupNames.length + aggrDimensions.length) - 14 : undefined) : 150,
           sorter: (a, b) => {
             return localeCompare(a[name]?.stat, b[name]?.stat);
           },

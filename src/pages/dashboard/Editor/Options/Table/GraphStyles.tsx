@@ -54,6 +54,27 @@ export default function GraphStyles({ chartForm, variableConfigWithOptions }) {
               </Radio.Group>
             </Form.Item>
           </Col>
+          <Col span={12}>
+            <Form.Item label={t('panel.custom.table.nowrap')} name={[...namePrefix, 'nowrap']} valuePropName='checked'>
+              <Switch size='small' />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item label={t('panel.custom.table.tableLayout.label')} name={[...namePrefix, 'tableLayout']}>
+              <Select
+                options={[
+                  {
+                    label: t('panel.custom.table.tableLayout.fixed'),
+                    value: 'fixed',
+                  },
+                  {
+                    label: t('panel.custom.table.tableLayout.auto'),
+                    value: 'auto',
+                  },
+                ]}
+              />
+            </Form.Item>
+          </Col>
         </Row>
         <Form.Item label={t('panel.custom.calc')} name={[...namePrefix, 'calc']} tooltip={t('panel.custom.calc_tip')}>
           <Select>
