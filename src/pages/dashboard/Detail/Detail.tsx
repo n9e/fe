@@ -18,6 +18,7 @@ import React, { useState, useRef, useEffect, useContext } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
 import semver from 'semver';
+import i18next from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { useInterval } from 'ahooks';
 import { v4 as uuidv4 } from 'uuid';
@@ -87,7 +88,7 @@ const builtinParamsToID = (builtinParams) => {
 message.config({
   maxCount: 1,
 });
-const getDefaultTimeRange = (query, t, dashboardDefaultRangeIndex?) => {
+const getDefaultTimeRange = (id, query, dashboardDefaultRangeIndex?) => {
   const defaultRange =
     dashboardDefaultRangeIndex !== undefined && dashboardDefaultRangeIndex !== ''
       ? rangeOptions[dashboardDefaultRangeIndex]
@@ -108,10 +109,10 @@ const getDefaultTimeRange = (query, t, dashboardDefaultRangeIndex?) => {
         end: moment(_.toNumber(query.__to)),
       };
     }
-    message.error(t('detail.invalidTimeRange'));
-    return getDefaultValue(dashboardTimeCacheKey, defaultRange);
+    message.error(i18next.t('dashboard:detail.invalidTimeRange'));
+    return getDefaultValue(`${dashboardTimeCacheKey}_${id}`, defaultRange);
   }
-  return getDefaultValue(dashboardTimeCacheKey, defaultRange);
+  return getDefaultValue(`${dashboardTimeCacheKey}_${id}`, defaultRange);
 };
 
 export default function DetailV2(props: IProps) {
@@ -132,7 +133,7 @@ export default function DetailV2(props: IProps) {
   const [variableConfigWithOptions, setVariableConfigWithOptions] = useState<IVariable[]>();
   const [dashboardLinks, setDashboardLinks] = useState<ILink[]>();
   const [panels, setPanels] = useState<any[]>([]);
-  const [range, setRange] = useState<IRawTimeRange>(getDefaultTimeRange(query, t, dashboardDefaultRangeIndex));
+  const [range, setRange] = useState<IRawTimeRange>(getDefaultTimeRange(id, query, dashboardDefaultRangeIndex));
   const [editable, setEditable] = useState(true);
   const [editorData, setEditorData] = useState({
     visible: false,
