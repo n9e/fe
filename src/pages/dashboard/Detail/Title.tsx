@@ -234,7 +234,7 @@ export default function Title(props: IProps) {
             </Dropdown>
           )}
           <TimeRangePickerWithRefresh
-            localKey={dashboardTimeCacheKey}
+            localKey={`${dashboardTimeCacheKey}_${dashboard.id}`}
             dateFormat='YYYY-MM-DD HH:mm:ss'
             value={range}
             onChange={(val) => {
