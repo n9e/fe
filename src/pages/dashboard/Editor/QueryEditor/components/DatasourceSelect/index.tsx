@@ -6,10 +6,11 @@ import { useTranslation } from 'react-i18next';
 import { ProSvg } from '@/components/DatasourceSelect';
 import { PRIMARY_COLOR } from '@/utils/constant';
 import { CommonStateContext } from '@/App';
+import DatasourceSelectExtra from './DatasourceSelectExtra';
 
 const defaultDatasourceCate = 'prometheus';
 
-export default function index({ chartForm, variableConfig }) {
+export default function index({ dashboardId, chartForm, variableConfig }) {
   const { t } = useTranslation('dashboard');
   const { groupedDatasourceList, datasourceCateOptions } = useContext(CommonStateContext);
   const cates = _.filter(datasourceCateOptions, (item) => {
@@ -147,6 +148,7 @@ export default function index({ chartForm, variableConfig }) {
           );
         }}
       </Form.Item>
+      <DatasourceSelectExtra dashboardId={dashboardId} variableConfig={variableConfig} />
     </Space>
   );
 }

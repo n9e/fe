@@ -30,7 +30,7 @@ export default function index({ chartForm, type, variableConfig, dashboardId, ti
             <Radio.Button value='transform'>{t('query.transform')} (beta)</Radio.Button>
           </Radio.Group>
         )}
-        <DatasourceSelect chartForm={chartForm} variableConfig={variableConfig} />
+        <DatasourceSelect dashboardId={dashboardId} chartForm={chartForm} variableConfig={variableConfig} />
       </Space>
       <div
         style={{
