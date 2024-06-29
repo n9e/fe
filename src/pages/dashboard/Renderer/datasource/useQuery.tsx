@@ -16,6 +16,7 @@
  */
 import React, { useState, useEffect, useRef } from 'react';
 import _ from 'lodash';
+import { Form } from 'antd';
 import { useDebounceFn } from 'ahooks';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { datasource as tdengineQuery } from '@/plugins/TDengine';
@@ -49,6 +50,7 @@ interface IProps {
 
 export default function useQuery(props: IProps) {
   const { dashboardId, datasourceCate, time, targets, variableConfig, inViewPort, spanNulls, datasourceValue } = props;
+  const form = Form.useFormInstance();
   const [series, setSeries] = useState<any[]>([]);
   const [query, setQuery] = useState<any[]>([]);
   const [error, setError] = useState('');
@@ -64,8 +66,16 @@ export default function useQuery(props: IProps) {
     ...plusDatasource,
   };
   const { run: fetchData } = useDebounceFn(
-    () => {
+    async () => {
       if (!datasourceCate) return;
+      // 如果在编辑状态，需要校验表单
+      if (form && typeof form.validateFields === 'function') {
+        try {
+          await form.validateFields();
+        } catch (e) {
+          return;
+        }
+      }
       setLoading(true);
       fetchQueryMap[datasourceCate](props)
         .then(({ series, query }: { series: any[]; query: any[] }) => {
