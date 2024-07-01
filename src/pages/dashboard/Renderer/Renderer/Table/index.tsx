@@ -32,7 +32,7 @@ import localeCompare from '../../utils/localeCompare';
 import formatToTable from '../../utils/formatToTable';
 import { useGlobalState } from '../../../globalState';
 import { getDetailUrl } from '../../utils/replaceExpressionDetail';
-import { transformColumns, downloadCsv, useDeepCompareWithRef } from './utils';
+import { transformColumns, downloadCsv, useDeepCompareWithRef, isRawData } from './utils';
 import Cell from './Cell';
 import './style.less';
 import moment from 'moment';
@@ -274,7 +274,7 @@ function TableCpt(props: IProps, ref: any) {
     }
 
     if (displayMode === 'labelsOfSeriesToRows') {
-      const columnsKeys: any[] = _.isEmpty(columns) ? _.concat(getColumnsKeys(calculatedValues), 'value') : columns;
+      const columnsKeys: any[] = _.isEmpty(columns) ? (isRawData(series) ? getColumnsKeys(calculatedValues) : _.concat(getColumnsKeys(calculatedValues), 'value')) : columns;
       tableColumns = _.map(columnsKeys, (key, idx) => {
         return {
           title: key,
