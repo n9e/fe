@@ -8,8 +8,6 @@ import { PRIMARY_COLOR } from '@/utils/constant';
 import { CommonStateContext } from '@/App';
 import DatasourceSelectExtra from './DatasourceSelectExtra';
 
-const defaultDatasourceCate = 'prometheus';
-
 export default function index({ dashboardId, chartForm, variableConfig }) {
   const { t } = useTranslation('dashboard');
   const { groupedDatasourceList, datasourceCateOptions } = useContext(CommonStateContext);
@@ -17,6 +15,7 @@ export default function index({ dashboardId, chartForm, variableConfig }) {
     return !!item.dashboard;
   });
   const datasourceVars = _.filter(variableConfig, { type: 'datasource' });
+  const datasourceCate = Form.useWatch('datasourceCate');
   const getDefaultDatasourceValue = (datasourceCate) => {
     const finded = _.find(datasourceVars, { definition: datasourceCate });
     if (finded) {
@@ -29,7 +28,7 @@ export default function index({ dashboardId, chartForm, variableConfig }) {
     <Space align='start'>
       <Input.Group>
         <span className='ant-input-group-addon'>{t('common:datasource.type')}</span>
-        <Form.Item name='datasourceCate' noStyle initialValue={defaultDatasourceCate}>
+        <Form.Item name='datasourceCate' noStyle>
           <Select
             dropdownMatchSelectWidth={false}
             style={{ minWidth: 70 }}
@@ -104,50 +103,42 @@ export default function index({ dashboardId, chartForm, variableConfig }) {
           </Select>
         </Form.Item>
       </Input.Group>
-      <Form.Item shouldUpdate={(prev, curr) => prev.datasourceCate !== curr.datasourceCate} noStyle>
-        {({ getFieldValue }) => {
-          const cate = getFieldValue('datasourceCate') || defaultDatasourceCate;
-          return (
-            <Input.Group compact>
-              <span
-                className='ant-input-group-addon'
-                style={{
-                  width: 'max-content',
-                  height: 32,
-                  lineHeight: '32px',
-                }}
-              >
-                {t('common:datasource.id')}
-              </span>
-              <Form.Item
-                name='datasourceValue'
-                rules={[
-                  {
-                    required: true,
-                    message: t('query.datasource_msg'),
-                  },
-                ]}
-                initialValue={getDefaultDatasourceValue(defaultDatasourceCate)}
-              >
-                <Select allowClear placeholder={t('query.datasource_placeholder')} style={{ minWidth: 70 }} dropdownMatchSelectWidth={false} showSearch optionFilterProp='children'>
-                  {_.map(datasourceVars, (item, idx) => {
-                    return (
-                      <Select.Option value={`\${${item.name}}`} key={`${item.name}_${idx}`}>
-                        {`\${${item.name}}`}
-                      </Select.Option>
-                    );
-                  })}
-                  {_.map(groupedDatasourceList[cate], (item) => (
-                    <Select.Option value={item.id} key={item.id}>
-                      {item.name}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Input.Group>
-          );
-        }}
-      </Form.Item>
+      <Input.Group compact>
+        <span
+          className='ant-input-group-addon'
+          style={{
+            width: 'max-content',
+            height: 32,
+            lineHeight: '32px',
+          }}
+        >
+          {t('common:datasource.id')}
+        </span>
+        <Form.Item
+          name='datasourceValue'
+          rules={[
+            {
+              required: true,
+              message: t('query.datasource_msg'),
+            },
+          ]}
+        >
+          <Select allowClear placeholder={t('query.datasource_placeholder')} style={{ minWidth: 70 }} dropdownMatchSelectWidth={false} showSearch optionFilterProp='children'>
+            {_.map(datasourceVars, (item, idx) => {
+              return (
+                <Select.Option value={`\${${item.name}}`} key={`${item.name}_${idx}`}>
+                  {`\${${item.name}}`}
+                </Select.Option>
+              );
+            })}
+            {_.map(groupedDatasourceList[datasourceCate], (item) => (
+              <Select.Option value={item.id} key={item.id}>
+                {item.name}
+              </Select.Option>
+            ))}
+          </Select>
+        </Form.Item>
+      </Input.Group>
       <DatasourceSelectExtra dashboardId={dashboardId} variableConfig={variableConfig} />
     </Space>
   );
