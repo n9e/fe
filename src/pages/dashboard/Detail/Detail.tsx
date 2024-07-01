@@ -47,6 +47,7 @@ import { defaultCustomValuesMap, defaultOptionsValuesMap } from '../Editor/confi
 import { sortPanelsByGridLayout, panelsMergeToConfigs, updatePanelsInsertNewPanelToGlobal } from '../Panels/utils';
 import { useGlobalState } from '../globalState';
 import { scrollToLastPanel } from './utils';
+import ajustInitialValues from '../Renderer/utils/ajustInitialValues';
 import './style.less';
 interface URLParam {
   id: string;
@@ -119,7 +120,7 @@ export default function DetailV2(props: IProps) {
   const { isPreview = false, isBuiltin = false, gobackPath, builtinParams } = props;
   const { t, i18n } = useTranslation('dashboard');
   const history = useHistory();
-  const { datasourceList, profile, dashboardDefaultRangeIndex, dashboardSaveMode, perms } = useContext(CommonStateContext);
+  const { datasourceList, profile, dashboardDefaultRangeIndex, dashboardSaveMode, perms, groupedDatasourceList } = useContext(CommonStateContext);
   const isAuthorized = _.includes(perms, '/dashboards/put') && !isPreview;
   const [dashboardMeta, setDashboardMeta] = useGlobalState('dashboardMeta');
   let { id } = useParams<URLParam>();
@@ -299,22 +300,7 @@ export default function DetailV2(props: IProps) {
                       configs: panelsMergeToConfigs(dashboard.configs, newPanels),
                     });
                   } else {
-                    setEditorData({
-                      visible: true,
-                      id: uuidv4(),
-                      initialValues: {
-                        name: 'Panel Title',
-                        type,
-                        targets: [
-                          {
-                            refId: 'A',
-                            expr: '',
-                          },
-                        ],
-                        custom: defaultCustomValuesMap[type],
-                        options: defaultOptionsValuesMap[type],
-                      },
-                    });
+                    setEditorData(ajustInitialValues(type, groupedDatasourceList, panels, variableConfig));
                   }
                 }}
               />
