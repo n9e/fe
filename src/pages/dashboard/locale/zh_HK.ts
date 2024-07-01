@@ -317,6 +317,7 @@ const zh_HK = {
           fixed: '固定',
         },
         nowrap: '單元格不換行',
+        organizeFields: '組織字段',
       },
       text: {
         textColor: '文字顏色',

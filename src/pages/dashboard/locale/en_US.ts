@@ -311,6 +311,7 @@ const en_US = {
           fixed: 'Fixed',
         },
         nowrap: 'No wrap',
+        organizeFields: 'Organize fields',
       },
       text: {
         textColor: 'TextColor',
