@@ -325,6 +325,7 @@ const zh_CN = {
           fixed: '固定',
         },
         nowrap: '单元格不换行',
+        organizeFields: '字段整理',
       },
       text: {
         textColor: '文字颜色',

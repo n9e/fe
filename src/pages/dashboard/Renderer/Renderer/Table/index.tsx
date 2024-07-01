@@ -127,7 +127,7 @@ function TableCpt(props: IProps, ref: any) {
     if (displayMode === 'seriesToRows') {
       fields = ['name', 'value'];
     } else if (displayMode === 'labelsOfSeriesToRows') {
-      fields = !_.isEmpty(columns) ? columns : [...getColumnsKeys(data), 'value'];
+      fields = !_.isEmpty(columns) ? columns : isRawData(series) ? getColumnsKeys(data) : [...getColumnsKeys(data), 'value'];
     } else if (displayMode === 'labelValuesToRows') {
       fields = _.isArray(aggrDimension) ? aggrDimension : [aggrDimension];
     }
