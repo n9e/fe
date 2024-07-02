@@ -100,6 +100,7 @@ const zh_CN = {
       copy: '复制 JSON 到剪贴板',
     },
   },
+  invalidDatasource: '无效的数据源',
 
   // 临时把 task 的翻译放在这里
   tpl: '自愈脚本',

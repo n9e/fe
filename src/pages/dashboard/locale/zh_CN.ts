@@ -1,3 +1,5 @@
+import { layout } from '@/pages/user/const';
+
 const zh_CN = {
   title: '监控仪表盘',
   name: '仪表盘名称',
@@ -317,6 +319,15 @@ const zh_CN = {
           cellLink: '单元格链接',
           appendLinkColumn: '追加链接列',
         },
+        tableLayout: {
+          label: '表格布局',
+          label_tip: '固定布局下列默认宽度根据列数量等分不会产生横向滚动条。自动布局下列默认最大宽度为 150px 表格内容可能会溢出从而产生横向滚动条。',
+          auto: '自动',
+          fixed: '固定',
+        },
+        nowrap: '单元格不换行',
+        organizeFields: '字段整理',
+        colorMode_tip: '颜色模式是针对 "值字段" 的颜色设置。值模式下颜色作用于值文字；背景模式下颜色作用于字段所在单元格背景色。',
       },
       text: {
         textColor: '文字颜色',

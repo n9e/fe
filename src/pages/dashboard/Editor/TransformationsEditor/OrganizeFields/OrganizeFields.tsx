@@ -4,6 +4,7 @@ import { MenuOutlined, EyeOutlined, EyeInvisibleOutlined } from '@ant-design/ico
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
 import { arrayMoveImmutable } from 'array-move';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import Collapse, { Panel } from '../../Components/Collapse';
 import { useGlobalState } from '../../../globalState';
@@ -33,6 +34,7 @@ const SortableItem = SortableElement(({ children }) => <div style={{ marginBotto
 const DragHandle = SortableHandle(() => <Button icon={<MenuOutlined />} />);
 
 export default function OrganizeFields(props: IProps) {
+  const { t } = useTranslation('dashboard');
   const { value, onChange } = props;
   const [displayedTableFields, setDisplayedTableFields] = useGlobalState('displayedTableFields');
   const [fields, setFields] = useState(_.flatten(displayedTableFields));
@@ -43,7 +45,7 @@ export default function OrganizeFields(props: IProps) {
 
   return (
     <Collapse>
-      <Panel header='字段管理'>
+      <Panel header={t('panel.custom.table.organizeFields')}>
         <SortableBody
           useDragHandle
           helperClass='row-dragging'

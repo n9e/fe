@@ -15,12 +15,13 @@
  *
  */
 import React, { useEffect, useState } from 'react';
-import { Form, Select, Button } from 'antd';
-import { WarningOutlined, ReloadOutlined } from '@ant-design/icons';
+import { Form, Select } from 'antd';
+import { WarningOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
 import { getDatasourceBriefList } from '@/services/common';
+import DatasourceSelectExtra from '@/pages/alertRules/Form/components/DatasourceSelectExtra';
 
 export const DATASOURCE_ALL = 0;
 
@@ -31,6 +32,7 @@ interface IProps {
   mode?: 'multiple';
   required?: boolean;
   disabled?: boolean;
+  showExtra?: boolean;
 }
 
 const getInvalidDatasourceIds = (ids: number | number[], datasourceList: { id: number; name: string }[], fullDatasourceList: any[]) => {
@@ -48,7 +50,7 @@ const getInvalidDatasourceIds = (ids: number | number[], datasourceList: { id: n
   return invalid;
 };
 
-export default function index({ setFieldsValue, cate, datasourceList, mode, required = true, disabled }: IProps) {
+export default function index({ setFieldsValue, cate, datasourceList, mode, required = true, disabled, showExtra }: IProps) {
   const { t } = useTranslation('alertRules');
   const [fullDatasourceList, setFullDatasourceList] = useState<any[]>([]);
   const datasourceIds = Form.useWatch('datasource_ids');
@@ -75,94 +77,109 @@ export default function index({ setFieldsValue, cate, datasourceList, mode, requ
   }, []);
 
   return (
-    <Form.Item
-      label={
-        <div>
-          {t('common:datasource.id')}
-          <span style={{ paddingLeft: 16 }}>
-            {_.isEmpty(invalidDatasourceIds) ? null : (
-              <span style={{ color: '#ff4d4f' }}>
-                <span>
-                  <WarningOutlined /> {t('invalid_datasource_tip_1')}
-                </span>
-                {_.map(invalidDatasourceIds, (item) => {
-                  const result = _.find(fullDatasourceList, { id: item });
-                  if (result) {
-                    let url = `/help/source/edit/${result.plugin_type}/${result.id}`;
-                    if (import.meta.env.VITE_IS_ENT === 'true') {
-                      const cateMap = {
-                        timeseries: 'datasource',
-                        logging: 'logsource',
-                      };
-                      url = `/settings/${cateMap[result.category]}/edit/${result.id}`;
-                      if (result.category === 'logging') {
-                        url = `/settings/${cateMap[result.category]}/edit/${result.plugin_type}/${result.id}`;
-                      }
-                    }
-                    return (
-                      <Link style={{ paddingLeft: 8 }} target='_blank' to={url}>
-                        {result.name}
-                      </Link>
-                    );
-                  }
-                })}
-                <span style={{ paddingLeft: 8 }}>{t('invalid_datasource_tip_2')}</span>
-                <a
-                  style={{ paddingLeft: 8 }}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    fetchDatasourceList();
-                  }}
-                >
-                  {t('invalid_datasource_reload')}
-                </a>
-              </span>
-            )}
-          </span>
-        </div>
-      }
-      name='datasource_ids'
-      rules={[
-        {
-          required,
-          message: t('common:datasource.id_required'),
-        },
-        {
-          validator(rule, value, callback) {
-            const invalidDatasourceIds = getInvalidDatasourceIds(datasourceIds, datasourceList, fullDatasourceList);
-            if (_.isEmpty(invalidDatasourceIds)) {
-              callback();
-            } else {
-              callback('invalidDatasourceIds');
-            }
-          },
-          message: '', // label 右侧已经显示，这里就不显示 error msg
-        },
-      ]}
+    <div
+      style={{
+        display: 'flex',
+        width: '100%',
+        gap: 10,
+      }}
     >
-      <Select
-        mode={mode}
-        onChange={(v: number[] | number) => {
-          if (_.isArray(v)) {
-            const curVal = _.last(v);
-            if (curVal === DATASOURCE_ALL) {
-              setFieldsValue({ datasource_ids: [DATASOURCE_ALL] });
-            } else if (typeof v !== 'number' && v.includes(DATASOURCE_ALL)) {
-              setFieldsValue({ datasource_ids: _.without(v, DATASOURCE_ALL) });
-            }
-          }
-        }}
-        maxTagCount='responsive'
-        disabled={disabled}
-        showSearch
-        optionFilterProp='children'
+      <Form.Item
+        style={{ width: '100%' }}
+        label={
+          <div>
+            {t('common:datasource.id')}
+            <span style={{ paddingLeft: 16 }}>
+              {_.isEmpty(invalidDatasourceIds) ? null : (
+                <span style={{ color: '#ff4d4f' }}>
+                  <span>
+                    <WarningOutlined /> {t('invalid_datasource_tip_1')}
+                  </span>
+                  {_.map(invalidDatasourceIds, (item) => {
+                    const result = _.find(fullDatasourceList, { id: item });
+                    if (result) {
+                      let url = `/help/source/edit/${result.plugin_type}/${result.id}`;
+                      if (import.meta.env.VITE_IS_ENT === 'true') {
+                        const cateMap = {
+                          timeseries: 'datasource',
+                          logging: 'logsource',
+                        };
+                        url = `/settings/${cateMap[result.category]}/edit/${result.id}`;
+                        if (result.category === 'logging') {
+                          url = `/settings/${cateMap[result.category]}/edit/${result.plugin_type}/${result.id}`;
+                        }
+                      }
+                      return (
+                        <Link style={{ paddingLeft: 8 }} target='_blank' to={url}>
+                          {result.name}
+                        </Link>
+                      );
+                    }
+                  })}
+                  <span style={{ paddingLeft: 8 }}>{t('invalid_datasource_tip_2')}</span>
+                  <a
+                    style={{ paddingLeft: 8 }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      fetchDatasourceList();
+                    }}
+                  >
+                    {t('invalid_datasource_reload')}
+                  </a>
+                </span>
+              )}
+            </span>
+          </div>
+        }
+        name='datasource_ids'
+        rules={[
+          {
+            required,
+            message: t('common:datasource.id_required'),
+          },
+          {
+            validator(rule, value, callback) {
+              const invalidDatasourceIds = getInvalidDatasourceIds(datasourceIds, datasourceList, fullDatasourceList);
+              if (_.isEmpty(invalidDatasourceIds)) {
+                callback();
+              } else {
+                callback('invalidDatasourceIds');
+              }
+            },
+            message: '', // label 右侧已经显示，这里就不显示 error msg
+          },
+        ]}
       >
-        {_.map(curDatasourceList, (item) => (
-          <Select.Option value={item.id} key={item.id}>
-            {item.name}
-          </Select.Option>
-        ))}
-      </Select>
-    </Form.Item>
+        <Select
+          mode={mode}
+          onChange={(v: number[] | number) => {
+            if (_.isArray(v)) {
+              const curVal = _.last(v);
+              if (curVal === DATASOURCE_ALL) {
+                setFieldsValue({ datasource_ids: [DATASOURCE_ALL] });
+              } else if (typeof v !== 'number' && v.includes(DATASOURCE_ALL)) {
+                setFieldsValue({ datasource_ids: _.without(v, DATASOURCE_ALL) });
+              }
+            }
+          }}
+          maxTagCount='responsive'
+          disabled={disabled}
+          showSearch
+          optionFilterProp='children'
+          style={{ width: '100%' }}
+        >
+          {_.map(curDatasourceList, (item) => (
+            <Select.Option value={item.id} key={item.id}>
+              {item.name}
+            </Select.Option>
+          ))}
+        </Select>
+      </Form.Item>
+      {showExtra && (
+        <Form.Item label=' '>
+          <DatasourceSelectExtra />
+        </Form.Item>
+      )}
+    </div>
   );
 }

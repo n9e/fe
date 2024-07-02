@@ -305,6 +305,17 @@ const en_US = {
           cellLink: 'Cell link',
           appendLinkColumn: 'Append link column',
         },
+        tableLayout: {
+          label: 'Table layout',
+          label_tip:
+            'Fixed layout following default width divided equally by the number of columns will not produce horizontal scrollbars. The default maximum width under Auto Layout is 150px and table content may overflow resulting in horizontal scroll bars.',
+          auto: 'Auto',
+          fixed: 'Fixed',
+        },
+        nowrap: 'No wrap',
+        organizeFields: 'Organize fields',
+        colorMode_tip:
+          'Color mode is the color setting for the "value field". In value mode, the color is applied to the value text; in background mode, the color is applied to the background color of the cell where the field is located.',
       },
       text: {
         textColor: 'TextColor',

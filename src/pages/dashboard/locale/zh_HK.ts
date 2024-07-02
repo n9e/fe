@@ -311,6 +311,15 @@ const zh_HK = {
           cellLink: '單元格連結',
           appendLinkColumn: '追加連結列',
         },
+        tableLayout: {
+          label: '表格佈局',
+          label_tip: '固定佈局下列預設寬度根據列數量等分不會產生橫向捲軸。自動佈局下列預設最大寬度為 150px 表格內容可能會溢位進而產生橫向捲軸。',
+          auto: '自動',
+          fixed: '固定',
+        },
+        nowrap: '單元格不換行',
+        organizeFields: '組織字段',
+        colorMode_tip: '顏色模式是針對 "值欄位" 的顏色設定。值模式下顏色作用於值文字；背景模式下顏色作用於欄位所在儲存格背景色。',
       },
       text: {
         textColor: '文字顏色',

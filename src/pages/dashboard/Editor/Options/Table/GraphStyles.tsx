@@ -47,11 +47,32 @@ export default function GraphStyles({ chartForm, variableConfigWithOptions }) {
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label={t('panel.custom.colorMode')} name={[...namePrefix, 'colorMode']}>
+            <Form.Item label={t('panel.custom.colorMode')} name={[...namePrefix, 'colorMode']} tooltip={t('panel.custom.table.colorMode_tip')}>
               <Radio.Group buttonStyle='solid'>
                 <Radio.Button value='value'>{t('panel.custom.value')}</Radio.Button>
                 <Radio.Button value='background'>{t('panel.custom.background')}</Radio.Button>
               </Radio.Group>
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item label={t('panel.custom.table.nowrap')} name={[...namePrefix, 'nowrap']} valuePropName='checked'>
+              <Switch size='small' />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item label={t('panel.custom.table.tableLayout.label')} name={[...namePrefix, 'tableLayout']} tooltip={t('panel.custom.table.tableLayout.label_tip')}>
+              <Select
+                options={[
+                  {
+                    label: t('panel.custom.table.tableLayout.fixed'),
+                    value: 'fixed',
+                  },
+                  {
+                    label: t('panel.custom.table.tableLayout.auto'),
+                    value: 'auto',
+                  },
+                ]}
+              />
             </Form.Item>
           </Col>
         </Row>
