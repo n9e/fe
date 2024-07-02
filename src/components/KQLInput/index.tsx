@@ -36,7 +36,6 @@ export interface Props {
   value?: string;
   onChange?: (expr?: string) => void;
   executeQuery?: (expr?: string) => void;
-  validateTrigger?: string[];
   completeEnabled?: boolean;
   trigger?: ('onBlur' | 'onEnter')[]; // 触发 onChang 的事件
   placeholder?: string | false;
@@ -52,7 +51,6 @@ export default function index(props: Props) {
     onChange,
     executeQuery,
     readonly = false,
-    validateTrigger = ['onChange', 'onBlur'],
     completeEnabled = true,
     trigger = ['onBlur', 'onEnter'],
     placeholder,
@@ -147,7 +145,7 @@ export default function index(props: Props) {
               const val = update.state.doc.toString();
               if (val !== realValue.current) {
                 realValue.current = val;
-                if (_.includes(validateTrigger, 'onChange')) {
+                if (_.includes(trigger, 'onChange')) {
                   onChange(val);
                 }
                 if (val === '' && viewRef.current) {
