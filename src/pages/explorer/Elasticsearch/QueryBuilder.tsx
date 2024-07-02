@@ -184,6 +184,7 @@ export default function QueryBuilder(props: Props) {
                 date_field: date_field,
               }}
               historicalRecords={getLocalQueryHistory(datasourceValue)}
+              onEnter={onExecute}
             />
           </Form.Item>
         )}
