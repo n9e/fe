@@ -60,7 +60,7 @@ export default function GraphStyles({ chartForm, variableConfigWithOptions }) {
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label={t('panel.custom.table.tableLayout.label')} name={[...namePrefix, 'tableLayout']}>
+            <Form.Item label={t('panel.custom.table.tableLayout.label')} name={[...namePrefix, 'tableLayout']} tooltip={t('panel.custom.table.tableLayout.label_tip')}>
               <Select
                 options={[
                   {
