@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import { createPortal } from 'react-dom';
 import _ from 'lodash';
 import moment from 'moment';
-import queryString, { ParsedQuery } from 'query-string';
+import queryString from 'query-string';
 import { useTranslation } from 'react-i18next';
 import { Table, Empty, Spin, InputNumber, Select, Radio, Space, Checkbox, Tag, Form, Alert } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
@@ -14,7 +14,8 @@ import Timeseries from '@/pages/dashboard/Renderer/Renderer/Timeseries';
 import { CommonStateContext } from '@/App';
 import { PRIMARY_COLOR } from '@/utils/constant';
 import metricQuery from './metricQuery';
-import { getColumnsFromFields, Field, dslBuilder, Filter, getFieldLabel } from './utils';
+import { Field, dslBuilder, Filter, getFieldLabel } from './utils';
+import { getColumnsFromFields } from './utils/getColumnsFromFields';
 import FieldsSidebar from './FieldsSidebar';
 import QueryBuilder from './QueryBuilder';
 import QueryBuilderWithIndexPatterns from './QueryBuilderWithIndexPatterns';
@@ -82,28 +83,6 @@ const ModeRadio = ({ mode, setMode, allowHideSystemIndices, setAllowHideSystemIn
       )}
     </div>
   );
-};
-
-/**
- * 从 URL query 中获取 filter
- * 存在 query_string 时直接作为 filter 值
- * 否则排查掉 data_source_name, data_source_id, index_name, timestamp 之后的参数合并为 filter
- * 合并后的 filter 为 AND 关系
- */
-
-const getFilterByQuery = (query: ParsedQuery<string>) => {
-  if (query?.query_string) {
-    return query?.query_string;
-  } else {
-    const filtersArr: string[] = [];
-    const validParmas = _.omit(query, ['data_source_name', 'data_source_id', 'index_name', 'timestamp']);
-    _.forEach(validParmas, (value, key) => {
-      if (value) {
-        filtersArr.push(`${key}:"${value}"`);
-      }
-    });
-    return _.join(filtersArr, ' AND ');
-  }
 };
 
 const getDefaultMode = (query, isOpenSearch, esIndexMode, value?) => {
@@ -206,6 +185,7 @@ export default function index(props: IProps) {
               return {
                 id: _.uniqueId(),
                 fields: item.fields,
+                highlight: item.highlight,
                 json: item._source,
               };
             });
@@ -496,7 +476,7 @@ export default function index(props: IProps) {
                   className='es-discover-logs-table'
                   tableLayout='fixed'
                   rowKey='id'
-                  columns={getColumnsFromFields(selectedFields, form.getFieldValue(['query']), form.getFieldValue(['fieldConfig']), filters)}
+                  columns={getColumnsFromFields(selectedFields, form.getFieldValue(['query']), form.getFieldValue(['fieldConfig']))}
                   dataSource={data}
                   expandable={{
                     expandedRowRender: (record) => {
