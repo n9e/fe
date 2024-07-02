@@ -47,7 +47,6 @@ const getDefaultValuesByCate = () => {};
 const autoDatasourcetype = [];
 const AuthList = [];
 const extraColumns = () => {};
-
 export {
   AlertRule,
   QueryBuilder,

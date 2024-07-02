@@ -27,6 +27,7 @@ import { DatasourceCateEnum } from '@/utils/constant';
 import { getDefaultValuesByCate } from '../../../utils';
 import Prometheus from './Prometheus';
 import { AlertRule as TDengine } from '@/plugins/TDengine';
+
 // @ts-ignore
 import PlusAlertRule from 'plus:/parcels/AlertRule';
 
@@ -60,6 +61,7 @@ export default function index({ form }) {
                   cate={cate}
                   datasourceList={groupedDatasourceList[cate] || []}
                   mode={cate === 'prometheus' ? 'multiple' : undefined}
+                  showExtra
                 />
               );
             }}

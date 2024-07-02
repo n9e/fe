@@ -17,6 +17,7 @@
 import _ from 'lodash';
 import valueFormatter from './valueFormatter';
 import { IValueMapping, IThresholds } from '../../types';
+import getSerieName from './getSerieName';
 
 const getValueAndToNumber = (value: any[]) => {
   return _.toNumber(_.get(value, 1, NaN));
@@ -104,7 +105,23 @@ export const getMappedTextObj = (textValue: string, valueMappings?: IValueMappin
   };
 };
 
-const getCalculatedValuesBySeries = (series: any[], calc: string, { unit, decimals, dateFormat }, valueMappings?: IValueMapping[], thresholds?: IThresholds) => {
+const getCalculatedValuesBySeries = (
+  series: any[],
+  calc: string,
+  {
+    unit,
+    decimals,
+    dateFormat,
+    valueField,
+  }: {
+    unit?: string;
+    decimals?: number;
+    dateFormat?: string;
+    valueField?: string;
+  },
+  valueMappings?: IValueMapping[],
+  thresholds?: IThresholds,
+) => {
   if (calc === 'origin') {
     let values: any[] = [];
     _.forEach(series, (serie) => {
@@ -146,10 +163,22 @@ const getCalculatedValuesBySeries = (series: any[], calc: string, { unit, decima
       count: () => _.size(serie.data),
     };
     const stat = results[calc] ? results[calc]() : NaN;
+    // 2024-06-28 serie.name 放到这里处理，原 datasource 里的 name 都删除掉
+    // 目前只有 mysql 源生效
+    // name 的处理逻辑为
+    // 1. 如果存在 valueField 则把 valueField 作为 __name__ 的值
+    // 2. 如果存在 legend 则通过 replaceExpressionBracket 转换 name
+    // 3. 如果存在 ref name 则为 ref + name
+    // 4. 最后把 name 通过 valueMappings 转换
+    let name = serie.name;
+    if (!name) {
+      name = getSerieName(serie.metric, { valueField, legend: serie.target?.legend, ref: serie.isExp ? serie.refId : undefined });
+    }
 
     return {
       id: serie.id,
-      name: getMappedTextObj(serie.name, valueMappings)?.text,
+      name: getMappedTextObj(name, valueMappings)?.text,
+      target: serie.target,
       metric: _.reduce(
         serie.metric,
         (pre, curVal, curKey) => {

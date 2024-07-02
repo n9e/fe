@@ -70,3 +70,17 @@ export function useDeepCompareWithRef(value) {
 
   return ref.current;
 }
+
+/**
+ * 判断是否为 raw 数据（一般为日志或是mysql数据）
+ * 用途：表格图里如果是 raw 数据，则在标签模式下不显示 value 列
+ * @param data series data || raw data
+ * @returns boolean
+ */
+export function isRawData(data: any[]) {
+  const head = _.head(data);
+  if (head && head?.target?.query?.mode === 'raw') {
+    return true;
+  }
+  return false;
+}

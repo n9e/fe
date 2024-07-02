@@ -165,7 +165,7 @@ function index(props: IProps) {
         padding: '10px 24px 24px 24px',
       }}
     >
-      {!_.isEmpty(initialValues) && (
+      {initialValues?.datasourceCate && (
         <FormCpt
           ref={formRef}
           initialValues={normalizeInitialValues(initialValues)}

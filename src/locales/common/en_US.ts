@@ -100,6 +100,7 @@ const en_US = {
       copy: 'Copy JSON to clipboard',
     },
   },
+  invalidDatasource: 'Invalid datasource',
 
   tpl: 'Self-healing',
   'tpl.create': 'Create',
