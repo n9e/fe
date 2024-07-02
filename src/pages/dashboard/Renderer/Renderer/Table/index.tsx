@@ -462,11 +462,12 @@ function TableCpt(props: IProps, ref: any) {
         tableColumns = transformColumns(tableColumns, values.transformations);
       }
       return tableColumns;
-    }, [useDeepCompareWithRef(columns), displayMode, useDeepCompareWithRef(calculatedValues), sortObj, themeMode, aggrDimension, overrides, size]),
+    }, [useDeepCompareWithRef(columns), displayMode, useDeepCompareWithRef(calculatedValues), sortObj, themeMode, aggrDimension, overrides, size, tableLayout]),
     columnsState: {
       persistenceType: 'localStorage',
       persistenceKey: `dashboard-table2.1-resizable-${values.id}`,
     },
+    cache: false,
   });
 
   useImperativeHandle(
