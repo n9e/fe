@@ -47,7 +47,7 @@ export default function GraphStyles({ chartForm, variableConfigWithOptions }) {
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label={t('panel.custom.colorMode')} name={[...namePrefix, 'colorMode']}>
+            <Form.Item label={t('panel.custom.colorMode')} name={[...namePrefix, 'colorMode']} tooltip={t('panel.custom.table.colorMode_tip')}>
               <Radio.Group buttonStyle='solid'>
                 <Radio.Button value='value'>{t('panel.custom.value')}</Radio.Button>
                 <Radio.Button value='background'>{t('panel.custom.background')}</Radio.Button>

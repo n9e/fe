@@ -1,5 +1,6 @@
 import React from 'react';
 import { Form } from 'antd';
+import _ from 'lodash';
 import { DatasourceCateEnum } from '@/utils/constant';
 // @ts-ignore
 import * as meta from 'plus:/datasource/mysql/components/Meta';
@@ -9,7 +10,8 @@ export default function index() {
   const datasourceValue = Form.useWatch('datasource_ids');
 
   if (datasourceCate === DatasourceCateEnum.mysql && datasourceValue !== undefined) {
-    return <meta.MetaModal datasourceValue={datasourceValue} />;
+    const realDatasourceValue = _.isArray(datasourceValue) ? _.head(datasourceValue) : datasourceValue;
+    return <meta.MetaModal datasourceValue={realDatasourceValue} />;
   }
   return null;
 }
