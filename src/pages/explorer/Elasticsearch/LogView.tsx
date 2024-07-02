@@ -89,7 +89,7 @@ export default function LogView(props: Props) {
                 const value = _.isArray(fieldVal) ? _.join(fieldVal, ',') : fieldVal;
                 return (
                   <div>
-                    <RenderValue value={value} highlights={highlight[field]} />
+                    <RenderValue value={value} highlights={highlight?.[field]} />
                   </div>
                 );
               },

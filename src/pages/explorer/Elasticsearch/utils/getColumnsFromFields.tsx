@@ -52,7 +52,7 @@ export function getColumnsFromFields(selectedFields: { name: string; type: strin
                 const value = _.isArray(val) ? _.join(val, ',') : getFieldValue(key, val, fieldConfig);
                 return (
                   <React.Fragment key={label}>
-                    <dt>{label}:</dt> <dd dangerouslySetInnerHTML={{ __html: purify.sanitize(getHighlightHtml(value, highlight[key])) }}></dd>
+                    <dt>{label}:</dt> <dd dangerouslySetInnerHTML={{ __html: purify.sanitize(getHighlightHtml(value, highlight?.[key])) }}></dd>
                   </React.Fragment>
                 );
               })}
@@ -73,7 +73,7 @@ export function getColumnsFromFields(selectedFields: { name: string; type: strin
           const { highlight } = record;
           const fieldVal = getFieldValue(item.name, fields[fieldKey], fieldConfig);
           const value = _.isArray(fieldVal) ? _.join(fieldVal, ',') : fieldVal;
-          return <RenderValue value={value} highlights={highlight[fieldKey]} />;
+          return <RenderValue value={value} highlights={highlight?.[fieldKey]} />;
         },
         sorter: _.includes(['date', 'number'], typeMap[item.type])
           ? {
