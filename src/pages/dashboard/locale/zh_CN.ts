@@ -327,6 +327,7 @@ const zh_CN = {
         },
         nowrap: '单元格不换行',
         organizeFields: '字段整理',
+        colorMode_tip: '颜色模式是针对 "值字段" 的颜色设置。值模式下颜色作用于值文字；背景模式下颜色作用于字段所在单元格背景色。',
       },
       text: {
         textColor: '文字颜色',
