@@ -478,7 +478,7 @@ export default function index(props: IProps) {
                   dataSource={data}
                   expandable={{
                     expandedRowRender: (record) => {
-                      return <LogView value={record.json} fieldConfig={form.getFieldValue(['fieldConfig'])} fields={fields} />;
+                      return <LogView value={record.json} fieldConfig={form.getFieldValue(['fieldConfig'])} fields={fields} highlight={record.highlight} />;
                     },
                     expandIcon: ({ expanded, onExpand, record }) =>
                       expanded ? <DownOutlined onClick={(e) => onExpand(record, e)} /> : <RightOutlined onClick={(e) => onExpand(record, e)} />,

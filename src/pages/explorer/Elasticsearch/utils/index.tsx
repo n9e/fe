@@ -31,7 +31,7 @@ export function getFieldValue(fieldKey, fieldValue, fieldConfig?: any) {
   return fieldValue;
 }
 
-export function RenderValue({ value, highlights }) {
+export function RenderValue({ value, highlights }: { value: any; highlights: string[] }) {
   const limit = 2; // 18
   const { t } = useTranslation('db_aliyunSLS');
   const [expand, setExpand] = useState(false);
@@ -41,7 +41,6 @@ export function RenderValue({ value, highlights }) {
     return (
       <div style={{ display: 'inline-block', wordBreak: 'break-all' }}>
         {_.map(lines, (v, idx) => {
-          console.log(v, highlights, getHighlightHtml(v, highlights));
           return (
             <div key={idx}>
               <span
@@ -78,7 +77,7 @@ export function RenderValue({ value, highlights }) {
       </div>
     );
   }
-  return <div style={{ display: 'inline-block', wordBreak: 'break-all' }}>{value}</div>;
+  return <div style={{ display: 'inline-block', wordBreak: 'break-all' }} dangerouslySetInnerHTML={{ __html: purify.sanitize(getHighlightHtml(value, highlights)) }}></div>;
 }
 
 interface Mappings {
