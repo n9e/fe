@@ -35,6 +35,7 @@ import {
   ClearOutlined,
 } from '@ant-design/icons';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
+import PanelEmpty from '../components/PanelEmpty';
 import Timeseries from './Timeseries';
 import Stat from './Stat';
 import Table from './Table';
@@ -324,7 +325,7 @@ function index(props: IProps) {
         </div>
         <div className='renderer-body' style={{ height: values.name ? `calc(100% - 34px)` : '100%' }}>
           {_.isEmpty(series) && values.type !== 'text' && values.type !== 'iframe' ? (
-            <div className='renderer-body-content-empty'>No Data</div>
+            <PanelEmpty values={values} />
           ) : (
             <>{RendererCptMap[values.type] ? RendererCptMap[values.type]() : <div className='unknown-type'>{`无效的图表类型 ${values.type}`}</div>}</>
           )}
