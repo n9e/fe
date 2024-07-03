@@ -44,7 +44,7 @@ import Title from './Title';
 import { JSONParse } from '../utils';
 import Editor from '../Editor';
 import { defaultCustomValuesMap, defaultOptionsValuesMap } from '../Editor/config';
-import { sortPanelsByGridLayout, panelsMergeToConfigs, updatePanelsInsertNewPanelToGlobal } from '../Panels/utils';
+import { sortPanelsByGridLayout, panelsMergeToConfigs, updatePanelsInsertNewPanelToGlobal, ajustPanels } from '../Panels/utils';
 import { useGlobalState } from '../globalState';
 import { scrollToLastPanel } from './utils';
 import ajustInitialValues from '../Renderer/utils/ajustInitialValues';
@@ -184,7 +184,7 @@ export default function DetailV2(props: IProps) {
           }) as IVariable[],
         );
         setDashboardLinks(configs.links);
-        setPanels(sortPanelsByGridLayout(configs.panels));
+        setPanels(sortPanelsByGridLayout(ajustPanels(configs.panels)));
         if (cbk) {
           cbk();
         }
