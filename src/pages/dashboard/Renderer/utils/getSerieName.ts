@@ -31,7 +31,7 @@ const getSerieName = (
     return name;
   }
 
-  let name = newMetric['__name__'] || '';
+  let name = newMetric?.['__name__'] || '';
   _.forEach(_.omit(newMetric, '__name__'), (value, key) => {
     name += ` ${key}: ${value}`;
   });
