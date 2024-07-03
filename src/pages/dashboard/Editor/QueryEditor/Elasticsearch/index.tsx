@@ -6,7 +6,7 @@ import ExpressionPanel from '../../Components/ExpressionPanel';
 import AddQueryButtons from '../../Components/AddQueryButtons';
 import QueryPanel from './QueryPanel';
 
-export default function Elasticsearch({ variableConfig, dashboardId }) {
+export default function Elasticsearch({ chartForm, variableConfig, dashboardId }) {
   const targets = Form.useWatch('targets');
 
   return (
