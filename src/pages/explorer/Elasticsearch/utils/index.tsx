@@ -240,6 +240,7 @@ export function dslBuilder(params: {
     interval: string;
     intervalkey: string;
   };
+  shouldHighlight?: boolean;
 }) {
   const syntax = params.syntax || 'lucene';
   const header = {
@@ -276,7 +277,7 @@ export function dslBuilder(params: {
     aggs: {},
   };
   body.track_total_hits = true; //get real hits total
-  body.highlight = getHighlightRequest(true);
+  body.highlight = getHighlightRequest(!!params.shouldHighlight);
   if (params.limit) {
     body.size = params.limit;
   }

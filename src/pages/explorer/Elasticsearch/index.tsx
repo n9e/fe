@@ -178,6 +178,7 @@ export default function index(props: IProps) {
                 ]
               : sorterRef.current,
             _source: true,
+            shouldHighlight: true,
           }),
         )
           .then((res) => {

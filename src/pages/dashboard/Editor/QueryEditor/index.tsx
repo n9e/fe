@@ -44,7 +44,7 @@ export default function index({ chartForm, type, variableConfig, dashboardId, ti
               return <Prometheus chartForm={chartForm} variableConfig={variableConfig} dashboardId={dashboardId} time={time} />;
             }
             if (cate === DatasourceCateEnum.elasticsearch) {
-              return <Elasticsearch chartForm={chartForm} variableConfig={variableConfig} dashboardId={dashboardId} />;
+              return <Elasticsearch variableConfig={variableConfig} dashboardId={dashboardId} />;
             }
             if (cate === DatasourceCateEnum.tdengine) {
               return <TDengine chartForm={chartForm} variableConfig={variableConfig} dashboardId={dashboardId} />;

@@ -1,7 +1,10 @@
 import _ from 'lodash';
+import { buildESQueryFromKuery } from '@fc-components/es-query';
 import { ElasticsearchQuery } from './types';
 
 export function getLogsQuery(target: ElasticsearchQuery) {
+  target = _.cloneDeep(target);
+  target.syntax = target.syntax || 'lucene'; // 兼容旧数据没有 syntax 字段
   const queryObj: any = {
     size: target.limit,
     query: {
@@ -31,15 +34,18 @@ export function getLogsQuery(target: ElasticsearchQuery) {
     aggs: {},
   };
   if (target.filter && target.filter !== '') {
-    queryObj.query.bool.filter = [
-      ...queryObj.query.bool.filter,
-      {
+    if (target.syntax === 'lucene') {
+      queryObj.query.bool.filter = _.concat(queryObj.query.bool.filter, {
         query_string: {
           analyze_wildcard: true,
-          query: target.filter,
+          query: target.filter || '*',
         },
-      },
-    ];
+      });
+    }
+    if (target.syntax === 'kuery' && target.filter) {
+      const query = buildESQueryFromKuery(target.filter);
+      queryObj.query.bool.filter = _.concat(queryObj.query.bool.filter, query.filter);
+    }
   }
   return queryObj;
 }
@@ -48,6 +54,7 @@ export function getSeriesQuery(target: ElasticsearchQuery, intervalkey: string) 
   target = _.cloneDeep(target);
   target.values = target.values || [{ func: 'count' }];
   target.group_by = target.group_by || [{ cate: 'date_histogram' }];
+  target.syntax = target.syntax || 'lucene'; // 兼容旧数据没有 syntax 字段
 
   if (!_.find(target.group_by, { cate: 'date_histogram' })) {
     target.group_by = [...target.group_by, { cate: 'date_histogram' }];
@@ -73,15 +80,18 @@ export function getSeriesQuery(target: ElasticsearchQuery, intervalkey: string) 
   };
 
   if (target.filter && target.filter !== '') {
-    queryObj.query.bool.filter = [
-      ...queryObj.query.bool.filter,
-      {
+    if (target.syntax === 'lucene') {
+      queryObj.query.bool.filter = _.concat(queryObj.query.bool.filter, {
         query_string: {
           analyze_wildcard: true,
-          query: target.filter,
+          query: target.filter || '*',
         },
-      },
-    ];
+      });
+    }
+    if (target.syntax === 'kuery' && target.filter) {
+      const query = buildESQueryFromKuery(target.filter);
+      queryObj.query.bool.filter = _.concat(queryObj.query.bool.filter, query.filter);
+    }
   }
 
   let nestedAggs = queryObj;
