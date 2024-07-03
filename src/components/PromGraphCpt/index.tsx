@@ -60,6 +60,7 @@ interface IProps {
   showBuilder?: boolean;
   onChange?: (promQL?: string) => void;
   promQLInputTooltip?: string;
+  extra?: React.ReactElement;
 }
 
 const TabPane = Tabs.TabPane;
@@ -90,6 +91,7 @@ export default function index(props: IProps) {
     showBuilder = true,
     onChange,
     promQLInputTooltip,
+    extra,
   } = props;
   const [value, setValue] = useState<string | undefined>(promQL); // for promQLInput
   const [promql, setPromql] = useState<string | undefined>(promQL);
@@ -219,6 +221,23 @@ export default function index(props: IProps) {
               >
                 {t('builder_btn')}
               </Button>
+            </span>
+          )}
+          {extra && (
+            <span
+              className='ant-input-group-addon'
+              style={{
+                border: 0,
+                padding: '0 0 0 10px',
+                background: 'none',
+              }}
+            >
+              {React.cloneElement(extra as React.ReactElement, {
+                onChange: (newValue?: string) => {
+                  setValue(newValue);
+                  setPromql(newValue);
+                },
+              })}
             </span>
           )}
           <span

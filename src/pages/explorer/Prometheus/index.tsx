@@ -7,6 +7,9 @@ import { FormInstance } from 'antd/lib/form/Form';
 import PromGraph from '@/components/PromGraphCpt';
 import { IRawTimeRange, timeRangeUnix, isMathString } from '@/components/TimeRangePicker';
 import { queryStringOptions } from '../constants';
+import HistoricalRecords, { setLocalQueryHistory } from './HistoricalRecords';
+
+const LOCAL_KEY = 'n9e-query-promql-history';
 
 type IMode = 'table' | 'graph';
 interface IProps {
@@ -20,7 +23,7 @@ interface IProps {
   defaultUnit?: string;
   showGlobalMetrics?: boolean;
   showBuilder?: boolean;
-  onChange?: (promQL: string) => void;
+  onChange?: (promQL?: string) => void;
   promQLInputTooltip?: string;
   graphStandardOptionsType?: 'vertical' | 'horizontal';
   defaultType?: IMode; // 受控的 mode 和 querystring (mode) 是互斥的
@@ -94,8 +97,11 @@ export default function Prometheus(props: IProps) {
       graphOperates={{ enabled: true }}
       globalOperates={{ enabled: true }}
       headerExtra={headerExtra}
-      executeQuery={() => {
+      executeQuery={(newPromQL) => {
         form.validateFields();
+        if (newPromQL) {
+          setLocalQueryHistory(`${LOCAL_KEY}-${datasourceValue}`, newPromQL);
+        }
       }}
       showBuiltinMetrics={showBuiltinMetrics}
       graphStandardOptionsType={graphStandardOptionsType}
@@ -109,6 +115,7 @@ export default function Prometheus(props: IProps) {
           onDefaultTypeChange(newType);
         }
       }}
+      extra={<HistoricalRecords localKey={LOCAL_KEY} datasourceValue={datasourceValue} />}
     />
   );
 }
