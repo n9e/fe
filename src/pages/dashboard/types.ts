@@ -49,6 +49,7 @@ export type IType = 'row' | 'timeseries' | 'stat' | 'table' | 'pie' | 'hexbin' |
 export interface IValueMapping {
   match: {
     special?: string | number;
+    specialValue?: string | number;
     from?: number;
     to?: number;
   };
