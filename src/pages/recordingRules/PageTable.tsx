@@ -150,11 +150,8 @@ const PageTable: React.FC<Props> = () => {
         },
       },
       {
-        title: t('prom_eval_interval'),
-        dataIndex: 'prom_eval_interval',
-        render: (data) => {
-          return data + 's';
-        },
+        title: t('cron_pattern'),
+        dataIndex: 'cron_pattern',
       },
       {
         title: t('append_tags'),
