@@ -54,6 +54,7 @@ export default function useQuery(props: IProps) {
   const [series, setSeries] = useState<any[]>([]);
   const [query, setQuery] = useState<any[]>([]);
   const [error, setError] = useState('');
+  const [loaded, setLoaded] = useState(false);
   const [loading, setLoading] = useState(false);
   const cachedVariableValues = _.map(variableConfig, (item) => {
     return getVaraiableSelected(item.name, item.type, dashboardId);
@@ -98,6 +99,7 @@ export default function useQuery(props: IProps) {
         })
         .finally(() => {
           setLoading(false);
+          setLoaded(true);
         });
     },
     {
@@ -134,5 +136,5 @@ export default function useQuery(props: IProps) {
     setSeries(_series);
   }, [JSON.stringify(_.map(targets, 'legend'))]);
 
-  return { query, series, error, loading };
+  return { query, series, error, loading, loaded };
 }
