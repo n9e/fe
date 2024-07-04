@@ -82,7 +82,7 @@ function index(props: IProps) {
   const bodyWrapRef = useRef<HTMLDivElement>(null);
   const [inViewPort] = useInViewport(ref);
   const [inspect, setInspect] = useState(false);
-  const { query, series, error, loading } = useQuery({
+  const { query, series, error, loading, loaded } = useQuery({
     id,
     dashboardId,
     time,
@@ -323,13 +323,15 @@ function index(props: IProps) {
             )}
           </div>
         </div>
-        <div className='renderer-body' style={{ height: values.name ? `calc(100% - 34px)` : '100%' }}>
-          {_.isEmpty(series) && values.type !== 'text' && values.type !== 'iframe' ? (
-            <PanelEmpty values={values} />
-          ) : (
-            <>{RendererCptMap[values.type] ? RendererCptMap[values.type]() : <div className='unknown-type'>{`无效的图表类型 ${values.type}`}</div>}</>
-          )}
-        </div>
+        {loaded && (
+          <div className='renderer-body' style={{ height: values.name ? `calc(100% - 34px)` : '100%' }}>
+            {_.isEmpty(series) && values.type !== 'text' && values.type !== 'iframe' ? (
+              <PanelEmpty values={values} />
+            ) : (
+              <>{RendererCptMap[values.type] ? RendererCptMap[values.type]() : <div className='unknown-type'>{`无效的图表类型 ${values.type}`}</div>}</>
+            )}
+          </div>
+        )}
       </div>
       <Drawer
         title={t('panel.inspect.title')}
