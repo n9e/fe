@@ -82,6 +82,7 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
           batchLogParams.push({
             index: query.index,
             filter,
+            syntax: query.syntax,
             date_field: query.date_field,
             limit: query.limit,
             start,
@@ -92,6 +93,7 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
             batchDsParams.push({
               index: query.index,
               filter,
+              syntax: query.syntax,
               values: query?.values,
               group_by: query.group_by,
               date_field: query.date_field,
@@ -109,6 +111,7 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
                   ref: target.refId,
                   index: query.index,
                   filter,
+                  syntax: query.syntax,
                   value: item,
                   group_by: query.group_by,
                   date_field: query.date_field,

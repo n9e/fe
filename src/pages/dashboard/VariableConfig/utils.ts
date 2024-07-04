@@ -1,6 +1,18 @@
 import _ from 'lodash';
 
-export function normalizeESQueryRequestBody(params: any, date_field: string | undefined, start: number, end: number) {
+export function normalizeESQueryRequestBody(
+  params: {
+    find: string;
+    field: string;
+    query?: string;
+    size?: number;
+    orderBy?: string;
+    order?: string;
+  },
+  date_field: string | undefined,
+  start: number,
+  end: number,
+) {
   let orderBy = '_key';
   if (params?.orderBy === 'doc_count') {
     orderBy = '_count';
@@ -24,8 +36,8 @@ export function normalizeESQueryRequestBody(params: any, date_field: string | un
     },
     aggs: {
       A: {
-        [params?.find]: {
-          field: `${params?.field}`,
+        [params.find]: {
+          field: `${params.field}`,
           size: params.size || 500,
           order: {
             [orderBy]: params.order || 'desc',

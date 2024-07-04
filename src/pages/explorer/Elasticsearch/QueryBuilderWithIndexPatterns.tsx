@@ -8,6 +8,8 @@ import TimeRangePicker from '@/components/TimeRangePicker';
 import { getESIndexPatterns } from '@/pages/log/IndexPatterns/services';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import AuthorizationWrapper, { useIsAuthorized } from '@/components/AuthorizationWrapper';
+import KQLInput from '@/components/KQLInput';
+import { getLocalQueryHistory, setLocalQueryHistory } from '@/components/KQLInput/utils';
 import { getFullFields, Field } from './services';
 import InputFilter from './InputFilter';
 import { Link, useLocation } from 'react-router-dom';
@@ -27,13 +29,16 @@ export default function QueryBuilder(props: Props) {
   const { onExecute, datasourceValue, form, setFields, onIndexChange, loading } = props;
   const [indexPatterns, setIndexPatterns] = useState<any[]>([]);
   const indexPattern = Form.useWatch(['query', 'indexPattern']);
+  const indexPatternObj = _.find(indexPatterns, (item) => item.id === indexPattern);
+  const date_field = Form.useWatch(['query', 'date_field']);
+  const syntax = Form.useWatch(['query', 'syntax']);
   const indexPatternsAuthorized = useIsAuthorized(['/log/index-patterns']);
   const [allFields, setAllFields] = useState<Field[]>([]);
   const refInputFilter = useRef<any>();
   const { run: onIndexPatternChange } = useDebounceFn(
     (indexPattern) => {
       if (datasourceValue && indexPattern) {
-        const finded = indexPatterns.find(i=> i.id=== indexPattern || i.name===indexPattern); //从url上带过来时indexPattern不是id，是name，兼容下这种情况
+        const finded = indexPatterns.find((i) => i.id === indexPattern || i.name === indexPattern); //从url上带过来时indexPattern不是id，是name，兼容下这种情况
         if (finded) {
           const formValuesQuery = form.getFieldValue('query');
           let fieldConfig;
@@ -153,15 +158,61 @@ export default function QueryBuilder(props: Props) {
           label={
             <>
               {t('datasource:es.filter')}{' '}
-              <a href='https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax ' target='_blank'>
+              <a
+                href={
+                  syntax === 'Lucene'
+                    ? 'https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax'
+                    : 'https://www.elastic.co/guide/en/kibana/current/kuery-query.html'
+                }
+                target='_blank'
+              >
                 <QuestionCircleOutlined />
               </a>
             </>
           }
+          addonAfter={
+            <Form.Item name={['query', 'syntax']} noStyle initialValue='lucene'>
+              <Select
+                bordered={false}
+                options={[
+                  {
+                    label: 'Lucene',
+                    value: 'lucene',
+                  },
+                  {
+                    label: 'KQL',
+                    value: 'kuery',
+                  },
+                ]}
+                dropdownMatchSelectWidth={false}
+                onChange={() => {
+                  form.setFieldsValue({
+                    query: {
+                      filter: '',
+                    },
+                  });
+                }}
+              />
+            </Form.Item>
+          }
         >
-          <Form.Item name={['query', 'filter']} style={{ minWidth: 300 }}>
-            <InputFilter fields={allFields} ref={refInputFilter} onExecute={onExecute} />
-          </Form.Item>
+          {syntax === 'lucene' ? (
+            <Form.Item name={['query', 'filter']}>
+              <InputFilter fields={allFields} ref={refInputFilter} onExecute={onExecute} />
+            </Form.Item>
+          ) : (
+            <Form.Item name={['query', 'filter']}>
+              <KQLInput
+                datasourceValue={datasourceValue}
+                query={{
+                  index: indexPatternObj?.name,
+                  date_field: date_field,
+                }}
+                historicalRecords={getLocalQueryHistory(datasourceValue)}
+                onEnter={onExecute}
+              />
+            </Form.Item>
+          )}
         </InputGroupWithFormItem>
         <Form.Item name={['query', 'range']} initialValue={{ start: 'now-1h', end: 'now' }}>
           <TimeRangePicker
@@ -169,6 +220,7 @@ export default function QueryBuilder(props: Props) {
               if (refInputFilter.current) {
                 refInputFilter.current.onCallback();
               }
+              setLocalQueryHistory(datasourceValue, form.getFieldValue(['query', 'filter']));
               onExecute();
             }}
           />
@@ -181,6 +233,7 @@ export default function QueryBuilder(props: Props) {
               if (refInputFilter.current) {
                 refInputFilter.current.onCallback();
               }
+              setLocalQueryHistory(datasourceValue, form.getFieldValue(['query', 'filter']));
               onExecute();
             }}
           >

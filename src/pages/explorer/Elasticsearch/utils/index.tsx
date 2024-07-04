@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
+import purify from 'dompurify';
 import { useTranslation } from 'react-i18next';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
-import { measureTextWidth } from '@ant-design/plots';
-import flatten from './flatten';
-
-function localeCompareFunc(a, b) {
-  return a.localeCompare(b);
-}
+import { buildESQueryFromKuery } from '@fc-components/es-query';
+import flatten from '../flatten';
+import { getHighlightRequest, getHighlightHtml } from './highlight';
 
 export function getFieldLabel(fieldKey: string, fieldConfig?: any) {
   return fieldConfig?.attrs?.[fieldKey]?.alias || fieldKey;
@@ -33,31 +31,32 @@ export function getFieldValue(fieldKey, fieldValue, fieldConfig?: any) {
   return fieldValue;
 }
 
-export function normalizeLogs(logs: { [index: string]: string }, fieldConfig?: any) {
-  const logsClone = _.cloneDeep(logs);
-  _.forEach(logsClone, (item, key) => {
-    const label = getFieldLabel(key, fieldConfig);
-    logsClone[label] = getFieldValue(key, item, fieldConfig);
-    if (label !== key) {
-      delete logsClone[key];
-    }
-  });
-  return logsClone;
-}
-
-export function RenderValue({ value }) {
+export function RenderValue({ value, highlights }: { value: any; highlights: string[] }) {
+  const limit = 2; // 18
   const { t } = useTranslation('db_aliyunSLS');
   const [expand, setExpand] = useState(false);
   if (typeof value === 'string' && value.indexOf('\n') > -1) {
     const valArr = value.split('\n');
-    const lines = !expand ? _.slice(valArr, 0, 18) : valArr;
+    const lines = !expand ? _.slice(valArr, 0, limit) : valArr;
     return (
       <div style={{ display: 'inline-block', wordBreak: 'break-all' }}>
         {_.map(lines, (v, idx) => {
           return (
             <div key={idx}>
-              {v}
-              {idx === lines.length - 1 && valArr.length > 18 && (
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: purify.sanitize(
+                    getHighlightHtml(
+                      v,
+                      _.map(highlights, (item) => {
+                        const itemArr = _.split(item, '\n');
+                        return itemArr[idx];
+                      }),
+                    ),
+                  ),
+                }}
+              />
+              {idx === lines.length - 1 && valArr.length > limit && (
                 <a
                   onClick={() => {
                     setExpand(!expand);
@@ -78,103 +77,7 @@ export function RenderValue({ value }) {
       </div>
     );
   }
-  return <div style={{ display: 'inline-block', wordBreak: 'break-all' }}>{value}</div>;
-}
-
-export function getColumnsFromFields(selectedFields: { name: string; type: string }[], dateField?: string, fieldConfig?: any, filters?: any[]) {
-  let columns: any[] = [];
-  if (_.isEmpty(selectedFields)) {
-    columns = [
-      {
-        title: 'Document',
-        dataIndex: 'fields',
-        render(text) {
-          const fields = _.cloneDeep(text);
-          _.forEach(fields, (value, key) => {
-            if (value === undefined || value === null || value === '') {
-              delete fields[key];
-            }
-          });
-          return (
-            <dl className='es-discover-logs-row'>
-              {_.map(fields, (val, key) => {
-                const label = getFieldLabel(key, fieldConfig);
-                const value = _.isArray(val) ? _.join(val, ',') : getFieldValue(key, val, fieldConfig);
-                return (
-                  <React.Fragment key={label}>
-                    <dt>{label}:</dt> <dd>{_.find(filters, { key, value: val, operator: 'is' }) ? <mark>{value}</mark> : value}</dd>
-                  </React.Fragment>
-                );
-              })}
-            </dl>
-          );
-        },
-      },
-    ];
-  } else {
-    columns = _.map(selectedFields, (item, idx) => {
-      const fieldKey = item.name;
-      const label: string = getFieldLabel(fieldKey, fieldConfig);
-      return {
-        title: getFieldLabel(fieldKey, fieldConfig),
-        dataIndex: 'fields',
-        key: fieldKey,
-        render: (fields) => {
-          const fieldVal = getFieldValue(item.name, fields[fieldKey], fieldConfig);
-          const value = _.isArray(fieldVal) ? _.join(fieldVal, ',') : fieldVal;
-          return (
-            <div
-              style={
-                {
-                  // minWidth: measureTextWidth(label) + 30, // sorter width
-                }
-              }
-            >
-              {_.find(filters, { key: fieldKey, value: fields[fieldKey], operator: 'is' }) ? (
-                <mark>
-                  <RenderValue value={value} />
-                </mark>
-              ) : (
-                <RenderValue value={value} />
-              )}
-            </div>
-          );
-        },
-        sorter: _.includes(['date', 'number'], typeMap[item.type])
-          ? {
-              multiple: idx + 2,
-              compare: (a, b) => localeCompareFunc(_.join(_.get(a, `fields[${item}]`, '')), _.join(_.get(b, `fields[${item}]`, ''))),
-            }
-          : false,
-      };
-    });
-  }
-  if (dateField) {
-    columns.unshift({
-      title: 'Time',
-      dataIndex: 'fields',
-      key: dateField,
-      width: 200,
-      render: (fields) => {
-        const format = fieldConfig?.formatMap?.[dateField];
-        return getFieldValue(dateField, fields[dateField], {
-          formatMap: {
-            [dateField]: {
-              type: 'date',
-              params: {
-                pattern: format?.params?.pattern || 'YYYY-MM-DD HH:mm:ss',
-              },
-            },
-          },
-        });
-      },
-      defaultSortOrder: 'descend',
-      sorter: {
-        multiple: 1,
-      },
-    });
-  }
-  return columns;
+  return <div style={{ display: 'inline-block', wordBreak: 'break-all' }} dangerouslySetInnerHTML={{ __html: purify.sanitize(getHighlightHtml(value, highlights)) }}></div>;
 }
 
 interface Mappings {
@@ -321,7 +224,9 @@ export function dslBuilder(params: {
   start: number;
   end: number;
   filters?: Filter[];
+  syntax?: string; // lucene | kuery
   query_string?: string;
+  kuery?: string;
   limit?: number;
   order?: string;
   orderField?: string;
@@ -335,7 +240,9 @@ export function dslBuilder(params: {
     interval: string;
     intervalkey: string;
   };
+  shouldHighlight?: boolean;
 }) {
+  const syntax = params.syntax || 'lucene';
   const header = {
     search_type: 'query_then_fetch',
     ignore_unavailable: true,
@@ -370,6 +277,7 @@ export function dslBuilder(params: {
     aggs: {},
   };
   body.track_total_hits = true; //get real hits total
+  body.highlight = getHighlightRequest(!!params.shouldHighlight);
   if (params.limit) {
     body.size = params.limit;
   }
@@ -415,13 +323,17 @@ export function dslBuilder(params: {
       }
     });
   }
-  if (params.query_string) {
+  if (syntax === 'lucene') {
     body.query.bool.filter.push({
       query_string: {
         analyze_wildcard: true,
         query: params.query_string || '*',
       },
     });
+  }
+  if (syntax === 'kuery' && params.kuery) {
+    const query = buildESQueryFromKuery(params.kuery);
+    body.query.bool.filter = _.concat(body.query.bool.filter, query.filter);
   }
   if (params.date_histogram) {
     _.set(body, 'aggs.A', {

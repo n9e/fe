@@ -1,6 +1,7 @@
 export interface ElasticsearchQuery {
   index: string;
   filter: string;
+  syntax?: string; // lucene | kuery
   date_field: string;
   interval?: string; // TODO: 是否可以为空？
   values: {
