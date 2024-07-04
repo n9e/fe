@@ -197,6 +197,7 @@ export default function index(props: IProps) {
           })
           .finally(() => {
             setLoading(false);
+            setErrorContent(undefined);
           });
         fetchSeries(values);
       } catch (e: any) {
