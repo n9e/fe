@@ -5,7 +5,7 @@ import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import './style.less';
 
-const LIMIT = 10;
+const LIMIT = 100;
 
 export const setLocalQueryHistory = (localKey: string, query: string) => {
   if (!query) return;
