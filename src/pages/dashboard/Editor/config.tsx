@@ -158,8 +158,8 @@ export const defaultCustomValuesMap = {
     colorMode: 'value',
     calc: 'lastNotNull',
     displayMode: 'seriesToRows',
-    tableLayout: 'fixed',
-    nowrap: false,
+    tableLayout: 'auto',
+    nowrap: true,
   },
   hexbin: {
     textMode: 'valueAndName',

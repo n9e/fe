@@ -338,3 +338,19 @@ export function processRepeats(panels: IPanel[], variables: IVariable[]) {
   const newPanels = sortPanelsByGridLayout(panelsClone);
   return newPanels;
 }
+
+export function ajustPanels(panels: IPanel[]) {
+  return _.map(panels, (panel) => {
+    if (panel.type === 'table') {
+      return {
+        ...panel,
+        custom: {
+          ...panel.custom,
+          tableLayout: panel.custom.tableLayout !== undefined ? panel.custom.tableLayout : 'fixed',
+          nowrap: panel.custom.nowrap !== undefined ? panel.custom.nowrap : false,
+        },
+      };
+    }
+    return panel;
+  });
+}
