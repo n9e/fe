@@ -8,6 +8,7 @@ import { addOrEditRecordingRule, editRecordingRule, deleteRecordingRule } from '
 import { PromQLInputWithBuilder } from '@/components/PromQLInput';
 import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
 import { CommonStateContext } from '@/App';
+import CronPattern from './CronPattern';
 
 const DATASOURCE_ALL = 0;
 
@@ -127,7 +128,6 @@ const operateForm: React.FC<Props> = ({ type, detail = {} }) => {
           className='strategy-form'
           layout='vertical'
           initialValues={{
-            prom_eval_interval: 30,
             ...detail,
             datasource_ids: detail.datasource_ids || [DATASOURCE_ALL],
           }}
@@ -170,29 +170,7 @@ const operateForm: React.FC<Props> = ({ type, detail = {} }) => {
                 );
               }}
             </Form.Item>
-
-            <Form.Item required label={t('prom_eval_interval')} tooltip={t('prom_eval_interval_tip', { num: form.getFieldValue('prom_eval_interval') })}>
-              <Space>
-                <Form.Item
-                  style={{ marginBottom: 0 }}
-                  name='prom_eval_interval'
-                  initialValue={30}
-                  rules={[
-                    {
-                      required: true,
-                    },
-                  ]}
-                >
-                  <InputNumber
-                    min={1}
-                    onChange={() => {
-                      setRefresh(!refresh);
-                    }}
-                  />
-                </Form.Item>
-                s
-              </Space>
-            </Form.Item>
+            <CronPattern />
             <Form.Item label={t('append_tags')} name='append_tags' rules={[isValidFormat]}>
               <Select mode='tags' tokenSeparators={[' ']} open={false} placeholder={t('append_tags_placeholder')} tagRender={tagRender} />
             </Form.Item>
