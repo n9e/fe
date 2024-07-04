@@ -4,6 +4,7 @@ import { Form, Input, InputNumber, Select, Tag, Space, Tooltip, Modal, Switch } 
 import { QuestionCircleFilled } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { CommonStateContext } from '@/App';
+import CronPattern from './CronPattern';
 
 const { Option } = Select;
 const layout = {
@@ -23,7 +24,7 @@ const fields = [
   },
   {
     id: 5,
-    field: 'prom_eval_interval',
+    field: 'cron_pattern',
     name: '执行频率',
   },
   {
@@ -138,7 +139,6 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish }) => {
           className='strategy-form'
           layout={refresh ? 'horizontal' : 'horizontal'}
           initialValues={{
-            prom_eval_interval: 15,
             datasource_ids: [0],
             field: 'datasource_ids',
             enable_status: true,
@@ -189,25 +189,10 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish }) => {
                   </>
                 );
 
-              case 'prom_eval_interval':
+              case 'cron_pattern':
                 return (
                   <>
-                    <Form.Item label={t('batch.update.changeto')}>
-                      <Space>
-                        <Form.Item style={{ marginBottom: 0 }} name='prom_eval_interval' initialValue={15} wrapperCol={{ span: 10 }}>
-                          <InputNumber
-                            min={1}
-                            onChange={() => {
-                              setRefresh(!refresh);
-                            }}
-                          />
-                        </Form.Item>
-                        s
-                        <Tooltip title={t('batch.update.prom_eval_interval_tip', { num: form.getFieldValue('prom_eval_interval') })}>
-                          <QuestionCircleFilled />
-                        </Tooltip>
-                      </Space>
-                    </Form.Item>
+                    <CronPattern label={t('batch.update.changeto')} />
                   </>
                 );
               case 'disabled':
