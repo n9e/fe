@@ -16,11 +16,12 @@ interface Props {
   value: Record<string, any>;
   fieldConfig: any;
   fields: Field[];
+  highlight: any;
 }
 
 export default function LogView(props: Props) {
   const { t } = useTranslation('explorer');
-  const { value, fieldConfig, fields } = props;
+  const { value, fieldConfig, fields, highlight } = props;
   const [type, setType] = useState<string>('table');
   let jsonValue = '';
   try {
@@ -88,7 +89,7 @@ export default function LogView(props: Props) {
                 const value = _.isArray(fieldVal) ? _.join(fieldVal, ',') : fieldVal;
                 return (
                   <div>
-                    <RenderValue value={value} />
+                    <RenderValue value={value} highlights={highlight?.[field]} />
                   </div>
                 );
               },

@@ -15,7 +15,24 @@
  *
  */
 import React from 'react';
+import KQLInput from '@/components/KQLInput';
 
 export default function Demo() {
-  return null;
+  return (
+    <div
+      style={{
+        padding: 100,
+      }}
+    >
+      <KQLInput
+        datasourceValue={81}
+        query={{
+          index: 'log_with_message_*',
+          date_field: '@timestamp',
+        }}
+        historicalRecords={[]}
+        value=''
+      />
+    </div>
+  );
 }
