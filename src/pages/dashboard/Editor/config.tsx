@@ -134,6 +134,8 @@ export const defaultCustomValuesMap = {
     scaleDistribution: {
       type: 'linear',
     },
+    showPoints: 'none',
+    pointSize: 5,
   },
   stat: {
     textMode: 'valueAndName',
