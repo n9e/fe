@@ -362,6 +362,10 @@ const en_US = {
             off: 'Off',
           },
         },
+        showPoints: 'Show points',
+        showPoints_always: 'Always',
+        showPoints_none: 'None',
+        pointSize: 'Point size',
       },
       iframe: {
         src: 'Src',

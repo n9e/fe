@@ -370,6 +370,10 @@ const zh_HK = {
             off: '關閉',
           },
         },
+        showPoints: '點顯示',
+        showPoints_always: '顯示',
+        showPoints_none: '不顯示',
+        pointSize: '點大小',
       },
       iframe: {
         src: 'iframe 地址',

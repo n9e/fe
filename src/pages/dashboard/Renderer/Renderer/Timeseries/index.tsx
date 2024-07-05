@@ -124,7 +124,7 @@ export default function index(props: IProps) {
   const history = useHistory();
   const location = useLocation();
   const { custom, options = {}, targets, overrides } = values;
-  const { lineWidth = 1, gradientMode = 'none', scaleDistribution } = custom;
+  const { lineWidth = 1, gradientMode = 'none', scaleDistribution, showPoints, pointSize } = custom;
   const [seriesData, setSeriesData] = useState<any[]>([]);
   const [activeLegend, setActiveLegend] = useState('');
   const chartEleRef = useRef<HTMLDivElement>(null);
@@ -234,6 +234,8 @@ export default function index(props: IProps) {
         series: _.cloneDeep(seriesData),
         line: {
           width: lineWidth,
+          showPoints,
+          pointSize,
         },
         area: {
           ...chartRef.current.options.area,
