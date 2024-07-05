@@ -59,5 +59,9 @@ const en_US = {
       emptyText: 'No export records yet, please click to query logs and then click download',
     },
   },
+  historicalRecords: {
+    button: 'Historical Records',
+    searchPlaceholder: 'Search historical records',
+  },
 };
 export default en_US;

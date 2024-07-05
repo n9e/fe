@@ -59,5 +59,9 @@ const zh_CN = {
       emptyText: '暂无导出记录，请点击查询日志，然后点击下载',
     },
   },
+  historicalRecords: {
+    button: '历史记录',
+    searchPlaceholder: '搜索历史记录',
+  },
 };
 export default zh_CN;

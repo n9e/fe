@@ -59,6 +59,10 @@ const zh_HK = {
       emptyText: '暫無導出記錄，請點擊查詢日誌，然後點擊下載',
     },
   },
+  historicalRecords: {
+    button: '歷史記錄',
+    searchPlaceholder: '搜索歷史記錄',
+  },
 };
 
 export default zh_HK;

@@ -76,7 +76,7 @@ interface Props {
 }
 
 export default function index({ localKey, datasourceValue, onChange }: Props) {
-  const { t } = useTranslation('db_mysql');
+  const { t } = useTranslation('explorer');
   const [search, setSearch] = useState('');
   const [visible, setVisible] = useState(false);
   const historicalRecords = useMemo(() => getLocalQueryHistory(`${localKey}-${datasourceValue}`), [datasourceValue, visible]);
@@ -89,7 +89,7 @@ export default function index({ localKey, datasourceValue, onChange }: Props) {
       }}
       content={
         <div className='n9e-historical-records-popover-content'>
-          <Input placeholder={t('query.historicalRecords.searchPlaceholder')} value={search} onChange={(e) => setSearch(e.target.value)} />
+          <Input placeholder={t('historicalRecords.searchPlaceholder')} value={search} onChange={(e) => setSearch(e.target.value)} />
           <div className='n9e-historical-records-popover-content-records-content'>
             {_.map(historicalRecords, (item) => {
               if (!search || item[0].includes(search)) {
@@ -118,7 +118,7 @@ export default function index({ localKey, datasourceValue, onChange }: Props) {
             lineHeight: '36px',
           }}
         >
-          {t('query.historicalRecords.button')}
+          {t('historicalRecords.button')}
         </div>
       }
       trigger='click'
@@ -129,7 +129,7 @@ export default function index({ localKey, datasourceValue, onChange }: Props) {
           setVisible(true);
         }}
       >
-        {t('query.historicalRecords.button')}
+        {t('historicalRecords.button')}
       </Button>
     </Popover>
   );
