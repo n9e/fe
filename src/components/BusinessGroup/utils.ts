@@ -114,13 +114,15 @@ export function getDefaultBusiness(busiGroups) {
   let defaultBusinessGroupKey = getDefaultBusinessGroupKey();
   let ids = getCleanBusinessGroupIds(defaultBusinessGroupKey);
   let idsArr = _.map(_.compact(_.split(ids, ',')), _.toNumber);
-  const isValid = _.every(idsArr, (id) => {
-    if (!_.find(busiGroups, { id })) {
-      window.localStorage.removeItem('businessGroupKey');
-      return false;
-    }
-    return true;
-  });
+  const isValid = !_.isEmpty(idsArr)
+    ? _.every(idsArr, (id) => {
+        if (!_.find(busiGroups, { id })) {
+          window.localStorage.removeItem('businessGroupKey');
+          return false;
+        }
+        return true;
+      })
+    : false;
   // 缓存的节点信息无效时，取第一个节点
   if (!isValid) {
     defaultBusinessGroupKey = busiGroups?.[0]?.id;
