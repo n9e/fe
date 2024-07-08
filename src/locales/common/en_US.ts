@@ -37,6 +37,8 @@ const en_US = {
     batch_import: 'Batch Import',
     test: 'Test',
     copy: 'Copy',
+    expand: 'Expand',
+    collapse: 'Collapse',
   },
   table: {
     name: 'Name',

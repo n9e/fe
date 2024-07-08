@@ -37,6 +37,8 @@ const zh_HK = {
     batch_import: '批量匯入',
     test: '測試',
     copy: '複製',
+    expand: '展開',
+    collapse: '收起',
   },
   table: {
     name: '名稱',
