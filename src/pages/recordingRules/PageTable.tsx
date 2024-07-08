@@ -18,7 +18,7 @@ import Import from './components/Import';
 import Export from './components/Export';
 
 interface Props {
-  // bgid?: number;
+  gids?: string;
 }
 
 const { confirm } = Modal;
@@ -33,7 +33,7 @@ const exportIgnoreAttrsObj = {
   update_by: undefined,
 };
 
-const PageTable: React.FC<Props> = () => {
+const PageTable: React.FC<Props> = ({ gids }) => {
   const [severity] = useState<number>();
   const { t } = useTranslation('recordingRules');
   const history = useHistory();
@@ -49,18 +49,19 @@ const PageTable: React.FC<Props> = () => {
 
   useEffect(() => {
     getRecordingRules();
-  }, [businessGroup.ids, severity]);
+  }, [gids, severity]);
 
   useEffect(() => {
     filterData();
   }, [query, datasourceIds, currentStrategyDataAll]);
 
   const getRecordingRules = async () => {
-    if (!businessGroup.ids) {
+    if (!gids) {
       return;
     }
     setLoading(true);
-    const { success, dat } = await getBusiGroupsRecordingRules(businessGroup.ids);
+    const ids = gids === '-2' ? undefined : gids;
+    const { success, dat } = await getBusiGroupsRecordingRules(ids);
     if (success) {
       setCurrentStrategyDataAll(dat.filter((item) => !severity || item.severity === severity) || []);
       setLoading(false);
