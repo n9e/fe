@@ -23,6 +23,7 @@ import { Panel } from '../../Components/Collapse';
 export default function GraphStyles() {
   const { t } = useTranslation('dashboard');
   const namePrefix = ['custom'];
+  const showPoints = Form.useWatch([...namePrefix, 'showPoints']);
 
   return (
     <Panel header={t('panel.custom.title')}>
@@ -120,6 +121,15 @@ export default function GraphStyles() {
             }}
           </Form.Item>
         </Space>
+        <Form.Item label={t('panel.custom.timeseries.showPoints')} name={[...namePrefix, 'showPoints']}>
+          <Radio.Group buttonStyle='solid'>
+            <Radio.Button value='always'>{t('panel.custom.timeseries.showPoints_always')}</Radio.Button>
+            <Radio.Button value='none'>{t('panel.custom.timeseries.showPoints_none')}</Radio.Button>
+          </Radio.Group>
+        </Form.Item>
+        <Form.Item label={t('panel.custom.timeseries.pointSize')} name={[...namePrefix, 'pointSize']} hidden={showPoints === 'none'}>
+          <Slider min={1} max={40} step={1} />
+        </Form.Item>
       </>
     </Panel>
   );

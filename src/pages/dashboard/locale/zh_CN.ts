@@ -378,6 +378,10 @@ const zh_CN = {
             off: '关闭',
           },
         },
+        showPoints: '显示点',
+        showPoints_always: '显示',
+        showPoints_none: '不显示',
+        pointSize: '点大小',
       },
       iframe: {
         src: 'iframe 地址',
