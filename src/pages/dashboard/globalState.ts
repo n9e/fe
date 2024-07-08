@@ -1,4 +1,5 @@
 import { createGlobalState } from 'react-hooks-global-state';
+import { IPanel } from './types';
 
 export const { useGlobalState } = createGlobalState<{
   dashboardMeta: {
@@ -11,6 +12,7 @@ export const { useGlobalState } = createGlobalState<{
   tableFields: string[];
   displayedTableFields: string[];
   tableRefIds: string[]; // labelValuesToRows 模式下，tableRefIds 用于记录当前表格的 refId
+  panelClipboard?: IPanel;
 }>({
   statFields: [],
   tableFields: [],
@@ -22,4 +24,5 @@ export const { useGlobalState } = createGlobalState<{
     graphZoom: string;
   },
   tableRefIds: [],
+  panelClipboard: undefined,
 });

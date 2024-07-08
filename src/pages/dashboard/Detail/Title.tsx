@@ -33,6 +33,7 @@ import { dashboardTimeCacheKey } from './Detail';
 import FormModal from '../List/FormModal';
 import { IDashboard, ILink } from '../types';
 import { dashboardThemeModeCacheKey, getDefaultThemeMode } from './utils';
+import { useGlobalState } from '../globalState';
 
 interface IProps {
   dashboard: IDashboard;
@@ -80,6 +81,7 @@ export default function Title(props: IProps) {
   const [dashboardList, setDashboardList] = useState<IDashboard[]>([]);
   const [dashboardListDropdownSearch, setDashboardListDropdownSearch] = useState('');
   const [dashboardListDropdownVisible, setDashboardListDropdownVisible] = useState(false);
+  const [panelClipboard, setPanelClipboard] = useGlobalState('panelClipboard');
 
   useEffect(() => {
     document.title = `${dashboard.name} - ${siteInfo?.page_title || cachePageTitle}`;
@@ -213,7 +215,7 @@ export default function Title(props: IProps) {
               trigger={['click']}
               overlay={
                 <Menu>
-                  {_.map([{ type: 'row', name: 'row' }, ...visualizations], (item) => {
+                  {_.map(_.concat(panelClipboard ? [{ type: 'pastePanel' }] : [], [{ type: 'row', name: 'row' }], visualizations), (item) => {
                     return (
                       <Menu.Item
                         key={item.type}
