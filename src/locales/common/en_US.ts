@@ -6,6 +6,8 @@ const en_US = {
   },
   business_group: 'Business Group',
   search_placeholder: 'Please enter search keywords',
+  my_business_group: 'My Business Group',
+  all_business_group: 'All Business Group',
   nodata: 'No Data',
   btn: {
     add: 'Add',

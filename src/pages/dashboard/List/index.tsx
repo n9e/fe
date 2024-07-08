@@ -29,11 +29,11 @@ import { useUpdateEffect } from 'ahooks';
 import { Dashboard as DashboardType } from '@/store/dashboardInterface';
 import { getBusiGroupsDashboards, getBusiGroupsPublicDashboards, cloneDashboard, removeDashboards, getDashboard, updateDashboardPublic } from '@/services/dashboardV2';
 import PageLayout from '@/components/pageLayout';
-import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
 import { CommonStateContext } from '@/App';
 import BusinessGroup, { getCleanBusinessGroupIds } from '@/components/BusinessGroup';
 import usePagination from '@/components/usePagination';
 import { getDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
+import { getBusiGroups } from '@/components/BusinessGroup';
 import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
 import Header from './Header';
 import FormModal from './FormModal';
@@ -47,12 +47,14 @@ const SEARCH_LOCAL_STORAGE_KEY = 'n9e_dashboard_search';
 
 export default function index() {
   const { t } = useTranslation('dashboard');
-  const { businessGroup, busiGroups } = useContext(CommonStateContext);
+  const { businessGroup } = useContext(CommonStateContext);
   const [gids, setGids] = useState<string | undefined>(localStorage.getItem(N9E_BOARD_NODE_ID) || businessGroup.ids || '-2'); // -1: 公开仪表盘, -2: 所有仪表盘
   const [list, setList] = useState<any[]>([]);
   const [selectRowKeys, setSelectRowKeys] = useState<number[]>([]);
   const [refreshKey, setRefreshKey] = useState(_.uniqueId('refreshKey_'));
   const [searchVal, setsearchVal] = useState<string>(localStorage.getItem(SEARCH_LOCAL_STORAGE_KEY) || '');
+  const [selectedBusinessGroup, setSelectedBusinessGroup] = useState<number>(); // 目前只有公开仪表盘会用到
+  const [busiGroups, setBusiGroups] = useState<any[]>([]);
   const pagination = usePagination({ PAGESIZE_KEY: 'dashboard-pagesize' });
   const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
 
@@ -73,14 +75,23 @@ export default function index() {
   }, [gids, refreshKey]);
 
   const data = _.filter(list, (item) => {
-    if (searchVal) {
-      return (
-        _.includes(item.name.toLowerCase(), searchVal.toLowerCase()) ||
-        _.includes(_.join(_.sortBy(_.split(item.tags.toLowerCase(), ' ')), ' '), _.join(_.sortBy(_.split(searchVal.toLowerCase(), ' ')), ' '))
-      );
+    let flag = true;
+    if (typeof selectedBusinessGroup === 'number') {
+      flag = item.group_id === selectedBusinessGroup;
     }
-    return true;
+    if (searchVal) {
+      flag =
+        _.includes(item.name.toLowerCase(), searchVal.toLowerCase()) ||
+        _.includes(_.join(_.sortBy(_.split(item.tags.toLowerCase(), ' ')), ' '), _.join(_.sortBy(_.split(searchVal.toLowerCase(), ' ')), ' '));
+    }
+    return flag;
   });
+
+  useEffect(() => {
+    getBusiGroups({ all: true }).then((res) => {
+      setBusiGroups(res);
+    });
+  }, []);
 
   return (
     <PageLayout title={t('title')} icon={<FundViewOutlined />}>
@@ -138,6 +149,8 @@ export default function index() {
             }}
             columnsConfigs={columnsConfigs}
             setColumnsConfigs={setColumnsConfigs}
+            selectedBusinessGroup={selectedBusinessGroup}
+            setSelectedBusinessGroup={setSelectedBusinessGroup}
           />
           <Table
             className='mt8'
