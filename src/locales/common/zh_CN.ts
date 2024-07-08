@@ -34,6 +34,7 @@ const zh_CN = {
     batch_export: '批量导出',
     batch_import: '批量导入',
     test: '测试',
+    copy: '拷贝',
   },
   table: {
     name: '名称',
