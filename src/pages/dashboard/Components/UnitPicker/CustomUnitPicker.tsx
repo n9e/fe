@@ -16,7 +16,7 @@ export default function index(props: SelectProps & Props) {
   return (
     <AutoComplete
       filterOption={(inputValue, option) => {
-        return _.includes(_.lowerCase(option.cleanLabel), _.lowerCase(inputValue));
+        return _.includes(_.lowerCase(option?.cleanLabel), _.lowerCase(inputValue));
       }}
       {...resetProps}
       options={buildUnitOptions(hideOptionLabel, hideSIOption, ajustUnitOptions)}
