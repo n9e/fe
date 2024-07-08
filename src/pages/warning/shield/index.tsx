@@ -26,9 +26,8 @@ import Tags from '@/components/Tags';
 import PageLayout from '@/components/pageLayout';
 import { getBusiGroupsAlertMutes, deleteShields, updateShields } from '@/services/shield';
 import { shieldItem, strategyStatus } from '@/store/warningInterface';
-import BusinessGroup from '@/components/BusinessGroup';
+import BusinessGroupSideBarWithAll, { getDefaultGids } from '@/components/BusinessGroup/BusinessGroupSideBarWithAll';
 import RefreshIcon from '@/components/RefreshIcon';
-import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
 import { DatasourceSelect, ProdSelect } from '@/components/DatasourceSelect';
 import { CommonStateContext } from '@/App';
 import { pageSizeOptionsDefault } from '../const';
@@ -39,11 +38,13 @@ export { default as Add } from './add';
 export { default as Edit } from './edit';
 
 const { confirm } = Modal;
+const N9E_GIDS_LOCALKEY = 'n9e_mutes_gids';
 
 const Shield: React.FC = () => {
   const { t } = useTranslation('alertMutes');
   const history = useHistory();
   const { datasourceList, groupedDatasourceList, businessGroup, busiGroups } = useContext(CommonStateContext);
+  const [gids, setGids] = useState<string | undefined>(getDefaultGids(N9E_GIDS_LOCALKEY, businessGroup));
   const [query, setQuery] = useState<string>('');
   const [currentShieldDataAll, setCurrentShieldDataAll] = useState<Array<shieldItem>>([]);
   const [currentShieldData, setCurrentShieldData] = useState<Array<shieldItem>>([]);
@@ -277,7 +278,7 @@ const Shield: React.FC = () => {
 
   useEffect(() => {
     getList();
-  }, [businessGroup.ids]);
+  }, [gids]);
 
   useEffect(() => {
     filterData();
@@ -312,9 +313,10 @@ const Shield: React.FC = () => {
   };
 
   const getList = async () => {
-    if (businessGroup.ids) {
+    if (gids) {
       setLoading(true);
-      const { success, dat } = await getBusiGroupsAlertMutes(businessGroup.ids);
+      const ids = gids === '-2' ? undefined : gids;
+      const { success, dat } = await getBusiGroupsAlertMutes(ids);
       if (success) {
         setCurrentShieldDataAll(dat || []);
         setLoading(false);
@@ -334,64 +336,60 @@ const Shield: React.FC = () => {
   return (
     <PageLayout title={t('title')} icon={<CloseCircleOutlined />}>
       <div className='shield-content'>
-        <BusinessGroup />
-        {businessGroup.ids ? (
-          <div className='shield-index n9e-border-base' style={{ height: '100%', overflowY: 'auto' }}>
-            <div className='header'>
-              <Space>
-                <RefreshIcon
+        <BusinessGroupSideBarWithAll gids={gids} setGids={setGids} localeKey={N9E_GIDS_LOCALKEY} />
+        <div className='shield-index n9e-border-base' style={{ height: '100%', overflowY: 'auto' }}>
+          <div className='header'>
+            <Space>
+              <RefreshIcon
+                onClick={() => {
+                  refreshList();
+                }}
+              />
+              <ProdSelect style={{ width: 90 }} value={prod} onChange={setProd} />
+              <DatasourceSelect
+                style={{ width: 100 }}
+                filterKey='alertRule'
+                value={datasourceIds}
+                onChange={(val) => {
+                  setDatasourceIds(val);
+                }}
+              />
+              <Input onPressEnter={onSearchQuery} prefix={<SearchOutlined />} placeholder={t('search_placeholder')} />
+            </Space>
+            {businessGroup.isLeaf && (
+              <div className='header-right'>
+                <Button
+                  type='primary'
+                  className='add'
                   onClick={() => {
-                    refreshList();
+                    history.push('/alert-mutes/add');
                   }}
-                />
-                <ProdSelect style={{ width: 90 }} value={prod} onChange={setProd} />
-                <DatasourceSelect
-                  style={{ width: 100 }}
-                  filterKey='alertRule'
-                  value={datasourceIds}
-                  onChange={(val) => {
-                    setDatasourceIds(val);
-                  }}
-                />
-                <Input onPressEnter={onSearchQuery} prefix={<SearchOutlined />} placeholder={t('search_placeholder')} />
-              </Space>
-              {businessGroup.isLeaf && (
-                <div className='header-right'>
-                  <Button
-                    type='primary'
-                    className='add'
-                    onClick={() => {
-                      history.push('/alert-mutes/add');
-                    }}
-                  >
-                    {t('common:btn.add')}
-                  </Button>
-                </div>
-              )}
-            </div>
-            <Table
-              className='mt8'
-              size='small'
-              rowKey='id'
-              tableLayout='fixed'
-              pagination={{
-                total: currentShieldData.length,
-                showQuickJumper: true,
-                showSizeChanger: true,
-                showTotal: (total) => {
-                  return t('common:table.total', { total });
-                },
-                pageSizeOptions: pageSizeOptionsDefault,
-                defaultPageSize: 30,
-              }}
-              loading={loading}
-              dataSource={currentShieldData}
-              columns={columns}
-            />
+                >
+                  {t('common:btn.add')}
+                </Button>
+              </div>
+            )}
           </div>
-        ) : (
-          <BlankBusinessPlaceholder text='屏蔽规则' />
-        )}
+          <Table
+            className='mt8'
+            size='small'
+            rowKey='id'
+            tableLayout='fixed'
+            pagination={{
+              total: currentShieldData.length,
+              showQuickJumper: true,
+              showSizeChanger: true,
+              showTotal: (total) => {
+                return t('common:table.total', { total });
+              },
+              pageSizeOptions: pageSizeOptionsDefault,
+              defaultPageSize: 30,
+            }}
+            loading={loading}
+            dataSource={currentShieldData}
+            columns={columns}
+          />
+        </div>
       </div>
     </PageLayout>
   );

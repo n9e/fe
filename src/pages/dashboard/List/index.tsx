@@ -23,14 +23,13 @@ import { Table, Tag, Modal, Space, Button, Dropdown, Menu, message } from 'antd'
 import { FundViewOutlined, EditOutlined, ShareAltOutlined, MoreOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import _ from 'lodash';
-import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { useUpdateEffect } from 'ahooks';
 import { Dashboard as DashboardType } from '@/store/dashboardInterface';
 import { getBusiGroupsDashboards, getBusiGroupsPublicDashboards, cloneDashboard, removeDashboards, getDashboard, updateDashboardPublic } from '@/services/dashboardV2';
 import PageLayout from '@/components/pageLayout';
 import { CommonStateContext } from '@/App';
-import BusinessGroup, { getCleanBusinessGroupIds } from '@/components/BusinessGroup';
+import BusinessGroupSideBarWithAll, { getDefaultGids } from '@/components/BusinessGroup/BusinessGroupSideBarWithAll';
 import usePagination from '@/components/usePagination';
 import { getDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
 import { getBusiGroups } from '@/components/BusinessGroup';
@@ -42,13 +41,13 @@ import { exportDataStringify } from './utils';
 import PublicForm from './PublicForm';
 import './style.less';
 
-const N9E_BOARD_NODE_ID = 'N9E_BOARD_NODE_ID';
+const N9E_GIDS_LOCALKEY = 'N9E_BOARD_NODE_ID';
 const SEARCH_LOCAL_STORAGE_KEY = 'n9e_dashboard_search';
 
 export default function index() {
   const { t } = useTranslation('dashboard');
   const { businessGroup } = useContext(CommonStateContext);
-  const [gids, setGids] = useState<string | undefined>(localStorage.getItem(N9E_BOARD_NODE_ID) || businessGroup.ids || '-2'); // -1: 公开仪表盘, -2: 所有仪表盘
+  const [gids, setGids] = useState<string | undefined>(getDefaultGids(N9E_GIDS_LOCALKEY, businessGroup));
   const [list, setList] = useState<any[]>([]);
   const [selectRowKeys, setSelectRowKeys] = useState<number[]>([]);
   const [refreshKey, setRefreshKey] = useState(_.uniqueId('refreshKey_'));
@@ -96,45 +95,7 @@ export default function index() {
   return (
     <PageLayout title={t('title')} icon={<FundViewOutlined />}>
       <div style={{ display: 'flex' }}>
-        <BusinessGroup
-          renderHeadExtra={() => {
-            return (
-              <div>
-                <div className='n9e-biz-group-container-group-title'>{t('default_filter.title')}</div>
-                <div
-                  className={classNames({
-                    'n9e-biz-group-item': true,
-                    active: gids === '-1',
-                  })}
-                  onClick={() => {
-                    setGids('-1');
-                    localStorage.setItem(N9E_BOARD_NODE_ID, '-1');
-                  }}
-                >
-                  {t('default_filter.public')}
-                </div>
-                <div
-                  className={classNames({
-                    'n9e-biz-group-item': true,
-                    active: gids === '-2',
-                  })}
-                  onClick={() => {
-                    setGids('-2');
-                    localStorage.setItem(N9E_BOARD_NODE_ID, '-2');
-                  }}
-                >
-                  {t('default_filter.all')}
-                </div>
-              </div>
-            );
-          }}
-          showSelected={gids !== '-1' && gids !== '-2'}
-          onSelect={(key) => {
-            const ids = getCleanBusinessGroupIds(key);
-            setGids(ids);
-            localStorage.removeItem(N9E_BOARD_NODE_ID);
-          }}
-        />
+        <BusinessGroupSideBarWithAll gids={gids} setGids={setGids} localeKey={N9E_GIDS_LOCALKEY} showPublicOption publicOptionLabel={t('default_filter.public')} />
         <div className='n9e-border-base dashboards-v2'>
           <Header
             gids={gids}
