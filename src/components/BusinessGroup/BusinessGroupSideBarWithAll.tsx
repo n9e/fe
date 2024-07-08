@@ -17,6 +17,7 @@ interface Props {
   localeKey: string;
   showPublicOption?: boolean;
   publicOptionLabel?: string;
+  allOptionLabel?: string;
 }
 
 export function getDefaultGids(localeKey: string, businessGroup: any) {
@@ -25,7 +26,7 @@ export function getDefaultGids(localeKey: string, businessGroup: any) {
 
 export default function BusinessGroupSideBarWithAll(props: Props) {
   const { t } = useTranslation('BusinessGroup');
-  const { gids, setGids, localeKey, showPublicOption, publicOptionLabel } = props;
+  const { gids, setGids, localeKey, showPublicOption, publicOptionLabel, allOptionLabel } = props;
 
   return (
     <BusinessGroup
@@ -57,7 +58,7 @@ export default function BusinessGroupSideBarWithAll(props: Props) {
                 localStorage.setItem(localeKey, '-2');
               }}
             >
-              {t('default_filter.all')}
+              {allOptionLabel || t('default_filter.all')}
             </div>
           </div>
         );
