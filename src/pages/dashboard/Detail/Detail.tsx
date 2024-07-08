@@ -301,7 +301,7 @@ export default function DetailV2(props: IProps) {
                     });
                   } else if (type === 'pastePanel') {
                     if (panelClipboard) {
-                      const newPanels = updatePanelsInsertNewPanelToGlobal(panels, { ..._.omit(panelClipboard, ['id', 'layout']), id: uuidv4() }, 'chart');
+                      const newPanels = updatePanelsInsertNewPanelToGlobal(panels, { ...panelClipboard, id: uuidv4() }, 'chart', false);
                       setPanels(newPanels);
                       scrollToLastPanel(newPanels);
                       handleUpdateDashboardConfigs(dashboard.id, {
