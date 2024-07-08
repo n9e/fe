@@ -32,11 +32,12 @@ export function getFieldValue(fieldKey, fieldValue, fieldConfig?: any) {
 }
 
 export function RenderValue({ value, highlights }: { value: any; highlights: string[] }) {
-  const limit = 2; // 18
-  const { t } = useTranslation('db_aliyunSLS');
+  const limit = 18;
+  const { t } = useTranslation();
   const [expand, setExpand] = useState(false);
-  if (typeof value === 'string' && value.indexOf('\n') > -1) {
-    const valArr = value.split('\n');
+  const splitRegex = /\r\n|\n|\r|\\r\\n|\\n|\\r/g;
+  const valArr = _.split(value, splitRegex);
+  if (typeof value === 'string' && valArr.length > 1) {
     const lines = !expand ? _.slice(valArr, 0, limit) : valArr;
     return (
       <div style={{ display: 'inline-block', wordBreak: 'break-all' }}>
@@ -65,7 +66,7 @@ export function RenderValue({ value, highlights }: { value: any; highlights: str
                     marginLeft: 8,
                   }}
                 >
-                  {expand ? t('logs.collapse') : t('logs.expand')}
+                  {expand ? t('common:btn.collapse') : t('common:btn.expand')}
                   {expand ? <LeftOutlined /> : <RightOutlined />}
                 </a>
               )}

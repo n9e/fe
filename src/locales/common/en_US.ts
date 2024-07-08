@@ -34,6 +34,8 @@ const en_US = {
     batch_export: 'Batch Export',
     batch_import: 'Batch Import',
     test: 'Test',
+    expand: 'Expand',
+    collapse: 'Collapse',
   },
   table: {
     name: 'Name',
