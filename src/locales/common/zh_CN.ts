@@ -6,6 +6,8 @@ const zh_CN = {
   },
   business_group: '业务组',
   search_placeholder: '请输入搜索关键字',
+  my_business_group: '我的业务组',
+  all_business_group: '全部业务组',
   nodata: '暂无数据',
   btn: {
     add: '新增',
