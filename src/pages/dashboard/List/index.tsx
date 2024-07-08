@@ -95,7 +95,14 @@ export default function index() {
   return (
     <PageLayout title={t('title')} icon={<FundViewOutlined />}>
       <div style={{ display: 'flex' }}>
-        <BusinessGroupSideBarWithAll gids={gids} setGids={setGids} localeKey={N9E_GIDS_LOCALKEY} showPublicOption publicOptionLabel={t('default_filter.public')} />
+        <BusinessGroupSideBarWithAll
+          gids={gids}
+          setGids={setGids}
+          localeKey={N9E_GIDS_LOCALKEY}
+          showPublicOption
+          publicOptionLabel={t('default_filter.public')}
+          allOptionLabel={t('default_filter.all')}
+        />
         <div className='n9e-border-base dashboards-v2'>
           <Header
             gids={gids}
