@@ -148,7 +148,7 @@ const Event: React.FC = () => {
           />
           <BusinessGroupSelectWithAll
             value={filter.bgid}
-            onChange={(val) => {
+            onChange={(val: number) => {
               setFilter({
                 ...filter,
                 bgid: val,
