@@ -82,7 +82,7 @@ export default function index() {
   const data = _.filter(list, (item) => {
     let flag = true;
     // 公开仪表盘需要对单独的业务组选择器选择的值过滤
-    if (gids === '-1' && _.isEmpty(selectedBusinessGroup)) {
+    if (gids === '-1' && !_.isEmpty(selectedBusinessGroup)) {
       flag = _.includes(selectedBusinessGroup, item.group_id);
     }
     if (searchVal) {
