@@ -97,7 +97,7 @@ const PageTable: React.FC<Props> = ({ gids }) => {
   };
 
   const columns: ColumnType<strategyItem>[] = _.concat(
-    businessGroup.isLeaf
+    businessGroup.isLeaf && gids !== '-2'
       ? []
       : ([
           {

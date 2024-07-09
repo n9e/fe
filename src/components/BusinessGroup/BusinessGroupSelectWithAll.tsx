@@ -7,14 +7,15 @@ import { getBusiGroups } from './services';
 import { getBusinessGroupsOptions } from './utils';
 
 interface Props {
-  value?: number;
-  onChange?: (value?: number) => void;
+  value?: number | number[];
+  onChange?: (value?: number | number[]) => void;
+  mode?: 'multiple';
 }
 
 export default function BusinessGroupSelect(props: Props) {
   const { t } = useTranslation();
   const { busiGroups } = useContext(CommonStateContext);
-  const { value, onChange } = props;
+  const { value, onChange, mode } = props;
   const [allBusiGroups, setAllBusiGroups] = useState<any[]>([]);
 
   useEffect(() => {
@@ -28,6 +29,7 @@ export default function BusinessGroupSelect(props: Props) {
   return (
     <Select
       allowClear
+      mode={mode}
       placeholder={t('common:business_group')}
       style={{ minWidth: 80 }}
       value={value}

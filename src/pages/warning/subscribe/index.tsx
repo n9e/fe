@@ -69,7 +69,7 @@ const Shield: React.FC = () => {
   }
   const [datasourceIds, setDatasourceIds] = useState<number[] | undefined>(defaultDatasourceIds);
   const columns: ColumnsType = _.concat(
-    businessGroup.isLeaf
+    businessGroup.isLeaf && gids !== '-2'
       ? []
       : ([
           {

@@ -52,7 +52,7 @@ const Shield: React.FC = () => {
   const [prod, setProd] = useState<string>();
   const [datasourceIds, setDatasourceIds] = useState<number[]>();
   const columns: ColumnsType = _.concat(
-    businessGroup.isLeaf
+    businessGroup.isLeaf && gids !== '-2'
       ? []
       : ([
           {
