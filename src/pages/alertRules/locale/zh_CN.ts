@@ -180,5 +180,6 @@ const zh_CN = {
     disabled: '启用',
     severity: '级别',
   },
+  expired: '告警规则已经被别人修改，为避免相互覆盖，请刷新页面查看最新配置',
 };
 export default zh_CN;

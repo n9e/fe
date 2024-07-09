@@ -180,6 +180,7 @@ const zh_HK = {
     disabled: '啟用',
     severity: '級別',
   },
+  expired: '告警規則已經被別人修改，為避免相互覆蓋，請刷新頁面查看最新配置',
 };
 
 export default zh_HK;
