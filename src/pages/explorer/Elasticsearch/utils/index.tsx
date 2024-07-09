@@ -32,7 +32,7 @@ export function getFieldValue(fieldKey, fieldValue, fieldConfig?: any) {
 }
 
 export function RenderValue({ value, highlights }: { value: any; highlights: string[] }) {
-  const limit = 2; // 18
+  const limit = 18;
   const { t } = useTranslation('db_aliyunSLS');
   const [expand, setExpand] = useState(false);
   if (typeof value === 'string' && value.indexOf('\n') > -1) {
