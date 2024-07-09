@@ -43,6 +43,12 @@ import './style.less';
 
 const N9E_GIDS_LOCALKEY = 'N9E_BOARD_NODE_ID';
 const SEARCH_LOCAL_STORAGE_KEY = 'n9e_dashboard_search';
+const PUBLIC_SELECT_GIDS_LOCALKEY = 'N9E_PUBLIC_SELECT_GIDS';
+const getDefaultPublicSelectGids = (localKey: string) => {
+  const valueStr = localStorage.getItem(localKey);
+  const value = valueStr ? _.map(_.split(valueStr, ','), _.toNumber) : [];
+  return value;
+};
 
 export default function index() {
   const { t } = useTranslation('dashboard');
@@ -52,7 +58,7 @@ export default function index() {
   const [selectRowKeys, setSelectRowKeys] = useState<number[]>([]);
   const [refreshKey, setRefreshKey] = useState(_.uniqueId('refreshKey_'));
   const [searchVal, setsearchVal] = useState<string>(localStorage.getItem(SEARCH_LOCAL_STORAGE_KEY) || '');
-  const [selectedBusinessGroup, setSelectedBusinessGroup] = useState<number>(); // 目前只有公开仪表盘会用到
+  const [selectedBusinessGroup, setSelectedBusinessGroup] = useState<number[] | undefined>(getDefaultPublicSelectGids(PUBLIC_SELECT_GIDS_LOCALKEY)); // 目前只有公开仪表盘会用到
   const [busiGroups, setBusiGroups] = useState<any[]>([]);
   const pagination = usePagination({ PAGESIZE_KEY: 'dashboard-pagesize' });
   const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
@@ -75,8 +81,9 @@ export default function index() {
 
   const data = _.filter(list, (item) => {
     let flag = true;
-    if (typeof selectedBusinessGroup === 'number') {
-      flag = item.group_id === selectedBusinessGroup;
+    // 公开仪表盘需要对单独的业务组选择器选择的值过滤
+    if (gids === '-1' && _.isArray(selectedBusinessGroup) && selectedBusinessGroup.length > 0) {
+      flag = _.includes(selectedBusinessGroup, item.group_id);
     }
     if (searchVal) {
       flag =
@@ -118,7 +125,10 @@ export default function index() {
             columnsConfigs={columnsConfigs}
             setColumnsConfigs={setColumnsConfigs}
             selectedBusinessGroup={selectedBusinessGroup}
-            setSelectedBusinessGroup={setSelectedBusinessGroup}
+            setSelectedBusinessGroup={(val) => {
+              setSelectedBusinessGroup(val);
+              localStorage.setItem(PUBLIC_SELECT_GIDS_LOCALKEY, _.join(val, ','));
+            }}
           />
           <Table
             className='mt8'

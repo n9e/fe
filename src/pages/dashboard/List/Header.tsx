@@ -36,8 +36,8 @@ interface IProps {
   onSearchChange: (val) => void;
   columnsConfigs: { name: string; visible: boolean }[];
   setColumnsConfigs: (val: { name: string; visible: boolean }[]) => void;
-  selectedBusinessGroup?: number;
-  setSelectedBusinessGroup: (val?: number) => void;
+  selectedBusinessGroup?: number[];
+  setSelectedBusinessGroup: (val?: number[]) => void;
 }
 
 export default function Header(props: IProps) {
@@ -68,7 +68,7 @@ export default function Header(props: IProps) {
             prefix={<SearchOutlined />}
             placeholder={t('search_placeholder')}
           />
-          {gids === '-1' && <BusinessGroupSelectWithAll value={selectedBusinessGroup} onChange={setSelectedBusinessGroup} />}
+          {gids === '-1' && <BusinessGroupSelectWithAll value={selectedBusinessGroup} onChange={setSelectedBusinessGroup} mode='multiple' />}
         </Space>
         <Space>
           {businessGroup.isLeaf && gids && gids !== '-1' && gids !== '-2' && (
