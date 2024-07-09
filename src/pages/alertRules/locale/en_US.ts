@@ -180,5 +180,6 @@ const en_US = {
     disabled: 'Enable',
     severity: 'Severity',
   },
+  expired: 'The alert rule has been modified by others. To avoid mutual coverage, please refresh the page to view the latest configuration',
 };
 export default en_US;

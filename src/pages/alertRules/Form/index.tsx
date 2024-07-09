@@ -15,7 +15,7 @@
  *
  */
 import React, { useContext, useEffect, createContext } from 'react';
-import { Form, Space, Button, message, Affix, Card } from 'antd';
+import { Form, Space, Button, message, Affix, Card, Alert } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams, Link } from 'react-router-dom';
 import _ from 'lodash';
@@ -32,6 +32,7 @@ import { defaultValues } from './constants';
 interface IProps {
   type?: number; // 空: 新增 1:编辑 2:克隆 3:查看
   initialValues?: any;
+  editable?: boolean;
 }
 
 export const FormStateContext = createContext({
@@ -39,7 +40,7 @@ export const FormStateContext = createContext({
 });
 
 export default function index(props: IProps) {
-  const { type, initialValues } = props;
+  const { type, initialValues, editable = true } = props;
   const history = useHistory();
   const { bgid } = useParams<{ bgid: string }>();
   const { t } = useTranslation('alertRules');
@@ -112,6 +113,7 @@ export default function index(props: IProps) {
       <Form form={form} layout='vertical' disabled={disabled} style={{ overflow: 'hidden auto' }}>
         <div className='p2'>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {editable === false && <Alert type='warning' message={t('expired')} />}
             <Form.Item name='disabled' hidden>
               <div />
             </Form.Item>
@@ -126,6 +128,7 @@ export default function index(props: IProps) {
                 <Space>
                   <Button
                     type='primary'
+                    disabled={editable === false}
                     onClick={() => {
                       form
                         .validateFields()
