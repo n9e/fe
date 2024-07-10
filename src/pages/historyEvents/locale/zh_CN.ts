@@ -3,7 +3,7 @@ const zh_CN = {
   rule_name: '规则标题&事件标签',
   search_placeholder: '模糊搜索规则和标签(多个关键词请用空格分隔)',
   first_trigger_time: '首次触发时间',
-  last_eval_time: '触发时间',
+  trigger_time: '触发时间',
   hours: {
     6: '最近 6 小时',
     12: '最近 12 小时',
