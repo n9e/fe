@@ -324,11 +324,6 @@ const SideMenu = () => {
                 list={menus}
                 collapsed={collapsed && !collapsedHover}
                 selectedKeys={selectedKeys}
-                onClick={(key) => {
-                  if (key.startsWith('/')) {
-                    history.push(key);
-                  }
-                }}
                 sideMenuBgColor={sideMenuBgColor}
                 isCustomBg={isCustomBg}
                 quickMenuRef={quickMenuRef}
