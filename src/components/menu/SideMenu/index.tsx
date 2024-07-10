@@ -247,7 +247,7 @@ const SideMenu = () => {
       return true;
     }
     // 大盘全屏模式下也需要隐藏左侧菜单
-    if (location.pathname.indexOf('/dashboard') === 0) {
+    if (location.pathname.indexOf('/dashboard') === 0 || location.pathname.indexOf('/embedded-dashboards') === 0) {
       const query = querystring.parse(location.search);
       if (query?.viewMode === 'fullscreen') {
         return true;
