@@ -107,7 +107,7 @@ function EditItem(props: IProps) {
               style={{ width: '100%' }}
               onChange={(val) => {
                 form.setFieldsValue({
-                  name: val === 'businessGroupIdent' ? 'busigroup' : '',
+                  name: val === 'businessGroupIdent' ? 'busigroup' : form.getFieldValue('name'),
                   definition: '',
                   defaultValue: '',
                   hide: val === 'constant' || val === 'businessGroupIdent' ? true : false,
