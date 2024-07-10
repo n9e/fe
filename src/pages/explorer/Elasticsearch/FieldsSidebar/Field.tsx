@@ -80,7 +80,7 @@ export default function Field(props: Props) {
                   <div key={item.label} className='n9e-es-discover-field-values-topn-item'>
                     <div style={{ width: 'calc(100% - 40px)' }}>
                       <div className='n9e-es-discover-field-values-topn-item-content'>
-                        <div className='n9e-es-discover-field-values-topn-item-label'>{item.label || '(empty)'}</div>
+                        <div className='n9e-es-discover-field-values-topn-item-label'>{_.isEmpty(item.label) && !_.isNumber(item.label) ? '(empty)' : item.label}</div>
                         <div className='n9e-es-discover-field-values-topn-item-percent'>{percent}%</div>
                       </div>
                       <Progress percent={percent} size='small' showInfo={false} strokeColor='#6c53b1' />
