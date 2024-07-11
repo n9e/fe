@@ -180,5 +180,15 @@ const en_US = {
     disabled: 'Enable',
     severity: 'Severity',
   },
+  relabel: {
+    title: 'Relabel',
+    if_placeholder: 'Optional, only events that meet this matching condition will be relabeled',
+    target_label_placeholder: 'Key of the new label',
+    replacement_placeholder:
+      'The final value of the label, if the separator is configured, this field can be left blank, if the regex is configured, this field can use the content matched in the regular expression to construct the final target value',
+    source_labels_placeholder: 'Optional, the original label used',
+    separator_placeholder: 'Optional, spliced according to the existing label value, used to splice the connector of the value',
+    regex_placeholder: 'Optional, based on the content of the existing label value, extract the regular expression used to construct the content',
+  },
 };
 export default en_US;

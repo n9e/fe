@@ -180,5 +180,14 @@ const zh_CN = {
     disabled: '启用',
     severity: '级别',
   },
+  relabel: {
+    title: '事件 relabel',
+    if_placeholder: '选填，满足此匹配条件的事件才进行标签 relabel',
+    target_label_placeholder: '新增标签的 key',
+    replacement_placeholder: '标签最终的 value，如果配置了 separator 此字段可不填，如果配置了 regex 此字段可使用正则中匹配的内容来构建最终的目标值',
+    source_labels_placeholder: '选填，使用的原始标签',
+    separator_placeholder: '选填，根据已有的标签值拼接，用来拼接 value 的连字符',
+    regex_placeholder: '选填，根据已有标签值部分内容构建，提取构建内容的正则',
+  },
 };
 export default zh_CN;
