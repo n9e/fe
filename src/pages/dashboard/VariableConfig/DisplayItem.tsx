@@ -36,7 +36,7 @@ export default function DisplayItem(props: IProps) {
     let curValue = value;
     // 当 query 和 custom 类型开启多选时，如果 value 为字符串，需要转为数组
     if ((type === 'query' || type === 'custom') && multi) {
-      if (_.isUndefined(value)) {
+      if (value === undefined) {
         curValue = undefined;
       } else {
         curValue = _.isArray(value) ? value : [value];
