@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import DataGrid, { Column, DataGridHandle } from 'react-data-grid';
 import { useTranslation } from 'react-i18next';
+import './style.css';
 
 interface IProps {
   dataSource: any[];
