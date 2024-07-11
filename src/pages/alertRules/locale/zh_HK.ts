@@ -181,6 +181,15 @@ const zh_HK = {
     severity: '級別',
   },
   expired: '告警規則已經被別人修改，為避免相互覆蓋，請刷新頁面查看最新配置',
+  relabel: {
+    title: '事件 relabel',
+    if_placeholder: '選填，滿足此匹配條件的事件才進行標籤 relabel',
+    target_label_placeholder: '新增標籤的 key',
+    replacement_placeholder: '標籤最終的 value，如果配置了 separator 此字段可不填，如果配置了 regex 此字段可使用正則中匹配的內容來構建最終的目標值',
+    source_labels_placeholder: '選填，使用的原始標籤',
+    separator_placeholder: '選填，根據已有的標籤值拼接，用來拼接 value 的連字符',
+    regex_placeholder: '選填，根據已有標籤值部分內容構建，提取構建內容的正則',
+  },
 };
 
 export default zh_HK;

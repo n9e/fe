@@ -26,6 +26,7 @@ import Base from './Base';
 import Rule from './Rule';
 import Effective from './Effective';
 import Notify from './Notify';
+import EventSettings from './EventSettings';
 import { processFormValues, processInitialValues } from './utils';
 import { defaultValues } from './constants';
 
@@ -119,6 +120,7 @@ export default function index(props: IProps) {
             </Form.Item>
             <Base />
             <Rule form={form} />
+            <EventSettings />
             <Effective />
             <Notify disabled={disabled} />
           </div>

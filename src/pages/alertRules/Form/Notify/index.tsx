@@ -28,8 +28,6 @@ import { panelBaseProps } from '../../constants';
 import NotifyExtra from 'plus:/parcels/AlertRule/NotifyExtra';
 // @ts-ignore
 import NotifyChannelsTpl from 'plus:/parcels/AlertRule/NotifyChannelsTpl';
-// @ts-ignore
-import EventSettings from 'plus:/parcels/AlertRule/EventSettings';
 
 export default function index({ disabled }) {
   const { t } = useTranslation('alertRules');
@@ -257,7 +255,6 @@ export default function index({ disabled }) {
         </Form.List>
       </Card>
       <NotifyExtra contactList={contactList} notifyGroups={notifyGroups} />
-      <EventSettings />
     </>
   );
 }
