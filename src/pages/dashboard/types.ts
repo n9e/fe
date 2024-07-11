@@ -88,6 +88,7 @@ export interface IOptions {
     calcs: string[];
     displayMode: 'list' | 'table' | 'hidden';
     placement: 'right' | 'bottom';
+    heightInPercentage?: number;
     columns?: string[];
     detailName: string;
     detailUrl: string;

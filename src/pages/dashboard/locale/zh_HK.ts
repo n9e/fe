@@ -98,6 +98,10 @@ const zh_HK = {
       businessGroupIdent: '業務組標識',
     },
     hide: '隱藏變數',
+    hide_map: {
+      yes: '是',
+      no: '否',
+    },
     definition: '變數定義',
     definition_msg1: '請輸入變數定義',
     definition_msg2: '變數定義必須是合法的JSON',
@@ -183,6 +187,8 @@ const zh_HK = {
           showItem: '显示项目',
           hideItem: '隐藏项目',
         },
+        heightInPercentage: '高度百分比',
+        heightInPercentage_tip: 'Legend 高度佔據面板的最大高度百分比，最小值為 20%，最大值為 80%',
       },
       thresholds: {
         title: '閾值',

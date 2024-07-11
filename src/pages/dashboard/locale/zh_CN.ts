@@ -101,6 +101,10 @@ const zh_CN = {
       businessGroupIdent: '业务组标识 (Business group ident)',
     },
     hide: '隐藏变量',
+    hide_map: {
+      yes: '是',
+      no: '否',
+    },
     definition: '变量定义',
     definition_msg1: '请输入变量定义',
     definition_msg2: '变量定义必须是合法的JSON',
@@ -186,6 +190,8 @@ const zh_CN = {
           showItem: '显示项目',
           hideItem: '隐藏项目',
         },
+        heightInPercentage: '高度百分比',
+        heightInPercentage_tip: 'Legend 高度占据面板的最大高度百分比，最小值为 20%，最大值为 80%',
       },
       thresholds: {
         title: '阈值',

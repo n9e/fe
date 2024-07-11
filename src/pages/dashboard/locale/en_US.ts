@@ -98,6 +98,10 @@ const en_US = {
       businessGroupIdent: 'Business group ident',
     },
     hide: 'Hide',
+    hide_map: {
+      yes: 'Yes',
+      no: 'No',
+    },
     definition: 'Definition',
     definition_msg1: 'Please enter variable definition',
     definition_msg2: 'Variable definition must be valid JSON',
@@ -183,6 +187,8 @@ const en_US = {
           showItem: 'Show item',
           hideItem: 'Hide item',
         },
+        heightInPercentage: 'Height in percentage',
+        heightInPercentage_tip: 'Legend height occupies the maximum height percentage of the panel, the minimum value is 20%, the maximum value is 80%',
       },
       thresholds: {
         title: 'Thresholds',
