@@ -140,7 +140,7 @@ export function setVaraiableSelected({
   vars,
 }: {
   name: string;
-  value: string | string[];
+  value?: string | string[];
   id: string;
   urlAttach?: boolean;
   vars?: IVariable[];
