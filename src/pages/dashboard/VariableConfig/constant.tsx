@@ -182,12 +182,16 @@ export function getVaraiableSelected(name: string, type: string, id: string) {
     }
     return v;
   } else {
-    if (v === null) return undefined;
+    if (v === null || v === undefined) return undefined;
     if (_.isArray(v) && v.length === 0) {
       return [];
     }
     if (type === 'datasource' && !_.isNaN(_.toNumber(v))) {
       return _.toNumber(v);
+    }
+    // all 是变量全选的特殊值
+    if (v === 'all') {
+      return ['all'];
     }
     return v;
   }
