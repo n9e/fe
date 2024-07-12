@@ -18,8 +18,8 @@ import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import gfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
-
 import './index.less';
+
 interface IMarkDownPros {
   content: string;
   style?: any;
@@ -29,67 +29,7 @@ interface IMarkDownPros {
 const Markdown: React.FC<IMarkDownPros> = ({ content, style = {} }) => {
   return (
     <div className='dashboard-markdown-wrapper' style={style}>
-      <ReactMarkdown
-        remarkPlugins={[gfm]}
-        children={content}
-        rehypePlugins={[rehypeRaw]}
-        components={{
-          h1: ({ node, ...props }) => (
-            <h1
-              {...props}
-              style={{
-                color: style.color,
-                ...props.style,
-              }}
-            />
-          ),
-          h2: ({ node, ...props }) => (
-            <h2
-              {...props}
-              style={{
-                color: style.color,
-                ...props.style,
-              }}
-            />
-          ),
-          h3: ({ node, ...props }) => (
-            <h3
-              {...props}
-              style={{
-                color: style.color,
-                ...props.style,
-              }}
-            />
-          ),
-          h4: ({ node, ...props }) => (
-            <h4
-              {...props}
-              style={{
-                color: style.color,
-                ...props.style,
-              }}
-            />
-          ),
-          h5: ({ node, ...props }) => (
-            <h5
-              {...props}
-              style={{
-                color: style.color,
-                ...props.style,
-              }}
-            />
-          ),
-          h6: ({ node, ...props }) => (
-            <h6
-              {...props}
-              style={{
-                color: style.color,
-                ...props.style,
-              }}
-            />
-          ),
-        }}
-      />
+      <ReactMarkdown remarkPlugins={[gfm]} children={content} rehypePlugins={[rehypeRaw]} />
     </div>
   );
 };
