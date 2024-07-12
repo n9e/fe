@@ -39,7 +39,7 @@ export default function DisplayItem(props: IProps) {
       if (value === undefined) {
         curValue = undefined;
       } else {
-        curValue = _.isArray(value) ? value : [value];
+        curValue = Array.isArray(value) ? value : [value];
       }
     }
     setSelected(curValue);
