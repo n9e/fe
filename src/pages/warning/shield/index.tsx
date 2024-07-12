@@ -28,7 +28,7 @@ import { getBusiGroupsAlertMutes, deleteShields, updateShields } from '@/service
 import { shieldItem, strategyStatus } from '@/store/warningInterface';
 import BusinessGroupSideBarWithAll, { getDefaultGids } from '@/components/BusinessGroup/BusinessGroupSideBarWithAll';
 import RefreshIcon from '@/components/RefreshIcon';
-import { DatasourceSelect, ProdSelect } from '@/components/DatasourceSelect';
+import { DatasourceSelect } from '@/components/DatasourceSelect';
 import { CommonStateContext } from '@/App';
 import { pageSizeOptionsDefault } from '../const';
 import './locale';
@@ -49,7 +49,6 @@ const Shield: React.FC = () => {
   const [currentShieldDataAll, setCurrentShieldDataAll] = useState<Array<shieldItem>>([]);
   const [currentShieldData, setCurrentShieldData] = useState<Array<shieldItem>>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [prod, setProd] = useState<string>();
   const [datasourceIds, setDatasourceIds] = useState<number[]>();
   const columns: ColumnsType = _.concat(
     businessGroup.isLeaf && gids !== '-2'
@@ -282,7 +281,7 @@ const Shield: React.FC = () => {
 
   useEffect(() => {
     filterData();
-  }, [query, prod, datasourceIds, currentShieldDataAll]);
+  }, [query, datasourceIds, currentShieldDataAll]);
 
   const includesProm = (ids) => {
     return _.some(ids, (id) => {
@@ -300,7 +299,6 @@ const Shield: React.FC = () => {
       });
       return (
         (item.cause.indexOf(query) > -1 || !!tagFind) &&
-        ((prod && prod === item.prod) || !prod) &&
         (_.some(item.datasource_ids, (id) => {
           if (includesProm(datasourceIds) && id === 0) return true;
           return _.includes(datasourceIds, id);
@@ -345,7 +343,6 @@ const Shield: React.FC = () => {
                   refreshList();
                 }}
               />
-              <ProdSelect style={{ width: 90 }} value={prod} onChange={setProd} />
               <DatasourceSelect
                 style={{ width: 100 }}
                 filterKey='alertRule'
