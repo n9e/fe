@@ -162,7 +162,11 @@ const getCalculatedValuesBySeries = (
       sum: () => _.sumBy(serie.data, (item: any) => _.toNumber(item[1])),
       count: () => _.size(serie.data),
     };
-    const stat = results[calc] ? results[calc]() : NaN;
+    let stat = results[calc] ? results[calc]() : NaN;
+    // 2024-07-12 如果 valueField 不是内置的 Value 字段，则取 metric 中的值
+    if (valueField && valueField !== 'Value') {
+      stat = _.get(serie, ['metric', valueField], NaN);
+    }
     // 2024-06-28 serie.name 放到这里处理，原 datasource 里的 name 都删除掉
     // 目前只有 mysql 源生效
     // name 的处理逻辑为
