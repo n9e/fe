@@ -344,7 +344,7 @@ const Shield: React.FC = () => {
                     refreshList();
                   }}
                 />
-                <ProdSelect style={{ width: 90 }} value={prod} onChange={setProd} />
+                {/* <ProdSelect style={{ width: 90 }} value={prod} onChange={setProd} /> */}
                 <DatasourceSelect
                   style={{ width: 100 }}
                   filterKey='alertRule'
