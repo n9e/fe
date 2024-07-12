@@ -118,6 +118,7 @@ function index(props: IProps) {
         for (let idx = 0; idx < value.length; idx++) {
           const item = _.cloneDeep(value[idx]);
           if (item.type === 'query' && item.definition) {
+            const datasourceCate = item.datasource?.cate;
             const definition = idx > 0 ? replaceExpressionVars(item.definition, result, idx, id) : item.definition;
 
             let options = [];
@@ -135,14 +136,14 @@ function index(props: IProps) {
                 id,
                 groupedDatasourceList,
               );
-              options = _.sortBy(_.uniq(options));
+              options = datasourceCate === 'prometheus' ? _.sortBy(_.uniq(options)) : _.uniq(options);
             } catch (error) {
               console.error(error);
             }
             const regFilterOptions = filterOptionsByReg(options, item.reg, result, idx, id);
             result[idx] = item;
             result[idx].fullDefinition = definition;
-            result[idx].options = item.type === 'query' ? _.sortBy(regFilterOptions) : regFilterOptions;
+            result[idx].options = item.type === 'query' ? (datasourceCate === 'prometheus' ? _.sortBy(regFilterOptions) : regFilterOptions) : regFilterOptions;
             // 当仪表盘变量值为空时，设置默认值
             // 如果已选项不在待选项里也视做空值处理
             const selected = getVaraiableSelected(item.name, item.type, id);
