@@ -120,7 +120,7 @@ export default function index(props: IProps) {
             </Form.Item>
             <Base />
             <Rule form={form} />
-            <EventSettings />
+            <EventSettings initialValues={initialValues} />
             <Effective />
             <Notify disabled={disabled} />
           </div>

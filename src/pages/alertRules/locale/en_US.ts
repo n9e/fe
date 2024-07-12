@@ -190,6 +190,15 @@ const en_US = {
     source_labels_placeholder: 'Optional, the original label used',
     separator_placeholder: 'Optional, spliced according to the existing label value, used to splice the connector of the value',
     regex_placeholder: 'Optional, based on the content of the existing label value, extract the regular expression used to construct the content',
+    labelkeep: {
+      regex_placeholder: 'Required, supports regular expressions, labels that match the label key will be retained',
+    },
+    labeldrop: {
+      regex_placeholder: 'Required, supports regular expressions, labels that match the label key will be deleted',
+    },
+    labelmap: {
+      regex_placeholder: 'Required, use regular expressions to extract content',
+    },
   },
 };
 export default en_US;

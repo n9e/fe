@@ -189,6 +189,15 @@ const zh_CN = {
     source_labels_placeholder: '选填，使用的原始标签',
     separator_placeholder: '选填，根据已有的标签值拼接，用来拼接 value 的连字符',
     regex_placeholder: '选填，根据已有标签值部分内容构建，提取构建内容的正则',
+    labelkeep: {
+      regex_placeholder: '必填，支持正则，标签key匹配到的标签会保留',
+    },
+    labeldrop: {
+      regex_placeholder: '必填，支持正则，标签key匹配到的标签会被删除',
+    },
+    labelmap: {
+      regex_placeholder: '必填，使用正则提取内容',
+    },
   },
 };
 export default zh_CN;

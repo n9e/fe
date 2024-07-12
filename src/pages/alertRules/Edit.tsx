@@ -15,6 +15,7 @@
  *
  */
 import React, { useEffect, useState, useRef } from 'react';
+import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useParams, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
@@ -62,7 +63,7 @@ export default function Edit() {
 
   return (
     <PageLayout title={t('title')} showBack backPath='/alert-rules'>
-      <Form type={mode === 'clone' ? 2 : 1} initialValues={values} editable={editable} />
+      {!_.isEmpty(values) && <Form type={mode === 'clone' ? 2 : 1} editable={editable} initialValues={values} />}
     </PageLayout>
   );
 }

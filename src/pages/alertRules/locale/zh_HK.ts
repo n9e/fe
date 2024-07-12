@@ -189,6 +189,15 @@ const zh_HK = {
     source_labels_placeholder: '選填，使用的原始標籤',
     separator_placeholder: '選填，根據已有的標籤值拼接，用來拼接 value 的連字符',
     regex_placeholder: '選填，根據已有標籤值部分內容構建，提取構建內容的正則',
+    labelkeep: {
+      regex_placeholder: '必填，支持正則，標籤key匹配到的標籤會保留',
+    },
+    labeldrop: {
+      regex_placeholder: '必填，支持正則，標籤key匹配到的標籤會被刪除',
+    },
+    labelmap: {
+      regex_placeholder: '必填，使用正則提取內容',
+    },
   },
 };
 

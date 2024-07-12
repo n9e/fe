@@ -6,14 +6,14 @@ import _ from 'lodash';
 import RelabelItem from './RelabelItem';
 import './style.less';
 
-const name = ['rule_config', 'event_relabel_config'];
+export const name = ['rule_config', 'event_relabel_config'];
 
 export default function PrometheusV2() {
   const { t } = useTranslation('alertRules');
 
   return (
     <>
-      <Form.List name={name} initialValue={[]}>
+      <Form.List name={name}>
         {(fields, { add, remove }) => (
           <div className='n9e-alert-relabel-list'>
             {fields.map((field) => (
