@@ -183,20 +183,21 @@ const zh_CN = {
   expired: '告警规则已经被别人修改，为避免相互覆盖，请刷新页面查看最新配置',
   relabel: {
     title: '事件 relabel',
-    if_placeholder: '选填，满足此匹配条件的事件才进行标签 relabel',
-    target_label_placeholder: '新增标签的 key',
-    replacement_placeholder: '标签最终的 value，如果配置了 separator 此字段可不填，如果配置了 regex 此字段可使用正则中匹配的内容来构建最终的目标值',
-    source_labels_placeholder: '选填，使用的原始标签',
-    separator_placeholder: '选填，根据已有的标签值拼接，用来拼接 value 的连字符',
-    regex_placeholder: '选填，根据已有标签值部分内容构建，提取构建内容的正则',
+    if_tip: '选填，满足此匹配条件的事件才进行标签 relabel',
+    target_label_tip: '新增标签的 key',
+    replacement_tip: '标签最终的 value，如果配置了 separator 此字段可不填，如果配置了 regex 此字段可使用正则中匹配的内容来构建最终的目标值',
+    source_labels_tip: '选填，使用的原始标签',
+    source_labels_tip_placeholder: '使用回车或空格分隔',
+    separator_tip: '选填，根据已有的标签值拼接，用来拼接 value 的连字符',
+    regex_tip: '选填，根据已有标签值部分内容构建，提取构建内容的正则',
     labelkeep: {
-      regex_placeholder: '必填，支持正则，标签key匹配到的标签会保留',
+      regex_tip: '必填，支持正则，标签key匹配到的标签会保留',
     },
     labeldrop: {
-      regex_placeholder: '必填，支持正则，标签key匹配到的标签会被删除',
+      regex_tip: '必填，支持正则，标签key匹配到的标签会被删除',
     },
     labelmap: {
-      regex_placeholder: '必填，使用正则提取内容',
+      regex_tip: '必填，使用正则提取内容',
     },
   },
 };
