@@ -6,7 +6,7 @@ import _ from 'lodash';
 import RelabelItem from './RelabelItem';
 import './style.less';
 
-const name = ['extra_config', 'event_relabel_config'];
+const name = ['rule_config', 'event_relabel_config'];
 
 export default function PrometheusV2() {
   const { t } = useTranslation('alertRules');
