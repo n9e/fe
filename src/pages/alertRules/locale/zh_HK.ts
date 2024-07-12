@@ -182,20 +182,21 @@ const zh_HK = {
   },
   relabel: {
     title: '事件 relabel',
-    if_placeholder: '選填，滿足此匹配條件的事件才進行標籤 relabel',
-    target_label_placeholder: '新增標籤的 key',
-    replacement_placeholder: '標籤最終的 value，如果配置了 separator 此字段可不填，如果配置了 regex 此字段可使用正則中匹配的內容來構建最終的目標值',
-    source_labels_placeholder: '選填，使用的原始標籤',
-    separator_placeholder: '選填，根據已有的標籤值拼接，用來拼接 value 的連字符',
-    regex_placeholder: '選填，根據已有標籤值部分內容構建，提取構建內容的正則',
+    if_tip: '選填，滿足此匹配條件的事件才進行標籤 relabel',
+    target_label_tip: '新增標籤的 key',
+    replacement_tip: '標籤最終的 value，如果配置了 separator 此字段可不填，如果配置了 regex 此字段可使用正則中匹配的內容來構建最終的目標值',
+    source_labels_tip: '選填，使用的原始標籤',
+    source_labels_tip_placeholder: '使用回車或空格分隔',
+    separator_tip: '選填，根據已有的標籤值拼接，用來拼接 value 的連字符',
+    regex_tip: '選填，根據已有標籤值部分內容構建，提取構建內容的正則',
     labelkeep: {
-      regex_placeholder: '必填，支持正則，標籤key匹配到的標籤會保留',
+      regex_tip: '必填，支持正則，標籤key匹配到的標籤會保留',
     },
     labeldrop: {
-      regex_placeholder: '必填，支持正則，標籤key匹配到的標籤會被刪除',
+      regex_tip: '必填，支持正則，標籤key匹配到的標籤會被刪除',
     },
     labelmap: {
-      regex_placeholder: '必填，使用正則提取內容',
+      regex_tip: '必填，使用正則提取內容',
     },
   },
 };

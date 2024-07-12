@@ -31,33 +31,33 @@ export default function RelabelItem(props: Props) {
         {action === 'replace' && (
           <>
             <Col span={12}>
-              <Form.Item {...field} name={[field.name, 'if']} label='if'>
-                <Input placeholder={t('relabel.if_placeholder')} />
+              <Form.Item {...field} name={[field.name, 'if']} label='if' tooltip={t('relabel.if_tip')}>
+                <Input />
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item {...field} name={[field.name, 'target_label']} label='target_label'>
-                <Input placeholder={t('relabel.target_label_placeholder')} />
+              <Form.Item {...field} name={[field.name, 'target_label']} label='target_label' tooltip={t('relabel.target_label_tip')}>
+                <Input />
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item {...field} name={[field.name, 'replacement']} label='replacement'>
-                <Input placeholder={t('relabel.replacement_placeholder')} />
+              <Form.Item {...field} name={[field.name, 'replacement']} label='replacement' tooltip={t('relabel.replacement_tip')}>
+                <Input />
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item {...field} name={[field.name, 'source_labels']} label='source_labels'>
-                <Input placeholder={t('relabel.source_labels_placeholder')} />
+              <Form.Item {...field} name={[field.name, 'source_labels']} label='source_labels' tooltip={t('relabel.source_labels_tip')}>
+                <Select mode='tags' tokenSeparators={[' ']} open={false} placeholder={t('relabel.source_labels_tip_placeholder')} />
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item {...field} name={[field.name, 'separator']} label='separator'>
-                <Input placeholder={t('relabel.separator_placeholder')} />
+              <Form.Item {...field} name={[field.name, 'separator']} label='separator' tooltip={t('relabel.separator_tip')}>
+                <Input />
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item {...field} name={[field.name, 'regex']} label='regex'>
-                <Input placeholder={t('relabel.regex_placeholder')} />
+              <Form.Item {...field} name={[field.name, 'regex']} label='regex' tooltip={t('relabel.regex_tip')}>
+                <Input />
               </Form.Item>
             </Col>
           </>
@@ -73,8 +73,9 @@ export default function RelabelItem(props: Props) {
                   required: true,
                 },
               ]}
+              tooltip={t(`relabel.${action}.regex_tip`)}
             >
-              <Input placeholder={t(`relabel.${action}.regex_placeholder`)} />
+              <Input />
             </Form.Item>
           </Col>
         )}
@@ -90,13 +91,14 @@ export default function RelabelItem(props: Props) {
                     required: true,
                   },
                 ]}
+                tooltip={t('relabel.labelmap.regex_tip')}
               >
-                <Input placeholder={t('relabel.labelmap.regex_placeholder')} />
+                <Input />
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item {...field} name={[field.name, 'replacement']} label='replacement'>
-                <Input placeholder={t('relabel.replacement_placeholder')} />
+              <Form.Item {...field} name={[field.name, 'replacement']} label='replacement' tooltip={t('relabel.replacement_tip')}>
+                <Input />
               </Form.Item>
             </Col>
           </>

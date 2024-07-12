@@ -182,21 +182,22 @@ const en_US = {
   },
   relabel: {
     title: 'Relabel',
-    if_placeholder: 'Optional, only events that meet this matching condition will be relabeled',
-    target_label_placeholder: 'Key of the new label',
-    replacement_placeholder:
+    if_tip: 'Optional, only events that meet this matching condition will be relabeled',
+    target_label_tip: 'Key of the new label',
+    replacement_tip:
       'The final value of the label, if the separator is configured, this field can be left blank, if the regex is configured, this field can use the content matched in the regular expression to construct the final target value',
-    source_labels_placeholder: 'Optional, the original label used',
-    separator_placeholder: 'Optional, spliced according to the existing label value, used to splice the connector of the value',
-    regex_placeholder: 'Optional, based on the content of the existing label value, extract the regular expression used to construct the content',
+    source_labels_tip: 'Optional, the original label used',
+    source_labels_tip_placeholder: 'Use Enter or Space to separate',
+    separator_tip: 'Optional, spliced according to the existing label value, used to splice the connector of the value',
+    regex_tip: 'Optional, based on the content of the existing label value, extract the regular expression used to construct the content',
     labelkeep: {
-      regex_placeholder: 'Required, supports regular expressions, labels that match the label key will be retained',
+      regex_tip: 'Required, supports regular expressions, labels that match the label key will be retained',
     },
     labeldrop: {
-      regex_placeholder: 'Required, supports regular expressions, labels that match the label key will be deleted',
+      regex_tip: 'Required, supports regular expressions, labels that match the label key will be deleted',
     },
     labelmap: {
-      regex_placeholder: 'Required, use regular expressions to extract content',
+      regex_tip: 'Required, use regular expressions to extract content',
     },
   },
 };
