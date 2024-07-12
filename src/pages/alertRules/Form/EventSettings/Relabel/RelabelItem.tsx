@@ -64,16 +64,34 @@ export default function RelabelItem(props: Props) {
         )}
         {(action === 'labelkeep' || action === 'labeldrop') && (
           <Col span={12}>
-            <Form.Item {...field} name={[field.name, 'regex']} label='regex'>
-              <Input placeholder={t('relabel.regex_placeholder')} />
+            <Form.Item
+              {...field}
+              name={[field.name, 'regex']}
+              label='regex'
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <Input placeholder={t(`relabel.${action}.regex_placeholder`)} />
             </Form.Item>
           </Col>
         )}
         {action === 'labelmap' && (
           <>
             <Col span={6}>
-              <Form.Item {...field} name={[field.name, 'regex']} label='regex'>
-                <Input placeholder={t('relabel.regex_placeholder')} />
+              <Form.Item
+                {...field}
+                name={[field.name, 'regex']}
+                label='regex'
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
+              >
+                <Input placeholder={t('relabel.labelmap.regex_placeholder')} />
               </Form.Item>
             </Col>
             <Col span={6}>
