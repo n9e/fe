@@ -20,7 +20,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import _ from 'lodash';
 import { useKeyPress } from 'ahooks';
-import { Space, Empty, Spin, Dropdown, Input, Menu, notification } from 'antd';
+import { Space, Empty, Spin, Dropdown, Input, Menu, notification, Tooltip } from 'antd';
 import { SettingOutlined, DownOutlined, FullscreenOutlined } from '@ant-design/icons';
 import { CommonStateContext } from '@/App';
 import PageLayout from '@/components/pageLayout';
@@ -71,29 +71,29 @@ export default function index() {
     }
   }, [data, query.id]);
 
-  useKeyPress('esc', () => {
-    if (query.viewMode === 'fullscreen') {
-      history.replace({
-        pathname: location.pathname,
-        search: queryString.stringify(_.omit(query, ['viewMode'])),
-      });
-      notification.close('dashboard_fullscreen');
-    }
-  });
+  // useKeyPress('esc', () => {
+  //   if (query.viewMode === 'fullscreen') {
+  //     history.replace({
+  //       pathname: location.pathname,
+  //       search: queryString.stringify(_.omit(query, ['viewMode'])),
+  //     });
+  //     notification.close('dashboard_fullscreen');
+  //   }
+  // });
 
-  useEffect(() => {
-    if (query.viewMode === 'fullscreen' && isClickTrigger.current) {
-      notification.info({
-        key: 'dashboard_fullscreen',
-        message: (
-          <div>
-            <div>{t('dashboard:detail.fullscreen.notification.esc')}</div>
-          </div>
-        ),
-        duration: 3,
-      });
-    }
-  }, [query.viewMode]);
+  // useEffect(() => {
+  //   if (query.viewMode === 'fullscreen' && isClickTrigger.current) {
+  //     notification.info({
+  //       key: 'dashboard_fullscreen',
+  //       message: (
+  //         <div>
+  //           <div>{t('dashboard:detail.fullscreen.notification.esc')}</div>
+  //         </div>
+  //       ),
+  //       duration: 3,
+  //     });
+  //   }
+  // }, [query.viewMode]);
 
   useEffect(() => {
     setLoading(true);
@@ -193,19 +193,21 @@ export default function index() {
                 }}
               />
             </AuthorizationWrapper>
-            <FullscreenOutlined
-              style={{ margin: 0 }}
-              onClick={() => {
-                isClickTrigger.current = true;
-                history.replace({
-                  pathname: location.pathname,
-                  search: queryString.stringify({
-                    ...query,
-                    viewMode: 'fullscreen',
-                  }),
-                });
-              }}
-            />
+            <Tooltip title={t('exitFullScreen_tip')}>
+              <FullscreenOutlined
+                style={{ margin: 0 }}
+                onClick={() => {
+                  isClickTrigger.current = true;
+                  history.push({
+                    pathname: location.pathname,
+                    search: queryString.stringify({
+                      ...query,
+                      viewMode: 'fullscreen',
+                    }),
+                  });
+                }}
+              />
+            </Tooltip>
           </Space>
         ) : (
           t('title')
