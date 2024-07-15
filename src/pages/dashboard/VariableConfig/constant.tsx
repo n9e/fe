@@ -21,7 +21,7 @@ import queryString from 'query-string';
 import { getLabelNames, getMetricSeries, getMetricSeriesV2, getLabelValues, getMetric, getQueryResult, getESVariableResult } from '@/services/dashboardV2';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { IVariable } from './definition';
-import { normalizeESQueryRequestBody } from './utils';
+import { normalizeESQueryRequestBody, ajustVarSingleValue } from './utils';
 
 // https://grafana.com/docs/grafana/latest/datasources/prometheus/#query-variable 根据文档解析表达式
 // 每一个promtheus接口都接受start和end参数来限制返回值
@@ -197,6 +197,11 @@ export function getVaraiableSelected(name: string, type: string, id: string) {
   }
 }
 
+const replaceAllSeparatorMap = {
+  prometheus: '|',
+  elasticsearch: ' OR ',
+};
+
 export const replaceExpressionVarsSpecifyRule = (
   params: {
     expression: string;
@@ -216,7 +221,8 @@ export const replaceExpressionVarsSpecifyRule = (
   if (vars && vars.length > 0) {
     for (let i = 0; i < limit; i++) {
       if (formData[i]) {
-        const { name, options, reg, value, allValue, type } = formData[i];
+        const { name, options, reg, value, allValue, type, datasource } = formData[i];
+        const separator = replaceAllSeparatorMap[datasource?.cate] || replaceAllSeparatorMap.prometheus;
         const placeholder = getPlaceholder(name);
         const selected = getVaraiableSelected(name, type, id);
         if (vars.includes(placeholder)) {
@@ -227,17 +233,42 @@ export const replaceExpressionVarsSpecifyRule = (
               newExpression = replaceAllPolyfill(
                 newExpression,
                 placeholder,
-                `(${_.trim((options as string[]).filter((i) => !reg || !stringToRegex(reg) || (stringToRegex(reg) as RegExp).test(i)).join('|'), '|')})`,
+                `(${_.trim(
+                  _.join(
+                    _.map(
+                      _.filter(options, (i) => !reg || !stringToRegex(reg) || (stringToRegex(reg) as RegExp).test(i)),
+                      (item) => {
+                        return datasource?.cate === 'elasticsearch' ? `"${item}"` : item;
+                      },
+                    ),
+                    separator,
+                  ),
+                  separator,
+                )})`,
               );
             }
           } else if (Array.isArray(selected)) {
-            const realSelected = _.size(selected) === 0 ? '' : _.size(selected) === 1 ? selected[0] : `(${_.trim((selected as string[]).join('|'), '|')})`;
+            const headSelected = datasource?.cate === 'elasticsearch' ? `"${selected[0]}"` : selected[0];
+            const realSelected =
+              _.size(selected) === 0
+                ? ''
+                : _.size(selected) === 1
+                ? headSelected
+                : `(${_.trim(
+                    _.join(
+                      _.map(selected, (item) => {
+                        return datasource?.cate === 'elasticsearch' ? `"${item}"` : item;
+                      }),
+                      separator,
+                    ),
+                    separator,
+                  )})`;
             newExpression = replaceAllPolyfill(newExpression, placeholder, realSelected);
           } else if (typeof selected === 'string') {
-            newExpression = replaceAllPolyfill(newExpression, placeholder, selected as string);
+            newExpression = replaceAllPolyfill(newExpression, placeholder, ajustVarSingleValue(newExpression, placeholder, selected, formData[i]));
           } else if (selected === null || selected === undefined) {
             // 未选择或填写变量值时替换为传入的value
-            newExpression = replaceAllPolyfill(newExpression, placeholder, value ? (_.isArray(value) ? _.trim(_.join(value, '|'), '|') : value) : '');
+            newExpression = replaceAllPolyfill(newExpression, placeholder, value ? (_.isArray(value) ? _.trim(_.join(value, separator), separator) : value) : '');
             if (type === 'datasource') {
               newExpression = !_.isNaN(_.toNumber(newExpression)) ? (_.toNumber(newExpression) as any) : newExpression;
             }
