@@ -360,6 +360,7 @@ const Shield: React.FC = () => {
           className='n9e-border-base p2'
           style={{
             width: '100%',
+            overflow: 'hidden auto',
           }}
         >
           <div
