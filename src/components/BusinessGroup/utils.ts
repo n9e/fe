@@ -180,7 +180,7 @@ export const getBusinessGroupsOptions = (myBusiGroups, allBusiGroups) => {
     },
     {
       label: i18next.t('common:all_business_group'),
-      options: _.map(allBusiGroups, (item) => {
+      options: _.map(_.differenceBy(allBusiGroups, myBusiGroups, 'id') as any, (item) => {
         return { label: item.name, value: item.id };
       }),
     },
