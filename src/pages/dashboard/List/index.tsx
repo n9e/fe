@@ -85,7 +85,7 @@ export default function index() {
     if (gids === '-1' && !_.isEmpty(selectedBusinessGroup)) {
       flag = _.includes(selectedBusinessGroup, item.group_id);
     }
-    if (searchVal) {
+    if (searchVal && flag) {
       flag =
         _.includes(item.name.toLowerCase(), searchVal.toLowerCase()) ||
         _.includes(_.join(_.sortBy(_.split(item.tags.toLowerCase(), ' ')), ' '), _.join(_.sortBy(_.split(searchVal.toLowerCase(), ' ')), ' '));
