@@ -399,7 +399,7 @@ export default function index(props: IProps) {
     if (chartRef.current) {
       chartRef.current.handleResize();
     }
-  }, [placement, JSON.stringify(legendEleSize)]);
+  }, [placement, JSON.stringify(legendEleSize), heightInPercentage]);
 
   let tableColumn: ColumnProps<DataItem>[] = [
     {
