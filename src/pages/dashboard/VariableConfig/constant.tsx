@@ -110,7 +110,7 @@ const replaceAllPolyfill = (str, substr, newSubstr): string => {
 function getVarsValue(id: string, vars?: IVariable[]) {
   const varsValue = {};
   _.forEach(vars, (item) => {
-    varsValue[item.name] = getVaraiableSelected(item.name, item.type, id);
+    varsValue[item.name] = getVaraiableSelected(item, id);
   });
   return varsValue;
 }
@@ -151,7 +151,8 @@ export function setVaraiableSelected({
   urlAttach && attachVariable2Url(name, value, id, vars);
 }
 
-export function getVaraiableSelected(name: string, type: string, id: string) {
+export function getVaraiableSelected(varaiableItem: IVariable, id: string) {
+  const { name, type, multi } = varaiableItem;
   const { search } = window.location;
   const searchObj = queryString.parse(search);
   let v: any = searchObj[name];
@@ -176,9 +177,13 @@ export function getVaraiableSelected(name: string, type: string, id: string) {
     if (type === 'datasource' && !_.isNaN(_.toNumber(v))) {
       return _.toNumber(v);
     }
-    // all 是变量全选的特殊值
-    if (v === 'all') {
-      return ['all'];
+    if (multi) {
+      if (v === 'all') {
+        return ['all'];
+      }
+      if (_.isString(v)) {
+        return [v];
+      }
     }
     return v;
   } else {
@@ -189,9 +194,13 @@ export function getVaraiableSelected(name: string, type: string, id: string) {
     if (type === 'datasource' && !_.isNaN(_.toNumber(v))) {
       return _.toNumber(v);
     }
-    // all 是变量全选的特殊值
-    if (v === 'all') {
-      return ['all'];
+    if (multi) {
+      if (v === 'all') {
+        return ['all'];
+      }
+      if (_.isString(v)) {
+        return [v];
+      }
     }
     return v;
   }
@@ -224,7 +233,7 @@ export const replaceExpressionVarsSpecifyRule = (
         const { name, options, reg, value, allValue, type, datasource } = formData[i];
         const separator = replaceAllSeparatorMap[datasource?.cate] || replaceAllSeparatorMap.prometheus;
         const placeholder = getPlaceholder(name);
-        const selected = getVaraiableSelected(name, type, id);
+        const selected = getVaraiableSelected(formData[i], id);
         if (vars.includes(placeholder)) {
           if (_.isEqual(selected, ['all'])) {
             if (allValue) {

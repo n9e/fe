@@ -57,7 +57,7 @@ export default function useQuery(props: IProps) {
   const [loaded, setLoaded] = useState(false);
   const [loading, setLoading] = useState(false);
   const cachedVariableValues = _.map(variableConfig, (item) => {
-    return getVaraiableSelected(item.name, item.type, dashboardId);
+    return getVaraiableSelected(item, dashboardId);
   });
   const flag = useRef(false);
   const fetchQueryMap = {
