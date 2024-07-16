@@ -290,7 +290,7 @@ function TableCpt(props: IProps, ref: any) {
             let textObj = getMappedTextObj(text, options?.valueMappings);
             const overrideProps = getOverridePropertiesByName(overrides, 'byName', key);
             if (!_.isEmpty(overrideProps)) {
-              textObj = getSerieTextObj(textObj.text, overrideProps?.standardOptions, overrideProps?.valueMappings);
+              textObj = getSerieTextObj(textObj.text, overrideProps?.standardOptions, overrideProps?.valueMappings, undefined, false);
             }
             return <Cell {...textObj} panel={values} time={time} record={record} />;
           },

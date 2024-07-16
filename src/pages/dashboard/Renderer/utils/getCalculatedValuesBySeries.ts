@@ -23,7 +23,13 @@ const getValueAndToNumber = (value: any[]) => {
   return _.toNumber(_.get(value, 1, NaN));
 };
 
-export const getSerieTextObj = (value: number | string | null | undefined, standardOptions?: any, valueMappings?: IValueMapping[], thresholds?: IThresholds) => {
+export const getSerieTextObj = (
+  value: number | string | null | undefined,
+  standardOptions?: any,
+  valueMappings?: IValueMapping[],
+  thresholds?: IThresholds,
+  handleValueFormatter = true,
+) => {
   const { decimals, dateFormat } = standardOptions || {};
   const unit = standardOptions?.unit || standardOptions?.util; // TODO: 兼容之前写错的 util
   const matchedValueMapping = _.find(valueMappings, (item: any) => {
@@ -38,16 +44,16 @@ export const getSerieTextObj = (value: number | string | null | undefined, stand
       }
       return false;
     } else {
-      value = _.toNumber(value) as number;
+      const toNumberValue = _.toNumber(value) as number;
       if (type === 'special') {
-        return value === match?.special;
+        return toNumberValue === match?.special;
       } else if (type === 'range') {
         if (_.isNumber(match?.from) && _.isNumber(match?.to)) {
-          return value >= match?.from && value <= match?.to;
+          return toNumberValue >= match?.from && toNumberValue <= match?.to;
         } else if (_.isNumber(match?.from)) {
-          return value >= match?.from;
+          return toNumberValue >= match?.from;
         } else if (_.isNumber(match?.to)) {
-          return value <= match?.to;
+          return toNumberValue <= match?.to;
         }
         return false;
       }
@@ -65,20 +71,29 @@ export const getSerieTextObj = (value: number | string | null | undefined, stand
     }),
     (item) => {
       if (_.isNumber(item.value) && value) {
-        value = _.toNumber(value) as number;
-        if (value >= item.value) {
+        const toNumberValue = _.toNumber(value) as number;
+        if (toNumberValue >= item.value) {
           matchedThresholdsColor = item.color;
         }
       }
     },
   );
-  const valueObj = valueFormatter({ unit, decimals, dateFormat }, value);
-  const newValue = matchedValueMapping?.result?.text ? matchedValueMapping?.result?.text : valueObj.value;
+  if (handleValueFormatter) {
+    const valueObj = valueFormatter({ unit, decimals, dateFormat }, value);
+    const newValue = matchedValueMapping?.result?.text ? matchedValueMapping?.result?.text : valueObj.value;
+    return {
+      value: newValue,
+      unit: valueObj.unit,
+      color: matchedValueMapping?.result?.color || matchedThresholdsColor,
+      text: newValue + valueObj.unit,
+    };
+  }
+  const newValue = matchedValueMapping?.result?.text ? matchedValueMapping?.result?.text : value;
   return {
     value: newValue,
-    unit: valueObj.unit,
+    unit: '',
     color: matchedValueMapping?.result?.color || matchedThresholdsColor,
-    text: newValue + valueObj.unit,
+    text: newValue,
   };
 };
 
