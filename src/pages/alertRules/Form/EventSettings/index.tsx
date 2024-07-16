@@ -28,19 +28,21 @@ export default function index({ initialValues }) {
         >
           {t('relabel.title')}
           {collapsed ? <RightOutlined /> : <DownOutlined />}
-          <a
-            onClick={(event) => {
-              event.stopPropagation();
-              DocumentDrawer({
-                language: i18n.language,
-                darkMode,
-                title: t('relabel.help_btn'),
-                documentPath: '/docs/alert-event-relabel',
-              });
-            }}
-          >
-            {t('relabel.help_btn')}
-          </a>
+          {!collapsed && (
+            <a
+              onClick={(event) => {
+                event.stopPropagation();
+                DocumentDrawer({
+                  language: i18n.language,
+                  darkMode,
+                  title: t('relabel.help_btn'),
+                  documentPath: '/docs/alert-event-relabel',
+                });
+              }}
+            >
+              {t('relabel.help_btn')}
+            </a>
+          )}
         </Space>
       }
       bodyStyle={{
