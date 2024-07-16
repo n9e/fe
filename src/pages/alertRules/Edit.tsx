@@ -63,7 +63,7 @@ export default function Edit() {
 
   return (
     <PageLayout title={t('title')} showBack backPath='/alert-rules'>
-      {!_.isEmpty(values) && <Form type={mode === 'clone' ? 2 : 1} editable={editable} initialValues={values} />}
+      {!_.isEmpty(values) && <Form type={mode === 'clone' ? 2 : 1} initialValues={values} editable={editable} />}
     </PageLayout>
   );
 }

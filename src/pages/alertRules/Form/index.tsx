@@ -48,6 +48,7 @@ export default function index(props: IProps) {
   const [form] = Form.useForm();
   const { groupedDatasourceList, licenseRulesRemaining } = useContext(CommonStateContext);
   const disabled = type === 3;
+  const containerRef = React.useRef(null);
   const handleCheck = async (values) => {
     if (values.cate === 'prometheus') {
       if (values.rule_config.checked && values.prod === 'anomaly') {
@@ -111,58 +112,67 @@ export default function index(props: IProps) {
         disabled,
       }}
     >
-      <Form form={form} layout='vertical' disabled={disabled} style={{ overflow: 'hidden auto' }}>
-        <div className='p2'>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            {editable === false && <Alert type='warning' message={t('expired')} />}
-            <Form.Item name='disabled' hidden>
-              <div />
-            </Form.Item>
-            <Base />
-            <Rule form={form} />
-            <EventSettings initialValues={initialValues} />
-            <Effective />
-            <Notify disabled={disabled} />
-          </div>
-          <Affix offsetBottom={0}>
-            <Card size='small' className='affix-bottom-shadow'>
-              {!disabled && (
-                <Space>
-                  <Button
-                    type='primary'
-                    disabled={editable === false}
-                    onClick={() => {
-                      form
-                        .validateFields()
-                        .then(async (values) => {
-                          handleCheck(values);
-                          const data = processFormValues(values) as any;
-                          if (type === 1) {
-                            const res = await EditStrategy(data, initialValues.group_id, initialValues.id);
-                            handleMessage(res);
-                          } else {
-                            const curBusiId = initialValues?.group_id || Number(bgid);
-                            const res = await addStrategy([data], curBusiId);
-                            handleMessage(res);
-                          }
-                        })
-                        .catch((err) => {
-                          console.error(err);
-                          scrollToFirstError();
-                        });
-                    }}
-                  >
-                    {t('common:btn.save')}
-                  </Button>
-                  <Link to='/alert-rules'>
-                    <Button>{t('common:btn.cancel')}</Button>
-                  </Link>
-                </Space>
+      <div style={{ overflow: 'hidden auto', padding: 0 }} ref={containerRef}>
+        <Form form={form} layout='vertical' disabled={disabled} style={{ background: 'unset' }}>
+          <div className='p2'>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {editable === false && (
+                <Affix
+                  target={() => {
+                    return containerRef.current || window;
+                  }}
+                >
+                  <Alert type='warning' message={t('expired')} />
+                </Affix>
               )}
-            </Card>
-          </Affix>
-        </div>
-      </Form>
+              <Form.Item name='disabled' hidden>
+                <div />
+              </Form.Item>
+              <Base />
+              <Rule form={form} />
+              <EventSettings initialValues={initialValues} />
+              <Effective />
+              <Notify disabled={disabled} />
+            </div>
+            <Affix offsetBottom={0}>
+              <Card size='small' className='affix-bottom-shadow'>
+                {!disabled && (
+                  <Space>
+                    <Button
+                      type='primary'
+                      onClick={() => {
+                        form
+                          .validateFields()
+                          .then(async (values) => {
+                            handleCheck(values);
+                            const data = processFormValues(values) as any;
+                            if (type === 1) {
+                              const res = await EditStrategy(data, initialValues.group_id, initialValues.id);
+                              handleMessage(res);
+                            } else {
+                              const curBusiId = initialValues?.group_id || Number(bgid);
+                              const res = await addStrategy([data], curBusiId);
+                              handleMessage(res);
+                            }
+                          })
+                          .catch((err) => {
+                            console.error(err);
+                            scrollToFirstError();
+                          });
+                      }}
+                    >
+                      {t('common:btn.save')}
+                    </Button>
+                    <Link to='/alert-rules'>
+                      <Button>{t('common:btn.cancel')}</Button>
+                    </Link>
+                  </Space>
+                )}
+              </Card>
+            </Affix>
+          </div>
+        </Form>
+      </div>
     </FormStateContext.Provider>
   );
 }
