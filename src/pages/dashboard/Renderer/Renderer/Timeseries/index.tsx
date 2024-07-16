@@ -187,19 +187,7 @@ export default function index(props: IProps) {
       });
     }
     if (hasLegend) {
-      setLegendData(
-        getLegendValues(
-          seriesData,
-          {
-            unit: options?.standardOptions?.util,
-            decimals: options?.standardOptions?.decimals,
-            dateFormat: options?.standardOptions?.dateFormat,
-          },
-          colors || hexPalette,
-          undefined,
-          options?.valueMappings,
-        ),
-      );
+      setLegendData(getLegendValues(seriesData, options?.standardOptions, colors || hexPalette, undefined, options?.valueMappings, overrides));
     } else {
       setLegendData([]);
     }
@@ -376,19 +364,7 @@ export default function index(props: IProps) {
       });
     }
     if (hasLegend) {
-      setLegendData(
-        getLegendValues(
-          seriesData,
-          {
-            unit: options?.standardOptions?.util,
-            decimals: options?.standardOptions?.decimals,
-            dateFormat: options?.standardOptions?.dateFormat,
-          },
-          colors || hexPalette,
-          custom.stack === 'noraml',
-          options?.valueMappings,
-        ),
-      );
+      setLegendData(getLegendValues(seriesData, options?.standardOptions, colors || hexPalette, custom.stack === 'noraml', options?.valueMappings, overrides));
     } else {
       setLegendData([]);
     }
