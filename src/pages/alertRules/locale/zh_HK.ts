@@ -180,6 +180,7 @@ const zh_HK = {
     disabled: '啟用',
     severity: '級別',
   },
+  expired: '告警規則已經被別人修改，為避免相互覆蓋，請刷新頁面查看最新配置',
   relabel: {
     title: '事件 relabel',
     if_tip: '選填，滿足此匹配條件的事件才進行標籤 relabel',

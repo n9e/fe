@@ -180,6 +180,7 @@ const zh_CN = {
     disabled: '启用',
     severity: '级别',
   },
+  expired: '告警规则已经被别人修改，为避免相互覆盖，请刷新页面查看最新配置',
   relabel: {
     title: '事件 relabel',
     if_tip: '选填，满足此匹配条件的事件才进行标签 relabel',

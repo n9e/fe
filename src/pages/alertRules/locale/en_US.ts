@@ -180,6 +180,7 @@ const en_US = {
     disabled: 'Enable',
     severity: 'Severity',
   },
+  expired: 'The alert rule has been modified by others. To avoid mutual coverage, please refresh the page to view the latest configuration',
   relabel: {
     title: 'Relabel',
     if_tip: 'Optional, only events that meet this matching condition will be relabeled',
