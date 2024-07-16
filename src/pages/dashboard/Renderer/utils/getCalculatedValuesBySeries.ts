@@ -16,7 +16,7 @@
  */
 import _ from 'lodash';
 import valueFormatter from './valueFormatter';
-import { IValueMapping, IThresholds } from '../../types';
+import { IValueMapping, IThresholds, IOverride } from '../../types';
 import getSerieName from './getSerieName';
 
 const getValueAndToNumber = (value: any[]) => {
@@ -198,9 +198,16 @@ const getCalculatedValuesBySeries = (
   return values;
 };
 
-export const getLegendValues = (series: any[], { unit, decimals, dateFormat }, hexPalette: string[], stack = false, valueMappings?: IValueMapping[]) => {
+export const getLegendValues = (series: any[], standardOptions, hexPalette: string[], stack = false, valueMappings?: IValueMapping[], overrides?: IOverride[]) => {
+  let { unit, decimals, dateFormat } = standardOptions || {};
   const newSeries = stack ? _.reverse(_.clone(series)) : series;
   const values = _.map(newSeries, (serie, idx) => {
+    const override = _.find(overrides, (item) => item.matcher.value === serie.refId);
+    if (override) {
+      unit = override?.properties?.standardOptions?.util;
+      decimals = override?.properties?.standardOptions?.decimals;
+      dateFormat = override?.properties?.standardOptions?.dateFormat;
+    }
     const results = {
       max: getValueAndToNumber(_.maxBy(serie.data, (item: any) => _.toNumber(item[1]))),
       min: getValueAndToNumber(_.minBy(serie.data, (item: any) => _.toNumber(item[1]))),
