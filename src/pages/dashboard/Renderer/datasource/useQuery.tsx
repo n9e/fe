@@ -72,7 +72,7 @@ export default function useQuery(props: IProps) {
       // 如果在编辑状态，需要校验表单
       if (form && typeof form.validateFields === 'function') {
         try {
-          await form.validateFields();
+          // await form.validateFields();
         } catch (e) {
           return;
         }

@@ -1,0 +1,17 @@
+.fill-grid.rdg {
+  /* 覆盖内置变量 */
+  /* --rdg-color: var(--fc-text-2); */
+  --rdg-border-color: var(--fc-border-base);
+  --rdg-summary-border-color: #aaa;
+  --rdg-background-color: var(--fc-fill-2);
+  --rdg-header-background-color: var(--fc-fill-1);
+  /* --rdg-row-hover-background-color: #f5f5f5;
+  --rdg-row-selected-background-color: #dbecfa;
+  --row-selected-hover-background-color: #c9e3f8;
+  --rdg-checkbox-color: #005194;
+  --rdg-checkbox-focus-color: #61b8ff;
+  --rdg-checkbox-disabled-border-color: #ccc;
+  --rdg-checkbox-disabled-background-color: #ddd;
+  --rdg-selection-color: #66afe9;
+  --rdg-font-size: 14px; */
+}

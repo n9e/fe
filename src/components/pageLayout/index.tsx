@@ -109,9 +109,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                     <RollbackOutlined
                       onClick={() => {
                         if (backPath) {
-                          history.push({
-                            pathname: backPath,
-                          });
+                          history.push(backPath);
                         } else {
                           history.goBack();
                         }

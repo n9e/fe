@@ -1,5 +1,4 @@
 import React from 'react';
-import Color from 'color';
 import { IPanel, ITextStyles } from '../../../types';
 import Markdown from '../../../Editor/Components/Markdown';
 import { replaceFieldWithVariable } from '../../../VariableConfig/constant';
