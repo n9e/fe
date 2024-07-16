@@ -206,16 +206,6 @@ function TableCpt(props: IProps, ref: any) {
         render: (text, record) => {
           const textObj = getMappedTextObj(text, options?.valueMappings);
           return <Cell {...textObj} panel={values} time={time} record={record} />;
-          return (
-            <div
-              className='renderer-table-td-content'
-              style={{
-                color: textObj.color,
-              }}
-            >
-              {textObj.text}
-            </div>
-          );
         },
         ...getColumnSearchProps(['name']),
       },
@@ -239,16 +229,6 @@ function TableCpt(props: IProps, ref: any) {
           }
           const colorObj = getColor(textObj.color, colorMode, themeMode);
           return <Cell {...textObj} style={colorObj} panel={values} time={time} record={record} />;
-          return (
-            <div
-              className='renderer-table-td-content'
-              style={{
-                ...colorObj,
-              }}
-            >
-              {textObj.text}
-            </div>
-          );
         },
         ...getColumnSearchProps(['text']),
       },
@@ -302,16 +282,6 @@ function TableCpt(props: IProps, ref: any) {
               }
               const colorObj = getColor(textObj.color, colorMode, themeMode);
               return <Cell {...textObj} style={colorObj} panel={values} time={time} record={record} />;
-              return (
-                <div
-                  className='renderer-table-td-content'
-                  style={{
-                    ...colorObj,
-                  }}
-                >
-                  {textObj?.text}
-                </div>
-              );
             }
             let text = record.metric?.[key] || record.fields?.[key]; // TODO metric or fields
             if (key === '__time__') {
@@ -320,19 +290,9 @@ function TableCpt(props: IProps, ref: any) {
             let textObj = getMappedTextObj(text, options?.valueMappings);
             const overrideProps = getOverridePropertiesByName(overrides, 'byName', key);
             if (!_.isEmpty(overrideProps)) {
-              textObj = getSerieTextObj(_.toNumber(textObj.text), overrideProps?.standardOptions, overrideProps?.valueMappings);
+              textObj = getSerieTextObj(textObj.text, overrideProps?.standardOptions, overrideProps?.valueMappings);
             }
             return <Cell {...textObj} panel={values} time={time} record={record} />;
-            return (
-              <div
-                className='renderer-table-td-content'
-                style={{
-                  color: textObj.color,
-                }}
-              >
-                {textObj?.text}
-              </div>
-            );
           },
           ...getColumnSearchProps(['metric', key]),
         };
@@ -365,16 +325,6 @@ function TableCpt(props: IProps, ref: any) {
             }
             const textObj = getMappedTextObj(text, options?.valueMappings);
             return <Cell {...textObj} panel={values} time={time} record={record} />;
-            return (
-              <div
-                className='renderer-table-td-content'
-                style={{
-                  color: textObj.color,
-                }}
-              >
-                {textObj.text}
-              </div>
-            );
           },
           ...getColumnSearchProps([aggrDimension]),
         };
@@ -405,16 +355,6 @@ function TableCpt(props: IProps, ref: any) {
             }
             const colorObj = getColor(textObj.color, colorMode, themeMode);
             return <Cell {...textObj} style={colorObj} panel={values} time={time} record={record} />;
-            return (
-              <div
-                className='renderer-table-td-content'
-                style={{
-                  ...colorObj,
-                }}
-              >
-                {textObj?.text}
-              </div>
-            );
           },
           ...getColumnSearchProps([name, 'text']),
         });

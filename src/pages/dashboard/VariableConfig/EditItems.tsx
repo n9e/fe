@@ -113,6 +113,14 @@ export default function EditItems(props: IProps) {
               },
             },
             {
+              title: t('var.hide'),
+              dataIndex: 'hide',
+              width: 70,
+              render: (text) => {
+                return text ? t(`var.hide_map.yes`) : t('var.hide_map.no');
+              },
+            },
+            {
               title: t('common:table.operations'),
               width: 150,
               render: (_text, record, idx) => {

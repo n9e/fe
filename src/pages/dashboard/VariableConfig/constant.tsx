@@ -21,7 +21,7 @@ import queryString from 'query-string';
 import { getLabelNames, getMetricSeries, getMetricSeriesV2, getLabelValues, getMetric, getQueryResult, getESVariableResult } from '@/services/dashboardV2';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { IVariable } from './definition';
-import { normalizeESQueryRequestBody } from './utils';
+import { normalizeESQueryRequestBody, ajustVarSingleValue } from './utils';
 
 // https://grafana.com/docs/grafana/latest/datasources/prometheus/#query-variable 根据文档解析表达式
 // 每一个promtheus接口都接受start和end参数来限制返回值
@@ -110,7 +110,7 @@ const replaceAllPolyfill = (str, substr, newSubstr): string => {
 function getVarsValue(id: string, vars?: IVariable[]) {
   const varsValue = {};
   _.forEach(vars, (item) => {
-    varsValue[item.name] = getVaraiableSelected(item.name, item.type, id);
+    varsValue[item.name] = getVaraiableSelected(item, id);
   });
   return varsValue;
 }
@@ -140,7 +140,7 @@ export function setVaraiableSelected({
   vars,
 }: {
   name: string;
-  value: string | string[];
+  value?: string | string[];
   id: string;
   urlAttach?: boolean;
   vars?: IVariable[];
@@ -151,7 +151,8 @@ export function setVaraiableSelected({
   urlAttach && attachVariable2Url(name, value, id, vars);
 }
 
-export function getVaraiableSelected(name: string, type: string, id: string) {
+export function getVaraiableSelected(varaiableItem: IVariable, id: string) {
+  const { name, type, multi } = varaiableItem;
   const { search } = window.location;
   const searchObj = queryString.parse(search);
   let v: any = searchObj[name];
@@ -176,22 +177,47 @@ export function getVaraiableSelected(name: string, type: string, id: string) {
     if (type === 'datasource' && !_.isNaN(_.toNumber(v))) {
       return _.toNumber(v);
     }
-    // all 是变量全选的特殊值
-    if (v === 'all') {
-      return ['all'];
+    if (multi) {
+      if (v === 'all') {
+        return ['all'];
+      }
+      if (_.isString(v)) {
+        return [v];
+      }
+    } else {
+      if (_.isArray(v)) {
+        return v[0];
+      }
     }
     return v;
   } else {
-    if (v === null) return undefined;
+    if (v === null || v === undefined) return undefined;
     if (_.isArray(v) && v.length === 0) {
       return [];
     }
     if (type === 'datasource' && !_.isNaN(_.toNumber(v))) {
       return _.toNumber(v);
     }
+    if (multi) {
+      if (v === 'all') {
+        return ['all'];
+      }
+      if (_.isString(v)) {
+        return [v];
+      }
+    } else {
+      if (_.isArray(v)) {
+        return v[0];
+      }
+    }
     return v;
   }
 }
+
+const replaceAllSeparatorMap = {
+  prometheus: '|',
+  elasticsearch: ' OR ',
+};
 
 export const replaceExpressionVarsSpecifyRule = (
   params: {
@@ -212,9 +238,10 @@ export const replaceExpressionVarsSpecifyRule = (
   if (vars && vars.length > 0) {
     for (let i = 0; i < limit; i++) {
       if (formData[i]) {
-        const { name, options, reg, value, allValue, type } = formData[i];
+        const { name, options, reg, value, allValue, type, datasource } = formData[i];
+        const separator = replaceAllSeparatorMap[datasource?.cate] || replaceAllSeparatorMap.prometheus;
         const placeholder = getPlaceholder(name);
-        const selected = getVaraiableSelected(name, type, id);
+        const selected = getVaraiableSelected(formData[i], id);
         if (vars.includes(placeholder)) {
           if (_.isEqual(selected, ['all'])) {
             if (allValue) {
@@ -223,17 +250,42 @@ export const replaceExpressionVarsSpecifyRule = (
               newExpression = replaceAllPolyfill(
                 newExpression,
                 placeholder,
-                `(${_.trim((options as string[]).filter((i) => !reg || !stringToRegex(reg) || (stringToRegex(reg) as RegExp).test(i)).join('|'), '|')})`,
+                `(${_.trim(
+                  _.join(
+                    _.map(
+                      _.filter(options, (i) => !reg || !stringToRegex(reg) || (stringToRegex(reg) as RegExp).test(i)),
+                      (item) => {
+                        return datasource?.cate === 'elasticsearch' ? `"${item}"` : item;
+                      },
+                    ),
+                    separator,
+                  ),
+                  separator,
+                )})`,
               );
             }
           } else if (Array.isArray(selected)) {
-            const realSelected = _.size(selected) === 0 ? '' : _.size(selected) === 1 ? selected[0] : `(${_.trim((selected as string[]).join('|'), '|')})`;
+            const headSelected = datasource?.cate === 'elasticsearch' ? `"${selected[0]}"` : selected[0];
+            const realSelected =
+              _.size(selected) === 0
+                ? ''
+                : _.size(selected) === 1
+                ? headSelected
+                : `(${_.trim(
+                    _.join(
+                      _.map(selected, (item) => {
+                        return datasource?.cate === 'elasticsearch' ? `"${item}"` : item;
+                      }),
+                      separator,
+                    ),
+                    separator,
+                  )})`;
             newExpression = replaceAllPolyfill(newExpression, placeholder, realSelected);
           } else if (typeof selected === 'string') {
-            newExpression = replaceAllPolyfill(newExpression, placeholder, selected as string);
+            newExpression = replaceAllPolyfill(newExpression, placeholder, ajustVarSingleValue(newExpression, placeholder, selected, formData[i]));
           } else if (selected === null || selected === undefined) {
             // 未选择或填写变量值时替换为传入的value
-            newExpression = replaceAllPolyfill(newExpression, placeholder, value ? (_.isArray(value) ? _.trim(_.join(value, '|'), '|') : value) : '');
+            newExpression = replaceAllPolyfill(newExpression, placeholder, value ? (_.isArray(value) ? _.trim(_.join(value, separator), separator) : value) : '');
             if (type === 'datasource') {
               newExpression = !_.isNaN(_.toNumber(newExpression)) ? (_.toNumber(newExpression) as any) : newExpression;
             }

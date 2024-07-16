@@ -16,7 +16,7 @@
  */
 import _ from 'lodash';
 import valueFormatter from './valueFormatter';
-import { IValueMapping, IThresholds } from '../../types';
+import { IValueMapping, IThresholds, IOverride } from '../../types';
 import getSerieName from './getSerieName';
 
 const getValueAndToNumber = (value: any[]) => {
@@ -38,16 +38,16 @@ export const getSerieTextObj = (value: number | string | null | undefined, stand
       }
       return false;
     } else {
-      value = _.toNumber(value) as number;
+      const toNumberValue = _.toNumber(value) as number;
       if (type === 'special') {
-        return value === match?.special;
+        return toNumberValue === match?.special;
       } else if (type === 'range') {
         if (_.isNumber(match?.from) && _.isNumber(match?.to)) {
-          return value >= match?.from && value <= match?.to;
+          return toNumberValue >= match?.from && toNumberValue <= match?.to;
         } else if (_.isNumber(match?.from)) {
-          return value >= match?.from;
+          return toNumberValue >= match?.from;
         } else if (_.isNumber(match?.to)) {
-          return value <= match?.to;
+          return toNumberValue <= match?.to;
         }
         return false;
       }
@@ -65,20 +65,29 @@ export const getSerieTextObj = (value: number | string | null | undefined, stand
     }),
     (item) => {
       if (_.isNumber(item.value) && value) {
-        value = _.toNumber(value) as number;
-        if (value >= item.value) {
+        const toNumberValue = _.toNumber(value) as number;
+        if (toNumberValue >= item.value) {
           matchedThresholdsColor = item.color;
         }
       }
     },
   );
-  const valueObj = valueFormatter({ unit, decimals, dateFormat }, value);
-  const newValue = matchedValueMapping?.result?.text ? matchedValueMapping?.result?.text : valueObj.value;
+  if (unit || decimals) {
+    const valueObj = valueFormatter({ unit, decimals, dateFormat }, value);
+    const newValue = matchedValueMapping?.result?.text ? matchedValueMapping?.result?.text : valueObj.value;
+    return {
+      value: newValue,
+      unit: valueObj.unit,
+      color: matchedValueMapping?.result?.color || matchedThresholdsColor,
+      text: newValue + valueObj.unit,
+    };
+  }
+  const newValue = matchedValueMapping?.result?.text ? matchedValueMapping?.result?.text : value;
   return {
     value: newValue,
-    unit: valueObj.unit,
+    unit: '',
     color: matchedValueMapping?.result?.color || matchedThresholdsColor,
-    text: newValue + valueObj.unit,
+    text: newValue,
   };
 };
 
@@ -198,9 +207,16 @@ const getCalculatedValuesBySeries = (
   return values;
 };
 
-export const getLegendValues = (series: any[], { unit, decimals, dateFormat }, hexPalette: string[], stack = false, valueMappings?: IValueMapping[]) => {
+export const getLegendValues = (series: any[], standardOptions, hexPalette: string[], stack = false, valueMappings?: IValueMapping[], overrides?: IOverride[]) => {
+  let { unit, decimals, dateFormat } = standardOptions || {};
   const newSeries = stack ? _.reverse(_.clone(series)) : series;
   const values = _.map(newSeries, (serie, idx) => {
+    const override = _.find(overrides, (item) => item.matcher.value === serie.refId);
+    if (override) {
+      unit = override?.properties?.standardOptions?.util;
+      decimals = override?.properties?.standardOptions?.decimals;
+      dateFormat = override?.properties?.standardOptions?.dateFormat;
+    }
     const results = {
       max: getValueAndToNumber(_.maxBy(serie.data, (item: any) => _.toNumber(item[1]))),
       min: getValueAndToNumber(_.minBy(serie.data, (item: any) => _.toNumber(item[1]))),

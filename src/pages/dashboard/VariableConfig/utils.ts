@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { IVariable } from './definition';
 
 export function normalizeESQueryRequestBody(
   params: {
@@ -64,4 +65,31 @@ export function normalizeESQueryRequestBody(
 
 export function getGroupIdent(groupID, groups) {
   return _.find(groups, { id: groupID })?.label_value;
+}
+
+function escapeRegExp(string: string): string {
+  // 转义字符串中的特殊字符
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function isPlaceholderQuoted(expression: string, placeholder: string): boolean {
+  // 转义占位符以安全地用于正则表达式
+  const escapedPlaceholder = escapeRegExp(placeholder);
+  // 使用反向引用来确保占位符前后的引号相同
+  const regex = new RegExp(`(['"])${escapedPlaceholder}\\1`);
+  return regex.test(expression);
+}
+
+/**
+ * 如果是 ES 数据源的变量，需要如下处理
+ * 1. 如果 expression 中变量占位符被引号包裹，则不需要处理
+ * 2. 否则需要将变量值加上引号
+ */
+export function ajustVarSingleValue(expression: string, placeholder: string, value: string, varItem: IVariable) {
+  if (varItem.datasource?.cate === 'elasticsearch') {
+    if (!isPlaceholderQuoted(expression, placeholder)) {
+      value = `"${value}"`;
+    }
+  }
+  return value;
 }

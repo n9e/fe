@@ -133,6 +133,7 @@ export default function index(props: IProps) {
   const legendEleSize = useSize(legendEleRef);
   const displayMode = options.legend?.displayMode || 'table';
   const placement = displayMode === 'table' ? 'bottom' : options.legend?.placement || 'bottom';
+  const heightInPercentage = options.legend?.heightInPercentage || 30;
   const legendColumns = !_.isEmpty(options.legend?.columns) ? options.legend?.columns : displayMode === 'table' ? ['max', 'min', 'avg', 'sum', 'last'] : [];
   const detailUrl = options.legend?.detailUrl || undefined;
   const detailName = options.legend?.detailName || undefined;
@@ -141,7 +142,8 @@ export default function index(props: IProps) {
   const [legendData, setLegendData] = useState<any[]>([]);
   const [isExpanded, setIsExpanded] = useState(false);
   let _chartHeight = hasLegend ? `calc(100% - ${legendEleSize?.height! + 16}px)` : '100%';
-  let _tableHeight = hasLegend ? '30%' : '0px';
+  let minChartHeight = hasLegend ? `${100 - heightInPercentage}%` : '100%';
+  let _tableHeight = hasLegend ? `${heightInPercentage}%` : '0px';
 
   const detailFormatter = (data: any) => {
     if (detailUrl && time) {
@@ -151,11 +153,13 @@ export default function index(props: IProps) {
   };
   if (!inDashboard) {
     _chartHeight = chartHeight;
+    minChartHeight = chartHeight;
     _tableHeight = tableHeight;
   }
 
   if (placement === 'right') {
     _chartHeight = '100%';
+    minChartHeight = '100%';
     _tableHeight = '100%';
   }
 
@@ -183,19 +187,7 @@ export default function index(props: IProps) {
       });
     }
     if (hasLegend) {
-      setLegendData(
-        getLegendValues(
-          seriesData,
-          {
-            unit: options?.standardOptions?.util,
-            decimals: options?.standardOptions?.decimals,
-            dateFormat: options?.standardOptions?.dateFormat,
-          },
-          colors || hexPalette,
-          undefined,
-          options?.valueMappings,
-        ),
-      );
+      setLegendData(getLegendValues(seriesData, options?.standardOptions, colors || hexPalette, undefined, options?.valueMappings, overrides));
     } else {
       setLegendData([]);
     }
@@ -372,19 +364,7 @@ export default function index(props: IProps) {
       });
     }
     if (hasLegend) {
-      setLegendData(
-        getLegendValues(
-          seriesData,
-          {
-            unit: options?.standardOptions?.util,
-            decimals: options?.standardOptions?.decimals,
-            dateFormat: options?.standardOptions?.dateFormat,
-          },
-          colors || hexPalette,
-          custom.stack === 'noraml',
-          options?.valueMappings,
-        ),
-      );
+      setLegendData(getLegendValues(seriesData, options?.standardOptions, colors || hexPalette, custom.stack === 'noraml', options?.valueMappings, overrides));
     } else {
       setLegendData([]);
     }
@@ -395,7 +375,7 @@ export default function index(props: IProps) {
     if (chartRef.current) {
       chartRef.current.handleResize();
     }
-  }, [placement, JSON.stringify(legendEleSize)]);
+  }, [placement, JSON.stringify(legendEleSize), heightInPercentage]);
 
   let tableColumn: ColumnProps<DataItem>[] = [
     {
@@ -469,7 +449,7 @@ export default function index(props: IProps) {
         className='renderer-timeseries-graph'
         style={{
           height: _chartHeight,
-          minHeight: '70%',
+          minHeight: minChartHeight,
           width: '100%',
           minWidth: 0,
         }}
