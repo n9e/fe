@@ -184,6 +184,10 @@ export function getVaraiableSelected(varaiableItem: IVariable, id: string) {
       if (_.isString(v)) {
         return [v];
       }
+    } else {
+      if (_.isArray(v)) {
+        return v[0];
+      }
     }
     return v;
   } else {
@@ -200,6 +204,10 @@ export function getVaraiableSelected(varaiableItem: IVariable, id: string) {
       }
       if (_.isString(v)) {
         return [v];
+      }
+    } else {
+      if (_.isArray(v)) {
+        return v[0];
       }
     }
     return v;
