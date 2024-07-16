@@ -159,7 +159,7 @@ request.interceptors.response.use(
         });
     } else if ([502, 503, 504].includes(status)) {
       throw {
-        message: i18next.t('网络请求超时，请稍后重试'),
+        message: i18next.t('common:request_fail_msg'),
       };
     } else {
       return response

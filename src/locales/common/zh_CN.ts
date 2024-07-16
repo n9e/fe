@@ -185,5 +185,6 @@ const zh_CN = {
   'msg.sort.success': '排序成功',
 
   copy_success: '复制成功 {{num}} 条记录',
+  request_fail_msg: '网络请求超时，请稍后重试',
 };
 export default zh_CN;
