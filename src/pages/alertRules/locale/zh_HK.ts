@@ -183,6 +183,7 @@ const zh_HK = {
   expired: '告警規則已經被別人修改，為避免相互覆蓋，請刷新頁面查看最新配置',
   relabel: {
     title: '事件 relabel',
+    help_btn: '使用說明',
     if_tip: '選填，滿足此匹配條件的事件才進行標籤 relabel',
     target_label_tip: '新增標籤的 key',
     replacement_tip: '標籤最終的 value，如果配置了 separator 此字段可不填，如果配置了 regex 此字段可使用正則中匹配的內容來構建最終的目標值',
@@ -198,6 +199,15 @@ const zh_HK = {
     },
     labelmap: {
       regex_tip: '必填，使用正則提取內容',
+      replacement_tip: '可以寫固定值，例如 abc，也可以寫從正則中匹配到的字符，例如正則為 local(host)，這裡寫 $1，最終的值是 host',
+    },
+    test_btn: '測試配置',
+    test: {
+      title: '測試',
+      label: '標籤',
+      labelFromEvent: '從告警事件中選擇標籤',
+      btn: '測試配置',
+      result: 'relabel 結果',
     },
   },
 };

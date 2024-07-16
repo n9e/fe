@@ -183,6 +183,7 @@ const zh_CN = {
   expired: '告警规则已经被别人修改，为避免相互覆盖，请刷新页面查看最新配置',
   relabel: {
     title: '事件 relabel',
+    help_btn: '使用说明',
     if_tip: '选填，满足此匹配条件的事件才进行标签 relabel',
     target_label_tip: '新增标签的 key',
     replacement_tip: '标签最终的 value，如果配置了 separator 此字段可不填，如果配置了 regex 此字段可使用正则中匹配的内容来构建最终的目标值',
@@ -198,6 +199,15 @@ const zh_CN = {
     },
     labelmap: {
       regex_tip: '必填，使用正则提取内容',
+      replacement_tip: '可以写固定值，比如 abc，也可以写从正则中匹配到的字符，比如正则为 local(host)，这里写 $1，最终的值是 host',
+    },
+    test_btn: '测试配置',
+    test: {
+      title: '测试',
+      label: '标签',
+      labelFromEvent: '从告警事件中选择标签',
+      btn: '测试',
+      result: 'relabel 结果',
     },
   },
 };

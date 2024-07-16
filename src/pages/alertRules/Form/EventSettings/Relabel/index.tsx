@@ -1,9 +1,10 @@
 import React from 'react';
-import { Form, Card, Button } from 'antd';
+import { Form, Button } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import RelabelItem from './RelabelItem';
+import TestModal from './TestModal';
 import './style.less';
 
 export const name = ['rule_config', 'event_relabel_config'];
@@ -34,6 +35,7 @@ export default function PrometheusV2() {
           </div>
         )}
       </Form.List>
+      <TestModal />
     </>
   );
 }
