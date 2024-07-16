@@ -72,7 +72,8 @@ export default function useQuery(props: IProps) {
       // 如果在编辑状态，需要校验表单
       if (form && typeof form.validateFields === 'function') {
         try {
-          await form.validateFields();
+          // 2024-07-16 暂时关闭表单校验，因为会导致一些表单项无法获取标签数据
+          // await form.validateFields();
         } catch (e) {
           return;
         }
