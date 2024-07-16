@@ -188,5 +188,6 @@ const en_US = {
   'msg.sort.success': 'Successfully sorted',
 
   copy_success: 'Successful copy {{num}} items',
+  request_fail_msg: 'Request failed, please try again later',
 };
 export default en_US;
