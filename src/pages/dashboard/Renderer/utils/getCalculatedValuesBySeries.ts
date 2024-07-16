@@ -23,13 +23,7 @@ const getValueAndToNumber = (value: any[]) => {
   return _.toNumber(_.get(value, 1, NaN));
 };
 
-export const getSerieTextObj = (
-  value: number | string | null | undefined,
-  standardOptions?: any,
-  valueMappings?: IValueMapping[],
-  thresholds?: IThresholds,
-  handleValueFormatter = true,
-) => {
+export const getSerieTextObj = (value: number | string | null | undefined, standardOptions?: any, valueMappings?: IValueMapping[], thresholds?: IThresholds) => {
   const { decimals, dateFormat } = standardOptions || {};
   const unit = standardOptions?.unit || standardOptions?.util; // TODO: 兼容之前写错的 util
   const matchedValueMapping = _.find(valueMappings, (item: any) => {
@@ -78,7 +72,7 @@ export const getSerieTextObj = (
       }
     },
   );
-  if (handleValueFormatter) {
+  if (unit || decimals) {
     const valueObj = valueFormatter({ unit, decimals, dateFormat }, value);
     const newValue = matchedValueMapping?.result?.text ? matchedValueMapping?.result?.text : valueObj.value;
     return {
