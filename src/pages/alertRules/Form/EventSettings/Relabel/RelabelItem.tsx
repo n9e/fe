@@ -30,11 +30,11 @@ export default function RelabelItem(props: Props) {
         </Col>
         {action === 'replace' && (
           <>
-            <Col span={12}>
+            {/* <Col span={12}>
               <Form.Item {...field} name={[field.name, 'if']} label='if' tooltip={t('relabel.if_tip')}>
                 <Input />
               </Form.Item>
-            </Col>
+            </Col> */}
             <Col span={12}>
               <Form.Item {...field} name={[field.name, 'target_label']} label='target_label' tooltip={t('relabel.target_label_tip')}>
                 <Input />
@@ -50,12 +50,12 @@ export default function RelabelItem(props: Props) {
                 <Select mode='tags' tokenSeparators={[' ']} open={false} placeholder={t('relabel.source_labels_tip_placeholder')} />
               </Form.Item>
             </Col>
-            <Col span={6}>
+            <Col span={12}>
               <Form.Item {...field} name={[field.name, 'separator']} label='separator' tooltip={t('relabel.separator_tip')}>
                 <Input />
               </Form.Item>
             </Col>
-            <Col span={6}>
+            <Col span={12}>
               <Form.Item {...field} name={[field.name, 'regex']} label='regex' tooltip={t('relabel.regex_tip')}>
                 <Input />
               </Form.Item>
