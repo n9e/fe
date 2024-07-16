@@ -97,7 +97,7 @@ export default function RelabelItem(props: Props) {
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item {...field} name={[field.name, 'replacement']} label='replacement' tooltip={t('relabel.replacement_tip')}>
+              <Form.Item {...field} name={[field.name, 'replacement']} label='replacement' tooltip={t('relabel.labelmap.replacement_tip')}>
                 <Input />
               </Form.Item>
             </Col>
