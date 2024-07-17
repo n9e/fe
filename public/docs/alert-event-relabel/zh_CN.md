@@ -26,7 +26,8 @@ action 选择 labelkeep, regex 是标签 key 的匹配条件，支持写正则�
 
 保存之后，新的告警事件，只会保留 service|name|addr 三个标签，这里注意 rulename 是特殊的标签，不在处理范围内。
 
-![img](https://alidocs.dingtalk.com/core/api/resources/img/5eecdaf48460cde55ff344a279021d5238eed2ac5b1362b54a94cefac92b8e65b2bdfab878cb955439e8703ac5556d0d00e652a286771433a7727a127b1543073a106d063c8091bd84658a7e9e1617c010aad195084c61850eda98c701a25dbf?tmpCode=c70f2aed-e150-49d8-8d64-39abc81fbd19)
+![img](http://download.flashcat.cloud/uPic/5eecdaf48460cde55ff344a279021d5238eed2ac5b1362b54a94cefac92b8e65b2bdfab878cb955439e8703ac5556d0d00e652a286771433a7727a127b1543073a106d063c8091bd84658a7e9e1617c010aad195084c61850eda98c701a25dbf.png)
+
 
 ##### **场景 3 对告警事件中的某个标签的 key 重命名**
 
