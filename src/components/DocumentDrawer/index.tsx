@@ -3,6 +3,7 @@ import _ from 'lodash';
 import { Drawer } from 'antd';
 import MDEditor from '@uiw/react-md-editor';
 import ModalHOC, { ModalWrapProps } from '../ModalHOC';
+import './style.less';
 
 interface Props {
   darkMode?: boolean;
@@ -45,9 +46,6 @@ function index(props: Props & ModalWrapProps) {
     >
       <div data-color-mode={darkMode ? 'dark' : 'light'}>
         <MDEditor.Markdown
-          style={{
-            backgroundColor: 'var(--fc-fill-2)',
-          }}
           source={document}
           rehypeRewrite={(node: any) => {
             if (_.includes(['h1', 'h2', 'h3', 'h4', 'h5', 'h6'], node.tagName)) {
