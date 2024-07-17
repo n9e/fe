@@ -51,7 +51,7 @@ export default function RelabelItem(props: Props) {
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item {...field} name={[field.name, 'separator']} label='separator' tooltip={t('relabel.separator_tip')}>
+              <Form.Item {...field} name={[field.name, 'separator']} label='separator' tooltip={t('relabel.separator_tip')} initialValue=';'>
                 <Input />
               </Form.Item>
             </Col>
