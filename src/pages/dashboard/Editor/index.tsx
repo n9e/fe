@@ -165,7 +165,8 @@ function index(props: IProps) {
         padding: '10px 24px 24px 24px',
       }}
     >
-      {initialValues?.datasourceCate && (
+      {/* 除了 text 和 iframe 类型其他的类型比如存在 initialValues?.datasourceCate */}
+      {(initialValues?.datasourceCate || _.includes(['text', 'iframe'], initialValues.type)) && (
         <FormCpt
           ref={formRef}
           initialValues={normalizeInitialValues(initialValues)}

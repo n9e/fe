@@ -21,7 +21,7 @@ const getESFilterByQuery = (query: { [index: string]: string | null }) => {
     return query?.query_string;
   } else {
     const filtersArr: string[] = [];
-    const validParmas = _.omit(query, ['data_source_name', 'data_source_id', 'index_name', 'timestamp', 'index_pattern']);
+    const validParmas = _.omit(query, ['data_source_name', 'data_source_id', 'index_name', 'timestamp', 'index_pattern', 'start', 'end', 'mode']);
     _.forEach(validParmas, (value, key) => {
       if (value) {
         filtersArr.push(`${key}:"${value}"`);
@@ -77,6 +77,10 @@ export const getFormValuesBySearch = (params: { [index: string]: string | null }
       const timestamp = _.get(params, 'timestamp', '@timestamp');
       const range_start = _.get(params, 'start');
       const range_end = _.get(params, 'end');
+      const defaultRange =
+        range_start && range_end
+          ? { start: !isMathString(range_start) ? moment(Number(range_start)) : range_start, end: !isMathString(range_end) ? moment(Number(range_end)) : range_end }
+          : undefined;
       if (index) {
         return {
           ...formValues,
@@ -84,7 +88,7 @@ export const getFormValuesBySearch = (params: { [index: string]: string | null }
             index,
             filter: getESFilterByQuery(params),
             date_field: timestamp,
-            range: range_start && range_end ? { start: moment.unix(Number(range_start)), end: moment.unix(Number(range_end)) } : undefined,
+            range: defaultRange,
           },
         };
       } else if (indexPattern) {
@@ -93,7 +97,7 @@ export const getFormValuesBySearch = (params: { [index: string]: string | null }
           query: {
             filter: getESFilterByQuery(params),
             indexPattern,
-            range: range_start && range_end ? { start: moment.unix(Number(range_start)), end: moment.unix(Number(range_end)) } : undefined,
+            range: defaultRange,
           },
         };
       }
@@ -114,12 +118,16 @@ export const getFormValuesBySearch = (params: { [index: string]: string | null }
     if (data_source_name === 'doris') {
       const range_start = _.get(params, 'start');
       const range_end = _.get(params, 'end');
+      const defaultRange =
+        range_start && range_end
+          ? { start: !isMathString(range_start) ? moment(Number(range_start)) : range_start, end: !isMathString(range_end) ? moment(Number(range_end)) : range_end }
+          : undefined;
       return {
         ...formValues,
         query: {
           condition: _.get(params, 'condition'),
           time_field: _.get(params, 'time_field'),
-          range: range_start && range_end ? { start: moment.unix(Number(range_start)), end: moment.unix(Number(range_end)) } : undefined,
+          range: defaultRange,
         },
       };
     }
@@ -163,6 +171,8 @@ const defaultActiveKey = getuuid();
 export const getLocalItems = (params) => {
   const localItems = localStorage.getItem(localeKey);
   let items: any[] = [];
+  const range_start = _.get(params, 'start');
+  const range_end = _.get(params, 'end');
   if (localItems) {
     try {
       items = _.map(JSON.parse(localItems), (item) => {
@@ -185,6 +195,13 @@ export const getLocalItems = (params) => {
             });
           }
         }
+        const searchRange =
+          range_start && range_end
+            ? { start: !isMathString(range_start) ? moment(Number(range_start)) : range_start, end: !isMathString(range_end) ? moment(Number(range_end)) : range_end }
+            : undefined;
+        if (searchRange) {
+          _.set(item, 'formValues.query.range', searchRange);
+        }
         return {
           ...item,
           isInited: false,
@@ -194,10 +211,16 @@ export const getLocalItems = (params) => {
       console.warn(e);
     }
   } else {
+    const searchRange =
+      range_start && range_end
+        ? { start: !isMathString(range_start) ? moment(Number(range_start)) : range_start, end: !isMathString(range_end) ? moment(Number(range_end)) : range_end }
+        : undefined;
+
     items = [
       {
         key: defaultActiveKey,
         isInited: false,
+        formValues: searchRange ? { query: { range: searchRange } } : undefined,
       },
     ];
   }
@@ -212,7 +235,7 @@ export const getLocalItems = (params) => {
 
       const searchRange =
         range_start && range_end
-          ? { start: !isMathString(range_start) ? moment.unix(Number(range_start)) : range_start, end: !isMathString(range_end) ? moment.unix(Number(range_end)) : range_end }
+          ? { start: !isMathString(range_start) ? moment(Number(range_start)) : range_start, end: !isMathString(range_end) ? moment(Number(range_end)) : range_end }
           : undefined;
       // 当命中缓存时，url search中的start和end 如存在，则优先级更高
       if (item && searchRange) {
