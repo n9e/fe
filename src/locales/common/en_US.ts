@@ -39,7 +39,6 @@ const en_US = {
     copy: 'Copy',
     expand: 'Expand',
     collapse: 'Collapse',
-    copy: 'Copy',
   },
   table: {
     name: 'Name',
