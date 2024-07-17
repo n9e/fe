@@ -15,11 +15,11 @@
  *
  */
 import React, { ReactNode, useContext, useState, useEffect } from 'react';
-import { useHistory, Link } from 'react-router-dom';
-import { RollbackOutlined } from '@ant-design/icons';
+import { useHistory, Link, useLocation } from 'react-router-dom';
+import querystring from 'query-string';
 import { useTranslation } from 'react-i18next';
 import { Menu, Dropdown, Space, Drawer } from 'antd';
-import { DownOutlined } from '@ant-design/icons';
+import { DownOutlined, RollbackOutlined } from '@ant-design/icons';
 import { Logout } from '@/services/login';
 import AdvancedWrap, { License } from '@/components/AdvancedWrap';
 import { CommonStateContext } from '@/App';
@@ -29,7 +29,8 @@ import Version from './Version';
 import SideMenuColorSetting from './SideMenuColorSetting';
 import './index.less';
 import './locale';
-
+// @ts-ignore
+import FeatureNotification from '@/plus/pages/FeatureNotification';
 interface IPageLayoutProps {
   icon?: ReactNode;
   title?: String | JSX.Element;
@@ -51,6 +52,8 @@ const i18nMap = {
 const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introIcon, children, customArea, showBack, backPath, docFn }) => {
   const { t, i18n } = useTranslation('pageLayout');
   const history = useHistory();
+  const location = useLocation();
+  const query = querystring.parse(location.search);
   const { profile, siteInfo } = useContext(CommonStateContext);
   const embed = localStorage.getItem('embed') === '1' && window.self !== window.top;
   const [curLanguage, setCurLanguage] = useState(i18nMap[i18n.language] || '中文');
@@ -102,7 +105,13 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
             <div className={'page-top-header'}>{customArea}</div>
           ) : (
             <div className={'page-top-header'}>
-              <div className={`page-header-content ${!IS_ENT ? 'n9e-page-header-content' : ''}`}>
+              <div
+                className={`page-header-content ${!IS_ENT ? 'n9e-page-header-content' : ''}`}
+                style={{
+                  // 2024-07-10 用途集成仪表盘全屏模式，未来其他页面的全屏模式皆是 viewMode=fullscreen
+                  display: query.viewMode === 'fullscreen' ? 'none' : 'flex',
+                }}
+              >
                 <div className={'page-header-title'}>
                   {showBack && window.history.state && (
                     <RollbackOutlined
@@ -152,6 +161,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
 
                   <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
                     <License />
+                    <FeatureNotification />
                   </AdvancedWrap>
 
                   <Dropdown

@@ -91,6 +91,7 @@ export default function Prometheus({ chartForm, variableConfig, dashboardId, tim
                               rules={[
                                 {
                                   required: true,
+                                  message: '',
                                 },
                               ]}
                               style={{ flex: 1 }}

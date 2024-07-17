@@ -180,5 +180,35 @@ const zh_CN = {
     disabled: '启用',
     severity: '级别',
   },
+  expired: '告警规则已经被别人修改，为避免相互覆盖，请刷新页面查看最新配置',
+  relabel: {
+    title: '事件 relabel',
+    help_btn: '使用说明',
+    if_tip: '选填，满足此匹配条件的事件才进行标签 relabel',
+    target_label_tip: '新增标签的 key',
+    replacement_tip: '标签最终的 value，如果配置了 separator 此字段可不填，如果配置了 regex 此字段可使用正则中匹配的内容来构建最终的目标值',
+    source_labels_tip: '选填，使用的原始标签',
+    source_labels_tip_placeholder: '使用回车或空格分隔',
+    separator_tip: '选填，根据已有的标签值拼接，用来拼接 value 的连字符',
+    regex_tip: '选填，根据已有标签值部分内容构建，提取构建内容的正则',
+    labelkeep: {
+      regex_tip: '必填，支持正则，标签key匹配到的标签会保留',
+    },
+    labeldrop: {
+      regex_tip: '必填，支持正则，标签key匹配到的标签会被删除',
+    },
+    labelmap: {
+      regex_tip: '必填，使用正则提取内容',
+      replacement_tip: '可以写固定值，比如 abc，也可以写从正则中匹配到的字符，比如正则为 local(host)，这里写 $1，最终的值是 host',
+    },
+    test_btn: '测试配置',
+    test: {
+      title: '测试',
+      label: '标签',
+      labelFromEvent: '从告警事件中选择标签',
+      btn: '测试',
+      result: 'relabel 结果',
+    },
+  },
 };
 export default zh_CN;

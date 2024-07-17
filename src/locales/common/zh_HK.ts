@@ -6,6 +6,8 @@ const zh_HK = {
   },
   business_group: '業務組',
   search_placeholder: '請輸入搜索關鍵字',
+  my_business_group: '我的業務組',
+  all_business_group: '全部業務組',
   nodata: '暫無數據',
   btn: {
     add: '新增',
@@ -181,6 +183,7 @@ const zh_HK = {
   'msg.clone.error': '克隆失敗',
   'msg.sort.success': '排序成功',
   copy_success: '複製成功 {{num}} 條記錄',
+  request_fail_msg: '請求失敗，請檢查網絡連線',
 };
 
 export default zh_HK;

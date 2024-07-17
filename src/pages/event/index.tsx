@@ -27,6 +27,7 @@ import { getProdOptions } from '@/pages/alertRules/Form/components/ProdSelect';
 import DatasourceSelect from '@/components/DatasourceSelect/DatasourceSelect';
 import TimeRangePicker, { IRawTimeRange } from '@/components/TimeRangePicker';
 import { IS_ENT } from '@/utils/constant';
+import { BusinessGroupSelectWithAll } from '@/components/BusinessGroup';
 import Card from './card';
 import Table from './Table';
 import './locale';
@@ -145,29 +146,15 @@ const Event: React.FC = () => {
               });
             }}
           />
-          <Select
-            allowClear
-            placeholder={t('common:business_group')}
-            style={{ minWidth: 80 }}
+          <BusinessGroupSelectWithAll
             value={filter.bgid}
-            onChange={(val) => {
+            onChange={(val: number) => {
               setFilter({
                 ...filter,
                 bgid: val,
               });
             }}
-            dropdownMatchSelectWidth={false}
-            showSearch
-            optionFilterProp='children'
-          >
-            {_.map(busiGroups, (item) => {
-              return (
-                <Select.Option value={item.id} key={item.id}>
-                  {item.name}
-                </Select.Option>
-              );
-            })}
-          </Select>
+          />
           <Select
             allowClear
             style={{ minWidth: 80 }}

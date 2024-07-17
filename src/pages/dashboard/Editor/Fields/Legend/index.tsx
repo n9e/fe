@@ -15,7 +15,7 @@
  *
  */
 import React from 'react';
-import { Form, Radio, Row, Col, Select, Input } from 'antd';
+import { Form, Radio, Row, Col, Select, Input, InputNumber } from 'antd';
 import _ from 'lodash';
 import { Trans, useTranslation } from 'react-i18next';
 import { Panel } from '../../Components/Collapse';
@@ -42,59 +42,46 @@ export default function index() {
             const displayMode = getFieldValue([...namePrefix, 'displayMode']);
             return (
               <>
+                <Col span={8}>
+                  <Form.Item
+                    label={t('panel.options.legend.heightInPercentage')}
+                    name={[...namePrefix, 'heightInPercentage']}
+                    tooltip={t('panel.options.legend.heightInPercentage_tip')}
+                    initialValue={30}
+                  >
+                    <InputNumber min={20} max={80} style={{ width: '100%' }} />
+                  </Form.Item>
+                </Col>
                 <Col
                   span={7}
                   style={{
                     display: displayMode === 'list' ? 'block' : 'none',
                   }}
                 >
-                  <Form.Item label={t('panel.options.legend.placement')} name={[...namePrefix, 'placement']}>
+                  <Form.Item label={t('panel.options.legend.placement')} name={[...namePrefix, 'placement']} initialValue='bottom'>
                     <Radio.Group buttonStyle='solid'>
                       <Radio.Button value='bottom'>Bottom</Radio.Button>
                       <Radio.Button value='right'>Right</Radio.Button>
                     </Radio.Group>
                   </Form.Item>
                 </Col>
-                <Col
-                  span={8}
-                  style={{
-                    display: displayMode === 'list' ? 'block' : 'none',
-                  }}
-                >
-                  <Form.Item label={t('panel.options.legend.columns')} name={[...namePrefix, 'columns']}>
-                    <Select mode='multiple'>
-                      {_.map(tableColumn, (item) => {
-                        return (
-                          <Select.Option key={item} value={item}>
-                            {t(`panel.options.legend.${item}`)}
-                          </Select.Option>
-                        );
-                      })}
-                    </Select>
-                  </Form.Item>
-                </Col>
-                <Col
-                  span={15}
-                  style={{
-                    display: displayMode === 'table' ? 'block' : 'none',
-                  }}
-                >
-                  <Form.Item label={t('panel.options.legend.columns')} name={[...namePrefix, 'columns']}>
-                    <Select mode='multiple'>
-                      {_.map(tableColumn, (item) => {
-                        return (
-                          <Select.Option key={item} value={item}>
-                            {t(`panel.options.legend.${item}`)}
-                          </Select.Option>
-                        );
-                      })}
-                    </Select>
-                  </Form.Item>
-                </Col>
               </>
             );
           }}
         </Form.Item>
+        <Col span={24}>
+          <Form.Item label={t('panel.options.legend.columns')} name={[...namePrefix, 'columns']}>
+            <Select mode='multiple'>
+              {_.map(tableColumn, (item) => {
+                return (
+                  <Select.Option key={item} value={item}>
+                    {t(`panel.options.legend.${item}`)}
+                  </Select.Option>
+                );
+              })}
+            </Select>
+          </Form.Item>
+        </Col>
         <Col span={24}>
           <Form.Item label={t('panel.options.legend.behaviour.label')} name={[...namePrefix, 'behaviour']} initialValue='showItem'>
             <Select

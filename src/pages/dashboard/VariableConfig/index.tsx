@@ -118,6 +118,7 @@ function index(props: IProps) {
         for (let idx = 0; idx < value.length; idx++) {
           const item = _.cloneDeep(value[idx]);
           if (item.type === 'query' && item.definition) {
+            const datasourceCate = item.datasource?.cate;
             const definition = idx > 0 ? replaceExpressionVars(item.definition, result, idx, id) : item.definition;
 
             let options = [];
@@ -135,17 +136,17 @@ function index(props: IProps) {
                 id,
                 groupedDatasourceList,
               );
-              options = _.sortBy(_.uniq(options));
+              options = datasourceCate === 'prometheus' ? _.sortBy(_.uniq(options)) : _.uniq(options);
             } catch (error) {
               console.error(error);
             }
             const regFilterOptions = filterOptionsByReg(options, item.reg, result, idx, id);
             result[idx] = item;
             result[idx].fullDefinition = definition;
-            result[idx].options = item.type === 'query' ? _.sortBy(regFilterOptions) : regFilterOptions;
+            result[idx].options = item.type === 'query' ? (datasourceCate === 'prometheus' ? _.sortBy(regFilterOptions) : regFilterOptions) : regFilterOptions;
             // 当仪表盘变量值为空时，设置默认值
             // 如果已选项不在待选项里也视做空值处理
-            const selected = getVaraiableSelected(item.name, item.type, id);
+            const selected = getVaraiableSelected(item, id);
             if (query.__variable_value_fixed === undefined) {
               if (selected === null || (selected && !_.isEmpty(regFilterOptions) && !includes(regFilterOptions, selected))) {
                 const head = regFilterOptions?.[0] || ''; // 2014-01-22 添加默认值（空字符）
@@ -156,7 +157,7 @@ function index(props: IProps) {
           } else if (item.type === 'custom') {
             result[idx] = item;
             result[idx].options = _.map(_.compact(_.split(item.definition, ',')), _.trim);
-            const selected = getVaraiableSelected(item.name, item.type, id);
+            const selected = getVaraiableSelected(item, id);
             if (selected === null && query.__variable_value_fixed === undefined) {
               const head = _.head(result[idx].options)!;
               const defaultVal = item.multi ? (item.allOption ? ['all'] : head ? [head] : []) : head;
@@ -164,13 +165,13 @@ function index(props: IProps) {
             }
           } else if (item.type === 'textbox') {
             result[idx] = item;
-            const selected = getVaraiableSelected(item.name, item.type, id);
+            const selected = getVaraiableSelected(item, id);
             if (selected === null && query.__variable_value_fixed === undefined) {
               setVaraiableSelected({ name: item.name, value: item.defaultValue!, id, urlAttach: true });
             }
           } else if (item.type === 'constant') {
             result[idx] = item;
-            const selected = getVaraiableSelected(item.name, item.type, id);
+            const selected = getVaraiableSelected(item, id);
             if (selected === null && query.__variable_value_fixed === undefined) {
               setVaraiableSelected({ name: item.name, value: item.definition, id, urlAttach: true });
             }
@@ -185,13 +186,13 @@ function index(props: IProps) {
             } else {
               result[idx].options = options;
             }
-            const selected = getVaraiableSelected(item.name, item.type, id);
+            const selected = getVaraiableSelected(item, id);
             if (selected === null) {
               if (item.defaultValue) {
                 setVaraiableSelected({ name: item.name, value: item.defaultValue, id, urlAttach: true });
               } else {
                 if (query.__variable_value_fixed === undefined) {
-                  setVaraiableSelected({ name: item.name, value: options[0]?.id, id, urlAttach: true });
+                  setVaraiableSelected({ name: item.name, value: options?.[0]?.id, id, urlAttach: true });
                 }
               }
             }
@@ -210,7 +211,7 @@ function index(props: IProps) {
             const regFilterOptions = filterOptionsByReg(options, item.reg, result, idx, id);
             result[idx] = item;
             result[idx].options = regFilterOptions;
-            const selected = getVaraiableSelected(item.name, item.type, id);
+            const selected = getVaraiableSelected(item, id);
             if (query.__variable_value_fixed === undefined) {
               if (selected === null || (selected && !_.isEmpty(regFilterOptions) && !includes(regFilterOptions, selected))) {
                 const head = regFilterOptions?.[0] || ''; // 2014-01-22 添加默认值（空字符）
@@ -221,7 +222,7 @@ function index(props: IProps) {
           } else if (item.type === 'businessGroupIdent') {
             result[idx] = item;
             const hostIdent = _.find(busiGroups, { id: dashboard.group_id })?.label_value;
-            const selected = getVaraiableSelected(item.name, item.type, id);
+            const selected = getVaraiableSelected(item, id);
             if (hostIdent && selected === null && query.__variable_value_fixed === undefined) {
               setVaraiableSelected({ name: item.name, value: hostIdent, id, urlAttach: true });
             }
@@ -232,7 +233,7 @@ function index(props: IProps) {
         result = _.map(_.compact(result), (item) => {
           return {
             ...item,
-            value: getVaraiableSelected(item?.name, item?.type, id),
+            value: getVaraiableSelected(item, id),
           };
         });
         setData(result);

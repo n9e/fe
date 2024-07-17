@@ -14,13 +14,14 @@
  * limitations under the License.
  *
  */
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import _ from 'lodash';
-import { Space, Empty, Spin, Dropdown, Input, Menu } from 'antd';
-import { SettingOutlined, DownOutlined } from '@ant-design/icons';
+import { useKeyPress } from 'ahooks';
+import { Space, Empty, Spin, Dropdown, Input, Menu, notification, Tooltip } from 'antd';
+import { SettingOutlined, DownOutlined, FullscreenOutlined } from '@ant-design/icons';
 import { CommonStateContext } from '@/App';
 import PageLayout from '@/components/pageLayout';
 import AuthorizationWrapper from '@/components/AuthorizationWrapper';
@@ -42,6 +43,7 @@ export default function index() {
   const [activeRecord, setActiveRecord] = useState<Record>();
   const [dashboardListDropdownSearch, setDashboardListDropdownSearch] = useState('');
   const [dashboardListDropdownVisible, setDashboardListDropdownVisible] = useState(false);
+  const isClickTrigger = useRef(false);
 
   useEffect(() => {
     if (query.id) {
@@ -55,13 +57,43 @@ export default function index() {
           if (_.find(data, (item) => item.id === localStorage.getItem(LOCAL_STORAGE_KEY))) {
             id = localStorage.getItem(LOCAL_STORAGE_KEY) as string;
           }
-          history.replace(`/embedded-dashboards?id=${id}`);
+          history.replace({
+            pathname: '/embedded-dashboards',
+            search: queryString.stringify({
+              ...query,
+              id,
+            }),
+          });
         } else {
           setActiveRecord(undefined);
         }
       }
     }
   }, [data, query.id]);
+
+  // useKeyPress('esc', () => {
+  //   if (query.viewMode === 'fullscreen') {
+  //     history.replace({
+  //       pathname: location.pathname,
+  //       search: queryString.stringify(_.omit(query, ['viewMode'])),
+  //     });
+  //     notification.close('dashboard_fullscreen');
+  //   }
+  // });
+
+  // useEffect(() => {
+  //   if (query.viewMode === 'fullscreen' && isClickTrigger.current) {
+  //     notification.info({
+  //       key: 'dashboard_fullscreen',
+  //       message: (
+  //         <div>
+  //           <div>{t('dashboard:detail.fullscreen.notification.esc')}</div>
+  //         </div>
+  //       ),
+  //       duration: 3,
+  //     });
+  //   }
+  // }, [query.viewMode]);
 
   useEffect(() => {
     setLoading(true);
@@ -75,7 +107,13 @@ export default function index() {
           if (_.find(res, (item) => item.id === localStorage.getItem(LOCAL_STORAGE_KEY))) {
             id = localStorage.getItem(LOCAL_STORAGE_KEY) as string;
           }
-          history.replace(`/embedded-dashboards?id=${id}`);
+          history.replace({
+            pathname: '/embedded-dashboards',
+            search: queryString.stringify({
+              ...query,
+              id,
+            }),
+          });
         }
       })
       .finally(() => {
@@ -144,6 +182,7 @@ export default function index() {
             </Dropdown>
             <AuthorizationWrapper allowedPerms={['/embedded-dashboards/put']}>
               <SettingOutlined
+                style={{ margin: 0 }}
                 onClick={() => {
                   FormModal({
                     initialValues: data,
@@ -154,6 +193,21 @@ export default function index() {
                 }}
               />
             </AuthorizationWrapper>
+            <Tooltip title={t('exitFullScreen_tip')}>
+              <FullscreenOutlined
+                style={{ margin: 0 }}
+                onClick={() => {
+                  isClickTrigger.current = true;
+                  history.push({
+                    pathname: location.pathname,
+                    search: queryString.stringify({
+                      ...query,
+                      viewMode: 'fullscreen',
+                    }),
+                  });
+                }}
+              />
+            </Tooltip>
           </Space>
         ) : (
           t('title')

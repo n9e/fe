@@ -15,7 +15,7 @@
  *
  */
 import React, { useContext, useEffect, createContext } from 'react';
-import { Form, Space, Button, message, Affix, Card } from 'antd';
+import { Form, Space, Button, message, Affix, Card, Alert } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams, Link } from 'react-router-dom';
 import _ from 'lodash';
@@ -26,12 +26,14 @@ import Base from './Base';
 import Rule from './Rule';
 import Effective from './Effective';
 import Notify from './Notify';
+import EventSettings from './EventSettings';
 import { processFormValues, processInitialValues } from './utils';
 import { defaultValues } from './constants';
 
 interface IProps {
   type?: number; // 空: 新增 1:编辑 2:克隆 3:查看
   initialValues?: any;
+  editable?: boolean;
 }
 
 export const FormStateContext = createContext({
@@ -39,13 +41,14 @@ export const FormStateContext = createContext({
 });
 
 export default function index(props: IProps) {
-  const { type, initialValues } = props;
+  const { type, initialValues, editable = true } = props;
   const history = useHistory();
   const { bgid } = useParams<{ bgid: string }>();
   const { t } = useTranslation('alertRules');
   const [form] = Form.useForm();
   const { groupedDatasourceList, licenseRulesRemaining } = useContext(CommonStateContext);
   const disabled = type === 3;
+  const containerRef = React.useRef(null);
   const handleCheck = async (values) => {
     if (values.cate === 'prometheus') {
       if (values.rule_config.checked && values.prod === 'anomaly') {
@@ -109,55 +112,67 @@ export default function index(props: IProps) {
         disabled,
       }}
     >
-      <Form form={form} layout='vertical' disabled={disabled} style={{ overflow: 'hidden auto' }}>
-        <div className='p2'>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <Form.Item name='disabled' hidden>
-              <div />
-            </Form.Item>
-            <Base />
-            <Rule form={form} />
-            <Effective />
-            <Notify disabled={disabled} />
-          </div>
-          <Affix offsetBottom={0}>
-            <Card size='small' className='affix-bottom-shadow'>
-              {!disabled && (
-                <Space>
-                  <Button
-                    type='primary'
-                    onClick={() => {
-                      form
-                        .validateFields()
-                        .then(async (values) => {
-                          handleCheck(values);
-                          const data = processFormValues(values) as any;
-                          if (type === 1) {
-                            const res = await EditStrategy(data, initialValues.group_id, initialValues.id);
-                            handleMessage(res);
-                          } else {
-                            const curBusiId = initialValues?.group_id || Number(bgid);
-                            const res = await addStrategy([data], curBusiId);
-                            handleMessage(res);
-                          }
-                        })
-                        .catch((err) => {
-                          console.error(err);
-                          scrollToFirstError();
-                        });
-                    }}
-                  >
-                    {t('common:btn.save')}
-                  </Button>
-                  <Link to='/alert-rules'>
-                    <Button>{t('common:btn.cancel')}</Button>
-                  </Link>
-                </Space>
+      <div style={{ overflow: 'hidden auto', padding: 0 }} ref={containerRef}>
+        <Form form={form} layout='vertical' disabled={disabled} style={{ background: 'unset' }}>
+          <div className='p2'>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {editable === false && (
+                <Affix
+                  target={() => {
+                    return containerRef.current || window;
+                  }}
+                >
+                  <Alert type='warning' message={t('expired')} />
+                </Affix>
               )}
-            </Card>
-          </Affix>
-        </div>
-      </Form>
+              <Form.Item name='disabled' hidden>
+                <div />
+              </Form.Item>
+              <Base />
+              <Rule form={form} />
+              <EventSettings initialValues={initialValues} />
+              <Effective />
+              <Notify disabled={disabled} />
+            </div>
+            <Affix offsetBottom={0}>
+              <Card size='small' className='affix-bottom-shadow'>
+                {!disabled && (
+                  <Space>
+                    <Button
+                      type='primary'
+                      onClick={() => {
+                        form
+                          .validateFields()
+                          .then(async (values) => {
+                            handleCheck(values);
+                            const data = processFormValues(values) as any;
+                            if (type === 1) {
+                              const res = await EditStrategy(data, initialValues.group_id, initialValues.id);
+                              handleMessage(res);
+                            } else {
+                              const curBusiId = initialValues?.group_id || Number(bgid);
+                              const res = await addStrategy([data], curBusiId);
+                              handleMessage(res);
+                            }
+                          })
+                          .catch((err) => {
+                            console.error(err);
+                            scrollToFirstError();
+                          });
+                      }}
+                    >
+                      {t('common:btn.save')}
+                    </Button>
+                    <Link to='/alert-rules'>
+                      <Button>{t('common:btn.cancel')}</Button>
+                    </Link>
+                  </Space>
+                )}
+              </Card>
+            </Affix>
+          </div>
+        </Form>
+      </div>
     </FormStateContext.Provider>
   );
 }

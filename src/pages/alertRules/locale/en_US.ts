@@ -180,5 +180,37 @@ const en_US = {
     disabled: 'Enable',
     severity: 'Severity',
   },
+  expired: 'The alert rule has been modified by others. To avoid mutual coverage, please refresh the page to view the latest configuration',
+  relabel: {
+    title: 'Relabel',
+    help_btn: 'Help',
+    if_tip: 'Optional, only events that meet this matching condition will be relabeled',
+    target_label_tip: 'Key of the new label',
+    replacement_tip:
+      'The final value of the label, if the separator is configured, this field can be left blank, if the regex is configured, this field can use the content matched in the regular expression to construct the final target value',
+    source_labels_tip: 'Optional, the original label used',
+    source_labels_tip_placeholder: 'Use Enter or Space to separate',
+    separator_tip: 'Optional, spliced according to the existing label value, used to splice the connector of the value',
+    regex_tip: 'Optional, based on the content of the existing label value, extract the regular expression used to construct the content',
+    labelkeep: {
+      regex_tip: 'Required, supports regular expressions, labels that match the label key will be retained',
+    },
+    labeldrop: {
+      regex_tip: 'Required, supports regular expressions, labels that match the label key will be deleted',
+    },
+    labelmap: {
+      regex_tip: 'Required, use regular expressions to extract content',
+      replacement_tip:
+        'You can write a fixed value, such as abc, or you can write characters matched from the regular expression. For example, the regular expression is local(host). Here, write $1, and the final value is host.',
+    },
+    test_btn: 'Test Configuration',
+    test: {
+      title: 'Test',
+      label: 'Label',
+      labelFromEvent: 'Select label from alert event',
+      btn: 'Apply',
+      result: 'Relabel Result',
+    },
+  },
 };
 export default en_US;

@@ -26,6 +26,7 @@ import { Dashboard } from '@/store/dashboardInterface';
 import { IVariable } from './definition';
 import { stringToRegex } from './constant';
 import ElasticsearchSettings from './datasource/elasticsearch';
+import DocumentDrawer from '@/components/DocumentDrawer';
 
 interface IProps {
   id: string;
@@ -82,10 +83,10 @@ const allOptions = [
 ];
 
 function EditItem(props: IProps) {
-  const { t } = useTranslation('dashboard');
+  const { t, i18n } = useTranslation('dashboard');
   const { data, vars, range, id, index, datasourceVars, onOk, onCancel, dashboard } = props;
   const [form] = Form.useForm();
-  const { groupedDatasourceList, datasourceCateOptions, busiGroups } = useContext(CommonStateContext);
+  const { groupedDatasourceList, datasourceCateOptions, busiGroups, darkMode } = useContext(CommonStateContext);
   const groupRecord = useMemo(() => _.find(busiGroups, { id: dashboard.group_id }), [busiGroups, dashboard.group_id]);
 
   return (
@@ -107,7 +108,7 @@ function EditItem(props: IProps) {
               style={{ width: '100%' }}
               onChange={(val) => {
                 form.setFieldsValue({
-                  name: val === 'businessGroupIdent' ? 'busigroup' : '',
+                  name: val === 'businessGroupIdent' ? 'busigroup' : form.getFieldValue('name'),
                   definition: '',
                   defaultValue: '',
                   hide: val === 'constant' || val === 'businessGroupIdent' ? true : false,
@@ -196,12 +197,16 @@ function EditItem(props: IProps) {
                       <QuestionCircleOutlined
                         style={{ marginLeft: 5 }}
                         onClick={() => {
-                          window.open('https://flashcat.cloud/media/?type=夜莺监控&source=aHR0cHM6Ly9kb3dubG9hZC5mbGFzaGNhdC5jbG91ZC9uOWUtMTMtZGFzaGJvYXJkLWludHJvLm1wNA==');
-                          // if (datasourceCate === 'prometheus') {
-                          //   window.open('https://grafana.com/docs/grafana/latest/datasources/prometheus/#query-variable', '_blank');
-                          // } else if (datasourceCate === 'elasticsearch') {
-                          //   window.open('https://grafana.com/docs/grafana/latest/datasources/elasticsearch/template-variables', '_blank');
-                          // }
+                          if (datasourceCate === 'prometheus') {
+                            window.open('https://flashcat.cloud/media/?type=夜莺监控&source=aHR0cHM6Ly9kb3dubG9hZC5mbGFzaGNhdC5jbG91ZC9uOWUtMTMtZGFzaGJvYXJkLWludHJvLm1wNA==');
+                          } else if (datasourceCate === 'elasticsearch') {
+                            DocumentDrawer({
+                              language: i18n.language,
+                              darkMode,
+                              title: t('var.definition'),
+                              documentPath: '/docs/elasticsearch-template-variables',
+                            });
+                          }
                         }}
                       />
                     </span>
