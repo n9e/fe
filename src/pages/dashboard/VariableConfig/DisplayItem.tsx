@@ -123,7 +123,7 @@ export default function DisplayItem(props: IProps) {
                 onChange(undefined);
               }
             }}
-            dropdownMatchSelectWidth={false}
+            dropdownMatchSelectWidth={_.toNumber(options?.length) > 100}
             value={selected}
             dropdownClassName='overflow-586'
             maxTagPlaceholder={(omittedValues) => {
@@ -219,7 +219,7 @@ export default function DisplayItem(props: IProps) {
             }}
             defaultActiveFirstOption={false}
             showSearch
-            dropdownMatchSelectWidth={false}
+            dropdownMatchSelectWidth={_.toNumber(options?.length) > 100}
             value={selected}
             dropdownClassName='overflow-586'
             maxTagPlaceholder={(omittedValues) => {
