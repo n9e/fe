@@ -53,6 +53,10 @@ const processError = (res: any): string => {
   return JSON.stringify(res);
 };
 
+const combineLoginURL = () => {
+  return `${basePrefix}/login${location.pathname != '/' ? '?redirect=' + encodeURIComponent(location.pathname + location.search) : ''}`;
+};
+
 /** 配置request请求时的默认参数 */
 const request = extend({
   errorHandler,
@@ -127,13 +131,13 @@ request.interceptors.response.use(
         });
     } else if (status === 401 && !_.includes(response.url, '/api/n9e-plus/proxy') && !_.includes(response.url, '/api/n9e/proxy')) {
       if (response.url.indexOf('/api/n9e/auth/refresh') > 0) {
-        location.href = `${basePrefix}/login${location.pathname != '/' ? '?redirect=' + location.pathname + location.search : ''}`;
+        location.href = combineLoginURL();
       } else {
         localStorage.getItem('refresh_token')
           ? UpdateAccessToken().then((res) => {
               console.log('401 err', res);
               if (res.err) {
-                location.href = `${basePrefix}/login${location.pathname != '/' ? '?redirect=' + location.pathname + location.search : ''}`;
+                location.href = combineLoginURL();
               } else {
                 const { access_token, refresh_token } = res.dat;
                 localStorage.setItem(AccessTokenKey, access_token);
@@ -141,7 +145,7 @@ request.interceptors.response.use(
                 location.href = `${basePrefix}${location.pathname}${location.search}`;
               }
             })
-          : (location.href = `${basePrefix}/login${location.pathname != '/' ? '?redirect=' + location.pathname + location.search : ''}`);
+          : (location.href = combineLoginURL());
       }
     } else if (
       status === 403 &&
