@@ -19,7 +19,7 @@ import { Form, InputNumber, Row, Col, Tooltip, Input } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
-import UnitPicker from '@/pages/dashboard/Components/UnitPicker';
+import { CustomUnitPicker } from '@/pages/dashboard/Components/UnitPicker';
 import { Panel } from '../../Components/Collapse';
 
 interface IProps {
@@ -69,7 +69,7 @@ export default function index(props: IProps) {
                     }
                     name={[...namePrefix, 'util']}
                   >
-                    <UnitPicker
+                    <CustomUnitPicker
                       placeholder='SI prefixes'
                       allowClear
                       showSearch

@@ -46,6 +46,7 @@ import Row from './Row';
 import EditorModal from './EditorModal';
 import { getDefaultThemeMode, ROW_HEIGHT } from '../Detail/utils';
 import { IDashboardConfig } from '../types';
+import { useGlobalState } from '../globalState';
 import './style.less';
 
 interface IProps {
@@ -113,6 +114,7 @@ function index(props: IProps) {
     }
   };
   const editorRef = useRef<any>(null);
+  const [panelClipboard, setPanelClipboard] = useGlobalState('panelClipboard');
 
   useEffect(() => {
     setPanels(processRepeats(panels, variableConfig));
@@ -227,6 +229,9 @@ function index(props: IProps) {
                           });
                         },
                       });
+                    }}
+                    onCopyClick={() => {
+                      setPanelClipboard(item);
                     }}
                   />
                 ) : (

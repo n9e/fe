@@ -38,6 +38,7 @@ const zh_HK = {
     test: '測試',
     expand: '展開',
     collapse: '收起',
+    copy: '複製',
   },
   table: {
     name: '名稱',

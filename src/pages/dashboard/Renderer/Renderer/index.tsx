@@ -36,6 +36,7 @@ import {
 } from '@ant-design/icons';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import PanelEmpty from '../components/PanelEmpty';
+import CloneIcon from '../components/CloneIcon';
 import Timeseries from './Timeseries';
 import Stat from './Stat';
 import Table from './Table';
@@ -69,11 +70,12 @@ interface IProps {
   onShareClick?: () => void;
   onEditClick?: () => void;
   onDeleteClick?: () => void;
+  onCopyClick?: () => void;
 }
 
 function index(props: IProps) {
   const { t } = useTranslation('dashboard');
-  const { datasourceValue, themeMode, dashboardId, id, variableConfig, isPreview, onCloneClick, onShareClick, onEditClick, onDeleteClick } = props;
+  const { datasourceValue, themeMode, dashboardId, id, variableConfig, isPreview, onCloneClick, onShareClick, onEditClick, onDeleteClick, onCopyClick } = props;
   const [time, setTime] = useState(props.time);
   const [visible, setVisible] = useState(false);
   const values = _.cloneDeep(props.values);
@@ -247,8 +249,20 @@ function index(props: IProps) {
                           }}
                           key='clone_btn'
                         >
-                          <CopyOutlined style={{ marginRight: 8 }} />
+                          <CloneIcon style={{ marginRight: 8 }} />
                           {t('common:btn.clone')}
+                        </Menu.Item>
+                      )}
+                      {!isPreview && !values.repeatPanelId && (
+                        <Menu.Item
+                          onClick={() => {
+                            setVisible(false);
+                            if (onCopyClick) onCopyClick();
+                          }}
+                          key='copy_btn'
+                        >
+                          <CopyOutlined style={{ marginRight: 8 }} />
+                          {t('common:btn.copy')}
                         </Menu.Item>
                       )}
                       <Menu.Item

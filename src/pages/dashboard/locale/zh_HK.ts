@@ -445,6 +445,7 @@ const zh_HK = {
       discardText: '放棄',
       okText: '儲存',
     },
+    noPanelToPaste: '沒有可粘貼的圖表',
   },
   settings: {
     graphTooltip: {
@@ -474,6 +475,7 @@ const zh_HK = {
     heatmap: '色塊圖',
     iframe: '內嵌文檔(iframe)',
     row: '分組',
+    pastePanel: '粘貼圖表',
   },
   calcs: {
     lastNotNull: '最後一個非空值',

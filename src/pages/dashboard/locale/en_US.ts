@@ -437,6 +437,7 @@ const en_US = {
       discardText: 'Discard',
       okText: 'Save',
     },
+    noPanelToPaste: 'No panel to paste',
   },
   settings: {
     graphTooltip: {
@@ -466,6 +467,7 @@ const en_US = {
     heatmap: 'Heatmap',
     iframe: 'Iframe',
     row: 'Row',
+    pastePanel: 'Paste panel',
   },
   calcs: {
     lastNotNull: 'Last not null value',
