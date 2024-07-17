@@ -161,8 +161,8 @@ const valueFormatter = ({ unit, decimals = 6, dateFormat = 'YYYY-MM-DD HH:mm:ss'
     }
     return {
       value: _.round(val, decimals),
-      unit: '',
-      text: _.round(val, decimals),
+      unit: unit,
+      text: _.round(val, decimals) + ' ' + unit, // 2024-07-08 值和单位组合之间添加空格，暂时用在自定义单位，后续考虑其他内置单位也添加空格
       stat: val,
     };
   }

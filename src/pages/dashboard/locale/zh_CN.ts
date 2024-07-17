@@ -453,6 +453,7 @@ const zh_CN = {
       discardText: '放弃',
       okText: '保存',
     },
+    noPanelToPaste: '没有可粘贴的图表',
   },
   settings: {
     graphTooltip: {
@@ -482,6 +483,7 @@ const zh_CN = {
     heatmap: '色块图',
     iframe: '内嵌文档(iframe)',
     row: '分组',
+    pastePanel: '粘贴图表',
   },
   calcs: {
     lastNotNull: '最后一个非空值',

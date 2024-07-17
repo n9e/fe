@@ -164,9 +164,9 @@ const PANEL_W = 12;
 const PANEL_H = 4;
 
 // 新增 panel 到全局
-export function updatePanelsInsertNewPanelToGlobal(panels: IPanel[], panel: any, type: 'row' | 'chart') {
-  const w = type === 'row' ? 24 : PANEL_W;
-  const h = type === 'row' ? 1 : PANEL_H;
+export function updatePanelsInsertNewPanelToGlobal(panels: IPanel[], panel: any, type: 'row' | 'chart', useDefaultSize = true) {
+  const w = type === 'row' ? 24 : useDefaultSize ? PANEL_W : panel.layout.w || PANEL_W;
+  const h = type === 'row' ? 1 : useDefaultSize ? PANEL_H : panel.layout.h || PANEL_H;
   const maxItem = _.maxBy(panels, (item: IPanel) => {
     return item.layout.y + item.layout.h;
   });
