@@ -55,7 +55,7 @@ export default function index(props: IProps) {
   const location = useLocation();
   const query = queryString.parse(location.search);
   const history = useHistory();
-  const { title = t('common:business_group'), renderHeadExtra, onSelect, showSelected = true } = props;
+  const { title = t('common:business_groups'), renderHeadExtra, onSelect, showSelected = true } = props;
   const [collapse, setCollapse] = useState(localStorage.getItem('leftlist') === '1');
   const [width, setWidth] = useState(_.toNumber(localStorage.getItem('leftwidth') || 200));
   const { busiGroups, siteInfo } = useContext(CommonStateContext);

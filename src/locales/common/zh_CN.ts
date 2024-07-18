@@ -5,6 +5,7 @@ const zh_CN = {
     '404_btn': '回到首页',
   },
   business_group: '业务组',
+  business_groups: '业务组',
   search_placeholder: '请输入搜索关键字',
   nodata: '暂无数据',
   btn: {

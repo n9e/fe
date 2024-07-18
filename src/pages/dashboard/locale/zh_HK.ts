@@ -25,7 +25,8 @@ const zh_HK = {
   default_filter: {
     title: '預置篩選',
     public: '公開儀表盤',
-    all: '全部儀表盤',
+    all: '所屬業務組儀錶板',
+    all_tip: '此選項會顯示您所在業務組下關聯的所有儀錶板',
   },
   create_title: '創建儀表盤',
   edit_title: '編輯儀表盤',

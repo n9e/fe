@@ -28,7 +28,8 @@ const zh_CN = {
   default_filter: {
     title: '预置筛选',
     public: '公开仪表盘',
-    all: '全部仪表盘',
+    all: '所属业务组仪表盘',
+    all_tip: '此选项会展示您所在业务组下关联的所有仪表盘',
   },
   create_title: '创建仪表盘',
   edit_title: '编辑仪表盘',

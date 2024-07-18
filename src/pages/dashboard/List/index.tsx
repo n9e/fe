@@ -19,8 +19,8 @@
  */
 import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { Table, Tag, Modal, Space, Button, Dropdown, Menu, message } from 'antd';
-import { FundViewOutlined, EditOutlined, ShareAltOutlined, MoreOutlined } from '@ant-design/icons';
+import { Table, Tag, Modal, Space, Button, Dropdown, Menu, message, Tooltip } from 'antd';
+import { FundViewOutlined, EditOutlined, ShareAltOutlined, MoreOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import _ from 'lodash';
 import classNames from 'classnames';
@@ -112,7 +112,12 @@ export default function index() {
                     localStorage.setItem(N9E_BOARD_NODE_ID, '-2');
                   }}
                 >
-                  {t('default_filter.all')}
+                  <Space>
+                    {t('default_filter.all')}
+                    <Tooltip title={t('default_filter.all_tip')}>
+                      <InfoCircleOutlined />
+                    </Tooltip>
+                  </Space>
                 </div>
               </div>
             );

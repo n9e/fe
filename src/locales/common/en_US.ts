@@ -5,6 +5,7 @@ const en_US = {
     '404_btn': 'Back to Home',
   },
   business_group: 'Business Group',
+  business_groups: 'Business Groups',
   search_placeholder: 'Please enter search keywords',
   nodata: 'No Data',
   btn: {

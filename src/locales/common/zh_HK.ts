@@ -5,6 +5,7 @@ const zh_HK = {
     '404_btn': '回到首頁',
   },
   business_group: '業務組',
+  business_groups: '業務組',
   search_placeholder: '請輸入搜索關鍵字',
   nodata: '暫無數據',
   btn: {
