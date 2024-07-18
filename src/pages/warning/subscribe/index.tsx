@@ -400,7 +400,7 @@ const Shield: React.FC = () => {
               />
             </Space>
             <Space>
-              {businessGroup.isLeaf && (
+              {businessGroup.isLeaf && gids !== '-2' && (
                 <div>
                   <Button
                     type='primary'
