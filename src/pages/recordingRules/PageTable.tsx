@@ -374,7 +374,7 @@ const PageTable: React.FC<Props> = ({ gids }) => {
           </Select>
           <SearchInput placeholder={t('search_placeholder')} onSearch={setQuery} allowClear />
         </Space>
-        {businessGroup.isLeaf && (
+        {businessGroup.isLeaf && gids !== '-2' && (
           <div className='strategy-table-search-right'>
             <Space>
               <Button type='primary' onClick={goToAddWarningStrategy} className='strategy-table-search-right-create'>

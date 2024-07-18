@@ -353,7 +353,7 @@ const Shield: React.FC = () => {
               />
               <Input onPressEnter={onSearchQuery} prefix={<SearchOutlined />} placeholder={t('search_placeholder')} />
             </Space>
-            {businessGroup.isLeaf && (
+            {businessGroup.isLeaf && gids !== '-2' && (
               <div className='header-right'>
                 <Button
                   type='primary'
