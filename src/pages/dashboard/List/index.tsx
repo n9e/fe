@@ -109,6 +109,7 @@ export default function index() {
           showPublicOption={_.includes(perms, '/public-dashboards')}
           publicOptionLabel={t('default_filter.public')}
           allOptionLabel={t('default_filter.all')}
+          allOptionTooltip={t('default_filter.all_tip')}
         />
         <div className='n9e-border-base dashboards-v2'>
           <Header
