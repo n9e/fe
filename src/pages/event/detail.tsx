@@ -289,49 +289,53 @@ const EventDetailPage: React.FC = () => {
             size='small'
             className='desc-container'
             title={t('detail.card_title')}
-            actions={[
-              <div className='action-btns'>
-                <Space>
-                  <Button
-                    type='primary'
-                    onClick={() => {
-                      history.push({
-                        pathname: '/alert-mutes/add',
-                        search: queryString.stringify({
-                          busiGroup: eventDetail.group_id,
-                          prod: eventDetail.rule_prod,
-                          cate: eventDetail.cate,
-                          datasource_ids: [eventDetail.datasource_id],
-                          tags: eventDetail.tags,
-                        }),
-                      });
-                    }}
-                  >
-                    {t('shield')}
-                  </Button>
-                  {!isHistory && (
-                    <Button
-                      danger
-                      onClick={() => {
-                        if (eventDetail.group_id) {
-                          deleteAlertEventsModal(
-                            [Number(eventId)],
-                            () => {
-                              history.replace('/alert-cur-events');
-                            },
-                            t,
-                          );
-                        } else {
-                          message.warn('该告警未返回业务组ID');
-                        }
-                      }}
-                    >
-                      {t('common:btn.delete')}
-                    </Button>
-                  )}
-                </Space>
-              </div>,
-            ]}
+            actions={
+              !_.includes(['firemap', 'northstar'], eventDetail?.rule_prod)
+                ? [
+                    <div className='action-btns'>
+                      <Space>
+                        <Button
+                          type='primary'
+                          onClick={() => {
+                            history.push({
+                              pathname: '/alert-mutes/add',
+                              search: queryString.stringify({
+                                busiGroup: eventDetail.group_id,
+                                prod: eventDetail.rule_prod,
+                                cate: eventDetail.cate,
+                                datasource_ids: [eventDetail.datasource_id],
+                                tags: eventDetail.tags,
+                              }),
+                            });
+                          }}
+                        >
+                          {t('shield')}
+                        </Button>
+                        {!isHistory && (
+                          <Button
+                            danger
+                            onClick={() => {
+                              if (eventDetail.group_id) {
+                                deleteAlertEventsModal(
+                                  [Number(eventId)],
+                                  () => {
+                                    history.replace('/alert-cur-events');
+                                  },
+                                  t,
+                                );
+                              } else {
+                                message.warn('该告警未返回业务组ID');
+                              }
+                            }}
+                          >
+                            {t('common:btn.delete')}
+                          </Button>
+                        )}
+                      </Space>
+                    </div>,
+                  ]
+                : []
+            }
           >
             {eventDetail && (
               <div>
