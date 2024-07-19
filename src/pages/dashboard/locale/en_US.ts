@@ -34,6 +34,7 @@ const en_US = {
   cluster: 'Cluster',
   full_screen: 'Full screen',
   exit_full_screen: 'Exit full screen',
+  copyPanelTip: 'Panel copied. Click "Add panel" to paste.',
   batch: {
     import: 'Import dashboard',
     label: 'Dashboard JSON',
