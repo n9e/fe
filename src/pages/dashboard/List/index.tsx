@@ -23,17 +23,16 @@ import { Table, Tag, Modal, Space, Button, Dropdown, Menu, message } from 'antd'
 import { FundViewOutlined, EditOutlined, ShareAltOutlined, MoreOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import _ from 'lodash';
-import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { useUpdateEffect } from 'ahooks';
 import { Dashboard as DashboardType } from '@/store/dashboardInterface';
 import { getBusiGroupsDashboards, getBusiGroupsPublicDashboards, cloneDashboard, removeDashboards, getDashboard, updateDashboardPublic } from '@/services/dashboardV2';
 import PageLayout from '@/components/pageLayout';
-import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
 import { CommonStateContext } from '@/App';
-import BusinessGroup, { getCleanBusinessGroupIds } from '@/components/BusinessGroup';
+import BusinessGroupSideBarWithAll, { getDefaultGids } from '@/components/BusinessGroup/BusinessGroupSideBarWithAll';
 import usePagination from '@/components/usePagination';
 import { getDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
+import { getBusiGroups } from '@/components/BusinessGroup';
 import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
 import Header from './Header';
 import FormModal from './FormModal';
@@ -42,17 +41,25 @@ import { exportDataStringify } from './utils';
 import PublicForm from './PublicForm';
 import './style.less';
 
-const N9E_BOARD_NODE_ID = 'N9E_BOARD_NODE_ID';
+const N9E_GIDS_LOCALKEY = 'N9E_BOARD_NODE_ID';
 const SEARCH_LOCAL_STORAGE_KEY = 'n9e_dashboard_search';
+const PUBLIC_SELECT_GIDS_LOCALKEY = 'N9E_PUBLIC_SELECT_GIDS';
+const getDefaultPublicSelectGids = (localKey: string) => {
+  const valueStr = localStorage.getItem(localKey);
+  const value = valueStr ? _.map(_.split(valueStr, ','), _.toNumber) : [];
+  return value;
+};
 
 export default function index() {
   const { t } = useTranslation('dashboard');
-  const { businessGroup, busiGroups } = useContext(CommonStateContext);
-  const [gids, setGids] = useState<string | undefined>(localStorage.getItem(N9E_BOARD_NODE_ID) || businessGroup.ids || '-2'); // -1: 公开仪表盘, -2: 所有仪表盘
+  const { businessGroup, perms } = useContext(CommonStateContext);
+  const [gids, setGids] = useState<string | undefined>(getDefaultGids(N9E_GIDS_LOCALKEY, businessGroup));
   const [list, setList] = useState<any[]>([]);
   const [selectRowKeys, setSelectRowKeys] = useState<number[]>([]);
   const [refreshKey, setRefreshKey] = useState(_.uniqueId('refreshKey_'));
   const [searchVal, setsearchVal] = useState<string>(localStorage.getItem(SEARCH_LOCAL_STORAGE_KEY) || '');
+  const [selectedBusinessGroup, setSelectedBusinessGroup] = useState<number[] | undefined>(getDefaultPublicSelectGids(PUBLIC_SELECT_GIDS_LOCALKEY)); // 目前只有公开仪表盘会用到
+  const [busiGroups, setBusiGroups] = useState<any[]>([]);
   const pagination = usePagination({ PAGESIZE_KEY: 'dashboard-pagesize' });
   const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
 
@@ -73,56 +80,35 @@ export default function index() {
   }, [gids, refreshKey]);
 
   const data = _.filter(list, (item) => {
-    if (searchVal) {
-      return (
-        _.includes(item.name.toLowerCase(), searchVal.toLowerCase()) ||
-        _.includes(_.join(_.sortBy(_.split(item.tags.toLowerCase(), ' ')), ' '), _.join(_.sortBy(_.split(searchVal.toLowerCase(), ' ')), ' '))
-      );
+    let flag = true;
+    // 公开仪表盘需要对单独的业务组选择器选择的值过滤
+    if (gids === '-1' && !_.isEmpty(selectedBusinessGroup)) {
+      flag = _.includes(selectedBusinessGroup, item.group_id);
     }
-    return true;
+    if (searchVal && flag) {
+      flag =
+        _.includes(item.name.toLowerCase(), searchVal.toLowerCase()) ||
+        _.includes(_.join(_.sortBy(_.split(item.tags.toLowerCase(), ' ')), ' '), _.join(_.sortBy(_.split(searchVal.toLowerCase(), ' ')), ' '));
+    }
+    return flag;
   });
+
+  useEffect(() => {
+    getBusiGroups({ all: true }).then((res) => {
+      setBusiGroups(res);
+    });
+  }, []);
 
   return (
     <PageLayout title={t('title')} icon={<FundViewOutlined />}>
       <div style={{ display: 'flex' }}>
-        <BusinessGroup
-          renderHeadExtra={() => {
-            return (
-              <div>
-                <div className='n9e-biz-group-container-group-title'>{t('default_filter.title')}</div>
-                <div
-                  className={classNames({
-                    'n9e-biz-group-item': true,
-                    active: gids === '-1',
-                  })}
-                  onClick={() => {
-                    setGids('-1');
-                    localStorage.setItem(N9E_BOARD_NODE_ID, '-1');
-                  }}
-                >
-                  {t('default_filter.public')}
-                </div>
-                <div
-                  className={classNames({
-                    'n9e-biz-group-item': true,
-                    active: gids === '-2',
-                  })}
-                  onClick={() => {
-                    setGids('-2');
-                    localStorage.setItem(N9E_BOARD_NODE_ID, '-2');
-                  }}
-                >
-                  {t('default_filter.all')}
-                </div>
-              </div>
-            );
-          }}
-          showSelected={gids !== '-1' && gids !== '-2'}
-          onSelect={(key) => {
-            const ids = getCleanBusinessGroupIds(key);
-            setGids(ids);
-            localStorage.removeItem(N9E_BOARD_NODE_ID);
-          }}
+        <BusinessGroupSideBarWithAll
+          gids={gids}
+          setGids={setGids}
+          localeKey={N9E_GIDS_LOCALKEY}
+          showPublicOption={_.includes(perms, '/public-dashboards')}
+          publicOptionLabel={t('default_filter.public')}
+          allOptionLabel={t('default_filter.all')}
         />
         <div className='n9e-border-base dashboards-v2'>
           <Header
@@ -138,6 +124,11 @@ export default function index() {
             }}
             columnsConfigs={columnsConfigs}
             setColumnsConfigs={setColumnsConfigs}
+            selectedBusinessGroup={selectedBusinessGroup}
+            setSelectedBusinessGroup={(val) => {
+              setSelectedBusinessGroup(val);
+              localStorage.setItem(PUBLIC_SELECT_GIDS_LOCALKEY, _.join(val, ','));
+            }}
           />
           <Table
             className='mt8'

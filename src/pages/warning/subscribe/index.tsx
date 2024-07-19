@@ -24,9 +24,8 @@ import _ from 'lodash';
 import PageLayout from '@/components/pageLayout';
 import { getBusiGroupsAlertSubscribes, deleteSubscribes, editSubscribe } from '@/services/subscribe';
 import { subscribeItem } from '@/store/warningInterface/subscribe';
-import BusinessGroup from '@/components/BusinessGroup';
+import BusinessGroupSideBarWithAll, { getDefaultGids } from '@/components/BusinessGroup/BusinessGroupSideBarWithAll';
 import RefreshIcon from '@/components/RefreshIcon';
-import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
 import { CommonStateContext } from '@/App';
 import { priorityColor } from '@/utils/constant';
 import { DatasourceSelect } from '@/components/DatasourceSelect';
@@ -43,12 +42,14 @@ export { default as Edit } from './edit';
 
 const QUERY_LOCAL_STORAGE_KEY = 'alertSubscribes_filter_query';
 const DATASOURCE_IDS_LOCAL_STORAGE_KEY = 'alertSubscribes_filter_datasource_ids';
+const N9E_GIDS_LOCALKEY = 'n9e_subscribes_gids';
 
 const { confirm } = Modal;
 const Shield: React.FC = () => {
   const { t } = useTranslation('alertSubscribes');
   const history = useHistory();
   const { datasourceList, businessGroup, busiGroups } = useContext(CommonStateContext);
+  const [gids, setGids] = useState<string | undefined>(getDefaultGids(N9E_GIDS_LOCALKEY, businessGroup)); // -2: 所有告警策略
   const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
   const [query, setQuery] = useState<string>(localStorage.getItem(QUERY_LOCAL_STORAGE_KEY) || '');
   const [currentShieldDataAll, setCurrentShieldDataAll] = useState<Array<subscribeItem>>([]);
@@ -68,7 +69,7 @@ const Shield: React.FC = () => {
   }
   const [datasourceIds, setDatasourceIds] = useState<number[] | undefined>(defaultDatasourceIds);
   const columns: ColumnsType = _.concat(
-    businessGroup.isLeaf
+    businessGroup.isLeaf && gids !== '-2'
       ? []
       : ([
           {
@@ -304,7 +305,7 @@ const Shield: React.FC = () => {
 
   useEffect(() => {
     getList();
-  }, [businessGroup.ids]);
+  }, [gids]);
 
   useEffect(() => {
     filterData();
@@ -336,9 +337,10 @@ const Shield: React.FC = () => {
   };
 
   const getList = async () => {
-    if (businessGroup.ids) {
+    if (gids) {
       setLoading(true);
-      const { success, dat } = await getBusiGroupsAlertSubscribes(businessGroup.ids);
+      const ids = gids === '-2' ? undefined : gids;
+      const { success, dat } = await getBusiGroupsAlertSubscribes(ids);
       if (success) {
         setCurrentShieldDataAll(dat || []);
         setLoading(false);
@@ -353,101 +355,98 @@ const Shield: React.FC = () => {
   return (
     <PageLayout title={t('title')} icon={<CopyOutlined />}>
       <div className='shield-content'>
-        <BusinessGroup />
-        {businessGroup.ids ? (
+        <BusinessGroupSideBarWithAll gids={gids} setGids={setGids} localeKey={N9E_GIDS_LOCALKEY} />
+        <div
+          className='n9e-border-base p2'
+          style={{
+            width: '100%',
+            overflow: 'hidden auto',
+          }}
+        >
           <div
-            className='n9e-border-base p2'
             style={{
-              width: '100%',
+              display: 'flex',
+              justifyContent: 'space-between',
             }}
           >
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-              }}
-            >
-              <Space>
-                <RefreshIcon
-                  onClick={() => {
-                    refreshList();
-                  }}
-                />
-                <DatasourceSelect
-                  style={{ width: 100 }}
-                  filterKey='alertRule'
-                  value={datasourceIds}
-                  onChange={(val) => {
-                    setDatasourceIds(val);
-                    if (_.isEmpty(val)) {
-                      localStorage.removeItem(DATASOURCE_IDS_LOCAL_STORAGE_KEY);
-                    } else {
-                      localStorage.setItem(DATASOURCE_IDS_LOCAL_STORAGE_KEY, JSON.stringify(val));
-                    }
-                  }}
-                />
-                <Input
-                  style={{ minWidth: 400 }}
-                  value={query}
-                  onChange={(e) => {
-                    setQuery(e.target.value);
-                    localStorage.setItem(QUERY_LOCAL_STORAGE_KEY, e.target.value);
-                  }}
-                  prefix={<SearchOutlined />}
-                  placeholder={t('search_placeholder')}
-                />
-              </Space>
-              <Space>
-                {businessGroup.isLeaf && (
-                  <div>
-                    <Button
-                      type='primary'
-                      className='add'
-                      onClick={() => {
-                        history.push('/alert-subscribes/add');
-                      }}
-                    >
-                      {t('common:btn.add')}
-                    </Button>
-                  </div>
-                )}
-                <Button
-                  onClick={() => {
-                    OrganizeColumns({
-                      i18nNs: 'alertSubscribes',
-                      value: columnsConfigs,
-                      onChange: (val) => {
-                        setColumnsConfigs(val);
-                        setDefaultColumnsConfigs(val, LOCAL_STORAGE_KEY);
-                      },
-                    });
-                  }}
-                  icon={<EyeOutlined />}
-                />
-              </Space>
-            </div>
-            <Table
-              className='mt8'
-              size='small'
-              rowKey='id'
-              pagination={{
-                total: currentShieldData.length,
-                showQuickJumper: true,
-                showSizeChanger: true,
-                showTotal: (total) => {
-                  return t('common:table.total', { total });
-                },
-                pageSizeOptions: pageSizeOptionsDefault,
-                defaultPageSize: 30,
-              }}
-              loading={loading}
-              dataSource={currentShieldData}
-              columns={ajustColumns(columns, columnsConfigs)}
-            />
+            <Space>
+              <RefreshIcon
+                onClick={() => {
+                  refreshList();
+                }}
+              />
+              <DatasourceSelect
+                style={{ width: 100 }}
+                filterKey='alertRule'
+                value={datasourceIds}
+                onChange={(val) => {
+                  setDatasourceIds(val);
+                  if (_.isEmpty(val)) {
+                    localStorage.removeItem(DATASOURCE_IDS_LOCAL_STORAGE_KEY);
+                  } else {
+                    localStorage.setItem(DATASOURCE_IDS_LOCAL_STORAGE_KEY, JSON.stringify(val));
+                  }
+                }}
+              />
+              <Input
+                style={{ minWidth: 400 }}
+                value={query}
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  localStorage.setItem(QUERY_LOCAL_STORAGE_KEY, e.target.value);
+                }}
+                prefix={<SearchOutlined />}
+                placeholder={t('search_placeholder')}
+              />
+            </Space>
+            <Space>
+              {businessGroup.isLeaf && gids !== '-2' && (
+                <div>
+                  <Button
+                    type='primary'
+                    className='add'
+                    onClick={() => {
+                      history.push('/alert-subscribes/add');
+                    }}
+                  >
+                    {t('common:btn.add')}
+                  </Button>
+                </div>
+              )}
+              <Button
+                onClick={() => {
+                  OrganizeColumns({
+                    i18nNs: 'alertSubscribes',
+                    value: columnsConfigs,
+                    onChange: (val) => {
+                      setColumnsConfigs(val);
+                      setDefaultColumnsConfigs(val, LOCAL_STORAGE_KEY);
+                    },
+                  });
+                }}
+                icon={<EyeOutlined />}
+              />
+            </Space>
           </div>
-        ) : (
-          <BlankBusinessPlaceholder text={t('title')} />
-        )}
+          <Table
+            className='mt8'
+            size='small'
+            rowKey='id'
+            pagination={{
+              total: currentShieldData.length,
+              showQuickJumper: true,
+              showSizeChanger: true,
+              showTotal: (total) => {
+                return t('common:table.total', { total });
+              },
+              pageSizeOptions: pageSizeOptionsDefault,
+              defaultPageSize: 30,
+            }}
+            loading={loading}
+            dataSource={currentShieldData}
+            columns={ajustColumns(columns, columnsConfigs)}
+          />
+        </div>
       </div>
     </PageLayout>
   );

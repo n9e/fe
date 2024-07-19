@@ -21,17 +21,28 @@ import { IVariable } from './definition';
 
 interface IProps {
   expression: IVariable;
-  value: string | string[];
-  onChange: (val: string | string[]) => void; // 目前只为了外层更新变量 options
+  value: string | string[] | undefined;
+  onChange: (val: string | string[] | undefined) => void; // 目前只为了外层更新变量 options
 }
 
 export default function DisplayItem(props: IProps) {
   const { expression, value, onChange } = props;
   const { name, label, multi, allOption, options, type, hide } = expression;
-  const [selected, setSelected] = useState<string | string[]>(value);
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [selected, setSelected] = useState<string | string[] | undefined>(value);
+  const [searchValue, setSearchValue] = useState('');
 
   useEffect(() => {
-    setSelected(value);
+    let curValue = value;
+    // 当 query 和 custom 类型开启多选时，如果 value 为字符串，需要转为数组
+    if ((type === 'query' || type === 'custom') && multi) {
+      if (value === undefined) {
+        curValue = undefined;
+      } else {
+        curValue = Array.isArray(value) ? value : [value];
+      }
+    }
+    setSelected(curValue);
   }, [JSON.stringify(value)]);
 
   // 兼容旧数据，businessGroupIdent 和 constant 的 hide 默认为 true
@@ -44,27 +55,75 @@ export default function DisplayItem(props: IProps) {
         {type === 'query' || type === 'custom' ? (
           <Select
             allowClear
-            mode={multi ? 'tags' : undefined}
+            mode={multi ? 'multiple' : undefined}
             style={{
               width: '180px',
             }}
             maxTagCount='responsive'
-            onChange={(v) => {
-              let val = v;
-              if (_.isArray(v)) {
-                const curVal = _.last(v);
-                if (curVal === 'all') {
-                  val = ['all'];
-                } else if (v.includes('all')) {
-                  val = _.without(v, 'all');
+            onSelect={(v) => {
+              // 单选模式直接触发 onChange
+              if (multi) {
+                // 多选模式下如果选中的是 all，清空其他选项
+                if (v === 'all') {
+                  setSelected(['all']);
+                } else {
+                  // 如果选中的是 all 之外的其他选项，清除 all 值
+                  setSelected(_.without([...(selected || []), v], 'all'));
+                }
+              } else {
+                // 完成选择后清空搜索框
+                setSearchValue('');
+                setSelected(v);
+                onChange(v);
+              }
+            }}
+            onDeselect={(v) => {
+              // 只有多选生效 onDeselect 事件
+              // 如果取消选中的是 all，清空所有选项
+              // 如果取消选中的是 all 之外的其他选项，则排除该选项
+              if (multi) {
+                let newSelected: string[] = [];
+                if (v === 'all') {
+                  newSelected = [];
+                } else {
+                  newSelected = _.without(selected, v);
+                }
+                setSelected(newSelected);
+                // 如果是点击的 Tag 上的关闭按钮，也需要触发 onChange
+                if (!dropdownVisible) {
+                  setSearchValue('');
+                  onChange(newSelected);
                 }
               }
-              setSelected(val);
-              onChange(val);
             }}
             defaultActiveFirstOption={false}
             showSearch
-            dropdownMatchSelectWidth={false}
+            searchValue={searchValue}
+            onSearch={(v) => {
+              setSearchValue(v);
+            }}
+            open={dropdownVisible}
+            onDropdownVisibleChange={(open) => {
+              if (!open) {
+                // 多选模式下 dropdown 关闭时，触发 onChange
+                if (multi) {
+                  // 完成选择后清空搜索框
+                  setSearchValue('');
+                  onChange(selected);
+                }
+              }
+              setDropdownVisible(open);
+            }}
+            onClear={() => {
+              if (multi) {
+                setSelected([]);
+                onChange([]);
+              } else {
+                setSelected(undefined);
+                onChange(undefined);
+              }
+            }}
+            dropdownMatchSelectWidth={_.toNumber(options?.length) > 100}
             value={selected}
             dropdownClassName='overflow-586'
             maxTagPlaceholder={(omittedValues) => {
@@ -85,7 +144,7 @@ export default function DisplayItem(props: IProps) {
           >
             {allOption && (
               <Select.Option key={'all'} value={'all'}>
-                all
+                All
               </Select.Option>
             )}
             {options &&
@@ -160,7 +219,7 @@ export default function DisplayItem(props: IProps) {
             }}
             defaultActiveFirstOption={false}
             showSearch
-            dropdownMatchSelectWidth={false}
+            dropdownMatchSelectWidth={_.toNumber(options?.length) > 100}
             value={selected}
             dropdownClassName='overflow-586'
             maxTagPlaceholder={(omittedValues) => {

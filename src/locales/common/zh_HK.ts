@@ -6,6 +6,8 @@ const zh_HK = {
   },
   business_group: '業務組',
   search_placeholder: '請輸入搜索關鍵字',
+  my_business_group: '我的業務組',
+  all_business_group: '全部業務組',
   nodata: '暫無數據',
   btn: {
     add: '新增',
@@ -36,6 +38,7 @@ const zh_HK = {
     test: '測試',
     expand: '展開',
     collapse: '收起',
+    copy: '複製',
   },
   table: {
     name: '名稱',

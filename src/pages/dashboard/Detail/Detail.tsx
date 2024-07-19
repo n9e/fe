@@ -123,6 +123,7 @@ export default function DetailV2(props: IProps) {
   const { datasourceList, profile, dashboardDefaultRangeIndex, dashboardSaveMode, perms, groupedDatasourceList } = useContext(CommonStateContext);
   const isAuthorized = _.includes(perms, '/dashboards/put') && !isPreview;
   const [dashboardMeta, setDashboardMeta] = useGlobalState('dashboardMeta');
+  const [panelClipboard, setPanelClipboard] = useGlobalState('panelClipboard');
   let { id } = useParams<URLParam>();
   const query = queryString.parse(useLocation().search);
   if (isBuiltin) {
@@ -299,6 +300,17 @@ export default function DetailV2(props: IProps) {
                     handleUpdateDashboardConfigs(dashboard.id, {
                       configs: panelsMergeToConfigs(dashboard.configs, newPanels),
                     });
+                  } else if (type === 'pastePanel') {
+                    if (panelClipboard) {
+                      const newPanels = updatePanelsInsertNewPanelToGlobal(panels, { ...panelClipboard, id: uuidv4() }, 'chart', false);
+                      setPanels(newPanels);
+                      scrollToLastPanel(newPanels);
+                      handleUpdateDashboardConfigs(dashboard.id, {
+                        configs: panelsMergeToConfigs(dashboard.configs, newPanels),
+                      });
+                    } else {
+                      message.error(t('detail.noPanelToPaste'));
+                    }
                   } else {
                     setEditorData(ajustInitialValues(type, groupedDatasourceList, panels, variableConfig));
                   }

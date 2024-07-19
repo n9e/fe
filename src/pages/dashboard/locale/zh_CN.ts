@@ -101,6 +101,10 @@ const zh_CN = {
       businessGroupIdent: '业务组标识 (Business group ident)',
     },
     hide: '隐藏变量',
+    hide_map: {
+      yes: '是',
+      no: '否',
+    },
     definition: '变量定义',
     definition_msg1: '请输入变量定义',
     definition_msg2: '变量定义必须是合法的JSON',
@@ -186,6 +190,8 @@ const zh_CN = {
           showItem: '显示项目',
           hideItem: '隐藏项目',
         },
+        heightInPercentage: '高度百分比',
+        heightInPercentage_tip: 'Legend 高度占据面板的最大高度百分比，最小值为 20%，最大值为 80%',
       },
       thresholds: {
         title: '阈值',
@@ -447,6 +453,7 @@ const zh_CN = {
       discardText: '放弃',
       okText: '保存',
     },
+    noPanelToPaste: '没有可粘贴的图表',
   },
   settings: {
     graphTooltip: {
@@ -476,6 +483,7 @@ const zh_CN = {
     heatmap: '色块图',
     iframe: '内嵌文档(iframe)',
     row: '分组',
+    pastePanel: '粘贴图表',
   },
   calcs: {
     lastNotNull: '最后一个非空值',

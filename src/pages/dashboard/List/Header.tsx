@@ -21,11 +21,12 @@ import { useTranslation } from 'react-i18next';
 import { removeDashboards } from '@/services/dashboardV2';
 import RefreshIcon from '@/components/RefreshIcon';
 import OrganizeColumns, { setDefaultColumnsConfigs } from '@/components/OrganizeColumns';
+import { CommonStateContext } from '@/App';
+import { BusinessGroupSelectWithAll } from '@/components/BusinessGroup';
 import { LOCAL_STORAGE_KEY } from './constants';
 import FormModal from './FormModal';
 import Import from './Import';
 import BatchClone from './BatchClone';
-import { CommonStateContext } from '@/App';
 
 interface IProps {
   gids?: string;
@@ -35,12 +36,14 @@ interface IProps {
   onSearchChange: (val) => void;
   columnsConfigs: { name: string; visible: boolean }[];
   setColumnsConfigs: (val: { name: string; visible: boolean }[]) => void;
+  selectedBusinessGroup?: number[];
+  setSelectedBusinessGroup: (val?: number[]) => void;
 }
 
 export default function Header(props: IProps) {
   const { businessGroup, busiGroups } = useContext(CommonStateContext);
   const { t } = useTranslation('dashboard');
-  const { gids, selectRowKeys, refreshList, searchVal, onSearchChange, columnsConfigs, setColumnsConfigs } = props;
+  const { gids, selectRowKeys, refreshList, searchVal, onSearchChange, columnsConfigs, setColumnsConfigs, selectedBusinessGroup, setSelectedBusinessGroup } = props;
 
   return (
     <>
@@ -65,6 +68,7 @@ export default function Header(props: IProps) {
             prefix={<SearchOutlined />}
             placeholder={t('search_placeholder')}
           />
+          {gids === '-1' && <BusinessGroupSelectWithAll value={selectedBusinessGroup} onChange={setSelectedBusinessGroup} mode='multiple' />}
         </Space>
         <Space>
           {businessGroup.isLeaf && gids && gids !== '-1' && gids !== '-2' && (

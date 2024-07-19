@@ -57,7 +57,7 @@ export default function useQuery(props: IProps) {
   const [loaded, setLoaded] = useState(false);
   const [loading, setLoading] = useState(false);
   const cachedVariableValues = _.map(variableConfig, (item) => {
-    return getVaraiableSelected(item.name, item.type, dashboardId);
+    return getVaraiableSelected(item, dashboardId);
   });
   const flag = useRef(false);
   const fetchQueryMap = {
@@ -72,6 +72,7 @@ export default function useQuery(props: IProps) {
       // 如果在编辑状态，需要校验表单
       if (form && typeof form.validateFields === 'function') {
         try {
+          // 2024-07-16 暂时关闭表单校验，因为会导致一些表单项无法获取标签数据
           // await form.validateFields();
         } catch (e) {
           return;

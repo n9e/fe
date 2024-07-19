@@ -180,6 +180,36 @@ const zh_HK = {
     disabled: '啟用',
     severity: '級別',
   },
+  expired: '告警規則已經被別人修改，為避免相互覆蓋，請刷新頁面查看最新配置',
+  relabel: {
+    title: '事件 relabel',
+    help_btn: '使用說明',
+    if_tip: '選填，滿足此匹配條件的事件才進行標籤 relabel',
+    target_label_tip: '新增標籤的 key',
+    replacement_tip: '標籤最終的 value，如果配置了 separator 此字段可不填，如果配置了 regex 此字段可使用正則中匹配的內容來構建最終的目標值',
+    source_labels_tip: '選填，使用的原始標籤',
+    source_labels_tip_placeholder: '使用回車或空格分隔',
+    separator_tip: '選填，根據已有的標籤值拼接，用來拼接 value 的連字符',
+    regex_tip: '選填，根據已有標籤值部分內容構建，提取構建內容的正則',
+    labelkeep: {
+      regex_tip: '必填，支持正則，標籤key匹配到的標籤會保留',
+    },
+    labeldrop: {
+      regex_tip: '必填，支持正則，標籤key匹配到的標籤會被刪除',
+    },
+    labelmap: {
+      regex_tip: '必填，使用正則提取內容',
+      replacement_tip: '可以寫固定值，例如 abc，也可以寫從正則中匹配到的字符，例如正則為 local(host)，這裡寫 $1，最終的值是 host',
+    },
+    test_btn: '測試配置',
+    test: {
+      title: '測試',
+      label: '標籤',
+      labelFromEvent: '從告警事件中選擇標籤',
+      btn: '測試配置',
+      result: 'relabel 結果',
+    },
+  },
 };
 
 export default zh_HK;
