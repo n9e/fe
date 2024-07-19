@@ -21,7 +21,7 @@ import queryString from 'query-string';
 import { getLabelNames, getMetricSeries, getMetricSeriesV2, getLabelValues, getMetric, getQueryResult, getESVariableResult } from '@/services/dashboardV2';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { IVariable } from './definition';
-import { normalizeESQueryRequestBody, ajustVarSingleValue } from './utils';
+import { normalizeESQueryRequestBody, ajustVarSingleValue, escapeJsonString } from './utils';
 
 // https://grafana.com/docs/grafana/latest/datasources/prometheus/#query-variable 根据文档解析表达式
 // 每一个promtheus接口都接受start和end参数来限制返回值
@@ -41,6 +41,7 @@ export const convertExpressionToQuery = (expression: string, range: IRawTimeRang
       const end = moment(parsedRange.end).valueOf();
       return getESVariableResult(datasourceValue, config?.index!, normalizeESQueryRequestBody(query, config?.date_field, start, end));
     } catch (e) {
+      console.error(e);
       return Promise.resolve([]);
     }
   } else {
@@ -230,6 +231,7 @@ export const replaceExpressionVarsSpecifyRule = (
     regex: string;
     getPlaceholder: (expression: string) => string;
   },
+  isEscapeJsonString = false,
 ) => {
   const { expression, formData, limit, id } = params;
   const { regex, getPlaceholder } = rule;
@@ -247,42 +249,44 @@ export const replaceExpressionVarsSpecifyRule = (
             if (allValue) {
               newExpression = replaceAllPolyfill(newExpression, placeholder, allValue);
             } else {
-              newExpression = replaceAllPolyfill(
-                newExpression,
-                placeholder,
-                `(${_.trim(
-                  _.join(
-                    _.map(
-                      _.filter(options, (i) => !reg || !stringToRegex(reg) || (stringToRegex(reg) as RegExp).test(i)),
-                      (item) => {
-                        return datasource?.cate === 'elasticsearch' ? `"${item}"` : item;
-                      },
-                    ),
-                    separator,
+              let newValue = `(${_.trim(
+                _.join(
+                  _.map(
+                    _.filter(options, (i) => !reg || !stringToRegex(reg) || (stringToRegex(reg) as RegExp).test(i)),
+                    (item) => {
+                      return datasource?.cate === 'elasticsearch' ? `"${item}"` : item;
+                    },
                   ),
                   separator,
-                )})`,
-              );
+                ),
+                separator,
+              )})`;
+              // 2024-07-09 如果是 ES 数据源的变量，在变量内部处理时需要做转义处理
+              if (datasource?.cate === 'elasticsearch' && isEscapeJsonString) {
+                newValue = escapeJsonString(newValue);
+              }
+              newExpression = replaceAllPolyfill(newExpression, placeholder, newValue);
             }
           } else if (Array.isArray(selected)) {
-            const headSelected = datasource?.cate === 'elasticsearch' ? `"${selected[0]}"` : selected[0];
-            const realSelected =
-              _.size(selected) === 0
-                ? ''
-                : _.size(selected) === 1
-                ? headSelected
-                : `(${_.trim(
-                    _.join(
-                      _.map(selected, (item) => {
-                        return datasource?.cate === 'elasticsearch' ? `"${item}"` : item;
-                      }),
-                      separator,
-                    ),
-                    separator,
-                  )})`;
+            let newValue = `(${_.trim(
+              _.join(
+                _.map(selected, (item) => {
+                  return datasource?.cate === 'elasticsearch' ? `"${item}"` : item;
+                }),
+                separator,
+              ),
+              separator,
+            )})`;
+            // 2024-07-09 如果是 ES 数据源的变量，在变量内部处理时需要做转义处理
+            if (datasource?.cate === 'elasticsearch' && isEscapeJsonString) {
+              newValue = escapeJsonString(newValue);
+            }
+            // 2024-07-09 如果是 ES 数据源的变量，并且不是变量内部处理时，需要将变量值加上引号
+            const headSelected = datasource?.cate === 'elasticsearch' && !isEscapeJsonString ? `"${selected[0]}"` : selected[0];
+            const realSelected = _.size(selected) === 0 ? '' : _.size(selected) === 1 ? headSelected : newValue;
             newExpression = replaceAllPolyfill(newExpression, placeholder, realSelected);
           } else if (typeof selected === 'string') {
-            newExpression = replaceAllPolyfill(newExpression, placeholder, ajustVarSingleValue(newExpression, placeholder, selected, formData[i]));
+            newExpression = replaceAllPolyfill(newExpression, placeholder, ajustVarSingleValue(newExpression, placeholder, selected, formData[i], isEscapeJsonString));
           } else if (selected === null || selected === undefined) {
             // 未选择或填写变量值时替换为传入的value
             newExpression = replaceAllPolyfill(newExpression, placeholder, value ? (_.isArray(value) ? _.trim(_.join(value, separator), separator) : value) : '');
@@ -304,7 +308,7 @@ export const replaceExpressionVarsSpecifyRule = (
   return newExpression;
 };
 
-export const replaceExpressionVars = (expression: string, formData: IVariable[], limit: number, id: string) => {
+export const replaceExpressionVars = (expression: string, formData: IVariable[], limit: number, id: string, isEscapeJsonString = false) => {
   let newExpression = expression;
   newExpression = replaceExpressionVarsSpecifyRule(
     { expression: newExpression, formData, limit, id },
@@ -312,6 +316,7 @@ export const replaceExpressionVars = (expression: string, formData: IVariable[],
       regex: '\\$[0-9a-zA-Z_]+',
       getPlaceholder: (expression: string) => `$${expression}`,
     },
+    isEscapeJsonString,
   );
   newExpression = replaceExpressionVarsSpecifyRule(
     { expression: newExpression, formData, limit, id },
@@ -319,6 +324,7 @@ export const replaceExpressionVars = (expression: string, formData: IVariable[],
       regex: '\\${[0-9a-zA-Z_]+}',
       getPlaceholder: (expression: string) => '${' + expression + '}',
     },
+    isEscapeJsonString,
   );
   return newExpression;
 };
