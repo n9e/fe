@@ -34,6 +34,7 @@ const zh_HK = {
   cluster: '叢集',
   full_screen: '全屏',
   exit_full_screen: '退出全屏',
+  copyPanelTip: '圖表已複製。點擊 "添加圖表" 進行貼上。',
   batch: {
     import: '匯入儀表盤',
     label: '儀表盤 JSON',

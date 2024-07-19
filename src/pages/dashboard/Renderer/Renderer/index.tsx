@@ -19,7 +19,7 @@ import _ from 'lodash';
 import classNames from 'classnames';
 import { useInViewport } from 'ahooks';
 import { useTranslation } from 'react-i18next';
-import { Dropdown, Menu, Tooltip, Space, Drawer } from 'antd';
+import { Dropdown, Menu, Tooltip, Space, Drawer, message } from 'antd';
 import {
   InfoCircleOutlined,
   MoreOutlined,
@@ -257,7 +257,10 @@ function index(props: IProps) {
                         <Menu.Item
                           onClick={() => {
                             setVisible(false);
-                            if (onCopyClick) onCopyClick();
+                            if (onCopyClick) {
+                              message.info(t('copyPanelTip'));
+                              onCopyClick();
+                            }
                           }}
                           key='copy_btn'
                         >
