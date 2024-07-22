@@ -222,6 +222,16 @@ export default function QueryBuilder(props: Props) {
             setLocalQueryHistory(datasourceValue, form.getFieldValue(['query', 'filter']));
             onExecute();
           }}
+          ajustTimeOptions={(options) => {
+            return _.concat(
+              [
+                { start: 'now-5s', end: 'now', display: 'Last 5 seconds' },
+                { start: 'now-15s', end: 'now', display: 'Last 15 seconds' },
+                { start: 'now-30s', end: 'now', display: 'Last 30 seconds' },
+              ],
+              options,
+            );
+          }}
         />
       </Form.Item>
       <Form.Item>

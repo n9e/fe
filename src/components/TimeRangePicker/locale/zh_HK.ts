@@ -16,6 +16,9 @@ const zh_HK = {
     year: '年',
   },
   rangeOptions: {
+    'Last 5 seconds': '最近 5 秒',
+    'Last 15 seconds': '最近 15 秒',
+    'Last 30 seconds': '最近 30 秒',
     'Last 1 minute': '最近 1 分鐘',
     'Last 2 minutes': '最近 2 分鐘',
     'Last 3 minutes': '最近 3 分鐘',
