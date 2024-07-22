@@ -51,7 +51,7 @@ export function arrayToCsv(data: any[]) {
 
 export function downloadCsv(data: any[], filename: string) {
   const csv = arrayToCsv(data);
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');
   const url = URL.createObjectURL(blob);
   link.setAttribute('href', url);
