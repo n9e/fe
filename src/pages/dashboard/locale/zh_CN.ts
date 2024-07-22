@@ -1,5 +1,3 @@
-import { layout } from '@/pages/user/const';
-
 const zh_CN = {
   title: '监控仪表盘',
   name: '仪表盘名称',
@@ -28,7 +26,8 @@ const zh_CN = {
   default_filter: {
     title: '预置筛选',
     public: '公开仪表盘',
-    all: '全部仪表盘',
+    all: '所属业务组仪表盘',
+    all_tip: '此选项会展示您所在业务组下关联的所有仪表盘',
   },
   create_title: '创建仪表盘',
   edit_title: '编辑仪表盘',
@@ -36,6 +35,7 @@ const zh_CN = {
   cluster: '集群', // TODO: 监控仪表盘暂时使用
   full_screen: '全屏',
   exit_full_screen: '退出全屏',
+  copyPanelTip: '图表已复制。单击 "添加图表" 进行粘贴。',
   batch: {
     import: '导入仪表盘',
     label: '仪表盘 JSON',

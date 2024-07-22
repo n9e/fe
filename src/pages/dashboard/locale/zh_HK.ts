@@ -25,7 +25,8 @@ const zh_HK = {
   default_filter: {
     title: '預置篩選',
     public: '公開儀表盤',
-    all: '全部儀表盤',
+    all: '所屬業務組儀錶板',
+    all_tip: '此選項會顯示您所在業務群組下關聯的所有儀表板',
   },
   create_title: '創建儀表盤',
   edit_title: '編輯儀表盤',
@@ -33,6 +34,7 @@ const zh_HK = {
   cluster: '叢集',
   full_screen: '全屏',
   exit_full_screen: '退出全屏',
+  copyPanelTip: '圖表已複製。點擊 "添加圖表" 進行貼上。',
   batch: {
     import: '匯入儀表盤',
     label: '儀表盤 JSON',

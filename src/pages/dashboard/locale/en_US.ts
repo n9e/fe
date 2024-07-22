@@ -25,7 +25,8 @@ const en_US = {
   default_filter: {
     title: 'Preset filters',
     public: 'Public dashboards',
-    all: 'All dashboards',
+    all: 'Dashboards for your business groups',
+    all_tip: 'Display all dashboards created in your business groups',
   },
   create_title: 'Create Dashboard',
   edit_title: 'Edit Dashboard',
@@ -33,6 +34,7 @@ const en_US = {
   cluster: 'Cluster',
   full_screen: 'Full screen',
   exit_full_screen: 'Exit full screen',
+  copyPanelTip: 'Panel copied. Click "Add panel" to paste.',
   batch: {
     import: 'Import dashboard',
     label: 'Dashboard JSON',

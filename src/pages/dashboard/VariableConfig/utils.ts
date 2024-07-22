@@ -76,7 +76,7 @@ function isPlaceholderQuoted(expression: string, placeholder: string): boolean {
   // 转义占位符以安全地用于正则表达式
   const escapedPlaceholder = escapeRegExp(placeholder);
   // 使用反向引用来确保占位符前后的引号相同
-  const regex = new RegExp(`(['"])${escapedPlaceholder}\\1`);
+  const regex = new RegExp(`(['"])${escapedPlaceholder}(\\\\)?\\1`);
   return regex.test(expression);
 }
 
@@ -85,11 +85,20 @@ function isPlaceholderQuoted(expression: string, placeholder: string): boolean {
  * 1. 如果 expression 中变量占位符被引号包裹，则不需要处理
  * 2. 否则需要将变量值加上引号
  */
-export function ajustVarSingleValue(expression: string, placeholder: string, value: string, varItem: IVariable) {
+export function ajustVarSingleValue(expression: string, placeholder: string, value: string, varItem: IVariable, isEscapeJsonString: boolean) {
   if (varItem.datasource?.cate === 'elasticsearch') {
     if (!isPlaceholderQuoted(expression, placeholder)) {
       value = `"${value}"`;
     }
   }
+  // 2024-07-09 如果是 ES 数据源的变量，在变量内部处理时需要做转义处理
+  if (isEscapeJsonString) {
+    value = escapeJsonString(value);
+  }
   return value;
+}
+
+// 转义 JSON 字符串中的特殊字符
+export function escapeJsonString(str: string): string {
+  return str.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
 }
