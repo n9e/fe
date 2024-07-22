@@ -6,7 +6,7 @@ export const downloadFile = (data = '', filename = 'export.csv') => {
   const a = document.createElement('a');
   a.href = URL.createObjectURL(
     new Blob(['\ufeff' + data], {
-      type: 'text/plain',
+      type: 'text/csv;charset=utf-8;',
     }),
   );
   a.setAttribute('download', filename);
