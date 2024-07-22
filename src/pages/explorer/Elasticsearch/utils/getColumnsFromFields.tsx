@@ -49,10 +49,17 @@ export function getColumnsFromFields(selectedFields: { name: string; type: strin
               {_.map(fieldKeys, (key) => {
                 const val = fields[key];
                 const label = getFieldLabel(key, fieldConfig);
-                const value = _.isArray(val) ? _.join(val, ',') : getFieldValue(key, val, fieldConfig);
+                if (!_.isPlainObject(val) && fieldConfig?.formatMap?.[key]) {
+                  const value = getFieldValue(key, val, fieldConfig);
+                  return (
+                    <React.Fragment key={label}>
+                      <dt>{label}:</dt> <dd>{value}</dd>
+                    </React.Fragment>
+                  );
+                }
                 return (
                   <React.Fragment key={label}>
-                    <dt>{label}:</dt> <dd dangerouslySetInnerHTML={{ __html: purify.sanitize(getHighlightHtml(value, highlight?.[key])) }}></dd>
+                    <dt>{label}:</dt> <dd dangerouslySetInnerHTML={{ __html: purify.sanitize(getHighlightHtml(val, highlight?.[key])) }}></dd>
                   </React.Fragment>
                 );
               })}
