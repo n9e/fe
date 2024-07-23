@@ -8,6 +8,7 @@ import HideButton from '@/pages/dashboard/Components/HideButton';
 import { IS_PLUS } from '@/utils/constant';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import KQLInput from '@/components/KQLInput';
+import LegendInput from '@/pages/dashboard/Components/LegendInput';
 import DateField from './DateField';
 import IndexSelect from './IndexSelect';
 import Values from './Values';
@@ -193,6 +194,21 @@ export default function QueryPanel({ fields, field, index, remove, dashboardId, 
           return <Time prefixField={field} prefixNameField={[field.name]} chartForm={chartForm} variableConfig={variableConfig} dashboardId={dashboardId} />;
         }}
       </Form.Item>
+      {IS_PLUS && (
+        <Form.Item
+          label='Legend'
+          {...field}
+          name={[field.name, 'legend']}
+          tooltip={{
+            getPopupContainer: () => document.body,
+            title: t('query.legendTip2', {
+              interpolation: { skipOnVariables: true },
+            }),
+          }}
+        >
+          <LegendInput />
+        </Form.Item>
+      )}
     </Panel>
   );
 }

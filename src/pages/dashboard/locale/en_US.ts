@@ -419,6 +419,8 @@ const en_US = {
       },
     },
     expression_placeholder: 'Math operations on one or more queries. You reference the query by ${refId} ie. $A, $B, $C etc. The sum of two scalar values: $A + $B > 10',
+    legendTip: 'Series name override or template, {{hostname}} will be replaced with label value for hostname',
+    legendTip2: 'Series name override or template, {{hostname}} will be replaced with label value for hostname, currently only effective under time series data',
   },
   detail: {
     datasource_empty: 'Please configure the data source first',

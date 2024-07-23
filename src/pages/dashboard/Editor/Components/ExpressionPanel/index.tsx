@@ -3,6 +3,7 @@ import { Form, Input, Space } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import HideButton from '@/pages/dashboard/Components/HideButton';
+import LegendInput from '@/pages/dashboard/Components/LegendInput';
 import { Panel } from '../Collapse';
 
 const alphabet = 'ABCDEFGHIGKLMNOPQRSTUVWXYZ'.split('');
@@ -44,6 +45,19 @@ export default function index({ fields, remove, field }) {
         style={{ flex: 1 }}
       >
         <Input.TextArea autoSize placeholder={t('query.expression_placeholder')} />
+      </Form.Item>
+      <Form.Item
+        label='Legend'
+        {...field}
+        name={[field.name, 'legend']}
+        tooltip={{
+          getPopupContainer: () => document.body,
+          title: t('query.legendTip2', {
+            interpolation: { skipOnVariables: true },
+          }),
+        }}
+      >
+        <LegendInput />
       </Form.Item>
     </Panel>
   );

@@ -433,6 +433,8 @@ const zh_CN = {
       },
     },
     expression_placeholder: '对一个或多个查询进行数学运算。您通过 ${refId} 引用查询，即 $A、$B、$C 等。两个标量值的总和：$A + $B > 10',
+    legendTip: '图例名称的覆盖或模板，例如 {{hostname}} 将替换为 hostname 标签的值',
+    legendTip2: '图例名称的覆盖或模板，例如 {{hostname}} 将替换为 hostname 标签的值，目前只在时序数据下生效',
   },
   detail: {
     datasource_empty: '没有数据源信息，请先配置数据源',
