@@ -225,7 +225,6 @@ export default function Metrics(props: IProps) {
                           setSelectedMetrics([]);
                         }}
                         disabled={!selectedMetrics.length}
-                        style={{ background: '#fff' }}
                       >
                         {t('metrics.clear')}
                       </Button>
