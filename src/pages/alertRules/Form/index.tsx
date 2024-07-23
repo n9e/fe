@@ -160,6 +160,7 @@ export default function index(props: IProps) {
                             scrollToFirstError();
                           });
                       }}
+                      disabled={editable === false}
                     >
                       {t('common:btn.save')}
                     </Button>
