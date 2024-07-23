@@ -168,7 +168,8 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
               series.push({
                 id: _.uniqueId('series_'),
                 refId: refId,
-                name: getSerieName(serie.metric, isExp ? serie.ref : undefined),
+                target: currentTarget,
+                isExp,
                 metric: serie.metric,
                 data: serie.values,
               });
