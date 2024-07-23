@@ -16,7 +16,8 @@
  */
 import React, { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Tag, Button, Table, Tooltip } from 'antd';
+import { Tag, Button, Table, Tooltip, Dropdown, Menu } from 'antd';
+import { MoreOutlined } from '@ant-design/icons';
 import { useHistory, Link } from 'react-router-dom';
 import moment from 'moment';
 import _ from 'lodash';
@@ -73,7 +74,7 @@ export default function TableCpt(props: IProps) {
       render(title, { id, tags }) {
         return (
           <>
-            <div>
+            <div className='mb1'>
               <Link to={`/alert-cur-events/${id}`}>{title}</Link>
             </div>
             <div>
@@ -81,7 +82,7 @@ export default function TableCpt(props: IProps) {
                 return (
                   <Tooltip key={item} title={item}>
                     <Tag
-                      color='purple'
+                      // color='purple'
                       style={{ maxWidth: '100%' }}
                       onClick={() => {
                         if (!filter.queryContent.includes(item)) {
@@ -129,52 +130,68 @@ export default function TableCpt(props: IProps) {
     {
       title: t('common:table.operations'),
       dataIndex: 'operate',
-      width: 200,
+      width: 80,
       render(value, record) {
         return (
-          <>
-            <AckBtn
-              data={record}
-              onOk={() => {
-                setRefreshFlag(_.uniqueId('refresh_'));
-              }}
-            />
-            <Button
-              size='small'
-              type='link'
-              onClick={() => {
-                history.push({
-                  pathname: '/alert-mutes/add',
-                  search: queryString.stringify({
-                    busiGroup: record.group_id,
-                    prod: record.rule_prod,
-                    cate: record.cate,
-                    datasource_ids: [record.datasource_id],
-                    tags: record.tags,
-                  }),
-                });
-              }}
-            >
-              {t('shield')}
-            </Button>
-            <Button
-              size='small'
-              type='link'
-              danger
-              onClick={() =>
-                deleteAlertEventsModal(
-                  [record.id],
-                  () => {
-                    setSelectedRowKeys(selectedRowKeys.filter((key) => key !== record.id));
-                    setRefreshFlag(_.uniqueId('refresh_'));
-                  },
-                  t,
-                )
-              }
-            >
-              {t('common:btn.delete')}
-            </Button>
-          </>
+          <Dropdown
+            overlay={
+              <Menu>
+                <Menu.Item>
+                  <AckBtn
+                    data={record}
+                    onOk={() => {
+                      setRefreshFlag(_.uniqueId('refresh_'));
+                    }}
+                  />
+                </Menu.Item>
+                {!_.includes(['firemap', 'northstar'], record?.rule_prod) && (
+                  <Menu.Item>
+                    <Button
+                      style={{ padding: 0 }}
+                      size='small'
+                      type='link'
+                      onClick={() => {
+                        history.push({
+                          pathname: '/alert-mutes/add',
+                          search: queryString.stringify({
+                            busiGroup: record.group_id,
+                            prod: record.rule_prod,
+                            cate: record.cate,
+                            datasource_ids: [record.datasource_id],
+                            tags: record.tags,
+                          }),
+                        });
+                      }}
+                    >
+                      {t('shield')}
+                    </Button>
+                  </Menu.Item>
+                )}
+                <Menu.Item>
+                  <Button
+                    style={{ padding: 0 }}
+                    size='small'
+                    type='link'
+                    danger
+                    onClick={() =>
+                      deleteAlertEventsModal(
+                        [record.id],
+                        () => {
+                          setSelectedRowKeys(selectedRowKeys.filter((key) => key !== record.id));
+                          setRefreshFlag(_.uniqueId('refresh_'));
+                        },
+                        t,
+                      )
+                    }
+                  >
+                    {t('common:btn.delete')}
+                  </Button>
+                </Menu.Item>
+              </Menu>
+            }
+          >
+            <Button type='link' icon={<MoreOutlined />} />
+          </Dropdown>
         );
       },
     },
