@@ -27,7 +27,7 @@ export const getMenuList = (t) => {
     {
       key: 'applications',
       icon: <IconFont type='icon-Menu_Infrastructure' />,
-      label: t('应用'),
+      label: t('应用视图'),
       children: [
         {
           key: '/applications',

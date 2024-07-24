@@ -18,7 +18,7 @@ const zh_CN = {
   cpu_num: '核数',
   health_levle: '健康度',
   offset: '时间偏移',
-  offset_tip: '计算逻辑为用 夜莺部署机器的时间减去categraf部署机器的时间',
+  offset_tip: '计算逻辑为用 服务端部署机器的时间减去探针部署机器的时间',
   os: '操作系统',
   arch: 'CPU架构',
   update_at: '更新时间',

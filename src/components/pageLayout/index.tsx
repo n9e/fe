@@ -132,17 +132,17 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                     </a>
                   )}
 
-                  <Version />
+                  {/* <Version /> */}
 
                   <Space style={{ marginRight: 16 }}>
                     {/* 整合版本关闭文档链接 */}
-                    {!IS_ENT && (
+                    {/* {!IS_ENT && (
                       <div style={{ marginRight: 8, position: 'relative' }}>
                         <a target='_blank' href={siteInfo?.document_url || 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/introduction/'}>
                           {t('docs')}
                         </a>
                       </div>
-                    )}
+                    )} */}
                     {profile?.admin && (
                       <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
                         <Link to='/audits'>{t('audits:title')}</Link>
@@ -156,7 +156,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                     <License />
                   </AdvancedWrap>
 
-                  <Dropdown
+                  {/* <Dropdown
                     overlay={
                       <Menu
                         onSelect={({ key }) => {
@@ -175,7 +175,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                     <a style={{ marginRight: 20 }} onClick={(e) => e.preventDefault()} id='i18n-btn'>
                       {curLanguage}
                     </a>
-                  </Dropdown>
+                  </Dropdown> */}
                   {!IS_ENT && (
                     <div style={{ marginRight: 8 }}>
                       <DarkModeSelect />
