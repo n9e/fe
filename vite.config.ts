@@ -41,7 +41,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   // 后端接口地址
   // 也可以通过环境变量来设置，创建 `.env` 文件，内容为 `PROXY=http://localhost:8080`
-  let proxyURL = env.PROXY || 'http://localhost:8080';
+  let proxyURL = env.PROXY || 'http://39.107.78.98:19000';
   let fontFamily = '"Microsoft Yahei",Verdana,Helvetica Neue,sans-serif,PingFangSC-Regular,simsun,"sans-serif"';
   if (env.VITE_IS_PRO) {
     proxyURL = env.PROXY_PRO;

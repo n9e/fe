@@ -50,6 +50,7 @@ const getMenuList = (t) => {
         },
       ],
     },
+    
     {
       key: 'alarm',
       icon: <IconFont type='icon-Menu_AlarmManagement' />,

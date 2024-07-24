@@ -110,7 +110,9 @@ export default function MenuList(
           item={{ key: 'quickJump', label: t('quickJump'), icon: <IconFont type='icon-Menu_Search' /> }}
           onClick={() => props.quickMenuRef.current.open()}
         />
+        
         <div className={cn('my-2 h-px w-full', props.isCustomBg ? 'bg-white/10' : 'bg-fc-200')}></div>
+        
         <div className='space-y-1'>
           {list
             .filter((m) => m)

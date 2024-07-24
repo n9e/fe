@@ -11,6 +11,7 @@ const en_US = {
   链路追踪: 'Tracing',
   拓扑分析: 'Dependencies',
   基础设施: 'Infrastructure',
+  应用:'Application',
   监控机器: 'Host List',
   告警管理: 'Alerting',
   告警规则: 'Alert Rules',

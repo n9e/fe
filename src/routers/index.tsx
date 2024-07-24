@@ -46,6 +46,8 @@ import Event from '@/pages/event';
 import EventDetail from '@/pages/event/detail';
 import historyEvents from '@/pages/historyEvents';
 import Targets from '@/pages/targets';
+import Application from '@/pages/application';
+import APPDashboard from '@/pages/application/appDashboard';
 import Demo from '@/pages/demo';
 import TaskTpl from '@/pages/taskTpl';
 import TaskTplAdd from '@/pages/taskTpl/add';
@@ -157,6 +159,8 @@ export default function Content() {
         <Route path='/user-groups' component={Groups} />
         <Route path='/account/profile/:tab' component={Profile} />
 
+         
+
         <Route path='/dashboard/:id' exact component={DashboardDetail} />
         <Route path='/dashboards/:id' exact component={DashboardDetail} />
         <Route path='/dashboards/share/:id' component={DashboardShare} />
@@ -185,6 +189,9 @@ export default function Content() {
         <Route exact path='/alert-cur-events/:eventId' component={EventDetail} />
         <Route exact path='/alert-his-events/:eventId' component={EventDetail} />
         <Route exact path='/targets' component={Targets} />
+
+        <Route exact path='/applications' component={APPDashboard} />
+        <Route exact path='/application-details' component={Application} />
 
         <Route exact path='/job-tpls' component={TaskTpl} />
         <Route exact path='/job-tpls/add' component={TaskTplAdd} />

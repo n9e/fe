@@ -25,6 +25,21 @@ import getPlusMenu from 'plus:/menu';
 export const getMenuList = (t) => {
   const menuList = [
     {
+      key: 'applications',
+      icon: <IconFont type='icon-Menu_Infrastructure' />,
+      label: t('应用'),
+      children: [
+        {
+          key: '/applications',
+          label: t('应用大屏'),
+        },
+        {
+          key: '/application-details',
+          label: t('应用详情'),
+        },
+      ],
+    },
+    {
       key: 'dashboard',
       icon: <IconFont type='icon-Menu_Dashboard' />,
       label: t('仪表盘'),
@@ -39,6 +54,7 @@ export const getMenuList = (t) => {
         },
       ],
     },
+    
     {
       key: 'metric',
       icon: <IconFont type='icon-IndexManagement1' />,
@@ -141,6 +157,7 @@ export const getMenuList = (t) => {
         },
       ],
     },
+   
     {
       key: 'manage',
       icon: <IconFont type='icon-Menu_PersonnelOrganization' />,
@@ -227,6 +244,7 @@ const SideMenu = () => {
   const quickMenuRef = useRef<{ open: () => void }>({ open: () => {} });
   const isCustomBg = sideMenuBgMode !== 'light';
   const menuList = isPlus ? getPlusMenu(t) : getMenuList(t);
+  //const menuList = getMenuList(t);
   const [menus, setMenus] = useState<IMenuItem[]>(menuList);
   const menuPaths = useMemo(
     () =>
@@ -257,23 +275,23 @@ const SideMenu = () => {
     return false;
   }, [location.pathname, location.search]);
 
-  useEffect(() => {
-    if (profile?.roles?.length > 0) {
-      // 过滤掉没有权限的菜单
-      const newMenus: any = _.filter(
-        _.map(menuList, (menu) => {
-          return {
-            ...menu,
-            children: _.filter(menu.children, (item) => item && _.includes(perms, item.key)),
-          };
-        }),
-        (item) => {
-          return item.children && item.children.length > 0;
-        },
-      );
-      setMenus(newMenus);
-    }
-  }, [profile?.roles, i18n.language]);
+  // useEffect(() => {
+  //   if (profile?.roles?.length > 0) {
+  //     // 过滤掉没有权限的菜单
+  //     const newMenus: any = _.filter(
+  //       _.map(menuList, (menu) => {
+  //         return {
+  //           ...menu,
+  //           children: _.filter(menu.children, (item) => item && _.includes(perms, item.key)),
+  //         };
+  //       }),
+  //       (item) => {
+  //         return item.children && item.children.length > 0;
+  //       },
+  //     );
+  //     setMenus(newMenus);
+  //   }
+  // }, [profile?.roles, i18n.language]);
 
   useEffect(() => {
     let finalPath = ['', ''];
@@ -318,6 +336,7 @@ const SideMenu = () => {
           style={{ background: sideMenuBgColor }}
         >
           <div className='flex flex-1 flex-col justify-between gap-8 overflow-hidden'>
+            
             <SideMenuHeader collapsed={collapsed} collapsedHover={collapsedHover} sideMenuBgMode={sideMenuBgMode} />
             <ScrollArea className='-mr-2 flex-1'>
               <MenuList
