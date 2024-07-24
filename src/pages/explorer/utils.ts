@@ -46,6 +46,12 @@ export const getFormValuesBySearch = (params: { [index: string]: string | null }
     if (data_source_name === 'aliyun-sls') {
       const project = _.get(params, 'project');
       const logstore = _.get(params, 'logstore');
+      const range_start = _.get(params, 'start');
+      const range_end = _.get(params, 'end');
+      const defaultRange =
+        range_start && range_end
+          ? { start: !isMathString(range_start) ? moment(Number(range_start)) : range_start, end: !isMathString(range_end) ? moment(Number(range_end)) : range_end }
+          : undefined;
       if (project && logstore) {
         return {
           ...formValues,
@@ -53,6 +59,7 @@ export const getFormValuesBySearch = (params: { [index: string]: string | null }
             project,
             logstore,
             query: queryString,
+            range: defaultRange,
           },
         };
       }
