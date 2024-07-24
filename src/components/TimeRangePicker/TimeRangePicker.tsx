@@ -24,7 +24,7 @@ import zh_TW from 'rc-picker/lib/locale/zh_TW';
 import en_US from 'rc-picker/lib/locale/en_US';
 import 'rc-picker/assets/index.css';
 import classNames from 'classnames';
-import moment, { Moment } from 'moment';
+import moment from 'moment';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { isValid, describeTimeRange, valueAsString, isMathString } from './utils';
@@ -195,9 +195,19 @@ const AbsoluteTimePicker = ({
 };
 
 export default function index(props: ITimeRangePickerProps) {
-  const { t, i18n } = useTranslation('timeRangePicker');
+  const { t } = useTranslation('timeRangePicker');
   const absoluteHistoryCache = getAbsoluteHistoryCache();
-  const { value, onChange = () => {}, dateFormat = 'YYYY-MM-DD HH:mm', placeholder = t('placeholder'), allowClear = false, onClear = () => {}, extraFooter, disabled } = props;
+  const {
+    value,
+    onChange = () => {},
+    dateFormat = 'YYYY-MM-DD HH:mm',
+    placeholder = t('placeholder'),
+    allowClear = false,
+    onClear = () => {},
+    extraFooter,
+    disabled,
+    ajustTimeOptions,
+  } = props;
   const [visible, setVisible] = useState(false);
   const [range, setRange] = useState<IRawTimeRange>();
   const [label, setLabel] = useState<string>('');
@@ -272,7 +282,7 @@ export default function index(props: ITimeRangePickerProps) {
                     />
                     <ul>
                       {_.map(
-                        _.filter(rangeOptions, (item) => {
+                        _.filter(ajustTimeOptions ? ajustTimeOptions(rangeOptions) : rangeOptions, (item) => {
                           const display = t(`rangeOptions.${item.display}`);
                           return display.indexOf(searchValue) > -1;
                         }),
