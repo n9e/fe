@@ -69,8 +69,13 @@ export const convertExpressionToQuery = (expression: string, range: IRawTimeRang
         return getLabelValues(label, { start, end }, datasourceValue).then((res) => res.data);
       }
     } else if (expression.startsWith('metrics(')) {
-      const metric = expression.substring('metrics('.length, expression.length - 1);
-      return getMetric({ start, end }, datasourceValue).then((res) => res.data.filter((item) => item.includes(metric)));
+      const metricRegexStr = expression.substring('metrics('.length, expression.length - 1);
+      return getMetric({ start, end }, datasourceValue).then((res) =>
+        res.data.filter((item) => {
+          // 2024-07-24 这里需要对 metricRegexStr 进行正则匹配
+          return item.match(new RegExp(metricRegexStr));
+        }),
+      );
     } else if (expression.startsWith('query_result(')) {
       let promql = expression.substring('query_result('.length, expression.length - 1);
       promql = replaceFieldWithVariable(promql, dashboardId, getOptionsList({}, range));
