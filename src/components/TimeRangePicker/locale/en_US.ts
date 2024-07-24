@@ -16,6 +16,9 @@ const en_US = {
     year: 'year',
   },
   rangeOptions: {
+    'Last 5 seconds': 'Last 5 seconds',
+    'Last 15 seconds': 'Last 15 seconds',
+    'Last 30 seconds': 'Last 30 seconds',
     'Last 1 minute': 'Last 1 minute',
     'Last 2 minutes': 'Last 2 minutes',
     'Last 3 minutes': 'Last 3 minutes',

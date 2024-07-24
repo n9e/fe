@@ -30,7 +30,7 @@ import SideMenuColorSetting from './SideMenuColorSetting';
 import './index.less';
 import './locale';
 // @ts-ignore
-import FeatureNotification from '@/plus/pages/FeatureNotification';
+import FeatureNotification from 'plus:/pages/FeatureNotification';
 interface IPageLayoutProps {
   icon?: ReactNode;
   title?: String | JSX.Element;

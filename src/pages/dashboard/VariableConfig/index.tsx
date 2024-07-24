@@ -119,7 +119,7 @@ function index(props: IProps) {
           const item = _.cloneDeep(value[idx]);
           if (item.type === 'query' && item.definition) {
             const datasourceCate = item.datasource?.cate;
-            const definition = idx > 0 ? replaceExpressionVars(item.definition, result, idx, id) : item.definition;
+            const definition = idx > 0 ? replaceExpressionVars(item.definition, result, idx, id, true) : item.definition;
 
             let options = [];
             try {
