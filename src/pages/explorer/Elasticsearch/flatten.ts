@@ -31,7 +31,7 @@ export default function flatten(target: object, opts?: { delimiter?: any; maxDep
         output[newKey] = '{}';
         return;
       }
-      output[newKey] = value;
+      output[newKey] = Array.isArray(value) ? JSON.stringify(value) : value;
     });
   }
 
