@@ -25,7 +25,8 @@ const zh_HK = {
   default_filter: {
     title: '預置篩選',
     public: '公開儀表盤',
-    all: '全部儀表盤',
+    all: '所屬業務組儀錶板',
+    all_tip: '此選項會顯示您所在業務群組下關聯的所有儀表板',
   },
   create_title: '創建儀表盤',
   edit_title: '編輯儀表盤',
@@ -33,6 +34,7 @@ const zh_HK = {
   cluster: '叢集',
   full_screen: '全屏',
   exit_full_screen: '退出全屏',
+  copyPanelTip: '圖表已複製。點擊 "添加圖表" 進行貼上。',
   batch: {
     import: '匯入儀表盤',
     label: '儀表盤 JSON',
@@ -425,6 +427,8 @@ const zh_HK = {
       },
     },
     expression_placeholder: '對一個或多個查詢進行數學運算。您透過 ${refId} 引用查詢，即 $A、$B、$C 等。兩個標量值的總和：$A + $B > 10',
+    legendTip: '圖例名稱的覆寫或模板，例如 {{hostname}} 將替換為 hostname 標籤的值',
+    legendTip2: '圖例名稱的覆寫或模板，例如 {{hostname}} 將替換為 hostname 標籤的值，目前只在時序資料下生效',
   },
   detail: {
     datasource_empty: '沒有數據源資訊，請先配置數據源',

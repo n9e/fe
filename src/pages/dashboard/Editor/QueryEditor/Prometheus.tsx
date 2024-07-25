@@ -117,8 +117,9 @@ export default function Prometheus({ chartForm, variableConfig, dashboardId, tim
                           name={[field.name, 'legend']}
                           tooltip={{
                             getPopupContainer: () => document.body,
-                            title:
-                              'Controls the name of the time series, using name or pattern. For example {{hostname}} will be replaced with label value for the label hostname.',
+                            title: t('query.legendTip', {
+                              interpolation: { skipOnVariables: true },
+                            }),
                           }}
                         >
                           <Input />
