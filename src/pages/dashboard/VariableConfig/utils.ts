@@ -105,5 +105,5 @@ export function escapeJsonString(str: string): string {
 
 // 转义 PromQL 字符串中的特殊字符 {}[]().-
 export function escapePromQLString(str: string): string {
-  return str.replace(/[{}[\]().-]/g, '\\$&');
+  return str.replace(/[{}[\]().-]/g, '\\\\$&');
 }

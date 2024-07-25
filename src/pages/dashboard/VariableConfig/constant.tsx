@@ -259,7 +259,14 @@ export const replaceExpressionVarsSpecifyRule = (
                   _.map(
                     _.filter(options, (i) => !reg || !stringToRegex(reg) || (stringToRegex(reg) as RegExp).test(i)),
                     (item) => {
-                      return datasource?.cate === 'elasticsearch' ? `"${item}"` : item;
+                      // 2024-07-24 如果是 prometheus 数据源的变量，需要对 {}[]().- 进行转义
+                      if (datasource?.cate === 'prometheus') {
+                        return escapePromQLString(item);
+                      }
+                      if (datasource?.cate === 'elasticsearch') {
+                        return `"${item}"`;
+                      }
+                      return item;
                     },
                   ),
                   separator,
@@ -270,17 +277,21 @@ export const replaceExpressionVarsSpecifyRule = (
               if (datasource?.cate === 'elasticsearch' && isEscapeJsonString) {
                 newValue = escapeJsonString(newValue);
               }
-              // 2024-07-24 如果是 prometheus 数据源的变量，需要对 {}[]().- 进行转义
-              if (datasource?.cate === 'prometheus') {
-                newValue = escapePromQLString(newValue);
-              }
+
               newExpression = replaceAllPolyfill(newExpression, placeholder, newValue);
             }
           } else if (Array.isArray(selected)) {
             let newValue = `(${_.trim(
               _.join(
                 _.map(selected, (item) => {
-                  return datasource?.cate === 'elasticsearch' ? `"${item}"` : item;
+                  // 2024-07-24 如果是 prometheus 数据源的变量，需要对 {}[]().- 进行转义
+                  if (datasource?.cate === 'prometheus') {
+                    return escapePromQLString(item);
+                  }
+                  if (datasource?.cate === 'elasticsearch') {
+                    return `"${item}"`;
+                  }
+                  return item;
                 }),
                 separator,
               ),
@@ -289,10 +300,6 @@ export const replaceExpressionVarsSpecifyRule = (
             // 2024-07-09 如果是 ES 数据源的变量，在变量内部处理时需要做转义处理
             if (datasource?.cate === 'elasticsearch' && isEscapeJsonString) {
               newValue = escapeJsonString(newValue);
-            }
-            // 2024-07-24 如果是 prometheus 数据源的变量，需要对 {}[]().- 进行转义
-            if (datasource?.cate === 'prometheus') {
-              newValue = escapePromQLString(newValue);
             }
             // 2024-07-09 如果是 ES 数据源的变量，并且不是变量内部处理时，需要将变量值加上引号
             const headSelected = datasource?.cate === 'elasticsearch' && !isEscapeJsonString ? `"${selected[0]}"` : selected[0];
