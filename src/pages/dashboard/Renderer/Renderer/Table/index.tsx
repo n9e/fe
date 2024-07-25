@@ -47,6 +47,7 @@ interface IProps {
 
 const DEFAULT_LIGTH_COLOR = '#ffffff';
 const DEFAULT_DARK_COLOR = '#333';
+const LIMIT = 500;
 
 const getColumnsKeys = (data: any[]) => {
   const keys = _.reduce(
@@ -92,7 +93,8 @@ function TableCpt(props: IProps, ref: any) {
   const [dashboardMeta] = useGlobalState('dashboardMeta');
   const eleRef = useRef<HTMLDivElement>(null);
   const size = useSize(eleRef);
-  const { values, series, themeMode, time, isPreview } = props;
+  const { values, themeMode, time, isPreview } = props;
+  const series = _.slice(props.series, 0, LIMIT);
   const { custom, options, overrides } = values;
   const { showHeader, calc, aggrDimension, displayMode, columns, sortColumn, sortOrder, colorMode = 'value', tableLayout = 'fixed' } = custom;
   const [calculatedValues, setCalculatedValues] = useState<any[]>([]);

@@ -25,9 +25,10 @@ const getSerieName = (
 
   if (legend) {
     let name = replaceExpressionBracket(legend, newMetric);
-    if (ref) {
-      name = `${ref} ${name}`;
-    }
+    // 2024-07-23 注释以下逻辑， expression 也支持 legend，同时如果设置了 legend 则不再开头添加 ref
+    // if (ref) {
+    //   name = `${ref} ${name}`;
+    // }
     return name;
   }
 

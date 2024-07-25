@@ -199,7 +199,8 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
                 series.push({
                   id: _.uniqueId('series_'),
                   refId: refId,
-                  name: target?.legend ? replaceExpressionBracket(target?.legend, serie.metric) : getSerieName(serie.metric, isExp ? serie.ref : undefined),
+                  target: currentTarget,
+                  isExp,
                   metric: serie.metric,
                   expr,
                   data: !spanNulls ? completeBreakpoints(_step, serie.values) : serie.values,

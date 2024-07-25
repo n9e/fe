@@ -1,6 +1,8 @@
 import React from 'react';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
+import { Space, Tooltip } from 'antd';
+import { InfoCircleOutlined } from '@ant-design/icons';
 import BusinessGroup, { getCleanBusinessGroupIds } from './';
 import './locale';
 
@@ -18,6 +20,7 @@ interface Props {
   showPublicOption?: boolean;
   publicOptionLabel?: string;
   allOptionLabel?: string;
+  allOptionTooltip?: string;
 }
 
 export function getDefaultGids(localeKey: string, businessGroup: any) {
@@ -26,7 +29,7 @@ export function getDefaultGids(localeKey: string, businessGroup: any) {
 
 export default function BusinessGroupSideBarWithAll(props: Props) {
   const { t } = useTranslation('BusinessGroup');
-  const { gids, setGids, localeKey, showPublicOption, publicOptionLabel, allOptionLabel } = props;
+  const { gids, setGids, localeKey, showPublicOption, publicOptionLabel, allOptionLabel, allOptionTooltip } = props;
 
   return (
     <BusinessGroup
@@ -58,7 +61,14 @@ export default function BusinessGroupSideBarWithAll(props: Props) {
                 localStorage.setItem(localeKey, '-2');
               }}
             >
-              {allOptionLabel || t('default_filter.all')}
+              <Space>
+                {allOptionLabel || t('default_filter.all')}
+                {allOptionTooltip && (
+                  <Tooltip title={allOptionTooltip}>
+                    <InfoCircleOutlined />
+                  </Tooltip>
+                )}
+              </Space>
             </div>
           </div>
         );
