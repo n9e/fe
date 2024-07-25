@@ -17,6 +17,7 @@
 import React, { useEffect, useState } from 'react';
 import { SearchOutlined } from '@ant-design/icons';
 import { Input, Modal } from 'antd';
+import _ from 'lodash';
 import { getPromData } from '../services';
 
 interface MetricsExplorer {
@@ -39,8 +40,8 @@ const MetricsExplorer: React.FC<MetricsExplorer> = ({ url, datasourceValue, show
   useEffect(() => {
     if (show && datasourceValue) {
       getPromData(`${url}/${datasourceValue}/api/v1/label/__name__/values`, {}).then((res) => {
-        setMetrics(res);
-        setFilteredMetrics(res);
+        setMetrics(res || []);
+        setFilteredMetrics(res || []);
       });
     }
   }, [show, datasourceValue]);
@@ -52,7 +53,7 @@ const MetricsExplorer: React.FC<MetricsExplorer> = ({ url, datasourceValue, show
         onPressEnter={(e) => {
           e.preventDefault();
           const value = e.currentTarget.value;
-          setFilteredMetrics(metrics.filter((metric) => metric.includes(value)));
+          setFilteredMetrics(_.filter(metrics, (metric) => metric.includes(value)));
         }}
       />
       <div className='prom-graph-metrics-explorer-list' onClick={(e) => checkMetric((e.target as HTMLElement).innerText)}>
