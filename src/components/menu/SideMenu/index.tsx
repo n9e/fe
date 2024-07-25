@@ -275,23 +275,28 @@ const SideMenu = () => {
     return false;
   }, [location.pathname, location.search]);
 
-  // useEffect(() => {
-  //   if (profile?.roles?.length > 0) {
-  //     // 过滤掉没有权限的菜单
-  //     const newMenus: any = _.filter(
-  //       _.map(menuList, (menu) => {
-  //         return {
-  //           ...menu,
-  //           children: _.filter(menu.children, (item) => item && _.includes(perms, item.key)),
-  //         };
-  //       }),
-  //       (item) => {
-  //         return item.children && item.children.length > 0;
-  //       },
-  //     );
-  //     setMenus(newMenus);
-  //   }
-  // }, [profile?.roles, i18n.language]);
+  useEffect(() => {
+    if (profile?.roles?.length > 0) {
+      // 过滤掉没有权限的菜单
+      const newMenus: any = _.filter(
+        _.map(menuList, (menu) => {
+          return {
+            ...menu,
+            children: _.filter(menu.children, (item) => item && _.includes(perms, item.key)),
+          };
+        }),
+        (item) => {
+          return item.children && item.children.length > 0;
+        },
+      );
+
+      
+      console.log("perms : ", perms)
+      console.log("menuList : ", menuList)
+
+      setMenus(newMenus);
+    }
+  }, [profile?.roles, i18n.language]);
 
   useEffect(() => {
     let finalPath = ['', ''];
