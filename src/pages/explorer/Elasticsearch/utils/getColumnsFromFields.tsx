@@ -23,7 +23,7 @@ function localeCompareFunc(a, b) {
   return a.localeCompare(b);
 }
 
-export function getColumnsFromFields(selectedFields: { name: string; type: string }[], queryValue: any, fieldConfig?: any) {
+export function getColumnsFromFields(selectedFields: { name: string; type: string }[], queryValue: any, fieldConfig?: any, dataSource?: any) {
   const { date_field: dateField } = queryValue;
   let columns: any[] = [];
   if (_.isEmpty(selectedFields)) {
@@ -50,7 +50,8 @@ export function getColumnsFromFields(selectedFields: { name: string; type: strin
                 const val = fields[key];
                 const label = getFieldLabel(key, fieldConfig);
                 if (!_.isPlainObject(val) && fieldConfig?.formatMap?.[key]) {
-                  const value = getFieldValue(key, val, fieldConfig);
+                  const recordOfArr = record.json ? Object.keys(record.json).map((key) => ({ field: key, value: record.json[key] })) : [];
+                  const value = getFieldValue(key, val, fieldConfig, recordOfArr);
                   return (
                     <React.Fragment key={label}>
                       <dt>{label}:</dt> <dd>{value}</dd>

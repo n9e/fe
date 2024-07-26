@@ -9,11 +9,14 @@ const zh_HK = {
   create_btn: '創建索引規則',
   create_title: '創建索引規則',
   indexes_empty: '沒有匹配的索引',
+  keyword:'字段',
+  should_not_empty: '不可為空',
+  should_not_dup: "字段不能重複",
   field: {
     name: '字段名稱',
     type: '字段類型',
     type_placeholder: '請選擇字段類型',
-    edit_title: '編輯字段',
+    edit_title: '編輯索引',
     alias: '字段別名',
     alias_tip: '日誌查詢中顯示的字段名稱, 查詢和過濾使用原字段名稱',
     format: {
@@ -27,7 +30,7 @@ const zh_HK = {
         },
         url: {
           urlTemplate: 'URL 模板',
-          urlTemplateTip: '可用{{value}}代表该字段的值',
+          urlTemplateTip: '可用{{value}}代表该字段的值,其他字段均可被作為變量引用，如${key1}，${key2}',
           urlTemplateTip1: '如跳转tracing系统：http://flashcat.cloud/trace?traceId={{value}}&dataSourceName=traceSystemName',
           urlTemplatePlaceholder: 'https://www.example.com/?q={{value}}',
           labelTemplate: '標籤模板',

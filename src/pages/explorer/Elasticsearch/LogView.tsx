@@ -31,6 +31,17 @@ export default function LogView(props: Props) {
     jsonValue = '无法解析';
   }
 
+  const dataSource = _.filter(
+    _.map(value, (val, key) => {
+      return {
+        field: key,
+        value: val,
+      };
+    }),
+    (item) => {
+      return item.value !== undefined && item.value !== null && item.value !== '';
+    },
+  )
   return (
     <Tabs
       activeKey={type}
@@ -53,17 +64,7 @@ export default function LogView(props: Props) {
     >
       <Tabs.TabPane tab='Table' key='table'>
         <Table
-          dataSource={_.filter(
-            _.map(value, (val, key) => {
-              return {
-                field: key,
-                value: val,
-              };
-            }),
-            (item) => {
-              return item.value !== undefined && item.value !== null && item.value !== '';
-            },
-          )}
+          dataSource={dataSource}
           columns={[
             {
               title: 'Field',
@@ -85,7 +86,7 @@ export default function LogView(props: Props) {
               key: 'value',
               render: (val: any, record: { field: string }) => {
                 const field = record.field;
-                const fieldVal = getFieldValue(field, val, fieldConfig);
+                const fieldVal = getFieldValue(field, val, fieldConfig, dataSource);
                 const value = _.isArray(fieldVal) ? _.join(fieldVal, ',') : fieldVal;
                 return (
                   <div>

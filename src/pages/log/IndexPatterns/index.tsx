@@ -23,13 +23,12 @@ import PageLayout from '@/components/pageLayout';
 import AuthorizationWrapper from '@/components/AuthorizationWrapper';
 import { CommonStateContext } from '@/App';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
-import { getESIndexPatterns, deleteESIndexPattern } from './services';
+import { getESIndexPatterns, deleteESIndexPattern, putESIndexPattern } from './services';
 import Add from './Add';
 import { IndexPattern } from './types';
 import './locale';
 import { SearchOutlined } from '@ant-design/icons';
-
-export { default as Fields } from './Fields';
+import EditField from './EditField';
 
 export default function Servers() {
   const { t } = useTranslation('es-index-patterns');
@@ -108,9 +107,6 @@ export default function Servers() {
                   {
                     title: t('name'),
                     dataIndex: 'name',
-                    render: (val, record) => {
-                      return <Link to={`/log/index-patterns/${record.id}`}>{val}</Link>;
-                    },
                     sorter: (a, b) => localeCompare(a.name, b.name),
                   },
                   {
@@ -123,7 +119,32 @@ export default function Servers() {
                     render: (record) => {
                       return (
                         <Space>
-                          <Link to={`/log/index-patterns/${record.id}`}>{t('common:btn.edit')}</Link>
+                          <Button
+                            type='link'
+                            onClick={() => {
+                              if (record) {
+                                EditField({
+                                  id: record.id,
+                                  onOk(values, name) {
+                                    const newFieldConfig = {
+                                      arr:values.arr,
+                                      version: 2,
+                                    };
+                                    putESIndexPattern(record.id, {
+                                      ..._.omit(record, ['fieldConfig', 'id']),
+                                      fields_format: JSON.stringify(newFieldConfig),
+                                      name,
+                                    }).then(() => {
+                                      fetchData();
+                                      message.success(t('common:success.save'));
+                                    });
+                                  },
+                                });
+                              }
+                            }}
+                          >
+                            {t('common:btn.edit')}
+                          </Button>
                           <Popconfirm
                             title={t('common:confirm.delete')}
                             onConfirm={() => {

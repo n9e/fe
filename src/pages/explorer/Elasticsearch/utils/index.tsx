@@ -16,14 +16,20 @@ export function getFieldType(fieldKey: string, fieldConfig?: any) {
   return fieldConfig?.formatMap?.[fieldKey]?.type;
 }
 
-export function getFieldValue(fieldKey, fieldValue, fieldConfig?: any) {
+export function getFieldValue(fieldKey, fieldValue, fieldConfig?: any, dataSource?:{field:string,value:string}[]) {
   const format = fieldConfig?.formatMap?.[fieldKey];
   if (format && format?.type === 'date' && format?.params?.pattern) {
     return moment(fieldValue).format(format?.params?.pattern);
   }
   if (format && format?.type === 'url' && format?.params?.urlTemplate) {
+    let realLink = format?.params?.urlTemplate.replace('{{value}}', fieldValue);
+    if(dataSource && dataSource.length > 0){
+      dataSource.forEach((item) => {
+        realLink = realLink.replace('${' + item.field + '}', item.value);
+      });
+    }
     return (
-      <a target='_blank' href={format?.params?.urlTemplate.replace('{{value}}', fieldValue)}>
+      <a target='_blank' href={realLink}>
         {format?.params?.labelTemplate.replace('{{value}}', fieldValue)}
       </a>
     );

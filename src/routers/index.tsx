@@ -38,7 +38,7 @@ import Groups from '@/pages/user/groups';
 import Users from '@/pages/user/users';
 import Business from '@/pages/user/business';
 import { Metric as MetricExplore, Log as LogExplore } from '@/pages/explorer';
-import IndexPatterns, { Fields as IndexPatternFields } from '@/pages/log/IndexPatterns';
+import IndexPatterns from '@/pages/log/IndexPatterns';
 import ObjectExplore from '@/pages/monitor/object';
 import Shield, { Add as AddShield, Edit as ShieldEdit } from '@/pages/warning/shield';
 import Subscribe, { Add as SubscribeAdd, Edit as SubscribeEdit } from '@/pages/warning/subscribe';
@@ -151,7 +151,6 @@ export default function Content() {
         <Route path='/metric/explorer' component={MetricExplore} exact />
         <Route path='/log/explorer' component={LogExplore} exact />
         <Route path='/log/index-patterns' component={IndexPatterns} exact />
-        <Route path='/log/index-patterns/:id' component={IndexPatternFields} exact />
         <Route path='/object/explorer' component={ObjectExplore} exact />
         <Route path='/busi-groups' component={Business} />
         <Route path='/users' component={Users} />
