@@ -26,7 +26,7 @@ import FormModal from './FormModal';
 import './locale';
 
 export default function index() {
-  const { t } = useTranslation('variableConfigs');
+  const { t, i18n } = useTranslation('variableConfigs');
   const [search, setSearch] = useState('');
   const [data, setData] = useState<VariableConfig[]>([]);
   const [rsaConfig, setRsaConfig] = useState<RASConfig>({} as RASConfig);
@@ -53,6 +53,7 @@ export default function index() {
             style={{ fontSize: 12 }}
             onClick={() => {
               DocumentDrawer({
+                language: i18n.language,
                 title: t('common:userManual'),
                 type: 'iframe',
                 documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/var_set/variable',
