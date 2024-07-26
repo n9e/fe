@@ -13,7 +13,7 @@ const en_US = {
     name: 'Field name',
     type: 'Field type',
     type_placeholder: 'Please select field type',
-    edit_title: 'Edit field',
+    edit_title: 'Edit index',
     alias: 'Field alias',
     alias_tip: 'The field name to display in the explorer, Queries and filters use the original field name',
     format: {
@@ -27,7 +27,7 @@ const en_US = {
         },
         url: {
           urlTemplate: 'URL template',
-          urlTemplateTip: 'Use {{value}} as a placeholder',
+          urlTemplateTip: 'Use {{value}} as a placeholder, other fields can be used as variables, such as ${key1}, ${key2}, ${a.b}',
           urlTemplateTip1: 'Just as tracing：http://flashcat.cloud/trace?traceId={{value}}&dataSourceName=traceSystemName',
           urlTemplatePlaceholder: 'https://www.example.com/?q={{value}}',
           labelTemplate: 'Label template',

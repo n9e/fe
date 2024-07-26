@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Form, Select, Button, Space, Tooltip } from 'antd';
 import { QuestionCircleOutlined, SettingOutlined } from '@ant-design/icons';
 import TimeRangePicker from '@/components/TimeRangePicker';
-import { getESIndexPatterns } from '@/pages/log/IndexPatterns/services';
+import { getESIndexPatterns, standardizeFieldConfig } from '@/pages/log/IndexPatterns/services';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import AuthorizationWrapper, { useIsAuthorized } from '@/components/AuthorizationWrapper';
 import KQLInput from '@/components/KQLInput';
@@ -44,7 +44,7 @@ export default function QueryBuilder(props: Props) {
           let fieldConfig;
           try {
             if (finded.fields_format) {
-              fieldConfig = JSON.parse(finded.fields_format);
+              fieldConfig = standardizeFieldConfig(JSON.parse(finded.fields_format));
             }
           } catch (error) {
             console.warn(error);
@@ -82,7 +82,7 @@ export default function QueryBuilder(props: Props) {
             let fieldConfig;
             try {
               if (indexPattern.fields_format) {
-                fieldConfig = JSON.parse(indexPattern.fields_format);
+                fieldConfig = standardizeFieldConfig(JSON.parse(indexPattern.fields_format));
               }
             } catch (error) {
               console.warn(error);

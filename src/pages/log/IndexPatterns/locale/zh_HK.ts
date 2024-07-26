@@ -13,7 +13,7 @@ const zh_HK = {
     name: '字段名稱',
     type: '字段類型',
     type_placeholder: '請選擇字段類型',
-    edit_title: '編輯字段',
+    edit_title: '編輯索引',
     alias: '字段別名',
     alias_tip: '日誌查詢中顯示的字段名稱, 查詢和過濾使用原字段名稱',
     format: {
@@ -27,7 +27,7 @@ const zh_HK = {
         },
         url: {
           urlTemplate: 'URL 模板',
-          urlTemplateTip: '可用{{value}}代表该字段的值',
+          urlTemplateTip: '可用{{value}}代表该字段的值,其他字段均可被作為變量引用，如${key1}，${key2}，${a.b}',
           urlTemplateTip1: '如跳转tracing系统：http://flashcat.cloud/trace?traceId={{value}}&dataSourceName=traceSystemName',
           urlTemplatePlaceholder: 'https://www.example.com/?q={{value}}',
           labelTemplate: '標籤模板',

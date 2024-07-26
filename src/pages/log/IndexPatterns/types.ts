@@ -23,3 +23,24 @@ export interface FieldConfig {
   };
   version: number;
 }
+
+export interface FieldConfigVersion2 {
+  arr: {
+    attrs: {
+      // [index: string]: {   这里没有这一层！！
+        [index: string]: string; 
+      // };
+    };
+    field: string;
+    type: string;
+    formatMap: {
+      // [index: string]: {  这里没有这一层！！
+        type: string; // date
+        params: {
+          [index: string]: string; // pattern
+        };
+      // };
+    };
+  }[];
+  version: number;
+}
