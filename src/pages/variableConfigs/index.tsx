@@ -55,7 +55,7 @@ export default function index() {
               DocumentDrawer({
                 title: t('common:userManual'),
                 type: 'iframe',
-                documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/var_set/variable',
+                documentPath: 'http://10.99.1.106:9010/docs/content/flashcat-monitor/nightingale-v7/usage/var_set/variable',
               });
             }}
           >
