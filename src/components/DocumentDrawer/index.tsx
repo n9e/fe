@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
-import { Drawer } from 'antd';
+import { Drawer, Spin } from 'antd';
 import MDEditor from '@uiw/react-md-editor';
 import ModalHOC, { ModalWrapProps } from '../ModalHOC';
 import './style.less';
@@ -24,6 +24,7 @@ const filenameMap = {
 function index(props: Props & ModalWrapProps) {
   const { visible, destroy, darkMode, language = 'zh_CN', title, width = '60%', documentPath, onClose, type = 'md' } = props;
   const [document, setDocument] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (documentPath && type === 'md') {
@@ -63,7 +64,17 @@ function index(props: Props & ModalWrapProps) {
           />
         </div>
       )}
-      {type === 'iframe' && <iframe src={`${documentPath}${filenameMap[language]}?onlyContent`} style={{ width: '100%', height: '100%', border: '0 none' }} />}
+      {type === 'iframe' && (
+        <Spin spinning={loading} wrapperClassName='n9e-document-drawer-iframe-loading'>
+          <iframe
+            src={`${documentPath}${filenameMap[language]}?onlyContent`}
+            style={{ width: '100%', height: '100%', border: '0 none', visibility: loading ? 'hidden' : 'visible' }}
+            onLoad={() => {
+              setLoading(false);
+            }}
+          />
+        </Spin>
+      )}
     </Drawer>
   );
 }
