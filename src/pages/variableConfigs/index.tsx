@@ -20,6 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { Button, Input, Table, Space, message, Popconfirm } from 'antd';
 import { SettingOutlined } from '@ant-design/icons';
 import PageLayout from '@/components/pageLayout';
+import DocumentDrawer from '@/components/DocumentDrawer';
 import { getVariableConfigs, VariableConfig, postVariableConfigs, deleteVariableConfigs, putVariableConfigs, getRSAConfig, RASConfig } from './services';
 import FormModal from './FormModal';
 import './locale';
@@ -44,7 +45,26 @@ export default function index() {
   }, []);
 
   return (
-    <PageLayout title={t('title')} icon={<SettingOutlined />}>
+    <PageLayout
+      title={
+        <Space>
+          {t('title')}
+          <a
+            style={{ fontSize: 12 }}
+            onClick={() => {
+              DocumentDrawer({
+                title: t('common:userManual'),
+                type: 'iframe',
+                documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/var_set/variable',
+              });
+            }}
+          >
+            {t('common:userManual')}
+          </a>
+        </Space>
+      }
+      icon={<SettingOutlined />}
+    >
       <div>
         <div
           className='n9e-border-base'
