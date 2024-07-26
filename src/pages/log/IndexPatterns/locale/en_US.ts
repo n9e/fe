@@ -9,12 +9,15 @@ const en_US = {
   create_btn: 'Create Index Pattern',
   create_title: 'Create Index Pattern',
   indexes_empty: 'No matching indexes',
+  keyword:'Index',
+  should_not_empty: 'Cannot be null',
+  should_not_dup: "Index field cannot be duplicated",
   field: {
     name: 'Field name',
     type: 'Field type',
     type_placeholder: 'Please select field type',
     edit_title: 'Edit index',
-    alias: 'Field alias',
+    alias: 'Alias',
     alias_tip: 'The field name to display in the explorer, Queries and filters use the original field name',
     format: {
       title: 'Format',
@@ -27,7 +30,7 @@ const en_US = {
         },
         url: {
           urlTemplate: 'URL template',
-          urlTemplateTip: 'Use {{value}} as a placeholder, other fields can be used as variables, such as ${key1}, ${key2}, ${a.b}',
+          urlTemplateTip: 'Use {{value}} as a placeholder, other fields can be used as variables, such as ${key1}, ${key2}',
           urlTemplateTip1: 'Just as tracing：http://flashcat.cloud/trace?traceId={{value}}&dataSourceName=traceSystemName',
           urlTemplatePlaceholder: 'https://www.example.com/?q={{value}}',
           labelTemplate: 'Label template',

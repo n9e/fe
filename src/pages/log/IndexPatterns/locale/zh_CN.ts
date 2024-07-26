@@ -9,7 +9,9 @@ const zh_CN = {
   create_btn: '创建索引模式',
   create_title: '创建索引模式',
   indexes_empty: '没有匹配的索引',
-  keyword:'字段',
+  keyword: '字段',
+  should_not_empty: '不可为空',
+  should_not_dup: '字段不能重复',
   field: {
     name: '字段名称',
     type: '字段类型',
@@ -28,7 +30,7 @@ const zh_CN = {
         },
         url: {
           urlTemplate: 'URL 模板',
-          urlTemplateTip: '可用{{value}}代表该字段的值,其他字段均可被作为变量引用，如${key1}，${key2}，${a.b}',
+          urlTemplateTip: '可用{{value}}代表该字段的值,其他字段均可被作为变量引用，如${key1}，${key2}',
           urlTemplateTip1: '如跳转tracing系统：http://flashcat.cloud/trace?traceId={{value}}&dataSourceName=traceSystemName',
           urlTemplatePlaceholder: 'http://flashcat.cloud/trace?traceId={{value}}&dataSourceName=traceSystemName',
           labelTemplate: '标签模板',

@@ -81,20 +81,48 @@ function EditField(props: Props & ModalWrapProps) {
           destroy();
         }}
       >
-        <Form.List name='arr' initialValue={[{}]}>
-          {(fields, { add, remove }) => (
+        <Form.List
+          name='arr'
+          initialValue={[{}]}
+          rules={[
+            {
+              validator: async (_, names) => {
+                if (!names || names.length === 0) {
+                  return Promise.reject(new Error(t('should_not_empty')));
+                }
+                // 判断names中的field字段不可重复
+                const fieldValues: string[] = [];
+                for (const item of names) {
+                  if (item.field) {
+                    if (fieldValues.includes(item.field)) {
+                      return Promise.reject(new Error(t('should_not_dup')));
+                    }
+                    fieldValues.push(item.field);
+                  }
+                }
+                return Promise.resolve();
+              },
+            },
+          ]}
+        >
+          {(fields, { add, remove }, { errors }) => (
             <>
               {fields.map(({ key, name }) => (
                 <FieldRow key={key} name={name} remove={remove} form={form} add={add} fields={fieldsAll} />
               ))}
+              {fields.length === 0 && <PlusCircleOutlined onClick={() => add()} style={{ marginBottom: 16 }} />}
+              <Form.ErrorList errors={errors} />
             </>
           )}
         </Form.List>
 
         <Form.Item>
-          <Button type='primary' htmlType='submit'>
-            {t('common:btn.save')}
-          </Button>
+          <Space>
+            <Button type='primary' htmlType='submit'>
+              {t('common:btn.save')}
+            </Button>
+            <Button onClick={() => destroy()}>{t('common:btn.cancel')}</Button>
+          </Space>
         </Form.Item>
       </Form>
     </Drawer>
