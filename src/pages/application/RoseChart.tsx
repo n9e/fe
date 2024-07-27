@@ -25,19 +25,19 @@ interface ChartProps {
   data: { 
     labels: string[]; 
     values: number[] 
-};
+  };
 }
 
 const Chart: React.FC<ChartProps> = ({ data }) => {
   const option = {
-    title: {
-      text: '应用统计',
-      left: 'center', // 设置标题居中
-      textStyle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-      },
-    },
+    // title: {
+    //   text: '应用统计',
+    //   left: 'center', // 设置标题居中
+    //   textStyle: {
+    //     fontSize: 18,
+    //     fontWeight: 'bold',
+    //   },
+    // },
     tooltip: {
       trigger: 'item',
       formatter: '{a} <br/>{b}: {c} ({d}%)',
@@ -49,9 +49,9 @@ const Chart: React.FC<ChartProps> = ({ data }) => {
     },
     series: [
       {
-        name: '访问来源',
+        name: '应用系统',
         type: 'pie',
-        radius: ['50%', '70%'],
+        radius: ['55%', '70%'],
         avoidLabelOverlap: false,
         label: {
           show: false,
@@ -61,7 +61,7 @@ const Chart: React.FC<ChartProps> = ({ data }) => {
           label: {
             show: true,
             fontSize: '30',
-            fontWeight: 'bold',
+            //fontWeight: 'bold',
           },
         },
         labelLine: {
@@ -71,14 +71,14 @@ const Chart: React.FC<ChartProps> = ({ data }) => {
           value,
           name: data.labels[index],
           itemStyle: {
-            color: index === 0 ? '#4EEA70' : index === 1 ? 'yellow' : '#E63A35', // 分别设置为绿色、黄色、红色
+            color: index === 0 ? '#52c41a' : index === 1 ? 'yellow' : '#ff4d4f', // 分别设置为绿色、黄色、红色
           },
         })),
       },
     ],
   };
 
-  return <ReactECharts option={option} style={{ height: '400px' }} />;
+  return <ReactECharts option={option} style={{ height: '100%' }} />;
 };
 
 export default Chart;

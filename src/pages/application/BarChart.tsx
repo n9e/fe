@@ -23,36 +23,33 @@ echarts.use([
 
 interface ChartProps {
   data: { 
-    x: string[]; //横坐标
-    y: number[]; //纵坐标
+    labels: string[]; //横坐标
+    values: number[]; //纵坐标
   };
 }
 
 const Chart: React.FC<ChartProps> = ({ data }) => {
   const option = {
-    title: {
-      text: '应用可用性',
-      left: 'center',
-    },
+    
     tooltip: {
       trigger: 'axis',
     },
     xAxis: {
       type: 'category',
-      data: data.x,
+      data: data.labels,
     },
     yAxis: {
       type: 'value',
     },
     series: [
       {
-        data: data.y,
+        data: data.values,
         type: 'bar',
       },
     ],
   };
 
-  return <ReactECharts option={option} style={{ height: '400px' }} />;
+  return <ReactECharts option={option} style={{ height: '100%' }} />;
 };
 
 export default Chart;

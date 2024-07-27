@@ -11,6 +11,8 @@ import {
   LegendComponent,
 } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
+import { Smooth } from '@antv/g2/lib/shape/line/smooth';
+import { symbol } from 'd3';
 
 echarts.use([
   TitleComponent,
@@ -23,36 +25,36 @@ echarts.use([
 
 interface ChartProps {
   data: { 
-    x: string[]; //横坐标
-    y: number[]; //纵坐标
+    labels: string[]; 
+    values: number[] 
   };
 }
 
+
 const Chart: React.FC<ChartProps> = ({ data }) => {
   const option = {
-    title: {
-      text: '告警趋势',
-      left: 'center',
-    },
+   
     tooltip: {
       trigger: 'axis',
     },
     xAxis: {
       type: 'category',
-      data: data.x,
+      data: data.labels,
     },
     yAxis: {
       type: 'value',
     },
     series: [
       {
-        data: data.y,
+        data: data.values,
         type: 'line',
+        smooth: 0.6,
+        symbol: 'none',
       },
     ],
   };
 
-  return <ReactECharts option={option} style={{ height: '400px' }} />;
+  return <ReactECharts option={option} style={{ height: '100%' }} />;
 };
 
 export default Chart;
