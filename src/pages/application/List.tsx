@@ -343,11 +343,11 @@ export default function List(props: IProps) {
       });
     }
     //节点健康度
-    if (item.name === 'health_levle') {
+    if (item.name === 'health_level') {
       columns.push({
-        title: (t('health_levle')),
+        title: (t('health_level')),
         width: 100,
-        dataIndex: 'health_levle',
+        dataIndex: 'health_level',
         sorter: (a, b) => a.offset - b.offset,
         render(text, reocrd) {
           if (reocrd.cpu_num === -1) return <Unknown />;
