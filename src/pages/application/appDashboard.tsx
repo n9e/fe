@@ -83,7 +83,7 @@ const tendencyData = {
   
 
   const [currentPage, setCurrentPage] = useState(0);
-  const chartsPerPage = 9;
+  const chartsPerPage = 12;
 
   //院级核心应用数据
   const charts : application[] = [
@@ -98,6 +98,11 @@ const tendencyData = {
     { name: '系统I', health: 79 },
     { name: '系统J', health: 90 },
     { name: '系统K', health: 90 },
+    { name: '系统H', health: 89 },
+    { name: '系统I', health: 79 },
+    { name: '系统J', health: 90 },
+    { name: '系统K', health: 90 },
+
   ]
   
   //下一页
@@ -118,7 +123,7 @@ const tendencyData = {
       <div className="flex-col-item">
         <div style={{position: 'relative',height: '50%', border: '1px solid #ccc',margin: '0px 10px 10px 0px' }}>
           <h4 style={{textAlign: 'center'}}>院级核心应用</h4>
-          <Grid charts={visibleCharts} />
+          <div style={{position: 'absolute', top: '10px',}}><Grid charts={visibleCharts} /></div>            
           <Button style={{ position: 'absolute', bottom: '6px', right: '10px' }} onClick={handleClickPrev} size='small' disabled={currentPage === 0}>上一页</Button> 
           <Button style={{ position: 'absolute', bottom: '6px', right: '75px' }} onClick={handleClickNext} size='small' disabled={startIndex + chartsPerPage >= charts.length}>下一页</Button>          
         </div>
