@@ -76,7 +76,6 @@ export default function Title(props: IProps) {
   const { siteInfo, dashboardSaveMode } = useContext(CommonStateContext);
   const query = querystring.parse(location.search);
   const { viewMode, __public__ } = query;
-  const themeMode = getDefaultThemeMode(query); // only for ENT version
   const isClickTrigger = useRef(false);
   const [dashboardList, setDashboardList] = useState<IDashboard[]>([]);
   const [dashboardListDropdownSearch, setDashboardListDropdownSearch] = useState('');
@@ -110,28 +109,6 @@ export default function Title(props: IProps) {
         message: (
           <div>
             <div>{t('detail.fullscreen.notification.esc')}</div>
-            {IS_ENT && (
-              <div>
-                <Space>
-                  {t('detail.fullscreen.notification.theme')}
-                  <Switch
-                    checkedChildren='dark'
-                    unCheckedChildren='light'
-                    defaultChecked={themeMode === 'dark'}
-                    onChange={(checked) => {
-                      const newQuery = _.omit(querystring.parse(window.location.search), ['themeMode']);
-                      newQuery.themeMode = checked ? 'dark' : 'light';
-                      localStorage.setItem('dashboard_themeMode', checked ? 'dark' : 'light');
-                      history.replace({
-                        pathname: location.pathname,
-                        search: querystring.stringify(newQuery),
-                      });
-                      window.localStorage.setItem(dashboardThemeModeCacheKey, newQuery.themeMode);
-                    }}
-                  />
-                </Space>
-              </div>
-            )}
           </div>
         ),
         duration: 3,
@@ -314,24 +291,6 @@ export default function Title(props: IProps) {
             }}
             icon={<FullscreenOutlined />}
           />
-          {IS_ENT && (
-            <Select
-              options={[
-                { label: 'light', value: 'light' },
-                { label: 'dark', value: 'dark' },
-              ]}
-              value={themeMode || 'light'}
-              onChange={(val) => {
-                const newQuery = _.omit(query, ['themeMode']);
-                newQuery.themeMode = val;
-                history.replace({
-                  pathname: location.pathname,
-                  search: querystring.stringify(newQuery),
-                });
-                window.localStorage.setItem(dashboardThemeModeCacheKey, val);
-              }}
-            />
-          )}
         </Space>
       </div>
     </div>
