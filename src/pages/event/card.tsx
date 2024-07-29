@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useLayoutEffect, useRef, useImperativeHandle, useContext } from 'react';
 import { Button, Row, Col, Drawer, Tag, Table, Dropdown, Menu, Tooltip } from 'antd';
+import { MoreOutlined } from '@ant-design/icons';
 import { useHistory, Link } from 'react-router-dom';
 import { ReactNode } from 'react-markdown/lib/react-markdown';
 import _, { throttle } from 'lodash';
@@ -122,14 +123,17 @@ function Card(props: Props, ref) {
       render(title, { id, tags }) {
         return (
           <>
-            <div>
+            <div className='mb1'>
               <Link to={`/alert-cur-events/${id}`}>{title}</Link>
             </div>
             <div>
               {_.map(tags, (item) => {
                 return (
                   <Tooltip key={item} title={item}>
-                    <Tag color='purple' style={{ maxWidth: '100%' }}>
+                    <Tag
+                      // color='purple'
+                      style={{ maxWidth: '100%' }}
+                    >
                       <div
                         style={{
                           maxWidth: 'max-content',
@@ -167,52 +171,68 @@ function Card(props: Props, ref) {
     {
       title: t('common:table.operations'),
       dataIndex: 'operate',
-      width: 200,
+      width: 80,
       render(value, record) {
         return (
-          <>
-            <AckBtn
-              data={record}
-              onOk={() => {
-                fetchCardDetail(openedCard!);
-              }}
-            />
-            <Button
-              size='small'
-              type='link'
-              onClick={() => {
-                history.push({
-                  pathname: '/alert-mutes/add',
-                  search: queryString.stringify({
-                    busiGroup: record.group_id,
-                    prod: record.rule_prod,
-                    cate: record.cate,
-                    datasource_ids: [record.datasource_id],
-                    tags: record.tags,
-                  }),
-                });
-              }}
-            >
-              {t('shield')}
-            </Button>
-            <Button
-              size='small'
-              type='link'
-              danger
-              onClick={() =>
-                deleteAlertEventsModal(
-                  [record.id],
-                  () => {
-                    setSelectedRowKeys(selectedRowKeys.filter((key) => key !== record.id));
-                    fetchCardDetail(openedCard!);
-                  },
-                  t,
-                )
-              }
-            >
-              {t('common:btn.delete')}
-            </Button>
-          </>
+          <Dropdown
+            overlay={
+              <Menu>
+                <Menu.Item>
+                  <AckBtn
+                    data={record}
+                    onOk={() => {
+                      fetchCardDetail(openedCard!);
+                    }}
+                  />
+                </Menu.Item>
+                {!_.includes(['firemap', 'northstar'], record?.rule_prod) && (
+                  <Menu.Item>
+                    <Button
+                      style={{ padding: 0 }}
+                      size='small'
+                      type='link'
+                      onClick={() => {
+                        history.push({
+                          pathname: '/alert-mutes/add',
+                          search: queryString.stringify({
+                            busiGroup: record.group_id,
+                            prod: record.rule_prod,
+                            cate: record.cate,
+                            datasource_ids: [record.datasource_id],
+                            tags: record.tags,
+                          }),
+                        });
+                      }}
+                    >
+                      {t('shield')}
+                    </Button>
+                  </Menu.Item>
+                )}
+                <Menu.Item>
+                  <Button
+                    style={{ padding: 0 }}
+                    size='small'
+                    type='link'
+                    danger
+                    onClick={() =>
+                      deleteAlertEventsModal(
+                        [record.id],
+                        () => {
+                          setSelectedRowKeys(selectedRowKeys.filter((key) => key !== record.id));
+                          fetchCardDetail(openedCard!);
+                        },
+                        t,
+                      )
+                    }
+                  >
+                    {t('common:btn.delete')}
+                  </Button>
+                </Menu.Item>
+              </Menu>
+            }
+          >
+            <Button type='link' icon={<MoreOutlined />} />
+          </Dropdown>
         );
       },
     },
@@ -306,7 +326,7 @@ function Card(props: Props, ref) {
         placement='right'
         onClose={onClose}
         visible={visible}
-        width={1060}
+        width='80%'
       >
         <Table
           tableLayout='fixed'

@@ -134,8 +134,9 @@ export default function TDengineQueryBuilder({ chartForm, variableConfig, dashbo
                           name={[field.name, 'legend']}
                           tooltip={{
                             getPopupContainer: () => document.body,
-                            title:
-                              'Controls the name of the time series, using name or pattern. For example {{hostname}} will be replaced with label value for the label hostname.',
+                            title: t('dashboard:query.legendTip', {
+                              interpolation: { skipOnVariables: true },
+                            }),
                           }}
                         >
                           <Input />

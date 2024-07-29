@@ -102,3 +102,9 @@ export function ajustVarSingleValue(expression: string, placeholder: string, val
 export function escapeJsonString(str: string): string {
   return str.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
 }
+
+// 转义 PromQL 字符串中的特殊字符 {}[]().-
+// 2024-07-25 暂时修改成只对 () 进行转义
+export function escapePromQLString(str: string): string {
+  return str.replace(/[()]/g, '\\\\$&');
+}

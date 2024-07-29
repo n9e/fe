@@ -154,8 +154,8 @@ const en_US = {
   1. Check channels and groups
   `,
   default_filter: {
-    title: 'Preset filters',
-    all: 'All rules',
+    title: 'Preset Filters',
+    all: 'All Rules',
   },
   ruleConfigPromVersion: 'Mode',
   ruleConfigPromVersion_v1: 'Normal mode',

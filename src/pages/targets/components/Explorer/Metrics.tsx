@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { useAntdTable, useDebounceFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
-import { Button, Select, Space, Tooltip, Input, Table, message, Row, Col } from 'antd';
+import { Select, Space, Tooltip, Input, Table, message, Row, Col } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { ColumnType } from 'antd/lib/table';
 import Markdown from '@/components/Markdown';
 import usePagination from '@/components/usePagination';
 import { getMetrics, Record, Filter, getTypes, getCollectors, buildLabelFilterAndExpression } from '@/pages/metricsBuiltin/services';
 import { getComponents, Component } from '@/pages/builtInComponents/services';
+import { escapePromQLString } from '@/pages/dashboard/VariableConfig/utils';
 
 interface Props {
   selectedIdents: string[];
@@ -82,7 +83,12 @@ export default function Metrics(props: Props) {
           <Tooltip overlayClassName='ant-tooltip-max-width-600 ant-tooltip-with-link' title={record.note ? <Markdown content={record.note} /> : undefined}>
             <a
               onClick={() => {
-                const label_filter = `{ident=~"${_.join(selectedIdents, '|')}"}`;
+                const label_filter = `{ident=~"${_.join(
+                  _.map(selectedIdents, (item) => {
+                    return escapePromQLString(item);
+                  }),
+                  '|',
+                )}"}`;
                 if (label_filter) {
                   buildLabelFilterAndExpression({
                     label_filter,

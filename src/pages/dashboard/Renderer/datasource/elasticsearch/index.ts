@@ -5,7 +5,6 @@ import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { getDsQuery, getESVersion } from '@/services/warning';
 import { normalizeTime } from '@/pages/alertRules/utils';
 import { fetchHistoryRangeBatch2 } from '@/services/dashboardV2';
-import { getSerieName } from '@/pages/dashboard/Renderer/datasource/utils';
 import { ITarget } from '../../../types';
 import { IVariable } from '../../../VariableConfig/definition';
 import { replaceExpressionVars } from '../../../VariableConfig/constant';
@@ -168,7 +167,8 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
               series.push({
                 id: _.uniqueId('series_'),
                 refId: refId,
-                name: getSerieName(serie.metric, isExp ? serie.ref : undefined),
+                target: currentTarget,
+                isExp,
                 metric: serie.metric,
                 data: serie.values,
               });
