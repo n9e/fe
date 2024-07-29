@@ -187,27 +187,6 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
 
                   <div style={{ marginRight: 8 }}>
                     <DarkModeSelect />
-                    {IS_ENT && (
-                      <Tooltip
-                        title={
-                          <div>
-                            <div style={{ marginBottom: 8 }}>
-                              <b>注意</b>：企业版 暗黑功能测试中
-                            </div>
-                            <hr />
-                            <div>测试模块：</div>
-                            <ul>
-                              <li>北极星</li>
-                            </ul>
-                            <div>
-                              <b>如果发现样式问题， 请及时反馈</b>
-                            </div>
-                          </div>
-                        }
-                      >
-                        <QuestionCircleOutlined style={{ marginRight: 8 }} />
-                      </Tooltip>
-                    )}
                   </div>
 
                   <Dropdown overlay={menu} trigger={['click']}>
