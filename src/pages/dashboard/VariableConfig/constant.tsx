@@ -21,7 +21,7 @@ import queryString from 'query-string';
 import { getLabelNames, getMetricSeries, getMetricSeriesV2, getLabelValues, getMetric, getQueryResult, getESVariableResult } from '@/services/dashboardV2';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { IVariable } from './definition';
-import { normalizeESQueryRequestBody, ajustVarSingleValue, escapeJsonString } from './utils';
+import { normalizeESQueryRequestBody, ajustVarSingleValue, escapeJsonString, escapePromQLString } from './utils';
 
 // https://grafana.com/docs/grafana/latest/datasources/prometheus/#query-variable 根据文档解析表达式
 // 每一个promtheus接口都接受start和end参数来限制返回值
@@ -69,8 +69,13 @@ export const convertExpressionToQuery = (expression: string, range: IRawTimeRang
         return getLabelValues(label, { start, end }, datasourceValue).then((res) => res.data);
       }
     } else if (expression.startsWith('metrics(')) {
-      const metric = expression.substring('metrics('.length, expression.length - 1);
-      return getMetric({ start, end }, datasourceValue).then((res) => res.data.filter((item) => item.includes(metric)));
+      const metricRegexStr = expression.substring('metrics('.length, expression.length - 1);
+      return getMetric({ start, end }, datasourceValue).then((res) =>
+        res.data.filter((item) => {
+          // 2024-07-24 这里需要对 metricRegexStr 进行正则匹配
+          return item.match(new RegExp(metricRegexStr));
+        }),
+      );
     } else if (expression.startsWith('query_result(')) {
       let promql = expression.substring('query_result('.length, expression.length - 1);
       promql = replaceFieldWithVariable(promql, dashboardId, getOptionsList({}, range));
@@ -254,7 +259,14 @@ export const replaceExpressionVarsSpecifyRule = (
                   _.map(
                     _.filter(options, (i) => !reg || !stringToRegex(reg) || (stringToRegex(reg) as RegExp).test(i)),
                     (item) => {
-                      return datasource?.cate === 'elasticsearch' ? `"${item}"` : item;
+                      // 2024-07-24 如果是 prometheus 数据源的变量，需要对 {}[]().- 进行转义
+                      if (datasource?.cate === 'prometheus') {
+                        return escapePromQLString(item);
+                      }
+                      if (datasource?.cate === 'elasticsearch') {
+                        return `"${item}"`;
+                      }
+                      return item;
                     },
                   ),
                   separator,
@@ -265,13 +277,21 @@ export const replaceExpressionVarsSpecifyRule = (
               if (datasource?.cate === 'elasticsearch' && isEscapeJsonString) {
                 newValue = escapeJsonString(newValue);
               }
+
               newExpression = replaceAllPolyfill(newExpression, placeholder, newValue);
             }
           } else if (Array.isArray(selected)) {
             let newValue = `(${_.trim(
               _.join(
                 _.map(selected, (item) => {
-                  return datasource?.cate === 'elasticsearch' ? `"${item}"` : item;
+                  // 2024-07-24 如果是 prometheus 数据源的变量，需要对 {}[]().- 进行转义
+                  if (datasource?.cate === 'prometheus') {
+                    return escapePromQLString(item);
+                  }
+                  if (datasource?.cate === 'elasticsearch') {
+                    return `"${item}"`;
+                  }
+                  return item;
                 }),
                 separator,
               ),

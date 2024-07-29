@@ -38,7 +38,7 @@ import Groups from '@/pages/user/groups';
 import Users from '@/pages/user/users';
 import Business from '@/pages/user/business';
 import { Metric as MetricExplore, Log as LogExplore } from '@/pages/explorer';
-import IndexPatterns, { Fields as IndexPatternFields } from '@/pages/log/IndexPatterns';
+import IndexPatterns from '@/pages/log/IndexPatterns';
 import ObjectExplore from '@/pages/monitor/object';
 import Shield, { Add as AddShield, Edit as ShieldEdit } from '@/pages/warning/shield';
 import Subscribe, { Add as SubscribeAdd, Edit as SubscribeEdit } from '@/pages/warning/subscribe';
@@ -106,17 +106,6 @@ export default function Content() {
   const history = useHistory();
   const isPlus = useIsPlus();
   const { profile, siteInfo, perms } = useContext(CommonStateContext);
-  let themeClassName = '';
-  if (IS_ENT) {
-    // 仪表盘在全屏和暗黑主题下需要定义个 dark 样式名
-    if (_.startsWith(location.pathname, '/dashboards/') && !_.endsWith(location.pathname, '/dashboards/')) {
-      const query = querystring.parse(location.search);
-      const themeMode = getDefaultThemeMode(query);
-      if (themeMode === 'dark') {
-        themeClassName = 'theme-dark';
-      }
-    }
-  }
 
   useEffect(() => {
     /**
@@ -140,7 +129,7 @@ export default function Content() {
   }, []);
 
   return (
-    <div className={`content ${themeClassName}`}>
+    <div className='content'>
       <Switch>
         <Route path='/demo' component={Demo} />
         <Route path='/overview' component={Overview} />
@@ -151,7 +140,6 @@ export default function Content() {
         <Route path='/metric/explorer' component={MetricExplore} exact />
         <Route path='/log/explorer' component={LogExplore} exact />
         <Route path='/log/index-patterns' component={IndexPatterns} exact />
-        <Route path='/log/index-patterns/:id' component={IndexPatternFields} exact />
         <Route path='/object/explorer' component={ObjectExplore} exact />
         <Route path='/busi-groups' component={Business} />
         <Route path='/users' component={Users} />
