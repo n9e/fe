@@ -117,7 +117,9 @@ function NameWithTooltip({ record, children }) {
 
 export default function index(props: IProps) {
   const [dashboardMeta] = useGlobalState('dashboardMeta');
-  const { darkMode } = useContext(CommonStateContext);
+  const { darkMode: appDarkMode } = useContext(CommonStateContext);
+  // hoc打开的组件获取不到 App 中 useContext, 这里用localStorage兜底
+  const darkMode = appDarkMode || localStorage.getItem('darkMode') === 'true';
   const { t } = useTranslation('dashboard');
   const { time, setRange, values, series, inDashboard = true, chartHeight = '200px', tableHeight = '200px', onClick, isPreview, colors } = props;
   const themeMode = props.themeMode || (darkMode ? 'dark' : 'light');
