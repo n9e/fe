@@ -177,7 +177,8 @@ function index(props: IProps) {
               {item.type !== 'row' ? (
                 semver.valid(item.version) ? (
                   <Renderer
-                    isPreview={!isAuthorized}
+                    isPreview={isPreview}
+                    isAuthorized={isAuthorized}
                     themeMode={themeMode as 'dark'}
                     dashboardId={_.toString(props.dashboardId)}
                     id={item.id}
@@ -258,7 +259,7 @@ function index(props: IProps) {
                 )
               ) : (
                 <Row
-                  isPreview={!isAuthorized}
+                  isAuthorized={isAuthorized}
                   name={item.name}
                   row={item}
                   onToggle={() => {
