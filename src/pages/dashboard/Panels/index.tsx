@@ -72,11 +72,7 @@ const ReactGridLayout = WidthProvider(RGL);
 function index(props: IProps) {
   const { t } = useTranslation('dashboard');
   const { profile, darkMode, dashboardSaveMode, perms, groupedDatasourceList } = useContext(CommonStateContext);
-  const location = useLocation();
-  let themeMode = darkMode ? 'dark' : 'light';
-  if (IS_ENT) {
-    themeMode = getDefaultThemeMode(querystring.parse(location.search));
-  }
+  const themeMode = darkMode ? 'dark' : 'light';
   const { editable, dashboard, setDashboard, setAllowedLeave, range, variableConfig, panels, isPreview, setPanels, onShareClick, onUpdated } = props;
   const roles = _.get(profile, 'roles', []);
   const isAuthorized = _.includes(perms, '/dashboards/put') && !isPreview;
