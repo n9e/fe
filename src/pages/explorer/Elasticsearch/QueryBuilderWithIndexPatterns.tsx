@@ -45,6 +45,7 @@ export default function QueryBuilder(props: Props) {
           try {
             if (finded.fields_format) {
               fieldConfig = standardizeFieldConfig(JSON.parse(finded.fields_format));
+              form.setFields([{name:'fieldConfig',value:undefined}]);
             }
           } catch (error) {
             console.warn(error);

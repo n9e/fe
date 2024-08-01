@@ -93,7 +93,7 @@ function EditField(props: Props & ModalWrapProps) {
                 // 判断names中的field字段不可重复
                 const fieldValues: string[] = [];
                 for (const item of names) {
-                  if (item.field) {
+                  if (item?.field) {
                     if (fieldValues.includes(item.field)) {
                       return Promise.reject(new Error(t('should_not_dup')));
                     }
@@ -146,7 +146,7 @@ function FieldRow({ key, name, form, remove, add, fields }: { key: number; name:
             }}
             onChange={(v) => {
               const type = fields.find((i) => i.name === v)?.type || '';
-              form.setFields([{ name: ['arr', name, 'type'], value: type }]);
+              form.setFields([{ name: ['arr', name, 'type'], value: type },{name:['arr', name, 'formatMap', 'type'], value:'url'}]);
             }}
           >
             {fields.map((item) => (
