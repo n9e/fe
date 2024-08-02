@@ -25,7 +25,7 @@ import { useGlobalState } from '../globalState';
 import { IVariable, replaceExpressionVars } from '../VariableConfig';
 
 interface IProps {
-  isPreview?: boolean;
+  isAuthorized: boolean;
   name: string;
   row: any;
   onToggle: () => void;
@@ -43,7 +43,7 @@ function replaceFieldWithVariable(value: string, dashboardId?: string, variableC
 
 export default function Row(props: IProps) {
   const { t } = useTranslation('dashboard');
-  const { isPreview, name, row, onToggle, onAddClick, onEditClick, onDeleteClick } = props;
+  const { isAuthorized, name, row, onToggle, onAddClick, onEditClick, onDeleteClick } = props;
   const [editVisble, setEditVisble] = useState(false);
   const [newName, setNewName] = useState<string>();
   const [deleteVisible, setDeleteVisible] = useState(false);
@@ -64,7 +64,7 @@ export default function Row(props: IProps) {
         <span style={{ paddingRight: 6 }}>{replaceFieldWithVariable(name, dashboardMeta.dashboardId, dashboardMeta.variableConfigWithOptions)}</span>
         {row.collapsed ? <CaretDownOutlined /> : <CaretRightOutlined />}
       </div>
-      {!isPreview && (
+      {isAuthorized && (
         <Space>
           <AddPanelIcon
             onClick={() => {
