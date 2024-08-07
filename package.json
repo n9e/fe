@@ -35,7 +35,7 @@
     "@radix-ui/react-scroll-area": "^1.0.5",
     "@uiw/react-codemirror": "4.6.0",
     "@uiw/react-md-editor": "^4.0.4",
-    "ahooks": "3.1.5",
+    "ahooks": "^3.5.0",
     "ansi_up": "^6.0.2",
     "antd": "4.21.0",
     "array-move": "^4.0.0",
