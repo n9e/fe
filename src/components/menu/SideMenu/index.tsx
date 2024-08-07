@@ -240,6 +240,7 @@ const SideMenu = () => {
     if (
       location.pathname === '/login' ||
       location.pathname.startsWith('/chart/') ||
+      location.pathname.startsWith('/events/screen/') ||
       location.pathname.startsWith('/dashboards/share/') ||
       location.pathname === '/callback' ||
       location.pathname.indexOf('/polaris/screen') === 0
