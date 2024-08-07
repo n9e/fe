@@ -21,7 +21,7 @@ export default function Cluster({ form, clusterRef }) {
   return (
     <Form.Item label={t('form.cluster')} name='cluster_name' tooltip={t('form.cluster_tip')}>
       <Select ref={clusterRef} allowClear>
-        {_.map(clusters, (item) => {
+        {_.map(_.concat(clusters, 'no_assigned_engine'), (item) => {
           return (
             <Select.Option key={item} value={item}>
               {item}
