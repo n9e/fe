@@ -214,7 +214,7 @@ export default function QueryBuilder(props: Props) {
             </Form.Item>
           )}
         </InputGroupWithFormItem>
-        <Form.Item name={['query', 'range']} initialValue={{ start: 'now-1h', end: 'now' }}>
+        <Form.Item name={['query', 'range']} initialValue={{ start: 'now-1h', end: 'now' }} hidden={!date_field}>
           <TimeRangePicker
             onChange={() => {
               if (refInputFilter.current) {
