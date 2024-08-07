@@ -20,7 +20,7 @@
  * data_source_id: string
  */
 import React, { useRef, useContext } from 'react';
-import { Card, Space, Input, Form, Select, Row, Col } from 'antd';
+import { Input, Form, Select, Row, Col } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useHistory } from 'react-router-dom';
