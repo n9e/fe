@@ -12,7 +12,7 @@ import { getLogsQuery } from './services';
 import { parseRange } from '@/components/TimeRangePicker';
 import Timeseries from '@/pages/dashboard/Renderer/Renderer/Timeseries';
 import { CommonStateContext } from '@/App';
-import { PRIMARY_COLOR } from '@/utils/constant';
+import { DatasourceCateEnum, PRIMARY_COLOR } from '@/utils/constant';
 import metricQuery from './metricQuery';
 import { Field, dslBuilder, Filter, getFieldLabel } from './utils';
 import { getColumnsFromFields } from './utils/getColumnsFromFields';
@@ -239,7 +239,10 @@ export default function index(props: IProps) {
   }, [JSON.stringify(filters)]);
 
   useEffect(() => {
-    if (defaultFormValuesControl?.defaultFormValues && defaultFormValuesControl?.isInited === false) {
+    if (
+      [DatasourceCateEnum.elasticsearch, DatasourceCateEnum.opensearch].includes(defaultFormValuesControl?.defaultFormValues?.datasourceCate) &&
+      defaultFormValuesControl?.isInited === false
+    ) {
       form.setFieldsValue(defaultFormValuesControl.defaultFormValues);
       defaultFormValuesControl.setIsInited();
       setMode(getDefaultMode(query, isOpenSearch, esIndexMode, defaultFormValuesControl.defaultFormValues?.query?.mode));
