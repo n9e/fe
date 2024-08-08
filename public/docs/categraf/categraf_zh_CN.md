@@ -1,20 +1,25 @@
 ## 部署 categraf
 
+
+## 开源用户
 ### 1. 下载并解压的安装包
+> categraf 最新版本可以到 https://flashcat.cloud/download/categraf/ 获取
 
 ```bash
-wget https://download.flashcat.cloud/categraf_ent-v0.3.94-linux-amd64.tar.gz
-tar zxvf categraf_ent-v0.3.94-linux-amd64.tar.gz
+wget https://download.flashcat.cloud/categraf-v0.3.73-linux-amd64.tar.gz
+tar zxvf categraf-v0.3.73-linux-amd64.tar.gz
 ```
 
-### 2. 修改 conf/config.toml , 将 providers 改为 [“local”,“http”] ，修改 [http_provider], 配置参考如下
+### 2. 修改 conf/config.toml , 将下面的上报数据的地址修改为 n9e 的实际地址
 
 ```toml
-providers = ["local","http"]
+[[writers]]  
+url = "http://127.0.0.1:17000/prometheus/v1/write"
 
-[http_provider]
-# 将 ${n9e_ip} 替换为 n9e 的实际地址
-remote_url = "http://${n9e_ip}:17000/v1/n9e-plus/collects"
+[heartbeat]
+enable = true
+# report os version cpu.util mem.util metadata
+url = "http://127.0.0.1:17000/v1/n9e/heartbeat"
 ```
 
 ### 3. 启动 categraf 采集器
