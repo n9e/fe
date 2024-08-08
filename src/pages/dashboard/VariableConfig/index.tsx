@@ -171,8 +171,7 @@ function index(props: IProps) {
             }
           } else if (item.type === 'constant') {
             result[idx] = item;
-            const selected = getVaraiableSelected(item, id);
-            if (selected === null && query.__variable_value_fixed === undefined) {
+            if (query.__variable_value_fixed === undefined) {
               setVaraiableSelected({ name: item.name, value: item.definition, id, urlAttach: true });
             }
           } else if (item.type === 'datasource') {
