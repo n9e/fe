@@ -70,6 +70,18 @@ const zh_HK = {
     trigger: '觸發',
     firemap_ql_label: '卡片',
     northstar_ql_label: '指標',
+    event_notify_records: {
+      label: '通知記錄',
+      view: '查看詳情',
+      result_title: '通知結果',
+      alert_rule_notify_records: '訂閱規則通知',
+      subscription_rule_notify_records: '訂閱規則通知',
+      channel: '通知渠道',
+      username: '通知人',
+      target: '通知對象',
+      status: '通知狀態',
+      detail: '通知詳情',
+    },
   },
 };
 

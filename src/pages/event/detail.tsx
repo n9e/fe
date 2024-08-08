@@ -27,6 +27,7 @@ import { getAlertEventsById, getHistoryEventsById } from '@/services/warning';
 import { priorityColor } from '@/utils/constant';
 import { deleteAlertEventsModal } from '.';
 import { CommonStateContext, basePrefix } from '@/App';
+import EventNotifyRecords from './EventNotifyRecords';
 // @ts-ignore
 import plusEventDetail from 'plus:/parcels/Event/eventDetail';
 // @ts-ignore
@@ -353,6 +354,7 @@ const EventDetailPage: React.FC = () => {
                       </div>
                     );
                   })}
+                <EventNotifyRecords eventId={eventDetail.id} />
               </div>
             )}
           </Card>

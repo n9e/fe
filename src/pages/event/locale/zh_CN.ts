@@ -72,6 +72,18 @@ const zh_CN = {
     trigger: '触发',
     firemap_ql_label: '卡片',
     northstar_ql_label: '指标',
+    event_notify_records: {
+      label: '通知记录',
+      view: '查看详情',
+      result_title: '通知结果',
+      alert_rule_notify_records: '告警规则通知',
+      subscription_rule_notify_records: '订阅规则通知',
+      channel: '通知渠道',
+      username: '通知对象',
+      target: '通知目标',
+      status: '通知状态',
+      detail: '结果详情',
+    },
   },
 };
 export default zh_CN;
