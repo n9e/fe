@@ -42,6 +42,7 @@ export default function index(props: Props) {
       title: t('detail.event_notify_records.username'),
       dataIndex: 'username',
       key: 'username',
+      width: 70,
     },
     {
       title: t('detail.event_notify_records.target'),
@@ -52,6 +53,7 @@ export default function index(props: Props) {
       title: t('detail.event_notify_records.status'),
       dataIndex: 'status',
       key: 'status',
+      width: 70,
       render: (val) => {
         if (val === 0) {
           return <Tag color='red'>fail</Tag>;
