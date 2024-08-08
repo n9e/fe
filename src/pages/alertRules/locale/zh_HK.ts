@@ -210,6 +210,14 @@ const zh_HK = {
       result: 'relabel 結果',
     },
   },
+  task_tpls: {
+    title: '自愈模板',
+    add_btn: '創建自愈模板',
+    tpl_id: '自愈模板',
+    tpl_id_msg: '自愈模板不能為空',
+    host: '機器',
+    host_placeholder: '填寫執行機器，使用回車或空格分隔',
+  },
 };
 
 export default zh_HK;

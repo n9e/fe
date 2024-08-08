@@ -28,6 +28,7 @@ import { priorityColor } from '@/utils/constant';
 import { deleteAlertEventsModal } from '.';
 import { CommonStateContext, basePrefix } from '@/App';
 import EventNotifyRecords from './EventNotifyRecords';
+import TaskTpls from './TaskTpls';
 // @ts-ignore
 import plusEventDetail from 'plus:/parcels/Event/eventDetail';
 // @ts-ignore
@@ -355,6 +356,7 @@ const EventDetailPage: React.FC = () => {
                     );
                   })}
                 <EventNotifyRecords eventId={eventDetail.id} />
+                <TaskTpls eventDetail={eventDetail} />
               </div>
             )}
           </Card>

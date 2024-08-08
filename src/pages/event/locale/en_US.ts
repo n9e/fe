@@ -84,6 +84,9 @@ const en_US = {
       status: 'Status',
       detail: 'Detail',
     },
+    task_tpls: {
+      label: 'Self-healing Template',
+    },
   },
 };
 export default en_US;

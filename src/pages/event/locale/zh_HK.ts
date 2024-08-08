@@ -82,6 +82,9 @@ const zh_HK = {
       status: '通知狀態',
       detail: '通知詳情',
     },
+    task_tpls: {
+      label: '自癒模板',
+    },
   },
 };
 

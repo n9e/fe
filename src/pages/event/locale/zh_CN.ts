@@ -84,6 +84,9 @@ const zh_CN = {
       status: '通知状态',
       detail: '结果详情',
     },
+    task_tpls: {
+      label: '自愈模板',
+    },
   },
 };
 export default zh_CN;
