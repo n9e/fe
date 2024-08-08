@@ -10,7 +10,7 @@ const en_US = {
   my_business_group: 'My Business Group',
   all_business_group: 'All Business Group',
   nodata: 'No Data',
-  userManual: 'User Manual',
+  document_link: 'Document',
   btn: {
     add: 'Add',
     create: 'Create',

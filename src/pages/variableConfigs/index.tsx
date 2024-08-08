@@ -54,13 +54,13 @@ export default function index() {
             onClick={() => {
               DocumentDrawer({
                 language: i18n.language,
-                title: t('common:userManual'),
+                title: t('common:document_link'),
                 type: 'iframe',
                 documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/var_set/variable',
               });
             }}
           >
-            {t('common:userManual')}
+            {t('common:document_link')}
           </a>
         </Space>
       }

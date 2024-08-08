@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
-import { Drawer, Spin } from 'antd';
+import { Drawer, Space, Spin } from 'antd';
+import { ExportOutlined } from '@ant-design/icons';
 import MDEditor from '@uiw/react-md-editor';
 import ModalHOC, { ModalWrapProps } from '../ModalHOC';
 import './style.less';
@@ -41,7 +42,16 @@ function index(props: Props & ModalWrapProps) {
   return (
     <Drawer
       width={width}
-      title={title}
+      title={
+        <Space>
+          {title}
+          {type === 'iframe' && (
+            <a target='_blank' href={`${documentPath}${filenameMap[language]}`}>
+              <ExportOutlined />
+            </a>
+          )}
+        </Space>
+      }
       placement='right'
       onClose={() => {
         if (onClose) {

@@ -10,7 +10,7 @@ const zh_HK = {
   my_business_group: '我的業務組',
   all_business_group: '全部業務組',
   nodata: '暫無數據',
-  userManual: '使用說明',
+  document_link: '使用說明',
   btn: {
     add: '新增',
     create: '創建',
