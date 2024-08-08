@@ -14,10 +14,12 @@ import Global from 'plus:/parcels/SSOConfigs/Global';
 export default function index() {
   const { t } = useTranslation('SSOConfigs');
   const [data, setData] = useState<SSOConfigType[]>([]);
+  const [activeKey, setActiveKey] = useState<string>();
 
   useEffect(() => {
     getSSOConfigs().then((res) => {
       setData(res);
+      setActiveKey(res?.[0]?.name);
     });
   }, []);
 
@@ -36,10 +38,16 @@ export default function index() {
             paddingTop: 2,
           }}
         >
-          <Tabs>
+          <Tabs
+            activeKey={activeKey}
+            onChange={(activeKey) => {
+              setActiveKey(activeKey);
+            }}
+            tabBarExtraContent={<a>{t('common:document_link')}</a>}
+          >
             {data.map((item) => {
               return (
-                <Tabs.TabPane tab={item.name} key={item.id}>
+                <Tabs.TabPane tab={item.name} key={item.name}>
                   <div>
                     <CodeMirror
                       value={item.content}
