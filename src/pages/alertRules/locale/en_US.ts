@@ -212,5 +212,13 @@ const en_US = {
       result: 'Relabel Result',
     },
   },
+  task_tpls: {
+    title: 'Self-healing Template',
+    add_btn: 'Create',
+    tpl_id: 'Template',
+    tpl_id_msg: 'Template is required',
+    host: 'Host',
+    host_placeholder: 'use Enter or Space to separate',
+  },
 };
 export default en_US;

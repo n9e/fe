@@ -86,7 +86,7 @@ const Event: React.FC = () => {
           tags &&
           tags.map((item) => (
             <Tag
-              color='purple'
+              // color='purple'
               key={item}
               onClick={(e) => {
                 if (!filter.queryContent.includes(item)) {
@@ -102,7 +102,7 @@ const Event: React.FC = () => {
           ));
         return (
           <>
-            <div>
+            <div className='mb1'>
               <Link
                 to={{
                   pathname: `/alert-his-events/${id}`,
@@ -113,7 +113,15 @@ const Event: React.FC = () => {
               </Link>
             </div>
             <div>
-              <span className='event-tags'>{content}</span>
+              <span
+                style={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  rowGap: 4,
+                }}
+              >
+                {content}
+              </span>
             </div>
           </>
         );

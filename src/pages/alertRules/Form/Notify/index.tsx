@@ -23,7 +23,9 @@ import { PlusCircleOutlined, MinusCircleOutlined, QuestionCircleFilled, RightOut
 import { getTeamInfoList, getNotifiesList } from '@/services/manage';
 import { getAlertRulesCallbacks } from '@/services/warning';
 import { getWebhooks } from '@/pages/help/NotificationSettings/services';
+import AuthorizationWrapper from '@/components/AuthorizationWrapper';
 import { panelBaseProps } from '../../constants';
+import TaskTpls from './TaskTpls';
 // @ts-ignore
 import NotifyExtra from 'plus:/parcels/AlertRule/NotifyExtra';
 // @ts-ignore
@@ -176,6 +178,9 @@ export default function index({ disabled }) {
             );
           }}
         </Form.Item>
+        <AuthorizationWrapper allowedPerms={['/job-tpls']}>
+          <TaskTpls />
+        </AuthorizationWrapper>
         <Form.List name='callbacks'>
           {(fields, { add, remove }) => (
             <div>
