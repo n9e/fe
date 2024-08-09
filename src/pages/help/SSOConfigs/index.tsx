@@ -5,19 +5,29 @@ import { useTranslation } from 'react-i18next';
 import { EditorView } from '@codemirror/view';
 import PageLayout from '@/components/pageLayout';
 import CodeMirror from '@/components/CodeMirror';
+import DocumentDrawer from '@/components/DocumentDrawer';
 import { getSSOConfigs, putSSOConfig } from './services';
 import { SSOConfigType } from './types';
 import './locale';
 //@ts-ignore
 import Global from 'plus:/parcels/SSOConfigs/Global';
 
+const documentMap = {
+  OAuth2: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/sso/oauth2',
+  LDAP: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/sso/ldap',
+  CAS: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/sso/cas',
+  OIDC: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/sso/oidc',
+};
+
 export default function index() {
-  const { t } = useTranslation('SSOConfigs');
+  const { t, i18n } = useTranslation('SSOConfigs');
   const [data, setData] = useState<SSOConfigType[]>([]);
+  const [activeKey, setActiveKey] = useState<string>();
 
   useEffect(() => {
     getSSOConfigs().then((res) => {
       setData(res);
+      setActiveKey(res?.[0]?.name);
     });
   }, []);
 
@@ -36,10 +46,32 @@ export default function index() {
             paddingTop: 2,
           }}
         >
-          <Tabs>
+          <Tabs
+            activeKey={activeKey}
+            onChange={(activeKey) => {
+              setActiveKey(activeKey);
+            }}
+            tabBarExtraContent={
+              activeKey &&
+              documentMap[activeKey] && (
+                <a
+                  onClick={() => {
+                    DocumentDrawer({
+                      language: i18n.language,
+                      title: t('common:document_link'),
+                      type: 'iframe',
+                      documentPath: documentMap[activeKey],
+                    });
+                  }}
+                >
+                  {t('common:document_link')}
+                </a>
+              )
+            }
+          >
             {data.map((item) => {
               return (
-                <Tabs.TabPane tab={item.name} key={item.id}>
+                <Tabs.TabPane tab={item.name} key={item.name}>
                   <div>
                     <CodeMirror
                       value={item.content}

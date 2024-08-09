@@ -344,6 +344,14 @@ function Card(props: Props, ref) {
           }}
           dataSource={drawerList}
           columns={columns}
+          pagination={{
+            defaultPageSize: 30,
+            showSizeChanger: true,
+            showTotal: (total) => {
+              return t('common:table.total', { total });
+            },
+            pageSizeOptions: ['30', '100', '200', '500'],
+          }}
         />
       </Drawer>
     </div>

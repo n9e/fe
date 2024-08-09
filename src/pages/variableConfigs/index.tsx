@@ -20,12 +20,13 @@ import { useTranslation } from 'react-i18next';
 import { Button, Input, Table, Space, message, Popconfirm } from 'antd';
 import { SettingOutlined } from '@ant-design/icons';
 import PageLayout from '@/components/pageLayout';
+import DocumentDrawer from '@/components/DocumentDrawer';
 import { getVariableConfigs, VariableConfig, postVariableConfigs, deleteVariableConfigs, putVariableConfigs, getRSAConfig, RASConfig } from './services';
 import FormModal from './FormModal';
 import './locale';
 
 export default function index() {
-  const { t } = useTranslation('variableConfigs');
+  const { t, i18n } = useTranslation('variableConfigs');
   const [search, setSearch] = useState('');
   const [data, setData] = useState<VariableConfig[]>([]);
   const [rsaConfig, setRsaConfig] = useState<RASConfig>({} as RASConfig);
@@ -44,7 +45,27 @@ export default function index() {
   }, []);
 
   return (
-    <PageLayout title={t('title')} icon={<SettingOutlined />}>
+    <PageLayout
+      title={
+        <Space>
+          {t('title')}
+          <a
+            style={{ fontSize: 12 }}
+            onClick={() => {
+              DocumentDrawer({
+                language: i18n.language,
+                title: t('common:document_link'),
+                type: 'iframe',
+                documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/var_set/variable',
+              });
+            }}
+          >
+            {t('common:document_link')}
+          </a>
+        </Space>
+      }
+      icon={<SettingOutlined />}
+    >
       <div>
         <div
           className='n9e-border-base'

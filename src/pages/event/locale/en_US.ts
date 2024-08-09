@@ -72,6 +72,22 @@ const en_US = {
     trigger: 'Trigger',
     firemap_ql_label: 'Card',
     northstar_ql_label: 'Indicator',
+    event_notify_records: {
+      label: 'Notification Records',
+      view: 'View Detail',
+      result_title: 'Result',
+      alert_rule_notify_records: 'Alert Rule Notification',
+      subscription_rule_notify_records: 'Subscription Rule Notification',
+      channel: 'Channel',
+      username: 'Username',
+      target: 'Target',
+      status: 'Status',
+      detail: 'Detail',
+      sub_id: 'Rule ID',
+    },
+    task_tpls: {
+      label: 'Self-healing Template',
+    },
   },
 };
 export default en_US;
