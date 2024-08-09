@@ -216,7 +216,7 @@ const zh_CN = {
     tpl_id: '自愈模板',
     tpl_id_msg: '自愈模板不能为空',
     host: '执行机器',
-    host_placeholder: '填写执行机器，使用回车或空格分隔',
+    host_placeholder: '默认可留空，会从事件中的 ident 标签获取要执行的机器',
   },
 };
 export default zh_CN;

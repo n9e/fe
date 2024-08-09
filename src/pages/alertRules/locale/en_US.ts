@@ -218,7 +218,7 @@ const en_US = {
     tpl_id: 'Template',
     tpl_id_msg: 'Template is required',
     host: 'Host',
-    host_placeholder: 'use Enter or Space to separate',
+    host_placeholder: 'Optional, the host to be executed will be obtained from the ident tag in the event',
   },
 };
 export default en_US;

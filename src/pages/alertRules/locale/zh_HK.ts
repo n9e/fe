@@ -216,7 +216,7 @@ const zh_HK = {
     tpl_id: '自愈模板',
     tpl_id_msg: '自愈模板不能為空',
     host: '機器',
-    host_placeholder: '填寫執行機器，使用回車或空格分隔',
+    host_placeholder: '預設可留空，會從事件中的 ident 標籤取得要執行的機器',
   },
 };
 

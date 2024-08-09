@@ -83,6 +83,7 @@ const en_US = {
       target: 'Target',
       status: 'Status',
       detail: 'Detail',
+      sub_id: 'Rule ID',
     },
     task_tpls: {
       label: 'Self-healing Template',

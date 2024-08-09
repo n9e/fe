@@ -16,9 +16,11 @@
  */
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Card, Drawer, Space, Table, Tag } from 'antd';
+import { Card, Drawer, Space, Table, Tag, Tooltip } from 'antd';
 import _ from 'lodash';
 import { getEventNotifyRecords, DatasourceItem } from './services';
+import { render } from 'react-dom';
+import { Link } from 'react-router-dom';
 
 interface Props {
   eventId: number;
@@ -43,6 +45,9 @@ export default function index(props: Props) {
       dataIndex: 'username',
       key: 'username',
       width: 70,
+      render: (val) => {
+        return val || '-';
+      },
     },
     {
       title: t('detail.event_notify_records.target'),
@@ -54,17 +59,13 @@ export default function index(props: Props) {
       dataIndex: 'status',
       key: 'status',
       width: 70,
-      render: (val) => {
-        if (val === 0) {
-          return <Tag color='red'>fail</Tag>;
-        }
-        return <Tag color='green'>ok</Tag>;
+      render: (val, record) => {
+        return (
+          <Tooltip title={record.detail} placement='left'>
+            <Tag color={val === 0 ? 'red' : 'green'}>{val === 0 ? 'fail' : 'ok'}</Tag>
+          </Tooltip>
+        );
       },
-    },
-    {
-      title: t('detail.event_notify_records.detail'),
-      dataIndex: 'detail',
-      key: 'detail',
     },
   ];
 
@@ -88,6 +89,7 @@ export default function index(props: Props) {
                 alertSubscribesRecords.push({
                   ...subItem,
                   channel: key,
+                  sub_id: item.sub_id,
                 });
               });
             });
@@ -133,7 +135,26 @@ export default function index(props: Props) {
           <Table size='small' columns={columns} dataSource={data?.alertRulesRecords} />
         </Card>
         <Card size='small' title={<Space>{t('detail.event_notify_records.subscription_rule_notify_records')}</Space>}>
-          <Table size='small' columns={columns} dataSource={data?.alertSubscribesRecords} />
+          <Table
+            size='small'
+            columns={_.concat(
+              {
+                title: t('detail.event_notify_records.sub_id'),
+                dataIndex: 'sub_id',
+                key: 'sub_id',
+                width: 70,
+                render: (val) => {
+                  return (
+                    <Link target='_blank' to={`/alert-subscribes/edit/${val}`}>
+                      {val}
+                    </Link>
+                  );
+                },
+              } as any,
+              columns,
+            )}
+            dataSource={data?.alertSubscribesRecords}
+          />
         </Card>
       </Drawer>
     </div>
