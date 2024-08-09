@@ -155,16 +155,9 @@ function Add(props: Props & ModalWrapProps) {
             >
               <Input ref={inputRef} />
             </Form.Item>
-            <Form.Item
-              name='time_field'
-              label={t('time_field')}
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
-            >
+            <Form.Item name='time_field' label={t('time_field')}>
               <Select
+                allowClear
                 options={_.map(dateFields, (field) => {
                   return {
                     label: field,

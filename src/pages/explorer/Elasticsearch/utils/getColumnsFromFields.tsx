@@ -46,7 +46,8 @@ export function getColumnsFromFields(selectedFields: { name: string; type: strin
 
           return (
             <dl className='es-discover-logs-row'>
-              {_.map(fieldKeys, (key) => {
+              {/*2024-0807 限制只渲染前 20 个字段*/}
+              {_.map(_.slice(fieldKeys, 0, 20), (key) => {
                 const val = fields[key];
                 const label = getFieldLabel(key, fieldConfig);
                 if (!_.isPlainObject(val) && fieldConfig?.formatMap?.[key]) {

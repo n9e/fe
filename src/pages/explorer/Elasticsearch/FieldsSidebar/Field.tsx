@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Popover, Progress, Space, Spin } from 'antd';
+import { Popover, Progress, Space, Spin, Tooltip } from 'antd';
 import Icon, { PlusCircleOutlined, CloseCircleOutlined, CalendarOutlined, QuestionOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import type { CustomIconComponentProps } from '@ant-design/icons/lib/components/Icon';
 import { getFieldLabel } from '../../Elasticsearch/utils';
@@ -80,7 +80,9 @@ export default function Field(props: Props) {
                   <div key={item.label} className='n9e-es-discover-field-values-topn-item'>
                     <div style={{ width: 'calc(100% - 40px)' }}>
                       <div className='n9e-es-discover-field-values-topn-item-content'>
-                        <div className='n9e-es-discover-field-values-topn-item-label'>{_.isEmpty(item.label) && !_.isNumber(item.label) ? '(empty)' : item.label}</div>
+                        <div className='n9e-es-discover-field-values-topn-item-label'>
+                          {_.isEmpty(item.label) && !_.isNumber(item.label) ? '(empty)' : <Tooltip title={item.label}>{item.label}</Tooltip>}
+                        </div>
                         <div className='n9e-es-discover-field-values-topn-item-percent'>{percent}%</div>
                       </div>
                       <Progress percent={percent} size='small' showInfo={false} strokeColor='#6c53b1' />

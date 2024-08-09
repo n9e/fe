@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import _ from 'lodash';
 import { useDebounceFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
-import { Form, Select, Button, Space, Tooltip } from 'antd';
+import { Form, Select, Button, Tooltip } from 'antd';
 import { QuestionCircleOutlined, SettingOutlined } from '@ant-design/icons';
 import TimeRangePicker from '@/components/TimeRangePicker';
 import { getESIndexPatterns } from '@/pages/log/IndexPatterns/services';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
-import AuthorizationWrapper, { useIsAuthorized } from '@/components/AuthorizationWrapper';
+import { useIsAuthorized } from '@/components/AuthorizationWrapper';
 import KQLInput from '@/components/KQLInput';
 import { getLocalQueryHistory, setLocalQueryHistory } from '@/components/KQLInput/utils';
 import { getFullFields, Field } from './services';
@@ -214,7 +214,7 @@ export default function QueryBuilder(props: Props) {
             </Form.Item>
           )}
         </InputGroupWithFormItem>
-        <Form.Item name={['query', 'range']} initialValue={{ start: 'now-1h', end: 'now' }}>
+        <Form.Item name={['query', 'range']} initialValue={{ start: 'now-1h', end: 'now' }} hidden={!date_field}>
           <TimeRangePicker
             onChange={() => {
               if (refInputFilter.current) {
