@@ -3,6 +3,7 @@ import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 
 export interface DatasourceItem {
+  sub_id?: number;
   channel: string;
   target: string;
   username: string;

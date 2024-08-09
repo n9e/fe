@@ -34,9 +34,11 @@ export default function TaskTpls() {
           <Space align='baseline'>
             {t('task_tpls.title')}
             <PlusCircleOutlined className='control-icon-normal' onClick={() => add()} />
-            <Link target='_blank' to='/job-tpls/add'>
-              {t('task_tpls.add_btn')}
-            </Link>
+            {fields.length > 0 && (
+              <Link target='_blank' to='/job-tpls/add'>
+                {t('task_tpls.add_btn')}
+              </Link>
+            )}
           </Space>
           {fields.map((field) => (
             <Row gutter={16} key={field.key}>
