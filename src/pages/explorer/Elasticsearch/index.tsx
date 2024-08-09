@@ -239,13 +239,10 @@ export default function index(props: IProps) {
   }, [JSON.stringify(filters)]);
 
   useEffect(() => {
-    if (
-      [DatasourceCateEnum.elasticsearch, DatasourceCateEnum.opensearch].includes(defaultFormValuesControl?.defaultFormValues?.datasourceCate) &&
-      defaultFormValuesControl?.isInited === false
-    ) {
+    if (defaultFormValuesControl?.defaultFormValues && defaultFormValuesControl?.isInited === false) {
       form.setFieldsValue(defaultFormValuesControl.defaultFormValues);
       defaultFormValuesControl.setIsInited();
-      setMode(getDefaultMode(query, isOpenSearch, esIndexMode, defaultFormValuesControl.defaultFormValues?.query?.mode));
+      setMode(getDefaultMode(query, isOpenSearch, esIndexMode, defaultFormValuesControl?.defaultFormValues?.query?.mode));
     }
   }, []);
 
