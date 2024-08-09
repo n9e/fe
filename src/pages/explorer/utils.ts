@@ -138,7 +138,6 @@ export const getFormValuesBySearch = (params: { [index: string]: string | null }
         },
       };
     }
-
     if (data_source_name === 'ck') {
       return {
         ...formValues,
@@ -147,6 +146,20 @@ export const getFormValuesBySearch = (params: { [index: string]: string | null }
           time_field: _.get(params, 'queryTimeField'),
         },
       };
+    }
+    if (data_source_name === 'volc-tls') {
+      const project_id = _.get(params, 'project_id');
+      const topic_id = _.get(params, 'topic_id');
+      if (project_id && topic_id) {
+        return {
+          ...formValues,
+          query: {
+            project_id,
+            topic_id,
+            query: queryString,
+          },
+        };
+      }
     }
   }
   return undefined;
