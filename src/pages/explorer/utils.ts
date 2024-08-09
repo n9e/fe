@@ -138,6 +138,16 @@ export const getFormValuesBySearch = (params: { [index: string]: string | null }
         },
       };
     }
+
+    if (data_source_name === 'ck') {
+      return {
+        ...formValues,
+        query: {
+          sql: _.get(params, 'querySql'),
+          time_field: _.get(params, 'queryTimeField'),
+        },
+      };
+    }
   }
   return undefined;
 };
