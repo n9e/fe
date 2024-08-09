@@ -138,6 +138,20 @@ export const getFormValuesBySearch = (params: { [index: string]: string | null }
         },
       };
     }
+    if (data_source_name === 'volc-tls') {
+      const project_id = _.get(params, 'project_id');
+      const topic_id = _.get(params, 'topic_id');
+      if (project_id && topic_id) {
+        return {
+          ...formValues,
+          query: {
+            project_id,
+            topic_id,
+            query: queryString,
+          },
+        };
+      }
+    }
   }
   return undefined;
 };
@@ -159,7 +173,7 @@ export const formValuesIsInItems = (
       }
       if (formValues.datasourceCate === 'es') {
         // es数据源区分index和indexPattern，无法严格equal，所以以缓存中的formValues.query中的keys为标准，逐个对比是否相等
-        const omitedFormValuesQuery = _.omit(formValues.query, ['query', 'range'])
+        const omitedFormValuesQuery = _.omit(formValues.query, ['query', 'range']);
         const keys = _.keys(omitedFormValuesQuery);
         const pickedKeysItemFormValues = _.pick(itemFormValues?.query, keys);
         return _.isEqual(pickedKeysItemFormValues, omitedFormValuesQuery);
