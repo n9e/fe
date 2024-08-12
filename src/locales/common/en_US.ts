@@ -10,6 +10,7 @@ const en_US = {
   my_business_group: 'My Business Group',
   all_business_group: 'All Business Group',
   nodata: 'No Data',
+  log_detail: 'Log Detail',
   btn: {
     add: 'Add',
     create: 'Create',
