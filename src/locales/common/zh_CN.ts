@@ -11,6 +11,7 @@ const zh_CN = {
   all_business_group: '全部业务组',
   nodata: '暂无数据',
   document_link: '使用说明',
+  log_detail: '日志详情',
   btn: {
     add: '新增',
     create: '创建',

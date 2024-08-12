@@ -11,6 +11,7 @@ const en_US = {
   all_business_group: 'All Business Group',
   nodata: 'No Data',
   document_link: 'Document',
+  log_detail: 'Log Detail',
   btn: {
     add: 'Add',
     create: 'Create',
