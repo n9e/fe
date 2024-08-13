@@ -44,6 +44,7 @@ interface Props {
   detailUrl?: string;
   themeMode?: 'dark';
   donut?: boolean;
+  decimals?: number;
 }
 
 function renderStatistic(containerWidth, text, style) {
@@ -63,9 +64,10 @@ function renderStatistic(containerWidth, text, style) {
 }
 
 const DemoPie = (props: Props) => {
-  const { data, positon, hidden, labelWithName, labelWithValue, themeMode, detailName, detailUrl, donut, dataFormatter, detailFormatter } = props;
+  const { data, positon, hidden, labelWithName, labelWithValue, themeMode, detailName, detailUrl, donut, dataFormatter, detailFormatter, decimals = 2 } = props;
 
   const config: PieConfig = {
+    animation: false,
     padding: [16, 8, 16, 8],
     appendPadding: 10,
     data,
@@ -76,7 +78,7 @@ const DemoPie = (props: Props) => {
     label: {
       type: 'spider',
       content: (record) => {
-        return `${labelWithName ? `${record.name}: ` : ''}${labelWithValue ? dataFormatter(record.value) : `${(record.percent * 100).toFixed(0)}%`}`;
+        return `${labelWithName ? `${record.name}: ` : ''}${labelWithValue ? dataFormatter(record.value) : `${(record.percent * 100).toFixed(decimals)}%`}`;
       },
       style: {
         fontSize: 12,
