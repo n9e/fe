@@ -301,12 +301,14 @@ const zh_CN = {
         },
       },
       pie: {
+        countOfValueField: '值字段计数',
+        countOfValueField_tip: '开启后，将会根据 "值字段" 的值进行计数，否则将以 "值字段" 的值作为数据展示',
         legengPosition: '图例位置', // pie
         max: '最多展示块数',
         max_tip: '超过的块数则合并展示为其他',
         donut: '环图模式',
-        labelWithName: 'label是否包含名称',
-        labelWithValue: 'label显示指标值',
+        labelWithName: 'Label 是否包含名称',
+        labelWithValue: 'Label 显示指标值',
         detailName: '链接名称',
         detailUrl: '链接地址',
       },
