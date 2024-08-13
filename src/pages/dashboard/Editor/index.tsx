@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Modal, Select, Space, Button } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 import _ from 'lodash';
@@ -22,6 +22,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { useTranslation } from 'react-i18next';
 import TimeRangePicker, { IRawTimeRange } from '@/components/TimeRangePicker';
 import { Dashboard } from '@/store/dashboardInterface';
+import { CommonStateContext } from '@/App';
 import { visualizations, defaultValues, defaultCustomValuesMap, defaultOptionsValuesMap } from './config';
 import { IVariable } from '../VariableConfig';
 import FormCpt from './Form';
@@ -43,7 +44,8 @@ interface IProps {
 }
 
 function index(props: IProps) {
-  const { t, i18n } = useTranslation('dashboard');
+  const { t } = useTranslation('dashboard');
+  const { groupedDatasourceList } = useContext(CommonStateContext);
   const formRef = useRef<any>();
   const { mode, visible, setVisible, variableConfigWithOptions, id, dashboardId, time, dashboard } = props;
   const [initialValues, setInitialValues] = useState<IPanel>(_.cloneDeep(props.initialValues));
@@ -104,6 +106,9 @@ function index(props: IProps) {
                   _.set(valuesCopy, 'type', val);
                   _.set(valuesCopy, 'custom', defaultCustomValuesMap[val]);
                   _.set(valuesCopy, 'options', defaultOptionsValuesMap[val]);
+                  _.set(valuesCopy, 'targets', valuesCopy.targets || [{ refId: 'A' }]);
+                  _.set(valuesCopy, 'datasourceCate', valuesCopy.datasourceCate || 'prometheus');
+                  _.set(valuesCopy, 'datasourceValue', valuesCopy.datasourceValue || groupedDatasourceList['prometheus'][0]?.id);
                   setInitialValues(valuesCopy);
                 }
               }}
