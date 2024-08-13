@@ -289,6 +289,8 @@ const en_US = {
         },
       },
       pie: {
+        countOfValueField: 'Count of value field',
+        countOfValueField_tip: 'Count the number of values in the value field',
         legengPosition: 'Legend position',
         max: 'Max',
         max_tip: 'Exceeded blocks are merged and displayed as other',
