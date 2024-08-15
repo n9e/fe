@@ -259,14 +259,11 @@ export const replaceExpressionVarsSpecifyRule = (
                   _.map(
                     _.filter(options, (i) => !reg || !stringToRegex(reg) || (stringToRegex(reg) as RegExp).test(i)),
                     (item) => {
-                      // 2024-07-24 如果是 prometheus 数据源的变量，需要对 {}[]().- 进行转义
-                      if (datasource?.cate === 'prometheus') {
-                        return escapePromQLString(item);
-                      }
                       if (datasource?.cate === 'elasticsearch') {
                         return `"${item}"`;
                       }
-                      return item;
+                      // 2024-07-24 如果是 prometheus 数据源的变量，需要对 {}[]().- 进行转义
+                      return escapePromQLString(item);
                     },
                   ),
                   separator,
@@ -284,14 +281,11 @@ export const replaceExpressionVarsSpecifyRule = (
             let newValue = `(${_.trim(
               _.join(
                 _.map(selected, (item) => {
-                  // 2024-07-24 如果是 prometheus 数据源的变量，需要对 {}[]().- 进行转义
-                  if (datasource?.cate === 'prometheus') {
-                    return escapePromQLString(item);
-                  }
                   if (datasource?.cate === 'elasticsearch') {
                     return `"${item}"`;
                   }
-                  return item;
+                  // 2024-07-24 如果是 prometheus 数据源的变量，需要对 {}[]().- 进行转义
+                  return escapePromQLString(item);
                 }),
                 separator,
               ),
@@ -301,8 +295,15 @@ export const replaceExpressionVarsSpecifyRule = (
             if (datasource?.cate === 'elasticsearch' && isEscapeJsonString) {
               newValue = escapeJsonString(newValue);
             }
+            let headSelected = escapePromQLString(selected[0]);
             // 2024-07-09 如果是 ES 数据源的变量，并且不是变量内部处理时，需要将变量值加上引号
-            const headSelected = datasource?.cate === 'elasticsearch' && !isEscapeJsonString ? `"${selected[0]}"` : selected[0];
+            if (datasource?.cate === 'elasticsearch') {
+              if (!isEscapeJsonString) {
+                headSelected = `"${selected[0]}"`;
+              } else {
+                headSelected = selected[0];
+              }
+            }
             const realSelected = _.size(selected) === 0 ? '' : _.size(selected) === 1 ? headSelected : newValue;
             newExpression = replaceAllPolyfill(newExpression, placeholder, realSelected);
           } else if (typeof selected === 'string') {

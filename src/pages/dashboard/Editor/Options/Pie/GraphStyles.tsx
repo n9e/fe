@@ -15,7 +15,7 @@
  *
  */
 import React, { useEffect } from 'react';
-import { Form, Select, Row, Col, InputNumber, Switch, Input } from 'antd';
+import { Form, Select, Row, Col, InputNumber, Switch, Input, Checkbox, Space } from 'antd';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
 import { Panel } from '../../Components/Collapse';
@@ -27,6 +27,7 @@ export default function GraphStyles() {
   const namePrefix = ['custom'];
   const [statFields, setStatFields] = useGlobalState('statFields');
   const fields = _.compact(_.concat(statFields, 'Value'));
+  const valueField = Form.useWatch([...namePrefix, 'valueField']);
 
   useEffect(() => {
     return () => {
@@ -64,7 +65,20 @@ export default function GraphStyles() {
               </Select>
             </Form.Item>
           </Col>
-          <Col span={8}>
+          {valueField !== 'Value' && (
+            <Col span={8}>
+              <Form.Item
+                label={t('panel.custom.pie.countOfValueField')}
+                name={[...namePrefix, 'countOfValueField']}
+                tooltip={t('panel.custom.pie.countOfValueField_tip')}
+                initialValue={true}
+                valuePropName='checked'
+              >
+                <Switch />
+              </Form.Item>
+            </Col>
+          )}
+          <Col span={10}>
             <Form.Item label={t('panel.custom.pie.legengPosition')} name={[...namePrefix, 'legengPosition']}>
               <Select>
                 {legendPostion.map((item) => {
@@ -77,25 +91,25 @@ export default function GraphStyles() {
               </Select>
             </Form.Item>
           </Col>
-          <Col span={9}>
+          <Col span={10}>
             <Form.Item label={t('panel.custom.pie.max')} name={[...namePrefix, 'max']} tooltip={t('panel.custom.pie.max_tip')}>
               <InputNumber style={{ width: '100%' }} />
             </Form.Item>
           </Col>
-          <Col span={3}>
+          <Col span={4}>
             <Form.Item label={t('panel.custom.pie.donut')} name={[...namePrefix, 'donut']} valuePropName='checked'>
               <Switch />
             </Form.Item>
           </Col>
-          <Col span={6}>
-            <Form.Item label={t('panel.custom.pie.labelWithName')} name={[...namePrefix, 'labelWithName']} valuePropName='checked'>
-              <Switch />
-            </Form.Item>
-          </Col>
-          <Col span={6}>
-            <Form.Item label={t('panel.custom.pie.labelWithValue')} name={[...namePrefix, 'labelWithValue']} valuePropName='checked'>
-              <Switch />
-            </Form.Item>
+          <Col span={24}>
+            <Space>
+              <Form.Item label={t('panel.custom.pie.labelWithName')} name={[...namePrefix, 'labelWithName']} valuePropName='checked'>
+                <Switch />
+              </Form.Item>
+              <Form.Item label={t('panel.custom.pie.labelWithValue')} name={[...namePrefix, 'labelWithValue']} valuePropName='checked'>
+                <Switch />
+              </Form.Item>
+            </Space>
           </Col>
           <Col span={9}>
             <Form.Item label={t('panel.custom.pie.detailName')} name={[...namePrefix, 'detailName']}>

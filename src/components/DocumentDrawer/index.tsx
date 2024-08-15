@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
-import { Drawer } from 'antd';
+import { Drawer, Space, Spin } from 'antd';
+import { ExportOutlined } from '@ant-design/icons';
 import MDEditor from '@uiw/react-md-editor';
 import ModalHOC, { ModalWrapProps } from '../ModalHOC';
 import './style.less';
@@ -11,15 +12,23 @@ interface Props {
   width?: string | number;
   title: string;
   documentPath: string;
+  type?: 'md' | 'iframe';
   onClose?: (destroy: () => void) => void;
 }
 
+const filenameMap = {
+  zh_CN: '',
+  zh_HK: '_hk',
+  en_US: '_en',
+};
+
 function index(props: Props & ModalWrapProps) {
-  const { visible, destroy, darkMode, language, title, width = '60%', documentPath, onClose } = props;
+  const { visible, destroy, darkMode, language = 'zh_CN', title, width = '60%', documentPath, onClose, type = 'md' } = props;
   const [document, setDocument] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (documentPath) {
+    if (documentPath && type === 'md') {
       fetch(`${documentPath}/${language}.md`)
         .then((res) => {
           return res.text();
@@ -33,7 +42,16 @@ function index(props: Props & ModalWrapProps) {
   return (
     <Drawer
       width={width}
-      title={title}
+      title={
+        <Space>
+          {title}
+          {type === 'iframe' && (
+            <a target='_blank' href={`${documentPath}${filenameMap[language]}`}>
+              <ExportOutlined />
+            </a>
+          )}
+        </Space>
+      }
       placement='right'
       onClose={() => {
         if (onClose) {
@@ -44,16 +62,29 @@ function index(props: Props & ModalWrapProps) {
       }}
       visible={visible}
     >
-      <div data-color-mode={darkMode ? 'dark' : 'light'}>
-        <MDEditor.Markdown
-          source={document}
-          rehypeRewrite={(node: any) => {
-            if (_.includes(['h1', 'h2', 'h3', 'h4', 'h5', 'h6'], node.tagName)) {
-              node.children = node.children.filter((item) => item.tagName != 'a');
-            }
-          }}
-        />
-      </div>
+      {type === 'md' && (
+        <div data-color-mode={darkMode ? 'dark' : 'light'}>
+          <MDEditor.Markdown
+            source={document}
+            rehypeRewrite={(node: any) => {
+              if (_.includes(['h1', 'h2', 'h3', 'h4', 'h5', 'h6'], node.tagName)) {
+                node.children = node.children.filter((item) => item.tagName != 'a');
+              }
+            }}
+          />
+        </div>
+      )}
+      {type === 'iframe' && (
+        <Spin spinning={loading} wrapperClassName='n9e-document-drawer-iframe-loading'>
+          <iframe
+            src={`${documentPath}${filenameMap[language]}?onlyContent`}
+            style={{ width: '100%', height: '100%', border: '0 none', visibility: loading ? 'hidden' : 'visible' }}
+            onLoad={() => {
+              setLoading(false);
+            }}
+          />
+        </Spin>
+      )}
     </Drawer>
   );
 }

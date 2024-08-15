@@ -93,8 +93,7 @@ function TableCpt(props: IProps, ref: any) {
   const [dashboardMeta] = useGlobalState('dashboardMeta');
   const eleRef = useRef<HTMLDivElement>(null);
   const size = useSize(eleRef);
-  const { values, themeMode, time, isPreview } = props;
-  const series = _.slice(props.series, 0, LIMIT);
+  const { values, themeMode, time, isPreview, series } = props;
   const { custom, options, overrides } = values;
   const { showHeader, calc, aggrDimension, displayMode, columns, sortColumn, sortOrder, colorMode = 'value', tableLayout = 'fixed' } = custom;
   const [calculatedValues, setCalculatedValues] = useState<any[]>([]);
@@ -394,8 +393,8 @@ function TableCpt(props: IProps, ref: any) {
     }
   }
 
-  const headerHeight = showHeader ? 44 : 0;
-  const height = size?.height! - headerHeight;
+  const headerHeight = showHeader ? 34 : 0;
+  const height = size?.height! - headerHeight - 2 - (tableDataSource.length > LIMIT ? 24 : 0);
   const realHeight = isNaN(height) ? 0 : height;
 
   const { components, resizableColumns, tableWidth, resetColumns } = useAntdResizableHeader({
@@ -491,7 +490,17 @@ function TableCpt(props: IProps, ref: any) {
           })}
           scroll={{ y: realHeight, x: tableWidth ? tableWidth - 30 : tableWidth }}
           bordered={false}
-          pagination={false}
+          pagination={
+            tableDataSource.length > LIMIT
+              ? {
+                  size: 'small',
+                  pageSize: LIMIT,
+                  showSizeChanger: false,
+                  showQuickJumper: false,
+                  showTotal: (total) => `Total ${total} items`,
+                }
+              : false
+          }
           onChange={(pagination, filters, sorter: any) => {
             setSortObj({
               sortColumn: sorter.columnKey,
