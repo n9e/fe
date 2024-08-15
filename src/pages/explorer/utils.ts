@@ -138,7 +138,6 @@ export const getFormValuesBySearch = (params: { [index: string]: string | null }
         },
       };
     }
-
     if (data_source_name === 'ck') {
       return {
         ...formValues,
@@ -147,6 +146,27 @@ export const getFormValuesBySearch = (params: { [index: string]: string | null }
           time_field: _.get(params, 'queryTimeField'),
         },
       };
+    }
+    if (data_source_name === 'volc-tls') {
+      const project_id = _.get(params, 'project_id');
+      const topic_id = _.get(params, 'topic_id');
+      const range_start = _.get(params, 'start');
+      const range_end = _.get(params, 'end');
+      const defaultRange =
+        range_start && range_end
+          ? { start: !isMathString(range_start) ? moment(Number(range_start)) : range_start, end: !isMathString(range_end) ? moment(Number(range_end)) : range_end }
+          : undefined;
+      if (project_id && topic_id) {
+        return {
+          ...formValues,
+          query: {
+            project_id,
+            topic_id,
+            query: queryString,
+            range: defaultRange,
+          },
+        };
+      }
     }
   }
   return undefined;

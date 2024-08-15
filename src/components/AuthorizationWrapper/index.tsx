@@ -27,7 +27,7 @@ export default function index(props: Props) {
   return null;
 }
 
-export const useIsAuthorized = (allowedPerms: string | string[]) => {
+export const useIsAuthorized = (allowedPerms: string[]) => {
   const { perms } = useContext(CommonStateContext);
   return useMemo(() => {
     return _.every(allowedPerms, (perm) => _.includes(perms, perm));
