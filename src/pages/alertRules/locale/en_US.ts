@@ -108,6 +108,7 @@ const en_US = {
       errmsg: 'Error message',
     },
     import_builtin: 'Import built-in alert rules',
+    import_prometheus: 'Import Prometheus alert rules',
     export: {
       title: 'Export Alert Rules',
       copy: 'Copy JSON content to clipboard',
