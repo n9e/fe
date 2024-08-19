@@ -110,7 +110,7 @@ export default function index(props: IProps) {
   const [series, setSeries] = useState<any[]>([]);
   const [displayTimes, setDisplayTimes] = useState('');
   const [fields, setFields, getFields] = useGetState<Field[]>([]);
-  const [selectedFields, setSelectedFields, getSelectedFields] = useGetState<Field[]>([]);
+  const [selectedFields, setSelectedFields] = useState<Field[]>([]);
   const [interval, setInterval] = useState(1);
   const [intervalUnit, setIntervalUnit] = useState<'second' | 'min' | 'hour'>('min');
   const [chartVisible, setChartVisible] = useState(true);
@@ -477,7 +477,7 @@ export default function index(props: IProps) {
                     </div>
                   )}
                 </div>
-                <Table data={data} fetchData={fetchData} sorterRef={sorterRef} form={form} getFields={getFields} getSelectedFields={getSelectedFields} />
+                <Table data={data} fetchData={fetchData} sorterRef={sorterRef} form={form} getFields={getFields} selectedFields={selectedFields} />
                 <div
                   className='es-discover-collapse'
                   onClick={() => {
