@@ -12,14 +12,14 @@ interface Props {
   sorterRef: any;
   form: any;
   getFields: () => Field[];
-  getSelectedFields: () => Field[];
+  selectedFields: Field[];
 }
 
 function Table(props: Props) {
-  const { data, fetchData, sorterRef, form, getFields, getSelectedFields } = props;
+  const { data, fetchData, sorterRef, form, getFields, selectedFields } = props;
   const columns = useMemo(() => {
-    return getColumnsFromFields(getSelectedFields(), form.getFieldValue(['query']), form.getFieldValue(['fieldConfig']));
-  }, []);
+    return getColumnsFromFields(selectedFields, form.getFieldValue(['query']), form.getFieldValue(['fieldConfig']));
+  }, [selectedFields]);
 
   return (
     <AntdTable
@@ -53,5 +53,5 @@ function Table(props: Props) {
 }
 
 export default React.memo(Table, (prevProps, nextProps) => {
-  return _.isEqual(prevProps.data, nextProps.data);
+  return _.isEqual(prevProps.data, nextProps.data) && _.isEqual(prevProps.selectedFields, nextProps.selectedFields);
 });
