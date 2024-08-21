@@ -32,7 +32,7 @@
   flex-wrap: wrap;
   column-gap: 10px;
   align-content: flex-start;
-  padding: 4px 8px;
+  padding: 4px 8px !important;
   margin: 8px;
   cursor: pointer;
   user-select: none;
@@ -62,11 +62,11 @@
   }
 }
 .renderer-timeseries-legend-list-placement-right {
-  flex-direction: column;
-  flex-wrap: unset;
-  height: 100%;
+  flex-direction: column !important;
+  flex-wrap: unset !important;
+  height: 100% !important;
   & > div {
-    flex-shrink: 0;
+    flex-shrink: 0 !important;
   }
 }
 .renderer-timeseries-legend-color-symbol {
