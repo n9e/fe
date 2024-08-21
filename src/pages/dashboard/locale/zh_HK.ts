@@ -268,6 +268,8 @@ const zh_HK = {
       valueField: '值字段',
       valueField_tip: 'Value 是保留關鍵字，作為時序資料取值計算後的字段名',
       valueField_tip2: '需選擇值為數值類型的字段',
+      nameField: '名稱字段',
+      nameField_tip: '以名稱欄位的值作為系列的名稱',
       colSpan: '每行最多顯示',
       colSpanTip: '即將廢棄，選擇"自動"選項將使用下方的佈局方向設置',
       colSpanAuto: '自動',
