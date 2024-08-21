@@ -570,22 +570,24 @@ export default function index(props: IProps) {
                       <span className='renderer-timeseries-legend-list-item-name'>{item.name}</span>
                     </NameWithTooltip>
 
-                    <span className='renderer-timeseries-legend-list-item-calcs'>
-                      {_.map(legendColumns, (column) => {
-                        return (
-                          <span key={column}>
-                            {t(`panel.options.legend.${column}`)}: {item[column].text}
-                          </span>
-                        );
-                      })}
-                    </span>
-                    <span className='renderer-timeseries-legend-list-item-link'>
-                      {detailUrl && (
+                    {!_.isEmpty(legendColumns) && (
+                      <span className='renderer-timeseries-legend-list-item-calcs'>
+                        {_.map(legendColumns, (column) => {
+                          return (
+                            <span key={column}>
+                              {t(`panel.options.legend.${column}`)}: {item[column].text}
+                            </span>
+                          );
+                        })}
+                      </span>
+                    )}
+                    {detailUrl && (
+                      <span className='renderer-timeseries-legend-list-item-link'>
                         <a href={detailFormatter(item)} target='_blank'>
                           {detailName}
                         </a>
-                      )}
-                    </span>
+                      </span>
+                    )}
                   </div>
                 );
               })}

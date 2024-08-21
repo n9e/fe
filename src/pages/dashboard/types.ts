@@ -177,6 +177,8 @@ export interface IBarGaugeStyles {
   version: string;
   displayMode: 'basic';
   calc: string;
+  valueField?: string;
+  nameField?: string;
   maxValue: number;
   baseColor: string;
   serieWidth: number;

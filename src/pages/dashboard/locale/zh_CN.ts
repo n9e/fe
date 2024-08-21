@@ -279,6 +279,8 @@ const zh_CN = {
       valueField: '值字段',
       valueField_tip: 'Value 是保留关键字，作为时序数据取值计算后的字段名',
       valueField_tip2: '需选择值为数值类型的字段',
+      nameField: '名称字段',
+      nameField_tip: '以名称字段的值作为系列的名称',
       colSpan: '每行最多显示',
       colSpanTip: '即将废弃，选择"自动"选项将使用下方的布局方向设置',
       colSpanAuto: '自动',

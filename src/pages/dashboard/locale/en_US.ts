@@ -267,6 +267,8 @@ const en_US = {
       valueField: 'Value field',
       valueField_tip: 'Value is a reserved keyword, used as the field name after time series data value calculation',
       valueField_tip2: 'You need to select a column whose value is a numeric type',
+      nameField: 'Name field',
+      nameField_tip: 'Use the value of the name field as the name of the series',
       colSpan: 'Col span',
       colSpanTip: 'Deprecated soon, selecting the "Auto" option will use the layout direction settings below',
       colSpanAuto: 'Auto',
