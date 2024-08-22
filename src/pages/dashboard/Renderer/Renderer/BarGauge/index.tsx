@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Tooltip } from 'antd';
 import _ from 'lodash';
 import Color from 'color';
@@ -24,7 +24,7 @@ import getCalculatedValuesBySeries from '../../utils/getCalculatedValuesBySeries
 import { getDetailUrl } from '../../utils/replaceExpressionDetail';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { useGlobalState } from '../../../globalState';
-
+import { getSerieTextObj } from '../../utils/getCalculatedValuesBySeries';
 import './style.less';
 
 interface IProps {
@@ -32,11 +32,25 @@ interface IProps {
   series: any[];
   themeMode?: 'dark';
   time: IRawTimeRange;
+  isPreview?: boolean;
 }
+
+const getColumnsKeys = (data: any[]) => {
+  const keys = _.reduce(
+    data,
+    (result, item) => {
+      return _.union(result, _.keys(item.metric));
+    },
+    [],
+  );
+  return _.uniq(keys);
+};
 
 function Item(props) {
   const { item, custom, themeMode, maxValue, time } = props;
-  const { baseColor = '#FF656B', displayMode = 'basic', serieWidth = 20, detailUrl } = custom as IBarGaugeStyles;
+  const metric = item.metric;
+  const { baseColor = '#FF656B', displayMode = 'basic', serieWidth = 20, detailUrl, nameField } = custom as IBarGaugeStyles;
+  const name = nameField ? _.get(metric, nameField, item.name) : item.name;
   const color = item.color ? item.color : baseColor;
   const bgRef = useRef(null);
   const bgSize = useSize(bgRef);
@@ -64,10 +78,10 @@ function Item(props) {
         >
           {detailUrl ? (
             <a target='_blank' href={getDetailUrl(detailUrl, item, dashboardMeta, time)}>
-              {item.name}
+              {name}
             </a>
           ) : (
-            item.name
+            name
           )}
         </div>
 
@@ -93,7 +107,7 @@ function Item(props) {
                 .alpha(displayMode === 'basic' ? 0.2 : 1)
                 .rgb()
                 .string(),
-              width: `${(item.stat / maxValue) * 100}%`,
+              width: `${(item.value / maxValue) * 100}%`,
             }}
           >
             {displayMode === 'basic' && (
@@ -105,7 +119,8 @@ function Item(props) {
                   right: getTextRight(),
                 }}
               >
-                {item.text}
+                {item.value}
+                {item.unit}
               </div>
             )}
           </div>
@@ -116,9 +131,10 @@ function Item(props) {
 }
 
 export default function BarGauge(props: IProps) {
-  const { values, series, themeMode, time } = props;
+  const { values, series, themeMode, time, isPreview } = props;
   const { custom, options } = values;
-  const { calc, maxValue, sortOrder = 'desc' } = custom;
+  const { calc, maxValue, sortOrder = 'desc', valueField = 'Value' } = custom;
+  const [statFields, setStatFields] = useGlobalState('statFields');
   let calculatedValues = getCalculatedValuesBySeries(
     series,
     calc,
@@ -129,10 +145,40 @@ export default function BarGauge(props: IProps) {
     },
     options?.valueMappings,
   );
-  if (sortOrder && sortOrder !== 'none') {
-    calculatedValues = _.orderBy(calculatedValues, ['stat'], [sortOrder]);
+  if (valueField !== 'Value') {
+    calculatedValues = _.map(calculatedValues, (item) => {
+      const itemClone = _.cloneDeep(item);
+      const value = _.get(item, ['metric', valueField]);
+      if (!_.isNaN(_.toNumber(value))) {
+        const result = getSerieTextObj(
+          value,
+          {
+            unit: options?.standardOptions?.util,
+            decimals: options?.standardOptions?.decimals,
+            dateFormat: options?.standardOptions?.dateFormat,
+          },
+          options?.valueMappings,
+          options?.thresholds,
+        );
+        itemClone.value = result?.value;
+        itemClone.unit = result?.unit;
+        itemClone.color = result?.color;
+      } else {
+        itemClone.value = value;
+      }
+      return itemClone;
+    });
   }
-  const curMaxValue = maxValue !== undefined && maxValue !== null ? maxValue : _.maxBy(calculatedValues, 'stat')?.stat || 0;
+  if (sortOrder && sortOrder !== 'none') {
+    calculatedValues = _.orderBy(calculatedValues, ['value'], [sortOrder]);
+  }
+  const curMaxValue = maxValue !== undefined && maxValue !== null ? maxValue : _.maxBy(calculatedValues, 'value')?.value || 0;
+
+  useEffect(() => {
+    if (isPreview) {
+      setStatFields(getColumnsKeys(calculatedValues));
+    }
+  }, [isPreview, JSON.stringify(calculatedValues)]);
 
   return (
     <div className='renderer-bar-gauge-container'>

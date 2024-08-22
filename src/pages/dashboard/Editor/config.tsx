@@ -174,6 +174,7 @@ export const defaultCustomValuesMap = {
   },
   barGauge: {
     calc: 'lastNotNull',
+    valueField: 'Value',
     baseColor: '#9470FF',
     displayMode: 'basic',
     serieWidth: 20,
