@@ -499,12 +499,12 @@ export default function index(props: IProps) {
                         }),
                       );
                     } else {
-                      activeLegends.current = activeLegend !== record.id ? record.id : '';
+                      activeLegend.current = activeLegend.current !== record.id ? record.id : '';
                       setSeriesData(
                         _.map(seriesData, (subItem) => {
                           return {
                             ...subItem,
-                            visible: activeLegends.current ? (legendBehaviour === 'hideItem' ? activeLegends.current !== subItem.id : activeLegends.current === subItem.id) : true,
+                            visible: activeLegend.current ? (legendBehaviour === 'hideItem' ? activeLegend.current !== subItem.id : activeLegend.current === subItem.id) : true,
                           };
                         }),
                       );
@@ -544,16 +544,12 @@ export default function index(props: IProps) {
                           }),
                         );
                       } else {
-                        activeLegends.current = activeLegend !== item.id ? item.id : '';
+                        activeLegend.current = activeLegend.current !== item.id ? item.id : '';
                         setSeriesData(
                           _.map(seriesData, (subItem) => {
                             return {
                               ...subItem,
-                              visible: activeLegends.current
-                                ? legendBehaviour === 'hideItem'
-                                  ? activeLegends.current !== subItem.id
-                                  : activeLegends.current === subItem.id
-                                : true,
+                              visible: activeLegend.current ? (legendBehaviour === 'hideItem' ? activeLegend.current !== subItem.id : activeLegend.current === subItem.id) : true,
                             };
                           }),
                         );
