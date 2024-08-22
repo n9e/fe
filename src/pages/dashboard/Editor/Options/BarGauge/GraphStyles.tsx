@@ -68,7 +68,7 @@ export default function GraphStyles() {
           </Col>
           <Col span={8}>
             <Form.Item label={t('panel.custom.nameField')} name={[...namePrefix, 'nameField']} tooltip={t('panel.custom.nameField_tip')}>
-              <Select>
+              <Select allowClear>
                 {_.map(statFields, (item) => {
                   return (
                     <Select.Option key={item} value={item}>
