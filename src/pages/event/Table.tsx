@@ -121,7 +121,7 @@ export default function TableCpt(props: IProps) {
     },
     {
       title: t('trigger_time'),
-      dataIndex: 'last_eval_time',
+      dataIndex: 'trigger_time',
       width: 120,
       render(value) {
         return moment(value * 1000).format('YYYY-MM-DD HH:mm:ss');
