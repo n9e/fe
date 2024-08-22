@@ -61,9 +61,13 @@ export const convertExpressionToQuery = (expression: string, range: IRawTimeRang
           end >= moment().subtract(1, 'day').unix() &&
           (currentDatasource?.settings?.['prometheus.tsdb_type'] === 'VictoriaMetrics' || currentDatasource?.settings?.tsdb_type === 'VictoriaMetrics')
         ) {
-          return getMetricSeriesV2({ metric, start, end }, datasourceValue).then((res) => Array.from(new Set(_.map(res.data, (item) => item[label!.trim()]))));
+          return getMetricSeriesV2({ metric, start, end }, datasourceValue).then((res) =>
+            _.without(Array.from(new Set(_.map(res.data, (item) => item[_.trim(label)]))), undefined),
+          );
         }
-        return getMetricSeries({ 'match[]': metric.trim(), start, end }, datasourceValue).then((res) => Array.from(new Set(_.map(res.data, (item) => item[label!.trim()]))));
+        return getMetricSeries({ 'match[]': metric.trim(), start, end }, datasourceValue).then((res) =>
+          _.without(Array.from(new Set(_.map(res.data, (item) => item[_.trim(label)]))), undefined),
+        );
       } else {
         const label = expression.substring('label_values('.length, expression.length - 1);
         return getLabelValues(label, { start, end }, datasourceValue).then((res) => res.data);
