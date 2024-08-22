@@ -21,5 +21,6 @@ import { RequestMethod } from '@/store/common';
 export const getAlertRulePure = (id: number) => {
   return request(`/api/n9e/alert-rule/${id}/pure`, {
     method: RequestMethod.Get,
+    silence: true,
   }).then((res) => res.dat);
 };

@@ -137,7 +137,7 @@ const Event: React.FC = () => {
     },
     {
       title: t('trigger_time'),
-      dataIndex: 'trigger_time',
+      dataIndex: 'last_eval_time',
       width: 120,
       render(value) {
         return moment((value ? value : 0) * 1000).format('YYYY-MM-DD HH:mm:ss');
