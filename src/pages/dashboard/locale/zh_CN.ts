@@ -190,6 +190,11 @@ const zh_CN = {
           showItem: '显示项目',
           hideItem: '隐藏项目',
         },
+        selectMode: {
+          label: '选择模式',
+          single: '单选',
+          multiple: '多选',
+        },
         heightInPercentage: '高度百分比',
         heightInPercentage_tip: 'Legend 高度占据面板的最大高度百分比，最小值为 20%，最大值为 80%',
       },

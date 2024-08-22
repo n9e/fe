@@ -126,7 +126,8 @@ export default function index(props: IProps) {
   const { custom, options = {}, targets, overrides } = values;
   const { lineWidth = 1, gradientMode = 'none', scaleDistribution, showPoints, pointSize } = custom;
   const [seriesData, setSeriesData] = useState<any[]>([]);
-  const [activeLegend, setActiveLegend] = useState('');
+  const activeLegend = useRef<string>();
+  const activeLegends = useRef<string[]>([]);
   const chartEleRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<TsGraph>(null);
   const legendEleRef = useRef<HTMLDivElement>(null);
@@ -138,6 +139,7 @@ export default function index(props: IProps) {
   const detailUrl = options.legend?.detailUrl || undefined;
   const detailName = options.legend?.detailName || undefined;
   const legendBehaviour = options.legend?.behaviour || 'showItem';
+  const legendSelectMode = options.legend?.selectMode || 'single';
   const hasLegend = displayMode !== 'hidden';
   const [legendData, setLegendData] = useState<any[]>([]);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -482,16 +484,31 @@ export default function index(props: IProps) {
               onRow={(record) => {
                 return {
                   onClick: () => {
-                    const newActiveLegend = activeLegend !== record.id ? record.id : '';
-                    setActiveLegend(newActiveLegend);
-                    setSeriesData(
-                      _.map(seriesData, (subItem) => {
-                        return {
-                          ...subItem,
-                          visible: newActiveLegend ? (legendBehaviour === 'hideItem' ? newActiveLegend !== subItem.id : newActiveLegend === subItem.id) : true,
-                        };
-                      }),
-                    );
+                    if (legendSelectMode === 'multiple') {
+                      activeLegends.current = _.xor(activeLegends.current, [record.id]);
+                      setSeriesData(
+                        _.map(seriesData, (subItem) => {
+                          return {
+                            ...subItem,
+                            visible: activeLegends.current.length
+                              ? legendBehaviour === 'hideItem'
+                                ? !activeLegends.current.includes(subItem.id)
+                                : activeLegends.current.includes(subItem.id)
+                              : true,
+                          };
+                        }),
+                      );
+                    } else {
+                      activeLegends.current = activeLegend !== record.id ? record.id : '';
+                      setSeriesData(
+                        _.map(seriesData, (subItem) => {
+                          return {
+                            ...subItem,
+                            visible: activeLegends.current ? (legendBehaviour === 'hideItem' ? activeLegends.current !== subItem.id : activeLegends.current === subItem.id) : true,
+                          };
+                        }),
+                      );
+                    }
                   },
                 };
               }}
@@ -512,16 +529,35 @@ export default function index(props: IProps) {
                   <div
                     key={item.id}
                     onClick={() => {
-                      const newActiveLegend = activeLegend !== item.id ? item.id : '';
-                      setActiveLegend(newActiveLegend);
-                      setSeriesData(
-                        _.map(seriesData, (subItem) => {
-                          return {
-                            ...subItem,
-                            visible: newActiveLegend ? (legendBehaviour === 'hideItem' ? newActiveLegend !== subItem.id : newActiveLegend === subItem.id) : true,
-                          };
-                        }),
-                      );
+                      if (legendSelectMode === 'multiple') {
+                        activeLegends.current = _.xor(activeLegends.current, [item.id]);
+                        setSeriesData(
+                          _.map(seriesData, (subItem) => {
+                            return {
+                              ...subItem,
+                              visible: activeLegends.current.length
+                                ? legendBehaviour === 'hideItem'
+                                  ? !activeLegends.current.includes(subItem.id)
+                                  : activeLegends.current.includes(subItem.id)
+                                : true,
+                            };
+                          }),
+                        );
+                      } else {
+                        activeLegends.current = activeLegend !== item.id ? item.id : '';
+                        setSeriesData(
+                          _.map(seriesData, (subItem) => {
+                            return {
+                              ...subItem,
+                              visible: activeLegends.current
+                                ? legendBehaviour === 'hideItem'
+                                  ? activeLegends.current !== subItem.id
+                                  : activeLegends.current === subItem.id
+                                : true,
+                            };
+                          }),
+                        );
+                      }
                     }}
                     className={classNames('renderer-timeseries-legend-list-item', {
                       disabled: item.disabled,

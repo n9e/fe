@@ -189,6 +189,11 @@ const en_US = {
           showItem: 'Show item',
           hideItem: 'Hide item',
         },
+        selectMode: {
+          label: 'Select mode',
+          single: 'Single',
+          multiple: 'Multiple',
+        },
         heightInPercentage: 'Height in percentage',
         heightInPercentage_tip: 'Legend height occupies the maximum height percentage of the panel, the minimum value is 20%, the maximum value is 80%',
       },

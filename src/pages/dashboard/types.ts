@@ -93,6 +93,7 @@ export interface IOptions {
     detailName: string;
     detailUrl: string;
     behaviour: 'showItem' | 'hideItem';
+    selectMode: 'single' | 'multiple';
   };
   tooltip?: {
     mode: 'single' | 'all';
