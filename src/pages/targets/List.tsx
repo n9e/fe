@@ -169,9 +169,60 @@ export default function List(props: IProps) {
         className: 'n9e-hosts-table-column-ip',
       });
     }
+    if (item.name === 'host_tags') {
+      columns.push({
+        title: (
+          <Space>
+            {t('host_tags')}
+            <Tooltip title={t('host_tags_tip')}>
+              <InfoCircleOutlined />
+            </Tooltip>
+          </Space>
+        ),
+        dataIndex: 'host_tags',
+        className: 'n9e-hosts-table-column-tags',
+        ellipsis: {
+          showTitle: false,
+        },
+        render(tagArr) {
+          const content =
+            tagArr &&
+            tagArr.map((item) => (
+              <Tag
+                color='purple'
+                key={item}
+                onClick={(e) => {
+                  if (!tableQueryContent.includes(item)) {
+                    isAddTagToQueryInput.current = true;
+                    const val = tableQueryContent ? `${tableQueryContent.trim()} ${item}` : item;
+                    setTableQueryContent(val);
+                    setSearchVal(val);
+                  }
+                }}
+              >
+                {item}
+              </Tag>
+            ));
+          return (
+            tagArr && (
+              <Tooltip title={content} placement='topLeft' getPopupContainer={() => document.body} overlayClassName='mon-manage-table-tooltip'>
+                {content}
+              </Tooltip>
+            )
+          );
+        },
+      });
+    }
     if (item.name === 'tags') {
       columns.push({
-        title: t('tags'),
+        title: (
+          <Space>
+            {t('tags')}
+            <Tooltip title={t('tags_tip')}>
+              <InfoCircleOutlined />
+            </Tooltip>
+          </Space>
+        ),
         dataIndex: 'tags',
         className: 'n9e-hosts-table-column-tags',
         ellipsis: {

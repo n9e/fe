@@ -21,8 +21,9 @@ import { Modal, Tabs } from 'antd';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import ImportBuiltinContent from './ImportBuiltinContent';
 import ImportBase from './ImportBase';
+import ImportPrometheus from './ImportPrometheus';
 
-type ModalType = 'Import' | 'ImportBuiltin';
+type ModalType = 'Import' | 'ImportBuiltin' | 'ImportPrometheus';
 interface IProps {
   busiId: number;
   refreshList: () => void;
@@ -45,6 +46,7 @@ function Import(props: IProps & ModalWrapProps) {
         <Tabs activeKey={modalType} onChange={(e: ModalType) => setModalType(e)} className='custom-import-alert-title'>
           <TabPane tab={t('batch.import_builtin')} key='ImportBuiltin'></TabPane>
           <TabPane tab={t('batch.import.title')} key='Import'></TabPane>
+          <TabPane tab={t('batch.import_prometheus')} key='ImportPrometheus'></TabPane>
         </Tabs>
       }
       visible={visible}
@@ -74,6 +76,16 @@ function Import(props: IProps & ModalWrapProps) {
           }}
           groupedDatasourceList={groupedDatasourceList}
           datasourceCateOptions={datasourceCateOptions}
+        />
+      )}
+      {modalType === 'ImportPrometheus' && (
+        <ImportPrometheus
+          busiId={busiId}
+          onOk={() => {
+            refreshList();
+            destroy();
+          }}
+          groupedDatasourceList={groupedDatasourceList}
         />
       )}
     </Modal>
