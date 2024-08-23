@@ -147,8 +147,15 @@ const EventDetailPage: React.FC = () => {
     },
     ...(!_.includes(['firemap', 'northstar'], eventDetail?.rule_prod) ? [{ label: t('detail.target_note'), key: 'target_note' }] : [false]),
     {
-      label: t('detail.trigger_time'),
-      key: 'trigger_time',
+      label: t('detail.first_trigger_time'),
+      key: 'first_trigger_time',
+      render(time) {
+        return moment(time * 1000).format('YYYY-MM-DD HH:mm:ss');
+      },
+    },
+    {
+      label: t('detail.last_eval_time'),
+      key: 'last_eval_time',
       render(time) {
         return moment(time * 1000).format('YYYY-MM-DD HH:mm:ss');
       },
