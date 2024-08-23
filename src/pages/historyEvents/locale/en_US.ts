@@ -4,6 +4,7 @@ const en_US = {
   search_placeholder: 'multiple keywords separated by spaces',
   first_trigger_time: 'First Triggered',
   trigger_time: 'Triggered',
+  last_eval_time: 'Last Evaluated',
   hours: {
     6: 'Last 6 Hours',
     12: 'Last 12 Hours',
