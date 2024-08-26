@@ -146,7 +146,7 @@ export default function MoreOperations(props: MoreOperationsProps) {
                 bgid,
               );
               if (!res.err) {
-                message.success('common:success.modify');
+                message.success(t('common:success.modify'));
                 getAlertRules();
                 setisModalVisible(false);
               } else {
@@ -164,7 +164,7 @@ export default function MoreOperations(props: MoreOperationsProps) {
                 bgid,
               );
               if (!res.err) {
-                message.success('common:success.modify');
+                message.success(t('common:success.modify'));
                 getAlertRules();
                 setisModalVisible(false);
               } else {

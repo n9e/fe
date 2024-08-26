@@ -18,7 +18,7 @@ import React, { useState, useEffect, useCallback, useContext } from 'react';
 import moment from 'moment';
 import _ from 'lodash';
 import { debounce, join } from 'lodash';
-import { Form, Input, InputNumber, Radio, Select, Row, Col, TimePicker, Checkbox, Tag, message, Space, Switch, Tooltip, Modal, Button } from 'antd';
+import { Form, Input, InputNumber, Radio, Select, Row, Col, TimePicker, Checkbox, Tag, AutoComplete, Space, Switch, Tooltip, Modal, Button } from 'antd';
 import { QuestionCircleFilled, MinusCircleOutlined, PlusCircleOutlined, CaretDownOutlined, PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { getTeamInfoList, getNotifiesList } from '@/services/manage';
@@ -107,8 +107,7 @@ const fields = [
     name: '备注',
   },
   {
-    field: 'runbook_url',
-    name: '预案链接',
+    field: 'annotations',
   },
 ];
 
@@ -135,6 +134,7 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish }) => {
   const [field, setField] = useState<string>('datasource_ids');
   const [refresh, setRefresh] = useState(true);
   const changetoText = t('batch.update.changeto');
+  const action = Form.useWatch('action', form);
 
   useEffect(() => {
     getNotifyChannel();
@@ -249,6 +249,11 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish }) => {
         case 'notify_recovered':
           data.notify_recovered = values.notify_recovered ? 1 : 0;
           break;
+        case 'annotations':
+          if (data.action === 'cover') {
+            delete data.action;
+          }
+          break;
         default:
           break;
       }
@@ -258,8 +263,12 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish }) => {
         if (data[key] === undefined) {
           data[key] = '';
         }
-        if (Array.isArray(data[key]) && key !== 'datasource_ids' && key !== 'service_cal_ids') {
-          data[key] = data[key].join(' ');
+        if (key === 'annotations') {
+          data[key] = _.chain(data[key]).keyBy('key').mapValues('value').value();
+        } else {
+          if (Array.isArray(data[key]) && key !== 'datasource_ids' && key !== 'service_cal_ids') {
+            data[key] = data[key].join(' ');
+          }
         }
       });
       editModalFinish(true, data);
@@ -335,12 +344,66 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish }) => {
                     </Form.Item>
                   </>
                 );
-              case 'runbook_url':
+              case 'annotations':
                 return (
                   <>
-                    <Form.Item label={changetoText} name='runbook_url'>
-                      <Input />
+                    <Form.Item name='action' label={t('batch.update.callback_cover.mode')} initialValue='cover'>
+                      <Radio.Group
+                        buttonStyle='solid'
+                        onChange={(e) => {
+                          form.setFieldsValue({ annotations: undefined });
+                        }}
+                      >
+                        <Radio.Button value='cover'>{t('batch.update.callback_cover.cover')}</Radio.Button>
+                        <Radio.Button value='annotations_add'>{t('batch.update.callback_cover.callback_add')}</Radio.Button>
+                        <Radio.Button value='annotations_del'>{t('batch.update.callback_cover.callback_del')}</Radio.Button>
+                      </Radio.Group>
                     </Form.Item>
+                    <Form.List name='annotations'>
+                      {(fields, { add, remove }) => (
+                        <div>
+                          <Space align='baseline'>
+                            {action === 'cover' && changetoText}
+                            {action === 'annotations_add' && t('batch.update.callback_cover.callback_add')}
+                            {action === 'annotations_del' && t('batch.update.callback_cover.callback_del')}
+                            <PlusCircleOutlined className='control-icon-normal' onClick={() => add()} />
+                          </Space>
+                          {fields.map((field) => (
+                            <Row gutter={16} key={field.key}>
+                              <Col flex='120px'>
+                                <Form.Item {...field} name={[field.name, 'key']}>
+                                  <AutoComplete
+                                    options={[
+                                      {
+                                        value: 'recovery_promql',
+                                      },
+                                      {
+                                        value: 'runbook_url',
+                                      },
+                                      {
+                                        value: 'dashboard_url',
+                                      },
+                                      {
+                                        value: 'summary',
+                                      },
+                                    ]}
+                                    style={{ width: 200 }}
+                                  />
+                                </Form.Item>
+                              </Col>
+                              <Col flex='auto'>
+                                <Form.Item {...field} name={[field.name, 'value']}>
+                                  <Input.TextArea autoSize />
+                                </Form.Item>
+                              </Col>
+                              <Col flex='40px'>
+                                <MinusCircleOutlined className='control-icon-normal' onClick={() => remove(field.name)} />
+                              </Col>
+                            </Row>
+                          ))}
+                        </div>
+                      )}
+                    </Form.List>
                   </>
                 );
               case 'datasource_ids':

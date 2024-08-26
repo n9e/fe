@@ -146,6 +146,7 @@ const zh_HK = {
         note: '備註',
         runbook_url: '預案連結',
         service_cal_ids: '服務日曆',
+        annotations: '附加資訊',
       },
     },
   },

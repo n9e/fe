@@ -146,6 +146,7 @@ const en_US = {
         note: 'Note',
         runbook_url: 'Runbook URL',
         service_cal_ids: 'Service Calendar',
+        annotations: 'Annotations',
       },
     },
   },

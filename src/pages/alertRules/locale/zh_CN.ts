@@ -146,6 +146,7 @@ const zh_CN = {
         note: '备注',
         runbook_url: '预案链接',
         service_cal_ids: '服务日历',
+        annotations: '附加信息',
       },
     },
   },
