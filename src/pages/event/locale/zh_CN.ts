@@ -57,6 +57,7 @@ const zh_CN = {
     first_trigger_time: '首次触发时间',
     last_eval_time: '本次检测时间',
     trigger_value: '上次异常触发时值',
+    trigger_value2: '触发时值',
     recover_time: '恢复时间',
     rule_algo: '告警方式',
     rule_algo_anomaly: '智能告警',
