@@ -15,7 +15,7 @@ export enum TypeEnum {
   metric = 'metric',
 }
 export interface PayloadQuery {
-  component: string;
+  component_id: number;
   type: TypeEnum;
   cate?: string; // 某些组件有子分类
   query?: string; // 名称模糊查询
@@ -24,7 +24,7 @@ export interface PayloadQuery {
 export interface Payload {
   id: number;
   type: TypeEnum;
-  component: string;
+  component_id: number;
   cate: string;
   name: string;
   content: string;
