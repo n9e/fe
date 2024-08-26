@@ -157,6 +157,7 @@ export const getBuiltinDashboard = function (data) {
 export const getDashboardPure = function (id: string) {
   return request(`/api/n9e/board/${id}/pure`, {
     method: RequestMethod.Get,
+    silence: true,
   }).then((res) => {
     return res.dat;
   });
