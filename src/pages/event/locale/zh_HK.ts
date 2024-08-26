@@ -55,6 +55,7 @@ const zh_HK = {
     first_trigger_time: '首次觸發時間',
     last_eval_time: '本次檢測時間',
     trigger_value: '上次異常觸發時值',
+    trigger_value2: '觸發時值',
     recover_time: '恢復時間',
     rule_algo: '告警方式',
     rule_algo_anomaly: '智慧告警',

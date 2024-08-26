@@ -57,6 +57,7 @@ const en_US = {
     first_trigger_time: 'First Triggered',
     last_eval_time: 'Last Evaluated',
     trigger_value: 'Last Triggered Value',
+    trigger_value2: 'Triggered Value',
     recover_time: 'Recover Time',
     rule_algo: 'Alert Type',
     rule_algo_anomaly: 'Anomaly',
