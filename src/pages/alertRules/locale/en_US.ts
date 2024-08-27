@@ -147,6 +147,7 @@ const en_US = {
         runbook_url: 'Runbook URL',
         service_cal_ids: 'Service Calendar',
         annotations: 'Annotations',
+        triggers: 'Triggers',
       },
       cloneToHosts: {
         title: 'Clone to Hosts',

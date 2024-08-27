@@ -15,7 +15,6 @@
  *
  */
 import React, { useState, useEffect, useCallback, useContext } from 'react';
-import moment from 'moment';
 import _ from 'lodash';
 import { debounce, join } from 'lodash';
 import { Form, Input, InputNumber, Radio, Select, Row, Col, TimePicker, Checkbox, Tag, AutoComplete, Space, Switch, Tooltip, Modal, Button } from 'antd';
@@ -24,6 +23,8 @@ import { useTranslation } from 'react-i18next';
 import { getTeamInfoList, getNotifiesList } from '@/services/manage';
 import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
 import { CommonStateContext } from '@/App';
+import Triggers from '@/pages/alertRules/Form/components/Triggers';
+import { alphabet } from '@/components/QueryName/utils';
 import { defaultValues } from '../Form/constants';
 
 // @ts-ignore
@@ -32,14 +33,6 @@ import ServiceCalendarSelect from 'plus:/pages/ServiceCalendar/ServiceCalendarSe
 import BatchEditNotifyChannels from 'plus:/parcels/AlertRule/BatchEditNotifyChannels';
 
 const { Option } = Select;
-const layout = {
-  labelCol: {
-    span: 3,
-  },
-  wrapperCol: {
-    span: 20,
-  },
-};
 
 const fields = [
   {
@@ -109,6 +102,9 @@ const fields = [
   {
     field: 'annotations',
   },
+  {
+    field: 'triggers',
+  },
 ];
 
 // 校验单个标签格式是否正确
@@ -123,9 +119,10 @@ function isTagValid(tag) {
 interface Props {
   isModalVisible: boolean;
   editModalFinish: Function;
+  selectedRows: any[];
 }
 
-const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish }) => {
+const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedRows }) => {
   const { t, i18n } = useTranslation('alertRules');
   const [form] = Form.useForm();
   const { datasourceList, isPlus } = useContext(CommonStateContext);
@@ -257,6 +254,7 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish }) => {
         default:
           break;
       }
+      const field = data.field;
       delete data.field;
       Object.keys(data).forEach((key) => {
         // 因为功能上有清除备注的需求，需要支持传空
@@ -266,7 +264,7 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish }) => {
         if (key === 'annotations') {
           data[key] = _.chain(data[key]).keyBy('key').mapValues('value').value();
         } else {
-          if (Array.isArray(data[key]) && key !== 'datasource_ids' && key !== 'service_cal_ids') {
+          if (Array.isArray(data[key]) && key !== 'datasource_ids' && key !== 'service_cal_ids' && field !== 'triggers') {
             data[key] = data[key].join(' ');
           }
         }
@@ -351,7 +349,7 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish }) => {
                       <Radio.Group
                         buttonStyle='solid'
                         onChange={(e) => {
-                          form.setFieldsValue({ annotations: undefined });
+                          form.setFieldsValue({ annotations: [{}] });
                         }}
                       >
                         <Radio.Button value='cover'>{t('batch.update.callback_cover.cover')}</Radio.Button>
@@ -359,7 +357,7 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish }) => {
                         <Radio.Button value='annotations_del'>{t('batch.update.callback_cover.callback_del')}</Radio.Button>
                       </Radio.Group>
                     </Form.Item>
-                    <Form.List name='annotations'>
+                    <Form.List name='annotations' initialValue={[{}]}>
                       {(fields, { add, remove }) => (
                         <div>
                           <Space align='baseline'>
@@ -735,6 +733,40 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish }) => {
                       <ServiceCalendarSelect name='service_cal_ids' showLabel={false} />
                     </Form.Item>
                   </>
+                );
+              case 'triggers':
+                let queries: any[] = [];
+                _.forEach(selectedRows, (row) => {
+                  _.forEach(row?.rule_config?.queries, (query, index) => {
+                    queries.push({
+                      ...query,
+                      ref: alphabet[index],
+                    });
+                  });
+                });
+                queries = _.uniqBy(queries, 'ref');
+                return (
+                  <Form.Item label={changetoText}>
+                    <Form.Item name='action' initialValue='update_triggers' hidden>
+                      <div />
+                    </Form.Item>
+                    <Triggers
+                      queries={queries}
+                      initialValue={[
+                        {
+                          mode: 0,
+                          expressions: [
+                            {
+                              ref: 'A',
+                              comparisonOperator: '==',
+                              logicalOperator: '&&',
+                            },
+                          ],
+                          severity: 1,
+                        },
+                      ]}
+                    />
+                  </Form.Item>
                 );
               default:
                 return null;

@@ -187,6 +187,7 @@ export default function MoreOperations(props: MoreOperationsProps) {
             setisModalVisible(false);
           }
         }}
+        selectedRows={selectedRows}
       />
     </>
   );
