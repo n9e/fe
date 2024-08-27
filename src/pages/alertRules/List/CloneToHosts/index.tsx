@@ -5,7 +5,7 @@ import { Modal, Space, Select, Table } from 'antd';
 import { useTranslation } from 'react-i18next';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { getTargetList } from '@/services/targets';
-import { collectsClone } from '@/pages/alertRules/services';
+import { rulesClone } from '@/pages/alertRules/services';
 import ValuesSelect from './ValuesSelect';
 
 interface Props {
@@ -67,7 +67,7 @@ function index(props: Props & ModalWrapProps) {
       title={t('batch.cloneToHosts.select_hosts.title')}
       visible={visible}
       onOk={() => {
-        collectsClone(gid, {
+        rulesClone(gid, {
           ids,
           ident_list: selectedRowKeys,
         }).then((res) => {

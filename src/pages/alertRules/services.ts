@@ -24,7 +24,7 @@ export const getAlertRulePure = (id: number) => {
   }).then((res) => res.dat);
 };
 
-export const collectsClone = (gid, data) => {
+export const rulesClone = (gid, data) => {
   return request(`/api/n9e/busi-group/${gid}/alert-rules/clone`, {
     method: RequestMethod.Post,
     data,
