@@ -56,6 +56,7 @@ const zh_HK = {
     note: '備註',
     operations: '操作',
     total: '共 {{total}} 條',
+    result: '結果',
   },
   datasource: {
     prod: '監控類型',

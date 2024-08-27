@@ -15,7 +15,7 @@
  *
  */
 import React, { useEffect, useState, useCallback, useContext } from 'react';
-import { Modal, Tag, Form, Input, Alert, Select, Tooltip } from 'antd';
+import { Modal, Tag, Form, Input, Alert, Select, Tooltip, Table } from 'antd';
 import { DatabaseOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _, { debounce } from 'lodash';
@@ -261,11 +261,44 @@ const OperationModal: React.FC<OperateionModalProps> = ({ operateType, setOperat
       setConfirmLoading(true);
       data.idents = data.idents.split('\n');
       requestFunc(data)
-        .then(() => {
-          setOperateType(OperateType.None);
-          reloadList();
-          form.resetFields();
-          setConfirmLoading(false);
+        .then((res) => {
+          if (_.isEmpty(res?.dat)) {
+            setOperateType(OperateType.None);
+            reloadList();
+            form.resetFields();
+            setConfirmLoading(false);
+          } else {
+            const errData = _.map(res.dat, (val, key) => {
+              return {
+                name: key,
+                result: val,
+              };
+            });
+            Modal.error({
+              icon: null,
+              content: (
+                <Table
+                  size='small'
+                  columns={[
+                    {
+                      title: t('common:table.name'),
+                      dataIndex: 'name',
+                      key: 'name',
+                    },
+                    {
+                      title: t('common:table.result'),
+                      dataIndex: 'result',
+                      key: 'result',
+                    },
+                  ]}
+                  dataSource={errData}
+                  pagination={false}
+                  rowKey='name'
+                />
+              ),
+            });
+            setConfirmLoading(false);
+          }
         })
         .catch(() => setConfirmLoading(false));
     });
@@ -298,7 +331,7 @@ const OperationModal: React.FC<OperateionModalProps> = ({ operateType, setOperat
   // 解绑标签时，根据输入框监控对象动态获取标签列表
   useEffect(() => {
     if (operateType === OperateType.UnbindTag && identList.length) {
-      getTargetTags({ idents: identList.join(',') }).then(({ dat }) => {
+      getTargetTags({ idents: identList.join(','), ignore_host_tag: true }).then(({ dat }) => {
         // 删除多余的选中标签
         const curSelectedTags = form.getFieldValue('tags') || [];
         form.setFieldsValue({
