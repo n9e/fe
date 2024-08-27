@@ -56,6 +56,7 @@ const en_US = {
     note: 'Note',
     operations: 'Operations',
     total: 'Total {{total}} items',
+    result: 'Result',
   },
   datasource: {
     prod: 'Type',
