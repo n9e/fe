@@ -149,6 +149,23 @@ const zh_CN = {
         annotations: '附加信息',
       },
     },
+    cloneToHosts: {
+      title: '克隆到多个机器',
+      select_hosts: {
+        title: '选择机器',
+        filter: '筛选',
+        ident: '机器标识',
+        tags: '标签',
+        group: '业务组',
+      },
+      clone_btn: '克隆',
+      result: {
+        title: '克隆结果',
+        host: '机器',
+        rule: '规则',
+        msg: '结果',
+      },
+    },
   },
   brain_result_btn: '训练结果',
   testTip: `

@@ -148,6 +148,23 @@ const en_US = {
         service_cal_ids: 'Service Calendar',
         annotations: 'Annotations',
       },
+      cloneToHosts: {
+        title: 'Clone to Hosts',
+        select_hosts: {
+          title: 'Select Hosts',
+          filter: 'Filter',
+          ident: 'Ident',
+          tags: 'Tags',
+          group: 'Group',
+        },
+        clone_btn: 'Clone',
+        result: {
+          title: 'Result',
+          host: 'Host',
+          rule: 'Rule',
+          msg: 'Message',
+        },
+      },
     },
   },
   brain_result_btn: 'Training Result',

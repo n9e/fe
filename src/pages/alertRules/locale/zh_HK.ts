@@ -149,6 +149,23 @@ const zh_HK = {
         annotations: '附加資訊',
       },
     },
+    cloneToHosts: {
+      title: '複製到機器',
+      select_hosts: {
+        title: '選擇機器',
+        filter: '篩選',
+        ident: '機器標識',
+        tags: '標籤',
+        group: '業務組',
+      },
+      clone_btn: '複製',
+      result: {
+        title: '複製結果',
+        host: '機器',
+        rule: '規則',
+        msg: '消息',
+      },
+    },
   },
   brain_result_btn: '訓練結果',
   testTip: `
