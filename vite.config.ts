@@ -35,6 +35,7 @@ const chunk2 = [
 const chunk3 = ['react-ace'];
 const chunk1 = ['react', 'react-router-dom', 'react-dom', 'moment', '@ant-design/icons', 'umi-request', 'lodash', 'react-grid-layout', 'd3', 'ahooks', 'color'];
 const antdChunk = ['antd'];
+const excelChunk = ['file-saver', 'exceljs'];
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
