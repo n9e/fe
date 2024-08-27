@@ -29,7 +29,7 @@ export const getComponents = function (): Promise<Component[]> {
   });
 };
 
-export const getCates = function (params: { component: string; type: TypeEnum }): Promise<string[]> {
+export const getCates = function (params: { component_id: number; type: TypeEnum }): Promise<string[]> {
   return request('/api/n9e/builtin-payloads/cates', {
     method: RequestMethod.Get,
     params,

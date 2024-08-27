@@ -1,7 +1,7 @@
 import i18next from 'i18next';
 import _ from 'lodash';
 
-const alphabet = 'ABCDEFGHIGKLMNOPQRSTUVWXYZ'.split('');
+export const alphabet = 'ABCDEFGHIGKLMNOPQRSTUVWXYZ'.split('');
 
 /**
  * 生成查询名称, 根据字母表依次生成，如果已存在则跳过

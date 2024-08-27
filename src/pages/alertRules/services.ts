@@ -24,3 +24,10 @@ export const getAlertRulePure = (id: number) => {
     silence: true,
   }).then((res) => res.dat);
 };
+
+export const collectsClone = (gid, data) => {
+  return request(`/api/n9e/busi-group/${gid}/alert-rules/clone`, {
+    method: RequestMethod.Post,
+    data,
+  }).then((res) => res.dat);
+};

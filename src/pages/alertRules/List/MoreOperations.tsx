@@ -23,6 +23,7 @@ import { deleteStrategy, updateAlertRules, updateServiceCal, updateNotifyChannel
 import { CommonStateContext } from '@/App';
 import Export from './Export';
 import EditModal from './EditModal';
+import CloneToHosts from './CloneToHosts';
 
 interface MoreOperationsProps {
   bgid: number;
@@ -104,6 +105,17 @@ export default function MoreOperations(props: MoreOperationsProps) {
             >
               <span>{t('batch.update.title')}</span>
             </li>
+            <li
+              className='ant-dropdown-menu-item'
+              onClick={() => {
+                CloneToHosts({
+                  gid: bgid,
+                  ids: selectRowKeys,
+                });
+              }}
+            >
+              <span>{t('batch.cloneToHosts.title')}</span>
+            </li>
           </ul>
         }
         trigger={['click']}
@@ -146,7 +158,7 @@ export default function MoreOperations(props: MoreOperationsProps) {
                 bgid,
               );
               if (!res.err) {
-                message.success('common:success.modify');
+                message.success(t('common:success.modify'));
                 getAlertRules();
                 setisModalVisible(false);
               } else {
@@ -164,7 +176,7 @@ export default function MoreOperations(props: MoreOperationsProps) {
                 bgid,
               );
               if (!res.err) {
-                message.success('common:success.modify');
+                message.success(t('common:success.modify'));
                 getAlertRules();
                 setisModalVisible(false);
               } else {
@@ -175,6 +187,7 @@ export default function MoreOperations(props: MoreOperationsProps) {
             setisModalVisible(false);
           }
         }}
+        selectedRows={selectedRows}
       />
     </>
   );

@@ -14,10 +14,11 @@ import GroupSelectModal from './GroupSelectModal';
 
 interface Props {
   component: string;
+  component_id: number;
 }
 
 export default function index(props: Props) {
-  const { component } = props;
+  const { component, component_id } = props;
   const { t } = useTranslation('builtInComponents');
   const { darkMode, busiGroups } = useContext(CommonStateContext);
   const [filter, setFilter] = useState<{
@@ -34,7 +35,7 @@ export default function index(props: Props) {
   const fetchData = () => {
     setLoading(true);
     getPayloads<Payload[]>({
-      component,
+      component_id,
       type: TypeEnum.collect,
       query: filter.query,
     })
@@ -47,7 +48,7 @@ export default function index(props: Props) {
   };
   const fetchCates = () => {
     getCates({
-      component,
+      component_id,
       type: TypeEnum.collect,
     }).then((res) => {
       setCateList(res);
@@ -58,7 +59,7 @@ export default function index(props: Props) {
     () => {
       fetchData();
     },
-    [component, filter.query],
+    [component_id, filter.query],
     {
       wait: 500,
     },
@@ -98,7 +99,7 @@ export default function index(props: Props) {
                   contentMode: 'yaml',
                   initialValues: {
                     type: TypeEnum.collect,
-                    component,
+                    component_id,
                   },
                   onOk: () => {
                     fetchData();

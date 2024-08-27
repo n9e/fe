@@ -62,7 +62,7 @@ export default function ImportBuiltinContent({ busiId, onOk, groupedDatasourceLi
   useEffect(() => {
     if (!component || !cate) return;
     getPayloads<Payload[]>({
-      component,
+      component_id: component,
       type: TypeEnum.alert,
       cate: cate,
       query: filter.query,
@@ -130,7 +130,7 @@ export default function ImportBuiltinContent({ busiId, onOk, groupedDatasourceLi
           options={_.map(components, (item) => {
             return {
               label: item.ident,
-              value: item.ident,
+              value: item.id,
             };
           })}
           onChange={() => {
