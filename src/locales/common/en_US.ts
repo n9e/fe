@@ -56,7 +56,8 @@ const en_US = {
     note: 'Note',
     operations: 'Operations',
     total: 'Total {{total}} items',
-    result: 'Result',
+    host: 'Host',
+    error_msg: 'Error message',
   },
   datasource: {
     prod: 'Type',

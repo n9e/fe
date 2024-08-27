@@ -270,8 +270,8 @@ const OperationModal: React.FC<OperateionModalProps> = ({ operateType, setOperat
           } else {
             const errData = _.map(res.dat, (val, key) => {
               return {
-                name: key,
-                result: val,
+                host: key,
+                error_msg: val,
               };
             });
             Modal.error({
@@ -281,19 +281,19 @@ const OperationModal: React.FC<OperateionModalProps> = ({ operateType, setOperat
                   size='small'
                   columns={[
                     {
-                      title: t('common:table.name'),
-                      dataIndex: 'name',
-                      key: 'name',
+                      title: t('common:table.host'),
+                      dataIndex: 'host',
+                      key: 'host',
                     },
                     {
-                      title: t('common:table.result'),
-                      dataIndex: 'result',
-                      key: 'result',
+                      title: t('common:table.error_msg'),
+                      dataIndex: 'error_msg',
+                      key: 'error_msg',
                     },
                   ]}
                   dataSource={errData}
                   pagination={false}
-                  rowKey='name'
+                  rowKey='host'
                 />
               ),
             });
