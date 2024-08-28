@@ -160,7 +160,7 @@ export const importStrategy = function (data: any[], busiId: number) {
   });
 };
 
-export const importPromRule = function (data: any[], busiId: number) {
+export const importPromRule = function (data: any, busiId: number) {
   return request(`/api/n9e/busi-group/${busiId}/alert-rules/import-prom-rule`, {
     method: 'POST',
     data: data,
