@@ -22,6 +22,17 @@ import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { importPromRule } from '@/services/warning';
 import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
 
+const ymlExample = `groups:
+- name: example
+  rules:
+  - alert: HighRequestLatency
+    expr: job:request_latency_seconds:mean5m{job="myjob"} > 0.5
+    for: 10m
+    labels:
+      severity: page
+    annotations:
+      summary: High request latency`;
+
 export default function ImportPrometheus({ busiId, onOk, groupedDatasourceList }) {
   const { t } = useTranslation('alertRules');
   const [importResult, setImportResult] = useState<{ name: string; msg: string }[]>();
@@ -35,7 +46,13 @@ export default function ImportPrometheus({ busiId, onOk, groupedDatasourceList }
         layout='vertical'
         onFinish={async (vals) => {
           try {
-            const { dat } = await importPromRule(vals, busiId);
+            const { dat } = await importPromRule(
+              {
+                ..._.omit(vals, 'enabled'),
+                disabled: vals.enabled ? 0 : 1,
+              },
+              busiId,
+            );
             const dataSource = _.map(dat, (val, key) => {
               return {
                 name: key,
@@ -47,9 +64,7 @@ export default function ImportPrometheus({ busiId, onOk, groupedDatasourceList }
               message.success(t('common:success.import'));
               onOk();
             }
-          } catch (error) {
-            message.error(t('common:error.import') + error);
-          }
+          } catch (error) {}
         }}
         initialValues={{
           enabled: false,
@@ -64,7 +79,7 @@ export default function ImportPrometheus({ busiId, onOk, groupedDatasourceList }
             },
           ]}
         >
-          <Input.TextArea className='code-area' rows={16} />
+          <Input.TextArea className='code-area' rows={16} placeholder={ymlExample} />
         </Form.Item>
         {importContent && (
           <>
