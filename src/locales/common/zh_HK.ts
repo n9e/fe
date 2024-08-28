@@ -56,6 +56,8 @@ const zh_HK = {
     note: '備註',
     operations: '操作',
     total: '共 {{total}} 條',
+    host: '機器',
+    error_msg: '錯誤',
   },
   datasource: {
     prod: '監控類型',

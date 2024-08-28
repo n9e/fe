@@ -43,7 +43,7 @@ export function getBusiGroups(query = '', limit: number = 5000) {
     ),
   }).then((res) => {
     return {
-      dat: _.sortBy(res.dat, 'name'),
+      dat: _.sortBy(res.dat, (item) => _.lowerCase(item.name)),
     };
   });
 }

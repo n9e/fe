@@ -118,7 +118,7 @@ const Resource: React.FC = () => {
       limit: PAGE_SIZE,
     };
     getBusinessTeamList(params).then((data) => {
-      setTeamList(data.dat || []);
+      setTeamList(_.sortBy(data.dat, (item) => _.lowerCase(item.name)));
       if (
         (!teamId ||
           isDelete ||

@@ -56,6 +56,8 @@ const zh_CN = {
     note: '备注',
     operations: '操作',
     total: '共 {{total}} 条',
+    host: '机器',
+    error_msg: '错误',
   },
   datasource: {
     prod: '监控类型',
