@@ -21,6 +21,8 @@ import i18next from 'i18next';
 import { JSEncrypt } from 'js-encrypt';
 import { IStore } from '@/store/common';
 export { getDefaultDatasourceValue, setDefaultDatasourceValue } from './datasource';
+import ExcelJS from 'exceljs';
+import { saveAs } from 'file-saver';
 
 export const isPromise = (obj) => {
   return !!obj && (typeof obj === 'object' || typeof obj === 'function') && typeof obj.then === 'function';
@@ -224,3 +226,29 @@ export const RSAEncrypt = (str: string): string => {
   }
   return encrypt.encrypt(str);
 };
+
+interface IData {
+  sheetName: string;
+  columns: { header: string; key: string; width?: number }[];
+  list: any[];
+}
+
+export async function downloadExcel(fileName: string = 'download.xlsx', data: IData[]) {
+  try {
+    const workbook = new ExcelJS.Workbook();
+    for (let i = 0; i < data.length; i++) {
+      const el = data[i];
+      const workSheet = workbook.addWorksheet(el.sheetName);
+      workSheet.columns = el.columns;
+      workSheet.columns.forEach((column) => {
+        column.width = column.header?.length! < 15 ? 15 : column.header?.length;
+      });
+      workSheet.addRows(el.list);
+    }
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    saveAs(new Blob([buffer], { type: 'text/plain;charset=utf-8' }), fileName);
+  } catch (error) {
+    throw new Error('下载错误: ' + error);
+  }
+}

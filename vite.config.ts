@@ -98,6 +98,7 @@ export default defineConfig(({ mode }) => {
             vendor1: chunk2,
             vendor2: chunk3,
             antdChunk: antdChunk,
+            excelChunk: excelChunk,
           },
         },
       },
