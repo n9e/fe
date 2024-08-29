@@ -349,7 +349,14 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
                       <Radio.Group
                         buttonStyle='solid'
                         onChange={(e) => {
-                          form.setFieldsValue({ annotations: [{}] });
+                          form.setFieldsValue({
+                            annotations: [
+                              {
+                                key: '',
+                                value: '',
+                              },
+                            ],
+                          });
                         }}
                       >
                         <Radio.Button value='cover'>{t('batch.update.callback_cover.cover')}</Radio.Button>
@@ -364,7 +371,15 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
                             {action === 'cover' && changetoText}
                             {action === 'annotations_add' && t('batch.update.callback_cover.callback_add')}
                             {action === 'annotations_del' && t('batch.update.callback_cover.callback_del')}
-                            <PlusCircleOutlined className='control-icon-normal' onClick={() => add()} />
+                            <PlusCircleOutlined
+                              className='control-icon-normal'
+                              onClick={() =>
+                                add({
+                                  key: '',
+                                  value: '',
+                                })
+                              }
+                            />
                           </Space>
                           {fields.map((field) => (
                             <Row gutter={16} key={field.key}>
@@ -390,7 +405,7 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
                                 </Form.Item>
                               </Col>
                               <Col flex='auto'>
-                                <Form.Item {...field} name={[field.name, 'value']}>
+                                <Form.Item {...field} name={[field.name, 'value']} hidden={action === 'annotations_del'}>
                                   <Input.TextArea autoSize />
                                 </Form.Item>
                               </Col>
@@ -752,19 +767,21 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
                     </Form.Item>
                     <Triggers
                       queries={queries}
-                      initialValue={[
-                        {
-                          mode: 0,
-                          expressions: [
-                            {
-                              ref: 'A',
-                              comparisonOperator: '==',
-                              logicalOperator: '&&',
-                            },
-                          ],
-                          severity: 1,
-                        },
-                      ]}
+                      initialValue={
+                        selectedRows[0]?.rule_config?.triggers || [
+                          {
+                            mode: 0,
+                            expressions: [
+                              {
+                                ref: 'A',
+                                comparisonOperator: '==',
+                                logicalOperator: '&&',
+                              },
+                            ],
+                            severity: 1,
+                          },
+                        ]
+                      }
                     />
                   </Form.Item>
                 );
