@@ -111,6 +111,7 @@ export default function MoreOperations(props: MoreOperationsProps) {
                 CloneToHosts({
                   gid: bgid,
                   ids: selectRowKeys,
+                  onOk: getAlertRules,
                 });
               }}
             >
