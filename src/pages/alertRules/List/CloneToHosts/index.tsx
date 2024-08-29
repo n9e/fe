@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { useDebounceFn } from 'ahooks';
-import { Modal, Space, Select, Table } from 'antd';
+import { Modal, Space, Select, Table, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { getTargetList } from '@/services/targets';
@@ -11,13 +11,14 @@ import ValuesSelect from './ValuesSelect';
 interface Props {
   gid: number;
   ids: React.Key[];
+  onOk: () => void;
 }
 
 const queryKeyOptions = ['all_hosts', 'group_ids', 'tags'];
 
 function index(props: Props & ModalWrapProps) {
   const { t } = useTranslation('alertRules');
-  const { gid, ids, visible, destroy } = props;
+  const { gid, ids, onOk, visible, destroy } = props;
   const [filterHost, setFilterHost] = useState<{
     key: string;
     op: string;
@@ -71,10 +72,10 @@ function index(props: Props & ModalWrapProps) {
           ids,
           ident_list: selectedRowKeys,
         }).then((res) => {
-          if (res) {
+          if (!_.isEmpty(res)) {
             const data: any[] = [];
-            _.forEach(res, (val, host) => {
-              _.forEach(val, (msg, rule) => {
+            _.forEach(res, (val, rule) => {
+              _.forEach(val, (msg, host) => {
                 data.push({
                   id: data.length + 1,
                   host,
@@ -89,6 +90,8 @@ function index(props: Props & ModalWrapProps) {
             });
           } else {
             destroy();
+            message.success(t('common:success.clone'));
+            onOk();
           }
         });
       }}
