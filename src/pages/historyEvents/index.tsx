@@ -74,7 +74,7 @@ const Event: React.FC = () => {
       title: t('common:datasource.id'),
       dataIndex: 'datasource_id',
       width: 100,
-      render: (value) => {
+      render: (value, record) => {
         return _.find(datasourceList, { id: value })?.name || '-';
       },
     },
