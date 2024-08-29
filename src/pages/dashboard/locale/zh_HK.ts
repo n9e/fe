@@ -407,6 +407,11 @@ const zh_HK = {
         barMaxWidth: '條形最大寬度',
         colorField_tip: 'Name 是保留關鍵字，序列名值的欄位名稱',
       },
+      barGauge: {
+        topn: '最多排名',
+        combine_other: '其他',
+        combine_other_tip: '超過最多排名的數據將合併為其他',
+      },
     },
     inspect: {
       title: '排查',

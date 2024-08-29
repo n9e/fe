@@ -399,6 +399,11 @@ const en_US = {
         barMaxWidth: 'Bar max width',
         colorField_tip: 'Name is a reserved keyword, used as the field name of the series name',
       },
+      barGauge: {
+        topn: 'TopN',
+        combine_other: 'Other',
+        combine_other_tip: 'The number of series that exceed the topN value will be merged into the "Other" series',
+      },
     },
     inspect: {
       title: 'Inspect',

@@ -413,6 +413,11 @@ const zh_CN = {
         barMaxWidth: '条形最大宽度',
         colorField_tip: 'Name 是保留关键字，作为序列名值的字段名',
       },
+      barGauge: {
+        topn: '最多排名',
+        combine_other: '其他',
+        combine_other_tip: '超过最多排名的数据将会合并为一个其他项',
+      },
     },
     inspect: {
       title: '排查',
