@@ -42,7 +42,7 @@ const CACHE_KEY = 'alert_events_range';
 const Event: React.FC = () => {
   const { t } = useTranslation('AlertHisEvents');
   const query = queryString.parse(useLocation().search);
-  const { groupedDatasourceList, busiGroups, feats, datasourceList } = useContext(CommonStateContext);
+  const { feats, datasourceList } = useContext(CommonStateContext);
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
   const [filter, setFilter] = useState<{
     range: IRawTimeRange;
@@ -75,7 +75,7 @@ const Event: React.FC = () => {
       dataIndex: 'datasource_id',
       width: 100,
       render: (value, record) => {
-        return _.find(groupedDatasourceList?.[record.cate], { id: value })?.name || '-';
+        return _.find(datasourceList, { id: value })?.name || '-';
       },
     },
     {

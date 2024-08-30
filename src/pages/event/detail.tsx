@@ -161,7 +161,7 @@ const EventDetailPage: React.FC = () => {
       },
     },
     {
-      label: eventDetail?.is_recovered ? t('detail.trigger_value') : t('detail.trigger_value2'),
+      label: eventDetail?.is_recovered && eventDetail?.cate === 'prometheus' ? t('detail.trigger_value') : t('detail.trigger_value2'),
       key: 'trigger_value',
       render(val) {
         return (
