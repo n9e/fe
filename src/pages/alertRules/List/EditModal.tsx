@@ -15,15 +15,16 @@
  *
  */
 import React, { useState, useEffect, useCallback, useContext } from 'react';
-import moment from 'moment';
 import _ from 'lodash';
 import { debounce, join } from 'lodash';
-import { Form, Input, InputNumber, Radio, Select, Row, Col, TimePicker, Checkbox, Tag, message, Space, Switch, Tooltip, Modal, Button } from 'antd';
+import { Form, Input, InputNumber, Radio, Select, Row, Col, TimePicker, Checkbox, Tag, AutoComplete, Space, Switch, Tooltip, Modal, Button } from 'antd';
 import { QuestionCircleFilled, MinusCircleOutlined, PlusCircleOutlined, CaretDownOutlined, PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { getTeamInfoList, getNotifiesList } from '@/services/manage';
 import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
 import { CommonStateContext } from '@/App';
+import Triggers from '@/pages/alertRules/Form/components/Triggers';
+import { alphabet } from '@/components/QueryName/utils';
 import { defaultValues } from '../Form/constants';
 
 // @ts-ignore
@@ -32,14 +33,6 @@ import ServiceCalendarSelect from 'plus:/pages/ServiceCalendar/ServiceCalendarSe
 import BatchEditNotifyChannels from 'plus:/parcels/AlertRule/BatchEditNotifyChannels';
 
 const { Option } = Select;
-const layout = {
-  labelCol: {
-    span: 3,
-  },
-  wrapperCol: {
-    span: 20,
-  },
-};
 
 const fields = [
   {
@@ -107,8 +100,10 @@ const fields = [
     name: '备注',
   },
   {
-    field: 'runbook_url',
-    name: '预案链接',
+    field: 'annotations',
+  },
+  {
+    field: 'triggers',
   },
 ];
 
@@ -124,9 +119,10 @@ function isTagValid(tag) {
 interface Props {
   isModalVisible: boolean;
   editModalFinish: Function;
+  selectedRows: any[];
 }
 
-const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish }) => {
+const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedRows }) => {
   const { t, i18n } = useTranslation('alertRules');
   const [form] = Form.useForm();
   const { datasourceList, isPlus } = useContext(CommonStateContext);
@@ -135,6 +131,7 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish }) => {
   const [field, setField] = useState<string>('datasource_ids');
   const [refresh, setRefresh] = useState(true);
   const changetoText = t('batch.update.changeto');
+  const action = Form.useWatch('action', form);
 
   useEffect(() => {
     getNotifyChannel();
@@ -249,17 +246,27 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish }) => {
         case 'notify_recovered':
           data.notify_recovered = values.notify_recovered ? 1 : 0;
           break;
+        case 'annotations':
+          if (data.action === 'cover') {
+            delete data.action;
+          }
+          break;
         default:
           break;
       }
+      const field = data.field;
       delete data.field;
       Object.keys(data).forEach((key) => {
         // 因为功能上有清除备注的需求，需要支持传空
         if (data[key] === undefined) {
           data[key] = '';
         }
-        if (Array.isArray(data[key]) && key !== 'datasource_ids' && key !== 'service_cal_ids') {
-          data[key] = data[key].join(' ');
+        if (key === 'annotations') {
+          data[key] = _.chain(data[key]).keyBy('key').mapValues('value').value();
+        } else {
+          if (Array.isArray(data[key]) && key !== 'datasource_ids' && key !== 'service_cal_ids' && field !== 'triggers') {
+            data[key] = data[key].join(' ');
+          }
         }
       });
       editModalFinish(true, data);
@@ -335,12 +342,81 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish }) => {
                     </Form.Item>
                   </>
                 );
-              case 'runbook_url':
+              case 'annotations':
                 return (
                   <>
-                    <Form.Item label={changetoText} name='runbook_url'>
-                      <Input />
+                    <Form.Item name='action' label={t('batch.update.callback_cover.mode')} initialValue='cover'>
+                      <Radio.Group
+                        buttonStyle='solid'
+                        onChange={(e) => {
+                          form.setFieldsValue({
+                            annotations: [
+                              {
+                                key: '',
+                                value: '',
+                              },
+                            ],
+                          });
+                        }}
+                      >
+                        <Radio.Button value='cover'>{t('batch.update.callback_cover.cover')}</Radio.Button>
+                        <Radio.Button value='annotations_add'>{t('batch.update.callback_cover.callback_add')}</Radio.Button>
+                        <Radio.Button value='annotations_del'>{t('batch.update.callback_cover.callback_del')}</Radio.Button>
+                      </Radio.Group>
                     </Form.Item>
+                    <Form.List name='annotations' initialValue={[{}]}>
+                      {(fields, { add, remove }) => (
+                        <div>
+                          <Space align='baseline'>
+                            {action === 'cover' && changetoText}
+                            {action === 'annotations_add' && t('batch.update.callback_cover.callback_add')}
+                            {action === 'annotations_del' && t('batch.update.callback_cover.callback_del')}
+                            <PlusCircleOutlined
+                              className='control-icon-normal'
+                              onClick={() =>
+                                add({
+                                  key: '',
+                                  value: '',
+                                })
+                              }
+                            />
+                          </Space>
+                          {fields.map((field) => (
+                            <Row gutter={16} key={field.key}>
+                              <Col flex='120px'>
+                                <Form.Item {...field} name={[field.name, 'key']}>
+                                  <AutoComplete
+                                    options={[
+                                      {
+                                        value: 'recovery_promql',
+                                      },
+                                      {
+                                        value: 'runbook_url',
+                                      },
+                                      {
+                                        value: 'dashboard_url',
+                                      },
+                                      {
+                                        value: 'summary',
+                                      },
+                                    ]}
+                                    style={{ width: 200 }}
+                                  />
+                                </Form.Item>
+                              </Col>
+                              <Col flex='auto'>
+                                <Form.Item {...field} name={[field.name, 'value']} hidden={action === 'annotations_del'}>
+                                  <Input.TextArea autoSize />
+                                </Form.Item>
+                              </Col>
+                              <Col flex='40px'>
+                                <MinusCircleOutlined className='control-icon-normal' onClick={() => remove(field.name)} />
+                              </Col>
+                            </Row>
+                          ))}
+                        </div>
+                      )}
+                    </Form.List>
                   </>
                 );
               case 'datasource_ids':
@@ -672,6 +748,42 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish }) => {
                       <ServiceCalendarSelect name='service_cal_ids' showLabel={false} />
                     </Form.Item>
                   </>
+                );
+              case 'triggers':
+                let queries: any[] = [];
+                _.forEach(selectedRows, (row) => {
+                  _.forEach(row?.rule_config?.queries, (query, index) => {
+                    queries.push({
+                      ...query,
+                      ref: alphabet[index],
+                    });
+                  });
+                });
+                queries = _.uniqBy(queries, 'ref');
+                return (
+                  <Form.Item label={changetoText}>
+                    <Form.Item name='action' initialValue='update_triggers' hidden>
+                      <div />
+                    </Form.Item>
+                    <Triggers
+                      queries={queries}
+                      initialValue={
+                        selectedRows[0]?.rule_config?.triggers || [
+                          {
+                            mode: 0,
+                            expressions: [
+                              {
+                                ref: 'A',
+                                comparisonOperator: '==',
+                                logicalOperator: '&&',
+                              },
+                            ],
+                            severity: 1,
+                          },
+                        ]
+                      }
+                    />
+                  </Form.Item>
                 );
               default:
                 return null;

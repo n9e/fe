@@ -34,7 +34,7 @@ export default function ImportBuiltinContent({ busiId, onOk, groupedDatasourceLi
   const [data, setData] = useState<Payload[]>([]);
   const [cateList, setCateList] = useState<string[]>([]);
   const [form] = Form.useForm();
-  const component = Form.useWatch('component', form);
+  const component_id = Form.useWatch('component_id', form);
   const cate = Form.useWatch('cate', form);
   const selectedRules = Form.useWatch('selectedRules', form);
   const datasourceCate = Form.useWatch('datasource_cate', form);
@@ -49,7 +49,7 @@ export default function ImportBuiltinContent({ busiId, onOk, groupedDatasourceLi
 
   useEffect(() => {
     getCates({
-      component,
+      component_id,
       type: TypeEnum.alert,
     }).then((res) => {
       setCateList(res);
@@ -57,19 +57,19 @@ export default function ImportBuiltinContent({ busiId, onOk, groupedDatasourceLi
         cate: cate || _.head(res),
       });
     });
-  }, [component]);
+  }, [component_id]);
 
   useEffect(() => {
-    if (!component || !cate) return;
+    if (!component_id || !cate) return;
     getPayloads<Payload[]>({
-      component,
+      component_id,
       type: TypeEnum.alert,
       cate: cate,
       query: filter.query,
     }).then((res) => {
       setData(res);
     });
-  }, [component, cate, filter.query]);
+  }, [component_id, cate, filter.query]);
 
   return (
     <Form
@@ -118,7 +118,7 @@ export default function ImportBuiltinContent({ busiId, onOk, groupedDatasourceLi
       {!allowSubmit && <Alert className='mb1' message={t('builtInComponents:import_to_buisGroup_invaild')} type='error' showIcon />}
       <Form.Item
         label={t('builtInComponents:component')}
-        name='component'
+        name='component_id'
         rules={[
           {
             required: true,
@@ -127,10 +127,12 @@ export default function ImportBuiltinContent({ busiId, onOk, groupedDatasourceLi
       >
         <Select
           showSearch
+          filterOption
+          optionFilterProp='label'
           options={_.map(components, (item) => {
             return {
               label: item.ident,
-              value: item.ident,
+              value: item.id,
             };
           })}
           onChange={() => {
@@ -165,7 +167,7 @@ export default function ImportBuiltinContent({ busiId, onOk, groupedDatasourceLi
           }}
         />
       </Form.Item>
-      <Form.Item name='selectedRules' label={t('builtInComponents:payloads')} hidden={!component}>
+      <Form.Item name='selectedRules' label={t('builtInComponents:payloads')} hidden={!component_id}>
         <>
           <Input
             prefix={<SearchOutlined />}

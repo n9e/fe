@@ -64,6 +64,9 @@ function index(props: Props & ModalWrapProps) {
         <Form.Item name='id' hidden>
           <div />
         </Form.Item>
+        <Form.Item name='readme' hidden>
+          <div />
+        </Form.Item>
         <Form.Item
           label={t('ident')}
           name='ident'
@@ -73,7 +76,7 @@ function index(props: Props & ModalWrapProps) {
             },
           ]}
         >
-          <Input />
+          <Input disabled={initialValues?.created_by === 'system'} />
         </Form.Item>
         <Form.Item
           label={

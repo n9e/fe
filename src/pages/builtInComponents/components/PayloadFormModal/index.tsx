@@ -88,7 +88,7 @@ function index(props: Props & ModalWrapProps) {
         <Form.Item name='type' hidden>
           <div />
         </Form.Item>
-        <Form.Item name='component' hidden>
+        <Form.Item name='component_id' hidden>
           <div />
         </Form.Item>
         {showCate && (
