@@ -21,7 +21,7 @@ import moment from 'moment';
 import _ from 'lodash';
 import { useAntdTable } from 'ahooks';
 import { Input, Tag, Button, Space, Table, Select, message } from 'antd';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import PageLayout from '@/components/pageLayout';
 import RefreshIcon from '@/components/RefreshIcon';
@@ -38,29 +38,29 @@ import '../event/index.less';
 import './locale';
 
 const CACHE_KEY = 'alert_events_range';
-
-const Event: React.FC = () => {
-  const { t } = useTranslation('AlertHisEvents');
-  const query = queryString.parse(useLocation().search);
-  const { feats, datasourceList } = useContext(CommonStateContext);
-  const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
-  const [filter, setFilter] = useState<{
-    range: IRawTimeRange;
-    datasourceIds: number[];
-    bgid?: number;
-    severity?: number;
-    eventType?: number;
-    queryContent: string;
-    rule_prods: string[];
-  }>({
+const getFilter = (query) => {
+  return {
     range: getDefaultValue(CACHE_KEY, {
       start: 'now-6h',
       end: 'now',
     }),
-    datasourceIds: [],
-    queryContent: '',
-    rule_prods: [],
-  });
+    datasource_ids: query.datasource_ids ? _.split(query.datasource_ids, ',').map(Number) : [],
+    bgid: query.bgid ? Number(query.bgid) : undefined,
+    severity: query.severity ? Number(query.severity) : undefined,
+    query: query.query || '',
+    is_recovered: query.is_recovered ? Number(query.is_recovered) : undefined,
+    rule_prods: query.rule_prods ? _.split(query.rule_prods, ',') : [],
+  };
+};
+
+const Event: React.FC = () => {
+  const { t } = useTranslation('AlertHisEvents');
+  const location = useLocation();
+  const query = queryString.parse(location.search);
+  const { feats, datasourceList } = useContext(CommonStateContext);
+  const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
+  const history = useHistory();
+  const filter = getFilter(query);
   const columns = [
     {
       title: t('prod'),
@@ -86,13 +86,12 @@ const Event: React.FC = () => {
           tags &&
           tags.map((item) => (
             <Tag
-              // color='purple'
               key={item}
               onClick={(e) => {
-                if (!filter.queryContent.includes(item)) {
-                  setFilter({
+                if (!_.includes(filter.query, item)) {
+                  updateFilter({
                     ...filter,
-                    queryContent: filter.queryContent ? `${filter.queryContent.trim()} ${item}` : item,
+                    queryContent: filter.query ? `${filter.query.trim()} ${item}` : item,
                   });
                 }
               }}
@@ -147,10 +146,10 @@ const Event: React.FC = () => {
   const [exportBtnLoadding, setExportBtnLoadding] = useState(false);
   const filterObj = Object.assign(
     { range: filter.range },
-    filter.datasourceIds.length ? { datasource_ids: _.join(filter.datasourceIds, ',') } : {},
+    filter.datasource_ids.length ? { datasource_ids: _.join(filter.datasource_ids, ',') } : {},
     filter.severity !== undefined ? { severity: filter.severity } : {},
-    filter.queryContent ? { query: filter.queryContent } : {},
-    filter.eventType !== undefined ? { is_recovered: filter.eventType } : {},
+    filter.query ? { query: filter.query } : {},
+    filter.is_recovered !== undefined ? { is_recovered: filter.is_recovered } : {},
     { bgid: filter.bgid },
     filter.rule_prods.length ? { rule_prods: _.join(filter.rule_prods, ',') } : {},
   );
@@ -170,136 +169,6 @@ const Event: React.FC = () => {
         pro: false,
       },
     ];
-  }
-
-  function renderLeftHeader() {
-    return (
-      <div className='table-operate-box'>
-        <Space>
-          <RefreshIcon
-            onClick={() => {
-              setRefreshFlag(_.uniqueId('refresh_'));
-            }}
-          />
-          <TimeRangePicker
-            localKey={CACHE_KEY}
-            value={filter.range}
-            onChange={(val) => {
-              setFilter({
-                ...filter,
-                range: val,
-              });
-            }}
-            dateFormat='YYYY-MM-DD HH:mm:ss'
-          />
-          <Select
-            allowClear
-            placeholder={t('prod')}
-            style={{ minWidth: 80 }}
-            value={filter.rule_prods}
-            mode='multiple'
-            onChange={(val) => {
-              setFilter({
-                ...filter,
-                rule_prods: val,
-              });
-            }}
-            dropdownMatchSelectWidth={false}
-          >
-            {prodOptions.map((item) => {
-              return (
-                <Select.Option value={item.value} key={item.value}>
-                  {item.label}
-                </Select.Option>
-              );
-            })}
-          </Select>
-          <DatasourceSelect
-            style={{ width: 100 }}
-            filterKey='alertRule'
-            value={filter.datasourceIds}
-            onChange={(val: number[]) => {
-              setFilter({
-                ...filter,
-                datasourceIds: val,
-              });
-            }}
-          />
-          <BusinessGroupSelectWithAll
-            value={filter.bgid}
-            onChange={(val: number) => {
-              setFilter({
-                ...filter,
-                bgid: val,
-              });
-            }}
-          />
-          <Select
-            style={{ minWidth: 60 }}
-            placeholder={t('severity')}
-            allowClear
-            value={filter.severity}
-            onChange={(val) => {
-              setFilter({
-                ...filter,
-                severity: val,
-              });
-            }}
-          >
-            <Select.Option value={1}>S1</Select.Option>
-            <Select.Option value={2}>S2</Select.Option>
-            <Select.Option value={3}>S3</Select.Option>
-          </Select>
-          <Select
-            style={{ minWidth: 60 }}
-            placeholder={t('eventType')}
-            allowClear
-            value={filter.eventType}
-            onChange={(val) => {
-              setFilter({
-                ...filter,
-                eventType: val,
-              });
-            }}
-          >
-            <Select.Option value={0}>Triggered</Select.Option>
-            <Select.Option value={1}>Recovered</Select.Option>
-          </Select>
-          <Input
-            className='search-input'
-            prefix={<SearchOutlined />}
-            placeholder={t('search_placeholder')}
-            value={filter.queryContent}
-            onChange={(e) => {
-              setFilter({
-                ...filter,
-                queryContent: e.target.value,
-              });
-            }}
-            onPressEnter={(e) => {
-              setRefreshFlag(_.uniqueId('refresh_'));
-            }}
-          />
-          <Button
-            loading={exportBtnLoadding}
-            onClick={() => {
-              setExportBtnLoadding(true);
-              const parsedRange = parseRange(filterObj.range);
-              exportEvents({ ..._.omit(filterObj, 'range'), stime: moment(parsedRange.start).unix(), etime: moment(parsedRange.end).unix(), limit: 1000000, p: 1 }, (err, csv) => {
-                if (err) {
-                  message.error(t('export_failed'));
-                } else {
-                  downloadFile(csv, `events_${moment().format('YYYY-MM-DD_HH-mm-ss')}.csv`);
-                }
-                setExportBtnLoadding(false);
-              });
-            }}
-          >
-            {t('export')}
-          </Button>
-        </Space>
-      </div>
-    );
   }
 
   const fetchData = ({ current, pageSize }) => {
@@ -332,11 +201,150 @@ const Event: React.FC = () => {
     debounceWait: 500,
   });
 
+  const updateFilter = (newFilter) => {
+    history.replace({
+      pathname: location.pathname,
+      search: queryString.stringify({
+        ...query,
+        ..._.omit(newFilter, 'range'), // range 仍然通过 loclalStorage 存储
+      }),
+    });
+  };
+
   return (
     <PageLayout icon={<AlertOutlined />} title={t('title')}>
       <div className='event-content'>
         <div className='table-area n9e-border-base'>
-          {!query.ids && renderLeftHeader()}
+          {!query.ids && (
+            <div className='table-operate-box'>
+              <Space>
+                <RefreshIcon
+                  onClick={() => {
+                    setRefreshFlag(_.uniqueId('refresh_'));
+                  }}
+                />
+                <TimeRangePicker
+                  localKey={CACHE_KEY}
+                  value={filter.range}
+                  onChange={(val) => {
+                    updateFilter({
+                      ...filter,
+                      range: val,
+                    });
+                  }}
+                  dateFormat='YYYY-MM-DD HH:mm:ss'
+                />
+                <Select
+                  allowClear
+                  placeholder={t('prod')}
+                  style={{ minWidth: 80 }}
+                  value={filter.rule_prods}
+                  mode='multiple'
+                  onChange={(val) => {
+                    updateFilter({
+                      ...filter,
+                      rule_prods: val,
+                    });
+                  }}
+                  dropdownMatchSelectWidth={false}
+                >
+                  {prodOptions.map((item) => {
+                    return (
+                      <Select.Option value={item.value} key={item.value}>
+                        {item.label}
+                      </Select.Option>
+                    );
+                  })}
+                </Select>
+                <DatasourceSelect
+                  style={{ width: 100 }}
+                  filterKey='alertRule'
+                  value={filter.datasource_ids}
+                  onChange={(val: number[]) => {
+                    updateFilter({
+                      ...filter,
+                      datasource_ids: val,
+                    });
+                  }}
+                />
+                <BusinessGroupSelectWithAll
+                  value={filter.bgid}
+                  onChange={(val: number) => {
+                    updateFilter({
+                      ...filter,
+                      bgid: val,
+                    });
+                  }}
+                />
+                <Select
+                  style={{ minWidth: 60 }}
+                  placeholder={t('severity')}
+                  allowClear
+                  value={filter.severity}
+                  onChange={(val) => {
+                    updateFilter({
+                      ...filter,
+                      severity: val,
+                    });
+                  }}
+                >
+                  <Select.Option value={1}>S1</Select.Option>
+                  <Select.Option value={2}>S2</Select.Option>
+                  <Select.Option value={3}>S3</Select.Option>
+                </Select>
+                <Select
+                  style={{ minWidth: 60 }}
+                  placeholder={t('eventType')}
+                  allowClear
+                  value={filter.is_recovered}
+                  onChange={(val) => {
+                    updateFilter({
+                      ...filter,
+                      is_recovered: val,
+                    });
+                  }}
+                >
+                  <Select.Option value={0}>Triggered</Select.Option>
+                  <Select.Option value={1}>Recovered</Select.Option>
+                </Select>
+                <Input
+                  className='search-input'
+                  prefix={<SearchOutlined />}
+                  placeholder={t('search_placeholder')}
+                  value={filter.query}
+                  onChange={(e) => {
+                    updateFilter({
+                      ...filter,
+                      query: e.target.value,
+                    });
+                  }}
+                  onPressEnter={(e) => {
+                    setRefreshFlag(_.uniqueId('refresh_'));
+                  }}
+                />
+                <Button
+                  loading={exportBtnLoadding}
+                  onClick={() => {
+                    setExportBtnLoadding(true);
+                    const parsedRange = parseRange(filterObj.range);
+                    exportEvents(
+                      { ..._.omit(filterObj, 'range'), stime: moment(parsedRange.start).unix(), etime: moment(parsedRange.end).unix(), limit: 1000000, p: 1 },
+                      (err, csv) => {
+                        if (err) {
+                          message.error(t('export_failed'));
+                        } else {
+                          downloadFile(csv, `events_${moment().format('YYYY-MM-DD_HH-mm-ss')}.csv`);
+                        }
+                        setExportBtnLoadding(false);
+                      },
+                    );
+                  }}
+                >
+                  {t('export')}
+                </Button>
+              </Space>
+            </div>
+          )}
           <Table
             className='mt8'
             size='small'
