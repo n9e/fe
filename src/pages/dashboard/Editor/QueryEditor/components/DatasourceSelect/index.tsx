@@ -59,8 +59,6 @@ export default function index({ dashboardId, chartForm, variableConfig }) {
                           },
                         ],
                         date_field: '@timestamp',
-                        interval: 1,
-                        interval_unit: 'min',
                       },
                     },
                   ],
