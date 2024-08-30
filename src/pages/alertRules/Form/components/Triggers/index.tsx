@@ -29,13 +29,14 @@ interface IProps {
   prefixName?: string[]; // 列表字段名
   queries: any[];
   disabled?: boolean;
+  initialValue?: any;
 }
 
 export default function index(props: IProps) {
   const { t } = useTranslation('alertRules');
-  const { prefixField = {}, fullPrefixName = [], prefixName = [], queries, disabled } = props;
+  const { prefixField = {}, fullPrefixName = [], prefixName = [], queries, disabled, initialValue } = props;
   return (
-    <Form.List {...prefixField} name={[...prefixName, 'triggers']}>
+    <Form.List {...prefixField} name={[...prefixName, 'triggers']} initialValue={initialValue}>
       {(fields, { add, remove }) => (
         <Card
           title={

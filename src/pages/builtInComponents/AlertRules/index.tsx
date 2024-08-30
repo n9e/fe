@@ -18,11 +18,11 @@ import { formatBeautifyJson, formatBeautifyJsons } from '../utils';
 import PayloadFormModal from '../components/PayloadFormModal';
 
 interface Props {
-  component: string;
+  component_id: number;
 }
 
 export default function index(props: Props) {
-  const { component } = props;
+  const { component_id } = props;
   const { t } = useTranslation('builtInComponents');
   const { busiGroups, groupedDatasourceList, datasourceCateOptions, darkMode } = useContext(CommonStateContext);
   const [filter, setFilter] = useState<{
@@ -37,7 +37,7 @@ export default function index(props: Props) {
   const selectedRows = useRef<RuleType[]>([]);
   const fetchData = () => {
     setLoading(true);
-    getPayloads<RuleType[]>({ component, type: TypeEnum.alert, cate: filter.cate, query: filter.query })
+    getPayloads<RuleType[]>({ component_id, type: TypeEnum.alert, cate: filter.cate, query: filter.query })
       .then((res) => {
         setData(res);
       })
@@ -47,7 +47,7 @@ export default function index(props: Props) {
   };
   const fetchCates = () => {
     getCates({
-      component,
+      component_id,
       type: TypeEnum.alert,
     }).then((res) => {
       setCateList(res);
@@ -62,7 +62,7 @@ export default function index(props: Props) {
     () => {
       fetchData();
     },
-    [component, filter.cate, filter.query],
+    [component_id, filter.cate, filter.query],
     {
       wait: 500,
     },
@@ -120,7 +120,7 @@ export default function index(props: Props) {
                   showCate: true,
                   initialValues: {
                     type: TypeEnum.alert,
-                    component,
+                    component_id,
                     cate: filter.cate,
                   },
                   onOk: () => {
