@@ -243,7 +243,8 @@ const SideMenu = () => {
       location.pathname.startsWith('/events/screen/') ||
       location.pathname.startsWith('/dashboards/share/') ||
       location.pathname === '/callback' ||
-      location.pathname.indexOf('/polaris/screen') === 0
+      location.pathname.indexOf('/polaris/screen') === 0 ||
+      location.pathname.indexOf('/template/screens/detail') === 0
     ) {
       return true;
     }
