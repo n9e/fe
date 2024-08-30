@@ -28,7 +28,7 @@ import RefreshIcon from '@/components/RefreshIcon';
 import { CommonStateContext } from '@/App';
 import { getProdOptions } from '@/pages/alertRules/Form/components/ProdSelect';
 import DatasourceSelect from '@/components/DatasourceSelect/DatasourceSelect';
-import TimeRangePicker, { IRawTimeRange, parseRange, getDefaultValue } from '@/components/TimeRangePicker';
+import TimeRangePicker, { parseRange, getDefaultValue } from '@/components/TimeRangePicker';
 import { IS_ENT } from '@/utils/constant';
 import { BusinessGroupSelectWithAll } from '@/components/BusinessGroup';
 import exportEvents, { downloadFile } from './exportEvents';
@@ -47,7 +47,7 @@ const getFilter = (query) => {
     datasource_ids: query.datasource_ids ? _.split(query.datasource_ids, ',').map(Number) : [],
     bgid: query.bgid ? Number(query.bgid) : undefined,
     severity: query.severity ? Number(query.severity) : undefined,
-    query: query.query || '',
+    query: query.query,
     is_recovered: query.is_recovered ? Number(query.is_recovered) : undefined,
     rule_prods: query.rule_prods ? _.split(query.rule_prods, ',') : [],
   };
@@ -61,6 +61,15 @@ const Event: React.FC = () => {
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
   const history = useHistory();
   const filter = getFilter(query);
+  const setFilter = (newFilter) => {
+    history.replace({
+      pathname: location.pathname,
+      search: queryString.stringify({
+        ...query,
+        ..._.omit(newFilter, 'range'), // range 仍然通过 loclalStorage 存储
+      }),
+    });
+  };
   const columns = [
     {
       title: t('prod'),
@@ -89,7 +98,7 @@ const Event: React.FC = () => {
               key={item}
               onClick={(e) => {
                 if (!_.includes(filter.query, item)) {
-                  updateFilter({
+                  setFilter({
                     ...filter,
                     queryContent: filter.query ? `${filter.query.trim()} ${item}` : item,
                   });
@@ -201,16 +210,6 @@ const Event: React.FC = () => {
     debounceWait: 500,
   });
 
-  const updateFilter = (newFilter) => {
-    history.replace({
-      pathname: location.pathname,
-      search: queryString.stringify({
-        ...query,
-        ..._.omit(newFilter, 'range'), // range 仍然通过 loclalStorage 存储
-      }),
-    });
-  };
-
   return (
     <PageLayout icon={<AlertOutlined />} title={t('title')}>
       <div className='event-content'>
@@ -227,7 +226,7 @@ const Event: React.FC = () => {
                   localKey={CACHE_KEY}
                   value={filter.range}
                   onChange={(val) => {
-                    updateFilter({
+                    setFilter({
                       ...filter,
                       range: val,
                     });
@@ -241,7 +240,7 @@ const Event: React.FC = () => {
                   value={filter.rule_prods}
                   mode='multiple'
                   onChange={(val) => {
-                    updateFilter({
+                    setFilter({
                       ...filter,
                       rule_prods: val,
                     });
@@ -261,7 +260,7 @@ const Event: React.FC = () => {
                   filterKey='alertRule'
                   value={filter.datasource_ids}
                   onChange={(val: number[]) => {
-                    updateFilter({
+                    setFilter({
                       ...filter,
                       datasource_ids: val,
                     });
@@ -270,7 +269,7 @@ const Event: React.FC = () => {
                 <BusinessGroupSelectWithAll
                   value={filter.bgid}
                   onChange={(val: number) => {
-                    updateFilter({
+                    setFilter({
                       ...filter,
                       bgid: val,
                     });
@@ -282,7 +281,7 @@ const Event: React.FC = () => {
                   allowClear
                   value={filter.severity}
                   onChange={(val) => {
-                    updateFilter({
+                    setFilter({
                       ...filter,
                       severity: val,
                     });
@@ -298,7 +297,7 @@ const Event: React.FC = () => {
                   allowClear
                   value={filter.is_recovered}
                   onChange={(val) => {
-                    updateFilter({
+                    setFilter({
                       ...filter,
                       is_recovered: val,
                     });
@@ -313,7 +312,7 @@ const Event: React.FC = () => {
                   placeholder={t('search_placeholder')}
                   value={filter.query}
                   onChange={(e) => {
-                    updateFilter({
+                    setFilter({
                       ...filter,
                       query: e.target.value,
                     });
