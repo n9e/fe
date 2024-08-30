@@ -434,7 +434,7 @@ export default function index(props: IProps) {
                           >
                             {chartVisible ? t('log.hideChart') : t('log.showChart')}
                           </a>
-                          {isPlus && <DownloadModal queryData={{ ...form.getFieldsValue(), total }} />}
+                          {isPlus && <DownloadModal queryData={{ ...form.getFieldsValue(), mode, total }} />}
                         </div>
                       </>
                     )}
