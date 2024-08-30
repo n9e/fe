@@ -191,9 +191,15 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
         logPlayload += esQuery + '\n';
       });
       logRes = await getDsQuery(datasourceValue, logPlayload);
+      // TODO: 暂时以第一个查询条件是否配置 date_format 为准，如果配置了 date_format 则所有日志的 date_field 值都会去格式化
+      const dateField = _.get(targets, '[0].query.date_field');
+      const dateFormat = _.get(targets, '[0].query.date_format');
       _.forEach(logRes, (item) => {
         const { docs } = flattenHits(item?.hits?.hits);
         _.forEach(docs, (doc: any) => {
+          if (dateField && dateFormat) {
+            _.set(doc, `fields.${dateField}`, moment(doc?.fields?.[dateField]).format(dateFormat));
+          }
           series.push({
             id: doc._id,
             name: doc._index,

@@ -31,6 +31,8 @@ const zh_CN = {
     },
     raw: {
       limit: '日志条数',
+      date_format: '日期格式',
+      date_format_tip: '使用 Moment.js 格式模式，比如 YYYY-MM-DD HH:mm:ss.SSS',
     },
     alert: {
       query: {
