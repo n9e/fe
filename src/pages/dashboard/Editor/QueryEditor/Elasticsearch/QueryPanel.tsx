@@ -1,6 +1,6 @@
 import React from 'react';
-import { Form, Row, Col, Input, InputNumber, Space, Select } from 'antd';
-import { DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { Form, Row, Col, Input, InputNumber, Space, Select, Tooltip } from 'antd';
+import { DeleteOutlined, InfoCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { FormListFieldData } from 'antd/lib/form/FormList';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -171,10 +171,26 @@ export default function QueryPanel({ fields, field, index, remove, dashboardId, 
           if (_.get(targetQueryValues, [0, 'func']) === 'rawData') {
             return (
               <Row gutter={10}>
-                <Col span={12}>
+                <Col span={8}>
                   <DateField datasourceValue={realDatasourceValue} index={indexValue} prefixField={field} prefixNames={[field.name, 'query']} />
                 </Col>
-                <Col span={12}>
+                <Col span={8}>
+                  <InputGroupWithFormItem
+                    label={
+                      <Space>
+                        {t('datasource:es.raw.date_format')}
+                        <Tooltip title={t('datasource:es.raw.date_format_tip')}>
+                          <InfoCircleOutlined />
+                        </Tooltip>
+                      </Space>
+                    }
+                  >
+                    <Form.Item {...field} name={[field.name, 'query', 'date_format']}>
+                      <Input />
+                    </Form.Item>
+                  </InputGroupWithFormItem>
+                </Col>
+                <Col span={8}>
                   <InputGroupWithFormItem label={t('datasource:es.raw.limit')}>
                     <Form.Item {...field} name={[field.name, 'query', 'limit']}>
                       <InputNumber style={{ width: '100%' }} />

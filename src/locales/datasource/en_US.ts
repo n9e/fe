@@ -31,6 +31,8 @@ const en_US = {
     },
     raw: {
       limit: 'Limit',
+      date_format: 'Date Format',
+      date_format_tip: 'Use Moment.js format pattern, such as YYYY-MM-DD HH:mm:ss.SSS',
     },
     alert: {
       query: {
