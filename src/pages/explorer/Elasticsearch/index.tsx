@@ -13,7 +13,7 @@ import { getLogsQuery } from './services';
 import { parseRange } from '@/components/TimeRangePicker';
 import Timeseries from '@/pages/dashboard/Renderer/Renderer/Timeseries';
 import { CommonStateContext } from '@/App';
-import { PRIMARY_COLOR } from '@/utils/constant';
+import { DatasourceCateEnum, PRIMARY_COLOR } from '@/utils/constant';
 import metricQuery from './metricQuery';
 import { Field, dslBuilder, Filter, getFieldLabel } from './utils';
 import FieldsSidebar from './FieldsSidebar';
@@ -243,7 +243,7 @@ export default function index(props: IProps) {
     if (defaultFormValuesControl?.defaultFormValues && defaultFormValuesControl?.isInited === false) {
       form.setFieldsValue(defaultFormValuesControl.defaultFormValues);
       defaultFormValuesControl.setIsInited();
-      setMode(getDefaultMode(query, isOpenSearch, esIndexMode, defaultFormValuesControl.defaultFormValues?.query?.mode));
+      setMode(getDefaultMode(query, isOpenSearch, esIndexMode, defaultFormValuesControl?.defaultFormValues?.query?.mode));
     }
   }, []);
 
@@ -434,7 +434,7 @@ export default function index(props: IProps) {
                           >
                             {chartVisible ? t('log.hideChart') : t('log.showChart')}
                           </a>
-                          {isPlus && <DownloadModal queryData={{ ...form.getFieldsValue(), total }} />}
+                          {isPlus && <DownloadModal queryData={{ ...form.getFieldsValue(), mode, total }} />}
                         </div>
                       </>
                     )}

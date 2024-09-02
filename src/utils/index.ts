@@ -21,6 +21,8 @@ import i18next from 'i18next';
 import { JSEncrypt } from 'js-encrypt';
 import { IStore } from '@/store/common';
 export { getDefaultDatasourceValue, setDefaultDatasourceValue } from './datasource';
+import ExcelJS from 'exceljs';
+import { saveAs } from 'file-saver';
 
 export const isPromise = (obj) => {
   return !!obj && (typeof obj === 'object' || typeof obj === 'function') && typeof obj.then === 'function';
@@ -87,9 +89,9 @@ export const copy2ClipBoard = (text: string, silent = false): boolean => {
   let succeeded;
   try {
     succeeded = document.execCommand('copy');
-    !silent && message.success('复制到剪贴板');
+    !silent && message.success(i18next.t('复制到剪贴板'));
   } catch (err) {
-    message.error('复制失败');
+    message.error(i18next.t('复制失败'));
     succeeded = false;
   }
   if (succeeded) {
@@ -224,3 +226,29 @@ export const RSAEncrypt = (str: string): string => {
   }
   return encrypt.encrypt(str);
 };
+
+interface IData {
+  sheetName: string;
+  columns: { header: string; key: string; width?: number }[];
+  list: any[];
+}
+
+export async function downloadExcel(fileName: string = 'download.xlsx', data: IData[]) {
+  try {
+    const workbook = new ExcelJS.Workbook();
+    for (let i = 0; i < data.length; i++) {
+      const el = data[i];
+      const workSheet = workbook.addWorksheet(el.sheetName);
+      workSheet.columns = el.columns;
+      workSheet.columns.forEach((column) => {
+        column.width = column.header?.length! < 15 ? 15 : column.header?.length;
+      });
+      workSheet.addRows(el.list);
+    }
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    saveAs(new Blob([buffer], { type: 'text/plain;charset=utf-8' }), fileName);
+  } catch (error) {
+    throw new Error('下载错误: ' + error);
+  }
+}
