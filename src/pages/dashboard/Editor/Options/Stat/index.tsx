@@ -19,14 +19,16 @@ import GraphStyles from './GraphStyles';
 import StandardOptions from '../../Fields/StandardOptions';
 import ValueMappings from '../../Fields/ValueMappings';
 import Thresholds from '../../Fields/Thresholds';
+import Overrides from '../../Fields/Overrides';
 
-export default function Stat() {
+export default function Stat({ targets }) {
   return (
     <>
       <GraphStyles />
       <Thresholds />
       <ValueMappings />
       <StandardOptions />
+      <Overrides targets={targets} matcherNames={['byFrameRefID']} overrideOptions={['thresholds']} />
     </>
   );
 }

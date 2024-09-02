@@ -1,17 +1,34 @@
 import React, { useRef, useEffect } from 'react';
 import _ from 'lodash';
 import TsGraph from '@fc-plot/ts-graph';
+import { IOverride } from '../../../types';
 import { getSerieTextObj } from '../../utils/getCalculatedValuesBySeries';
+import getOverridePropertiesByName from '../../utils/getOverridePropertiesByName';
 
 const UNIT_PADDING = 4;
 const getTextColor = (color, colorMode) => {
   return colorMode === 'value' ? color : '#fff';
 };
 
-export default function StatItem(props) {
+interface Props {
+  item: any;
+  textMode: string;
+  colorMode: string;
+  textSize: any;
+  isFullSizeBackground: boolean;
+  valueField: string;
+  graphMode: string;
+  serie: any;
+  options: any;
+  style: any;
+  minFontSize: any;
+  overrides: IOverride[];
+}
+
+export default function StatItem(props: Props) {
   const chartEleRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<TsGraph>(null);
-  const { textMode, colorMode, textSize, isFullSizeBackground, valueField = 'Value', graphMode, serie, options, style, width, height, minFontSize } = props;
+  const { textMode, colorMode, textSize, isFullSizeBackground, valueField = 'Value', graphMode, serie, options, style, minFontSize, overrides } = props;
   let item = props.item;
 
   if (valueField !== 'Value') {
@@ -33,6 +50,14 @@ export default function StatItem(props) {
     } else {
       item.value = value;
     }
+  }
+
+  const overrideProps = getOverridePropertiesByName(overrides, 'byFrameRefID', item.fields?.refId);
+  if (!_.isEmpty(overrideProps)) {
+    const textObj = getSerieTextObj(item?.stat, overrideProps?.standardOptions, overrideProps?.valueMappings, overrideProps?.thresholds);
+    item.value = textObj.value;
+    item.unit = textObj.unit;
+    item.color = textObj.color;
   }
 
   const color = item.color;
