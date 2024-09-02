@@ -28,6 +28,7 @@ export interface shieldItem {
   mute_time_type: 0 | 1;
   periodic_mutes: any[];
   prod: string;
+  note?: string;
 }
 
 export interface IshieldState {

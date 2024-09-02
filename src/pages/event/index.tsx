@@ -19,6 +19,8 @@ import { Button, Input, message, Modal, Select, Space, Row, Col, Dropdown, Menu 
 import { AlertOutlined, ExclamationCircleOutlined, SearchOutlined, AppstoreOutlined, UnorderedListOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
+import queryString from 'query-string';
+import { useLocation, useHistory } from 'react-router-dom';
 import PageLayout from '@/components/pageLayout';
 import { deleteAlertEvents } from '@/services/warning';
 import { AutoRefresh } from '@/components/TimeRangePicker';
@@ -37,6 +39,17 @@ import './index.less';
 import BatchAckBtn from 'plus:/parcels/Event/Acknowledge/BatchAckBtn';
 
 const CACHE_KEY = 'alert_active_events_range';
+const getFilter = (query) => {
+  return {
+    range: undefined,
+    datasource_ids: query.datasource_ids ? _.split(query.datasource_ids, ',').map(Number) : [],
+    bgid: query.bgid ? Number(query.bgid) : undefined,
+    severity: query.severity ? Number(query.severity) : undefined,
+    query: query.query,
+    is_recovered: query.is_recovered ? Number(query.is_recovered) : undefined,
+    rule_prods: query.rule_prods ? _.split(query.rule_prods, ',') : [],
+  };
+};
 
 const { confirm } = Modal;
 export const SeverityColor = ['red', 'orange', 'yellow', 'green'];
@@ -61,21 +74,20 @@ export function deleteAlertEventsModal(ids: number[], onSuccess = () => {}, t) {
 const Event: React.FC = () => {
   const { t } = useTranslation('AlertCurEvents');
   const [view, setView] = useState<'card' | 'list'>('card');
-  const { busiGroups, feats } = useContext(CommonStateContext);
-  const [filter, setFilter] = useState<{
-    range?: IRawTimeRange;
-    cate?: string;
-    datasourceIds: number[];
-    bgid?: number;
-    severity?: number;
-    queryContent: string;
-    rule_prods: string[];
-  }>({
-    range: undefined,
-    datasourceIds: [],
-    queryContent: '',
-    rule_prods: [],
-  });
+  const { feats } = useContext(CommonStateContext);
+  const location = useLocation();
+  const history = useHistory();
+  const query = queryString.parse(location.search);
+  const filter = getFilter(query);
+  const setFilter = (newFilter) => {
+    history.replace({
+      pathname: location.pathname,
+      search: queryString.stringify({
+        ...query,
+        ..._.omit(newFilter, 'range'), // range 仍然通过 loclalStorage 存储
+      }),
+    });
+  };
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
   let prodOptions = getProdOptions(feats);
@@ -138,11 +150,11 @@ const Event: React.FC = () => {
           <DatasourceSelect
             style={{ width: 100 }}
             filterKey='alertRule'
-            value={filter.datasourceIds}
+            value={filter.datasource_ids}
             onChange={(val: number[]) => {
               setFilter({
                 ...filter,
-                datasourceIds: val,
+                datasource_ids: val,
               });
             }}
           />
@@ -175,11 +187,11 @@ const Event: React.FC = () => {
             className='search-input'
             prefix={<SearchOutlined />}
             placeholder={t('search_placeholder')}
-            value={filter.queryContent}
+            value={filter.query}
             onChange={(e) => {
               setFilter({
                 ...filter,
-                queryContent: e.target.value,
+                query: e.target.value,
               });
             }}
           />
@@ -236,9 +248,9 @@ const Event: React.FC = () => {
 
   const filterObj = Object.assign(
     { range: filter.range },
-    filter.datasourceIds.length ? { datasource_ids: filter.datasourceIds } : {},
+    filter.datasource_ids.length ? { datasource_ids: filter.datasource_ids } : {},
     filter.severity ? { severity: filter.severity } : {},
-    filter.queryContent ? { query: filter.queryContent } : {},
+    filter.query ? { query: filter.query } : {},
     { bgid: filter.bgid },
     filter.rule_prods.length ? { rule_prods: _.join(filter.rule_prods, ',') } : {},
   );
