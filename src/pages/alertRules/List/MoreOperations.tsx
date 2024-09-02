@@ -105,18 +105,20 @@ export default function MoreOperations(props: MoreOperationsProps) {
             >
               <span>{t('batch.update.title')}</span>
             </li>
-            <li
-              className='ant-dropdown-menu-item'
-              onClick={() => {
-                CloneToHosts({
-                  gid: bgid,
-                  ids: selectRowKeys,
-                  onOk: getAlertRules,
-                });
-              }}
-            >
-              <span>{t('batch.cloneToHosts.title')}</span>
-            </li>
+            {isPlus && (
+              <li
+                className='ant-dropdown-menu-item'
+                onClick={() => {
+                  CloneToHosts({
+                    gid: bgid,
+                    ids: selectRowKeys,
+                    onOk: getAlertRules,
+                  });
+                }}
+              >
+                <span>{t('batch.cloneToHosts.title')}</span>
+              </li>
+            )}
           </ul>
         }
         trigger={['click']}
