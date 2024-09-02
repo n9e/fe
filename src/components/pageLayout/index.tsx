@@ -184,7 +184,6 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                       {curLanguage}
                     </a>
                   </Dropdown>
-
                   <div style={{ marginRight: 8 }}>
                     <DarkModeSelect />
                   </div>

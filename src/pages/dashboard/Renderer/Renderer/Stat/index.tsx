@@ -55,7 +55,7 @@ const getColumnsKeys = (data: any[]) => {
 
 export default function Stat(props: IProps) {
   const { values, series, bodyWrapRef, isPreview } = props;
-  const { custom, options } = values;
+  const { custom, options, overrides } = values;
   const { calc, textMode, colorMode, colSpan, textSize, valueField, graphMode, orientation } = custom;
   const calculatedValues = getCalculatedValuesBySeries(
     series,
@@ -132,7 +132,7 @@ export default function Stat(props: IProps) {
             colSpan === 0 &&
             orientation === 'auto' &&
             grid &&
-            _.map(calculatedValues, (item, idx) => {
+            _.map(calculatedValues, (item) => {
               const isLastRow = yGrid === grid.yCount - 1;
               const itemWidth = isLastRow ? grid.widthOnLastRow : grid.width;
               const itemHeight = grid.height;
@@ -147,7 +147,6 @@ export default function Stat(props: IProps) {
                 <StatItem
                   key={item.id}
                   item={item}
-                  idx={idx}
                   textMode={textMode}
                   colorMode={colorMode}
                   textSize={textSize}
@@ -156,9 +155,8 @@ export default function Stat(props: IProps) {
                   graphMode={graphMode}
                   serie={_.find(series, { id: item.id })}
                   options={options}
-                  width={itemWidth}
-                  height={itemHeight}
                   minFontSize={minFontSize}
+                  overrides={overrides}
                   style={{
                     position: 'absolute',
                     left: xPos,
@@ -172,12 +170,11 @@ export default function Stat(props: IProps) {
           {eleSize?.width &&
             colSpan === 0 &&
             orientation !== 'auto' &&
-            _.map(calculatedValues, (item, idx) => {
+            _.map(calculatedValues, (item) => {
               return (
                 <StatItem
                   key={item.id}
                   item={item}
-                  idx={idx}
                   textMode={textMode}
                   colorMode={colorMode}
                   textSize={textSize}
@@ -186,9 +183,8 @@ export default function Stat(props: IProps) {
                   graphMode={graphMode}
                   serie={_.find(series, { id: item.id })}
                   options={options}
-                  width={orientation === 'horizontal' ? (eleSize?.width as number) * (100 / calculatedValues.length / 100) : eleSize?.width}
-                  height={orientation === 'vertical' ? (eleSize?.height as number) * (100 / calculatedValues.length / 100) : eleSize?.height}
                   minFontSize={minFontSize}
+                  overrides={overrides}
                   style={
                     orientation === 'horizontal'
                       ? {
