@@ -334,7 +334,7 @@ export default function index(props: ITimeRangePickerProps) {
         placement='bottomRight'
         visible={visible}
         onVisibleChange={(v) => {
-          setVisible(v);
+          !disabled && setVisible(v);
         }}
       >
         <Button
