@@ -80,7 +80,7 @@ export default function GraphStyles({ variableConfigWithOptions }) {
         }
         name={[...namePrefix, 'content']}
       >
-        <Mentions prefix='$' rows={3} placeholder={t('panel.custom.text.content_placeholder')}>
+        <Mentions prefix='$' autoSize={{ minRows: 3 }} placeholder={t('panel.custom.text.content_placeholder')}>
           {_.map(variableConfigWithOptions, (item) => {
             return (
               <Mentions.Option key={item.name} value={item.name}>

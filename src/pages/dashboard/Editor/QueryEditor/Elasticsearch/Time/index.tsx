@@ -36,7 +36,7 @@ export default function index({ prefixField = {}, prefixNameField = [], chartFor
           <Input.Group>
             <span className='ant-input-group-addon'>{t('datasource:es.interval')}</span>
             <Form.Item {...prefixField} name={[...prefixNameField, 'query', 'interval']} noStyle>
-              <InputNumber style={{ width: '100%' }} />
+              <InputNumber style={{ width: '100%' }} placeholder='auto' />
             </Form.Item>
             <span className='ant-input-group-addon'>
               <Form.Item {...prefixField} name={[...prefixNameField, 'query', 'interval_unit']} noStyle initialValue='min'>

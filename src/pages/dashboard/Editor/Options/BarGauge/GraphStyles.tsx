@@ -15,7 +15,7 @@
  *
  */
 import React, { useEffect } from 'react';
-import { Form, Select, Row, Col, InputNumber, Input } from 'antd';
+import { Form, Select, Row, Col, InputNumber, Input, Switch } from 'antd';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
 import { Panel } from '../../Components/Collapse';
@@ -24,11 +24,10 @@ import ColorPicker from '../../../Components/ColorPicker';
 import { useGlobalState } from '../../../globalState';
 
 export default function GraphStyles() {
-  const { t, i18n } = useTranslation('dashboard');
+  const { t } = useTranslation('dashboard');
   const namePrefix = ['custom'];
   const [statFields, setStatFields] = useGlobalState('statFields');
   const fields = _.compact(_.concat(statFields, 'Value'));
-  const valueField = Form.useWatch([...namePrefix, 'valueField']);
 
   useEffect(() => {
     return () => {
@@ -108,6 +107,16 @@ export default function GraphStyles() {
           <Col span={3}>
             <Form.Item label={t('panel.custom.baseColor')} name={[...namePrefix, 'baseColor']}>
               <ColorPicker />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item label={t('panel.custom.barGauge.topn')} name={[...namePrefix, 'topn']}>
+              <InputNumber style={{ width: '100%' }} />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item label={t('panel.custom.barGauge.combine_other')} tooltip={t('panel.custom.barGauge.combine_other_tip')} name={[...namePrefix, 'combine_other']}>
+              <Switch />
             </Form.Item>
           </Col>
         </Row>
