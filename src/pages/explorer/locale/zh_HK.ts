@@ -39,8 +39,8 @@ const zh_HK = {
       time_sort_asc: '時間升序',
       all: '全部',
       custom: '自定義',
-      custom_validated: '日誌數量必須大於0',
-      all_quantity: '數量約',
+      custom_validated: '日誌數量必須在1-65535之间',
+      all_quantity: '总数約',
       createSuccess: '任務創建成功',
     },
     log_export: {

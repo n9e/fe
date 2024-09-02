@@ -39,8 +39,8 @@ const zh_CN = {
       time_sort_asc: '时间升序',
       all: '全部',
       custom: '自定义',
-      custom_validated: '日志数量必须大约0',
-      all_quantity: '数量约',
+      custom_validated: '數量必須在1-65535之间',
+      all_quantity: '总数约',
       createSuccess: '任务创建成功',
     },
     log_export: {

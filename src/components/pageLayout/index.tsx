@@ -188,7 +188,6 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                   <div style={{ marginRight: 8 }}>
                     <DarkModeSelect />
                   </div>
-
                   <Dropdown overlay={menu} trigger={['click']}>
                     <span className='avator' style={{ cursor: 'pointer' }}>
                       <img src={profile.portrait || '/image/avatar1.png'} alt='' />
