@@ -14,11 +14,12 @@
  * limitations under the License.
  *
  */
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useMemo } from 'react';
 import { Tooltip } from 'antd';
 import _ from 'lodash';
 import Color from 'color';
 import { useSize } from 'ahooks';
+import { getTextWidth } from '@/pages/dashboard/Renderer/Renderer/Hexbin/utils';
 import { IPanel, IBarGaugeStyles } from '../../../types';
 import getCalculatedValuesBySeries from '../../utils/getCalculatedValuesBySeries';
 import { getDetailUrl } from '../../utils/replaceExpressionDetail';
@@ -47,9 +48,9 @@ const getColumnsKeys = (data: any[]) => {
 };
 
 function Item(props) {
-  const { item, custom, themeMode, maxValue, time } = props;
+  const { item, custom, themeMode, maxValue, time, maxNameWidth } = props;
   const metric = item.metric;
-  const { baseColor = '#FF656B', displayMode = 'basic', serieWidth = 20, detailUrl, nameField } = custom as IBarGaugeStyles;
+  const { baseColor = '#FF656B', displayMode = 'basic', serieWidth, detailUrl, nameField } = custom as IBarGaugeStyles;
   const name = nameField ? _.get(metric, nameField, item.name) : item.name;
   const color = item.color ? item.color : baseColor;
   const bgRef = useRef(null);
@@ -73,7 +74,7 @@ function Item(props) {
         <div
           className='renderer-bar-gauge-item-name'
           style={{
-            width: `${serieWidth}%`,
+            width: serieWidth ? `${serieWidth}%` : `${maxNameWidth + 4}px`, // 4px 是 省略号的宽度
           }}
         >
           {detailUrl ? (
@@ -88,7 +89,7 @@ function Item(props) {
         <div
           className='renderer-bar-gauge-item-value'
           style={{
-            width: `${100 - serieWidth}%`,
+            width: '100%',
           }}
         >
           <div
@@ -107,7 +108,7 @@ function Item(props) {
                 .alpha(displayMode === 'basic' ? 0.2 : 1)
                 .rgb()
                 .string(),
-              width: `${(item.value / maxValue) * 100}%`,
+              width: `${(item.stat / maxValue) * 100}%`,
             }}
           >
             {displayMode === 'basic' && (
@@ -133,7 +134,9 @@ function Item(props) {
 export default function BarGauge(props: IProps) {
   const { values, series, themeMode, time, isPreview } = props;
   const { custom, options } = values;
-  const { calc, maxValue, sortOrder = 'desc', valueField = 'Value' } = custom;
+  const { calc, maxValue, sortOrder = 'desc', valueField = 'Value', topn, combine_other } = custom;
+  const containerRef = useRef(null);
+  const containerSize = useSize(containerRef);
   const [statFields, setStatFields] = useGlobalState('statFields');
   let calculatedValues = getCalculatedValuesBySeries(
     series,
@@ -160,19 +163,68 @@ export default function BarGauge(props: IProps) {
           options?.valueMappings,
           options?.thresholds,
         );
+        itemClone.stat = _.toNumber(value);
         itemClone.value = result?.value;
         itemClone.unit = result?.unit;
         itemClone.color = result?.color;
       } else {
+        itemClone.stat = value;
         itemClone.value = value;
       }
       return itemClone;
     });
   }
-  if (sortOrder && sortOrder !== 'none') {
-    calculatedValues = _.orderBy(calculatedValues, ['value'], [sortOrder]);
+  if (topn) {
+    const items = _.take(calculatedValues, topn);
+    if (combine_other) {
+      const sumValue = _.sumBy(_.slice(calculatedValues, topn), (item) => {
+        return item.stat;
+      });
+      const textObj = getSerieTextObj(
+        sumValue,
+        {
+          unit: options?.standardOptions?.util,
+          decimals: options?.standardOptions?.decimals,
+          dateFormat: options?.standardOptions?.dateFormat,
+        },
+        options?.valueMappings,
+      );
+      calculatedValues = _.concat(items, [
+        {
+          id: 'other',
+          name: 'Other',
+          stat: sumValue,
+          value: textObj?.value,
+          unit: textObj?.unit,
+        },
+      ]);
+    } else {
+      calculatedValues = items;
+    }
   }
-  const curMaxValue = maxValue !== undefined && maxValue !== null ? maxValue : _.maxBy(calculatedValues, 'value')?.value || 0;
+  if (sortOrder && sortOrder !== 'none') {
+    calculatedValues = _.orderBy(calculatedValues, ['stat'], [sortOrder]);
+  }
+  const curMaxValue = maxValue !== undefined && maxValue !== null ? maxValue : _.maxBy(calculatedValues, 'stat')?.stat || 0;
+  const maxNameWidth = useMemo(() => {
+    if (containerSize) {
+      let max = 0;
+      _.forEach(calculatedValues, (item) => {
+        const { metric } = item;
+        const { nameField } = custom;
+        const name = nameField ? _.get(metric, nameField, item.name) : item.name;
+        const nameWidth = getTextWidth(name);
+        if (nameWidth > max) {
+          max = nameWidth;
+        }
+      });
+      if (max > (containerSize.width - 10) / 2) {
+        return (containerSize.width - 10) / 2;
+      }
+      return max;
+    }
+    return 0;
+  }, [calculatedValues, containerSize]);
 
   useEffect(() => {
     if (isPreview) {
@@ -182,9 +234,9 @@ export default function BarGauge(props: IProps) {
 
   return (
     <div className='renderer-bar-gauge-container'>
-      <div className='renderer-bar-gauge scroll-container'>
+      <div className='renderer-bar-gauge scroll-container' ref={containerRef}>
         {_.map(calculatedValues, (item) => {
-          return <Item key={item.id} item={item} custom={custom} themeMode={themeMode} maxValue={curMaxValue} time={time} />;
+          return <Item key={item.id} item={item} custom={custom} themeMode={themeMode} maxValue={curMaxValue} time={time} maxNameWidth={maxNameWidth} />;
         })}
       </div>
     </div>

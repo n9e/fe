@@ -201,7 +201,7 @@ export function getVaraiableSelected(varaiableItem: IVariable, id: string) {
     }
     return v;
   } else {
-    if (v === null || v === undefined) return undefined;
+    if (v === null || v === undefined || v === '') return undefined;
     if (_.isArray(v) && v.length === 0) {
       return [];
     }

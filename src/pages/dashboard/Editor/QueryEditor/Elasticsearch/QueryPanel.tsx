@@ -172,14 +172,7 @@ export default function QueryPanel({ fields, field, index, remove, dashboardId, 
             return (
               <Row gutter={10}>
                 <Col span={12}>
-                  <Form.Item shouldUpdate noStyle>
-                    {({ getFieldValue }) => {
-                      let datasourceValue = getFieldValue('datasourceValue');
-                      datasourceValue = replaceExpressionVars(datasourceValue as any, variableConfig, variableConfig.length, _.toString(dashboardId));
-                      const index = getFieldValue(['targets', field.name, 'query', 'index']);
-                      return <DateField datasourceValue={datasourceValue} index={index} prefixField={field} prefixNames={[field.name, 'query']} />;
-                    }}
-                  </Form.Item>
+                  <DateField datasourceValue={realDatasourceValue} index={indexValue} prefixField={field} prefixNames={[field.name, 'query']} />
                 </Col>
                 <Col span={12}>
                   <InputGroupWithFormItem label={t('datasource:es.raw.limit')}>

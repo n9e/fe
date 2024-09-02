@@ -3,7 +3,6 @@ import moment from 'moment';
 import semver from 'semver';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { getDsQuery, getESVersion } from '@/services/warning';
-import { normalizeTime } from '@/pages/alertRules/utils';
 import { fetchHistoryRangeBatch2 } from '@/services/dashboardV2';
 import { ITarget } from '../../../types';
 import { IVariable } from '../../../VariableConfig/definition';
@@ -12,6 +11,7 @@ import { getSeriesQuery, getLogsQuery } from './queryBuilder';
 import { processResponseToSeries } from './processResponse';
 import { flattenHits } from '@/pages/explorer/Elasticsearch/utils';
 import { N9E_PATHNAME, IS_PLUS } from '@/utils/constant';
+import { normalizeInterval } from './utils';
 
 interface IOptions {
   dashboardId: string;
@@ -96,7 +96,7 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
               values: query?.values,
               group_by: query.group_by,
               date_field: query.date_field,
-              interval: `${normalizeTime(query.interval, query.interval_unit)}s`,
+              interval: `${normalizeInterval(parsedRange, query.interval, query.interval_unit)}s`,
               start,
               end,
             });
@@ -114,7 +114,7 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
                   value: item,
                   group_by: query.group_by,
                   date_field: query.date_field,
-                  interval: normalizeTime(query.interval, query.interval_unit),
+                  interval: normalizeInterval(parsedRange, query.interval, query.interval_unit),
                   start: moment(parsedRange.start).unix(),
                   end: moment(parsedRange.end).unix(),
                 },

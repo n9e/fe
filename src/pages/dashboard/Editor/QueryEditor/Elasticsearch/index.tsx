@@ -36,8 +36,6 @@ export default function Elasticsearch({ chartForm, variableConfig, dashboardId }
                       },
                     ],
                     date_field: '@timestamp',
-                    interval: 1,
-                    interval_unit: 'min',
                   },
                   refId: newRefId,
                 });

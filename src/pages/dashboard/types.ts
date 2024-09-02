@@ -181,7 +181,7 @@ export interface IBarGaugeStyles {
   nameField?: string;
   maxValue: number;
   baseColor: string;
-  serieWidth: number;
+  serieWidth: number | null;
   sortOrder: 'none' | 'asc' | 'desc';
   detailUrl: string | undefined;
 }
