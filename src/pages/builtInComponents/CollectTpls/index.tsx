@@ -163,7 +163,7 @@ export default function index(props: Props) {
                             GroupSelectModal({
                               busiGroups,
                               onOk: (group_id) => {
-                                window.open(`/collects/add/${group_id}?component=${component}&cate=${record.cate}&payloadID=${record.id}`, '_blank');
+                                window.open(`/collects/add/${group_id}?component_id=${component_id}&cate=${record.cate}&payloadID=${record.id}`, '_blank');
                               },
                             });
                           }}
