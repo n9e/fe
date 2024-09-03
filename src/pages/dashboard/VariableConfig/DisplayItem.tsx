@@ -188,6 +188,7 @@ export default function DisplayItem(props: IProps) {
               setSelected(value as any);
               onChange(value);
             }}
+            optionFilterProp='children'
           >
             {_.map(options as any, (item) => (
               <Select.Option key={item.id} value={item.id}>
