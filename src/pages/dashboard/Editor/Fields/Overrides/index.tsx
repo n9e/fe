@@ -29,9 +29,10 @@ interface Props {
   targets: any;
   matcherNames?: string[];
   overrideOptions?: string[];
+  showMinMax?: boolean;
 }
 
-export default function index({ targets, matcherNames = ['byFrameRefID', 'byName'], overrideOptions }: Props) {
+export default function index({ targets, matcherNames = ['byFrameRefID', 'byName'], overrideOptions, showMinMax }: Props) {
   const { t } = useTranslation('dashboard');
   const [tableFields] = useGlobalState('tableFields');
   const namePrefix = ['overrides'];
@@ -139,7 +140,7 @@ export default function index({ targets, matcherNames = ['byFrameRefID', 'byName
                 />
               )}
               <ValueMappings preNamePrefix={namePrefix} namePrefix={[name, 'properties', 'valueMappings']} />
-              <StandardOptions preNamePrefix={namePrefix} namePrefix={[name, 'properties', 'standardOptions']} />
+              <StandardOptions preNamePrefix={namePrefix} namePrefix={[name, 'properties', 'standardOptions']} showMinMax={showMinMax} />
             </Panel>
           );
         })
