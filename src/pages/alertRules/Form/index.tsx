@@ -96,7 +96,7 @@ export default function index(props: IProps) {
   };
 
   useEffect(() => {
-    if (type === 1 || type === 2 || type === 3) {
+    if (type === 1 || type === 2 || type === 3 || !_.isEmpty(initialValues)) {
       form.setFieldsValue(processInitialValues(initialValues));
     } else {
       form.setFieldsValue({
