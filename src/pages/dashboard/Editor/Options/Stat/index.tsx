@@ -27,8 +27,8 @@ export default function Stat({ targets }) {
       <GraphStyles />
       <Thresholds />
       <ValueMappings />
-      <StandardOptions />
-      <Overrides targets={targets} matcherNames={['byFrameRefID']} overrideOptions={['thresholds']} />
+      <StandardOptions showMinMax={false} />
+      <Overrides targets={targets} matcherNames={['byFrameRefID']} overrideOptions={['thresholds']} showMinMax={false} />
     </>
   );
 }
