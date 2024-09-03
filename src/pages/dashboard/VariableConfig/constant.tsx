@@ -134,7 +134,8 @@ function attachVariable2Url(key, value, id: string, vars?: IVariable[]) {
     newQuery[key] = _.isEmpty(value) && !_.isNumber(value) ? undefined : value;
   });
   // 当清空变量值时，需要在开启固定变量值模式，以防止变量值又处理默认值逻辑
-  if (value === undefined) {
+  // 2024-09-03 新增 _.isEqual(value, []) 考虑多选的情况
+  if (value === undefined || _.isEqual(value, [])) {
     newQuery['__variable_value_fixed'] = 'true';
   }
   const newurl = `${protocol}//${host}${pathname}?${queryString.stringify(newQuery)}`;
