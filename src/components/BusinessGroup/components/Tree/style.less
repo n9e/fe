@@ -1,0 +1,37 @@
+.n9e-tree-container {
+  height: 100%;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  .n9e-tree-node-title {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 4px;
+    white-space: normal;
+    word-break: break-all;
+  }
+  .n9e-tree-node-title-text {
+    cursor: pointer;
+    width: 100%;
+    &:hover {
+      color: var(--fc-fill-primary);
+    }
+  }
+  .n9e-tree-node-icon {
+    padding: 0 4px;
+    cursor: pointer;
+  }
+  .n9e-tree-node-selected-title {
+    .n9e-tree-node-title-text {
+      color: var(--fc-fill-primary);
+    }
+  }
+  .n9e-tree-children {
+    margin-left: 12px;
+    padding-left: 10px;
+    border-left: 1px solid #d9d9d9;
+  }
+}
