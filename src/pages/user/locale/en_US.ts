@@ -38,17 +38,6 @@ const en_US = {
       - monitoring <1 />
       - login <1 />
     `,
-    label_enable: 'Use as a label',
-    label_enable_tip:
-      'The system will automatically use the English identifier of the business group as a label attached to the time series data of the monitoring object under the business group',
-    label_value: 'Ident',
-    label_value_tip: `
-      <0>
-        Use English, and it cannot be repeated with other business group, the system will automatically generate
-        <1>busigroup={{val}}</1>
-        label
-      </0>
-    `,
     team_name: 'Team',
     perm_flag_0: 'ro',
     perm_flag_1: 'rw',
