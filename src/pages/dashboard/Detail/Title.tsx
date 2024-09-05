@@ -19,7 +19,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import querystring from 'query-string';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Button, Space, Dropdown, Menu, Switch, notification, Select, Input, message } from 'antd';
+import { Button, Space, Dropdown, Menu, notification, Input, message, Tooltip } from 'antd';
 import { RollbackOutlined, SettingOutlined, SaveOutlined, FullscreenOutlined, DownOutlined } from '@ant-design/icons';
 import { useKeyPress } from 'ahooks';
 import { TimeRangePickerWithRefresh, IRawTimeRange } from '@/components/TimeRangePicker';
@@ -33,7 +33,6 @@ import { dashboardTimeCacheKey } from './Detail';
 import FormModal from '../List/FormModal';
 import ImportGrafanaURLFormModal from '../List/ImportGrafanaURLFormModal';
 import { IDashboard, ILink } from '../types';
-import { dashboardThemeModeCacheKey, getDefaultThemeMode } from './utils';
 import { useGlobalState } from '../globalState';
 
 interface IProps {
@@ -294,25 +293,26 @@ export default function Title(props: IProps) {
               )}
             </>
           )}
-          <Button
-            onClick={() => {
-              const newQuery = _.omit(querystring.parse(window.location.search), ['viewMode', 'themeMode']);
-              if (!viewMode) {
-                newQuery.viewMode = 'fullscreen';
-                newQuery.themeMode = localStorage.getItem(dashboardThemeModeCacheKey) || 'light';
-                isClickTrigger.current = true;
-              }
-              history.replace({
-                pathname: location.pathname,
-                search: querystring.stringify(newQuery),
-              });
-              // TODO: 解决仪表盘 layout resize 问题
-              setTimeout(() => {
-                window.dispatchEvent(new Event('resize'));
-              }, 500);
-            }}
-            icon={<FullscreenOutlined />}
-          />
+          <Tooltip title={dashboard.configs?.mode === 'iframe' ? t('embeddedDashboards:exitFullScreen_tip') : undefined}>
+            <Button
+              onClick={() => {
+                const newQuery = _.omit(querystring.parse(window.location.search), ['viewMode', 'themeMode']);
+                if (!viewMode) {
+                  newQuery.viewMode = 'fullscreen';
+                  isClickTrigger.current = true;
+                }
+                history.replace({
+                  pathname: location.pathname,
+                  search: querystring.stringify(newQuery),
+                });
+                // TODO: 解决仪表盘 layout resize 问题
+                setTimeout(() => {
+                  window.dispatchEvent(new Event('resize'));
+                }, 500);
+              }}
+              icon={<FullscreenOutlined />}
+            />
+          </Tooltip>
         </Space>
       </div>
     </div>
