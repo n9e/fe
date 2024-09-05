@@ -21,6 +21,10 @@ const zh_HK = {
       2: '授權訪問',
     },
     bgids: '授權業務組',
+    theme_link: {
+      dark: '暗色主題連結',
+      light: '亮色主題連結',
+    },
   },
   default_filter: {
     title: '預置篩選',

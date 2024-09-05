@@ -35,6 +35,7 @@ import Feedback from '@/components/Feedback';
 import { getN9eConfig } from '@/pages/siteSettings/services';
 import HeaderMenu from './components/menu/SideMenu';
 import Content from './routers';
+import { getDarkMode, updateDarkMode } from '@/utils/darkMode';
 
 // @ts-ignore
 import useIsPlus from 'plus:/components/useIsPlus';
@@ -170,9 +171,9 @@ function App() {
       window.localStorage.setItem('sideMenuBgMode', mode);
       setCommonState((state) => ({ ...state, sideMenuBgMode: mode }));
     },
-    darkMode: localStorage.getItem('darkMode') === 'true',
+    darkMode: getDarkMode(),
     setDarkMode: (mode: boolean) => {
-      window.localStorage.setItem('darkMode', String(mode));
+      updateDarkMode(mode);
       setCommonState((state) => ({ ...state, darkMode: mode }));
     },
     esIndexMode: 'all',

@@ -21,6 +21,10 @@ const en_US = {
       2: 'Authorized access',
     },
     bgids: 'Authorized business groups',
+    theme_link: {
+      dark: 'Dark theme',
+      light: 'Light theme',
+    },
   },
   default_filter: {
     title: 'Preset Filters',
