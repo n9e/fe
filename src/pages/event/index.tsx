@@ -27,7 +27,7 @@ import { AutoRefresh } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
 import { getProdOptions } from '@/pages/alertRules/Form/components/ProdSelect';
 import DatasourceSelect from '@/components/DatasourceSelect/DatasourceSelect';
-import TimeRangePicker, { IRawTimeRange } from '@/components/TimeRangePicker';
+import TimeRangePicker, { getDefaultValue } from '@/components/TimeRangePicker';
 import { IS_ENT } from '@/utils/constant';
 import { BusinessGroupSelectWithAll } from '@/components/BusinessGroup';
 import Card from './card';
@@ -41,7 +41,7 @@ import BatchAckBtn from 'plus:/parcels/Event/Acknowledge/BatchAckBtn';
 const CACHE_KEY = 'alert_active_events_range';
 const getFilter = (query) => {
   return {
-    range: undefined,
+    range: getDefaultValue(CACHE_KEY, undefined),
     datasource_ids: query.datasource_ids ? _.split(query.datasource_ids, ',').map(Number) : [],
     bgid: query.bgid ? Number(query.bgid) : undefined,
     severity: query.severity ? Number(query.severity) : undefined,

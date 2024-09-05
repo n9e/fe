@@ -149,22 +149,22 @@ const en_US = {
         annotations: 'Annotations',
         triggers: 'Triggers',
       },
-      cloneToHosts: {
-        title: 'Clone to Hosts',
-        select_hosts: {
-          title: 'Select Hosts',
-          filter: 'Filter',
-          ident: 'Ident',
-          tags: 'Tags',
-          group: 'Group',
-        },
-        clone_btn: 'Clone',
-        result: {
-          title: 'Result',
-          host: 'Host',
-          rule: 'Rule',
-          msg: 'Message',
-        },
+    },
+    cloneToHosts: {
+      title: 'Clone to Hosts',
+      select_hosts: {
+        title: 'Select Hosts',
+        filter: 'Filter',
+        ident: 'Ident',
+        tags: 'Tags',
+        group: 'Group',
+      },
+      clone_btn: 'Clone',
+      result: {
+        title: 'Result',
+        host: 'Host',
+        rule: 'Rule',
+        msg: 'Message',
       },
     },
   },
