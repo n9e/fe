@@ -22,6 +22,10 @@ const zh_CN = {
       2: '授权访问',
     },
     bgids: '授权业务组',
+    theme_link: {
+      dark: '暗色主题链接',
+      light: '亮色主题链接',
+    },
   },
   default_filter: {
     title: '预置筛选',
