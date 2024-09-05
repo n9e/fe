@@ -19,7 +19,6 @@ import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import _ from 'lodash';
-import { useKeyPress } from 'ahooks';
 import { Space, Empty, Spin, Dropdown, Input, Menu, notification, Tooltip } from 'antd';
 import { SettingOutlined, DownOutlined, FullscreenOutlined } from '@ant-design/icons';
 import { CommonStateContext } from '@/App';

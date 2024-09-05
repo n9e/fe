@@ -31,6 +31,7 @@ import { AddPanelIcon } from '../config';
 import { visualizations } from '../Editor/config';
 import { dashboardTimeCacheKey } from './Detail';
 import FormModal from '../List/FormModal';
+import ImportGrafanaURLFormModal from '../List/ImportGrafanaURLFormModal';
 import { IDashboard, ILink } from '../types';
 import { dashboardThemeModeCacheKey, getDefaultThemeMode } from './utils';
 import { useGlobalState } from '../globalState';
@@ -185,93 +186,114 @@ export default function Title(props: IProps) {
           </Dropdown>
         )}
       </div>
+
       <div className='dashboard-detail-header-right'>
         <Space>
-          {isAuthorized && (
-            <Dropdown
-              trigger={['click']}
-              overlay={
-                <Menu>
-                  {_.map(_.concat(panelClipboard ? [{ type: 'pastePanel' }] : [], [{ type: 'row', name: 'row' }], visualizations), (item) => {
-                    return (
-                      <Menu.Item
-                        key={item.type}
-                        onClick={() => {
-                          onAddPanel(item.type);
-                        }}
-                      >
-                        {t(`visualizations.${item.type}`)}
-                      </Menu.Item>
-                    );
-                  })}
-                </Menu>
-              }
-            >
-              <Button type='primary' icon={<AddPanelIcon />}>
-                {t('add_panel')}
-              </Button>
-            </Dropdown>
-          )}
-          <TimeRangePickerWithRefresh
-            localKey={`${dashboardTimeCacheKey}_${dashboard.id}`}
-            dateFormat='YYYY-MM-DD HH:mm:ss'
-            value={range}
-            onChange={(val) => {
-              // 以下 history replace 会触发 beforeunload，在手动保存模式下暂时关闭
-              if (dashboardSaveMode !== 'manual') {
-                history.replace({
-                  pathname: location.pathname,
-                  // 重新设置时间范围时，清空 __from 和 __to
-                  search: querystring.stringify(_.omit(querystring.parse(window.location.search), ['__from', '__to'])),
-                });
-              }
-              setRange(val);
-            }}
-          />
-          {isAuthorized && dashboardSaveMode === 'manual' && (
-            <Button
-              icon={<SaveOutlined />}
-              onClick={() => {
-                if (editable) {
-                  updateDashboardConfigs(dashboard.id, {
-                    configs: JSON.stringify(dashboard.configs),
-                  }).then((res) => {
-                    updateAtRef.current = res.update_at;
-                    message.success(t('detail.saved'));
-                    setAllowedLeave(true);
+          {dashboard.configs?.mode !== 'iframe' ? (
+            <>
+              {isAuthorized && (
+                <Dropdown
+                  trigger={['click']}
+                  overlay={
+                    <Menu>
+                      {_.map(_.concat(panelClipboard ? [{ type: 'pastePanel' }] : [], [{ type: 'row', name: 'row' }], visualizations), (item) => {
+                        return (
+                          <Menu.Item
+                            key={item.type}
+                            onClick={() => {
+                              onAddPanel(item.type);
+                            }}
+                          >
+                            {t(`visualizations.${item.type}`)}
+                          </Menu.Item>
+                        );
+                      })}
+                    </Menu>
+                  }
+                >
+                  <Button type='primary' icon={<AddPanelIcon />}>
+                    {t('add_panel')}
+                  </Button>
+                </Dropdown>
+              )}
+              <TimeRangePickerWithRefresh
+                localKey={`${dashboardTimeCacheKey}_${dashboard.id}`}
+                dateFormat='YYYY-MM-DD HH:mm:ss'
+                value={range}
+                onChange={(val) => {
+                  // 以下 history replace 会触发 beforeunload，在手动保存模式下暂时关闭
+                  if (dashboardSaveMode !== 'manual') {
+                    history.replace({
+                      pathname: location.pathname,
+                      // 重新设置时间范围时，清空 __from 和 __to
+                      search: querystring.stringify(_.omit(querystring.parse(window.location.search), ['__from', '__to'])),
+                    });
+                  }
+                  setRange(val);
+                }}
+              />
+              {isAuthorized && dashboardSaveMode === 'manual' && (
+                <Button
+                  icon={<SaveOutlined />}
+                  onClick={() => {
+                    if (editable) {
+                      updateDashboardConfigs(dashboard.id, {
+                        configs: JSON.stringify(dashboard.configs),
+                      }).then((res) => {
+                        updateAtRef.current = res.update_at;
+                        message.success(t('detail.saved'));
+                        setAllowedLeave(true);
+                      });
+                    } else {
+                      message.warning(t('detail.expired'));
+                    }
+                  }}
+                />
+              )}
+              {isAuthorized && (
+                <Button
+                  icon={<SettingOutlined />}
+                  onClick={() => {
+                    FormModal({
+                      action: 'edit',
+                      initialValues: dashboard,
+                      onOk: () => {
+                        window.location.reload();
+                      },
+                    });
+                  }}
+                />
+              )}
+              <DashboardLinks
+                editable={isAuthorized}
+                value={dashboardLinks}
+                onChange={(v) => {
+                  const dashboardConfigs: any = dashboard.configs;
+                  dashboardConfigs.links = v;
+                  handleUpdateDashboardConfigs(dashboard.id, {
+                    configs: JSON.stringify(dashboardConfigs),
                   });
-                } else {
-                  message.warning(t('detail.expired'));
-                }
-              }}
-            />
+                  setDashboardLinks(v);
+                }}
+              />
+            </>
+          ) : (
+            <>
+              {isAuthorized && (
+                <Button
+                  icon={<SettingOutlined />}
+                  onClick={() => {
+                    ImportGrafanaURLFormModal({
+                      initialValues: dashboard,
+                      onOk: () => {
+                        window.location.reload();
+                      },
+                    });
+                  }}
+                />
+              )}
+            </>
           )}
-          {isAuthorized && (
-            <Button
-              icon={<SettingOutlined />}
-              onClick={() => {
-                FormModal({
-                  action: 'edit',
-                  initialValues: dashboard,
-                  onOk: () => {
-                    window.location.reload();
-                  },
-                });
-              }}
-            />
-          )}
-          <DashboardLinks
-            editable={isAuthorized}
-            value={dashboardLinks}
-            onChange={(v) => {
-              const dashboardConfigs: any = dashboard.configs;
-              dashboardConfigs.links = v;
-              handleUpdateDashboardConfigs(dashboard.id, {
-                configs: JSON.stringify(dashboardConfigs),
-              });
-              setDashboardLinks(v);
-            }}
-          />
           <Button
             onClick={() => {
               const newQuery = _.omit(querystring.parse(window.location.search), ['viewMode', 'themeMode']);
