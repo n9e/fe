@@ -26,7 +26,7 @@ import { getComponents, getPayloads, Component, Payload } from '@/pages/builtInC
 import { TypeEnum } from '@/pages/builtInComponents/types';
 import { getValidImportData, convertDashboardGrafanaToN9E, JSONParse, checkGrafanaDashboardVersion } from './utils';
 
-type ModalType = 'Import' | 'ImportGrafana' | 'ImportBuiltin';
+type ModalType = 'Import' | 'ImportGrafana' | 'ImportBuiltin' | 'ImportGrafanaURL';
 interface IProps {
   busiId: number;
   type: ModalType;
@@ -264,11 +264,12 @@ function Import(props: IProps & ModalWrapProps) {
 
   return (
     <Modal
-      width={600}
+      width={900}
       className='dashboard-import-modal'
       title={
         <Tabs activeKey={modalType} onChange={(e: ModalType) => setModalType(e)} className='custom-import-alert-title'>
           <TabPane tab={t('batch.import_builtin')} key='ImportBuiltin'></TabPane>
+          <TabPane tab={t('batch.import_grafana_url')} key='ImportGrafanaURL'></TabPane>
           <TabPane tab={t('batch.import')} key='Import'></TabPane>
           <TabPane
             tab={
@@ -391,6 +392,70 @@ function Import(props: IProps & ModalWrapProps) {
                 {t('batch.continueToImport')}
               </Button>
             )}
+          </Form.Item>
+        </Form>
+      ) : null}
+      {modalType === 'ImportGrafanaURL' ? (
+        <Form
+          layout='vertical'
+          onFinish={(vals) => {
+            createDashboard(busiId, {
+              name: vals.name,
+              ident: vals.ident,
+              tags: _.join(vals.tags, ' '),
+              configs: JSON.stringify({
+                mode: 'iframe',
+                iframe_url: vals.iframe_url,
+                version: '3.0.0',
+              }),
+            }).then(() => {
+              message.success(t('common:success.import'));
+              refreshList();
+              destroy();
+            });
+          }}
+        >
+          <Form.Item
+            label={t('name')}
+            name='name'
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label={t('ident')}
+            name='ident'
+            rules={[
+              {
+                pattern: /^[a-zA-Z0-9\-]*$/,
+                message: t('ident_msg'),
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item label={t('tags')} name='tags'>
+            <Select mode='tags' tokenSeparators={[' ']} open={false} />
+          </Form.Item>
+          <Form.Item
+            label={t('batch.import_grafana_url_label')}
+            name='iframe_url'
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <Input.TextArea autoSize={{ minRows: 2 }} />
+          </Form.Item>
+          <Form.Item>
+            <Button type='primary' htmlType='submit'>
+              {t('common:btn.import')}
+            </Button>
           </Form.Item>
         </Form>
       ) : null}

@@ -36,6 +36,7 @@ import { CommonStateContext, basePrefix } from '@/App';
 import MigrationModal from '@/pages/help/migrate/MigrationModal';
 import RouterPrompt from '@/components/RouterPrompt';
 import { rangeOptions } from '@/components/TimeRangePicker/config';
+import { adjustURL } from '@/pages/embeddedDashboards/utils';
 import VariableConfig, { IVariable } from '../VariableConfig';
 import { replaceExpressionVars, getOptionsList } from '../VariableConfig/constant';
 import { ILink, IDashboardConfig } from '../types';
@@ -43,7 +44,6 @@ import Panels from '../Panels';
 import Title from './Title';
 import { JSONParse } from '../utils';
 import Editor from '../Editor';
-import { defaultCustomValuesMap, defaultOptionsValuesMap } from '../Editor/config';
 import { sortPanelsByGridLayout, panelsMergeToConfigs, updatePanelsInsertNewPanelToGlobal, ajustPanels } from '../Panels/utils';
 import { useGlobalState } from '../globalState';
 import { scrollToLastPanel } from './utils';
@@ -120,7 +120,7 @@ export default function DetailV2(props: IProps) {
   const { isPreview = false, isBuiltin = false, gobackPath, builtinParams } = props;
   const { t, i18n } = useTranslation('dashboard');
   const history = useHistory();
-  const { datasourceList, profile, dashboardDefaultRangeIndex, dashboardSaveMode, perms, groupedDatasourceList } = useContext(CommonStateContext);
+  const { datasourceList, profile, dashboardDefaultRangeIndex, dashboardSaveMode, perms, groupedDatasourceList, darkMode } = useContext(CommonStateContext);
   const isAuthorized = _.includes(perms, '/dashboards/put') && !isPreview;
   const [dashboardMeta, setDashboardMeta] = useGlobalState('dashboardMeta');
   const [panelClipboard, setPanelClipboard] = useGlobalState('panelClipboard');
@@ -266,6 +266,7 @@ export default function DetailV2(props: IProps) {
               className='dashboard-detail-content-header-container'
               style={{
                 display: query.viewMode !== 'fullscreen' ? 'block' : 'none',
+                paddingBottom: dashboard.configs?.mode === 'iframe' ? 0 : 16,
               }}
             >
               <Title
@@ -321,77 +322,85 @@ export default function DetailV2(props: IProps) {
                   <Alert type='warning' message={t('detail.expired')} />
                 </div>
               )}
-              <div className='dashboard-detail-content-header'>
-                <div className='variable-area'>
-                  {variableConfig && (
-                    <VariableConfig
-                      isPreview={!isAuthorized}
-                      onChange={handleVariableChange}
-                      value={variableConfig}
-                      range={range}
-                      id={id}
-                      onOpenFire={stopAutoRefresh}
-                      variableConfigRefreshFlag={variableConfigRefreshFlag}
-                      dashboard={dashboard}
-                    />
-                  )}
+              {dashboard.configs?.mode !== 'iframe' && (
+                <div className='dashboard-detail-content-header'>
+                  <div className='variable-area'>
+                    {variableConfig && (
+                      <VariableConfig
+                        isPreview={!isAuthorized}
+                        onChange={handleVariableChange}
+                        value={variableConfig}
+                        range={range}
+                        id={id}
+                        onOpenFire={stopAutoRefresh}
+                        variableConfigRefreshFlag={variableConfigRefreshFlag}
+                        dashboard={dashboard}
+                      />
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </Affix>
-          {variableConfigWithOptions && (
-            <Panels
-              dashboardId={id}
-              isPreview={isPreview}
-              editable={editable}
-              panels={panels}
-              setPanels={setPanels}
-              dashboard={dashboard}
-              setDashboard={setDashboard}
-              setAllowedLeave={setAllowedLeave}
-              range={range}
-              setRange={setRange}
-              variableConfig={variableConfigWithOptions}
-              onShareClick={(panel) => {
-                const curDatasourceValue = replaceExpressionVars(panel.datasourceValue, variableConfigWithOptions, variableConfigWithOptions.length, id);
-                const serielData = {
-                  dataProps: {
-                    ...panel,
-                    datasourceValue: curDatasourceValue,
-                    // @ts-ignore
-                    datasourceName: _.find(datasourceList, { id: curDatasourceValue })?.name,
-                    targets: _.map(panel.targets, (target) => {
-                      const fullVars = getOptionsList(
-                        {
-                          dashboardId: _.toString(dashboard.id),
-                          variableConfigWithOptions: variableConfigWithOptions,
-                        },
+          {dashboard.configs?.mode !== 'iframe' ? (
+            <>
+              {variableConfigWithOptions && (
+                <Panels
+                  dashboardId={id}
+                  isPreview={isPreview}
+                  editable={editable}
+                  panels={panels}
+                  setPanels={setPanels}
+                  dashboard={dashboard}
+                  setDashboard={setDashboard}
+                  setAllowedLeave={setAllowedLeave}
+                  range={range}
+                  setRange={setRange}
+                  variableConfig={variableConfigWithOptions}
+                  onShareClick={(panel) => {
+                    const curDatasourceValue = replaceExpressionVars(panel.datasourceValue, variableConfigWithOptions, variableConfigWithOptions.length, id);
+                    const serielData = {
+                      dataProps: {
+                        ...panel,
+                        datasourceValue: curDatasourceValue,
+                        // @ts-ignore
+                        datasourceName: _.find(datasourceList, { id: curDatasourceValue })?.name,
+                        targets: _.map(panel.targets, (target) => {
+                          const fullVars = getOptionsList(
+                            {
+                              dashboardId: _.toString(dashboard.id),
+                              variableConfigWithOptions: variableConfigWithOptions,
+                            },
+                            range,
+                          );
+                          const realExpr = variableConfigWithOptions ? replaceExpressionVars(target.expr, fullVars, fullVars.length, id) : target.expr;
+                          return {
+                            ...target,
+                            expr: realExpr,
+                          };
+                        }),
                         range,
-                      );
-                      const realExpr = variableConfigWithOptions ? replaceExpressionVars(target.expr, fullVars, fullVars.length, id) : target.expr;
-                      return {
-                        ...target,
-                        expr: realExpr,
-                      };
-                    }),
-                    range,
-                  },
-                };
-                SetTmpChartData([
-                  {
-                    configs: JSON.stringify(serielData),
-                  },
-                ]).then((res) => {
-                  const ids = res.dat;
-                  window.open(basePrefix + '/chart/' + ids);
-                });
-              }}
-              onUpdated={(res) => {
-                updateAtRef.current = res.update_at;
-                refresh();
-              }}
-              setVariableConfigRefreshFlag={setVariableConfigRefreshFlag}
-            />
+                      },
+                    };
+                    SetTmpChartData([
+                      {
+                        configs: JSON.stringify(serielData),
+                      },
+                    ]).then((res) => {
+                      const ids = res.dat;
+                      window.open(basePrefix + '/chart/' + ids);
+                    });
+                  }}
+                  onUpdated={(res) => {
+                    updateAtRef.current = res.update_at;
+                    refresh();
+                  }}
+                  setVariableConfigRefreshFlag={setVariableConfigRefreshFlag}
+                />
+              )}
+            </>
+          ) : (
+            <iframe className='embedded-dashboards-iframe' src={adjustURL(dashboard.configs?.iframe_url!, darkMode)} width='100%' height='100%' />
           )}
         </div>
       </div>

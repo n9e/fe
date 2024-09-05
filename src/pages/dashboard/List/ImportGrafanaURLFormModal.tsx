@@ -15,24 +15,22 @@
  *
  */
 import React, { useEffect } from 'react';
-import { Modal, Form, Input, Select, Radio, message } from 'antd';
+import { Modal, Form, Input, Select, message } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
-import { updateDashboard, createDashboard, getDashboard, updateDashboardConfigs } from '@/services/dashboardV2';
+import { updateDashboard, getDashboard, updateDashboardConfigs } from '@/services/dashboardV2';
 import { IDashboard, IDashboardConfig } from '../types';
 import { JSONParse } from '../utils';
 
 interface Props {
-  action: 'create' | 'edit';
-  busiId?: number;
   initialValues?: IDashboard;
   onOk?: () => void;
 }
 
 function index(props: Props & ModalWrapProps) {
   const { t } = useTranslation('dashboard');
-  const { visible, destroy, busiId, action, initialValues, onOk } = props;
+  const { visible, destroy, initialValues, onOk } = props;
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -55,47 +53,33 @@ function index(props: Props & ModalWrapProps) {
   return (
     <Modal
       destroyOnClose
-      title={t(`${action}_title`)}
+      title={t('edit_title')}
       visible={visible}
       onCancel={destroy}
       onOk={() => {
-        form.validateFields().then(async (values) => {
-          let result;
-          if (action === 'edit' && initialValues?.id) {
-            result = await updateDashboard(initialValues.id, {
+        if (initialValues?.id) {
+          form.validateFields().then(async (values) => {
+            const result = await updateDashboard(initialValues.id, {
               name: values.name,
               ident: values.ident,
               tags: _.join(values.tags, ' '),
             });
             message.success(t('common:success.edit'));
-          } else if (action === 'create' && busiId) {
-            result = await createDashboard(busiId, {
-              name: values.name,
-              ident: values.ident,
-              tags: _.join(values.tags, ' '),
-              configs: JSON.stringify({
-                var: [],
-                panels: [],
-                version: '3.0.0',
-              }),
-            });
-            message.success(t('common:success.create'));
-          }
-          if (result) {
-            const configs = JSONParse(result.configs);
-            await updateDashboardConfigs(result.id, {
-              configs: JSON.stringify({
-                ...configs,
-                graphTooltip: values.graphTooltip,
-                graphZoom: values.graphZoom,
-              }),
-            });
-          }
-          if (onOk) {
-            onOk();
-          }
-          destroy();
-        });
+            if (result) {
+              const configs = JSONParse(result.configs);
+              await updateDashboardConfigs(result.id, {
+                configs: JSON.stringify({
+                  ...configs,
+                  iframe_url: values.iframe_url,
+                }),
+              });
+            }
+            if (onOk) {
+              onOk();
+            }
+            destroy();
+          });
+        }
       }}
     >
       <Form
@@ -105,8 +89,7 @@ function index(props: Props & ModalWrapProps) {
           name: initialValues?.name,
           ident: initialValues?.ident,
           tags: initialValues?.tags ? _.split(initialValues.tags, ' ') : undefined,
-          graphTooltip: _.get(initialValues, 'configs.graphTooltip', 'default'),
-          graphZoom: _.get(initialValues, 'configs.graphZoom', 'default'),
+          iframe_url: initialValues?.configs?.iframe_url,
         }}
       >
         <Form.Item
@@ -135,39 +118,16 @@ function index(props: Props & ModalWrapProps) {
         <Form.Item label={t('tags')} name='tags'>
           <Select mode='tags' tokenSeparators={[' ']} open={false} />
         </Form.Item>
-        <Form.Item label={t('settings.graphTooltip.label')} name='graphTooltip' tooltip={t('settings.graphTooltip.tip')}>
-          <Radio.Group
-            optionType='button'
-            options={[
-              {
-                label: t('settings.graphTooltip.default'),
-                value: 'default',
-              },
-              {
-                label: t('settings.graphTooltip.sharedCrosshair'),
-                value: 'sharedCrosshair',
-              },
-              {
-                label: t('settings.graphTooltip.sharedTooltip'),
-                value: 'sharedTooltip',
-              },
-            ]}
-          />
-        </Form.Item>
-        <Form.Item label={t('settings.graphZoom.label')} name='graphZoom' tooltip={t('settings.graphZoom.tip')}>
-          <Radio.Group
-            optionType='button'
-            options={[
-              {
-                label: t('settings.graphZoom.default'),
-                value: 'default',
-              },
-              {
-                label: t('settings.graphZoom.updateTimeRange'),
-                value: 'updateTimeRange',
-              },
-            ]}
-          />
+        <Form.Item
+          label={t('batch.import_grafana_url_label')}
+          name='iframe_url'
+          rules={[
+            {
+              required: true,
+            },
+          ]}
+        >
+          <Input.TextArea autoSize={{ minRows: 2 }} />
         </Form.Item>
       </Form>
     </Modal>
