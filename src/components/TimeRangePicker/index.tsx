@@ -58,7 +58,7 @@ export default function index(props: ITimeRangePickerProps) {
 }
 
 export type { IRawTimeRange } from './types';
-export function getDefaultValue(localKey: string, defaultValue: IRawTimeRange) {
+export function getDefaultValue(localKey: string, defaultValue?: IRawTimeRange) {
   const localeValue = localStorage.getItem(localKey);
   if (localeValue) {
     try {
