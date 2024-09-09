@@ -20,8 +20,8 @@ import _ from 'lodash';
 import { useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import PageLayout from '@/components/pageLayout';
-import { Button, Table, Input, message, List, Row, Col, Modal, Space, Tree } from 'antd';
-import { EditOutlined, DeleteOutlined, SearchOutlined, UserOutlined, InfoCircleOutlined, DownOutlined } from '@ant-design/icons';
+import { Button, Table, Input, message, List, Row, Col, Modal, Space } from 'antd';
+import { EditOutlined, DeleteOutlined, SearchOutlined, UserOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import UserInfoModal from './component/createModal';
 import { getTeamInfoList, getTeamInfo, deleteTeam, deleteMember } from '@/services/manage';
 import { User, Team, UserType, ActionType, TeamInfo } from '@/store/manageInterface';
@@ -29,6 +29,7 @@ import { ColumnsType } from 'antd/lib/table';
 import { useTranslation } from 'react-i18next';
 import { listToTree } from '@/components/BusinessGroup';
 import { CommonStateContext } from '@/App';
+import Tree from '@/components/BusinessGroup/components/Tree';
 import './index.less';
 import './locale';
 
@@ -275,11 +276,8 @@ const Resource: React.FC = () => {
               <div className='radio-list' style={{ overflowY: 'auto' }}>
                 {!_.isEmpty(teamList) && (
                   <Tree
-                    rootClassName='business-group-tree'
-                    defaultExpandParent={false}
                     defaultExpandedKeys={getLocaleExpandedKeys()}
                     selectedKeys={teamId ? [_.toString(teamId)] : []}
-                    blockNode
                     onSelect={(_selectedKeys, e: any) => {
                       const nodeId = e.node.id;
                       setTeamId(nodeId as any);

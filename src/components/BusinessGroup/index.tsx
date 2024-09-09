@@ -154,11 +154,8 @@ export default function index(props: IProps) {
             <div className='radio-list'>
               {!_.isEmpty(businessGroupTreeData) && (
                 <Tree
-                  // rootClassName='business-group-tree'
-                  // defaultExpandParent={false}
                   defaultExpandedKeys={getCollapsedKeys(businessGroupTreeData, getLocaleExpandedKeys(), businessGroup.key)}
                   selectedKeys={showSelected && businessGroup.key ? [businessGroup.key] : undefined}
-                  // blockNode
                   onSelect={(_selectedKeys, e) => {
                     const itemKey = e.node.key;
                     businessGroupOnChange(itemKey);
