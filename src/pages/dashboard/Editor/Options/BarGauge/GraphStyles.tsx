@@ -115,7 +115,12 @@ export default function GraphStyles() {
             </Form.Item>
           </Col>
           <Col span={8}>
-            <Form.Item label={t('panel.custom.barGauge.combine_other')} tooltip={t('panel.custom.barGauge.combine_other_tip')} name={[...namePrefix, 'combine_other']}>
+            <Form.Item
+              label={t('panel.custom.barGauge.combine_other')}
+              tooltip={t('panel.custom.barGauge.combine_other_tip')}
+              name={[...namePrefix, 'combine_other']}
+              valuePropName='checked'
+            >
               <Switch />
             </Form.Item>
           </Col>
