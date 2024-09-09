@@ -15,6 +15,7 @@ interface Props {
 
 const renderTree = (
   treeData: TreeNode[],
+  eachLevelIsLast: boolean[],
   level: number,
   expandedKeys?: string[],
   selectedKeys?: string[],
@@ -23,10 +24,11 @@ const renderTree = (
 ) => {
   return (
     <ul className='n9e-tree-nodes'>
-      {_.map(treeData, (item) => {
+      {_.map(treeData, (item, nodeIdx) => {
         const hasChildren = item.children && item.children.length > 0;
         const isExpanded = _.includes(expandedKeys, item.key);
         const isSelected = _.includes(selectedKeys, item.key);
+        const newEachLevelIsLast = [...eachLevelIsLast, nodeIdx === treeData.length - 1];
         return (
           <li key={item.key} className='n9e-tree-node'>
             <div
@@ -38,22 +40,35 @@ const renderTree = (
               }}
             >
               {_.map(Array.from({ length: level }), (_, index) => {
+                const realIndex = index + 1;
                 return (
-                  <div key={index} className={classNames('n9e-tree-node-indent')}>
+                  <div key={realIndex} className={classNames('n9e-tree-node-indent')}>
                     {index !== 0 && (
                       <>
-                        {index + 1 === level && (
-                          <div
-                            className={classNames('n9e-tree-node-indent-current-branch', {
-                              'n9e-tree-node-indent-current-branch-active': isSelected,
-                            })}
-                          />
+                        {realIndex === level ? (
+                          <>
+                            <div
+                              className={classNames('n9e-tree-node-indent-current-branch', {
+                                'n9e-tree-node-indent-current-branch-active': isSelected,
+                              })}
+                            />
+                            {treeData.length - 1 !== nodeIdx && (
+                              <div
+                                className={classNames('n9e-tree-node-indent-next-branch', {
+                                  'n9e-tree-node-indent-next-branch-active': isSelected,
+                                })}
+                              />
+                            )}
+                          </>
+                        ) : (
+                          !eachLevelIsLast[realIndex] && (
+                            <div
+                              className={classNames('n9e-tree-node-indent-next-branch', {
+                                'n9e-tree-node-indent-next-branch-active': isSelected,
+                              })}
+                            />
+                          )
                         )}
-                        <div
-                          className={classNames('n9e-tree-node-indent-next-branch', {
-                            'n9e-tree-node-indent-next-branch-active': isSelected,
-                          })}
-                        />
                       </>
                     )}
                   </div>
@@ -75,7 +90,7 @@ const renderTree = (
                 )}
               </div>
             </div>
-            {hasChildren && isExpanded && renderTree(item.children || [], level + 1, expandedKeys, selectedKeys, onSelect, onExpand)}
+            {hasChildren && isExpanded && renderTree(item.children || [], newEachLevelIsLast, level + 1, expandedKeys, selectedKeys, onSelect, onExpand)}
           </li>
         );
       })}
@@ -93,7 +108,7 @@ function index(props: Props) {
 
   return (
     <div className='n9e-tree-container'>
-      {renderTree(treeData, 1, expandedKeys, selectedKeys, onSelect, (newExpandedKeys) => {
+      {renderTree(treeData, [false], 1, expandedKeys, selectedKeys, onSelect, (newExpandedKeys) => {
         setExpandedKeys(newExpandedKeys);
         onExpand && onExpand(newExpandedKeys);
       })}
