@@ -291,12 +291,13 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
         onCancel={() => {
           editModalClose();
         }}
+        destroyOnClose
       >
         <Form
           layout='vertical'
           form={form}
+          preserve={false}
           className='strategy-form'
-          // layout={refresh ? 'horizontal' : 'horizontal'}
           initialValues={{
             prom_eval_interval: 15,
             disabled: 0, // 0:立即启用 1:禁用
