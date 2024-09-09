@@ -20,11 +20,19 @@ import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Panel } from '../../Components/Collapse';
+import Thresholds from '../Thresholds';
 import ValueMappings from '../ValueMappings';
 import StandardOptions from '../StandardOptions';
 import { useGlobalState } from '../../../globalState';
 
-export default function index({ targets }) {
+interface Props {
+  targets: any;
+  matcherNames?: string[];
+  overrideOptions?: string[];
+  showMinMax?: boolean;
+}
+
+export default function index({ targets, matcherNames = ['byFrameRefID', 'byName'], overrideOptions, showMinMax }: Props) {
   const { t } = useTranslation('dashboard');
   const [tableFields] = useGlobalState('tableFields');
   const namePrefix = ['overrides'];
@@ -62,16 +70,21 @@ export default function index({ targets }) {
                   <Form.Item label={t('panel.overrides.matcher.id')} {...restField} name={[name, 'matcher', 'id']} initialValue='byFrameRefID'>
                     <Select
                       allowClear
-                      options={[
-                        {
-                          label: t('panel.overrides.matcher.byFrameRefID.option'),
-                          value: 'byFrameRefID',
+                      options={_.filter(
+                        [
+                          {
+                            label: t('panel.overrides.matcher.byFrameRefID.option'),
+                            value: 'byFrameRefID',
+                          },
+                          {
+                            label: t('panel.overrides.matcher.byName.option'),
+                            value: 'byName',
+                          },
+                        ],
+                        (item) => {
+                          return _.includes(matcherNames, item.value);
                         },
-                        {
-                          label: t('panel.overrides.matcher.byName.option'),
-                          value: 'byName',
-                        },
-                      ]}
+                      )}
                     ></Select>
                   </Form.Item>
                 </Col>
@@ -113,9 +126,21 @@ export default function index({ targets }) {
                   </Form.Item>
                 </Col>
               </Row>
-
+              {_.includes(overrideOptions, 'thresholds') && (
+                <Thresholds
+                  preNamePrefix={namePrefix}
+                  namePrefix={[name, 'properties', 'thresholds']}
+                  initialValue={[
+                    {
+                      color: '#6C53B1',
+                      value: null,
+                      type: 'base',
+                    },
+                  ]}
+                />
+              )}
               <ValueMappings preNamePrefix={namePrefix} namePrefix={[name, 'properties', 'valueMappings']} />
-              <StandardOptions preNamePrefix={namePrefix} namePrefix={[name, 'properties', 'standardOptions']} />
+              <StandardOptions preNamePrefix={namePrefix} namePrefix={[name, 'properties', 'standardOptions']} showMinMax={showMinMax} />
             </Panel>
           );
         })
