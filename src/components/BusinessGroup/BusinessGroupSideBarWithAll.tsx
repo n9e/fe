@@ -27,6 +27,10 @@ export function getDefaultGids(localeKey: string, businessGroup: any) {
   return localStorage.getItem(localeKey) || businessGroup.ids || '-2';
 }
 
+export function getDefaultGidsInDashboard(localeKey: string, businessGroup: any) {
+  return localStorage.getItem(localeKey) || businessGroup.ids || '-1';
+}
+
 export default function BusinessGroupSideBarWithAll(props: Props) {
   const { t } = useTranslation('BusinessGroup');
   const { gids, setGids, localeKey, showPublicOption, publicOptionLabel, allOptionLabel, allOptionTooltip } = props;
