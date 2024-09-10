@@ -174,6 +174,9 @@ export default function BarGauge(props: IProps) {
       return itemClone;
     });
   }
+  if (sortOrder && sortOrder !== 'none') {
+    calculatedValues = _.orderBy(calculatedValues, ['stat'], [sortOrder]);
+  }
   if (topn) {
     const items = _.take(calculatedValues, topn);
     if (combine_other) {
@@ -202,6 +205,7 @@ export default function BarGauge(props: IProps) {
       calculatedValues = items;
     }
   }
+  // 统计后的 other 值再排序
   if (sortOrder && sortOrder !== 'none') {
     calculatedValues = _.orderBy(calculatedValues, ['stat'], [sortOrder]);
   }
