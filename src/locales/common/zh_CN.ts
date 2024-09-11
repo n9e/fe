@@ -12,6 +12,7 @@ const zh_CN = {
   nodata: '暂无数据',
   log_detail: '日志详情',
   document_link: '使用说明',
+  required: '必填项',
   btn: {
     add: '新增',
     create: '创建',

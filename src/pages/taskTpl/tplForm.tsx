@@ -61,7 +61,7 @@ const TplForm = (props) => {
           }
           name='title'
           initialValue={initialValues.title}
-          rules={[{ required: true, message: '必填项！' }]}
+          rules={[{ required: true, message: t('common:required') }]}
         >
           <Input />
         </FormItem>
@@ -88,7 +88,7 @@ const TplForm = (props) => {
           }
           name='account'
           initialValue={initialValues.account}
-          rules={[{ required: true, message: '必填项！' }]}
+          rules={[{ required: true, message: t('common:required') }]}
         >
           <Input />
         </FormItem>
@@ -101,7 +101,7 @@ const TplForm = (props) => {
           }
           name='batch'
           initialValue={initialValues.batch}
-          rules={[{ required: true, message: '必填项！' }]}
+          rules={[{ required: true, message: t('common:required') }]}
         >
           <InputNumber min={0} />
         </FormItem>
@@ -114,7 +114,7 @@ const TplForm = (props) => {
           }
           name='tolerance'
           initialValue={initialValues.tolerance}
-          rules={[{ required: true, message: '必填项！' }]}
+          rules={[{ required: true, message: t('common:required') }]}
         >
           <InputNumber min={0} />
         </FormItem>
@@ -158,7 +158,7 @@ const TplForm = (props) => {
           }
           name='hosts'
           initialValue={_.join(initialValues.hosts, '\n')}
-          rules={[{ required: type !== 'tpl', message: '必填项！' }]}
+          rules={[{ required: type !== 'tpl', message: t('common:required') }]}
         >
           <TextArea autoSize={{ minRows: 3, maxRows: 8 }} />
         </FormItem>
@@ -192,7 +192,7 @@ const TplForm = (props) => {
           }
           name='script'
           initialValue={initialValues.script}
-          rules={[{ required: true, message: '必填项！' }]}
+          rules={[{ required: true, message: t('common:required') }]}
         >
           <Editor />
         </FormItem>

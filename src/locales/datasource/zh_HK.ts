@@ -25,6 +25,7 @@ const zh_HK = {
     func: '函數',
     funcField: '字段名',
     terms: {
+      label: '根據指定 field 分組',
       more: '高階設定',
       size: '匹配個數',
       min_value: '文件最小值',
