@@ -15,7 +15,7 @@ const en_US = {
   告警管理: 'Alerting',
   告警规则: 'Alert Rules',
   内置规则: 'Built-in',
-  屏蔽规则: 'Alert Mutes',
+  屏蔽规则: 'Blackout',
   订阅规则: 'Subscriptions',
   活跃告警: 'Active',
   历史告警: 'Historical',
