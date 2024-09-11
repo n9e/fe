@@ -54,6 +54,12 @@ const zh_HK = {
     },
     event: {
       groupBy: `根據 {{field}} 分組，匹配個數 {{size}}, 文檔最小值 {{min_value}}`,
+      logs: {
+        title: '日誌詳情',
+        size: '結果數',
+        fields: '篩選字段',
+        jsonParseError: '解析失敗',
+      },
     },
     syntaxOptions: '語法選項',
     queryFailed: '查詢失敗，請稍後重試',
