@@ -79,7 +79,8 @@ const renderTree = (
                 {hasChildren && (
                   <span
                     className='n9e-tree-node-icon'
-                    onClick={() => {
+                    onClick={(event) => {
+                      event.stopPropagation();
                       // 如果 item.key 在 defaultExpandedKeys 中，就从 defaultExpandedKeys 中移除，否则添加
                       const newExpandedKeys = isExpanded ? _.without(expandedKeys, item.key) : [...(expandedKeys || []), item.key];
                       onExpand && onExpand(newExpandedKeys);
