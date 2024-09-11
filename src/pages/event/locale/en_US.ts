@@ -18,7 +18,7 @@ const en_US = {
   rule_name: 'Rule Name & Event Tags',
   first_trigger_time: 'First Triggered',
   trigger_time: 'Triggered',
-  shield: 'Shield',
+  shield: 'Blackout',
   aggregate_rule: 'Aggregate Rule',
   aggregate_rule_name: 'Rule Name',
   public: 'Public',
