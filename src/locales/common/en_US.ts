@@ -47,6 +47,7 @@ const en_US = {
     name: 'Name',
     ident: 'Ident',
     tag: 'Tag',
+    host_tag: 'Host Tag',
     update_at: 'Updated',
     update_by: 'Updated by',
     create_at: 'Created',

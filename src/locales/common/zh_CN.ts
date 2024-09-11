@@ -47,6 +47,7 @@ const zh_CN = {
     name: '名称',
     ident: '标识',
     tag: '标签',
+    host_tag: '机器标签',
     update_at: '更新时间',
     update_by: '更新人',
     create_at: '创建时间',

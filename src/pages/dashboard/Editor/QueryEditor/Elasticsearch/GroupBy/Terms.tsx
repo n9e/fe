@@ -48,7 +48,7 @@ export default function Terms({ prefixField, fieldsOptions, values }) {
               <Col span={6}>
                 <InputGroupWithFormItem label={t('datasource:es.terms.size')}>
                   <Form.Item {...prefixField} name={[prefixField.name, 'size']} noStyle>
-                    <InputNumber style={{ width: '100%' }} />
+                    <InputNumber style={{ width: '100%' }} min={0} />
                   </Form.Item>
                 </InputGroupWithFormItem>
               </Col>
