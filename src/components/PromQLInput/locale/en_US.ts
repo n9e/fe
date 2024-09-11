@@ -4,5 +4,6 @@ const en_US = {
     btn: 'Built-in Metrics',
     query_placeholder: 'Please enter the metric name',
   },
+  required: 'Please enter a PromQL query',
 };
 export default en_US;

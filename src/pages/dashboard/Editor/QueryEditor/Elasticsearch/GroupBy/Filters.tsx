@@ -1,16 +1,18 @@
 import React from 'react';
 import { Form, Select, Row, Col, Input, Space } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
-import { groupByCates, groupByCatesMap } from './configs';
+import { useTranslation } from 'react-i18next';
+import { groupByCates } from './configs';
 
 export default function Filters({ prefixField }) {
+  const { t } = useTranslation('alertRules');
   return (
     <>
       <Form.Item {...prefixField} name={[prefixField.name, 'cate']}>
         <Select style={{ width: '100%' }} optionLabelProp='value'>
           {groupByCates.map((func) => (
             <Select.Option key={func} value={func}>
-              {func} ({groupByCatesMap[func]})
+              {func} ({t(`datasource:es.${func}.label`)})
             </Select.Option>
           ))}
         </Select>

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Row, Col, Form, Select, Button, Input, InputNumber, AutoComplete } from 'antd';
+import { Row, Col, Form, Select, Button, InputNumber, AutoComplete } from 'antd';
 import { VerticalRightOutlined, VerticalLeftOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import _ from 'lodash';
-import { groupByCates, groupByCatesMap } from './configs';
+import { groupByCates } from './configs';
 
 export default function Terms({ prefixField, fieldsOptions, values }) {
   const { t } = useTranslation('alertRules');
@@ -20,7 +20,7 @@ export default function Terms({ prefixField, fieldsOptions, values }) {
               <Select style={{ width: '100%' }}>
                 {groupByCates.map((func) => (
                   <Select.Option key={func} value={func}>
-                    {func} ({groupByCatesMap[func]})
+                    {func} ({t(`datasource:es.${func}.label`)})
                   </Select.Option>
                 ))}
               </Select>
