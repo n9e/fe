@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { RightOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
+import { RightIcon } from '@/components/BusinessGroup/components/Tree/constant';
 import { IMenuItem } from './types';
 import { cn } from './utils';
 import IconFont from '../../IconFont';
@@ -50,11 +50,7 @@ function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
           </div>
           {!collapsed && <div className={`overflow-hidden truncate text-l1 tracking-wide ${isActive ? (props.isCustomBg ? 'text-[#fff]' : 'text-title') : ''}`}>{item.label}</div>}
         </div>
-        {!collapsed && (
-          <div>
-            <RightOutlined className={cn('h-3.5 w-3.5 transition', isExpand ? 'rotate-90' : '')} />
-          </div>
-        )}
+        {!collapsed && <RightIcon className={cn('transition', isExpand ? 'rotate-90' : '')} style={{ fontSize: 24 }} />}
       </div>
       <div
         className='mt-1 space-y-1 overflow-hidden transition-height'

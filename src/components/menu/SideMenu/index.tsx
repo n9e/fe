@@ -4,7 +4,6 @@ import Icon, { MenuUnfoldOutlined, MenuFoldOutlined, NotificationFilled } from '
 import _ from 'lodash';
 import querystring from 'query-string';
 import { useTranslation } from 'react-i18next';
-import { getMenuPerm } from '@/services/common';
 import { ScrollArea } from '@/components/ScrollArea';
 import { CommonStateContext } from '@/App';
 import { getSideMenuBgColor } from '@/components/pageLayout/SideMenuColorSetting';
