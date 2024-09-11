@@ -49,7 +49,7 @@ export default function MoreOperations(props: MoreOperationsProps) {
   const { t } = useTranslation('alertRules');
   const { bgid, selectRowKeys, selectedRows, getAlertRules } = props;
   const [isModalVisible, setisModalVisible] = useState<boolean>(false);
-  const { isPlus } = useContext(CommonStateContext);
+  const { isPlus, busiGroups } = useContext(CommonStateContext);
 
   return (
     <>
@@ -112,6 +112,7 @@ export default function MoreOperations(props: MoreOperationsProps) {
                   CloneToHosts({
                     gid: bgid,
                     ids: selectRowKeys,
+                    busiGroups,
                     onOk: getAlertRules,
                   });
                 }}

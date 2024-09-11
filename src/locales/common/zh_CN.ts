@@ -13,6 +13,10 @@ const zh_CN = {
   log_detail: '日志详情',
   document_link: '使用说明',
   required: '必填项',
+  host: {
+    tags: '用户标签',
+    host_tags: '机器标签',
+  },
   btn: {
     add: '新增',
     create: '创建',
@@ -48,7 +52,6 @@ const zh_CN = {
     name: '名称',
     ident: '标识',
     tag: '标签',
-    host_tag: '机器标签',
     update_at: '更新时间',
     update_by: '更新人',
     create_at: '创建时间',
