@@ -127,7 +127,7 @@ export default function GraphStyles() {
               name={[...namePrefix, 'detailUrl']}
               tooltip={{
                 overlayInnerStyle: { width: 330 },
-                title: <Trans ns='dashboard' i18nKey='dashboard:link.url_tip' components={{ 1: <br /> }} />,
+                title: <Trans ns='dashboard' i18nKey='dashboard:var.help_tip' components={{ 1: <br /> }} />,
               }}
             >
               <Input style={{ width: '100%' }} />

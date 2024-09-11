@@ -3,7 +3,7 @@ import { Form, Row, Col, Input, Switch, InputNumber, Space, Tag, Tooltip } from 
 import { DeleteOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import moment from 'moment';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import TimeRangePicker, { isMathString } from '@/components/TimeRangePicker';
 import Resolution from '@/components/Resolution';
 import { PromQLInputWithBuilder } from '@/components/PromQLInput';
@@ -85,6 +85,10 @@ export default function Prometheus({ chartForm, variableConfig, dashboardId, tim
                           return (
                             <Form.Item
                               label='PromQL'
+                              tooltip={{
+                                overlayInnerStyle: { width: 330 },
+                                title: <Trans ns='dashboard' i18nKey='dashboard:var.help_tip' components={{ 1: <br /> }} />,
+                              }}
                               {...field}
                               name={[field.name, 'expr']}
                               validateTrigger={['onBlur']}
