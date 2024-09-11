@@ -62,6 +62,19 @@ export default function Preview(props: IProps) {
               },
             },
             {
+              title: t('common:table.host_tag'),
+              dataIndex: 'host_tags',
+              render: (val) => {
+                return _.map(val, (item) => {
+                  return (
+                    <Tag key={item} color='purple'>
+                      {item}
+                    </Tag>
+                  );
+                });
+              },
+            },
+            {
               title: t('common:business_group'),
               dataIndex: 'group_obj',
               render(groupObj) {
