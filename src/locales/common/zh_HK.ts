@@ -12,6 +12,7 @@ const zh_HK = {
   nodata: '暫無數據',
   log_detail: '日誌詳情',
   document_link: '使用說明',
+  required: '必填項',
   btn: {
     add: '新增',
     create: '創建',

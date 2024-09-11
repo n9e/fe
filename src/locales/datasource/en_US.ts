@@ -25,6 +25,7 @@ const en_US = {
     func: 'Function',
     funcField: 'Field',
     terms: {
+      label: 'Group by field',
       more: 'More',
       size: 'Size',
       min_value: 'Min Doc Count',

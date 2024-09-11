@@ -25,6 +25,7 @@ const zh_CN = {
     func: '函数',
     funcField: '字段名',
     terms: {
+      label: '根据指定 field 分组',
       more: '高级设置',
       size: '匹配个数',
       min_value: '文档最小值',

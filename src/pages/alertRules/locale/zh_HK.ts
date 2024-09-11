@@ -96,6 +96,9 @@ const zh_HK = {
     prom_for_duration_tip:
       '通常持續時長大於執行頻率，在持續時長內按照執行頻率多次執行 PromQL 查詢，每次都觸發才生成告警；如果持續時長置為 0，表示只要有一次 PromQL 查詢觸發閾值，就生成告警',
   },
+  loki: {
+    required: '請輸入 LogQL',
+  },
   batch: {
     not_select: '請先選擇策略',
     delete: '刪除告警規則',

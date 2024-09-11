@@ -12,6 +12,7 @@ const en_US = {
   nodata: 'No Data',
   log_detail: 'Log Detail',
   document_link: 'Document',
+  required: 'Required',
   btn: {
     add: 'Add',
     create: 'Create',

@@ -72,7 +72,7 @@ export default function index(props: { datasourceCate: string; datasourceValue: 
                       name={[field.name, 'prom_ql']} //页面上展示LogQL，实际还是存prom_ql
                       validateTrigger={['onBlur']}
                       trigger='onChange'
-                      rules={[{ required: true, message: t('请输入LogQL') }]}
+                      rules={[{ required: true, message: t('loki.required') }]}
                     >
                       <Input placeholder='Input logql to query. Press Shift+Enter for newlines'></Input>
                     </Form.Item>

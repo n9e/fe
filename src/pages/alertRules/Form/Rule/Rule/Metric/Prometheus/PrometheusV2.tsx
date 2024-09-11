@@ -82,7 +82,13 @@ export default function PrometheusV2(props: Props) {
                     </Col>
                     <Col flex='auto'>
                       <InputGroupWithFormItem label='PromQL'>
-                        <Form.Item {...field} name={[field.name, 'query']} validateTrigger={['onBlur']} trigger='onChange' rules={[{ required: true, message: t('请输入PromQL') }]}>
+                        <Form.Item
+                          {...field}
+                          name={[field.name, 'query']}
+                          validateTrigger={['onBlur']}
+                          trigger='onChange'
+                          rules={[{ required: true, message: t('promQLInput:required') }]}
+                        >
                           <PromQLInputWithBuilder readonly={disabled} datasourceValue={datasourceId} />
                         </Form.Item>
                       </InputGroupWithFormItem>
