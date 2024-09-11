@@ -13,6 +13,10 @@ const zh_HK = {
   log_detail: '日誌詳情',
   document_link: '使用說明',
   required: '必填項',
+  host: {
+    tags: '用戶標籤',
+    host_tags: '機器標籤',
+  },
   btn: {
     add: '新增',
     create: '創建',
@@ -48,7 +52,6 @@ const zh_HK = {
     name: '名稱',
     ident: '標識',
     tag: '標籤',
-    host_tag: '機器標籤',
     update_at: '更新時間',
     update_by: '更新人',
     create_at: '創建時間',

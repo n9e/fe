@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import _ from 'lodash';
 import { useDebounceFn } from 'ahooks';
 import { Modal, Space, Select, Table, message } from 'antd';
@@ -11,6 +11,7 @@ import ValuesSelect from './ValuesSelect';
 interface Props {
   gid: number;
   ids: React.Key[];
+  busiGroups: any[];
   onOk: () => void;
 }
 
@@ -18,7 +19,7 @@ const queryKeyOptions = ['all_hosts', 'group_ids', 'tags'];
 
 function index(props: Props & ModalWrapProps) {
   const { t } = useTranslation('alertRules');
-  const { gid, ids, onOk, visible, destroy } = props;
+  const { gid, ids, busiGroups, onOk, visible, destroy } = props;
   const [filterHost, setFilterHost] = useState<{
     key: string;
     op: string;
@@ -165,12 +166,29 @@ function index(props: Props & ModalWrapProps) {
             dataIndex: 'ident',
           },
           {
-            title: t('batch.cloneToHosts.select_hosts.tags'),
+            title: t('common:host.host_tags'),
+            dataIndex: 'host_tags',
+            render: (val) => {
+              return _.join(val, ', ');
+            },
+          },
+          {
+            title: t('common:host.tags'),
             dataIndex: 'tags',
+            render: (val) => {
+              return _.join(val, ', ');
+            },
           },
           {
             title: t('batch.cloneToHosts.select_hosts.group'),
-            dataIndex: 'group',
+            dataIndex: 'group_id',
+            render: (val) => {
+              return _.get(
+                _.find(busiGroups, (item) => item.id === val),
+                'name',
+                '',
+              );
+            },
           },
         ]}
         dataSource={hosts}

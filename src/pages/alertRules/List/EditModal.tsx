@@ -123,12 +123,12 @@ interface Props {
 }
 
 const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedRows }) => {
-  const { t, i18n } = useTranslation('alertRules');
+  const { t } = useTranslation('alertRules');
   const [form] = Form.useForm();
   const { datasourceList, isPlus } = useContext(CommonStateContext);
   const [contactList, setInitContactList] = useState([]);
   const [notifyGroups, setNotifyGroups] = useState([]);
-  const [field, setField] = useState<string>('datasource_ids');
+  const field = Form.useWatch('field', form);
   const [refresh, setRefresh] = useState(true);
   const changetoText = t('batch.update.changeto');
   const action = Form.useWatch('action', form);
@@ -277,10 +277,6 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
     editModalFinish(false);
   };
 
-  const fieldChange = (val) => {
-    setField(val);
-  };
-
   return (
     <>
       <Modal
@@ -317,7 +313,7 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
               },
             ]}
           >
-            <Select suffixIcon={<CaretDownOutlined />} style={{ width: '100%' }} onChange={fieldChange}>
+            <Select style={{ width: '100%' }}>
               {_.map(
                 isPlus
                   ? _.concat(fields, {

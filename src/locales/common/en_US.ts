@@ -13,6 +13,10 @@ const en_US = {
   log_detail: 'Log Detail',
   document_link: 'Document',
   required: 'Required',
+  host: {
+    tags: 'User Tags',
+    host_tags: 'Host Tags',
+  },
   btn: {
     add: 'Add',
     create: 'Create',
@@ -48,7 +52,6 @@ const en_US = {
     name: 'Name',
     ident: 'Ident',
     tag: 'Tag',
-    host_tag: 'Host Tag',
     update_at: 'Updated',
     update_by: 'Updated by',
     create_at: 'Created',
