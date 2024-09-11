@@ -54,6 +54,12 @@ const en_US = {
     },
     event: {
       groupBy: `Group by {{field}}, number of matches {{size}}, document minimum value {{min_value}}`,
+      logs: {
+        title: 'Logs Detail',
+        size: 'Size',
+        fields: 'Fields',
+        jsonParseError: 'Parse failed',
+      },
     },
     syntaxOptions: 'Syntax Options',
     queryFailed: 'Query failed, please try again later',

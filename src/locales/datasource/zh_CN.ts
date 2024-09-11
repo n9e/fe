@@ -54,6 +54,12 @@ const zh_CN = {
     },
     event: {
       groupBy: `根据 {{field}} 分组，匹配个数 {{size}}, 文档最小值 {{min_value}}`,
+      logs: {
+        title: '日志详情',
+        size: '结果数',
+        fields: '筛选字段',
+        jsonParseError: '解析失败',
+      },
     },
     syntaxOptions: '语法选项',
     queryFailed: '查询失败，请稍后重试',
