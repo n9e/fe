@@ -49,8 +49,8 @@ export default function Preview(props: IProps) {
               dataIndex: 'ident',
             },
             {
-              title: t('common:table.tag'),
-              dataIndex: 'tags',
+              title: t('common:host.host_tags'),
+              dataIndex: 'host_tags',
               render: (val) => {
                 return _.map(val, (item) => {
                   return (
@@ -62,8 +62,8 @@ export default function Preview(props: IProps) {
               },
             },
             {
-              title: t('common:table.host_tag'),
-              dataIndex: 'host_tags',
+              title: t('common:host.tags'),
+              dataIndex: 'tags',
               render: (val) => {
                 return _.map(val, (item) => {
                   return (
