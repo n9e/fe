@@ -1,5 +1,5 @@
 const en_US = {
-  title: 'Alert mutes',
+  title: 'Blackout',
   search_placeholder: 'Search tags, mute reasons',
   cause: 'Cause',
   time: 'Time',
