@@ -55,7 +55,7 @@ export function bindOrUnbindTags(isBind, data) {
 
 // 修改/移出业务组
 export function moveTargetBusi(data) {
-  return request(`/api/n9e/targets/bgid`, {
+  return request(`/api/n9e/targets/bgids`, {
     method: RequestMethod.Put,
     data: Object.assign({ bgid: 0 }, data),
   });
