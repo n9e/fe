@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { escapePromQLString } from '@/pages/dashboard/VariableConfig/utils';
 
 export function filtersToStr(
   filters: {
@@ -15,6 +16,13 @@ export function filtersToStr(
       return '';
     }),
   );
-  const str = _.join(_.compact(arr), ',');
+  const str = _.join(
+    _.compact(
+      _.map(arr, (item) => {
+        return escapePromQLString(item);
+      }),
+    ),
+    ',',
+  );
   return str ? `{${str}}` : '';
 }
