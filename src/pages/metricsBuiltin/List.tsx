@@ -124,6 +124,7 @@ export default function index() {
                 } catch (e) {
                   console.error(e);
                 }
+                console.log('label_filter', label_filter, record.expression);
                 if (label_filter) {
                   buildLabelFilterAndExpression({
                     label_filter,
