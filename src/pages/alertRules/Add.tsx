@@ -45,6 +45,20 @@ export default function Add() {
             ref: generateQueryNameByIndex(idx),
           };
         }),
+        triggers: [
+          {
+            mode: 0,
+            expressions: [
+              {
+                ref: 'A',
+                comparisonOperator: '>',
+                value: 0,
+                logicalOperator: '&&',
+              },
+            ],
+            severity: 2,
+          },
+        ],
       },
     };
   }
