@@ -31,8 +31,6 @@ const TeamForm = React.forwardRef<ReactNode, TeamProps>((props, ref) => {
   const [form] = Form.useForm();
   const [userTeam, setUserTeam] = useState<Team[]>([]);
   const [initialValues, setInitialValues] = useState({
-    label_enable: false,
-    label_value: '',
     members: [{ perm_flag: true }],
     name: '',
   });
@@ -51,11 +49,9 @@ const TeamForm = React.forwardRef<ReactNode, TeamProps>((props, ref) => {
   }, []);
 
   const getTeamInfoDetail = (id: string) => {
-    getBusinessTeamInfo(id).then((data: { name: string; label_enable: number; label_value: string; user_groups: { perm_flag: string; user_group: { id: number } }[] }) => {
+    getBusinessTeamInfo(id).then((data: { name: string; user_groups: { perm_flag: string; user_group: { id: number } }[] }) => {
       setInitialValues({
         name: data.name,
-        label_enable: data.label_enable === 1,
-        label_value: data.label_value,
         members: data.user_groups.map((item) => ({
           perm_flag: item.perm_flag === 'rw',
           user_group_id: item.user_group?.id,
@@ -103,54 +99,6 @@ const TeamForm = React.forwardRef<ReactNode, TeamProps>((props, ref) => {
             }
           >
             <Input />
-          </Form.Item>
-          <Form.Item
-            label={t('business.label_enable')}
-            name='label_enable'
-            valuePropName='checked'
-            tooltip={{ title: t('business.label_enable_tip'), getPopupContainer: () => document.body }}
-          >
-            <Switch />
-          </Form.Item>
-
-          <Form.Item noStyle shouldUpdate={(prevValues, curValues) => prevValues.label_enable !== curValues.label_enable}>
-            {({ getFieldValue }) => {
-              return (
-                getFieldValue('label_enable') && (
-                  <Form.Item
-                    label={t('business.label_value')}
-                    name='label_value'
-                    rules={[
-                      {
-                        required: true,
-                      },
-                    ]}
-                    tooltip={{
-                      title: (
-                        <Trans
-                          ns='user'
-                          i18nKey='business.label_value_tip'
-                          values={{
-                            val: form.getFieldValue('label_value'),
-                          }}
-                        >
-                          <span>
-                            尽量用英文，不能与其他业务组标识重复，系统会自动生成 <Tag color='purple'>busigroup={form.getFieldValue('label_value')}</Tag> 的标签
-                          </span>
-                        </Trans>
-                      ),
-                      getPopupContainer: () => document.body,
-                    }}
-                  >
-                    <Input
-                      onChange={(val) => {
-                        setRefresh(!refresh);
-                      }}
-                    />
-                  </Form.Item>
-                )
-              );
-            }}
           </Form.Item>
         </>
       )}
