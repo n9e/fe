@@ -42,7 +42,7 @@ interface ITargetProps {
   id: number;
   cluster: string;
   group_id: number;
-  group_obj: object | null;
+  group_objs: object[] | null;
   ident: string;
   note: string;
   tags: string[];
@@ -260,10 +260,18 @@ export default function List(props: IProps) {
     if (item.name === 'group_obj') {
       columns.push({
         title: t('group_obj'),
-        dataIndex: 'group_obj',
+        dataIndex: 'group_objs',
         className: 'n9e-hosts-table-column-groups',
-        render(groupObj: BusiGroupItem | null) {
-          return groupObj ? groupObj.name : t('not_grouped');
+        render(groupObjs: BusiGroupItem[] | null) {
+          return _.isEmpty(groupObjs)
+            ? t('not_grouped')
+            : _.map(groupObjs, (item) => {
+                return (
+                  <Tag color='purple' key={item.id}>
+                    {item.name}
+                  </Tag>
+                );
+              });
         },
       });
     }
