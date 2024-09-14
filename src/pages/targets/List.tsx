@@ -261,17 +261,26 @@ export default function List(props: IProps) {
       columns.push({
         title: t('group_obj'),
         dataIndex: 'group_objs',
-        className: 'n9e-hosts-table-column-groups',
-        render(groupObjs: BusiGroupItem[] | null) {
-          return _.isEmpty(groupObjs)
-            ? t('not_grouped')
-            : _.map(groupObjs, (item) => {
-                return (
-                  <Tag color='purple' key={item.id}>
-                    {item.name}
-                  </Tag>
-                );
-              });
+        className: 'n9e-hosts-table-column-tags',
+        ellipsis: {
+          showTitle: false,
+        },
+        render(tagArr) {
+          if (_.isEmpty(tagArr)) return t('not_grouped');
+          const content =
+            tagArr &&
+            tagArr.map((item) => (
+              <Tag color='purple' key={item.name}>
+                {item.name}
+              </Tag>
+            ));
+          return (
+            tagArr && (
+              <Tooltip title={content} placement='topLeft' getPopupContainer={() => document.body}>
+                {content}
+              </Tooltip>
+            )
+          );
         },
       });
     }
