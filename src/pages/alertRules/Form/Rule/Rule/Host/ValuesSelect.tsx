@@ -30,7 +30,7 @@ export default function ValuesSelect(props: IProps) {
       getMonObjectList({
         p: 1,
         limit: 100,
-        bgid: -1,
+        gids: -1,
         query,
       })
         .then((res) => {
