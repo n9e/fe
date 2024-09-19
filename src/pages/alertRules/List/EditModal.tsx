@@ -543,7 +543,7 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
                       <Space>
                         <Form.Item style={{ marginBottom: 0 }} name='notify_repeat_step' initialValue={60} wrapperCol={{ span: 10 }}>
                           <InputNumber
-                            min={0}
+                            min={1}
                             onChange={(val) => {
                               setRefresh(!refresh);
                             }}
