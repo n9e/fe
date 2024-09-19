@@ -157,7 +157,7 @@ export default function index({ disabled }) {
                     ]}
                     tooltip={t('notify_repeat_step_tip', { num: getFieldValue('notify_repeat_step') })}
                   >
-                    <InputNumber min={0} style={{ width: '100%' }} />
+                    <InputNumber min={1} style={{ width: '100%' }} />
                   </Form.Item>
                 </Col>
                 <Col span={8}>

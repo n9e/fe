@@ -170,6 +170,8 @@ const zh_CN = {
         msg: '结果',
       },
     },
+    export_to_csv: '导出（CSV）',
+    export_failed: '导出失败',
   },
   brain_result_btn: '训练结果',
   testTip: `

@@ -170,6 +170,8 @@ const zh_HK = {
         msg: '消息',
       },
     },
+    export_to_csv: '匯出（CSV）',
+    export_failed: '匯出失敗',
   },
   brain_result_btn: '訓練結果',
   testTip: `

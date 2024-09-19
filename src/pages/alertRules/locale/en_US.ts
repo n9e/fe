@@ -170,6 +170,8 @@ const en_US = {
         msg: 'Message',
       },
     },
+    export_to_csv: 'Export (CSV)',
+    export_failed: 'Export failed',
   },
   brain_result_btn: 'Training Result',
   testTip: `
