@@ -97,6 +97,7 @@ if (lanugage) {
     if (value) {
       const valueKeys = lodash.keys(value);
       valueKeys.forEach((valueKey) => {
+        if (valueKey === 'help' || valueKey === 'warning') return;
         const valueContent = value[valueKey];
         const resolvedPath = resolvePaths([__dirname, '../src', ...target.keys, valueKey, ...(lodash.isEqual(target.keys, ['locales']) ? [] : ['locale']), `${lanugage}.ts`]);
         fs.writeFileSync(resolvedPath, builderFileContent(lanugage, valueContent));
