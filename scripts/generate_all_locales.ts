@@ -3,7 +3,7 @@
  * 1. package.json 添加 "type": "module"
  * 2. npx ts-node generate_all_locales.ts
  *
- * 在当前目录生成一个完整的语言文件 n9e_locale.json, 用于翻译其他语言
+ * 在当前目录生成一个完整的语言文件 all_locale.json, 用于翻译其他语言
  * 语言包来源于
  * 1. src/locales/*\/zh_CN.ts
  * 2. src/components/*\/locale/zh_CN.ts

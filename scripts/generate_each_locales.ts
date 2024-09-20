@@ -12,9 +12,33 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import lodash from 'lodash';
-import { Project, SyntaxKind } from 'ts-morph';
+import { Project, SyntaxKind, VariableDeclarationKind } from 'ts-morph';
+import prettier from 'prettier';
 
 const lanugage = process.argv.slice(2)[0];
+const builderFileContent = (lanugage, valueContent) => {
+  const project = new Project();
+  const sourceFile = project.createSourceFile('tempFile.ts', '', { overwrite: true });
+
+  sourceFile.addVariableStatement({
+    declarationKind: VariableDeclarationKind.Const,
+    declarations: [
+      {
+        name: lanugage,
+        initializer: JSON.stringify(valueContent, null, 2),
+      },
+    ],
+  });
+  sourceFile.addExportAssignment({
+    isExportEquals: false,
+    expression: lanugage,
+  });
+
+  const fileContent = sourceFile.getFullText();
+  const formattedContent = prettier.format(fileContent, { parser: 'typescript' });
+  return formattedContent;
+};
+
 if (lanugage) {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
@@ -74,15 +98,15 @@ if (lanugage) {
       const valueKeys = lodash.keys(value);
       valueKeys.forEach((valueKey) => {
         const valueContent = value[valueKey];
-        const resolvedPath = resolvePaths([__dirname, '../src', ...target.keys, valueKey, ...(lodash.isEqual(target.keys, ['locales']) ? [] : ['locale']), `${lanugage}.json`]);
-        fs.writeFileSync(resolvedPath, JSON.stringify(valueContent, null, 2));
+        const resolvedPath = resolvePaths([__dirname, '../src', ...target.keys, valueKey, ...(lodash.isEqual(target.keys, ['locales']) ? [] : ['locale']), `${lanugage}.ts`]);
+        fs.writeFileSync(resolvedPath, builderFileContent(lanugage, valueContent));
         if (!lodash.isEqual(target.keys, ['locales'])) {
           const localeIndexPath = resolvePaths([__dirname, '../src', ...target.keys, valueKey, 'locale', 'index.ts']);
           const project = new Project();
           const sourceFile = project.addSourceFileAtPath(localeIndexPath);
           sourceFile.addImportDeclaration({
             defaultImport: lanugage,
-            moduleSpecifier: `./${lanugage}.json`,
+            moduleSpecifier: `./${lanugage}`,
           });
           const callExpressions = sourceFile.getDescendantsOfKind(SyntaxKind.CallExpression);
           const targetCallExpression = callExpressions.find((callExpression) => {
