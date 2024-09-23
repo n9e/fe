@@ -72,22 +72,16 @@ export const getSerieTextObj = (value: number | string | null | undefined, stand
       }
     },
   );
-  if (unit || decimals) {
-    const valueObj = valueFormatter({ unit, decimals, dateFormat }, value);
-    const newValue = matchedValueMapping?.result?.text ? matchedValueMapping?.result?.text : valueObj.value;
-    return {
-      value: newValue,
-      unit: valueObj.unit,
-      color: matchedValueMapping?.result?.color || matchedThresholdsColor,
-      text: newValue + valueObj.unit,
-    };
-  }
-  const newValue = matchedValueMapping?.result?.text ? matchedValueMapping?.result?.text : value;
+
+  // 2024-09-23 不配置单位或是小数位数时，用默认的单位和小数位数处理
+  // TODO: 之前不清楚为什么关闭了默认处理
+  const valueObj = valueFormatter({ unit, decimals, dateFormat }, value);
+  const newValue = matchedValueMapping?.result?.text ? matchedValueMapping?.result?.text : valueObj.value;
   return {
     value: newValue,
-    unit: '',
+    unit: valueObj.unit,
     color: matchedValueMapping?.result?.color || matchedThresholdsColor,
-    text: newValue,
+    text: newValue + valueObj.unit,
   };
 };
 
