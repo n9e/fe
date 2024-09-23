@@ -123,8 +123,41 @@ if (lanugage) {
             console.log('未找到 i18next.addResourceBundle 方法调用');
           }
           sourceFile.saveSync();
+        } else {
+          const localeIndexPath = resolvePaths([__dirname, '../src', ...target.keys, valueKey, 'index.ts']);
+          const project = new Project();
+          const sourceFile = project.addSourceFileAtPath(localeIndexPath);
+          sourceFile.addImportDeclaration({
+            defaultImport: lanugage,
+            moduleSpecifier: `./${lanugage}`,
+          });
+          const exportDeclarations = sourceFile.getExportDeclarations();
+          if (exportDeclarations[0]) {
+            exportDeclarations[0].addNamedExport(lanugage);
+          }
+          sourceFile.saveSync();
         }
       });
+      if (lodash.isEqual(target.keys, ['locales'])) {
+        // 修改 locales/common/resources.ts
+        const resourcesPath = resolvePaths([__dirname, '../src', ...target.keys, 'resources.ts']);
+        const resourcesProject = new Project();
+        const resourcesFile = resourcesProject.addSourceFileAtPath(resourcesPath);
+        const variableStatement = resourcesFile.getVariableStatementOrThrow('resources');
+        const variableDeclaration = variableStatement.getDeclarations()[0];
+        const initializer = variableDeclaration.getInitializerIfKindOrThrow(SyntaxKind.ObjectLiteralExpression);
+
+        initializer.addPropertyAssignment({
+          name: lanugage,
+          initializer: (writer) => {
+            writer.write(`{ common: common.${lanugage}, datasource: datasource.${lanugage} }`);
+          },
+        });
+        resourcesFile.saveSync();
+        const resourcesFileContent = fs.readFileSync(resourcesPath, 'utf8');
+        const resourcesFormattedContent = prettier.format(resourcesFileContent, { parser: 'typescript' });
+        fs.writeFileSync(resourcesPath, resourcesFormattedContent);
+      }
     }
   });
 } else {
