@@ -449,14 +449,16 @@ const Targets: React.FC = () => {
           />
         </div>
       </div>
-      <OperationModal
-        operateType={operateType}
-        setOperateType={setOperateType}
-        idents={selectedIdents}
-        reloadList={() => {
-          setRefreshFlag(_.uniqueId('refreshFlag_'));
-        }}
-      />
+      {_.includes(_.values(OperateType), operateType) && (
+        <OperationModal
+          operateType={operateType}
+          setOperateType={setOperateType}
+          idents={selectedIdents}
+          reloadList={() => {
+            setRefreshFlag(_.uniqueId('refreshFlag_'));
+          }}
+        />
+      )}
     </PageLayout>
   );
 };
