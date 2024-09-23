@@ -16,3 +16,10 @@ export function getTargetInformationByIdent(ident: string) {
     }
   });
 }
+
+export function putTargetsBgids(data: { bgids: number[]; idents: string[]; action: string }) {
+  return request('/api/n9e/targets/bgids', {
+    method: RequestMethod.Put,
+    data,
+  });
+}

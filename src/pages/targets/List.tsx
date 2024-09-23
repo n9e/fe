@@ -6,7 +6,6 @@ import { useAntdTable } from 'ahooks';
 import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation, Trans } from 'react-i18next';
-import { BusiGroupItem } from '@/store/commonInterface';
 import { getMonObjectList } from '@/services/targets';
 import { timeFormatter } from '@/pages/dashboard/Renderer/utils/valueFormatter';
 import { CommonStateContext } from '@/App';
@@ -16,6 +15,7 @@ import { getDefaultColumnsConfigs, setDefaultColumnsConfigs } from './utils';
 import TargetMetaDrawer from './TargetMetaDrawer';
 import categrafInstallationDrawer from './components/categrafInstallationDrawer';
 import Explorer from './components/Explorer';
+import EditBusinessGroups from './components/EditBusinessGroups';
 
 // @ts-ignore
 import CollectsDrawer from 'plus:/pages/collects/CollectsDrawer';
@@ -74,6 +74,7 @@ const Unknown = () => {
 export default function List(props: IProps) {
   const { t } = useTranslation('targets');
   const { gids, selectedIdents, setSelectedIdents, selectedRowKeys, setSelectedRowKeys, refreshFlag, setRefreshFlag, setOperateType } = props;
+  const [selectedRows, setSelectedRows] = useState<ITargetProps[]>([]);
   const isAddTagToQueryInput = useRef(false);
   const [searchVal, setSearchVal] = useState('');
   const [tableQueryContent, setTableQueryContent] = useState<string>('');
@@ -587,14 +588,26 @@ export default function List(props: IProps) {
               >
                 <Menu.Item key={OperateType.BindTag}>{t('bind_tag.title')}</Menu.Item>
                 <Menu.Item key={OperateType.UnbindTag}>{t('unbind_tag.title')}</Menu.Item>
-                <Menu.Item key={OperateType.UpdateBusi}>{t('update_busi.title')}</Menu.Item>
-                {gids !== '0' && gids !== undefined && <Menu.Item key={OperateType.RemoveBusi}>{t('remove_busi.title')}</Menu.Item>}
+                <EditBusinessGroups
+                  gids={gids}
+                  idents={selectedIdents}
+                  selectedRows={selectedRows}
+                  onOk={() => {
+                    setRefreshFlag(_.uniqueId('refreshFlag_'));
+                    setSelectedIdents([]);
+                    setSelectedRowKeys([]);
+                    setSelectedRows([]);
+                  }}
+                />
                 <Menu.Item key={OperateType.UpdateNote}>{t('update_note.title')}</Menu.Item>
                 <Menu.Item key={OperateType.Delete}>{t('batch_delete.title')}</Menu.Item>
                 <UpgradeAgent
                   selectedIdents={selectedIdents}
                   onOk={() => {
                     setRefreshFlag(_.uniqueId('refreshFlag_'));
+                    setSelectedIdents([]);
+                    setSelectedRowKeys([]);
+                    setSelectedRows([]);
                   }}
                 />
               </Menu>
@@ -634,6 +647,7 @@ export default function List(props: IProps) {
           onChange(selectedRowKeys, selectedRows: ITargetProps[]) {
             setSelectedRowKeys(selectedRowKeys);
             setSelectedIdents(selectedRows ? selectedRows.map(({ ident }) => ident) : []);
+            setSelectedRows(selectedRows);
           },
         }}
         pagination={{
