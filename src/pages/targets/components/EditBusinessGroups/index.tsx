@@ -33,7 +33,7 @@ export default function index(props: Props) {
   return (
     <>
       <Menu.Item
-        key='upgradeAgent'
+        key='EditBusinessGroups'
         onClick={() => {
           setVisible(true);
         }}
