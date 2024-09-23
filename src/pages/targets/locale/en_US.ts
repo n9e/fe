@@ -63,6 +63,12 @@ const en_US = {
   update_busi: {
     title: 'Update business group',
     label: 'Business group',
+    mode: {
+      label: 'Mode',
+      reset: 'Reset',
+      add: 'Add',
+      del: 'Delete',
+    },
   },
   remove_busi: {
     title: 'Remove business group',

@@ -62,6 +62,12 @@ const zh_HK = {
   update_busi: {
     title: '修改業務組',
     label: '歸屬業務組',
+    mode: {
+      label: '模式',
+      reset: '覆蓋',
+      add: '追加',
+      del: '刪除',
+    },
   },
   remove_busi: {
     title: '移出業務組',
