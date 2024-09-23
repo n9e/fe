@@ -32,14 +32,13 @@ export default function index(props: Props) {
 
   return (
     <>
-      <Menu.Item
-        key='EditBusinessGroups'
+      <span
         onClick={() => {
           setVisible(true);
         }}
       >
         {t('update_busi.title')}
-      </Menu.Item>
+      </span>
       <Modal
         title={t('update_busi.title')}
         destroyOnClose

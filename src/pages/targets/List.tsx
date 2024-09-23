@@ -588,28 +588,32 @@ export default function List(props: IProps) {
               >
                 <Menu.Item key={OperateType.BindTag}>{t('bind_tag.title')}</Menu.Item>
                 <Menu.Item key={OperateType.UnbindTag}>{t('unbind_tag.title')}</Menu.Item>
-                <EditBusinessGroups
-                  gids={gids}
-                  idents={selectedIdents}
-                  selectedRows={selectedRows}
-                  onOk={() => {
-                    setRefreshFlag(_.uniqueId('refreshFlag_'));
-                    setSelectedIdents([]);
-                    setSelectedRowKeys([]);
-                    setSelectedRows([]);
-                  }}
-                />
+                <Menu.Item>
+                  <EditBusinessGroups
+                    gids={gids}
+                    idents={selectedIdents}
+                    selectedRows={selectedRows}
+                    onOk={() => {
+                      setRefreshFlag(_.uniqueId('refreshFlag_'));
+                      setSelectedIdents([]);
+                      setSelectedRowKeys([]);
+                      setSelectedRows([]);
+                    }}
+                  />
+                </Menu.Item>
                 <Menu.Item key={OperateType.UpdateNote}>{t('update_note.title')}</Menu.Item>
                 <Menu.Item key={OperateType.Delete}>{t('batch_delete.title')}</Menu.Item>
-                <UpgradeAgent
-                  selectedIdents={selectedIdents}
-                  onOk={() => {
-                    setRefreshFlag(_.uniqueId('refreshFlag_'));
-                    setSelectedIdents([]);
-                    setSelectedRowKeys([]);
-                    setSelectedRows([]);
-                  }}
-                />
+                <Menu.Item>
+                  <UpgradeAgent
+                    selectedIdents={selectedIdents}
+                    onOk={() => {
+                      setRefreshFlag(_.uniqueId('refreshFlag_'));
+                      setSelectedIdents([]);
+                      setSelectedRowKeys([]);
+                      setSelectedRows([]);
+                    }}
+                  />
+                </Menu.Item>
               </Menu>
             }
           >
