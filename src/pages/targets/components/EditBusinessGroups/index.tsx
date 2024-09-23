@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import _ from 'lodash';
-import { Menu, Modal, Form, Input, Select, Radio, Table } from 'antd';
+import { Modal, Form, Input, Select, Radio, Table } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { CommonStateContext } from '@/App';
 import { putTargetsBgids } from '@/pages/targets/services';
@@ -35,6 +35,7 @@ export default function index(props: Props) {
       <span
         onClick={() => {
           setVisible(true);
+          form.setFieldsValue({ idents: _.join(idents, '\n'), action: 'reset' });
         }}
       >
         {t('update_busi.title')}
@@ -91,15 +92,7 @@ export default function index(props: Props) {
           });
         }}
       >
-        <Form
-          layout='vertical'
-          preserve={false}
-          form={form}
-          initialValues={{
-            idents: _.join(idents, '\n'),
-            action: 'reset',
-          }}
-        >
+        <Form layout='vertical' preserve={false} form={form}>
           <Form.Item label={t('targets')} name='idents'>
             <Input.TextArea
               autoSize={{

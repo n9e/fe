@@ -608,9 +608,6 @@ export default function List(props: IProps) {
                     selectedIdents={selectedIdents}
                     onOk={() => {
                       setRefreshFlag(_.uniqueId('refreshFlag_'));
-                      setSelectedIdents([]);
-                      setSelectedRowKeys([]);
-                      setSelectedRows([]);
                     }}
                   />
                 </Menu.Item>
