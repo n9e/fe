@@ -87,7 +87,7 @@ export default function QueryPanel({ fields, field, index, remove, dashboardId, 
                 <QuestionCircleOutlined />
               </a>
             </Space>
-            <Form.Item {...field} name={[field.name, 'query', 'syntax']} noStyle initialValue='lucene'>
+            <Form.Item {...field} name={[field.name, 'query', 'syntax']} noStyle initialValue='lucene' hidden={IS_PLUS}>
               <Select
                 bordered={false}
                 options={[
