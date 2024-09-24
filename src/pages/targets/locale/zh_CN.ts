@@ -62,6 +62,12 @@ const zh_CN = {
   update_busi: {
     title: '修改业务组',
     label: '归属业务组',
+    mode: {
+      label: '模式',
+      reset: '覆盖',
+      add: '新增',
+      del: '删除',
+    },
   },
   remove_busi: {
     title: '移出业务组',

@@ -20,7 +20,7 @@ import { DatabaseOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _, { debounce } from 'lodash';
 import classNames from 'classnames';
-import { bindTags, unbindTags, moveTargetBusi, updateTargetNote, deleteTargets, getTargetTags } from '@/services/targets';
+import { bindTags, unbindTags, moveTargetBusi, deleteTargetBusi, updateTargetNote, deleteTargets, getTargetTags } from '@/services/targets';
 import PageLayout from '@/components/pageLayout';
 import { getBusiGroups } from '@/services/common';
 import { CommonStateContext } from '@/App';
@@ -53,7 +53,7 @@ const { TextArea } = Input;
 
 const OperationModal: React.FC<OperateionModalProps> = ({ operateType, setOperateType, idents, reloadList }) => {
   const { t } = useTranslation('targets');
-  const { busiGroups } = useContext(CommonStateContext);
+  const { busiGroups, businessGroup } = useContext(CommonStateContext);
   const [form] = Form.useForm();
   const [confirmLoading, setConfirmLoading] = useState<boolean>(false);
   const [identList, setIdentList] = useState<string[]>(idents);
@@ -149,10 +149,17 @@ const OperationModal: React.FC<OperateionModalProps> = ({ operateType, setOperat
   const removeBusiDetail = () => {
     return {
       operateTitle: t('remove_busi.title'),
-      requestFunc: moveTargetBusi,
-      isFormItem: false,
+      requestFunc: deleteTargetBusi,
+      isFormItem: true,
       render() {
-        return <Alert message={t('remove_busi.msg')} type='error' />;
+        return (
+          <>
+            <Form.Item name='bgids' hidden initialValue={[businessGroup.id]}>
+              <div />
+            </Form.Item>
+            <Alert message={t('remove_busi.msg')} type='error' />
+          </>
+        );
       },
     };
   };
@@ -193,7 +200,7 @@ const OperationModal: React.FC<OperateionModalProps> = ({ operateType, setOperat
       isFormItem: true,
       render() {
         return (
-          <Form.Item label={t('update_busi.label')} name='bgid' rules={[{ required: true }]}>
+          <Form.Item label={t('update_busi.label')} name='bgids' rules={[{ required: true }]}>
             <Select
               showSearch
               style={{ width: '100%' }}
@@ -203,6 +210,7 @@ const OperationModal: React.FC<OperateionModalProps> = ({ operateType, setOperat
               }))}
               optionFilterProp='label'
               filterOption={false}
+              mode='multiple'
               onSearch={handleSearch}
               onFocus={() => {
                 getBusiGroups('').then((res) => {
@@ -441,14 +449,16 @@ const Targets: React.FC = () => {
           />
         </div>
       </div>
-      <OperationModal
-        operateType={operateType}
-        setOperateType={setOperateType}
-        idents={selectedIdents}
-        reloadList={() => {
-          setRefreshFlag(_.uniqueId('refreshFlag_'));
-        }}
-      />
+      {_.includes(_.values(OperateType), operateType) && (
+        <OperationModal
+          operateType={operateType}
+          setOperateType={setOperateType}
+          idents={selectedIdents}
+          reloadList={() => {
+            setRefreshFlag(_.uniqueId('refreshFlag_'));
+          }}
+        />
+      )}
     </PageLayout>
   );
 };
