@@ -4,7 +4,7 @@ import { InputRef } from 'antd/lib/input';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { validator } from './utils';
-export { generateQueryName } from './utils';
+export { generateQueryName, generateQueryNameByIndex } from './utils';
 import './locale';
 
 interface Props {

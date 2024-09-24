@@ -3,7 +3,9 @@ import { Form } from 'antd';
 import { DatasourceCateEnum } from '@/utils/constant';
 import { replaceExpressionVars } from '@/pages/dashboard/VariableConfig/constant';
 // @ts-ignore
-import * as meta from 'plus:/datasource/mysql/components/Meta';
+import * as MySQLMeta from 'plus:/datasource/mysql/components/Meta';
+// @ts-ignore
+import * as CKMeta from 'plus:/datasource/clickHouse/components/Meta';
 
 export default function index({ dashboardId, variableConfig }) {
   const datasourceCate = Form.useWatch('datasourceCate');
@@ -11,7 +13,11 @@ export default function index({ dashboardId, variableConfig }) {
 
   if (datasourceCate === DatasourceCateEnum.mysql && datasourceValue !== undefined) {
     const curDatasourceValue = variableConfig ? replaceExpressionVars(datasourceValue, variableConfig, variableConfig.length, dashboardId) : datasourceValue;
-    return <meta.MetaModal datasourceValue={curDatasourceValue} />;
+    return <MySQLMeta.MetaModal datasourceValue={curDatasourceValue} />;
+  }
+  if (datasourceCate === DatasourceCateEnum.ck && datasourceValue !== undefined) {
+    const curDatasourceValue = variableConfig ? replaceExpressionVars(datasourceValue, variableConfig, variableConfig.length, dashboardId) : datasourceValue;
+    return <CKMeta.MetaModal datasourceValue={curDatasourceValue} />;
   }
   return null;
 }

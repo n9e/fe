@@ -38,16 +38,6 @@ const zh_CN = {
       - 监控 <1 />
       - 登录 <1 />
     `,
-    label_enable: '作为标签使用',
-    label_enable_tip: '系统会自动把业务组的英文标识作为标签附到该业务组下辖监控对象的时序数据上',
-    label_value: '英文标识',
-    label_value_tip: `
-      <0>
-        尽量用英文，不能与其他业务组标识重复，系统会自动生成
-        <1>busigroup={{val}}</1>
-        的标签
-      </0>
-    `,
     team_name: '团队',
     perm_flag_0: '只读',
     perm_flag_1: '读写',
