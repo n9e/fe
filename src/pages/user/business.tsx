@@ -19,8 +19,8 @@ import moment from 'moment';
 import _ from 'lodash';
 import classNames from 'classnames';
 import PageLayout from '@/components/pageLayout';
-import { Button, Table, Input, message, Row, Col, Modal, Space, Tree } from 'antd';
-import { EditOutlined, DeleteOutlined, SearchOutlined, UserOutlined, InfoCircleOutlined, DownOutlined } from '@ant-design/icons';
+import { Button, Table, Input, message, Row, Col, Modal, Space } from 'antd';
+import { EditOutlined, DeleteOutlined, SearchOutlined, UserOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import UserInfoModal from './component/createModal';
 import { deleteBusinessTeamMember, getBusinessTeamList, getBusinessTeamInfo, deleteBusinessTeam } from '@/services/manage';
 import { Team, ActionType } from '@/store/manageInterface';
@@ -29,6 +29,7 @@ import { ColumnsType } from 'antd/lib/table';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@/utils';
 import { listToTree, getCollapsedKeys, getLocaleExpandedKeys, setLocaleExpandedKeys } from '@/components/BusinessGroup';
+import Tree from '@/components/BusinessGroup/components/Tree';
 import '@/components/BlankBusinessPlaceholder/index.less';
 import './index.less';
 
@@ -218,11 +219,8 @@ const Resource: React.FC = () => {
               <div className='radio-list' style={{ overflowY: 'auto' }}>
                 {!_.isEmpty(teamList) && (
                   <Tree
-                    rootClassName='business-group-tree'
-                    defaultExpandParent={false}
                     defaultExpandedKeys={getCollapsedKeys(listToTree(teamList as any, siteInfo?.businessGroupSeparator), getLocaleExpandedKeys(), teamId as any)}
                     selectedKeys={teamId ? [_.toString(teamId)] : []}
-                    blockNode
                     onSelect={(_selectedKeys, e: any) => {
                       const nodeId = e.node.id;
                       setTeamId(nodeId as any);

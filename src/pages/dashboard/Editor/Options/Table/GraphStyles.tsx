@@ -215,7 +215,7 @@ export default function GraphStyles({ chartForm, variableConfigWithOptions }) {
           label={
             <Space>
               {t('panel.base.link.label')}
-              <Tooltip title={<Trans ns='dashboard' i18nKey='dashboard:link.url_tip' components={{ 1: <br /> }} />}>
+              <Tooltip title={<Trans ns='dashboard' i18nKey='dashboard:var.help_tip' components={{ 1: <br /> }} />}>
                 <InfoCircleOutlined />
               </Tooltip>
             </Space>

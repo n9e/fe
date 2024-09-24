@@ -257,6 +257,8 @@ export interface IDashboardConfig {
   panels: IPanel[];
   graphTooltip: 'default' | 'sharedCrosshair' | 'sharedTooltip';
   graphZoom: 'default' | 'updateTimeRange';
+  mode?: 'iframe';
+  iframe_url?: string;
 }
 
 export interface IDashboard {

@@ -21,6 +21,10 @@ const en_US = {
       2: 'Authorized access',
     },
     bgids: 'Authorized business groups',
+    theme_link: {
+      dark: 'Dark theme',
+      light: 'Light theme',
+    },
   },
   default_filter: {
     title: 'Preset Filters',
@@ -36,12 +40,14 @@ const en_US = {
   exit_full_screen: 'Exit full screen',
   copyPanelTip: 'Panel copied. Click "Add panel" to paste.',
   batch: {
-    import: 'Import dashboard',
+    import: 'Import dashboard JSON',
     label: 'Dashboard JSON',
     import_grafana: 'Import Grafana dashboard',
     import_grafana_tip: 'Imported panels only support the chart types and features that n9e currently supports, <a>feedback</a>',
     import_grafana_tip_version_error: 'Import of dashboard config less than v7 version is not supported',
     import_grafana_tip_version_warning: 'The imported dashboard config version is less than v8, some panels may not be displayed properly, do you want to continue importing?',
+    import_grafana_url: 'Import Grafana dashboard URL',
+    import_grafana_url_label: 'Grafana dashboard URL',
     continueToImport: 'Continue to import',
     noSelected: 'Please select any dashboard',
     import_builtin: 'Import built-in dashboard',
@@ -56,27 +62,6 @@ const en_US = {
     title: 'Links',
     name: 'Name',
     url: 'URL',
-    url_tip: `
-      Variables usage
-      <1 />
-      \${variable_name}: dashboard variable value
-      <1 />
-      \${__field.name}: series name
-      <1 />
-      \${__field.value}: series value
-      <1 />
-      \${__field.labels.X}: specified label value
-      <1 />
-      \${__field.labels.__name__}: metric name
-      <1 />
-      \${__from}: Unix millisecond
-      <1 />
-      \${__from_date_seconds}: Unix seconds epoch
-      <1 />
-      \${__from_date_iso}: ISO 8601/RFC 3339
-      <1 />
-      The syntax above also works with \${__to}
-      `,
     isNewBlank: 'Open in new tab',
   },
   var: {
@@ -133,6 +118,37 @@ const en_US = {
       ident: 'Business group ident',
       invalid: 'Invalid business group ident, Please go to the business group management settings first.',
     },
+    help_tip: `
+      Variables usage
+      <1 />
+      \${variable_name}: dashboard variable value
+      <1 />
+      \${__field.name}: series name
+      <1 />
+      \${__field.value}: series value
+      <1 />
+      \${__field.labels.X}: specified label value
+      <1 />
+      \${__field.labels.__name__}: metric name
+      <1 />
+      \${__interval}: Time interval (seconds)
+      <1 />
+      \${__interval_ms}: Time interval (milliseconds)
+      <1 />
+      \${__range}: Time range (seconds)
+      <1 />
+      \${__range_ms}: Time range (milliseconds)
+      <1 />
+      \${__rate_interval}: Time interval (seconds), __interval * 4
+      <1 />
+      \${__from}: Unix millisecond
+      <1 />
+      \${__from_date_seconds}: Unix seconds epoch
+      <1 />
+      \${__from_date_iso}: ISO 8601/RFC 3339
+      <1 />
+      The syntax above also works with \${__to}
+    `,
   },
   row: {
     edit_title: 'Edit row',

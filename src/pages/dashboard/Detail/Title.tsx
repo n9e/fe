@@ -19,7 +19,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import querystring from 'query-string';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Button, Space, Dropdown, Menu, Switch, notification, Select, Input, message } from 'antd';
+import { Button, Space, Dropdown, Menu, notification, Input, message, Tooltip } from 'antd';
 import { RollbackOutlined, SettingOutlined, SaveOutlined, FullscreenOutlined, DownOutlined } from '@ant-design/icons';
 import { useKeyPress } from 'ahooks';
 import { TimeRangePickerWithRefresh, IRawTimeRange } from '@/components/TimeRangePicker';
@@ -31,8 +31,8 @@ import { AddPanelIcon } from '../config';
 import { visualizations } from '../Editor/config';
 import { dashboardTimeCacheKey } from './Detail';
 import FormModal from '../List/FormModal';
+import ImportGrafanaURLFormModal from '../List/ImportGrafanaURLFormModal';
 import { IDashboard, ILink } from '../types';
-import { dashboardThemeModeCacheKey, getDefaultThemeMode } from './utils';
 import { useGlobalState } from '../globalState';
 
 interface IProps {
@@ -185,112 +185,134 @@ export default function Title(props: IProps) {
           </Dropdown>
         )}
       </div>
+
       <div className='dashboard-detail-header-right'>
         <Space>
-          {isAuthorized && (
-            <Dropdown
-              trigger={['click']}
-              overlay={
-                <Menu>
-                  {_.map(_.concat(panelClipboard ? [{ type: 'pastePanel' }] : [], [{ type: 'row', name: 'row' }], visualizations), (item) => {
-                    return (
-                      <Menu.Item
-                        key={item.type}
-                        onClick={() => {
-                          onAddPanel(item.type);
-                        }}
-                      >
-                        {t(`visualizations.${item.type}`)}
-                      </Menu.Item>
-                    );
-                  })}
-                </Menu>
-              }
-            >
-              <Button type='primary' icon={<AddPanelIcon />}>
-                {t('add_panel')}
-              </Button>
-            </Dropdown>
+          {dashboard.configs?.mode !== 'iframe' ? (
+            <>
+              {isAuthorized && (
+                <Dropdown
+                  trigger={['click']}
+                  overlay={
+                    <Menu>
+                      {_.map(_.concat(panelClipboard ? [{ type: 'pastePanel' }] : [], [{ type: 'row', name: 'row' }], visualizations), (item) => {
+                        return (
+                          <Menu.Item
+                            key={item.type}
+                            onClick={() => {
+                              onAddPanel(item.type);
+                            }}
+                          >
+                            {t(`visualizations.${item.type}`)}
+                          </Menu.Item>
+                        );
+                      })}
+                    </Menu>
+                  }
+                >
+                  <Button type='primary' icon={<AddPanelIcon />}>
+                    {t('add_panel')}
+                  </Button>
+                </Dropdown>
+              )}
+              <TimeRangePickerWithRefresh
+                localKey={`${dashboardTimeCacheKey}_${dashboard.id}`}
+                dateFormat='YYYY-MM-DD HH:mm:ss'
+                value={range}
+                onChange={(val) => {
+                  // 以下 history replace 会触发 beforeunload，在手动保存模式下暂时关闭
+                  if (dashboardSaveMode !== 'manual') {
+                    history.replace({
+                      pathname: location.pathname,
+                      // 重新设置时间范围时，清空 __from 和 __to
+                      search: querystring.stringify(_.omit(querystring.parse(window.location.search), ['__from', '__to'])),
+                    });
+                  }
+                  setRange(val);
+                }}
+              />
+              {isAuthorized && dashboardSaveMode === 'manual' && (
+                <Button
+                  icon={<SaveOutlined />}
+                  onClick={() => {
+                    if (editable) {
+                      updateDashboardConfigs(dashboard.id, {
+                        configs: JSON.stringify(dashboard.configs),
+                      }).then((res) => {
+                        updateAtRef.current = res.update_at;
+                        message.success(t('detail.saved'));
+                        setAllowedLeave(true);
+                      });
+                    } else {
+                      message.warning(t('detail.expired'));
+                    }
+                  }}
+                />
+              )}
+              {isAuthorized && (
+                <Button
+                  icon={<SettingOutlined />}
+                  onClick={() => {
+                    FormModal({
+                      action: 'edit',
+                      initialValues: dashboard,
+                      onOk: () => {
+                        window.location.reload();
+                      },
+                    });
+                  }}
+                />
+              )}
+              <DashboardLinks
+                editable={isAuthorized}
+                value={dashboardLinks}
+                onChange={(v) => {
+                  const dashboardConfigs: any = dashboard.configs;
+                  dashboardConfigs.links = v;
+                  handleUpdateDashboardConfigs(dashboard.id, {
+                    configs: JSON.stringify(dashboardConfigs),
+                  });
+                  setDashboardLinks(v);
+                }}
+              />
+            </>
+          ) : (
+            <>
+              {isAuthorized && (
+                <Button
+                  icon={<SettingOutlined />}
+                  onClick={() => {
+                    ImportGrafanaURLFormModal({
+                      initialValues: dashboard,
+                      onOk: () => {
+                        window.location.reload();
+                      },
+                    });
+                  }}
+                />
+              )}
+            </>
           )}
-          <TimeRangePickerWithRefresh
-            localKey={`${dashboardTimeCacheKey}_${dashboard.id}`}
-            dateFormat='YYYY-MM-DD HH:mm:ss'
-            value={range}
-            onChange={(val) => {
-              // 以下 history replace 会触发 beforeunload，在手动保存模式下暂时关闭
-              if (dashboardSaveMode !== 'manual') {
+          <Tooltip title={dashboard.configs?.mode === 'iframe' ? t('embeddedDashboards:exitFullScreen_tip') : undefined}>
+            <Button
+              onClick={() => {
+                const newQuery = _.omit(querystring.parse(window.location.search), ['viewMode', 'themeMode']);
+                if (!viewMode) {
+                  newQuery.viewMode = 'fullscreen';
+                  isClickTrigger.current = true;
+                }
                 history.replace({
                   pathname: location.pathname,
-                  // 重新设置时间范围时，清空 __from 和 __to
-                  search: querystring.stringify(_.omit(querystring.parse(window.location.search), ['__from', '__to'])),
+                  search: querystring.stringify(newQuery),
                 });
-              }
-              setRange(val);
-            }}
-          />
-          {isAuthorized && dashboardSaveMode === 'manual' && (
-            <Button
-              icon={<SaveOutlined />}
-              onClick={() => {
-                if (editable) {
-                  updateDashboardConfigs(dashboard.id, {
-                    configs: JSON.stringify(dashboard.configs),
-                  }).then((res) => {
-                    updateAtRef.current = res.update_at;
-                    message.success(t('detail.saved'));
-                    setAllowedLeave(true);
-                  });
-                } else {
-                  message.warning(t('detail.expired'));
-                }
+                // TODO: 解决仪表盘 layout resize 问题
+                setTimeout(() => {
+                  window.dispatchEvent(new Event('resize'));
+                }, 500);
               }}
+              icon={<FullscreenOutlined />}
             />
-          )}
-          {isAuthorized && (
-            <Button
-              icon={<SettingOutlined />}
-              onClick={() => {
-                FormModal({
-                  action: 'edit',
-                  initialValues: dashboard,
-                  onOk: () => {
-                    window.location.reload();
-                  },
-                });
-              }}
-            />
-          )}
-          <DashboardLinks
-            editable={isAuthorized}
-            value={dashboardLinks}
-            onChange={(v) => {
-              const dashboardConfigs: any = dashboard.configs;
-              dashboardConfigs.links = v;
-              handleUpdateDashboardConfigs(dashboard.id, {
-                configs: JSON.stringify(dashboardConfigs),
-              });
-              setDashboardLinks(v);
-            }}
-          />
-          <Button
-            onClick={() => {
-              const newQuery = _.omit(querystring.parse(window.location.search), ['viewMode', 'themeMode']);
-              if (!viewMode) {
-                newQuery.viewMode = 'fullscreen';
-                newQuery.themeMode = localStorage.getItem(dashboardThemeModeCacheKey) || 'light';
-                isClickTrigger.current = true;
-              }
-              history.replace({
-                pathname: location.pathname,
-                search: querystring.stringify(newQuery),
-              });
-              // TODO: 解决仪表盘 layout resize 问题
-              setTimeout(() => {
-                window.dispatchEvent(new Event('resize'));
-              }, 500);
-            }}
-            icon={<FullscreenOutlined />}
-          />
+          </Tooltip>
         </Space>
       </div>
     </div>

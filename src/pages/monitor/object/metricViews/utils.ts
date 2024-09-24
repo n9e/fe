@@ -15,16 +15,18 @@
  *
  */
 import _ from 'lodash';
+import { escapePromQLString } from '@/pages/dashboard/VariableConfig/utils';
 import { IMatch } from '../types';
 
-
 export function getFiltersStr(filters: IMatch['filters']) {
-  const arr = _.compact(_.map(filters, (item) => {
-    if (item.label && item.value) {
-      return `${item.label}${item.oper}"${item.value}"`;
-    }
-    return '';
-  }));
+  const arr = _.compact(
+    _.map(filters, (item) => {
+      if (item.label && item.value) {
+        return `${item.label}${item.oper}"${item.value}"`;
+      }
+      return '';
+    }),
+  );
   return _.join(_.compact(arr), ',');
 }
 
@@ -41,7 +43,12 @@ export function getDynamicLabelsStr(dynamicLabels: IMatch['dynamicLabels']) {
 export function getMatchStr(match: IMatch) {
   const arr = _.map(match.dimensionLabels, (item) => {
     if (!_.isEmpty(item.value)) {
-      return `${item.label}=~"${_.join(item.value, '|')}"`;
+      return `${item.label}=~"${_.join(
+        _.map(item.value, (item) => {
+          return escapePromQLString(item);
+        }),
+        '|',
+      )}"`;
     }
     return '';
   });

@@ -21,6 +21,10 @@ const zh_HK = {
       2: '授權訪問',
     },
     bgids: '授權業務組',
+    theme_link: {
+      dark: '暗色主題連結',
+      light: '亮色主題連結',
+    },
   },
   default_filter: {
     title: '預置篩選',
@@ -36,12 +40,14 @@ const zh_HK = {
   exit_full_screen: '退出全屏',
   copyPanelTip: '圖表已複製。點擊 "添加圖表" 進行貼上。',
   batch: {
-    import: '匯入儀表盤',
+    import: '匯入儀表盤 JSON',
     label: '儀表盤 JSON',
     import_grafana: '匯入 Grafana 儀表盤',
     import_grafana_tip: '匯入完的圖表只支援夜鶯目前支援的圖表類型和功能, <a>問題反饋</a>',
     import_grafana_tip_version_error: '不支援匯入小於 v7 版本的儀表盤配置',
     import_grafana_tip_version_warning: '匯入的儀表盤配置版本小於 v8，部分圖表可能無法正常顯示，是否繼續匯入？',
+    import_grafana_url: 'Grafana 儀錶板地址（建議）',
+    import_grafana_url_label: 'Grafana 儀錶板地址',
     continueToImport: '繼續匯入',
     noSelected: '請選擇儀表盤',
     import_builtin: '匯入內置儀表盤',
@@ -56,27 +62,6 @@ const zh_HK = {
     title: '儀表盤連結',
     name: '連結名稱',
     url: '連結地址',
-    url_tip: `
-      變數使用說明
-      <1/>
-      \${variable_name}: 顯示儀表盤變數值
-      <1/>
-      \${__field.name}: 顯示序列的名稱
-      <1/>
-      \${__field.value}: 顯示序列的數值
-      <1/>
-      \${__field.labels.X}: 顯示指定的標籤值
-      <1/>
-      \${__field.labels.__name__}: 顯示指標名
-      <1/>
-      \${__from}: 起始時間, 毫秒
-      <1/>
-      \${__from_date_seconds}: 起始時間, 秒
-      <1/>
-      \${__from_date_iso}: 起始時間, ISO 8601/RFC 3339
-      <1/>
-      上面語法適用於 \${__to}
-    `,
     isNewBlank: '是否新視窗開啟',
   },
   var: {
@@ -133,6 +118,37 @@ const zh_HK = {
       ident: '業務組標識',
       invalid: '沒有找到目前業務組的標識，請先去業務組管理設置',
     },
+    help_tip: `
+      變數使用說明
+      <1/>
+      \${variable_name}: 儀表盤變數值
+      <1/>
+      \${__field.name}: 圖例的名稱
+      <1/>
+      \${__field.value}: 圖例的數值
+      <1/>
+      \${__field.labels.X}: 標籤值
+      <1/>
+      \${__field.labels.__name__}: 指標名
+      <1/>
+      \${__interval}: 時間間隔（秒）, 例如 15s
+      <1 />
+      \${__interval_ms}: 時間間隔（毫秒）, 例如 15000ms
+      <1 />
+      \${__range}: 時間範圍（秒）, 例如 3600s
+      <1 />
+      \${__range_ms}: 時間範圍（毫秒）, 例如 3600000ms
+      <1 />
+      \${__rate_interval}: 時間間隔（秒）, __interval * 4
+      <1/>
+       \${__from}: 起始時間（毫秒）
+      <1/>
+      \${__from_date_seconds}: 起始時間（秒）
+      <1/>
+      \${__from_date_iso}: 起始時間, ISO 8601/RFC 3339
+      <1 />
+      上面語法適用於 \${__to}
+    `,
   },
   row: {
     edit_title: '編輯分組',
