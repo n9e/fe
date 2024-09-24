@@ -47,6 +47,7 @@ const i18nMap = {
   zh_CN: '简体',
   zh_HK: '繁體',
   en_US: 'En',
+  ja_JP: '日本語',
 };
 
 const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introIcon, children, customArea, showBack, backPath, docFn }) => {

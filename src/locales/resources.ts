@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-import * as datasource from './datasource';
-import * as common from './common';
+import * as datasource from "./datasource";
+import * as common from "./common";
 
 const resources = {
   en_US: {
@@ -30,6 +30,7 @@ const resources = {
     common: common.zh_HK,
     datasource: datasource.zh_HK,
   },
+  ja_JP: { common: common.ja_JP, datasource: datasource.ja_JP },
 };
 
 export default resources;
