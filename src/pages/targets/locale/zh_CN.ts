@@ -11,7 +11,7 @@ const zh_CN = {
   not_grouped: '未归组',
   host_ip: 'IP',
   host_tags: '机器标签',
-  host_tags_tip: 'categraf globle_labels 配置的标签，会追加到此机器上报的时序数据中',
+  host_tags_tip: 'categraf global_labels 配置的标签，会追加到此机器上报的时序数据中',
   tags: '用户标签',
   tags_tip: '用户在页面配置的标签，会追加到此机器上报的时序数据中',
   group_obj: '业务组',
