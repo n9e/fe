@@ -12,7 +12,7 @@ const en_US = {
   not_grouped: 'Ungrouped',
   host_ip: 'IP',
   host_tags: 'Host tags',
-  host_tags_tip: 'Tags configured in categraf globle_labels will be appended to the time series data reported by this host',
+  host_tags_tip: 'Tags configured in categraf global_labels will be appended to the time series data reported by this host',
   tags: 'Tags',
   tags_tip: 'Tags configured on the page will be appended to the time series data reported by this host',
   group_obj: 'Business group',
