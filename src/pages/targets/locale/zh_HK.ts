@@ -11,7 +11,7 @@ const zh_HK = {
   not_grouped: '未歸組',
   host_ip: 'IP',
   host_tags: '機器標籤',
-  host_tags_tip: 'categraf globle_labels 配置的標籤，會追加到此機器上報的時序數據中',
+  host_tags_tip: 'categraf global_labels 配置的標籤，會追加到此機器上報的時序數據中',
   tags: '用戶標籤',
   tags_tip: '用戶在頁面配置的標籤，會追加到此機器上報的時序數據中',
   group_obj: '業務組',
