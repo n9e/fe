@@ -29,8 +29,7 @@ export default function ValuesSelect(props: IProps) {
       setFetching(true);
       getMonObjectList({
         p: 1,
-        limit: 100,
-        bgid: -1,
+        limit: 1000,
         query,
       })
         .then((res) => {
