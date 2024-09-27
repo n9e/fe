@@ -110,6 +110,7 @@ export interface ICommonState {
   esIndexMode: string;
   dashboardSaveMode: 'auto' | 'manual';
   perms?: string[];
+  screenTemplates?: string[];
 }
 
 export const basePrefix = import.meta.env.VITE_PREFIX || '';
@@ -178,6 +179,7 @@ function App() {
     },
     esIndexMode: 'all',
     dashboardSaveMode: 'auto',
+    screenTemplates: [],
   });
 
   useEffect(() => {
