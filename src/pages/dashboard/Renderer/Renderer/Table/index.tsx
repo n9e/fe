@@ -416,7 +416,7 @@ function TableCpt(props: IProps, ref: any) {
     () => {
       return {
         exportCsv() {
-          let data: string[][] = _.map(tableDataSource, (item) => {
+          let data: (string | undefined)[][] = _.map(tableDataSource, (item) => {
             return [
               item.name,
               ajustFiledValue(item, overrides, {
@@ -483,7 +483,7 @@ function TableCpt(props: IProps, ref: any) {
             const { renameByName } = organizeOptions;
             if (renameByName) {
               data[0] = _.map(data[0], (item) => {
-                const newName = renameByName[item];
+                const newName = renameByName[item!];
                 if (newName) {
                   return newName;
                 }
