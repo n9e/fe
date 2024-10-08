@@ -10,6 +10,7 @@ export default function TestModal() {
   const { t } = useTranslation('alertRules');
   const eventRelabelConfig = Form.useWatch(name);
   const [visible, setVisible] = useState(false);
+  const alertRuleForm = Form.useFormInstance();
   const [form] = Form.useForm();
   const tags = Form.useWatch('tags', form);
   const [result, setResult] = useState<string[]>();
@@ -22,7 +23,15 @@ export default function TestModal() {
         className='mt2'
         disabled={_.isEmpty(eventRelabelConfig)}
         onClick={() => {
-          setVisible(true);
+          const validateNamePaths = _.map(eventRelabelConfig, (item, index) => {
+            if (item.action !== 'replace') {
+              return [...name, index, 'regex'];
+            }
+            return [];
+          });
+          alertRuleForm.validateFields(validateNamePaths).then(() => {
+            setVisible(true);
+          });
         }}
       >
         {t('relabel.test_btn')}

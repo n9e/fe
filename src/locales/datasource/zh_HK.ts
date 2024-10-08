@@ -25,12 +25,15 @@ const zh_HK = {
     func: '函數',
     funcField: '字段名',
     terms: {
+      label: '根據指定 field 分組',
       more: '高階設定',
       size: '匹配個數',
       min_value: '文件最小值',
     },
     raw: {
       limit: '日誌條數',
+      date_format: '日期格式',
+      date_format_tip: '使用 Moment.js 格式模式，比如 YYYY-MM-DD HH:mm:ss.SSS',
     },
     alert: {
       query: {
@@ -51,6 +54,12 @@ const zh_HK = {
     },
     event: {
       groupBy: `根據 {{field}} 分組，匹配個數 {{size}}, 文檔最小值 {{min_value}}`,
+      logs: {
+        title: '日誌詳情',
+        size: '結果數',
+        fields: '篩選字段',
+        jsonParseError: '解析失敗',
+      },
     },
     syntaxOptions: '語法選項',
     queryFailed: '查詢失敗，請稍後重試',

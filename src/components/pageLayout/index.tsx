@@ -47,6 +47,7 @@ const i18nMap = {
   zh_CN: '简体',
   zh_HK: '繁體',
   en_US: 'En',
+  ja_JP: '日本語',
 };
 
 const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introIcon, children, customArea, showBack, backPath, docFn }) => {
@@ -184,11 +185,11 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                       {curLanguage}
                     </a>
                   </Dropdown>
-                  {!IS_ENT && (
+
                     <div style={{ marginRight: 8 }}>
                       <DarkModeSelect />
                     </div>
-                  )}
+               
                   <Dropdown overlay={menu} trigger={['click']}>
                     <span className='avator' style={{ cursor: 'pointer' }}>
                       <img src={profile.portrait || '/image/avatar1.png'} alt='' />

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Form, Row, Col, Input, InputNumber, Space, Select } from 'antd';
-import { DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { Form, Row, Col, Input, InputNumber, Space, Select, Tooltip } from 'antd';
+import { DeleteOutlined, InfoCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { FormListFieldData } from 'antd/lib/form/FormList';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -8,6 +8,7 @@ import HideButton from '@/pages/dashboard/Components/HideButton';
 import { IS_PLUS } from '@/utils/constant';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import KQLInput from '@/components/KQLInput';
+import LegendInput from '@/pages/dashboard/Components/LegendInput';
 import DateField from './DateField';
 import IndexSelect from './IndexSelect';
 import Values from './Values';
@@ -86,7 +87,7 @@ export default function QueryPanel({ fields, field, index, remove, dashboardId, 
                 <QuestionCircleOutlined />
               </a>
             </Space>
-            <Form.Item {...field} name={[field.name, 'query', 'syntax']} noStyle initialValue='lucene'>
+            <Form.Item {...field} name={[field.name, 'query', 'syntax']} noStyle initialValue='lucene' hidden={IS_PLUS}>
               <Select
                 bordered={false}
                 options={[
@@ -170,17 +171,26 @@ export default function QueryPanel({ fields, field, index, remove, dashboardId, 
           if (_.get(targetQueryValues, [0, 'func']) === 'rawData') {
             return (
               <Row gutter={10}>
-                <Col span={12}>
-                  <Form.Item shouldUpdate noStyle>
-                    {({ getFieldValue }) => {
-                      let datasourceValue = getFieldValue('datasourceValue');
-                      datasourceValue = replaceExpressionVars(datasourceValue as any, variableConfig, variableConfig.length, _.toString(dashboardId));
-                      const index = getFieldValue(['targets', field.name, 'query', 'index']);
-                      return <DateField datasourceValue={datasourceValue} index={index} prefixField={field} prefixNames={[field.name, 'query']} />;
-                    }}
-                  </Form.Item>
+                <Col span={8}>
+                  <DateField datasourceValue={realDatasourceValue} index={indexValue} prefixField={field} prefixNames={[field.name, 'query']} />
                 </Col>
-                <Col span={12}>
+                <Col span={8}>
+                  <InputGroupWithFormItem
+                    label={
+                      <Space>
+                        {t('datasource:es.raw.date_format')}
+                        <Tooltip title={t('datasource:es.raw.date_format_tip')}>
+                          <InfoCircleOutlined />
+                        </Tooltip>
+                      </Space>
+                    }
+                  >
+                    <Form.Item {...field} name={[field.name, 'query', 'date_format']}>
+                      <Input />
+                    </Form.Item>
+                  </InputGroupWithFormItem>
+                </Col>
+                <Col span={8}>
                   <InputGroupWithFormItem label={t('datasource:es.raw.limit')}>
                     <Form.Item {...field} name={[field.name, 'query', 'limit']}>
                       <InputNumber style={{ width: '100%' }} />
@@ -193,6 +203,21 @@ export default function QueryPanel({ fields, field, index, remove, dashboardId, 
           return <Time prefixField={field} prefixNameField={[field.name]} chartForm={chartForm} variableConfig={variableConfig} dashboardId={dashboardId} />;
         }}
       </Form.Item>
+      {IS_PLUS && (
+        <Form.Item
+          label='Legend'
+          {...field}
+          name={[field.name, 'legend']}
+          tooltip={{
+            getPopupContainer: () => document.body,
+            title: t('query.legendTip2', {
+              interpolation: { skipOnVariables: true },
+            }),
+          }}
+        >
+          <LegendInput />
+        </Form.Item>
+      )}
     </Panel>
   );
 }

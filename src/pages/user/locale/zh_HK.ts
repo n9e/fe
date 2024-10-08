@@ -38,16 +38,6 @@ const zh_HK = {
       - 監控 <1 />
       - 登錄 <1 />
     `,
-    label_enable: '作為標籤使用',
-    label_enable_tip: '系統會自動把業務組的英文標識作為標籤附到該業務組下轄監控機器的時序資料上',
-    label_value: '英文標識',
-    label_value_tip: `
-      <0>
-        儘量用英文，不能與其他業務組標識重複，系統會自動生成
-        <1>busigroup={{val}}</1>
-        的標籤
-      </0>
-    `,
     team_name: '團隊',
     perm_flag_0: '只讀',
     perm_flag_1: '讀寫',

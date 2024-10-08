@@ -96,6 +96,9 @@ const en_US = {
     prom_for_duration_tip:
       'Usually the duration is greater than the execution frequency. During the duration, PromQL query is executed multiple times according to the execution frequency, and an alert is generated only if it is triggered every time. If the duration is set to 0, an alert is generated as long as the threshold is triggered once during the PromQL query.',
   },
+  loki: {
+    required: 'Please input LogQL',
+  },
   batch: {
     not_select: 'Please select some rules first',
     delete: 'Delete Alert Rules',
@@ -108,6 +111,7 @@ const en_US = {
       errmsg: 'Error message',
     },
     import_builtin: 'Import built-in alert rules',
+    import_prometheus: 'Import Prometheus alert rules',
     export: {
       title: 'Export Alert Rules',
       copy: 'Copy JSON content to clipboard',
@@ -145,6 +149,25 @@ const en_US = {
         note: 'Note',
         runbook_url: 'Runbook URL',
         service_cal_ids: 'Service Calendar',
+        annotations: 'Annotations',
+        triggers: 'Triggers',
+      },
+    },
+    cloneToHosts: {
+      title: 'Clone to Hosts',
+      select_hosts: {
+        title: 'Select Hosts',
+        filter: 'Filter',
+        ident: 'Ident',
+        tags: 'Tags',
+        group: 'Group',
+      },
+      clone_btn: 'Clone',
+      result: {
+        title: 'Result',
+        host: 'Host',
+        rule: 'Rule',
+        msg: 'Message',
       },
     },
   },
@@ -154,8 +177,8 @@ const en_US = {
   1. Check channels and groups
   `,
   default_filter: {
-    title: 'Preset filters',
-    all: 'All rules',
+    title: 'Preset Filters',
+    all: 'All Rules',
   },
   ruleConfigPromVersion: 'Mode',
   ruleConfigPromVersion_v1: 'Normal mode',
@@ -211,6 +234,14 @@ const en_US = {
       btn: 'Apply',
       result: 'Relabel Result',
     },
+  },
+  task_tpls: {
+    title: 'Self-healing Template',
+    add_btn: 'Create',
+    tpl_id: 'Template',
+    tpl_id_msg: 'Template is required',
+    host: 'Host',
+    host_placeholder: 'Optional, the host to be executed will be obtained from the ident tag in the event',
   },
 };
 export default en_US;

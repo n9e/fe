@@ -3,9 +3,7 @@ import moment from 'moment';
 import semver from 'semver';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { getDsQuery, getESVersion } from '@/services/warning';
-import { normalizeTime } from '@/pages/alertRules/utils';
 import { fetchHistoryRangeBatch2 } from '@/services/dashboardV2';
-import { getSerieName } from '@/pages/dashboard/Renderer/datasource/utils';
 import { ITarget } from '../../../types';
 import { IVariable } from '../../../VariableConfig/definition';
 import { replaceExpressionVars } from '../../../VariableConfig/constant';
@@ -13,6 +11,7 @@ import { getSeriesQuery, getLogsQuery } from './queryBuilder';
 import { processResponseToSeries } from './processResponse';
 import { flattenHits } from '@/pages/explorer/Elasticsearch/utils';
 import { N9E_PATHNAME, IS_PLUS } from '@/utils/constant';
+import { normalizeInterval } from './utils';
 
 interface IOptions {
   dashboardId: string;
@@ -97,7 +96,7 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
               values: query?.values,
               group_by: query.group_by,
               date_field: query.date_field,
-              interval: `${normalizeTime(query.interval, query.interval_unit)}s`,
+              interval: `${normalizeInterval(parsedRange, query.interval, query.interval_unit)}s`,
               start,
               end,
             });
@@ -115,7 +114,7 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
                   value: item,
                   group_by: query.group_by,
                   date_field: query.date_field,
-                  interval: normalizeTime(query.interval, query.interval_unit),
+                  interval: normalizeInterval(parsedRange, query.interval, query.interval_unit),
                   start: moment(parsedRange.start).unix(),
                   end: moment(parsedRange.end).unix(),
                 },
@@ -168,7 +167,8 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
               series.push({
                 id: _.uniqueId('series_'),
                 refId: refId,
-                name: getSerieName(serie.metric, isExp ? serie.ref : undefined),
+                target: currentTarget,
+                isExp,
                 metric: serie.metric,
                 data: serie.values,
               });
@@ -191,9 +191,15 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
         logPlayload += esQuery + '\n';
       });
       logRes = await getDsQuery(datasourceValue, logPlayload);
+      // TODO: 暂时以第一个查询条件是否配置 date_format 为准，如果配置了 date_format 则所有日志的 date_field 值都会去格式化
+      const dateField = _.get(targets, '[0].query.date_field');
+      const dateFormat = _.get(targets, '[0].query.date_format');
       _.forEach(logRes, (item) => {
         const { docs } = flattenHits(item?.hits?.hits);
         _.forEach(docs, (doc: any) => {
+          if (dateField && dateFormat) {
+            _.set(doc, `fields.${dateField}`, moment(doc?.fields?.[dateField]).format(dateFormat));
+          }
           series.push({
             id: doc._id,
             name: doc._index,

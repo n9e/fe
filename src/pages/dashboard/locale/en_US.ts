@@ -23,9 +23,10 @@ const en_US = {
     bgids: 'Authorized business groups',
   },
   default_filter: {
-    title: 'Preset filters',
-    public: 'Public dashboards',
-    all: 'All dashboards',
+    title: 'Preset Filters',
+    public: 'Public Dashboards',
+    all: 'My Business Groups Dashboards',
+    all_tip: 'Display all my business groups dashboards',
   },
   create_title: 'Create Dashboard',
   edit_title: 'Edit Dashboard',
@@ -33,6 +34,7 @@ const en_US = {
   cluster: 'Cluster',
   full_screen: 'Full screen',
   exit_full_screen: 'Exit full screen',
+  copyPanelTip: 'Panel copied. Click "Add panel" to paste.',
   batch: {
     import: 'Import dashboard',
     label: 'Dashboard JSON',
@@ -187,6 +189,11 @@ const en_US = {
           showItem: 'Show item',
           hideItem: 'Hide item',
         },
+        selectMode: {
+          label: 'Select mode',
+          single: 'Single',
+          multiple: 'Multiple',
+        },
         heightInPercentage: 'Height in percentage',
         heightInPercentage_tip: 'Legend height occupies the maximum height percentage of the panel, the minimum value is 20%, the maximum value is 80%',
       },
@@ -260,6 +267,8 @@ const en_US = {
       valueField: 'Value field',
       valueField_tip: 'Value is a reserved keyword, used as the field name after time series data value calculation',
       valueField_tip2: 'You need to select a column whose value is a numeric type',
+      nameField: 'Name field',
+      nameField_tip: 'Use the value of the name field as the name of the series',
       colSpan: 'Col span',
       colSpanTip: 'Deprecated soon, selecting the "Auto" option will use the layout direction settings below',
       colSpanAuto: 'Auto',
@@ -287,6 +296,8 @@ const en_US = {
         },
       },
       pie: {
+        countOfValueField: 'Count of value field',
+        countOfValueField_tip: 'Count the number of values in the value field',
         legengPosition: 'Legend position',
         max: 'Max',
         max_tip: 'Exceeded blocks are merged and displayed as other',
@@ -388,6 +399,11 @@ const en_US = {
         barMaxWidth: 'Bar max width',
         colorField_tip: 'Name is a reserved keyword, used as the field name of the series name',
       },
+      barGauge: {
+        topn: 'TopN',
+        combine_other: 'Other',
+        combine_other_tip: 'The number of series that exceed the topN value will be merged into the "Other" series',
+      },
     },
     inspect: {
       title: 'Inspect',
@@ -417,6 +433,8 @@ const en_US = {
       },
     },
     expression_placeholder: 'Math operations on one or more queries. You reference the query by ${refId} ie. $A, $B, $C etc. The sum of two scalar values: $A + $B > 10',
+    legendTip: 'Series name override or template, {{hostname}} will be replaced with label value for hostname',
+    legendTip2: 'Series name override or template, {{hostname}} will be replaced with label value for hostname, currently only effective under time series data',
   },
   detail: {
     datasource_empty: 'Please configure the data source first',

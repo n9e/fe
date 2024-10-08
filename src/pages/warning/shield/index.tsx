@@ -297,15 +297,13 @@ const Shield: React.FC = () => {
       const tagFind = item.tags.find((tag) => {
         return tag.key.indexOf(query) > -1 || tag.value.indexOf(query) > -1 || tag.func.indexOf(query) > -1;
       });
-      return (
-        (item.cause.indexOf(query) > -1 || !!tagFind) &&
-        (_.some(item.datasource_ids, (id) => {
-          if (includesProm(datasourceIds) && id === 0) return true;
-          return _.includes(datasourceIds, id);
-        }) ||
-          datasourceIds?.length === 0 ||
-          !datasourceIds)
-      );
+      const datsourceFind = datasourceIds?.length
+        ? _.some(item.datasource_ids, (id) => {
+            if (includesProm(datasourceIds) && id === 0) return true;
+            return _.includes(datasourceIds, id);
+          })
+        : true;
+      return (_.includes(item.note, query) || _.includes(item.cause, query) || !!tagFind) && datsourceFind;
     });
     setCurrentShieldData(res || []);
   };

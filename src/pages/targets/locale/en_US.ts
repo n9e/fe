@@ -1,6 +1,6 @@
 const en_US = {
   title: 'Host List',
-  default_filter: 'Preset filters',
+  default_filter: 'Preset Filters',
   ungrouped_targets: 'Ungrouped hosts',
   all_targets: 'All hosts',
   datasource: 'Datasource',
@@ -11,7 +11,10 @@ const en_US = {
   filterDowntimeMin_plural: '{{count}} minutes',
   not_grouped: 'Ungrouped',
   host_ip: 'IP',
+  host_tags: 'Host tags',
+  host_tags_tip: 'Tags configured in categraf globle_labels will be appended to the time series data reported by this host',
   tags: 'Tags',
+  tags_tip: 'Tags configured on the page will be appended to the time series data reported by this host',
   group_obj: 'Business group',
   target_up: 'Status',
   mem_util: 'Memory',

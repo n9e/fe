@@ -121,7 +121,7 @@ function index(props: IProps) {
             const datasourceCate = item.datasource?.cate;
             const definition = idx > 0 ? replaceExpressionVars(item.definition, result, idx, id, true) : item.definition;
 
-            let options = [];
+            let options: string[] = [];
             try {
               options = await convertExpressionToQuery(
                 definition,
@@ -137,6 +137,7 @@ function index(props: IProps) {
                 groupedDatasourceList,
               );
               options = datasourceCate === 'prometheus' ? _.sortBy(_.uniq(options)) : _.uniq(options);
+              options = _.map(options, _.toString); // 2024-09-03 统一将选项转为字符串，以防一些数据返回非字符串类型，比如 ES 的 status: 200
             } catch (error) {
               console.error(error);
             }
@@ -171,8 +172,7 @@ function index(props: IProps) {
             }
           } else if (item.type === 'constant') {
             result[idx] = item;
-            const selected = getVaraiableSelected(item, id);
-            if (selected === null && query.__variable_value_fixed === undefined) {
+            if (query.__variable_value_fixed === undefined) {
               setVaraiableSelected({ name: item.name, value: item.definition, id, urlAttach: true });
             }
           } else if (item.type === 'datasource') {

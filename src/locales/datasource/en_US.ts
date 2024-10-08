@@ -25,12 +25,15 @@ const en_US = {
     func: 'Function',
     funcField: 'Field',
     terms: {
+      label: 'Group by field',
       more: 'More',
       size: 'Size',
       min_value: 'Min Doc Count',
     },
     raw: {
       limit: 'Limit',
+      date_format: 'Date Format',
+      date_format_tip: 'Use Moment.js format pattern, such as YYYY-MM-DD HH:mm:ss.SSS',
     },
     alert: {
       query: {
@@ -51,6 +54,12 @@ const en_US = {
     },
     event: {
       groupBy: `Group by {{field}}, number of matches {{size}}, document minimum value {{min_value}}`,
+      logs: {
+        title: 'Logs Detail',
+        size: 'Size',
+        fields: 'Fields',
+        jsonParseError: 'Parse failed',
+      },
     },
     syntaxOptions: 'Syntax Options',
     queryFailed: 'Query failed, please try again later',

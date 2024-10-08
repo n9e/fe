@@ -63,7 +63,7 @@ const ImportBuiltinContent = ({ busiId, onOk }) => {
   const [components, setComponents] = useState<Component[]>([]);
   const [dashboards, setDashboards] = useState<Payload[]>([]);
   const [form] = Form.useForm();
-  const component = Form.useWatch('component', form);
+  const component_id = Form.useWatch('component_id', form);
   const selectedBoards = Form.useWatch('selectedBoards', form);
 
   useEffect(() => {
@@ -73,16 +73,16 @@ const ImportBuiltinContent = ({ busiId, onOk }) => {
   }, []);
 
   useEffect(() => {
-    if (component) {
+    if (component_id) {
       getPayloads<Payload[]>({
-        component,
+        component_id,
         type: TypeEnum.dashboard,
         query: filter.query,
       }).then((res) => {
         setDashboards(res);
       });
     }
-  }, [component, filter.query]);
+  }, [component_id, filter.query]);
 
   return (
     <Form
@@ -126,7 +126,7 @@ const ImportBuiltinContent = ({ busiId, onOk }) => {
     >
       <Form.Item
         label={t('builtInComponents:component')}
-        name='component'
+        name='component_id'
         rules={[
           {
             required: true,
@@ -135,10 +135,12 @@ const ImportBuiltinContent = ({ busiId, onOk }) => {
       >
         <Select
           showSearch
+          filterOption
+          optionFilterProp='label'
           options={_.map(components, (item) => {
             return {
               label: item.ident,
-              value: item.ident,
+              value: item.id,
             };
           })}
           onChange={() => {
@@ -148,7 +150,7 @@ const ImportBuiltinContent = ({ busiId, onOk }) => {
           }}
         />
       </Form.Item>
-      <Form.Item name='selectedBoards' label={t('builtInComponents:payloads')} hidden={!component}>
+      <Form.Item name='selectedBoards' label={t('builtInComponents:payloads')} hidden={!component_id}>
         <>
           <Input
             prefix={<SearchOutlined />}

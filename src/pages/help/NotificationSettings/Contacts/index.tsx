@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Table, Switch, Space, Button, Popconfirm, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
+import DocumentDrawer from '@/components/DocumentDrawer';
 import { getNotifyContacts, putNotifyContacts } from '../services';
 import { ContactType } from '../types';
 import AddModal from './AddModal';
 import EditModal from './EditModal';
 
 export default function Channels() {
-  const { t } = useTranslation('notificationSettings');
+  const { t, i18n } = useTranslation('notificationSettings');
   const [data, setData] = useState<ContactType[]>([]);
 
   useEffect(() => {
@@ -44,6 +45,19 @@ export default function Channels() {
               >
                 {t('channels.add')}
               </Button>
+              <a
+                style={{ fontSize: 12 }}
+                onClick={() => {
+                  DocumentDrawer({
+                    language: i18n.language,
+                    title: t('common:document_link'),
+                    type: 'iframe',
+                    documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/notification_set/-connect',
+                  });
+                }}
+              >
+                {t('common:document_link')}
+              </a>
             </Space>
           );
         }}

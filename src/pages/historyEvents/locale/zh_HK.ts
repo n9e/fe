@@ -4,6 +4,7 @@ const zh_HK = {
   search_placeholder: '模糊搜尋規則和標籤 (多個關鍵詞請用空格分隔)',
   first_trigger_time: '首次觸發時間',
   trigger_time: '觸發時間',
+  last_eval_time: '檢測時間',
   hours: {
     '6': '最近 6 小時',
     '12': '最近 12 小時',

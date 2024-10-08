@@ -252,17 +252,17 @@ export default function index() {
             </Tabs.TabPane>
             {IS_PLUS && (
               <Tabs.TabPane tab={t('tab_collectTpls')} key='tab_collectTpls'>
-                <CollectTpls component={activeComponent.ident} />
+                <CollectTpls component={activeComponent.ident} component_id={activeComponent.id} />
               </Tabs.TabPane>
             )}
             <Tabs.TabPane tab={t('tab_metrics')} key='tab_metrics'>
               <Metrics component={activeComponent.ident} />
             </Tabs.TabPane>
             <Tabs.TabPane tab={t('tab_dashboards')} key='tab_dashboards'>
-              <Dashboards component={activeComponent.ident} />
+              <Dashboards component_id={activeComponent.id} />
             </Tabs.TabPane>
             <Tabs.TabPane tab={t('tab_alertRules')} key='tab_alertRules'>
-              <AlertRules component={activeComponent.ident} />
+              <AlertRules component_id={activeComponent.id} />
             </Tabs.TabPane>
           </Tabs>
         )}

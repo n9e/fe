@@ -12,5 +12,5 @@ stats.html
 build.sh
 .env
 .env.advanced
-scripts/n9e_locale.json
+scripts/all_locales.json
 src/plus

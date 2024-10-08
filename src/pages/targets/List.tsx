@@ -169,9 +169,60 @@ export default function List(props: IProps) {
         className: 'n9e-hosts-table-column-ip',
       });
     }
+    if (item.name === 'host_tags') {
+      columns.push({
+        title: (
+          <Space>
+            {t('host_tags')}
+            <Tooltip title={t('host_tags_tip')}>
+              <InfoCircleOutlined />
+            </Tooltip>
+          </Space>
+        ),
+        dataIndex: 'host_tags',
+        className: 'n9e-hosts-table-column-tags',
+        ellipsis: {
+          showTitle: false,
+        },
+        render(tagArr) {
+          const content =
+            tagArr &&
+            tagArr.map((item) => (
+              <Tag
+                color='purple'
+                key={item}
+                onClick={(e) => {
+                  if (!tableQueryContent.includes(item)) {
+                    isAddTagToQueryInput.current = true;
+                    const val = tableQueryContent ? `${tableQueryContent.trim()} ${item}` : item;
+                    setTableQueryContent(val);
+                    setSearchVal(val);
+                  }
+                }}
+              >
+                {item}
+              </Tag>
+            ));
+          return (
+            tagArr && (
+              <Tooltip title={content} placement='topLeft' getPopupContainer={() => document.body} overlayClassName='mon-manage-table-tooltip'>
+                {content}
+              </Tooltip>
+            )
+          );
+        },
+      });
+    }
     if (item.name === 'tags') {
       columns.push({
-        title: t('tags'),
+        title: (
+          <Space>
+            {t('tags')}
+            <Tooltip title={t('tags_tip')}>
+              <InfoCircleOutlined />
+            </Tooltip>
+          </Space>
+        ),
         dataIndex: 'tags',
         className: 'n9e-hosts-table-column-tags',
         ellipsis: {
@@ -520,7 +571,7 @@ export default function List(props: IProps) {
                 <Menu.Item key={OperateType.BindTag}>{t('bind_tag.title')}</Menu.Item>
                 <Menu.Item key={OperateType.UnbindTag}>{t('unbind_tag.title')}</Menu.Item>
                 <Menu.Item key={OperateType.UpdateBusi}>{t('update_busi.title')}</Menu.Item>
-                <Menu.Item key={OperateType.RemoveBusi}>{t('remove_busi.title')}</Menu.Item>
+                {gids !== '0' && gids !== undefined && <Menu.Item key={OperateType.RemoveBusi}>{t('remove_busi.title')}</Menu.Item>}
                 <Menu.Item key={OperateType.UpdateNote}>{t('update_note.title')}</Menu.Item>
                 <Menu.Item key={OperateType.Delete}>{t('batch_delete.title')}</Menu.Item>
                 <UpgradeAgent

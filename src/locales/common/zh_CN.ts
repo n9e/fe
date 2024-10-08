@@ -5,10 +5,18 @@ const zh_CN = {
     '404_btn': '回到首页',
   },
   business_group: '业务组',
+  business_groups: '业务组',
   search_placeholder: '请输入搜索关键字',
   my_business_group: '我的业务组',
   all_business_group: '全部业务组',
   nodata: '暂无数据',
+  log_detail: '日志详情',
+  document_link: '使用说明',
+  required: '必填项',
+  host: {
+    tags: '用户标签',
+    host_tags: '机器标签',
+  },
   btn: {
     add: '新增',
     create: '创建',
@@ -53,6 +61,8 @@ const zh_CN = {
     note: '备注',
     operations: '操作',
     total: '共 {{total}} 条',
+    host: '机器',
+    error_msg: '错误',
   },
   datasource: {
     prod: '监控类型',

@@ -16,8 +16,10 @@
  */
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import { InfoCircleOutlined } from '@ant-design/icons';
+import './locale';
+
 interface Props {
   text: string;
 }
@@ -28,11 +30,10 @@ export default function BlankBusinessPlaceholder(props: Props) {
   return (
     <div className='blank-busi-holder'>
       <p style={{ textAlign: 'left', fontWeight: 'bold' }}>
-        <InfoCircleOutlined style={{ color: '#1473ff' }} /> {t('提示信息')}
+        <InfoCircleOutlined style={{ color: '#1473ff' }} /> {t('BlankBusinessPlaceholder:title')}
       </p>
       <p>
-        {text}需要归属某个业务组，请先 &nbsp;
-        <Link to='/busi-groups'>创建业务组</Link>
+        <Trans ns='BlankBusinessPlaceholder' i18nKey='BlankBusinessPlaceholder:content' components={{ a: <Link to='/busi-groups' /> }} />
       </p>
     </div>
   );

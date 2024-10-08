@@ -47,6 +47,7 @@ import EditorModal from './EditorModal';
 import { getDefaultThemeMode, ROW_HEIGHT } from '../Detail/utils';
 import { IDashboardConfig } from '../types';
 import { useGlobalState } from '../globalState';
+import ajustInitialValues from '../Renderer/utils/ajustInitialValues';
 import './style.less';
 
 interface IProps {
@@ -70,12 +71,8 @@ const ReactGridLayout = WidthProvider(RGL);
 
 function index(props: IProps) {
   const { t } = useTranslation('dashboard');
-  const { profile, darkMode, dashboardSaveMode, perms } = useContext(CommonStateContext);
-  const location = useLocation();
-  let themeMode = darkMode ? 'dark' : 'light';
-  if (IS_ENT) {
-    themeMode = getDefaultThemeMode(querystring.parse(location.search));
-  }
+  const { profile, darkMode, dashboardSaveMode, perms, groupedDatasourceList } = useContext(CommonStateContext);
+  const themeMode = darkMode ? 'dark' : 'light';
   const { editable, dashboard, setDashboard, setAllowedLeave, range, variableConfig, panels, isPreview, setPanels, onShareClick, onUpdated } = props;
   const roles = _.get(profile, 'roles', []);
   const isAuthorized = _.includes(perms, '/dashboards/put') && !isPreview;
@@ -176,7 +173,8 @@ function index(props: IProps) {
               {item.type !== 'row' ? (
                 semver.valid(item.version) ? (
                   <Renderer
-                    isPreview={!isAuthorized}
+                    isPreview={isPreview}
+                    isAuthorized={isAuthorized}
                     themeMode={themeMode as 'dark'}
                     dashboardId={_.toString(props.dashboardId)}
                     id={item.id}
@@ -257,7 +255,7 @@ function index(props: IProps) {
                 )
               ) : (
                 <Row
-                  isPreview={!isAuthorized}
+                  isAuthorized={isAuthorized}
                   name={item.name}
                   row={item}
                   onToggle={() => {
@@ -274,16 +272,7 @@ function index(props: IProps) {
                       mode: 'add',
                       visible: true,
                       id: item.id,
-                      initialValues: {
-                        type: 'timeseries',
-                        name: 'Panel Title',
-                        targets: [
-                          {
-                            refId: 'A',
-                            expr: '',
-                          },
-                        ],
-                      },
+                      initialValues: ajustInitialValues('timeseries', groupedDatasourceList, panels, variableConfig)?.initialValues,
                     });
                   }}
                   onEditClick={(newPanel) => {

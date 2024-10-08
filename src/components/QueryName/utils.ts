@@ -1,7 +1,7 @@
 import i18next from 'i18next';
 import _ from 'lodash';
 
-const alphabet = 'ABCDEFGHIGKLMNOPQRSTUVWXYZ'.split('');
+export const alphabet = 'ABCDEFGHIGKLMNOPQRSTUVWXYZ'.split('');
 
 /**
  * 生成查询名称, 根据字母表依次生成，如果已存在则跳过
@@ -18,6 +18,20 @@ export const generateQueryName = (existingNames?: string[]) => {
     }
   }
   return allNames.find((name) => !names.includes(name));
+};
+
+/**
+ * 生成查询名称, 根据字母表依次生成，如果已存在则跳过
+ * 如果字母表用完则从 AA 到 ZZ
+ * 参数只有 index 递增，index 跟 字母表的对应关系是一一对应的
+ * @param index
+ * @returns
+ */
+export const generateQueryNameByIndex = (index: number) => {
+  if (index < alphabet.length) {
+    return alphabet[index];
+  }
+  return `${alphabet[Math.floor(index / alphabet.length) - 1]}${alphabet[index % alphabet.length]}`;
 };
 
 export const validator = (value: string, preValue?: string, existingNames?: string[]) => {

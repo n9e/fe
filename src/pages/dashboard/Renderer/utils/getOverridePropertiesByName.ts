@@ -16,7 +16,8 @@
  */
 import _ from 'lodash';
 
-const getOverridePropertiesByName = (overrides: any[], type: string, name: string) => {
+const getOverridePropertiesByName = (overrides: any[], type: string, name?: string) => {
+  if (!name) return {};
   let properties: any = {};
   _.forEach(overrides, (item) => {
     if (type === 'byFrameRefID' && item?.matcher?.value === name) {

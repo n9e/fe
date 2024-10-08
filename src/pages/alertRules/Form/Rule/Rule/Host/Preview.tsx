@@ -49,7 +49,20 @@ export default function Preview(props: IProps) {
               dataIndex: 'ident',
             },
             {
-              title: t('common:table.tag'),
+              title: t('common:host.host_tags'),
+              dataIndex: 'host_tags',
+              render: (val) => {
+                return _.map(val, (item) => {
+                  return (
+                    <Tag key={item} color='purple'>
+                      {item}
+                    </Tag>
+                  );
+                });
+              },
+            },
+            {
+              title: t('common:host.tags'),
               dataIndex: 'tags',
               render: (val) => {
                 return _.map(val, (item) => {

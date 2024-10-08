@@ -230,7 +230,7 @@ export interface Filter {
 
 export function dslBuilder(params: {
   index: string;
-  date_field: string;
+  date_field?: string;
   start: number;
   end: number;
   filters?: Filter[];
@@ -261,17 +261,7 @@ export function dslBuilder(params: {
   const body: any = {
     query: {
       bool: {
-        filter: [
-          {
-            range: {
-              [params.date_field]: {
-                gte: params.start,
-                lte: params.end,
-                format: 'epoch_millis',
-              },
-            },
-          },
-        ],
+        filter: [],
         must_not: [],
       },
     },
@@ -288,6 +278,17 @@ export function dslBuilder(params: {
   };
   body.track_total_hits = true; //get real hits total
   body.highlight = getHighlightRequest(!!params.shouldHighlight);
+  if (params.date_field) {
+    body.query.bool.filter.push({
+      range: {
+        [params.date_field]: {
+          gte: params.start,
+          lte: params.end,
+          format: 'epoch_millis',
+        },
+      },
+    });
+  }
   if (params.limit) {
     body.size = params.limit;
   }

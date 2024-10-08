@@ -4,22 +4,22 @@ import _ from 'lodash';
 import moment from 'moment';
 import queryString from 'query-string';
 import { useTranslation } from 'react-i18next';
-import { Table, Empty, Spin, InputNumber, Select, Radio, Space, Checkbox, Tag, Form, Alert } from 'antd';
+import { useGetState } from 'ahooks';
+import { Empty, Spin, InputNumber, Select, Radio, Space, Checkbox, Tag, Form, Alert } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
-import { DownOutlined, RightOutlined, LeftOutlined } from '@ant-design/icons';
+import { RightOutlined, LeftOutlined } from '@ant-design/icons';
 import { useLocation } from 'react-router-dom';
 import { getLogsQuery } from './services';
 import { parseRange } from '@/components/TimeRangePicker';
 import Timeseries from '@/pages/dashboard/Renderer/Renderer/Timeseries';
 import { CommonStateContext } from '@/App';
-import { PRIMARY_COLOR } from '@/utils/constant';
+import { DatasourceCateEnum, PRIMARY_COLOR } from '@/utils/constant';
 import metricQuery from './metricQuery';
 import { Field, dslBuilder, Filter, getFieldLabel } from './utils';
-import { getColumnsFromFields } from './utils/getColumnsFromFields';
 import FieldsSidebar from './FieldsSidebar';
 import QueryBuilder from './QueryBuilder';
 import QueryBuilderWithIndexPatterns from './QueryBuilderWithIndexPatterns';
-import LogView from './LogView';
+import Table from './Table';
 import './style.less';
 // @ts-ignore
 import DownloadModal from 'plus:/datasource/elasticsearch/components/LogDownload/DownloadModal';
@@ -109,7 +109,7 @@ export default function index(props: IProps) {
   const [total, setTotal] = useState(0);
   const [series, setSeries] = useState<any[]>([]);
   const [displayTimes, setDisplayTimes] = useState('');
-  const [fields, setFields] = useState<Field[]>([]);
+  const [fields, setFields, getFields] = useGetState<Field[]>([]);
   const [selectedFields, setSelectedFields] = useState<Field[]>([]);
   const [interval, setInterval] = useState(1);
   const [intervalUnit, setIntervalUnit] = useState<'second' | 'min' | 'hour'>('min');
@@ -118,6 +118,7 @@ export default function index(props: IProps) {
   const [filters, setFilters] = useState<Filter[]>();
   const [errorContent, setErrorContent] = useState();
   const fieldConfig = Form.useWatch('fieldConfig', form);
+  const date_field = Form.useWatch(['query', 'date_field'], form);
   const sorterRef = useRef<any>([]);
   const timesRef = useRef<{
     start: number;
@@ -242,7 +243,7 @@ export default function index(props: IProps) {
     if (defaultFormValuesControl?.defaultFormValues && defaultFormValuesControl?.isInited === false) {
       form.setFieldsValue(defaultFormValuesControl.defaultFormValues);
       defaultFormValuesControl.setIsInited();
-      setMode(getDefaultMode(query, isOpenSearch, esIndexMode, defaultFormValuesControl.defaultFormValues?.query?.mode));
+      setMode(getDefaultMode(query, isOpenSearch, esIndexMode, defaultFormValuesControl?.defaultFormValues?.query?.mode));
     }
   }, []);
 
@@ -380,7 +381,7 @@ export default function index(props: IProps) {
                 <div
                   className='es-discover-chart'
                   style={{
-                    height: chartVisible ? 190 : 40,
+                    height: chartVisible && date_field ? 190 : 40,
                   }}
                 >
                   <div className='es-discover-chart-title'>
@@ -394,48 +395,51 @@ export default function index(props: IProps) {
                       </strong>{' '}
                       hits
                     </div>
+                    {date_field && (
+                      <>
+                        <div className='es-discover-chart-title-content'>
+                          {chartVisible && (
+                            <>
+                              <span>{displayTimes}</span>
+                              <span style={{ marginLeft: 10 }}>
+                                {t('log.interval')}:{' '}
+                                <InputNumber
+                                  size='small'
+                                  value={interval}
+                                  min={1}
+                                  onBlur={(e) => {
+                                    const val = _.toNumber(e.target.value);
+                                    if (val > 0) setInterval(val);
+                                  }}
+                                  onPressEnter={(e: any) => {
+                                    const val = _.toNumber(e.target.value);
+                                    if (val > 0) setInterval(val);
+                                  }}
+                                />{' '}
+                                <Select size='small' style={{ width: 80 }} value={intervalUnit} onChange={(val) => setIntervalUnit(val)}>
+                                  <Select.Option value='second'>{t('common:time.second')}</Select.Option>
+                                  <Select.Option value='min'>{t('common:time.minute')}</Select.Option>
+                                  <Select.Option value='hour'>{t('common:time.hour')}</Select.Option>
+                                </Select>
+                              </span>
+                            </>
+                          )}
+                        </div>
 
-                    <div className='es-discover-chart-title-content'>
-                      {chartVisible && (
-                        <>
-                          <span>{displayTimes}</span>
-                          <span style={{ marginLeft: 10 }}>
-                            {t('log.interval')}:{' '}
-                            <InputNumber
-                              size='small'
-                              value={interval}
-                              min={1}
-                              onBlur={(e) => {
-                                const val = _.toNumber(e.target.value);
-                                if (val > 0) setInterval(val);
-                              }}
-                              onPressEnter={(e: any) => {
-                                const val = _.toNumber(e.target.value);
-                                if (val > 0) setInterval(val);
-                              }}
-                            />{' '}
-                            <Select size='small' style={{ width: 80 }} value={intervalUnit} onChange={(val) => setIntervalUnit(val)}>
-                              <Select.Option value='second'>{t('common:time.second')}</Select.Option>
-                              <Select.Option value='min'>{t('common:time.minute')}</Select.Option>
-                              <Select.Option value='hour'>{t('common:time.hour')}</Select.Option>
-                            </Select>
-                          </span>
-                        </>
-                      )}
-                    </div>
-
-                    <div className='es-discover-chart-title-action'>
-                      <a
-                        onClick={() => {
-                          setChartVisible(!chartVisible);
-                        }}
-                      >
-                        {chartVisible ? t('log.hideChart') : t('log.showChart')}
-                      </a>
-                      {isPlus && <DownloadModal queryData={{ ...form.getFieldsValue(), total }} />}
-                    </div>
+                        <div className='es-discover-chart-title-action'>
+                          <a
+                            onClick={() => {
+                              setChartVisible(!chartVisible);
+                            }}
+                          >
+                            {chartVisible ? t('log.hideChart') : t('log.showChart')}
+                          </a>
+                          {isPlus && <DownloadModal queryData={{ ...form.getFieldsValue(), mode, total }} />}
+                        </div>
+                      </>
+                    )}
                   </div>
-                  {chartVisible && (
+                  {chartVisible && date_field && (
                     <div className='es-discover-chart-content'>
                       <Timeseries
                         series={series}
@@ -473,35 +477,7 @@ export default function index(props: IProps) {
                     </div>
                   )}
                 </div>
-                <Table
-                  size='small'
-                  className='es-discover-logs-table'
-                  tableLayout='fixed'
-                  rowKey='id'
-                  columns={getColumnsFromFields(selectedFields, form.getFieldValue(['query']), form.getFieldValue(['fieldConfig']))}
-                  dataSource={data}
-                  expandable={{
-                    expandedRowRender: (record) => {
-                      return <LogView value={record.json} fieldConfig={form.getFieldValue(['fieldConfig'])} fields={fields} highlight={record.highlight} />;
-                    },
-                    expandIcon: ({ expanded, onExpand, record }) =>
-                      expanded ? <DownOutlined onClick={(e) => onExpand(record, e)} /> : <RightOutlined onClick={(e) => onExpand(record, e)} />,
-                  }}
-                  scroll={{
-                    // x: _.isEmpty(selectedFields) ? undefined : 'max-content',
-                    y: 'calc(100% - 36px)',
-                  }}
-                  pagination={false}
-                  onChange={(pagination, filters, sorter: any, extra) => {
-                    sorterRef.current = _.map(_.isArray(sorter) ? sorter : [sorter], (item) => {
-                      return {
-                        field: item.columnKey,
-                        order: item.order === 'ascend' ? 'asc' : 'desc',
-                      };
-                    });
-                    fetchData();
-                  }}
-                />
+                <Table data={data} fetchData={fetchData} sorterRef={sorterRef} form={form} getFields={getFields} selectedFields={selectedFields} />
                 <div
                   className='es-discover-collapse'
                   onClick={() => {

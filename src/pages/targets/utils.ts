@@ -3,7 +3,7 @@ import { IS_PLUS } from '@/utils/constant';
 
 export const getDefaultColumnsConfigs = () => {
   const columns = _.concat(
-    ['host_ip', 'tags', 'group_obj', 'update_at', 'mem_util', 'cpu_util', 'offset', 'cpu_num', 'os', 'arch', 'remote_addr'],
+    ['host_ip', 'host_tags', 'tags', 'group_obj', 'update_at', 'mem_util', 'cpu_util', 'offset', 'cpu_num', 'os', 'arch', 'remote_addr'],
     IS_PLUS ? ['agent_version'] : [],
     ['note'],
   );

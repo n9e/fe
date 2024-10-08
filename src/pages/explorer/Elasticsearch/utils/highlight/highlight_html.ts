@@ -3,7 +3,7 @@ import { highlightTags } from './highlight_tags';
 import { htmlTags } from './html_tags';
 
 export function getHighlightHtml(fieldValue: string | object, highlights: string[] | undefined | null) {
-  let highlightHtml = typeof fieldValue === 'object' ? JSON.stringify(fieldValue) : fieldValue;
+  let highlightHtml = typeof fieldValue === 'object' ? _.escape(JSON.stringify(fieldValue)) : _.escape(fieldValue);
 
   _.each(highlights, function (highlight) {
     const escapedHighlight = _.escape(highlight);

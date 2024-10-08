@@ -17,11 +17,11 @@ import Import from './Import';
 import { formatBeautifyJson, formatBeautifyJsons } from '../utils';
 
 interface Props {
-  component: string;
+  component_id: number;
 }
 
 export default function index(props: Props) {
-  const { component } = props;
+  const { component_id } = props;
   const { t } = useTranslation('builtInComponents');
   const { busiGroups, darkMode } = useContext(CommonStateContext);
   const [filter, setFilter] = useState<{
@@ -34,7 +34,7 @@ export default function index(props: Props) {
   const selectedRows = useRef<Payload[]>([]);
   const fetchData = () => {
     setLoading(true);
-    getPayloads<Payload[]>({ component, type: TypeEnum.dashboard, query: filter.query })
+    getPayloads<Payload[]>({ component_id, type: TypeEnum.dashboard, query: filter.query })
       .then((res) => {
         setData(res);
       })
@@ -47,7 +47,7 @@ export default function index(props: Props) {
     () => {
       fetchData();
     },
-    [component, filter.query],
+    [component_id, filter.query],
     {
       wait: 500,
     },
@@ -80,7 +80,7 @@ export default function index(props: Props) {
                   contentMode: 'json',
                   initialValues: {
                     type: TypeEnum.dashboard,
-                    component,
+                    component_id,
                   },
                   onOk: () => {
                     fetchData();

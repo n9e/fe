@@ -106,17 +106,6 @@ export default function Content() {
   const history = useHistory();
   const isPlus = useIsPlus();
   const { profile, siteInfo, perms } = useContext(CommonStateContext);
-  let themeClassName = '';
-  if (IS_ENT) {
-    // 仪表盘在全屏和暗黑主题下需要定义个 dark 样式名
-    if (_.startsWith(location.pathname, '/dashboards/') && !_.endsWith(location.pathname, '/dashboards/')) {
-      const query = querystring.parse(location.search);
-      const themeMode = getDefaultThemeMode(query);
-      if (themeMode === 'dark') {
-        themeClassName = 'theme-dark';
-      }
-    }
-  }
 
   useEffect(() => {
     /**
@@ -140,7 +129,7 @@ export default function Content() {
   }, []);
 
   return (
-    <div className={`content ${themeClassName}`}>
+    <div className='content'>
       <Switch>
         <Route path='/demo' component={Demo} />
         <Route path='/overview' component={Overview} />

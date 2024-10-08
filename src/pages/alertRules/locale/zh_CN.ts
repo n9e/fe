@@ -96,6 +96,9 @@ const zh_CN = {
     prom_for_duration_tip:
       '通常持续时长大于执行频率，在持续时长内按照执行频率多次执行PromQL查询，每次都触发才生成告警；如果持续时长置为0，表示只要有一次PromQL查询触发阈值，就生成告警',
   },
+  loki: {
+    required: '请输入 LogQL',
+  },
   batch: {
     not_select: '请先选择策略',
     delete: '删除告警规则',
@@ -108,6 +111,7 @@ const zh_CN = {
       errmsg: '错误信息',
     },
     import_builtin: '导入内置告警规则',
+    import_prometheus: '导入 Prometheus 告警规则',
     export: {
       title: '导出告警规则',
       copy: '复制 JSON 内容到剪贴板',
@@ -145,6 +149,25 @@ const zh_CN = {
         note: '备注',
         runbook_url: '预案链接',
         service_cal_ids: '服务日历',
+        annotations: '附加信息',
+        triggers: '告警条件',
+      },
+    },
+    cloneToHosts: {
+      title: '克隆到多个机器',
+      select_hosts: {
+        title: '选择机器',
+        filter: '筛选',
+        ident: '机器标识',
+        tags: '标签',
+        group: '业务组',
+      },
+      clone_btn: '克隆',
+      result: {
+        title: '克隆结果',
+        host: '机器',
+        rule: '规则',
+        msg: '结果',
       },
     },
   },
@@ -209,6 +232,14 @@ const zh_CN = {
       btn: '测试',
       result: 'relabel 结果',
     },
+  },
+  task_tpls: {
+    title: '告警自愈',
+    add_btn: '创建自愈模板',
+    tpl_id: '自愈模板',
+    tpl_id_msg: '自愈模板不能为空',
+    host: '执行机器',
+    host_placeholder: '默认可留空，会从事件中的 ident 标签获取要执行的机器',
   },
 };
 export default zh_CN;

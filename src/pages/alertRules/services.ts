@@ -21,5 +21,13 @@ import { RequestMethod } from '@/store/common';
 export const getAlertRulePure = (id: number) => {
   return request(`/api/n9e/alert-rule/${id}/pure`, {
     method: RequestMethod.Get,
+    silence: true,
+  }).then((res) => res.dat);
+};
+
+export const rulesClone = (gid, data) => {
+  return request(`/api/n9e/busi-group/${gid}/alert-rules/clone`, {
+    method: RequestMethod.Post,
+    data,
   }).then((res) => res.dat);
 };

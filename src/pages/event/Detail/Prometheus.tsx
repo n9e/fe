@@ -24,35 +24,37 @@ export default function PrometheusDetail(props: IProps) {
           const queries = _.get(ruleConfig, 'queries', []);
           return (
             <div style={{ width: '100%' }}>
-              {_.map(queries, (item) => {
+              {_.map(queries, (item, idx) => {
                 const prom_ql = item.query;
                 return (
-                  <Space align='baseline' size={2}>
-                    <Button
-                      className='p0'
-                      style={{
-                        position: 'relative',
-                        top: 1,
-                      }}
-                      type='link'
-                      onClick={() => {
-                        history.push({
-                          pathname: '/metric/explorer',
-                          search: queryString.stringify({
-                            prom_ql,
-                            data_source_name: 'prometheus',
-                            data_source_id: eventDetail.datasource_id,
-                            mode: 'graph',
-                            start: moment.unix(eventDetail.trigger_time).subtract(30, 'minutes').unix(),
-                            end: moment.unix(eventDetail.trigger_time).add(30, 'minutes').unix(),
-                          }),
-                        });
-                      }}
-                    >
-                      <PlayCircleOutlined />
-                    </Button>
-                    <PromQLInput value={prom_ql} readonly />
-                  </Space>
+                  <div key={idx}>
+                    <Space align='baseline' size={2}>
+                      <Button
+                        className='p0'
+                        style={{
+                          position: 'relative',
+                          top: 1,
+                        }}
+                        type='link'
+                        onClick={() => {
+                          history.push({
+                            pathname: '/metric/explorer',
+                            search: queryString.stringify({
+                              prom_ql,
+                              data_source_name: 'prometheus',
+                              data_source_id: eventDetail.datasource_id,
+                              mode: 'graph',
+                              start: moment.unix(eventDetail.trigger_time).subtract(30, 'minutes').unix(),
+                              end: moment.unix(eventDetail.trigger_time).add(30, 'minutes').unix(),
+                            }),
+                          });
+                        }}
+                      >
+                        <PlayCircleOutlined />
+                      </Button>
+                      <PromQLInput value={prom_ql} readonly />
+                    </Space>
+                  </div>
                 );
               })}
             </div>
@@ -66,7 +68,7 @@ export default function PrometheusDetail(props: IProps) {
           const triggers = _.get(val, 'triggers', []);
           return _.map(triggers, (item, idx) => {
             return (
-              <div key={idx} style={{ backgroundColor: '#fafafa', padding: 8 }}>
+              <div key={idx} style={{ backgroundColor: 'var(--fc-fill-3)', padding: 8 }}>
                 <span style={{ paddingRight: 4 }}>{item.exp}</span>
                 <span>
                   {i18next.t('AlertCurEvents:detail.trigger')} {`${i18next.t(`common:severity.${item?.severity}`)}`}

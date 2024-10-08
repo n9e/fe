@@ -24,23 +24,26 @@ import ColorPicker from '../../../Components/ColorPicker';
 
 interface Props {
   hideBase?: boolean;
+  preNamePrefix?: (string | number)[];
+  namePrefix?: (string | number)[];
+  initialValue?: any;
 }
 
 export default function index(props: Props) {
   const { hideBase } = props;
   const { t } = useTranslation('dashboard');
-  const namePrefix = ['options', 'thresholds'];
+  const { preNamePrefix = [], namePrefix = ['options', 'thresholds'], initialValue } = props;
 
   return (
     <Panel header={t('panel.options.thresholds.title')}>
-      <Form.List name={[...namePrefix, 'steps']}>
+      <Form.List name={[...namePrefix, 'steps']} initialValue={initialValue}>
         {(fields, { add, remove }) => (
           <>
             {fields.map(({ key, name, ...restField }) => {
               return (
                 <Form.Item key={key} shouldUpdate noStyle>
                   {({ getFieldValue }) => {
-                    const type = getFieldValue([...namePrefix, 'steps', name, 'type']);
+                    const type = getFieldValue([...preNamePrefix, ...namePrefix, 'steps', name, 'type']);
                     const width = type === 'base' ? 'calc(100% - 32px)' : 'calc(100% - 82px)';
 
                     return (

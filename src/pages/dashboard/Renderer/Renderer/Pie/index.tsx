@@ -50,7 +50,7 @@ export default function Pie(props: IProps) {
   const [statFields, setStatFields] = useGlobalState('statFields');
   const { values, series, themeMode, time, isPreview } = props;
   const { custom, options } = values;
-  const { calc, legengPosition, max, labelWithName, labelWithValue, detailUrl, detailName, donut = false, valueField = 'Value' } = custom;
+  const { calc, legengPosition, max, labelWithName, labelWithValue, detailUrl, detailName, donut = false, valueField = 'Value', countOfValueField = true } = custom;
   const dataFormatter = (text: number) => {
     const resFormatter = valueFormatter(
       {
@@ -80,26 +80,40 @@ export default function Pie(props: IProps) {
 
   let data: any[] = [];
   if (valueField !== 'Value') {
-    data = _.map(
-      _.groupBy(
-        _.map(calculatedValues, (item) => {
+    if (countOfValueField === true) {
+      data = _.map(
+        _.groupBy(
+          _.map(calculatedValues, (item) => {
+            return {
+              name: custom.valueField,
+              value: _.get(item, ['metric', custom.valueField]),
+            };
+          }),
+          'value',
+        ),
+        (vals, name) => {
           return {
-            name: custom.valueField,
-            value: _.get(item, ['metric', custom.valueField]),
+            name,
+            value: _.size(vals),
+            metric: {
+              [custom.valueField]: name,
+            },
           };
-        }),
-        'value',
-      ),
-      (vals, name) => {
+        },
+      );
+    } else {
+      data = _.map(calculatedValues, (item) => {
         return {
-          name,
-          value: _.size(vals),
-          metric: {
-            [custom.valueField]: name,
-          },
+          name: item.name,
+          value: _.get(item, ['metric', custom.valueField]),
+          metric: item.metric,
         };
-      },
-    );
+      });
+    }
+    data =
+      max && data.length > max
+        ? data.slice(0, max).concat({ name: 'Other', value: data.slice(max).reduce((previousValue, currentValue) => currentValue.value + previousValue, 0), metric: {} })
+        : data;
   } else {
     const sortedValues = calculatedValues.sort((a, b) => b.stat - a.stat);
     data =
@@ -133,6 +147,7 @@ export default function Pie(props: IProps) {
         detailName={detailName}
         detailUrl={detailUrl}
         donut={donut}
+        decimals={options?.standardOptions?.decimals}
       />
     </div>
   );

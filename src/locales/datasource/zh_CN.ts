@@ -25,12 +25,15 @@ const zh_CN = {
     func: '函数',
     funcField: '字段名',
     terms: {
+      label: '根据指定 field 分组',
       more: '高级设置',
       size: '匹配个数',
       min_value: '文档最小值',
     },
     raw: {
       limit: '日志条数',
+      date_format: '日期格式',
+      date_format_tip: '使用 Moment.js 格式模式，比如 YYYY-MM-DD HH:mm:ss.SSS',
     },
     alert: {
       query: {
@@ -51,6 +54,12 @@ const zh_CN = {
     },
     event: {
       groupBy: `根据 {{field}} 分组，匹配个数 {{size}}, 文档最小值 {{min_value}}`,
+      logs: {
+        title: '日志详情',
+        size: '结果数',
+        fields: '筛选字段',
+        jsonParseError: '解析失败',
+      },
     },
     syntaxOptions: '语法选项',
     queryFailed: '查询失败，请稍后重试',

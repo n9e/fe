@@ -27,6 +27,8 @@ import { getAlertEventsById, getHistoryEventsById } from '@/services/warning';
 import { priorityColor } from '@/utils/constant';
 import { deleteAlertEventsModal } from '.';
 import { CommonStateContext, basePrefix } from '@/App';
+import EventNotifyRecords from './EventNotifyRecords';
+import TaskTpls from './TaskTpls';
 // @ts-ignore
 import plusEventDetail from 'plus:/parcels/Event/eventDetail';
 // @ts-ignore
@@ -145,14 +147,21 @@ const EventDetailPage: React.FC = () => {
     },
     ...(!_.includes(['firemap', 'northstar'], eventDetail?.rule_prod) ? [{ label: t('detail.target_note'), key: 'target_note' }] : [false]),
     {
-      label: t('detail.trigger_time'),
-      key: 'trigger_time',
+      label: t('detail.first_trigger_time'),
+      key: 'first_trigger_time',
       render(time) {
         return moment(time * 1000).format('YYYY-MM-DD HH:mm:ss');
       },
     },
     {
-      label: t('detail.trigger_value'),
+      label: t('detail.last_eval_time'),
+      key: 'last_eval_time',
+      render(time) {
+        return moment(time * 1000).format('YYYY-MM-DD HH:mm:ss');
+      },
+    },
+    {
+      label: eventDetail?.is_recovered && eventDetail?.cate === 'prometheus' ? t('detail.trigger_value') : t('detail.trigger_value2'),
       key: 'trigger_value',
       render(val) {
         return (
@@ -353,6 +362,8 @@ const EventDetailPage: React.FC = () => {
                       </div>
                     );
                   })}
+                <EventNotifyRecords eventId={eventDetail.id} />
+                <TaskTpls eventDetail={eventDetail} />
               </div>
             )}
           </Card>

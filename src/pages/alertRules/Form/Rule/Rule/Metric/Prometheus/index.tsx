@@ -128,7 +128,13 @@ export default function index(props: { form: any; datasourceCate: string; dataso
               <div className='alert-rule-triggers-container'>
                 {fields.map((field) => (
                   <div key={field.key} className='alert-rule-trigger-container'>
-                    <Form.Item {...field} name={[field.name, 'prom_ql']} validateTrigger={['onBlur']} trigger='onChange' rules={[{ required: true, message: t('请输入PromQL') }]}>
+                    <Form.Item
+                      {...field}
+                      name={[field.name, 'prom_ql']}
+                      validateTrigger={['onBlur']}
+                      trigger='onChange'
+                      rules={[{ required: true, message: t('promQLInput:required') }]}
+                    >
                       <PromQLInputWithBuilder readonly={disabled} datasourceValue={datasourceId} showBuiltinMetrics />
                     </Form.Item>
                     <div>

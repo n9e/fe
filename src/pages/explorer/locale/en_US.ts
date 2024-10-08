@@ -39,8 +39,8 @@ const en_US = {
       time_sort_asc: 'Ascending by Time',
       all: 'All',
       custom: 'Custom',
-      custom_validated: 'Log count must be greater than 0',
-      all_quantity: 'Quantity: ',
+      custom_validated: 'The number of logs must be between 1-65535',
+      all_quantity: 'Total approximately',
       createSuccess: 'Task created successfully',
     },
     log_export: {

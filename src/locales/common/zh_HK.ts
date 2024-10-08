@@ -5,10 +5,18 @@ const zh_HK = {
     '404_btn': '回到首頁',
   },
   business_group: '業務組',
+  business_groups: '業務組',
   search_placeholder: '請輸入搜索關鍵字',
   my_business_group: '我的業務組',
   all_business_group: '全部業務組',
   nodata: '暫無數據',
+  log_detail: '日誌詳情',
+  document_link: '使用說明',
+  required: '必填項',
+  host: {
+    tags: '用戶標籤',
+    host_tags: '機器標籤',
+  },
   btn: {
     add: '新增',
     create: '創建',
@@ -53,6 +61,8 @@ const zh_HK = {
     note: '備註',
     operations: '操作',
     total: '共 {{total}} 條',
+    host: '機器',
+    error_msg: '錯誤',
   },
   datasource: {
     prod: '監控類型',

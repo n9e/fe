@@ -19,7 +19,7 @@ import _ from 'lodash';
 import classNames from 'classnames';
 import { useInViewport } from 'ahooks';
 import { useTranslation } from 'react-i18next';
-import { Dropdown, Menu, Tooltip, Space, Drawer } from 'antd';
+import { Dropdown, Menu, Tooltip, Space, Drawer, message } from 'antd';
 import {
   InfoCircleOutlined,
   MoreOutlined,
@@ -66,6 +66,7 @@ interface IProps {
   values: IPanel;
   variableConfig?: IVariable[];
   isPreview?: boolean; // 是否是预览，预览中不显示编辑和分享
+  isAuthorized?: boolean; // 是否有权限
   onCloneClick?: () => void;
   onShareClick?: () => void;
   onEditClick?: () => void;
@@ -75,7 +76,7 @@ interface IProps {
 
 function index(props: IProps) {
   const { t } = useTranslation('dashboard');
-  const { datasourceValue, themeMode, dashboardId, id, variableConfig, isPreview, onCloneClick, onShareClick, onEditClick, onDeleteClick, onCopyClick } = props;
+  const { datasourceValue, themeMode, dashboardId, id, variableConfig, isPreview, isAuthorized, onCloneClick, onShareClick, onEditClick, onDeleteClick, onCopyClick } = props;
   const [time, setTime] = useState(props.time);
   const [visible, setVisible] = useState(false);
   const values = _.cloneDeep(props.values);
@@ -123,7 +124,7 @@ function index(props: IProps) {
     table: () => <Table {...subProps} themeMode={themeMode} time={time} isPreview={isPreview} ref={tableRef} />,
     pie: () => <Pie {...subProps} themeMode={themeMode} time={time} isPreview={isPreview} />,
     hexbin: () => <Hexbin {...subProps} themeMode={themeMode} time={time} isPreview={isPreview} />,
-    barGauge: () => <BarGauge {...subProps} themeMode={themeMode} time={time} />,
+    barGauge: () => <BarGauge {...subProps} themeMode={themeMode} time={time} isPreview={isPreview} />,
     text: () => <Text {...subProps} themeMode={themeMode} />,
     gauge: () => <Gauge {...subProps} themeMode={themeMode} isPreview={isPreview} />,
     iframe: () => <Iframe {...subProps} time={time} />,
@@ -200,7 +201,7 @@ function index(props: IProps) {
               <SyncOutlined spin style={{ marginRight: 8 }} />
             ) : (
               <Space size={2} style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                {!isPreview && !name && <DragOutlined className='renderer-header-controller dashboards-panels-item-drag-handle' />}
+                {isAuthorized && !name && <DragOutlined className='renderer-header-controller dashboards-panels-item-drag-handle' />}
                 <Dropdown
                   trigger={['click']}
                   placement='bottom'
@@ -229,7 +230,7 @@ function index(props: IProps) {
                           {t('refresh_btn')}
                         </div>
                       </Menu.Item>
-                      {!isPreview && !values.repeatPanelId && (
+                      {isAuthorized && !values.repeatPanelId && (
                         <Menu.Item
                           onClick={() => {
                             setVisible(false);
@@ -241,7 +242,7 @@ function index(props: IProps) {
                           {t('common:btn.edit')}
                         </Menu.Item>
                       )}
-                      {!isPreview && !values.repeatPanelId && (
+                      {isAuthorized && !values.repeatPanelId && (
                         <Menu.Item
                           onClick={() => {
                             setVisible(false);
@@ -253,11 +254,14 @@ function index(props: IProps) {
                           {t('common:btn.clone')}
                         </Menu.Item>
                       )}
-                      {!isPreview && !values.repeatPanelId && (
+                      {isAuthorized && !values.repeatPanelId && (
                         <Menu.Item
                           onClick={() => {
                             setVisible(false);
-                            if (onCopyClick) onCopyClick();
+                            if (onCopyClick) {
+                              message.info(t('copyPanelTip'));
+                              onCopyClick();
+                            }
                           }}
                           key='copy_btn'
                         >
@@ -316,7 +320,7 @@ function index(props: IProps) {
                         <InfoCircleOutlined style={{ marginRight: 8 }} />
                         {t('inspect_btn')}
                       </Menu.Item>
-                      {!isPreview && !values.repeatPanelId && (
+                      {isAuthorized && !values.repeatPanelId && (
                         <Menu.Item
                           onClick={() => {
                             setVisible(false);

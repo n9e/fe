@@ -1,5 +1,3 @@
-import { layout } from '@/pages/user/const';
-
 const zh_CN = {
   title: '监控仪表盘',
   name: '仪表盘名称',
@@ -28,7 +26,8 @@ const zh_CN = {
   default_filter: {
     title: '预置筛选',
     public: '公开仪表盘',
-    all: '全部仪表盘',
+    all: '所属业务组仪表盘',
+    all_tip: '此选项会展示您所在业务组下关联的所有仪表盘',
   },
   create_title: '创建仪表盘',
   edit_title: '编辑仪表盘',
@@ -36,6 +35,7 @@ const zh_CN = {
   cluster: '集群', // TODO: 监控仪表盘暂时使用
   full_screen: '全屏',
   exit_full_screen: '退出全屏',
+  copyPanelTip: '图表已复制。单击 "添加图表" 进行粘贴。',
   batch: {
     import: '导入仪表盘',
     label: '仪表盘 JSON',
@@ -190,6 +190,11 @@ const zh_CN = {
           showItem: '显示项目',
           hideItem: '隐藏项目',
         },
+        selectMode: {
+          label: '选择模式',
+          single: '单选',
+          multiple: '多选',
+        },
         heightInPercentage: '高度百分比',
         heightInPercentage_tip: 'Legend 高度占据面板的最大高度百分比，最小值为 20%，最大值为 80%',
       },
@@ -274,6 +279,8 @@ const zh_CN = {
       valueField: '值字段',
       valueField_tip: 'Value 是保留关键字，作为时序数据取值计算后的字段名',
       valueField_tip2: '需选择值为数值类型的字段',
+      nameField: '名称字段',
+      nameField_tip: '以名称字段的值作为系列的名称',
       colSpan: '每行最多显示',
       colSpanTip: '即将废弃，选择"自动"选项将使用下方的布局方向设置',
       colSpanAuto: '自动',
@@ -301,12 +308,14 @@ const zh_CN = {
         },
       },
       pie: {
+        countOfValueField: '值字段计数',
+        countOfValueField_tip: '开启后，将会根据 "值字段" 的值进行计数，否则将以 "值字段" 的值作为数据展示',
         legengPosition: '图例位置', // pie
         max: '最多展示块数',
         max_tip: '超过的块数则合并展示为其他',
         donut: '环图模式',
-        labelWithName: 'label是否包含名称',
-        labelWithValue: 'label显示指标值',
+        labelWithName: 'Label 是否包含名称',
+        labelWithValue: 'Label 显示指标值',
         detailName: '链接名称',
         detailUrl: '链接地址',
       },
@@ -404,6 +413,11 @@ const zh_CN = {
         barMaxWidth: '条形最大宽度',
         colorField_tip: 'Name 是保留关键字，作为序列名值的字段名',
       },
+      barGauge: {
+        topn: '最多排名',
+        combine_other: '其他',
+        combine_other_tip: '超过最多排名的数据将会合并为一个其他项',
+      },
     },
     inspect: {
       title: '排查',
@@ -433,6 +447,8 @@ const zh_CN = {
       },
     },
     expression_placeholder: '对一个或多个查询进行数学运算。您通过 ${refId} 引用查询，即 $A、$B、$C 等。两个标量值的总和：$A + $B > 10',
+    legendTip: '图例名称的覆盖或模板，例如 {{hostname}} 将替换为 hostname 标签的值',
+    legendTip2: '图例名称的覆盖或模板，例如 {{hostname}} 将替换为 hostname 标签的值，目前只在时序数据下生效',
   },
   detail: {
     datasource_empty: '没有数据源信息，请先配置数据源',
