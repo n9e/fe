@@ -50,6 +50,9 @@ function index(props: Props & ModalWrapProps) {
         .then((res) => {
           setHosts(res?.dat?.list || []);
         })
+        .catch(() => {
+          setHosts([]);
+        })
         .finally(() => {
           setLoading(false);
         });
@@ -196,7 +199,7 @@ function index(props: Props & ModalWrapProps) {
             dataIndex: 'group_objs',
             render(groupObjs: any[]) {
               return _.isEmpty(groupObjs)
-                ? t('not_grouped')
+                ? t('common:not_grouped')
                 : _.map(groupObjs, (item) => {
                     return (
                       <Tag color='purple' key={item.id}>

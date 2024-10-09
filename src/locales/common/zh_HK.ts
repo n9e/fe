@@ -9,6 +9,7 @@ const zh_HK = {
   search_placeholder: '請輸入搜索關鍵字',
   my_business_group: '我的業務組',
   all_business_group: '全部業務組',
+  not_grouped: '未歸組',
   nodata: '暫無數據',
   log_detail: '日誌詳情',
   document_link: '使用說明',

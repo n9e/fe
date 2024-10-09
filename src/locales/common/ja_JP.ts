@@ -9,6 +9,7 @@ const ja_JP = {
   search_placeholder: '検索キーワードを入力してください',
   my_business_group: '私のビジネスグループ',
   all_business_group: 'すべてのビジネスグループ',
+  not_grouped: 'グループ化されていません',
   nodata: 'データがありません',
   log_detail: 'ログの詳細',
   document_link: '使用説明',

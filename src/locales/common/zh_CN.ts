@@ -9,6 +9,7 @@ const zh_CN = {
   search_placeholder: '请输入搜索关键字',
   my_business_group: '我的业务组',
   all_business_group: '全部业务组',
+  not_grouped: '未归组',
   nodata: '暂无数据',
   log_detail: '日志详情',
   document_link: '使用说明',

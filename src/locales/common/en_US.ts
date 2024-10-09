@@ -9,6 +9,7 @@ const en_US = {
   search_placeholder: 'Please enter search keywords',
   my_business_group: 'My Business Group',
   all_business_group: 'All Business Group',
+  not_grouped: 'Not Grouped',
   nodata: 'No Data',
   log_detail: 'Log Detail',
   document_link: 'Document',
