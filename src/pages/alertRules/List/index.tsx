@@ -61,7 +61,7 @@ export default function List(props: ListProps) {
   const pagination = usePagination({ PAGESIZE_KEY: 'alert-rules-pagesize' });
   let defaultFilter = {} as Filter;
   try {
-    defaultFilter = JSON.parse(window.localStorage.getItem(FILTER_LOCAL_STORAGE_KEY) || '{}');
+    defaultFilter = JSON.parse(window.sessionStorage.getItem(FILTER_LOCAL_STORAGE_KEY) || '{}');
   } catch (e) {
     console.error(e);
   }
@@ -367,7 +367,7 @@ export default function List(props: ListProps) {
     (search) => {
       const newFilter = { ...filter, search };
       setFilter(newFilter);
-      window.localStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
+      window.sessionStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
     },
     {
       wait: 500,
@@ -395,7 +395,7 @@ export default function List(props: ListProps) {
                   prod: val,
                 };
                 setFilter(newFilter);
-                window.localStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
+                window.sessionStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
               }}
             />
             <DatasourceSelect
@@ -408,7 +408,7 @@ export default function List(props: ListProps) {
                   datasourceIds: val,
                 };
                 setFilter(newFilter);
-                window.localStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
+                window.sessionStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
               }}
             />
             <Select
@@ -423,7 +423,7 @@ export default function List(props: ListProps) {
                   severities: val,
                 };
                 setFilter(newFilter);
-                window.localStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
+                window.sessionStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
               }}
             >
               <Select.Option value={1}>S1</Select.Option>
