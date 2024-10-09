@@ -243,8 +243,12 @@ export default function List(props: ListProps) {
         },
       },
       {
-        title: t('table.update_by'),
+        title: t('common:table.username'),
         dataIndex: 'update_by',
+      },
+      {
+        title: t('common:table.nickname'),
+        dataIndex: 'update_by_nickname',
       },
       {
         title: t('table.disabled'),

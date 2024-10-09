@@ -67,6 +67,8 @@ const ja_JP = {
     total: '合計 {{total}} 件',
     host: 'マシン',
     error_msg: 'エラー',
+    username: 'ユーザー名',
+    nickname: '表示名',
   },
   datasource: {
     prod: '監視タイプ',

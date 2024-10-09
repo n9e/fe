@@ -66,6 +66,8 @@ const zh_HK = {
     total: '共 {{total}} 條',
     host: '機器',
     error_msg: '錯誤',
+    username: '用戶名',
+    nickname: '顯示名',
   },
   datasource: {
     prod: '監控類型',

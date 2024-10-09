@@ -66,6 +66,8 @@ const zh_CN = {
     total: '共 {{total}} 条',
     host: '机器',
     error_msg: '错误',
+    username: '用户名',
+    nickname: '显示名',
   },
   datasource: {
     prod: '监控类型',

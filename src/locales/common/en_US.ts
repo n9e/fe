@@ -67,6 +67,8 @@ const en_US = {
     total: 'Total {{total}} items',
     host: 'Host',
     error_msg: 'Error message',
+    username: 'Username',
+    nickname: 'Nickname',
   },
   datasource: {
     prod: 'Type',
