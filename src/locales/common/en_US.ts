@@ -14,8 +14,11 @@ const en_US = {
   document_link: 'Document',
   required: 'Required',
   host: {
-    tags: 'User Tags',
-    host_tags: 'Host Tags',
+    tags: 'Custom Tags',
+    tags_tip: 'Tags configured by the user on the page will be appended to the time series data reported by this machine',
+    host_tags: 'Reported Tags',
+    host_tags_tip:
+      'Tags configured by categraf global.labels will appear here and will be appended to the time series data reported by this machine. categraf needs to be upgraded to v0.3.80 or higher to support this feature',
   },
   btn: {
     add: 'Add',
