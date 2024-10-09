@@ -24,8 +24,10 @@ const zh_HK = {
   teamSeparator: '團隊分隔符',
   darkTheme: '深色主題',
   lightTheme: '淺色主題',
-  explorer_timeseries_legend_columns: '時序圖的圖列管理',
+  explorer_timeseries_legend_columns: '即時查詢的時序圖圖例管理',
   explorer_timeseries_legend_columns_placeholder: '默認值為 Last',
+  print_access_log: '開啟 Access Log',
+  print_body_paths: '打印請求 Body 路徑',
 };
 
 export default zh_HK;
