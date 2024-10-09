@@ -174,8 +174,8 @@ export default function List(props: IProps) {
       columns.push({
         title: (
           <Space>
-            {t('host_tags')}
-            <Tooltip title={t('host_tags_tip')}>
+            {t('common:host.host_tags')}
+            <Tooltip title={t('common:host.host_tags_tip')}>
               <InfoCircleOutlined />
             </Tooltip>
           </Space>
@@ -218,8 +218,8 @@ export default function List(props: IProps) {
       columns.push({
         title: (
           <Space>
-            {t('tags')}
-            <Tooltip title={t('tags_tip')}>
+            {t('common:host.tags')}
+            <Tooltip title={t('common:host.tags_tip')}>
               <InfoCircleOutlined />
             </Tooltip>
           </Space>

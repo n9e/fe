@@ -14,8 +14,10 @@ const zh_HK = {
   document_link: '使用說明',
   required: '必填項',
   host: {
-    tags: '用戶標籤',
-    host_tags: '機器標籤',
+    tags: '自定義標籤',
+    tags_tip: '用戶在頁面配置的標籤，會追加到此機器上報的時序數據中',
+    host_tags: '上報的標籤',
+    host_tags_tip: 'categraf global.labels 配置的標籤，會出現在這裡，會追加到此機器上報的時序數據中，categraf 需要升級到 v0.3.80 及以上版本，才支持此功能',
   },
   btn: {
     add: '新增',
