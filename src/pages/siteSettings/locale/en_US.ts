@@ -26,5 +26,7 @@ const en_US = {
   lightTheme: 'Light Theme',
   explorer_timeseries_legend_columns: 'Timeseries Legend Columns',
   explorer_timeseries_legend_columns_placeholder: 'Default value is Last',
+  print_access_log: 'Print Access Log',
+  print_body_paths: 'Print Request Body Paths',
 };
 export default en_US;

@@ -9,6 +9,7 @@ const zh_HK = {
   search_placeholder: '請輸入搜索關鍵字',
   my_business_group: '我的業務組',
   all_business_group: '全部業務組',
+  not_grouped: '未歸組',
   nodata: '暫無數據',
   log_detail: '日誌詳情',
   document_link: '使用說明',
@@ -65,6 +66,8 @@ const zh_HK = {
     total: '共 {{total}} 條',
     host: '機器',
     error_msg: '錯誤',
+    username: '用戶名',
+    nickname: '顯示名',
   },
   datasource: {
     prod: '監控類型',

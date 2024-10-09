@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Card, Form, Input, Button, message, Row, Space, Select } from 'antd';
+import { Card, Form, Input, Button, message, Row, Col, Space, Select, Switch } from 'antd';
 import PageLayout from '@/components/pageLayout';
 import { getN9eConfig, putN9eConfig } from './services';
 import './locale';
@@ -110,6 +110,20 @@ export default function index() {
                   })}
                 />
               </Form.Item>
+              <div>
+                <Row>
+                  <Col span={4}>
+                    <Form.Item label={t('print_access_log')} name={['print_access_log']} initialValue={false} valuePropName='checked'>
+                      <Switch />
+                    </Form.Item>
+                  </Col>
+                  <Col span={20}>
+                    <Form.Item label={t('print_body_paths')} name={['print_body_paths']}>
+                      <Select mode='tags' placeholder='/api/n9e/busi-groups/alert-rules' style={{ width: '100%' }} open={false} />
+                    </Form.Item>
+                  </Col>
+                </Row>
+              </div>
               <Button type='primary' htmlType='submit'>
                 {t('common:btn.save')}
               </Button>

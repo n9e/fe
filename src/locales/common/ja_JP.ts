@@ -9,6 +9,7 @@ const ja_JP = {
   search_placeholder: '検索キーワードを入力してください',
   my_business_group: '私のビジネスグループ',
   all_business_group: 'すべてのビジネスグループ',
+  not_grouped: 'グループ化されていません',
   nodata: 'データがありません',
   log_detail: 'ログの詳細',
   document_link: '使用説明',
@@ -66,6 +67,8 @@ const ja_JP = {
     total: '合計 {{total}} 件',
     host: 'マシン',
     error_msg: 'エラー',
+    username: 'ユーザー名',
+    nickname: '表示名',
   },
   datasource: {
     prod: '監視タイプ',

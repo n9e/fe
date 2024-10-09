@@ -267,7 +267,7 @@ export default function List(props: IProps) {
           showTitle: false,
         },
         render(tagArr) {
-          if (_.isEmpty(tagArr)) return t('not_grouped');
+          if (_.isEmpty(tagArr)) return t('common:not_grouped');
           const content =
             tagArr &&
             tagArr.map((item) => (
