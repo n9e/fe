@@ -17,7 +17,7 @@
 import React, { useRef, useEffect, useState, useMemo, forwardRef, useImperativeHandle } from 'react';
 import _ from 'lodash';
 import { Table, Input, Space, Button } from 'antd';
-import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
+import { SearchOutlined, FilterOutlined, ConsoleSqlOutlined } from '@ant-design/icons';
 import type { ColumnType } from 'antd/es/table';
 import type { FilterConfirmProps } from 'antd/es/table/interface';
 import { useSize } from 'ahooks';
@@ -32,7 +32,7 @@ import localeCompare from '../../utils/localeCompare';
 import formatToTable from '../../utils/formatToTable';
 import { useGlobalState } from '../../../globalState';
 import { getDetailUrl } from '../../utils/replaceExpressionDetail';
-import { transformColumns, downloadCsv, useDeepCompareWithRef, isRawData } from './utils';
+import { transformColumns, downloadCsv, useDeepCompareWithRef, isRawData, ajustFiledValue } from './utils';
 import Cell from './Cell';
 import './style.less';
 import moment from 'moment';
@@ -416,8 +416,14 @@ function TableCpt(props: IProps, ref: any) {
     () => {
       return {
         exportCsv() {
-          let data: string[][] = _.map(tableDataSource, (item) => {
-            return [item.name, item.value];
+          let data: (string | undefined)[][] = _.map(tableDataSource, (item) => {
+            return [
+              item.name,
+              ajustFiledValue(item, overrides, {
+                type: 'byFrameRefID',
+                value: item.fields?.refId,
+              })?.text,
+            ];
           });
           data.unshift(['name', 'value']);
           if (displayMode === 'labelsOfSeriesToRows') {
@@ -425,9 +431,20 @@ function TableCpt(props: IProps, ref: any) {
             data = _.map(tableDataSource, (item) => {
               return _.map(keys, (key) => {
                 if (key === 'value') {
-                  return _.get(item, key);
+                  return ajustFiledValue(item, overrides, {
+                    type: 'byFrameRefID',
+                    value: item.fields?.refId,
+                  })?.text;
                 }
-                return _.get(item.metric, key);
+                let text = item.metric?.[key] || item.fields?.[key]; // TODO metric or fields
+                if (key === '__time__') {
+                  text = moment.unix(text).format('YYYY-MM-DD HH:mm:ss');
+                }
+                const textObj = getMappedTextObj(text, options?.valueMappings);
+                return ajustFiledValue(textObj, overrides, {
+                  type: 'byName',
+                  value: key,
+                })?.text;
               });
             });
             data.unshift(keys);
@@ -444,7 +461,13 @@ function TableCpt(props: IProps, ref: any) {
             data = _.map(tableDataSource, (item) => {
               const row = _.map(aggrDimensions, (key) => _.get(item, key));
               _.map(groupNames, (name) => {
-                row.push(_.get(item, name)?.text);
+                const record = item?.[name];
+                row.push(
+                  ajustFiledValue(record, overrides, {
+                    type: 'byFrameRefID',
+                    value: name,
+                  })?.text,
+                );
               });
               return row;
             });
@@ -460,7 +483,7 @@ function TableCpt(props: IProps, ref: any) {
             const { renameByName } = organizeOptions;
             if (renameByName) {
               data[0] = _.map(data[0], (item) => {
-                const newName = renameByName[item];
+                const newName = renameByName[item!];
                 if (newName) {
                   return newName;
                 }
