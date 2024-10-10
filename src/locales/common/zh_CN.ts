@@ -47,6 +47,7 @@ const zh_CN = {
     expand: '展开',
     collapse: '收起',
     copy: '拷贝',
+    config: '配置'
   },
   table: {
     name: '名称',
