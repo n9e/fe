@@ -50,6 +50,7 @@ const zh_HK = {
     copy: '複製',
     expand: '展開',
     collapse: '收起',
+    config: '設定'
   },
   table: {
     name: '名稱',

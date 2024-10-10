@@ -50,6 +50,7 @@ const zh_CN = {
     copy: '拷贝',
     expand: '展开',
     collapse: '收起',
+    config: '配置'
   },
   table: {
     name: '名称',

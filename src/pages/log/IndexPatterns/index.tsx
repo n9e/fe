@@ -125,9 +125,11 @@ export default function Servers() {
                               if (record) {
                                 EditField({
                                   id: record.id,
+                                  datasourceList,
                                   onOk(values, name) {
+                                    console.log('values', values)
                                     const newFieldConfig = {
-                                      arr:values.arr,
+                                      ...values,
                                       version: 2,
                                     };
                                     putESIndexPattern(record.id, {
@@ -143,7 +145,7 @@ export default function Servers() {
                               }
                             }}
                           >
-                            {t('common:btn.edit')}
+                            {t('common:btn.config')}
                           </Button>
                           <Popconfirm
                             title={t('common:confirm.delete')}

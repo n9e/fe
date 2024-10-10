@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
+import { Popover } from 'antd';
 import purify from 'dompurify';
 import { useTranslation } from 'react-i18next';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { buildESQueryFromKuery } from '@fc-components/es-query';
 import flatten from '../flatten';
 import { getHighlightRequest, getHighlightHtml } from './highlight';
+import { basePrefix } from '@/App';
+import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 
 export function getFieldLabel(fieldKey: string, fieldConfig?: any) {
   return fieldConfig?.attrs?.[fieldKey]?.alias || fieldKey;
@@ -16,14 +19,70 @@ export function getFieldType(fieldKey: string, fieldConfig?: any) {
   return fieldConfig?.formatMap?.[fieldKey]?.type;
 }
 
-export function getFieldValue(fieldKey, fieldValue, fieldConfig?: any, dataSource?:{field:string,value:string}[]) {
+const handleNav = (link: string, rawValue: object, query: { start: number; end: number }) => {
+  const param = new URLSearchParams(link);
+  const startMargin = param.get('${__start_time_margin__}');
+  const endMargin = param.get('${__end_time_margin__}');
+  const startMarginNum = startMargin && !isNaN(Number(startMargin)) ? Number(startMargin) : 0;
+  const endMarginNum = endMargin && !isNaN(Number(endMargin)) ? Number(endMargin) : 0;
+  let reallink = link
+    .replace('${local_protocol}', location.protocol)
+    .replace('${local_domain}', location.host)
+    .replace('${local_url}', location.origin)
+    .replace('${__start_time__}', typeof query.start === 'number' ? String(1000 * query.start + startMarginNum) : '')
+    .replace('${__end_time__}', typeof query.end === 'number' ? String(1000 * query.end + endMarginNum) : '');
+
+  if (startMargin) {
+    reallink = reallink.replace('&${__start_time_margin__}' + '=' + startMargin, '');
+  }
+  if (endMargin) {
+    reallink = reallink.replace('&${__end_time_margin__}' + '=' + endMargin, '');
+  }
+  const unReplaceKeyReg = /\$\{(.+?)\}/g;
+  reallink = reallink.replace(unReplaceKeyReg, function (a, b) {
+    const wholeWord = rawValue[b]
+    return wholeWord || _.get(rawValue, b.split('.')) 
+  });
+  window.open(basePrefix + reallink.replace(unReplaceKeyReg, ''), '_blank');
+};
+
+export function getFieldValue(fieldKey, fieldValue, fieldConfig: any, rawValue?: { [field: string]: string }, range?: IRawTimeRange) {
   const format = fieldConfig?.formatMap?.[fieldKey];
   if (format && format?.type === 'date' && format?.params?.pattern) {
     return moment(fieldValue).format(format?.params?.pattern);
   }
+  if (rawValue && format && format?.type === 'url' && format?.paramsArr?.length > 0) {
+    const parsedRange = range ? parseRange(range) : null;
+    let start = parsedRange ? moment(parsedRange.start).unix() : 0;
+    let end = parsedRange ? moment(parsedRange.end).unix() : 0;
+    return (
+      <Popover
+        placement='right'
+        overlayClassName='popover-json'
+        content={format?.paramsArr.map((item, i) => (
+          <div key={i} style={{ lineHeight: '24px' }}>
+            <a onClick={() => handleNav(item.urlTemplate, rawValue, { start, end })}>{item.name}</a>
+          </div>
+        ))}
+      >
+        <a
+          style={{ textDecoration: 'underline', fontWeight: 'bold' }}
+          onClick={() => {
+            if (format?.paramsArr.length > 0) {
+              handleNav(format?.paramsArr[0].urlTemplate, rawValue, { start, end });
+            }
+          }}
+        >
+          {format?.params?.labelTemplate.replace('{{value}}', fieldValue) || fieldValue}
+        </a>
+      </Popover>
+    );
+  }
   if (format && format?.type === 'url' && format?.params?.urlTemplate) {
     let realLink = format?.params?.urlTemplate.replace('{{value}}', fieldValue);
-    if(dataSource && dataSource.length > 0){
+    const dataSource = rawValue ? Object.keys(rawValue).map((key) => ({ field: key, value: rawValue[key] })) : [];
+
+    if (dataSource && dataSource.length > 0) {
       dataSource.forEach((item) => {
         realLink = realLink.replace('${' + item.field + '}', item.value);
       });
