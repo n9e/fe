@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import moment from 'moment';
-import { DatasourceCateEnum } from '@/utils/constant';
+import { DatasourceCateEnum, BaseDatasourceCateEnum } from '@/utils/constant';
 import { defaultRuleConfig, defaultValues } from './constants';
 import { DATASOURCE_ALL } from '../constants';
 // @ts-ignore
@@ -84,7 +84,7 @@ export function processFormValues(values) {
   } else if (values.prod === 'anomaly') {
     cate = 'prometheus';
   }
-  if (_.isFunction(alertUtils.processFormValues)) {
+  if (_.isFunction(alertUtils.processFormValues) && !BaseDatasourceCateEnum[cate]) {
     values = alertUtils.processFormValues(values);
   } else {
     if (values?.rule_config?.queries) {
@@ -133,14 +133,16 @@ export function processFormValues(values) {
 }
 
 export function processInitialValues(values) {
-  if (_.isFunction(alertUtils.processInitialValues)) {
+  let cate = values.cate;
+  if (_.isFunction(alertUtils.processInitialValues) && !BaseDatasourceCateEnum[cate]) {
+    console.log(222);
     values = alertUtils.processInitialValues(values);
   } else {
     if (values?.rule_config?.queries) {
       values.rule_config.queries = _.map(values.rule_config.queries, (item) => {
         _.set(item, 'keys.labelKey', item?.keys?.labelKey ? _.split(item.keys.labelKey, ' ') : []);
         _.set(item, 'keys.valueKey', item?.keys?.valueKey ? _.split(item.keys.valueKey, ' ') : []);
-        _.set(item, 'keys.valueKey', item?.keys?.metricKey ? _.split(item.keys.metricKey, ' ') : []);
+        _.set(item, 'keys.metricKey', item?.keys?.metricKey ? _.split(item.keys.metricKey, ' ') : []);
         return {
           ...item,
           interval: parseTimeToValueAndUnit(item.interval).value,

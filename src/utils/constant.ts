@@ -59,7 +59,7 @@ export const chartDefaultOptions = {
   animation: false,
 };
 
-enum BaseDatasourceCateEnum {
+export enum BaseDatasourceCateEnum {
   prometheus = 'prometheus',
   elasticsearch = 'elasticsearch',
   tdengine = 'tdengine',
