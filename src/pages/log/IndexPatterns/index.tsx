@@ -156,7 +156,7 @@ export default function Servers() {
                               });
                             }}
                           >
-                            <Button type='link' style={{ padding: 0 }}>
+                            <Button type='link' style={{ padding: 0 }} danger>
                               {t('common:btn.delete')}
                             </Button>
                           </Popconfirm>

@@ -6,7 +6,7 @@ const zh_CN = {
   name_msg2: '已存在同名的规则',
   time_field: '时间字段',
   allow_hide_system_indices: '匹配隐藏的索引',
-  create_btn: '创建索引模式',
+  create_btn: '新增索引模式',
   create_title: '创建索引模式',
   indexes_empty: '没有匹配的索引',
   keyword: '字段',
