@@ -16,7 +16,7 @@ import { Project, SyntaxKind, VariableDeclarationKind } from 'ts-morph';
 import prettier from 'prettier';
 
 const lanugage = process.argv.slice(2)[0];
-const builderFileContent = (lanugage, valueContent) => {
+const builderFileContent = (lanugage, valueContent, prettierConfig) => {
   const project = new Project();
   const sourceFile = project.createSourceFile('tempFile.ts', '', { overwrite: true });
 
@@ -35,13 +35,22 @@ const builderFileContent = (lanugage, valueContent) => {
   });
 
   const fileContent = sourceFile.getFullText();
-  const formattedContent = prettier.format(fileContent, { parser: 'typescript' });
+  const formattedContent = prettier.format(fileContent, prettierConfig);
   return formattedContent;
+};
+const getPrettierConfig = () => {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+  const prettierConfigPath = path.resolve(__dirname, '../.prettierrc.json');
+  const prettierConfigContent = fs.readFileSync(prettierConfigPath, 'utf-8');
+  return JSON.parse(prettierConfigContent);
 };
 
 if (lanugage) {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
+  const prettierConfig = getPrettierConfig();
+  prettierConfig.parser = 'typescript';
   const targets = [
     {
       path: path.resolve(__dirname, '../src/locales/*/zh_CN.ts'),
@@ -100,7 +109,7 @@ if (lanugage) {
         if (valueKey === 'help' || valueKey === 'warning') return;
         const valueContent = value[valueKey];
         const resolvedPath = resolvePaths([__dirname, '../src', ...target.keys, valueKey, ...(lodash.isEqual(target.keys, ['locales']) ? [] : ['locale']), `${lanugage}.ts`]);
-        fs.writeFileSync(resolvedPath, builderFileContent(lanugage, valueContent));
+        fs.writeFileSync(resolvedPath, builderFileContent(lanugage, valueContent, prettierConfig));
         if (!lodash.isEqual(target.keys, ['locales'])) {
           const localeIndexPath = resolvePaths([__dirname, '../src', ...target.keys, valueKey, 'locale', 'index.ts']);
           const project = new Project();
@@ -155,7 +164,7 @@ if (lanugage) {
         });
         resourcesFile.saveSync();
         const resourcesFileContent = fs.readFileSync(resourcesPath, 'utf8');
-        const resourcesFormattedContent = prettier.format(resourcesFileContent, { parser: 'typescript' });
+        const resourcesFormattedContent = prettier.format(resourcesFileContent, prettierConfig);
         fs.writeFileSync(resourcesPath, resourcesFormattedContent);
       }
     }
