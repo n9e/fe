@@ -62,6 +62,7 @@ const zh_HK = {
           urlTemplate: 'URLテンプレート',
           urlTemplateTip: '{{value}}でこのフィールドの値を表し、他のフィールドも変数として参照できます。例えば${key1}、${key2}',
           urlTemplateTip1: '例えばtracingシステムへのリンク：http://flashcat.cloud/trace?traceId={{value}}&dataSourceName=traceSystemName',
+          urlTemplateTip2: 'このフィールドは無効になっています。リンク設定に移動してください。',
           urlTemplatePlaceholder: 'https://www.example.com/?q={{value}}',
           labelTemplate: 'ラベルテンプレート',
           labelTemplatePlaceholder: '{{value}}',

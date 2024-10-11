@@ -37,6 +37,7 @@ const zh_CN = {
           urlTemplate: 'URL 模板',
           urlTemplateTip: '可用{{value}}代表该字段的值,其他字段均可被作为变量引用，如${key1}，${key2}',
           urlTemplateTip1: '如跳转tracing系统：http://flashcat.cloud/trace?traceId={{value}}&dataSourceName=traceSystemName',
+          urlTemplateTip2: '该字段已禁用，请去跳转链接配置',
           urlTemplatePlaceholder: 'http://flashcat.cloud/trace?traceId={{value}}&dataSourceName=traceSystemName',
           urlTemplatePlaceholder1: 'http://${local_url}/dashboards/132?param1=${sample_field}',
           labelTemplate: '标签模板',
