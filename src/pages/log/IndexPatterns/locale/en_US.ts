@@ -66,6 +66,7 @@ const en_US = {
           urlTemplate: 'URL template',
           urlTemplateTip: 'Use {{value}} as a placeholder, other fields can be used as variables, such as ${key1}, ${key2}',
           urlTemplateTip1: 'Just as tracing：http://flashcat.cloud/trace?traceId={{value}}&dataSourceName=traceSystemName',
+          urlTemplateTip2: 'This field is disabled, please go to the jump link configuration',
           urlTemplatePlaceholder: 'https://www.example.com/?q={{value}}',
           labelTemplate: 'Label template',
           labelTemplatePlaceholder: '{{value}}',

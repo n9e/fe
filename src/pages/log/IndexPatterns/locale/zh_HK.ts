@@ -65,6 +65,7 @@ const zh_HK = {
           urlTemplate: 'URL 模板',
           urlTemplateTip: '可用{{value}}代表该字段的值,其他字段均可被作為變量引用，如${key1}，${key2}',
           urlTemplateTip1: '如跳转tracing系统：http://flashcat.cloud/trace?traceId={{value}}&dataSourceName=traceSystemName',
+          urlTemplateTip2: '该字段已禁用，请去跳转链接配置',
           urlTemplatePlaceholder: 'https://www.example.com/?q={{value}}',
           labelTemplate: '標籤模板',
           labelTemplatePlaceholder: '{{value}}',

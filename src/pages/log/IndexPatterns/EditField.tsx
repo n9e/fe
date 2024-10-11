@@ -24,6 +24,7 @@ import { getFullFields } from '@/pages/explorer/Elasticsearch/services';
 import { FieldConfigVersion2, convertToVersion2, FieldConfig } from './types';
 import _ from 'lodash';
 import { copy2ClipBoard } from '@/utils';
+import InputEnlarge from '@/components/InputEnlarge';
 
 interface IField {
   name: string;
@@ -455,7 +456,7 @@ function LinkFieldRow({ key, name, form, remove, add, fields }: { key: number; n
 
       <Col span={16}>
         <Form.Item name={[name, 'urlTemplate']} rules={[{ required: true, message: t('should_not_empty') }]}>
-          <Input placeholder={t('field.format.params.url.urlTemplatePlaceholder1', { skipInterpolation: true })} />
+          <InputEnlarge placeholder={t('field.format.params.url.urlTemplatePlaceholder1', { skipInterpolation: true })} />
         </Form.Item>
       </Col>
       <Col span={3}>
@@ -478,7 +479,7 @@ function FieldRow({ key, name, form, remove, add, fields }: { key: number; name:
   const formatType = Form.useWatch(['arr', name, 'formatMap', 'type'], form);
   return (
     <Row gutter={16} key={key}>
-      <Col flex='150px'>
+      <Col flex='200px'>
         <Form.Item label={t('keyword')} name={[name, 'field']}>
           <Select
             dropdownMatchSelectWidth={false}
@@ -505,7 +506,7 @@ function FieldRow({ key, name, form, remove, add, fields }: { key: number; name:
           <Input disabled />
         </Form.Item>
       </Col>
-      <Col flex='84px'>
+      <Col flex='184px'>
         <Form.Item label={t('field.alias')} name={[name, 'attrs', 'alias']} tooltip={t('field.alias_tip')}>
           <Input />
         </Form.Item>
@@ -564,12 +565,13 @@ function FieldRow({ key, name, form, remove, add, fields }: { key: number; name:
                             <div>
                               {t('field.format.params.url.urlTemplateTip', { skipInterpolation: true })}
                               <div>{t('field.format.params.url.urlTemplateTip1', { skipInterpolation: true })}</div>
+                              <div>{t('field.format.params.url.urlTemplateTip2', { skipInterpolation: true })}</div>
                             </div>
                           ),
                           overlayInnerStyle: { width: 550 },
                         }}
                       >
-                        <Input placeholder={t('field.format.params.url.urlTemplatePlaceholder', { skipInterpolation: true })} disabled title='请去跳转链接配置' />
+                        <Input placeholder={t('field.format.params.url.urlTemplatePlaceholder', { skipInterpolation: true })} disabled />
                       </Form.Item>
                     </Col>
                     <Col flex={'184px'}>
