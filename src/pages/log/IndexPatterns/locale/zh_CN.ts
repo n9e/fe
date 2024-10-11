@@ -16,7 +16,7 @@ const zh_CN = {
   tipCollapse: '收起',
   link: '跳转链接',
   displayStyle: '展示样式',
-  tip1:"其中{{value}}为指定字段的值，可在跳转链接中引用，也可在该变量的基础上增加信息。",
+  tip1:"其中{{value}}为指定字段的值，可在该变量的基础上增加信息。",
   field: {
     alias1: '链接别名',
     fieldPlaceholder: '请选择字段',

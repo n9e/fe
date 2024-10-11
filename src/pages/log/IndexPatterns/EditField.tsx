@@ -243,10 +243,10 @@ function EditField(props: Props & ModalWrapProps) {
         <div>
           <strong>{name}</strong>
         </div>
-        <div style={{ marginTop: 8 }}>
-          {t('common:datasource.name')}：<Tag>{finded?.name}</Tag>
+        <div style={{ marginTop: 8, color: 'var(--fc-text-4)' }}>
+          {t('common:datasource.name')}：{finded?.name}
           <span style={{ marginLeft: 36 }}>{t('time_field')}：</span>
-          <span style={{ color: '#333' }}>{timeField || '-'}</span>
+          <span>{timeField || '-'}</span>
         </div>
       </div>
       <Tabs
@@ -257,7 +257,7 @@ function EditField(props: Props & ModalWrapProps) {
         destroyInactiveTabPane={false}
       >
         <Tabs.TabPane tab={t('link')} key='link'>
-          <div style={{ marginBottom: 20, background: 'var(--fc-fill-3)', padding: '8px 12px' }}>
+          <div style={{ marginBottom: 20, background: 'var(--fc-fill-3)', padding: '8px 12px', borderRadius: 6 }}>
             <div style={{ display: 'flex' }} className='tip-collapse'>
               <InfoCircleOutlined style={{ margin: '2px 4px' }} className='text-primary' />
               <div>
@@ -278,16 +278,11 @@ function EditField(props: Props & ModalWrapProps) {
           <Link {...{ form: linkForm, fieldsAll, t }} />
         </Tabs.TabPane>
         <Tabs.TabPane tab={t('displayStyle')} key='displayStyle'>
-          <div style={{ display: 'flex', marginBottom: 20, background: 'var(--fc-fill-3)', padding: '8px 12px' }} className='tip-collapse'>
+          <div style={{ display: 'flex', marginBottom: 20, background: 'var(--fc-fill-3)', padding: '8px 12px', borderRadius: 6 }} className='tip-collapse'>
             <InfoCircleOutlined style={{ margin: '2px 4px' }} className='text-primary' />
             <div>
               <div>{t('可为指定字段设置展示样式，如，格式、别名等。')}</div>
               <div>{t(`tip1`, { skipInterpolation: true })}</div>
-              <div>
-                {t('如：设置字段的链接为')}
-                {`：https://flashcat.cloud/?para={{value}}，`}
-                {t('或将该字段显示的值展示为')} {`{{value}} - xxxx`}
-              </div>
             </div>
           </div>
           <StyleConfig {...{ form: styleConfigForm, fieldsAll, t }} />
