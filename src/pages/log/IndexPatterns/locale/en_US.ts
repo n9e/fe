@@ -34,8 +34,8 @@ const en_US = {
   "可为指定字段设置展示样式，如，格式、别名等。":"You can set the display style for the specified field, such as format, alias, etc.",
   "如：设置字段的链接为":"For example: setting the link for the field to", 
   "或将该字段显示的值展示为":"or displaying the value of the field as", 
-  '可为指定字段设置链接，链接地址中的参数可引用日志中的任意字段。':
-    'You can set the link address for the specified field, and the parameters in the link address can be referenced as any field in the log. For example:',
+  '可为指定字段设置链接。':
+    'You can set the link address for the specified field',
   复制: 'Copy',
   样例: 'Example',
   tip1: 'Where {{value}} is the value of the specified field, which can be referenced in the jump link, and information can also be added based on this variable.',

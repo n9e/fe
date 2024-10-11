@@ -261,7 +261,7 @@ function EditField(props: Props & ModalWrapProps) {
             <div style={{ display: 'flex' }} className='tip-collapse'>
               <InfoCircleOutlined style={{ margin: '2px 4px' }} className='text-primary' />
               <div>
-                {t('可为指定字段设置链接，链接地址中的参数可引用日志中的任意字段。')}
+                {t('可为指定字段设置链接')}
                 {LinkTip(t, 'frontend', collapse)}
               </div>
             </div>
