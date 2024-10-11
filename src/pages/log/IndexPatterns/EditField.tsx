@@ -365,7 +365,7 @@ function Link({ form, fieldsAll, t }) {
                     </span>
                   </Tooltip>
                 </Col>
-                <Col span={3}>{t('alias1')}</Col>
+                <Col span={3}>{t('form.alias1')}</Col>
                 <Col span={1}></Col>
               </Row>
             )}
@@ -489,6 +489,7 @@ function FieldRow({ key, name, form, remove, add, fields }: { key: number; name:
       <Col flex='200px'>
         <Form.Item label={t('keyword')} name={[name, 'field']}>
           <Select
+            placeholder={t('field.fieldPlaceholder')}
             dropdownMatchSelectWidth={false}
             showSearch
             filterOption={(input, option: any) => {
@@ -544,7 +545,7 @@ function FieldRow({ key, name, form, remove, add, fields }: { key: number; name:
               {formatTypeOptions.length > 0 && (
                 <Col flex='105px'>
                   <Form.Item label={t('field.format.type')} name={[name, 'formatMap', 'type']}>
-                    <Select allowClear options={formatTypeOptions} placeholder={t('field.fieldPlaceholder')} />
+                    <Select allowClear options={formatTypeOptions} />
                   </Form.Item>
                 </Col>
               )}
