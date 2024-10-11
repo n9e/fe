@@ -44,7 +44,7 @@ const TplForm = (props) => {
     });
   };
 
-  const { initialValues, type } = props;
+  const { initialValues, type, bgid } = props;
 
   return (
     <div className='job-tpl-form'>
@@ -141,7 +141,7 @@ const TplForm = (props) => {
                   style={{ padding: 0 }}
                   onClick={() => {
                     hostsFilterModal({
-                      group_id: businessGroup.id!,
+                      group_id: bgid || businessGroup.id!,
                       onOk: (hosts) => {
                         form.setFieldsValue({
                           hosts: _.join(_.map(hosts, 'ident'), '\n'),

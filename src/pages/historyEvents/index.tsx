@@ -100,7 +100,7 @@ const Event: React.FC = () => {
                 if (!_.includes(filter.query, item)) {
                   setFilter({
                     ...filter,
-                    queryContent: filter.query ? `${filter.query.trim()} ${item}` : item,
+                    query: filter.query ? `${filter.query.trim()} ${item}` : item,
                   });
                 }
               }}

@@ -44,17 +44,18 @@ function getTableData(options: any, gids: string | undefined, query: string) {
 
 const index = (_props: any) => {
   const { t, i18n } = useTranslation('common');
-  const searchRef = useRef<any>(null);
   const [query, setQuery] = useState('');
   const { busiGroups, businessGroup } = useContext(CommonStateContext);
   const [selectedIds, setSelectedIds] = useState([] as any[]);
-  const { tableProps, refresh } = useAntdTable<any, any>((options) => getTableData(options, businessGroup.ids, query), { refreshDeps: [businessGroup.ids, query] });
+  const { tableProps, refresh } = useAntdTable<any, any>((options) => getTableData(options, businessGroup.ids, query), {
+    refreshDeps: [businessGroup.ids, query],
+    debounceWait: 300,
+  });
 
   function handleTagClick(tag: string) {
     if (!_.includes(query, tag)) {
       const newQuery = query ? `${query} ${tag}` : tag;
       setQuery(newQuery);
-      searchRef.current?.setValue(newQuery);
     }
   }
 
@@ -187,11 +188,10 @@ const index = (_props: any) => {
               <Col span={14} className='mb10'>
                 <Input
                   style={{ width: 200 }}
-                  ref={searchRef}
                   prefix={<SearchOutlined />}
-                  defaultValue={query}
-                  onPressEnter={(e) => {
-                    setQuery(e.currentTarget.value);
+                  value={query}
+                  onChange={(e) => {
+                    setQuery(e.target.value);
                   }}
                 />
               </Col>
