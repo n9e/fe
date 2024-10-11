@@ -35,7 +35,7 @@ export default function TaskTpls() {
             {t('task_tpls.title')}
             <PlusCircleOutlined className='control-icon-normal' onClick={() => add()} />
             {fields.length > 0 && (
-              <Link target='_blank' to='/job-tpls/add'>
+              <Link target='_blank' to={`/job-tpls/add?gid=${group_id}`}>
                 {t('task_tpls.add_btn')}
               </Link>
             )}
