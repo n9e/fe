@@ -222,9 +222,9 @@ function EditField(props: Props & ModalWrapProps) {
           <Button
             type='primary'
             onClick={async () => {
-              if(tabVal==='link'){
+              if (tabVal === 'link') {
                 await linkForm.validateFields();
-              }else {
+              } else {
                 await styleConfigForm.validateFields();
               }
               const linkArr = await linkForm.getFieldValue('linkArr');
@@ -257,33 +257,37 @@ function EditField(props: Props & ModalWrapProps) {
         destroyInactiveTabPane={false}
       >
         <Tabs.TabPane tab={t('link')} key='link'>
-          <div style={{ marginBottom: 20 }}>
+          <div style={{ marginBottom: 20, background: 'var(--fc-fill-3)', padding: '8px 12px' }}>
             <div style={{ display: 'flex' }} className='tip-collapse'>
               <InfoCircleOutlined style={{ margin: '2px 4px' }} className='text-primary' />
               <div>
                 {t('可为指定字段设置链接')}
                 {LinkTip(t, 'frontend', collapse)}
+                {collapse ? (
+                  <Button type='link' onClick={() => setCollapse(!collapse)} style={{ padding: 0 }} size='small'>
+                    {t('tipDisplay')} <DownOutlined />
+                  </Button>
+                ) : (
+                  <Button type='link' onClick={() => setCollapse(!collapse)} style={{ padding: 0 }} size='small'>
+                    {t('tipCollapse')} <UpOutlined />
+                  </Button>
+                )}
               </div>
             </div>
-            {collapse ? (
-              <Button type='link' onClick={() => setCollapse(!collapse)}>
-                {t('tipDisplay')} <DownOutlined />
-              </Button>
-            ) : (
-              <Button type='link' onClick={() => setCollapse(!collapse)}>
-                {t('tipCollapse')} <UpOutlined />
-              </Button>
-            )}
           </div>
           <Link {...{ form: linkForm, fieldsAll, t }} />
         </Tabs.TabPane>
         <Tabs.TabPane tab={t('displayStyle')} key='displayStyle'>
-          <div style={{ display: 'flex', marginBottom: 20 }} className='tip-collapse'>
+          <div style={{ display: 'flex', marginBottom: 20, background: 'var(--fc-fill-3)', padding: '8px 12px' }} className='tip-collapse'>
             <InfoCircleOutlined style={{ margin: '2px 4px' }} className='text-primary' />
             <div>
               <div>{t('可为指定字段设置展示样式，如，格式、别名等。')}</div>
-              <div>{t(`tip1`,{value:"{{value}}"})}</div>
-              <div>{t('如：设置字段的链接为')}{`：https://flashcat.cloud/?para={{value}}，`}{t('或将该字段显示的值展示为')} {`{{value}} - xxxx`}</div>
+              <div>{t(`tip1`, { skipInterpolation: true })}</div>
+              <div>
+                {t('如：设置字段的链接为')}
+                {`：https://flashcat.cloud/?para={{value}}，`}
+                {t('或将该字段显示的值展示为')} {`{{value}} - xxxx`}
+              </div>
             </div>
           </div>
           <StyleConfig {...{ form: styleConfigForm, fieldsAll, t }} />
@@ -318,31 +322,33 @@ function Link({ form, fieldsAll, t }) {
       <Form.List
         name='linkArr'
         initialValue={[]}
-        rules={[
-          // {
-          //   validator: async (_, names) => {
-          //     if (!names || names.length === 0) {
-          //       return Promise.reject(new Error(t('should_not_empty')));
-          //     }
-          //     // 判断names中的field字段不可重复
-          //     const fieldValues: string[] = [];
-          //     for (const item of names) {
-          //       if (item?.field) {
-          //         if (fieldValues.includes(item.field)) {
-          //           return Promise.reject(new Error(t('should_not_dup')));
-          //         }
-          //         fieldValues.push(item.field);
-          //       }
-          //     }
-          //     return Promise.resolve();
-          //   },
-          // },
-        ]}
+        rules={
+          [
+            // {
+            //   validator: async (_, names) => {
+            //     if (!names || names.length === 0) {
+            //       return Promise.reject(new Error(t('should_not_empty')));
+            //     }
+            //     // 判断names中的field字段不可重复
+            //     const fieldValues: string[] = [];
+            //     for (const item of names) {
+            //       if (item?.field) {
+            //         if (fieldValues.includes(item.field)) {
+            //           return Promise.reject(new Error(t('should_not_dup')));
+            //         }
+            //         fieldValues.push(item.field);
+            //       }
+            //     }
+            //     return Promise.resolve();
+            //   },
+            // },
+          ]
+        }
       >
         {(fields, { add, remove }, { errors }) => (
           <>
             {fields.length > 0 && (
-              <Row gutter={16} style={{marginBottom: 8}}>
+              <Row gutter={16} style={{ marginBottom: 8 }}>
                 <Col span={4}>{t('keyword')}</Col>
                 <Col span={16}>
                   {t('链接地址')}
@@ -359,7 +365,7 @@ function Link({ form, fieldsAll, t }) {
                     </span>
                   </Tooltip>
                 </Col>
-                <Col span={3}>{t('name')}</Col>
+                <Col span={3}>{t('alias1')}</Col>
                 <Col span={1}></Col>
               </Row>
             )}
@@ -439,8 +445,9 @@ function LinkFieldRow({ key, name, form, remove, add, fields }: { key: number; n
   return (
     <Row gutter={16} key={key}>
       <Col span={4}>
-        <Form.Item name={[name, 'field']} style={{width: '100%'}}>
+        <Form.Item name={[name, 'field']} style={{ width: '100%' }}>
           <Select
+            placeholder={t('field.fieldPlaceholder', { skipInterpolation: true })}
             dropdownMatchSelectWidth={false}
             showSearch
             filterOption={(input, option: any) => {
@@ -461,7 +468,7 @@ function LinkFieldRow({ key, name, form, remove, add, fields }: { key: number; n
       </Col>
       <Col span={3}>
         <Form.Item name={[name, 'name']} rules={[{ required: true, message: t('should_not_empty') }]}>
-          <Input />
+          <Input placeholder={t('field.namePlaceholder')} />
         </Form.Item>
       </Col>
 
@@ -537,7 +544,7 @@ function FieldRow({ key, name, form, remove, add, fields }: { key: number; name:
               {formatTypeOptions.length > 0 && (
                 <Col flex='105px'>
                   <Form.Item label={t('field.format.type')} name={[name, 'formatMap', 'type']}>
-                    <Select allowClear options={formatTypeOptions} />
+                    <Select allowClear options={formatTypeOptions} placeholder={t('field.fieldPlaceholder')} />
                   </Form.Item>
                 </Col>
               )}
@@ -563,11 +570,10 @@ function FieldRow({ key, name, form, remove, add, fields }: { key: number; name:
                         tooltip={{
                           title: (
                             <div>
-                              {t('field.format.params.url.urlTemplateTip', { skipInterpolation: true })}
-                              <div>{t('field.format.params.url.urlTemplateTip1', { skipInterpolation: true })}</div>
                               <div>{t('field.format.params.url.urlTemplateTip2', { skipInterpolation: true })}</div>
                             </div>
                           ),
+                          placement: 'topRight',
                           overlayInnerStyle: { width: 550 },
                         }}
                       >

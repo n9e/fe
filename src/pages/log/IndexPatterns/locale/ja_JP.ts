@@ -43,6 +43,9 @@ const zh_HK = {
   展示样式: '表示スタイル',
   链接地址:"リンクアドレス",
   field: {
+    alias1: 'リンク別名',
+    fieldPlaceholder: 'フィールドを選択してください',
+    namePlaceholder: '入力してください',
     name: 'フィールド名',
     type: 'フィールドタイプ',
     type_placeholder: 'フィールドタイプを選択してください',
@@ -62,7 +65,7 @@ const zh_HK = {
           urlTemplate: 'URLテンプレート',
           urlTemplateTip: '{{value}}でこのフィールドの値を表し、他のフィールドも変数として参照できます。例えば${key1}、${key2}',
           urlTemplateTip1: '例えばtracingシステムへのリンク：http://flashcat.cloud/trace?traceId={{value}}&dataSourceName=traceSystemName',
-          urlTemplateTip2: 'このフィールドは無効になっています。リンク設定に移動してください。',
+          urlTemplateTip2: 'リンクの設定と変更は「リンクを跳ぶ」の中で行ってください。同じフィールドのリンクが「リンクを跳ぶ」に設定されている場合、この設定は無効になります。',
           urlTemplatePlaceholder: 'https://www.example.com/?q={{value}}',
           labelTemplate: 'ラベルテンプレート',
           labelTemplatePlaceholder: '{{value}}',

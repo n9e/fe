@@ -18,6 +18,9 @@ const zh_CN = {
   displayStyle: '展示样式',
   tip1:"其中{{value}}为指定字段的值，可在跳转链接中引用，也可在该变量的基础上增加信息。",
   field: {
+    alias1: '链接别名',
+    fieldPlaceholder: '请选择字段',
+    namePlaceholder: '请输入',
     name: '字段名称',
     type: '字段类型',
     type_placeholder: '请选择字段类型',
@@ -37,7 +40,7 @@ const zh_CN = {
           urlTemplate: 'URL 模板',
           urlTemplateTip: '可用{{value}}代表该字段的值,其他字段均可被作为变量引用，如${key1}，${key2}',
           urlTemplateTip1: '如跳转tracing系统：http://flashcat.cloud/trace?traceId={{value}}&dataSourceName=traceSystemName',
-          urlTemplateTip2: '该字段已禁用，请去跳转链接配置',
+          urlTemplateTip2: '链接的配置和修改请到“跳转链接”中进行，如“跳转链接”中配置了同一字段的链接，此处的配置将失效。',
           urlTemplatePlaceholder: 'http://flashcat.cloud/trace?traceId={{value}}&dataSourceName=traceSystemName',
           urlTemplatePlaceholder1: 'http://${local_url}/dashboards/132?param1=${sample_field}',
           labelTemplate: '标签模板',
