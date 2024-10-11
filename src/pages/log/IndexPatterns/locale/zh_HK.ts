@@ -46,6 +46,9 @@ const zh_HK = {
   跳转链接: '跳轉連結',
   展示样式: '展示樣式',
   field: {
+    alias1: '連結別名',
+    fieldPlaceholder: '請選擇字段',
+    namePlaceholder: '請輸入',
     name: '字段名稱',
     type: '字段類型',
     type_placeholder: '請選擇字段類型',
@@ -65,7 +68,7 @@ const zh_HK = {
           urlTemplate: 'URL 模板',
           urlTemplateTip: '可用{{value}}代表该字段的值,其他字段均可被作為變量引用，如${key1}，${key2}',
           urlTemplateTip1: '如跳转tracing系统：http://flashcat.cloud/trace?traceId={{value}}&dataSourceName=traceSystemName',
-          urlTemplateTip2: '该字段已禁用，请去跳转链接配置',
+          urlTemplateTip2: '連結的配置和修改請到“跳轉連結”中進行，如“跳轉連結”中配置了同一字段的連結，此處的配置將失效。',
           urlTemplatePlaceholder: 'https://www.example.com/?q={{value}}',
           labelTemplate: '標籤模板',
           labelTemplatePlaceholder: '{{value}}',
