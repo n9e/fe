@@ -365,7 +365,7 @@ function Link({ form, fieldsAll, t }) {
                     </span>
                   </Tooltip>
                 </Col>
-                <Col span={3}>{t('form.alias1')}</Col>
+                <Col span={3}>{t('field.alias1')}</Col>
                 <Col span={1}></Col>
               </Row>
             )}
