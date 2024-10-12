@@ -267,6 +267,11 @@ const ja_JP = {
       on: 'ラベル名',
     },
   },
+  filter_disabled: {
+    placeholder: 'フィルターを選択',
+    0: '有効',
+    1: '無効',
+  },
 };
 
 export default ja_JP;

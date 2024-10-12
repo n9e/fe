@@ -273,5 +273,10 @@ const en_US = {
       on: 'Label key',
     },
   },
+  filter_disabled: {
+    placeholder: 'Enabled status',
+    0: 'Enabled',
+    1: 'Disabled',
+  },
 };
 export default en_US;

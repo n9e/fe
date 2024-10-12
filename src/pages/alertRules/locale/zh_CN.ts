@@ -1,3 +1,5 @@
+import { placeholder } from '@codemirror/view';
+
 const zh_CN = {
   title: '告警规则',
   search_placeholder: '搜索名称或标签',
@@ -270,6 +272,11 @@ const zh_CN = {
       join_type_placeholder: '请选择集合操作',
       on: '标签名',
     },
+  },
+  filter_disabled: {
+    placeholder: '启用状态',
+    0: '启用',
+    1: '未启用',
   },
 };
 export default zh_CN;

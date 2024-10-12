@@ -271,6 +271,11 @@ const zh_HK = {
       on: '標籤名',
     },
   },
+  filter_disabled: {
+    placeholder: '啟用狀態',
+    0: '啟用',
+    1: '未啟用',
+  },
 };
 
 export default zh_HK;

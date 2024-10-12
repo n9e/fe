@@ -48,6 +48,7 @@ interface Filter {
   search?: string;
   prod?: string;
   severities?: number[];
+  disabled?: 0 | 1;
 }
 
 const FILTER_LOCAL_STORAGE_KEY = 'alert-rules-filter';
@@ -349,7 +350,8 @@ export default function List(props: ListProps) {
           return _.includes(datasourceIds, id);
         }) ||
           datasourceIds?.length === 0 ||
-          !datasourceIds)
+          !datasourceIds) &&
+        (filter.disabled === undefined || item.disabled === filter.disabled)
       );
     });
   };
@@ -444,6 +446,29 @@ export default function List(props: ListProps) {
               }}
               prefix={<SearchOutlined />}
             />
+            <Select
+              allowClear
+              placeholder={t('filter_disabled.placeholder')}
+              options={[
+                {
+                  label: t('filter_disabled.0'),
+                  value: 0,
+                },
+                {
+                  label: t('filter_disabled.1'),
+                  value: 1,
+                },
+              ]}
+              value={filter.disabled}
+              onChange={(val) => {
+                const newFilter = {
+                  ...filter,
+                  disabled: val,
+                };
+                setFilter(newFilter);
+                window.sessionStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
+              }}
+            />
           </Space>
         </Col>
 
@@ -499,6 +524,7 @@ export default function List(props: ListProps) {
         className='mt8'
         size='small'
         rowKey='id'
+        showSorterTooltip={false}
         pagination={pagination}
         loading={loading}
         dataSource={filteredData}
