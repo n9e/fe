@@ -15,6 +15,7 @@ import { getProdOptions } from '@/pages/alertRules/Form/components/ProdSelect';
 import { IS_PLUS, IS_ENT } from '@/utils/constant';
 import DatasourceSelect from '@/components/DatasourceSelect/DatasourceSelect';
 import { BusinessGroupSelectWithAll } from '@/components/BusinessGroup';
+import './style.less';
 
 // @ts-ignore
 import AckBtn from 'plus:/parcels/Event/Acknowledge/AckBtn';
@@ -385,7 +386,7 @@ export default function index(props: Props) {
         </Col>
       </Row>
       <Table
-        className='mt8'
+        className='mt8 alert-rules-events-table'
         size='small'
         tableLayout='fixed'
         rowKey={(record) => record.id}
