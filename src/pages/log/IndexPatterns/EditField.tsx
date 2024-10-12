@@ -494,7 +494,7 @@ function FieldRow({ key, name, form, remove, add, fields }: { key: number; name:
               const type = fields.find((i) => i.name === v)?.type || '';
               form.setFields([
                 { name: ['arr', name, 'type'], value: type },
-                { name: ['arr', name, 'formatMap', 'type'], value: 'url' },
+                // { name: ['arr', name, 'formatMap', 'type'], value: 'url' }, // 这里不允许新增了，也不用设置默认值了
               ]);
             }}
           >
@@ -521,7 +521,6 @@ function FieldRow({ key, name, form, remove, add, fields }: { key: number; name:
           const urlTemplate = getFieldValue(['arr', name, 'formatMap', 'params', 'urlTemplate']);
 
           const formatTypeOptions: { label: string; value: string }[] = [];
-
           if (urlTemplate) {
             formatTypeOptions.push({
               label: 'URL',
@@ -573,7 +572,7 @@ function FieldRow({ key, name, form, remove, add, fields }: { key: number; name:
                           overlayInnerStyle: { width: 550 },
                         }}
                       >
-                        <Input placeholder={t('field.format.params.url.urlTemplatePlaceholder', { skipInterpolation: true })} disabled />
+                        <Input placeholder={t('field.format.params.url.urlTemplatePlaceholder', { skipInterpolation: true })} />
                       </Form.Item>
                     </Col>
                     <Col flex={'184px'}>
