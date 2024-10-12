@@ -243,6 +243,34 @@ const zh_HK = {
     host: '機器',
     host_placeholder: '預設可留空，會從事件中的 ident 標籤取得要執行的機器',
   },
+  trigger: {
+    advanced_settings: {
+      label: '高級設置',
+    },
+    recover_config: {
+      label: '恢復條件',
+      judge_type: {
+        0: '查不到數據就恢復',
+        1: '結果滿足條件才算恢復',
+        2: '查不到數據不算恢復',
+      },
+      recover_exp_placeholder: 'e.g. $A < 50',
+    },
+    joins: {
+      label: '集合操作',
+      join_type: {
+        original: '不合併',
+        none: '直接拼接',
+        inner_join: '內聯',
+        left_join: '左聯',
+        right_join: '右聯',
+        left_exclude: '左斥',
+        right_exclude: '右斥',
+      },
+      join_type_placeholder: '選擇集合操作',
+      on: '標籤名',
+    },
+  },
 };
 
 export default zh_HK;

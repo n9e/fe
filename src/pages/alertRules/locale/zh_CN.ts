@@ -243,5 +243,33 @@ const zh_CN = {
     host: '执行机器',
     host_placeholder: '默认可留空，会从事件中的 ident 标签获取要执行的机器',
   },
+  trigger: {
+    advanced_settings: {
+      label: '高级设置',
+    },
+    recover_config: {
+      label: '恢复条件',
+      judge_type: {
+        0: '查不到数据就恢复',
+        1: '查不到数据不算恢复',
+        2: '结果满足条件才算恢复',
+      },
+      recover_exp_placeholder: 'e.g. $A < 50',
+    },
+    joins: {
+      label: '集合操作',
+      join_type: {
+        original: '不合并',
+        none: '直接拼接',
+        inner_join: '内联',
+        left_join: '左联',
+        right_join: '右联',
+        left_exclude: '左斥',
+        right_exclude: '右斥',
+      },
+      join_type_placeholder: '请选择集合操作',
+      on: '标签名',
+    },
+  },
 };
 export default zh_CN;
