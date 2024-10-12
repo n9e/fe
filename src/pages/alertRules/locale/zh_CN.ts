@@ -1,3 +1,5 @@
+import { placeholder } from '@codemirror/view';
+
 const zh_CN = {
   title: '告警规则',
   search_placeholder: '搜索名称或标签',
@@ -204,6 +206,8 @@ const zh_CN = {
     update_by: '更新人',
     disabled: '启用',
     severity: '级别',
+    status: '状态',
+    status_tip: '告警规则当前是否触发了告警事件，触发了是Triggered，没触发是0k，默认统计最近 30 天的数据',
   },
   expired: '告警规则已经被别人修改，为避免相互覆盖，请刷新页面查看最新配置',
   relabel: {
@@ -270,6 +274,11 @@ const zh_CN = {
       join_type_placeholder: '请选择集合操作',
       on: '标签名',
     },
+  },
+  filter_disabled: {
+    placeholder: '启用状态',
+    0: '启用',
+    1: '未启用',
   },
 };
 export default zh_CN;

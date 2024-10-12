@@ -20,6 +20,11 @@ import i18next from 'i18next';
 export const LOCAL_STORAGE_KEY = 'alertRules_columns_configs';
 export const defaultColumnsConfigs = [
   {
+    name: 'cur_event_count',
+    i18nKey: 'table.status',
+    visible: true,
+  },
+  {
     name: 'cate',
     i18nKey: 'table.cate',
     visible: true,

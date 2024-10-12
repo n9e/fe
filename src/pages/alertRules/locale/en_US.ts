@@ -204,6 +204,9 @@ const en_US = {
     update_by: 'Updated By',
     disabled: 'Enable',
     severity: 'Severity',
+    status: 'Status',
+    status_tip:
+      'Whether the alarm rule currently triggers the alarm event. If it is triggered, it is Triggered. If it is not triggered, it is 0k. The default statistics are the data of the last 30 days',
   },
   expired: 'The alert rule has been modified by others. To avoid mutual coverage, please refresh the page to view the latest configuration',
   relabel: {
@@ -272,6 +275,11 @@ const en_US = {
       join_type_placeholder: 'Select join operation',
       on: 'Label key',
     },
+  },
+  filter_disabled: {
+    placeholder: 'Enabled status',
+    0: 'Enabled',
+    1: 'Disabled',
   },
 };
 export default en_US;

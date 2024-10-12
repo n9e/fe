@@ -22,7 +22,7 @@ import { useDebounceFn } from 'ahooks';
 import moment from 'moment';
 import { Table, Tag, Switch, Modal, Space, Button, Row, Col, message, Select, Tooltip, Input } from 'antd';
 import { ColumnType } from 'antd/lib/table';
-import { EyeOutlined, SearchOutlined } from '@ant-design/icons';
+import { EyeOutlined, InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import RefreshIcon from '@/components/RefreshIcon';
 import usePagination from '@/components/usePagination';
 import { getBusiGroupsAlertRules, updateAlertRules, deleteStrategy } from '@/services/warning';
@@ -37,6 +37,7 @@ import { allCates } from '@/components/AdvancedWrap/utils';
 import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
 import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
 import { priorityColor } from '@/utils/constant';
+import EventsDrawer, { Props as EventsDrawerProps } from './EventsDrawer';
 
 interface ListProps {
   gids?: string;
@@ -48,6 +49,7 @@ interface Filter {
   search?: string;
   prod?: string;
   severities?: number[];
+  disabled?: 0 | 1;
 }
 
 const FILTER_LOCAL_STORAGE_KEY = 'alert-rules-filter';
@@ -72,6 +74,15 @@ export default function List(props: ListProps) {
   const [data, setData] = useState<AlertRuleType<any>[]>([]);
   const [loading, setLoading] = useState(false);
   const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
+  const [eventsDrawerProps, setEventsDrawerProps] = useState<EventsDrawerProps>({
+    visible: false,
+    onClose: () => {
+      setEventsDrawerProps({
+        ...eventsDrawerProps,
+        visible: false,
+      });
+    },
+  });
   const columns: ColumnType<AlertRuleType<any>>[] = _.concat(
     businessGroup.isLeaf && gids !== '-2'
       ? []
@@ -86,6 +97,33 @@ export default function List(props: ListProps) {
           },
         ] as any),
     [
+      {
+        title: (
+          <Space>
+            {t('table.status')}
+            <Tooltip title={t('table.status_tip')}>
+              <InfoCircleOutlined />
+            </Tooltip>
+          </Space>
+        ),
+        dataIndex: 'cur_event_count',
+        render: (val, record) => {
+          return (
+            <a
+              onClick={() => {
+                setEventsDrawerProps({
+                  ...eventsDrawerProps,
+                  visible: true,
+                  title: record.name,
+                  rid: record.id,
+                });
+              }}
+            >
+              {val > 0 ? <Tag color='#e6522c'>Triggered</Tag> : <Tag color='#00a700'>0k</Tag>}
+            </a>
+          );
+        },
+      },
       {
         title: t('table.cate'),
         dataIndex: 'cate',
@@ -349,7 +387,8 @@ export default function List(props: ListProps) {
           return _.includes(datasourceIds, id);
         }) ||
           datasourceIds?.length === 0 ||
-          !datasourceIds)
+          !datasourceIds) &&
+        (filter.disabled === undefined || item.disabled === filter.disabled)
       );
     });
   };
@@ -444,6 +483,29 @@ export default function List(props: ListProps) {
               }}
               prefix={<SearchOutlined />}
             />
+            <Select
+              allowClear
+              placeholder={t('filter_disabled.placeholder')}
+              options={[
+                {
+                  label: t('filter_disabled.0'),
+                  value: 0,
+                },
+                {
+                  label: t('filter_disabled.1'),
+                  value: 1,
+                },
+              ]}
+              value={filter.disabled}
+              onChange={(val) => {
+                const newFilter = {
+                  ...filter,
+                  disabled: val,
+                };
+                setFilter(newFilter);
+                window.sessionStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
+              }}
+            />
           </Space>
         </Col>
 
@@ -499,6 +561,7 @@ export default function List(props: ListProps) {
         className='mt8'
         size='small'
         rowKey='id'
+        showSorterTooltip={false}
         pagination={pagination}
         loading={loading}
         dataSource={filteredData}
@@ -511,6 +574,7 @@ export default function List(props: ListProps) {
         }}
         columns={ajustColumns(columns, columnsConfigs)}
       />
+      <EventsDrawer {...eventsDrawerProps} />
     </div>
   );
 }

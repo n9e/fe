@@ -292,9 +292,9 @@ function Card(props: Props, ref) {
             <Dropdown
               disabled={selectedRowKeys.length === 0}
               overlay={
-                <Menu>
-                  <Menu.Item
-                    disabled={selectedRowKeys.length === 0}
+                <ul className='ant-dropdown-menu'>
+                  <li
+                    className='ant-dropdown-menu-item'
                     onClick={() =>
                       deleteAlertEventsModal(
                         selectedRowKeys,
@@ -306,8 +306,8 @@ function Card(props: Props, ref) {
                       )
                     }
                   >
-                    {t('common:btn.batch_delete')}{' '}
-                  </Menu.Item>
+                    {t('common:btn.batch_delete')}
+                  </li>
                   <BatchAckBtn
                     selectedIds={selectedRowKeys}
                     onOk={() => {
@@ -315,11 +315,13 @@ function Card(props: Props, ref) {
                       fetchCardDetail(openedCard!);
                     }}
                   />
-                </Menu>
+                </ul>
               }
               trigger={['click']}
             >
-              <Button style={{ marginRight: 8 }}>{t('batch_btn')}</Button>
+              <Button style={{ marginRight: 8 }} disabled={selectedRowKeys.length === 0}>
+                {t('batch_btn')}
+              </Button>
             </Dropdown>
           </div>
         }

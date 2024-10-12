@@ -206,9 +206,9 @@ const Event: React.FC = () => {
           {view === 'list' && (
             <Dropdown
               overlay={
-                <Menu>
-                  <Menu.Item
-                    disabled={selectedRowKeys.length === 0}
+                <ul className='ant-dropdown-menu'>
+                  <li
+                    className='ant-dropdown-menu-item'
                     onClick={() =>
                       deleteAlertEventsModal(
                         selectedRowKeys,
@@ -220,8 +220,8 @@ const Event: React.FC = () => {
                       )
                     }
                   >
-                    {t('common:btn.batch_delete')}{' '}
-                  </Menu.Item>
+                    {t('common:btn.batch_delete')}
+                  </li>
                   <BatchAckBtn
                     selectedIds={selectedRowKeys}
                     onOk={() => {
@@ -229,11 +229,13 @@ const Event: React.FC = () => {
                       setRefreshFlag(_.uniqueId('refresh_'));
                     }}
                   />
-                </Menu>
+                </ul>
               }
               trigger={['click']}
             >
-              <Button style={{ marginRight: 8 }}>{t('batch_btn')}</Button>
+              <Button style={{ marginRight: 8 }} disabled={selectedRowKeys.length === 0}>
+                {t('batch_btn')}
+              </Button>
             </Dropdown>
           )}
           <AutoRefresh
