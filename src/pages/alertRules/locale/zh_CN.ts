@@ -207,7 +207,7 @@ const zh_CN = {
     disabled: '启用',
     severity: '级别',
     status: '状态',
-    status_tip: '告警规则当前是否触发了告警事件，触发了是Triggered，没触发是0k，默认统计最近 30 天的数据',
+    status_tip: '告警规则当前是否触发了告警事件，默认统计最近 30 天的数据',
   },
   expired: '告警规则已经被别人修改，为避免相互覆盖，请刷新页面查看最新配置',
   relabel: {

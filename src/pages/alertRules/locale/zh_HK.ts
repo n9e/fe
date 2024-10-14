@@ -205,7 +205,7 @@ const zh_HK = {
     disabled: '啟用',
     severity: '級別',
     status: '狀態',
-    status_tip: '告警規則目前是否觸發了告警事件，觸發了是Triggered，沒觸發是0k，預設統計最近 30 天的資料',
+    status_tip: '告警規則目前是否觸發了告警事件，預設統計最近 30 天的資料',
   },
   expired: '告警規則已經被別人修改，為避免相互覆蓋，請刷新頁面查看最新配置',
   relabel: {
