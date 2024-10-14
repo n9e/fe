@@ -22,7 +22,7 @@ import { useDebounceFn } from 'ahooks';
 import moment from 'moment';
 import { Table, Tag, Switch, Modal, Space, Button, Row, Col, message, Select, Tooltip, Input } from 'antd';
 import { ColumnType } from 'antd/lib/table';
-import { EyeOutlined, InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
+import { EyeOutlined, InfoCircleOutlined, SearchOutlined, WarningFilled, CheckCircleFilled } from '@ant-design/icons';
 import RefreshIcon from '@/components/RefreshIcon';
 import usePagination from '@/components/usePagination';
 import { getBusiGroupsAlertRules, updateAlertRules, deleteStrategy } from '@/services/warning';
@@ -118,8 +118,12 @@ export default function List(props: ListProps) {
                   rid: record.id,
                 });
               }}
+              style={{
+                fontSize: 20,
+                color: val > 0 ? '#e6522c' : '#00a700',
+              }}
             >
-              {val > 0 ? <Tag color='#e6522c'>Triggered</Tag> : <Tag color='#00a700'>0k</Tag>}
+              {val > 0 ? <WarningFilled /> : <CheckCircleFilled />}
             </a>
           );
         },
