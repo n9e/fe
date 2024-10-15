@@ -1,7 +1,7 @@
-const zh_CN = {
+const ja_JP = {
   default_filter: {
     title: 'プリセットフィルタ',
     all: 'すべてのルール',
   },
 };
-export default zh_CN;
+export default ja_JP;

@@ -8,3 +8,4 @@ i18next.addResourceBundle('en_US', 'BusinessGroup', en_US);
 i18next.addResourceBundle('ja_JP', 'BusinessGroup', ja_JP);
 i18next.addResourceBundle('zh_CN', 'BusinessGroup', zh_CN);
 i18next.addResourceBundle('zh_HK', 'BusinessGroup', zh_HK);
+i18next.addResourceBundle('ja_JP', 'BusinessGroup', ja_JP);
