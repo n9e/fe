@@ -6,6 +6,8 @@ import { replaceExpressionVars } from '@/pages/dashboard/VariableConfig/constant
 import * as MySQLMeta from 'plus:/datasource/mysql/components/Meta';
 // @ts-ignore
 import * as CKMeta from 'plus:/datasource/clickHouse/components/Meta';
+// @ts-ignore
+import * as InfluxDBMeta from 'plus:/components/Meta';
 
 export default function index({ dashboardId, variableConfig }) {
   const datasourceCate = Form.useWatch('datasourceCate');
@@ -18,6 +20,10 @@ export default function index({ dashboardId, variableConfig }) {
   if (datasourceCate === DatasourceCateEnum.ck && datasourceValue !== undefined) {
     const curDatasourceValue = variableConfig ? replaceExpressionVars(datasourceValue, variableConfig, variableConfig.length, dashboardId) : datasourceValue;
     return <CKMeta.MetaModal datasourceValue={curDatasourceValue} />;
+  }
+  if (datasourceCate === DatasourceCateEnum.influxDB && datasourceValue !== undefined) {
+    const curDatasourceValue = variableConfig ? replaceExpressionVars(datasourceValue, variableConfig, variableConfig.length, dashboardId) : datasourceValue;
+    return <InfluxDBMeta.MetaModal datasourceCate={DatasourceCateEnum.influxDB} datasourceValue={curDatasourceValue} />;
   }
   return null;
 }
