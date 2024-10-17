@@ -112,6 +112,13 @@ export function processFormValues(values) {
             exp: stringifyExpressions(trigger.expressions),
           };
         }
+        // 如果是表达式模式 mode=1 则清理掉 expressions 字段值
+        if (trigger.mode === 1) {
+          return {
+            ...trigger,
+            expressions: [{ ref: 'A', comparisonOperator: '>' }],
+          };
+        }
         return trigger;
       });
     }

@@ -143,7 +143,7 @@ export default function index(props: Props) {
                 <Link
                   to={{
                     pathname: `${pathname}/dashboard/detail`,
-                    search: `?id=${record.id}`,
+                    search: `?__uuid__=${record.uuid}`,
                   }}
                   target='_blank'
                 >

@@ -30,7 +30,7 @@ import { GetProfile } from '@/services/account';
 import { getBusiGroups, getDatasourceBriefList, getMenuPerm } from '@/services/common';
 import { getLicense } from '@/components/AdvancedWrap';
 import { getVersions } from '@/components/pageLayout/Version/services';
-import { getCleanBusinessGroupIds, getDefaultBusiness } from '@/components/BusinessGroup';
+import { getCleanBusinessGroupIds, getDefaultBusiness, getVaildBusinessGroup } from '@/components/BusinessGroup';
 import Feedback from '@/components/Feedback';
 import { getN9eConfig } from '@/pages/siteSettings/services';
 import HeaderMenu from './components/menu/SideMenu';
@@ -85,6 +85,8 @@ export interface ICommonState {
     id?: number; // 叶子节点的id 用于兼容旧的代码
     isLeaf?: boolean;
   };
+  setBusiGroup: (group: { key?: string; ids?: string; id?: number; isLeaf?: boolean }) => void;
+  getVaildBusinessGroup: (busiGroups: any[], businessGroupKey: { key?: string; ids?: string; id?: number; isLeaf?: boolean }) => void;
   businessGroupOnChange: (key: string) => void;
   profile: IProfile;
   setProfile: (profile: IProfile) => void;
@@ -143,6 +145,10 @@ function App() {
       setCommonState((state) => ({ ...state, curBusiId: id }));
     },
     businessGroup: {},
+    setBusiGroup: (businessGroup) => {
+      setCommonState((state) => ({ ...state, businessGroup }));
+    },
+    getVaildBusinessGroup,
     businessGroupOnChange: (key: string) => {
       window.localStorage.setItem('businessGroupKey', key);
       const ids = getCleanBusinessGroupIds(key);

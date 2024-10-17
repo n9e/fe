@@ -30,7 +30,7 @@ import PageLayout from '@/components/pageLayout';
 import { IRawTimeRange, getDefaultValue, isValid } from '@/components/TimeRangePicker';
 import { Dashboard } from '@/store/dashboardInterface';
 import { getDashboard, updateDashboardConfigs, getDashboardPure } from '@/services/dashboardV2';
-import { getPayload } from '@/pages/builtInComponents/services';
+import { getPayload, getPayloadByUUID } from '@/pages/builtInComponents/services';
 import { SetTmpChartData } from '@/services/metric';
 import { CommonStateContext, basePrefix } from '@/App';
 import MigrationModal from '@/pages/help/migrate/MigrationModal';
@@ -64,7 +64,7 @@ interface IProps {
 export const dashboardTimeCacheKey = 'dashboard-timeRangePicker-value';
 const fetchDashboard = ({ id, builtinParams }) => {
   if (builtinParams) {
-    return getPayload(builtinParams).then((res) => {
+    return getPayloadByUUID(builtinParams).then((res) => {
       let { content } = res;
       try {
         content = JSON.parse(content);

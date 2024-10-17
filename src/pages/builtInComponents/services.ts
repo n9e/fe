@@ -55,6 +55,15 @@ export const getPayload = (id: number): Promise<{ content: string }> => {
   });
 };
 
+export const getPayloadByUUID = (uuid: number): Promise<{ content: string }> => {
+  return request(`/api/n9e/builtin-payload`, {
+    method: RequestMethod.Get,
+    params: { uuid },
+  }).then((res) => {
+    return res.dat;
+  });
+};
+
 export const postPayloads = (data: PayloadPost[]): Promise<any> => {
   return request('/api/n9e/builtin-payloads', {
     method: RequestMethod.Post,

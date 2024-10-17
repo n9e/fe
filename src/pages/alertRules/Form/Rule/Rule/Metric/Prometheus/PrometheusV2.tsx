@@ -19,7 +19,7 @@
  * 新版查询条件和告警条件表单
  */
 import React, { useContext } from 'react';
-import { Form, Row, Col, Card, Space, Input } from 'antd';
+import { Form, Row, Col, Card, Space } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';

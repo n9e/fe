@@ -22,7 +22,7 @@ export default function index({ field, disabled }: { field: any; disabled?: bool
   const { t } = useTranslation('alertRules');
   return (
     <Space align='baseline'>
-      {t('severity_label')}：
+      {t('severity_label')}
       <Form.Item {...field} name={[field.name, 'severity']} rules={[{ required: true, message: 'Missing severity' }]} noStyle>
         <Radio.Group disabled={disabled}>
           <Radio value={1}>{t('common:severity.1')}</Radio>

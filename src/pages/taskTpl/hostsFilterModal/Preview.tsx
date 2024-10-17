@@ -23,10 +23,15 @@ export default function Preview(props: IProps) {
       p: page,
       limit,
       queries,
-    }).then((res) => {
-      setData(res?.dat?.list || []);
-      setTotal(res?.dat?.total || 0);
-    });
+    })
+      .then((res) => {
+        setData(res?.dat?.list || []);
+        setTotal(res?.dat?.total || 0);
+      })
+      .catch(() => {
+        setData([]);
+        setTotal(0);
+      });
   }, [visible, page, limit]);
 
   return (
@@ -79,7 +84,7 @@ export default function Preview(props: IProps) {
               dataIndex: 'group_objs',
               render(groupObjs: any[]) {
                 return _.isEmpty(groupObjs)
-                  ? t('not_grouped')
+                  ? t('common:not_grouped')
                   : _.map(groupObjs, (item) => {
                       return (
                         <Tag color='purple' key={item.id}>

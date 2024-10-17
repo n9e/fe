@@ -16,12 +16,15 @@
  */
 
 import React from 'react';
-import { Form, Radio } from 'antd';
+import { Form, Radio, Space } from 'antd';
+import { DownOutlined, RightOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import Severity from '@/pages/alertRules/Form/components/Severity';
 import Builder from './Builder';
 import Code from './Code';
+import RecoverConfig from './RecoverConfig';
+import Joins from './Joins';
 
 interface IProps {
   prefixField?: any;
@@ -34,6 +37,7 @@ interface IProps {
 export default function Trigger(props: IProps) {
   const { t } = useTranslation('alertRules');
   const { prefixField = {}, fullPrefixName = [], prefixName = [], queries, disabled } = props;
+  const [expanded, setExpanded] = React.useState(false);
 
   return (
     <div className='n9e-fill-color-3 p2'>
@@ -54,7 +58,30 @@ export default function Trigger(props: IProps) {
           }
         }}
       </Form.Item>
-      <Severity field={prefixField} disabled={disabled} />
+      <div className='mb1'>
+        <Severity field={prefixField} disabled={disabled} />
+      </div>
+      <div>
+        <div className='mb1'>
+          <Space
+            className='n9e-cursor-pointer'
+            onClick={() => {
+              setExpanded(!expanded);
+            }}
+          >
+            {t('trigger.advanced_settings.label')}
+            {expanded ? <DownOutlined /> : <RightOutlined />}
+          </Space>
+        </div>
+        <div
+          style={{
+            display: expanded ? 'block' : 'none',
+          }}
+        >
+          <RecoverConfig {...props} />
+          <Joins {...props} />
+        </div>
+      </div>
     </div>
   );
 }

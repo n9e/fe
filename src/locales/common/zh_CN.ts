@@ -9,13 +9,16 @@ const zh_CN = {
   search_placeholder: '请输入搜索关键字',
   my_business_group: '我的业务组',
   all_business_group: '全部业务组',
+  not_grouped: '未归组',
   nodata: '暂无数据',
   log_detail: '日志详情',
   document_link: '使用说明',
   required: '必填项',
   host: {
-    tags: '用户标签',
-    host_tags: '机器标签',
+    tags: '自定义标签',
+    tags_tip: '用户在页面配置的标签，会追加到此机器上报的时序数据中',
+    host_tags: '上报的标签',
+    host_tags_tip: 'categraf global.labels 配置的标签，会出现在这里，会追加到此机器上报的时序数据中，categraf 需要升级到 v0.3.80 及以上版本，才支持此功能',
   },
   btn: {
     add: '新增',
@@ -63,6 +66,8 @@ const zh_CN = {
     total: '共 {{total}} 条',
     host: '机器',
     error_msg: '错误',
+    username: '用户名',
+    nickname: '显示名',
   },
   datasource: {
     prod: '监控类型',

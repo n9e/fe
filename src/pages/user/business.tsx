@@ -28,7 +28,7 @@ import { CommonStateContext } from '@/App';
 import { ColumnsType } from 'antd/lib/table';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@/utils';
-import { listToTree, getCollapsedKeys, getLocaleExpandedKeys, setLocaleExpandedKeys } from '@/components/BusinessGroup';
+import { listToTree, getCollapsedKeys, getLocaleExpandedKeys, setLocaleExpandedKeys, getDefaultBusiness } from '@/components/BusinessGroup';
 import Tree from '@/components/BusinessGroup/components/Tree';
 import '@/components/BlankBusinessPlaceholder/index.less';
 import './index.less';
@@ -37,7 +37,7 @@ const { confirm } = Modal;
 export const PAGE_SIZE = 5000;
 
 const Resource: React.FC = () => {
-  const { setBusiGroups, siteInfo } = useContext(CommonStateContext);
+  const { setBusiGroups, siteInfo, setBusiGroup } = useContext(CommonStateContext);
   const { t } = useTranslation('user');
   const urlQuery = useQuery();
   const id = urlQuery.get('id');
@@ -133,6 +133,7 @@ const Resource: React.FC = () => {
         teamId && getTeamInfoDetail(teamId);
       }
       setBusiGroups(data.dat || []);
+      setBusiGroup(getDefaultBusiness(data.dat));
     });
   };
 

@@ -198,19 +198,14 @@ export default function TableCpt(props: IProps) {
   ];
   if (import.meta.env.VITE_IS_PRO === 'true') {
     columns.splice(5, 0, {
-      title: t('status'),
-      dataIndex: 'status',
-      width: 100,
-      render: (value) => {
-        return t(`status_${value}`) as string;
-      },
-    });
-    columns.splice(6, 0, {
       title: t('claimant'),
       dataIndex: 'claimant',
       width: 100,
-      render: (value) => {
-        return value;
+      render: (value, record) => {
+        if (record.status === 1) {
+          return value;
+        }
+        return t('status_0');
       },
     });
   }
