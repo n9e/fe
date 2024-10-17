@@ -1,5 +1,7 @@
 import _ from 'lodash';
 import { useRef } from 'react';
+import getOverridePropertiesByName from '../../utils/getOverridePropertiesByName';
+import { getSerieTextObj, getMappedTextObj } from '../../utils/getCalculatedValuesBySeries';
 
 export function transformColumns(columns: any[], transformations?: any[]): any[] {
   let newColumns: any[] = columns;
@@ -83,4 +85,38 @@ export function isRawData(data: any[]) {
     return true;
   }
   return false;
+}
+
+export function ajustFiledValue(
+  record: {
+    stat?: number;
+    text?: string;
+    color?: string;
+  },
+  overrides: any[],
+  match: {
+    type: string;
+    value: string;
+  },
+) {
+  let textObj = {
+    text: record?.text,
+    color: record?.color,
+  };
+  if (match.type === 'byFrameRefID') {
+    const overrideProps = getOverridePropertiesByName(overrides, 'byFrameRefID', match.value);
+    if (!_.isEmpty(overrideProps)) {
+      textObj = getSerieTextObj(record?.stat, overrideProps?.standardOptions, overrideProps?.valueMappings);
+    }
+    return textObj;
+  }
+  if (match.type === 'byName') {
+    const overrideProps = getOverridePropertiesByName(overrides, 'byName', match.value);
+    if (!_.isEmpty(overrideProps)) {
+      textObj = getSerieTextObj(textObj.text, overrideProps?.standardOptions, overrideProps?.valueMappings);
+    }
+    return textObj;
+  }
+
+  return textObj;
 }
