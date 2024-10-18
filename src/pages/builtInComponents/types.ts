@@ -23,6 +23,7 @@ export interface PayloadQuery {
 
 export interface Payload {
   id: number;
+  uuid: number;
   type: TypeEnum;
   component_id: number;
   cate: string;

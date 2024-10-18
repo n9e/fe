@@ -173,7 +173,7 @@ const ImportBuiltinContent = ({ busiId, onOk }) => {
                     <Link
                       to={{
                         pathname: '/built-in-components/dashboard/detail',
-                        search: `?id=${record.id}`,
+                        search: `?__uuid__=${record.uuid}`,
                       }}
                       target='_blank'
                     >
