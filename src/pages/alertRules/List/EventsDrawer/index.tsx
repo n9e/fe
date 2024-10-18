@@ -60,7 +60,6 @@ export default function index(props: Props) {
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
   const { tableProps } = useAntdTable(
     (params) => {
-      console.log('params', params, visible);
       if (visible) {
         return fetchData(rid, filter, params);
       }
