@@ -84,6 +84,14 @@ export function processFormValues(values) {
   } else if (values.prod === 'anomaly') {
     cate = 'prometheus';
   }
+  // TODO 如果保存的是 prometheus v2 版本的规则，需要清理掉 v1 版本的 prom_ql 字段
+  if (values.cate === 'prometheus' && values.rule_config?.version === 'v2') {
+    _.set(
+      values,
+      'rule_config.queries',
+      _.map(values.rule_config.queries, (item) => _.omit(item, 'prom_ql')),
+    );
+  }
   if (_.isFunction(alertUtils.processFormValues) && !BaseDatasourceCateEnum[cate]) {
     values = alertUtils.processFormValues(values);
   } else {
