@@ -123,6 +123,7 @@ function index(_props: any, ref: any) {
                   onClick={() => {
                     if (item.id === active) {
                       setActive(undefined);
+                      localStorage.removeItem(LOCALE_KEY);
                     } else {
                       setActive(item.id);
                       localStorage.setItem(LOCALE_KEY, item.id);
