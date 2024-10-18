@@ -84,18 +84,6 @@ export default function List(props: ListProps) {
     },
   });
   const columns: ColumnType<AlertRuleType<any>>[] = _.concat(
-    businessGroup.isLeaf && gids !== '-2'
-      ? []
-      : ([
-          {
-            title: t('common:business_group'),
-            dataIndex: 'group_id',
-            width: 100,
-            render: (id) => {
-              return _.find(busiGroups, { id })?.name;
-            },
-          },
-        ] as any),
     [
       {
         title: (
@@ -128,6 +116,20 @@ export default function List(props: ListProps) {
           );
         },
       },
+    ],
+    businessGroup.isLeaf && gids !== '-2'
+      ? []
+      : ([
+          {
+            title: t('common:business_group'),
+            dataIndex: 'group_id',
+            width: 100,
+            render: (id) => {
+              return _.find(busiGroups, { id })?.name;
+            },
+          },
+        ] as any),
+    [
       {
         title: t('table.cate'),
         dataIndex: 'cate',
