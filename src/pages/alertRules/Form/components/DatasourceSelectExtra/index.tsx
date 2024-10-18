@@ -7,6 +7,8 @@ import * as MySQLMeta from 'plus:/datasource/mysql/components/Meta';
 // @ts-ignore
 import * as CKMeta from 'plus:/datasource/clickHouse/components/Meta';
 // @ts-ignore
+import * as OracleMeta from 'plus:/datasource/oracle/components/Meta';
+// @ts-ignore
 import * as Meta from 'plus:/components/Meta';
 
 export default function index() {
@@ -27,7 +29,7 @@ export default function index() {
   }
   if (datasourceCate === DatasourceCateEnum.oracle && datasourceValue !== undefined) {
     const realDatasourceValue = _.isArray(datasourceValue) ? _.head(datasourceValue) : datasourceValue;
-    return <Meta.MetaModal datasourceCate={DatasourceCateEnum.oracle} datasourceValue={realDatasourceValue} />;
+    return <OracleMeta.MetaModal datasourceCate={DatasourceCateEnum.oracle} datasourceValue={realDatasourceValue} />;
   }
   if (datasourceCate === DatasourceCateEnum.pgsql && datasourceValue !== undefined) {
     const realDatasourceValue = _.isArray(datasourceValue) ? _.head(datasourceValue) : datasourceValue;
