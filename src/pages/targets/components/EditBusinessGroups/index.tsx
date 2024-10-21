@@ -128,6 +128,8 @@ export default function index(props: Props) {
           </Form.Item>
           <Form.Item label={t('update_busi.label')} name='bgids'>
             <Select
+              showSearch
+              optionFilterProp='label'
               mode='multiple'
               options={
                 action === 'reset' || action === 'add'

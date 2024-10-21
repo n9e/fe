@@ -204,6 +204,8 @@ const en_US = {
     update_by: 'Updated By',
     disabled: 'Enable',
     severity: 'Severity',
+    status: 'Status',
+    status_tip: 'Whether the alarm rule currently triggers the alarm event. The default statistics are the data of the last 30 days',
   },
   expired: 'The alert rule has been modified by others. To avoid mutual coverage, please refresh the page to view the latest configuration',
   relabel: {
@@ -244,6 +246,39 @@ const en_US = {
     tpl_id_msg: 'Template is required',
     host: 'Host',
     host_placeholder: 'Optional, the host to be executed will be obtained from the ident tag in the event',
+  },
+  trigger: {
+    advanced_settings: {
+      label: 'Advanced Settings',
+    },
+    recover_config: {
+      label: 'Recovery configuration',
+      judge_type: {
+        0: 'No data is considered recovered',
+        1: 'No data is not considered recovered',
+        2: 'The result meets the condition to be considered recovered',
+      },
+      recover_exp_placeholder: 'e.g. $A < 50',
+    },
+    joins: {
+      label: 'Joins Operations',
+      join_type: {
+        original: 'No merge',
+        none: 'None',
+        inner_join: 'Inner join',
+        left_join: 'Left join',
+        right_join: 'Right join',
+        left_exclude: 'Left exclude',
+        right_exclude: 'Right exclude',
+      },
+      join_type_placeholder: 'Select join operation',
+      on: 'Label key',
+    },
+  },
+  filter_disabled: {
+    placeholder: 'Enabled status',
+    0: 'Enabled',
+    1: 'Disabled',
   },
 };
 export default en_US;

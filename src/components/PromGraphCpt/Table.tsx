@@ -61,12 +61,12 @@ function getListItemLabel(resultType, record) {
     </>
   );
 }
-function toFixedNoRound(num, fixed) {
-  if (typeof num !== 'number') return num;
-  const re = new RegExp(`^-?\\d+(?:\.\\d{0,${fixed || -1}})?`);
-  const arr = num.toString().match(re);
-  if (arr) return arr[0];
-  return num.toString();
+
+// step 只取整数部分(秒)
+function toFixedNoRound(num1 = 0, num2 = 0) {
+  const num1Str = num1.toFixed(0);
+  const num2Str = num2.toFixed(0);
+  return _.toNumber(num1Str) - _.toNumber(num2Str);
 }
 
 function formatValue(val, unit) {
@@ -94,7 +94,7 @@ function getListItemValue(resultType, record, unit) {
               <span style={{ display: 'table-cell', padding: '0 4px' }}>{formatValue(_.get(value, 1), unit)}</span>
               <span style={{ display: 'table-cell', padding: '0 4px' }}>@{timestamp || '-'}</span>
               <span style={{ display: 'table-cell', padding: '0 4px' }}>{moment.unix(timestamp).format('YYYY-MM-DD HH:mm:ss')}</span>
-              <span style={{ display: 'table-cell', padding: '0 4px' }}>{i > 0 ? `+${toFixedNoRound(timestamp - _.get(values[i - 1], 0), 0)}` : ''}</span>
+              <span style={{ display: 'table-cell', padding: '0 4px' }}>{i > 0 ? `+${toFixedNoRound(timestamp, _.get(values[i - 1], 0))}` : ''}</span>
             </div>
           );
         })}

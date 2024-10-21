@@ -1,3 +1,5 @@
+import { placeholder } from '@codemirror/view';
+
 const zh_CN = {
   title: '告警规则',
   search_placeholder: '搜索名称或标签',
@@ -204,6 +206,8 @@ const zh_CN = {
     update_by: '更新人',
     disabled: '启用',
     severity: '级别',
+    status: '状态',
+    status_tip: '告警规则当前是否触发了告警事件，默认统计最近 30 天的数据',
   },
   expired: '告警规则已经被别人修改，为避免相互覆盖，请刷新页面查看最新配置',
   relabel: {
@@ -242,6 +246,39 @@ const zh_CN = {
     tpl_id_msg: '自愈模板不能为空',
     host: '执行机器',
     host_placeholder: '默认可留空，会从事件中的 ident 标签获取要执行的机器',
+  },
+  trigger: {
+    advanced_settings: {
+      label: '高级设置',
+    },
+    recover_config: {
+      label: '恢复条件',
+      judge_type: {
+        0: '查不到数据就恢复',
+        1: '查不到数据不算恢复',
+        2: '结果满足条件才算恢复',
+      },
+      recover_exp_placeholder: 'e.g. $A < 50',
+    },
+    joins: {
+      label: '集合操作',
+      join_type: {
+        original: '不合并',
+        none: '直接拼接',
+        inner_join: '内联',
+        left_join: '左联',
+        right_join: '右联',
+        left_exclude: '左斥',
+        right_exclude: '右斥',
+      },
+      join_type_placeholder: '请选择集合操作',
+      on: '标签名',
+    },
+  },
+  filter_disabled: {
+    placeholder: '启用状态',
+    0: '启用',
+    1: '未启用',
   },
 };
 export default zh_CN;
