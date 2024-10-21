@@ -25,13 +25,5 @@ export default function index({ dashboardId, variableConfig }) {
     const curDatasourceValue = variableConfig ? replaceExpressionVars(datasourceValue, variableConfig, variableConfig.length, dashboardId) : datasourceValue;
     return <Meta.MetaModal datasourceCate={DatasourceCateEnum.influxDB} datasourceValue={curDatasourceValue} />;
   }
-  if (datasourceCate === DatasourceCateEnum.oracle && datasourceValue !== undefined) {
-    const curDatasourceValue = variableConfig ? replaceExpressionVars(datasourceValue, variableConfig, variableConfig.length, dashboardId) : datasourceValue;
-    return <Meta.MetaModal datasourceCate={DatasourceCateEnum.oracle} datasourceValue={curDatasourceValue} />;
-  }
-  if (datasourceCate === DatasourceCateEnum.pgsql && datasourceValue !== undefined) {
-    const curDatasourceValue = variableConfig ? replaceExpressionVars(datasourceValue, variableConfig, variableConfig.length, dashboardId) : datasourceValue;
-    return <Meta.MetaModal datasourceCate={DatasourceCateEnum.pgsql} datasourceValue={curDatasourceValue} />;
-  }
   return null;
 }

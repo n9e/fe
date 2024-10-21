@@ -1,7 +1,7 @@
 import React from 'react';
 import { Form } from 'antd';
 import _ from 'lodash';
-import { DatasourceCateEnum } from '@/utils/constant';
+import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
 // @ts-ignore
 import * as MySQLMeta from 'plus:/datasource/mysql/components/Meta';
 // @ts-ignore
@@ -24,14 +24,6 @@ export default function index() {
   if (datasourceCate === DatasourceCateEnum.influxDB && datasourceValue !== undefined) {
     const realDatasourceValue = _.isArray(datasourceValue) ? _.head(datasourceValue) : datasourceValue;
     return <Meta.MetaModal datasourceCate={DatasourceCateEnum.influxDB} datasourceValue={realDatasourceValue} />;
-  }
-  if (datasourceCate === DatasourceCateEnum.oracle && datasourceValue !== undefined) {
-    const realDatasourceValue = _.isArray(datasourceValue) ? _.head(datasourceValue) : datasourceValue;
-    return <Meta.MetaModal datasourceCate={DatasourceCateEnum.oracle} datasourceValue={realDatasourceValue} />;
-  }
-  if (datasourceCate === DatasourceCateEnum.pgsql && datasourceValue !== undefined) {
-    const realDatasourceValue = _.isArray(datasourceValue) ? _.head(datasourceValue) : datasourceValue;
-    return <Meta.MetaModal datasourceCate={DatasourceCateEnum.pgsql} datasourceValue={realDatasourceValue} />;
   }
   return null;
 }
