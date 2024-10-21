@@ -20,6 +20,7 @@ export default function index(props: Props) {
   const { prefixField = {}, fullPrefixName = [], prefixName = [], queries, disabled } = props;
   const form = Form.useFormInstance();
   const joins = Form.useWatch([...fullPrefixName, 'joins']);
+  const join_ref = Form.useWatch([...fullPrefixName, 'join_ref']);
 
   return (
     <div>
@@ -55,6 +56,7 @@ export default function index(props: Props) {
                     onClick={() => {
                       add({});
                     }}
+                    disabled={queries?.length === 1}
                   >
                     {t('common:btn.add')}
                   </Button>
@@ -81,12 +83,17 @@ export default function index(props: Props) {
                           <Form.Item {...field} name={[field.name, 'ref']}>
                             <Select
                               disabled={disabled}
-                              options={_.map(queries, (item) => {
-                                return {
-                                  label: item.ref,
-                                  value: item.ref,
-                                };
-                              })}
+                              options={_.map(
+                                _.filter(queries, (item) => {
+                                  return item.ref !== join_ref;
+                                }),
+                                (item) => {
+                                  return {
+                                    label: item.ref,
+                                    value: item.ref,
+                                  };
+                                },
+                              )}
                               placeholder='ref'
                             />
                           </Form.Item>
