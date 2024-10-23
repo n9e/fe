@@ -93,7 +93,23 @@ function EditItem(props: IProps) {
     <Form layout='vertical' autoComplete='off' preserve={false} form={form} initialValues={data}>
       <Row gutter={16}>
         <Col span={6}>
-          <Form.Item label={t('var.name')} name='name' rules={[{ required: true }, { pattern: /^[0-9a-zA-Z_]+$/, message: t('var.name_msg') }]}>
+          <Form.Item
+            label={t('var.name')}
+            name='name'
+            rules={[
+              { required: true },
+              { pattern: /^[0-9a-zA-Z_]+$/, message: t('var.name_msg') },
+              () => ({
+                validator(_rule, value) {
+                  // 如果 name 重复，提示错误
+                  if (_.find(vars, { name: value })) {
+                    return Promise.reject(t('var.name_repeat_msg'));
+                  }
+                  return Promise.resolve();
+                },
+              }),
+            ]}
+          >
             <Input />
           </Form.Item>
         </Col>

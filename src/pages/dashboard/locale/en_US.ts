@@ -73,6 +73,7 @@ const en_US = {
     },
     name: 'Name',
     name_msg: 'Only support number and character underline',
+    name_repeat_msg: 'Variable name already exists',
     label: 'Label',
     type: 'Type',
     type_map: {

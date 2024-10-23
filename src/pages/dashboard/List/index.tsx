@@ -65,6 +65,8 @@ export default function index() {
 
   useUpdateEffect(() => {
     setGids(businessGroup.ids);
+    setsearchVal('');
+    localStorage.removeItem(SEARCH_LOCAL_STORAGE_KEY);
   }, [businessGroup.ids]);
 
   useEffect(() => {

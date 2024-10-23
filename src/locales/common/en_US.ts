@@ -9,13 +9,17 @@ const en_US = {
   search_placeholder: 'Please enter search keywords',
   my_business_group: 'My Business Group',
   all_business_group: 'All Business Group',
+  not_grouped: 'Not Grouped',
   nodata: 'No Data',
   log_detail: 'Log Detail',
   document_link: 'Document',
   required: 'Required',
   host: {
-    tags: 'User Tags',
-    host_tags: 'Host Tags',
+    tags: 'Custom Tags',
+    tags_tip: 'Tags configured by the user on the page will be appended to the time series data reported by this machine',
+    host_tags: 'Reported Tags',
+    host_tags_tip:
+      'Tags configured by categraf global.labels will appear here and will be appended to the time series data reported by this machine. categraf needs to be upgraded to v0.3.80 or higher to support this feature',
   },
   btn: {
     add: 'Add',
@@ -63,6 +67,8 @@ const en_US = {
     total: 'Total {{total}} items',
     host: 'Host',
     error_msg: 'Error message',
+    username: 'Username',
+    nickname: 'Nickname',
   },
   datasource: {
     prod: 'Type',

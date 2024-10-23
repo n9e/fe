@@ -73,6 +73,7 @@ const zh_HK = {
     },
     name: '變數名稱',
     name_msg: '僅支援數字和字元下劃線',
+    name_repeat_msg: '變數名稱已存在',
     label: '顯示名稱',
     type: '變數類型',
     type_map: {

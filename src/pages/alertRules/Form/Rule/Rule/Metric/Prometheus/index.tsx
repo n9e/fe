@@ -79,6 +79,12 @@ export default function index(props: { form: any; datasourceCate: string; dataso
                 form.setFieldsValue({
                   rule_config: {
                     ...rule_config,
+                    queries: [
+                      {
+                        ref: 'A',
+                        query: '',
+                      },
+                    ],
                     triggers: [
                       {
                         mode: 0,
