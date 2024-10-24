@@ -80,7 +80,7 @@ export const baseTheme = EditorView.theme({
   },
 
   '.cm-selectionMatch': {
-    backgroundColor: '#e6f3ff',
+    backgroundColor: 'unset',
   },
 
   '.cm-diagnostic': {
