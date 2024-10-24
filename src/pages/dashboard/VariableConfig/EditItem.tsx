@@ -88,6 +88,7 @@ function EditItem(props: IProps) {
   const [form] = Form.useForm();
   const { groupedDatasourceList, datasourceCateOptions, busiGroups, darkMode } = useContext(CommonStateContext);
   const groupRecord = useMemo(() => _.find(busiGroups, { id: dashboard.group_id }), [busiGroups, dashboard.group_id]);
+  const otherVars = _.filter(vars, (item) => item.name !== data.name);
 
   return (
     <Form layout='vertical' autoComplete='off' preserve={false} form={form} initialValues={data}>
@@ -102,7 +103,7 @@ function EditItem(props: IProps) {
               () => ({
                 validator(_rule, value) {
                   // 如果 name 重复，提示错误
-                  if (_.find(vars, { name: value })) {
+                  if (_.find(otherVars, { name: value })) {
                     return Promise.reject(t('var.name_repeat_msg'));
                   }
                   return Promise.resolve();
