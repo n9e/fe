@@ -12,12 +12,13 @@ import { processFormValues } from './utils';
 
 interface Props {
   form: any;
+  onOk: () => void;
 }
 
 export default function PreviewMutedEvents(props: Props) {
   const { t } = useTranslation('AlertCurEvents');
   const { groupedDatasourceList } = useContext(CommonStateContext);
-  const { form } = props;
+  const { form, onOk } = props;
   const [visible, setVisible] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
@@ -80,8 +81,8 @@ export default function PreviewMutedEvents(props: Props) {
     },
   ];
   const fetchData = (values) => {
-    previewMutedEvents(processFormValues(values), values.group_id).then((res) => {
-      setData(res.dat || []);
+    return previewMutedEvents(processFormValues(values), values.group_id).then((res) => {
+      return res.dat || [];
     });
   };
 
@@ -93,16 +94,27 @@ export default function PreviewMutedEvents(props: Props) {
           form
             .validateFields()
             .then((values: any) => {
-              setVisible(true);
-              fetchData(values);
+              fetchData(values)
+                .then((dat) => {
+                  if (dat.length === 0) {
+                    onOk();
+                  } else {
+                    setVisible(true);
+                    setData(dat);
+                  }
+                })
+                .catch(() => {
+                  setVisible(false);
+                  setData([]);
+                });
             })
             .catch(scrollToFirstError);
         }}
       >
-        {t('alertMutes:preview_muted_btn')}
+        {t('common:btn.save')}
       </Button>
       <Modal
-        title={t('alertMutes:preview_muted_btn')}
+        title={t('alertMutes:preview_muted_title')}
         visible={visible}
         footer={[
           <Button
@@ -112,6 +124,14 @@ export default function PreviewMutedEvents(props: Props) {
             }}
           >
             {t('common:btn.cancel')}
+          </Button>,
+          <Button
+            key='cancel'
+            onClick={() => {
+              onOk();
+            }}
+          >
+            {t('alertMutes:preview_muted_save_only')}
           </Button>,
           <Button
             key='delete'
@@ -128,7 +148,7 @@ export default function PreviewMutedEvents(props: Props) {
               );
             }}
           >
-            {t('common:btn.delete')}
+            {t('alertMutes:preview_muted_save_and_delete')}
           </Button>,
         ]}
         onCancel={() => {

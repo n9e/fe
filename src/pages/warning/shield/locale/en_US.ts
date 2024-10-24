@@ -52,6 +52,8 @@ const en_US = {
   mute_configs: 'Mute duration',
   alert_content:
     'In order to prevent the misalignment of the mute rule from muting all the alerts of the company, this mute rule will only take effect on the alerts of a specific business group',
-  preview_muted_btn: 'Preview and delete related events',
+  preview_muted_title: 'Preview related events',
+  preview_muted_save_only: 'Save only',
+  preview_muted_save_and_delete: 'Save and delete related events',
 };
 export default en_US;
