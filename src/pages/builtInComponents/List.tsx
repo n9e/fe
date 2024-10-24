@@ -16,6 +16,7 @@ import Dashboards from './Dashboards';
 import { getComponents, Component, deleteComponents, putComponent } from './services';
 import ComponentFormModal from './components/ComponentFormModal';
 
+const LIST_SEARCH_VALUE = 'builtin-list-search-value';
 const BUILT_IN_ACTIVE_TAB_KEY = 'builtin-drawer-active-tab';
 
 export default function index() {
@@ -24,7 +25,7 @@ export default function index() {
   const { search } = useLocation();
   const query = queryString.parse(search);
   const defaultComponent = query.component as string;
-  const [searchValue, setSearchValue] = useState('');
+  const [searchValue, setSearchValue] = useState(localStorage.getItem(LIST_SEARCH_VALUE) || '');
   const [data, setData] = useState<Component[]>([]);
   const [activeComponent, setActiveComponent] = useState<Component>();
   const [readme, setReadme] = useState('');
@@ -60,6 +61,7 @@ export default function index() {
               value={searchValue}
               onChange={(e) => {
                 setSearchValue(e.target.value);
+                localStorage.setItem(LIST_SEARCH_VALUE, e.target.value);
               }}
               allowClear
               placeholder={t('common:search_placeholder')}
