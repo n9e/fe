@@ -283,7 +283,6 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
                       <Tooltip title={t(`tag.key.tip`)}>
                         <QuestionCircleOutlined
                           style={{
-                            color: 'rgba(0, 0, 0, 0.45)',
                             cursor: 'help',
                           }}
                         />
