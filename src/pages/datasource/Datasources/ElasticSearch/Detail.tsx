@@ -18,7 +18,11 @@ export default function Index(props: Props) {
         <Row gutter={16}>
           <Col span={24}>URL：</Col>
           <Col span={24} className='second-color'>
-            {data?.http?.url}
+            {data?.http?.urls
+              ? _.map(data?.http?.urls, (url) => {
+                  return <div key={url}>{url}</div>;
+                })
+              : data?.http?.url}
           </Col>
         </Row>
       </div>
