@@ -126,9 +126,10 @@ export default function PreviewMutedEvents(props: Props) {
             {t('common:btn.cancel')}
           </Button>,
           <Button
-            key='cancel'
+            key='save_only'
             onClick={() => {
               onOk();
+              setVisible(false);
             }}
           >
             {t('alertMutes:preview_muted_save_only')}
@@ -143,6 +144,8 @@ export default function PreviewMutedEvents(props: Props) {
                 () => {
                   setSelectedRowKeys([]);
                   fetchData(form.getFieldsValue());
+                  onOk();
+                  setVisible(false);
                 },
                 t,
               );
