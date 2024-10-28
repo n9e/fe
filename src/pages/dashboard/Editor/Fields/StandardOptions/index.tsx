@@ -67,7 +67,7 @@ export default function index(props: IProps) {
                         </Tooltip>
                       </div>
                     }
-                    name={[...namePrefix, 'util']}
+                    name={[...namePrefix, 'util']} // TODO: Change this to 'unit'
                   >
                     <CustomUnitPicker
                       placeholder='SI prefixes'

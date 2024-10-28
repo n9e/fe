@@ -15,14 +15,18 @@ export const getMinFontSizeByList = (
     value: string;
     unit: string;
   }[],
-  width: number,
-  height: number,
-  grid?: IGrid,
-  orientation?: 'horizontal' | 'vertical',
+  options: {
+    width: number;
+    height: number;
+    grid?: IGrid;
+    orientation?: 'horizontal' | 'vertical';
+    textMode?: string;
+  },
 ): {
   name: number;
   value: number;
 } => {
+  const { width, height, grid, orientation, textMode } = options;
   let xGrid = 0;
   let yGrid = 0;
   let nameFontSize;
@@ -45,8 +49,11 @@ export const getMinFontSizeByList = (
     }
     const name = item.name;
     const valueAndUnit = `${item.value} ${item.unit}`;
-    const nameFontSizeTemp = getMaxFontSize(name, (realWidth - 20) * 0.8, realHeight / 2 / 3);
-    const valueFontSizeTemp = getMaxFontSize(valueAndUnit, (realWidth - 20) * 0.8, (realHeight / 2 / 3) * 2);
+    const nameFontSizeTemp = name && textMode === 'valueAndName' ? getMaxFontSize(name, (realWidth - 20) * 0.8, realHeight / 2 / 3) : 0;
+    const valueFontSizeTemp =
+      name && textMode === 'valueAndName'
+        ? getMaxFontSize(valueAndUnit, (realWidth - 20) * 0.8, (realHeight / 2 / 3) * 2)
+        : getMaxFontSize(valueAndUnit, (realWidth - 20) * 0.8, realHeight);
     if (index === 0) {
       nameFontSize = nameFontSizeTemp;
       valueFontSize = valueFontSizeTemp;

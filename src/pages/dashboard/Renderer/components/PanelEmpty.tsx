@@ -45,7 +45,7 @@ export default function PanelEmpty(props: Props) {
 
   if (finded) {
     // 值映射匹配到无数据时，会根据 stat 图的样式来渲染映射的文本
-    const fontSize = getMaxFontSize(finded.result?.text, (eleSize?.width! - 20) * 0.8, (eleSize?.height! / 2 / 3) * 2);
+    const fontSize = getMaxFontSize(finded.result?.text, (eleSize?.width! - 20) * 0.8, eleSize?.height!);
     return (
       <div style={{ padding: 10, width: '100%', height: '100%' }}>
         <div
