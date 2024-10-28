@@ -428,6 +428,15 @@ const zh_HK = {
         topn: '最多排名',
         combine_other: '其他',
         combine_other_tip: '超過最多排名的數據將合併為其他',
+        otherPosition: {
+          label: '其他項目位置',
+          tip: '其他項目的位置，可選項在最前或最後',
+          options: {
+            none: '無',
+            top: '最前',
+            bottom: '最後',
+          },
+        },
       },
     },
     inspect: {

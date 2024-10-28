@@ -179,6 +179,7 @@ export const defaultCustomValuesMap = {
     displayMode: 'basic',
     serieWidth: 20,
     sortOrder: 'desc',
+    otherPosition: 'none',
   },
   text: {
     textSize: 12,
