@@ -1,6 +1,6 @@
 const ja_JP = {
   title: 'スクリーンルール',
-  search_placeholder: 'タグ、スクリーンの理由を検索',
+  search_placeholder: '検索ルールの説明、ラベル、ブロック理由',
   datasource_type: 'データソースタイプ',
   datasource_id: 'データソース',
   cause: 'スクリーンの理由',

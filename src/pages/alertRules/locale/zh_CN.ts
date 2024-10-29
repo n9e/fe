@@ -50,6 +50,7 @@ const zh_CN = {
   notify_max_number_tip: '如果值为0，则不做最大发送次数的限制',
   notify_flashduty_configured: '当前已配置了全局 Flashduty 推送',
   callbacks: '回调地址',
+  callbacks_tip: '支持配置变量，变量使用方式可参考 <a>变量引用</a> 文档',
   annotations: '附加信息',
   annotationsOptions: {
     plan_link: '预案链接',
