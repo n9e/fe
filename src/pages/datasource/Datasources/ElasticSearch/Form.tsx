@@ -34,7 +34,7 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
     >
       <Card title={t(`${action}_title`)}>
         <Name />
-        <HTTP placeholder='http://localhost:9200' />
+        <HTTP placeholder='http://localhost:9200' multipleUrls />
         <BasicAuth />
         <SkipTLSVerify />
         <Headers />

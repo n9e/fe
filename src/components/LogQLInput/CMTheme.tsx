@@ -9,7 +9,7 @@ export const baseTheme = EditorView.theme({
     outline: 'unset',
   },
   '.cm-scroller': {
-    overflow: 'hidden',
+    maxHeight: '100px',
     fontFamily: 'Consolas,Monaco,sans-serif,PingFangSC-Regular,microsoft yahei ui,microsoft yahei,simsun,"sans-serif"',
   },
   '.cm-matchingBracket': {
@@ -80,7 +80,7 @@ export const baseTheme = EditorView.theme({
   },
 
   '.cm-selectionMatch': {
-    backgroundColor: '#e6f3ff',
+    backgroundColor: 'unset',
   },
 
   '.cm-diagnostic': {
