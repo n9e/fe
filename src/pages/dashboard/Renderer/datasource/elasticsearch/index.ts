@@ -4,13 +4,13 @@ import semver from 'semver';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { getDsQuery, getESVersion } from '@/services/warning';
 import { fetchHistoryRangeBatch2 } from '@/services/dashboardV2';
+import { flattenHits } from '@/pages/explorer/Elasticsearch/utils';
+import { N9E_PATHNAME, IS_PLUS } from '@/utils/constant';
 import { ITarget } from '../../../types';
 import { IVariable } from '../../../VariableConfig/definition';
 import { replaceExpressionVars } from '../../../VariableConfig/constant';
 import { getSeriesQuery, getLogsQuery } from './queryBuilder';
 import { processResponseToSeries } from './processResponse';
-import { flattenHits } from '@/pages/explorer/Elasticsearch/utils';
-import { N9E_PATHNAME, IS_PLUS } from '@/utils/constant';
 import { normalizeInterval } from './utils';
 
 interface IOptions {
