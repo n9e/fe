@@ -134,7 +134,7 @@ function Item(props) {
 export default function BarGauge(props: IProps) {
   const { values, series, themeMode, time, isPreview } = props;
   const { custom, options } = values;
-  const { calc, maxValue, sortOrder = 'desc', valueField = 'Value', topn, combine_other } = custom;
+  const { calc, maxValue, sortOrder = 'desc', valueField = 'Value', topn, combine_other, otherPosition = 'none' } = custom;
   const containerRef = useRef(null);
   const containerSize = useSize(containerRef);
   const [statFields, setStatFields] = useGlobalState('statFields');
@@ -192,22 +192,26 @@ export default function BarGauge(props: IProps) {
         },
         options?.valueMappings,
       );
-      calculatedValues = _.concat(items, [
-        {
-          id: 'other',
-          name: 'Other',
-          stat: sumValue,
-          value: textObj?.value,
-          unit: textObj?.unit,
-        },
-      ]);
+      const otherOption = {
+        id: 'other',
+        name: 'Other',
+        stat: sumValue,
+        value: textObj?.value,
+        unit: textObj?.unit,
+      };
+      if (otherPosition === 'top') {
+        calculatedValues = _.concat([otherOption], items);
+      } else if (otherPosition === 'bottom') {
+        calculatedValues = _.concat(items, [otherOption]);
+      } else if (otherPosition === 'none') {
+        calculatedValues = _.concat(items, [otherOption]);
+        if (sortOrder && sortOrder !== 'none') {
+          calculatedValues = _.orderBy(calculatedValues, ['stat'], [sortOrder]);
+        }
+      }
     } else {
       calculatedValues = items;
     }
-  }
-  // 统计后的 other 值再排序
-  if (sortOrder && sortOrder !== 'none') {
-    calculatedValues = _.orderBy(calculatedValues, ['stat'], [sortOrder]);
   }
   const curMaxValue = maxValue !== undefined && maxValue !== null ? maxValue : _.maxBy(calculatedValues, 'stat')?.stat || 0;
   const maxNameWidth = useMemo(() => {

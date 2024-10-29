@@ -119,8 +119,9 @@ export default function DisplayItem(props: IProps) {
                 setSelected([]);
                 onChange([]);
               } else {
-                setSelected(undefined);
-                onChange(undefined);
+                // 2024-10-28 清空变量时将 undefined 转为 '', 使之能缓存清空值状态，以便下次访问时变量值为空
+                setSelected('');
+                onChange('');
               }
             }}
             dropdownMatchSelectWidth={_.toNumber(options?.length) > 100}

@@ -434,6 +434,15 @@ const zh_CN = {
         topn: '最多排名',
         combine_other: '其他',
         combine_other_tip: '超过最多排名的数据将会合并为一个其他项',
+        otherPosition: {
+          label: '其他项位置',
+          tip: '其他项的位置，可选项在最前或最后',
+          options: {
+            none: '无',
+            top: '最前',
+            bottom: '最后',
+          },
+        },
       },
     },
     inspect: {
