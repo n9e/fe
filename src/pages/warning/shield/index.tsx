@@ -131,23 +131,26 @@ const Shield: React.FC = () => {
         title: t('cause'),
         dataIndex: 'cause',
         render: (text: string, record: shieldItem) => {
-          return (
-            <>
-              <Tooltip placement='topLeft' title={text}>
-                <div
-                  style={{
-                    whiteSpace: 'nowrap',
-                    textOverflow: 'ellipsis',
-                    overflow: 'hidden',
-                    lineHeight: '16px',
-                  }}
-                >
-                  {text}
-                </div>
-              </Tooltip>
-              by {record.create_by}
-            </>
-          );
+          if (text) {
+            return (
+              <>
+                <Tooltip placement='topLeft' title={text}>
+                  <div
+                    style={{
+                      whiteSpace: 'nowrap',
+                      textOverflow: 'ellipsis',
+                      overflow: 'hidden',
+                      lineHeight: '16px',
+                    }}
+                  >
+                    {text}
+                  </div>
+                </Tooltip>
+                by {record.create_by}
+              </>
+            );
+          }
+          return null;
         },
       },
       {
@@ -349,7 +352,14 @@ const Shield: React.FC = () => {
                   setDatasourceIds(val);
                 }}
               />
-              <Input onPressEnter={onSearchQuery} prefix={<SearchOutlined />} placeholder={t('search_placeholder')} />
+              <Input
+                onChange={onSearchQuery}
+                prefix={<SearchOutlined />}
+                placeholder={t('search_placeholder')}
+                style={{
+                  width: 300,
+                }}
+              />
             </Space>
             {businessGroup.isLeaf && gids !== '-2' && (
               <div className='header-right'>

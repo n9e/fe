@@ -1,6 +1,6 @@
 const en_US = {
   title: 'Blackout',
-  search_placeholder: 'Search tags, mute reasons',
+  search_placeholder: 'Search by rule name, tag, or blackout reason',
   cause: 'Cause',
   time: 'Time',
   note: 'Description',

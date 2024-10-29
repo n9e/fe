@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Button, Popover, Spin, Empty, Space, Select, Form } from 'antd';
+import { Button, Popover, Spin, Empty, Space, Select, Form, InputNumber } from 'antd';
 import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
@@ -26,6 +26,7 @@ export default function GraphPreview({ form, fieldName, promqlFieldName = 'prom_
     start: 'now-24h',
     end: 'now',
   });
+  const [step, setStep] = useState<number | null>();
 
   const fetchData = () => {
     const query = form.getFieldValue(['rule_config', 'queries', fieldName]);
@@ -35,7 +36,7 @@ export default function GraphPreview({ form, fieldName, promqlFieldName = 'prom_
 
     if (datasourceId) {
       setLoading(true);
-      const step = getDefaultStepByStartAndEnd(from, to);
+      const curStep = step || getDefaultStepByStartAndEnd(from, to);
       fetchHistoryRangeBatch(
         {
           datasource_id: datasourceId,
@@ -44,7 +45,7 @@ export default function GraphPreview({ form, fieldName, promqlFieldName = 'prom_
               query: query[promqlFieldName],
               start: from,
               end: to,
-              step,
+              step: curStep,
             },
           ],
         },
@@ -66,7 +67,7 @@ export default function GraphPreview({ form, fieldName, promqlFieldName = 'prom_
                 name: getSerieName(serie.metric),
                 metric: serie.metric,
                 expr: item.expr,
-                data: completeBreakpoints(step, serie.values),
+                data: completeBreakpoints(curStep, serie.values),
               });
             });
           }
@@ -119,6 +120,19 @@ export default function GraphPreview({ form, fieldName, promqlFieldName = 'prom_
                 })}
               />
               <TimeRangePicker value={range} onChange={setRange} dateFormat='YYYY-MM-DD HH:mm:ss' />
+              <InputNumber
+                placeholder='step'
+                value={step}
+                onChange={(val) => {
+                  setStep(val);
+                }}
+                onBlur={() => {
+                  fetchData();
+                }}
+                onPressEnter={() => {
+                  fetchData();
+                }}
+              />
             </Space>
           </div>
         }

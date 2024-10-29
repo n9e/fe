@@ -48,6 +48,7 @@ const en_US = {
   notify_max_number_tip: 'The maximum number of times the alert is sent to the alert receiving group',
   notify_flashduty_configured: 'Global Flashduty push is configured',
   callbacks: 'Callbacks',
+  callbacks_tip: 'Support configuration variables, the usage of variables can refer to the <a>Variable Reference</a> document',
   annotations: 'Annotations',
   annotationsOptions: {
     plan_link: 'Plan Link',

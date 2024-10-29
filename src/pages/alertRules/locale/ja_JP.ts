@@ -48,6 +48,7 @@ const ja_JP = {
   notify_max_number_tip: '値が0の場合は最大送信回数の制限を設けません',
   notify_flashduty_configured: '現在、全局 Flashduty プッシュが設定されています',
   callbacks: 'コールバックURL',
+  callbacks_tip: '変数の設定をサポートします。変数の使用方法については、<a>変数参照</a>ドキュメントを参照してください',
   annotations: '追加情報',
   annotationsOptions: {
     plan_link: '計画リンク',

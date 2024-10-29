@@ -17,13 +17,14 @@
 
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { Card, Form, Checkbox, Switch, Space, Select, Tooltip, Row, Col, InputNumber, Input, AutoComplete } from 'antd';
-import { PlusCircleOutlined, MinusCircleOutlined, QuestionCircleFilled, RightOutlined, DownOutlined } from '@ant-design/icons';
+import { PlusCircleOutlined, MinusCircleOutlined, QuestionCircleFilled, RightOutlined, DownOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { getTeamInfoList, getNotifiesList } from '@/services/manage';
 import { getAlertRulesCallbacks } from '@/services/warning';
 import { getWebhooks } from '@/pages/help/NotificationSettings/services';
 import AuthorizationWrapper from '@/components/AuthorizationWrapper';
+import Markdown from '@/components/Markdown';
 import { panelBaseProps } from '../../constants';
 import TaskTpls from './TaskTpls';
 // @ts-ignore
@@ -186,6 +187,18 @@ export default function index({ disabled }) {
             <div>
               <Space align='baseline'>
                 {t('callbacks')}
+                <Tooltip
+                  title={
+                    <Trans
+                      ns='alertRules'
+                      i18nKey='alertRules:callbacks_tip'
+                      components={{ a: <a href='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v6/faq/go-template/' target='_blank' /> }}
+                    />
+                  }
+                  overlayClassName='ant-tooltip-max-width-600 ant-tooltip-with-link'
+                >
+                  <InfoCircleOutlined />
+                </Tooltip>
                 <PlusCircleOutlined className='control-icon-normal' onClick={() => add()} />
               </Space>
               {fields.map((field) => (
