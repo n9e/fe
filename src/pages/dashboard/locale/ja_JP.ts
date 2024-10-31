@@ -397,7 +397,7 @@ const ja_JP = {
           label: 'その他の位置',
           tip: 'その他の項目を表示する位置を選択します',
           options: {
-            none: '非表示',
+            none: 'デフォルト',
             top: '最初',
             bottom: '最後',
           },
