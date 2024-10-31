@@ -432,7 +432,7 @@ const zh_HK = {
           label: '其他項目位置',
           tip: '其他項目的位置，可選項在最前或最後',
           options: {
-            none: '無',
+            none: '預設',
             top: '最前',
             bottom: '最後',
           },

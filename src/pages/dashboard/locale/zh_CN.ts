@@ -438,7 +438,7 @@ const zh_CN = {
           label: '其他项位置',
           tip: '其他项的位置，可选项在最前或最后',
           options: {
-            none: '无',
+            none: '默认',
             top: '最前',
             bottom: '最后',
           },
