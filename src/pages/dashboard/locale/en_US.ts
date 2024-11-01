@@ -1,5 +1,8 @@
 const en_US = {
   title: 'Dashboards',
+  list: 'Dashboards',
+  back_icon_tip: 'Move back one page in the session history. If there is no previous page, return to the dashboards',
+  back_icon_tip_is_built_in: 'Move back one page in the session history. If there is no previous page, return to the built-in components',
   name: 'Name',
   tags: 'Tags',
   ident: 'Ident',

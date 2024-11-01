@@ -1,5 +1,8 @@
 const zh_HK = {
   title: '監控儀表盤',
+  list: '儀表盤列表',
+  back_icon_tip: '返返回上一頁，沒有上一頁則返回儀錶板列表',
+  back_icon_tip_is_built_in: '返回上一頁，沒有上一頁則返回模板中心',
   name: '儀表盤名稱',
   tags: '分類標籤',
   ident: '英文標識',
