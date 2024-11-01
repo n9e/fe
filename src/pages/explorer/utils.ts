@@ -1,6 +1,11 @@
 import _ from 'lodash';
-import { isMathString, IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import moment from 'moment';
+import { isMathString, IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
+import { DatasourceCateEnum } from '@/utils/constant';
+
+// @ts-ignore
+import getPlusFormValuesByParams from '@/plus/parcels/Explorer/utils/getPlusFormValuesByParams';
+
 interface FormValue {
   datasourceCate: string;
   datasourceValue: number;
@@ -42,50 +47,7 @@ export const getFormValuesBySearch = (params: { [index: string]: string | null }
       datasourceCate: data_source_name,
       datasourceValue: _.toNumber(data_source_id),
     };
-    const queryString = _.get(params, 'query') || undefined;
-    if (data_source_name === 'aliyun-sls') {
-      const project = _.get(params, 'project');
-      const logstore = _.get(params, 'logstore');
-      const range_start = _.get(params, 'start');
-      const range_end = _.get(params, 'end');
-      const defaultRange =
-        range_start && range_end
-          ? { start: !isMathString(range_start) ? moment(Number(range_start)) : range_start, end: !isMathString(range_end) ? moment(Number(range_end)) : range_end }
-          : undefined;
-      if (project && logstore) {
-        return {
-          ...formValues,
-          query: {
-            project,
-            logstore,
-            query: queryString,
-            range: defaultRange,
-          },
-        };
-      }
-    }
-    if (data_source_name === 'tencent-cls') {
-      const logset_id = _.get(params, 'logset_id');
-      const topic_id = _.get(params, 'topic_id');
-      const range_start = _.get(params, 'start');
-      const range_end = _.get(params, 'end');
-      const defaultRange =
-        range_start && range_end
-          ? { start: !isMathString(range_start) ? moment(Number(range_start)) : range_start, end: !isMathString(range_end) ? moment(Number(range_end)) : range_end }
-          : undefined;
-      if (logset_id && topic_id) {
-        return {
-          ...formValues,
-          query: {
-            logset_id,
-            topic_id,
-            query: queryString,
-            range: defaultRange,
-          },
-        };
-      }
-    }
-    if (data_source_name === 'elasticsearch') {
+    if (data_source_name === DatasourceCateEnum.elasticsearch) {
       const index = _.get(params, 'index_name');
       const indexPattern = _.get(params, 'index_pattern');
       const timestamp = _.get(params, 'timestamp', '@timestamp');
@@ -115,8 +77,7 @@ export const getFormValuesBySearch = (params: { [index: string]: string | null }
           },
         };
       }
-    }
-    if (data_source_name === 'loki') {
+    } else if (data_source_name === DatasourceCateEnum.loki) {
       const query = _.get(params, 'query');
       const limit = _.get(params, 'limit');
       if (query) {
@@ -128,52 +89,8 @@ export const getFormValuesBySearch = (params: { [index: string]: string | null }
           },
         };
       }
-    }
-    if (data_source_name === 'doris') {
-      const range_start = _.get(params, 'start');
-      const range_end = _.get(params, 'end');
-      const defaultRange =
-        range_start && range_end
-          ? { start: !isMathString(range_start) ? moment(Number(range_start)) : range_start, end: !isMathString(range_end) ? moment(Number(range_end)) : range_end }
-          : undefined;
-      return {
-        ...formValues,
-        query: {
-          condition: _.get(params, 'condition'),
-          time_field: _.get(params, 'time_field'),
-          range: defaultRange,
-        },
-      };
-    }
-    if (data_source_name === 'ck') {
-      return {
-        ...formValues,
-        query: {
-          sql: _.get(params, 'querySql'),
-          time_field: _.get(params, 'queryTimeField'),
-        },
-      };
-    }
-    if (data_source_name === 'volc-tls') {
-      const project_id = _.get(params, 'project_id');
-      const topic_id = _.get(params, 'topic_id');
-      const range_start = _.get(params, 'start');
-      const range_end = _.get(params, 'end');
-      const defaultRange =
-        range_start && range_end
-          ? { start: !isMathString(range_start) ? moment(Number(range_start)) : range_start, end: !isMathString(range_end) ? moment(Number(range_end)) : range_end }
-          : undefined;
-      if (project_id && topic_id) {
-        return {
-          ...formValues,
-          query: {
-            project_id,
-            topic_id,
-            query: queryString,
-            range: defaultRange,
-          },
-        };
-      }
+    } else {
+      return getPlusFormValuesByParams(params);
     }
   }
   return undefined;

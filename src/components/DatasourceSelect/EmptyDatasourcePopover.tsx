@@ -29,7 +29,7 @@ export default function EmptyDatasourcePopover(props: IProps) {
         </>
       }
       visible={_.isEmpty(datasourceList)}
-      placement='top'
+      placement='rightTop'
     >
       {children}
     </Popover>
