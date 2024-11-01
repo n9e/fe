@@ -59,3 +59,18 @@ export const scrollToLastPanel = (panels: IPanel[]) => {
     }, 1000);
   }
 };
+
+export async function goBack(history) {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject('nowhere to go'), 100);
+    history.goBack();
+    const onBack = () => {
+      window.removeEventListener('beforeunload', onBack);
+      window.removeEventListener('popstate', onBack);
+      clearTimeout(timer);
+      resolve(true);
+    };
+    window.addEventListener('beforeunload', onBack);
+    window.addEventListener('popstate', onBack);
+  });
+}

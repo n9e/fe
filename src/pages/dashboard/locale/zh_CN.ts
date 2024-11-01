@@ -1,5 +1,8 @@
 const zh_CN = {
   title: '监控仪表盘',
+  list: '仪表盘列表',
+  back_icon_tip: '返回上一页，没有上一页则返回仪表盘列表',
+  back_icon_tip_is_built_in: '返回上一页，没有上一页则返回模板中心',
   name: '仪表盘名称',
   tags: '分类标签',
   ident: '英文标识',
