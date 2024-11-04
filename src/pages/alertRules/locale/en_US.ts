@@ -49,6 +49,9 @@ const en_US = {
   notify_flashduty_configured: 'Global Flashduty push is configured',
   callbacks: 'Callbacks',
   callbacks_tip: 'Support configuration variables, the usage of variables can refer to the <a>Variable Reference</a> document',
+  override_global_webhook: 'Override Global Callback',
+  override_global_webhook_tip:
+    'After this switch is turned on, the alert event will only be sent to the callback address of this rule, and will not be sent to the global callback address',
   annotations: 'Annotations',
   annotationsOptions: {
     plan_link: 'Plan Link',

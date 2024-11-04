@@ -24,7 +24,6 @@ import { getTeamInfoList, getNotifiesList } from '@/services/manage';
 import { getAlertRulesCallbacks } from '@/services/warning';
 import { getWebhooks } from '@/pages/help/NotificationSettings/services';
 import AuthorizationWrapper from '@/components/AuthorizationWrapper';
-import Markdown from '@/components/Markdown';
 import { panelBaseProps } from '../../constants';
 import TaskTpls from './TaskTpls';
 // @ts-ignore
@@ -40,6 +39,7 @@ export default function index({ disabled }) {
   const [notifyTargetCollapsed, setNotifyTargetCollapsed] = useState<boolean>(false);
   const [callbacks, setCallbacks] = useState<string[]>([]);
   const notify_channels = Form.useWatch('notify_channels');
+  const callbacksValue = Form.useWatch('callbacks');
   const getNotifyChannel = () => {
     getNotifiesList().then((res) => {
       setContactList(res || []);
@@ -228,6 +228,22 @@ export default function index({ disabled }) {
             </div>
           )}
         </Form.List>
+        <div
+          style={{
+            display: callbacksValue && callbacksValue.length > 0 ? 'block' : 'none',
+          }}
+        >
+          <Space>
+            {t('override_global_webhook')}
+            <Tooltip title={t('override_global_webhook_tip')}>
+              <InfoCircleOutlined />
+            </Tooltip>
+            <Form.Item name={['rule_config', 'override_global_webhook']} valuePropName='checked' noStyle>
+              <Switch />
+            </Form.Item>
+          </Space>
+        </div>
+
         <Form.List name='annotations'>
           {(fields, { add, remove }) => (
             <div>

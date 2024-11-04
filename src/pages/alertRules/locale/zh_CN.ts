@@ -51,6 +51,8 @@ const zh_CN = {
   notify_flashduty_configured: '当前已配置了全局 Flashduty 推送',
   callbacks: '回调地址',
   callbacks_tip: '支持配置变量，变量使用方式可参考 <a>变量引用</a> 文档',
+  override_global_webhook: '覆盖全局回调',
+  override_global_webhook_tip: '此开关开启之后，告警事件只会发给本规则的回调地址，不会再发给全局的回调地址',
   annotations: '附加信息',
   annotationsOptions: {
     plan_link: '预案链接',

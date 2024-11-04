@@ -49,6 +49,8 @@ const zh_HK = {
   notify_flashduty_configured: '當前已配置了全局 Flashduty 推送',
   callbacks: '回撥地址',
   callbacks_tip: '支持配置變數，變數使用方式可參考 <a>變數引用</a> 文檔',
+  override_global_webhook: '覆蓋全局回調',
+  override_global_webhook_tip: '此開關開啟之後，告警事件只會發給本規則的回調地址，不會再發給全局的回調地址',
   annotations: '附加資訊',
   annotationsOptions: {
     plan_link: '預案連結',
