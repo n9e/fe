@@ -49,6 +49,8 @@ const ja_JP = {
   notify_flashduty_configured: '現在、全局 Flashduty プッシュが設定されています',
   callbacks: 'コールバックURL',
   callbacks_tip: '変数の設定をサポートします。変数の使用方法については、<a>変数参照</a>ドキュメントを参照してください',
+  override_global_webhook: 'グローバルコールバックを上書き',
+  override_global_webhook_tip: 'このスイッチをオンにすると、アラートイベントはこのルールのコールバックアドレスのみに送信され、グローバルコールバックアドレスには送信されません',
   annotations: '追加情報',
   annotationsOptions: {
     plan_link: '計画リンク',
