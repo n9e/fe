@@ -14,6 +14,7 @@ const zh_HK = {
   log_detail: '日誌詳情',
   document_link: '使用說明',
   required: '必填項',
+  unit: '單位',
   host: {
     tags: '自定義標籤',
     tags_tip: '用戶在頁面配置的標籤，會追加到此機器上報的時序數據中',

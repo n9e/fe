@@ -14,6 +14,7 @@ const ja_JP = {
   log_detail: 'ログの詳細',
   document_link: '使用説明',
   required: '必須項目',
+  unit: '単位',
   host: {
     tags: 'ユーザータグ',
     tags_tip: 'ユーザーがページで構成したタグは、このマシンが報告した時系列データに追加されます',
