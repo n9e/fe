@@ -14,6 +14,7 @@ const en_US = {
   log_detail: 'Log Detail',
   document_link: 'Document',
   required: 'Required',
+  unit: 'Unit',
   host: {
     tags: 'Custom Tags',
     tags_tip: 'Tags configured by the user on the page will be appended to the time series data reported by this machine',

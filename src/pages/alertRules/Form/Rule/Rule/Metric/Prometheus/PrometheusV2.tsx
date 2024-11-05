@@ -29,6 +29,7 @@ import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import Triggers from '@/pages/alertRules/Form/components/Triggers';
 import { FormStateContext } from '@/pages/alertRules/Form';
 import QueryName, { generateQueryName } from '@/components/QueryName';
+import UnitPicker from '@/pages/dashboard/Components/UnitPicker';
 import GraphPreview from './GraphPreview';
 
 interface Props {
@@ -94,9 +95,12 @@ export default function PrometheusV2(props: Props) {
                       </InputGroupWithFormItem>
                     </Col>
                   </Row>
-                  <div style={{ marginTop: 8 }}>
-                    <GraphPreview form={form} fieldName={field.name} promqlFieldName='query' />
-                  </div>
+                  <InputGroupWithFormItem label={t('common:unit')}>
+                    <Form.Item {...field} name={[field.name, 'unit']} initialValue='none'>
+                      <UnitPicker />
+                    </Form.Item>
+                  </InputGroupWithFormItem>
+                  <GraphPreview form={form} fieldName={field.name} promqlFieldName='query' />
                   <MinusCircleOutlined className='alert-rule-trigger-remove' onClick={() => remove(field.name)} />
                 </div>
               ))}
