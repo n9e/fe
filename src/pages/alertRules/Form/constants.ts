@@ -80,7 +80,6 @@ export const defaultValues = {
   notify_repeat_step: 60,
   notify_max_number: 0,
   rule_config: defaultRuleConfig.metric,
-  datasource_ids: [],
   prom_eval_interval: 30,
   prom_for_duration: 60,
   prod: 'metric',

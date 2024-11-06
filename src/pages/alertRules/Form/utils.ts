@@ -141,7 +141,6 @@ export function processFormValues(values) {
     notify_recovered: values.notify_recovered ? 1 : 0,
     enable_in_bg: values.enable_in_bg ? 1 : 0,
     callbacks: _.map(values.callbacks, (item) => item.url),
-    datasource_ids: _.isArray(values.datasource_ids) ? values.datasource_ids : values.datasource_ids ? [values.datasource_ids] : [],
     annotations: _.chain(values.annotations).keyBy('key').mapValues('value').value(),
   };
   return data;
@@ -195,7 +194,6 @@ export function getDefaultValuesByProd(prod, defaultBrainParams, isPlus = false)
     return {
       prod,
       cate: 'host',
-      datasource_ids: undefined,
       rule_config: defaultRuleConfig.host,
     };
   }
@@ -203,7 +201,6 @@ export function getDefaultValuesByProd(prod, defaultBrainParams, isPlus = false)
     return {
       prod,
       cate: 'prometheus',
-      datasource_ids: [DATASOURCE_ALL],
       rule_config: {
         ...defaultRuleConfig.anomaly,
         algo_params: defaultBrainParams?.holtwinters || {},
@@ -214,7 +211,6 @@ export function getDefaultValuesByProd(prod, defaultBrainParams, isPlus = false)
     return {
       prod,
       cate: 'prometheus',
-      datasource_ids: [DATASOURCE_ALL],
       rule_config: defaultRuleConfig.metric,
     };
   }
@@ -223,14 +219,12 @@ export function getDefaultValuesByProd(prod, defaultBrainParams, isPlus = false)
       return {
         prod,
         cate: 'elasticsearch',
-        datasource_ids: undefined,
         rule_config: defaultRuleConfig.logging,
       };
     }
     return {
       prod,
       cate: 'loki',
-      datasource_ids: [DATASOURCE_ALL],
       rule_config: defaultRuleConfig.loki,
     };
   }
@@ -238,7 +232,6 @@ export function getDefaultValuesByProd(prod, defaultBrainParams, isPlus = false)
     return {
       prod,
       cate: 'loki',
-      datasource_ids: [DATASOURCE_ALL],
       rule_config: defaultRuleConfig.loki,
     };
   }
@@ -249,7 +242,6 @@ export function getDefaultValuesByCate(prod, cate) {
     return {
       prod,
       cate,
-      datasource_ids: [DATASOURCE_ALL],
       rule_config: defaultRuleConfig.metric,
     };
   }
@@ -257,7 +249,6 @@ export function getDefaultValuesByCate(prod, cate) {
     return {
       prod,
       cate,
-      datasource_ids: undefined,
       rule_config: {
         queries: [
           {
@@ -287,7 +278,6 @@ export function getDefaultValuesByCate(prod, cate) {
     return {
       prod,
       cate,
-      datasource_ids: [DATASOURCE_ALL],
       rule_config: defaultRuleConfig.loki,
     };
   }

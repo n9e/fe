@@ -23,7 +23,6 @@ export function getDefaultValuesByCate(prod, cate) {
   return {
     prod,
     cate,
-    datasource_ids: undefined,
     rule_config: defaultRuleConfig.logging,
   };
 }
