@@ -74,11 +74,13 @@ export default function index({ form }) {
         </Col>
       </Row>
       <div style={{ marginBottom: 10 }}>
-        <Form.Item noStyle shouldUpdate={(prevValues, curValues) => !_.isEqual(prevValues.cate, curValues.cate) || !_.isEqual(prevValues.datasource_ids, curValues.datasource_ids)}>
+        <Form.Item
+          noStyle
+          shouldUpdate={(prevValues, curValues) => !_.isEqual(prevValues.cate, curValues.cate) || !_.isEqual(prevValues.datasource_value, curValues.datasource_value)}
+        >
           {(form) => {
             const cate = form.getFieldValue('cate');
-            let datasourceValue = form.getFieldValue('datasource_ids');
-            datasourceValue = _.isArray(datasourceValue) ? datasourceValue[0] : datasourceValue;
+            const datasourceValue = form.getFieldValue('datasource_value');
             if (cate === 'loki') {
               return <Loki datasourceCate={cate} datasourceValue={datasourceValue} />;
             }

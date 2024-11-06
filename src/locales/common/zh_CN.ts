@@ -82,6 +82,15 @@ const zh_CN = {
       btn1: '前往配置',
       btn2: '知道了',
     },
+    queries: {
+      label: '数据源筛选',
+      match_type_0: '精确匹配',
+      match_type_1: '模糊匹配',
+      match_type_2: '全部数据源',
+      op_in: '等于',
+      op_not_in: '不等于',
+      preview: '数据源预览',
+    },
   },
   confirm: {
     delete: '确认删除吗？',

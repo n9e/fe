@@ -20,7 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { Input, Form, Table, Button, Divider, message, Select, Switch, Alert } from 'antd';
 import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { importStrategy } from '@/services/warning';
-import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
+import DatasourceValueSelectV2 from '@/pages/alertRules/Form/components/DatasourceValueSelect/V2';
 
 export default function ImportBase({ busiId, onOk, groupedDatasourceList, datasourceCateOptions }) {
   const { t } = useTranslation('alertRules');
@@ -73,8 +73,11 @@ export default function ImportBase({ busiId, onOk, groupedDatasourceList, dataso
               return {
                 ...item,
                 cate: item.cate === 'host' ? 'host' : vals.datasource_cate,
-                datasource_ids: item.cate === 'host' ? item.datasource_ids : vals.datasource_ids,
                 disabled: vals.enabled ? 0 : 1,
+                rule_config: {
+                  ...item.rule_config,
+                  datasource_queries: vals.rule_config?.datasource_queries,
+                },
               };
             });
             const { dat } = await importStrategy(importData, busiId);
@@ -122,9 +125,7 @@ export default function ImportBase({ busiId, onOk, groupedDatasourceList, dataso
                 })}
               </Select>
             </Form.Item>
-            {datasourceCate && (
-              <DatasourceValueSelect mode='multiple' setFieldsValue={form.setFieldsValue} cate={datasourceCate} datasourceList={groupedDatasourceList[datasourceCate] || []} />
-            )}
+            {datasourceCate && <DatasourceValueSelectV2 datasourceList={groupedDatasourceList[datasourceCate] || []} />}
             <Form.Item label={t('common:table.enabled')} name='enabled' valuePropName='checked'>
               <Switch />
             </Form.Item>
