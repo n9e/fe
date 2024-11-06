@@ -1,6 +1,6 @@
 const zh_CN = {
   title: '屏蔽规则',
-  search_placeholder: '搜索标签、屏蔽原因',
+  search_placeholder: '搜索规则说明、标签、屏蔽原因',
   datasource_type: '数据源类型',
   datasource_id: '数据源',
   cause: '屏蔽原因',

@@ -48,6 +48,7 @@ const zh_HK = {
   notify_max_number_tip: '如果值為 0，則不做最大發送次數的限制',
   notify_flashduty_configured: '當前已配置了全局 Flashduty 推送',
   callbacks: '回撥地址',
+  callbacks_tip: '支持配置變數，變數使用方式可參考 <a>變數引用</a> 文檔',
   annotations: '附加資訊',
   annotationsOptions: {
     plan_link: '預案連結',
