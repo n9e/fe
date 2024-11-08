@@ -19,7 +19,6 @@ import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 
 export const getDatasourcesByQueries = (data) => {
-  return Promise.resolve([]);
   return request(`/api/n9e/datasource/query`, {
     method: RequestMethod.Post,
     data,

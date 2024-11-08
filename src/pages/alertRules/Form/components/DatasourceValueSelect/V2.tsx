@@ -140,13 +140,13 @@ function Query({ names, field, remove, invalidDatasourceIds, datasourceList, dis
 }
 
 export default function index(props: IProps) {
-  const { datasourceList, datasourceCate, names = ['rule_config', 'datasource_queries'], disabled, showExtra } = props;
+  const { datasourceList, datasourceCate, names = ['datasource_queries'], disabled, showExtra } = props;
   const { t } = useTranslation('alertRules');
   const [fullDatasourceList, setFullDatasourceList] = useState<any[]>([]);
   const [datasources, setDatasources] = useState<any[]>([]);
   const [invalidDatasourceIds, setInvalidDatasourceIds] = useState<number[]>([]);
   const form = Form.useFormInstance();
-  const datasource_cate = datasourceCate || Form.useWatch(['datasource_cate']);
+  const datasource_cate = datasourceCate || Form.useWatch(['cate']);
   const datasource_queries = Form.useWatch(names);
   const [previewModalVisible, setPreviewModalVisible] = useState(false);
   const fetchDatasourceList = () => {

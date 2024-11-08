@@ -86,7 +86,7 @@ export default function ImportBuiltinContent({ busiId, onOk, groupedDatasourceLi
               disabled: vals.enabled ? 0 : 1,
               rule_config: {
                 ...item.rule_config,
-                datasource_queries: vals.rule_config?.datasource_queries,
+                datasource_queries: vals?.datasource_queries,
               },
             };
           }),
