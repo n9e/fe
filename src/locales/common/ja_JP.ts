@@ -83,6 +83,15 @@ const ja_JP = {
       btn1: '設定に移動',
       btn2: '了解',
     },
+    queries: {
+      label: 'データソースフィルタ',
+      match_type_0: '完全一致',
+      match_type_1: '部分一致',
+      match_type_2: '全データソース',
+      op_in: '等しい',
+      op_not_in: '等しくない',
+      preview: 'データソースプレビュー',
+    },
   },
   confirm: {
     delete: '削除しますか？',
