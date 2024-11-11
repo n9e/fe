@@ -113,9 +113,9 @@ const en_US = {
     weekdays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
   },
   severity: {
-    1: 'S1',
-    2: 'S2',
-    3: 'S3',
+    1: 'S1（Critical）',
+    2: 'S2（Warning）',
+    3: 'S3（Info）',
   },
   download_json: 'Download JSON',
   batch: {

@@ -121,9 +121,9 @@ const zh_CN = {
     weekdays: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
   },
   severity: {
-    1: '一级报警',
-    2: '二级报警',
-    3: '三级报警',
+    1: '一级报警（Critical）',
+    2: '二级报警（Warning）',
+    3: '三级报警（Info）',
   },
   download_json: '下载 JSON',
   batch: {
