@@ -4,7 +4,7 @@ import { isMathString, IRawTimeRange, parseRange } from '@/components/TimeRangeP
 import { DatasourceCateEnum } from '@/utils/constant';
 
 // @ts-ignore
-import getPlusFormValuesByParams from '@/plus/parcels/Explorer/utils/getPlusFormValuesByParams';
+import getPlusFormValuesByParams from 'plus:/parcels/Explorer/utils/getPlusFormValuesByParams';
 
 interface FormValue {
   datasourceCate: string;
