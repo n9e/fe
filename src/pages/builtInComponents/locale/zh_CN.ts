@@ -16,6 +16,7 @@ const zh_CN = {
   name: '名称',
   payload_name: '模板名称',
   tags: '标签',
+  variable: '变量',
   component: '组件',
   cate: '分类',
   content: '内容',

@@ -35,6 +35,7 @@ interface IProps {
   data: IVariable;
   vars: IVariable[];
   datasourceVars: IVariable[];
+  editMode?: number; // 0: 变量名、类型、数据源类型、数据源值无法修改
   onOk: (val: IVariable) => void;
   onCancel: () => void;
   dashboard: Dashboard;
@@ -84,7 +85,7 @@ const allOptions = [
 
 function EditItem(props: IProps) {
   const { t, i18n } = useTranslation('dashboard');
-  const { data, vars, range, id, index, datasourceVars, onOk, onCancel, dashboard } = props;
+  const { data, vars, range, id, index, datasourceVars, onOk, onCancel, dashboard, editMode } = props;
   const [form] = Form.useForm();
   const { groupedDatasourceList, datasourceCateOptions, busiGroups, darkMode } = useContext(CommonStateContext);
   const groupRecord = useMemo(() => _.find(busiGroups, { id: dashboard.group_id }), [busiGroups, dashboard.group_id]);
@@ -111,12 +112,12 @@ function EditItem(props: IProps) {
               }),
             ]}
           >
-            <Input />
+            <Input disabled={editMode === 0} />
           </Form.Item>
         </Col>
         <Col span={6}>
           <Form.Item label={t('var.label')} name='label'>
-            <Input />
+            <Input disabled={editMode === 0} />
           </Form.Item>
         </Col>
         <Col span={6}>
@@ -131,6 +132,7 @@ function EditItem(props: IProps) {
                   hide: val === 'constant' || val === 'businessGroupIdent' ? true : false,
                 });
               }}
+              disabled={editMode === 0}
             >
               {_.map(typeOptions, (item) => {
                 return (
@@ -149,7 +151,7 @@ function EditItem(props: IProps) {
             return (
               <Col span={6}>
                 <Form.Item label={t('var.hide')} name='hide' valuePropName='checked' initialValue={type === 'constant' || type === 'businessGroupIdent' ? true : false}>
-                  <Switch />
+                  <Switch disabled={editMode === 0} />
                 </Form.Item>
               </Col>
             );
@@ -178,6 +180,7 @@ function EditItem(props: IProps) {
                                 },
                               });
                             }}
+                            disabled={editMode === 0}
                           >
                             {_.map(allOptions, (item) => (
                               <Select.Option key={item.value} value={item.value}>
@@ -188,7 +191,13 @@ function EditItem(props: IProps) {
                         </Form.Item>
                       </Col>
                       <Col span={12}>
-                        <ClusterSelect cate={datasourceCate} label={t('common:datasource.id')} name={['datasource', 'value']} datasourceVars={datasourceVars} />
+                        <ClusterSelect
+                          cate={datasourceCate}
+                          label={t('common:datasource.id')}
+                          name={['datasource', 'value']}
+                          datasourceVars={datasourceVars}
+                          disabled={editMode === 0}
+                        />
                       </Col>
                     </Row>
                   );
@@ -292,7 +301,7 @@ function EditItem(props: IProps) {
             return (
               <>
                 <Form.Item label={t('var.datasource.definition')} name='definition' rules={[{ required: true }]}>
-                  <Select>
+                  <Select disabled={editMode === 0}>
                     {_.map(datasourceCateOptions, (item) => (
                       <Select.Option key={item.value} value={item.value}>
                         {item.label}
