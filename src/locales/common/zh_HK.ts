@@ -111,9 +111,9 @@ const zh_HK = {
     weekdays: ['週日', '週一', '週二', '週三', '週四', '週五', '週六'],
   },
   severity: {
-    '1': '一級報警',
-    '2': '二級報警',
-    '3': '三級報警',
+    '1': '一級報警（Critical）',
+    '2': '二級報警（Warning）',
+    '3': '三級報警（Info）',
   },
   download_json: '下載 JSON',
   batch: {
