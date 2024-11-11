@@ -82,6 +82,15 @@ const en_US = {
       btn1: 'Go to configure',
       btn2: 'OK',
     },
+    queries: {
+      label: 'Datasource Filter',
+      match_type_0: 'Exact Match',
+      match_type_1: 'Fuzzy Match',
+      match_type_2: 'All Datasources',
+      op_in: 'Equal',
+      op_not_in: 'Not Equal',
+      preview: 'Datasource Preview',
+    },
   },
   confirm: {
     delete: 'Are you sure to delete?',

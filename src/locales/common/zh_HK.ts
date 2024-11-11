@@ -81,6 +81,15 @@ const zh_HK = {
       btn1: '前往配置',
       btn2: '知道了',
     },
+    queries: {
+      label: '數據源篩選',
+      match_type_0: '精確匹配',
+      match_type_1: '模糊匹配',
+      match_type_2: '全部數據源',
+      op_in: '等於',
+      op_not_in: '不等於',
+      preview: '數據源預覽',
+    },
   },
   confirm: {
     delete: '確認刪除嗎？',
