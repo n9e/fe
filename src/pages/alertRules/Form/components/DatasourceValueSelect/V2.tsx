@@ -232,7 +232,6 @@ export default function index(props: IProps) {
             <div className='mb2'>
               <Space>
                 <Button
-                  size='small'
                   type='primary'
                   ghost
                   onClick={() => {
