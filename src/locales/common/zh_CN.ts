@@ -15,6 +15,7 @@ const zh_CN = {
   document_link: '使用说明',
   required: '必填项',
   unit: '单位',
+  and: '且',
   host: {
     tags: '自定义标签',
     tags_tip: '用户在页面配置的标签，会追加到此机器上报的时序数据中',
@@ -87,8 +88,8 @@ const zh_CN = {
       match_type_0: '精确匹配',
       match_type_1: '模糊匹配',
       match_type_2: '全部数据源',
-      op_in: '等于',
-      op_not_in: '不等于',
+      op_in: '包含',
+      op_not_in: '不包含',
       preview: '数据源预览',
     },
   },

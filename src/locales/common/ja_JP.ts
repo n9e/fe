@@ -15,6 +15,7 @@ const ja_JP = {
   document_link: '使用説明',
   required: '必須項目',
   unit: '単位',
+  and: 'および',
   host: {
     tags: 'ユーザータグ',
     tags_tip: 'ユーザーがページで構成したタグは、このマシンが報告した時系列データに追加されます',
@@ -88,8 +89,8 @@ const ja_JP = {
       match_type_0: '完全一致',
       match_type_1: '部分一致',
       match_type_2: '全データソース',
-      op_in: '等しい',
-      op_not_in: '等しくない',
+      op_in: '含む',
+      op_not_in: '含まない',
       preview: 'データソースプレビュー',
     },
   },

@@ -73,6 +73,9 @@ export default function GraphPreview({ form, fieldName, promqlFieldName = 'prom_
           }
           setData(series);
         })
+        .catch(() => {
+          setData([]);
+        })
         .finally(() => {
           setLoading(false);
         });

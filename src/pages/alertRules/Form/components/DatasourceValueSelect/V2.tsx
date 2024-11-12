@@ -23,6 +23,7 @@ import { Link } from 'react-router-dom';
 import { getDatasourceBriefList } from '@/services/common';
 import DatasourceSelectExtra from '@/pages/alertRules/Form/components/DatasourceSelectExtra';
 import { getDatasourcesByQueries } from './services';
+import './style.less';
 
 interface IProps {
   datasourceList: { id: number; name: string }[];
@@ -44,12 +45,19 @@ const getInvalidDatasourceIds = (ids: number[], fullDatasourceList: any[]) => {
   return invalid;
 };
 
-function Query({ names, field, remove, invalidDatasourceIds, datasourceList, disabled }) {
+function Query({ idx, names, field, remove, invalidDatasourceIds, datasourceList, disabled }) {
   const { t } = useTranslation('alertRules');
+  const form = Form.useFormInstance();
   const match_type = Form.useWatch([...names, field.name, 'match_type']);
 
   return (
     <Row gutter={8}>
+      {idx > 0 && (
+        <Col flex='none'>
+          <div className='alert-rule-datasource-and'>{t('common:and')}</div>
+        </Col>
+      )}
+
       <Col flex='200px'>
         <Form.Item {...field} name={[field.name, 'match_type']} initialValue={0}>
           <Select
@@ -68,6 +76,11 @@ function Query({ names, field, remove, invalidDatasourceIds, datasourceList, dis
                 value: 1,
               },
             ]}
+            onChange={() => {
+              const values = _.cloneDeep(form.getFieldsValue());
+              _.set(values, [...names, field.name, 'values'], []);
+              form.setFieldsValue(values);
+            }}
           />
         </Form.Item>
       </Col>
@@ -202,10 +215,11 @@ export default function index(props: IProps) {
                 />
               </Space>
             </div>
-            {fields.map((field) => {
+            {fields.map((field, index) => {
               return (
                 <Query
                   key={field.name}
+                  idx={index}
                   names={names}
                   field={field}
                   remove={remove}
