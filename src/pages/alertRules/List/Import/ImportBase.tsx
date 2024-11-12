@@ -122,7 +122,7 @@ export default function ImportBase({ busiId, onOk, groupedDatasourceList, dataso
                 })}
               </Select>
             </Form.Item>
-            {datasourceCate && <DatasourceValueSelectV2 datasourceList={groupedDatasourceList[datasourceCate] || []} />}
+            {datasourceCate && <DatasourceValueSelectV2 datasourceCate={datasourceCate} datasourceList={groupedDatasourceList[datasourceCate] || []} />}
             <Form.Item label={t('common:table.enabled')} name='enabled' valuePropName='checked'>
               <Switch />
             </Form.Item>
