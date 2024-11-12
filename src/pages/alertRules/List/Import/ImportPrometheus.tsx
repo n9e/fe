@@ -84,7 +84,7 @@ export default function ImportPrometheus({ busiId, onOk, groupedDatasourceList }
         </Form.Item>
         {importContent && (
           <>
-            <DatasourceValueSelectV2 datasourceList={groupedDatasourceList.prometheus || []} />
+            <DatasourceValueSelectV2 datasourceCate='prometheus' datasourceList={groupedDatasourceList.prometheus || []} />
             <Form.Item label={t('common:table.enabled')} name='enabled' valuePropName='checked'>
               <Switch />
             </Form.Item>
