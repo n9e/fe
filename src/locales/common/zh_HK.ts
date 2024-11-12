@@ -15,6 +15,7 @@ const zh_HK = {
   document_link: '使用說明',
   required: '必填項',
   unit: '單位',
+  and: '且',
   host: {
     tags: '自定義標籤',
     tags_tip: '用戶在頁面配置的標籤，會追加到此機器上報的時序數據中',
@@ -86,8 +87,8 @@ const zh_HK = {
       match_type_0: '精確匹配',
       match_type_1: '模糊匹配',
       match_type_2: '全部數據源',
-      op_in: '等於',
-      op_not_in: '不等於',
+      op_in: '包含',
+      op_not_in: '不包含',
       preview: '數據源預覽',
     },
   },

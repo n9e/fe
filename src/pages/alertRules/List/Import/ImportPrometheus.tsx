@@ -49,11 +49,8 @@ export default function ImportPrometheus({ busiId, onOk, groupedDatasourceList }
             const { dat } = await importPromRule(
               {
                 ..._.omit(vals, 'enabled'),
+                datasource_queries: vals?.datasource_queries,
                 disabled: vals.enabled ? 0 : 1,
-                rule_config: {
-                  ...vals.rule_config,
-                  datasource_queries: vals?.datasource_queries,
-                },
               },
               busiId,
             );

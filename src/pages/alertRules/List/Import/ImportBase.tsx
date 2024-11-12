@@ -73,11 +73,8 @@ export default function ImportBase({ busiId, onOk, groupedDatasourceList, dataso
               return {
                 ...item,
                 cate: item.cate === 'host' ? 'host' : vals.datasource_cate,
+                datasource_queries: vals?.datasource_queries,
                 disabled: vals.enabled ? 0 : 1,
-                rule_config: {
-                  ...item.rule_config,
-                  datasource_queries: vals?.datasource_queries,
-                },
               };
             });
             const { dat } = await importStrategy(importData, busiId);

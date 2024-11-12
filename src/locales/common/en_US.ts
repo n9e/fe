@@ -15,6 +15,7 @@ const en_US = {
   document_link: 'Document',
   required: 'Required',
   unit: 'Unit',
+  and: 'And',
   host: {
     tags: 'Custom Tags',
     tags_tip: 'Tags configured by the user on the page will be appended to the time series data reported by this machine',
@@ -87,8 +88,8 @@ const en_US = {
       match_type_0: 'Exact Match',
       match_type_1: 'Fuzzy Match',
       match_type_2: 'All Datasources',
-      op_in: 'Equal',
-      op_not_in: 'Not Equal',
+      op_in: 'In',
+      op_not_in: 'Not In',
       preview: 'Datasource Preview',
     },
   },
