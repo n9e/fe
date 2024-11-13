@@ -124,7 +124,6 @@ const zh_HK = {
       name: '批量更新',
       field: '字段',
       changeto: '改為',
-      enable_in_bg_tip: '根據告警事件中的 ident 歸屬關係判斷',
       callback_cover: {
         mode: '模式',
         cover: '覆蓋',
