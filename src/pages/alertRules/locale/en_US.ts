@@ -32,7 +32,8 @@ const en_US = {
   effective_time_end_msg: 'End Time is required',
   effective_time_week_msg: 'Please select effective week',
   enable_in_bg: 'Enable in buisness group',
-  enable_in_bg_tip: 'Determine the ownership relationship based on the ident in the alert event',
+  enable_in_bg_tip:
+    'Determined according to the ownership relationship of the ident tag in the alert event, that is: if the machine corresponding to the ident tag in the alert event does not belong to the business group, the alert event will be discarded',
   notify_configs: 'Notify Configuration',
   notify_channels: 'Channels',
   notify_channels_doc: 'Document',
