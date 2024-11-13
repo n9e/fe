@@ -16,8 +16,8 @@
  */
 import React, { useEffect, useState } from 'react';
 import { Form, Select, Space, Row, Col, Button, Tooltip, Modal, Table } from 'antd';
-import { WarningOutlined, PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
-import { useTranslation } from 'react-i18next';
+import { WarningOutlined, PlusCircleOutlined, MinusCircleOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { Trans, useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
 import { getDatasourceBriefList } from '@/services/common';
@@ -72,7 +72,23 @@ function Query({ idx, names, field, remove, invalidDatasourceIds, datasourceList
                 value: 0,
               },
               {
-                label: t('common:datasource.queries.match_type_1'),
+                label: (
+                  <Space>
+                    {t('common:datasource.queries.match_type_1')}
+                    <Tooltip
+                      title={
+                        <Trans
+                          i18nKey='common:datasource.queries.match_type_1_tip'
+                          components={{
+                            br: <br />,
+                          }}
+                        />
+                      }
+                    >
+                      <InfoCircleOutlined />
+                    </Tooltip>
+                  </Space>
+                ),
                 value: 1,
               },
             ]}
