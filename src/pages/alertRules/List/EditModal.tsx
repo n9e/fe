@@ -456,7 +456,7 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
                         <Form.Item name='enable_in_bg' valuePropName='checked'>
                           <Switch />
                         </Form.Item>
-                        <span>{t('batch.update.enable_in_bg_tip')}</span>
+                        <span>{t('enable_in_bg_tip')}</span>
                       </Space>
                     </Form.Item>
                   </>

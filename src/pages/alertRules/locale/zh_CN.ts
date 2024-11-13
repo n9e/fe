@@ -34,7 +34,7 @@ const zh_CN = {
   effective_time_end_msg: '结束时间不能为空',
   effective_time_week_msg: '请选择生效周期',
   enable_in_bg: '仅在本业务组生效',
-  enable_in_bg_tip: '根据告警事件中的ident归属关系判断',
+  enable_in_bg_tip: '根据告警事件中的 ident 归属关系判断，即：如果告警事件中有 ident 标签且 ident 对应的机器不属于该业务组，则丢弃此告警事件',
   notify_configs: '通知配置',
   notify_channels: '通知媒介',
   notify_channels_doc: '使用文档',
@@ -126,7 +126,6 @@ const zh_CN = {
       name: '批量更新',
       field: '字段',
       changeto: '改为',
-      enable_in_bg_tip: '根据告警事件中的ident归属关系判断',
       callback_cover: {
         mode: '模式',
         cover: '覆盖',
