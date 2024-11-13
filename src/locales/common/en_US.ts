@@ -88,6 +88,7 @@ const en_US = {
       label: 'Datasource Filter',
       match_type_0: 'Exact Match',
       match_type_1: 'Fuzzy Match',
+      match_type_1_tip: `Supports two wildcards<br>* can match 0 or more arbitrary characters<br>? can only match one arbitrary character`,
       match_type_2: 'All Datasources',
       op_in: 'In',
       op_not_in: 'Not In',

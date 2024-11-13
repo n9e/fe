@@ -87,6 +87,7 @@ const zh_HK = {
       label: '數據源篩選',
       match_type_0: '精確匹配',
       match_type_1: '模糊匹配',
+      match_type_1_tip: `支持兩種通配符<br>* 可以匹配 0 個或多個任意字符<br>? 只能匹配一個任意字符`,
       match_type_2: '全部數據源',
       op_in: '包含',
       op_not_in: '不包含',

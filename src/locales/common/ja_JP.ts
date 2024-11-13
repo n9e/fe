@@ -88,6 +88,7 @@ const ja_JP = {
       label: 'データソースフィルタ',
       match_type_0: '完全一致',
       match_type_1: '部分一致',
+      match_type_1_tip: `2つのワイルドカードをサポートします<br>* 0個以上の任意の文字を一致させる<br>? 1文字だけ一致させる`,
       match_type_2: '全データソース',
       op_in: '含む',
       op_not_in: '含まない',
