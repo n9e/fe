@@ -124,7 +124,6 @@ const ja_JP = {
       name: 'バッチ更新',
       field: 'フィールド',
       changeto: '変更する',
-      enable_in_bg_tip: 'アラートイベントのident帰属関係に基づいて判断',
       callback_cover: {
         mode: 'モード',
         cover: 'カバー',

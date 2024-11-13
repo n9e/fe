@@ -125,7 +125,6 @@ const en_US = {
       name: 'Update Alert Rules',
       field: 'Field',
       changeto: 'Change to',
-      enable_in_bg_tip: 'Determine the ownership relationship based on the ident in the alert event',
       callback_cover: {
         mode: 'Mode',
         cover: 'Cover',
