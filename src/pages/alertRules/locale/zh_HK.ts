@@ -281,6 +281,25 @@ const zh_HK = {
     0: '啟用',
     1: '未啟用',
   },
+  var_config: {
+    enable: '啟用變量',
+    config: '變量配置',
+    config_tip: '變量配置',
+    name: '變量名',
+    type: '變量類型',
+    value: '變量值',
+    threshold: '閾值',
+    threshold_value: '變量值',
+    enum: '枚舉值',
+    enum_value: '變量值',
+    host: '機器標識',
+    host_value: '機器標識',
+    device: '網絡設備',
+    device_value: '網絡設備',
+    filter: '變量篩選',
+    filter_tip: '變量篩選',
+    add_subFilter: '添加子篩選',
+  },
 };
 
 export default zh_HK;
