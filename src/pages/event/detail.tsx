@@ -122,7 +122,16 @@ const EventDetailPage: React.FC = () => {
       label: t('detail.severity'),
       key: 'severity',
       render: (severity) => {
-        return <Tag color={priorityColor[severity - 1]}>S{severity}</Tag>;
+        const severityMap = {
+          1: '（Critical）',
+          2: '（Warning）',
+          3: '（Info）',
+        };
+        return (
+          <Tag color={priorityColor[severity - 1]}>
+            S{severity} {severityMap[severity]}
+          </Tag>
+        );
       },
     },
     {

@@ -20,7 +20,7 @@ import { Form, Row, Col } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import { CommonStateContext } from '@/App';
-import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
+import DatasourceValueSelectV2 from '@/pages/alertRules/Form/components/DatasourceValueSelect/V2';
 import IntervalAndDuration from '@/pages/alertRules/Form/components/IntervalAndDuration';
 import { DatasourceCateSelect } from '@/components/DatasourceSelect';
 import { getDefaultValuesByCate } from '../../../utils';
@@ -38,47 +38,31 @@ export default function index({ form }) {
 
   return (
     <div>
-      <Row gutter={16}>
-        <Col span={12}>
-          <Form.Item label={t('common:datasource.type')} name='cate'>
-            <DatasourceCateSelect
-              scene='alert'
-              filterCates={(cates) => {
-                return _.filter(cates, (item) => {
-                  return _.includes(item.type, prod) && !!item.alertRule && (item.alertPro ? isPlus : true);
-                });
-              }}
-              onChange={(val) => {
-                const cateObj = _.find(datasourceCateOptions, (item) => item.value === val);
-                if (cateObj) {
-                  form.setFieldsValue(getDefaultValuesByCate(prod, val));
-                }
-              }}
-            />
-          </Form.Item>
-        </Col>
-        <Col span={12}>
-          <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.cate !== curValues.cate} noStyle>
-            {({ getFieldValue, setFieldsValue }) => {
-              const cate = getFieldValue('cate');
-              return (
-                <DatasourceValueSelect
-                  setFieldsValue={setFieldsValue}
-                  cate={cate}
-                  datasourceList={groupedDatasourceList[cate] || []}
-                  mode={cate === 'loki' ? 'multiple' : undefined}
-                />
-              );
-            }}
-          </Form.Item>
-        </Col>
-      </Row>
+      <Form.Item label={t('common:datasource.type')} name='cate'>
+        <DatasourceCateSelect
+          scene='alert'
+          filterCates={(cates) => {
+            return _.filter(cates, (item) => {
+              return _.includes(item.type, prod) && !!item.alertRule && (item.alertPro ? isPlus : true);
+            });
+          }}
+          onChange={(val) => {
+            const cateObj = _.find(datasourceCateOptions, (item) => item.value === val);
+            if (cateObj) {
+              form.setFieldsValue(getDefaultValuesByCate(prod, val));
+            }
+          }}
+        />
+      </Form.Item>
+      <DatasourceValueSelectV2 datasourceList={groupedDatasourceList[cate] || []} showExtra />
       <div style={{ marginBottom: 10 }}>
-        <Form.Item noStyle shouldUpdate={(prevValues, curValues) => !_.isEqual(prevValues.cate, curValues.cate) || !_.isEqual(prevValues.datasource_ids, curValues.datasource_ids)}>
+        <Form.Item
+          noStyle
+          shouldUpdate={(prevValues, curValues) => !_.isEqual(prevValues.cate, curValues.cate) || !_.isEqual(prevValues.datasource_value, curValues.datasource_value)}
+        >
           {(form) => {
             const cate = form.getFieldValue('cate');
-            let datasourceValue = form.getFieldValue('datasource_ids');
-            datasourceValue = _.isArray(datasourceValue) ? datasourceValue[0] : datasourceValue;
+            const datasourceValue = form.getFieldValue('datasource_value');
             if (cate === 'loki') {
               return <Loki datasourceCate={cate} datasourceValue={datasourceValue} />;
             }

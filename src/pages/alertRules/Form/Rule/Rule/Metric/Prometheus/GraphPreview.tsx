@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Button, Popover, Spin, Empty, Space, Select, Form, InputNumber } from 'antd';
+import { Button, Popover, Spin, Empty, Space, Select, Form, InputNumber, message } from 'antd';
 import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
@@ -72,6 +72,14 @@ export default function GraphPreview({ form, fieldName, promqlFieldName = 'prom_
             });
           }
           setData(series);
+        })
+        .catch((res) => {
+          try {
+            message.error(res.message);
+          } catch (e) {
+            console.log(e);
+          }
+          setData([]);
         })
         .finally(() => {
           setLoading(false);
@@ -194,11 +202,7 @@ export default function GraphPreview({ form, fieldName, promqlFieldName = 'prom_
           ghost
           onClick={() => {
             if (!visible) {
-              const datasource_ids = form.getFieldValue('datasource_ids');
-              let datasource_id = _.isArray(datasource_ids) ? datasource_ids?.[0] : datasource_ids;
-              if (!datasource_id || datasource_id === 0) {
-                datasource_id = groupedDatasourceList.prometheus?.[0]?.id;
-              }
+              const datasource_id = form.getFieldValue('datasource_value');
               setDatasourceId(datasource_id);
               setVisible(true);
             }

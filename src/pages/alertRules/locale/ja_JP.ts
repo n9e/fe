@@ -32,7 +32,8 @@ const ja_JP = {
   effective_time_end_msg: '終了時間は空できません',
   effective_time_week_msg: '有効期間を選択してください',
   enable_in_bg: 'このビジネスグループでのみ有効',
-  enable_in_bg_tip: 'アラートイベントのident帰属関係に基づいて判断',
+  enable_in_bg_tip:
+    'アラートイベントの ident ラベルに基づいて所属関係を判断し、つまり：アラートイベントに ident ラベルがあり、その ident に対応するマシンがこのビジネスグループに属していない場合、このアラートイベントは破棄されます',
   notify_configs: '通知設定',
   notify_channels: '通知メディア',
   notify_channels_doc: 'ドキュメントを使用',
@@ -124,7 +125,6 @@ const ja_JP = {
       name: 'バッチ更新',
       field: 'フィールド',
       changeto: '変更する',
-      enable_in_bg_tip: 'アラートイベントのident帰属関係に基づいて判断',
       callback_cover: {
         mode: 'モード',
         cover: 'カバー',

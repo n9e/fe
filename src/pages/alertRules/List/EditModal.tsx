@@ -18,10 +18,10 @@ import React, { useState, useEffect, useCallback, useContext } from 'react';
 import _ from 'lodash';
 import { debounce, join } from 'lodash';
 import { Form, Input, InputNumber, Radio, Select, Row, Col, TimePicker, Checkbox, Tag, AutoComplete, Space, Switch, Tooltip, Modal, Button } from 'antd';
-import { QuestionCircleFilled, MinusCircleOutlined, PlusCircleOutlined, CaretDownOutlined, PlusOutlined } from '@ant-design/icons';
+import { QuestionCircleFilled, MinusCircleOutlined, PlusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { getTeamInfoList, getNotifiesList } from '@/services/manage';
-import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
+import DatasourceValueSelectV2 from '@/pages/alertRules/Form/components/DatasourceValueSelect/V2';
 import { CommonStateContext } from '@/App';
 import Triggers from '@/pages/alertRules/Form/components/Triggers';
 import { alphabet } from '@/components/QueryName/utils';
@@ -125,7 +125,7 @@ interface Props {
 const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedRows }) => {
   const { t } = useTranslation('alertRules');
   const [form] = Form.useForm();
-  const { datasourceList, isPlus } = useContext(CommonStateContext);
+  const { groupedDatasourceList, isPlus } = useContext(CommonStateContext);
   const [contactList, setInitContactList] = useState([]);
   const [notifyGroups, setNotifyGroups] = useState([]);
   const field = Form.useWatch('field', form);
@@ -264,7 +264,7 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
         if (key === 'annotations') {
           data[key] = _.chain(data[key]).keyBy('key').mapValues('value').value();
         } else {
-          if (Array.isArray(data[key]) && key !== 'datasource_ids' && key !== 'service_cal_ids' && field !== 'triggers') {
+          if (Array.isArray(data[key]) && field !== 'datasource_ids' && key !== 'service_cal_ids' && field !== 'triggers') {
             data[key] = data[key].join(' ');
           }
         }
@@ -300,7 +300,6 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
             enable_status: true, // true:立即启用 false:禁用
             notify_recovered: 1, // 1:启用
             effective_time: defaultValues.effective_time,
-            datasource_ids: [],
             field: 'datasource_ids',
           }}
         >
@@ -419,7 +418,14 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
               case 'datasource_ids':
                 return (
                   <>
-                    <DatasourceValueSelect mode='multiple' setFieldsValue={form.setFieldsValue} cate='prometheus' datasourceList={datasourceList || []} />
+                    <DatasourceValueSelectV2
+                      names={['datasource_queries']}
+                      datasourceCate={selectedRows[0]?.cate}
+                      datasourceList={groupedDatasourceList?.[selectedRows[0]?.cate] || []}
+                    />
+                    <Form.Item name='action' initialValue='datasource_change' hidden>
+                      <div />
+                    </Form.Item>
                   </>
                 );
               case 'severity':
@@ -450,7 +456,7 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
                         <Form.Item name='enable_in_bg' valuePropName='checked'>
                           <Switch />
                         </Form.Item>
-                        <span>{t('batch.update.enable_in_bg_tip')}</span>
+                        <span>{t('enable_in_bg_tip')}</span>
                       </Space>
                     </Form.Item>
                   </>

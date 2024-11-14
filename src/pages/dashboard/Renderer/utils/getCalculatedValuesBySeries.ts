@@ -38,6 +38,9 @@ export const getSerieTextObj = (value: number | string | null | undefined, stand
       }
       return false;
     } else {
+      if (type === 'textValue') {
+        return value === match?.textValue;
+      }
       const toNumberValue = _.toNumber(value) as number;
       if (type === 'special') {
         return toNumberValue === match?.special;

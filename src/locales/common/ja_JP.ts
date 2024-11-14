@@ -15,6 +15,7 @@ const ja_JP = {
   document_link: '使用説明',
   required: '必須項目',
   unit: '単位',
+  and: 'および',
   host: {
     tags: 'ユーザータグ',
     tags_tip: 'ユーザーがページで構成したタグは、このマシンが報告した時系列データに追加されます',
@@ -83,6 +84,16 @@ const ja_JP = {
       btn1: '設定に移動',
       btn2: '了解',
     },
+    queries: {
+      label: 'データソースフィルタ',
+      match_type_0: '完全一致',
+      match_type_1: '部分一致',
+      match_type_1_tip: `2つのワイルドカードをサポートします<br>* 0個以上の任意の文字を一致させる<br>? 1文字だけ一致させる`,
+      match_type_2: '全データソース',
+      op_in: '含む',
+      op_not_in: '含まない',
+      preview: 'データソースプレビュー',
+    },
   },
   confirm: {
     delete: '削除しますか？',
@@ -113,9 +124,9 @@ const ja_JP = {
     weekdays: ['日曜日', '月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日'],
   },
   severity: {
-    '1': '一次警報',
-    '2': '二次警報',
-    '3': '三次警報',
+    '1': '一次警報（Critical）',
+    '2': '二次警報（Warning）',
+    '3': '三次警報（Info）',
   },
   download_json: 'JSONをダウンロード',
   batch: {

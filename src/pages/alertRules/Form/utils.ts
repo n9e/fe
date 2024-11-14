@@ -141,7 +141,6 @@ export function processFormValues(values) {
     notify_recovered: values.notify_recovered ? 1 : 0,
     enable_in_bg: values.enable_in_bg ? 1 : 0,
     callbacks: _.map(values.callbacks, (item) => item.url),
-    datasource_ids: _.isArray(values.datasource_ids) ? values.datasource_ids : values.datasource_ids ? [values.datasource_ids] : [],
     annotations: _.chain(values.annotations).keyBy('key').mapValues('value').value(),
   };
   return data;
@@ -150,7 +149,6 @@ export function processFormValues(values) {
 export function processInitialValues(values) {
   let cate = values.cate;
   if (_.isFunction(alertUtils.processInitialValues) && !BaseDatasourceCateEnum[cate]) {
-    console.log(222);
     values = alertUtils.processInitialValues(values);
   } else {
     if (values?.rule_config?.queries) {
@@ -190,32 +188,43 @@ export function processInitialValues(values) {
   };
 }
 
+const datasourceDefaultValue = {
+  datasource_queries: [
+    {
+      match_type: 0,
+      op: 'in',
+      values: [],
+    },
+  ],
+  datasource_value: undefined,
+};
+
 export function getDefaultValuesByProd(prod, defaultBrainParams, isPlus = false) {
   if (prod === 'host') {
     return {
       prod,
       cate: 'host',
-      datasource_ids: undefined,
       rule_config: defaultRuleConfig.host,
+      ...datasourceDefaultValue,
     };
   }
   if (prod === 'anomaly') {
     return {
       prod,
       cate: 'prometheus',
-      datasource_ids: [DATASOURCE_ALL],
       rule_config: {
         ...defaultRuleConfig.anomaly,
         algo_params: defaultBrainParams?.holtwinters || {},
       },
+      ...datasourceDefaultValue,
     };
   }
   if (prod === 'metric') {
     return {
       prod,
       cate: 'prometheus',
-      datasource_ids: [DATASOURCE_ALL],
       rule_config: defaultRuleConfig.metric,
+      ...datasourceDefaultValue,
     };
   }
   if (prod === 'logging') {
@@ -223,23 +232,23 @@ export function getDefaultValuesByProd(prod, defaultBrainParams, isPlus = false)
       return {
         prod,
         cate: 'elasticsearch',
-        datasource_ids: undefined,
         rule_config: defaultRuleConfig.logging,
+        ...datasourceDefaultValue,
       };
     }
     return {
       prod,
       cate: 'loki',
-      datasource_ids: [DATASOURCE_ALL],
       rule_config: defaultRuleConfig.loki,
+      ...datasourceDefaultValue,
     };
   }
   if (prod === 'loki') {
     return {
       prod,
       cate: 'loki',
-      datasource_ids: [DATASOURCE_ALL],
       rule_config: defaultRuleConfig.loki,
+      ...datasourceDefaultValue,
     };
   }
 }
@@ -249,15 +258,14 @@ export function getDefaultValuesByCate(prod, cate) {
     return {
       prod,
       cate,
-      datasource_ids: [DATASOURCE_ALL],
       rule_config: defaultRuleConfig.metric,
+      ...datasourceDefaultValue,
     };
   }
   if (cate === DatasourceCateEnum.tdengine) {
     return {
       prod,
       cate,
-      datasource_ids: undefined,
       rule_config: {
         queries: [
           {
@@ -281,14 +289,15 @@ export function getDefaultValuesByCate(prod, cate) {
           },
         ],
       },
+      ...datasourceDefaultValue,
     };
   }
   if (cate === DatasourceCateEnum.loki) {
     return {
       prod,
       cate,
-      datasource_ids: [DATASOURCE_ALL],
       rule_config: defaultRuleConfig.loki,
+      ...datasourceDefaultValue,
     };
   }
   if (_.isFunction(alertUtils.getDefaultValuesByCate)) {
