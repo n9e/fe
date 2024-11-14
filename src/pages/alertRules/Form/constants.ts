@@ -52,7 +52,6 @@ export const defaultRuleConfig = {
     ],
   },
   anomaly: {
-    algorithm: 'holtwinters',
     severity: 2,
   },
   loki: {

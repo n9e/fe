@@ -1,6 +1,6 @@
 const zh_HK = {
   title: '屏蔽規則',
-  search_placeholder: '搜尋標籤、屏蔽原因',
+  search_placeholder: '搜索規則說明、標籤、屏蔽原因',
   datasource_type: '數據源類型',
   datasource_id: '數據源',
   cause: '屏蔽原因',

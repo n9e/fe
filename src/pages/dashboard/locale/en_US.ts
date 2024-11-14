@@ -420,6 +420,15 @@ const en_US = {
         topn: 'TopN',
         combine_other: 'Other',
         combine_other_tip: 'The number of series that exceed the topN value will be merged into the "Other" series',
+        otherPosition: {
+          label: 'Other position',
+          tip: 'The position of the "Other" series',
+          options: {
+            none: 'None',
+            top: 'Top',
+            bottom: 'Bottom',
+          },
+        },
       },
     },
     inspect: {

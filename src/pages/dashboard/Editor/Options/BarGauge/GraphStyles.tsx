@@ -124,6 +124,31 @@ export default function GraphStyles() {
               <Switch />
             </Form.Item>
           </Col>
+          <Col span={8}>
+            <Form.Item
+              label={t('panel.custom.barGauge.otherPosition.label')}
+              tooltip={t('panel.custom.barGauge.otherPosition.tip')}
+              name={[...namePrefix, 'otherPosition']}
+              initialValue='none'
+            >
+              <Select
+                options={[
+                  {
+                    label: t('panel.custom.barGauge.otherPosition.options.none'),
+                    value: 'none',
+                  },
+                  {
+                    label: t('panel.custom.barGauge.otherPosition.options.top'),
+                    value: 'top',
+                  },
+                  {
+                    label: t('panel.custom.barGauge.otherPosition.options.bottom'),
+                    value: 'bottom',
+                  },
+                ]}
+              />
+            </Form.Item>
+          </Col>
         </Row>
         <Row gutter={10}>
           <Col span={24}>

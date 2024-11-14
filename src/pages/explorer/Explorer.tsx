@@ -34,9 +34,10 @@ import { Explorer as TDengine } from '@/plugins/TDengine';
 import Prometheus from './Prometheus';
 import Elasticsearch from './Elasticsearch';
 import Loki from './Loki';
+import './index.less';
+
 // @ts-ignore
 import PlusExplorer from 'plus:/parcels/Explorer';
-import './index.less';
 
 type Type = 'logging' | 'metric' | 'loki';
 
