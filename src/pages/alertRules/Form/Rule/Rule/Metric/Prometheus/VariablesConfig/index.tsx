@@ -1,0 +1,188 @@
+import React from 'react';
+import { Form, Space, Switch, Table, Tooltip, Button } from 'antd';
+import { FormListFieldData } from 'antd/lib/form/FormList';
+import { useTranslation } from 'react-i18next';
+import _ from 'lodash';
+import { PlusCircleOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import HostSelectPreview from '@/components/DeviceSelect/HostSelect/Preview';
+import NetworkDeviceSelectPreview from '@/components/DeviceSelect/NetworkDeviceSelect/Preview';
+import EditModal from './EditModal';
+
+interface Props {
+  prefixName: (string | number)[];
+  field: FormListFieldData;
+}
+
+export default function index(props: Props) {
+  const { t } = useTranslation('alertRules');
+  const { prefixName, field } = props;
+  const form = Form.useFormInstance();
+  const namePath = [...prefixName, field.name, 'var_config', 'param_val'];
+  const var_config = Form.useWatch(namePath);
+  const [editModalData, setEditModalData] = React.useState<{
+    action: string;
+    visible: boolean;
+    data: any;
+  }>({
+    action: 'create',
+    visible: false,
+    data: {},
+  });
+
+  return (
+    <>
+      <div className='mb2'>
+        <div className='mb1'>
+          <Space>
+            <span>{t('var_config.enable')}</span>
+            <Switch
+              size='small'
+              checked={var_config !== undefined}
+              onChange={(checked) => {
+                const values = _.cloneDeep(form.getFieldsValue());
+                _.set(values, namePath, checked ? [] : undefined);
+                form.setFieldsValue(values);
+              }}
+            />
+          </Space>
+        </div>
+        <div
+          className='mb1 p1'
+          style={{
+            display: var_config === undefined ? 'none' : 'block',
+            backgroundColor: 'var(--fc-fill-4)',
+          }}
+        >
+          <div className='mb1'>
+            <Space>
+              <span>{t('var_config.config')}</span>
+              <PlusCircleOutlined
+                onClick={() => {
+                  setEditModalData({
+                    action: 'create',
+                    visible: true,
+                    data: {
+                      param_type: 'threshold',
+                    },
+                  });
+                }}
+              />
+              <Tooltip title={t('var_config.config_tip')}>
+                <InfoCircleOutlined />
+              </Tooltip>
+            </Space>
+          </div>
+          <Table
+            rowKey='name'
+            size='small'
+            columns={[
+              {
+                title: t('var_config.name'),
+                dataIndex: 'name',
+              },
+              {
+                title: t('var_config.type'),
+                dataIndex: 'param_type',
+                render: (text) => {
+                  return t(`var_config.${text}`);
+                },
+              },
+              {
+                title: t('var_config.value'),
+                dataIndex: 'query',
+                render: (val, record) => {
+                  if (record.param_type === 'threshold') {
+                    return val;
+                  }
+                  if (record.param_type === 'enum') {
+                    return _.join(val, ',');
+                  }
+                  if (record.param_type === 'host') {
+                    return <HostSelectPreview queries={val} />;
+                  }
+                  if (record.param_type === 'device') {
+                    return <NetworkDeviceSelectPreview queries={val} />;
+                  }
+                },
+              },
+              {
+                title: t('common:table.operations'),
+                render: (record) => {
+                  return (
+                    <Space>
+                      <Button
+                        size='small'
+                        type='link'
+                        style={{
+                          padding: 0,
+                        }}
+                        onClick={() => {
+                          setEditModalData({
+                            action: 'edit',
+                            visible: true,
+                            data: record,
+                          });
+                        }}
+                      >
+                        {t('common:btn.edit')}
+                      </Button>
+                      <Button
+                        size='small'
+                        type='link'
+                        danger
+                        style={{
+                          padding: 0,
+                        }}
+                        onClick={() => {
+                          const values = _.cloneDeep(form.getFieldsValue());
+                          const namePathValues = _.get(values, namePath, []);
+                          const index = _.findIndex(namePathValues, { name: record.name });
+                          _.set(
+                            values,
+                            namePath,
+                            _.filter(namePathValues, (v, i: number) => i !== index),
+                          );
+                          form.setFieldsValue(values);
+                        }}
+                      >
+                        {t('common:btn.delete')}
+                      </Button>
+                    </Space>
+                  );
+                },
+              },
+            ]}
+            dataSource={var_config}
+            pagination={false}
+          />
+        </div>
+      </div>
+      <EditModal
+        {...editModalData}
+        onCancel={() => {
+          setEditModalData({
+            action: 'create',
+            visible: false,
+            data: {},
+          });
+        }}
+        onOk={(vals) => {
+          const values = _.cloneDeep(form.getFieldsValue());
+          const namePathValues = _.get(values, namePath, []);
+          if (editModalData.action === 'create') {
+            _.set(values, namePath, _.concat(namePathValues, [vals]));
+          } else if (editModalData.action === 'edit') {
+            const index = _.findIndex(namePathValues, { name: vals.name });
+            _.set(values, [...namePath, index], vals);
+          }
+          form.setFieldsValue(values);
+          setEditModalData({
+            action: 'create',
+            visible: false,
+            data: {},
+          });
+        }}
+      />
+    </>
+  );
+}
