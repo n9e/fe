@@ -14,12 +14,16 @@ interface Props {
   topField: FormListFieldData;
   prefixName: (string | number)[];
   level: number;
+  prefixIndex?: number;
 }
 
 function baseVariablesToRowData(data) {
   const rowData = {};
   _.forEach(data, (item) => {
-    rowData[item.name] = item.query;
+    rowData[item.name] = {
+      param_type: item.param_type,
+      query: item.query,
+    };
   });
   return rowData;
 }
@@ -111,8 +115,8 @@ export default function index(props: Props) {
                 }}
               >
                 <Table
-                  rowKey={(record) => {
-                    return JSON.stringify(record);
+                  rowKey={(record, index) => {
+                    return JSON.stringify(record) + index;
                   }}
                   size='small'
                   pagination={false}
@@ -122,16 +126,16 @@ export default function index(props: Props) {
                         title: item,
                         dataIndex: item,
                         key: item,
-                        render: (val, _record, index) => {
+                        render: (val, record, index) => {
                           if (val) {
                             const param_type = _.find(topParam, { name: item })?.param_type;
                             return (
                               <Space>
                                 <span>
-                                  {param_type === 'threshold' && val}
-                                  {param_type === 'enum' && _.join(val, ',')}
-                                  {param_type === 'host' && <HostSelectPreview queries={val} />}
-                                  {param_type === 'device' && <NetworkDeviceSelectPreview queries={val} />}
+                                  {param_type === 'threshold' && val.query}
+                                  {param_type === 'enum' && _.join(val.query, ',')}
+                                  {param_type === 'host' && <HostSelectPreview queries={val.query} />}
+                                  {param_type === 'device' && <NetworkDeviceSelectPreview queries={val.query} />}
                                 </span>
                                 <a
                                   onClick={() => {
@@ -139,7 +143,10 @@ export default function index(props: Props) {
                                       childVarConfigsIndex: idx,
                                       paramValIndex: index,
                                       visible: true,
-                                      data: _.find(topParam, { name: item }),
+                                      data: {
+                                        ...val,
+                                        name: item,
+                                      },
                                     });
                                   }}
                                 >
@@ -155,7 +162,7 @@ export default function index(props: Props) {
                       {
                         title: t('common:table.operations'),
                         width: 100,
-                        render: () => {
+                        render: (_val, _record, index) => {
                           return (
                             <Space>
                               <Button
@@ -185,12 +192,11 @@ export default function index(props: Props) {
                                 }}
                                 onClick={() => {
                                   const values = _.cloneDeep(form.getFieldsValue());
-                                  const curConf = _.get(values, childVarConfigsPath, []);
-                                  _.set(
-                                    values,
-                                    childVarConfigsPath,
-                                    _.filter(curConf, (item, index: number) => index !== idx),
-                                  );
+                                  const curConf = _.get(values, [...childVarConfigsPath, idx], {});
+                                  _.set(values, [...childVarConfigsPath, idx], {
+                                    ...curConf,
+                                    param_val: _.filter(curConf.param_val, (_item, curIndex: number) => curIndex !== index),
+                                  });
                                   form.setFieldsValue(values);
                                 }}
                               >
@@ -227,7 +233,10 @@ export default function index(props: Props) {
             param_val: _.map(curConf.param_val, (item, index: number) => {
               if (index === editModalData.paramValIndex) {
                 const itemClone = _.cloneDeep(item);
-                itemClone[vals.name] = vals.query;
+                itemClone[vals.name] = {
+                  param_type: vals.param_type,
+                  query: vals.query,
+                };
                 return itemClone;
               }
               return item;
@@ -241,6 +250,7 @@ export default function index(props: Props) {
             data: {},
           });
         }}
+        nameAndTypeDisabled
       />
     </>
   );

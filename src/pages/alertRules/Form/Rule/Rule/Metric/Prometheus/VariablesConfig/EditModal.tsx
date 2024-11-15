@@ -13,11 +13,12 @@ interface Props {
   };
   onOk: (data: any) => void;
   onCancel: () => void;
+  nameAndTypeDisabled?: boolean;
 }
 
 export default function EditModal(props: Props) {
   const { t } = useTranslation('alertRules');
-  const { visible, data, onOk, onCancel } = props;
+  const { visible, data, onOk, onCancel, nameAndTypeDisabled } = props;
   const [form] = Form.useForm();
   const param_type = Form.useWatch(['param_type'], form);
 
@@ -44,7 +45,7 @@ export default function EditModal(props: Props) {
         <Row gutter={8}>
           <Col span={12}>
             <Form.Item label={t('var_config.name')} name='name'>
-              <Input />
+              <Input disabled={nameAndTypeDisabled} />
             </Form.Item>
           </Col>
           <Col span={12}>
@@ -71,6 +72,7 @@ export default function EditModal(props: Props) {
                 onChange={() => {
                   form.setFieldsValue({ query: undefined });
                 }}
+                disabled={nameAndTypeDisabled}
               />
             </Form.Item>
           </Col>
