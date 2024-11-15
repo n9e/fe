@@ -65,6 +65,7 @@ const en_US = {
   invalid_datasource_tip_1: 'Datasources',
   invalid_datasource_tip_2: 'are not configured with cluster of alert engine',
   invalid_datasource_reload: 'Reload',
+  advanced_settings: 'Advanced Settings',
   host: {
     query: {
       title: 'Queries',
