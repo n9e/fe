@@ -27,6 +27,7 @@ import { FormStateContext } from '@/pages/alertRules/Form';
 import { IS_PLUS } from '@/utils/constant';
 import GraphPreview from './GraphPreview';
 import PrometheusV2 from './PrometheusV2';
+import AdvancedSettings from './components/AdvancedSettings';
 import './style.less';
 
 export default function index(props: { form: any; datasourceCate: string; datasourceValue: number }) {
@@ -133,10 +134,11 @@ export default function index(props: { form: any; datasourceCate: string; dataso
                     >
                       <PromQLInputWithBuilder readonly={disabled} datasourceValue={datasourceValue} showBuiltinMetrics />
                     </Form.Item>
-                    <div>
+                    <div className='mb2'>
                       <Severity field={field} />
                     </div>
-                    <div style={{ marginTop: 8 }}>
+                    <AdvancedSettings field={field} />
+                    <div className='mt2'>
                       <GraphPreview form={form} fieldName={field.name} />
                     </div>
                     <MinusCircleOutlined className='alert-rule-trigger-remove' onClick={() => remove(field.name)} />

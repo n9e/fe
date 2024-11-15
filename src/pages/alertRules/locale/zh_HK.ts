@@ -63,6 +63,7 @@ const zh_HK = {
   invalid_datasource_tip_1: '數據源',
   invalid_datasource_tip_2: '未配置關聯告警引擎集群',
   invalid_datasource_reload: '刷新數據源',
+  advanced_settings: '輔助配置',
   host: {
     query: {
       title: '機器篩選',

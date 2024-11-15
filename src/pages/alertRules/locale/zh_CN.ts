@@ -65,6 +65,7 @@ const zh_CN = {
   invalid_datasource_tip_1: '数据源',
   invalid_datasource_tip_2: '未配置关联告警引擎集群',
   invalid_datasource_reload: '刷新数据源',
+  advanced_settings: '辅助配置',
   host: {
     query: {
       title: '机器筛选',

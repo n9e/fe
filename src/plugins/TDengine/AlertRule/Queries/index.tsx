@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import AdvancedSettings from '@/plugins/TDengine/components/AdvancedSettings';
 import QueryName, { generateQueryName } from '@/components/QueryName';
-import UnitPicker from '@/pages/dashboard/Components/UnitPicker';
 import GraphPreview from './GraphPreview';
 import SqlTemplates from '../../components/SqlTemplates';
 import { MetaModal } from '../../components/Meta';
@@ -147,11 +146,6 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
                       }}
                     />
                   )}
-                  <InputGroupWithFormItem label={t('common:unit')}>
-                    <Form.Item {...field} name={[field.name, 'unit']} initialValue='none'>
-                      <UnitPicker />
-                    </Form.Item>
-                  </InputGroupWithFormItem>
                   <Form.Item shouldUpdate noStyle>
                     {({ getFieldValue }) => {
                       const cate = getFieldValue('cate');

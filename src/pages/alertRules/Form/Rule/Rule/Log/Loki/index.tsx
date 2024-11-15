@@ -15,29 +15,17 @@
  *
  */
 
-import React, { useContext } from 'react';
+import React from 'react';
 import { Form, Row, Col, Card, Space, Input } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
-import { CommonStateContext } from '@/App';
 import Severity from '@/pages/alertRules/Form/components/Severity';
 import Inhibit from '@/pages/alertRules/Form/components/Inhibit';
-import { FormStateContext } from '@/pages/alertRules/Form';
-
-const DATASOURCE_ALL = 0;
-
-function getFirstDatasourceId(datasourceIds: number[] = [], datasourceList: { id: number }[] = []) {
-  return _.isEqual(datasourceIds, [DATASOURCE_ALL]) && datasourceList.length > 0 ? datasourceList[0]?.id : datasourceIds?.[0];
-}
+import AdvancedSettings from '@/pages/alertRules/Form/Rule/Rule/Metric/Prometheus/components/AdvancedSettings';
 
 export default function index(props: { datasourceCate: string; datasourceValue: number[] }) {
-  const { datasourceCate, datasourceValue } = props;
   const { t } = useTranslation('alertRules');
-  const { groupedDatasourceList } = useContext(CommonStateContext);
-  const { disabled } = useContext(FormStateContext);
-  const curDatasourceList = groupedDatasourceList[datasourceCate] || [];
-  const datasourceId = getFirstDatasourceId(datasourceValue, curDatasourceList);
 
   return (
     <Form.List name={['rule_config', 'queries']}>
@@ -78,9 +66,10 @@ export default function index(props: { datasourceCate: string; datasourceValue: 
                     </Form.Item>
                   </Col>
                 </Row>
-                <div>
+                <div className='mb2'>
                   <Severity field={field} />
                 </div>
+                <AdvancedSettings field={field} />
                 <MinusCircleOutlined className='alert-rule-trigger-remove' onClick={() => remove(field.name)} />
               </div>
             ))}
