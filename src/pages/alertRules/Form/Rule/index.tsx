@@ -27,7 +27,7 @@ import ProdSelect from '../components/ProdSelect';
 // @ts-ignore
 import PlusAlertRule from 'plus:/parcels/AlertRule';
 
-export default function Rule({ form }) {  
+export default function Rule({ form }) {
   const { t } = useTranslation('alertRules');
   const { isPlus } = useContext(CommonStateContext);
 
@@ -54,7 +54,6 @@ export default function Rule({ form }) {
       <Form.Item shouldUpdate={(prevValues, currentValues) => prevValues.prod !== currentValues.prod}>
         {() => {
           const prod = form.getFieldValue('prod');
-          const cate = form.getFieldValue('cate');
           if (prod === 'host') {
             return <Host />;
           }

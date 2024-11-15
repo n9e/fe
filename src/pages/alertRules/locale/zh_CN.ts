@@ -34,7 +34,7 @@ const zh_CN = {
   effective_time_end_msg: '结束时间不能为空',
   effective_time_week_msg: '请选择生效周期',
   enable_in_bg: '仅在本业务组生效',
-  enable_in_bg_tip: '根据告警事件中的ident归属关系判断',
+  enable_in_bg_tip: '根据告警事件中的 ident 归属关系判断，即：如果告警事件中有 ident 标签且 ident 对应的机器不属于该业务组，则丢弃此告警事件',
   notify_configs: '通知配置',
   notify_channels: '通知媒介',
   notify_channels_doc: '使用文档',
@@ -51,6 +51,8 @@ const zh_CN = {
   notify_flashduty_configured: '当前已配置了全局 Flashduty 推送',
   callbacks: '回调地址',
   callbacks_tip: '支持配置变量，变量使用方式可参考 <a>变量引用</a> 文档',
+  override_global_webhook: '覆盖全局回调',
+  override_global_webhook_tip: '此开关开启之后，告警事件只会发给本规则的回调地址，不会再发给全局的回调地址',
   annotations: '附加信息',
   annotationsOptions: {
     plan_link: '预案链接',
@@ -63,6 +65,7 @@ const zh_CN = {
   invalid_datasource_tip_1: '数据源',
   invalid_datasource_tip_2: '未配置关联告警引擎集群',
   invalid_datasource_reload: '刷新数据源',
+  advanced_settings: '辅助配置',
   host: {
     query: {
       title: '机器筛选',
@@ -124,7 +127,6 @@ const zh_CN = {
       name: '批量更新',
       field: '字段',
       changeto: '改为',
-      enable_in_bg_tip: '根据告警事件中的ident归属关系判断',
       callback_cover: {
         mode: '模式',
         cover: '覆盖',

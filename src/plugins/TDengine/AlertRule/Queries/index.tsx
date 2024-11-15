@@ -20,8 +20,6 @@ interface IProps {
   datasourceValue: number | number[];
 }
 
-const alphabet = 'ABCDEFGHIGKLMNOPQRSTUVWXYZ'.split('');
-
 export default function index({ form, prefixField = {}, fullPrefixName = [], prefixName = [], disabled, datasourceValue }: IProps) {
   const { t } = useTranslation('db_tdengine');
   const datasourceID = _.isArray(datasourceValue) ? datasourceValue[0] : datasourceValue;

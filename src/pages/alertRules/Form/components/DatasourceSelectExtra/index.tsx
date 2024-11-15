@@ -8,11 +8,10 @@ import DatasourceSelectExtra from 'plus:/components/DatasourceSelectExtra';
 
 export default function index() {
   const datasourceCate = Form.useWatch('cate');
-  const datasourceValue = Form.useWatch('datasource_ids');
-  const curDatasourceValue = _.isArray(datasourceValue) ? _.head(datasourceValue) : datasourceValue;
+  const datasourceValue = Form.useWatch('datasource_value');
 
   if (IS_PLUS) {
-    return <DatasourceSelectExtra datasourceCate={datasourceCate} datasourceValue={curDatasourceValue} />;
+    return <DatasourceSelectExtra datasourceCate={datasourceCate} datasourceValue={datasourceValue} />;
   }
 
   return null;

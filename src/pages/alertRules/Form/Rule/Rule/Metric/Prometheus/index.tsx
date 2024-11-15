@@ -16,11 +16,10 @@
  */
 
 import React, { useContext } from 'react';
-import { Form, Row, Col, Card, Space, Select, Tooltip, Radio } from 'antd';
+import { Form, Card, Space, Tooltip, Radio } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { Trans, useTranslation } from 'react-i18next';
 import _ from 'lodash';
-import { CommonStateContext } from '@/App';
 import { PromQLInputWithBuilder } from '@/components/PromQLInput';
 import Severity from '@/pages/alertRules/Form/components/Severity';
 import Inhibit from '@/pages/alertRules/Form/components/Inhibit';
@@ -28,21 +27,13 @@ import { FormStateContext } from '@/pages/alertRules/Form';
 import { IS_PLUS } from '@/utils/constant';
 import GraphPreview from './GraphPreview';
 import PrometheusV2 from './PrometheusV2';
+import AdvancedSettings from './components/AdvancedSettings';
 import './style.less';
 
-const DATASOURCE_ALL = 0;
-
-function getFirstDatasourceId(datasourceIds: number[] = [], datasourceList: { id: number }[] = []) {
-  return _.isEqual(datasourceIds, [DATASOURCE_ALL]) && datasourceList.length > 0 ? datasourceList[0]?.id : datasourceIds?.[0];
-}
-
-export default function index(props: { form: any; datasourceCate: string; datasourceValue: number[] }) {
-  const { form, datasourceCate, datasourceValue } = props;
+export default function index(props: { form: any; datasourceCate: string; datasourceValue: number }) {
+  const { form, datasourceValue } = props;
   const { t } = useTranslation('alertRules');
-  const { groupedDatasourceList } = useContext(CommonStateContext);
   const { disabled } = useContext(FormStateContext);
-  const curDatasourceList = groupedDatasourceList[datasourceCate] || [];
-  const datasourceId = getFirstDatasourceId(datasourceValue, curDatasourceList);
   const ruleConfigVersion = Form.useWatch(['rule_config', 'version']);
 
   return (
@@ -141,12 +132,13 @@ export default function index(props: { form: any; datasourceCate: string; dataso
                       trigger='onChange'
                       rules={[{ required: true, message: t('promQLInput:required') }]}
                     >
-                      <PromQLInputWithBuilder readonly={disabled} datasourceValue={datasourceId} showBuiltinMetrics />
+                      <PromQLInputWithBuilder readonly={disabled} datasourceValue={datasourceValue} showBuiltinMetrics />
                     </Form.Item>
-                    <div>
+                    <div className='mb2'>
                       <Severity field={field} />
                     </div>
-                    <div style={{ marginTop: 8 }}>
+                    <AdvancedSettings field={field} />
+                    <div className='mt2'>
                       <GraphPreview form={form} fieldName={field.name} />
                     </div>
                     <MinusCircleOutlined className='alert-rule-trigger-remove' onClick={() => remove(field.name)} />

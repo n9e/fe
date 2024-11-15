@@ -20,7 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { Input, Form, Table, Button, Divider, message, Switch } from 'antd';
 import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { importPromRule } from '@/services/warning';
-import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
+import DatasourceValueSelectV2 from '@/pages/alertRules/Form/components/DatasourceValueSelect/V2';
 
 const ymlExample = `groups:
 - name: example
@@ -49,6 +49,7 @@ export default function ImportPrometheus({ busiId, onOk, groupedDatasourceList }
             const { dat } = await importPromRule(
               {
                 ..._.omit(vals, 'enabled'),
+                datasource_queries: vals?.datasource_queries,
                 disabled: vals.enabled ? 0 : 1,
               },
               busiId,
@@ -83,7 +84,7 @@ export default function ImportPrometheus({ busiId, onOk, groupedDatasourceList }
         </Form.Item>
         {importContent && (
           <>
-            <DatasourceValueSelect mode='multiple' setFieldsValue={form.setFieldsValue} cate='prometheus' datasourceList={groupedDatasourceList.prometheus || []} />
+            <DatasourceValueSelectV2 datasourceCate='prometheus' datasourceList={groupedDatasourceList.prometheus || []} />
             <Form.Item label={t('common:table.enabled')} name='enabled' valuePropName='checked'>
               <Switch />
             </Form.Item>

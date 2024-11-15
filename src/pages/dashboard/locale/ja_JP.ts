@@ -1,5 +1,8 @@
 const ja_JP = {
   title: '監視ダッシュボード',
+  list: 'ダッシュボードリスト',
+  back_icon_tip: '前のページに戻る',
+  back_icon_tip_is_built_in: '内蔵ダッシュボードに戻る',
   name: 'ダッシュボード名',
   tags: 'カテゴリータグ',
   ident: '英語識別子',
