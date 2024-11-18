@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
-import { useTranslation } from 'react-i18next';
 import { Resizable } from 're-resizable';
 import { Button, Tabs } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';

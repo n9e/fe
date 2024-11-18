@@ -105,17 +105,17 @@ export default function Graph(props: Props) {
         <div style={{ width: 600 }}>
           <AdvancedSettings mode='graph' span={12} prefixName={['query']} expanded expandTriggerVisible={false} />
         </div>
-        <Form.Item>
-          <Popover
-            placement='left'
-            content={<LineGraphStandardOptions highLevelConfig={highLevelConfig} setHighLevelConfig={setHighLevelConfig} />}
-            trigger='click'
-            autoAdjustOverflow={false}
-            getPopupContainer={() => document.body}
-          >
+        <Popover
+          placement='left'
+          content={<LineGraphStandardOptions highLevelConfig={highLevelConfig} setHighLevelConfig={setHighLevelConfig} />}
+          trigger='click'
+          autoAdjustOverflow={false}
+          getPopupContainer={() => document.body}
+        >
+          <Form.Item>
             <Button icon={<SettingOutlined />} />
-          </Popover>
-        </Form.Item>
+          </Form.Item>
+        </Popover>
       </Space>
       {errorContent && <Alert style={{ marginBottom: 16 }} message={errorContent} type='error' />}
       <Timeseries inDashboard={false} values={lineGraphProps as any} series={data} />
