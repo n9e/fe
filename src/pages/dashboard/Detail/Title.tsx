@@ -147,7 +147,9 @@ export default function Title(props: IProps) {
               />
             </Tooltip>
             <Space className='pr1'>
-              <Link to={props.gobackPath || '/dashboards'}>{isBuiltin ? t('builtInComponents:title') : t('list')}</Link>
+              <Link to={props.gobackPath || '/dashboards'} style={{ fontSize: 14 }}>
+                {isBuiltin ? t('builtInComponents:title') : t('list')}
+              </Link>
               {'>'}
             </Space>
           </Space>
