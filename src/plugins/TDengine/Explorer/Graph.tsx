@@ -100,7 +100,7 @@ export default function Graph(props: Props) {
   }, [JSON.stringify(range), JSON.stringify(keys), query, refreshFlag]);
 
   return (
-    <div style={{ minHeight: 0 }}>
+    <div className='explorer-graph-container'>
       <Space>
         <div style={{ width: 600 }}>
           <AdvancedSettings mode='graph' span={12} prefixName={['query']} expanded expandTriggerVisible={false} />
