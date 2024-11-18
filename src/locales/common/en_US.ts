@@ -14,6 +14,8 @@ const en_US = {
   log_detail: 'Log Detail',
   document_link: 'Document',
   required: 'Required',
+  unit: 'Unit',
+  and: 'And',
   host: {
     tags: 'Custom Tags',
     tags_tip: 'Tags configured by the user on the page will be appended to the time series data reported by this machine',
@@ -81,6 +83,16 @@ const en_US = {
       btn1: 'Go to configure',
       btn2: 'OK',
     },
+    queries: {
+      label: 'Datasource Filter',
+      match_type_0: 'Exact Match',
+      match_type_1: 'Fuzzy Match',
+      match_type_1_tip: `Supports two wildcards<br>* can match 0 or more arbitrary characters<br>? can only match one arbitrary character`,
+      match_type_2: 'All Datasources',
+      op_in: 'In',
+      op_not_in: 'Not In',
+      preview: 'Datasource Preview',
+    },
   },
   confirm: {
     delete: 'Are you sure to delete?',
@@ -111,9 +123,9 @@ const en_US = {
     weekdays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
   },
   severity: {
-    1: 'S1',
-    2: 'S2',
-    3: 'S3',
+    1: 'S1（Critical）',
+    2: 'S2（Warning）',
+    3: 'S3（Info）',
   },
   download_json: 'Download JSON',
   batch: {

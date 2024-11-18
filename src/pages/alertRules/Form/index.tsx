@@ -55,15 +55,6 @@ export default function index(props: IProps) {
         message.warning('请先校验指标');
         return;
       }
-      // TODO: 多个 promql 怎么校验？
-      // const datasourceId = getFirstDatasourceId(values.datasource_ids, groupedDatasourceList[values.cate]);
-      // const res = await prometheusQuery({ query: values.prom_ql }, datasourceId);
-      // if (res.error) {
-      //   notification.error({
-      //     message: res.error,
-      //   });
-      //   return false;
-      // }
     } else if (type !== 1) {
       if (licenseRulesRemaining === 0 && values.prod === 'anomaly') {
         message.error('可添加的智能告警规则数量已达上限，请联系客服');

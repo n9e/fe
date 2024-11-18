@@ -15,7 +15,7 @@
  *
  */
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory, useLocation, Link } from 'react-router-dom';
 import querystring from 'query-string';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -34,6 +34,7 @@ import FormModal from '../List/FormModal';
 import ImportGrafanaURLFormModal from '../List/ImportGrafanaURLFormModal';
 import { IDashboard, ILink } from '../types';
 import { useGlobalState } from '../globalState';
+import { goBack } from './utils';
 
 interface IProps {
   dashboard: IDashboard;
@@ -133,7 +134,24 @@ export default function Title(props: IProps) {
       }}
     >
       <div className='dashboard-detail-header-left'>
-        {isPreview && !isBuiltin ? null : <RollbackOutlined className='back' onClick={() => history.push(props.gobackPath || '/dashboards')} />}
+        {isPreview && !isBuiltin ? null : (
+          <Space>
+            <Tooltip title={isBuiltin ? t('back_icon_tip_is_built_in') : t('back_icon_tip')}>
+              <RollbackOutlined
+                className='back_icon'
+                onClick={() => {
+                  goBack(history).catch(() => {
+                    history.push(props.gobackPath || '/dashboards');
+                  });
+                }}
+              />
+            </Tooltip>
+            <Space className='pr1'>
+              <Link to={props.gobackPath || '/dashboards'}>{isBuiltin ? t('builtInComponents:title') : t('list')}</Link>
+              {'>'}
+            </Space>
+          </Space>
+        )}
         {isPreview === true || __public__ === 'true' ? (
           // 公开仪表盘不显示下拉
           <div className='title'>{dashboard.name}</div>
@@ -178,10 +196,9 @@ export default function Title(props: IProps) {
               </div>
             }
           >
-            <Space style={{ cursor: 'pointer' }}>
-              <div className='title'>{dashboard.name}</div>
-              <DownOutlined />
-            </Space>
+            <span style={{ cursor: 'pointer' }}>
+              <span className='title'>{dashboard.name}</span> <DownOutlined />
+            </span>
           </Dropdown>
         )}
       </div>

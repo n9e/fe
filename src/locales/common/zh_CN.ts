@@ -14,6 +14,8 @@ const zh_CN = {
   log_detail: '日志详情',
   document_link: '使用说明',
   required: '必填项',
+  unit: '单位',
+  and: '且',
   host: {
     tags: '自定义标签',
     tags_tip: '用户在页面配置的标签，会追加到此机器上报的时序数据中',
@@ -80,6 +82,16 @@ const zh_CN = {
       btn1: '前往配置',
       btn2: '知道了',
     },
+    queries: {
+      label: '数据源筛选',
+      match_type_0: '精确匹配',
+      match_type_1: '模糊匹配',
+      match_type_1_tip: `支持两种通配符<br>* 可以匹配 0 个或多个任意字符<br>? 只能匹配一个任意字符`,
+      match_type_2: '全部数据源',
+      op_in: '包含',
+      op_not_in: '不包含',
+      preview: '数据源预览',
+    },
   },
   confirm: {
     delete: '确认删除吗？',
@@ -110,9 +122,9 @@ const zh_CN = {
     weekdays: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
   },
   severity: {
-    1: '一级报警',
-    2: '二级报警',
-    3: '三级报警',
+    1: '一级报警（Critical）',
+    2: '二级报警（Warning）',
+    3: '三级报警（Info）',
   },
   download_json: '下载 JSON',
   batch: {

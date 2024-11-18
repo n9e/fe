@@ -474,10 +474,11 @@ export default function List(props: ListProps) {
                 setFilter(newFilter);
                 window.sessionStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
               }}
+              dropdownMatchSelectWidth={false}
             >
-              <Select.Option value={1}>S1</Select.Option>
-              <Select.Option value={2}>S2</Select.Option>
-              <Select.Option value={3}>S3</Select.Option>
+              <Select.Option value={1}>S1（Critical）</Select.Option>
+              <Select.Option value={2}>S2（Warning）</Select.Option>
+              <Select.Option value={3}>S3（Info）</Select.Option>
             </Select>
             <Input
               placeholder={t('search_placeholder')}

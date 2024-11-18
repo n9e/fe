@@ -32,7 +32,8 @@ const ja_JP = {
   effective_time_end_msg: '終了時間は空できません',
   effective_time_week_msg: '有効期間を選択してください',
   enable_in_bg: 'このビジネスグループでのみ有効',
-  enable_in_bg_tip: 'アラートイベントのident帰属関係に基づいて判断',
+  enable_in_bg_tip:
+    'アラートイベントの ident ラベルに基づいて所属関係を判断し、つまり：アラートイベントに ident ラベルがあり、その ident に対応するマシンがこのビジネスグループに属していない場合、このアラートイベントは破棄されます',
   notify_configs: '通知設定',
   notify_channels: '通知メディア',
   notify_channels_doc: 'ドキュメントを使用',
@@ -49,6 +50,8 @@ const ja_JP = {
   notify_flashduty_configured: '現在、全局 Flashduty プッシュが設定されています',
   callbacks: 'コールバックURL',
   callbacks_tip: '変数の設定をサポートします。変数の使用方法については、<a>変数参照</a>ドキュメントを参照してください',
+  override_global_webhook: 'グローバルコールバックを上書き',
+  override_global_webhook_tip: 'このスイッチをオンにすると、アラートイベントはこのルールのコールバックアドレスのみに送信され、グローバルコールバックアドレスには送信されません',
   annotations: '追加情報',
   annotationsOptions: {
     plan_link: '計画リンク',
@@ -61,6 +64,7 @@ const ja_JP = {
   invalid_datasource_tip_1: 'データソース',
   invalid_datasource_tip_2: '関連するアラートエンジンクラスタが設定されていません',
   invalid_datasource_reload: 'データソースをリロード',
+  advanced_settings: '補助設定',
   host: {
     query: {
       title: 'ホストフィルタ',
@@ -122,7 +126,6 @@ const ja_JP = {
       name: 'バッチ更新',
       field: 'フィールド',
       changeto: '変更する',
-      enable_in_bg_tip: 'アラートイベントのident帰属関係に基づいて判断',
       callback_cover: {
         mode: 'モード',
         cover: 'カバー',

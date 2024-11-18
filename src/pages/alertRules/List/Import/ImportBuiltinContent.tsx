@@ -20,7 +20,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Modal, Input, Form, Table, Button, Select, Switch, Space, Tag, Alert } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
-import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
+import DatasourceValueSelectV2 from '@/pages/alertRules/Form/components/DatasourceValueSelect/V2';
 import { getComponents, getCates, getPayloads, Component, Payload } from '@/pages/builtInComponents/services';
 import { TypeEnum } from '@/pages/builtInComponents/types';
 import { createRule } from '@/pages/builtInComponents/AlertRules/services';
@@ -83,7 +83,7 @@ export default function ImportBuiltinContent({ busiId, onOk, groupedDatasourceLi
             return {
               ...content,
               cate: content.cate === 'host' ? 'host' : vals.datasource_cate,
-              datasource_ids: content.cate === 'host' ? content.datasource_ids : vals.datasource_ids,
+              datasource_queries: vals?.datasource_queries,
               disabled: vals.enabled ? 0 : 1,
             };
           }),
@@ -282,9 +282,7 @@ export default function ImportBuiltinContent({ busiId, onOk, groupedDatasourceLi
               })}
             </Select>
           </Form.Item>
-          {datasourceCate && (
-            <DatasourceValueSelect mode='multiple' setFieldsValue={form.setFieldsValue} cate={datasourceCate} datasourceList={groupedDatasourceList[datasourceCate] || []} />
-          )}
+          {datasourceCate && <DatasourceValueSelectV2 datasourceCate={datasourceCate} datasourceList={groupedDatasourceList[datasourceCate] || []} />}
         </>
       )}
 

@@ -14,6 +14,8 @@ const zh_HK = {
   log_detail: '日誌詳情',
   document_link: '使用說明',
   required: '必填項',
+  unit: '單位',
+  and: '且',
   host: {
     tags: '自定義標籤',
     tags_tip: '用戶在頁面配置的標籤，會追加到此機器上報的時序數據中',
@@ -80,6 +82,16 @@ const zh_HK = {
       btn1: '前往配置',
       btn2: '知道了',
     },
+    queries: {
+      label: '數據源篩選',
+      match_type_0: '精確匹配',
+      match_type_1: '模糊匹配',
+      match_type_1_tip: `支持兩種通配符<br>* 可以匹配 0 個或多個任意字符<br>? 只能匹配一個任意字符`,
+      match_type_2: '全部數據源',
+      op_in: '包含',
+      op_not_in: '不包含',
+      preview: '數據源預覽',
+    },
   },
   confirm: {
     delete: '確認刪除嗎？',
@@ -110,9 +122,9 @@ const zh_HK = {
     weekdays: ['週日', '週一', '週二', '週三', '週四', '週五', '週六'],
   },
   severity: {
-    '1': '一級報警',
-    '2': '二級報警',
-    '3': '三級報警',
+    '1': '一級報警（Critical）',
+    '2': '二級報警（Warning）',
+    '3': '三級報警（Info）',
   },
   download_json: '下載 JSON',
   batch: {

@@ -32,7 +32,8 @@ const en_US = {
   effective_time_end_msg: 'End Time is required',
   effective_time_week_msg: 'Please select effective week',
   enable_in_bg: 'Enable in buisness group',
-  enable_in_bg_tip: 'Determine the ownership relationship based on the ident in the alert event',
+  enable_in_bg_tip:
+    'Determined according to the ownership relationship of the ident tag in the alert event, that is: if the machine corresponding to the ident tag in the alert event does not belong to the business group, the alert event will be discarded',
   notify_configs: 'Notify Configuration',
   notify_channels: 'Channels',
   notify_channels_doc: 'Document',
@@ -49,6 +50,9 @@ const en_US = {
   notify_flashduty_configured: 'Global Flashduty push is configured',
   callbacks: 'Callbacks',
   callbacks_tip: 'Support configuration variables, the usage of variables can refer to the <a>Variable Reference</a> document',
+  override_global_webhook: 'Override Global Callback',
+  override_global_webhook_tip:
+    'After this switch is turned on, the alert event will only be sent to the callback address of this rule, and will not be sent to the global callback address',
   annotations: 'Annotations',
   annotationsOptions: {
     plan_link: 'Plan Link',
@@ -61,6 +65,7 @@ const en_US = {
   invalid_datasource_tip_1: 'Datasources',
   invalid_datasource_tip_2: 'are not configured with cluster of alert engine',
   invalid_datasource_reload: 'Reload',
+  advanced_settings: 'Advanced Settings',
   host: {
     query: {
       title: 'Queries',
@@ -122,7 +127,6 @@ const en_US = {
       name: 'Update Alert Rules',
       field: 'Field',
       changeto: 'Change to',
-      enable_in_bg_tip: 'Determine the ownership relationship based on the ident in the alert event',
       callback_cover: {
         mode: 'Mode',
         cover: 'Cover',
