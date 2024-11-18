@@ -3,7 +3,7 @@ import { Form, Space, Switch, Table, Tooltip, Button } from 'antd';
 import { FormListFieldData } from 'antd/lib/form/FormList';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
-import { PlusCircleOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { PlusCircleOutlined, InfoCircleOutlined, EditOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import HostSelectPreview from '@/components/DeviceSelect/HostSelect/Preview';
 import NetworkDeviceSelectPreview from '@/components/DeviceSelect/NetworkDeviceSelect/Preview';
 import EditModal from './EditModal';
@@ -123,13 +123,11 @@ export default function index(props: Props) {
                             data: record,
                           });
                         }}
-                      >
-                        {t('common:btn.edit')}
-                      </Button>
+                        icon={<EditOutlined />}
+                      />
                       <Button
                         size='small'
                         type='link'
-                        danger
                         style={{
                           padding: 0,
                         }}
@@ -144,9 +142,8 @@ export default function index(props: Props) {
                           );
                           form.setFieldsValue(values);
                         }}
-                      >
-                        {t('common:btn.delete')}
-                      </Button>
+                        icon={<MinusCircleOutlined />}
+                      />
                     </Space>
                   );
                 },
