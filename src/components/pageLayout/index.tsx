@@ -132,7 +132,9 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                   {title}
                 </div>
 
-                <div className={'page-header-right-area'} style={{display: sessionStorage.getItem('menuHide') === '1' ? 'none' : undefined }}>
+                <div className={'page-header-right-area'} style={{display: sessionStorage.getItem('menuHide') === '1' ? 'none' : undefined 
+
+                }}>
                   {introIcon}
                   {docFn && (
                     <a onClick={() => docFn()} style={{ marginRight: 20 }}>
@@ -162,6 +164,8 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
 
                   <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
                     <License />
+                  </AdvancedWrap>
+                  <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
                     <FeatureNotification />
                   </AdvancedWrap>
 
