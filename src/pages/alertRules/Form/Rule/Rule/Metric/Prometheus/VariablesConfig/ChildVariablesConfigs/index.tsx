@@ -3,7 +3,7 @@ import { FormListFieldData } from 'antd/lib/form/FormList';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Space, Tooltip, Form, Table, Button } from 'antd';
-import { InfoCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
+import { InfoCircleOutlined, PlusCircleOutlined, EditOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import HostSelectPreview from '@/components/DeviceSelect/HostSelect/Preview';
 import NetworkDeviceSelectPreview from '@/components/DeviceSelect/NetworkDeviceSelect/Preview';
 import EditModal from '../EditModal';
@@ -44,12 +44,10 @@ export default function index(props: Props) {
   const childVarConfigsPath = prefixName;
   const childVarConfigs = Form.useWatch(childVarConfigsPath);
   const [editModalData, setEditModalData] = React.useState<{
-    childVarConfigsIndex: number;
     paramValIndex: number;
     visible: boolean;
     data: any;
   }>({
-    childVarConfigsIndex: 0,
     paramValIndex: 0,
     visible: false,
     data: {},
@@ -59,21 +57,18 @@ export default function index(props: Props) {
   return (
     <>
       <div className='mb1'>
-        {level === 1 && (
+        {level === 1 ? (
           <div className='mb1'>
             <Space>
               <span>{t('var_config.filter')}</span>
               <PlusCircleOutlined
                 onClick={() => {
                   const values = _.cloneDeep(form.getFieldsValue());
-                  const childVarConfigs = _.get(values, childVarConfigsPath, []);
-                  _.set(
-                    values,
-                    childVarConfigsPath,
-                    _.concat(childVarConfigs, {
-                      param_val: [baseVariablesToRowData(topParam)],
-                    }),
-                  );
+                  const curConf = _.get(values, childVarConfigsPath, {});
+                  _.set(values, childVarConfigsPath, {
+                    ...curConf,
+                    param_val: _.concat(curConf.param_val || [], baseVariablesToRowData(topParam)),
+                  });
                   form.setFieldsValue(values);
                 }}
               />
@@ -82,144 +77,113 @@ export default function index(props: Props) {
               </Tooltip>
             </Space>
           </div>
-        )}
-        {level === 2 && (
+        ) : (
           <div className='mt1'>
             <Space>
               <span>{t('var_config.add_subFilter')}</span>
               <PlusCircleOutlined
                 onClick={() => {
                   const values = _.cloneDeep(form.getFieldsValue());
-                  const childVarConfigs = _.get(values, childVarConfigsPath, []);
-                  _.set(
-                    values,
-                    childVarConfigsPath,
-                    _.concat(childVarConfigs, {
-                      param_val: [baseVariablesToRowData(topParam)],
-                    }),
-                  );
+                  const curConf = _.get(values, childVarConfigsPath, {});
+                  _.set(values, childVarConfigsPath, {
+                    ...curConf,
+                    param_val: _.concat(curConf.param_val || [], baseVariablesToRowData(topParam)),
+                  });
                   form.setFieldsValue(values);
                 }}
               />
             </Space>
           </div>
         )}
-        {childVarConfigs !== undefined &&
-          _.map(childVarConfigs, (item, idx: number) => {
-            return (
-              <div
-                key={idx}
-                className='mb1 p1'
-                style={{
-                  backgroundColor: level === 1 ? 'var(--fc-fill-4)' : 'var(--fc-fill-5)',
-                }}
-              >
-                <Table
-                  rowKey={(record, index) => {
-                    return JSON.stringify(record) + index;
-                  }}
-                  size='small'
-                  pagination={false}
-                  columns={_.concat(
-                    _.map(getColumnKeys(item.param_val), (item) => {
-                      return {
-                        title: item,
-                        dataIndex: item,
-                        key: item,
-                        render: (val, record, index) => {
-                          if (val) {
-                            const param_type = _.find(topParam, { name: item })?.param_type;
-                            return (
-                              <Space>
-                                <span>
-                                  {param_type === 'threshold' && val.query}
-                                  {param_type === 'enum' && _.join(val.query, ',')}
-                                  {param_type === 'host' && <HostSelectPreview queries={val.query} />}
-                                  {param_type === 'device' && <NetworkDeviceSelectPreview queries={val.query} />}
-                                </span>
-                                <a
-                                  onClick={() => {
-                                    setEditModalData({
-                                      childVarConfigsIndex: idx,
-                                      paramValIndex: index,
-                                      visible: true,
-                                      data: {
-                                        ...val,
-                                        name: item,
-                                      },
-                                    });
-                                  }}
-                                >
-                                  {t('common:btn.edit')}
-                                </a>
-                              </Space>
-                            );
-                          }
-                        },
-                      };
-                    }),
-                    [
-                      {
-                        title: t('common:table.operations'),
-                        width: 100,
-                        render: (_val, _record, index) => {
-                          return (
-                            <Space>
-                              <Button
-                                size='small'
-                                type='link'
-                                style={{
-                                  padding: 0,
-                                }}
-                                onClick={() => {
-                                  const values = _.cloneDeep(form.getFieldsValue());
-                                  const curConf = _.get(values, [...childVarConfigsPath, idx], {});
-                                  _.set(values, [...childVarConfigsPath, idx], {
-                                    ...curConf,
-                                    param_val: _.concat(curConf.param_val, baseVariablesToRowData(topParam)),
-                                  });
-                                  form.setFieldsValue(values);
-                                }}
-                              >
-                                {t('common:btn.add')}
-                              </Button>
-                              <Button
-                                size='small'
-                                type='link'
-                                danger
-                                style={{
-                                  padding: 0,
-                                }}
-                                onClick={() => {
-                                  const values = _.cloneDeep(form.getFieldsValue());
-                                  const curConf = _.get(values, [...childVarConfigsPath, idx], {});
-                                  _.set(values, [...childVarConfigsPath, idx], {
-                                    ...curConf,
-                                    param_val: _.filter(curConf.param_val, (_item, curIndex: number) => curIndex !== index),
-                                  });
-                                  form.setFieldsValue(values);
-                                }}
-                              >
-                                {t('common:btn.delete')}
-                              </Button>
-                            </Space>
-                          );
-                        },
-                      },
-                    ] as any,
-                  )}
-                  dataSource={item.param_val}
-                />
-                {level === 1 && <ChildVariablesConfigs topPrefixName={topPrefixName} topField={topField} prefixName={[...prefixName, idx, 'child_var_configs']} level={2} />}
-              </div>
-            );
-          })}
+        {childVarConfigs !== undefined && childVarConfigs?.param_val !== undefined && (
+          <div
+            className='mb1 p1'
+            style={{
+              backgroundColor: `var(--fc-fill-${level + 3})`, // 从 4 开始
+            }}
+          >
+            <Table
+              rowKey={(record, index) => {
+                return JSON.stringify(record) + index;
+              }}
+              size='small'
+              pagination={false}
+              columns={_.concat(
+                _.map(getColumnKeys(childVarConfigs.param_val), (item) => {
+                  return {
+                    title: item,
+                    dataIndex: item,
+                    key: item,
+                    render: (val, _record, index) => {
+                      if (val) {
+                        const param_type = _.find(topParam, { name: item })?.param_type;
+                        return (
+                          <Space>
+                            <span>
+                              {param_type === 'threshold' && val.query}
+                              {param_type === 'enum' && _.join(val.query, ',')}
+                              {param_type === 'host' && <HostSelectPreview queries={val.query} />}
+                              {param_type === 'device' && <NetworkDeviceSelectPreview queries={val.query} />}
+                            </span>
+                            <EditOutlined
+                              onClick={() => {
+                                setEditModalData({
+                                  paramValIndex: index,
+                                  visible: true,
+                                  data: {
+                                    ...val,
+                                    name: item,
+                                  },
+                                });
+                              }}
+                            />
+                          </Space>
+                        );
+                      }
+                    },
+                  };
+                }),
+                [
+                  {
+                    title: t('common:table.operations'),
+                    width: 100,
+                    render: (_val, _record, index) => {
+                      return (
+                        <Space>
+                          <Button
+                            size='small'
+                            type='link'
+                            style={{
+                              padding: 0,
+                            }}
+                            onClick={() => {
+                              const values = _.cloneDeep(form.getFieldsValue());
+                              const curConf = _.get(values, childVarConfigsPath, {});
+                              const param_val = _.filter(curConf.param_val, (_item, curIndex: number) => curIndex !== index);
+                              _.set(values, childVarConfigsPath, {
+                                ...curConf,
+                                param_val: _.isEmpty(param_val) ? undefined : param_val,
+                              });
+                              form.setFieldsValue(values);
+                            }}
+                            icon={<MinusCircleOutlined />}
+                          />
+                        </Space>
+                      );
+                    },
+                  },
+                ] as any,
+              )}
+              dataSource={childVarConfigs.param_val}
+            />
+            {level < 3 && <ChildVariablesConfigs topPrefixName={topPrefixName} topField={topField} prefixName={[...prefixName, 'child_var_configs']} level={level + 1} />}
+          </div>
+        )}
       </div>
       <EditModal
         {...editModalData}
         onCancel={() => {
           setEditModalData({
-            childVarConfigsIndex: 0,
             paramValIndex: 0,
             visible: false,
             data: {},
@@ -227,8 +191,8 @@ export default function index(props: Props) {
         }}
         onOk={(vals) => {
           const values = _.cloneDeep(form.getFieldsValue());
-          const curConf = _.get(values, [...childVarConfigsPath, editModalData.childVarConfigsIndex], {});
-          _.set(values, [...childVarConfigsPath, editModalData.childVarConfigsIndex], {
+          const curConf = _.get(values, childVarConfigsPath, {});
+          _.set(values, childVarConfigsPath, {
             ...curConf,
             param_val: _.map(curConf.param_val, (item, index: number) => {
               if (index === editModalData.paramValIndex) {
@@ -244,7 +208,6 @@ export default function index(props: Props) {
           });
           form.setFieldsValue(values);
           setEditModalData({
-            childVarConfigsIndex: 0,
             paramValIndex: 0,
             visible: false,
             data: {},

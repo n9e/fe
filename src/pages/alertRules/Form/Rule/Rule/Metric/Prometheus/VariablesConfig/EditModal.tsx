@@ -44,12 +44,28 @@ export default function EditModal(props: Props) {
       <Form form={form} layout='vertical'>
         <Row gutter={8}>
           <Col span={12}>
-            <Form.Item label={t('var_config.name')} name='name'>
+            <Form.Item
+              label={t('var_config.name')}
+              name='name'
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
               <Input disabled={nameAndTypeDisabled} />
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label={t('var_config.type')} name='param_type'>
+            <Form.Item
+              label={t('var_config.type')}
+              name='param_type'
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
               <Select
                 options={[
                   {
@@ -78,12 +94,28 @@ export default function EditModal(props: Props) {
           </Col>
         </Row>
         {param_type === 'threshold' && (
-          <Form.Item label={t('var_config.threshold_value')} name='query'>
+          <Form.Item
+            label={t('var_config.threshold_value')}
+            name='query'
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
             <InputNumber style={{ width: '100%' }} />
           </Form.Item>
         )}
         {param_type === 'enum' && (
-          <Form.Item label={t('var_config.enum_value')} name='query'>
+          <Form.Item
+            label={t('var_config.enum_value')}
+            name='query'
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
             <Select mode='tags' open={false} tokenSeparators={[' ']} />
           </Form.Item>
         )}
