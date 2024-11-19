@@ -47,6 +47,9 @@ const getDefaultValuesByCate = () => {};
 const autoDatasourcetype = [];
 const AuthList = [];
 const extraColumns = () => {};
+const getNetworkDevices = () => {};
+const getNetworkDevicesList = () => {};
+const getNetworkDevicesTags = () => {};
 export {
   AlertRule,
   QueryBuilder,
@@ -65,4 +68,7 @@ export {
   autoDatasourcetype,
   AuthList,
   extraColumns,
+  getNetworkDevices,
+  getNetworkDevicesList,
+  getNetworkDevicesTags,
 };
