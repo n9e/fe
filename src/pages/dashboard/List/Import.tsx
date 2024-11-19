@@ -245,6 +245,7 @@ function Import(props: IProps & ModalWrapProps) {
   const [modalType, setModalType] = useState(type);
   const [checkedVerisonResult, setCheckedVerisonResult] = useState<undefined | 0 | 1 | 2>();
   const [form] = Form.useForm();
+  const [importLoading, setImportLoading] = useState(false);
   const importGrafanaFunc = (json) => {
     const data = convertDashboardGrafanaToN9E(json);
     createDashboard(busiId, {
@@ -266,6 +267,7 @@ function Import(props: IProps & ModalWrapProps) {
     <Modal
       width={900}
       className='dashboard-import-modal'
+      maskClosable={false}
       title={
         <Tabs activeKey={modalType} onChange={(e: ModalType) => setModalType(e)} className='custom-import-alert-title'>
           <TabPane tab={t('batch.import_builtin')} key='ImportBuiltin'></TabPane>
@@ -303,15 +305,20 @@ function Import(props: IProps & ModalWrapProps) {
         <Form
           layout='vertical'
           onFinish={(vals) => {
+            setImportLoading(true);
             const data = getValidImportData(vals.import);
             createDashboard(busiId, {
               ...data,
               configs: data.configs,
-            }).then(() => {
-              message.success(t('common:success.import'));
-              refreshList();
-              destroy();
-            });
+            })
+              .then(() => {
+                message.success(t('common:success.import'));
+                refreshList();
+                destroy();
+              })
+              .finally(() => {
+                setImportLoading(false);
+              });
           }}
         >
           <Form.Item
@@ -326,7 +333,7 @@ function Import(props: IProps & ModalWrapProps) {
             <Input.TextArea className='code-area' rows={16} />
           </Form.Item>
           <Form.Item>
-            <Button type='primary' htmlType='submit'>
+            <Button type='primary' htmlType='submit' loading={importLoading}>
               {t('common:btn.import')}
             </Button>
           </Form.Item>
