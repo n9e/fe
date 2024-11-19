@@ -314,7 +314,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
               <div className='filter-settings-row-connector-line' />
               <div className='filter-settings-row-connector-text-container'>
                 <div className='filter-settings-row-connector-text' style={{ width: _.max([whenTextWidth, andTextWidth]) }}>
-                  {t('when')}
+                  {t('and')}
                 </div>
               </div>
             </div>
