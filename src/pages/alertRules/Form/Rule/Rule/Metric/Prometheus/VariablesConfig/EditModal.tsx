@@ -1,8 +1,10 @@
 import React, { useEffect } from 'react';
 import { Form, Modal, Row, Col, Input, Select, InputNumber } from 'antd';
 import { useTranslation } from 'react-i18next';
+import _ from 'lodash';
 import HostSelect from '@/components/DeviceSelect/HostSelect';
 import NetworkDeviceSelect from '@/components/DeviceSelect/NetworkDeviceSelect';
+import { IS_PLUS } from '@/utils/constant';
 
 interface Props {
   visible: boolean;
@@ -67,24 +69,30 @@ export default function EditModal(props: Props) {
               ]}
             >
               <Select
-                options={[
-                  {
-                    label: t('var_config.threshold'),
-                    value: 'threshold',
-                  },
-                  {
-                    label: t('var_config.enum'),
-                    value: 'enum',
-                  },
-                  {
-                    label: t('var_config.host'),
-                    value: 'host',
-                  },
-                  {
-                    label: t('var_config.device'),
-                    value: 'device',
-                  },
-                ]}
+                options={_.concat(
+                  [
+                    {
+                      label: t('var_config.threshold'),
+                      value: 'threshold',
+                    },
+                    {
+                      label: t('var_config.enum'),
+                      value: 'enum',
+                    },
+                    {
+                      label: t('var_config.host'),
+                      value: 'host',
+                    },
+                  ],
+                  IS_PLUS
+                    ? [
+                        {
+                          label: t('var_config.device'),
+                          value: 'device',
+                        },
+                      ]
+                    : [],
+                )}
                 onChange={() => {
                   form.setFieldsValue({ query: undefined });
                 }}
@@ -120,7 +128,7 @@ export default function EditModal(props: Props) {
           </Form.Item>
         )}
         {param_type === 'host' && <HostSelect prefixName={['query']} />}
-        {param_type === 'device' && <NetworkDeviceSelect prefixName={['query']} />}
+        {param_type === 'device' && IS_PLUS && <NetworkDeviceSelect prefixName={['query']} />}
       </Form>
     </Modal>
   );

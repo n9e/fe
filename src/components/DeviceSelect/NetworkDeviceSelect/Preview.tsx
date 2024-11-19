@@ -2,8 +2,10 @@ import React, { useState, useEffect, useContext } from 'react';
 import _ from 'lodash';
 import { Modal, Table, Button } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { getNetworkDevicesList } from '@/plus/pages/networkDevices/services';
 import { CommonStateContext } from '@/App';
+
+// @ts-ignore
+import { getNetworkDevicesList } from 'plus:/pages/networkDevices/services';
 
 interface Props {
   queries: any[];
