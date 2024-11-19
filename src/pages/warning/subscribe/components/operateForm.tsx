@@ -21,6 +21,7 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router';
 import { Link } from 'react-router-dom';
+import { getTextWidth } from '@/pages/dashboard/Renderer/Renderer/Hexbin/utils';
 import { addSubscribe, editSubscribe, deleteSubscribes } from '@/services/subscribe';
 import { getNotifiesList, getTeamInfoList } from '@/services/manage';
 import { subscribeItem } from '@/store/warningInterface/subscribe';
@@ -59,6 +60,10 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
   const redefineChannels = Form.useWatch(['redefine_channels'], form);
   const redefineWebhooks = Form.useWatch(['redefine_webhooks'], form);
   const new_channels = Form.useWatch(['new_channels'], form);
+  const whenText = t('when');
+  const andText = t('and');
+  const whenTextWidth = getTextWidth(whenText);
+  const andTextWidth = getTextWidth(andText);
 
   useEffect(() => {
     getNotifyChannel();
@@ -139,7 +144,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
 
   return (
     <main
-      className='p2'
+      className='p2 subscription-rules-form'
       style={{
         overflow: 'hidden auto',
       }}
@@ -153,7 +158,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
         }}
         initialValues={{
           ...detail,
-          busi_groups: _.map(detail.busi_groups, (item) => {
+          busi_groups: _.map(detail.busi_groups || [{}], (item) => {
             return {
               ...item,
               value: _.includes(['in', 'not in'], item.func) ? item.value.split(' ') : item.value,
@@ -167,13 +172,13 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
           new_channels: detail?.new_channels ? detail?.new_channels?.split(' ') : [],
         }}
       >
-        <Card {...panelBaseProps} title={t('basic_configs')}>
+        <Card {...panelBaseProps} title={t('basic_configs')} className='mb2'>
+          <Form.Item label={t('note')} name='note'>
+            <Input />
+          </Form.Item>
+        </Card>
+        <Card {...panelBaseProps} title={t('filter_configs')} className='mb2'>
           <Row gutter={10}>
-            <Col span={24}>
-              <Form.Item label={t('note')} name='note'>
-                <Input />
-              </Form.Item>
-            </Col>
             <Col span={12}>
               <Form.Item label={t('common:datasource.type')} name='cate' initialValue='prometheus'>
                 <DatasourceCateSelect
@@ -200,116 +205,170 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
               </Form.Item>
             </Col>
           </Row>
-
-          <Form.Item label={t('severities')} name='severities' initialValue={[1, 2, 3]} rules={[{ required: true, message: t('severities_msg') }]}>
-            <Checkbox.Group
-              options={[
-                {
-                  label: t('common:severity.1'),
-                  value: 1,
-                },
-                {
-                  label: t('common:severity.2'),
-                  value: 2,
-                },
-                {
-                  label: t('common:severity.3'),
-                  value: 3,
-                },
-              ]}
-            />
-          </Form.Item>
-
-          <Form.Item label={t('sub_rule_name')}>
-            <Space wrap>
-              {_.map(selectedRules, (item) => (
-                <Tag
-                  color='purple'
-                  key={item.id}
-                  closable
-                  onClose={() => {
-                    setSelectedRules(selectedRules.filter((row) => row.id !== item.id));
-                  }}
-                >
-                  <Link to={`/alert-rules/edit/${item.id}`} target='_blank'>
-                    {item.name}
-                  </Link>
-                </Tag>
-              ))}
-              <EditOutlined
-                style={{ cursor: 'pointer', fontSize: '18px' }}
-                onClick={() => {
-                  setRuleModalShow(true);
-                }}
-              />
-            </Space>
-          </Form.Item>
-
-          <Form.List name='busi_groups' initialValue={[]}>
-            {(fields, { add, remove }, { errors }) => (
-              <>
-                <Row gutter={[10, 10]} style={{ marginBottom: '8px' }}>
-                  <Col span={5}>
-                    <Space align='baseline'>
-                      <span>{t('group.key.label')}</span>
-                      <PlusCircleOutlined
-                        className='control-icon-normal'
-                        onClick={() =>
-                          add({
-                            key: 'groups',
-                          })
-                        }
-                      />
-                    </Space>
-                  </Col>
-                  <Col span={3}>{t('group.func.label')}</Col>
-                  <Col span={16}>{t('group.value.label')}</Col>
-                </Row>
-                {fields.map((field, index) => (
-                  <BusiGroupsTagItem field={field} fields={fields} key={index} remove={remove} add={add} form={form} />
-                ))}
-                <Form.ErrorList errors={errors} />
-              </>
-            )}
-          </Form.List>
-
-          <Form.List name='tags' initialValue={[]}>
-            {(fields, { add, remove }, { errors }) => (
-              <>
-                <Row gutter={[10, 10]} style={{ marginBottom: '8px' }}>
-                  <Col span={5}>
-                    <Space align='baseline'>
-                      <span>{t('tag.key.label')}</span>
-                      <Tooltip title={t(`tag.key.tip`)}>
-                        <QuestionCircleOutlined
-                          style={{
-                            cursor: 'help',
-                          }}
-                        />
-                      </Tooltip>
-                      <PlusCircleOutlined className='control-icon-normal' onClick={() => add()} />
-                    </Space>
-                  </Col>
-                  <Col span={3}>{t('tag.func.label')}</Col>
-                  <Col span={16}>{t('tag.value.label')}</Col>
-                </Row>
-                {fields.map((field, index) => (
-                  <TagItem field={field} fields={fields} key={index} remove={remove} add={add} form={form} />
-                ))}
-                <Form.ErrorList errors={errors} />
-              </>
-            )}
-          </Form.List>
-
-          <Form.Item label={t('for_duration')} tooltip={t('for_duration_tip')} name='for_duration'>
-            <InputNumber style={{ width: '100%' }} />
-          </Form.Item>
+          <div className='filter-settings-row'>
+            <div className='filter-settings-row-connector'>
+              <div className='filter-settings-row-connector-line' />
+              <div className='filter-settings-row-connector-text-container'>
+                <div className='filter-settings-row-connector-text' style={{ width: _.max([whenTextWidth, andTextWidth]) }}>
+                  {t('when')}
+                </div>
+              </div>
+            </div>
+            <div className='filter-settings-row-content'>
+              <Form.Item label={t('severities')} name='severities' initialValue={[1, 2, 3]} rules={[{ required: true, message: t('severities_msg') }]}>
+                <Checkbox.Group
+                  options={[
+                    {
+                      label: t('common:severity.1'),
+                      value: 1,
+                    },
+                    {
+                      label: t('common:severity.2'),
+                      value: 2,
+                    },
+                    {
+                      label: t('common:severity.3'),
+                      value: 3,
+                    },
+                  ]}
+                />
+              </Form.Item>
+            </div>
+          </div>
+          <div className='filter-settings-row'>
+            <div className='filter-settings-row-connector'>
+              <div className='filter-settings-row-connector-line' />
+              <div className='filter-settings-row-connector-text-container'>
+                <div className='filter-settings-row-connector-text' style={{ width: _.max([whenTextWidth, andTextWidth]) }}>
+                  {t('and')}
+                </div>
+              </div>
+            </div>
+            <div className='filter-settings-row-content'>
+              <Form.Item label={t('sub_rule_name')}>
+                <Space wrap>
+                  {_.map(selectedRules, (item) => (
+                    <Tag
+                      color='purple'
+                      key={item.id}
+                      closable
+                      onClose={() => {
+                        setSelectedRules(selectedRules.filter((row) => row.id !== item.id));
+                      }}
+                    >
+                      <Link to={`/alert-rules/edit/${item.id}`} target='_blank'>
+                        {item.name}
+                      </Link>
+                    </Tag>
+                  ))}
+                  <EditOutlined
+                    style={{ cursor: 'pointer', fontSize: '18px' }}
+                    onClick={() => {
+                      setRuleModalShow(true);
+                    }}
+                  />
+                </Space>
+              </Form.Item>
+            </div>
+          </div>
+          <div className='filter-settings-row'>
+            <div className='filter-settings-row-connector'>
+              <div className='filter-settings-row-connector-line' />
+              <div className='filter-settings-row-connector-text-container'>
+                <div className='filter-settings-row-connector-text' style={{ width: _.max([whenTextWidth, andTextWidth]) }}>
+                  {t('when')}
+                </div>
+              </div>
+            </div>
+            <div className='filter-settings-row-content'>
+              <Form.List name='busi_groups'>
+                {(fields, { add, remove }, { errors }) => (
+                  <>
+                    <Row gutter={[10, 10]} style={{ marginBottom: '8px' }}>
+                      <Col span={5}>
+                        <Space>
+                          <span>{t('group.key.label')}</span>
+                          <PlusCircleOutlined
+                            onClick={() =>
+                              add({
+                                key: 'groups',
+                              })
+                            }
+                          />
+                        </Space>
+                      </Col>
+                      <Col span={3}>{t('group.func.label')}</Col>
+                      <Col span={16}>{t('group.value.label')}</Col>
+                    </Row>
+                    {fields.map((field, index) => (
+                      <BusiGroupsTagItem field={field} fields={fields} key={index} remove={remove} add={add} form={form} />
+                    ))}
+                    <Form.ErrorList errors={errors} />
+                  </>
+                )}
+              </Form.List>
+            </div>
+          </div>
+          <div className='filter-settings-row'>
+            <div className='filter-settings-row-connector'>
+              <div className='filter-settings-row-connector-line' />
+              <div className='filter-settings-row-connector-text-container'>
+                <div className='filter-settings-row-connector-text' style={{ width: _.max([whenTextWidth, andTextWidth]) }}>
+                  {t('when')}
+                </div>
+              </div>
+            </div>
+            <div className='filter-settings-row-content'>
+              <Form.List name='tags' initialValue={[{}]}>
+                {(fields, { add, remove }, { errors }) => (
+                  <>
+                    <Row gutter={[10, 10]} style={{ marginBottom: '8px' }}>
+                      <Col span={5}>
+                        <Space>
+                          <span>{t('tag.key.label')}</span>
+                          <Tooltip title={t(`tag.key.tip`)}>
+                            <QuestionCircleOutlined
+                              style={{
+                                cursor: 'help',
+                              }}
+                            />
+                          </Tooltip>
+                          <PlusCircleOutlined onClick={() => add()} />
+                        </Space>
+                      </Col>
+                      <Col span={3}>{t('tag.func.label')}</Col>
+                      <Col span={16}>{t('tag.value.label')}</Col>
+                    </Row>
+                    {fields.map((field, index) => (
+                      <TagItem field={field} fields={fields} key={index} remove={remove} add={add} form={form} />
+                    ))}
+                    <Form.ErrorList errors={errors} />
+                  </>
+                )}
+              </Form.List>
+            </div>
+          </div>
+          <div className='filter-settings-row'>
+            <div className='filter-settings-row-connector'>
+              <div className='filter-settings-row-connector-text-container'>
+                <div className='filter-settings-row-connector-text' style={{ width: _.max([whenTextWidth, andTextWidth]) }}>
+                  {t('and')}
+                </div>
+              </div>
+            </div>
+            <div className='filter-settings-row-content'>
+              <Form.Item label={t('for_duration')} tooltip={t('for_duration_tip')} name='for_duration'>
+                <InputNumber style={{ width: '100%' }} />
+              </Form.Item>
+            </div>
+          </div>
+        </Card>
+        <Card {...panelBaseProps} title={t('notify_configs')}>
           <Form.Item label={t('user_group_ids')} name='user_group_ids'>
             <Select mode='multiple' showSearch optionFilterProp='children' filterOption={false} onSearch={(e) => debounceFetcher(e)} onBlur={() => getGroups('')}>
               {notifyGroupsOptions}
             </Select>
           </Form.Item>
-
           <div>
             <Space>
               {t('redefine_severity')}
