@@ -63,7 +63,7 @@ export function getTextSizeForWidthAndHeight(text: string, width: number, height
 export const defaultFont = {
   fontWeight: 'normal',
   fontSize: '12px',
-  fontFamily: 'Helvetica Neue,sans-serif,PingFangSC-Regular,microsoft yahei ui,microsoft yahei,simsun,"sans-serif"',
+  fontFamily: '"Microsoft Yahei", Verdana, Helvetica Neue, sans-serif, PingFangSC-Regular, simsun, "sans-serif"',
 };
 
 export const getFontStr = (font = defaultFont) => {
