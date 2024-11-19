@@ -3,7 +3,9 @@ import _ from 'lodash';
 import { Select, Form, Spin } from 'antd';
 import { useDebounceFn } from 'ahooks';
 import { CommonStateContext } from '@/App';
-import { getNetworkDevices, getNetworkDevicesTags } from '@/plus/pages/networkDevices/services';
+
+// @ts-ignore
+import { getNetworkDevices, getNetworkDevicesTags } from 'plus:/pages/networkDevices/services';
 
 interface IProps {
   queryKey: string;
