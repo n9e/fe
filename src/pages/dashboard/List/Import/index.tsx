@@ -60,6 +60,7 @@ export default function Import(props: IProps) {
   const [modalType, setModalType] = useState(type);
   const [checkedVerisonResult, setCheckedVerisonResult] = useState<undefined | 0 | 1 | 2>();
   const [form] = Form.useForm();
+  const [importLoading, setImportLoading] = useState(false);
   const importGrafanaFunc = (json) => {
     const data = convertDashboardGrafanaToN9E(json);
     createDashboard(busiId, {
@@ -80,6 +81,7 @@ export default function Import(props: IProps) {
     <Modal
       width={900}
       className='dashboard-import-modal'
+      maskClosable={false}
       title={
         <Tabs activeKey={modalType} onChange={(e: ModalType) => setModalType(e)} className='custom-import-alert-title'>
           <TabPane tab={t('batch.import_builtin')} key='ImportBuiltin'></TabPane>
@@ -116,14 +118,19 @@ export default function Import(props: IProps) {
         <Form
           layout='vertical'
           onFinish={(vals) => {
+            setImportLoading(true);
             const data = getValidImportData(vals.import);
             createDashboard(busiId, {
               ...data,
               configs: data.configs,
-            }).then(() => {
-              message.success(t('common:success.import'));
-              onOk();
-            });
+            })
+              .then(() => {
+                message.success(t('common:success.import'));
+                onOk();
+              })
+              .finally(() => {
+                setImportLoading(false);
+              });
           }}
         >
           <Form.Item
@@ -138,7 +145,7 @@ export default function Import(props: IProps) {
             <Input.TextArea className='code-area' rows={16} />
           </Form.Item>
           <Form.Item>
-            <Button type='primary' htmlType='submit'>
+            <Button type='primary' htmlType='submit' loading={importLoading}>
               {t('common:btn.import')}
             </Button>
           </Form.Item>
