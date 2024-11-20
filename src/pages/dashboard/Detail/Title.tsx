@@ -150,7 +150,7 @@ export default function Title(props: IProps) {
               <Link to={props.gobackPath || '/dashboards'} style={{ fontSize: 14 }}>
                 {isBuiltin ? t('builtInComponents:title') : t('list')}
               </Link>
-              {'>'}
+              {'/'}
             </Space>
           </Space>
         )}

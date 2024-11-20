@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Button, List, Input, Modal, Space } from 'antd';
 import { SafetyCertificateOutlined, SearchOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import PageLayout from '@/components/pageLayout';
+import PageLayout, { HelpLink } from '@/components/pageLayout';
 import { RoleType, OperationType } from './types';
 import { getRoles, deleteRoles, getOperations } from './services';
 import RoleFormModal from './RoleFormModal';
@@ -36,7 +36,15 @@ export default function index() {
   }, []);
 
   return (
-    <PageLayout title={t('title')} icon={<SafetyCertificateOutlined />}>
+    <PageLayout
+      title={
+        <Space>
+          {t('title')}
+          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/personnel-permissions/permissions-management/' />
+        </Space>
+      }
+      icon={<SafetyCertificateOutlined />}
+    >
       <div className='user-manage-content'>
         <div style={{ display: 'flex', gap: 10, height: '100%', background: 'unset' }}>
           <div className='left-tree-area'>

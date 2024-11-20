@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { message, Spin, Modal } from 'antd';
+import { message, Spin, Modal, Space } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
-import PageLayout from '@/components/pageLayout';
+import PageLayout, { HelpLink } from '@/components/pageLayout';
 import BreadCrumb from '@/components/BreadCrumb';
 import { CommonStateContext } from '@/App';
+import { allCates } from '@/components/AdvancedWrap/utils';
 import { getDataSourceDetailById, submitRequest } from './services';
 import Form from './Datasources/Form';
+import { helpLinkMap } from './config';
 import './index.less';
 
 export default function FormCpt() {
@@ -81,20 +83,21 @@ export default function FormCpt() {
   return (
     <PageLayout
       title={
-        <div>
-          {type}
+        <Space>
           <BreadCrumb
+            size='large'
             crumbs={[
               {
                 text: t('title'),
                 link: '/help/source',
               },
               {
-                text: type!,
+                text: _.find(allCates, { value: type })?.label || type,
               },
             ]}
           />
-        </div>
+          {helpLinkMap[type] && <HelpLink src={helpLinkMap[type]} />}
+        </Space>
       }
     >
       <div className='srm'>
