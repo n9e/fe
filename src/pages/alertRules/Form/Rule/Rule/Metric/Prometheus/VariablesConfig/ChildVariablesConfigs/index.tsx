@@ -40,7 +40,7 @@ export default function index(props: Props) {
   const { topPrefixName, topField, prefixName, level } = props;
   const form = Form.useFormInstance();
   const topNamePath = [...topPrefixName, topField.name, 'var_config'];
-  const topVarEnbaled = Form.useWatch([...topPrefixName, topField.name, 'var_enbaled']);
+  const topVarEnabled = Form.useWatch([...topPrefixName, topField.name, 'var_enabled']);
   const topParam = Form.useWatch([...topNamePath, 'param_val']);
   const childVarConfigsPath = prefixName;
   const childVarConfigs = Form.useWatch(childVarConfigsPath);
@@ -54,7 +54,7 @@ export default function index(props: Props) {
     data: {},
   });
 
-  if (!topVarEnbaled || topParam === undefined || _.isEmpty(topParam)) return null;
+  if (!topVarEnabled || topParam === undefined || _.isEmpty(topParam)) return null;
   return (
     <>
       <div className='mb1'>
