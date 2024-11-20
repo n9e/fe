@@ -6,10 +6,6 @@ const en_US = {
   name_tip: 'Promql is calculated periodically, and a new metric is generated. Fill in the name of the new metric here',
   note: 'Note',
   disabled: 'Enable',
-  cron_pattern: 'Execution frequency',
-  cron_pattern_msg: 'Please enter Cron expression',
-  cron_pattern_tip:
-    'Cron expression, support to second, that is: second minute hour day month week, such as 1 * * * * * means execute the first second every minute. You can also abbreviate @every 60s',
   append_tags: 'Tags',
   append_tags_msg: 'Invalid tag format, please check!',
   append_tags_msg1: 'Tag length should be less than or equal to 64 bits',

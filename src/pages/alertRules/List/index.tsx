@@ -95,6 +95,9 @@ export default function List(props: ListProps) {
           </Space>
         ),
         dataIndex: 'cur_event_count',
+        sorter: (a, b) => {
+          return localeCompare(a.cur_event_count, b.cur_event_count);
+        },
         render: (val, record) => {
           return (
             <a
