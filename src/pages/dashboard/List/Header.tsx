@@ -129,11 +129,8 @@ export default function Header(props: IProps) {
                             onOk: async () => {
                               removeDashboards(selectRowKeys).then(() => {
                                 message.success(t('common:success.delete'));
-                              });
-                              // TODO: 删除完后立马刷新数据有时候不是实时的，这里暂时间隔0.5s后再刷新列表
-                              setTimeout(() => {
                                 refreshList();
-                              }, 500);
+                              });
                             },
                           });
                         } else {
