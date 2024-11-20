@@ -170,7 +170,10 @@ const EventDetailPage: React.FC = () => {
       },
     },
     {
-      label: eventDetail?.is_recovered && eventDetail?.cate === 'prometheus' && eventDetail?.rule_config?.version === 'v1' ? t('detail.trigger_value') : t('detail.trigger_value2'),
+      label:
+        eventDetail?.is_recovered && eventDetail?.cate === 'prometheus' && (eventDetail?.rule_config?.version === 'v1' || eventDetail?.rule_config?.version === undefined)
+          ? t('detail.trigger_value')
+          : t('detail.trigger_value2'),
       key: 'trigger_value',
       render(val) {
         return (
