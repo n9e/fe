@@ -16,6 +16,7 @@ const zh_CN = {
   required: '必填项',
   unit: '单位',
   and: '且',
+  page_help: '使用说明',
   host: {
     tags: '自定义标签',
     tags_tip: '用户在页面配置的标签，会追加到此机器上报的时序数据中',
@@ -52,7 +53,7 @@ const zh_CN = {
     copy: '拷贝',
     expand: '展开',
     collapse: '收起',
-    config: '配置'
+    config: '配置',
   },
   table: {
     name: '名称',

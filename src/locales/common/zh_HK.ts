@@ -16,6 +16,7 @@ const zh_HK = {
   required: '必填項',
   unit: '單位',
   and: '且',
+  page_help: '使用說明',
   host: {
     tags: '自定義標籤',
     tags_tip: '用戶在頁面配置的標籤，會追加到此機器上報的時序數據中',
@@ -52,7 +53,7 @@ const zh_HK = {
     copy: '複製',
     expand: '展開',
     collapse: '收起',
-    config: '設定'
+    config: '設定',
   },
   table: {
     name: '名稱',

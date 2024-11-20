@@ -16,6 +16,7 @@ const ja_JP = {
   required: '必須項目',
   unit: '単位',
   and: 'および',
+  page_help: '使用説明',
   host: {
     tags: 'ユーザータグ',
     tags_tip: 'ユーザーがページで構成したタグは、このマシンが報告した時系列データに追加されます',
@@ -53,7 +54,7 @@ const ja_JP = {
     expand: '展開',
     collapse: '折りたたむ',
     copy: 'コピー',
-    config: '設定'
+    config: '設定',
   },
   table: {
     name: '名前',

@@ -34,6 +34,7 @@ import { Explorer as TDengine } from '@/plugins/TDengine';
 import Prometheus from './Prometheus';
 import Elasticsearch from './Elasticsearch';
 import Loki from './Loki';
+import Help from './components/Help';
 import './index.less';
 
 // @ts-ignore
@@ -62,6 +63,7 @@ const Panel = ({ type, defaultCate, panelIdx, defaultFormValuesControl }: IProps
   const params = new URLSearchParams(useLocation().search);
   const defaultDatasourceCate = params.get('data_source_name') || localStorage.getItem(`explorer_datasource_cate_${type}`) || defaultCate;
   const defaultDatasourceValue = params.get('data_source_id') ? _.toNumber(params.get('data_source_id')) : getDefaultDatasourceValue(defaultDatasourceCate, groupedDatasourceList);
+  const datasourceCate = Form.useWatch('datasourceCate', form);
 
   return (
     <div className='explorer-container'>
@@ -75,7 +77,7 @@ const Panel = ({ type, defaultCate, panelIdx, defaultFormValuesControl }: IProps
         <div className='explorer-content'>
           <Row gutter={8}>
             <Col>
-              <InputGroupWithFormItem label={t('common:datasource.type')}>
+              <InputGroupWithFormItem label={t('common:datasource.type')} addonAfterWithContainer={<Help datasourceCate={datasourceCate} />}>
                 <Form.Item name='datasourceCate' noStyle>
                   <DatasourceCateSelect
                     scene='graph'

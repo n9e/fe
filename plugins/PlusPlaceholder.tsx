@@ -50,6 +50,7 @@ const extraColumns = () => {};
 const getNetworkDevices = () => {};
 const getNetworkDevicesList = () => {};
 const getNetworkDevicesTags = () => {};
+const proDocumentPathMap = {};
 export {
   AlertRule,
   QueryBuilder,
@@ -71,4 +72,5 @@ export {
   getNetworkDevices,
   getNetworkDevicesList,
   getNetworkDevicesTags,
+  proDocumentPathMap,
 };

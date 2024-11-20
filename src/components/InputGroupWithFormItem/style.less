@@ -20,4 +20,11 @@
     height: 32px;
     line-height: 32px;
   }
+  // 2024-11-20 对 focused 和 hover 状态下的 select 组件进行 z-index 修正防止被后面 addonAfter 内容遮挡
+  .ant-select-focused:not(.ant-select-disabled).ant-select:not(.ant-select-customize-input) {
+    z-index: 1;
+  }
+  .ant-select:not(.ant-select-disabled):hover {
+    z-index: 1;
+  }
 }

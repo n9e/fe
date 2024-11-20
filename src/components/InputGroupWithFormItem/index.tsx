@@ -10,10 +10,11 @@ interface IProps {
   noStyle?: boolean;
   customStyle?: CSSProperties;
   addonAfter?: React.ReactNode;
+  addonAfterWithContainer?: React.ReactNode;
 }
 
 export default function index(props: IProps) {
-  const { children, label, labelWidth = 'max-content', noStyle = false, customStyle, addonAfter } = props;
+  const { children, label, labelWidth = 'max-content', noStyle = false, customStyle, addonAfter, addonAfterWithContainer } = props;
   return (
     <Input.Group compact className='input-group-with-form-item'>
       <span
@@ -31,6 +32,7 @@ export default function index(props: IProps) {
       </span>
       <div className='input-group-with-form-item-content'>{children}</div>
       {addonAfter && <span className='ant-input-group-addon'>{addonAfter}</span>}
+      {addonAfterWithContainer}
     </Input.Group>
   );
 }
