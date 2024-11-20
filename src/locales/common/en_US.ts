@@ -15,6 +15,7 @@ const en_US = {
   document_link: 'Document',
   required: 'Required',
   unit: 'Unit',
+  page_help: 'Help',
   host: {
     tags: 'Custom Tags',
     tags_tip: 'Tags configured by the user on the page will be appended to the time series data reported by this machine',

@@ -63,6 +63,7 @@ const zh_HK = {
     button: '歷史記錄',
     searchPlaceholder: '搜索歷史記錄',
   },
+  help: '使用說明',
 };
 
 export default zh_HK;

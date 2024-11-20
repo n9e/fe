@@ -63,5 +63,6 @@ const zh_CN = {
     button: '历史记录',
     searchPlaceholder: '搜索历史记录',
   },
+  help: '使用说明',
 };
 export default zh_CN;
