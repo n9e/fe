@@ -18,7 +18,7 @@ export default function index(props: Props) {
   const { prefixName, field } = props;
   const form = Form.useFormInstance();
   const namePath = [...prefixName, field.name, 'var_config', 'param_val'];
-  const var_enbaled = Form.useWatch([...prefixName, field.name, 'var_enbaled']);
+  const var_enabled = Form.useWatch([...prefixName, field.name, 'var_enabled']);
   const var_config = Form.useWatch(namePath);
   const [editModalData, setEditModalData] = React.useState<{
     action: string;
@@ -36,7 +36,7 @@ export default function index(props: Props) {
         <div className='mb1'>
           <Space>
             <span>{t('var_config.enable')}</span>
-            <Form.Item {...field} name={[field.name, 'var_enbaled']} valuePropName='checked' noStyle>
+            <Form.Item {...field} name={[field.name, 'var_enabled']} valuePropName='checked' noStyle>
               <Switch size='small' />
             </Form.Item>
           </Space>
@@ -44,7 +44,7 @@ export default function index(props: Props) {
         <div
           className='mb1 p1'
           style={{
-            display: var_enbaled ? 'block' : 'none',
+            display: var_enabled ? 'block' : 'none',
             backgroundColor: 'var(--fc-fill-4)',
           }}
         >
