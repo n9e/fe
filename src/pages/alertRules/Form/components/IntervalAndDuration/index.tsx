@@ -17,6 +17,7 @@
 import React from 'react';
 import { Form, Row, Col, InputNumber } from 'antd';
 import { useTranslation } from 'react-i18next';
+import CronPattern from '@/components/CronPattern';
 
 interface IProps {
   intervalTip?: (value?: number) => string;
@@ -25,25 +26,18 @@ interface IProps {
 
 export default function index({ intervalTip, durationTip }: IProps) {
   const { t } = useTranslation('alertRules');
+  const prom_for_duration = Form.useWatch(['prom_for_duration']);
+
   return (
-    <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.cate !== curValues.cate} noStyle>
-      {({ getFieldValue }) => {
-        const cate = getFieldValue('cate');
-        return (
-          <Row gutter={10}>
-            <Col span={12}>
-              <Form.Item name='prom_eval_interval' label={t('prom_eval_interval')} tooltip={intervalTip ? intervalTip(getFieldValue('prom_eval_interval')) : undefined}>
-                <InputNumber min={1} style={{ width: '100%' }} />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item name='prom_for_duration' label={t('prom_for_duration')} tooltip={durationTip ? durationTip(getFieldValue('prom_for_duration')) : undefined}>
-                <InputNumber min={0} style={{ width: '100%' }} />
-              </Form.Item>
-            </Col>
-          </Row>
-        );
-      }}
-    </Form.Item>
+    <Row gutter={10}>
+      <Col span={12}>
+        <CronPattern name='cron_pattern' />
+      </Col>
+      <Col span={12}>
+        <Form.Item name='prom_for_duration' label={t('prom_for_duration')} tooltip={durationTip ? durationTip(prom_for_duration) : undefined}>
+          <InputNumber min={0} style={{ width: '100%' }} />
+        </Form.Item>
+      </Col>
+    </Row>
   );
 }
