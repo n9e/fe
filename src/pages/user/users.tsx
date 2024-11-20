@@ -22,7 +22,7 @@ import { SearchOutlined, UserOutlined, EyeOutlined, MoreOutlined } from '@ant-de
 import { ColumnsType } from 'antd/lib/table';
 import { useTranslation } from 'react-i18next';
 import { useAntdTable } from 'ahooks';
-import PageLayout from '@/components/pageLayout';
+import PageLayout, { HelpLink } from '@/components/pageLayout';
 import UserInfoModal from './component/createModal';
 import { getUserInfoList, deleteUser } from '@/services/manage';
 import { User, UserType, ActionType } from '@/store/manageInterface';
@@ -239,7 +239,15 @@ const Resource: React.FC = () => {
   });
 
   return (
-    <PageLayout title={t('user.title')} icon={<UserOutlined />}>
+    <PageLayout
+      title={
+        <Space>
+          {t('user.title')}
+          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/personnel-permissions/user-management/' />
+        </Space>
+      }
+      icon={<UserOutlined />}
+    >
       <div className='user-manage-content'>
         <div className='user-content n9e-border-base'>
           <Row className='event-table-search'>
