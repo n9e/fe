@@ -17,6 +17,8 @@ const zh_CN = {
   unit: '单位',
   and: '且',
   page_help: '使用说明',
+  yes: '是',
+  no: '否',
   host: {
     tags: '自定义标签',
     tags_tip: '用户在页面配置的标签，会追加到此机器上报的时序数据中',

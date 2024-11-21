@@ -17,6 +17,8 @@ const zh_HK = {
   unit: '單位',
   and: '且',
   page_help: '使用說明',
+  yes: '是',
+  no: '否',
   host: {
     tags: '自定義標籤',
     tags_tip: '用戶在頁面配置的標籤，會追加到此機器上報的時序數據中',
