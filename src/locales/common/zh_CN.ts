@@ -22,6 +22,8 @@ const zh_CN = {
     host_tags: '上报的标签',
     host_tags_tip: 'categraf global.labels 配置的标签，会出现在这里，会追加到此机器上报的时序数据中，categraf 需要升级到 v0.3.80 及以上版本，才支持此功能',
   },
+  yes: '是',
+  no: '否',
   btn: {
     add: '新增',
     create: '创建',
