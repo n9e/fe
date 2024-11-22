@@ -21,7 +21,6 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router';
 import { Link } from 'react-router-dom';
-import { getTextWidth } from '@/pages/dashboard/Renderer/Renderer/Hexbin/utils';
 import { addSubscribe, editSubscribe, deleteSubscribes } from '@/services/subscribe';
 import { getNotifiesList, getTeamInfoList } from '@/services/manage';
 import { subscribeItem } from '@/store/warningInterface/subscribe';
@@ -60,10 +59,6 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
   const redefineChannels = Form.useWatch(['redefine_channels'], form);
   const redefineWebhooks = Form.useWatch(['redefine_webhooks'], form);
   const new_channels = Form.useWatch(['new_channels'], form);
-  const whenText = t('when');
-  const andText = t('and');
-  const whenTextWidth = getTextWidth(whenText);
-  const andTextWidth = getTextWidth(andText);
 
   useEffect(() => {
     getNotifyChannel();
@@ -209,9 +204,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
             <div className='filter-settings-row-connector'>
               <div className='filter-settings-row-connector-line' />
               <div className='filter-settings-row-connector-text-container'>
-                <div className='filter-settings-row-connector-text' style={{ width: _.max([whenTextWidth, andTextWidth]) }}>
-                  {t('when')}
-                </div>
+                <div className='filter-settings-row-connector-text'>{t('and')}</div>
               </div>
             </div>
             <div className='filter-settings-row-content'>
@@ -239,9 +232,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
             <div className='filter-settings-row-connector'>
               <div className='filter-settings-row-connector-line' />
               <div className='filter-settings-row-connector-text-container'>
-                <div className='filter-settings-row-connector-text' style={{ width: _.max([whenTextWidth, andTextWidth]) }}>
-                  {t('and')}
-                </div>
+                <div className='filter-settings-row-connector-text'>{t('and')}</div>
               </div>
             </div>
             <div className='filter-settings-row-content'>
@@ -275,9 +266,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
             <div className='filter-settings-row-connector'>
               <div className='filter-settings-row-connector-line' />
               <div className='filter-settings-row-connector-text-container'>
-                <div className='filter-settings-row-connector-text' style={{ width: _.max([whenTextWidth, andTextWidth]) }}>
-                  {t('and')}
-                </div>
+                <div className='filter-settings-row-connector-text'>{t('and')}</div>
               </div>
             </div>
             <div className='filter-settings-row-content'>
@@ -313,9 +302,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
             <div className='filter-settings-row-connector'>
               <div className='filter-settings-row-connector-line' />
               <div className='filter-settings-row-connector-text-container'>
-                <div className='filter-settings-row-connector-text' style={{ width: _.max([whenTextWidth, andTextWidth]) }}>
-                  {t('and')}
-                </div>
+                <div className='filter-settings-row-connector-text'>{t('and')}</div>
               </div>
             </div>
             <div className='filter-settings-row-content'>
@@ -351,9 +338,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
           <div className='filter-settings-row'>
             <div className='filter-settings-row-connector'>
               <div className='filter-settings-row-connector-text-container'>
-                <div className='filter-settings-row-connector-text' style={{ width: _.max([whenTextWidth, andTextWidth]) }}>
-                  {t('and')}
-                </div>
+                <div className='filter-settings-row-connector-text'>{t('and')}</div>
               </div>
             </div>
             <div className='filter-settings-row-content'>

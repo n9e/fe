@@ -55,7 +55,6 @@ const ja_JP = {
   note: 'サブスクライブ名',
   filter_configs: 'フィルター設定',
   notify_configs: '通知設定',
-  when: 'とき',
   and: 'および',
 };
 

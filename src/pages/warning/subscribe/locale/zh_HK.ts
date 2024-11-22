@@ -55,7 +55,6 @@ const zh_HK = {
   note: '訂閱名稱',
   filter_configs: '篩選配置',
   notify_configs: '通知配置',
-  when: '當',
   and: '且',
 };
 

@@ -57,7 +57,6 @@ const zh_CN = {
   note: '订阅名称',
   filter_configs: '筛选配置',
   notify_configs: '通知配置',
-  when: '当',
   and: '且',
 };
 export default zh_CN;
