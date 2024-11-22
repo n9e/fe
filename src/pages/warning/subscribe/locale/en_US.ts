@@ -55,7 +55,6 @@ const en_US = {
   note: 'Name',
   filter_configs: 'Filter Settings',
   notify_configs: 'Notification Settings',
-  when: 'When',
   and: 'And',
 };
 export default en_US;
