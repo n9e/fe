@@ -84,6 +84,7 @@ export default function Stat(props: IProps) {
         grid,
         orientation,
         textMode,
+        valueField,
       });
     }
     return {
