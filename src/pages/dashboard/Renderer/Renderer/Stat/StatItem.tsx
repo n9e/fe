@@ -117,7 +117,7 @@ export default function StatItem(props: Props) {
           </div>
         )}
         <div className='renderer-stat-item-content'>
-          {(textMode === 'valueAndName' || textMode === 'name') && (
+          {item.name && (textMode === 'valueAndName' || textMode === 'name') && (
             <div
               className='renderer-stat-header'
               style={{
