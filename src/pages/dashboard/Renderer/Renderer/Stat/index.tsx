@@ -78,7 +78,14 @@ export default function Stat(props: IProps) {
   let yGrid = 0;
   const minFontSize = useMemo(() => {
     if (eleSize?.width && eleSize?.height) {
-      return getMinFontSizeByList(calculatedValues, eleSize?.width, eleSize?.height, grid, orientation);
+      return getMinFontSizeByList(calculatedValues, {
+        width: eleSize?.width,
+        height: eleSize?.height,
+        grid,
+        orientation,
+        textMode,
+        valueField,
+      });
     }
     return {
       name: 12,
