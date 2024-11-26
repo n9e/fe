@@ -64,6 +64,8 @@ const zh_HK = {
     searchPlaceholder: '搜索歷史記錄',
   },
   help: '使用說明',
+  share_tip: '點擊複製分享鏈接',
+  share_tip_2: '點擊複製分享鏈接, 目前僅支持分享日誌原文查詢',
 };
 
 export default zh_HK;

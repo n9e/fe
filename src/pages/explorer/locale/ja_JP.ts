@@ -64,6 +64,8 @@ const ja_JP = {
     searchPlaceholder: '歴史レコードを検索',
   },
   help: 'データソースヘルプを表示',
+  share_tip: 'クリックして共有リンクをコピー',
+  share_tip_2: 'クリックして共有リンクをコピー、現在はログの元のクエリのみを共有できます',
 };
 
 export default ja_JP;
