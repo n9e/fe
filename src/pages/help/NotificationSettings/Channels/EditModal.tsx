@@ -1,6 +1,7 @@
 import React from 'react';
 import { Modal, Form, Input, Switch } from 'antd';
 import { useTranslation } from 'react-i18next';
+import _ from 'lodash';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { ChannelType } from '../types';
 
@@ -21,12 +22,23 @@ function EditModal(props: ModalWrapProps & IProps) {
       onCancel={destroy}
       onOk={() => {
         form.validateFields().then((values) => {
-          props.onOk(values);
+          const hide = !values.enabled;
+          props.onOk({
+            ..._.omit(values, 'enabled'),
+            hide,
+          } as ChannelType);
           destroy();
         });
       }}
     >
-      <Form layout='vertical' form={form} initialValues={initialValues}>
+      <Form
+        layout='vertical'
+        form={form}
+        initialValues={{
+          ...initialValues,
+          enabled: !initialValues?.hide,
+        }}
+      >
         <Form.Item
           label={t('channels.name')}
           name='name'
@@ -49,7 +61,7 @@ function EditModal(props: ModalWrapProps & IProps) {
         >
           <Input disabled={initialValues?.built_in} />
         </Form.Item>
-        <Form.Item label={t('channels.hide')} name='hide' valuePropName='checked'>
+        <Form.Item label={t('channels.enabled')} name='enabled' valuePropName='checked'>
           <Switch />
         </Form.Item>
         <Form.Item name='built_in' hidden noStyle initialValue={false}>
