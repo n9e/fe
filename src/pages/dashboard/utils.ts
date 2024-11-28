@@ -22,6 +22,15 @@ import { IDashboardConfig, IVariable } from './types';
 import { defaultValues, calcsOptions } from './Editor/config';
 import updateSchema from './updateSchema';
 
+// @ts-ignore
+import convertVariableQuery from 'plus:/utils/convertDashboardGrafanaToN9E/convertVariableQuery';
+// @ts-ignore
+import convertVariableDefault from 'plus:/utils/convertDashboardGrafanaToN9E/convertVariableDefault';
+// @ts-ignore
+import convertPanleTarget from 'plus:/utils/convertDashboardGrafanaToN9E/convertPanleTarget';
+// @ts-ignore
+import convertDatasource from 'plus:/utils/convertDashboardGrafanaToN9E/convertDatasource';
+
 export function JSONParse(str) {
   if (str) {
     try {
@@ -115,30 +124,37 @@ function convertVariablesGrafanaToN9E(templates: any, __inputs: any[], data: any
     })
     .map((item) => {
       if (item.type === 'query') {
-        let definition = item.definition;
-        if (typeof item.query === 'string') {
-          definition = item.query;
-        } else if (typeof item.query?.query === 'string') {
-          definition = item.query.query;
-        }
-        _.forEach(varWithUnitMap, (val, key) => {
-          definition = _.replace(definition, key, val);
-        });
         const varObj: any = {
           type: 'query',
           name: item.name,
-          definition,
+          label: item.label,
           allValue: item.allValue,
           allOption: item.includeAll,
           multi: item.multi,
           reg: item.regex,
           hide: item.hide === 0 ? false : true,
         };
-        const datasource = convertDatasourceGrafanaToN9E(item, templates.list);
-        varObj.datasource = {
-          cate: datasource.datasourceCate,
-          value: datasource.datasourceValue,
-        };
+        if (item.datasource?.type === 'prometheus') {
+          varObj.definition = item.definition;
+          if (typeof item.query === 'string') {
+            varObj.definition = item.query;
+          } else if (typeof item.query?.query === 'string') {
+            varObj.definition = item.query.query;
+          }
+          const datasource = convertDatasourceGrafanaToN9E(item, templates.list);
+          varObj.datasource = {
+            cate: datasource.datasourceCate,
+            value: datasource.datasourceValue,
+          };
+        } else {
+          const { definition, datasource } = convertVariableQuery(item);
+          varObj.definition = definition;
+          varObj.datasource = datasource;
+        }
+        // 转换一些内置变量
+        _.forEach(varWithUnitMap, (val, key) => {
+          varObj.definition = _.replace(varObj.definition, key, val);
+        });
         return varObj;
       } else if (item.type === 'custom') {
         return {
@@ -183,6 +199,7 @@ function convertVariablesGrafanaToN9E(templates: any, __inputs: any[], data: any
       };
     })
     .value();
+  // 检查是否内置默认数据源
   _.forEach(__inputs, (item) => {
     if (item.type === 'datasource') {
       vars.unshift({
@@ -192,17 +209,21 @@ function convertVariablesGrafanaToN9E(templates: any, __inputs: any[], data: any
       });
     }
   });
-  if (
-    !_.some(vars, { type: 'datasource' }) &&
-    _.some(data.panels, (panel) => {
-      return _.toLower(panel?.datasource?.type) !== 'prometheus';
-    })
-  ) {
-    vars.unshift({
-      type: 'datasource',
-      name: 'datasource',
-      definition: 'prometheus',
+  // 检查是否有数据源变量，没有的话就以第一个 panel 的数据源作为默认数据源
+  if (!_.some(vars, { type: 'datasource' })) {
+    const panels = _.filter(data.panels, (panel) => {
+      return panel.type !== 'row';
     });
+    const headPanel = _.head(panels);
+    if (headPanel?.datasource?.type === 'prometheus') {
+      vars.unshift({
+        type: 'datasource',
+        name: 'datasource',
+        definition: 'prometheus',
+      });
+    } else {
+      convertVariableDefault(headPanel, vars);
+    }
   }
   return vars;
 }
@@ -322,22 +343,21 @@ function convertDatasourceGrafanaToN9E(panel: any, vars: any[]) {
     defaultDatasourceValue = `\${${firstDatasource.name}}`;
   }
   const reg = /^\${[0-9a-zA-Z_]+}$/;
-  if (_.toLower(panel?.datasource?.type) === 'prometheus') {
-    return {
-      datasourceCate: 'prometheus',
-      datasourceValue: reg.test(panel.datasource.uid) ? panel.datasource.uid : defaultDatasourceValue,
-    };
-  }
+  // 兼容旧版本
   if (typeof panel.datasource === 'string' && reg.test(panel.datasource)) {
     return {
       datasourceCate: 'prometheus',
       datasourceValue: panel.datasource,
     };
   }
-  return {
-    datasourceCate: 'prometheus',
-    datasourceValue: defaultDatasourceValue,
-  };
+  if (_.toLower(panel?.datasource?.type) === 'prometheus') {
+    return {
+      datasourceCate: 'prometheus',
+      datasourceValue: reg.test(panel.datasource.uid) ? panel.datasource.uid : defaultDatasourceValue,
+    };
+  } else {
+    return convertDatasource(panel);
+  }
 }
 
 function convertPanlesGrafanaToN9E(panels: any, vars: any) {
@@ -381,14 +401,6 @@ function convertPanlesGrafanaToN9E(panels: any, vars: any) {
     },
   };
   return _.chain(panels)
-    .filter((item) => {
-      if (item.targets && item.type !== 'row') {
-        return _.every(item.targets, (subItem) => {
-          return !!subItem.expr;
-        });
-      }
-      return true;
-    })
     .map((item) => {
       const uid = uuidv4();
       if (item.type === 'row') {
@@ -417,16 +429,24 @@ function convertPanlesGrafanaToN9E(panels: any, vars: any) {
           i: uid,
         },
         targets: _.chain(item.targets)
-          .filter((item) => {
-            // TODO: 目前只能丢掉被隐藏的 query
-            return item.hide !== true;
+          .filter((targetItem) => {
+            if (item.datasource?.uid === '-- Mixed --') {
+              // 暂不支持混合数据源，这里直接过滤掉
+              return false;
+            }
+            // 暂不支持 prometheus 和 postgres 以外的数据源
+            return _.includes(['prometheus', 'postgres'], targetItem.datasource?.type);
           })
-          .map((item) => {
-            return {
-              refId: item.refId,
-              expr: item.expr,
-              legend: item.legendFormat,
-            };
+          .map((targetItem) => {
+            if (targetItem.datasource?.type === 'prometheus') {
+              return {
+                refId: targetItem.refId,
+                expr: targetItem.expr,
+                legend: targetItem.legendFormat,
+              };
+            } else {
+              return convertPanleTarget(targetItem);
+            }
           })
           .value(),
         options: convertOptionsGrafanaToN9E(item),

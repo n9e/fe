@@ -23,10 +23,11 @@ import { IRawTimeRange } from '@/components/TimeRangePicker';
 import ClusterSelect from '@/pages/dashboard/Editor/QueryEditor/components/ClusterSelect';
 import { CommonStateContext } from '@/App';
 import { Dashboard } from '@/store/dashboardInterface';
+import DocumentDrawer from '@/components/DocumentDrawer';
+import { allCates } from '@/components/AdvancedWrap/utils';
 import { IVariable } from './definition';
 import { stringToRegex } from './constant';
 import ElasticsearchSettings from './datasource/elasticsearch';
-import DocumentDrawer from '@/components/DocumentDrawer';
 
 interface IProps {
   id: string;
@@ -68,17 +69,6 @@ const typeOptions = [
   {
     label: 'Business group ident',
     value: 'businessGroupIdent',
-  },
-];
-
-const allOptions = [
-  {
-    value: 'prometheus',
-    label: 'Prometheus',
-  },
-  {
-    value: 'elasticsearch',
-    label: 'Elasticsearch',
   },
 ];
 
@@ -179,11 +169,16 @@ function EditItem(props: IProps) {
                               });
                             }}
                           >
-                            {_.map(allOptions, (item) => (
-                              <Select.Option key={item.value} value={item.value}>
-                                {item.label}
-                              </Select.Option>
-                            ))}
+                            {_.map(
+                              _.filter(allCates, (item) => {
+                                return item.dashboardVariable;
+                              }),
+                              (item) => (
+                                <Select.Option key={item.value} value={item.value}>
+                                  {item.label}
+                                </Select.Option>
+                              ),
+                            )}
                           </Select>
                         </Form.Item>
                       </Col>
@@ -209,24 +204,25 @@ function EditItem(props: IProps) {
                 {datasourceCate === 'elasticsearch' && <ElasticsearchSettings vars={vars} id={id} />}
                 <Form.Item
                   label={
-                    <span>
-                      {t('var.definition')}{' '}
-                      <QuestionCircleOutlined
-                        style={{ marginLeft: 5 }}
-                        onClick={() => {
-                          if (datasourceCate === 'prometheus') {
-                            window.open('https://flashcat.cloud/media/?type=夜莺监控&source=aHR0cHM6Ly9kb3dubG9hZC5mbGFzaGNhdC5jbG91ZC9uOWUtMTMtZGFzaGJvYXJkLWludHJvLm1wNA==');
-                          } else if (datasourceCate === 'elasticsearch') {
-                            DocumentDrawer({
-                              language: i18n.language,
-                              darkMode,
-                              title: t('var.definition'),
-                              documentPath: '/docs/elasticsearch-template-variables',
-                            });
-                          }
-                        }}
-                      />
-                    </span>
+                    <Space>
+                      {t('var.definition')}
+                      {_.includes(['prometheus', 'elasticsearch'], datasourceCate) && (
+                        <QuestionCircleOutlined
+                          onClick={() => {
+                            if (datasourceCate === 'prometheus') {
+                              window.open('https://flashcat.cloud/media/?type=夜莺监控&source=aHR0cHM6Ly9kb3dubG9hZC5mbGFzaGNhdC5jbG91ZC9uOWUtMTMtZGFzaGJvYXJkLWludHJvLm1wNA==');
+                            } else if (datasourceCate === 'elasticsearch') {
+                              DocumentDrawer({
+                                language: i18n.language,
+                                darkMode,
+                                title: t('var.definition'),
+                                documentPath: '/docs/elasticsearch-template-variables',
+                              });
+                            }
+                          }}
+                        />
+                      )}
+                    </Space>
                   }
                   name='definition'
                   rules={[
@@ -252,7 +248,7 @@ function EditItem(props: IProps) {
                   ]}
                   required
                 >
-                  <Input />
+                  <Input.TextArea autoSize={{ minRows: 2, maxRows: 6 }} />
                 </Form.Item>
                 <Form.Item
                   label={t('var.reg')}

@@ -148,12 +148,11 @@ export default function DisplayItem(props: IProps) {
                 All
               </Select.Option>
             )}
-            {options &&
-              options.map((value) => (
-                <Select.Option key={value} value={value} style={{ maxWidth: 500 }}>
-                  {value}
-                </Select.Option>
-              ))}
+            {_.map(options, (item) => (
+              <Select.Option key={item.value} value={item.value} style={{ maxWidth: 500 }}>
+                {item.label}
+              </Select.Option>
+            ))}
           </Select>
         ) : null}
         {type === 'textbox' ? (
@@ -245,9 +244,9 @@ export default function DisplayItem(props: IProps) {
                 all
               </Select.Option>
             )}
-            {_.map(options, (value) => (
-              <Select.Option key={value} value={value} style={{ maxWidth: 500 }}>
-                {value}
+            {_.map(options, (item) => (
+              <Select.Option key={item.value} value={item.value} style={{ maxWidth: 500 }}>
+                {item.label}
               </Select.Option>
             ))}
           </Select>
