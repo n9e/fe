@@ -51,7 +51,9 @@ export default function index({ targets, matcherNames = ['byFrameRefID', 'byName
                   <PlusCircleOutlined
                     onClick={() => {
                       add({
-                        type: 'special',
+                        matcher: {
+                          id: 'byFrameRefID',
+                        },
                       });
                     }}
                   />
