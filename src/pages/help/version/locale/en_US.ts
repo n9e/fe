@@ -1,5 +1,5 @@
 const en_US = {
-  title: 'System Version',
+  title: 'About Product',
   frontend: 'Frontend Version',
   backend: 'Backend Version',
 };
