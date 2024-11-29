@@ -42,7 +42,9 @@ export default function index({ targets }) {
                   <PlusCircleOutlined
                     onClick={() => {
                       add({
-                        type: 'special',
+                        matcher: {
+                          id: 'byFrameRefID',
+                        },
                       });
                     }}
                   />
