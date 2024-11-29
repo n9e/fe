@@ -21,7 +21,8 @@ import PageLayout from '@/components/pageLayout';
 import SystemInfoSvg from '../../../../public/image/system-info.svg';
 import pkgJson from '../../../../package.json';
 import './locale';
-
+// @ts-ignore
+import LicenseInfo from 'plus:/parcels/LicenseInfo';
 export default function version() {
   const { t } = useTranslation('version');
   const [backendVersion, setBackendVersion] = useState('');
@@ -53,6 +54,7 @@ export default function version() {
             {t('backend')}：{backendVersion}
           </li>
         </ul>
+        <LicenseInfo />
       </div>
     </PageLayout>
   );
