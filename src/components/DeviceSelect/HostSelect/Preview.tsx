@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { Modal, Table, Button, Tag } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { getTargetList } from '@/services/targets';
 
 interface IProps {
   queries: any[];
+  children?: React.ReactNode;
+  targetType?: string;
 }
 
 export default function Preview(props: IProps) {
   const { t } = useTranslation('DeviceSelect');
-  const { queries } = props;
+  const { queries, children, targetType = 'button' } = props;
   const [visible, setVisible] = useState<boolean>(false);
   const [data, setData] = useState<any[]>([]);
   const [total, setTotal] = useState<number>(0);
@@ -108,16 +111,27 @@ export default function Preview(props: IProps) {
           }}
         />
       </Modal>
-      <Button
-        size='small'
-        type='primary'
-        ghost
-        onClick={() => {
-          setVisible(true);
-        }}
-      >
-        {t('host.preview')}
-      </Button>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        {children}
+        {targetType === 'button' ? (
+          <Button
+            size='small'
+            type='primary'
+            ghost
+            onClick={() => {
+              setVisible(true);
+            }}
+          >
+            {t('host.preview')}
+          </Button>
+        ) : (
+          <SearchOutlined
+            onClick={() => {
+              setVisible(true);
+            }}
+          />
+        )}
+      </div>
     </div>
   );
 }

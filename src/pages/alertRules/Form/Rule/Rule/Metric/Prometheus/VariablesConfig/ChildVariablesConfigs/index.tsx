@@ -5,7 +5,9 @@ import { useTranslation } from 'react-i18next';
 import { Space, Tooltip, Form, Table, Button } from 'antd';
 import { InfoCircleOutlined, PlusCircleOutlined, EditOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import HostSelectPreview from '@/components/DeviceSelect/HostSelect/Preview';
+import HostSelectQueryRender from '@/components/DeviceSelect/HostSelect/QueryRender';
 import NetworkDeviceSelectPreview from '@/components/DeviceSelect/NetworkDeviceSelect/Preview';
+import NetworkDeviceSelectQueryRender from '@/components/DeviceSelect/NetworkDeviceSelect/QueryRender';
 import EditModal from '../EditModal';
 import ChildVariablesConfigs from './';
 
@@ -107,6 +109,7 @@ export default function index(props: Props) {
               rowKey={(record, index) => {
                 return JSON.stringify(record) + index;
               }}
+              tableLayout='fixed'
               size='small'
               pagination={false}
               columns={_.concat(
@@ -119,13 +122,21 @@ export default function index(props: Props) {
                       if (val) {
                         const param_type = _.find(topParam, { name: item })?.param_type;
                         return (
-                          <Space>
-                            <span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <div style={{ width: 'max-content', minWidth: 0 }}>
                               {param_type === 'threshold' && val.query}
                               {param_type === 'enum' && _.join(val.query, ',')}
-                              {param_type === 'host' && <HostSelectPreview queries={val.query} />}
-                              {param_type === 'device' && <NetworkDeviceSelectPreview queries={val.query} />}
-                            </span>
+                              {param_type === 'host' && (
+                                <HostSelectPreview queries={val.query} targetType='icon'>
+                                  <HostSelectQueryRender queries={val.query} maxLength={1000 / getColumnKeys(childVarConfigs.param_val).length} />
+                                </HostSelectPreview>
+                              )}
+                              {param_type === 'device' && (
+                                <NetworkDeviceSelectPreview queries={val.query} targetType='icon'>
+                                  <NetworkDeviceSelectQueryRender queries={val.query} maxLength={1000 / getColumnKeys(childVarConfigs.param_val).length} />
+                                </NetworkDeviceSelectPreview>
+                              )}
+                            </div>
                             <EditOutlined
                               onClick={() => {
                                 setEditModalData({
@@ -138,7 +149,7 @@ export default function index(props: Props) {
                                 });
                               }}
                             />
-                          </Space>
+                          </div>
                         );
                       }
                     },

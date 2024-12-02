@@ -5,7 +5,9 @@ import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import { PlusCircleOutlined, InfoCircleOutlined, EditOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import HostSelectPreview from '@/components/DeviceSelect/HostSelect/Preview';
+import HostSelectQueryRender from '@/components/DeviceSelect/HostSelect/QueryRender';
 import NetworkDeviceSelectPreview from '@/components/DeviceSelect/NetworkDeviceSelect/Preview';
+import NetworkDeviceSelectQueryRender from '@/components/DeviceSelect/NetworkDeviceSelect/QueryRender';
 import EditModal from './EditModal';
 
 interface Props {
@@ -70,14 +72,17 @@ export default function index(props: Props) {
           <Table
             rowKey='name'
             size='small'
+            tableLayout='fixed'
             columns={[
               {
                 title: t('var_config.name'),
                 dataIndex: 'name',
+                width: 100,
               },
               {
                 title: t('var_config.type'),
                 dataIndex: 'param_type',
+                width: 100,
                 render: (text) => {
                   return t(`var_config.${text}`);
                 },
@@ -93,15 +98,24 @@ export default function index(props: Props) {
                     return _.join(val, ',');
                   }
                   if (record.param_type === 'host') {
-                    return <HostSelectPreview queries={val} />;
+                    return (
+                      <HostSelectPreview queries={val} targetType='icon'>
+                        <HostSelectQueryRender queries={val} />
+                      </HostSelectPreview>
+                    );
                   }
                   if (record.param_type === 'device') {
-                    return <NetworkDeviceSelectPreview queries={val} />;
+                    return (
+                      <NetworkDeviceSelectPreview queries={val} targetType='icon'>
+                        <NetworkDeviceSelectQueryRender queries={val} />
+                      </NetworkDeviceSelectPreview>
+                    );
                   }
                 },
               },
               {
                 title: t('common:table.operations'),
+                width: 100,
                 render: (record) => {
                   return (
                     <Space>

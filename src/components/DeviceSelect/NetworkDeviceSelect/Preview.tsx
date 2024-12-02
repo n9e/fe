@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import _ from 'lodash';
 import { Modal, Table, Button } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { CommonStateContext } from '@/App';
 
@@ -9,12 +10,14 @@ import { getNetworkDevicesList } from 'plus:/pages/networkDevices/services';
 
 interface Props {
   queries: any[];
+  children?: React.ReactNode;
+  targetType?: string;
 }
 
 export default function Preview(props: Props) {
   const { t } = useTranslation('DeviceSelect');
   const { busiGroups } = useContext(CommonStateContext);
-  const { queries } = props;
+  const { queries, children, targetType = 'button' } = props;
   const [visible, setVisible] = useState<boolean>(false);
   const [data, setData] = useState<any[]>([]);
   const [total, setTotal] = useState<number>(0);
@@ -77,16 +80,27 @@ export default function Preview(props: Props) {
           }}
         />
       </Modal>
-      <Button
-        size='small'
-        type='primary'
-        ghost
-        onClick={() => {
-          setVisible(true);
-        }}
-      >
-        {t('network_device.preview')}
-      </Button>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        {children}
+        {targetType === 'button' ? (
+          <Button
+            size='small'
+            type='primary'
+            ghost
+            onClick={() => {
+              setVisible(true);
+            }}
+          >
+            {t('network_device.preview')}
+          </Button>
+        ) : (
+          <SearchOutlined
+            onClick={() => {
+              setVisible(true);
+            }}
+          />
+        )}
+      </div>
     </div>
   );
 }
