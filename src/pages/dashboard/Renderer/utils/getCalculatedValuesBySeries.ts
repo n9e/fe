@@ -210,7 +210,7 @@ const getCalculatedValuesBySeries = (
 
 export const getLegendValues = (series: any[], standardOptions, hexPalette: string[], stack = false, valueMappings?: IValueMapping[], overrides?: IOverride[]) => {
   let { decimals, dateFormat } = standardOptions || {};
-  let unit = standardOptions.unit || standardOptions.util; // TODO: 兼容之前写错的 util
+  let unit = standardOptions?.unit || standardOptions?.util; // TODO: 兼容之前写错的 util
   const newSeries = stack ? _.reverse(_.clone(series)) : series;
   const values = _.map(newSeries, (serie, idx) => {
     const override = _.find(overrides, (item) => item.matcher.value === serie.refId);
