@@ -73,3 +73,4 @@ export const N9E_PATHNAME = IS_PLUS ? 'n9e-plus' : 'n9e';
 export const IS_ENT = import.meta.env.VITE_IS_ENT === 'true';
 export const AccessTokenKey = 'access_token';
 export const PRIMARY_COLOR = '#6C53B1';
+export const SIZE = 8;
