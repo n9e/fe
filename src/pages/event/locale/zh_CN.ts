@@ -62,7 +62,7 @@ const zh_CN = {
     rule_algo: '告警方式',
     rule_algo_anomaly: '智能告警',
     rule_algo_threshold: '阈值告警',
-    prom_eval_interval: '执行频率',
+    cron_pattern: '执行频率',
     prom_for_duration: '持续时长',
     notify_channels: '通知渠道',
     notify_groups_obj: '告警接收组',

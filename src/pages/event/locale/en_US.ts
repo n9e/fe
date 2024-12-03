@@ -62,7 +62,7 @@ const en_US = {
     rule_algo: 'Alert Type',
     rule_algo_anomaly: 'Anomaly',
     rule_algo_threshold: 'Threshold',
-    prom_eval_interval: 'Execution frequency',
+    cron_pattern: 'Execution frequency',
     prom_for_duration: 'Duration',
     notify_channels: 'Receiving Channels',
     notify_groups_obj: 'Receiving Groups',
