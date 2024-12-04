@@ -32,7 +32,7 @@ export default function QueryRender(props: IProps) {
           );
         }
       }
-      return `${key}${op}${values ? `"${values}"` : ''}`;
+      return `${key}${op}${values ? `[${values}]` : ''}`;
     }),
     ' ',
   );
