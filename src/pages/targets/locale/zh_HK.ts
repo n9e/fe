@@ -66,6 +66,8 @@ const zh_HK = {
       add: '追加',
       del: '刪除',
     },
+    tags: '綁定標籤',
+    tags_tip: '為空不會覆蓋之前的標籤',
   },
   remove_busi: {
     title: '移出業務組',
