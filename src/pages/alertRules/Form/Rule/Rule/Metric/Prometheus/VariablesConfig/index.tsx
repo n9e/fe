@@ -4,6 +4,7 @@ import { FormListFieldData } from 'antd/lib/form/FormList';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import { PlusCircleOutlined, InfoCircleOutlined, EditOutlined, MinusCircleOutlined } from '@ant-design/icons';
+import { HelpLink } from '@/components/pageLayout';
 import HostSelectPreview from '@/components/DeviceSelect/HostSelect/Preview';
 import HostSelectQueryRender from '@/components/DeviceSelect/HostSelect/QueryRender';
 import NetworkDeviceSelectPreview from '@/components/DeviceSelect/NetworkDeviceSelect/Preview';
@@ -64,9 +65,7 @@ export default function index(props: Props) {
                   });
                 }}
               />
-              <Tooltip title={t('var_config.config_tip')}>
-                <InfoCircleOutlined />
-              </Tooltip>
+              <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/alarm-management/alert-rules/alert-promql-var-set/' />
             </Space>
           </div>
           <Table
