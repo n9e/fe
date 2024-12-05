@@ -21,8 +21,8 @@ interface ChildVariable {
  * 如果 topVariables 中的变量在 childVariables.param_val 中不存在则新增。
  * 如果存在 childVariables.child_var_configs 递归更新 childVariables.child_var_configs
  */
-export default function syncChildVariables(topVariables: Variable[], childVariables: ChildVariable) {
-  const childVariablesCopy = _.cloneDeep(childVariables);
+export default function syncChildVariables(topVariables: Variable[], childVariables?: ChildVariable) {
+  const childVariablesCopy = _.cloneDeep(childVariables) || ({} as ChildVariable);
 
   childVariablesCopy.param_val = _.map(childVariablesCopy.param_val, (item) => {
     // 同步 topVariables 的变量名
