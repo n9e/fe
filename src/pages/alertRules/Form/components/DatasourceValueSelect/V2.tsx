@@ -122,6 +122,7 @@ function Query({ names, field, remove, invalidDatasourceIds, datasourceList, dis
                     label: item.name,
                   };
                 })}
+                optionFilterProp='label'
               />
             </Form.Item>
           </Col>

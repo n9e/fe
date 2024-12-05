@@ -44,6 +44,9 @@ export default function EditModal(props: Props) {
       }}
     >
       <Form form={form} layout='vertical'>
+        <Form.Item name='id' hidden>
+          <Input />
+        </Form.Item>
         <Row gutter={8}>
           <Col span={12}>
             <Form.Item
