@@ -1,19 +1,28 @@
 import React from 'react';
-import { Form, Space, Switch, Table, Tooltip, Button } from 'antd';
+import { Form, Space, Switch, Table, Button } from 'antd';
 import { FormListFieldData } from 'antd/lib/form/FormList';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
-import { PlusCircleOutlined, InfoCircleOutlined, EditOutlined, MinusCircleOutlined } from '@ant-design/icons';
+import moment from 'moment';
+import { PlusCircleOutlined, EditOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { HelpLink } from '@/components/pageLayout';
 import HostSelectPreview from '@/components/DeviceSelect/HostSelect/Preview';
 import HostSelectQueryRender from '@/components/DeviceSelect/HostSelect/QueryRender';
 import NetworkDeviceSelectPreview from '@/components/DeviceSelect/NetworkDeviceSelect/Preview';
 import NetworkDeviceSelectQueryRender from '@/components/DeviceSelect/NetworkDeviceSelect/QueryRender';
 import EditModal from './EditModal';
+import syncChildVariables from './utils/syncChildVariables';
 
 interface Props {
   prefixName: (string | number)[];
   field: FormListFieldData;
+}
+
+function setChildVarConfigs(values, namePath, childVarConfigsNamePath) {
+  const newNamePathValues = _.get(values, namePath, []);
+  const childVarConfigsNamePathValues = _.get(values, childVarConfigsNamePath);
+  const newChildVarConfigsNamePathValue = syncChildVariables(newNamePathValues, childVarConfigsNamePathValues);
+  _.set(values, childVarConfigsNamePath, newChildVarConfigsNamePathValue);
 }
 
 export default function index(props: Props) {
@@ -21,6 +30,7 @@ export default function index(props: Props) {
   const { prefixName, field } = props;
   const form = Form.useFormInstance();
   const namePath = [...prefixName, field.name, 'var_config', 'param_val'];
+  const childVarConfigsNamePath = [...prefixName, field.name, 'var_config', 'child_var_configs'];
   const var_enabled = Form.useWatch([...prefixName, field.name, 'var_enabled']);
   const var_config = Form.useWatch(namePath);
   const [editModalData, setEditModalData] = React.useState<{
@@ -61,6 +71,7 @@ export default function index(props: Props) {
                     visible: true,
                     data: {
                       param_type: 'threshold',
+                      id: moment().valueOf(),
                     },
                   });
                 }}
@@ -142,12 +153,13 @@ export default function index(props: Props) {
                         onClick={() => {
                           const values = _.cloneDeep(form.getFieldsValue());
                           const namePathValues = _.get(values, namePath, []);
-                          const index = _.findIndex(namePathValues, { name: record.name });
+                          const index = _.findIndex(namePathValues, { id: record.id });
                           _.set(
                             values,
                             namePath,
                             _.filter(namePathValues, (v, i: number) => i !== index),
                           );
+                          setChildVarConfigs(values, namePath, childVarConfigsNamePath);
                           form.setFieldsValue(values);
                         }}
                         icon={<MinusCircleOutlined />}
@@ -177,9 +189,10 @@ export default function index(props: Props) {
           if (editModalData.action === 'create') {
             _.set(values, namePath, _.concat(namePathValues, [vals]));
           } else if (editModalData.action === 'edit') {
-            const index = _.findIndex(namePathValues, { name: vals.name });
+            const index = _.findIndex(namePathValues, { id: vals.id });
             _.set(values, [...namePath, index], vals);
           }
+          setChildVarConfigs(values, namePath, childVarConfigsNamePath);
           form.setFieldsValue(values);
           setEditModalData({
             action: 'create',

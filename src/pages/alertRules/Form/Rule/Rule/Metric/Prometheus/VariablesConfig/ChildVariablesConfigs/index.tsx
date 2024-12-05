@@ -22,19 +22,12 @@ interface Props {
 function baseVariablesToRowData(data) {
   const rowData = {};
   _.forEach(data, (item) => {
-    rowData[item.name] = {
-      param_type: item.param_type,
-      query: item.query,
-    };
+    rowData[item.name] = item;
   });
   return rowData;
 }
-function getColumnKeys(data) {
-  let keys: string[] = [];
-  _.forEach(data, (item) => {
-    keys = _.concat(keys, _.keys(item));
-  });
-  return _.uniq(keys);
+function getColumnKeys(topParam) {
+  return _.map(topParam, 'name');
 }
 
 export default function index(props: Props) {
@@ -98,7 +91,7 @@ export default function index(props: Props) {
             </Space>
           </div>
         )}
-        {childVarConfigs !== undefined && childVarConfigs?.param_val !== undefined && (
+        {childVarConfigs !== undefined && childVarConfigs?.param_val !== undefined && !_.isEmpty(childVarConfigs?.param_val) && (
           <div
             className='mb1 p1'
             style={{
@@ -113,14 +106,14 @@ export default function index(props: Props) {
               size='small'
               pagination={false}
               columns={_.concat(
-                _.map(getColumnKeys(childVarConfigs.param_val), (item) => {
+                _.map(getColumnKeys(topParam), (item) => {
                   return {
                     title: item,
                     dataIndex: item,
                     key: item,
                     render: (val, _record, index) => {
                       if (val) {
-                        const param_type = _.find(topParam, { name: item })?.param_type;
+                        const { param_type } = val;
                         return (
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                             <div style={{ width: 'max-content', minWidth: 0 }}>
@@ -142,10 +135,7 @@ export default function index(props: Props) {
                                 setEditModalData({
                                   paramValIndex: index,
                                   visible: true,
-                                  data: {
-                                    ...val,
-                                    name: item,
-                                  },
+                                  data: val,
                                 });
                               }}
                             />
@@ -209,10 +199,7 @@ export default function index(props: Props) {
             param_val: _.map(curConf.param_val, (item, index: number) => {
               if (index === editModalData.paramValIndex) {
                 const itemClone = _.cloneDeep(item);
-                itemClone[vals.name] = {
-                  param_type: vals.param_type,
-                  query: vals.query,
-                };
+                itemClone[vals.name] = vals;
                 return itemClone;
               }
               return item;
