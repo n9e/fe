@@ -9,11 +9,12 @@ interface IProps {
   name?: string | string[];
   label?: React.ReactNode;
   datasourceVars?: any[];
+  disabled?: boolean;
 }
 
 export default function index(props: IProps) {
   const { t } = useTranslation('dashboard');
-  const { cate, name = 'datasourceValue', label, datasourceVars } = props;
+  const { cate, name = 'datasourceValue', label, datasourceVars, disabled } = props;
   const { groupedDatasourceList } = useContext(CommonStateContext);
 
   return (
@@ -27,7 +28,7 @@ export default function index(props: IProps) {
         },
       ]}
     >
-      <Select allowClear placeholder={t('query.datasource_placeholder')} style={{ minWidth: 70 }} dropdownMatchSelectWidth={false}>
+      <Select allowClear placeholder={t('query.datasource_placeholder')} style={{ minWidth: 70 }} dropdownMatchSelectWidth={false} disabled={disabled}>
         {_.map(datasourceVars, (item, idx) => {
           return (
             <Select.Option value={`\${${item.name}}`} key={`${item.name}_${idx}`}>

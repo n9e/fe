@@ -63,5 +63,8 @@ const zh_CN = {
     button: '历史记录',
     searchPlaceholder: '搜索历史记录',
   },
+  share_tip: '点击复制分享链接',
+  share_tip_2: '点击复制分享链接, 目前仅支持分享日志原文查询',
+  help: '使用说明',
 };
 export default zh_CN;

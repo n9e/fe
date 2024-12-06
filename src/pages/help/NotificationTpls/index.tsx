@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { List, Input, Space, Button, Modal, message } from 'antd';
 import { SoundOutlined, SearchOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import PageLayout from '@/components/pageLayout';
+import PageLayout, { HelpLink } from '@/components/pageLayout';
 import { getNotifyTpls, deleteNotifyTpl } from './services';
 import { NotifyTplsType } from './types';
 import HTML from './Editor/HTML';
@@ -34,7 +34,15 @@ export default function index() {
   }, []);
 
   return (
-    <PageLayout title={t('title')} icon={<SoundOutlined />}>
+    <PageLayout
+      title={
+        <Space>
+          {t('title')}
+          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/system-configuration/notification-template/' />
+        </Space>
+      }
+      icon={<SoundOutlined />}
+    >
       <div>
         <div className='n9e-notification-tpls user-manage-content'>
           <div className='n9e-notification-tpls-sidebar left-tree-area'>

@@ -17,9 +17,9 @@
 import React, { useState, useContext } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Select, Result } from 'antd';
+import { Select, Result, Space } from 'antd';
 import { LineChartOutlined } from '@ant-design/icons';
-import PageLayout from '@/components/pageLayout';
+import PageLayout, { HelpLink } from '@/components/pageLayout';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
 import { getDefaultDatasourceValue, setDefaultDatasourceValue } from '@/utils';
@@ -52,7 +52,12 @@ export default function index() {
 
   return (
     <PageLayout
-      title={t('title')}
+      title={
+        <Space>
+          {t('title')}
+          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/timing-indicators/quick-view/' />
+        </Space>
+      }
       icon={<LineChartOutlined />}
       rightArea={
         <div

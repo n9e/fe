@@ -30,7 +30,7 @@ import PageLayout from '@/components/pageLayout';
 import { IRawTimeRange, getDefaultValue, isValid } from '@/components/TimeRangePicker';
 import { Dashboard } from '@/store/dashboardInterface';
 import { getDashboard, updateDashboardConfigs, getDashboardPure } from '@/services/dashboardV2';
-import { getPayload, getPayloadByUUID } from '@/pages/builtInComponents/services';
+import { getPayloadByUUID } from '@/pages/builtInComponents/services';
 import { SetTmpChartData } from '@/services/metric';
 import { CommonStateContext, basePrefix } from '@/App';
 import MigrationModal from '@/pages/help/migrate/MigrationModal';
@@ -77,7 +77,7 @@ const fetchDashboard = ({ id, builtinParams }) => {
   return getDashboard(id);
 };
 const builtinParamsToID = (builtinParams) => {
-  return `${builtinParams['__built-in-cate']}_${builtinParams['__built-in-name']}`;
+  return `${builtinParams['__uuid__']}`;
 };
 /**
  * 获取默认的时间范围
@@ -120,7 +120,7 @@ export default function DetailV2(props: IProps) {
   const { isPreview = false, isBuiltin = false, gobackPath, builtinParams } = props;
   const { t, i18n } = useTranslation('dashboard');
   const history = useHistory();
-  const { datasourceList, profile, dashboardDefaultRangeIndex, dashboardSaveMode, perms, groupedDatasourceList, darkMode } = useContext(CommonStateContext);
+  const { datasourceList, dashboardDefaultRangeIndex, dashboardSaveMode, perms, groupedDatasourceList, darkMode } = useContext(CommonStateContext);
   const isAuthorized = _.includes(perms, '/dashboards/put') && !isPreview;
   const [dashboardMeta, setDashboardMeta] = useGlobalState('dashboardMeta');
   const [panelClipboard, setPanelClipboard] = useGlobalState('panelClipboard');

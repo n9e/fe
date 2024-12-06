@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
-import { Form, Input, Button, Empty, Spin, message, Space, Select, Typography, Result } from 'antd';
+import { Form, Button, Empty, Spin, message, Space, Select, Typography, Result, Row as AntdRow, Col as AntdCol } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { getLogsQuery } from './services';
 import TimeRangePicker, { IRawTimeRange, isMathString, parseRange } from '@/components/TimeRangePicker';
 import Timeseries from '@/pages/dashboard/Renderer/Renderer/Timeseries';
@@ -20,6 +20,8 @@ import { SelectSort } from './component/operator/SelectSort';
 import { PrettifyJson } from './component/operator/PrettifyJson';
 import { ShowTime } from './component/operator/ShowTime';
 import { WrapLines } from './component/operator/WrapLines';
+import Share from '../components/Share';
+
 interface IProps {
   datasourceValue: number;
   headerExtra: HTMLDivElement | null;
@@ -39,12 +41,10 @@ const LOGS_LIMIT = [100, 300, 500, 700, 1000];
 export default function index(props: IProps) {
   const { t } = useTranslation('explorer');
   const { datasourceValue, form, headerExtra, defaultFormValuesControl } = props;
-  const history = useHistory();
   const { search } = useLocation();
   const params = queryString.parse(search);
   const [loading, setLoading] = useState(false);
-  // @ts-ignore
-  const [value, setValue] = useState<string | undefined>(_.isString(params.prom_ql) ? params.prom_ql : ''); // for logQLInput
+  const queryValue = Form.useWatch(['query', 'query']);
   const [data, setData] = useState<Row[]>([]);
   const [typeIsStreams, setTypeIsStreams] = useState<boolean>(true); // table or graph chart
   const [series, setSeries] = useState<any[]>([]);
@@ -68,10 +68,9 @@ export default function index(props: IProps) {
     start: number;
     end: number;
   }>();
-  const logQLInputRef = useRef<any>(null);
 
   useEffect(() => {
-    if (value != '') {
+    if (queryValue != '') {
       fetchData();
     }
   }, [JSON.stringify(range), datasourceValue, limit]);
@@ -79,7 +78,7 @@ export default function index(props: IProps) {
   // 每次输入LogQL 发送请求后变更匹配的关键字
   useEffect(() => {
     if (loading) {
-      const keyworkds = getKeywords(value || '');
+      const keyworkds = getKeywords(queryValue || '');
       setKeywords(keyworkds);
     }
   }, [loading]);
@@ -101,7 +100,7 @@ export default function index(props: IProps) {
 
   useEffect(() => {
     if (defaultFormValuesControl?.defaultFormValues && defaultFormValuesControl?.isInited === false) {
-      setValue(defaultFormValuesControl?.defaultFormValues?.query?.query);
+      form.setFieldsValue(defaultFormValuesControl.defaultFormValues);
       defaultFormValuesControl.setIsInited();
     }
   }, []);
@@ -128,7 +127,7 @@ export default function index(props: IProps) {
         end: moment(end).valueOf() * 1000 * 1000,
       };
       const queryParams = {
-        query: value,
+        query: queryValue,
         limit: limit,
         ...timesRef.current,
       };
@@ -137,15 +136,15 @@ export default function index(props: IProps) {
           datasourceCate: 'loki',
           datasourceValue,
           query: {
-            query: value,
+            query: queryValue,
           },
         });
       }
-      if (_.startsWith(value, '{')) {
+      if (_.startsWith(queryValue, '{')) {
         const [query_result, volume_result] = await Promise.all([
           getLogsQuery(values.datasourceValue, queryParams),
           getLogsQuery(values.datasourceValue, {
-            query: `sum by(level) (count_over_time(${value}[1m]))`,
+            query: `sum by(level) (count_over_time(${queryValue}[1m]))`,
             limit: limit,
             ...timesRef.current,
           }),
@@ -179,27 +178,32 @@ export default function index(props: IProps) {
     <div className='es-discover-container'>
       {headerExtra ? (
         createPortal(
-          <Space>
-            <InputGroupWithFormItem label={t('log.limit')}>
-              <Form.Item name='limit' initialValue={100}>
-                <Select
-                  dropdownMatchSelectWidth={false}
-                  onChange={(val) => {
-                    setLimit(val);
-                  }}
-                >
-                  {_.map(LOGS_LIMIT, (item) => (
-                    <Select.Option key={item} value={item}>
-                      {item}
-                    </Select.Option>
-                  ))}
-                </Select>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Space>
+              <InputGroupWithFormItem label={t('log.limit')}>
+                <Form.Item name='limit' initialValue={100}>
+                  <Select
+                    dropdownMatchSelectWidth={false}
+                    onChange={(val) => {
+                      setLimit(val);
+                    }}
+                  >
+                    {_.map(LOGS_LIMIT, (item) => (
+                      <Select.Option key={item} value={item}>
+                        {item}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </InputGroupWithFormItem>
+              <Form.Item name={['query', 'range']} initialValue={defaultTime ? defaultTime : { start: 'now-1h', end: 'now' }}>
+                <TimeRangePicker dateFormat='YYYY-MM-DD HH:mm:ss' onChange={setRange} />
               </Form.Item>
-            </InputGroupWithFormItem>
-            <Form.Item name={['query', 'range']} initialValue={defaultTime ? defaultTime : { start: 'now-1h', end: 'now' }}>
-              <TimeRangePicker dateFormat='YYYY-MM-DD HH:mm:ss' onChange={setRange} />
-            </Form.Item>
-          </Space>,
+            </Space>
+            <Space>
+              <Share />
+            </Space>
+          </div>,
           headerExtra,
         )
       ) : (
@@ -207,19 +211,14 @@ export default function index(props: IProps) {
           <TimeRangePicker dateFormat='YYYY-MM-DD HH:mm:ss' onChange={setRange} />
         </Form.Item>
       )}
-      <div className='log-expression-input'>
-        <Input.Group>
-          <span className='ant-input-affix-wrapper'>
-            <LogQLInput ref={logQLInputRef} value={value} onChange={setValue} completeEnabled={true} datasourceValue={datasourceValue} />
-          </span>
-          <span
-            className='ant-input-group-addon'
-            style={{
-              border: 0,
-              padding: '0 0 0 10px',
-              background: 'none',
-            }}
-          >
+      <div className='mb2'>
+        <AntdRow gutter={8}>
+          <AntdCol flex='auto'>
+            <Form.Item name={['query', 'query']}>
+              <LogQLInput completeEnabled={true} datasourceValue={datasourceValue} />
+            </Form.Item>
+          </AntdCol>
+          <AntdCol flex='none'>
             <Button
               type='primary'
               onClick={() => {
@@ -228,8 +227,8 @@ export default function index(props: IProps) {
             >
               {t('query_btn')}
             </Button>
-          </span>
-        </Input.Group>
+          </AntdCol>
+        </AntdRow>
       </div>
       <Spin spinning={loading}>
         {!_.isEmpty(data) ? (
@@ -303,7 +302,10 @@ export default function index(props: IProps) {
                         addQueryLabel={(k, v, operator) => {
                           const label = `${k}${operator}"${v}"`;
                           const regex = /{([^}]+)}/g;
-                          setValue(value?.replace(regex, (match, p1) => `{${p1},${label}}`));
+                          const newQueryValue = queryValue?.replace(regex, (match, p1) => `{${p1},${label}}`);
+                          const valuesClone = _.cloneDeep(form.getFieldsValue());
+                          _.set(valuesClone, ['query', 'query'], newQueryValue);
+                          form.setFieldsValue(valuesClone);
                         }}
                       />
                     );

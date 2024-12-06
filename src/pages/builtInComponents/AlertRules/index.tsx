@@ -9,6 +9,7 @@ import usePagination from '@/components/usePagination';
 import Export from '@/pages/dashboard/List/Export';
 import AuthorizationWrapper from '@/components/AuthorizationWrapper';
 import { CommonStateContext } from '@/App';
+import { HelpLink } from '@/components/pageLayout';
 import { RuleType } from './types';
 import Import from './Import';
 import { getPayloads, deletePayloads, getCates } from '../services';
@@ -108,6 +109,7 @@ export default function index(props: Props) {
           />
         </Space>
         <Space>
+          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/template-center/open-source/alarm-rule-template/' />
           <AuthorizationWrapper allowedPerms={['/built-in-components/add']}>
             <Button
               type='primary'

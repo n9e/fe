@@ -1,3 +1,5 @@
+import { placeholder } from '@codemirror/view';
+
 const zh_CN = {
   title: '订阅规则',
   search_placeholder: '搜索订阅名称、订阅的规则、订阅标签、告警接收组',
@@ -10,12 +12,18 @@ const zh_CN = {
     key: {
       label: '订阅事件标签键',
       tip: '这里的标签是指告警事件的标签，通过如下标签匹配规则过滤告警事件',
+      required: '标签键不能为空',
+      placeholder: '请输入标签键',
     },
     func: {
       label: '运算符',
     },
     value: {
       label: '标签值',
+      equal_placeholder: '请输入值',
+      include_placeholder: '可以输入多个值，用回车分割',
+      regex_placeholder: '请输入正则表达式匹配',
+      required: '标签值不能为空',
     },
   },
   group: {
@@ -28,6 +36,7 @@ const zh_CN = {
     },
     value: {
       label: '值',
+      required: '值不能为空',
     },
   },
   redefine_severity: '重新定义告警级别',
@@ -46,5 +55,8 @@ const zh_CN = {
   severities_msg: '订阅事件等级不能为空',
   tags_groups_require: '标签和接收组至少填写一项',
   note: '订阅名称',
+  filter_configs: '筛选配置',
+  notify_configs: '通知配置',
+  and: '且',
 };
 export default zh_CN;

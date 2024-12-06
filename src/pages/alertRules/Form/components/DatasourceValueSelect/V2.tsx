@@ -151,6 +151,7 @@ function Query({ idx, names, field, remove, invalidDatasourceIds, datasourceList
                     label: item.name,
                   };
                 })}
+                optionFilterProp='label'
               />
             </Form.Item>
           </Col>
