@@ -13,13 +13,14 @@ import { getLogsQuery } from './services';
 import { parseRange } from '@/components/TimeRangePicker';
 import Timeseries from '@/pages/dashboard/Renderer/Renderer/Timeseries';
 import { CommonStateContext } from '@/App';
-import { DatasourceCateEnum, PRIMARY_COLOR } from '@/utils/constant';
+import { PRIMARY_COLOR } from '@/utils/constant';
 import metricQuery from './metricQuery';
 import { Field, dslBuilder, Filter, getFieldLabel } from './utils';
 import FieldsSidebar from './FieldsSidebar';
 import QueryBuilder from './QueryBuilder';
 import QueryBuilderWithIndexPatterns from './QueryBuilderWithIndexPatterns';
 import Table from './Table';
+import Share from '../components/Share';
 import './style.less';
 // @ts-ignore
 import DownloadModal from 'plus:/datasource/elasticsearch/components/LogDownload/DownloadModal';
@@ -46,11 +47,20 @@ enum IMode {
   indices = 'indices',
 }
 
-const ModeRadio = ({ mode, setMode, allowHideSystemIndices, setAllowHideSystemIndices, datasourceValue }) => {
+const HeaderExtra = ({ mode, setMode, allowHideSystemIndices, setAllowHideSystemIndices, datasourceValue }) => {
   const { t } = useTranslation('explorer');
   const { esIndexMode, isPlus } = useContext(CommonStateContext);
-
-  if (esIndexMode === 'index-patterns' || esIndexMode === 'indices') return null;
+  // 如果固定了 indexPatterns 模式，不显示切换按钮
+  if (esIndexMode === 'index-patterns' || esIndexMode === 'indices') {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <div />
+        <Space>
+          <Share />
+        </Space>
+      </div>
+    );
+  }
 
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -76,11 +86,10 @@ const ModeRadio = ({ mode, setMode, allowHideSystemIndices, setAllowHideSystemIn
           </Checkbox>
         )}
       </Space>
-      {isPlus && (
-        <div>
-          <ExportModal datasourceValue={datasourceValue} />
-        </div>
-      )}
+      <Space>
+        {isPlus && <ExportModal datasourceValue={datasourceValue} />}
+        <Share />
+      </Space>
     </div>
   );
 };
@@ -211,7 +220,7 @@ export default function index(props: IProps) {
       }
     });
   };
-  const handlerModeChange = (mode, isOpenSearch) => {
+  const handlerModeChange = (mode) => {
     const queryValues = form.getFieldValue('query');
     form.setFieldsValue({
       fieldConfig: undefined,
@@ -251,14 +260,14 @@ export default function index(props: IProps) {
 
   return (
     <div className='es-discover-container'>
-      {!isOpenSearch && (
+      {!isOpenSearch ? (
         <>
-          {headerExtra ? (
+          {headerExtra &&
             createPortal(
-              <ModeRadio
+              <HeaderExtra
                 mode={mode}
                 setMode={(val) => {
-                  handlerModeChange(val, isOpenSearch);
+                  handlerModeChange(val);
                   form.setFieldsValue({
                     query: {
                       mode: val,
@@ -270,23 +279,20 @@ export default function index(props: IProps) {
                 datasourceValue={datasourceValue}
               />,
               headerExtra,
-            )
-          ) : (
-            <ModeRadio
-              mode={mode}
-              setMode={(val) => {
-                handlerModeChange(val, isOpenSearch);
-                form.setFieldsValue({
-                  query: {
-                    mode: val,
-                  },
-                });
-              }}
-              allowHideSystemIndices={allowHideSystemIndices}
-              setAllowHideSystemIndices={setAllowHideSystemIndices}
-              datasourceValue={datasourceValue}
-            />
-          )}
+            )}
+        </>
+      ) : (
+        <>
+          {headerExtra &&
+            createPortal(
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div />
+                <Space>
+                  <Share />
+                </Space>
+              </div>,
+              headerExtra,
+            )}
         </>
       )}
       <Form.Item name={['query', 'mode']} hidden>
