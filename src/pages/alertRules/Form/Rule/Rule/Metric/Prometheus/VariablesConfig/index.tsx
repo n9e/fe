@@ -185,7 +185,11 @@ export default function index(props: Props) {
         }}
         onOk={(vals) => {
           const values = _.cloneDeep(form.getFieldsValue());
-          const namePathValues = _.get(values, namePath, []);
+          let namePathValues = _.get(values, namePath, []);
+          // Ensure that namePathValues is a valid array
+          if (namePathValues === null) {
+            namePathValues = [];
+          }
           if (editModalData.action === 'create') {
             _.set(values, namePath, _.concat(namePathValues, [vals]));
           } else if (editModalData.action === 'edit') {
