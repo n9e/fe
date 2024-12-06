@@ -23,3 +23,9 @@ export function putTargetsBgids(data: { bgids: number[]; idents: string[]; actio
     data,
   });
 }
+
+export function getBusiGroupsTags() {
+  return request('/api/n9e/busi-groups/tags', {
+    method: RequestMethod.Get,
+  }).then((res) => res.dat);
+}
