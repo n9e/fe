@@ -232,10 +232,10 @@ const EventDetailPage: React.FC = () => {
     ...(eventDetail?.cate === 'tdengine' ? TDengineDetail(t) : [false]),
     ...(plusEventDetail(eventDetail?.cate, t) || []),
     {
-      label: t('detail.cron_pattern'),
-      key: 'cron_pattern',
+      label: t('detail.prom_eval_interval'),
+      key: 'prom_eval_interval',
       render(content) {
-        return content;
+        return `${content} s`;
       },
     },
     {

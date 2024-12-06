@@ -60,7 +60,7 @@ const zh_HK = {
     rule_algo: '告警方式',
     rule_algo_anomaly: '智慧告警',
     rule_algo_threshold: '閾值告警',
-    cron_pattern: '執行頻率',
+    prom_eval_interval: '執行頻率',
     prom_for_duration: '持續時長',
     notify_channels: '通知渠道',
     notify_groups_obj: '告警接收組',
