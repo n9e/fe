@@ -9,6 +9,7 @@ export interface Cate {
   type: string[];
   alertRule: boolean; // 是否支持告警规则
   dashboard: boolean; // 是否支持仪表盘
+  dashboardVariable: boolean; // 是否支持仪表盘变量
   graphPro: boolean; // Pro版本
   alertPro: boolean; // Pro版本
   logo?: string;
@@ -21,6 +22,7 @@ export const baseCates: Cate[] = [
     type: ['metric', 'anomaly'],
     alertRule: true,
     dashboard: true,
+    dashboardVariable: true,
     graphPro: false,
     alertPro: false,
     logo: '/image/logos/prometheus.png',
@@ -31,6 +33,7 @@ export const baseCates: Cate[] = [
     type: ['logging'],
     alertRule: true,
     dashboard: true,
+    dashboardVariable: true,
     graphPro: false,
     alertPro: true,
     logo: '/image/logos/elasticsearch.png',
@@ -41,6 +44,7 @@ export const baseCates: Cate[] = [
     type: ['metric'],
     alertRule: true,
     dashboard: true,
+    dashboardVariable: false,
     graphPro: false,
     alertPro: false,
     logo: '/image/logos/tdengine.png',
@@ -51,6 +55,7 @@ export const baseCates: Cate[] = [
     type: ['loki', 'logging'], // loki 是历史版本里一个过度的分类，后续会废弃
     alertRule: true,
     dashboard: false,
+    dashboardVariable: false,
     graphPro: false,
     alertPro: false,
     logo: '/image/logos/loki.png',
@@ -61,6 +66,7 @@ export const baseCates: Cate[] = [
     type: ['tracing'],
     alertRule: false,
     dashboard: false,
+    dashboardVariable: false,
     graphPro: false,
     alertPro: false,
     logo: '/image/logos/jaeger.png',
