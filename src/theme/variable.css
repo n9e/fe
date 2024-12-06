@@ -89,13 +89,13 @@
 
 /* 深色模式 */
 .theme-dark {
-  --fc-fill-1: rgb(32 34 46);
-  --fc-fill-2: rgb(39 42 56);
-  --fc-fill-3: rgb(50 53 69);
-  --fc-fill-4: rgb(57 60 77);
-  --fc-fill-5: rgb(64 67 84);
-  --fc-fill-6: rgb(71 74 91);
-  --fc-fill-7: rgb(79 82 99);
+  --fc-fill-1: #181A23;
+  --fc-fill-2: #1C1E28;
+  --fc-fill-3: #282A37;
+  --fc-fill-4: #303241;
+  --fc-fill-5: #3B3E4D;
+  --fc-fill-6: #444757;
+  --fc-fill-7: #4F5263;
   --fc-fill-primary: rgb(148, 112, 255);
   --fc-fill-success: rgb(63 196 83);
   --fc-fill-warning: rgb(230 198 39);
@@ -108,8 +108,8 @@
   --fc-text-3: #bfbfc5;
   --fc-text-4: #9999a2;
   --fc-text-5: #737380;
-  --fc-text-link: #8162dc;
-  --fc-text-link-rgb: 129, 98, 220;
+  --fc-text-link: #9470FF;
+  --fc-text-link-rgb: 148, 112, 255;
   --fc-text-placeholder: #bfbfbf;
 
   /* 其他 */
