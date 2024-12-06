@@ -396,6 +396,15 @@ const ja_JP = {
         topn: '最大表示数',
         combine_other: 'その他',
         combine_other_tip: '最大表示数を超えるデータは、その他の項目としてまとめられます',
+        otherPosition: {
+          label: 'その他の位置',
+          tip: 'その他の項目を表示する位置を選択します',
+          options: {
+            none: 'デフォルト',
+            top: '最初',
+            bottom: '最後',
+          },
+        },
       },
     },
     inspect: {

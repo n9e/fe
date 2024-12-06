@@ -149,7 +149,6 @@ export function processFormValues(values) {
 export function processInitialValues(values) {
   let cate = values.cate;
   if (_.isFunction(alertUtils.processInitialValues) && !BaseDatasourceCateEnum[cate]) {
-    console.log(222);
     values = alertUtils.processInitialValues(values);
   } else {
     if (values?.rule_config?.queries) {
@@ -189,12 +188,24 @@ export function processInitialValues(values) {
   };
 }
 
+const datasourceDefaultValue = {
+  datasource_queries: [
+    {
+      match_type: 0,
+      op: 'in',
+      values: [],
+    },
+  ],
+  datasource_value: undefined,
+};
+
 export function getDefaultValuesByProd(prod, defaultBrainParams, isPlus = false) {
   if (prod === 'host') {
     return {
       prod,
       cate: 'host',
       rule_config: defaultRuleConfig.host,
+      ...datasourceDefaultValue,
     };
   }
   if (prod === 'anomaly') {
@@ -205,6 +216,7 @@ export function getDefaultValuesByProd(prod, defaultBrainParams, isPlus = false)
         ...defaultRuleConfig.anomaly,
         algo_params: defaultBrainParams?.holtwinters || {},
       },
+      ...datasourceDefaultValue,
     };
   }
   if (prod === 'metric') {
@@ -212,6 +224,7 @@ export function getDefaultValuesByProd(prod, defaultBrainParams, isPlus = false)
       prod,
       cate: 'prometheus',
       rule_config: defaultRuleConfig.metric,
+      ...datasourceDefaultValue,
     };
   }
   if (prod === 'logging') {
@@ -220,12 +233,14 @@ export function getDefaultValuesByProd(prod, defaultBrainParams, isPlus = false)
         prod,
         cate: 'elasticsearch',
         rule_config: defaultRuleConfig.logging,
+        ...datasourceDefaultValue,
       };
     }
     return {
       prod,
       cate: 'loki',
       rule_config: defaultRuleConfig.loki,
+      ...datasourceDefaultValue,
     };
   }
   if (prod === 'loki') {
@@ -233,6 +248,7 @@ export function getDefaultValuesByProd(prod, defaultBrainParams, isPlus = false)
       prod,
       cate: 'loki',
       rule_config: defaultRuleConfig.loki,
+      ...datasourceDefaultValue,
     };
   }
 }
@@ -243,6 +259,7 @@ export function getDefaultValuesByCate(prod, cate) {
       prod,
       cate,
       rule_config: defaultRuleConfig.metric,
+      ...datasourceDefaultValue,
     };
   }
   if (cate === DatasourceCateEnum.tdengine) {
@@ -272,6 +289,7 @@ export function getDefaultValuesByCate(prod, cate) {
           },
         ],
       },
+      ...datasourceDefaultValue,
     };
   }
   if (cate === DatasourceCateEnum.loki) {
@@ -279,6 +297,7 @@ export function getDefaultValuesByCate(prod, cate) {
       prod,
       cate,
       rule_config: defaultRuleConfig.loki,
+      ...datasourceDefaultValue,
     };
   }
   if (_.isFunction(alertUtils.getDefaultValuesByCate)) {

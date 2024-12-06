@@ -58,6 +58,7 @@ export default function index({ prefixField = {}, prefixNameField = [], chartFor
               title: t('query.time_tip'),
             }}
             normalize={(val) => {
+              if (val === undefined || val === null || val === '') return undefined;
               return {
                 start: isMathString(val.start) ? val.start : moment(val.start).format('YYYY-MM-DD HH:mm:ss'),
                 end: isMathString(val.end) ? val.end : moment(val.end).format('YYYY-MM-DD HH:mm:ss'),

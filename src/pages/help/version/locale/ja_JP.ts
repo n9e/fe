@@ -1,5 +1,5 @@
 const ja_JP = {
-  title: "システムバージョン",
+  title: "製品について",
   frontend: "フロントエンドバージョン",
   backend: "バックエンドバージョン",
 };

@@ -29,6 +29,7 @@ import GraphPreview from './GraphPreview';
 import PrometheusV2 from './PrometheusV2';
 import VariablesConfig from './VariablesConfig';
 import ChildVariablesConfigs from './VariablesConfig/ChildVariablesConfigs';
+import AdvancedSettings from './components/AdvancedSettings';
 import './style.less';
 
 export default function index(props: { form: any; datasourceCate: string; datasourceValue: number }) {
@@ -145,7 +146,8 @@ export default function index(props: { form: any; datasourceCate: string; dataso
                     <div>
                       <Severity field={field} />
                     </div>
-                    <div style={{ marginTop: 8 }}>
+                    <AdvancedSettings field={field} />
+                    <div className='mt2'>
                       <GraphPreview form={form} fieldName={field.name} />
                     </div>
                     <MinusCircleOutlined className='alert-rule-trigger-remove' onClick={() => remove(field.name)} />

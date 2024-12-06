@@ -32,7 +32,7 @@ const zh_HK = {
   effective_time_end_msg: '結束時間不能為空',
   effective_time_week_msg: '請選擇生效週期',
   enable_in_bg: '僅在本業務組生效',
-  enable_in_bg_tip: '根據告警事件中的 ident 歸屬關係判斷',
+  enable_in_bg_tip: '根據告警事件中的 ident 歸屬關係判斷，即：如果告警事件中有 ident 標籤且 ident 對應的機器不屬於該業務組，則丟棄此告警事件',
   notify_configs: '通知配置',
   notify_channels: '通知媒介',
   notify_channels_doc: '使用文檔',
@@ -63,6 +63,7 @@ const zh_HK = {
   invalid_datasource_tip_1: '數據源',
   invalid_datasource_tip_2: '未配置關聯告警引擎集群',
   invalid_datasource_reload: '刷新數據源',
+  advanced_settings: '輔助配置',
   host: {
     query: {
       title: '機器篩選',
@@ -124,7 +125,6 @@ const zh_HK = {
       name: '批量更新',
       field: '字段',
       changeto: '改為',
-      enable_in_bg_tip: '根據告警事件中的 ident 歸屬關係判斷',
       callback_cover: {
         mode: '模式',
         cover: '覆蓋',

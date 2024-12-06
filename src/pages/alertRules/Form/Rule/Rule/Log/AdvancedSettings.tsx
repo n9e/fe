@@ -6,6 +6,9 @@ import { RightOutlined, DownOutlined } from '@ant-design/icons';
 export default function AdvancedSettings() {
   const { t } = useTranslation('alertRules');
   const [collapsed, setCollapsed] = useState(false);
+  const cate = Form.useWatch('cate');
+
+  if (cate !== 'elasticsearch') return null;
 
   return (
     <div>

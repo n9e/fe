@@ -418,7 +418,11 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
               case 'datasource_ids':
                 return (
                   <>
-                    <DatasourceValueSelectV2 names={['datasource_queries']} datasourceList={groupedDatasourceList?.[selectedRows[0]?.cate] || []} />
+                    <DatasourceValueSelectV2
+                      names={['datasource_queries']}
+                      datasourceCate={selectedRows[0]?.cate}
+                      datasourceList={groupedDatasourceList?.[selectedRows[0]?.cate] || []}
+                    />
                     <Form.Item name='action' initialValue='datasource_change' hidden>
                       <div />
                     </Form.Item>
@@ -452,7 +456,7 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
                         <Form.Item name='enable_in_bg' valuePropName='checked'>
                           <Switch />
                         </Form.Item>
-                        <span>{t('batch.update.enable_in_bg_tip')}</span>
+                        <span>{t('enable_in_bg_tip')}</span>
                       </Space>
                     </Form.Item>
                   </>

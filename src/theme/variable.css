@@ -33,7 +33,7 @@
   /* 其他 */
   --fc-primary-color: var(--fc-text-link);
   --fc-border-color: var(--fc-fill-4);
-  --fc-border-base: var(--fc-fill-7);
+  --fc-border-base: var(--fc-fill-5);
   --fc-background-color-light: rgba(250, 250, 250, 1);
 
   /* 红色 */
@@ -115,7 +115,7 @@
   /* 其他 */
   --fc-primary-color: var(--fc-text-link);
   --fc-border-color: var(--fc-fill-4);
-  --fc-border-base: var(--fc-fill-7);
+  --fc-border-base: var(--fc-fill-5);
   --fc-background-color-light: rgba(255, 255, 255, 0.04);
 
   /* 红色 */

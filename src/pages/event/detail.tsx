@@ -122,7 +122,16 @@ const EventDetailPage: React.FC = () => {
       label: t('detail.severity'),
       key: 'severity',
       render: (severity) => {
-        return <Tag color={priorityColor[severity - 1]}>S{severity}</Tag>;
+        const severityMap = {
+          1: '（Critical）',
+          2: '（Warning）',
+          3: '（Info）',
+        };
+        return (
+          <Tag color={priorityColor[severity - 1]}>
+            S{severity} {severityMap[severity]}
+          </Tag>
+        );
       },
     },
     {
@@ -161,7 +170,10 @@ const EventDetailPage: React.FC = () => {
       },
     },
     {
-      label: eventDetail?.is_recovered && eventDetail?.cate === 'prometheus' ? t('detail.trigger_value') : t('detail.trigger_value2'),
+      label:
+        eventDetail?.is_recovered && eventDetail?.cate === 'prometheus' && (eventDetail?.rule_config?.version === 'v1' || eventDetail?.rule_config?.version === undefined)
+          ? t('detail.trigger_value')
+          : t('detail.trigger_value2'),
       key: 'trigger_value',
       render(val) {
         return (

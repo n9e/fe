@@ -83,11 +83,8 @@ export default function ImportBuiltinContent({ busiId, onOk, groupedDatasourceLi
             return {
               ...content,
               cate: content.cate === 'host' ? 'host' : vals.datasource_cate,
+              datasource_queries: vals?.datasource_queries,
               disabled: vals.enabled ? 0 : 1,
-              rule_config: {
-                ...item.rule_config,
-                datasource_queries: vals?.datasource_queries,
-              },
             };
           }),
         ).then((res) => {
@@ -285,7 +282,7 @@ export default function ImportBuiltinContent({ busiId, onOk, groupedDatasourceLi
               })}
             </Select>
           </Form.Item>
-          {datasourceCate && <DatasourceValueSelectV2 datasourceList={groupedDatasourceList[datasourceCate] || []} />}
+          {datasourceCate && <DatasourceValueSelectV2 datasourceCate={datasourceCate} datasourceList={groupedDatasourceList[datasourceCate] || []} />}
         </>
       )}
 

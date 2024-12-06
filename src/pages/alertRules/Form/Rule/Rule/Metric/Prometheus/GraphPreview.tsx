@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Button, Popover, Spin, Empty, Space, Select, Form, InputNumber } from 'antd';
+import { Button, Popover, Spin, Empty, Space, Select, Form, InputNumber, message } from 'antd';
 import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
@@ -72,6 +72,14 @@ export default function GraphPreview({ form, fieldName, promqlFieldName = 'prom_
             });
           }
           setData(series);
+        })
+        .catch((res) => {
+          try {
+            message.error(res.message);
+          } catch (e) {
+            console.log(e);
+          }
+          setData([]);
         })
         .finally(() => {
           setLoading(false);

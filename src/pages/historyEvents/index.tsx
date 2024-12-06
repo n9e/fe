@@ -294,10 +294,11 @@ const Event: React.FC = () => {
                       severity: val,
                     });
                   }}
+                  dropdownMatchSelectWidth={false}
                 >
-                  <Select.Option value={1}>S1</Select.Option>
-                  <Select.Option value={2}>S2</Select.Option>
-                  <Select.Option value={3}>S3</Select.Option>
+                  <Select.Option value={1}>S1（Critical）</Select.Option>
+                  <Select.Option value={2}>S2（Warning）</Select.Option>
+                  <Select.Option value={3}>S3（Info）</Select.Option>
                 </Select>
                 <Select
                   style={{ minWidth: 60 }}

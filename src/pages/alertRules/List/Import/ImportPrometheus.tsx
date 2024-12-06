@@ -49,11 +49,8 @@ export default function ImportPrometheus({ busiId, onOk, groupedDatasourceList }
             const { dat } = await importPromRule(
               {
                 ..._.omit(vals, 'enabled'),
+                datasource_queries: vals?.datasource_queries,
                 disabled: vals.enabled ? 0 : 1,
-                rule_config: {
-                  ...vals.rule_config,
-                  datasource_queries: vals?.datasource_queries,
-                },
               },
               busiId,
             );
@@ -87,7 +84,7 @@ export default function ImportPrometheus({ busiId, onOk, groupedDatasourceList }
         </Form.Item>
         {importContent && (
           <>
-            <DatasourceValueSelectV2 datasourceList={groupedDatasourceList.prometheus || []} />
+            <DatasourceValueSelectV2 datasourceCate='prometheus' datasourceList={groupedDatasourceList.prometheus || []} />
             <Form.Item label={t('common:table.enabled')} name='enabled' valuePropName='checked'>
               <Switch />
             </Form.Item>
