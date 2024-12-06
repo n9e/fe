@@ -22,7 +22,11 @@ function AddModal(props: ModalWrapProps & IProps) {
       onCancel={destroy}
       onOk={() => {
         form.validateFields().then((values) => {
-          onOk(values);
+          const hide = !values.enabled;
+          props.onOk({
+            ..._.omit(values, 'enabled'),
+            hide,
+          } as ChannelType);
           destroy();
         });
       }}
@@ -61,7 +65,7 @@ function AddModal(props: ModalWrapProps & IProps) {
         >
           <Input />
         </Form.Item>
-        <Form.Item label={t('channels.hide')} name='hide' valuePropName='checked' initialValue={false}>
+        <Form.Item label={t('channels.enabled')} name='enabled' valuePropName='checked' initialValue={true}>
           <Switch />
         </Form.Item>
         <Form.Item name='built_in' hidden noStyle initialValue={false}>

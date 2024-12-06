@@ -15,6 +15,7 @@ const en_US = {
   document_link: 'Document',
   required: 'Required',
   unit: 'Unit',
+  page_help: 'Help',
   and: 'And',
   yes: 'Yes',
   no: 'No',

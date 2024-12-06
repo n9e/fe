@@ -43,12 +43,18 @@ interface IProps {
   dashboard: Dashboard;
 }
 
-function includes(source, target) {
+function includes(
+  source: {
+    label: string;
+    value: string;
+  }[],
+  target,
+) {
   if (_.isArray(target)) {
     // 不为空则有交集
-    return !_.isEmpty(_.intersection(source, target));
+    return !_.isEmpty(_.intersection(_.map(source, 'value'), target));
   }
-  return _.includes(source, target);
+  return _.includes(_.map(source, 'value'), target);
 }
 
 function index(props: IProps) {
@@ -144,23 +150,34 @@ function index(props: IProps) {
             const regFilterOptions = filterOptionsByReg(options, item.reg, result, idx, id);
             result[idx] = item;
             result[idx].fullDefinition = definition;
-            result[idx].options = item.type === 'query' ? (datasourceCate === 'prometheus' ? _.sortBy(regFilterOptions) : regFilterOptions) : regFilterOptions;
+            result[idx].options = regFilterOptions;
+            if (item.type === 'query') {
+              if (datasourceCate === 'prometheus') {
+                // TODO prometheus 对变量可选项排序
+                result[idx].options = _.sortBy(regFilterOptions, 'value');
+              }
+            }
             // 当仪表盘变量值为空时，设置默认值
             // 如果已选项不在待选项里也视做空值处理
             const selected = getVaraiableSelected(item, id);
             if (query.__variable_value_fixed === undefined) {
               if (selected === null || (selected && !_.isEmpty(regFilterOptions) && !includes(regFilterOptions, selected))) {
-                const head = regFilterOptions?.[0] || ''; // 2014-01-22 添加默认值（空字符）
+                const head = regFilterOptions?.[0]?.value || ''; // 2014-01-22 添加默认值（空字符）
                 const defaultVal = item.multi ? (item.allOption ? ['all'] : head ? [head] : []) : head;
                 setVaraiableSelected({ name: item.name, value: defaultVal, id, urlAttach: true });
               }
             }
           } else if (item.type === 'custom') {
             result[idx] = item;
-            result[idx].options = _.map(_.compact(_.split(item.definition, ',')), _.trim);
+            result[idx].options = _.map(_.map(_.compact(_.split(item.definition, ',')), _.trim), (item) => {
+              return {
+                label: item,
+                value: item,
+              };
+            });
             const selected = getVaraiableSelected(item, id);
             if (selected === null && query.__variable_value_fixed === undefined) {
-              const head = _.head(result[idx].options)!;
+              const head = _.head(result[idx].options)?.value;
               const defaultVal = item.multi ? (item.allOption ? ['all'] : head ? [head] : []) : head;
               setVaraiableSelected({ name: item.name, value: defaultVal, id, urlAttach: true });
             }
@@ -214,7 +231,7 @@ function index(props: IProps) {
             const selected = getVaraiableSelected(item, id);
             if (query.__variable_value_fixed === undefined) {
               if (selected === null || (selected && !_.isEmpty(regFilterOptions) && !includes(regFilterOptions, selected))) {
-                const head = regFilterOptions?.[0] || ''; // 2014-01-22 添加默认值（空字符）
+                const head = regFilterOptions?.[0]?.value || ''; // 2014-01-22 添加默认值（空字符）
                 const defaultVal = item.multi ? (item.allOption ? ['all'] : head ? [head] : []) : head;
                 setVaraiableSelected({ name: item.name, value: defaultVal, id, urlAttach: true });
               }

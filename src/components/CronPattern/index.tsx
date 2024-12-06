@@ -1,20 +1,22 @@
 import React from 'react';
 import { Form, AutoComplete } from 'antd';
 import { useTranslation } from 'react-i18next';
+import './locale';
 
 interface Props {
+  name: string | (string | number)[];
   label?: string;
 }
 
-export default function CronPatternField(props: Props) {
-  const { label } = props;
-  const { t } = useTranslation('recordingRules');
+export default function CronPattern(props: Props) {
+  const { name, label } = props;
+  const { t } = useTranslation('CronPattern');
   return (
     <Form.Item
-      name='cron_pattern'
+      name={name}
       label={label || t('cron_pattern')}
       rules={[{ required: true, message: t('cron_pattern_msg') }]}
-      initialValue={'@every 15s'}
+      initialValue='@every 15s'
       tooltip={t('cron_pattern_tip')}
     >
       <AutoComplete

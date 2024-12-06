@@ -1,17 +1,13 @@
-import React from 'react';
+import { DatasourceCateEnum } from '@/utils/constant';
 
-// export const sourceLogoMap = {
-//   prometheus: <img src={'/logos/prometheus_logos.svg'} alt='' className='datasource-logo' height='46' />,
-//   elasticsearch: <img src={'/logos/elasticSearch.svg'} alt='' className='datasource-logo' height='42' />, // 兼容 n9e
-//   'aliyun-sls': <img src={'/logos/aliyun-sls.svg'} alt='' className='datasource-logo' height='52' />,
-//   'tencent-cls': <img src={'/logos/tencent-cls.svg'} alt='' className='datasource-logo' height='52' />,
-//   jaeger: <img src={'/logos/jaeger_logo.svg'} alt='' className='datasource-logo' height='46' />,
-//   ck: <img src={'/logos/clickhouse.svg'} alt='' className='datasource-logo' height='52' />,
-//   zabbix: <img src={'/logos/zabbix.svg'} alt='' className='datasource-logo' height='56' />,
-//   influxdb: <img src={'/logos/influxdb.svg'} alt='' className='datasource-logo' height='56' />,
-//   opensearch: <img src={'/logos/opensearch.svg'} alt='' className='datasource-logo' height='52' />,
-//   tdengine: <img src={'/logos/tdengine.svg'} alt='' className='datasource-logo' height='56' />,
-//   loki: <img src={'/logos/loki_logo.svg'} alt='' className='prometheus_logo' height='46' />,
-//   kafka: <img src={'/logos/kafka.svg'} alt='' className='prometheus_logo' />,
-//   doris: <img src={'/logos/doris.svg'} alt='' className='prometheus_logo' />,
-// };
+export const helpLinkMap = {
+  [DatasourceCateEnum.prometheus]: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/data-source/open-source/prometheus/',
+  [DatasourceCateEnum.tdengine]: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/data-source/open-source/tdengine/',
+  jaeger: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/data-source/business/jaeger/',
+  [DatasourceCateEnum.zabbix]: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/data-source/business/zabbix/',
+  [DatasourceCateEnum.loki]: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/data-source/open-source/loki/',
+  [DatasourceCateEnum.tencentCLS]: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/data-source/business/tx-cls/',
+  [DatasourceCateEnum.elasticsearch]: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/data-source/open-source/es/',
+  [DatasourceCateEnum.aliyunSLS]: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/data-source/business/aliy-sls/',
+  [DatasourceCateEnum.mysql]: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/data-source/business/mysql/',
+};

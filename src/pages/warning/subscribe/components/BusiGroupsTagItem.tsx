@@ -37,11 +37,11 @@ const TagItem = ({ field, remove, form }: Itag) => {
   const [valuePlaceholder, setValuePlaceholder] = useState<string>('');
   const [funcCur, setfuncCur] = useState('==');
   const funcChange = (val) => {
-    let text = '';
-    if (val === 'in') {
-      text = '可以输入多个值，用回车分割';
-    } else if (val === '=~') {
-      text = '请输入正则表达式匹配标签value';
+    let text = t('tag.value.equal_placeholder');
+    if (val === 'in' || val === 'not in') {
+      text = t('tag.value.include_placeholder');
+    } else if (val === '=~' || val === '!~') {
+      text = t('tag.value.regex_placeholder');
     }
     setfuncCur(val);
     setValuePlaceholder(text);
@@ -55,7 +55,7 @@ const TagItem = ({ field, remove, form }: Itag) => {
   return (
     <>
       <Row gutter={[10, 10]} style={{ marginBottom: '16px' }}>
-        <Form.Item style={{ marginBottom: 0 }} name={[field.name, 'key']} rules={[{ required: true, message: t('key不能为空') }]} hidden>
+        <Form.Item style={{ marginBottom: 0 }} name={[field.name, 'key']} hidden>
           <Input />
         </Form.Item>
         <Col span={5}>
@@ -74,7 +74,7 @@ const TagItem = ({ field, remove, form }: Itag) => {
           </Form.Item>
         </Col>
         <Col span={15}>
-          <Form.Item style={{ marginBottom: 0 }} name={[field.name, 'value']} rules={[{ required: true, message: t('value不能为空') }]}>
+          <Form.Item style={{ marginBottom: 0 }} name={[field.name, 'value']} rules={[{ required: true, message: t('group.value.required') }]}>
             {['not in', 'in'].includes(funcCur) ? (
               <Select
                 mode='tags'

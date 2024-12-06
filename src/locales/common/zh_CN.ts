@@ -15,15 +15,16 @@ const zh_CN = {
   document_link: '使用说明',
   required: '必填项',
   unit: '单位',
+  page_help: '使用说明',
   and: '且',
+  yes: '是',
+  no: '否',
   host: {
     tags: '自定义标签',
     tags_tip: '用户在页面配置的标签，会追加到此机器上报的时序数据中',
     host_tags: '上报的标签',
     host_tags_tip: 'categraf global.labels 配置的标签，会出现在这里，会追加到此机器上报的时序数据中，categraf 需要升级到 v0.3.80 及以上版本，才支持此功能',
   },
-  yes: '是',
-  no: '否',
   btn: {
     add: '新增',
     create: '创建',

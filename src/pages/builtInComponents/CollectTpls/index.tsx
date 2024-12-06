@@ -7,6 +7,7 @@ import { useDebounceEffect } from 'ahooks';
 import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
 import AuthorizationWrapper from '@/components/AuthorizationWrapper';
+import { HelpLink } from '@/components/pageLayout';
 import { getPayloads, deletePayloads, getCates } from '../services';
 import { TypeEnum, Payload } from '../types';
 import PayloadFormModal from '../components/PayloadFormModal';
@@ -85,6 +86,7 @@ export default function index(props: Props) {
           />
         </Space>
         <Space>
+          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/template-center/business/collection-template/' />
           <AuthorizationWrapper allowedPerms={['/built-in-components/add']}>
             <Button
               type='primary'

@@ -19,7 +19,7 @@ import moment from 'moment';
 import _ from 'lodash';
 import { useLocation } from 'react-router-dom';
 import queryString from 'query-string';
-import PageLayout from '@/components/pageLayout';
+import PageLayout, { HelpLink } from '@/components/pageLayout';
 import { Button, Table, Input, message, List, Row, Col, Modal, Space } from 'antd';
 import { EditOutlined, DeleteOutlined, SearchOutlined, UserOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import UserInfoModal from './component/createModal';
@@ -219,7 +219,15 @@ const Resource: React.FC = () => {
   };
 
   return (
-    <PageLayout title={t('team.title')} icon={<UserOutlined />}>
+    <PageLayout
+      title={
+        <Space>
+          {t('team.title')}
+          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/personnel-permissions/team-management/' />
+        </Space>
+      }
+      icon={<UserOutlined />}
+    >
       <div className='user-manage-content'>
         <div style={{ display: 'flex', gap: 10, height: '100%', background: 'unset' }}>
           <div className='left-tree-area'>
