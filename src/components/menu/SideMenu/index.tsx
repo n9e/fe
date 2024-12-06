@@ -202,7 +202,7 @@ export const getMenuList = (t) => {
         },
         {
           key: '/help/version',
-          label: t('系统版本'),
+          label: t('version:title'),
         },
       ],
     },
