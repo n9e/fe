@@ -370,6 +370,14 @@ export const replaceExpressionVars = (expression: string, formData: IVariable[],
     },
     isEscapeJsonString,
   );
+  newExpression = replaceExpressionVarsSpecifyRule(
+    { expression: newExpression, formData, limit, id },
+    {
+      regex: '\\[\\[[0-9a-zA-Z_]+\\]\\]',
+      getPlaceholder: (expression: string) => '[[' + expression + ']]',
+    },
+    isEscapeJsonString,
+  );
   return newExpression;
 };
 
