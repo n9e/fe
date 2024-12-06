@@ -27,8 +27,12 @@ import { AccessTokenKey, IS_ENT } from '@/utils/constant';
 import DarkModeSelect from '@/components/DarkModeSelect';
 import Version from './Version';
 import SideMenuColorSetting from './SideMenuColorSetting';
+import HelpLink from './HelpLink';
 import './index.less';
 import './locale';
+
+export { HelpLink };
+
 // @ts-ignore
 import FeatureNotification from 'plus:/pages/FeatureNotification';
 interface IPageLayoutProps {
@@ -190,10 +194,10 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                     </a>
                   </Dropdown>
 
-                    <div style={{ marginRight: 8 }}>
-                      <DarkModeSelect />
-                    </div>
-               
+                  <div style={{ marginRight: 8 }}>
+                    <DarkModeSelect />
+                  </div>
+
                   <Dropdown overlay={menu} trigger={['click']}>
                     <span className='avator' style={{ cursor: 'pointer' }}>
                       <img src={profile.portrait || '/image/avatar1.png'} alt='' />

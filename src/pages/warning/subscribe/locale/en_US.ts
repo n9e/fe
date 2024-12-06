@@ -10,12 +10,18 @@ const en_US = {
     key: {
       label: 'Subscribed Event Tag Key',
       tip: 'The tag is the tag of the alert event, and the alert event is filtered by the following tag matching rules',
+      required: 'Tag key is required',
+      placeholder: 'Please enter tag key',
     },
     func: {
       label: 'Operator',
     },
     value: {
       label: 'Value',
+      equal_placeholder: 'Please enter value',
+      include_placeholder: 'Multiple values can be entered, separated by carriage return',
+      regex_placeholder: 'Please enter a regular expression match',
+      required: 'Tag value is required',
     },
   },
   group: {
@@ -28,6 +34,7 @@ const en_US = {
     },
     value: {
       label: 'Value',
+      required: 'Value is required',
     },
   },
   redefine_severity: 'Redefine Severity',
@@ -46,5 +53,8 @@ const en_US = {
   severities_msg: 'Severity is required',
   tags_groups_require: 'Tags and receiving groups must fill in at least one item',
   note: 'Name',
+  filter_configs: 'Filter Settings',
+  notify_configs: 'Notification Settings',
+  and: 'And',
 };
 export default en_US;

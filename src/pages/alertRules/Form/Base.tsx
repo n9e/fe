@@ -17,9 +17,10 @@
 
 import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Form, Input, Select, Card, Row, Col, Tag, Tooltip } from 'antd';
+import { Form, Input, Select, Card, Row, Col, Tag, Tooltip, Space } from 'antd';
 import _ from 'lodash';
 import { CommonStateContext } from '@/App';
+import { HelpLink } from '@/components/pageLayout';
 import { panelBaseProps } from '../constants';
 
 // 校验单个标签格式是否正确
@@ -68,7 +69,15 @@ export default function Base() {
     };
   }
   return (
-    <Card {...panelBaseProps} title={t('basic_configs')}>
+    <Card
+      {...panelBaseProps}
+      title={
+        <Space>
+          {t('basic_configs')}
+          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/alarm-management/alert-rules/alert-basic-conf/' />
+        </Space>
+      }
+    >
       <Row gutter={10}>
         <Col span={8}>
           <Form.Item label={t('name')} name='name' rules={[{ required: true }]}>

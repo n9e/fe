@@ -16,7 +16,7 @@
  */
 import React, { useState, useRef, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { Table, Divider, Popconfirm, Tag, Row, Col, Input, Button, Dropdown, Menu, message } from 'antd';
+import { Table, Divider, Popconfirm, Tag, Row, Col, Input, Button, Dropdown, Menu, message, Space } from 'antd';
 import { DownOutlined, SearchOutlined, CodeOutlined } from '@ant-design/icons';
 import { ColumnProps } from 'antd/lib/table';
 import _ from 'lodash';
@@ -26,7 +26,7 @@ import { useTranslation } from 'react-i18next';
 import request from '@/utils/request';
 import api from '@/utils/api';
 import BusinessGroup from '@/components/BusinessGroup';
-import PageLayout from '@/components/pageLayout';
+import PageLayout, { HelpLink } from '@/components/pageLayout';
 import { Tpl } from './interface';
 import BindTags from './bindTags';
 import UnBindTags from './unBindTags';
@@ -173,11 +173,12 @@ const index = (_props: any) => {
   );
   return (
     <PageLayout
+      icon={<CodeOutlined />}
       title={
-        <>
-          <CodeOutlined />
+        <Space>
           {t('tpl')}
-        </>
+          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/alarm_self-healing/self-healing-script/' />
+        </Space>
       }
     >
       <div style={{ display: 'flex' }}>

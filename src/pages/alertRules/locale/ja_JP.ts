@@ -278,6 +278,25 @@ const ja_JP = {
     0: '有効',
     1: '無効',
   },
+  var_config: {
+    enable: '変数を有効にする',
+    config: '変数設定',
+    config_tip: '変数設定',
+    name: '変数名',
+    type: '変数タイプ',
+    value: '変数値',
+    threshold: '閾値',
+    threshold_value: '変数値',
+    enum: '列挙型',
+    enum_value: '変数値',
+    host: 'マシン識別',
+    host_value: 'マシン識別',
+    device: 'ネットワークデバイス',
+    device_value: 'ネットワークデバイス',
+    filter: '変数フィルタ',
+    filter_tip: '変数フィルタ',
+    add_subFilter: 'サブフィルタを追加',
+  },
 };
 
 export default ja_JP;

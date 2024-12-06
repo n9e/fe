@@ -66,6 +66,8 @@ const zh_CN = {
       add: '新增',
       del: '删除',
     },
+    tags: '绑定标签',
+    tags_tip: '为空不会覆盖之前的标签',
   },
   remove_busi: {
     title: '移出业务组',

@@ -32,6 +32,7 @@ import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
 import FormModal from './components/FormModal';
 import Export from '@/pages/metricsBuiltin/components/Export';
 import Import from '@/pages/metricsBuiltin/components/Import';
+import { HelpLink } from '@/components/pageLayout';
 
 interface Props {
   component: string;
@@ -304,6 +305,7 @@ export default function index(props: Props) {
           />
         </Space>
         <Space>
+          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/template-center/open-source/-indicator-template/' />
           {actionAuth.add && (
             <FormModal
               component={component}

@@ -84,6 +84,7 @@ export default function Stat(props: IProps) {
         grid,
         orientation,
         textMode,
+        valueField,
       });
     }
     return {
@@ -120,7 +121,7 @@ export default function Stat(props: IProps) {
       const grid = calculateGridDimensions(eleSize.width, eleSize.height, ITEM_SPACIING, calculatedValues.length);
       setGrid(grid);
     }
-  }, [eleSize?.width, eleSize?.height, calculatedValues.length]);
+  }, [eleSize?.width, eleSize?.height, calculatedValues.length, orientation]);
 
   return (
     <div className='renderer-stat-container'>
