@@ -17,3 +17,36 @@
     }
   }
 }
+
+.subscription-rules-form {
+  .filter-settings-row {
+    display: flex;
+    gap: 16px;
+  }
+  .filter-settings-row-connector {
+    position: relative;
+  }
+  .filter-settings-row-connector-text-container {
+    position: relative;
+    background: var(--fc-fill-3);
+    padding: 8px;
+    border-radius: 2px;
+  }
+  .filter-settings-row-connector-text {
+    line-height: 1;
+    text-align: center;
+    width: max-content;
+  }
+  .filter-settings-row-connector-line {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 1px;
+    height: 100%;
+    border-left: 1px dashed var(--fc-border-color);
+  }
+  .filter-settings-row-content {
+    width: 100%;
+    margin-top: 4px;
+  }
+}

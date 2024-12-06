@@ -15,6 +15,7 @@ const zh_HK = {
   document_link: '使用說明',
   required: '必填項',
   unit: '單位',
+  page_help: '使用說明',
   and: '且',
   yes: '是',
   no: '否',

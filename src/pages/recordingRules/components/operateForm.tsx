@@ -1,14 +1,14 @@
 import React, { useState, useMemo, useContext } from 'react';
 import _ from 'lodash';
 import { useHistory, useParams } from 'react-router-dom';
-import { Form, Input, InputNumber, Select, Button, Modal, message, Space, Tooltip, Tag, notification } from 'antd';
+import { Form, Input, Select, Button, Modal, message, Space, Tooltip, Tag, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { prometheusQuery } from '@/services/warning';
 import { addOrEditRecordingRule, editRecordingRule, deleteRecordingRule } from '@/services/recording';
 import { PromQLInputWithBuilder } from '@/components/PromQLInput';
 import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
 import { CommonStateContext } from '@/App';
-import CronPattern from './CronPattern';
+import CronPattern from '@/components/CronPattern';
 
 const DATASOURCE_ALL = 0;
 
@@ -170,7 +170,7 @@ const operateForm: React.FC<Props> = ({ type, detail = {} }) => {
                 );
               }}
             </Form.Item>
-            <CronPattern />
+            <CronPattern name='cron_pattern' />
             <Form.Item label={t('append_tags')} name='append_tags' rules={[isValidFormat]}>
               <Select mode='tags' tokenSeparators={[' ']} open={false} placeholder={t('append_tags_placeholder')} tagRender={tagRender} />
             </Form.Item>

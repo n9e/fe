@@ -27,6 +27,8 @@ import { FormStateContext } from '@/pages/alertRules/Form';
 import { IS_PLUS } from '@/utils/constant';
 import GraphPreview from './GraphPreview';
 import PrometheusV2 from './PrometheusV2';
+import VariablesConfig from './VariablesConfig';
+import ChildVariablesConfigs from './VariablesConfig/ChildVariablesConfigs';
 import AdvancedSettings from './components/AdvancedSettings';
 import './style.less';
 
@@ -125,6 +127,7 @@ export default function index(props: { form: any; datasourceCate: string; dataso
               <div className='alert-rule-triggers-container'>
                 {fields.map((field) => (
                   <div key={field.key} className='alert-rule-trigger-container'>
+                    <VariablesConfig prefixName={['rule_config', 'queries']} field={field} />
                     <Form.Item
                       {...field}
                       name={[field.name, 'prom_ql']}
@@ -134,6 +137,12 @@ export default function index(props: { form: any; datasourceCate: string; dataso
                     >
                       <PromQLInputWithBuilder readonly={disabled} datasourceValue={datasourceValue} showBuiltinMetrics />
                     </Form.Item>
+                    <ChildVariablesConfigs
+                      topPrefixName={['rule_config', 'queries']}
+                      topField={field}
+                      prefixName={['rule_config', 'queries', field.name, 'var_config', 'child_var_configs']}
+                      level={1}
+                    />
                     <div className='mb2'>
                       <Severity field={field} />
                     </div>

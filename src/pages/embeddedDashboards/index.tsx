@@ -22,7 +22,7 @@ import _ from 'lodash';
 import { Space, Empty, Spin, Dropdown, Input, Menu, notification, Tooltip } from 'antd';
 import { SettingOutlined, DownOutlined, FullscreenOutlined } from '@ant-design/icons';
 import { CommonStateContext } from '@/App';
-import PageLayout from '@/components/pageLayout';
+import PageLayout, { HelpLink } from '@/components/pageLayout';
 import AuthorizationWrapper from '@/components/AuthorizationWrapper';
 import { getEmbeddedDashboards } from './services';
 import { Record } from './types';
@@ -131,86 +131,91 @@ export default function index() {
   return (
     <PageLayout
       title={
-        activeRecord ? (
-          <Space size={16}>
-            <Dropdown
-              trigger={['click']}
-              visible={dashboardListDropdownVisible}
-              onVisibleChange={(visible) => {
-                setDashboardListDropdownVisible(visible);
-              }}
-              overlay={
-                <div className='collects-payloads-dropdown-overlay p2 n9e-fill-color-2 n9e-border-base n9e-border-radius-base n9e-base-shadow'>
-                  <Input
-                    className='mb1'
-                    placeholder={t('common:search_placeholder')}
-                    value={dashboardListDropdownSearch}
-                    onChange={(e) => {
-                      setDashboardListDropdownSearch(e.target.value);
+        <Space>
+          <span>
+            {activeRecord ? (
+              <Space size={16}>
+                <Dropdown
+                  trigger={['click']}
+                  visible={dashboardListDropdownVisible}
+                  onVisibleChange={(visible) => {
+                    setDashboardListDropdownVisible(visible);
+                  }}
+                  overlay={
+                    <div className='collects-payloads-dropdown-overlay p2 n9e-fill-color-2 n9e-border-base n9e-border-radius-base n9e-base-shadow'>
+                      <Input
+                        className='mb1'
+                        placeholder={t('common:search_placeholder')}
+                        value={dashboardListDropdownSearch}
+                        onChange={(e) => {
+                          setDashboardListDropdownSearch(e.target.value);
+                        }}
+                      />
+                      <Menu>
+                        {_.map(
+                          _.filter(data, (item) => {
+                            return _.includes(_.toLower(item.name), _.toLower(dashboardListDropdownSearch));
+                          }),
+                          (item) => {
+                            return (
+                              <Menu.Item
+                                key={item.id}
+                                onClick={() => {
+                                  history.push(`/embedded-dashboards?id=${item.id}`);
+                                  setDashboardListDropdownVisible(false);
+                                  setDashboardListDropdownSearch('');
+                                  localStorage.setItem(LOCAL_STORAGE_KEY, item.id);
+                                }}
+                              >
+                                {item.name}
+                              </Menu.Item>
+                            );
+                          },
+                        )}
+                      </Menu>
+                    </div>
+                  }
+                >
+                  <Space size={4} style={{ cursor: 'pointer' }}>
+                    {activeRecord.name}
+                    <DownOutlined style={{ marginRight: 0, fontSize: 12 }} />
+                  </Space>
+                </Dropdown>
+                <AuthorizationWrapper allowedPerms={['/embedded-dashboards/put']}>
+                  <SettingOutlined
+                    style={{ margin: 0 }}
+                    onClick={() => {
+                      FormModal({
+                        initialValues: data,
+                        onOk: (newData) => {
+                          setData(newData);
+                        },
+                      });
                     }}
                   />
-                  <Menu>
-                    {_.map(
-                      _.filter(data, (item) => {
-                        return _.includes(_.toLower(item.name), _.toLower(dashboardListDropdownSearch));
-                      }),
-                      (item) => {
-                        return (
-                          <Menu.Item
-                            key={item.id}
-                            onClick={() => {
-                              history.push(`/embedded-dashboards?id=${item.id}`);
-                              setDashboardListDropdownVisible(false);
-                              setDashboardListDropdownSearch('');
-                              localStorage.setItem(LOCAL_STORAGE_KEY, item.id);
-                            }}
-                          >
-                            {item.name}
-                          </Menu.Item>
-                        );
-                      },
-                    )}
-                  </Menu>
-                </div>
-              }
-            >
-              <Space size={4} style={{ cursor: 'pointer' }}>
-                {activeRecord.name}
-                <DownOutlined style={{ marginRight: 0, fontSize: 12 }} />
+                </AuthorizationWrapper>
+                <Tooltip title={t('exitFullScreen_tip')}>
+                  <FullscreenOutlined
+                    style={{ margin: 0 }}
+                    onClick={() => {
+                      isClickTrigger.current = true;
+                      history.push({
+                        pathname: location.pathname,
+                        search: queryString.stringify({
+                          ...query,
+                          viewMode: 'fullscreen',
+                        }),
+                      });
+                    }}
+                  />
+                </Tooltip>
               </Space>
-            </Dropdown>
-            <AuthorizationWrapper allowedPerms={['/embedded-dashboards/put']}>
-              <SettingOutlined
-                style={{ margin: 0 }}
-                onClick={() => {
-                  FormModal({
-                    initialValues: data,
-                    onOk: (newData) => {
-                      setData(newData);
-                    },
-                  });
-                }}
-              />
-            </AuthorizationWrapper>
-            <Tooltip title={t('exitFullScreen_tip')}>
-              <FullscreenOutlined
-                style={{ margin: 0 }}
-                onClick={() => {
-                  isClickTrigger.current = true;
-                  history.push({
-                    pathname: location.pathname,
-                    search: queryString.stringify({
-                      ...query,
-                      viewMode: 'fullscreen',
-                    }),
-                  });
-                }}
-              />
-            </Tooltip>
-          </Space>
-        ) : (
-          t('title')
-        )
+            ) : (
+              t('title')
+            )}
+          </span>
+          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/dashboard/integrated-dashboard/' />
+        </Space>
       }
     >
       {_.isEmpty(data) ? (

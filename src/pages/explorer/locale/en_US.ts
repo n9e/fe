@@ -63,5 +63,6 @@ const en_US = {
     button: 'Historical Records',
     searchPlaceholder: 'Search historical records',
   },
+  help: 'Show data source Help',
 };
 export default en_US;
