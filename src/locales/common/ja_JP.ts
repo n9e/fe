@@ -15,8 +15,8 @@ const ja_JP = {
   document_link: '使用説明',
   required: '必須項目',
   unit: '単位',
-  and: 'および',
   page_help: '使用説明',
+  and: 'および',
   yes: 'はい',
   no: 'いいえ',
   host: {
