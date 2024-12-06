@@ -143,7 +143,7 @@ export default function index(props: { form: any; datasourceCate: string; dataso
                       prefixName={['rule_config', 'queries', field.name, 'var_config', 'child_var_configs']}
                       level={1}
                     />
-                    <div>
+                    <div className='mb2'>
                       <Severity field={field} />
                     </div>
                     <AdvancedSettings field={field} />
