@@ -15,7 +15,49 @@
  *
  */
 import React from 'react';
-import KQLInput from '@/components/KQLInput';
+import uPlot, { AlignedData, Options } from 'uplot';
+import UPlotChart from '@/components/UPlotChart';
+
+const options: Options = {
+  title: 'Derived Scale',
+  width: 600,
+  height: 400,
+  scales: {
+    x: {
+      time: false,
+    },
+    z: {
+      from: 'y',
+      range: (u, min, max) => [((min - 32) * 5) / 9, ((max - 32) * 5) / 9],
+    },
+  },
+  series: [
+    {},
+    {
+      label: 'blah',
+      stroke: 'green',
+    },
+  ],
+  axes: [
+    {},
+    {
+      values: (u, vals, space) => vals.map((v) => v + '° F'),
+    },
+    {
+      scale: 'z',
+      range: (u, min, max) => [Math.ceil(min), Math.ceil(max)],
+      values: (u, vals, space) => vals.map((v) => v + '° C'),
+      side: 1,
+      grid: { show: false },
+      space: 20,
+    },
+  ],
+};
+
+const data: AlignedData = [
+  [1, 2, 3, 4, 5, 6, 7],
+  [40, 43, 60, 65, 71, 73, 80],
+];
 
 export default function Demo() {
   return (
@@ -24,15 +66,7 @@ export default function Demo() {
         padding: 100,
       }}
     >
-      <KQLInput
-        datasourceValue={81}
-        query={{
-          index: 'log_with_message_*',
-          date_field: '@timestamp',
-        }}
-        historicalRecords={[]}
-        value=''
-      />
+      <UPlotChart options={options} data={data} />
     </div>
   );
 }
