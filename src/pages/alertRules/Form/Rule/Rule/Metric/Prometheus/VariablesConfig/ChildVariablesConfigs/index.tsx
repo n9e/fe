@@ -165,6 +165,7 @@ export default function index(props: Props) {
                               _.set(values, childVarConfigsPath, {
                                 ...curConf,
                                 param_val: _.isEmpty(param_val) ? undefined : param_val,
+                                child_var_configs: _.isEmpty(param_val) ? undefined : curConf.child_var_configs,
                               });
                               form.setFieldsValue(values);
                             }}
