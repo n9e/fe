@@ -3,7 +3,13 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import uPlot from 'uplot';
 import 'uplot/dist/uPlot.min.css';
 
-import { optionsUpdateState, dataMatch } from './utils';
+import optionsUpdateState from './utils/optionsUpdateState';
+import axisBuilder from './utils/axisBuilder';
+import dataMatch from './utils/dataMatch';
+import tooltipPlugin from './tooltipPlugin';
+import './style.less';
+
+export { tooltipPlugin, axisBuilder };
 
 export default function UPlotChart({
   options,

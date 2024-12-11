@@ -3,7 +3,7 @@ import _ from 'lodash';
 
 type OptionsUpdateState = 'keep' | 'update' | 'create';
 
-export const optionsUpdateState = (_lhs: uPlot.Options, _rhs: uPlot.Options): OptionsUpdateState => {
+export default function optionsUpdateState(_lhs: uPlot.Options, _rhs: uPlot.Options): OptionsUpdateState {
   const { width: lhsWidth, height: lhsHeight, ...lhs } = _lhs;
   const { width: rhsWidth, height: rhsHeight, ...rhs } = _rhs;
 
@@ -21,17 +21,4 @@ export const optionsUpdateState = (_lhs: uPlot.Options, _rhs: uPlot.Options): Op
     }
   }
   return state;
-};
-
-export const dataMatch = (lhs: uPlot.AlignedData, rhs: uPlot.AlignedData): boolean => {
-  if (lhs.length !== rhs.length) {
-    return false;
-  }
-  return _.every(lhs, (lhsOneSeries, seriesIdx) => {
-    const rhsOneSeries = rhs[seriesIdx];
-    if (lhsOneSeries.length !== rhsOneSeries.length) {
-      return false;
-    }
-    return _.every(lhsOneSeries, (value: number, valueIdx: number) => value === rhsOneSeries[valueIdx]);
-  });
-};
+}

@@ -64,6 +64,7 @@
     "lodash": "^4.17.21",
     "logfmt": "1.2.x",
     "moment": "^2.29.1",
+    "moment-timezone": "^0.5.46",
     "numeral": "^2.0.6",
     "query-string": "^7.0.1",
     "re-resizable": "^6.9.9",
