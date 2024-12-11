@@ -1,4 +1,6 @@
 import _ from 'lodash';
+import { Series } from 'uplot';
+import getSerieName from '../../../utils/getSerieName';
 
 interface ResultItem {
   ref: string;
@@ -16,13 +18,19 @@ type DataFrame = [xValues: number[], ...yValues: (number | null | undefined)[][]
  * @param result ResultItem[]
  * @returns DataFrame
  */
-export default function convertToDataFrame(result: ResultItem[]): DataFrame {
+export default function getDataFrameAndBaseSeries(result: ResultItem[]): {
+  frames: DataFrame;
+  baseSeries: Series[];
+} {
   const timestamps: number[] = [];
   const frames: DataFrame = [[]];
+  const baseSeries: Series[] = [];
 
   // Extract all timestamps
   for (const item of result) {
     for (const data of item.data) {
+      const label = getSerieName(data.metric);
+      baseSeries.push({ label });
       for (const [ts] of data.values) {
         // Add timestamp if not exists
         if (!timestamps.includes(ts)) {
@@ -38,19 +46,17 @@ export default function convertToDataFrame(result: ResultItem[]): DataFrame {
 
   // Create frames
   for (const item of result) {
-    const frame: (number | null | undefined)[] = _.fill(Array(timestamps.length), null);
-
     for (const data of item.data) {
+      const frame: (number | null | undefined)[] = _.fill(Array(timestamps.length), null);
       for (const [ts, value] of data.values) {
         const index = timestamps.indexOf(ts);
 
         // Add value to frame
         frame[index] = value;
       }
+      frames.push(frame);
     }
-
-    frames.push(frame);
   }
 
-  return frames;
+  return { frames, baseSeries };
 }

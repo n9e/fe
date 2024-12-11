@@ -1,8 +1,8 @@
 import React from 'react';
-import convertToDataFrame from './utils/convertToDataFrame';
+import getDataFrameAndBaseSeries from './utils/getDataFrameAndBaseSeries';
 import './style.less';
 
-export { convertToDataFrame };
+export { getDataFrameAndBaseSeries };
 
 export default function index() {
   return <div>index</div>;

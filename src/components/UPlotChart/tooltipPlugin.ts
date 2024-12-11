@@ -85,8 +85,9 @@ export default function tooltipPlugin(options: {
         frag.appendChild(ulNode);
 
         _.forEach(valuesData, (item, seriesIndex) => {
-          const value = item[idx];
           const serie = series[seriesIndex + 1];
+          let value = item[idx];
+          value = serie.value(u, value, seriesIndex + 1, idx);
           const { stroke, label } = serie;
           const color = stroke();
           const point = {
@@ -118,7 +119,7 @@ export default function tooltipPlugin(options: {
             liNode.appendChild(nameNode);
           }
 
-          if (_.isNumber(value)) {
+          if (value !== undefined && value !== null) {
             const valueNode = document.createElement('span');
 
             // if (nearestPoint?.name === label) {

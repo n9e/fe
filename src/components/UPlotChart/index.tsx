@@ -5,11 +5,14 @@ import 'uplot/dist/uPlot.min.css';
 
 import optionsUpdateState from './utils/optionsUpdateState';
 import axisBuilder from './utils/axisBuilder';
+import seriesBuider from './utils/seriesBuider';
 import dataMatch from './utils/dataMatch';
+import getStackedDataAndBands from './utils/stack';
 import tooltipPlugin from './tooltipPlugin';
+
 import './style.less';
 
-export { tooltipPlugin, axisBuilder };
+export { tooltipPlugin, axisBuilder, seriesBuider, getStackedDataAndBands };
 
 export default function UPlotChart({
   options,
