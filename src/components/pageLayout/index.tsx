@@ -186,12 +186,12 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                       </Menu>
                     }
                   >
-                    <a style={{ marginRight: 20 }} onClick={(e) => e.preventDefault()} id='i18n-btn'>
+                    <a style={{ marginRight: 12 }} onClick={(e) => e.preventDefault()} id='i18n-btn'>
                       {curLanguage}
                     </a>
                   </Dropdown>
 
-                  <div style={{ marginRight: 8 }}>
+                  <div style={{ marginRight: 12 }}>
                     <DarkModeSelect />
                   </div>
 
