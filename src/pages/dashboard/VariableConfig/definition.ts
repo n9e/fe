@@ -24,13 +24,16 @@ export interface IVariable {
   multi?: boolean;
   allOption?: boolean;
   allValue?: string;
-  options?: string[];
+  options?: {
+    label: string;
+    value: string;
+  }[];
   type: 'query' | 'textbox' | 'custom' | 'constant' | 'datasource' | 'hostIdent' | 'businessGroupIdent';
   defaultValue?: string; // textbox 的默认值
   datasource: {
     // v5.14.3 新增 datasource 储存数据源类型和名称
     // v6 必须有 datasource 字段
-    cate: 'prometheus' | 'elasticsearch';
+    cate: string;
     value?: number; // v6 之后改为用 datasourceId
   };
   config?: {

@@ -16,6 +16,7 @@ const en_US = {
   name: 'Name',
   payload_name: 'Templete Name',
   tags: 'Tags',
+  variable: 'Variable',
   component: 'Component',
   cate: 'Category',
   content: 'Content',

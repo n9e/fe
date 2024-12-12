@@ -1,10 +1,9 @@
 import React, { useContext, useState } from 'react';
 import _ from 'lodash';
-import { Form, Input, InputNumber, Select, Tag, Space, Tooltip, Modal, Switch } from 'antd';
-import { QuestionCircleFilled } from '@ant-design/icons';
+import { Form, Input, Select, Tag, Tooltip, Modal, Switch } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { CommonStateContext } from '@/App';
-import CronPattern from './CronPattern';
+import CronPattern from '@/components/CronPattern';
 
 const { Option } = Select;
 const layout = {
@@ -192,7 +191,7 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish }) => {
               case 'cron_pattern':
                 return (
                   <>
-                    <CronPattern label={t('batch.update.changeto')} />
+                    <CronPattern name='cron_pattern' label={t('batch.update.changeto')} />
                   </>
                 );
               case 'disabled':

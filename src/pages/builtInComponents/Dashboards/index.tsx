@@ -9,6 +9,7 @@ import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
 import Export from '@/pages/dashboard/List/Export';
 import AuthorizationWrapper from '@/components/AuthorizationWrapper';
+import { HelpLink } from '@/components/pageLayout';
 import { getPayloads, deletePayloads } from '../services';
 import { TypeEnum, Payload } from '../types';
 import PayloadFormModal from '../components/PayloadFormModal';
@@ -69,6 +70,7 @@ export default function index(props: Props) {
           />
         </Space>
         <Space>
+          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/template-center/open-source/dashboard-template/' />
           <AuthorizationWrapper allowedPerms={['/built-in-components/add']}>
             <Button
               type='primary'

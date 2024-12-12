@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Card, Form, Input, Button, message, Row, Col, Space, Select, Switch } from 'antd';
-import PageLayout from '@/components/pageLayout';
+import PageLayout, { HelpLink } from '@/components/pageLayout';
 import { getN9eConfig, putN9eConfig } from './services';
 import './locale';
 
@@ -31,7 +31,14 @@ export default function index() {
   }, []);
 
   return (
-    <PageLayout title={t('title')}>
+    <PageLayout
+      title={
+        <Space>
+          {t('title')}
+          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/system-configuration/site-settings/' />
+        </Space>
+      }
+    >
       <div className='srm'>
         <div>
           <Card>
@@ -76,7 +83,7 @@ export default function index() {
               </div>
               <div>
                 <Space>
-                  <Form.Item label={t('teamDisplayMode')} name={['teamDisplayMode']} initialValue='tree'>
+                  <Form.Item label={t('teamDisplayMode')} name={['teamDisplayMode']} initialValue='list'>
                     <Select
                       style={{ width: 200 }}
                       options={[

@@ -15,12 +15,12 @@
  *
  */
 import React, { useState, useEffect, useContext } from 'react';
-import { Table } from 'antd';
+import { Space, Table } from 'antd';
 import Icon from '@ant-design/icons';
 import moment from 'moment';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import PageLayout from '@/components/pageLayout';
+import PageLayout, { HelpLink } from '@/components/pageLayout';
 import { getN9EServers } from '@/services/help';
 import { CommonStateContext } from '@/App';
 import SystemInfoSvg from '../../../../public/image/system-info.svg';
@@ -134,10 +134,12 @@ export default function Servers() {
 
   return (
     <PageLayout
+      icon={<Icon component={SystemInfoSvg as any} />}
       title={
-        <>
-          <Icon component={SystemInfoSvg as any} /> {t('title')}
-        </>
+        <Space>
+          {t('title')}
+          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/system-configuration/alert-engine/' />
+        </Space>
       }
     >
       <div>

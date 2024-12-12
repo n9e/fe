@@ -16,7 +16,7 @@
  */
 import React, { useContext, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import { Table, Divider, Checkbox, Row, Col, Input, Select, Button } from 'antd';
+import { Table, Divider, Checkbox, Row, Col, Input, Select, Button, Space } from 'antd';
 import { SearchOutlined, CodeOutlined } from '@ant-design/icons';
 import { ColumnProps } from 'antd/lib/table';
 import _ from 'lodash';
@@ -25,7 +25,7 @@ import { useTranslation } from 'react-i18next';
 import { useAntdTable } from 'ahooks';
 import request from '@/utils/request';
 import BusinessGroup from '@/components/BusinessGroup';
-import PageLayout from '@/components/pageLayout';
+import PageLayout, { HelpLink } from '@/components/pageLayout';
 import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
 import { CommonStateContext } from '@/App';
 
@@ -108,11 +108,12 @@ const index = (_props: any) => {
   );
   return (
     <PageLayout
+      icon={<CodeOutlined />}
       title={
-        <>
-          <CodeOutlined />
+        <Space>
           {t('task')}
-        </>
+          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/alarm_self-healing/create-temporary-task/' />
+        </Space>
       }
     >
       <div style={{ display: 'flex' }}>

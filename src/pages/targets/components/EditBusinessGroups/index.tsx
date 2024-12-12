@@ -1,9 +1,9 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import _ from 'lodash';
 import { Modal, Form, Input, Select, Radio, Table } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { CommonStateContext } from '@/App';
-import { putTargetsBgids } from '@/pages/targets/services';
+import { putTargetsBgids, getBusiGroupsTags } from '@/pages/targets/services';
 
 interface Props {
   gids?: string;
@@ -29,6 +29,13 @@ export default function index(props: Props) {
     ),
     'id',
   );
+  const [tags, setTags] = useState<string[]>([]);
+
+  useEffect(() => {
+    getBusiGroupsTags().then((res) => {
+      setTags(res);
+    });
+  }, []);
 
   return (
     <>
@@ -146,6 +153,18 @@ export default function index(props: Props) {
                       };
                     })
               }
+            />
+          </Form.Item>
+          <Form.Item label={t('update_busi.tags')} name='tags' tooltip={t('update_busi.tags_tip')}>
+            <Select
+              mode='tags'
+              tokenSeparators={[' ']}
+              options={_.map(tags, (item) => {
+                return {
+                  label: item,
+                  value: item,
+                };
+              })}
             />
           </Form.Item>
         </Form>

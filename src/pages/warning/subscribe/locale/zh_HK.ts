@@ -10,12 +10,18 @@ const zh_HK = {
     key: {
       label: '訂閱事件標籤鍵',
       tip: '這裏的標籤是指告警事件的標籤，通過如下標籤匹配規則過濾告警事件',
+      required: '標籤鍵不能為空',
+      placeholder: '請輸入標籤鍵',
     },
     func: {
       label: '運算子',
     },
     value: {
       label: '標籤值',
+      equal_placeholder: '請輸入值',
+      include_placeholder: '可以輸入多個值，用回車分割',
+      regex_placeholder: '請輸入正則表達式匹配',
+      required: '標籤值不能為空',
     },
   },
   group: {
@@ -28,6 +34,7 @@ const zh_HK = {
     },
     value: {
       label: '值',
+      required: '值不能為空',
     },
   },
   redefine_severity: '重新定義告警級別',
@@ -46,6 +53,9 @@ const zh_HK = {
   severities_msg: '訂閱事件等級不能為空',
   tags_groups_require: '標籤和接收組至少填寫一項',
   note: '訂閱名稱',
+  filter_configs: '篩選配置',
+  notify_configs: '通知配置',
+  and: '且',
 };
 
 export default zh_HK;

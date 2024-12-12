@@ -67,6 +67,8 @@ const en_US = {
       add: 'Add',
       del: 'Delete',
     },
+    tags: 'Tags',
+    tags_tip: 'If empty, the previous tags will not be overwritten',
   },
   remove_busi: {
     title: 'Remove business group',

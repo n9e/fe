@@ -56,6 +56,14 @@ const ja_JP = {
   update_busi: {
     title: 'ビジネスグループの更新',
     label: '所属ビジネスグループ',
+    mode: {
+      label: 'モード',
+      reset: 'リセット',
+      add: '追加',
+      del: '削除',
+    },
+    tags: 'タグ',
+    tags_tip: 'タグの形式は key=value です。回車や空白で区切ってください',
   },
   remove_busi: {
     title: 'ビジネスグループからの削除',

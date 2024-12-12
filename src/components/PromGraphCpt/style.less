@@ -50,6 +50,9 @@
   margin-bottom: 16px;
   .ant-input-affix-wrapper {
     padding: 6px 11px;
+    &:hover {
+      z-index: 2 !important; // TODO: 修复 promql 下拉层会被遮挡的问题
+    }
   }
   .ant-input-affix-wrapper > .ant-input {
     padding: 0;

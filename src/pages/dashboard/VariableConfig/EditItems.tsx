@@ -34,11 +34,12 @@ interface IProps {
   range: IRawTimeRange;
   onChange: (v?: IVariable[]) => void;
   dashboard: Dashboard;
+  editMode?: number; // 0: 变量名、类型、数据源类型、数据源值无法修改
 }
 
 export default function EditItems(props: IProps) {
   const { t } = useTranslation('dashboard');
-  const { visible, setVisible, onChange, value, range, id, dashboard } = props;
+  const { visible, setVisible, onChange, value, range, id, dashboard, editMode } = props;
   const datasourceVars = _.filter(value, { type: 'datasource' });
   const [data, setData] = useState<IVariable[]>(value || []);
   const [record, setRecord] = useState<IVariable>({
@@ -120,72 +121,79 @@ export default function EditItems(props: IProps) {
                 return text ? t(`var.hide_map.yes`) : t('var.hide_map.no');
               },
             },
-            {
-              title: t('common:table.operations'),
-              width: 150,
-              render: (_text, record, idx) => {
-                return (
-                  <Space>
-                    <Button
-                      type='link'
-                      size='small'
-                      onClick={() => {
-                        const newData = arrayMoveImmutable(data, idx, idx + 1);
-                        setData(newData);
-                        onChange(newData);
-                      }}
-                      disabled={idx === data.length - 1}
-                    >
-                      <ArrowDownOutlined />
-                    </Button>
-                    <Button
-                      type='link'
-                      size='small'
-                      onClick={() => {
-                        const newData = arrayMoveImmutable(data, idx, idx - 1);
-                        setData(newData);
-                        onChange(newData);
-                      }}
-                      disabled={idx === 0}
-                    >
-                      <ArrowUpOutlined />
-                    </Button>
-                    <Button
-                      type='link'
-                      size='small'
-                      onClick={() => {
-                        const newData = [
-                          ...data,
-                          {
-                            ...record,
-                            name: 'copy_of_' + record.name,
-                          },
-                        ];
-                        setData(newData);
-                        onChange(newData);
-                      }}
-                    >
-                      <CopyOutlined />
-                    </Button>
-                    <Button
-                      type='link'
-                      size='small'
-                      onClick={() => {
-                        const newData = _.cloneDeep(data);
-                        newData.splice(idx, 1);
-                        setData(newData);
-                        onChange(newData);
-                      }}
-                    >
-                      <DeleteOutlined />
-                    </Button>
-                  </Space>
-                );
-              },
-            },
+            ...(editMode === 0
+              ? []
+              : [
+                  {
+                    title: t('common:table.operations'),
+                    width: 150,
+                    render: (_text, record, idx) => {
+                      return (
+                        <Space>
+                          <Button
+                            type='link'
+                            size='small'
+                            onClick={() => {
+                              const newData = arrayMoveImmutable(data, idx, idx + 1);
+                              setData(newData);
+                              onChange(newData);
+                            }}
+                            disabled={idx === data.length - 1}
+                          >
+                            <ArrowDownOutlined />
+                          </Button>
+                          <Button
+                            type='link'
+                            size='small'
+                            onClick={() => {
+                              const newData = arrayMoveImmutable(data, idx, idx - 1);
+                              setData(newData);
+                              onChange(newData);
+                            }}
+                            disabled={idx === 0}
+                          >
+                            <ArrowUpOutlined />
+                          </Button>
+                          <Button
+                            type='link'
+                            size='small'
+                            onClick={() => {
+                              const newData = [
+                                ...data,
+                                {
+                                  ...record,
+                                  name: 'copy_of_' + record.name,
+                                },
+                              ];
+                              setData(newData);
+                              onChange(newData);
+                            }}
+                          >
+                            <CopyOutlined />
+                          </Button>
+                          <Button
+                            type='link'
+                            size='small'
+                            onClick={() => {
+                              const newData = _.cloneDeep(data);
+                              newData.splice(idx, 1);
+                              setData(newData);
+                              onChange(newData);
+                            }}
+                          >
+                            <DeleteOutlined />
+                          </Button>
+                        </Space>
+                      );
+                    },
+                  },
+                ]),
           ]}
           pagination={false}
           footer={() => {
+            if (editMode === 0) {
+              return null;
+            }
             return (
               <Button
                 type='primary'
@@ -216,6 +224,7 @@ export default function EditItems(props: IProps) {
           datasourceVars={datasourceVars}
           data={record}
           vars={data}
+          editMode={editMode}
           onOk={(val) => {
             let newData = data;
             if (mode === 'add') {

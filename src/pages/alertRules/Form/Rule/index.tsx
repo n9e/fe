@@ -17,9 +17,10 @@
 
 import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Card, Form } from 'antd';
+import { Card, Form, Space } from 'antd';
 import { getBrainParams } from '@/services/warning';
 import { CommonStateContext } from '@/App';
+import { HelpLink } from '@/components/pageLayout';
 import { panelBaseProps } from '../../constants';
 import { Host, Metric, Log } from './Rule';
 import { getDefaultValuesByProd } from '../utils';
@@ -30,9 +31,20 @@ import PlusAlertRule from 'plus:/parcels/AlertRule';
 export default function Rule({ form }) {
   const { t } = useTranslation('alertRules');
   const { isPlus } = useContext(CommonStateContext);
+  const prod = Form.useWatch('prod');
 
   return (
-    <Card {...panelBaseProps} title={t('rule_configs')}>
+    <Card
+      {...panelBaseProps}
+      title={
+        <Space>
+          {t('rule_configs')}
+          {prod === 'metric' && (
+            <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/alarm-management/alert-rules/rule-configuration/metric-alarm-rule-configuration/' />
+          )}
+        </Space>
+      }
+    >
       <ProdSelect
         onChange={(prod) => {
           if (prod === 'anomaly') {
