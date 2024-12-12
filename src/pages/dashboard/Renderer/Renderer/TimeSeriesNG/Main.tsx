@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import uPlot, { Options } from 'uplot';
 import _ from 'lodash';
 
@@ -11,8 +11,8 @@ import valueFormatter from '../../utils/valueFormatter';
 import { getLegendValues, getMappedTextObj } from '../../utils/getCalculatedValuesBySeries';
 
 import getDataFrameAndBaseSeries from './utils/getDataFrameAndBaseSeries';
+import ResetZoomButton from './components/ResetZoomButton';
 import './style.less';
-import { Button } from 'antd';
 
 export { getDataFrameAndBaseSeries };
 
@@ -35,7 +35,6 @@ interface Props {
 export default function index(props: Props) {
   const { darkMode, width, height, panel, series, colors, range, setRange, inDashboard, isPreview, hideResetBtn, onClick, onZoomWithoutDefult } = props;
   const { custom, options = {}, targets, overrides } = panel;
-  console.log('custom', custom);
   const idRef = useRef<string>(`renderer-timeseries-${_.uniqueId()}`);
   const uPlotChartRef = useRef<any>();
   const xScaleRange = useRef<[number, number]>(); // 保存 x 轴初始缩放范围
@@ -138,27 +137,20 @@ export default function index(props: Props) {
       },
     };
   }, [width, height, custom, options, colors]);
-  // const { data: stackedData, bands } = getStackedDataAndBands(frames);
-  // options.bands = bands;
+  let data = frames;
+
+  if (custom.stack === 'noraml') {
+    const stackedDataAndBands = getStackedDataAndBands(frames);
+    const stackedData = stackedDataAndBands.data;
+    uOptions.bands = stackedDataAndBands.bands;
+    data = _.concat([frames[0]], stackedData) as any;
+  }
 
   return (
     <>
       <div className='renderer-timeseries-graph'>
-        <UPlotChart ref={uPlotChartRef} options={uOptions} data={frames} />
-        <Button
-          className='renderer-timeseries-graph-zoom-resetBtn'
-          style={{
-            display: showResetZoomBtn ? 'block' : 'none',
-          }}
-          onClick={() => {
-            const uPlot = uPlotChartRef.current && uPlotChartRef.current.getChartInstance();
-            if (uPlot && xScaleRange.current) {
-              uPlot.setScale('x', { min: xScaleRange.current[0], max: xScaleRange.current[1] });
-            }
-          }}
-        >
-          Reset zoom
-        </Button>
+        <UPlotChart ref={uPlotChartRef} options={uOptions} data={data} />
+        <ResetZoomButton showResetZoomBtn={showResetZoomBtn} uPlotChartRef={uPlotChartRef} xScaleRange={xScaleRange} />
       </div>
     </>
   );
