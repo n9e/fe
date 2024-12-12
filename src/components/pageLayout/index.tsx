@@ -132,9 +132,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                   {title}
                 </div>
 
-                <div className={'page-header-right-area'} style={{display: sessionStorage.getItem('menuHide') === '1' ? 'none' : undefined 
-
-                }}>
+                <div className={'page-header-right-area'} style={{ display: sessionStorage.getItem('menuHide') === '1' ? 'none' : undefined }}>
                   {introIcon}
                   {docFn && (
                     <a onClick={() => docFn()} style={{ marginRight: 20 }}>
@@ -185,15 +183,15 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                       </Menu>
                     }
                   >
-                    <a style={{ marginRight: 20 }} onClick={(e) => e.preventDefault()} id='i18n-btn'>
+                    <a style={{ marginRight: 12 }} onClick={(e) => e.preventDefault()} id='i18n-btn'>
                       {curLanguage}
                     </a>
                   </Dropdown>
 
-                    <div style={{ marginRight: 8 }}>
-                      <DarkModeSelect />
-                    </div>
-               
+                  <div style={{ marginRight: 12 }}>
+                    <DarkModeSelect />
+                  </div>
+
                   <Dropdown overlay={menu} trigger={['click']}>
                     <span className='avator' style={{ cursor: 'pointer' }}>
                       <img src={profile.portrait || '/image/avatar1.png'} alt='' />
