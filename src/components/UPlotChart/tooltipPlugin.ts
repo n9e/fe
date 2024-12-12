@@ -2,10 +2,12 @@ import _ from 'lodash';
 import moment from 'moment';
 
 export default function tooltipPlugin(options: {
+  id: string;
   pointNameformatter?: (label: string, point: any) => string;
   pointValueformatter?: (value: number, point: any) => string;
   sharedSortDirection?: 'asc' | 'desc';
 }) {
+  const { id } = options;
   let over, bLeft, bTop;
 
   function syncBounds() {
@@ -14,16 +16,21 @@ export default function tooltipPlugin(options: {
     bTop = bbox.top;
   }
 
-  const overlay = document.createElement('div');
-  overlay.className = 'n9e-uplot-tooltip-container';
-  overlay.style.display = 'none';
-  overlay.style.position = 'absolute';
-  document.body.appendChild(overlay);
+  let overlay = document.getElementById(id);
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = id;
+    overlay.className = 'n9e-uplot-tooltip-container';
+    overlay.style.display = 'none';
+    overlay.style.position = 'absolute';
+    document.body.appendChild(overlay);
+  }
 
   return {
     hooks: {
       init: (u) => {
         over = u.over;
+        overlay.style.display = 'none';
         over.onmouseenter = () => {
           overlay.style.display = 'block';
         };
@@ -39,6 +46,7 @@ export default function tooltipPlugin(options: {
         const timeData = data[0];
         let valuesData: number[][] = _.slice(data, 1);
         const { left, top, idx } = u.cursor;
+        if (idx === null) return;
         const anchor = { left: left + bLeft, top: top + bTop };
         (window as any).placement(overlay, anchor, 'right', 'start', { bound: document.body });
 
@@ -86,13 +94,14 @@ export default function tooltipPlugin(options: {
 
         _.forEach(valuesData, (item, seriesIndex) => {
           const serie = series[seriesIndex + 1];
-          let value = item[idx];
-          value = serie.value(u, value, seriesIndex + 1, idx);
+          const value = item[idx];
+          // value = serie.value(u, value, seriesIndex + 1, idx);
           const { stroke, label } = serie;
           const color = stroke();
           const point = {
             color,
             label,
+            n9e_internal: serie.n9e_internal,
           };
           const liNode = document.createElement('li');
 
@@ -109,6 +118,7 @@ export default function tooltipPlugin(options: {
           }
           if (formatName) {
             const nameNode = document.createElement('span');
+            nameNode.className = 'n9e-uplot-tooltip-item-name';
             const nameTextNode = document.createTextNode(formatName);
 
             // if (nearestPoint?.name === label) {

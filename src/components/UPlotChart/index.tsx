@@ -1,36 +1,42 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
 
 import uPlot from 'uplot';
 import 'uplot/dist/uPlot.min.css';
 
 import optionsUpdateState from './utils/optionsUpdateState';
+import paddingSide from './utils/paddingSide';
 import axisBuilder from './utils/axisBuilder';
 import seriesBuider from './utils/seriesBuider';
+import cursorBuider from './utils/cursorBuilder';
+import scalesBuilder from './utils/scalesBuilder';
 import dataMatch from './utils/dataMatch';
 import getStackedDataAndBands from './utils/stack';
 import tooltipPlugin from './tooltipPlugin';
 
 import './style.less';
 
-export { tooltipPlugin, axisBuilder, seriesBuider, getStackedDataAndBands };
+export { tooltipPlugin, paddingSide, axisBuilder, seriesBuider, cursorBuider, scalesBuilder, getStackedDataAndBands };
 
-export default function UPlotChart({
-  options,
-  data,
-  target,
-  onDelete,
-  onCreate,
-  resetScales = true,
-  className,
-}: {
-  options: uPlot.Options;
-  data: uPlot.AlignedData;
-  target?: HTMLElement | ((self: uPlot, init: Function) => void);
-  onDelete?: (chart: uPlot) => void;
-  onCreate?: (chart: uPlot) => void;
-  resetScales?: boolean;
-  className?: string;
-}): JSX.Element | null {
+export default forwardRef(function UPlotChart(
+  {
+    options,
+    data,
+    target,
+    onDelete,
+    onCreate,
+    resetScales = true,
+    className,
+  }: {
+    options: uPlot.Options;
+    data: uPlot.AlignedData;
+    target?: HTMLElement | ((self: uPlot, init: Function) => void);
+    onDelete?: (chart: uPlot) => void;
+    onCreate?: (chart: uPlot) => void;
+    resetScales?: boolean;
+    className?: string;
+  },
+  ref,
+): JSX.Element | null {
   const chartRef = useRef<uPlot | null>(null);
   const targetRef = useRef<HTMLDivElement>(null);
   const propOptionsRef = useRef(options);
@@ -106,5 +112,9 @@ export default function UPlotChart({
     return () => destroy(chartRef.current);
   }, [target, create, destroy]);
 
+  useImperativeHandle(ref, () => ({
+    getChartInstance: () => chartRef.current,
+  }));
+
   return target ? null : <div ref={targetRef} className={className}></div>;
-}
+});

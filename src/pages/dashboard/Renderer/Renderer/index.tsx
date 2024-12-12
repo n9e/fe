@@ -38,6 +38,7 @@ import { IRawTimeRange } from '@/components/TimeRangePicker';
 import PanelEmpty from '../components/PanelEmpty';
 import CloneIcon from '../components/CloneIcon';
 import Timeseries from './Timeseries';
+import TimeSeriesNG from './TimeSeriesNG';
 import Stat from './Stat';
 import Table from './Table';
 import Pie from './Pie';
@@ -120,6 +121,7 @@ function index(props: IProps) {
   };
   const RendererCptMap = {
     timeseries: () => <Timeseries {...subProps} themeMode={themeMode} time={time} setRange={props.setRange} isPreview={isPreview} />,
+    timeseriesNG: () => <TimeSeriesNG {...subProps} themeMode={themeMode} time={time} setRange={props.setRange} isPreview={isPreview} />,
     stat: () => <Stat {...subProps} bodyWrapRef={bodyWrapRef} themeMode={themeMode} isPreview={isPreview} />,
     table: () => <Table {...subProps} themeMode={themeMode} time={time} isPreview={isPreview} ref={tableRef} />,
     pie: () => <Pie {...subProps} themeMode={themeMode} time={time} isPreview={isPreview} />,

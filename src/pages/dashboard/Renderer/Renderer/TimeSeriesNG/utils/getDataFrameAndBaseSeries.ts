@@ -11,6 +11,13 @@ interface ResultItem {
   }[];
 }
 
+interface OldSeriesItem {
+  id: string;
+  refId: string;
+  metric: { [key: string]: string };
+  data: [Ts: number, Value: number][]; // [unixTimestamp, value]
+}
+
 type DataFrame = [xValues: number[], ...yValues: (number | null | undefined)[][]];
 
 /**
@@ -18,7 +25,7 @@ type DataFrame = [xValues: number[], ...yValues: (number | null | undefined)[][]
  * @param result ResultItem[]
  * @returns DataFrame
  */
-export default function getDataFrameAndBaseSeries(result: ResultItem[]): {
+export function getDataFrameAndBaseSeriesByResult(result: ResultItem[]): {
   frames: DataFrame;
   baseSeries: Series[];
 } {
@@ -56,6 +63,57 @@ export default function getDataFrameAndBaseSeries(result: ResultItem[]): {
       }
       frames.push(frame);
     }
+  }
+
+  return { frames, baseSeries };
+}
+
+/**
+ * Convert the series to a DataFrame
+ * @param oldSeries OldSeriesItem[]
+ * @returns DataFrame
+ */
+export default function getDataFrameAndBaseSeries(oldSeries: OldSeriesItem[]): {
+  frames: DataFrame;
+  baseSeries: { label: string; n9e_internal: { [index: string]: string } }[];
+} {
+  const timestamps: number[] = [];
+  const frames: DataFrame = [[]];
+  const baseSeries: { label: string; n9e_internal: { [index: string]: string } }[] = [];
+
+  // Extract all timestamps
+  for (const item of oldSeries) {
+    // console.log('item', item);
+    const label = getSerieName(item.metric);
+    baseSeries.push({
+      label,
+      // n9e 内部使用
+      n9e_internal: {
+        refId: item.refId,
+      },
+    });
+    for (const [ts] of item.data) {
+      // Add timestamp if not exists
+      if (!timestamps.includes(ts)) {
+        timestamps.push(ts);
+      }
+    }
+  }
+
+  // Sort timestamps
+  timestamps.sort((a, b) => a - b);
+  frames[0] = timestamps;
+
+  // Create frames
+  for (const item of oldSeries) {
+    const frame: (number | null | undefined)[] = _.fill(Array(timestamps.length), null);
+    for (const [ts, value] of item.data) {
+      const index = timestamps.indexOf(ts);
+
+      // Add value to frame
+      frame[index] = value;
+    }
+    frames.push(frame);
   }
 
   return { frames, baseSeries };

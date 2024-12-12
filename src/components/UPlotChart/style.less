@@ -2,12 +2,11 @@
   z-index: 999;
   pointer-events: none;
   .n9e-uplot-tooltip {
-    color: #333;
+    color: var(--fc-text-2);
     background: var(--fc-fill-1);
     border: 1px solid var(--fc-border-color);
     border-radius: 3px;
-    box-shadow: 1px 1px 1px rgba(136,136,136, 0.2);
-    white-space: nowrap;
+    box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.12);
     padding: 8px;
     margin: 8px;
     ul {
@@ -15,9 +14,7 @@
       margin: 0;
       padding: 0;
       li {
-        display: flex;
-        align-items: center;
-        gap: 6px;
+        table-layout: fixed;
         font-size: 12px;
       }
     }
@@ -29,6 +26,10 @@
       height: 4px;
       width: 12px;
       border-radius: 2px;
+      margin: 0 8px 2px 0;
+    }
+    .n9e-uplot-tooltip-item-name {
+      padding-right: 8px;
     }
   }
 }

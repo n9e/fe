@@ -23,6 +23,9 @@ export const visualizations = [
     type: 'timeseries',
   },
   {
+    type: 'timeseriesNG',
+  },
+  {
     type: 'barchart',
   },
   {

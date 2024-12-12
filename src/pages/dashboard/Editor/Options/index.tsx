@@ -31,6 +31,7 @@ import BarChart from './BarChart';
 export default function index({ type, targets, chartForm, variableConfigWithOptions }) {
   const OptionsCptMap = {
     timeseries: <Timeseries targets={targets} />,
+    timeseriesNG: <Timeseries targets={targets} />,
     stat: <Stat targets={targets} />,
     table: <Table targets={targets} chartForm={chartForm} variableConfigWithOptions={variableConfigWithOptions} />,
     pie: <Pie />,
