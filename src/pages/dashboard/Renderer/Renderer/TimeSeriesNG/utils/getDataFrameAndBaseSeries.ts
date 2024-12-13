@@ -14,7 +14,9 @@ interface ResultItem {
 interface OldSeriesItem {
   id: string;
   refId: string;
+  offset: number;
   metric: { [key: string]: string };
+  target: { expr: string };
   data: [Ts: number, Value: number][]; // [unixTimestamp, value]
 }
 
@@ -68,6 +70,13 @@ export function getDataFrameAndBaseSeriesByResult(result: ResultItem[]): {
   return { frames, baseSeries };
 }
 
+export interface BaseSeriesItem {
+  label: string;
+  n9e_internal: {
+    [index: string]: any;
+  };
+}
+
 /**
  * Convert the series to a DataFrame
  * @param oldSeries OldSeriesItem[]
@@ -75,21 +84,22 @@ export function getDataFrameAndBaseSeriesByResult(result: ResultItem[]): {
  */
 export default function getDataFrameAndBaseSeries(oldSeries: OldSeriesItem[]): {
   frames: DataFrame;
-  baseSeries: { label: string; n9e_internal: { [index: string]: string } }[];
+  baseSeries: BaseSeriesItem[];
 } {
   const timestamps: number[] = [];
   const frames: DataFrame = [[]];
-  const baseSeries: { label: string; n9e_internal: { [index: string]: string } }[] = [];
+  const baseSeries: BaseSeriesItem[] = [];
 
   // Extract all timestamps
   for (const item of oldSeries) {
-    // console.log('item', item);
-    const label = getSerieName(item.metric);
+    const label = _.isEmpty(item.metric) ? item.target.expr : getSerieName(item.metric);
     baseSeries.push({
       label,
       // n9e 内部使用
       n9e_internal: {
         refId: item.refId,
+        offset: item.offset,
+        metric: item.metric,
       },
     });
     for (const [ts] of item.data) {

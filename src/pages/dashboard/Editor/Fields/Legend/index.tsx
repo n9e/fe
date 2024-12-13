@@ -37,38 +37,24 @@ export default function index() {
             </Radio.Group>
           </Form.Item>
         </Col>
-        <Form.Item noStyle shouldUpdate={(prevValues, curValues) => _.get(prevValues, [...namePrefix, 'displayMode']) !== _.get(curValues, [...namePrefix, 'displayMode'])}>
-          {({ getFieldValue }) => {
-            const displayMode = getFieldValue([...namePrefix, 'displayMode']);
-            return (
-              <>
-                <Col span={8}>
-                  <Form.Item
-                    label={t('panel.options.legend.heightInPercentage')}
-                    name={[...namePrefix, 'heightInPercentage']}
-                    tooltip={t('panel.options.legend.heightInPercentage_tip')}
-                    initialValue={30}
-                  >
-                    <InputNumber min={20} max={80} style={{ width: '100%' }} />
-                  </Form.Item>
-                </Col>
-                <Col
-                  span={7}
-                  style={{
-                    display: displayMode === 'list' ? 'block' : 'none',
-                  }}
-                >
-                  <Form.Item label={t('panel.options.legend.placement')} name={[...namePrefix, 'placement']} initialValue='bottom'>
-                    <Radio.Group buttonStyle='solid'>
-                      <Radio.Button value='bottom'>Bottom</Radio.Button>
-                      <Radio.Button value='right'>Right</Radio.Button>
-                    </Radio.Group>
-                  </Form.Item>
-                </Col>
-              </>
-            );
-          }}
-        </Form.Item>
+        <Col span={8}>
+          <Form.Item
+            label={t('panel.options.legend.heightInPercentage')}
+            name={[...namePrefix, 'heightInPercentage']}
+            tooltip={t('panel.options.legend.heightInPercentage_tip')}
+            initialValue={30}
+          >
+            <InputNumber min={20} max={80} style={{ width: '100%' }} />
+          </Form.Item>
+        </Col>
+        <Col span={7}>
+          <Form.Item label={t('panel.options.legend.placement')} name={[...namePrefix, 'placement']} initialValue='bottom'>
+            <Radio.Group buttonStyle='solid'>
+              <Radio.Button value='bottom'>Bottom</Radio.Button>
+              <Radio.Button value='right'>Right</Radio.Button>
+            </Radio.Group>
+          </Form.Item>
+        </Col>
         <Col span={24}>
           <Form.Item label={t('panel.options.legend.columns')} name={[...namePrefix, 'columns']}>
             <Select mode='multiple'>

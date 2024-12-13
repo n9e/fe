@@ -1,0 +1,34 @@
+.renderer-timeseries-ng-legend-container {
+  .renderer-timeseries-ng-legend-color-symbol {
+    width: 14px;
+    height: 4px;
+    border-radius: 10px;
+    display: inline-block;
+    margin-right: 8px;
+  }
+  .renderer-timeseries-ng-legend-table {
+    .renderer-timeseries-ng-legend-table-name-column {
+      width: 100%;
+      display: flex;
+      white-space: nowrap;
+      align-items: center;
+    }
+    .renderer-timeseries-ng-legend-table-name-content {
+      white-space: nowrap;
+      background: none;
+      border: none;
+      font-size: inherit;
+      padding: 0px;
+      max-width: 600px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      user-select: text;
+    }
+
+    .ant-table-thead,.ant-table-tbody {
+      .ant-table-cell {
+        padding: 2px 4px !important;
+      }
+    }
+  }
+}

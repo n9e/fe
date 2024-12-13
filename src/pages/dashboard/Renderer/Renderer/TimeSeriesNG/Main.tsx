@@ -1,5 +1,5 @@
 import React, { useState, useRef, useMemo } from 'react';
-import uPlot, { Options, Range } from 'uplot';
+import uPlot, { AlignedData, Options, Range } from 'uplot';
 import _ from 'lodash';
 import moment from 'moment';
 
@@ -11,7 +11,7 @@ import { IPanel } from '../../../types';
 import valueFormatter from '../../utils/valueFormatter';
 import { getLegendValues, getMappedTextObj } from '../../utils/getCalculatedValuesBySeries';
 
-import getDataFrameAndBaseSeries from './utils/getDataFrameAndBaseSeries';
+import getDataFrameAndBaseSeries, { BaseSeriesItem } from './utils/getDataFrameAndBaseSeries';
 import getStartAndEndByTargets from './utils/getStartAndEndByTargets';
 import ResetZoomButton from './components/ResetZoomButton';
 import './style.less';
@@ -19,6 +19,8 @@ import './style.less';
 export { getDataFrameAndBaseSeries };
 
 interface Props {
+  frames: AlignedData;
+  baseSeries: BaseSeriesItem[];
   darkMode: boolean;
   width: number;
   height: number;
@@ -35,13 +37,12 @@ interface Props {
 }
 
 export default function index(props: Props) {
-  const { darkMode, width, height, panel, series, colors, range, setRange, inDashboard, isPreview, hideResetBtn, onClick, onZoomWithoutDefult } = props;
+  const { frames, baseSeries, darkMode, width, height, panel, series, colors, range, setRange, inDashboard, isPreview, hideResetBtn, onClick, onZoomWithoutDefult } = props;
   const { custom, options = {}, targets, overrides } = panel;
   const idRef = useRef<string>(`renderer-timeseries-${_.uniqueId()}`);
   const uPlotChartRef = useRef<any>();
   const xScaleRange = useRef<[number, number]>(); // 保存 x 轴初始缩放范围
   const [showResetZoomBtn, setShowResetZoomBtn] = useState(false);
-  const { frames, baseSeries } = getDataFrameAndBaseSeries(series as any);
   const uOptions: Options = useMemo(() => {
     let xRange: Range.MinMax | undefined = undefined;
     let yRange: Range.MinMax | undefined = undefined;
