@@ -50,6 +50,39 @@ export default function tooltipPlugin(options: {
         const anchor = { left: left + bLeft, top: top + bTop };
         (window as any).placement(overlay, anchor, 'right', 'start', { bound: document.body });
 
+        // tooltip 排序
+        if (options.sharedSortDirection) {
+          _.orderBy(
+            valuesData,
+            (item) => {
+              return item[idx];
+            },
+            options.sharedSortDirection,
+          );
+        }
+
+        // 获取鼠标位置
+        const mouseX = u.cursor.left;
+        const mouseY = u.cursor.top;
+
+        // 初始化最小距离和最近点的索引
+        let minDist = Infinity;
+        let closestIdx = idx;
+        let closestSeriesIdx = -1;
+
+        // 遍历所有数据点，找到距离最近的点
+        _.forEach(valuesData, (seriesData, seriesIdx) => {
+          const x = u.valToPos(timeData[idx], 'x');
+          const y = u.valToPos(seriesData[idx], 'y');
+          const dist = Math.sqrt(Math.pow(mouseX - x, 2) + Math.pow(mouseY - y, 2));
+          if (dist < minDist) {
+            minDist = dist;
+            closestIdx = idx;
+            closestSeriesIdx = seriesIdx;
+          }
+        });
+
+        // 绘制 DOM 元素
         overlay.innerHTML = '';
         const wrapEle = document.createElement('div');
         const renderToHeight = window.innerHeight / 1.5;
@@ -61,16 +94,6 @@ export default function tooltipPlugin(options: {
         // + 1: 标题栏高度
         const maxLength = (renderToHeight - 18 - 100) / 15;
         let overflow = false;
-
-        if (options.sharedSortDirection) {
-          _.orderBy(
-            valuesData,
-            (item) => {
-              return item[idx];
-            },
-            options.sharedSortDirection,
-          );
-        }
 
         if (valuesData.length > maxLength) {
           valuesData = _.slice(valuesData, 0, maxLength);
@@ -104,6 +127,11 @@ export default function tooltipPlugin(options: {
             n9e_internal: serie.n9e_internal,
           };
           const liNode = document.createElement('li');
+          liNode.className = 'n9e-uplot-tooltip-item';
+
+          if (closestSeriesIdx === seriesIndex) {
+            liNode.className = 'n9e-uplot-tooltip-item n9e-uplot-tooltip-item-closest';
+          }
 
           if (color) {
             const symbolNode = document.createElement('span');
@@ -121,20 +149,13 @@ export default function tooltipPlugin(options: {
             nameNode.className = 'n9e-uplot-tooltip-item-name';
             const nameTextNode = document.createTextNode(formatName);
 
-            // if (nearestPoint?.name === label) {
-            //   nameNode.style.fontWeight = 'bold';
-            // }
-
             nameNode.appendChild(nameTextNode);
             liNode.appendChild(nameNode);
           }
 
           if (value !== undefined && value !== null) {
             const valueNode = document.createElement('span');
-
-            // if (nearestPoint?.name === label) {
-            //   valueNode.style.fontWeight = 'bold';
-            // }
+            valueNode.className = 'n9e-uplot-tooltip-item-value';
 
             let formatedValue = _.toString(value);
 
@@ -145,7 +166,6 @@ export default function tooltipPlugin(options: {
             // formatValue += filledNull ? '(空值填补,仅限看图使用)' : '';
 
             const valueTextNode = document.createTextNode(formatedValue);
-
             valueNode.appendChild(valueTextNode);
             liNode.appendChild(valueNode);
           }

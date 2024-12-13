@@ -2,7 +2,7 @@
   z-index: 999;
   pointer-events: none;
   .n9e-uplot-tooltip {
-    color: var(--fc-text-2);
+    color: var(--fc-text-4);
     background: var(--fc-fill-1);
     border: 1px solid var(--fc-border-color);
     border-radius: 3px;
@@ -18,7 +18,12 @@
         font-size: 12px;
       }
     }
+    .n9e-uplot-tooltip-item-closest {
+      color: var(--fc-text-2);
+      font-weight: bolder;
+    }
     .n9e-uplot-tooltip-header {
+      color: var(--fc-text-2);
       font-weight: bolder;
     }
     .n9e-uplot-tooltip-item-symbol {
@@ -30,6 +35,10 @@
     }
     .n9e-uplot-tooltip-item-name {
       padding-right: 8px;
+    }
+    .n9e-uplot-tooltip-item-value {
+      color: var(--fc-text-2);
+      font-weight: bolder;
     }
   }
 }

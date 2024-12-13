@@ -1,9 +1,9 @@
-import { Scales, Scale } from 'uplot';
+import { Scales, Scale, Range } from 'uplot';
 import _ from 'lodash';
 
 interface Props {
-  xRange?: [number, number];
-  yRange?: [number, number];
+  xRange?: Range.MinMax;
+  yRange?: Range.MinMax;
   yDistr?: Scale.Distr;
   yLog?: Scale.LogBase;
 }

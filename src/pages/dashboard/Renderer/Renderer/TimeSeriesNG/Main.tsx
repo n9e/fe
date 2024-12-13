@@ -1,9 +1,10 @@
 import React, { useState, useRef, useMemo } from 'react';
-import uPlot, { Options } from 'uplot';
+import uPlot, { Options, Range } from 'uplot';
 import _ from 'lodash';
+import moment from 'moment';
 
 import UPlotChart, { tooltipPlugin, paddingSide, axisBuilder, seriesBuider, cursorBuider, scalesBuilder, getStackedDataAndBands } from '@/components/UPlotChart';
-import { IRawTimeRange } from '@/components/TimeRangePicker';
+import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { hexPalette } from '@/pages/dashboard/config';
 
 import { IPanel } from '../../../types';
@@ -11,6 +12,7 @@ import valueFormatter from '../../utils/valueFormatter';
 import { getLegendValues, getMappedTextObj } from '../../utils/getCalculatedValuesBySeries';
 
 import getDataFrameAndBaseSeries from './utils/getDataFrameAndBaseSeries';
+import getStartAndEndByTargets from './utils/getStartAndEndByTargets';
 import ResetZoomButton from './components/ResetZoomButton';
 import './style.less';
 
@@ -41,6 +43,21 @@ export default function index(props: Props) {
   const [showResetZoomBtn, setShowResetZoomBtn] = useState(false);
   const { frames, baseSeries } = getDataFrameAndBaseSeries(series as any);
   const uOptions: Options = useMemo(() => {
+    let xRange: Range.MinMax | undefined = undefined;
+    let yRange: Range.MinMax | undefined = undefined;
+    if (range) {
+      const parsedRange = parseRange(range);
+      const startAndEnd = getStartAndEndByTargets(targets);
+      const start = startAndEnd.start || moment(parsedRange.start).unix();
+      const end = startAndEnd.end || moment(parsedRange.end).unix();
+      xRange = [start, end];
+    }
+    if (_.isNumber(options.standardOptions?.min)) {
+      yRange = [options.standardOptions?.min, null];
+    }
+    if (_.isNumber(options.standardOptions?.max)) {
+      yRange = [yRange ? yRange[0] : null, options.standardOptions?.max];
+    }
     return {
       width,
       height,
@@ -85,6 +102,8 @@ export default function index(props: Props) {
       ],
       cursor: cursorBuider({}),
       scales: scalesBuilder({
+        xRange,
+        yRange,
         yDistr: custom.scaleDistribution?.type === 'log' ? 3 : 1,
         yLog: custom.scaleDistribution?.type === 'log' ? custom.scaleDistribution?.log : undefined,
       }),
@@ -136,7 +155,7 @@ export default function index(props: Props) {
         ],
       },
     };
-  }, [width, height, custom, options, colors]);
+  }, [width, height, custom, options, colors, JSON.stringify(range)]);
   let data = frames;
 
   if (custom.stack === 'noraml') {
@@ -150,7 +169,7 @@ export default function index(props: Props) {
     <>
       <div className='renderer-timeseries-graph'>
         <UPlotChart ref={uPlotChartRef} options={uOptions} data={data} />
-        <ResetZoomButton showResetZoomBtn={showResetZoomBtn} uPlotChartRef={uPlotChartRef} xScaleRange={xScaleRange} />
+        {!hideResetBtn && <ResetZoomButton showResetZoomBtn={showResetZoomBtn} uPlotChartRef={uPlotChartRef} xScaleRange={xScaleRange} />}
       </div>
     </>
   );
