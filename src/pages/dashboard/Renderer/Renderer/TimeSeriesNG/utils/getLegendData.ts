@@ -31,6 +31,8 @@ export interface DataItem {
   avg: ColData;
   last: ColData;
   sum: ColData;
+  offset: string;
+  color: string;
   // disabled: boolean;
 }
 

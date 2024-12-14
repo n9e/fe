@@ -108,7 +108,7 @@ export default function index(props: Props) {
             maxWidth: legend?.placement === 'right' ? legend?.widthInPercentage || 60 + '%' : 'unset',
           }}
         >
-          {legendDisplayMode === 'list' && <LegendList data={legendData} />}
+          {legendDisplayMode === 'list' && <LegendList data={legendData} legendColumns={legendColumns} placement={legend?.placement} />}
           {legendDisplayMode === 'table' && <LegendTable data={legendData} legendColumns={legendColumns} />}
         </div>
       )}
