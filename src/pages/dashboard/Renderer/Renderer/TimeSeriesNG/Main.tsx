@@ -13,6 +13,7 @@ import { getLegendValues, getMappedTextObj } from '../../utils/getCalculatedValu
 
 import getDataFrameAndBaseSeries, { BaseSeriesItem } from './utils/getDataFrameAndBaseSeries';
 import getStartAndEndByTargets from './utils/getStartAndEndByTargets';
+import drawThresholds from './utils/drawThresholds';
 import ResetZoomButton from './components/ResetZoomButton';
 import './style.less';
 
@@ -137,6 +138,23 @@ export default function index(props: Props) {
         }),
       ],
       hooks: {
+        draw: [
+          (uplot) => {
+            if (options.thresholds) {
+              drawThresholds({
+                uplot,
+                thresholds: {
+                  ...options.thresholds,
+                  mode: 'absolute',
+                },
+                // thresholdsStyle: options.thresholdsStyle,
+                thresholdsStyle: {
+                  mode: 'dashed+area',
+                },
+              });
+            }
+          },
+        ],
         setScale: [
           (u, scaleKey) => {
             if (scaleKey === 'x') {
@@ -168,7 +186,7 @@ export default function index(props: Props) {
 
   return (
     <>
-      <div className='renderer-timeseries-graph'>
+      <div className='renderer-timeseries-ng-graph'>
         <UPlotChart ref={uPlotChartRef} options={uOptions} data={data} />
         {!hideResetBtn && <ResetZoomButton showResetZoomBtn={showResetZoomBtn} uPlotChartRef={uPlotChartRef} xScaleRange={xScaleRange} />}
       </div>

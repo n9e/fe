@@ -8,6 +8,9 @@ export default function getChartContainerSize(padding: number, containerSize?: S
   const containerHeight = containerSize?.height || 0;
   const legendWidth = legendSize?.width || 0;
   const legendHeight = legendSize?.height || 0;
+  if (containerWidth === 0 || containerWidth === 0) {
+    return { width: 0, height: 0 };
+  }
   const chartContainerWidth = containerWidth - (placement === 'right' ? legendWidth : 0) - padding * 2;
   const chartContainerHeight = containerHeight - (placement === 'bottom' ? legendHeight : 0) - padding * 2;
 

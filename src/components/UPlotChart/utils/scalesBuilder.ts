@@ -13,21 +13,20 @@ export default function scalesBuilder(props: Props) {
   const scalesOptions: Scales = {};
   if (xRange) {
     scalesOptions.x = {
-      range: (self, min, max) => {
-        return xRange;
-      },
+      min: xRange[0] ?? undefined,
+      max: xRange[1] ?? undefined,
     };
   }
   if (yRange) {
     scalesOptions.y = {
-      range: (self, min, max) => {
-        return yRange;
-      },
+      min: yRange[0] ?? undefined,
+      max: yRange[1] ?? undefined,
     };
-    if (yDistr) {
-      scalesOptions.y.distr = yDistr;
-      scalesOptions.y.log = yLog;
-    }
+  }
+  if (yDistr) {
+    scalesOptions.y = scalesOptions.y || {};
+    scalesOptions.y.distr = yDistr;
+    scalesOptions.y.log = yLog;
   }
   return scalesOptions;
 }
