@@ -40,5 +40,11 @@ export default function cursorBuider(props: Props): Cursor {
         return 'blue';
       },
     },
+    bind: {
+      dblclick: (u) => () => {
+        // 关闭默认的双击重置缩放行为
+        return null;
+      },
+    },
   };
 }

@@ -4,11 +4,13 @@ import { Button } from 'antd';
 interface Props {
   showResetZoomBtn: boolean;
   uPlotChartRef: any;
-  xScaleRange: any;
+  xScaleInitMinMax?: [number, number];
+  yScaleInitMinMax?: [number, number];
 }
 
 export default function ResetZoomButton(props: Props) {
-  const { showResetZoomBtn, uPlotChartRef, xScaleRange } = props;
+  const { showResetZoomBtn, uPlotChartRef, xScaleInitMinMax, yScaleInitMinMax } = props;
+
   return (
     <Button
       className='renderer-timeseries-graph-zoom-resetBtn'
@@ -17,8 +19,9 @@ export default function ResetZoomButton(props: Props) {
       }}
       onClick={() => {
         const uPlot = uPlotChartRef.current && uPlotChartRef.current.getChartInstance();
-        if (uPlot && xScaleRange.current) {
-          uPlot.setScale('x', { min: xScaleRange.current[0], max: xScaleRange.current[1] });
+        if (uPlot && xScaleInitMinMax && yScaleInitMinMax) {
+          uPlot.setScale('x', { min: xScaleInitMinMax[0], max: xScaleInitMinMax[1] });
+          uPlot.setScale('y', { min: yScaleInitMinMax[0], max: yScaleInitMinMax[1] });
         }
       }}
     >

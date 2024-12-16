@@ -1,5 +1,5 @@
 import React, { useState, useRef, useMemo } from 'react';
-import uPlot, { AlignedData, Options, Range } from 'uplot';
+import uPlot, { AlignedData, Options } from 'uplot';
 import _ from 'lodash';
 import moment from 'moment';
 
@@ -9,11 +9,11 @@ import { hexPalette } from '@/pages/dashboard/config';
 
 import { IPanel } from '../../../types';
 import valueFormatter from '../../utils/valueFormatter';
-import { getLegendValues, getMappedTextObj } from '../../utils/getCalculatedValuesBySeries';
+import { getMappedTextObj } from '../../utils/getCalculatedValuesBySeries';
 
 import getDataFrameAndBaseSeries, { BaseSeriesItem } from './utils/getDataFrameAndBaseSeries';
-import getStartAndEndByTargets from './utils/getStartAndEndByTargets';
 import drawThresholds from './utils/drawThresholds';
+import getScalesMinMax from './utils/getScalesMinMax';
 import ResetZoomButton from './components/ResetZoomButton';
 import './style.less';
 
@@ -42,24 +42,12 @@ export default function index(props: Props) {
   const { custom, options = {}, targets, overrides } = panel;
   const idRef = useRef<string>(`renderer-timeseries-${_.uniqueId()}`);
   const uPlotChartRef = useRef<any>();
-  const xScaleRange = useRef<[number, number]>(); // 保存 x 轴初始缩放范围
+  // 保存 x 和 y 轴初始缩放范围
+  const xScaleInitMinMaxRef = useRef<[number, number]>();
+  const yScaleInitMinMaxRef = useRef<[number, number]>();
   const [showResetZoomBtn, setShowResetZoomBtn] = useState(false);
   const uOptions: Options = useMemo(() => {
-    let xRange: Range.MinMax | undefined = undefined;
-    let yRange: Range.MinMax | undefined = undefined;
-    if (range) {
-      const parsedRange = parseRange(range);
-      const startAndEnd = getStartAndEndByTargets(targets);
-      const start = startAndEnd.start || moment(parsedRange.start).unix();
-      const end = startAndEnd.end || moment(parsedRange.end).unix();
-      xRange = [start, end];
-    }
-    if (_.isNumber(options.standardOptions?.min)) {
-      yRange = [options.standardOptions?.min, null];
-    }
-    if (_.isNumber(options.standardOptions?.max)) {
-      yRange = [yRange ? yRange[0] : null, options.standardOptions?.max];
-    }
+    const { xMinMax, yRange } = getScalesMinMax({ range, panel });
     return {
       width,
       height,
@@ -104,7 +92,7 @@ export default function index(props: Props) {
       ],
       cursor: cursorBuider({}),
       scales: scalesBuilder({
-        xRange,
+        xMinMax,
         yRange,
         yDistr: custom.scaleDistribution?.type === 'log' ? 3 : 1,
         yLog: custom.scaleDistribution?.type === 'log' ? custom.scaleDistribution?.log : undefined,
@@ -161,13 +149,19 @@ export default function index(props: Props) {
               const min = u.scales.x.min;
               const max = u.scales.x.max;
               if (u.status === 0 && _.isNumber(min) && _.isNumber(max)) {
-                xScaleRange.current = [min, max];
+                xScaleInitMinMaxRef.current = [min, max];
               } else if (u.status === 1) {
-                if (_.isEqual(xScaleRange.current, [min, max])) {
+                if (_.isEqual(xScaleInitMinMaxRef.current, [min, max])) {
                   setShowResetZoomBtn(false);
                 } else {
                   setShowResetZoomBtn(true);
                 }
+              }
+            } else if (scaleKey === 'y') {
+              const min = u.scales.y.min;
+              const max = u.scales.y.max;
+              if (u.status === 0 && _.isNumber(min) && _.isNumber(max)) {
+                yScaleInitMinMaxRef.current = [min, max];
               }
             }
           },
@@ -188,7 +182,14 @@ export default function index(props: Props) {
     <>
       <div className='renderer-timeseries-ng-graph'>
         <UPlotChart ref={uPlotChartRef} options={uOptions} data={data} />
-        {!hideResetBtn && <ResetZoomButton showResetZoomBtn={showResetZoomBtn} uPlotChartRef={uPlotChartRef} xScaleRange={xScaleRange} />}
+        {!hideResetBtn && (
+          <ResetZoomButton
+            showResetZoomBtn={showResetZoomBtn}
+            uPlotChartRef={uPlotChartRef}
+            xScaleInitMinMax={xScaleInitMinMaxRef.current}
+            yScaleInitMinMax={yScaleInitMinMaxRef.current}
+          />
+        )}
       </div>
     </>
   );
