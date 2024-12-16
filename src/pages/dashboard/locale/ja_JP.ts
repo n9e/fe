@@ -189,6 +189,20 @@ const ja_JP = {
       thresholds: {
         title: 'しきい値',
         btn: '追加',
+        mode: {
+          label: 'しきい値モード',
+          tip: 'パーセンテージは最小値と最大値に対するしきい値を表します',
+          absolute: '絶対値',
+          percentage: 'パーセンテージ',
+        },
+      },
+      thresholdsStyle: {
+        label: 'しきい値スタイル',
+        off: 'オフ',
+        line: 'ライン',
+        dashed: '破線',
+        'line+area': 'ライン+エリア',
+        'dashed+area': '破線+エリア',
       },
       tooltip: {
         mode: 'モード',

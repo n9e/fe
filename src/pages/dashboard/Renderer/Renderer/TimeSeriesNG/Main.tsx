@@ -1,15 +1,15 @@
 import React, { useState, useRef, useMemo } from 'react';
-import uPlot, { AlignedData, Options } from 'uplot';
+import { AlignedData, Options } from 'uplot';
 import _ from 'lodash';
-import moment from 'moment';
 
 import UPlotChart, { tooltipPlugin, paddingSide, axisBuilder, seriesBuider, cursorBuider, scalesBuilder, getStackedDataAndBands } from '@/components/UPlotChart';
-import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
+import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { hexPalette } from '@/pages/dashboard/config';
 
 import { IPanel } from '../../../types';
 import valueFormatter from '../../utils/valueFormatter';
 import { getMappedTextObj } from '../../utils/getCalculatedValuesBySeries';
+import { defaultOptionsValues } from '../../../Editor/config';
 
 import getDataFrameAndBaseSeries, { BaseSeriesItem } from './utils/getDataFrameAndBaseSeries';
 import drawThresholds from './utils/drawThresholds';
@@ -90,7 +90,11 @@ export default function index(props: Props) {
           },
         }),
       ],
-      cursor: cursorBuider({}),
+      cursor: cursorBuider({
+        sync: {
+          key: 'a',
+        },
+      }),
       scales: scalesBuilder({
         xMinMax,
         yRange,
@@ -129,15 +133,15 @@ export default function index(props: Props) {
         draw: [
           (uplot) => {
             if (options.thresholds) {
+              const mode = options.thresholds.mode ?? defaultOptionsValues.thresholds.mode;
               drawThresholds({
                 uplot,
                 thresholds: {
                   ...options.thresholds,
-                  mode: 'absolute',
+                  mode,
                 },
-                // thresholdsStyle: options.thresholdsStyle,
                 thresholdsStyle: {
-                  mode: 'dashed+area',
+                  mode: options.thresholdsStyle?.mode ?? (defaultOptionsValues.thresholdsStyle.mode as any),
                 },
               });
             }

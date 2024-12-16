@@ -17,6 +17,7 @@
 import _ from 'lodash';
 import { PRIMARY_COLOR } from '@/utils/constant';
 import { colors } from '../Components/ColorRangeMenu/config';
+import { IOptions } from '../types';
 
 export const visualizations = [
   {
@@ -115,6 +116,10 @@ export const defaultOptionsValues = {
   },
   thresholds: {
     steps: [defaultThreshold],
+    mode: 'absolute',
+  },
+  thresholdsStyle: {
+    mode: 'dashed',
   },
 };
 
@@ -128,6 +133,19 @@ export const defaultValues = {
 
 export const defaultCustomValuesMap = {
   timeseries: {
+    drawStyle: 'lines',
+    lineInterpolation: 'smooth',
+    lineWidth: 2,
+    fillOpacity: 0.01,
+    gradientMode: 'none',
+    stack: 'off',
+    scaleDistribution: {
+      type: 'linear',
+    },
+    showPoints: 'none',
+    pointSize: 5,
+  },
+  timeseriesNG: {
     drawStyle: 'lines',
     lineInterpolation: 'smooth',
     lineWidth: 2,
@@ -211,6 +229,7 @@ export const defaultCustomValuesMap = {
 
 export const defaultOptionsValuesMap = {
   timeseries: defaultOptionsValues,
+  timeseriesNG: defaultOptionsValues,
   stat: defaultOptionsValues,
   pie: defaultOptionsValues,
   table: defaultOptionsValues,

@@ -217,10 +217,26 @@ const zh_CN = {
         },
         heightInPercentage: '高度百分比',
         heightInPercentage_tip: 'Legend 高度占据面板的最大高度百分比，最小值为 20%，最大值为 80%',
+        widthInPercentage: '宽度百分比',
+        widthInPercentage_tip: 'Legend 宽度占据面板的最大宽度百分比，最小值为 20%，最大值为 80%',
       },
       thresholds: {
         title: '阈值',
-        btn: '添加',
+        btn: '添加阈值',
+        mode: {
+          label: '阈值模式',
+          tip: '百分比表示相对于最小值和最大值的阈值',
+          absolute: '绝对值',
+          percentage: '百分比',
+        },
+      },
+      thresholdsStyle: {
+        label: '阈值样式',
+        off: '关闭',
+        line: '线',
+        dashed: '虚线',
+        'line+area': '线+区域',
+        'dashed+area': '虚线+区域',
       },
       tooltip: {
         mode: '模式',

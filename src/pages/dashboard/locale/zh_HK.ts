@@ -219,7 +219,21 @@ const zh_HK = {
       },
       thresholds: {
         title: '閾值',
-        btn: '新增',
+        btn: '新增閾值',
+        mode: {
+          label: '閾值模式',
+          tip: '百分比表示相對於最小值和最大值的閾值',
+          absolute: '絕對值',
+          percentage: '百分比',
+        },
+      },
+      thresholdsStyle: {
+        label: '閾值樣式',
+        off: '關閉',
+        line: '線條',
+        dashed: '虛線',
+        'line+area': '線條+區域',
+        'dashed+area': '虛線+區域',
       },
       tooltip: {
         mode: '模式',

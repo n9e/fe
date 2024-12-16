@@ -3,7 +3,6 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { DataItem } from '../../utils/getLegendData';
-import NameWithTooltip from '../NameWithTooltip';
 
 interface Props {
   data: DataItem[];
@@ -33,12 +32,10 @@ export default function LegendList(props: Props) {
             >
               <div className='renderer-timeseries-ng-legend-table-name-column'>
                 <div className='renderer-timeseries-ng-legend-color-symbol' style={{ backgroundColor: item.color }} />
-                <NameWithTooltip record={item}>
-                  <div className='renderer-timeseries-ng-legend-table-name-content'>
-                    {item.offset && item.offset !== 'current' ? <span style={{ paddingRight: 5 }}>offfset {item.offset}</span> : ''}
-                    <span>{item.name}</span>
-                  </div>
-                </NameWithTooltip>
+                <div className='renderer-timeseries-ng-legend-table-name-content'>
+                  {item.offset && item.offset !== 'current' ? <span style={{ paddingRight: 5 }}>offfset {item.offset}</span> : ''}
+                  <span>{item.name}</span>
+                </div>
                 <div className='renderer-timeseries-ng-legend-list-stat'>
                   {_.map(legendColumns, (column) => {
                     return (

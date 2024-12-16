@@ -2,22 +2,11 @@ import uPlot from 'uplot';
 import _ from 'lodash';
 import Color from 'color';
 
-interface Thresholds {
-  steps: {
-    color: string;
-    value: number;
-    type: 'base' | '';
-  }[];
-  mode: 'absolute' | 'percentage';
-}
-
-interface ThresholdsStyle {
-  mode: 'off' | 'line' | 'dashed' | 'line+area' | 'dashed+area';
-}
+import { IThresholds, ThresholdsStyle } from '@/pages/dashboard/types';
 
 interface Props {
   uplot: uPlot;
-  thresholds: Thresholds;
+  thresholds: IThresholds;
   thresholdsStyle: ThresholdsStyle;
 }
 
@@ -28,28 +17,32 @@ interface Props {
  */
 export default function drawThresholds(props: Props) {
   const { uplot, thresholds, thresholdsStyle } = props;
+  const thresholdsMode = thresholds.mode;
+  if (thresholdsStyle.mode === 'off') return;
+
+  const scaleXMin = uplot.scales.x.min;
+  const scaleXMax = uplot.scales.x.max;
+  const scaleYMin = uplot.scales.y.min;
+  const scaleYMax = uplot.scales.y.max;
+
   let thresholdsSteps = _.sortBy(thresholds.steps, (item) => {
     return item.value ?? 0;
   });
-  const thresholdsMode = thresholds.mode;
-  if (thresholdsStyle.mode === 'off') return;
-  const scaleYMax = uplot.scales.y.max;
-  if (thresholdsMode === 'percentage' && scaleYMax) {
+
+  if (thresholdsMode === 'percentage' && scaleYMin !== undefined && scaleYMax !== undefined) {
     thresholdsSteps = thresholdsSteps.map((step) => {
       if (step.type === 'base') return step;
       return {
         ...step,
-        value: scaleYMax * (step.value / 100),
+        // Thresholds mode Percentage means thresholds relative to min & max
+        value: scaleYMin + (scaleYMax - scaleYMin) * (step.value / 100),
       };
     });
   }
   const ctx = uplot.ctx;
   ctx.save();
-  const scaleXMin = uplot.scales.x.min;
-  const scaleXMax = uplot.scales.x.max;
-  const scaleyMin = uplot.scales.y.min;
-  const scaleyMax = uplot.scales.y.max;
-  if (scaleXMin !== undefined && scaleXMax !== undefined && scaleyMin !== undefined && scaleyMax !== undefined) {
+
+  if (scaleXMin !== undefined && scaleXMax !== undefined && scaleYMin !== undefined && scaleYMax !== undefined) {
     const xMin = uplot.valToPos(scaleXMin, 'x', true);
     const xMax = uplot.valToPos(scaleXMax, 'x', true);
     _.forEach(
@@ -60,7 +53,7 @@ export default function drawThresholds(props: Props) {
         ctx.beginPath();
         ctx.strokeStyle = step.color;
         ctx.lineWidth = 1;
-        if (thresholdsStyle.mode === 'dashed') {
+        if (thresholdsStyle.mode === 'dashed' || thresholdsStyle.mode === 'dashed+area') {
           ctx.setLineDash([5, 5]);
         }
         ctx.moveTo(xMin, uplot.valToPos(step.value, 'y', true));
@@ -73,8 +66,8 @@ export default function drawThresholds(props: Props) {
       _.forEach(thresholdsSteps, (step, index) => {
         ctx.beginPath();
         ctx.fillStyle = Color(step.color).alpha(0.14).rgb().string();
-        const y0Value = index === 0 ? scaleyMin : step.value;
-        const y1Value = index === thresholdsSteps.length - 1 ? scaleyMax : thresholdsSteps[index + 1].value;
+        const y0Value = index === 0 ? scaleYMin : step.value;
+        const y1Value = index === thresholdsSteps.length - 1 ? scaleYMax : thresholdsSteps[index + 1].value;
         const y0 = uplot.valToPos(y0Value, 'y', true);
         const y1 = uplot.valToPos(y1Value, 'y', true);
         ctx.moveTo(xMin, y0);

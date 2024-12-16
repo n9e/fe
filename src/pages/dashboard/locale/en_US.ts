@@ -219,7 +219,21 @@ const en_US = {
       },
       thresholds: {
         title: 'Thresholds',
-        btn: 'Add',
+        btn: 'Add threshold',
+        mode: {
+          label: 'Mode',
+          tip: 'Thresholds mode Percentage means thresholds relative to min & max',
+          absolute: 'Absolute',
+          percentage: 'Percentage',
+        },
+      },
+      thresholdsStyle: {
+        label: 'Thresholds style',
+        off: 'Off',
+        line: 'Line',
+        dashed: 'Dashed',
+        'line+area': 'Line+Area',
+        'dashed+area': 'Dashed+Area',
       },
       tooltip: {
         mode: 'Mode',

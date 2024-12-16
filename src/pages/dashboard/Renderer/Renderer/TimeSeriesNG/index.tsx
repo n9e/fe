@@ -62,7 +62,6 @@ export default function index(props: Props) {
   const legendDisplayMode = options.legend?.displayMode || 'table';
   const legendColumns = !_.isEmpty(options.legend?.columns) ? options.legend?.columns : legendDisplayMode === 'table' ? ['max', 'min', 'avg', 'sum', 'last'] : [];
   const chartContainerSize = getChartContainerSize(PADDING, containerSize, legendSize, legend?.placement);
-
   const [dataRefresh, setDataRefresh] = useState(_.uniqueId('dataRefresh_'));
   const [hideSeries, setHideSeries] = useState<string[]>([]);
   const { frames, baseSeries } = useMemo(() => {
@@ -83,7 +82,7 @@ export default function index(props: Props) {
       });
     }
     return [];
-  }, [dataRefresh]);
+  }, [dataRefresh, legend?.displayMode]);
 
   return (
     <div
@@ -104,7 +103,7 @@ export default function index(props: Props) {
           ref={legendRef}
           className='renderer-timeseries-ng-legend-container'
           style={{
-            maxHeight: legend?.placement === 'bottom' ? legend?.heightInPercentage + '%' : 'unset',
+            maxHeight: legend?.placement === 'bottom' ? legend?.heightInPercentage || 30 + '%' : 'unset',
             maxWidth: legend?.placement === 'right' ? legend?.widthInPercentage || 60 + '%' : 'unset',
           }}
         >
