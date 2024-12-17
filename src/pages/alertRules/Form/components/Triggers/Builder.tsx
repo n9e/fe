@@ -47,37 +47,41 @@ export default function Builder(props: IProps) {
                   <Space align='start'>
                     <Form.Item {...field} name={[field.name, 'ref']}>
                       <Select disabled={disabled}>
-                        {_.map(queries, (query) => {
+                        {_.map(queries, (query, index) => {
                           return (
-                            <Select.Option value={query.ref} key={query.ref}>
+                            <Select.Option value={query.ref} key={query.ref + index}>
                               {query.ref}
                             </Select.Option>
                           );
                         })}
                       </Select>
                     </Form.Item>
-                    <Form.Item {...field} name={[field.name, 'comparisonOperator']}>
-                      <Select style={{ width: 64 }} disabled={disabled}>
-                        <Select.Option value='=='>==</Select.Option>
-                        <Select.Option value='!='>!=</Select.Option>
-                        <Select.Option value='>'>{'>'}</Select.Option>
-                        <Select.Option value='>='>{'>='}</Select.Option>
-                        <Select.Option value='<'>{'<'}</Select.Option>
-                        <Select.Option value='<='>{'<='}</Select.Option>
-                      </Select>
-                    </Form.Item>
-                    <Form.Item
-                      {...field}
-                      name={[field.name, 'value']}
-                      rules={[
-                        {
-                          required: true,
-                          message: t('db_aliyunSLS:trigger.value_msg'),
-                        },
-                      ]}
-                    >
-                      <InputNumber style={{ width: 200 }} disabled={disabled} />
-                    </Form.Item>
+                    <div>
+                      <Form.Item {...field} name={[field.name, 'comparisonOperator']}>
+                        <Select style={{ width: 64 }} disabled={disabled}>
+                          <Select.Option value='=='>==</Select.Option>
+                          <Select.Option value='!='>!=</Select.Option>
+                          <Select.Option value='>'>{'>'}</Select.Option>
+                          <Select.Option value='>='>{'>='}</Select.Option>
+                          <Select.Option value='<'>{'<'}</Select.Option>
+                          <Select.Option value='<='>{'<='}</Select.Option>
+                        </Select>
+                      </Form.Item>
+                    </div>
+                    <div>
+                      <Form.Item
+                        {...field}
+                        name={[field.name, 'value']}
+                        rules={[
+                          {
+                            required: true,
+                            message: t('db_aliyunSLS:trigger.value_msg'),
+                          },
+                        ]}
+                      >
+                        <InputNumber style={{ width: 200 }} disabled={disabled} />
+                      </Form.Item>
+                    </div>
                     {field.name !== fields.length - 1 && (
                       <Form.Item {...field} name={[0, 'logicalOperator']}>
                         <Select style={{ width: 80 }} disabled={disabled}>
