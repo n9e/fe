@@ -90,7 +90,7 @@ export default function tooltipPlugin(options: {
           if (graphTooltip === 'sharedTooltip') {
             // 同步其他图表的 tooltip 显示
             const { event } = u.cursor;
-            if (event && hoveringUplotID === id) {
+            if (event) {
               uplotsMap.forEach((uplot, id) => {
                 if (uplot !== u) {
                   const curTooltipID = `${id}-tooltip`;
@@ -108,7 +108,7 @@ export default function tooltipPlugin(options: {
           overlay.style.display = 'none';
           // 同步其他图表的 tooltip 隐藏
           const { event } = u.cursor;
-          if (event && hoveringUplotID === id) {
+          if (event) {
             uplotsMap.forEach((uplot, id) => {
               if (uplot !== u) {
                 const curTooltipID = `${id}-tooltip`;
@@ -151,13 +151,13 @@ export default function tooltipPlugin(options: {
               if (uplot !== u) {
                 if (left === -10 && top === -10) {
                   uplot.setCursor({ left: -10, top: -10 });
-                  return false;
+                } else {
+                  // 根据时间值对齐
+                  const x = uplot.valToPos(timeData[idx], 'x');
+                  // 根据 top 和 height 比例对齐
+                  const y = (top / u.height) * uplot.height;
+                  uplot.setCursor({ left: x, top: y });
                 }
-                // 根据时间值对齐
-                const x = uplot.valToPos(timeData[idx], 'x');
-                // 根据 top 和 height 比例对齐
-                const y = (top / u.height) * uplot.height;
-                uplot.setCursor({ left: x, top: y });
               }
             });
           }
@@ -257,6 +257,10 @@ export default function tooltipPlugin(options: {
         }
 
         wrapEle.appendChild(frag);
+      },
+      destroy: () => {
+        overlay.style.display = 'none';
+        document.body.removeChild(overlay);
       },
     },
   };
