@@ -108,7 +108,7 @@ export const gaugeDefaultThresholds = [
 
 export const defaultOptionsValues = {
   tooltip: {
-    mode: 'all',
+    mode: 'single',
     sort: 'none',
   },
   legend: {

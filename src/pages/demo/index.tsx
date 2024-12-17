@@ -16,7 +16,7 @@
  */
 import React, { useContext, useRef } from 'react';
 import uPlot, { Options } from 'uplot';
-import UPlotChart, { tooltipPlugin, axisBuilder, seriesBuider, cursorBuider, scalesBuilder, getStackedDataAndBands } from '@/components/UPlotChart';
+import UPlotChart, { axisBuilder, seriesBuider, cursorBuider, scalesBuilder, getStackedDataAndBands } from '@/components/UPlotChart';
 import _ from 'lodash';
 import Color from 'color';
 import { getDataFrameAndBaseSeries } from '@/pages/dashboard/Renderer/Renderer/TimeSeriesNG';
@@ -36,7 +36,7 @@ export default function Demo() {
     height: 400,
     padding: [10, 10, 10, 10],
     legend: { show: false },
-    plugins: [tooltipPlugin({})],
+    // plugins: [tooltipPlugin({})],
     cursor: cursorBuider({}),
     scales: scalesBuilder({}),
     series: seriesBuider({

@@ -18,6 +18,7 @@ import './style.less';
 export { getDataFrameAndBaseSeries };
 
 interface Props {
+  id?: string;
   values: IPanel;
   series: any[];
   colors?: string[];
@@ -94,8 +95,8 @@ export default function index(props: Props) {
       }}
     >
       <div className='renderer-timeseries-ng-graph-container'>
-        {chartContainerSize.width && chartContainerSize.height && (
-          <Main {...mainProps} darkMode={darkMode} width={chartContainerSize.width} height={chartContainerSize.height} frames={frames} baseSeries={baseSeries} />
+        {props.id && chartContainerSize.width && chartContainerSize.height && (
+          <Main {...mainProps} id={props.id} darkMode={darkMode} width={chartContainerSize.width} height={chartContainerSize.height} frames={frames} baseSeries={baseSeries} />
         )}
       </div>
       {(legendDisplayMode === 'list' || legendDisplayMode === 'table') && (

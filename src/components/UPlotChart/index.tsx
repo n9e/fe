@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 
 import uPlot from 'uplot';
 import 'uplot/dist/uPlot.min.css';
@@ -16,27 +16,27 @@ import tooltipPlugin from './tooltipPlugin';
 import './style.less';
 
 export { tooltipPlugin, paddingSide, axisBuilder, seriesBuider, cursorBuider, scalesBuilder, getStackedDataAndBands };
+export const uplotsMap = new Map<string, uPlot>();
 
-export default forwardRef(function UPlotChart(
-  {
-    options,
-    data,
-    target,
-    onDelete,
-    onCreate,
-    resetScales = true,
-    className,
-  }: {
-    options: uPlot.Options;
-    data: uPlot.AlignedData;
-    target?: HTMLElement | ((self: uPlot, init: Function) => void);
-    onDelete?: (chart: uPlot) => void;
-    onCreate?: (chart: uPlot) => void;
-    resetScales?: boolean;
-    className?: string;
-  },
-  ref,
-): JSX.Element | null {
+export default function UPlotChart({
+  id,
+  options,
+  data,
+  target,
+  onDelete,
+  onCreate,
+  resetScales = true,
+  className,
+}: {
+  id: string;
+  options: uPlot.Options;
+  data: uPlot.AlignedData;
+  target?: HTMLElement | ((self: uPlot, init: Function) => void);
+  onDelete?: (id: string, chart: uPlot) => void;
+  onCreate?: (id: string, chart: uPlot) => void;
+  resetScales?: boolean;
+  className?: string;
+}): JSX.Element | null {
   const chartRef = useRef<uPlot | null>(null);
   const targetRef = useRef<HTMLDivElement>(null);
   const propOptionsRef = useRef(options);
@@ -52,7 +52,7 @@ export default forwardRef(function UPlotChart(
 
   const destroy = useCallback((chart: uPlot | null) => {
     if (chart) {
-      onDeleteRef.current?.(chart);
+      onDeleteRef.current?.(id, chart);
       chart.destroy();
       chartRef.current = null;
     }
@@ -60,7 +60,7 @@ export default forwardRef(function UPlotChart(
   const create = useCallback(() => {
     const newChart = new uPlot(propOptionsRef.current, propDataRef.current, propTargetRef.current || (targetRef.current as HTMLDivElement));
     chartRef.current = newChart;
-    onCreateRef.current?.(newChart);
+    onCreateRef.current?.(id, newChart);
   }, []);
 
   useEffect(() => {
@@ -112,9 +112,5 @@ export default forwardRef(function UPlotChart(
     return () => destroy(chartRef.current);
   }, [target, create, destroy]);
 
-  useImperativeHandle(ref, () => ({
-    getChartInstance: () => chartRef.current,
-  }));
-
   return target ? null : <div ref={targetRef} className={className}></div>;
-});
+}

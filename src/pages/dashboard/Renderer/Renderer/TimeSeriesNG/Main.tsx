@@ -1,8 +1,8 @@
 import React, { useState, useRef, useMemo } from 'react';
-import { AlignedData, Options } from 'uplot';
+import uplot, { AlignedData, Options } from 'uplot';
 import _ from 'lodash';
 
-import UPlotChart, { tooltipPlugin, paddingSide, axisBuilder, seriesBuider, cursorBuider, scalesBuilder, getStackedDataAndBands } from '@/components/UPlotChart';
+import UPlotChart, { tooltipPlugin, paddingSide, axisBuilder, seriesBuider, cursorBuider, scalesBuilder, getStackedDataAndBands, uplotsMap } from '@/components/UPlotChart';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { hexPalette } from '@/pages/dashboard/config';
 
@@ -10,6 +10,7 @@ import { IPanel } from '../../../types';
 import valueFormatter from '../../utils/valueFormatter';
 import { getMappedTextObj } from '../../utils/getCalculatedValuesBySeries';
 import { defaultOptionsValues } from '../../../Editor/config';
+import { useGlobalState } from '../../../globalState';
 
 import getDataFrameAndBaseSeries, { BaseSeriesItem } from './utils/getDataFrameAndBaseSeries';
 import drawThresholds from './utils/drawThresholds';
@@ -20,6 +21,7 @@ import './style.less';
 export { getDataFrameAndBaseSeries };
 
 interface Props {
+  id: string;
   frames: AlignedData;
   baseSeries: BaseSeriesItem[];
   darkMode: boolean;
@@ -38,10 +40,10 @@ interface Props {
 }
 
 export default function index(props: Props) {
-  const { frames, baseSeries, darkMode, width, height, panel, series, colors, range, setRange, inDashboard, isPreview, hideResetBtn, onClick, onZoomWithoutDefult } = props;
+  const { id, frames, baseSeries, darkMode, width, height, panel, series, colors, range, setRange, inDashboard, isPreview, hideResetBtn, onClick, onZoomWithoutDefult } = props;
   const { custom, options = {}, targets, overrides } = panel;
-  const idRef = useRef<string>(`renderer-timeseries-${_.uniqueId()}`);
-  const uPlotChartRef = useRef<any>();
+  const [dashboardMeta] = useGlobalState('dashboardMeta');
+  const uplotRef = useRef<any>();
   // 保存 x 和 y 轴初始缩放范围
   const xScaleInitMinMaxRef = useRef<[number, number]>();
   const yScaleInitMinMaxRef = useRef<[number, number]>();
@@ -55,7 +57,10 @@ export default function index(props: Props) {
       legend: { show: false },
       plugins: [
         tooltipPlugin({
-          id: idRef.current + '-tooltip',
+          id,
+          mode: options.tooltip?.mode ?? (defaultOptionsValues.tooltip.mode as any),
+          sort: options.tooltip?.sort ?? (defaultOptionsValues.tooltip.sort as any),
+          graphTooltip: dashboardMeta.graphTooltip as any,
           pointNameformatter: (val, point) => {
             let name = val;
             if (options?.standardOptions?.displayName) {
@@ -90,11 +95,7 @@ export default function index(props: Props) {
           },
         }),
       ],
-      cursor: cursorBuider({
-        sync: {
-          key: 'a',
-        },
-      }),
+      cursor: cursorBuider({}),
       scales: scalesBuilder({
         xMinMax,
         yRange,
@@ -185,11 +186,24 @@ export default function index(props: Props) {
   return (
     <>
       <div className='renderer-timeseries-ng-graph'>
-        <UPlotChart ref={uPlotChartRef} options={uOptions} data={data} />
+        <UPlotChart
+          id={id}
+          options={uOptions}
+          data={data}
+          onCreate={(id, uplot) => {
+            uplotRef.current = uplot;
+            uplotsMap.set(id, uplot);
+          }}
+          onDelete={(id) => {
+            uplotsMap.delete(id);
+          }}
+        />
         {!hideResetBtn && (
           <ResetZoomButton
             showResetZoomBtn={showResetZoomBtn}
-            uPlotChartRef={uPlotChartRef}
+            getUplot={() => {
+              return uplotRef.current;
+            }}
             xScaleInitMinMax={xScaleInitMinMaxRef.current}
             yScaleInitMinMax={yScaleInitMinMaxRef.current}
           />

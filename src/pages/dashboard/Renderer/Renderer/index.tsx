@@ -55,6 +55,7 @@ import useQuery from '../datasource/useQuery';
 import { IPanel } from '../../types';
 import replaceFieldWithVariable from '../utils/replaceFieldWithVariable';
 import Inspect from '../Inspect';
+
 import './style.less';
 
 interface IProps {
@@ -116,6 +117,7 @@ function index(props: IProps) {
     _.set(values, 'custom.colorRange', _.split(_.get(values, 'custom.colorRange'), ','));
   }
   const subProps = {
+    id,
     values,
     series,
   };

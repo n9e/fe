@@ -1,15 +1,16 @@
 import React from 'react';
 import { Button } from 'antd';
+import uplot from 'uplot';
 
 interface Props {
   showResetZoomBtn: boolean;
-  uPlotChartRef: any;
+  getUplot: () => uplot;
   xScaleInitMinMax?: [number, number];
   yScaleInitMinMax?: [number, number];
 }
 
 export default function ResetZoomButton(props: Props) {
-  const { showResetZoomBtn, uPlotChartRef, xScaleInitMinMax, yScaleInitMinMax } = props;
+  const { showResetZoomBtn, getUplot, xScaleInitMinMax, yScaleInitMinMax } = props;
 
   return (
     <Button
@@ -18,10 +19,10 @@ export default function ResetZoomButton(props: Props) {
         display: showResetZoomBtn ? 'block' : 'none',
       }}
       onClick={() => {
-        const uPlot = uPlotChartRef.current && uPlotChartRef.current.getChartInstance();
-        if (uPlot && xScaleInitMinMax && yScaleInitMinMax) {
-          uPlot.setScale('x', { min: xScaleInitMinMax[0], max: xScaleInitMinMax[1] });
-          uPlot.setScale('y', { min: yScaleInitMinMax[0], max: yScaleInitMinMax[1] });
+        const uplot = getUplot();
+        if (uplot && xScaleInitMinMax && yScaleInitMinMax) {
+          uplot.setScale('x', { min: xScaleInitMinMax[0], max: xScaleInitMinMax[1] });
+          uplot.setScale('y', { min: yScaleInitMinMax[0], max: yScaleInitMinMax[1] });
         }
       }}
     >
