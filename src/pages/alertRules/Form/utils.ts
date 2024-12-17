@@ -17,7 +17,14 @@ export const parseTimeToValueAndUnit = (value?: number) => {
       unit: 'min',
     };
   }
-  let time = value / 60;
+  let time = value;
+  if (time < 60) {
+    return {
+      value,
+      unit: 'second',
+    };
+  }
+  time = time / 60;
   if (time < 60) {
     return {
       value: time,
@@ -25,16 +32,9 @@ export const parseTimeToValueAndUnit = (value?: number) => {
     };
   }
   time = time / 60;
-  if (time < 24) {
-    return {
-      value: time,
-      unit: 'hour',
-    };
-  }
-  time = time / 24;
   return {
     value: time,
-    unit: 'day',
+    unit: 'hour',
   };
 };
 
@@ -50,9 +50,6 @@ export const normalizeTime = (value?: number, unit?: 'second' | 'min' | 'hour') 
   }
   if (unit === 'hour') {
     return value * 60 * 60;
-  }
-  if (unit === 'day') {
-    return value * 60 * 60 * 24;
   }
   return value;
 };
@@ -131,6 +128,13 @@ export function processFormValues(values) {
       });
     }
   }
+  const extra_config = values?.extra_config || {};
+  const enrich_queries = _.map(extra_config?.enrich_queries, (item) => {
+    return {
+      ..._.omit(item, 'interval_unit'),
+      interval: normalizeTime(item.interval, item.interval_unit),
+    };
+  });
   const data = {
     ..._.omit(values, 'effective_time'),
     cate,
@@ -142,6 +146,10 @@ export function processFormValues(values) {
     enable_in_bg: values.enable_in_bg ? 1 : 0,
     callbacks: _.map(values.callbacks, (item) => item.url),
     annotations: _.chain(values.annotations).keyBy('key').mapValues('value').value(),
+    extra_config: {
+      ...extra_config,
+      enrich_queries,
+    },
   };
   return data;
 }
@@ -164,6 +172,14 @@ export function processInitialValues(values) {
       });
     }
   }
+  const extra_config = values?.extra_config || {};
+  const enrich_queries = _.map(extra_config?.enrich_queries, (item) => {
+    return {
+      ...item,
+      interval: parseTimeToValueAndUnit(item.interval).value,
+      interval_unit: parseTimeToValueAndUnit(item.interval).unit,
+    };
+  });
   return {
     ...values,
     enable_in_bg: values?.enable_in_bg === 1,
@@ -185,6 +201,10 @@ export function processInitialValues(values) {
       key,
       value,
     })),
+    extra_config: {
+      ...extra_config,
+      enrich_queries,
+    },
   };
 }
 
