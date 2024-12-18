@@ -20,10 +20,12 @@ import { useTranslation } from 'react-i18next';
 import { Drawer, Button, Form, Input, Row, Col, Table, Select, Switch, message } from 'antd';
 import { useDebounceFn } from 'ahooks';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
-import { getFullIndices, getFields } from '@/pages/explorer/Elasticsearch/services';
-import { postESIndexPattern } from './services';
+import { getFullIndices, getFullFields } from '@/pages/explorer/Elasticsearch/services';
+import { postESIndexPattern, putESIndexPattern } from './services';
 
 interface Props {
+  mode: 'create' | 'edit';
+  initialValues?: any;
   indexPatterns: any[];
   datasourceList: any[];
   onOk: () => void;
@@ -31,22 +33,24 @@ interface Props {
 
 const DEFAULT_DATE_FIELD = '@timestamp';
 
-function Add(props: Props & ModalWrapProps) {
+function FormModal(props: Props & ModalWrapProps) {
   const { t } = useTranslation('es-index-patterns');
-  const { visible, destroy, indexPatterns, datasourceList, onOk } = props;
+  const { visible, destroy, mode, initialValues, indexPatterns, datasourceList, onOk } = props;
   const [form] = Form.useForm();
   const datasourceID = Form.useWatch('datasource_id', form);
   const name = Form.useWatch('name', form);
   const allow_hide_system_indices = Form.useWatch('allow_hide_system_indices', form);
+  const cross_cluster_enabled = Form.useWatch('cross_cluster_enabled', form);
   const [indices, setIndices] = useState<{ name: string }[]>([]);
   const [tablePageCurrent, setTablePageCurrent] = useState<number>(1);
-  const [dateFields, setDateFields] = useState<string[]>([]);
+  const [dateFields, setDateFields] = useState<{ name: string; type: string }[]>([]);
   const inputRef = useRef<any>(null);
   const alreadyWildcard = useRef<boolean>(false);
+
   const { run: fetchIndices } = useDebounceFn(
-    (datasourceID, name, fetchIndices) => {
+    (datasourceID, name, fetchIndices, allow_hide_system_indices) => {
       if (datasourceID) {
-        getFullIndices(datasourceID, name, fetchIndices).then((res) => {
+        getFullIndices(datasourceID, name, fetchIndices, allow_hide_system_indices === 1).then((res) => {
           setIndices(
             _.map(res, (item) => {
               return {
@@ -64,11 +68,20 @@ function Add(props: Props & ModalWrapProps) {
     },
   );
   const { run: fetchFields } = useDebounceFn(
-    (datasourceID, name) => {
-      getFields(datasourceID, name, 'date').then((res) => {
+    (datasourceID, name, cross_cluster_enabled) => {
+      getFullFields(datasourceID, name, {
+        type: 'date',
+        allowHideSystemIndices: allow_hide_system_indices,
+        crossClusterEnabled: cross_cluster_enabled === 1,
+      }).then((res) => {
         const fields = res.fields || [];
         setDateFields(res.fields || []);
-        if (_.includes(fields, DEFAULT_DATE_FIELD)) {
+        if (
+          _.includes(fields, {
+            name: DEFAULT_DATE_FIELD,
+            type: 'date',
+          })
+        ) {
           form.setFieldsValue({
             time_field: DEFAULT_DATE_FIELD,
           });
@@ -81,26 +94,45 @@ function Add(props: Props & ModalWrapProps) {
   );
 
   useEffect(() => {
-    fetchIndices(datasourceID, name, allow_hide_system_indices);
-    fetchFields(datasourceID, name);
+    fetchIndices(datasourceID, name, allow_hide_system_indices, cross_cluster_enabled);
+    fetchFields(datasourceID, name, cross_cluster_enabled);
   }, [datasourceID, name]);
 
   useEffect(() => {
-    fetchIndices(datasourceID, name, allow_hide_system_indices);
+    fetchIndices(datasourceID, name, allow_hide_system_indices, cross_cluster_enabled);
   }, [allow_hide_system_indices]);
 
+  useEffect(() => {
+    if (visible) {
+      if (initialValues) {
+        form.setFieldsValue(initialValues);
+      }
+    } else {
+      form.resetFields();
+    }
+  }, [visible]);
+
   return (
-    <Drawer width={1000} destroyOnClose maskClosable={false} title={t('create_title')} visible={visible} onClose={destroy}>
+    <Drawer width={1000} destroyOnClose maskClosable={false} title={t(`${mode}_title`)} visible={visible} onClose={destroy}>
       <Row gutter={32}>
         <Col span={12}>
           <Form
             form={form}
+            preserve={false}
             onFinish={(values) => {
-              postESIndexPattern(values).then(() => {
-                message.success(t('common:success.create'));
-                destroy();
-                onOk();
-              });
+              if (mode === 'create') {
+                postESIndexPattern(values).then(() => {
+                  message.success(t('common:success.create'));
+                  destroy();
+                  onOk();
+                });
+              } else if (mode === 'edit') {
+                putESIndexPattern(initialValues.id, values).then(() => {
+                  message.success(t('common:success.edit'));
+                  destroy();
+                  onOk();
+                });
+              }
             }}
             layout='vertical'
           >
@@ -160,13 +192,22 @@ function Add(props: Props & ModalWrapProps) {
                 allowClear
                 options={_.map(dateFields, (field) => {
                   return {
-                    label: field,
-                    value: field,
+                    label: field.name,
+                    value: field.name,
                   };
                 })}
               />
             </Form.Item>
             <Form.Item name='allow_hide_system_indices' label={t('allow_hide_system_indices')} valuePropName='checked'>
+              <Switch />
+            </Form.Item>
+            <Form.Item
+              name='cross_cluster_enabled'
+              label={t('cross_cluster_enabled')}
+              valuePropName='checked'
+              getValueFromEvent={(checked) => (checked ? 1 : 0)}
+              getValueProps={(value) => ({ checked: value === 1 })}
+            >
               <Switch />
             </Form.Item>
             <Form.Item>
@@ -206,4 +247,4 @@ function Add(props: Props & ModalWrapProps) {
   );
 }
 
-export default ModalHOC<Props>(Add);
+export default ModalHOC<Props>(FormModal);

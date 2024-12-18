@@ -39,21 +39,39 @@ export function getIndices(datasourceValue: number, allow_hide_system_indices = 
   });
 }
 
-export function getFullIndices(datasourceValue: number, target = '*', allow_hide_system_indices = false) {
+export function getFullIndices(datasourceValue: number, target = '*', allow_hide_system_indices = false, crossClusterEnabled = false) {
   const params: any = {
     format: 'json',
     s: 'index',
   };
-  if (allow_hide_system_indices) {
-    params.expand_wildcards = 'all';
+  if (crossClusterEnabled) {
+    return request(`/api/${N9E_PATHNAME}/proxy/${datasourceValue}/_field_caps`, {
+      method: RequestMethod.Get,
+      params: {
+        fields: '*',
+        index: target,
+      },
+      silence: true,
+    }).then((res) => {
+      return _.map(_.get(res, 'indices'), (name) => {
+        return {
+          index: name,
+          uuid: name,
+        };
+      });
+    });
+  } else {
+    if (allow_hide_system_indices) {
+      params.expand_wildcards = 'all';
+    }
+    return request(`/api/${N9E_PATHNAME}/proxy/${datasourceValue}/_cat/indices/${target}`, {
+      method: RequestMethod.Get,
+      params,
+      silence: true,
+    }).then((res) => {
+      return res;
+    });
   }
-  return request(`/api/${N9E_PATHNAME}/proxy/${datasourceValue}/_cat/indices/${target}`, {
-    method: RequestMethod.Get,
-    params,
-    silence: true,
-  }).then((res) => {
-    return res;
-  });
 }
 
 export function getFields(datasourceValue: number, index?: string, type?: string, allow_hide_system_indices = false) {
@@ -83,46 +101,71 @@ export function getFullFields(
     type?: string;
     allowHideSystemIndices?: boolean;
     includeSubFields?: boolean;
+    crossClusterEnabled?: boolean;
   } = {
     allowHideSystemIndices: false,
     includeSubFields: false,
+    crossClusterEnabled: false,
   },
 ) {
-  const url = index ? `/${index}/_mapping` : '/_mapping';
-
-  return request(`/api/${N9E_PATHNAME}/proxy/${datasourceValue}${url}`, {
-    method: RequestMethod.Get,
-    params: _.omit(
-      {
-        expand_wildcards: 'all',
-        pretty: true,
+  if (options.crossClusterEnabled) {
+    return request(`/api/${N9E_PATHNAME}/proxy/${datasourceValue}/_field_caps`, {
+      method: RequestMethod.Get,
+      params: {
+        fields: '*',
+        index,
       },
-      options.allowHideSystemIndices ? [] : ['expand_wildcards'],
-    ),
-    silence: true,
-  }).then((res) => {
-    return {
-      allFields: _.unionBy(
-        mappingsToFullFields(res, {
-          includeSubFields: options.includeSubFields,
-        }),
-        (item) => {
-          return item.name + item.type;
+      silence: true,
+    }).then((res) => {
+      const allFields = _.map(_.get(res, 'fields'), (fieldObject, name) => {
+        const keys = _.keys(fieldObject);
+        return {
+          name: name,
+          type: keys[0],
+        };
+      });
+      return {
+        allFields,
+        fields: options.type ? _.filter(allFields, { type: options.type }) : [],
+      };
+    });
+  } else {
+    const url = index ? `/${index}/_mapping` : '/_mapping';
+
+    return request(`/api/${N9E_PATHNAME}/proxy/${datasourceValue}${url}`, {
+      method: RequestMethod.Get,
+      params: _.omit(
+        {
+          expand_wildcards: 'all',
+          pretty: true,
         },
+        options.allowHideSystemIndices ? [] : ['expand_wildcards'],
       ),
-      fields: options.type
-        ? _.unionBy(
-            mappingsToFullFields(res, {
-              type: options.type,
-              includeSubFields: options.includeSubFields,
-            }),
-            (item) => {
-              return item.name + item.type;
-            },
-          )
-        : [],
-    };
-  });
+      silence: true,
+    }).then((res) => {
+      return {
+        allFields: _.unionBy(
+          mappingsToFullFields(res, {
+            includeSubFields: options.includeSubFields,
+          }),
+          (item) => {
+            return item.name + item.type;
+          },
+        ),
+        fields: options.type
+          ? _.unionBy(
+              mappingsToFullFields(res, {
+                type: options.type,
+                includeSubFields: options.includeSubFields,
+              }),
+              (item) => {
+                return item.name + item.type;
+              },
+            )
+          : [],
+      };
+    });
+  }
 }
 
 export function getLogsQuery(datasourceValue: number, requestBody) {

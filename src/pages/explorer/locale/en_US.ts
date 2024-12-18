@@ -63,8 +63,8 @@ const en_US = {
     button: 'Historical Records',
     searchPlaceholder: 'Search historical records',
   },
-  help: 'Show data source Help',
   share_tip: 'Click to copy the share link',
   share_tip_2: 'Click to copy the share link, currently only supports sharing log text queries',
+  help: 'Show data source Help',
 };
 export default en_US;
