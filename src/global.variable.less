@@ -50,7 +50,10 @@
 @fcBorderColor: #e5e5e5;
 
 .boxShadowMixin {
-  box-shadow: 0px 1px 8px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 2px 8px 0 var(--fc-boxshadow-base-color);
+}
+.boxHoverShadowMixin {
+  box-shadow: 0px 8px 16px 0 var(--fc-boxshadow-hover-color);
 }
 .borderRadiusMixin {
   border-radius: 4px;
