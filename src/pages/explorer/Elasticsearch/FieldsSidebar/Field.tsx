@@ -143,7 +143,7 @@ export default function Field(props: Props) {
                   limit,
                   fields: [ajustFieldParamValue(record, version)],
                 }),
-                item,
+                ajustFieldParamValue(record, version),
               )
                 .then((res) => {
                   setTop5Data(res);
