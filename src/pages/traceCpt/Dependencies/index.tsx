@@ -30,7 +30,7 @@ export default function index() {
       nodeSpacing: 10,
     },
     style: {
-      backgroundColor: darkMode ? '#272a38' : '#fff',
+      backgroundColor: darkMode ? '#1E212C' : '#fff',
     },
     nodeCfg: {
       size: 20,
