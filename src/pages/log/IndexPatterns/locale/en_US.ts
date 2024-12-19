@@ -8,6 +8,8 @@ const en_US = {
   allow_hide_system_indices: 'Match any index, including hidden ones',
   create_btn: 'Create Index Pattern',
   create_title: 'Create Index Pattern',
+  edit_title: 'Edit Index Pattern',
+  cross_cluster_enabled: 'Cross cluster',
   indexes_empty: 'No matching indexes',
   field: {
     name: 'Field name',

@@ -59,6 +59,7 @@ export default function QueryBuilder(props: Props) {
           onIndexChange();
           getFullFields(datasourceValue, finded.name, {
             allowHideSystemIndices: finded.allow_hide_system_indices,
+            crossClusterEnabled: finded.cross_cluster_enabled === 1,
           }).then((res) => {
             setFields(res.allFields);
             setAllFields(res.allFields);
