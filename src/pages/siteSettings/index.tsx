@@ -83,7 +83,7 @@ export default function index() {
               </div>
               <div>
                 <Space>
-                  <Form.Item label={t('teamDisplayMode')} name={['teamDisplayMode']} initialValue='tree'>
+                  <Form.Item label={t('teamDisplayMode')} name={['teamDisplayMode']} initialValue='list'>
                     <Select
                       style={{ width: 200 }}
                       options={[

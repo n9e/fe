@@ -58,6 +58,7 @@ export function setLocaleExpandedKeys(nodes: string[]) {
 
 const Resource: React.FC = () => {
   const { siteInfo } = useContext(CommonStateContext);
+  const teamDisplayMode = siteInfo?.teamDisplayMode || 'list';
   const { t } = useTranslation('user');
   const location = useLocation();
   const query = queryString.parse(location.search);
@@ -263,7 +264,7 @@ const Resource: React.FC = () => {
                 }}
               />
             </div>
-            {siteInfo?.teamDisplayMode == 'list' ? (
+            {teamDisplayMode == 'list' ? (
               <div className='radio-list' style={{ overflowY: 'auto' }}>
                 <List
                   style={{

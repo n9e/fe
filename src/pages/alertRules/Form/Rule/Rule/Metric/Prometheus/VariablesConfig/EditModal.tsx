@@ -43,7 +43,7 @@ export default function EditModal(props: Props) {
         });
       }}
     >
-      <Form form={form} layout='vertical'>
+      <Form form={form} layout='vertical' preserve={false}>
         <Form.Item name='id' hidden>
           <Input />
         </Form.Item>
