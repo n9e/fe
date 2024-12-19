@@ -44,6 +44,7 @@ function saveLess(filePath, filename, callback) {
         'table-header-sort-bg': '#303340',
         'popover-background': 'rgb(39, 42, 56)',
         'normal-color': 'rgb(79, 82, 99)',
+        'warning-color': '#6C53B1',
       },
       compress: false,
     })
