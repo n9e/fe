@@ -38,6 +38,9 @@ export default function index({ form }) {
 
   return (
     <div>
+      <Form.Item name='datasource_value' hidden>
+        <div />
+      </Form.Item>
       <Form.Item label={t('common:datasource.type')} name='cate'>
         <DatasourceCateSelect
           scene='alert'

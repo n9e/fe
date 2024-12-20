@@ -8,6 +8,8 @@ const zh_HK = {
   allow_hide_system_indices: '匹配隱藏的索引',
   create_btn: '創建索引規則',
   create_title: '創建索引規則',
+  edit_title: '編輯索引規則',
+  cross_cluster_enabled: '跨集群',
   indexes_empty: '沒有匹配的索引',
   field: {
     name: '字段名稱',
