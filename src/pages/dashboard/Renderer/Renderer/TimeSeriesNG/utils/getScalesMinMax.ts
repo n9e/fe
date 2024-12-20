@@ -26,10 +26,10 @@ export default function getScalesXMinMaxAndYRange(props: Props) {
     xMinMax = [start, end];
   }
   if (_.isNumber(options.standardOptions?.min)) {
-    yRange = [options.standardOptions?.min, null];
+    yRange = [options.standardOptions.min, null];
   }
   if (_.isNumber(options.standardOptions?.max)) {
-    yRange = [yRange ? yRange[0] : null, options.standardOptions?.max];
+    yRange = [yRange ? yRange[0] : null, options.standardOptions.max];
   }
 
   return {

@@ -82,6 +82,7 @@ export default function tooltipPlugin(options: {
   return {
     hooks: {
       init: (u) => {
+        if (overlay === null) return;
         over = u.over;
         overlay.style.display = 'none';
         over.onmouseenter = () => {
@@ -127,6 +128,7 @@ export default function tooltipPlugin(options: {
         bTop = bbox.top;
       },
       setCursor: (u) => {
+        if (overlay === null) return;
         const { data, series } = u;
         const timeData = data[0];
         let valuesData: {
