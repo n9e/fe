@@ -1,4 +1,5 @@
 /** Request 网络请求工具 更详细的 api 文档: https://github.com/umijs/umi-request */
+import React, { useState } from 'react';
 import Request, { ResponseError, extend } from 'umi-request';
 import { notification } from 'antd';
 import _ from 'lodash';
@@ -6,6 +7,7 @@ import { UpdateAccessToken } from '@/services/login';
 import { N9E_PATHNAME, AccessTokenKey } from '@/utils/constant';
 import i18next from 'i18next';
 import { basePrefix } from '@/App';
+import ErrorWithDetail from '@/components/ErrorWithDetail';
 
 /** 异常处理程序，所有的error都被这里处理，页面无法感知具体error */
 const errorHandler = (error: ResponseError<any>): Response => {
@@ -19,7 +21,7 @@ const errorHandler = (error: ResponseError<any>): Response => {
     else if (!error.silence) {
       notification.error({
         key: error.message,
-        message: error.message,
+        message: <ErrorWithDetail error={error} />,
       });
     }
     // 暂时认定只有开启 silence 的时候才需要传递 error 详情以便更加精确的处理错误
