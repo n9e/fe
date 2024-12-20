@@ -220,7 +220,7 @@ export default function tooltipPlugin(options: {
         }
 
         wrapEle.className = 'n9e-uplot-tooltip';
-        overlay.appendChild(wrapEle);
+        overlay!.appendChild(wrapEle);
 
         const frag = document.createDocumentFragment();
         const ulNode = document.createElement('ul');
@@ -263,7 +263,7 @@ export default function tooltipPlugin(options: {
         wrapEle.appendChild(frag);
       },
       destroy: () => {
-        overlay.style.display = 'none';
+        overlay!.style.display = 'none';
       },
     },
   };
