@@ -74,3 +74,18 @@ export const IS_ENT = import.meta.env.VITE_IS_ENT === 'true';
 export const AccessTokenKey = 'access_token';
 export const PRIMARY_COLOR = '#6C53B1';
 export const SIZE = 8;
+export const FONT_FAMILY = 'Helvetica Neue,sans-serif,PingFangSC-Regular,microsoft yahei ui,microsoft yahei,simsun,"sans-serif"';
+export const THEME = {
+  light: {
+    text: {
+      primary: '#333',
+    },
+    gridColor: 'rgba(0, 10, 23, 0.09)',
+  },
+  dark: {
+    text: {
+      primary: '#fff',
+    },
+    gridColor: 'rgba(240, 250, 255, 0.09)',
+  },
+};

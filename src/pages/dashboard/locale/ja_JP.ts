@@ -189,6 +189,20 @@ const ja_JP = {
       thresholds: {
         title: 'しきい値',
         btn: '追加',
+        mode: {
+          label: 'しきい値モード',
+          tip: 'パーセンテージは最小値と最大値に対するしきい値を表します',
+          absolute: '絶対値',
+          percentage: 'パーセンテージ',
+        },
+      },
+      thresholdsStyle: {
+        label: 'しきい値スタイル',
+        off: 'オフ',
+        line: 'ライン',
+        dashed: '破線',
+        'line+area': 'ライン+エリア',
+        'dashed+area': '破線+エリア',
       },
       tooltip: {
         mode: 'モード',
@@ -248,7 +262,7 @@ const ja_JP = {
       calc_tip: '時系列データにはすべての時間点のデータを計算する必要があります。非時系列データはこの設定を無視します',
       maxValue: '最大値',
       baseColor: '基本色',
-      serieWidth: 'シリーズ名の幅',
+      serieWidth: '名前の幅',
       sortOrder: '並び順',
       textMode: '表示モード',
       valueAndName: '値と名前',
@@ -405,6 +419,7 @@ const ja_JP = {
             bottom: '最後',
           },
         },
+        displayMode: '表示モード',
       },
     },
     inspect: {

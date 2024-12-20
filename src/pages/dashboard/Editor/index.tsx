@@ -59,7 +59,7 @@ function index(props: IProps) {
           _.set(values, 'custom.colorRange', _.split(values.custom.colorRange, ','));
         }
         let formData = Object.assign(values, {
-          version: '3.0.0',
+          version: '3.1.0',
         });
         if (values && values.id) {
           formData.id = values.id;

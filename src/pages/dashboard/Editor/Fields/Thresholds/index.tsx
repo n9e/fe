@@ -15,7 +15,7 @@
  *
  */
 import React from 'react';
-import { Form, Input, InputNumber, Button } from 'antd';
+import { Form, Input, InputNumber, Button, Select } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -27,18 +27,36 @@ interface Props {
   preNamePrefix?: (string | number)[];
   namePrefix?: (string | number)[];
   initialValue?: any;
+  showMode?: boolean;
+  showStyle?: boolean;
 }
 
 export default function index(props: Props) {
   const { hideBase } = props;
   const { t } = useTranslation('dashboard');
-  const { preNamePrefix = [], namePrefix = ['options', 'thresholds'], initialValue } = props;
+  const { preNamePrefix = [], namePrefix = ['options', 'thresholds'], initialValue, showMode = false, showStyle = false } = props;
 
   return (
     <Panel header={t('panel.options.thresholds.title')}>
       <Form.List name={[...namePrefix, 'steps']} initialValue={initialValue}>
         {(fields, { add, remove }) => (
           <>
+            <Button
+              className='mb2'
+              style={{ width: '100%' }}
+              onClick={() => {
+                add(
+                  {
+                    color: '#ef843c',
+                    value: 0,
+                    type: '', // 只是为了不让合并默认值的时候被覆盖
+                  },
+                  0,
+                );
+              }}
+            >
+              {t('panel.options.thresholds.btn')}
+            </Button>
             {fields.map(({ key, name, ...restField }) => {
               return (
                 <Form.Item key={key} shouldUpdate noStyle>
@@ -78,24 +96,53 @@ export default function index(props: Props) {
                 </Form.Item>
               );
             })}
-            <Button
-              style={{ width: '100%' }}
-              onClick={() => {
-                add(
-                  {
-                    color: '#ef843c',
-                    value: 0,
-                    type: '', // 只是为了不让合并默认值的时候被覆盖
-                  },
-                  0,
-                );
-              }}
-            >
-              {t('panel.options.thresholds.btn')}
-            </Button>
           </>
         )}
       </Form.List>
+      {showMode && (
+        <Form.Item name={[...namePrefix, 'mode']} label={t('panel.options.thresholds.mode.label')} tooltip={t('panel.options.thresholds.mode.tip')}>
+          <Select
+            options={[
+              {
+                label: t('panel.options.thresholds.mode.absolute'),
+                value: 'absolute',
+              },
+              {
+                label: t('panel.options.thresholds.mode.percentage'),
+                value: 'percentage',
+              },
+            ]}
+          />
+        </Form.Item>
+      )}
+      {showStyle && (
+        <Form.Item name={['options', 'thresholdsStyle', 'mode']} label={t('panel.options.thresholdsStyle.label')}>
+          <Select
+            options={[
+              {
+                label: t('panel.options.thresholdsStyle.off'),
+                value: 'off',
+              },
+              {
+                label: t('panel.options.thresholdsStyle.line'),
+                value: 'line',
+              },
+              {
+                label: t('panel.options.thresholdsStyle.dashed'),
+                value: 'dashed',
+              },
+              {
+                label: t('panel.options.thresholdsStyle.line+area'),
+                value: 'line+area',
+              },
+              {
+                label: t('panel.options.thresholdsStyle.dashed+area'),
+                value: 'dashed+area',
+              },
+            ]}
+          />
+        </Form.Item>
+      )}
     </Panel>
   );
 }

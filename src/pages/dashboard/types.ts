@@ -66,14 +66,18 @@ export interface IThresholds {
     value: number;
     type?: 'base';
   }[];
-  // mode: 'absolute' | 'percent'; 目前不支持
-  style: 'line'; // 目前只支持 line
+  mode: 'absolute' | 'percentage';
+}
+
+export interface ThresholdsStyle {
+  mode: 'off' | 'line' | 'dashed' | 'line+area' | 'dashed+area';
 }
 
 // 一些通用的配置，不同类型的图表可选择性使用配置
 export interface IOptions {
   valueMappings?: IValueMapping[];
   thresholds?: IThresholds;
+  thresholdsStyle?: ThresholdsStyle;
   xThresholds?: IThresholds;
   standardOptions?: {
     util?: string;
@@ -89,6 +93,7 @@ export interface IOptions {
     displayMode: 'list' | 'table' | 'hidden';
     placement: 'right' | 'bottom';
     heightInPercentage?: number;
+    widthInPercentage?: number;
     columns?: string[];
     detailName: string;
     detailUrl: string;

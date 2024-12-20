@@ -20,6 +20,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import { Modal, Input, Tabs, Form, Button, Alert, message, Select } from 'antd';
 import Icon from '@ant-design/icons';
 import { createDashboard } from '@/services/dashboardV2';
+import { DASHBOARD_VERSION } from '@/pages/dashboard/config';
 import { getValidImportData, convertDashboardGrafanaToN9E, JSONParse, checkGrafanaDashboardVersion } from '../utils';
 import ImportBuiltinContent from './ImportBuiltinContent';
 
@@ -224,7 +225,7 @@ export default function Import(props: IProps) {
               configs: JSON.stringify({
                 mode: 'iframe',
                 iframe_url: vals.iframe_url,
-                version: '3.0.0',
+                version: DASHBOARD_VERSION,
               }),
             }).then(() => {
               message.success(t('common:success.import'));

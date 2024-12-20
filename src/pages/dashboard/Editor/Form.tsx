@@ -94,6 +94,7 @@ function FormCpt(props: IProps, ref) {
                 {({ getFieldsValue }) => {
                   return (
                     <Renderer
+                      id={id}
                       dashboardId={dashboardId}
                       time={range}
                       values={getFieldsValue()}

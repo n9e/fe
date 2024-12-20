@@ -219,7 +219,21 @@ const en_US = {
       },
       thresholds: {
         title: 'Thresholds',
-        btn: 'Add',
+        btn: 'Add threshold',
+        mode: {
+          label: 'Mode',
+          tip: 'Thresholds mode Percentage means thresholds relative to min & max',
+          absolute: 'Absolute',
+          percentage: 'Percentage',
+        },
+      },
+      thresholdsStyle: {
+        label: 'Thresholds style',
+        off: 'Off',
+        line: 'Line',
+        dashed: 'Dashed',
+        'line+area': 'Line+Area',
+        'dashed+area': 'Dashed+Area',
       },
       tooltip: {
         mode: 'Mode',
@@ -276,7 +290,7 @@ const en_US = {
       calc_tip: 'Time series data requires value calculation for all time point data. Non-time series data ignores this setting',
       maxValue: 'Max',
       baseColor: 'Base color',
-      serieWidth: 'Serie width',
+      serieWidth: 'Name width',
       sortOrder: 'Order',
       textMode: 'Text mode',
       valueAndName: 'Value and name',
@@ -432,6 +446,7 @@ const en_US = {
             bottom: 'Bottom',
           },
         },
+        displayMode: 'Display mode',
       },
     },
     inspect: {

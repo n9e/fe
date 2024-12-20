@@ -18,6 +18,7 @@ import _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import moment from 'moment';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
+import { DASHBOARD_VERSION } from '@/pages/dashboard/config';
 import { IDashboardConfig, IVariable } from './types';
 import { defaultValues, calcsOptions } from './Editor/config';
 import updateSchema from './updateSchema';
@@ -288,7 +289,7 @@ function convertTimeseriesGrafanaToN9E(panel: any) {
   const fillOpacity = _.get(panel, 'fieldConfig.defaults.custom.fillOpacity');
   const stack = _.get(panel, 'fieldConfig.defaults.custom.stacking.mode');
   return {
-    version: '3.0.0',
+    version: DASHBOARD_VERSION,
     drawStyle: panel.type === 'barchart' ? 'bars' : 'lines',
     lineInterpolation: lineInterpolation === 'smooth' ? 'smooth' : 'linear',
     fillOpacity: fillOpacity ? fillOpacity / 100 : 0,
@@ -298,7 +299,7 @@ function convertTimeseriesGrafanaToN9E(panel: any) {
 
 function convertPieGrafanaToN9E(panel: any) {
   return {
-    version: '3.0.0',
+    version: DASHBOARD_VERSION,
     calc: normalizeCalc(_.get(panel, 'options.reduceOptions.calcs[0]')),
     legengPosition: 'hidden',
   };
@@ -306,7 +307,7 @@ function convertPieGrafanaToN9E(panel: any) {
 
 function convertStatGrafanaToN9E(panel: any) {
   return {
-    version: '3.0.0',
+    version: DASHBOARD_VERSION,
     textMode: 'value',
     calc: normalizeCalc(_.get(panel, 'options.reduceOptions.calcs[0]')),
     colorMode: 'value',
@@ -315,7 +316,7 @@ function convertStatGrafanaToN9E(panel: any) {
 
 function convertGaugeGrafanaToN9E(panel: any) {
   return {
-    version: '3.0.0',
+    version: DASHBOARD_VERSION,
     textMode: 'value',
     calc: normalizeCalc(_.get(panel, 'options.reduceOptions.calcs[0]')),
     colorMode: 'value',
@@ -324,14 +325,14 @@ function convertGaugeGrafanaToN9E(panel: any) {
 
 function convertBarGaugeGrafanaToN9E(panel: any) {
   return {
-    version: '3.0.0',
+    version: DASHBOARD_VERSION,
     calc: normalizeCalc(_.get(panel, 'options.reduceOptions.calcs[0]')),
   };
 }
 
 function convertTextGrafanaToN9E(panel: any) {
   return {
-    version: '3.0.0',
+    version: DASHBOARD_VERSION,
     content: _.get(panel, 'options.content'),
   };
 }
@@ -405,7 +406,7 @@ function convertPanlesGrafanaToN9E(panels: any, vars: any) {
       const uid = uuidv4();
       if (item.type === 'row') {
         return {
-          version: '3.0.0',
+          version: DASHBOARD_VERSION,
           id: uid,
           type: 'row',
           name: item.title,
@@ -418,7 +419,7 @@ function convertPanlesGrafanaToN9E(panels: any, vars: any) {
         };
       }
       return {
-        version: '3.0.0',
+        version: DASHBOARD_VERSION,
         id: uid,
         type: chartsMap[item.type] ? chartsMap[item.type].type : 'unknown',
         name: item.title,
@@ -467,7 +468,7 @@ export function convertDashboardGrafanaToN9E(data) {
   } = {
     name: data.title,
     configs: {
-      version: '3.0.0',
+      version: DASHBOARD_VERSION,
       links: convertLinksGrafanaToN9E(data.links),
       var: convertVariablesGrafanaToN9E(data.templating, data.__inputs, data) as IVariable[],
       panels: convertPanlesGrafanaToN9E(data.panels, data.templating?.list),

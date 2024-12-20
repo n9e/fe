@@ -47,6 +47,7 @@ import Editor from '../Editor';
 import { sortPanelsByGridLayout, panelsMergeToConfigs, updatePanelsInsertNewPanelToGlobal, ajustPanels } from '../Panels/utils';
 import { useGlobalState } from '../globalState';
 import { scrollToLastPanel } from './utils';
+import dashboardMigrator from './utils/dashboardMigrator';
 import ajustInitialValues from '../Renderer/utils/ajustInitialValues';
 import './style.less';
 interface URLParam {
@@ -155,7 +156,9 @@ export default function DetailV2(props: IProps) {
       builtinParams,
     }).then((res) => {
       updateAtRef.current = res.update_at;
-      const configs = _.isString(res.configs) ? JSONParse(res.configs) : res.configs;
+      let configs = _.isString(res.configs) ? JSONParse(res.configs) : res.configs;
+      // 仪表盘迁移
+      configs = dashboardMigrator(configs);
       if (props.onLoaded && !props.onLoaded(configs)) {
         return;
       }
