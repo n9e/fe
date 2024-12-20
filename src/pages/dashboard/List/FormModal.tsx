@@ -20,6 +20,7 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { updateDashboard, createDashboard, getDashboard, updateDashboardConfigs } from '@/services/dashboardV2';
+import { DASHBOARD_VERSION } from '@/pages/dashboard/config';
 import { IDashboard, IDashboardConfig } from '../types';
 import { JSONParse } from '../utils';
 
@@ -76,7 +77,7 @@ function index(props: Props & ModalWrapProps) {
               configs: JSON.stringify({
                 var: [],
                 panels: [],
-                version: '3.0.0',
+                version: DASHBOARD_VERSION,
               }),
             });
             message.success(t('common:success.create'));

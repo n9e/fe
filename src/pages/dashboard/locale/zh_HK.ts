@@ -219,7 +219,21 @@ const zh_HK = {
       },
       thresholds: {
         title: '閾值',
-        btn: '新增',
+        btn: '新增閾值',
+        mode: {
+          label: '閾值模式',
+          tip: '百分比表示相對於最小值和最大值的閾值',
+          absolute: '絕對值',
+          percentage: '百分比',
+        },
+      },
+      thresholdsStyle: {
+        label: '閾值樣式',
+        off: '關閉',
+        line: '線條',
+        dashed: '虛線',
+        'line+area': '線條+區域',
+        'dashed+area': '虛線+區域',
       },
       tooltip: {
         mode: '模式',
@@ -282,7 +296,7 @@ const zh_HK = {
       calc_tip: '時序資料需要對所有時間點資料做取值計算，非時序資料忽略此設置',
       maxValue: '最大值',
       baseColor: '基礎顏色',
-      serieWidth: '序列名寬度',
+      serieWidth: '名稱寬度',
       sortOrder: '排序',
       textMode: '顯示內容',
       valueAndName: '值和名稱',
@@ -440,6 +454,7 @@ const zh_HK = {
             bottom: '最後',
           },
         },
+        displayMode: '顯示模式',
       },
     },
     inspect: {
