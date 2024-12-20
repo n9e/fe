@@ -86,6 +86,7 @@ export default function tooltipPlugin(options: {
         over = u.over;
         overlay.style.display = 'none';
         over.onmouseenter = () => {
+          if (overlay === null) return;
           hoveringUplotID = id;
           overlay.style.display = 'block';
           if (graphTooltip === 'sharedTooltip') {
@@ -105,6 +106,7 @@ export default function tooltipPlugin(options: {
           }
         };
         over.onmouseleave = () => {
+          if (overlay === null) return;
           hoveringUplotID = '';
           overlay.style.display = 'none';
           // 同步其他图表的 tooltip 隐藏
@@ -200,7 +202,7 @@ export default function tooltipPlugin(options: {
         });
 
         // 绘制 DOM 元素
-        overlay.innerHTML = '';
+        overlay!.innerHTML = '';
         const wrapEle = document.createElement('div');
         const renderToHeight = window.innerHeight / 1.5;
 
