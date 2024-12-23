@@ -6,14 +6,15 @@ import './locale';
 interface IProps {
   error: {
     message: string;
-    raw_message?: string;
+    data?: any;
   };
 }
 
 export default function index(props: IProps) {
   const { error } = props;
   const { t } = useTranslation('ErrorWithDetail');
-  const { message, raw_message } = error;
+  const { message, data } = error;
+  const raw_message = data?.raw_message;
   const [collapse, setCollapse] = useState(true);
   return (
     <div>
