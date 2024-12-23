@@ -258,6 +258,7 @@ function index(props: IProps) {
                   isAuthorized={isAuthorized}
                   name={item.name}
                   row={item}
+                  panels={panels}
                   onToggle={() => {
                     const newPanels = handleRowToggle(!item.collapsed, panels, _.cloneDeep(item));
                     setPanels(newPanels);
