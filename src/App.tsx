@@ -184,7 +184,7 @@ function App() {
       setCommonState((state) => ({ ...state, darkMode: mode }));
     },
     esIndexMode: 'all',
-    dashboardSaveMode: 'auto',
+    dashboardSaveMode: 'manual',
     screenTemplates: [],
   });
 

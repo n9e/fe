@@ -371,6 +371,7 @@ const zh_HK = {
         nowrap: '單元格不換行',
         organizeFields: '組織字段',
         colorMode_tip: '顏色模式是針對 "值欄位" 的顏色設定。值模式下顏色作用於值文字；背景模式下顏色作用於欄位所在儲存格背景色。',
+        pageLimit: '每頁顯示行數',
       },
       text: {
         textColor: '文字顏色',

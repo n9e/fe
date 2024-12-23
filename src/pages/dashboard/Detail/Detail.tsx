@@ -25,7 +25,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { useParams, useHistory, useLocation } from 'react-router-dom';
 import { useBeforeunload } from 'react-beforeunload';
 import queryString from 'query-string';
-import { Alert, Modal, Button, Affix, message } from 'antd';
+import { Alert, Modal, Button, Affix, message, Spin } from 'antd';
 import PageLayout from '@/components/pageLayout';
 import { IRawTimeRange, getDefaultValue, isValid } from '@/components/TimeRangePicker';
 import { Dashboard } from '@/store/dashboardInterface';
@@ -136,6 +136,7 @@ export default function DetailV2(props: IProps) {
   const [variableConfigWithOptions, setVariableConfigWithOptions] = useState<IVariable[]>();
   const [dashboardLinks, setDashboardLinks] = useState<ILink[]>();
   const [panels, setPanels] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
   const [range, setRange] = useState<IRawTimeRange>(getDefaultTimeRange(id, query, dashboardDefaultRangeIndex));
   const [editable, setEditable] = useState(true);
   const [editorData, setEditorData] = useState({
@@ -147,53 +148,62 @@ export default function DetailV2(props: IProps) {
   const [migrationModalOpen, setMigrationModalOpen] = useState(false);
   const [variableConfigRefreshFlag, setVariableConfigRefreshFlag] = useState<string>(_.uniqueId('variableConfigRefreshFlag_'));
   const [allowedLeave, setAllowedLeave] = useState(true);
+
   const containerRef = useRef<HTMLDivElement>(null);
   let updateAtRef = useRef<number>();
   const routerPromptRef = useRef<any>();
   const refresh = async (cbk?: () => void) => {
+    // 自动保存模式下不显示 loading
+    if (dashboardSaveMode === 'manual') {
+      setLoading(true);
+    }
     fetchDashboard({
       id,
       builtinParams,
-    }).then((res) => {
-      updateAtRef.current = res.update_at;
-      let configs = _.isString(res.configs) ? JSONParse(res.configs) : res.configs;
-      // 仪表盘迁移
-      configs = dashboardMigrator(configs);
-      if (props.onLoaded && !props.onLoaded(configs)) {
-        return;
-      }
-      if ((!configs.version || semver.lt(configs.version, '3.0.0')) && !builtinParams) {
-        setMigrationVisible(true);
-      }
-      setDashboardMeta({
-        ...(dashboardMeta || {}),
-        graphTooltip: configs.graphTooltip,
-        graphZoom: configs.graphZoom,
-      });
-      setDashboard({
-        ...res,
-        configs,
-      });
-      if (configs) {
-        // TODO: configs 中可能没有 var 属性会导致 VariableConfig 报错
-        const variableConfig = configs.var
-          ? configs
-          : {
-              ...configs,
-              var: [],
-            };
-        setVariableConfig(
-          _.map(variableConfig.var, (item) => {
-            return _.omit(item, 'options'); // 兼容性代码，去除掉已保存的 options
-          }) as IVariable[],
-        );
-        setDashboardLinks(configs.links);
-        setPanels(sortPanelsByGridLayout(ajustPanels(configs.panels)));
-        if (cbk) {
-          cbk();
+    })
+      .then((res) => {
+        updateAtRef.current = res.update_at;
+        let configs = _.isString(res.configs) ? JSONParse(res.configs) : res.configs;
+        // 仪表盘迁移
+        configs = dashboardMigrator(configs);
+        if (props.onLoaded && !props.onLoaded(configs)) {
+          return;
         }
-      }
-    });
+        if ((!configs.version || semver.lt(configs.version, '3.0.0')) && !builtinParams) {
+          setMigrationVisible(true);
+        }
+        setDashboardMeta({
+          ...(dashboardMeta || {}),
+          graphTooltip: configs.graphTooltip,
+          graphZoom: configs.graphZoom,
+        });
+        setDashboard({
+          ...res,
+          configs,
+        });
+        if (configs) {
+          // TODO: configs 中可能没有 var 属性会导致 VariableConfig 报错
+          const variableConfig = configs.var
+            ? configs
+            : {
+                ...configs,
+                var: [],
+              };
+          setVariableConfig(
+            _.map(variableConfig.var, (item) => {
+              return _.omit(item, 'options'); // 兼容性代码，去除掉已保存的 options
+            }) as IVariable[],
+          );
+          setDashboardLinks(configs.links);
+          setPanels(sortPanelsByGridLayout(ajustPanels(configs.panels)));
+          if (cbk) {
+            cbk();
+          }
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
   const handleUpdateDashboardConfigs = (id, updateData) => {
     if (dashboardSaveMode === 'manual') {
@@ -345,66 +355,68 @@ export default function DetailV2(props: IProps) {
               )}
             </div>
           </Affix>
-          {dashboard.configs?.mode !== 'iframe' ? (
-            <>
-              {variableConfigWithOptions && (
-                <Panels
-                  dashboardId={id}
-                  isPreview={isPreview}
-                  editable={editable}
-                  panels={panels}
-                  setPanels={setPanels}
-                  dashboard={dashboard}
-                  setDashboard={setDashboard}
-                  setAllowedLeave={setAllowedLeave}
-                  range={range}
-                  setRange={setRange}
-                  variableConfig={variableConfigWithOptions}
-                  onShareClick={(panel) => {
-                    const curDatasourceValue = replaceExpressionVars(panel.datasourceValue, variableConfigWithOptions, variableConfigWithOptions.length, id);
-                    const serielData = {
-                      dataProps: {
-                        ...panel,
-                        datasourceValue: curDatasourceValue,
-                        // @ts-ignore
-                        datasourceName: _.find(datasourceList, { id: curDatasourceValue })?.name,
-                        targets: _.map(panel.targets, (target) => {
-                          const fullVars = getOptionsList(
-                            {
-                              dashboardId: _.toString(dashboard.id),
-                              variableConfigWithOptions: variableConfigWithOptions,
-                            },
-                            range,
-                          );
-                          const realExpr = variableConfigWithOptions ? replaceExpressionVars(target.expr, fullVars, fullVars.length, id) : target.expr;
-                          return {
-                            ...target,
-                            expr: realExpr,
-                          };
-                        }),
-                        range,
-                      },
-                    };
-                    SetTmpChartData([
-                      {
-                        configs: JSON.stringify(serielData),
-                      },
-                    ]).then((res) => {
-                      const ids = res.dat;
-                      window.open(basePrefix + '/chart/' + ids);
-                    });
-                  }}
-                  onUpdated={(res) => {
-                    updateAtRef.current = res.update_at;
-                    refresh();
-                  }}
-                  setVariableConfigRefreshFlag={setVariableConfigRefreshFlag}
-                />
-              )}
-            </>
-          ) : (
-            <iframe className='embedded-dashboards-iframe' src={adjustURL(dashboard.configs?.iframe_url!, darkMode)} width='100%' height='100%' />
-          )}
+          <Spin spinning={loading}>
+            {dashboard.configs?.mode !== 'iframe' ? (
+              <>
+                {variableConfigWithOptions && (
+                  <Panels
+                    dashboardId={id}
+                    isPreview={isPreview}
+                    editable={editable}
+                    panels={panels}
+                    setPanels={setPanels}
+                    dashboard={dashboard}
+                    setDashboard={setDashboard}
+                    setAllowedLeave={setAllowedLeave}
+                    range={range}
+                    setRange={setRange}
+                    variableConfig={variableConfigWithOptions}
+                    onShareClick={(panel) => {
+                      const curDatasourceValue = replaceExpressionVars(panel.datasourceValue, variableConfigWithOptions, variableConfigWithOptions.length, id);
+                      const serielData = {
+                        dataProps: {
+                          ...panel,
+                          datasourceValue: curDatasourceValue,
+                          // @ts-ignore
+                          datasourceName: _.find(datasourceList, { id: curDatasourceValue })?.name,
+                          targets: _.map(panel.targets, (target) => {
+                            const fullVars = getOptionsList(
+                              {
+                                dashboardId: _.toString(dashboard.id),
+                                variableConfigWithOptions: variableConfigWithOptions,
+                              },
+                              range,
+                            );
+                            const realExpr = variableConfigWithOptions ? replaceExpressionVars(target.expr, fullVars, fullVars.length, id) : target.expr;
+                            return {
+                              ...target,
+                              expr: realExpr,
+                            };
+                          }),
+                          range,
+                        },
+                      };
+                      SetTmpChartData([
+                        {
+                          configs: JSON.stringify(serielData),
+                        },
+                      ]).then((res) => {
+                        const ids = res.dat;
+                        window.open(basePrefix + '/chart/' + ids);
+                      });
+                    }}
+                    onUpdated={(res) => {
+                      updateAtRef.current = res.update_at;
+                      refresh();
+                    }}
+                    setVariableConfigRefreshFlag={setVariableConfigRefreshFlag}
+                  />
+                )}
+              </>
+            ) : (
+              <iframe className='embedded-dashboards-iframe' src={adjustURL(dashboard.configs?.iframe_url!, darkMode)} width='100%' height='100%' />
+            )}
+          </Spin>
         </div>
       </div>
       <Editor

@@ -367,6 +367,7 @@ const en_US = {
         organizeFields: 'Organize fields',
         colorMode_tip:
           'Color mode is the color setting for the "value field". In value mode, the color is applied to the value text; in background mode, the color is applied to the background color of the cell where the field is located.',
+        pageLimit: 'Page limit',
       },
       text: {
         textColor: 'TextColor',
