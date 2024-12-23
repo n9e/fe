@@ -157,7 +157,7 @@ export default function index(props: Props) {
             if (scaleKey === 'x') {
               const min = u.scales.x.min;
               const max = u.scales.x.max;
-              if (u.status === 0 && _.isNumber(min) && _.isNumber(max)) {
+              if (u.status === 0 && typeof min === 'number' && typeof max === 'number') {
                 xScaleInitMinMaxRef.current = [min, max];
               } else if (u.status === 1) {
                 if (_.isEqual(xScaleInitMinMaxRef.current, [min, max])) {
@@ -169,7 +169,7 @@ export default function index(props: Props) {
             } else if (scaleKey === 'y') {
               const min = u.scales.y.min;
               const max = u.scales.y.max;
-              if (u.status === 0 && _.isNumber(min) && _.isNumber(max)) {
+              if (u.status === 0 && typeof min === 'number' && typeof max === 'number') {
                 yScaleInitMinMaxRef.current = [min, max];
               }
             }
