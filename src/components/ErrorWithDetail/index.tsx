@@ -14,7 +14,7 @@ export default function index(props: IProps) {
   const { error } = props;
   const { t } = useTranslation('ErrorWithDetail');
   const { message, data } = error;
-  const raw_message = data?.raw_message;
+  const raw_message = data?.error?.raw_message;
   const [collapse, setCollapse] = useState(true);
   return (
     <div>
