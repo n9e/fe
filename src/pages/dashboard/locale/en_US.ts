@@ -448,6 +448,11 @@ const en_US = {
           },
         },
         displayMode: 'Display mode',
+        valueMode: {
+          label: 'Value display',
+          color: 'Color',
+          hidden: 'Hidden',
+        },
       },
     },
     inspect: {

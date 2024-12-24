@@ -184,6 +184,7 @@ export const defaultCustomValuesMap = {
     displayMode: 'basic',
     sortOrder: 'desc',
     otherPosition: 'none',
+    valueMode: 'color', // 'color' | 'hidden'
   },
   text: {
     textSize: 12,

@@ -30,7 +30,7 @@ export default function LCDBar(props: Props) {
   const [dashboardMeta] = useGlobalState('dashboardMeta');
   const { item, custom, options, themeMode, minValue, maxValue, time, maxNameWidth, maxBarWidth } = props;
   const { stat, metric } = item;
-  const { serieWidth, detailUrl, nameField } = custom as IBarGaugeStyles;
+  const { serieWidth, detailUrl, nameField, valueMode = 'color' } = custom as IBarGaugeStyles;
   const name = nameField ? _.get(metric, nameField, item.name) : item.name;
   const valueRange = maxValue - minValue;
   const cellCount = Math.floor(maxBarWidth / (CELL_WIDTH + CELL_SPACING));
@@ -89,6 +89,17 @@ export default function LCDBar(props: Props) {
           )}
         </div>
         <div className='renderer-bar-gauge-lcd-item-cells-wrapper'>{cells}</div>
+        {valueMode === 'color' && (
+          <div
+            className='renderer-bar-gauge-lcd-item-value'
+            style={{
+              color: item.color,
+            }}
+          >
+            {item.value}
+            {item.unit}
+          </div>
+        )}
       </div>
     </Tooltip>
   );

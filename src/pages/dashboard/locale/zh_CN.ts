@@ -464,6 +464,11 @@ const zh_CN = {
           },
         },
         displayMode: '显示模式',
+        valueMode: {
+          label: '数值显示',
+          color: '显示',
+          hidden: '隐藏',
+        },
       },
     },
     inspect: {
