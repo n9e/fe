@@ -131,6 +131,8 @@ export default function index(props: Props) {
         >
           {legendDisplayMode === 'list' && (
             <LegendList
+              panel={mainProps.panel}
+              range={mainProps.range}
               data={legendData}
               legendColumns={legendColumns}
               placement={legend?.placement}
@@ -145,6 +147,8 @@ export default function index(props: Props) {
           )}
           {legendDisplayMode === 'table' && (
             <LegendTable
+              panel={mainProps.panel}
+              range={mainProps.range}
               data={legendData}
               legendColumns={legendColumns}
               onRowClick={(record) => {
