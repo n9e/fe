@@ -54,7 +54,7 @@ export default function drawThresholds(props: Props) {
         ctx.strokeStyle = step.color;
         ctx.lineWidth = 1;
         if (thresholdsStyle.mode === 'dashed' || thresholdsStyle.mode === 'dashed+area') {
-          ctx.setLineDash([5, 5]);
+          ctx.setLineDash([10, 10]);
         }
         ctx.moveTo(xMin, uplot.valToPos(step.value, 'y', true));
         ctx.lineTo(xMax, uplot.valToPos(step.value, 'y', true));

@@ -71,6 +71,7 @@ export function getDataFrameAndBaseSeriesByResult(result: ResultItem[]): {
 }
 
 export interface BaseSeriesItem {
+  show: boolean;
   label: string;
   n9e_internal: {
     [index: string]: any;
@@ -94,9 +95,11 @@ export default function getDataFrameAndBaseSeries(oldSeries: OldSeriesItem[]): {
   for (const item of oldSeries) {
     const label = _.isEmpty(item.metric) ? item.target.expr : getSerieName(item.metric);
     baseSeries.push({
+      show: true,
       label,
       // n9e 内部使用
       n9e_internal: {
+        id: item.id,
         refId: item.refId,
         offset: item.offset,
         metric: item.metric,

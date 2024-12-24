@@ -26,6 +26,13 @@
       user-select: text;
     }
 
+    .renderer-timeseries-ng-legend-table-row {
+      cursor: pointer;
+    }
+    .renderer-timeseries-ng-legend-table-row.disabled {
+      color: var(--fc-text-4);
+    }
+
     .ant-table-thead,.ant-table-tbody {
       .ant-table-cell {
         padding: 2px 4px !important;
@@ -36,13 +43,17 @@
     padding: 0;
     margin: 4px 0 0;
     list-style: none;
-    .renderer-timeseries-ng-legend-table-name-column {
+    .renderer-timeseries-ng-legend-list-item {
       width: 100%;
       display: flex;
       white-space: nowrap;
       align-items: center;
       gap: 8px;
       padding-right: 10px;
+      cursor: pointer;
+      &.disabled {
+        color: var(--fc-text-4);
+      }
     }
     .renderer-timeseries-ng-legend-list-stat {
       flex-grow: 1;
