@@ -13,11 +13,10 @@ interface Props {
   panel: IPanel;
 }
 
-export default function getScalesXMinMaxAndYRange(props: Props) {
+export function getScalesXMinMax(props: Props) {
   const { range, panel } = props;
-  const { options = {}, targets } = panel;
+  const { targets } = panel;
   let xMinMax: Range.MinMax | undefined = undefined;
-  let yRange: Range.MinMax | undefined = undefined;
   if (range) {
     const parsedRange = parseRange(range);
     const startAndEnd = getStartAndEndByTargets(targets);
@@ -25,6 +24,13 @@ export default function getScalesXMinMaxAndYRange(props: Props) {
     const end = startAndEnd.end || moment(parsedRange.end).unix();
     xMinMax = [start, end];
   }
+  return xMinMax;
+}
+
+export function getScalesYRange(props: Props) {
+  const { panel } = props;
+  const { options = {} } = panel;
+  let yRange: Range.MinMax | undefined = undefined;
   if (_.isNumber(options.standardOptions?.min)) {
     yRange = [options.standardOptions?.min!, null];
   }
@@ -32,8 +38,5 @@ export default function getScalesXMinMaxAndYRange(props: Props) {
     yRange = [yRange ? yRange[0] : null, options.standardOptions?.max!];
   }
 
-  return {
-    xMinMax,
-    yRange,
-  };
+  return yRange;
 }

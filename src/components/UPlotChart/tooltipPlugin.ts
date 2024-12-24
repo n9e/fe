@@ -147,6 +147,10 @@ export default function tooltipPlugin(options: {
           }),
           1,
         );
+        valuesData = _.filter(valuesData, (item) => {
+          return item.seriesItem.show !== false;
+        });
+
         const { event, left, top, idx } = u.cursor;
 
         if (graphTooltip === 'sharedTooltip' || graphTooltip === 'sharedCrosshair') {

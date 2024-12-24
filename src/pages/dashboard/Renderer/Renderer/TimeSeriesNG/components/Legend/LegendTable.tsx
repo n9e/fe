@@ -4,10 +4,17 @@ import { ColumnProps } from 'antd/lib/table';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { DataItem } from '../../../utils/getLegendData';
-import NameWithTooltip from '../../NameWithTooltip';
+import { IRawTimeRange } from '@/components/TimeRangePicker';
+
+import { IPanel } from '../../../../../types';
+import { DataItem } from '../../utils/getLegendData';
+import NameWithTooltip from '../NameWithTooltip';
+
+import Link from './Link';
 
 interface Props {
+  panel: IPanel;
+  range?: IRawTimeRange;
   data: DataItem[];
   legendColumns?: string[];
   onRowClick: (record: DataItem) => void;
@@ -15,7 +22,10 @@ interface Props {
 
 export default function LegendTable(props: Props) {
   const { t } = useTranslation('dashboard');
-  const { data, legendColumns, onRowClick } = props;
+  const { panel, range, data, legendColumns, onRowClick } = props;
+  const options = panel.options || {};
+  const detailName = options.legend?.detailName;
+  const detailUrl = options.legend?.detailUrl;
 
   let columns: ColumnProps<DataItem>[] = [
     {
@@ -28,10 +38,11 @@ export default function LegendTable(props: Props) {
             <div className='renderer-timeseries-ng-legend-color-symbol' style={{ backgroundColor: record.color }} />
             <NameWithTooltip record={record}>
               <div className='renderer-timeseries-ng-legend-table-name-content'>
-                {record.offset && record.offset !== 'current' ? <span style={{ paddingRight: 5 }}>offfset {record.offset}</span> : ''}
+                {record.offset && record.offset !== 'current' ? <span style={{ paddingRight: 4 }}>offfset {record.offset}</span> : ''}
                 <span>{text}</span>
               </div>
             </NameWithTooltip>
+            <Link data={record} range={range} name={detailName} url={detailUrl} />
           </div>
         );
       },
