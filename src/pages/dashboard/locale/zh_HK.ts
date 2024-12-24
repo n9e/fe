@@ -529,6 +529,7 @@ const zh_HK = {
       default: '默认',
       updateTimeRange: '更新時間範圍',
     },
+    save: '儲存儀表板',
   },
   visualizations: {
     timeseries: '時序圖',

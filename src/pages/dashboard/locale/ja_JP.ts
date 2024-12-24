@@ -494,6 +494,7 @@ const ja_JP = {
       default: 'デフォルト',
       updateTimeRange: '時間範囲を更新',
     },
+    save: '保存',
   },
   visualizations: {
     timeseries: '時系列グラフ',

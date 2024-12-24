@@ -521,6 +521,7 @@ const en_US = {
       default: 'Default',
       updateTimeRange: 'Update time range',
     },
+    save: 'Save dashboard',
   },
   visualizations: {
     timeseries: 'Time Series',

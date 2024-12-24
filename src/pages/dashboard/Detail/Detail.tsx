@@ -29,7 +29,7 @@ import { Alert, Modal, Button, Affix, message, Spin } from 'antd';
 import PageLayout from '@/components/pageLayout';
 import { IRawTimeRange, getDefaultValue, isValid } from '@/components/TimeRangePicker';
 import { Dashboard } from '@/store/dashboardInterface';
-import { getDashboard, updateDashboardConfigs, getDashboardPure } from '@/services/dashboardV2';
+import { getDashboard, updateDashboard, updateDashboardConfigs, getDashboardPure } from '@/services/dashboardV2';
 import { getPayloadByUUID } from '@/pages/builtInComponents/services';
 import { SetTmpChartData } from '@/services/metric';
 import { CommonStateContext, basePrefix } from '@/App';
@@ -213,9 +213,20 @@ export default function DetailV2(props: IProps) {
       } catch (e) {
         console.error(e);
       }
-      setAllowedLeave(false);
+      // 如果是手动保存模式，并且没有编辑权限则不触发 RouterPrompt 提示
+      if (isAuthorized) {
+        setAllowedLeave(false);
+      }
+      setDashboardMeta({
+        ...(dashboardMeta || {}),
+        graphTooltip: configs.graphTooltip,
+        graphZoom: configs.graphZoom,
+      });
       setDashboard({
         ...dashboard,
+        name: updateData.name,
+        ident: updateData.ident,
+        tags: updateData.tags,
         configs,
       });
     } else {
@@ -288,6 +299,7 @@ export default function DetailV2(props: IProps) {
                 isAuthorized={isAuthorized}
                 editable={editable}
                 updateAtRef={updateAtRef}
+                allowedLeave={allowedLeave}
                 setAllowedLeave={setAllowedLeave}
                 gobackPath={gobackPath}
                 dashboard={dashboard}
@@ -530,6 +542,11 @@ export default function DetailV2(props: IProps) {
             type='primary'
             onClick={() => {
               routerPromptRef.current.hidePrompt();
+              updateDashboard(dashboard.id, {
+                name: dashboard.name,
+                ident: dashboard.ident,
+                tags: dashboard.tags,
+              });
               updateDashboardConfigs(dashboard.id, {
                 configs: JSON.stringify(dashboard.configs),
               }).then((res) => {

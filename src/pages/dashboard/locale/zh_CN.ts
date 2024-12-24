@@ -537,6 +537,7 @@ const zh_CN = {
       default: '默认',
       updateTimeRange: '更新时间范围',
     },
+    save: '保存仪表盘',
   },
   visualizations: {
     timeseries: '时序图',

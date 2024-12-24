@@ -50,6 +50,8 @@ function index(props: ModalWrapProps & IProps) {
       bodyStyle={{
         padding: '10px 24px 24px 24px',
       }}
+      okText={t('common:btn.ok')}
+      cancelText={t('common:btn.cancel')}
     >
       <Form
         layout='vertical'
