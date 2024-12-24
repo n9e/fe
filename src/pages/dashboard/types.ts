@@ -120,9 +120,16 @@ export interface IOverride {
 }
 
 export interface ILink {
+  type: 'link' | 'dashboards';
   title: string;
   url: string;
   targetBlank?: boolean;
+  dashboardIds?: number[];
+  dashboards: {
+    id: number;
+    name: string;
+    ident: string;
+  }[];
 }
 
 export interface ITimeseriesStyles {

@@ -67,6 +67,7 @@ const zh_CN = {
     name: '链接名称',
     url: '链接地址',
     isNewBlank: '是否新窗口打开',
+    dashboardIds_placeholder: '请选择仪表盘',
   },
   var: {
     btn: '添加变量',
@@ -537,6 +538,7 @@ const zh_CN = {
       default: '默认',
       updateTimeRange: '更新时间范围',
     },
+    save: '保存仪表盘',
   },
   visualizations: {
     timeseries: '时序图',

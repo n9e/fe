@@ -25,7 +25,7 @@ import { useKeyPress } from 'ahooks';
 import { TimeRangePickerWithRefresh, IRawTimeRange } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
 import { IS_ENT } from '@/utils/constant';
-import { updateDashboardConfigs, getBusiGroupsDashboards } from '@/services/dashboardV2';
+import { updateDashboard, updateDashboardConfigs, getBusiGroupsDashboards } from '@/services/dashboardV2';
 import DashboardLinks from '../DashboardLinks';
 import { AddPanelIcon } from '../config';
 import { visualizations } from '../Editor/config';
@@ -50,6 +50,7 @@ interface IProps {
   gobackPath?: string;
   editable: boolean;
   updateAtRef: React.MutableRefObject<number | undefined>;
+  allowedLeave: boolean;
   setAllowedLeave: (allowed: boolean) => void;
 }
 
@@ -70,6 +71,7 @@ export default function Title(props: IProps) {
     isAuthorized,
     editable,
     updateAtRef,
+    allowedLeave,
     setAllowedLeave,
   } = props;
   const history = useHistory();
@@ -207,6 +209,31 @@ export default function Title(props: IProps) {
 
       <div className='dashboard-detail-header-right'>
         <Space>
+          {isAuthorized && dashboardSaveMode === 'manual' && (
+            <Button
+              type={allowedLeave ? 'default' : 'primary'}
+              onClick={() => {
+                if (editable) {
+                  updateDashboard(dashboard.id, {
+                    name: dashboard.name,
+                    ident: dashboard.ident,
+                    tags: dashboard.tags,
+                  });
+                  updateDashboardConfigs(dashboard.id, {
+                    configs: JSON.stringify(dashboard.configs),
+                  }).then((res) => {
+                    updateAtRef.current = res.update_at;
+                    message.success(t('detail.saved'));
+                    setAllowedLeave(true);
+                  });
+                } else {
+                  message.warning(t('detail.expired'));
+                }
+              }}
+            >
+              {t('settings.save')}
+            </Button>
+          )}
           {dashboard.configs?.mode !== 'iframe' ? (
             <>
               {isAuthorized && (
@@ -229,7 +256,7 @@ export default function Title(props: IProps) {
                     </Menu>
                   }
                 >
-                  <Button type='primary' icon={<AddPanelIcon />}>
+                  <Button type='primary' ghost icon={<AddPanelIcon />}>
                     {t('add_panel')}
                   </Button>
                 </Dropdown>
@@ -250,33 +277,29 @@ export default function Title(props: IProps) {
                   setRange(val);
                 }}
               />
-              {isAuthorized && dashboardSaveMode === 'manual' && (
-                <Button
-                  icon={<SaveOutlined />}
-                  onClick={() => {
-                    if (editable) {
-                      updateDashboardConfigs(dashboard.id, {
-                        configs: JSON.stringify(dashboard.configs),
-                      }).then((res) => {
-                        updateAtRef.current = res.update_at;
-                        message.success(t('detail.saved'));
-                        setAllowedLeave(true);
-                      });
-                    } else {
-                      message.warning(t('detail.expired'));
-                    }
-                  }}
-                />
-              )}
-              {isAuthorized && (
+
+              {(isAuthorized || dashboardSaveMode === 'manual') && (
                 <Button
                   icon={<SettingOutlined />}
                   onClick={() => {
                     FormModal({
                       action: 'edit',
                       initialValues: dashboard,
-                      onOk: () => {
-                        window.location.reload();
+                      dashboardSaveMode,
+                      onOk: (values) => {
+                        if (dashboardSaveMode === 'manual') {
+                          const dashboardConfigs: any = dashboard.configs;
+                          dashboardConfigs.graphTooltip = values.graphTooltip;
+                          dashboardConfigs.graphZoom = values.graphZoom;
+                          handleUpdateDashboardConfigs(dashboard.id, {
+                            name: values.name,
+                            ident: values.ident,
+                            tags: _.join(values.tags, ' '),
+                            configs: JSON.stringify(dashboardConfigs),
+                          });
+                        } else {
+                          window.location.reload();
+                        }
                       },
                     });
                   }}
@@ -289,6 +312,7 @@ export default function Title(props: IProps) {
                   const dashboardConfigs: any = dashboard.configs;
                   dashboardConfigs.links = v;
                   handleUpdateDashboardConfigs(dashboard.id, {
+                    ...dashboard,
                     configs: JSON.stringify(dashboardConfigs),
                   });
                   setDashboardLinks(v);

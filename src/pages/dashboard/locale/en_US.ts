@@ -66,6 +66,7 @@ const en_US = {
     name: 'Name',
     url: 'URL',
     isNewBlank: 'Open in new tab',
+    dashboardIds_placeholder: 'Select dashboards',
   },
   var: {
     btn: 'Add variable',
@@ -521,6 +522,7 @@ const en_US = {
       default: 'Default',
       updateTimeRange: 'Update time range',
     },
+    save: 'Save dashboard',
   },
   visualizations: {
     timeseries: 'Time Series',
