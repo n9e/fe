@@ -1,5 +1,5 @@
 import React, { useState, useRef, useMemo } from 'react';
-import uplot, { AlignedData, Options } from 'uplot';
+import { AlignedData, Options } from 'uplot';
 import _ from 'lodash';
 
 import UPlotChart, { tooltipPlugin, paddingSide, axisBuilder, seriesBuider, cursorBuider, scalesBuilder, getStackedDataAndBands, uplotsMap } from '@/components/UPlotChart';
@@ -177,7 +177,7 @@ export default function index(props: Props) {
         ],
       },
     };
-  }, [width, height, custom, options, colors, JSON.stringify(range)]);
+  }, [width, height, custom, options, colors, JSON.stringify(range), JSON.stringify(baseSeries)]);
   let data = frames;
 
   if (custom.stack === 'noraml') {

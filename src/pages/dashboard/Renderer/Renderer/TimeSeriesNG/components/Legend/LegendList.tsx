@@ -1,6 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
+import classNames from 'classnames';
 
 import { DataItem } from '../../utils/getLegendData';
 
@@ -8,11 +9,12 @@ interface Props {
   data: DataItem[];
   legendColumns?: string[];
   placement?: 'bottom' | 'right';
+  onRowClick: (record: DataItem) => void;
 }
 
 export default function LegendList(props: Props) {
   const { t } = useTranslation('dashboard');
-  const { data, legendColumns, placement } = props;
+  const { data, legendColumns, placement, onRowClick } = props;
 
   return (
     <div
@@ -21,7 +23,7 @@ export default function LegendList(props: Props) {
         overflow: 'auto',
       }}
     >
-      <ul className='renderer-timeseries-ng-legend-list '>
+      <ul className='renderer-timeseries-ng-legend-list'>
         {_.map(data, (item) => {
           return (
             <li
@@ -30,7 +32,14 @@ export default function LegendList(props: Props) {
                 display: placement === 'right' ? 'block' : 'inline-block',
               }}
             >
-              <div className='renderer-timeseries-ng-legend-table-name-column'>
+              <div
+                className={classNames('renderer-timeseries-ng-legend-list-item', {
+                  disabled: !item.show,
+                })}
+                onClick={() => {
+                  onRowClick(item);
+                }}
+              >
                 <div className='renderer-timeseries-ng-legend-color-symbol' style={{ backgroundColor: item.color }} />
                 <div className='renderer-timeseries-ng-legend-table-name-content'>
                   {item.offset && item.offset !== 'current' ? <span style={{ paddingRight: 5 }}>offfset {item.offset}</span> : ''}

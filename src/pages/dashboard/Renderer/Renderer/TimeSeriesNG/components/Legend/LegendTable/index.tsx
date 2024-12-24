@@ -10,11 +10,12 @@ import NameWithTooltip from '../../NameWithTooltip';
 interface Props {
   data: DataItem[];
   legendColumns?: string[];
+  onRowClick: (record: DataItem) => void;
 }
 
 export default function LegendTable(props: Props) {
   const { t } = useTranslation('dashboard');
-  const { data, legendColumns } = props;
+  const { data, legendColumns, onRowClick } = props;
 
   let columns: ColumnProps<DataItem>[] = [
     {
@@ -59,7 +60,24 @@ export default function LegendTable(props: Props) {
         overflow: 'auto',
       }}
     >
-      <Table className='mt1 renderer-timeseries-ng-legend-table' size='small' pagination={false} rowKey='id' columns={columns} dataSource={data} />
+      <Table
+        className='mt1 renderer-timeseries-ng-legend-table'
+        size='small'
+        pagination={false}
+        rowKey='id'
+        columns={columns}
+        dataSource={data}
+        rowClassName={(record) => {
+          return !record.show ? 'renderer-timeseries-ng-legend-table-row disabled' : 'renderer-timeseries-ng-legend-table-row';
+        }}
+        onRow={(record) => {
+          return {
+            onClick: () => {
+              onRowClick(record);
+            },
+          };
+        }}
+      />
     </div>
   );
 }

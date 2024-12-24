@@ -62,19 +62,40 @@ export default function index(props: Props) {
   const legend = options?.legend;
   const legendDisplayMode = options.legend?.displayMode || 'table';
   const legendColumns = !_.isEmpty(options.legend?.columns) ? options.legend?.columns : legendDisplayMode === 'table' ? ['max', 'min', 'avg', 'sum', 'last'] : [];
+  const legendBehaviour = options.legend?.behaviour || 'showItem';
+  const legendSelectMode = options.legend?.selectMode || 'single';
   const chartContainerSize = getChartContainerSize(PADDING, containerSize, legendSize, legendDisplayMode, legend?.placement);
   const [dataRefresh, setDataRefresh] = useState(_.uniqueId('dataRefresh_'));
-  const [hideSeries, setHideSeries] = useState<string[]>([]);
+  const [activeLegend, setActiveLegend] = useState<string>(); // legendSelectMode === 'single'
+  const [activeLegends, setActiveLegends] = useState<string[]>([]); // legendSelectMode === 'multiple'
   const { frames, baseSeries } = useMemo(() => {
     setDataRefresh(_.uniqueId('dataRefresh_'));
     return getDataFrameAndBaseSeries(mainProps.series as any);
   }, [JSON.stringify(mainProps.series)]);
+  const seriesData = useMemo(() => {
+    if (legendSelectMode === 'multiple') {
+      return _.map(baseSeries, (subItem) => {
+        const id = subItem.n9e_internal.id;
+        return {
+          ...subItem,
+          show: activeLegends.length ? (legendBehaviour === 'hideItem' ? !activeLegends.includes(id) : activeLegends.includes(id)) : true,
+        };
+      });
+    }
+    return _.map(baseSeries, (subItem) => {
+      const id = subItem.n9e_internal.id;
+      return {
+        ...subItem,
+        show: activeLegend ? (legendBehaviour === 'hideItem' ? activeLegend !== id : activeLegend === id) : true,
+      };
+    });
+  }, [dataRefresh, JSON.stringify(activeLegend), JSON.stringify(activeLegends)]);
   const legendData = useMemo(() => {
     const { options, overrides } = mainProps.panel;
     if (legend?.displayMode !== 'hidden') {
       return getLegendData({
         frames,
-        baseSeries,
+        baseSeries: seriesData,
         hexPalette: mainProps.colors,
         standardOptions: options?.standardOptions,
         valueMappings: options?.valueMappings,
@@ -83,7 +104,7 @@ export default function index(props: Props) {
       });
     }
     return [];
-  }, [dataRefresh, legend?.displayMode]);
+  }, [dataRefresh, legend?.displayMode, JSON.stringify(mainProps.panel), JSON.stringify(seriesData)]);
 
   return (
     <div
@@ -96,7 +117,7 @@ export default function index(props: Props) {
     >
       <div className='renderer-timeseries-ng-graph-container'>
         {props.id && chartContainerSize.width && chartContainerSize.height && (
-          <Main {...mainProps} id={props.id} darkMode={darkMode} width={chartContainerSize.width} height={chartContainerSize.height} frames={frames} baseSeries={baseSeries} />
+          <Main {...mainProps} id={props.id} darkMode={darkMode} width={chartContainerSize.width} height={chartContainerSize.height} frames={frames} baseSeries={seriesData} />
         )}
       </div>
       {(legendDisplayMode === 'list' || legendDisplayMode === 'table') && (
@@ -108,8 +129,33 @@ export default function index(props: Props) {
             maxWidth: legend?.placement === 'right' ? legend?.widthInPercentage || 60 + '%' : 'unset',
           }}
         >
-          {legendDisplayMode === 'list' && <LegendList data={legendData} legendColumns={legendColumns} placement={legend?.placement} />}
-          {legendDisplayMode === 'table' && <LegendTable data={legendData} legendColumns={legendColumns} />}
+          {legendDisplayMode === 'list' && (
+            <LegendList
+              data={legendData}
+              legendColumns={legendColumns}
+              placement={legend?.placement}
+              onRowClick={(record) => {
+                if (legendSelectMode === 'multiple') {
+                  setActiveLegends(_.xor(activeLegends, [record.id]));
+                } else {
+                  setActiveLegend(activeLegend !== record.id ? record.id : '');
+                }
+              }}
+            />
+          )}
+          {legendDisplayMode === 'table' && (
+            <LegendTable
+              data={legendData}
+              legendColumns={legendColumns}
+              onRowClick={(record) => {
+                if (legendSelectMode === 'multiple') {
+                  setActiveLegends(_.xor(activeLegends, [record.id]));
+                } else {
+                  setActiveLegend(activeLegend !== record.id ? record.id : '');
+                }
+              }}
+            />
+          )}
         </div>
       )}
     </div>
