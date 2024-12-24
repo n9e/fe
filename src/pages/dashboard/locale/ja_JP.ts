@@ -64,6 +64,7 @@ const ja_JP = {
     url_tip:
       '\n      変数の使用方法\n      <1 />\n      ${variable_name}: ダッシュボード変数値を表示\n      <1 />\n      ${__field.name}: シーケンス名を表示\n      <1 />\n      ${__field.value}: シーケンス値を表示\n      <1 />\n      ${__field.labels.X}: 指定したラベル値を表示\n      <1 />\n      ${__field.labels.__name__}: 指標名を表示\n      <1 />\n      ${__from}: 開始時間, ミリ秒\n      <1 />\n      ${__from_date_seconds}: 開始時間, 秒\n      <1 />\n      ${__from_date_iso}: 開始時間, ISO 8601/RFC 3339\n      <1 />\n      上記の構文は ${__to} に適用されます\n      ',
     isNewBlank: '新しいウィンドウで開くかどうか',
+    dashboardIds_placeholder: 'ダッシュボードを選択してください',
   },
   var: {
     btn: '変数を追加',

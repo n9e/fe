@@ -66,6 +66,7 @@ const zh_HK = {
     name: '連結名稱',
     url: '連結地址',
     isNewBlank: '是否新視窗開啟',
+    dashboardIds_placeholder: '請選擇儀表盤',
   },
   var: {
     btn: '新增變數',

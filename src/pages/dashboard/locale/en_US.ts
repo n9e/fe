@@ -66,6 +66,7 @@ const en_US = {
     name: 'Name',
     url: 'URL',
     isNewBlank: 'Open in new tab',
+    dashboardIds_placeholder: 'Select dashboards',
   },
   var: {
     btn: 'Add variable',

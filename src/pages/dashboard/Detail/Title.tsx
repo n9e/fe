@@ -312,6 +312,7 @@ export default function Title(props: IProps) {
                   const dashboardConfigs: any = dashboard.configs;
                   dashboardConfigs.links = v;
                   handleUpdateDashboardConfigs(dashboard.id, {
+                    ...dashboard,
                     configs: JSON.stringify(dashboardConfigs),
                   });
                   setDashboardLinks(v);

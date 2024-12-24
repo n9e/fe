@@ -244,7 +244,11 @@ export default function DetailV2(props: IProps) {
       setVariableConfig(value);
     }
     // 更新变量配置
-    b && handleUpdateDashboardConfigs(dashboard.id, { configs: JSON.stringify(dashboardConfigs) });
+    b &&
+      handleUpdateDashboardConfigs(dashboard.id, {
+        ...dashboard,
+        configs: JSON.stringify(dashboardConfigs),
+      });
     // 更新变量配置状态
     if (valueWithOptions) {
       setVariableConfigWithOptions(valueWithOptions);
@@ -324,6 +328,7 @@ export default function DetailV2(props: IProps) {
                     );
                     setPanels(newPanels);
                     handleUpdateDashboardConfigs(dashboard.id, {
+                      ...dashboard,
                       configs: panelsMergeToConfigs(dashboard.configs, newPanels),
                     });
                   } else if (type === 'pastePanel') {
@@ -332,6 +337,7 @@ export default function DetailV2(props: IProps) {
                       setPanels(newPanels);
                       scrollToLastPanel(newPanels);
                       handleUpdateDashboardConfigs(dashboard.id, {
+                        ...dashboard,
                         configs: panelsMergeToConfigs(dashboard.configs, newPanels),
                       });
                     } else {
@@ -452,6 +458,7 @@ export default function DetailV2(props: IProps) {
             scrollToLastPanel(newPanels);
           }
           handleUpdateDashboardConfigs(dashboard.id, {
+            ...dashboard,
             configs: panelsMergeToConfigs(dashboard.configs, newPanels),
           });
         }}
@@ -471,6 +478,7 @@ export default function DetailV2(props: IProps) {
             onClick={() => {
               setMigrationVisible(false);
               handleUpdateDashboardConfigs(dashboard.id, {
+                ...dashboard,
                 configs: JSON.stringify({
                   ...dashboard.configs,
                   version: '3.0.0',
