@@ -456,6 +456,11 @@ const zh_HK = {
           },
         },
         displayMode: '顯示模式',
+        valueMode: {
+          label: '值模式',
+          color: '顯示',
+          hidden: '隱藏',
+        },
       },
     },
     inspect: {

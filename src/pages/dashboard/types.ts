@@ -180,7 +180,7 @@ export interface IPieStyles {
 
 export interface IBarGaugeStyles {
   version: string;
-  displayMode: 'basic';
+  displayMode: 'basic' | 'lcd';
   calc: string;
   valueField?: string;
   nameField?: string;
@@ -189,6 +189,7 @@ export interface IBarGaugeStyles {
   serieWidth: number | null;
   sortOrder: 'none' | 'asc' | 'desc';
   detailUrl: string | undefined;
+  valueMode: 'color' | 'hidden';
 }
 
 export interface ITextStyles {

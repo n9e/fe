@@ -421,6 +421,11 @@ const ja_JP = {
           },
         },
         displayMode: '表示モード',
+        valueMode: {
+          label: '値の表示モード',
+          color: '色',
+          hidden: '非表示',
+        },
       },
     },
     inspect: {
