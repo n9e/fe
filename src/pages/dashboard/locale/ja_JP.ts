@@ -67,6 +67,7 @@ const ja_JP = {
     dashboardIds_placeholder: 'ダッシュボードを選択してください',
   },
   var: {
+    vars: '変数',
     btn: '変数を追加',
     title: {
       list: '変数リスト',
@@ -132,6 +133,8 @@ const ja_JP = {
     cancel: 'キャンセル',
     ok: 'グループとチャートを削除',
     ok2: 'グループのみを削除',
+    panels: '{{num}} グラフ',
+    panels_plural: '{{count}} グラフ',
   },
   panel: {
     title: {

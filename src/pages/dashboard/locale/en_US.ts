@@ -69,6 +69,7 @@ const en_US = {
     dashboardIds_placeholder: 'Select dashboards',
   },
   var: {
+    vars: 'Variables',
     btn: 'Add variable',
     title: {
       list: 'Variables',
@@ -163,6 +164,8 @@ const en_US = {
     cancel: 'Cancel',
     ok: 'Delete row and panels',
     ok2: 'Delete row',
+    panels: '{{count}} panel',
+    panels_plural: '{{count}} panels',
   },
   panel: {
     title: {

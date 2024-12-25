@@ -70,6 +70,7 @@ const zh_CN = {
     dashboardIds_placeholder: '请选择仪表盘',
   },
   var: {
+    vars: '变量',
     btn: '添加变量',
     title: {
       list: '变量列表',
@@ -164,6 +165,8 @@ const zh_CN = {
     cancel: '取消',
     ok: '删除分组和图表',
     ok2: '仅删除分组',
+    panels: '{{count}} 个图表',
+    panels_plural: '{{count}} 个图表',
   },
   panel: {
     title: {

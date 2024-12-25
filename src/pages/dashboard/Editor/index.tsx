@@ -29,6 +29,8 @@ import FormCpt from './Form';
 import { IPanel } from '../types';
 import { normalizeInitialValues } from './util';
 
+import './style.less';
+
 interface IProps {
   mode: string;
   visible: boolean;
@@ -90,6 +92,7 @@ function index(props: IProps) {
 
   return (
     <Modal
+      className='n9e-dashboard-editor-modal'
       width='100%'
       title={
         <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -138,7 +141,7 @@ function index(props: IProps) {
           </Space>
         </div>
       }
-      style={{ top: 10, padding: 0 }}
+      style={{ top: 0, padding: 0 }}
       visible={visible}
       closable={false}
       destroyOnClose
@@ -167,7 +170,7 @@ function index(props: IProps) {
         props.onCancel && props.onCancel();
       }}
       bodyStyle={{
-        padding: '10px 24px 24px 24px',
+        padding: 10,
       }}
     >
       {/* 除了 text 和 iframe 类型其他的类型比如存在 initialValues?.datasourceCate */}
