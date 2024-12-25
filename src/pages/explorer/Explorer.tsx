@@ -31,6 +31,7 @@ import { getDefaultDatasourceValue, setDefaultDatasourceValue } from '@/utils';
 import { CommonStateContext } from '@/App';
 import { DatasourceCateSelect } from '@/components/DatasourceSelect';
 import { Explorer as TDengine } from '@/plugins/TDengine';
+import { Explorer as CK } from '@/plugins/clickHouse';
 import Prometheus from './Prometheus';
 import Elasticsearch from './Elasticsearch';
 import Loki from './Loki';
@@ -195,6 +196,8 @@ const Panel = ({ type, defaultCate, panelIdx, defaultFormValuesControl }: IProps
                   return <TDengine datasourceValue={datasourceValue} form={form} />;
                 } else if (datasourceCate === DatasourceCateEnum.loki) {
                   return <Loki datasourceValue={datasourceValue} headerExtra={headerExtraRef.current} form={form} defaultFormValuesControl={defaultFormValuesControl} />;
+                } else if (datasourceCate === DatasourceCateEnum.ck) {
+                  return <CK datasourceValue={datasourceValue} headerExtra={headerExtraRef.current} />;
                 }
                 return (
                   <PlusExplorer

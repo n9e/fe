@@ -1,0 +1,76 @@
+@border-color: var(--fc-border-color);
+
+.n9e-ck-explorer-container {
+  height: 100%;
+  .explorer-meta-container {
+    flex-shrink: 0;
+    border: 1px solid @border-color;
+    .ant-tree-title {
+      white-space: nowrap;
+    }
+  }
+  .explorer-main {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  .explorer-main-table {
+    height: 100%;
+    .ant-spin-nested-loading,.ant-spin-container,.ant-table,.ant-table-container {
+      height: 100%;
+    }
+  }
+  .explorer-query-container {
+    display: flex;
+    gap: 10px;
+    height: 100%;
+  
+    .ant-tabs {
+      min-height: 0;
+      height: 100%
+    }
+    .ant-tabs-nav-wrap {
+      border-left: 1px solid @border-color;
+    }
+    .ant-tabs-card > .ant-tabs-nav .ant-tabs-tab {
+      border: 1px solid @border-color;
+      border-left: 0 none;
+      color: #c1c1c1;
+    }
+    .ant-tabs-card.ant-tabs-top > .ant-tabs-nav .ant-tabs-tab-active {
+      border-bottom-color: var(--fc-fill-2);
+      border-top: 2px solid  @primary-color;
+    }
+    .ant-tabs-top > .ant-tabs-nav {
+      margin-bottom: 0;
+    }
+    .ant-tabs-content {
+      height: 100%;
+    }
+    .ant-tabs-content-holder {
+      border: 1px solid @border-color;
+      border-top: 0 none;
+      padding: 16px;
+    }
+    .ant-tabs-top > .ant-tabs-nav::before {
+      border-bottom: 1px solid @border-color;
+    }
+  }
+  .explorer-query {
+    display: flex;
+    gap: 10px;
+  }
+  .explorer-graph-container {
+    min-height: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    .ant-spin-nested-loading {
+      min-height: 0;
+    }
+    .renderer-timeseries-container {
+      display: flex !important;
+      flex-direction: column;
+    }
+  }
+}
