@@ -91,19 +91,21 @@ function FormCpt(props: IProps, ref) {
         >
           <Col flex={1} style={{ minWidth: 100 }}>
             <div className='n9e-dashboard-editor-modal-left-wrapper'>
-              <div className='n9e-dashboard-editor-modal-left-vars-wrapper'>
-                <span>{t('var.vars')}</span>
-                <VariableConfig
-                  onChange={(value, bool, withOptions) => {
-                    setVariableConfigWithOptions(withOptions || []);
-                  }}
-                  value={variableConfigWithOptions}
-                  editable={false}
-                  range={range}
-                  id={dashboardId}
-                  dashboard={dashboard}
-                />
-              </div>
+              {variableConfigWithOptions && variableConfigWithOptions.length > 0 && (
+                <div className='n9e-dashboard-editor-modal-left-vars-wrapper'>
+                  <span>{t('var.vars')}</span>
+                  <VariableConfig
+                    onChange={(value, bool, withOptions) => {
+                      setVariableConfigWithOptions(withOptions || []);
+                    }}
+                    value={variableConfigWithOptions}
+                    editable={false}
+                    range={range}
+                    id={dashboardId}
+                    dashboard={dashboard}
+                  />
+                </div>
+              )}
               <div className='n9e-border-base n9e-dashboard-editor-modal-left-chart-wrapper'>
                 <Form.Item shouldUpdate noStyle>
                   {({ getFieldsValue }) => {
