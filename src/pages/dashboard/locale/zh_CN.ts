@@ -70,6 +70,7 @@ const zh_CN = {
     dashboardIds_placeholder: '请选择仪表盘',
   },
   var: {
+    vars: '变量',
     btn: '添加变量',
     title: {
       list: '变量列表',

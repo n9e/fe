@@ -67,6 +67,7 @@ const ja_JP = {
     dashboardIds_placeholder: 'ダッシュボードを選択してください',
   },
   var: {
+    vars: '変数',
     btn: '変数を追加',
     title: {
       list: '変数リスト',

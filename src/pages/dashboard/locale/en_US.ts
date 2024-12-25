@@ -69,6 +69,7 @@ const en_US = {
     dashboardIds_placeholder: 'Select dashboards',
   },
   var: {
+    vars: 'Variables',
     btn: 'Add variable',
     title: {
       list: 'Variables',

@@ -69,6 +69,7 @@ const zh_HK = {
     dashboardIds_placeholder: '請選擇儀表盤',
   },
   var: {
+    vars: '變數',
     btn: '新增變數',
     title: {
       list: '變數列表',
