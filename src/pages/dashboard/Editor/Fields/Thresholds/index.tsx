@@ -47,7 +47,7 @@ export default function index(props: Props) {
               onClick={() => {
                 add(
                   {
-                    color: '#ef843c',
+                    color: 'rgb(255, 101, 107)',
                     value: 0,
                     type: '', // 只是为了不让合并默认值的时候被覆盖
                   },
