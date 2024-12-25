@@ -27,19 +27,23 @@ import { getAlertEventsById, getHistoryEventsById } from '@/services/warning';
 import { priorityColor } from '@/utils/constant';
 import { deleteAlertEventsModal } from '.';
 import { CommonStateContext, basePrefix } from '@/App';
+import TDengineDetail from '@/plugins/TDengine/Event';
+import { Event as ElasticsearchDetail } from '@/plugins/elasticsearch';
+
 import EventNotifyRecords from './EventNotifyRecords';
 import TaskTpls from './TaskTpls';
+import PrometheusDetail from './Detail/Prometheus';
+import Host from './Detail/Host';
+import LokiDetail from './Detail/Loki';
+
 // @ts-ignore
 import plusEventDetail from 'plus:/parcels/Event/eventDetail';
 // @ts-ignore
 import PlusPreview from 'plus:/parcels/Event/Preview';
 // @ts-ignore
 import PlusLogsDetail from 'plus:/parcels/Event/LogsDetail';
-import PrometheusDetail from './Detail/Prometheus';
-import Host from './Detail/Host';
-import TDengineDetail from '@/plugins/TDengine/Event';
+
 import './detail.less';
-import LokiDetail from './Detail/Loki';
 
 const { Paragraph } = Typography;
 const EventDetailPage: React.FC = () => {
@@ -230,6 +234,7 @@ const EventDetailPage: React.FC = () => {
       : [false]),
     ...(eventDetail?.cate === 'host' ? Host(t, commonState) : [false]),
     ...(eventDetail?.cate === 'tdengine' ? TDengineDetail(t) : [false]),
+    ...(eventDetail?.cate === 'elasticsearch' ? ElasticsearchDetail() : [false]),
     ...(plusEventDetail(eventDetail?.cate, t) || []),
     {
       label: t('detail.prom_eval_interval'),

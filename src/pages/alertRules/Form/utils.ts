@@ -248,18 +248,10 @@ export function getDefaultValuesByProd(prod, defaultBrainParams, isPlus = false)
     };
   }
   if (prod === 'logging') {
-    if (isPlus) {
-      return {
-        prod,
-        cate: 'elasticsearch',
-        rule_config: defaultRuleConfig.logging,
-        ...datasourceDefaultValue,
-      };
-    }
     return {
       prod,
-      cate: 'loki',
-      rule_config: defaultRuleConfig.loki,
+      cate: 'elasticsearch',
+      rule_config: defaultRuleConfig.logging,
       ...datasourceDefaultValue,
     };
   }

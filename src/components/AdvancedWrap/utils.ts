@@ -35,7 +35,7 @@ export const baseCates: Cate[] = [
     dashboard: true,
     dashboardVariable: true,
     graphPro: false,
-    alertPro: true,
+    alertPro: false,
     logo: '/image/logos/elasticsearch.png',
   },
   {
@@ -70,6 +70,17 @@ export const baseCates: Cate[] = [
     graphPro: false,
     alertPro: false,
     logo: '/image/logos/jaeger.png',
+  },
+  {
+    value: 'ck',
+    label: 'ClickHouse',
+    type: ['metric', 'logging'],
+    alertRule: true,
+    dashboard: true,
+    dashboardVariable: false,
+    graphPro: false,
+    alertPro: false,
+    logo: '/image/logos/ck.png',
   },
 ];
 

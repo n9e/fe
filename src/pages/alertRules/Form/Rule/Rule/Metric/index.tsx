@@ -27,6 +27,7 @@ import { DatasourceCateEnum } from '@/utils/constant';
 import { getDefaultValuesByCate } from '../../../utils';
 import Prometheus from './Prometheus';
 import { AlertRule as TDengine } from '@/plugins/TDengine';
+import { AlertRule as ClickHouse } from '@/plugins/clickHouse';
 
 // @ts-ignore
 import PlusAlertRule from 'plus:/parcels/AlertRule';
@@ -66,6 +67,9 @@ export default function index({ form }) {
             }
             if (cate === DatasourceCateEnum.tdengine) {
               return <TDengine form={form as any} datasourceValue={datasourceValue} />;
+            }
+            if (cate === DatasourceCateEnum.ck) {
+              return <ClickHouse datasourceValue={datasourceValue} />;
             }
             return <PlusAlertRule cate={cate} form={form} datasourceValue={datasourceValue} />;
           }}

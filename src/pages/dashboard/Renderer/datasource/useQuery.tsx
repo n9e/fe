@@ -20,6 +20,7 @@ import { Form } from 'antd';
 import { useDebounceFn } from 'ahooks';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { datasource as tdengineQuery } from '@/plugins/TDengine';
+import { datasource as ckQuery } from '@/plugins/clickHouse';
 import flatten from '@/utils/flatten';
 import { ITarget } from '../../types';
 import { getVaraiableSelected } from '../../VariableConfig/constant';
@@ -62,6 +63,7 @@ export default function useQuery(props: IProps) {
     prometheus: prometheusQuery,
     elasticsearch: elasticsearchQuery,
     tdengine: tdengineQuery,
+    ck: ckQuery,
     ...plusDatasource,
   };
   const { run: fetchData } = useDebounceFn(
