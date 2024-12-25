@@ -163,6 +163,8 @@ const en_US = {
     cancel: 'Cancel',
     ok: 'Delete row and panels',
     ok2: 'Delete row',
+    panels: '{{count}} panel',
+    panels_plural: '{{count}} panels',
   },
   panel: {
     title: {

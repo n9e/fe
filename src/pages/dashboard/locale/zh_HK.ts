@@ -163,6 +163,8 @@ const zh_HK = {
     cancel: '取消',
     ok: '刪除分組和圖表',
     ok2: '僅刪除分組',
+    panels: '{{num}} 張圖表',
+    panels_plural: '{{count}} 張圖表',
   },
   panel: {
     title: {
