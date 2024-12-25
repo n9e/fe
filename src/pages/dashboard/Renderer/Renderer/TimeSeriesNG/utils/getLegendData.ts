@@ -33,7 +33,7 @@ export interface DataItem {
   sum: ColData;
   offset: string;
   color: string;
-  // disabled: boolean;
+  show: boolean;
 }
 
 function getUnit(standardOptions: any) {
@@ -60,7 +60,7 @@ export default function getLegendData(props: Props): DataItem[] {
       last: _.last(item),
     };
     return {
-      id: _.uniqueId('legend_'),
+      id: seriesItem.n9e_internal.id,
       name: getMappedTextObj(seriesItem.label, valueMappings)?.text,
       metric: _.reduce(
         seriesItem.n9e_internal.metric,
@@ -72,7 +72,7 @@ export default function getLegendData(props: Props): DataItem[] {
       ),
       offset: seriesItem.n9e_internal.offset,
       color: hexPalette[idx % hexPalette.length],
-      // disabled: serie.visible === false ? true : undefined,
+      show: seriesItem.show,
       max: valueFormatter({ unit, decimals, dateFormat }, statValues.max),
       min: valueFormatter({ unit, decimals, dateFormat }, statValues.min),
       avg: valueFormatter({ unit, decimals, dateFormat }, statValues.avg),

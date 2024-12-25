@@ -67,8 +67,10 @@ const zh_CN = {
     name: '链接名称',
     url: '链接地址',
     isNewBlank: '是否新窗口打开',
+    dashboardIds_placeholder: '请选择仪表盘',
   },
   var: {
+    vars: '变量',
     btn: '添加变量',
     title: {
       list: '变量列表',
@@ -163,6 +165,8 @@ const zh_CN = {
     cancel: '取消',
     ok: '删除分组和图表',
     ok2: '仅删除分组',
+    panels: '{{count}} 个图表',
+    panels_plural: '{{count}} 个图表',
   },
   panel: {
     title: {
@@ -464,6 +468,11 @@ const zh_CN = {
           },
         },
         displayMode: '显示模式',
+        valueMode: {
+          label: '数值显示',
+          color: '显示',
+          hidden: '隐藏',
+        },
       },
     },
     inspect: {
@@ -532,6 +541,7 @@ const zh_CN = {
       default: '默认',
       updateTimeRange: '更新时间范围',
     },
+    save: '保存仪表盘',
   },
   visualizations: {
     timeseries: '时序图',

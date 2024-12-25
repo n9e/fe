@@ -29,7 +29,7 @@ import { Alert, Modal, Button, Affix, message, Spin } from 'antd';
 import PageLayout from '@/components/pageLayout';
 import { IRawTimeRange, getDefaultValue, isValid } from '@/components/TimeRangePicker';
 import { Dashboard } from '@/store/dashboardInterface';
-import { getDashboard, updateDashboardConfigs, getDashboardPure } from '@/services/dashboardV2';
+import { getDashboard, updateDashboard, updateDashboardConfigs, getDashboardPure } from '@/services/dashboardV2';
 import { getPayloadByUUID } from '@/pages/builtInComponents/services';
 import { SetTmpChartData } from '@/services/metric';
 import { CommonStateContext, basePrefix } from '@/App';
@@ -213,9 +213,20 @@ export default function DetailV2(props: IProps) {
       } catch (e) {
         console.error(e);
       }
-      setAllowedLeave(false);
+      // 如果是手动保存模式，并且没有编辑权限则不触发 RouterPrompt 提示
+      if (isAuthorized) {
+        setAllowedLeave(false);
+      }
+      setDashboardMeta({
+        ...(dashboardMeta || {}),
+        graphTooltip: configs.graphTooltip,
+        graphZoom: configs.graphZoom,
+      });
       setDashboard({
         ...dashboard,
+        name: updateData.name,
+        ident: updateData.ident,
+        tags: updateData.tags,
         configs,
       });
     } else {
@@ -233,7 +244,11 @@ export default function DetailV2(props: IProps) {
       setVariableConfig(value);
     }
     // 更新变量配置
-    b && handleUpdateDashboardConfigs(dashboard.id, { configs: JSON.stringify(dashboardConfigs) });
+    b &&
+      handleUpdateDashboardConfigs(dashboard.id, {
+        ...dashboard,
+        configs: JSON.stringify(dashboardConfigs),
+      });
     // 更新变量配置状态
     if (valueWithOptions) {
       setVariableConfigWithOptions(valueWithOptions);
@@ -288,6 +303,7 @@ export default function DetailV2(props: IProps) {
                 isAuthorized={isAuthorized}
                 editable={editable}
                 updateAtRef={updateAtRef}
+                allowedLeave={allowedLeave}
                 setAllowedLeave={setAllowedLeave}
                 gobackPath={gobackPath}
                 dashboard={dashboard}
@@ -312,6 +328,7 @@ export default function DetailV2(props: IProps) {
                     );
                     setPanels(newPanels);
                     handleUpdateDashboardConfigs(dashboard.id, {
+                      ...dashboard,
                       configs: panelsMergeToConfigs(dashboard.configs, newPanels),
                     });
                   } else if (type === 'pastePanel') {
@@ -320,6 +337,7 @@ export default function DetailV2(props: IProps) {
                       setPanels(newPanels);
                       scrollToLastPanel(newPanels);
                       handleUpdateDashboardConfigs(dashboard.id, {
+                        ...dashboard,
                         configs: panelsMergeToConfigs(dashboard.configs, newPanels),
                       });
                     } else {
@@ -440,6 +458,7 @@ export default function DetailV2(props: IProps) {
             scrollToLastPanel(newPanels);
           }
           handleUpdateDashboardConfigs(dashboard.id, {
+            ...dashboard,
             configs: panelsMergeToConfigs(dashboard.configs, newPanels),
           });
         }}
@@ -459,6 +478,7 @@ export default function DetailV2(props: IProps) {
             onClick={() => {
               setMigrationVisible(false);
               handleUpdateDashboardConfigs(dashboard.id, {
+                ...dashboard,
                 configs: JSON.stringify({
                   ...dashboard.configs,
                   version: '3.0.0',
@@ -530,6 +550,11 @@ export default function DetailV2(props: IProps) {
             type='primary'
             onClick={() => {
               routerPromptRef.current.hidePrompt();
+              updateDashboard(dashboard.id, {
+                name: dashboard.name,
+                ident: dashboard.ident,
+                tags: dashboard.tags,
+              });
               updateDashboardConfigs(dashboard.id, {
                 configs: JSON.stringify(dashboard.configs),
               }).then((res) => {

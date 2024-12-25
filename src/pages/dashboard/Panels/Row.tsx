@@ -23,13 +23,11 @@ import { useTranslation } from 'react-i18next';
 import { AddPanelIcon } from '../config';
 import { useGlobalState } from '../globalState';
 import { IVariable, replaceExpressionVars } from '../VariableConfig';
-import { getRowCollapsedPanels } from './utils';
 
 interface IProps {
   isAuthorized: boolean;
   name: string;
   row: any;
-  panels: any[];
   onToggle: () => void;
   onAddClick: () => void;
   onEditClick: (row: any) => void;
@@ -45,12 +43,12 @@ function replaceFieldWithVariable(value: string, dashboardId?: string, variableC
 
 export default function Row(props: IProps) {
   const { t } = useTranslation('dashboard');
-  const { isAuthorized, name, row, panels, onToggle, onAddClick, onEditClick, onDeleteClick } = props;
+  const { isAuthorized, name, row, onToggle, onAddClick, onEditClick, onDeleteClick } = props;
   const [editVisble, setEditVisble] = useState(false);
   const [newName, setNewName] = useState<string>();
   const [deleteVisible, setDeleteVisible] = useState(false);
   const [dashboardMeta] = useGlobalState('dashboardMeta');
-  const rowCollapsedPanelsWithoutRow = _.filter(getRowCollapsedPanels(panels, row), (panel) => panel.type !== 'row');
+  const rowPanels = row.panels?.length ?? 0;
 
   return (
     <div
@@ -67,7 +65,19 @@ export default function Row(props: IProps) {
         {row.collapsed ? <CaretDownOutlined /> : <CaretRightOutlined />}
         <span className='pl1'>
           <span>{replaceFieldWithVariable(name, dashboardMeta.dashboardId, dashboardMeta.variableConfigWithOptions)}</span>
-          {!row.collapsed && <span className='ml2 dashboards-panels-row-name-panels-count'>({rowCollapsedPanelsWithoutRow.length} panels)</span>}
+          {!row.collapsed && (
+            <span className='ml2 dashboards-panels-row-name-panels-count'>
+              (
+              {rowPanels > 1
+                ? t('row.panels_plural', {
+                    count: rowPanels,
+                  })
+                : t('row.panels', {
+                    count: rowPanels,
+                  })}
+              )
+            </span>
+          )}
         </span>
       </div>
       {isAuthorized && (

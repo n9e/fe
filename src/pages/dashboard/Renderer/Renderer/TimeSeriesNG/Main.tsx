@@ -1,5 +1,5 @@
 import React, { useState, useRef, useMemo } from 'react';
-import uplot, { AlignedData, Options } from 'uplot';
+import { AlignedData, Options } from 'uplot';
 import _ from 'lodash';
 
 import UPlotChart, { tooltipPlugin, paddingSide, axisBuilder, seriesBuider, cursorBuider, scalesBuilder, getStackedDataAndBands, uplotsMap } from '@/components/UPlotChart';
@@ -15,7 +15,7 @@ import { useGlobalState } from '../../../globalState';
 
 import getDataFrameAndBaseSeries, { BaseSeriesItem } from './utils/getDataFrameAndBaseSeries';
 import drawThresholds from './utils/drawThresholds';
-import getScalesMinMax from './utils/getScalesMinMax';
+import { getScalesXMinMax, getScalesYRange } from './utils/getScalesMinMax';
 import ResetZoomButton from './components/ResetZoomButton';
 import './style.less';
 
@@ -49,8 +49,12 @@ export default function index(props: Props) {
   const xScaleInitMinMaxRef = useRef<[number, number]>();
   const yScaleInitMinMaxRef = useRef<[number, number]>();
   const [showResetZoomBtn, setShowResetZoomBtn] = useState(false);
+  const xMinMax = useMemo(() => {
+    return getScalesXMinMax({ range, panel });
+  }, [range, JSON.stringify(_.map(panel.targets, 'time'))]);
+
   const uOptions: Options = useMemo(() => {
-    const { xMinMax, yRange } = getScalesMinMax({ range, panel });
+    const yRange = getScalesYRange({ panel });
     return {
       width,
       height,
@@ -177,7 +181,7 @@ export default function index(props: Props) {
         ],
       },
     };
-  }, [width, height, custom, options, colors, JSON.stringify(range)]);
+  }, [width, height, custom, options, colors, JSON.stringify(range), JSON.stringify(baseSeries), JSON.stringify(xMinMax)]);
   let data = frames;
 
   if (custom.stack === 'noraml') {

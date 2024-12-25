@@ -82,7 +82,7 @@ export const calcsOptions = {
 };
 
 export const defaultThreshold = {
-  color: PRIMARY_COLOR,
+  color: 'rgb(44, 157, 61)',
   value: null,
   type: 'base',
 };
@@ -184,6 +184,7 @@ export const defaultCustomValuesMap = {
     displayMode: 'basic',
     sortOrder: 'desc',
     otherPosition: 'none',
+    valueMode: 'color', // 'color' | 'hidden'
   },
   text: {
     textSize: 12,

@@ -66,8 +66,10 @@ const zh_HK = {
     name: '連結名稱',
     url: '連結地址',
     isNewBlank: '是否新視窗開啟',
+    dashboardIds_placeholder: '請選擇儀表盤',
   },
   var: {
+    vars: '變數',
     btn: '新增變數',
     title: {
       list: '變數列表',
@@ -162,6 +164,8 @@ const zh_HK = {
     cancel: '取消',
     ok: '刪除分組和圖表',
     ok2: '僅刪除分組',
+    panels: '{{num}} 張圖表',
+    panels_plural: '{{count}} 張圖表',
   },
   panel: {
     title: {
@@ -456,6 +460,11 @@ const zh_HK = {
           },
         },
         displayMode: '顯示模式',
+        valueMode: {
+          label: '值模式',
+          color: '顯示',
+          hidden: '隱藏',
+        },
       },
     },
     inspect: {
@@ -524,6 +533,7 @@ const zh_HK = {
       default: '默认',
       updateTimeRange: '更新時間範圍',
     },
+    save: '儲存儀表板',
   },
   visualizations: {
     timeseries: '時序圖',

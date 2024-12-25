@@ -15,10 +15,11 @@
  *
  */
 import React from 'react';
-import { Form, Input, InputNumber, Button, Select } from 'antd';
+import { Form, Input, InputNumber, Button, Select, Row, Col } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
+import { SIZE } from '@/utils/constant';
 import { Panel } from '../../Components/Collapse';
 import ColorPicker from '../../../Components/ColorPicker';
 
@@ -38,6 +39,56 @@ export default function index(props: Props) {
 
   return (
     <Panel header={t('panel.options.thresholds.title')}>
+      <Row gutter={SIZE}>
+        <Col span={12}>
+          {showMode && (
+            <Form.Item name={[...namePrefix, 'mode']} label={t('panel.options.thresholds.mode.label')} tooltip={t('panel.options.thresholds.mode.tip')}>
+              <Select
+                options={[
+                  {
+                    label: t('panel.options.thresholds.mode.absolute'),
+                    value: 'absolute',
+                  },
+                  {
+                    label: t('panel.options.thresholds.mode.percentage'),
+                    value: 'percentage',
+                  },
+                ]}
+              />
+            </Form.Item>
+          )}
+        </Col>
+        <Col span={12}>
+          {showStyle && (
+            <Form.Item name={['options', 'thresholdsStyle', 'mode']} label={t('panel.options.thresholdsStyle.label')}>
+              <Select
+                options={[
+                  {
+                    label: t('panel.options.thresholdsStyle.off'),
+                    value: 'off',
+                  },
+                  {
+                    label: t('panel.options.thresholdsStyle.line'),
+                    value: 'line',
+                  },
+                  {
+                    label: t('panel.options.thresholdsStyle.dashed'),
+                    value: 'dashed',
+                  },
+                  {
+                    label: t('panel.options.thresholdsStyle.line+area'),
+                    value: 'line+area',
+                  },
+                  {
+                    label: t('panel.options.thresholdsStyle.dashed+area'),
+                    value: 'dashed+area',
+                  },
+                ]}
+              />
+            </Form.Item>
+          )}
+        </Col>
+      </Row>
       <Form.List name={[...namePrefix, 'steps']} initialValue={initialValue}>
         {(fields, { add, remove }) => (
           <>
@@ -47,7 +98,7 @@ export default function index(props: Props) {
               onClick={() => {
                 add(
                   {
-                    color: '#ef843c',
+                    color: 'rgb(255, 101, 107)',
                     value: 0,
                     type: '', // 只是为了不让合并默认值的时候被覆盖
                   },
@@ -99,50 +150,6 @@ export default function index(props: Props) {
           </>
         )}
       </Form.List>
-      {showMode && (
-        <Form.Item name={[...namePrefix, 'mode']} label={t('panel.options.thresholds.mode.label')} tooltip={t('panel.options.thresholds.mode.tip')}>
-          <Select
-            options={[
-              {
-                label: t('panel.options.thresholds.mode.absolute'),
-                value: 'absolute',
-              },
-              {
-                label: t('panel.options.thresholds.mode.percentage'),
-                value: 'percentage',
-              },
-            ]}
-          />
-        </Form.Item>
-      )}
-      {showStyle && (
-        <Form.Item name={['options', 'thresholdsStyle', 'mode']} label={t('panel.options.thresholdsStyle.label')}>
-          <Select
-            options={[
-              {
-                label: t('panel.options.thresholdsStyle.off'),
-                value: 'off',
-              },
-              {
-                label: t('panel.options.thresholdsStyle.line'),
-                value: 'line',
-              },
-              {
-                label: t('panel.options.thresholdsStyle.dashed'),
-                value: 'dashed',
-              },
-              {
-                label: t('panel.options.thresholdsStyle.line+area'),
-                value: 'line+area',
-              },
-              {
-                label: t('panel.options.thresholdsStyle.dashed+area'),
-                value: 'dashed+area',
-              },
-            ]}
-          />
-        </Form.Item>
-      )}
     </Panel>
   );
 }

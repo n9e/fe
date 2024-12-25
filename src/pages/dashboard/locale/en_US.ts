@@ -66,8 +66,10 @@ const en_US = {
     name: 'Name',
     url: 'URL',
     isNewBlank: 'Open in new tab',
+    dashboardIds_placeholder: 'Select dashboards',
   },
   var: {
+    vars: 'Variables',
     btn: 'Add variable',
     title: {
       list: 'Variables',
@@ -162,6 +164,8 @@ const en_US = {
     cancel: 'Cancel',
     ok: 'Delete row and panels',
     ok2: 'Delete row',
+    panels: '{{count}} panel',
+    panels_plural: '{{count}} panels',
   },
   panel: {
     title: {
@@ -448,6 +452,11 @@ const en_US = {
           },
         },
         displayMode: 'Display mode',
+        valueMode: {
+          label: 'Value display',
+          color: 'Color',
+          hidden: 'Hidden',
+        },
       },
     },
     inspect: {
@@ -516,6 +525,7 @@ const en_US = {
       default: 'Default',
       updateTimeRange: 'Update time range',
     },
+    save: 'Save dashboard',
   },
   visualizations: {
     timeseries: 'Time Series',

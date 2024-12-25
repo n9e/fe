@@ -6,8 +6,12 @@ interface ResultItem {
   ref: string;
   data: {
     ref: string;
+    refId: string;
+    name: string;
     metric: { [key: string]: string };
     values: [Ts: number, Value: number][]; // [unixTimestamp, value]
+    target: { legend: string };
+    isExp: boolean;
   }[];
 }
 
@@ -16,8 +20,10 @@ interface OldSeriesItem {
   refId: string;
   offset: number;
   metric: { [key: string]: string };
-  target: { expr: string };
+  target: { expr: string; legend: string };
   data: [Ts: number, Value: number][]; // [unixTimestamp, value]
+  name?: string;
+  isExp?: boolean;
 }
 
 type DataFrame = [xValues: number[], ...yValues: (number | null | undefined)[][]];
@@ -38,7 +44,7 @@ export function getDataFrameAndBaseSeriesByResult(result: ResultItem[]): {
   // Extract all timestamps
   for (const item of result) {
     for (const data of item.data) {
-      const label = getSerieName(data.metric);
+      const label = data.name === undefined ? getSerieName(data.metric, { legend: data.target?.legend, ref: data.isExp ? data.refId : undefined }) : data.name;
       baseSeries.push({ label });
       for (const [ts] of data.values) {
         // Add timestamp if not exists
@@ -71,6 +77,7 @@ export function getDataFrameAndBaseSeriesByResult(result: ResultItem[]): {
 }
 
 export interface BaseSeriesItem {
+  show: boolean;
   label: string;
   n9e_internal: {
     [index: string]: any;
@@ -92,11 +99,14 @@ export default function getDataFrameAndBaseSeries(oldSeries: OldSeriesItem[]): {
 
   // Extract all timestamps
   for (const item of oldSeries) {
-    const label = _.isEmpty(item.metric) ? item.target.expr : getSerieName(item.metric);
+    // TODO: 如果没有在 datasource 环节里面设置 name，这里根据 metric、target、refId 生成一个 name
+    const label = item.name === undefined ? getSerieName(item.metric, { legend: item.target?.legend, ref: item.isExp ? item.refId : undefined }) : item.name;
     baseSeries.push({
+      show: true,
       label,
       // n9e 内部使用
       n9e_internal: {
+        id: item.id,
         refId: item.refId,
         offset: item.offset,
         metric: item.metric,

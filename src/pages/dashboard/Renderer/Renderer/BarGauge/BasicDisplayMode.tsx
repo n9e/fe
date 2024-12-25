@@ -26,7 +26,7 @@ interface Props {
 export default function BasicDisplayMode(props: Props) {
   const { item, custom, options, themeMode, minValue, maxValue, time, maxNameWidth } = props;
   const metric = item.metric;
-  const { serieWidth, detailUrl, nameField } = custom as IBarGaugeStyles;
+  const { serieWidth, detailUrl, nameField, valueMode = 'color' } = custom as IBarGaugeStyles;
   const { thresholds } = options;
   const baseColor = _.find(thresholds?.steps, { type: 'base' })?.color ?? '#7EB26D';
   const name = nameField ? _.get(metric, nameField, item.name) : item.name;
@@ -94,17 +94,19 @@ export default function BasicDisplayMode(props: Props) {
               width: calculatePercentage(item.stat, minValue, maxValue) + '%',
             }}
           >
-            <div
-              ref={textRef}
-              className='renderer-bar-gauge-item-value-text'
-              style={{
-                color: color,
-                right: getTextRight(),
-              }}
-            >
-              {item.value}
-              {item.unit}
-            </div>
+            {valueMode === 'color' && (
+              <div
+                ref={textRef}
+                className='renderer-bar-gauge-item-value-text'
+                style={{
+                  color: color,
+                  right: getTextRight(),
+                }}
+              >
+                {item.value}
+                {item.unit}
+              </div>
+            )}
           </div>
         </div>
       </div>

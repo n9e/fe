@@ -46,7 +46,7 @@ export default function index({ targets, matcherNames = ['byFrameRefID', 'byName
               isActive={false}
               key={key}
               isInner
-              header='override'
+              header='Override'
               extra={
                 <Space>
                   <PlusCircleOutlined
