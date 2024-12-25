@@ -25,7 +25,7 @@ export default function Form(props) {
   if (props.data.plugin_type === DatasourceCateEnum.loki) {
     return <Loki {...props} />;
   }
-  if (props.data.plugin_type === DatasourceCateEnum.loki) {
+  if (props.data.plugin_type === DatasourceCateEnum.ck) {
     return <Clickhouse {...props} type='ck' />;
   }
   return <Plus type={props.data.plugin_type} {...props} />;
