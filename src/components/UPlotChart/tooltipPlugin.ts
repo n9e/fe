@@ -66,7 +66,7 @@ export default function tooltipPlugin(options: {
   pointValueformatter?: (value: number, point: any) => string;
 }) {
   const { id, graphTooltip } = options;
-  let over, bLeft, bTop;
+  let over;
 
   const tooltipID = `${id}-tooltip`;
   let overlay = document.getElementById(tooltipID);
@@ -124,11 +124,6 @@ export default function tooltipPlugin(options: {
           }
         };
       },
-      setSize: () => {
-        let bbox = over.getBoundingClientRect();
-        bLeft = bbox.left;
-        bTop = bbox.top;
-      },
       setCursor: (u) => {
         if (overlay === null) return;
         const { data, series } = u;
@@ -171,7 +166,9 @@ export default function tooltipPlugin(options: {
           }
         }
         if (options.mode === 'none' || idx === null || (left === -10 && top === -10)) return;
-
+        const bbox = over.getBoundingClientRect();
+        const bLeft = bbox.left;
+        const bTop = bbox.top;
         const anchor = { left: left + bLeft, top: top + bTop };
         (window as any).placement(overlay, anchor, 'right', 'start', { bound: document.body });
 

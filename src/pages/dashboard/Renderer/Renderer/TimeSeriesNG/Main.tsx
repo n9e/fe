@@ -1,6 +1,9 @@
 import React, { useState, useRef, useMemo } from 'react';
 import { AlignedData, Options } from 'uplot';
 import _ from 'lodash';
+import moment from 'moment';
+import { useHistory, useLocation } from 'react-router-dom';
+import querystring from 'query-string';
 
 import UPlotChart, { tooltipPlugin, paddingSide, axisBuilder, seriesBuider, cursorBuider, scalesBuilder, getStackedDataAndBands, uplotsMap } from '@/components/UPlotChart';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
@@ -41,6 +44,8 @@ interface Props {
 }
 
 export default function index(props: Props) {
+  const history = useHistory();
+  const location = useLocation();
   const { id, frames, baseSeries, darkMode, width, height, panel, series, colors, range, setRange, inDashboard, isPreview, hideResetBtn, onClick, onZoomWithoutDefult } = props;
   const { custom, options = {}, targets, overrides } = panel;
   const [dashboardMeta] = useGlobalState('dashboardMeta');
@@ -167,7 +172,27 @@ export default function index(props: Props) {
                 if (_.isEqual(xScaleInitMinMaxRef.current, [min, max])) {
                   setShowResetZoomBtn(false);
                 } else {
-                  setShowResetZoomBtn(true);
+                  if (dashboardMeta.graphZoom === 'updateTimeRange') {
+                    if (min && max) {
+                      if (range && setRange) {
+                        setRange({
+                          start: moment.unix(min),
+                          end: moment.unix(max),
+                        });
+                        // 开启了缩放后更新全局时间范围时，url 中保存时间范围数据
+                        // history.replace({
+                        //   pathname: location.pathname,
+                        //   search: querystring.stringify({
+                        //     ...(querystring.parse(location.search) || {}),
+                        //     __from: moment.unix(min).valueOf(),
+                        //     __to: moment.unix(max).valueOf(),
+                        //   }),
+                        // });
+                      }
+                    }
+                  } else {
+                    setShowResetZoomBtn(true);
+                  }
                 }
               }
             } else if (scaleKey === 'y') {

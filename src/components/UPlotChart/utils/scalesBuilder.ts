@@ -3,6 +3,7 @@ import _ from 'lodash';
 
 interface Props {
   xMinMax?: Range.MinMax;
+  xRange?: Range.MinMax; // 固定 x 轴范围，一般用于关闭默认的 X 轴缩放
   yMinMax?: Range.MinMax;
   yRange?: Range.MinMax;
   yDistr?: Scale.Distr;
@@ -10,12 +11,17 @@ interface Props {
 }
 
 export default function scalesBuilder(props: Props) {
-  const { xMinMax, yMinMax, yRange, yDistr, yLog = 10 } = props;
+  const { xMinMax, xRange, yMinMax, yRange, yDistr, yLog = 10 } = props;
   const scalesOptions: Scales = {};
   if (xMinMax) {
     scalesOptions.x = {
       min: xMinMax[0] ?? undefined,
       max: xMinMax[1] ?? undefined,
+    };
+  }
+  if (xRange) {
+    scalesOptions.x = {
+      range: xRange,
     };
   }
   if (yMinMax) {
