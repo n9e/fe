@@ -37,7 +37,6 @@ export default function index() {
     start: 'now-1h',
     end: 'now',
   });
-  const [rerenderFlag, setRerenderFlag] = useState(_.uniqueId('rerenderFlag_'));
   const { groupedDatasourceList } = useContext(CommonStateContext);
   const datasources = groupedDatasourceList.prometheus;
   const [datasourceValue, setDatasourceValue] = useState<number>(getDefaultDatasourceValue('prometheus', groupedDatasourceList));
@@ -74,7 +73,7 @@ export default function index() {
             onChange={(val) => {
               setDatasourceValue(val);
               setDefaultDatasourceValue('prometheus', _.toString(val));
-              setRerenderFlag(_.uniqueId('rerenderFlag_'));
+              setMatch(undefined);
             }}
           >
             {_.map(datasources, (item) => {
@@ -88,7 +87,7 @@ export default function index() {
         </div>
       }
     >
-      <div className='n9e-metric-views' key={rerenderFlag}>
+      <div className='n9e-metric-views'>
         <List
           datasourceValue={datasourceValue}
           onSelect={(record: IMatch) => {
