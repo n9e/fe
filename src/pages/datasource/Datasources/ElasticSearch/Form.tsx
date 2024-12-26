@@ -3,7 +3,6 @@ import { Form, Select, InputNumber, Tooltip, Row, Col, Card, Space, Switch } fro
 import { InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import AdvancedWrap from '@/components/AdvancedWrap';
 import { scrollToFirstError } from '@/utils';
 import Name from '../../components/items/Name';
 import HTTP from '../../components/items/HTTP';
@@ -75,15 +74,13 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
             </Form.Item>
           </Col>
         </Row>
-        <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
-          <Space className='mb8'>
-            <span>{t('form.es.enable_write')}</span>
-            <Form.Item name={['settings', `enable_write`]} valuePropName='checked' noStyle>
-              <Switch />
-            </Form.Item>
-          </Space>
-          <Cluster form={form} clusterRef={clusterRef} />
-        </AdvancedWrap>
+        <Space className='mb8'>
+          <span>{t('form.es.enable_write')}</span>
+          <Form.Item name={['settings', `enable_write`]} valuePropName='checked' noStyle>
+            <Switch />
+          </Form.Item>
+        </Space>
+        <Cluster form={form} clusterRef={clusterRef} />
         <Description />
       </Card>
       <Footer id={data?.id} submitLoading={submitLoading} />
