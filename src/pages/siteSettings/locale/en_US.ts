@@ -28,5 +28,6 @@ const en_US = {
   explorer_timeseries_legend_columns_placeholder: 'Default value is Last',
   print_access_log: 'Print Access Log',
   print_body_paths: 'Print Request Body Paths',
+  font_family: 'Font Family',
 };
 export default en_US;

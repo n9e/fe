@@ -113,6 +113,7 @@ export interface ICommonState {
   dashboardSaveMode: 'auto' | 'manual';
   perms?: string[];
   screenTemplates?: string[];
+  tablePaginationPosition?: string; // 表格分页位置
 }
 
 export const basePrefix = import.meta.env.VITE_PREFIX || '';
@@ -209,6 +210,9 @@ function App() {
         document.title = siteInfo?.page_title || 'Nightingale';
         if (iconLink) {
           iconLink.href = siteInfo?.favicon_url || '/image/favicon.ico';
+        }
+        if (siteInfo?.font_family) {
+          document.body.style.fontFamily = siteInfo.font_family;
         }
         // 非匿名访问，需要初始化一些公共数据
         if (!anonymous) {

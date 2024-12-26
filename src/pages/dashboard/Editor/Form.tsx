@@ -123,9 +123,11 @@ function FormCpt(props: IProps, ref) {
                   }}
                 </Form.Item>
               </div>
-              <div className='n9e-dashboard-editor-modal-left-query-wrapper'>
-                <QueryEditor chartForm={chartForm} type={type} variableConfig={variableConfigWithOptions} dashboardId={dashboardId} time={range} />
-              </div>
+              {!_.includes(['text', 'iframe'], type) && (
+                <div className='n9e-dashboard-editor-modal-left-query-wrapper'>
+                  <QueryEditor chartForm={chartForm} type={type} variableConfig={variableConfigWithOptions} dashboardId={dashboardId} time={range} />
+                </div>
+              )}
             </div>
           </Col>
           <Col flex='600px' style={{ overflowY: 'auto' }}>
