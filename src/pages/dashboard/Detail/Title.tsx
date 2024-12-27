@@ -209,7 +209,7 @@ export default function Title(props: IProps) {
 
       <div className='dashboard-detail-header-right'>
         <Space>
-          {isAuthorized && dashboardSaveMode === 'manual' && (
+          {isAuthorized && dashboardSaveMode === 'manual' && !allowedLeave && (
             <Button
               type={allowedLeave ? 'default' : 'primary'}
               onClick={() => {
