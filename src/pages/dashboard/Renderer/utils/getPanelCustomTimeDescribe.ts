@@ -9,7 +9,8 @@ export default function getPanelCustomTimeDescribe(
   }[],
 ) {
   if (_.isEmpty(series)) return undefined;
-  const timeRanges = series.map((s) => s?.target?.time);
+  const timeRanges = _.compact(series.map((s) => s?.target?.time));
+  if (_.isEmpty(timeRanges)) return undefined;
   const allEqual = timeRanges.every((timeRange, index, array) => {
     return index === 0 || _.isEqual(timeRange, array[0]);
   });
