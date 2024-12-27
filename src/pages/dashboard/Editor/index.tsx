@@ -119,7 +119,10 @@ function index(props: IProps) {
               {_.map(visualizations, (item) => {
                 return (
                   <Select.Option value={item.type} key={item.type}>
-                    {t(`visualizations.${item.type}`)}
+                    <Space align='center' style={{ lineHeight: 1 }}>
+                      <img height={16} alt={item.type} src={`/image/dashboard/${item.type}.svg`} />
+                      {t(`visualizations.${item.type}`)}
+                    </Space>
                   </Select.Option>
                 );
               })}
