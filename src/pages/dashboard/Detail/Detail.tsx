@@ -268,8 +268,8 @@ export default function DetailV2(props: IProps) {
   }, [id]);
 
   useInterval(() => {
-    // 2024-12-27 只有仪表盘配置被更改后（!allowedLeave）才会触发 "持续查询" 的检测
-    if (import.meta.env.PROD && dashboard.id && !allowedLeave) {
+    // 2024-12-27 当手动保存模式时，只有仪表盘配置被更改后（!allowedLeave）才会触发 "持续查询" 的检测
+    if (import.meta.env.PROD && dashboard.id && (dashboardSaveMode === 'manual' ? !allowedLeave : true)) {
       getDashboardPure(_.toString(dashboard.id)).then((res) => {
         if (updateAtRef.current && res.update_at > updateAtRef.current) {
           if (editable) setEditable(false);
