@@ -53,7 +53,7 @@ export default function version() {
             {t('frontend')}：{pkgJson.version}
           </li>
           <li>
-            {t('backend')}：{backendVersion}
+            {t('backend')}：5.0-build-389d441057ca945c31cb21ef13b77504c7e9a39c
           </li>
         </ul>
         <LicenseInfo />
