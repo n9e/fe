@@ -3,13 +3,15 @@ import { Space, Form, Radio } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { DatasourceCateEnum } from '@/utils/constant';
-// @ts-ignore
-import PlusQueryBuilder from 'plus:/parcels/Dashboard/QueryBuilder';
+import { QueryBuilder as TDengine } from '@/plugins/TDengine';
+import { QueryBuilder as CK } from '@/plugins/clickHouse';
 import OrganizeFields from '../TransformationsEditor/OrganizeFields';
 import DatasourceSelect from './components/DatasourceSelect';
 import Prometheus from './Prometheus';
 import Elasticsearch from './Elasticsearch';
-import { QueryBuilder as TDengine } from '@/plugins/TDengine';
+
+// @ts-ignore
+import PlusQueryBuilder from 'plus:/parcels/Dashboard/QueryBuilder';
 
 export default function index({ chartForm, type, variableConfig, dashboardId, time }) {
   const { t } = useTranslation('dashboard');
@@ -48,6 +50,9 @@ export default function index({ chartForm, type, variableConfig, dashboardId, ti
             }
             if (cate === DatasourceCateEnum.tdengine) {
               return <TDengine chartForm={chartForm} variableConfig={variableConfig} dashboardId={dashboardId} />;
+            }
+            if (cate === DatasourceCateEnum.ck) {
+              return <CK />;
             }
             return <PlusQueryBuilder cate={cate} form={chartForm} variableConfig={variableConfig} dashboardId={dashboardId} time={time} />;
           }}

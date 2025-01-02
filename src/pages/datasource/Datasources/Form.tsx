@@ -1,6 +1,7 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { DatasourceCateEnum } from '@/utils/constant';
+import Clickhouse from '@/plugins/clickHouse/Datasource/Form';
 import Prometheus from './Prometheus/Form';
 import ElasticSearch from './ElasticSearch/Form';
 import Jaeger from './Jaeger/Form';
@@ -23,8 +24,11 @@ export default function Form(props) {
   if (params.type === DatasourceCateEnum.tdengine) {
     return <TDengine {...props} />;
   }
-  if (params.type === 'loki') {
+  if (params.type === DatasourceCateEnum.loki) {
     return <Loki {...props} />;
+  }
+  if (params.type === DatasourceCateEnum.ck) {
+    return <Clickhouse {...props} type='ck' />;
   }
   return <Plus type={params.type} {...props} />;
 }

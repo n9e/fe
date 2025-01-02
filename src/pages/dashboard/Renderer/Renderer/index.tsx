@@ -33,6 +33,7 @@ import {
   WarningOutlined,
   ExportOutlined,
   ClearOutlined,
+  FieldTimeOutlined,
 } from '@ant-design/icons';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import PanelEmpty from '../components/PanelEmpty';
@@ -53,6 +54,7 @@ import Markdown from '../../Editor/Components/Markdown';
 import useQuery from '../datasource/useQuery';
 import { IPanel } from '../../types';
 import replaceFieldWithVariable from '../utils/replaceFieldWithVariable';
+import getPanelCustomTimeDescribe from '../utils/getPanelCustomTimeDescribe';
 import Inspect from '../Inspect';
 
 import './style.less';
@@ -104,6 +106,7 @@ function index(props: IProps) {
   const name = replaceFieldWithVariable(dashboardId, values.name, variableConfig, values.scopedVars);
   const description = replaceFieldWithVariable(dashboardId, values.description, variableConfig, values.scopedVars);
   const tipsVisible = description || !_.isEmpty(values.links);
+  const panelCustomTimeDescribe = getPanelCustomTimeDescribe(series);
 
   useEffect(() => {
     setTime(props.time);
@@ -192,6 +195,11 @@ function index(props: IProps) {
                 <div className='renderer-header-desc'>{description ? <InfoCircleOutlined /> : <LinkOutlined />}</div>
               </Tooltip>
             ) : null}
+            {panelCustomTimeDescribe && (
+              <span>
+                <FieldTimeOutlined /> {panelCustomTimeDescribe}
+              </span>
+            )}
           </div>
           <div
             className='renderer-header-controllers'

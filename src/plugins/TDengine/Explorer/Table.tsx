@@ -44,24 +44,17 @@ export default function TableCpt(props: Props) {
         ],
       })
         .then((res) => {
-          const data = _.map(res?.data, (item) => {
-            return _.reduce(
-              item,
-              (result, item, idx) => {
-                if (res?.column_meta?.[idx]?.[0]) {
-                  result[res?.column_meta?.[idx]?.[0]] = item;
-                }
-                return result;
-              },
-              {},
-            );
-          });
+          const data = res?.list;
           setErrorContent('');
           setData(data);
           setColumns(
-            _.map(res?.column_meta, (item) => {
-              return item?.[0];
-            }),
+            _.union(
+              _.flattenDeep(
+                _.map(data, (item) => {
+                  return _.keys(item);
+                }),
+              ),
+            ),
           );
         })
         .catch((err) => {

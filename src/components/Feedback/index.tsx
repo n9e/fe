@@ -60,7 +60,7 @@ export default function Index() {
       <div
         draggable={false}
         className='n9e-feedback-container'
-        style={{ position: 'absolute', right: position.right, bottom: position.bottom }}
+        style={{ right: position.right, bottom: position.bottom }}
         onMouseDown={handleMouseDown}
         onClick={() => {
           if (!isMoving) {

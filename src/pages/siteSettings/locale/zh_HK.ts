@@ -28,6 +28,7 @@ const zh_HK = {
   explorer_timeseries_legend_columns_placeholder: '默認值為 Last',
   print_access_log: '開啟 Access Log',
   print_body_paths: '打印請求 Body 路徑',
+  font_family: '字體',
 };
 
 export default zh_HK;

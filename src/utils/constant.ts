@@ -14,8 +14,10 @@
  * limitations under the License.
  *
  */
+import getFontFamily from './getFontFamily';
 // @ts-ignore
 import { AdvancedDatasourceCateEnum } from 'plus:/types';
+
 export const PAGE_SIZE = 15;
 export const PAGE_SIZE_MAX = 100000;
 export const PAGE_SIZE_OPTION = 20;
@@ -64,6 +66,7 @@ export enum BaseDatasourceCateEnum {
   elasticsearch = 'elasticsearch',
   tdengine = 'tdengine',
   loki = 'loki',
+  ck = 'ck',
 }
 
 export const DatasourceCateEnum = { ...BaseDatasourceCateEnum, ...AdvancedDatasourceCateEnum };
@@ -74,7 +77,7 @@ export const IS_ENT = import.meta.env.VITE_IS_ENT === 'true';
 export const AccessTokenKey = 'access_token';
 export const PRIMARY_COLOR = '#6C53B1';
 export const SIZE = 8;
-export const FONT_FAMILY = 'Helvetica Neue,sans-serif,PingFangSC-Regular,microsoft yahei ui,microsoft yahei,simsun,"sans-serif"';
+export const FONT_FAMILY = getFontFamily(IS_ENT);
 export const THEME = {
   light: {
     text: {

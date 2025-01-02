@@ -26,6 +26,8 @@ import { DatasourceCateSelect } from '@/components/DatasourceSelect';
 import { getDefaultValuesByCate } from '../../../utils';
 import AdvancedSettings from './AdvancedSettings';
 import Loki from './Loki';
+import { AlertRule as ElasticsearchSettings } from '@/plugins/elasticsearch';
+import { AlertRule as ClickHouse } from '@/plugins/clickHouse';
 
 // @ts-ignore
 import PlusAlertRule from 'plus:/parcels/AlertRule';
@@ -68,6 +70,12 @@ export default function index({ form }) {
             const datasourceValue = form.getFieldValue('datasource_value');
             if (cate === 'loki') {
               return <Loki datasourceCate={cate} datasourceValue={datasourceValue} />;
+            }
+            if (cate === 'elasticsearch') {
+              return <ElasticsearchSettings disabled={false} form={form} datasourceValue={datasourceValue} />;
+            }
+            if (cate === 'ck') {
+              return <ClickHouse datasourceValue={datasourceValue} />;
             }
             return <PlusAlertRule cate={cate} form={form} datasourceValue={datasourceValue} />;
           }}

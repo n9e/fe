@@ -1,6 +1,11 @@
+body {
+  overflow: hidden; // 2024-12-26 v8 版本解决图表 Tooltip 容器会撑开页面导致滚动条出现的问题
+}
+
 #root,
 .App {
   height: 100%;
+  
 }
 html {
   --slider-rail: linear-gradient(to right, #45d678 0, #45d678 100%);
@@ -19,7 +24,6 @@ html {
 
 .App {
   display: flex;
-  font-family: @font-family;
   .ant-menu-inline-collapsed {
     width: 50px;
   }
@@ -141,9 +145,9 @@ input::placeholder {
     padding: 4px 0px;
   }
   &.disabled {
-    color: rgba(0, 0, 0, 0.5);
-    background-color: #f5f5f5;
-    border-color: #d9d9d9;
+    color: var(--fc-text-3);
+    background-color: var(--fc-fill-3);
+    border-color: var(--fc-border-base);
     box-shadow: none;
     cursor: not-allowed;
     opacity: 1;
