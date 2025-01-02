@@ -42,13 +42,13 @@ function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
           <div
             className={cn(
               'h-4.5 children-icon2:h-4.5 children-icon2:w-4.5',
-              isActive ? (props.isCustomBg ? 'text-[#fff]' : 'text-primary') : props.isCustomBg ? '' : 'text-primary-80',
+              isActive ? (props.isCustomBg ? 'text-main' : 'text-primary') : props.isCustomBg ? '' : 'text-primary-80',
               !collapsed ? 'mr-4' : '',
             )}
           >
             {item.icon}
           </div>
-          {!collapsed && <div className={`overflow-hidden truncate text-l1 tracking-wide ${isActive ? (props.isCustomBg ? 'text-[#fff]' : 'text-title') : ''}`}>{item.label}</div>}
+          {!collapsed && <div className={`overflow-hidden truncate text-l1 tracking-wide ${isActive ? 'text-title' : 'text-main'}`}>{item.label}</div>}
         </div>
         {!collapsed && <RightIcon className={cn('transition', isExpand ? 'rotate-90' : '')} style={{ fontSize: 24 }} />}
       </div>
@@ -74,20 +74,19 @@ function MenuItem(props: { item: IMenuItem; isSub?: boolean } & IMenuProps) {
       className={cn(
         'group flex h-9 cursor-pointer items-center relative rounded px-3.5 transition-colors transition-spacing duration-75',
         isActive ? (isCustomBg ? '' : 'bg-fc-200') : '',
-        'hover:bg-[rgba(204,204,220,0.12)]',
-        isCustomBg ? 'text-[#fff]' : 'text-main',
+        isCustomBg ? 'hover:bg-[rgba(204,204,220,0.12)]': 'hover:bg-fc-200',
       )}
       style={{background: isActive && isCustomBg ?'rgba(204, 204, 220, 0.08)':undefined }}
     >
       {!isSub ? (
-        <div className={cn('h-4.5 children-icon2:h-4.5 children-icon2:w-4.5', isActive ? (props.isCustomBg ? 'text-[#fff]' : 'text-title') : '', !collapsed ? 'mr-4' : '')}>
+        <div className={cn('h-4.5 children-icon2:h-4.5 children-icon2:w-4.5', isActive ? 'text-title' : 'text-main', !collapsed ? 'mr-4' : '')}>
           {item.icon}
         </div>
       ) : (
         !collapsed && <div className='mr-[34px]'></div>
       )}
       {!collapsed && (
-        <div className={`overflow-hidden truncate text-l1 tracking-wide ${isActive ? (props.isCustomBg ? 'text-[#fff]' : 'text-title') : ''}`}>
+        <div className={`overflow-hidden truncate text-l1 tracking-wide ${isActive ? 'text-title' : 'text-main'}`}>
           {item.label}{' '}
           {item.beta && (
             <span
