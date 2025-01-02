@@ -107,14 +107,14 @@
   --fc-fill-error: rgb(255 101 107);
 
   /* 文本 */
-  --fc-text-1: #ffffff;
-  --fc-text-2: #e6e6e8;
-  --fc-text-3: #bfbfc5;
-  --fc-text-4: #9999a2;
-  --fc-text-5: #737380;
   --fc-text-link: #9470FF;
   --fc-text-link-rgb: 148, 112, 255;
-  --fc-text-placeholder: #bfbfbf;
+  --fc-text-1:  rgba(255, 255, 255);
+  --fc-text-2: rgba(204, 204, 220);
+  --fc-text-3: rgba(204, 204, 220, 0.85);
+  --fc-text-4: rgba(204, 204, 220, 0.65);
+  --fc-text-5: rgba(204, 204, 220, 0.45);
+  --fc-text-placeholder: rgba(204, 204, 220, 0.65);
 
   /* 其他 */
   --fc-primary-color: var(--fc-text-link);
