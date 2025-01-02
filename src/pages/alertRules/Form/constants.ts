@@ -29,7 +29,7 @@ export const defaultRuleConfig = {
     queries: [
       {
         interval_unit: 'min',
-        interval: 1,
+        interval: 5,
         date_field: '@timestamp',
         value: {
           func: 'count',
