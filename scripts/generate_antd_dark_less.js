@@ -36,13 +36,13 @@ function saveLess(filePath, filename, callback) {
         'lime-base': '#8bbb11',
         'gold-base': '#d89614',
         'primary-color': '#8162dc',
-        'border-color-base': 'rgb(79, 82, 99)',
+        'border-color-base': 'rgba(204,204,220,0.2)', // input框的边框颜色
         'border-color-split': 'rgb(57, 60, 77)',
-        'component-background': '#1E212C',
-        'table-header-bg': '#303340',
+        'component-background': 'rgb(24 27 31)', //fc-fill-2
+        'table-header-bg': 'rgb(34 37 43)',//fc-fill-3
         'table-row-hover-bg': '#303340',
         'table-header-sort-bg': '#303340',
-        'popover-background': '#1E212C',
+        'popover-background': 'rgb(24 27 31)', //fc-fill-2
         'normal-color': 'rgb(79, 82, 99)',
       },
       compress: false,
