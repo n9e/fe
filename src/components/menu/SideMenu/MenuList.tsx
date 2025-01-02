@@ -73,10 +73,11 @@ function MenuItem(props: { item: IMenuItem; isSub?: boolean } & IMenuProps) {
       to={item.key}
       className={cn(
         'group flex h-9 cursor-pointer items-center relative rounded px-3.5 transition-colors transition-spacing duration-75',
-        isActive ? (isCustomBg ? 'bg-gray-200/20' : 'bg-fc-200') : '',
-        isCustomBg ? 'hover:bg-gray-200/20' : 'hover:bg-fc-200',
+        isActive ? (isCustomBg ? '' : 'bg-fc-200') : '',
+        'hover:bg-[rgba(204,204,220,0.12)]',
         isCustomBg ? 'text-[#fff]' : 'text-main',
       )}
+      style={{background: isActive && isCustomBg ?'rgba(204, 204, 220, 0.08)':undefined }}
     >
       {!isSub ? (
         <div className={cn('h-4.5 children-icon2:h-4.5 children-icon2:w-4.5', isActive ? (props.isCustomBg ? 'text-[#fff]' : 'text-title') : '', !collapsed ? 'mr-4' : '')}>
