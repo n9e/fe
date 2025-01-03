@@ -113,11 +113,13 @@ function FormCpt(props: IProps, ref) {
                       <Renderer
                         id={id}
                         dashboardId={dashboardId}
+                        dashboardID={dashboard.id}
                         time={range}
                         values={getFieldsValue()}
                         variableConfig={variableConfigWithOptions}
                         isPreview
                         themeMode={darkMode ? 'dark' : undefined}
+                        annotations={[]}
                       />
                     );
                   }}
