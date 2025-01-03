@@ -570,5 +570,13 @@ const zh_CN = {
     count: '数量',
     origin: '原始值',
   },
+  annotation: {
+    add: '添加注释',
+    edit: '编辑注释',
+    description: '描述',
+    tags: '标签',
+    updated: '注释已更新',
+    deleted: '注释已删除',
+  },
 };
 export default zh_CN;
