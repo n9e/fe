@@ -57,7 +57,7 @@ function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
         style={{ height: !isExpand || collapsed ? 0 : keyOfChildrens.length * 36 + (keyOfChildrens.length - 1) * 4 }}
       >
         {item.children?.map((c) => (
-          <MenuItem key={c.key} item={c} isSub collapsed={collapsed} selectedKeys={selectedKeys} isBgBlack={isBgBlack} {...otherProps} />
+          <MenuItem sideMenuBgColor={props.sideMenuBgColor} key={c.key} item={c} isSub collapsed={collapsed} selectedKeys={selectedKeys} isBgBlack={isBgBlack} {...otherProps} />
         ))}
       </div>
     </div>
