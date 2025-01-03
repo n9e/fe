@@ -18,9 +18,12 @@ import './style.less';
 export { getDataFrameAndBaseSeries };
 
 interface Props {
+  dashboardID: number;
   id?: string;
   values: IPanel;
   series: any[];
+  annotations: any[];
+  setAnnotationsRefreshFlag?: (flag: string) => void;
   colors?: string[];
   time?: IRawTimeRange;
   setRange?: (range: IRawTimeRange) => void;
@@ -49,6 +52,8 @@ export default function index(props: Props) {
   const mainProps = {
     panel: props.values,
     series: props.series,
+    annotations: props.annotations,
+    setAnnotationsRefreshFlag: props.setAnnotationsRefreshFlag,
     colors: props.colors ?? hexPalette,
     range: props.time,
     setRange: props.setRange,
@@ -117,7 +122,16 @@ export default function index(props: Props) {
     >
       <div className='renderer-timeseries-ng-graph-container'>
         {props.id && chartContainerSize.width && chartContainerSize.height && (
-          <Main {...mainProps} id={props.id} darkMode={darkMode} width={chartContainerSize.width} height={chartContainerSize.height} frames={frames} baseSeries={seriesData} />
+          <Main
+            {...mainProps}
+            dashboardID={props.dashboardID}
+            id={props.id}
+            darkMode={darkMode}
+            width={chartContainerSize.width}
+            height={chartContainerSize.height}
+            frames={frames}
+            baseSeries={seriesData}
+          />
         )}
       </div>
       {(legendDisplayMode === 'list' || legendDisplayMode === 'table') && (

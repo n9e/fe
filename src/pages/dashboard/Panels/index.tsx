@@ -55,6 +55,7 @@ interface IProps {
   editable: boolean;
   dashboard: Dashboard;
   setDashboard: React.Dispatch<React.SetStateAction<Dashboard>>;
+  annotations: any[];
   setAllowedLeave: (flag: boolean) => void;
   range: IRawTimeRange;
   setRange: (range: IRawTimeRange) => void;
@@ -65,6 +66,7 @@ interface IProps {
   onShareClick: (panel: any) => void;
   onUpdated: (res: any) => void;
   setVariableConfigRefreshFlag: (flag: string) => void;
+  setAnnotationsRefreshFlag: (flag: string) => void;
 }
 
 const ReactGridLayout = WidthProvider(RGL);
@@ -73,7 +75,7 @@ function index(props: IProps) {
   const { t } = useTranslation('dashboard');
   const { profile, darkMode, dashboardSaveMode, perms, groupedDatasourceList } = useContext(CommonStateContext);
   const themeMode = darkMode ? 'dark' : 'light';
-  const { editable, dashboard, setDashboard, setAllowedLeave, range, variableConfig, panels, isPreview, setPanels, onShareClick, onUpdated } = props;
+  const { editable, dashboard, setDashboard, annotations, setAllowedLeave, range, variableConfig, panels, isPreview, setPanels, onShareClick, onUpdated } = props;
   const roles = _.get(profile, 'roles', []);
   const isAuthorized = _.includes(perms, '/dashboards/put') && !isPreview;
   const layoutInitialized = useRef(false);
@@ -177,11 +179,13 @@ function index(props: IProps) {
                     isAuthorized={isAuthorized}
                     themeMode={themeMode as 'dark'}
                     dashboardId={_.toString(props.dashboardId)}
+                    dashboardID={dashboard.id}
                     id={item.id}
                     time={range}
                     setRange={props.setRange}
                     values={item}
                     variableConfig={variableConfig}
+                    annotations={_.filter(annotations, (annotation) => annotation.panel_id === item.id)}
                     onCloneClick={() => {
                       setPanels((panels) => {
                         return updatePanelsInsertNewPanel(panels, {
@@ -231,6 +235,7 @@ function index(props: IProps) {
                     onCopyClick={() => {
                       setPanelClipboard(item);
                     }}
+                    setAnnotationsRefreshFlag={props.setAnnotationsRefreshFlag}
                   />
                 ) : (
                   <div className='dashboards-panels-item-invalid'>

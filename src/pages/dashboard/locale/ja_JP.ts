@@ -527,6 +527,14 @@ const ja_JP = {
     count: '数',
     origin: '元の値',
   },
+  annotation: {
+    add: '注釈を追加',
+    edit: '注釈を編集',
+    description: '説明',
+    tags: 'タグ',
+    updated: '注釈が更新されました',
+    deleted: '注釈が削除されました',
+  },
 };
 
 export default ja_JP;
