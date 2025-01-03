@@ -11,7 +11,7 @@ import cursorBuider from './utils/cursorBuilder';
 import scalesBuilder from './utils/scalesBuilder';
 import dataMatch from './utils/dataMatch';
 import getStackedDataAndBands from './utils/stack';
-import tooltipPlugin from './tooltipPlugin';
+import tooltipPlugin from './plugins/tooltipPlugin';
 
 import './style.less';
 

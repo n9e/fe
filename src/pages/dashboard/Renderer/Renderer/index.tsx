@@ -62,7 +62,8 @@ import './style.less';
 interface IProps {
   datasourceValue?: number; // 全局数据源，如 values.datasourceValue 未设置则用全局数据源
   themeMode?: 'dark';
-  dashboardId: string;
+  dashboardId: string; // 仪表盘 ID 或者 ident
+  dashboardID: number; // 仪表盘 ID
   id?: string;
   time: IRawTimeRange;
   setRange?: (range: IRawTimeRange) => void;
@@ -70,16 +71,33 @@ interface IProps {
   variableConfig?: IVariable[];
   isPreview?: boolean; // 是否是预览，预览中不显示编辑和分享
   isAuthorized?: boolean; // 是否有权限
+  annotations: any[];
   onCloneClick?: () => void;
   onShareClick?: () => void;
   onEditClick?: () => void;
   onDeleteClick?: () => void;
   onCopyClick?: () => void;
+  setAnnotationsRefreshFlag?: (flag: string) => void;
 }
 
 function index(props: IProps) {
   const { t } = useTranslation('dashboard');
-  const { datasourceValue, themeMode, dashboardId, id, variableConfig, isPreview, isAuthorized, onCloneClick, onShareClick, onEditClick, onDeleteClick, onCopyClick } = props;
+  const {
+    datasourceValue,
+    themeMode,
+    dashboardId,
+    dashboardID,
+    id,
+    variableConfig,
+    isPreview,
+    isAuthorized,
+    annotations,
+    onCloneClick,
+    onShareClick,
+    onEditClick,
+    onDeleteClick,
+    onCopyClick,
+  } = props;
   const [time, setTime] = useState(props.time);
   const [visible, setVisible] = useState(false);
   const values = _.cloneDeep(props.values);
@@ -124,7 +142,18 @@ function index(props: IProps) {
     series,
   };
   const RendererCptMap = {
-    timeseries: () => <Timeseries {...subProps} themeMode={themeMode} time={time} setRange={props.setRange} isPreview={isPreview} />,
+    timeseries: () => (
+      <Timeseries
+        {...subProps}
+        dashboardID={dashboardID}
+        annotations={annotations}
+        setAnnotationsRefreshFlag={props.setAnnotationsRefreshFlag}
+        themeMode={themeMode}
+        time={time}
+        setRange={props.setRange}
+        isPreview={isPreview}
+      />
+    ),
     stat: () => <Stat {...subProps} bodyWrapRef={bodyWrapRef} themeMode={themeMode} isPreview={isPreview} />,
     table: () => <Table {...subProps} themeMode={themeMode} time={time} isPreview={isPreview} ref={tableRef} />,
     pie: () => <Pie {...subProps} themeMode={themeMode} time={time} isPreview={isPreview} />,

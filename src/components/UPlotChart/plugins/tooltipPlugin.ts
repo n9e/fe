@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import moment from 'moment';
 
-import { uplotsMap } from './index';
+import { uplotsMap } from '../index';
 
 let hoveringUplotID = '';
 
@@ -61,12 +61,26 @@ export default function tooltipPlugin(options: {
   id: string;
   mode: 'single' | 'all' | 'none';
   sort: 'asc' | 'desc' | 'none';
+  pinningEnabled?: boolean;
   graphTooltip?: 'default' | 'sharedCrosshair' | 'sharedTooltip';
+  renderFooter?: (domNode: HTMLDivElement, closeOverlay: () => void) => void;
   pointNameformatter?: (label: string, point: any) => string;
   pointValueformatter?: (value: number, point: any) => string;
 }) {
-  const { id, graphTooltip } = options;
+  const { id, pinningEnabled, graphTooltip, renderFooter } = options;
+  let uplot;
   let over;
+  let isPinned = false;
+
+  function closeOverlay() {
+    if (overlay === null) return;
+    isPinned = false;
+    overlay.style.display = 'none';
+    overlay.style.pointerEvents = 'none';
+    overlay.className = 'n9e-uplot-tooltip-container';
+    uplot.cursor._lock = false;
+    // uplot.setCursor({ left: -10, top: -10 });
+  }
 
   const tooltipID = `${id}-tooltip`;
   let overlay = document.getElementById(tooltipID);
@@ -77,14 +91,35 @@ export default function tooltipPlugin(options: {
     overlay.style.display = 'none';
     overlay.style.position = 'absolute';
     document.body.appendChild(overlay);
+
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (isPinned) {
+        if (overlay === null) return;
+        if (!overlay.contains(event.target as Node)) {
+          closeOverlay();
+        }
+      }
+    };
+
+    if (pinningEnabled) {
+      document.addEventListener('mouseup', handleOutsideClick);
+    }
   }
 
   return {
     hooks: {
-      init: (u) => {
+      init: (u: uPlot) => {
         if (overlay === null) return;
+        uplot = u;
         over = u.over;
         overlay.style.display = 'none';
+        overlay.innerHTML = `
+          <div class="n9e-uplot-tooltip">
+            <div class="n9e-uplot-tooltip-header"></div>
+            <div class="n9e-uplot-tooltip-main"></div>
+            <div class="n9e-uplot-tooltip-footer"></div>
+          </div>
+        `;
         over.onmouseenter = () => {
           if (overlay === null) return;
           hoveringUplotID = id;
@@ -107,6 +142,7 @@ export default function tooltipPlugin(options: {
         };
         over.onmouseleave = () => {
           if (overlay === null) return;
+          if (isPinned) return;
           hoveringUplotID = '';
           overlay.style.display = 'none';
           // 同步其他图表的 tooltip 隐藏
@@ -123,9 +159,41 @@ export default function tooltipPlugin(options: {
             });
           }
         };
+        if (pinningEnabled) {
+          let mouseDownX = 0;
+          over.onmousedown = (e) => {
+            mouseDownX = e.clientX;
+          };
+          over.onmouseup = (e) => {
+            if (mouseDownX !== e.clientX) return;
+            e.stopPropagation();
+            if (overlay) {
+              isPinned = !isPinned;
+              if (isPinned) {
+                // @ts-ignore
+                u.cursor._lock = true;
+                overlay.style.pointerEvents = 'unset';
+                overlay.className = 'n9e-uplot-tooltip-container n9e-uplot-tooltip-container-pinned';
+              } else {
+                // @ts-ignore
+                u.cursor._lock = false;
+                overlay.style.pointerEvents = 'none';
+                overlay.className = 'n9e-uplot-tooltip-container';
+              }
+            }
+            mouseDownX = 0;
+          };
+          if (renderFooter) {
+            const footerNode = overlay.querySelector('.n9e-uplot-tooltip-footer') as HTMLDivElement;
+            if (footerNode) {
+              renderFooter(footerNode, closeOverlay);
+            }
+          }
+        }
       },
       setCursor: (u) => {
         if (overlay === null) return;
+        if (isPinned) return;
         const { data, series } = u;
         const timeData = data[0];
         let valuesData: {
@@ -203,8 +271,8 @@ export default function tooltipPlugin(options: {
         });
 
         // 绘制 DOM 元素
-        overlay!.innerHTML = '';
-        const wrapEle = document.createElement('div');
+        // overlay!.innerHTML = '';
+        // const wrapEle = document.createElement('div');
         const renderToHeight = window.innerHeight / 1.5;
 
         // 最大可显示的行数，超出最大行数就在中位隐藏超出数量的行
@@ -220,48 +288,59 @@ export default function tooltipPlugin(options: {
           overflow = true;
         }
 
-        wrapEle.className = 'n9e-uplot-tooltip';
-        overlay!.appendChild(wrapEle);
+        const headerNode = overlay!.querySelector('.n9e-uplot-tooltip-header');
+        if (headerNode) {
+          headerNode.innerHTML = '';
+          const headerText = timeData[idx] ? moment.unix(timeData[idx]).format('YYYY-MM-DD HH:mm:ss') : 'Invalid Time';
+          const headerTextNode = document.createTextNode(headerText);
+          headerNode.appendChild(headerTextNode);
+          if (pinningEnabled) {
+            const closeNode = document.createElement('div');
+            closeNode.className = 'n9e-uplot-tooltip-header-close';
+            closeNode.innerHTML = `<span role="img" aria-label="close" class="anticon anticon-close"><svg fill-rule="evenodd" viewBox="64 64 896 896" focusable="false" data-icon="close" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M799.86 166.31c.02 0 .04.02.08.06l57.69 57.7c.04.03.05.05.06.08a.12.12 0 010 .06c0 .03-.02.05-.06.09L569.93 512l287.7 287.7c.04.04.05.06.06.09a.12.12 0 010 .07c0 .02-.02.04-.06.08l-57.7 57.69c-.03.04-.05.05-.07.06a.12.12 0 01-.07 0c-.03 0-.05-.02-.09-.06L512 569.93l-287.7 287.7c-.04.04-.06.05-.09.06a.12.12 0 01-.07 0c-.02 0-.04-.02-.08-.06l-57.69-57.7c-.04-.03-.05-.05-.06-.07a.12.12 0 010-.07c0-.03.02-.05.06-.09L454.07 512l-287.7-287.7c-.04-.04-.05-.06-.06-.09a.12.12 0 010-.07c0-.02.02-.04.06-.08l57.7-57.69c.03-.04.05-.05.07-.06a.12.12 0 01.07 0c.03 0 .05.02.09.06L512 454.07l287.7-287.7c.04-.04.06-.05.09-.06a.12.12 0 01.07 0z"></path></svg></span>`;
+            closeNode.onclick = () => {
+              closeOverlay();
+            };
+            headerNode.appendChild(closeNode);
+          }
+        }
 
-        const frag = document.createDocumentFragment();
-        const ulNode = document.createElement('ul');
-        const headerNode = document.createElement('li');
-        headerNode.className = 'n9e-uplot-tooltip-header';
-        const headerText = timeData[idx] ? moment.unix(timeData[idx]).format('YYYY-MM-DD HH:mm:ss') : 'Invalid Time';
-        const headerTextNode = document.createTextNode(headerText);
+        const mainNode = overlay!.querySelector('.n9e-uplot-tooltip-main');
+        if (mainNode) {
+          mainNode.innerHTML = '';
+          const frag = document.createDocumentFragment();
+          const ulNode = document.createElement('ul');
+          ulNode.style.maxWidth = `${window.innerWidth / 1.5}px`; // 宽度最大值
+          frag.appendChild(ulNode);
 
-        headerNode.appendChild(headerTextNode);
-        ulNode.style.maxWidth = `${window.innerWidth / 1.5}px`; // 宽度最大值
-        ulNode.appendChild(headerNode);
-        frag.appendChild(ulNode);
-
-        if (options.mode === 'single') {
-          const seriesItem = series[closestSeriesIdx];
-          const value = valuesData[closestSeriesIdx - 1]?.values?.[idx];
-          const liNode = renderTooltipItem(seriesItem, value, options);
-          liNode.className = 'n9e-uplot-tooltip-item n9e-uplot-tooltip-item-closest';
-          ulNode.appendChild(liNode);
-        } else {
-          _.forEach(valuesData, (item) => {
-            const seriesItem = item.seriesItem;
-            const value = item.values[idx];
+          if (options.mode === 'single') {
+            const seriesItem = series[closestSeriesIdx];
+            const value = valuesData[closestSeriesIdx - 1]?.values?.[idx];
             const liNode = renderTooltipItem(seriesItem, value, options);
-            if (item.seriesIndex === closestSeriesIdx) {
-              liNode.className = 'n9e-uplot-tooltip-item n9e-uplot-tooltip-item-closest';
-            }
+            liNode.className = 'n9e-uplot-tooltip-item n9e-uplot-tooltip-item-closest';
             ulNode.appendChild(liNode);
-          });
+          } else {
+            _.forEach(valuesData, (item) => {
+              const seriesItem = item.seriesItem;
+              const value = item.values[idx];
+              const liNode = renderTooltipItem(seriesItem, value, options);
+              if (item.seriesIndex === closestSeriesIdx) {
+                liNode.className = 'n9e-uplot-tooltip-item n9e-uplot-tooltip-item-closest';
+              }
+              ulNode.appendChild(liNode);
+            });
+          }
+
+          if (overflow) {
+            const overflowLiNode = document.createElement('li');
+            const overflowLiTextNode = document.createTextNode('......');
+
+            overflowLiNode.appendChild(overflowLiTextNode);
+            ulNode.appendChild(overflowLiNode);
+          }
+
+          mainNode.appendChild(frag);
         }
-
-        if (overflow) {
-          const overflowLiNode = document.createElement('li');
-          const overflowLiTextNode = document.createTextNode('......');
-
-          overflowLiNode.appendChild(overflowLiTextNode);
-          ulNode.appendChild(overflowLiNode);
-        }
-
-        wrapEle.appendChild(frag);
       },
       destroy: () => {
         overlay!.style.display = 'none';

@@ -1,9 +1,11 @@
 import React, { useState, useRef, useMemo } from 'react';
+import ReactDOM from 'react-dom';
 import { AlignedData, Options } from 'uplot';
 import _ from 'lodash';
 import moment from 'moment';
 import { useHistory, useLocation } from 'react-router-dom';
 import querystring from 'query-string';
+import { useTranslation } from 'react-i18next';
 
 import UPlotChart, { tooltipPlugin, paddingSide, axisBuilder, seriesBuider, cursorBuider, scalesBuilder, getStackedDataAndBands, uplotsMap } from '@/components/UPlotChart';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
@@ -20,11 +22,14 @@ import getDataFrameAndBaseSeries, { BaseSeriesItem } from './utils/getDataFrameA
 import drawThresholds from './utils/drawThresholds';
 import { getScalesXMinMax, getScalesYRange } from './utils/getScalesMinMax';
 import ResetZoomButton from './components/ResetZoomButton';
+import annotationsPlugin, { Markers as AddAnnotatsMarkers } from './components/Annotation/annotationsPlugin';
+import AddAnnotationButton from './components/Annotation/AddButton';
 import './style.less';
 
 export { getDataFrameAndBaseSeries };
 
 interface Props {
+  dashboardID: number;
   id: string;
   frames: AlignedData;
   baseSeries: BaseSeriesItem[];
@@ -33,6 +38,8 @@ interface Props {
   height: number;
   panel: IPanel;
   series: any[];
+  annotations: any[];
+  setAnnotationsRefreshFlag?: (flag: string) => void;
   colors?: string[];
   range?: IRawTimeRange;
   setRange?: (range: IRawTimeRange) => void;
@@ -44,9 +51,30 @@ interface Props {
 }
 
 export default function index(props: Props) {
+  const { t } = useTranslation('dashboard');
   const history = useHistory();
   const location = useLocation();
-  const { id, frames, baseSeries, darkMode, width, height, panel, series, colors, range, setRange, inDashboard, isPreview, hideResetBtn, onClick, onZoomWithoutDefult } = props;
+  const {
+    dashboardID,
+    id,
+    frames,
+    baseSeries,
+    darkMode,
+    width,
+    height,
+    panel,
+    series,
+    annotations,
+    setAnnotationsRefreshFlag,
+    colors,
+    range,
+    setRange,
+    inDashboard,
+    isPreview,
+    hideResetBtn,
+    onClick,
+    onZoomWithoutDefult,
+  } = props;
   const { custom, options = {}, targets, overrides } = panel;
   const [dashboardMeta] = useGlobalState('dashboardMeta');
   const uplotRef = useRef<any>();
@@ -54,6 +82,7 @@ export default function index(props: Props) {
   const xScaleInitMinMaxRef = useRef<[number, number]>();
   const yScaleInitMinMaxRef = useRef<[number, number]>();
   const [showResetZoomBtn, setShowResetZoomBtn] = useState(false);
+  const [annotationSettingUp, setAnnotationSettingUp] = useState(false);
   const xMinMax = useMemo(() => {
     return getScalesXMinMax({ range, panel });
   }, [range, JSON.stringify(_.map(panel.targets, 'time'))]);
@@ -70,6 +99,24 @@ export default function index(props: Props) {
           id,
           mode: options.tooltip?.mode ?? (defaultOptionsValues.tooltip.mode as any),
           sort: options.tooltip?.sort ?? (defaultOptionsValues.tooltip.sort as any),
+          pinningEnabled: true,
+          renderFooter: (domNode: HTMLDivElement, closeOverlay: () => void) => {
+            ReactDOM.render(
+              <AddAnnotationButton
+                dashboardID={dashboardID}
+                panelID={id}
+                closeOverlay={closeOverlay}
+                uplotRef={uplotRef}
+                setAnnotationSettingUp={setAnnotationSettingUp}
+                onOk={() => {
+                  if (setAnnotationsRefreshFlag) {
+                    setAnnotationsRefreshFlag(_.uniqueId('annotationsRefreshFlag_'));
+                  }
+                }}
+              />,
+              domNode,
+            );
+          },
           graphTooltip: dashboardMeta.graphTooltip as any,
           pointNameformatter: (val, point) => {
             let name = val;
@@ -102,6 +149,28 @@ export default function index(props: Props) {
               },
               val,
             ).text;
+          },
+        }),
+        annotationsPlugin({
+          annotations,
+          renderMarkers: (xAxisEle) => {
+            ReactDOM.render(
+              <AddAnnotatsMarkers
+                annotations={annotations}
+                uplotRef={uplotRef}
+                onEdit={() => {
+                  if (setAnnotationsRefreshFlag) {
+                    setAnnotationsRefreshFlag(_.uniqueId('annotationsRefreshFlag_'));
+                  }
+                }}
+                onDelete={() => {
+                  if (setAnnotationsRefreshFlag) {
+                    setAnnotationsRefreshFlag(_.uniqueId('annotationsRefreshFlag_'));
+                  }
+                }}
+              />,
+              xAxisEle,
+            );
           },
         }),
       ],
@@ -191,7 +260,9 @@ export default function index(props: Props) {
                       }
                     }
                   } else {
-                    setShowResetZoomBtn(true);
+                    if (!annotationSettingUp) {
+                      setShowResetZoomBtn(true);
+                    }
                   }
                 }
               }
@@ -206,7 +277,7 @@ export default function index(props: Props) {
         ],
       },
     };
-  }, [width, height, custom, options, colors, JSON.stringify(range), JSON.stringify(baseSeries), JSON.stringify(xMinMax)]);
+  }, [width, height, custom, options, colors, JSON.stringify(range), JSON.stringify(baseSeries), JSON.stringify(xMinMax), annotationSettingUp, JSON.stringify(annotations)]);
   let data = frames;
 
   if (custom.stack === 'noraml') {

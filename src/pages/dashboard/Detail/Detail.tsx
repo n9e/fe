@@ -27,9 +27,9 @@ import { useBeforeunload } from 'react-beforeunload';
 import queryString from 'query-string';
 import { Alert, Modal, Button, Affix, message, Spin } from 'antd';
 import PageLayout from '@/components/pageLayout';
-import { IRawTimeRange, getDefaultValue, isValid } from '@/components/TimeRangePicker';
+import { IRawTimeRange, getDefaultValue, isValid, parseRange } from '@/components/TimeRangePicker';
 import { Dashboard } from '@/store/dashboardInterface';
-import { getDashboard, updateDashboard, updateDashboardConfigs, getDashboardPure } from '@/services/dashboardV2';
+import { getDashboard, updateDashboard, updateDashboardConfigs, getDashboardPure, getAnnotations } from '@/services/dashboardV2';
 import { getPayloadByUUID } from '@/pages/builtInComponents/services';
 import { SetTmpChartData } from '@/services/metric';
 import { CommonStateContext, basePrefix } from '@/App';
@@ -136,6 +136,8 @@ export default function DetailV2(props: IProps) {
   const [variableConfigWithOptions, setVariableConfigWithOptions] = useState<IVariable[]>();
   const [dashboardLinks, setDashboardLinks] = useState<ILink[]>();
   const [panels, setPanels] = useState<any[]>([]);
+  const [annotations, setAnnotations] = useState<any[]>([]);
+  const [annotationsRefreshFlag, setAnnotationsRefreshFlag] = useState<string>(_.uniqueId('annotationsRefreshFlag_'));
   const [loading, setLoading] = useState(false);
   const [range, setRange] = useState<IRawTimeRange>(getDefaultTimeRange(id, query, dashboardDefaultRangeIndex));
   const [editable, setEditable] = useState(true);
@@ -177,10 +179,12 @@ export default function DetailV2(props: IProps) {
           graphTooltip: configs.graphTooltip,
           graphZoom: configs.graphZoom,
         });
-        setDashboard({
+        const newDashboard = {
           ...res,
           configs,
-        });
+        };
+        setDashboard(newDashboard);
+
         if (configs) {
           // TODO: configs 中可能没有 var 属性会导致 VariableConfig 报错
           const variableConfig = configs.var
@@ -281,6 +285,21 @@ export default function DetailV2(props: IProps) {
   }, 2000);
 
   useBeforeunload(!allowedLeave && import.meta.env.PROD ? () => t('detail.prompt.message') : undefined);
+
+  useEffect(() => {
+    if (dashboard.id) {
+      // 获取 annotations 数据
+      const parsedRange = parseRange(range);
+      getAnnotations({
+        dashboard_id: dashboard.id,
+        from: moment(parsedRange.start).unix(),
+        to: moment(parsedRange.end).unix(),
+        limit: 100,
+      }).then((res) => {
+        setAnnotations(res);
+      });
+    }
+  }, [dashboard.id, JSON.stringify(range), annotationsRefreshFlag]);
 
   return (
     <PageLayout customArea={<div />}>
@@ -386,6 +405,7 @@ export default function DetailV2(props: IProps) {
                     setPanels={setPanels}
                     dashboard={dashboard}
                     setDashboard={setDashboard}
+                    annotations={annotations}
                     setAllowedLeave={setAllowedLeave}
                     range={range}
                     setRange={setRange}
@@ -429,6 +449,7 @@ export default function DetailV2(props: IProps) {
                       refresh();
                     }}
                     setVariableConfigRefreshFlag={setVariableConfigRefreshFlag}
+                    setAnnotationsRefreshFlag={setAnnotationsRefreshFlag}
                   />
                 )}
               </>

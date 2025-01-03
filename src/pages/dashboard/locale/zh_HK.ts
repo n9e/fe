@@ -562,6 +562,14 @@ const zh_HK = {
     count: '數量',
     origin: '原始值',
   },
+  annotation: {
+    add: '新增注釋',
+    edit: '編輯注釋',
+    description: '描述',
+    tags: '標籤',
+    updated: '注釋已更新',
+    deleted: '注釋已刪除',
+  },
 };
 
 export default zh_HK;

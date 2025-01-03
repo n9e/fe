@@ -554,5 +554,13 @@ const en_US = {
     count: 'Count',
     origin: 'Origin',
   },
+  annotation: {
+    add: 'Add annotation',
+    edit: 'Edit annotation',
+    description: 'Description',
+    tags: 'Tags',
+    updated: 'Annotation updated',
+    deleted: 'Annotation deleted',
+  },
 };
 export default en_US;

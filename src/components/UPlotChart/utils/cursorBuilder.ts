@@ -10,6 +10,7 @@ interface Props {
 
 export default function cursorBuider(props: Props): Cursor {
   const { x = true, y = true, sync } = props;
+
   return {
     x,
     y,
