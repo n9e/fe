@@ -13,7 +13,7 @@ interface FormValue {
   datasourceCate: string;
   datasourceValue: number;
   query: {
-    [index: string]: string | IRawTimeRange | null | undefined | number;
+    [index: string]: any;
   };
 }
 
@@ -120,6 +120,14 @@ export const getFormValuesBySearchParams = (params: { [index: string]: string | 
           },
         };
       }
+    } else if (data_source_name === DatasourceCateEnum.ck) {
+      return {
+        ...formValues,
+        query: {
+          query: queryString,
+          range,
+        },
+      };
     } else {
       return getPlusFormValuesByParams(params);
     }
@@ -153,6 +161,9 @@ export const getLocationSearchByFormValues = (formValues: FormValue) => {
   } else if (data_source_name === DatasourceCateEnum.loki) {
     query.query = formValues.query?.query;
     query.limit = formValues.query?.limit;
+    return queryString.stringify(query);
+  } else if (data_source_name === DatasourceCateEnum.ck) {
+    query.query = formValues.query?.query;
     return queryString.stringify(query);
   } else {
     return getPlusLocationSearchByFormValues(formValues);

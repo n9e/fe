@@ -64,6 +64,7 @@ export enum BaseDatasourceCateEnum {
   elasticsearch = 'elasticsearch',
   tdengine = 'tdengine',
   loki = 'loki',
+  ck = 'ck',
 }
 
 export const DatasourceCateEnum = { ...BaseDatasourceCateEnum, ...AdvancedDatasourceCateEnum };
