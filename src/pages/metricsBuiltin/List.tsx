@@ -297,7 +297,9 @@ export default function index() {
   );
 
   useEffect(() => {
-    getComponents().then((res) => {
+    getComponents({
+      disabled: 0,
+    }).then((res) => {
       setTypsMeta(res);
     });
 

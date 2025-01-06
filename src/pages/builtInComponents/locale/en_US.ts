@@ -7,6 +7,7 @@ const en_US = {
   tab_dashboards: 'Dashboards',
   ident: 'Name',
   logo: 'Logo',
+  enable: 'Enable',
   readme: 'Instructions',
   componentFormModal: {
     edit: 'Edit Template',

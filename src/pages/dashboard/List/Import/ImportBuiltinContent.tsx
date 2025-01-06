@@ -30,7 +30,9 @@ export default function ImportBuiltinContent({ busiId, onOk }) {
   const selectedBoards = Form.useWatch('selectedBoards', form);
 
   useEffect(() => {
-    getComponents().then((res) => {
+    getComponents({
+      disabled: 0,
+    }).then((res) => {
       setComponents(res);
     });
   }, []);

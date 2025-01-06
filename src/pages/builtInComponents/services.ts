@@ -21,9 +21,10 @@ import { Component, ComponentPost, ComponentPut, PayloadQuery, TypeEnum, Payload
 
 export type { Component, TypeEnum, Payload };
 
-export const getComponents = function (): Promise<Component[]> {
+export const getComponents = function (params = {}): Promise<Component[]> {
   return request('/api/n9e/builtin-components', {
     method: RequestMethod.Get,
+    params,
   }).then((res) => {
     return res.dat;
   });
