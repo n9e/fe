@@ -42,7 +42,9 @@ export default function ImportBuiltinContent({ busiId, onOk, groupedDatasourceLi
   const [allowSubmit, setAllowSubmit] = React.useState(true);
 
   useEffect(() => {
-    getComponents().then((res) => {
+    getComponents({
+      disabled: 0,
+    }).then((res) => {
       setComponents(res);
     });
   }, []);
