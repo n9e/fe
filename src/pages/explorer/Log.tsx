@@ -14,24 +14,29 @@
  * limitations under the License.
  *
  */
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { LineChartOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { Tabs } from 'antd';
 import queryString from 'query-string';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+
 import PageLayout from '@/components/pageLayout';
+import { CommonStateContext } from '@/App';
+
 import Explorer from './Explorer';
 import { getuuid, getLocalItems, setLocalItems, getLocalActiveKey, setLocalActiveKey } from './utils';
 import './index.less';
 
 const MetricExplorerPage = () => {
   const { t } = useTranslation('explorer');
+  const { datasourceCateOptions } = useContext(CommonStateContext);
   const params = queryString.parse(useLocation().search) as { [index: string]: string | null };
   const defaultItems = getLocalItems(params);
   const [items, setItems] = useState<{ key: string; isInited?: boolean; formValues?: any }[]>(defaultItems);
   const [activeKey, setActiveKey] = useState<string>(getLocalActiveKey(params, defaultItems));
+  const cates = _.filter(datasourceCateOptions, (item) => _.includes(item.type, 'logging'));
 
   return (
     <PageLayout title={t('title')} icon={<LineChartOutlined />}>
@@ -84,7 +89,7 @@ const MetricExplorerPage = () => {
                   <Tabs.TabPane closable={items.length !== 1} tab={`${t('query_tab')} ${idx + 1}`} key={item.key}>
                     <Explorer
                       type='logging'
-                      defaultCate='elasticsearch'
+                      defaultCate={cates[0]?.value ?? 'elasticsearch'}
                       defaultFormValuesControl={{
                         isInited: item.isInited,
                         setIsInited: () => {
