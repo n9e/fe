@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import _ from 'lodash';
 import { useDebounceFn } from 'ahooks';
 import { useLocation } from 'react-router-dom';
@@ -9,6 +9,8 @@ import TimeRangePicker from '@/components/TimeRangePicker';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import KQLInput from '@/components/KQLInput';
 import { getLocalQueryHistory, setLocalQueryHistory } from '@/components/KQLInput/utils';
+import DocumentDrawer from '@/components/DocumentDrawer';
+import { CommonStateContext } from '@/App';
 import { getIndices, getFullFields, Field } from './services';
 import InputFilter from './InputFilter';
 
@@ -22,7 +24,8 @@ interface Props {
 }
 
 export default function QueryBuilder(props: Props) {
-  const { t } = useTranslation('explorer');
+  const { t, i18n } = useTranslation('explorer');
+  const { darkMode } = useContext(CommonStateContext);
   const { onExecute, datasourceValue, setFields, allowHideSystemIndices = false, form, loading } = props;
   const params = new URLSearchParams(useLocation().search);
   const [indexOptions, setIndexOptions] = useState<any[]>([]);
@@ -134,16 +137,19 @@ export default function QueryBuilder(props: Props) {
         label={
           <>
             {t('datasource:es.filter')}{' '}
-            <a
-              href={
-                syntax === 'Lucene'
-                  ? 'https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax'
-                  : 'https://www.elastic.co/guide/en/kibana/current/kuery-query.html'
-              }
-              target='_blank'
-            >
-              <QuestionCircleOutlined />
-            </a>
+            <Tooltip title={t('common:page_help')}>
+              <QuestionCircleOutlined
+                onClick={() => {
+                  DocumentDrawer({
+                    language: i18n.language,
+                    darkMode,
+                    title: t('common:page_help'),
+                    type: 'iframe',
+                    documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/log-analysis/open-source/elasticserch/',
+                  });
+                }}
+              />
+            </Tooltip>
           </>
         }
         addonAfter={

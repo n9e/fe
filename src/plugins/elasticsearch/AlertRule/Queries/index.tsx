@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Form, Input, Row, Col, Tooltip, AutoComplete, InputNumber, Select, Card, Space } from 'antd';
 import { PlusCircleOutlined, QuestionCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
@@ -7,6 +7,8 @@ import { getIndices } from '@/pages/explorer/Elasticsearch/services';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import GroupBy from '@/pages/dashboard/Editor/QueryEditor/Elasticsearch/GroupBy';
 import QueryName, { generateQueryName } from '@/components/QueryName';
+import DocumentDrawer from '@/components/DocumentDrawer';
+import { CommonStateContext } from '@/App';
 import GraphPreview from '../GraphPreview';
 import Value from './Value';
 import DateField from './DateField';
@@ -18,10 +20,9 @@ interface IProps {
   disabled?: boolean;
 }
 
-const alphabet = 'ABCDEFGHIGKLMNOPQRSTUVWXYZ'.split('');
-
 export default function index(props: IProps) {
-  const { t } = useTranslation('alertRules');
+  const { t, i18n } = useTranslation('alertRules');
+  const { darkMode } = useContext(CommonStateContext);
   const { datasourceValue, form, disabled } = props;
   const [indexOptions, setIndexOptions] = useState<any[]>([]);
   const [indexSearch, setIndexSearch] = useState('');
@@ -120,9 +121,20 @@ export default function index(props: IProps) {
                           label={
                             <span>
                               {t('datasource:es.filter')}{' '}
-                              <a href='https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax ' target='_blank'>
-                                <QuestionCircleOutlined />
-                              </a>
+                              <Tooltip title={t('common:page_help')}>
+                                <QuestionCircleOutlined
+                                  onClick={() => {
+                                    DocumentDrawer({
+                                      language: i18n.language,
+                                      darkMode,
+                                      title: t('common:page_help'),
+                                      type: 'iframe',
+                                      documentPath:
+                                        'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/alarm-management/alert-rules/rule-configuration/business/es-alarm-rules/',
+                                    });
+                                  }}
+                                />
+                              </Tooltip>
                             </span>
                           }
                           labelWidth={90}
