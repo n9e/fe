@@ -20,7 +20,6 @@ import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
 import { Panel } from '../../Components/Collapse';
 import { calcsOptions } from '../../config';
-import ColorPicker from '../../../Components/ColorPicker';
 import { useGlobalState } from '../../../globalState';
 
 export default function GraphStyles() {
@@ -28,6 +27,7 @@ export default function GraphStyles() {
   const namePrefix = ['custom'];
   const [statFields, setStatFields] = useGlobalState('statFields');
   const fields = _.compact(_.concat(statFields, 'Value'));
+  const combine_other = Form.useWatch([...namePrefix, 'combine_other']);
 
   useEffect(() => {
     return () => {
@@ -80,7 +80,7 @@ export default function GraphStyles() {
           </Col>
         </Row>
         <Row gutter={10}>
-          <Col span={8}>
+          <Col span={12}>
             <Form.Item label={t('panel.custom.serieWidth')}>
               <Input.Group>
                 <Form.Item noStyle name={[...namePrefix, 'serieWidth']}>
@@ -90,7 +90,7 @@ export default function GraphStyles() {
               </Input.Group>
             </Form.Item>
           </Col>
-          <Col span={8}>
+          <Col span={12}>
             <Form.Item label={t('panel.custom.sortOrder')} name={[...namePrefix, 'sortOrder']}>
               <Select>
                 <Select.Option value='none'>None</Select.Option>
@@ -99,14 +99,20 @@ export default function GraphStyles() {
               </Select>
             </Form.Item>
           </Col>
-          <Col span={5}>
-            <Form.Item label={t('panel.custom.maxValue')} name={[...namePrefix, 'maxValue']}>
-              <InputNumber placeholder='auto' style={{ width: '100%' }} />
+          <Col span={12}>
+            <Form.Item label={t('panel.custom.barGauge.displayMode')} name={[...namePrefix, 'displayMode']}>
+              <Select>
+                <Select.Option value='basic'>Basic</Select.Option>
+                <Select.Option value='lcd'>Retro LCD</Select.Option>
+              </Select>
             </Form.Item>
           </Col>
-          <Col span={3}>
-            <Form.Item label={t('panel.custom.baseColor')} name={[...namePrefix, 'baseColor']}>
-              <ColorPicker />
+          <Col span={12}>
+            <Form.Item label={t('panel.custom.barGauge.valueMode.label')} name={[...namePrefix, 'valueMode']}>
+              <Select>
+                <Select.Option value='color'>{t('panel.custom.barGauge.valueMode.color')}</Select.Option>
+                <Select.Option value='hidden'>{t('panel.custom.barGauge.valueMode.hidden')}</Select.Option>
+              </Select>
             </Form.Item>
           </Col>
           <Col span={8}>
@@ -130,6 +136,7 @@ export default function GraphStyles() {
               tooltip={t('panel.custom.barGauge.otherPosition.tip')}
               name={[...namePrefix, 'otherPosition']}
               initialValue='none'
+              hidden={!combine_other}
             >
               <Select
                 options={[

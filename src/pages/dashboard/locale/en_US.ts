@@ -66,8 +66,10 @@ const en_US = {
     name: 'Name',
     url: 'URL',
     isNewBlank: 'Open in new tab',
+    dashboardIds_placeholder: 'Select dashboards',
   },
   var: {
+    vars: 'Variables',
     btn: 'Add variable',
     title: {
       list: 'Variables',
@@ -162,6 +164,8 @@ const en_US = {
     cancel: 'Cancel',
     ok: 'Delete row and panels',
     ok2: 'Delete row',
+    panels: '{{count}} panel',
+    panels_plural: '{{count}} panels',
   },
   panel: {
     title: {
@@ -219,7 +223,21 @@ const en_US = {
       },
       thresholds: {
         title: 'Thresholds',
-        btn: 'Add',
+        btn: 'Add threshold',
+        mode: {
+          label: 'Mode',
+          tip: 'Thresholds mode Percentage means thresholds relative to min & max',
+          absolute: 'Absolute',
+          percentage: 'Percentage',
+        },
+      },
+      thresholdsStyle: {
+        label: 'Thresholds style',
+        off: 'Off',
+        line: 'Line',
+        dashed: 'Dashed',
+        'line+area': 'Line+Area',
+        'dashed+area': 'Dashed+Area',
       },
       tooltip: {
         mode: 'Mode',
@@ -276,7 +294,7 @@ const en_US = {
       calc_tip: 'Time series data requires value calculation for all time point data. Non-time series data ignores this setting',
       maxValue: 'Max',
       baseColor: 'Base color',
-      serieWidth: 'Serie width',
+      serieWidth: 'Name width',
       sortOrder: 'Order',
       textMode: 'Text mode',
       valueAndName: 'Value and name',
@@ -353,6 +371,7 @@ const en_US = {
         organizeFields: 'Organize fields',
         colorMode_tip:
           'Color mode is the color setting for the "value field". In value mode, the color is applied to the value text; in background mode, the color is applied to the background color of the cell where the field is located.',
+        pageLimit: 'Page limit',
       },
       text: {
         textColor: 'TextColor',
@@ -432,6 +451,12 @@ const en_US = {
             bottom: 'Bottom',
           },
         },
+        displayMode: 'Display mode',
+        valueMode: {
+          label: 'Value display',
+          color: 'Color',
+          hidden: 'Hidden',
+        },
       },
     },
     inspect: {
@@ -500,6 +525,7 @@ const en_US = {
       default: 'Default',
       updateTimeRange: 'Update time range',
     },
+    save: 'Save dashboard',
   },
   visualizations: {
     timeseries: 'Time Series',
@@ -527,6 +553,14 @@ const en_US = {
     sum: 'Sum',
     count: 'Count',
     origin: 'Origin',
+  },
+  annotation: {
+    add: 'Add annotation',
+    edit: 'Edit annotation',
+    description: 'Description',
+    tags: 'Tags',
+    updated: 'Annotation updated',
+    deleted: 'Annotation deleted',
   },
 };
 export default en_US;

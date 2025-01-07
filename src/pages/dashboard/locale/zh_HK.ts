@@ -66,8 +66,10 @@ const zh_HK = {
     name: '連結名稱',
     url: '連結地址',
     isNewBlank: '是否新視窗開啟',
+    dashboardIds_placeholder: '請選擇儀表盤',
   },
   var: {
+    vars: '變數',
     btn: '新增變數',
     title: {
       list: '變數列表',
@@ -162,6 +164,8 @@ const zh_HK = {
     cancel: '取消',
     ok: '刪除分組和圖表',
     ok2: '僅刪除分組',
+    panels: '{{num}} 張圖表',
+    panels_plural: '{{count}} 張圖表',
   },
   panel: {
     title: {
@@ -219,7 +223,21 @@ const zh_HK = {
       },
       thresholds: {
         title: '閾值',
-        btn: '新增',
+        btn: '新增閾值',
+        mode: {
+          label: '閾值模式',
+          tip: '百分比表示相對於最小值和最大值的閾值',
+          absolute: '絕對值',
+          percentage: '百分比',
+        },
+      },
+      thresholdsStyle: {
+        label: '閾值樣式',
+        off: '關閉',
+        line: '線條',
+        dashed: '虛線',
+        'line+area': '線條+區域',
+        'dashed+area': '虛線+區域',
       },
       tooltip: {
         mode: '模式',
@@ -282,7 +300,7 @@ const zh_HK = {
       calc_tip: '時序資料需要對所有時間點資料做取值計算，非時序資料忽略此設置',
       maxValue: '最大值',
       baseColor: '基礎顏色',
-      serieWidth: '序列名寬度',
+      serieWidth: '名稱寬度',
       sortOrder: '排序',
       textMode: '顯示內容',
       valueAndName: '值和名稱',
@@ -357,6 +375,7 @@ const zh_HK = {
         nowrap: '單元格不換行',
         organizeFields: '組織字段',
         colorMode_tip: '顏色模式是針對 "值欄位" 的顏色設定。值模式下顏色作用於值文字；背景模式下顏色作用於欄位所在儲存格背景色。',
+        pageLimit: '每頁顯示行數',
       },
       text: {
         textColor: '文字顏色',
@@ -440,6 +459,12 @@ const zh_HK = {
             bottom: '最後',
           },
         },
+        displayMode: '顯示模式',
+        valueMode: {
+          label: '值模式',
+          color: '顯示',
+          hidden: '隱藏',
+        },
       },
     },
     inspect: {
@@ -508,6 +533,7 @@ const zh_HK = {
       default: '默认',
       updateTimeRange: '更新時間範圍',
     },
+    save: '儲存儀表板',
   },
   visualizations: {
     timeseries: '時序圖',
@@ -535,6 +561,14 @@ const zh_HK = {
     sum: '總和',
     count: '數量',
     origin: '原始值',
+  },
+  annotation: {
+    add: '新增注釋',
+    edit: '編輯注釋',
+    description: '描述',
+    tags: '標籤',
+    updated: '注釋已更新',
+    deleted: '注釋已刪除',
   },
 };
 
