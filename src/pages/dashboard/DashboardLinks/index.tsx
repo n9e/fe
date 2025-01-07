@@ -14,11 +14,11 @@
  * limitations under the License.
  *
  */
-import React, { useMemo } from 'react';
+import React from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Button, Space, Dropdown, Menu } from 'antd';
-import { EditOutlined, LinkOutlined, DashboardOutlined } from '@ant-design/icons';
+import { EditOutlined, LinkOutlined } from '@ant-design/icons';
 import Edit from './Edit';
 import { ILink } from '../types';
 import './style.less';
@@ -32,35 +32,6 @@ interface IProps {
 export default function index(props: IProps) {
   const { t } = useTranslation('dashboard');
   const { editable = true, value } = props;
-  const links = useMemo(() => {
-    const data: {
-      id: string;
-      type: string;
-      title: string;
-      url: string;
-      targetBlank?: boolean;
-    }[] = [];
-    _.forEach(value, (item) => {
-      if (item.type === 'dashboards') {
-        _.forEach(item.dashboards, (dashboard) => {
-          data.push({
-            id: _.uniqueId(),
-            type: 'dashboards',
-            title: dashboard.name,
-            url: `/dashboards/${dashboard.ident || dashboard.id}`,
-            targetBlank: item.targetBlank,
-          });
-        });
-      } else {
-        data.push({
-          ...item,
-          id: _.uniqueId(),
-        });
-      }
-    });
-    return data;
-  }, [JSON.stringify(value)]);
-
   return (
     <div className='dashboard-detail-links'>
       <Space align='baseline'>
@@ -69,7 +40,6 @@ export default function index(props: IProps) {
             <Menu>
               {editable && (
                 <Menu.Item
-                  key='edit_links'
                   onClick={() => {
                     Edit({
                       initialValues: value,
@@ -85,14 +55,11 @@ export default function index(props: IProps) {
                   </Space>
                 </Menu.Item>
               )}
-              {_.map(links, (item) => {
+              {_.map(value, (item, idx) => {
                 return (
-                  <Menu.Item key={item.id}>
+                  <Menu.Item key={idx}>
                     <a href={item.url} target={item.targetBlank ? '_blank' : '_self'}>
-                      <Space>
-                        {item.type === 'dashboards' ? <DashboardOutlined /> : <LinkOutlined />}
-                        {item.title}
-                      </Space>
+                      {item.title}
                     </a>
                   </Menu.Item>
                 );

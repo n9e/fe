@@ -27,8 +27,7 @@ interface IProps {
 }
 
 export default function Panel(props: IProps) {
-  const [isActive, setIsActive] = useState<boolean>(props.isActive ?? true);
-
+  const [isActive, setIsActive] = useState<boolean>(props.isActive || true);
   return (
     <div
       className={classnames({

@@ -29,7 +29,6 @@ const ja_JP = {
   explorer_timeseries_legend_columns_placeholder: 'デフォルト値は Last です',
   print_access_log: 'アクセスログを印刷',
   print_body_paths: 'リクエストボディパスを印刷',
-  font_family: 'フォント',
 };
 
 export default ja_JP;

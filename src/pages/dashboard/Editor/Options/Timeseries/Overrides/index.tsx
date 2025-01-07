@@ -34,7 +34,6 @@ export default function index({ targets }) {
         fields.map(({ key, name, ...restField }) => {
           return (
             <Panel
-              isActive={false}
               key={key}
               isInner
               header='Override'
