@@ -24,9 +24,6 @@ export default function index() {
   const { t } = useTranslation('dashboard');
   const namePrefix = ['options', 'legend'];
   const tableColumn = ['max', 'min', 'avg', 'sum', 'last'];
-  const displayMode = Form.useWatch([...namePrefix, 'displayMode']);
-  const placement = Form.useWatch([...namePrefix, 'placement']);
-  const legendSizeKey = placement === 'bottom' ? 'height' : 'width';
 
   return (
     <Panel header='Legend'>
@@ -40,26 +37,40 @@ export default function index() {
             </Radio.Group>
           </Form.Item>
         </Col>
-        <Col span={7}>
-          <Form.Item label={t('panel.options.legend.placement')} name={[...namePrefix, 'placement']} initialValue='bottom' hidden={displayMode === 'hidden'}>
-            <Radio.Group buttonStyle='solid'>
-              <Radio.Button value='bottom'>Bottom</Radio.Button>
-              <Radio.Button value='right'>Right</Radio.Button>
-            </Radio.Group>
-          </Form.Item>
-        </Col>
-        <Col span={8}>
-          <Form.Item
-            label={t(`panel.options.legend.${legendSizeKey}InPercentage`)}
-            name={[...namePrefix, `${legendSizeKey}InPercentage`]}
-            tooltip={t(`panel.options.legend.${legendSizeKey}InPercentage_tip`)}
-            hidden={displayMode === 'hidden'}
-          >
-            <InputNumber min={20} max={80} style={{ width: '100%' }} placeholder='auto' />
-          </Form.Item>
-        </Col>
+        <Form.Item noStyle shouldUpdate={(prevValues, curValues) => _.get(prevValues, [...namePrefix, 'displayMode']) !== _.get(curValues, [...namePrefix, 'displayMode'])}>
+          {({ getFieldValue }) => {
+            const displayMode = getFieldValue([...namePrefix, 'displayMode']);
+            return (
+              <>
+                <Col span={8}>
+                  <Form.Item
+                    label={t('panel.options.legend.heightInPercentage')}
+                    name={[...namePrefix, 'heightInPercentage']}
+                    tooltip={t('panel.options.legend.heightInPercentage_tip')}
+                    initialValue={30}
+                  >
+                    <InputNumber min={20} max={80} style={{ width: '100%' }} />
+                  </Form.Item>
+                </Col>
+                <Col
+                  span={7}
+                  style={{
+                    display: displayMode === 'list' ? 'block' : 'none',
+                  }}
+                >
+                  <Form.Item label={t('panel.options.legend.placement')} name={[...namePrefix, 'placement']} initialValue='bottom'>
+                    <Radio.Group buttonStyle='solid'>
+                      <Radio.Button value='bottom'>Bottom</Radio.Button>
+                      <Radio.Button value='right'>Right</Radio.Button>
+                    </Radio.Group>
+                  </Form.Item>
+                </Col>
+              </>
+            );
+          }}
+        </Form.Item>
         <Col span={24}>
-          <Form.Item label={t('panel.options.legend.columns')} name={[...namePrefix, 'columns']} hidden={displayMode === 'hidden'}>
+          <Form.Item label={t('panel.options.legend.columns')} name={[...namePrefix, 'columns']}>
             <Select mode='multiple'>
               {_.map(tableColumn, (item) => {
                 return (
@@ -72,7 +83,7 @@ export default function index() {
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item label={t('panel.options.legend.behaviour.label')} name={[...namePrefix, 'behaviour']} initialValue='showItem' hidden={displayMode === 'hidden'}>
+          <Form.Item label={t('panel.options.legend.behaviour.label')} name={[...namePrefix, 'behaviour']} initialValue='showItem'>
             <Select
               options={[
                 {
@@ -88,7 +99,7 @@ export default function index() {
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item label={t('panel.options.legend.selectMode.label')} name={[...namePrefix, 'selectMode']} initialValue='single' hidden={displayMode === 'hidden'}>
+          <Form.Item label={t('panel.options.legend.selectMode.label')} name={[...namePrefix, 'selectMode']} initialValue='single'>
             <Select
               options={[
                 {
@@ -104,7 +115,7 @@ export default function index() {
           </Form.Item>
         </Col>
         <Col span={9}>
-          <Form.Item label={t('panel.custom.detailName')} name={[...namePrefix, 'detailName']} hidden={displayMode === 'hidden'}>
+          <Form.Item label={t('panel.custom.detailName')} name={[...namePrefix, 'detailName']}>
             <Input style={{ width: '100%' }} />
           </Form.Item>
         </Col>
@@ -116,7 +127,6 @@ export default function index() {
               overlayInnerStyle: { width: 330 },
               title: <Trans ns='dashboard' i18nKey='dashboard:var.help_tip' components={{ 1: <br /> }} />,
             }}
-            hidden={displayMode === 'hidden'}
           >
             <Input style={{ width: '100%' }} />
           </Form.Item>

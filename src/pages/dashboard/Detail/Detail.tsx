@@ -25,11 +25,11 @@ import { v4 as uuidv4 } from 'uuid';
 import { useParams, useHistory, useLocation } from 'react-router-dom';
 import { useBeforeunload } from 'react-beforeunload';
 import queryString from 'query-string';
-import { Alert, Modal, Button, Affix, message, Spin } from 'antd';
+import { Alert, Modal, Button, Affix, message } from 'antd';
 import PageLayout from '@/components/pageLayout';
-import { IRawTimeRange, getDefaultValue, isValid, parseRange } from '@/components/TimeRangePicker';
+import { IRawTimeRange, getDefaultValue, isValid } from '@/components/TimeRangePicker';
 import { Dashboard } from '@/store/dashboardInterface';
-import { getDashboard, updateDashboard, updateDashboardConfigs, getDashboardPure, getAnnotations } from '@/services/dashboardV2';
+import { getDashboard, updateDashboardConfigs, getDashboardPure } from '@/services/dashboardV2';
 import { getPayloadByUUID } from '@/pages/builtInComponents/services';
 import { SetTmpChartData } from '@/services/metric';
 import { CommonStateContext, basePrefix } from '@/App';
@@ -47,7 +47,6 @@ import Editor from '../Editor';
 import { sortPanelsByGridLayout, panelsMergeToConfigs, updatePanelsInsertNewPanelToGlobal, ajustPanels } from '../Panels/utils';
 import { useGlobalState } from '../globalState';
 import { scrollToLastPanel } from './utils';
-import dashboardMigrator from './utils/dashboardMigrator';
 import ajustInitialValues from '../Renderer/utils/ajustInitialValues';
 import './style.less';
 interface URLParam {
@@ -136,9 +135,6 @@ export default function DetailV2(props: IProps) {
   const [variableConfigWithOptions, setVariableConfigWithOptions] = useState<IVariable[]>();
   const [dashboardLinks, setDashboardLinks] = useState<ILink[]>();
   const [panels, setPanels] = useState<any[]>([]);
-  const [annotations, setAnnotations] = useState<any[]>([]);
-  const [annotationsRefreshFlag, setAnnotationsRefreshFlag] = useState<string>(_.uniqueId('annotationsRefreshFlag_'));
-  const [loading, setLoading] = useState(false);
   const [range, setRange] = useState<IRawTimeRange>(getDefaultTimeRange(id, query, dashboardDefaultRangeIndex));
   const [editable, setEditable] = useState(true);
   const [editorData, setEditorData] = useState({
@@ -150,64 +146,51 @@ export default function DetailV2(props: IProps) {
   const [migrationModalOpen, setMigrationModalOpen] = useState(false);
   const [variableConfigRefreshFlag, setVariableConfigRefreshFlag] = useState<string>(_.uniqueId('variableConfigRefreshFlag_'));
   const [allowedLeave, setAllowedLeave] = useState(true);
-
   const containerRef = useRef<HTMLDivElement>(null);
   let updateAtRef = useRef<number>();
   const routerPromptRef = useRef<any>();
   const refresh = async (cbk?: () => void) => {
-    // 自动保存模式下不显示 loading
-    if (dashboardSaveMode === 'manual') {
-      setLoading(true);
-    }
     fetchDashboard({
       id,
       builtinParams,
-    })
-      .then((res) => {
-        updateAtRef.current = res.update_at;
-        let configs = _.isString(res.configs) ? JSONParse(res.configs) : res.configs;
-        // 仪表盘迁移
-        configs = dashboardMigrator(configs);
-        if (props.onLoaded && !props.onLoaded(configs)) {
-          return;
-        }
-        if ((!configs.version || semver.lt(configs.version, '3.0.0')) && !builtinParams) {
-          setMigrationVisible(true);
-        }
-        setDashboardMeta({
-          ...(dashboardMeta || {}),
-          graphTooltip: configs.graphTooltip,
-          graphZoom: configs.graphZoom,
-        });
-        const newDashboard = {
-          ...res,
-          configs,
-        };
-        setDashboard(newDashboard);
-
-        if (configs) {
-          // TODO: configs 中可能没有 var 属性会导致 VariableConfig 报错
-          const variableConfig = configs.var
-            ? configs
-            : {
-                ...configs,
-                var: [],
-              };
-          setVariableConfig(
-            _.map(variableConfig.var, (item) => {
-              return _.omit(item, 'options'); // 兼容性代码，去除掉已保存的 options
-            }) as IVariable[],
-          );
-          setDashboardLinks(configs.links);
-          setPanels(sortPanelsByGridLayout(ajustPanels(configs.panels)));
-          if (cbk) {
-            cbk();
-          }
-        }
-      })
-      .finally(() => {
-        setLoading(false);
+    }).then((res) => {
+      updateAtRef.current = res.update_at;
+      const configs = _.isString(res.configs) ? JSONParse(res.configs) : res.configs;
+      if (props.onLoaded && !props.onLoaded(configs)) {
+        return;
+      }
+      if ((!configs.version || semver.lt(configs.version, '3.0.0')) && !builtinParams) {
+        setMigrationVisible(true);
+      }
+      setDashboardMeta({
+        ...(dashboardMeta || {}),
+        graphTooltip: configs.graphTooltip,
+        graphZoom: configs.graphZoom,
       });
+      setDashboard({
+        ...res,
+        configs,
+      });
+      if (configs) {
+        // TODO: configs 中可能没有 var 属性会导致 VariableConfig 报错
+        const variableConfig = configs.var
+          ? configs
+          : {
+              ...configs,
+              var: [],
+            };
+        setVariableConfig(
+          _.map(variableConfig.var, (item) => {
+            return _.omit(item, 'options'); // 兼容性代码，去除掉已保存的 options
+          }) as IVariable[],
+        );
+        setDashboardLinks(configs.links);
+        setPanels(sortPanelsByGridLayout(ajustPanels(configs.panels)));
+        if (cbk) {
+          cbk();
+        }
+      }
+    });
   };
   const handleUpdateDashboardConfigs = (id, updateData) => {
     if (dashboardSaveMode === 'manual') {
@@ -217,20 +200,9 @@ export default function DetailV2(props: IProps) {
       } catch (e) {
         console.error(e);
       }
-      // 如果是手动保存模式，并且没有编辑权限则不触发 RouterPrompt 提示
-      if (isAuthorized) {
-        setAllowedLeave(false);
-      }
-      setDashboardMeta({
-        ...(dashboardMeta || {}),
-        graphTooltip: configs.graphTooltip,
-        graphZoom: configs.graphZoom,
-      });
+      setAllowedLeave(false);
       setDashboard({
         ...dashboard,
-        name: updateData.name,
-        ident: updateData.ident,
-        tags: updateData.tags,
         configs,
       });
     } else {
@@ -248,11 +220,7 @@ export default function DetailV2(props: IProps) {
       setVariableConfig(value);
     }
     // 更新变量配置
-    b &&
-      handleUpdateDashboardConfigs(dashboard.id, {
-        ...dashboard,
-        configs: JSON.stringify(dashboardConfigs),
-      });
+    b && handleUpdateDashboardConfigs(dashboard.id, { configs: JSON.stringify(dashboardConfigs) });
     // 更新变量配置状态
     if (valueWithOptions) {
       setVariableConfigWithOptions(valueWithOptions);
@@ -272,8 +240,7 @@ export default function DetailV2(props: IProps) {
   }, [id]);
 
   useInterval(() => {
-    // 2024-12-27 当手动保存模式时，只有仪表盘配置被更改后（!allowedLeave）才会触发 "持续查询" 的检测
-    if (import.meta.env.PROD && dashboard.id && (dashboardSaveMode === 'manual' ? !allowedLeave : true)) {
+    if (import.meta.env.PROD && dashboard.id) {
       getDashboardPure(_.toString(dashboard.id)).then((res) => {
         if (updateAtRef.current && res.update_at > updateAtRef.current) {
           if (editable) setEditable(false);
@@ -285,21 +252,6 @@ export default function DetailV2(props: IProps) {
   }, 2000);
 
   useBeforeunload(!allowedLeave && import.meta.env.PROD ? () => t('detail.prompt.message') : undefined);
-
-  useEffect(() => {
-    if (dashboard.id) {
-      // 获取 annotations 数据
-      const parsedRange = parseRange(range);
-      getAnnotations({
-        dashboard_id: dashboard.id,
-        from: moment(parsedRange.start).unix(),
-        to: moment(parsedRange.end).unix(),
-        limit: 100,
-      }).then((res) => {
-        setAnnotations(res);
-      });
-    }
-  }, [dashboard.id, JSON.stringify(range), annotationsRefreshFlag]);
 
   return (
     <PageLayout customArea={<div />}>
@@ -323,7 +275,6 @@ export default function DetailV2(props: IProps) {
                 isAuthorized={isAuthorized}
                 editable={editable}
                 updateAtRef={updateAtRef}
-                allowedLeave={allowedLeave}
                 setAllowedLeave={setAllowedLeave}
                 gobackPath={gobackPath}
                 dashboard={dashboard}
@@ -348,7 +299,6 @@ export default function DetailV2(props: IProps) {
                     );
                     setPanels(newPanels);
                     handleUpdateDashboardConfigs(dashboard.id, {
-                      ...dashboard,
                       configs: panelsMergeToConfigs(dashboard.configs, newPanels),
                     });
                   } else if (type === 'pastePanel') {
@@ -357,7 +307,6 @@ export default function DetailV2(props: IProps) {
                       setPanels(newPanels);
                       scrollToLastPanel(newPanels);
                       handleUpdateDashboardConfigs(dashboard.id, {
-                        ...dashboard,
                         configs: panelsMergeToConfigs(dashboard.configs, newPanels),
                       });
                     } else {
@@ -393,70 +342,66 @@ export default function DetailV2(props: IProps) {
               )}
             </div>
           </Affix>
-          <Spin spinning={loading}>
-            {dashboard.configs?.mode !== 'iframe' ? (
-              <>
-                {variableConfigWithOptions && (
-                  <Panels
-                    dashboardId={id}
-                    isPreview={isPreview}
-                    editable={editable}
-                    panels={panels}
-                    setPanels={setPanels}
-                    dashboard={dashboard}
-                    setDashboard={setDashboard}
-                    annotations={annotations}
-                    setAllowedLeave={setAllowedLeave}
-                    range={range}
-                    setRange={setRange}
-                    variableConfig={variableConfigWithOptions}
-                    onShareClick={(panel) => {
-                      const curDatasourceValue = replaceExpressionVars(panel.datasourceValue, variableConfigWithOptions, variableConfigWithOptions.length, id);
-                      const serielData = {
-                        dataProps: {
-                          ...panel,
-                          datasourceValue: curDatasourceValue,
-                          // @ts-ignore
-                          datasourceName: _.find(datasourceList, { id: curDatasourceValue })?.name,
-                          targets: _.map(panel.targets, (target) => {
-                            const fullVars = getOptionsList(
-                              {
-                                dashboardId: _.toString(dashboard.id),
-                                variableConfigWithOptions: variableConfigWithOptions,
-                              },
-                              range,
-                            );
-                            const realExpr = variableConfigWithOptions ? replaceExpressionVars(target.expr, fullVars, fullVars.length, id) : target.expr;
-                            return {
-                              ...target,
-                              expr: realExpr,
-                            };
-                          }),
-                          range,
-                        },
-                      };
-                      SetTmpChartData([
-                        {
-                          configs: JSON.stringify(serielData),
-                        },
-                      ]).then((res) => {
-                        const ids = res.dat;
-                        window.open(basePrefix + '/chart/' + ids);
-                      });
-                    }}
-                    onUpdated={(res) => {
-                      updateAtRef.current = res.update_at;
-                      refresh();
-                    }}
-                    setVariableConfigRefreshFlag={setVariableConfigRefreshFlag}
-                    setAnnotationsRefreshFlag={setAnnotationsRefreshFlag}
-                  />
-                )}
-              </>
-            ) : (
-              <iframe className='embedded-dashboards-iframe' src={adjustURL(dashboard.configs?.iframe_url!, darkMode)} width='100%' height='100%' />
-            )}
-          </Spin>
+          {dashboard.configs?.mode !== 'iframe' ? (
+            <>
+              {variableConfigWithOptions && (
+                <Panels
+                  dashboardId={id}
+                  isPreview={isPreview}
+                  editable={editable}
+                  panels={panels}
+                  setPanels={setPanels}
+                  dashboard={dashboard}
+                  setDashboard={setDashboard}
+                  setAllowedLeave={setAllowedLeave}
+                  range={range}
+                  setRange={setRange}
+                  variableConfig={variableConfigWithOptions}
+                  onShareClick={(panel) => {
+                    const curDatasourceValue = replaceExpressionVars(panel.datasourceValue, variableConfigWithOptions, variableConfigWithOptions.length, id);
+                    const serielData = {
+                      dataProps: {
+                        ...panel,
+                        datasourceValue: curDatasourceValue,
+                        // @ts-ignore
+                        datasourceName: _.find(datasourceList, { id: curDatasourceValue })?.name,
+                        targets: _.map(panel.targets, (target) => {
+                          const fullVars = getOptionsList(
+                            {
+                              dashboardId: _.toString(dashboard.id),
+                              variableConfigWithOptions: variableConfigWithOptions,
+                            },
+                            range,
+                          );
+                          const realExpr = variableConfigWithOptions ? replaceExpressionVars(target.expr, fullVars, fullVars.length, id) : target.expr;
+                          return {
+                            ...target,
+                            expr: realExpr,
+                          };
+                        }),
+                        range,
+                      },
+                    };
+                    SetTmpChartData([
+                      {
+                        configs: JSON.stringify(serielData),
+                      },
+                    ]).then((res) => {
+                      const ids = res.dat;
+                      window.open(basePrefix + '/chart/' + ids);
+                    });
+                  }}
+                  onUpdated={(res) => {
+                    updateAtRef.current = res.update_at;
+                    refresh();
+                  }}
+                  setVariableConfigRefreshFlag={setVariableConfigRefreshFlag}
+                />
+              )}
+            </>
+          ) : (
+            <iframe className='embedded-dashboards-iframe' src={adjustURL(dashboard.configs?.iframe_url!, darkMode)} width='100%' height='100%' />
+          )}
         </div>
       </div>
       <Editor
@@ -480,7 +425,6 @@ export default function DetailV2(props: IProps) {
             scrollToLastPanel(newPanels);
           }
           handleUpdateDashboardConfigs(dashboard.id, {
-            ...dashboard,
             configs: panelsMergeToConfigs(dashboard.configs, newPanels),
           });
         }}
@@ -500,7 +444,6 @@ export default function DetailV2(props: IProps) {
             onClick={() => {
               setMigrationVisible(false);
               handleUpdateDashboardConfigs(dashboard.id, {
-                ...dashboard,
                 configs: JSON.stringify({
                   ...dashboard.configs,
                   version: '3.0.0',
@@ -572,11 +515,6 @@ export default function DetailV2(props: IProps) {
             type='primary'
             onClick={() => {
               routerPromptRef.current.hidePrompt();
-              updateDashboard(dashboard.id, {
-                name: dashboard.name,
-                ident: dashboard.ident,
-                tags: dashboard.tags,
-              });
               updateDashboardConfigs(dashboard.id, {
                 configs: JSON.stringify(dashboard.configs),
               }).then((res) => {

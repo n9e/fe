@@ -64,10 +64,8 @@ const ja_JP = {
     url_tip:
       '\n      変数の使用方法\n      <1 />\n      ${variable_name}: ダッシュボード変数値を表示\n      <1 />\n      ${__field.name}: シーケンス名を表示\n      <1 />\n      ${__field.value}: シーケンス値を表示\n      <1 />\n      ${__field.labels.X}: 指定したラベル値を表示\n      <1 />\n      ${__field.labels.__name__}: 指標名を表示\n      <1 />\n      ${__from}: 開始時間, ミリ秒\n      <1 />\n      ${__from_date_seconds}: 開始時間, 秒\n      <1 />\n      ${__from_date_iso}: 開始時間, ISO 8601/RFC 3339\n      <1 />\n      上記の構文は ${__to} に適用されます\n      ',
     isNewBlank: '新しいウィンドウで開くかどうか',
-    dashboardIds_placeholder: 'ダッシュボードを選択してください',
   },
   var: {
-    vars: '変数',
     btn: '変数を追加',
     title: {
       list: '変数リスト',
@@ -133,8 +131,6 @@ const ja_JP = {
     cancel: 'キャンセル',
     ok: 'グループとチャートを削除',
     ok2: 'グループのみを削除',
-    panels: '{{num}} グラフ',
-    panels_plural: '{{count}} グラフ',
   },
   panel: {
     title: {
@@ -193,20 +189,6 @@ const ja_JP = {
       thresholds: {
         title: 'しきい値',
         btn: '追加',
-        mode: {
-          label: 'しきい値モード',
-          tip: 'パーセンテージは最小値と最大値に対するしきい値を表します',
-          absolute: '絶対値',
-          percentage: 'パーセンテージ',
-        },
-      },
-      thresholdsStyle: {
-        label: 'しきい値スタイル',
-        off: 'オフ',
-        line: 'ライン',
-        dashed: '破線',
-        'line+area': 'ライン+エリア',
-        'dashed+area': '破線+エリア',
       },
       tooltip: {
         mode: 'モード',
@@ -266,7 +248,7 @@ const ja_JP = {
       calc_tip: '時系列データにはすべての時間点のデータを計算する必要があります。非時系列データはこの設定を無視します',
       maxValue: '最大値',
       baseColor: '基本色',
-      serieWidth: '名前の幅',
+      serieWidth: 'シリーズ名の幅',
       sortOrder: '並び順',
       textMode: '表示モード',
       valueAndName: '値と名前',
@@ -343,7 +325,6 @@ const ja_JP = {
         organizeFields: 'フィールドの整理',
         colorMode_tip:
           '色モードは"値フィールド"の色設定に影響します。値モードでは、色が値のテキストに適用されます。背景モードでは、色がフィールドが含まれるセルの背景色に適用されます。',
-        pageLimit: 'ページ制限',
       },
       text: {
         textColor: 'テキストの色',
@@ -424,12 +405,6 @@ const ja_JP = {
             bottom: '最後',
           },
         },
-        displayMode: '表示モード',
-        valueMode: {
-          label: '値の表示モード',
-          color: '色',
-          hidden: '非表示',
-        },
       },
     },
     inspect: {
@@ -498,7 +473,6 @@ const ja_JP = {
       default: 'デフォルト',
       updateTimeRange: '時間範囲を更新',
     },
-    save: '保存',
   },
   visualizations: {
     timeseries: '時系列グラフ',
@@ -526,14 +500,6 @@ const ja_JP = {
     sum: '合計',
     count: '数',
     origin: '元の値',
-  },
-  annotation: {
-    add: '注釈を追加',
-    edit: '注釈を編集',
-    description: '説明',
-    tags: 'タグ',
-    updated: '注釈が更新されました',
-    deleted: '注釈が削除されました',
   },
 };
 

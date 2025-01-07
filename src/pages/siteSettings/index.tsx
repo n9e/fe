@@ -131,9 +131,6 @@ export default function index() {
                   </Col>
                 </Row>
               </div>
-              <Form.Item label={t('font_family')} name={['font_family']}>
-                <Input />
-              </Form.Item>
               <Button type='primary' htmlType='submit'>
                 {t('common:btn.save')}
               </Button>

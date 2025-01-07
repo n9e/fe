@@ -23,7 +23,6 @@ import TimeRangePicker, { IRawTimeRange, parseRange } from '@/components/TimeRan
 import LineGraphStandardOptions from './components/GraphStandardOptions';
 import Timeseries from '@/pages/dashboard/Renderer/Renderer/Timeseries';
 import { completeBreakpoints } from '@/pages/dashboard/Renderer/datasource/utils';
-import { DASHBOARD_VERSION } from '@/pages/dashboard/config';
 import { CommonStateContext, basePrefix } from '@/App';
 import { getPromData, setTmpChartData } from './services';
 import { QueryStats } from './components/QueryStatsView';
@@ -212,7 +211,7 @@ export default function Graph(props: IProps) {
                     onClick={() => {
                       const dataProps = {
                         type: 'timeseries',
-                        version: DASHBOARD_VERSION,
+                        version: '3.0.0',
                         name: promql,
                         step,
                         range,

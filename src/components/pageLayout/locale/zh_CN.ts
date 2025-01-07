@@ -1,3 +1,5 @@
+import { title } from 'process';
+
 const zh_CN = {
   profile: '个人信息',
   themeSetting: '主题设置',
