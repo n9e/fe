@@ -7,6 +7,7 @@ const ja_JP = {
   tab_dashboards: 'ダッシュボード',
   ident: 'テンプレート名',
   logo: 'ロゴ',
+  enable: '有効',
   readme: '収集ガイド',
   componentFormModal: {
     edit: 'テンプレートを編集',
