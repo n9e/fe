@@ -2,7 +2,7 @@ import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'rea
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Field } from './utils';
-import { AutoComplete } from 'antd';
+import { AutoComplete, Input } from 'antd';
 import { HistoryOutlined } from '@ant-design/icons';
 
 interface Props {
@@ -146,7 +146,6 @@ function InputFilter(props: Props, ref) {
       {...props}
       onChange={triggerChange}
       dropdownMatchSelectWidth={false}
-      allowClear={true}
       options={_.filter(options, (item) => {
         if (searchData) {
           return _.includes(item.value, searchData);
@@ -154,7 +153,8 @@ function InputFilter(props: Props, ref) {
         return true;
       })}
       onKeyDown={(e) => {
-        if (e.key === 'Enter') {
+        if (e.key === 'Enter' && e.shiftKey === false) {
+          e.preventDefault();
           onCallback();
           onExecute();
         }
@@ -186,7 +186,9 @@ function InputFilter(props: Props, ref) {
           setSearchData(getSearchData(value));
         }
       }}
-    />
+    >
+      <Input.TextArea autoSize={{ minRows: 1, maxRows: 6 }} />
+    </AutoComplete>
   );
 }
 
