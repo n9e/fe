@@ -151,7 +151,7 @@ export default function GraphPreview(props: IProps) {
                   return {
                     title: item,
                     render: (record) => {
-                      return record.metric?.[record] ?? '-';
+                      return record.metric?.[item] ?? '-';
                     },
                   };
                 }) as any[],
