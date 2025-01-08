@@ -1,15 +1,15 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Button, Popover } from 'antd';
+import React, { useState, useRef, useEffect, useContext } from 'react';
+import { Button, Popover, Form, Select, Space, Table } from 'antd';
 import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
-import TimeRangePicker, { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
-import Timeseries from '@/pages/dashboard/Renderer/Renderer/Timeseries';
+
+import { CommonStateContext } from '@/App';
+
 import { normalizeTime } from '../utils';
 import { getDsQuery } from './services';
 
 interface IProps {
-  form: any;
   datasourceValue: number;
   disabled?: boolean;
 }
@@ -22,25 +22,28 @@ const getSerieName = (metric: Object) => {
   return _.trim(name);
 };
 
-export default function GraphPreview({ form, datasourceValue, disabled }: IProps) {
+export default function GraphPreview(props: IProps) {
   const { t } = useTranslation('alertRules');
+  const { groupedDatasourceList } = useContext(CommonStateContext);
+  const { disabled } = props;
   const divRef = useRef<HTMLDivElement>(null);
+  const form = Form.useFormInstance();
+  const datasource_values = form.getFieldValue('datasource_values');
   const [visible, setVisible] = useState(false);
-  const [range, setRange] = useState<IRawTimeRange>({
-    start: 'now-1h',
-    end: 'now',
-  });
   const [series, setSeries] = useState<any[]>([]);
+  const [columnKeys, setColumnKeys] = useState<string[]>([]);
+  const [datasourceValue, setDatasourceValue] = useState<number>(props.datasourceValue);
+
   const fetchSeries = () => {
     const queries = form.getFieldValue(['rule_config', 'queries']);
-    const parsedRange = parseRange(range);
-    const start = moment(parsedRange.start).unix();
-    const end = moment(parsedRange.end).unix();
+    const now = moment().unix();
+
     getDsQuery(
       {
         cate: form.getFieldValue('cate'),
         datasource_id: datasourceValue,
         query: _.map(queries, (item) => {
+          const interval = normalizeTime(item.interval, item.interval_unit) ?? 300; // 默认5分钟
           return {
             ref: item.ref,
             index: item.index,
@@ -48,9 +51,9 @@ export default function GraphPreview({ form, datasourceValue, disabled }: IProps
             value: item.value,
             group_by: item.group_by,
             date_field: item.date_field,
-            interval: normalizeTime(item.interval, item.interval_unit),
-            start,
-            end,
+            interval,
+            start: now - interval,
+            end: now,
           };
         }),
       },
@@ -67,6 +70,15 @@ export default function GraphPreview({ form, datasourceValue, disabled }: IProps
             };
           }),
         );
+        const keys: string[] = [];
+        _.forEach(res.dat, (item) => {
+          _.forEach(item.metric, (value, key) => {
+            if (!_.includes(keys, key) && key !== '__name__') {
+              keys.push(key);
+            }
+          });
+        });
+        setColumnKeys(keys);
       })
       .catch(() => {
         setSeries([]);
@@ -74,10 +86,8 @@ export default function GraphPreview({ form, datasourceValue, disabled }: IProps
   };
 
   useEffect(() => {
-    if (visible) {
-      fetchSeries();
-    }
-  }, [JSON.stringify(range)]);
+    setDatasourceValue(props.datasourceValue);
+  }, [props.datasourceValue]);
 
   return (
     <div ref={divRef}>
@@ -101,34 +111,57 @@ export default function GraphPreview({ form, datasourceValue, disabled }: IProps
             >
               {t('datasource:es.alert.query.preview')}
             </div>
-            <div>
-              <TimeRangePicker value={range} onChange={setRange} />
-            </div>
+            <Space>
+              <span>{t('common:datasource.name')}:</span>
+              <Select
+                value={datasourceValue}
+                onChange={(value) => {
+                  setDatasourceValue(value);
+                }}
+                style={{ width: 200 }}
+                options={_.map(
+                  _.filter(groupedDatasourceList.elasticsearch, (item) => {
+                    return _.includes(datasource_values, item.id);
+                  }),
+                  (item) => {
+                    return {
+                      label: item.name,
+                      value: item.id,
+                    };
+                  },
+                )}
+              />
+            </Space>
           </div>
         }
         content={
           <div style={{ width: 700 }}>
-            <Timeseries
-              inDashboard={false}
-              values={
+            <Table
+              size='small'
+              pagination={false}
+              dataSource={series}
+              columns={_.concat(
                 {
-                  custom: {
-                    drawStyle: 'lines',
-                    fillOpacity: 0,
-                    stack: 'hidden',
-                    lineInterpolation: 'smooth',
+                  title: 'Name',
+                  render: (record) => {
+                    return record.metric?.['__name__'] ?? '-';
                   },
-                  options: {
-                    legend: {
-                      displayMode: 'table',
+                },
+                _.map(columnKeys, (item) => {
+                  return {
+                    title: item,
+                    render: (record) => {
+                      return record.metric?.[record] ?? '-';
                     },
-                    tooltip: {
-                      mode: 'all',
-                    },
+                  };
+                }) as any[],
+                {
+                  title: 'Value',
+                  render: (record) => {
+                    return _.last(record.data)?.[1] ?? '-';
                   },
-                } as any
-              }
-              series={series}
+                },
+              )}
             />
           </div>
         }
