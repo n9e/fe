@@ -186,18 +186,21 @@ export default function index(props: IProps) {
   };
 
   useEffect(() => {
-    getDatasourcesByQueries({
-      datasource_cate,
-      datasource_queries,
-    }).then((res) => {
-      setDatasources(res);
-      const datasourceIds = _.map(res, 'id');
-      const invalidDatasourceIds = getInvalidDatasourceIds(datasourceIds, fullDatasourceList);
-      setInvalidDatasourceIds(invalidDatasourceIds);
-      form.setFieldsValue({
-        datasource_value: _.head(datasourceIds), // 取第一个数据用于数据预览等地方
+    if (!_.isEmpty(datasource_queries)) {
+      getDatasourcesByQueries({
+        datasource_cate,
+        datasource_queries,
+      }).then((res) => {
+        setDatasources(res);
+        const datasourceIds = _.map(res, 'id');
+        const invalidDatasourceIds = getInvalidDatasourceIds(datasourceIds, fullDatasourceList);
+        setInvalidDatasourceIds(invalidDatasourceIds);
+        form.setFieldsValue({
+          datasource_value: _.head(datasourceIds), // 取第一个数据用于数据预览等地方
+          datasource_values: datasourceIds, // 保存所有查询的数据源 id
+        });
       });
-    });
+    }
   }, [JSON.stringify(datasource_queries)]);
 
   useEffect(() => {
