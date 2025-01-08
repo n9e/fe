@@ -64,7 +64,7 @@ interface IProps {
   themeMode?: 'dark';
   dashboardId: string; // 仪表盘 ID 或者 ident
   dashboardID: number; // 仪表盘 ID
-  id?: string;
+  id: string;
   time: IRawTimeRange;
   setRange?: (range: IRawTimeRange) => void;
   values: IPanel;
