@@ -100,11 +100,11 @@ export default function Servers() {
       render: (text) => {
         return _.get(_.find(datasourceList, { id: text }), 'name');
       },
-      onCell: (record) => {
-        return {
-          rowSpan: record.row_span_map?.['datasource_id'],
-        };
-      },
+      // onCell: (record) => {
+      //   return {
+      //     rowSpan: record.row_span_map?.['datasource_id'],
+      //   };
+      // },
     },
     {
       title: t('clock'),
