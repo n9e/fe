@@ -101,6 +101,7 @@ export default function Chart() {
               return (
                 <div style={{ height: 740 }}>
                   <Renderer
+                    id={item.dataProps.id}
                     dashboardId={item.id}
                     dashboardID={item.id}
                     key={index}
