@@ -24,12 +24,13 @@ interface Itag {
   remove: Function;
   add: Function;
   fields: any[];
+  index: number;
   form: any;
 }
 
 const { Option } = Select;
 
-const TagItem: React.FC<Itag> = ({ field, remove, form }) => {
+const TagItem: React.FC<Itag> = ({ field, remove, form, fields, index }) => {
   const { t } = useTranslation('alertSubscribes');
   const [valuePlaceholder, setValuePlaceholder] = useState<string>('');
   const [funcCur, setfuncCur] = useState('==');
@@ -50,39 +51,53 @@ const TagItem: React.FC<Itag> = ({ field, remove, form }) => {
   }, []);
 
   return (
-    <>
-      <Row gutter={[10, 10]} style={{ marginBottom: '16px' }}>
-        <Col span={5}>
-          <Form.Item style={{ marginBottom: 0 }} name={[field.name, 'key']} rules={[{ required: true, message: t('tag.key.required') }]}>
-            <Input placeholder={t('tag.key.placeholder')} />
-          </Form.Item>
-        </Col>
-        <Col span={3}>
-          <Form.Item style={{ marginBottom: 0 }} name={[field.name, 'func']} initialValue='=='>
-            <Select suffixIcon={<CaretDownOutlined />} onChange={funcChange}>
-              <Option value='=='>==</Option>
-              <Option value='=~'>=~</Option>
-              <Option value='in'>in</Option>
-              <Option value='not in'>not in</Option>
-              <Option value='!='>!=</Option>
-              <Option value='!~'>!~</Option>
-            </Select>
-          </Form.Item>
-        </Col>
-        <Col span={15}>
-          <Form.Item style={{ marginBottom: 0 }} name={[field.name, 'value']} rules={[{ required: true, message: t('tag.value.required') }]}>
-            {['not in', 'in'].includes(funcCur) ? (
-              <Select mode='tags' open={false} style={{ width: '100%' }} placeholder={t(valuePlaceholder)} tokenSeparators={[' ']}></Select>
-            ) : (
-              <Input className='ant-input' placeholder={t(valuePlaceholder)} />
-            )}
-          </Form.Item>
-        </Col>
-        <Col>
-          <MinusCircleOutlined style={{ marginTop: '8px' }} onClick={() => remove(field.name)} />
-        </Col>
-      </Row>
-    </>
+    <div className='filter-settings-row'>
+      {fields.length > 1 && (
+        <div className='filter-settings-row-connector'>
+          {fields.length - 1 !== index && <div className='filter-settings-row-connector-line' />}
+          <div className='filter-settings-row-connector-text-container'>
+            <div className='filter-settings-row-connector-text'>{t('and')}</div>
+          </div>
+        </div>
+      )}
+      <div className='filter-settings-row-content' style={{ marginTop: 0 }}>
+        <Row gutter={10} className='mb2'>
+          <Col flex='auto'>
+            <Row gutter={10}>
+              <Col span={5}>
+                <Form.Item style={{ marginBottom: 0 }} name={[field.name, 'key']} rules={[{ required: true, message: t('tag.key.required') }]}>
+                  <Input placeholder={t('tag.key.placeholder')} />
+                </Form.Item>
+              </Col>
+              <Col span={4}>
+                <Form.Item style={{ marginBottom: 0 }} name={[field.name, 'func']} initialValue='=='>
+                  <Select suffixIcon={<CaretDownOutlined />} onChange={funcChange}>
+                    <Option value='=='>==</Option>
+                    <Option value='=~'>=~</Option>
+                    <Option value='in'>in</Option>
+                    <Option value='not in'>not in</Option>
+                    <Option value='!='>!=</Option>
+                    <Option value='!~'>!~</Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col span={15}>
+                <Form.Item style={{ marginBottom: 0 }} name={[field.name, 'value']} rules={[{ required: true, message: t('tag.value.required') }]}>
+                  {['not in', 'in'].includes(funcCur) ? (
+                    <Select mode='tags' open={false} style={{ width: '100%' }} placeholder={t(valuePlaceholder)} tokenSeparators={[' ']}></Select>
+                  ) : (
+                    <Input className='ant-input' placeholder={t(valuePlaceholder)} />
+                  )}
+                </Form.Item>
+              </Col>
+            </Row>
+          </Col>
+          <Col flex='32px'>
+            <MinusCircleOutlined style={{ lineHeight: '32px' }} onClick={() => remove(field.name)} />
+          </Col>
+        </Row>
+      </div>
+    </div>
   );
 };
 

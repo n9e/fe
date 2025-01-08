@@ -273,24 +273,30 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
               <Form.List name='busi_groups'>
                 {(fields, { add, remove }, { errors }) => (
                   <>
-                    <Row gutter={[10, 10]} style={{ marginBottom: '8px' }}>
-                      <Col span={5}>
-                        <Space>
-                          <span>{t('group.key.label')}</span>
-                          <PlusCircleOutlined
-                            onClick={() =>
-                              add({
-                                key: 'groups',
-                              })
-                            }
-                          />
-                        </Space>
+                    <Row gutter={10}>
+                      {fields.length > 1 && <Col flex='48px' />}
+                      <Col flex='auto'>
+                        <Row gutter={10} className='mb1'>
+                          <Col span={5}>
+                            <Space>
+                              <span>{t('group.key.label')}</span>
+                              <PlusCircleOutlined
+                                onClick={() =>
+                                  add({
+                                    key: 'groups',
+                                  })
+                                }
+                              />
+                            </Space>
+                          </Col>
+                          <Col span={4}>{t('group.func.label')}</Col>
+                          <Col span={15}>{t('group.value.label')}</Col>
+                        </Row>
                       </Col>
-                      <Col span={3}>{t('group.func.label')}</Col>
-                      <Col span={16}>{t('group.value.label')}</Col>
+                      <Col flex='32px' />
                     </Row>
                     {fields.map((field, index) => (
-                      <BusiGroupsTagItem field={field} fields={fields} key={index} remove={remove} add={add} form={form} />
+                      <BusiGroupsTagItem key={index} field={field} fields={fields} index={index} remove={remove} add={add} form={form} />
                     ))}
                     <Form.ErrorList errors={errors} />
                   </>
@@ -309,25 +315,31 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
               <Form.List name='tags' initialValue={[{}]}>
                 {(fields, { add, remove }, { errors }) => (
                   <>
-                    <Row gutter={[10, 10]} style={{ marginBottom: '8px' }}>
-                      <Col span={5}>
-                        <Space>
-                          <span>{t('tag.key.label')}</span>
-                          <Tooltip title={t(`tag.key.tip`)}>
-                            <QuestionCircleOutlined
-                              style={{
-                                cursor: 'help',
-                              }}
-                            />
-                          </Tooltip>
-                          <PlusCircleOutlined onClick={() => add()} />
-                        </Space>
+                    <Row gutter={10}>
+                      {fields.length > 1 && <Col flex='48px' />}
+                      <Col flex='auto'>
+                        <Row gutter={10} className='mb1'>
+                          <Col span={5}>
+                            <Space>
+                              <span>{t('tag.key.label')}</span>
+                              <Tooltip title={t(`tag.key.tip`)}>
+                                <QuestionCircleOutlined
+                                  style={{
+                                    cursor: 'help',
+                                  }}
+                                />
+                              </Tooltip>
+                              <PlusCircleOutlined onClick={() => add()} />
+                            </Space>
+                          </Col>
+                          <Col span={4}>{t('tag.func.label')}</Col>
+                          <Col span={15}>{t('tag.value.label')}</Col>
+                        </Row>
                       </Col>
-                      <Col span={3}>{t('tag.func.label')}</Col>
-                      <Col span={16}>{t('tag.value.label')}</Col>
+                      <Col flex='32px' />
                     </Row>
                     {fields.map((field, index) => (
-                      <TagItem field={field} fields={fields} key={index} remove={remove} add={add} form={form} />
+                      <TagItem key={index} field={field} fields={fields} index={index} remove={remove} add={add} form={form} />
                     ))}
                     <Form.ErrorList errors={errors} />
                   </>
