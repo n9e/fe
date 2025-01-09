@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import queryString from 'query-string';
-import { Input, Drawer, Space, Tabs, Button, Modal } from 'antd';
-import { SafetyCertificateOutlined, SearchOutlined, CloseOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Input, Drawer, Space, Tabs, Button, Modal, Tooltip } from 'antd';
+import { SafetyCertificateOutlined, SearchOutlined, CloseOutlined, EditOutlined, DeleteOutlined, StopOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useHistory } from 'react-router-dom';
 import PageLayout from '@/components/pageLayout';
@@ -149,6 +149,13 @@ export default function index() {
                         </AuthorizationWrapper>
                       </Space>
                     </div>
+                    {item.disabled === 1 && (
+                      <Tooltip title={t('disabled')}>
+                        <div className='builtin-cates-grid-item-status'>
+                          <StopOutlined />
+                        </div>
+                      </Tooltip>
+                    )}
                   </div>
                 );
               },

@@ -8,6 +8,7 @@ const zh_CN = {
   ident: '模板名称',
   logo: '图标',
   enable: '启用',
+  disabled: '未启用',
   readme: '采集说明',
   componentFormModal: {
     edit: '编辑模板',
