@@ -38,7 +38,7 @@ enum OperateType {
   None = 'none',
 }
 
-interface ITargetProps {
+export interface ITargetProps {
   id: number;
   cluster: string;
   group_id: number;
@@ -50,14 +50,14 @@ interface ITargetProps {
 }
 
 interface IProps {
+  editable?: boolean;
+  explorable?: boolean;
   gids?: string;
-  selectedIdents: string[];
-  setSelectedIdents: (selectedIdents: string[]) => void;
-  selectedRowKeys: any[];
-  setSelectedRowKeys: (selectedRowKeys: any[]) => void;
+  selectedRows: ITargetProps[];
+  setSelectedRows: (selectedRowKeys: ITargetProps[]) => void;
   refreshFlag: string;
   setRefreshFlag: (refreshFlag: string) => void;
-  setOperateType: (operateType: OperateType) => void;
+  setOperateType?: (operateType: OperateType) => void;
 }
 
 const GREEN_COLOR = '#3FC453';
@@ -74,8 +74,8 @@ const Unknown = () => {
 export default function List(props: IProps) {
   const { t } = useTranslation('targets');
   const { darkMode } = useContext(CommonStateContext);
-  const { gids, selectedIdents, setSelectedIdents, selectedRowKeys, setSelectedRowKeys, refreshFlag, setRefreshFlag, setOperateType } = props;
-  const [selectedRows, setSelectedRows] = useState<ITargetProps[]>([]);
+  const { editable = true, explorable = true, gids, selectedRows, setSelectedRows, refreshFlag, setRefreshFlag, setOperateType } = props;
+  const selectedIdents = _.map(selectedRows, 'ident');
   const isAddTagToQueryInput = useRef(false);
   const [searchVal, setSearchVal] = useState('');
   const [tableQueryContent, setTableQueryContent] = useState<string>('');
@@ -538,7 +538,12 @@ export default function List(props: IProps) {
 
   return (
     <div>
-      <div className='table-operate-box'>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+        }}
+      >
         <Space>
           <Button
             icon={<ReloadOutlined />}
@@ -547,7 +552,7 @@ export default function List(props: IProps) {
             }}
           />
           <Input
-            className='search-input'
+            style={{ width: 300 }}
             prefix={<SearchOutlined />}
             placeholder={t('search_placeholder')}
             value={searchVal}
@@ -597,67 +602,65 @@ export default function List(props: IProps) {
           />
         </Space>
         <Space>
-          <Dropdown
-            trigger={['click']}
-            overlay={
-              <Menu
-                onClick={({ key }) => {
-                  if (key) {
-                    setOperateType(key as OperateType);
-                  }
-                }}
-              >
-                <Menu.Item key={OperateType.BindTag}>{t('bind_tag.title')}</Menu.Item>
-                <Menu.Item key={OperateType.UnbindTag}>{t('unbind_tag.title')}</Menu.Item>
-                <Menu.Item key='EditBusinessGroups'>
-                  <EditBusinessGroups
-                    gids={gids}
-                    idents={selectedIdents}
-                    selectedRows={selectedRows}
-                    onOk={() => {
-                      setRefreshFlag(_.uniqueId('refreshFlag_'));
-                      setSelectedIdents([]);
-                      setSelectedRowKeys([]);
-                      setSelectedRows([]);
-                    }}
-                  />
-                </Menu.Item>
-                <Menu.Item key={OperateType.UpdateNote}>{t('update_note.title')}</Menu.Item>
-                <Menu.Item key={OperateType.Delete}>{t('batch_delete.title')}</Menu.Item>
-                <Menu.Item key='UpgradeAgent'>
-                  <UpgradeAgent
-                    selectedIdents={selectedIdents}
-                    onOk={() => {
-                      setRefreshFlag(_.uniqueId('refreshFlag_'));
-                    }}
-                  />
-                </Menu.Item>
-              </Menu>
-            }
-          >
-            <Button>
-              {t('common:btn.batch_operations')} <DownOutlined />
-            </Button>
-          </Dropdown>
-          <Space>
-            <Explorer selectedIdents={selectedIdents} />
-            <Button
-              onClick={() => {
-                OrganizeColumns({
-                  value: columnsConfigs,
-                  onChange: (val) => {
-                    setColumnsConfigs(val);
-                    setDefaultColumnsConfigs(val);
-                  },
-                });
-              }}
-              icon={<EyeOutlined />}
-            />
-          </Space>
+          {editable && (
+            <Dropdown
+              trigger={['click']}
+              overlay={
+                <Menu
+                  onClick={({ key }) => {
+                    if (key && setOperateType) {
+                      setOperateType(key as OperateType);
+                    }
+                  }}
+                >
+                  <Menu.Item key={OperateType.BindTag}>{t('bind_tag.title')}</Menu.Item>
+                  <Menu.Item key={OperateType.UnbindTag}>{t('unbind_tag.title')}</Menu.Item>
+                  <Menu.Item key='EditBusinessGroups'>
+                    <EditBusinessGroups
+                      gids={gids}
+                      idents={selectedIdents}
+                      selectedRows={selectedRows}
+                      onOk={() => {
+                        setRefreshFlag(_.uniqueId('refreshFlag_'));
+                        setSelectedRows([]);
+                      }}
+                    />
+                  </Menu.Item>
+                  <Menu.Item key={OperateType.UpdateNote}>{t('update_note.title')}</Menu.Item>
+                  <Menu.Item key={OperateType.Delete}>{t('batch_delete.title')}</Menu.Item>
+                  <Menu.Item key='UpgradeAgent'>
+                    <UpgradeAgent
+                      selectedIdents={selectedIdents}
+                      onOk={() => {
+                        setRefreshFlag(_.uniqueId('refreshFlag_'));
+                      }}
+                    />
+                  </Menu.Item>
+                </Menu>
+              }
+            >
+              <Button>
+                {t('common:btn.batch_operations')} <DownOutlined />
+              </Button>
+            </Dropdown>
+          )}
+          {explorable && <Explorer selectedIdents={selectedIdents} />}
+          <Button
+            onClick={() => {
+              OrganizeColumns({
+                value: columnsConfigs,
+                onChange: (val) => {
+                  setColumnsConfigs(val);
+                  setDefaultColumnsConfigs(val);
+                },
+              });
+            }}
+            icon={<EyeOutlined />}
+          />
         </Space>
       </div>
       <Table
-        className='mt8'
+        className='mt8 n9e-hosts-table'
         rowKey='id'
         columns={columns}
         size='small'
@@ -665,10 +668,8 @@ export default function List(props: IProps) {
         showSorterTooltip={false}
         rowSelection={{
           type: 'checkbox',
-          selectedRowKeys: selectedRowKeys,
+          selectedRowKeys: _.map(selectedRows, 'id'),
           onChange(selectedRowKeys, selectedRows: ITargetProps[]) {
-            setSelectedRowKeys(selectedRowKeys);
-            setSelectedIdents(selectedRows ? selectedRows.map(({ ident }) => ident) : []);
             setSelectedRows(selectedRows);
           },
         }}
