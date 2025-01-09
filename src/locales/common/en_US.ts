@@ -172,6 +172,7 @@ const en_US = {
   'tpl.modify': 'Modify the template',
   'tpl.create.task': 'Create a new task',
   'tpl.callback': 'Self-healing callback address',
+  'tpl.allOptionLabel': 'All scripts',
 
   task: 'Execution History',
   'task.create': 'Create task',
@@ -202,6 +203,7 @@ const en_US = {
   'task.tip.title': 'Tips',
   'task.tip.content':
     'If your role is an administrator, you can execute the script on any machine; otherwise, you can only execute the script on the machines under the business group with administrative rights',
+  'task.allOptionLabel': 'All tasks',
 
   'last.7.days': 'Last 7 days',
   'last.15.days': 'Last 15 days',

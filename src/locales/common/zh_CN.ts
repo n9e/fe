@@ -172,6 +172,7 @@ const zh_CN = {
   'tpl.modify': '编辑脚本',
   'tpl.create.task': '创建任务',
   'tpl.callback': '告警自愈回调地址',
+  'tpl.allOptionLabel': '全部脚本',
 
   task: '自愈任务',
   'task.create': '创建任务',
@@ -201,6 +202,7 @@ const zh_CN = {
   'task.save.execute': '保存立刻执行',
   'task.tip.title': '提示信息',
   'task.tip.content': '如果你的角色是管理员，则可以在任意机器执行脚本；否则，只能对有管理权限的业务组下的机器执行脚本',
+  'task.allOptionLabel': '全部任务',
 
   'last.7.days': '最近 7 天',
   'last.15.days': '最近 15 天',

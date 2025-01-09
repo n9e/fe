@@ -171,6 +171,8 @@ const ja_JP = {
   'tpl.modify': 'スクリプトを編集',
   'tpl.create.task': 'タスクを作成',
   'tpl.callback': '警報自己修復コールバックアドレス',
+  'tpl.allOptionLabel': '全スクリプト',
+
   task: '自己修復タスク',
   'task.create': 'タスクを作成',
   'task.title': 'タイトル',
@@ -199,6 +201,8 @@ const ja_JP = {
   'task.save.execute': '保存してすぐに実行',
   'task.tip.title': 'ヒント情報',
   'task.tip.content': 'もしロールが管理者なら、どのマシンでもスクリプトを実行できます。それ以外は、管理権限のあるビジネスグループのマシンでのみスクリプトを実行できます',
+  'task.allOptionLabel': '全スクリプト',
+
   'last.7.days': '最近 7 日',
   'last.15.days': '最近 15 日',
   'last.30.days': '最近 30 日',
