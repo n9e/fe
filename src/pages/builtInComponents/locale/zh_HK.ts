@@ -8,6 +8,7 @@ const zh_HK = {
   ident: '模板名稱',
   logo: '圖標',
   enable: '啟用',
+  disabled: '未啟用',
   readme: '採集說明',
   componentFormModal: {
     edit: '編輯模板',
