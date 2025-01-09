@@ -73,6 +73,7 @@ const Unknown = () => {
 
 export default function List(props: IProps) {
   const { t } = useTranslation('targets');
+  const { darkMode } = useContext(CommonStateContext);
   const { gids, selectedIdents, setSelectedIdents, selectedRowKeys, setSelectedRowKeys, refreshFlag, setRefreshFlag, setOperateType } = props;
   const [selectedRows, setSelectedRows] = useState<ITargetProps[]>([]);
   const isAddTagToQueryInput = useRef(false);
@@ -83,7 +84,7 @@ export default function List(props: IProps) {
   const [collectsDrawerIdent, setCollectsDrawerIdent] = useState('');
   const [downtime, setDowntime] = useState();
   const [agentVersions, setAgentVersions] = useState<string>();
-  const { darkMode } = useContext(CommonStateContext);
+  const sorterRef = useRef<any>();
   const LOST_COLOR = darkMode ? LOST_COLOR_DARK : LOST_COLOR_LIGHT;
   const columns: ColumnsType<any> = [
     {
@@ -431,6 +432,7 @@ export default function List(props: IProps) {
           </Space>
         ),
         width: 100,
+        sorter: true,
         dataIndex: 'update_at',
         render: (val, reocrd) => {
           let result = moment.unix(val).format('YYYY-MM-DD HH:mm:ss');
@@ -490,7 +492,7 @@ export default function List(props: IProps) {
     }
   });
 
-  const featchData = ({ current, pageSize }: { current: number; pageSize: number }): Promise<any> => {
+  const featchData = ({ current, pageSize, sorter }: { current: number; pageSize: number; sorter?: any }): Promise<any> => {
     const query = {
       query: tableQueryContent,
       gids: gids,
@@ -498,6 +500,8 @@ export default function List(props: IProps) {
       p: current,
       downtime,
       agent_versions: _.isEmpty(agentVersions) ? undefined : JSON.stringify(agentVersions),
+      order: sorter?.field,
+      desc: sorter?.field ? sorter?.order === 'descend' : undefined,
     };
     return getMonObjectList(query).then((res) => {
       return {
@@ -520,6 +524,7 @@ export default function List(props: IProps) {
     run({
       current: 1,
       pageSize: tableProps.pagination.pageSize,
+      sorter: sorterRef.current,
     });
   }, [tableQueryContent, gids, downtime, agentVersions]);
 
@@ -527,6 +532,7 @@ export default function List(props: IProps) {
     run({
       current: tableProps.pagination.current,
       pageSize: tableProps.pagination.pageSize,
+      sorter: sorterRef.current,
     });
   }, [refreshFlag]);
 
@@ -556,13 +562,28 @@ export default function List(props: IProps) {
           <Select
             allowClear
             placeholder={t('filterDowntime')}
-            style={{ width: 120 }}
-            options={_.map(downtimeOptions, (item) => {
-              return {
-                label: t('filterDowntimeMin', { count: item }),
-                value: item * 60,
-              };
-            })}
+            style={{ width: 'max-content' }}
+            dropdownMatchSelectWidth={false}
+            options={[
+              {
+                label: t('filterDowntimeNegative'),
+                options: _.map(downtimeOptions, (item) => {
+                  return {
+                    label: t('filterDowntimeNegativeMin', { count: item }),
+                    value: -(item * 60),
+                  };
+                }),
+              },
+              {
+                label: t('filterDowntimePositive'),
+                options: _.map(downtimeOptions, (item) => {
+                  return {
+                    label: t('filterDowntimePositiveMin', { count: item }),
+                    value: item * 60,
+                  };
+                }),
+              },
+            ]}
             value={downtime}
             onChange={(val) => {
               setDowntime(val);
@@ -679,6 +700,10 @@ export default function List(props: IProps) {
                 }}
               />
             ) : undefined,
+        }}
+        onChange={(pagination, filters, sorter) => {
+          sorterRef.current = sorter;
+          tableProps.onChange(pagination, filters, sorter);
         }}
       />
       <CollectsDrawer visible={collectsDrawerVisible} setVisible={setCollectsDrawerVisible} ident={collectsDrawerIdent} />
