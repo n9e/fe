@@ -132,7 +132,9 @@ export default function Metrics(props: Props) {
     }).then((res) => {
       setTypsMeta(res);
     });
-    getTypes().then((res) => {
+    getTypes({
+      disabled: 0,
+    }).then((res) => {
       setTypesList(res);
     });
     getCollectors().then((res) => {

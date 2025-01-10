@@ -8,6 +8,7 @@ const en_US = {
   ident: 'Name',
   logo: 'Logo',
   enable: 'Enable',
+  disabled: 'Disabled',
   readme: 'Instructions',
   componentFormModal: {
     edit: 'Edit template',
