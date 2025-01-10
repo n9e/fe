@@ -145,7 +145,7 @@ export default function index() {
             </div>
             <div
               style={{
-                height: 'calc(100% - 115px)',
+                height: 'calc(100% - 135px)',
                 marginBottom: 10,
               }}
             >
