@@ -62,7 +62,7 @@ export const deleteMetrics = function (ids: number[]): Promise<any> {
   });
 };
 
-export const getTypes = function (params?: { collector?: string; query?: string }): Promise<string[]> {
+export const getTypes = function (params?: { collector?: string; query?: string; disabled?: number }): Promise<string[]> {
   return request('/api/n9e/builtin-metrics/types', {
     method: RequestMethod.Get,
     params,
