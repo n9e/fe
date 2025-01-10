@@ -24,7 +24,7 @@ const en_US = {
   },
   metrics: {
     title: 'Metrics',
-    search_placeholder: 'Enter Space to separate different keywords',
+    search_placeholder: 'Enter space to separate different keywords',
     clear: 'Clear',
     noData: 'No data, please select the Labels',
     chart_title: 'Trend chart',

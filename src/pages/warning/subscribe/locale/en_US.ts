@@ -1,5 +1,5 @@
 const en_US = {
-  title: 'Alert subscribes',
+  title: 'Subscriptions',
   search_placeholder: 'Search by name, subscribed rules, subscribed tags, and receiving groups',
   rule_name: 'Subscription rules',
   sub_rule_name: 'Subscribe alert rule',
