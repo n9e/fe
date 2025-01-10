@@ -24,7 +24,9 @@ export default function Content(props: Props) {
   const defaultCollector = localStorage.getItem('promQLInput_builtiinMetrics_defaultCollector') || undefined;
 
   useEffect(() => {
-    getTypes().then((res) => {
+    getTypes({
+      disabled: 0,
+    }).then((res) => {
       setTypesList(res);
       getCollectors().then((res) => {
         setCollectorsList(res);
