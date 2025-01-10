@@ -1,21 +1,21 @@
 const en_US = {
   host: {
-    title: 'Host Filter',
+    title: 'Host filter',
     key: {
-      all_hosts: 'All Hosts',
-      group_ids: 'Business Group',
+      all_hosts: 'All hosts',
+      group_ids: 'Business group',
       tags: 'Tags',
       hosts: 'Hosts',
     },
     preview: 'Preview',
   },
   network_device: {
-    title: 'Network Device Filter',
+    title: 'Network device filter',
     key: {
-      all_devices: 'All Network Devices',
-      group_ids: 'Business Group',
+      all_devices: 'All network devices',
+      group_ids: 'Business group',
       tags: 'Tags',
-      ips: 'Network Devices',
+      ips: 'Network devices',
     },
     preview: 'Preview',
   },
