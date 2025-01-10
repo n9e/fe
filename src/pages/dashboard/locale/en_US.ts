@@ -220,6 +220,8 @@ const en_US = {
         },
         heightInPercentage: 'Height in percentage',
         heightInPercentage_tip: 'Legend height occupies the maximum height percentage of the panel, the minimum value is 20%, the maximum value is 80%',
+        widthInPercentage: 'Width in percentage',
+        widthInPercentage_tip: 'Legend width occupies the maximum width percentage of the panel, the minimum value is 20%, the maximum value is 80%',
       },
       thresholds: {
         title: 'Thresholds',
