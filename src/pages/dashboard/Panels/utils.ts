@@ -280,7 +280,7 @@ export function repeatPanel(panel: IPanel, panelIndex: number, panels: IPanel[],
     selectedOptions = [selectedOptions];
   }
   if (_.isEqual(selectedOptions, ['all'])) {
-    selectedOptions = variable.options || [];
+    selectedOptions = _.map(variable.options, 'value') || [];
   }
 
   const maxPerRow = panel.maxPerRow || 4;

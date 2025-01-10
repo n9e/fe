@@ -241,7 +241,7 @@ export default function DisplayItem(props: IProps) {
           >
             {allOption && (
               <Select.Option key={'all'} value={'all'}>
-                all
+                All
               </Select.Option>
             )}
             {_.map(options, (item) => (
