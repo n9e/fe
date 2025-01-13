@@ -1,7 +1,7 @@
 const en_US = {
-  title: 'Embedded Dashboards',
-  edit_title: 'Edit Embedded Dashboards',
-  edit_btn: 'Configure Now',
+  title: 'Embedded dashboards',
+  edit_title: 'Edit embedded dashboards',
+  edit_btn: 'Configure now',
   name: 'Name',
   name_msg: 'Please enter name',
   url: 'URL',

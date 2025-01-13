@@ -220,6 +220,8 @@ const zh_HK = {
         },
         heightInPercentage: '高度百分比',
         heightInPercentage_tip: 'Legend 高度佔據面板的最大高度百分比，最小值為 20%，最大值為 80%',
+        widthInPercentage: '寬度百分比',
+        widthInPercentage_tip: 'Legend 寬度佔據面板的最大寬度百分比，最小值為 20%，最大值為 80%',
       },
       thresholds: {
         title: '閾值',
