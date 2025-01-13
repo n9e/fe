@@ -16,9 +16,7 @@
  */
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import _ from 'lodash';
-import moment from 'moment';
 import semver from 'semver';
-import i18next from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { useInterval } from 'ahooks';
 import { v4 as uuidv4 } from 'uuid';
@@ -27,7 +25,7 @@ import { useBeforeunload } from 'react-beforeunload';
 import queryString from 'query-string';
 import { Alert, Modal, Button, Affix, message } from 'antd';
 import PageLayout from '@/components/pageLayout';
-import { IRawTimeRange, getDefaultValue, isValid } from '@/components/TimeRangePicker';
+import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { Dashboard } from '@/store/dashboardInterface';
 import { getDashboard, updateDashboardConfigs, getDashboardPure } from '@/services/dashboardV2';
 import { getPayloadByUUID } from '@/pages/builtInComponents/services';
@@ -35,7 +33,6 @@ import { SetTmpChartData } from '@/services/metric';
 import { CommonStateContext, basePrefix } from '@/App';
 import MigrationModal from '@/pages/help/migrate/MigrationModal';
 import RouterPrompt from '@/components/RouterPrompt';
-import { rangeOptions } from '@/components/TimeRangePicker/config';
 import { adjustURL } from '@/pages/embeddedDashboards/utils';
 import VariableConfig, { IVariable } from '../VariableConfig';
 import { replaceExpressionVars, getOptionsList } from '../VariableConfig/constant';
@@ -46,7 +43,7 @@ import { JSONParse } from '../utils';
 import Editor from '../Editor';
 import { sortPanelsByGridLayout, panelsMergeToConfigs, updatePanelsInsertNewPanelToGlobal, ajustPanels } from '../Panels/utils';
 import { useGlobalState } from '../globalState';
-import { scrollToLastPanel } from './utils';
+import { scrollToLastPanel, getDefaultTimeRange, getDefaultIntervalSeconds } from './utils';
 import ajustInitialValues from '../Renderer/utils/ajustInitialValues';
 import './style.less';
 interface URLParam {
@@ -61,7 +58,6 @@ interface IProps {
   onLoaded?: (dashboard: Dashboard['configs']) => boolean;
 }
 
-export const dashboardTimeCacheKey = 'dashboard-timeRangePicker-value';
 const fetchDashboard = ({ id, builtinParams }) => {
   if (builtinParams) {
     return getPayloadByUUID(builtinParams).then((res) => {
@@ -78,42 +74,6 @@ const fetchDashboard = ({ id, builtinParams }) => {
 };
 const builtinParamsToID = (builtinParams) => {
   return `${builtinParams['__uuid__']}`;
-};
-/**
- * 获取默认的时间范围
- * 1. 优先使用 URL 中的 __from 和 __to，如果不合法则使用默认值
- * 2. 如果 URL 中没有 __from 和 __to，则使用缓存中的值
- * 3. 如果缓存中没有值，则使用默认值
- */
-// TODO: 如果 URL 的 __from 和 __to 不合法就弹出提示，这里临时设置成只能弹出一次
-message.config({
-  maxCount: 1,
-});
-const getDefaultTimeRange = (id, query, dashboardDefaultRangeIndex?) => {
-  const defaultRange =
-    dashboardDefaultRangeIndex !== undefined && dashboardDefaultRangeIndex !== ''
-      ? rangeOptions[dashboardDefaultRangeIndex]
-      : {
-          start: 'now-1h',
-          end: 'now',
-        };
-  if (query.__from && query.__to) {
-    if (isValid(query.__from) && isValid(query.__to)) {
-      return {
-        start: query.__from,
-        end: query.__to,
-      };
-    }
-    if (moment(_.toNumber(query.__from)).isValid() && moment(_.toNumber(query.__to)).isValid()) {
-      return {
-        start: moment(_.toNumber(query.__from)),
-        end: moment(_.toNumber(query.__to)),
-      };
-    }
-    message.error(i18next.t('dashboard:detail.invalidTimeRange'));
-    return getDefaultValue(`${dashboardTimeCacheKey}_${id}`, defaultRange);
-  }
-  return getDefaultValue(`${dashboardTimeCacheKey}_${id}`, defaultRange);
 };
 
 export default function DetailV2(props: IProps) {
@@ -136,6 +96,7 @@ export default function DetailV2(props: IProps) {
   const [dashboardLinks, setDashboardLinks] = useState<ILink[]>();
   const [panels, setPanels] = useState<any[]>([]);
   const [range, setRange] = useState<IRawTimeRange>(getDefaultTimeRange(id, query, dashboardDefaultRangeIndex));
+  const [intervalSeconds, setIntervalSeconds] = useState<number | undefined>(getDefaultIntervalSeconds(query));
   const [editable, setEditable] = useState(true);
   const [editorData, setEditorData] = useState({
     visible: false,
@@ -285,6 +246,8 @@ export default function DetailV2(props: IProps) {
                 setRange={(v) => {
                   setRange(v);
                 }}
+                intervalSeconds={intervalSeconds}
+                setIntervalSeconds={setIntervalSeconds}
                 onAddPanel={(type) => {
                   if (type === 'row') {
                     const newPanels = updatePanelsInsertNewPanelToGlobal(
