@@ -284,6 +284,17 @@ export default function index(props: Props) {
     const stackedDataAndBands = getStackedDataAndBands(frames);
     const stackedData = stackedDataAndBands.data;
     uOptions.bands = stackedDataAndBands.bands;
+    uOptions.series = _.map(uOptions.series, (s, i) => {
+      if (i === 0) return s;
+      return {
+        ...s,
+        n9e_internal: {
+          // @ts-ignore
+          ...s.n9e_internal,
+          values: frames[i], // 只用于堆叠图下保存原始数据
+        },
+      };
+    });
     data = _.concat([frames[0]], stackedData) as any;
   }
 
