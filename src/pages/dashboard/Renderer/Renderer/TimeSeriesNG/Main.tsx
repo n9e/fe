@@ -88,6 +88,7 @@ export default function index(props: Props) {
   }, [range, JSON.stringify(_.map(panel.targets, 'time'))]);
 
   const uOptions: Options = useMemo(() => {
+    console.log('uOptions');
     const yRange = getScalesYRange({ panel });
     return {
       width,
@@ -277,7 +278,18 @@ export default function index(props: Props) {
         ],
       },
     };
-  }, [width, height, custom, options, colors, JSON.stringify(range), JSON.stringify(baseSeries), JSON.stringify(xMinMax), annotationSettingUp, JSON.stringify(annotations)]);
+  }, [
+    width,
+    height,
+    colors,
+    JSON.stringify(custom),
+    JSON.stringify(options),
+    JSON.stringify(range),
+    JSON.stringify(baseSeries),
+    JSON.stringify(xMinMax),
+    annotationSettingUp,
+    JSON.stringify(annotations),
+  ]);
   let data = frames;
 
   if (custom.stack === 'noraml') {
