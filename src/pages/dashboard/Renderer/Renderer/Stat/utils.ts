@@ -49,7 +49,7 @@ export const getMinFontSizeByList = (
       realHeight = orientation === 'vertical' ? (height as number) * (100 / list.length / 100) : height;
     }
     const name = item.name;
-    const value = valueField ? _.get(item, ['metric', valueField]) : item.value;
+    const value = valueField && valueField !== 'Value' ? _.get(item, ['metric', valueField]) : item.value;
     const valueAndUnit = `${value} ${item.unit}`;
     const nameFontSizeTemp = name && (textMode === 'valueAndName' || textMode === 'name') ? getMaxFontSize(name, (realWidth - 20) * 0.8, realHeight / 2 / 3) : 0;
     const valueFontSizeTemp =

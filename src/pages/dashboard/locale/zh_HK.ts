@@ -539,7 +539,7 @@ const zh_HK = {
   },
   visualizations: {
     timeseries: '時序圖',
-    barchart: '柱狀圖',
+    barchart: '棒形圖',
     stat: '指標圖',
     table: '表格',
     pie: '餅圖',
