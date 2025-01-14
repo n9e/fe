@@ -249,6 +249,11 @@ const zh_HK = {
     host_placeholder: '預設可留空，會從事件中的 ident 標籤取得要執行的機器',
   },
   trigger: {
+    title: '告警條件',
+    builder: '簡單模式',
+    code: '表達式模式',
+    label: '關聯 Label',
+    exp_trigger_disable: '啟用閾值判斷',
     advanced_settings: {
       label: '高級設置',
     },
@@ -275,6 +280,12 @@ const zh_HK = {
       join_type_placeholder: '選擇集合操作',
       on: '標籤名',
     },
+  },
+  nodata_trigger: {
+    title: '無數據告警',
+    enable: '之前查到過數據，現在查不到就告警；重新查到數據就恢復',
+    resolve_after: '無數據超過多久之後自動恢復',
+    resolve_after_unit: '秒',
   },
   filter_disabled: {
     placeholder: '啟用狀態',
