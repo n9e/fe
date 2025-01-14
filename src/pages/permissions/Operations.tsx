@@ -12,8 +12,8 @@ function transformOperations(operations: OperationType[]) {
       key: item.name,
       children: _.map(item.ops, (item) => {
         return {
-          title: item,
-          key: item,
+          title: item.cname,
+          key: item.name,
         };
       }) as {
         title: string;

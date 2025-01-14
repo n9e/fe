@@ -246,6 +246,11 @@ const ja_JP = {
     host_placeholder: 'デフォルトは空にできます。イベントの ident ラベルから実行するマシンを取得します',
   },
   trigger: {
+    title: 'アラート条件',
+    builder: 'シンプルモード',
+    code: '式モード',
+    label: '関連ラベル',
+    exp_trigger_disable: '閾値判定を有効にする',
     advanced_settings: {
       label: '高度な設定',
     },
@@ -272,6 +277,12 @@ const ja_JP = {
       join_type_placeholder: '集合操作を選択',
       on: 'ラベル名',
     },
+  },
+  nodata_trigger: {
+    title: 'データなしトリガー',
+    enable: '以前にデータが見つかり、現在データが見つからない場合にアラートをトリガーします。データが再度見つかると復旧します',
+    resolve_after: 'データがない期間が経過したら自動的に復旧します',
+    resolve_after_unit: '秒',
   },
   filter_disabled: {
     placeholder: 'フィルターを選択',

@@ -50,6 +50,13 @@ export const defaultRuleConfig = {
         severity: 2,
       },
     ],
+    exp_trigger_disable: false,
+    nodata_trigger: {
+      enable: false,
+      severity: 2,
+      resolve_after_enable: false,
+      resolve_after: undefined,
+    },
   },
   anomaly: {
     severity: 2,
