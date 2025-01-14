@@ -1,5 +1,5 @@
 const en_US = {
-  title: 'Notification Settings',
+  title: 'Notification settings',
   webhooks: {
     help_content:
       'Callback mechanism, used for integration between Nightingale and other systems. After Nightingale generates an alarm event, it will be pushed to various callback addresses. You can develop an HTTP API by yourself and configure it here to receive Nightingale alarm events and then do some automated, customized logic. The HTTP method used by Nightingale when calling back is POST, and the content of the alarm event will be placed in the HTTP Request Body in JSON format. Please refer to here for the event data structure. You can find a machine that is networked with Nightingale (assuming its IP is 10.1.2.3), start a port on it with nc, for example, `nc -k -l 4321` can use nc to listen on port 4321, then you configure `http://10.1.2.3:4321` into the callback address, then go to create an alarm rule, once triggered, Nightingale will call back this address, you can see the detailed data format of Nightingale callback in the output of the nc command.',
@@ -40,21 +40,21 @@ const en_US = {
     ident_msg2: 'Ident already exists',
     hide: 'Hide',
     add: 'Add',
-    add_title: 'Add Channel',
-    edit_title: 'Edit Channel',
+    add_title: 'Add channel',
+    edit_title: 'Edit channel',
     enabled: 'Enabled',
   },
   contacts: {
     title: 'Contacts',
-    add_title: 'Add Contact',
-    edit_title: 'Edit Contact',
+    add_title: 'Add contact',
+    edit_title: 'Edit contact',
   },
   smtp: {
     title: 'SMTP',
     testMessage: 'Test email has been sent, please check',
   },
   ibex: {
-    title: 'Ibex Settings',
+    title: 'Ibex settings',
   },
 };
 export default en_US;
