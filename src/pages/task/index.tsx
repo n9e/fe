@@ -68,7 +68,7 @@ const index = (_props: any) => {
   const [gids, setGids] = useState<string | undefined>(getDefaultGids(N9E_GIDS_LOCALKEY, businessGroup));
   const { tableProps } = useAntdTable((options) => getTableData(options, gids, query, mine, days), { refreshDeps: [gids, query, mine, days] });
   const columns: ColumnProps<DataItem>[] = _.concat(
-    businessGroup.isLeaf
+    businessGroup.isLeaf && gids !== '-2'
       ? []
       : ([
           {
@@ -169,7 +169,7 @@ const index = (_props: any) => {
                   {t('task.only.mine')}
                 </Checkbox>
               </Col>
-              {businessGroup.isLeaf && (
+              {businessGroup.isLeaf && gids !== '-2' && (
                 <Col span={8} style={{ textAlign: 'right' }}>
                   <Button
                     type='primary'

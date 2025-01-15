@@ -107,7 +107,7 @@ const index = (_props: any) => {
   }
 
   const columns: ColumnProps<Tpl>[] = _.concat(
-    businessGroup.isLeaf
+    businessGroup.isLeaf && gids !== '-2'
       ? []
       : ([
           {
@@ -212,7 +212,7 @@ const index = (_props: any) => {
                   }}
                 />
               </Col>
-              {businessGroup.isLeaf && (
+              {businessGroup.isLeaf && gids !== '-2' && (
                 <Col span={10} className='textAlignRight'>
                   <Link to={{ pathname: `/job-tpls/add` }}>
                     <Button style={{ marginRight: 10 }} type='primary'>
