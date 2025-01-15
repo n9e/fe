@@ -56,7 +56,6 @@ export default function index(props: Props) {
   const location = useLocation();
   const {
     dashboardID,
-    id,
     frames,
     baseSeries,
     darkMode,
@@ -75,6 +74,7 @@ export default function index(props: Props) {
     onClick,
     onZoomWithoutDefult,
   } = props;
+  const id = isPreview ? `preview_${props.id}` : props.id;
   const { custom, options = {}, targets, overrides } = panel;
   const [dashboardMeta] = useGlobalState('dashboardMeta');
   const uplotRef = useRef<any>();
@@ -88,7 +88,6 @@ export default function index(props: Props) {
   }, [range, JSON.stringify(_.map(panel.targets, 'time'))]);
 
   const uOptions: Options = useMemo(() => {
-    console.log('uOptions');
     const yRange = getScalesYRange({ panel });
     return {
       width,
@@ -101,6 +100,7 @@ export default function index(props: Props) {
           mode: options.tooltip?.mode ?? (defaultOptionsValues.tooltip.mode as any),
           sort: options.tooltip?.sort ?? (defaultOptionsValues.tooltip.sort as any),
           pinningEnabled: true,
+          zIndex: isPreview ? 1999 : 999, // 预览模式下 z-index 需要超过编辑面板的 z-index(1000)
           renderFooter: (domNode: HTMLDivElement, closeOverlay: () => void) => {
             ReactDOM.render(
               <AddAnnotationButton
