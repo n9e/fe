@@ -62,12 +62,13 @@ export default function tooltipPlugin(options: {
   mode: 'single' | 'all' | 'none';
   sort: 'asc' | 'desc' | 'none';
   pinningEnabled?: boolean;
+  zIndex?: number;
   graphTooltip?: 'default' | 'sharedCrosshair' | 'sharedTooltip';
   renderFooter?: (domNode: HTMLDivElement, closeOverlay: () => void) => void;
   pointNameformatter?: (label: string, point: any) => string;
   pointValueformatter?: (value: number, point: any) => string;
 }) {
-  const { id, pinningEnabled, graphTooltip, renderFooter } = options;
+  const { id, pinningEnabled, zIndex = 999, graphTooltip, renderFooter } = options;
   let uplot;
   let over;
   let isPinned = false;
@@ -88,6 +89,7 @@ export default function tooltipPlugin(options: {
     overlay = document.createElement('div');
     overlay.id = tooltipID;
     overlay.className = 'n9e-uplot-tooltip-container';
+    overlay.style.zIndex = _.toString(zIndex);
     overlay.style.display = 'none';
     overlay.style.position = 'absolute';
     document.body.appendChild(overlay);
