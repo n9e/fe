@@ -430,143 +430,138 @@ export default function List(props: ListProps) {
 
   return (
     <div className='n9e-border-base alert-rules-list-container' style={{ height: '100%', overflowY: 'auto' }}>
-      <Row justify='space-between'>
-        <Col span={16}>
-          <Space>
-            <RefreshIcon
+      <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+        <Space>
+          <RefreshIcon
+            onClick={() => {
+              fetchData();
+            }}
+          />
+          <ProdSelect
+            style={{ width: 90 }}
+            value={filter.prod}
+            onChange={(val) => {
+              const newFilter = {
+                ...filter,
+                prod: val,
+              };
+              setFilter(newFilter);
+              window.sessionStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
+            }}
+          />
+          <DatasourceSelect
+            style={{ minWidth: 100 }}
+            filterKey='alertRule'
+            disableResponsive
+            value={filter.datasourceIds}
+            onChange={(val) => {
+              const newFilter = {
+                ...filter,
+                datasourceIds: val,
+              };
+              setFilter(newFilter);
+              window.sessionStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
+            }}
+          />
+          <Select
+            mode='multiple'
+            placeholder={t('severity')}
+            style={{ minWidth: 120 }}
+            value={filter.severities}
+            onChange={(val) => {
+              const newFilter = {
+                ...filter,
+                severities: val,
+              };
+              setFilter(newFilter);
+              window.sessionStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
+            }}
+            dropdownMatchSelectWidth={false}
+          >
+            <Select.Option value={1}>S1（Critical）</Select.Option>
+            <Select.Option value={2}>S2（Warning）</Select.Option>
+            <Select.Option value={3}>S3（Info）</Select.Option>
+          </Select>
+          <Input
+            placeholder={t('search_placeholder')}
+            style={{ width: 200 }}
+            value={queryValue}
+            onChange={(e) => {
+              setQueryValue(e.target.value);
+              searchChange(e.target.value);
+            }}
+            prefix={<SearchOutlined />}
+          />
+          <Select
+            allowClear
+            placeholder={t('filter_disabled.placeholder')}
+            options={[
+              {
+                label: t('filter_disabled.0'),
+                value: 0,
+              },
+              {
+                label: t('filter_disabled.1'),
+                value: 1,
+              },
+            ]}
+            value={filter.disabled}
+            onChange={(val) => {
+              const newFilter = {
+                ...filter,
+                disabled: val,
+              };
+              setFilter(newFilter);
+              window.sessionStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
+            }}
+          />
+        </Space>
+        <Space>
+          {businessGroup.isLeaf && gids !== '-2' && (
+            <Button
+              type='primary'
               onClick={() => {
-                fetchData();
+                history.push(`/alert-rules/add/${businessGroup.id}`);
               }}
-            />
-            <ProdSelect
-              style={{ width: 90 }}
-              value={filter.prod}
-              onChange={(val) => {
-                const newFilter = {
-                  ...filter,
-                  prod: val,
-                };
-                setFilter(newFilter);
-                window.sessionStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
-              }}
-            />
-            <DatasourceSelect
-              style={{ width: 100 }}
-              filterKey='alertRule'
-              value={filter.datasourceIds}
-              onChange={(val) => {
-                const newFilter = {
-                  ...filter,
-                  datasourceIds: val,
-                };
-                setFilter(newFilter);
-                window.sessionStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
-              }}
-            />
-            <Select
-              mode='multiple'
-              placeholder={t('severity')}
-              style={{ width: 120 }}
-              maxTagCount='responsive'
-              value={filter.severities}
-              onChange={(val) => {
-                const newFilter = {
-                  ...filter,
-                  severities: val,
-                };
-                setFilter(newFilter);
-                window.sessionStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
-              }}
-              dropdownMatchSelectWidth={false}
+              className='strategy-table-search-right-create'
             >
-              <Select.Option value={1}>S1（Critical）</Select.Option>
-              <Select.Option value={2}>S2（Warning）</Select.Option>
-              <Select.Option value={3}>S3（Info）</Select.Option>
-            </Select>
-            <Input
-              placeholder={t('search_placeholder')}
-              style={{ width: 200 }}
-              value={queryValue}
-              onChange={(e) => {
-                setQueryValue(e.target.value);
-                searchChange(e.target.value);
-              }}
-              prefix={<SearchOutlined />}
-            />
-            <Select
-              allowClear
-              placeholder={t('filter_disabled.placeholder')}
-              options={[
-                {
-                  label: t('filter_disabled.0'),
-                  value: 0,
-                },
-                {
-                  label: t('filter_disabled.1'),
-                  value: 1,
-                },
-              ]}
-              value={filter.disabled}
-              onChange={(val) => {
-                const newFilter = {
-                  ...filter,
-                  disabled: val,
-                };
-                setFilter(newFilter);
-                window.sessionStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
-              }}
-            />
-          </Space>
-        </Col>
-
-        <Col>
-          <Space>
-            {businessGroup.isLeaf && gids !== '-2' && (
-              <Button
-                type='primary'
-                onClick={() => {
-                  history.push(`/alert-rules/add/${businessGroup.id}`);
-                }}
-                className='strategy-table-search-right-create'
-              >
-                {t('common:btn.add')}
-              </Button>
-            )}
-            {businessGroup.isLeaf && businessGroup.id && gids !== '-2' && (
-              <Button
-                onClick={() => {
-                  if (businessGroup.id) {
-                    Import({
-                      busiId: businessGroup.id,
-                      refreshList: fetchData,
-                      groupedDatasourceList,
-                      datasourceCateOptions,
-                    });
-                  }
-                }}
-              >
-                {t('common:btn.import')}
-              </Button>
-            )}
-            {businessGroup.isLeaf && businessGroup.id && gids !== '-2' && (
-              <MoreOperations bgid={businessGroup.id} selectRowKeys={selectRowKeys} selectedRows={selectedRows} getAlertRules={fetchData} />
-            )}
+              {t('common:btn.add')}
+            </Button>
+          )}
+          {businessGroup.isLeaf && businessGroup.id && gids !== '-2' && (
             <Button
               onClick={() => {
-                OrganizeColumns({
-                  i18nNs: 'alertRules',
-                  value: columnsConfigs,
-                  onChange: (val) => {
-                    setColumnsConfigs(val);
-                    setDefaultColumnsConfigs(val, LOCAL_STORAGE_KEY);
-                  },
-                });
+                if (businessGroup.id) {
+                  Import({
+                    busiId: businessGroup.id,
+                    refreshList: fetchData,
+                    groupedDatasourceList,
+                    datasourceCateOptions,
+                  });
+                }
               }}
-              icon={<EyeOutlined />}
-            />
-          </Space>
-        </Col>
-      </Row>
+            >
+              {t('common:btn.import')}
+            </Button>
+          )}
+          {businessGroup.isLeaf && businessGroup.id && gids !== '-2' && (
+            <MoreOperations bgid={businessGroup.id} selectRowKeys={selectRowKeys} selectedRows={selectedRows} getAlertRules={fetchData} />
+          )}
+          <Button
+            onClick={() => {
+              OrganizeColumns({
+                i18nNs: 'alertRules',
+                value: columnsConfigs,
+                onChange: (val) => {
+                  setColumnsConfigs(val);
+                  setDefaultColumnsConfigs(val, LOCAL_STORAGE_KEY);
+                },
+              });
+            }}
+            icon={<EyeOutlined />}
+          />
+        </Space>
+      </div>
       <Table
         className='mt8'
         size='small'
