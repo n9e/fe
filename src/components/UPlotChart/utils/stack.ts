@@ -63,7 +63,7 @@ export default function getStackedDataAndBands(dat: any) {
         let v = vals[i];
 
         if (v != null) stacked[i] = acc[i] += v;
-        else stacked[i] = v; // we may want to coerce to 0 here
+        else stacked[i] = acc[i]; // 如果值为null，直接作为0处理
       }
     } else data[si] = vals;
   });
