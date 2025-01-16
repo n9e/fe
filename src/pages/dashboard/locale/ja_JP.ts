@@ -133,7 +133,7 @@ const ja_JP = {
     cancel: 'キャンセル',
     ok: 'グループとチャートを削除',
     ok2: 'グループのみを削除',
-    panels: '{{num}} グラフ',
+    panels: '{{count}} グラフ',
     panels_plural: '{{count}} グラフ',
   },
   panel: {
