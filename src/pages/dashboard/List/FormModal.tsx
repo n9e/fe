@@ -19,9 +19,9 @@ import { Modal, Form, Input, Select, Radio, message } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
-import { updateDashboard, createDashboard, updateDashboardConfigs } from '@/services/dashboardV2';
+import { updateDashboard, createDashboard, getDashboard, updateDashboardConfigs } from '@/services/dashboardV2';
 import { DASHBOARD_VERSION } from '@/pages/dashboard/config';
-import { IDashboard } from '../types';
+import { IDashboard, IDashboardConfig } from '../types';
 import { JSONParse } from '../utils';
 
 interface Props {
@@ -39,12 +39,20 @@ function index(props: Props & ModalWrapProps) {
 
   useEffect(() => {
     if (initialValues?.id) {
-      form.setFieldsValue({
-        name: initialValues?.name,
-        ident: initialValues?.ident,
-        tags: initialValues?.tags ? _.split(initialValues.tags, ' ') : undefined,
-        graphTooltip: _.get(initialValues, 'configs.graphTooltip', 'default'),
-        graphZoom: _.get(initialValues, 'configs.graphZoom', 'default'),
+      getDashboard(initialValues.id).then((res) => {
+        let configs = {} as IDashboardConfig;
+        try {
+          configs = JSONParse(res.configs);
+        } catch (e) {
+          console.warn(e);
+        }
+        form.setFieldsValue({
+          name: initialValues?.name,
+          ident: initialValues?.ident,
+          tags: initialValues?.tags ? _.split(initialValues.tags, ' ') : undefined,
+          graphTooltip: configs.graphTooltip,
+          graphZoom: configs.graphZoom,
+        });
       });
     }
   }, [JSON.stringify(initialValues)]);

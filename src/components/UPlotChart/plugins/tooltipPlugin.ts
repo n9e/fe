@@ -6,7 +6,7 @@ import { uplotsMap } from '../index';
 let hoveringUplotID = '';
 
 function renderTooltipItem(seriesItem, value, options) {
-  // value = serie.value(u, value, seriesIndex + 1, idx);
+  // value = seriesItem.value(u, value, seriesIndex + 1, idx);
   const { stroke, label } = seriesItem;
   const color = stroke();
   const point = {
@@ -62,12 +62,13 @@ export default function tooltipPlugin(options: {
   mode: 'single' | 'all' | 'none';
   sort: 'asc' | 'desc' | 'none';
   pinningEnabled?: boolean;
+  zIndex?: number;
   graphTooltip?: 'default' | 'sharedCrosshair' | 'sharedTooltip';
   renderFooter?: (domNode: HTMLDivElement, closeOverlay: () => void) => void;
   pointNameformatter?: (label: string, point: any) => string;
   pointValueformatter?: (value: number, point: any) => string;
 }) {
-  const { id, pinningEnabled, graphTooltip, renderFooter } = options;
+  const { id, pinningEnabled, zIndex = 999, graphTooltip, renderFooter } = options;
   let uplot;
   let over;
   let isPinned = false;
@@ -88,6 +89,7 @@ export default function tooltipPlugin(options: {
     overlay = document.createElement('div');
     overlay.id = tooltipID;
     overlay.className = 'n9e-uplot-tooltip-container';
+    overlay.style.zIndex = _.toString(zIndex);
     overlay.style.display = 'none';
     overlay.style.position = 'absolute';
     document.body.appendChild(overlay);
@@ -315,14 +317,20 @@ export default function tooltipPlugin(options: {
 
           if (options.mode === 'single') {
             const seriesItem = series[closestSeriesIdx];
-            const value = valuesData[closestSeriesIdx - 1]?.values?.[idx];
+            let value = valuesData[closestSeriesIdx - 1]?.values?.[idx];
+            if (seriesItem.n9e_internal?.values) {
+              value = seriesItem.n9e_internal.values[idx];
+            }
             const liNode = renderTooltipItem(seriesItem, value, options);
             liNode.className = 'n9e-uplot-tooltip-item n9e-uplot-tooltip-item-closest';
             ulNode.appendChild(liNode);
           } else {
             _.forEach(valuesData, (item) => {
               const seriesItem = item.seriesItem;
-              const value = item.values[idx];
+              let value = item.values[idx];
+              if (seriesItem.n9e_internal?.values) {
+                value = seriesItem.n9e_internal.values[idx];
+              }
               const liNode = renderTooltipItem(seriesItem, value, options);
               if (item.seriesIndex === closestSeriesIdx) {
                 liNode.className = 'n9e-uplot-tooltip-item n9e-uplot-tooltip-item-closest';

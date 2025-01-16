@@ -16,15 +16,15 @@ const en_US = {
       <2>Logstore</2>
     `,
     range: 'Range',
-    power_sql: 'SQL Enhance',
+    power_sql: 'SQL enhance',
     query: 'Query',
     query_msg: 'Please input query condition',
     mode: {
-      timeSeries: 'Time Series',
-      raw: 'Raw Logs',
+      timeSeries: 'Time series',
+      raw: 'Raw logs',
     },
     advancedSettings: {
-      title: 'Advanced Settings',
+      title: 'Advanced settings',
       metricKey_tip:
         'This field can be used to specify which fields will be used as metricName. By default, numerical fields will be used as metricName. For example, the query result is used_percent:96 host:host01, used_percent will be used as metricName, and the value is 96',
       tags_placeholder: 'Press Enter to input multiple',

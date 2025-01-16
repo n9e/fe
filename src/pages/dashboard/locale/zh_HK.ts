@@ -164,7 +164,7 @@ const zh_HK = {
     cancel: '取消',
     ok: '刪除分組和圖表',
     ok2: '僅刪除分組',
-    panels: '{{num}} 張圖表',
+    panels: '{{count}} 張圖表',
     panels_plural: '{{count}} 張圖表',
   },
   panel: {
@@ -220,6 +220,8 @@ const zh_HK = {
         },
         heightInPercentage: '高度百分比',
         heightInPercentage_tip: 'Legend 高度佔據面板的最大高度百分比，最小值為 20%，最大值為 80%',
+        widthInPercentage: '寬度百分比',
+        widthInPercentage_tip: 'Legend 寬度佔據面板的最大寬度百分比，最小值為 20%，最大值為 80%',
       },
       thresholds: {
         title: '閾值',
@@ -537,7 +539,7 @@ const zh_HK = {
   },
   visualizations: {
     timeseries: '時序圖',
-    barchart: '柱狀圖',
+    barchart: '棒形圖',
     stat: '指標圖',
     table: '表格',
     pie: '餅圖',

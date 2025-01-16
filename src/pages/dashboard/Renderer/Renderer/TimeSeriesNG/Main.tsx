@@ -56,7 +56,6 @@ export default function index(props: Props) {
   const location = useLocation();
   const {
     dashboardID,
-    id,
     frames,
     baseSeries,
     darkMode,
@@ -75,6 +74,7 @@ export default function index(props: Props) {
     onClick,
     onZoomWithoutDefult,
   } = props;
+  const id = isPreview ? `preview_${props.id}` : props.id;
   const { custom, options = {}, targets, overrides } = panel;
   const [dashboardMeta] = useGlobalState('dashboardMeta');
   const uplotRef = useRef<any>();
@@ -100,6 +100,7 @@ export default function index(props: Props) {
           mode: options.tooltip?.mode ?? (defaultOptionsValues.tooltip.mode as any),
           sort: options.tooltip?.sort ?? (defaultOptionsValues.tooltip.sort as any),
           pinningEnabled: true,
+          zIndex: isPreview ? 1999 : 999, // 预览模式下 z-index 需要超过编辑面板的 z-index(1000)
           renderFooter: (domNode: HTMLDivElement, closeOverlay: () => void) => {
             ReactDOM.render(
               <AddAnnotationButton
@@ -277,13 +278,35 @@ export default function index(props: Props) {
         ],
       },
     };
-  }, [width, height, custom, options, colors, JSON.stringify(range), JSON.stringify(baseSeries), JSON.stringify(xMinMax), annotationSettingUp, JSON.stringify(annotations)]);
+  }, [
+    width,
+    height,
+    colors,
+    JSON.stringify(custom),
+    JSON.stringify(options),
+    JSON.stringify(range),
+    JSON.stringify(baseSeries),
+    JSON.stringify(xMinMax),
+    annotationSettingUp,
+    JSON.stringify(annotations),
+  ]);
   let data = frames;
 
   if (custom.stack === 'noraml') {
     const stackedDataAndBands = getStackedDataAndBands(frames);
     const stackedData = stackedDataAndBands.data;
     uOptions.bands = stackedDataAndBands.bands;
+    uOptions.series = _.map(uOptions.series, (s, i) => {
+      if (i === 0) return s;
+      return {
+        ...s,
+        n9e_internal: {
+          // @ts-ignore
+          ...s.n9e_internal,
+          values: frames[i], // 只用于堆叠图下保存原始数据
+        },
+      };
+    });
     data = _.concat([frames[0]], stackedData) as any;
   }
 

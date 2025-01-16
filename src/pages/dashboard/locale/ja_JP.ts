@@ -133,7 +133,7 @@ const ja_JP = {
     cancel: 'キャンセル',
     ok: 'グループとチャートを削除',
     ok2: 'グループのみを削除',
-    panels: '{{num}} グラフ',
+    panels: '{{count}} グラフ',
     panels_plural: '{{count}} グラフ',
   },
   panel: {
@@ -189,6 +189,8 @@ const ja_JP = {
         },
         heightInPercentage: '高さパーセンテージ',
         heightInPercentage_tip: 'Legendの高さはパネルの最大高さのパーセンテージを占めます。最小値は20%、最大値は80%です',
+        widthInPercentage: '幅パーセンテージ',
+        widthInPercentage_tip: 'Legendの幅はパネルの最大幅のパーセンテージを占めます。最小値は20%、最大値は80%です',
       },
       thresholds: {
         title: 'しきい値',

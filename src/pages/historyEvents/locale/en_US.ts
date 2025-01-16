@@ -1,10 +1,10 @@
 const en_US = {
-  title: 'History Events',
-  rule_name: 'Rule Name & Event Tags',
+  title: 'Historical events',
+  rule_name: 'Rule name & Event tags',
   search_placeholder: 'multiple keywords separated by spaces',
-  first_trigger_time: 'First Triggered',
+  first_trigger_time: 'First triggered',
   trigger_time: 'Triggered',
-  last_eval_time: 'Last Evaluated',
+  last_eval_time: 'Last evaluated',
   hours: {
     6: 'Last 6 Hours',
     12: 'Last 12 Hours',
@@ -18,9 +18,9 @@ const en_US = {
     2160: 'Last 90 Days',
   },
   severity: 'Severity',
-  eventType: 'Event Type',
+  eventType: 'Event type',
   export: 'Export',
-  export_failed: 'Export Failed',
+  export_failed: 'Export failed',
   prod: 'Type',
   rule_prod: {
     firemap: 'Firemap',
