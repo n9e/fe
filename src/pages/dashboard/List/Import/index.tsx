@@ -83,6 +83,7 @@ export default function Import(props: IProps) {
       width={900}
       className='dashboard-import-modal'
       maskClosable={false}
+      destroyOnClose
       title={
         <Tabs activeKey={modalType} onChange={(e: ModalType) => setModalType(e)} className='custom-import-alert-title'>
           <TabPane tab={t('batch.import_builtin')} key='ImportBuiltin'></TabPane>
@@ -124,10 +125,14 @@ export default function Import(props: IProps) {
             createDashboard(busiId, {
               ...data,
               configs: data.configs,
-            }).then(() => {
-              message.success(t('common:success.import'));
-              onOk();
-            });
+            })
+              .then(() => {
+                message.success(t('common:success.import'));
+                onOk();
+              })
+              .finally(() => {
+                setImportLoading(false);
+              });
           }}
         >
           <Form.Item

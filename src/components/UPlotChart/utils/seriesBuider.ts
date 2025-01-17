@@ -23,12 +23,14 @@ export default function seriesBuider(props: Props) {
   }
   const rightYAxisDisplay = _.get(overrides, [0, 'properties', 'rightYAxisDisplay']);
   const matchRefId = _.get(overrides, [0, 'matcher', 'value']);
+  const refIds = _.union(_.map(baseSeries, (item) => _.get(item, 'n9e_internal.refId')));
   const series: Series[] = _.concat(
     [{}] as Series[],
     _.map(baseSeries, (item, idx) => {
       const refId = _.get(item, 'n9e_internal.refId');
       let scaleKey = 'y';
-      if (rightYAxisDisplay && matchRefId === refId) {
+      // refIds.length > 1 TODO: 暂时不支持单独设置右侧Y轴
+      if (refIds.length > 1 && rightYAxisDisplay === 'noraml' && matchRefId === refId) {
         scaleKey = 'y2';
       }
       return {

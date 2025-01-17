@@ -289,6 +289,7 @@ export default function index(props: Props) {
     JSON.stringify(xMinMax),
     annotationSettingUp,
     JSON.stringify(annotations),
+    JSON.stringify(overrides),
   ]);
   let data = frames;
 
