@@ -54,7 +54,7 @@ const en_US = {
   quickOpenClose: 'Open/Close',
   quickSearchPlaceholder: 'Search...',
   quickMenus: 'Quick menus',
-  站内公告: 'Notification',
+  站内公告: 'Announcements',
   integrations: 'Integrations',
   built_in_components: 'Built-in components',
 };
