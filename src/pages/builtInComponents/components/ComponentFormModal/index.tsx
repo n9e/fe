@@ -1,6 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
-import { Modal, Form, Input, Space, message } from 'antd';
+import { Modal, Form, Input, Space, message, Switch } from 'antd';
 import { useTranslation } from 'react-i18next';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { postComponents, putComponent, Component } from '../../services';
@@ -77,6 +77,15 @@ function index(props: Props & ModalWrapProps) {
           ]}
         >
           <Input disabled={initialValues?.created_by === 'system'} />
+        </Form.Item>
+        <Form.Item
+          label={t('enable')}
+          name='disabled'
+          valuePropName='checked'
+          getValueFromEvent={(checked) => (checked ? 0 : 1)}
+          getValueProps={(value) => ({ checked: value === 0 })}
+        >
+          <Switch />
         </Form.Item>
         <Form.Item
           label={

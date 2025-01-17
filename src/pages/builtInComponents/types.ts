@@ -3,6 +3,7 @@ export interface Component {
   ident: string;
   logo: string;
   readme: string;
+  disabled: 0 | 1;
 }
 
 export type ComponentPost = Omit<Component, 'id'>;

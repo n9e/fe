@@ -7,6 +7,8 @@ const zh_CN = {
   tab_dashboards: '仪表盘',
   ident: '模板名称',
   logo: '图标',
+  enable: '启用',
+  disabled: '未启用',
   readme: '采集说明',
   componentFormModal: {
     edit: '编辑模板',

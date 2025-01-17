@@ -27,6 +27,7 @@ export default function GraphPreview({ form, fieldName, promqlFieldName = 'prom_
     end: 'now',
   });
   const [step, setStep] = useState<number | null>();
+  const var_enabled = Form.useWatch(['rule_config', 'queries', fieldName, 'var_enabled']);
 
   const fetchData = () => {
     const query = form.getFieldValue(['rule_config', 'queries', fieldName]);
@@ -92,6 +93,9 @@ export default function GraphPreview({ form, fieldName, promqlFieldName = 'prom_
       fetchData();
     }
   }, [visible, datasourceId, range]);
+
+  // 启用变量时无法预览，这里隐藏预览按钮
+  if (!!var_enabled) return null;
 
   return (
     <div ref={divRef}>
