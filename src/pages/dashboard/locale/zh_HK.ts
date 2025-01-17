@@ -1,7 +1,7 @@
 const zh_HK = {
   title: '監控儀表盤',
   list: '儀表盤列表',
-  back_icon_tip: '返返回上一頁，沒有上一頁則返回儀錶板列表',
+  back_icon_tip: '返返回上一頁，沒有上一頁則返回儀表板列表',
   back_icon_tip_is_built_in: '返回上一頁，沒有上一頁則返回模板中心',
   name: '儀表盤名稱',
   tags: '分類標籤',
@@ -32,7 +32,7 @@ const zh_HK = {
   default_filter: {
     title: '預置篩選',
     public: '公開儀表盤',
-    all: '所屬業務組儀錶板',
+    all: '所屬業務組儀表板',
     all_tip: '此選項會顯示您所在業務群組下關聯的所有儀表板',
   },
   create_title: '創建儀表盤',
@@ -49,8 +49,8 @@ const zh_HK = {
     import_grafana_tip: '匯入完的圖表只支援夜鶯目前支援的圖表類型和功能, <a>問題反饋</a>',
     import_grafana_tip_version_error: '不支援匯入小於 v7 版本的儀表盤配置',
     import_grafana_tip_version_warning: '匯入的儀表盤配置版本小於 v8，部分圖表可能無法正常顯示，是否繼續匯入？',
-    import_grafana_url: 'Grafana 儀錶板地址（建議）',
-    import_grafana_url_label: 'Grafana 儀錶板地址',
+    import_grafana_url: 'Grafana 儀表板地址（建議）',
+    import_grafana_url_label: 'Grafana 儀表板地址',
     continueToImport: '繼續匯入',
     noSelected: '請選擇儀表盤',
     import_builtin: '匯入內置儀表盤',
@@ -355,7 +355,7 @@ const zh_HK = {
       },
       table: {
         displayMode: '顯示模式',
-        showHeader: '顯示錶頭',
+        showHeader: '顯示表頭',
         seriesToRows: '每行展示 serie 的值',
         labelsOfSeriesToRows: '每行展示 labels 的值',
         labelValuesToRows: '每行展示指定聚合維度的值',
