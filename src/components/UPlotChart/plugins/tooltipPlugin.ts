@@ -263,8 +263,9 @@ export default function tooltipPlugin(options: {
 
         // 遍历所有数据点，找到距离最近的点
         _.forEach(valuesData, (item) => {
+          const { seriesItem } = item;
           const x = u.valToPos(timeData[idx], 'x');
-          const y = u.valToPos(item.values[idx], 'y');
+          const y = u.valToPos(item.values[idx], seriesItem.scale);
           const dist = Math.sqrt(Math.pow(mouseX - x, 2) + Math.pow(mouseY - y, 2));
           if (dist < minDist) {
             minDist = dist;

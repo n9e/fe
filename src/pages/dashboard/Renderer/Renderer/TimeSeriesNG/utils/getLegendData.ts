@@ -46,7 +46,7 @@ export default function getLegendData(props: Props): DataItem[] {
   let unit = getUnit(standardOptions);
   const data = _.map(_.slice(frames, 1), (item, idx) => {
     const seriesItem = baseSeries[idx];
-    const override = _.find(overrides, (item) => item.matcher.value === seriesItem.n9e_internal.refId);
+    const override = _.find(overrides, (item) => item.matcher?.value === seriesItem.n9e_internal.refId);
     if (override) {
       unit = override?.properties?.standardOptions?.util;
       decimals = override?.properties?.standardOptions?.decimals;

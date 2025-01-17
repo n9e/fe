@@ -75,6 +75,10 @@ export default function index(props: Props) {
   const [activeLegends, setActiveLegends] = useState<string[]>([]); // legendSelectMode === 'multiple'
   const { frames, baseSeries } = useMemo(() => {
     setDataRefresh(_.uniqueId('dataRefresh_'));
+    // TODO: 数据刷新后 series.id 会变化，这里暂时重置 activeLegend 和 activeLegends
+    // 后续需要考虑通过 series.metric 生成 hash 值，来判断是否是同一个 series
+    setActiveLegend(undefined);
+    setActiveLegends([]);
     return getDataFrameAndBaseSeries(mainProps.series as any);
   }, [JSON.stringify(mainProps.series)]);
   const seriesData = useMemo(() => {
@@ -94,7 +98,7 @@ export default function index(props: Props) {
         show: activeLegend ? (legendBehaviour === 'hideItem' ? activeLegend !== id : activeLegend === id) : true,
       };
     });
-  }, [dataRefresh, JSON.stringify(activeLegend), JSON.stringify(activeLegends)]);
+  }, [dataRefresh, activeLegend, JSON.stringify(activeLegends)]);
   const legendData = useMemo(() => {
     const { options, overrides } = mainProps.panel;
     if (legend?.displayMode !== 'hidden') {
