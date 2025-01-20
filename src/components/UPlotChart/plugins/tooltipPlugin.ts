@@ -198,20 +198,18 @@ export default function tooltipPlugin(options: {
         if (isPinned) return;
         const { data, series } = u;
         const timeData = data[0];
+        const originData = _.map(data, (item, idx: number) => {
+          return {
+            values: item,
+            seriesIndex: idx,
+            seriesItem: series[idx],
+          };
+        });
         let valuesData: {
           values: number[];
           seriesIndex: number;
           seriesItem: any;
-        }[] = _.slice(
-          _.map(data, (item, idx: number) => {
-            return {
-              values: item,
-              seriesIndex: idx,
-              seriesItem: series[idx],
-            };
-          }),
-          1,
-        );
+        }[] = _.slice(originData, 1);
         valuesData = _.filter(valuesData, (item) => {
           return item.seriesItem.show !== false;
         });
@@ -318,7 +316,7 @@ export default function tooltipPlugin(options: {
 
           if (options.mode === 'single') {
             const seriesItem = series[closestSeriesIdx];
-            let value = valuesData[closestSeriesIdx - 1]?.values?.[idx];
+            let value = originData[closestSeriesIdx]?.values?.[idx];
             if (seriesItem.n9e_internal?.values) {
               value = seriesItem.n9e_internal.values[idx];
             }

@@ -282,6 +282,8 @@ export default function index(props: Props) {
     width,
     height,
     colors,
+    dashboardMeta.graphTooltip,
+    dashboardMeta.graphZoom,
     JSON.stringify(custom),
     JSON.stringify(options),
     JSON.stringify(range),
