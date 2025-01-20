@@ -198,20 +198,18 @@ export default function tooltipPlugin(options: {
         if (isPinned) return;
         const { data, series } = u;
         const timeData = data[0];
+        const originData = _.map(data, (item, idx: number) => {
+          return {
+            values: item,
+            seriesIndex: idx,
+            seriesItem: series[idx],
+          };
+        });
         let valuesData: {
           values: number[];
           seriesIndex: number;
           seriesItem: any;
-        }[] = _.slice(
-          _.map(data, (item, idx: number) => {
-            return {
-              values: item,
-              seriesIndex: idx,
-              seriesItem: series[idx],
-            };
-          }),
-          1,
-        );
+        }[] = _.slice(originData, 1);
         valuesData = _.filter(valuesData, (item) => {
           return item.seriesItem.show !== false;
         });
@@ -263,8 +261,9 @@ export default function tooltipPlugin(options: {
 
         // 遍历所有数据点，找到距离最近的点
         _.forEach(valuesData, (item) => {
+          const { seriesItem } = item;
           const x = u.valToPos(timeData[idx], 'x');
-          const y = u.valToPos(item.values[idx], 'y');
+          const y = u.valToPos(item.values[idx], seriesItem.scale);
           const dist = Math.sqrt(Math.pow(mouseX - x, 2) + Math.pow(mouseY - y, 2));
           if (dist < minDist) {
             minDist = dist;
@@ -317,7 +316,7 @@ export default function tooltipPlugin(options: {
 
           if (options.mode === 'single') {
             const seriesItem = series[closestSeriesIdx];
-            let value = valuesData[closestSeriesIdx - 1]?.values?.[idx];
+            let value = originData[closestSeriesIdx]?.values?.[idx];
             if (seriesItem.n9e_internal?.values) {
               value = seriesItem.n9e_internal.values[idx];
             }

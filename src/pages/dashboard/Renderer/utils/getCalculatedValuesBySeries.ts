@@ -242,7 +242,7 @@ export const getLegendValues = (series: any[], standardOptions, hexPalette: stri
   let unit = standardOptions?.unit || standardOptions?.util; // TODO: 兼容之前写错的 util
   const newSeries = stack ? _.reverse(_.clone(series)) : series;
   const values = _.map(newSeries, (serie, idx) => {
-    const override = _.find(overrides, (item) => item.matcher.value === serie.refId);
+    const override = _.find(overrides, (item) => item.matcher?.value === serie.refId);
     if (override) {
       unit = override?.properties?.standardOptions?.util;
       decimals = override?.properties?.standardOptions?.decimals;

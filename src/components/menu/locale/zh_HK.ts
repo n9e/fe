@@ -48,7 +48,7 @@ const zh_HK = {
   拨测状态: '撥測狀態',
   网络探测: '網路探測',
   数据采集: '數據採集',
-  对象列表: '對象列錶',
+  对象列表: '對象列表',
   Pingmesh配置: 'Pingmesh配置',
   quickJump: '快速跳轉',
   quickOpenClose: '打開/關閉',
