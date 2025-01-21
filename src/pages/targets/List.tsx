@@ -291,7 +291,6 @@ export default function List(props: IProps) {
         title: t('mem_util'),
         width: 100,
         dataIndex: 'mem_util',
-        sorter: (a, b) => a.mem_util - b.mem_util,
         render(text, reocrd) {
           if (reocrd.cpu_num === -1) return <Unknown />;
           let backgroundColor = GREEN_COLOR;
@@ -323,7 +322,6 @@ export default function List(props: IProps) {
         title: t('cpu_util'),
         width: 100,
         dataIndex: 'cpu_util',
-        sorter: (a, b) => a.cpu_util - b.cpu_util,
         render(text, reocrd) {
           if (reocrd.cpu_num === -1) return <Unknown />;
           let backgroundColor = GREEN_COLOR;
@@ -354,7 +352,6 @@ export default function List(props: IProps) {
         title: t('cpu_num'),
         width: 100,
         dataIndex: 'cpu_num',
-        sorter: (a, b) => a.cpu_num - b.cpu_num,
         render: (val, reocrd) => {
           if (reocrd.cpu_num === -1) return <Unknown />;
           return val;
@@ -373,7 +370,6 @@ export default function List(props: IProps) {
         ),
         width: 100,
         dataIndex: 'offset',
-        sorter: (a, b) => a.offset - b.offset,
         render(text, reocrd) {
           if (reocrd.cpu_num === -1) return <Unknown />;
           let backgroundColor = RED_COLOR;
