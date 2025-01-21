@@ -34,7 +34,7 @@ export default function NodataTrigger(props: Props) {
       </div>
       <div className='mb1'>
         <Space align='baseline'>
-          <Form.Item noStyle name={[...names, 'duration']} valuePropName='checked'>
+          <Form.Item noStyle name={[...names, 'resolve_after_enable']} valuePropName='checked'>
             <Checkbox />
           </Form.Item>
           {t('nodata_trigger.resolve_after')}
