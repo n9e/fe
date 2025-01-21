@@ -286,7 +286,7 @@ const en_US = {
     },
   },
   nodata_trigger: {
-    title: 'No Data Trigger',
+    title: 'No data',
     enable: 'If data was previously retrievable but now cannot be found, trigger an alert; if the data is retrieved again, restore the normal status.',
     resolve_after: 'Automatically recover after no data for',
     resolve_after_unit: 's',
