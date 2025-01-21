@@ -246,7 +246,7 @@ const ja_JP = {
     host_placeholder: 'デフォルトは空にできます。イベントの ident ラベルから実行するマシンを取得します',
   },
   trigger: {
-    title: 'アラート条件',
+    title: '閾値判定',
     builder: 'シンプルモード',
     code: '式モード',
     label: '関連ラベル',

@@ -253,7 +253,7 @@ const en_US = {
     host_placeholder: 'Optional, the host to be executed will be obtained from the ident tag in the event',
   },
   trigger: {
-    title: 'Triggers',
+    title: 'Threshold Judgment',
     builder: 'Builder',
     code: 'Code',
     label: 'Label',

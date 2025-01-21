@@ -249,7 +249,7 @@ const zh_HK = {
     host_placeholder: '預設可留空，會從事件中的 ident 標籤取得要執行的機器',
   },
   trigger: {
-    title: '告警條件',
+    title: '閾值判斷',
     builder: '簡單模式',
     code: '表達式模式',
     label: '關聯 Label',
