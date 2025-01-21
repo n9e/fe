@@ -28,6 +28,7 @@ export const defaultRuleConfig = {
   logging: {
     queries: [
       {
+        ref: 'A',
         interval_unit: 'min',
         interval: 5,
         date_field: '@timestamp',
