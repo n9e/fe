@@ -51,11 +51,12 @@ export default function PrometheusV2(props: Props) {
               <Space>
                 <span>{t('ruleConfigPromVersionV2.query.title')}</span>
                 <PlusCircleOutlined
-                  onClick={() =>
-                    add({
+                  onClick={() => {
+                    return add({
+                      ref: generateQueryName(_.map(queries, 'ref')),
                       query: '',
-                    })
-                  }
+                    });
+                  }}
                 />
               </Space>
             }
@@ -66,7 +67,7 @@ export default function PrometheusV2(props: Props) {
                 <div key={field.key} className='alert-rule-trigger-container'>
                   <Row gutter={8}>
                     <Col flex='32px'>
-                      <Form.Item {...field} name={[field.name, 'ref']} initialValue={generateQueryName(_.map(queries, 'ref'))}>
+                      <Form.Item {...field} name={[field.name, 'ref']}>
                         <QueryName existingNames={_.map(queries, 'ref')} />
                       </Form.Item>
                     </Col>

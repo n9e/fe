@@ -4,6 +4,7 @@ import { PlusCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { getIndices } from '@/pages/explorer/Elasticsearch/services';
+import { generateQueryName } from '@/components/QueryName';
 import Query from './Query';
 
 interface IProps {
@@ -17,6 +18,7 @@ export default function index(props: IProps) {
   const { datasourceValue, form, disabled } = props;
   const [indexOptions, setIndexOptions] = useState<any[]>([]);
   const names = ['rule_config', 'queries'];
+  const queries = Form.useWatch(names);
 
   useEffect(() => {
     if (datasourceValue !== undefined) {
@@ -43,6 +45,7 @@ export default function index(props: IProps) {
                 disabled={disabled}
                 onClick={() =>
                   add({
+                    ref: generateQueryName(_.map(queries, 'ref')),
                     interval_unit: 'min',
                     interval: 5,
                     date_field: '@timestamp',

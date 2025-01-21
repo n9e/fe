@@ -251,7 +251,7 @@ const zh_CN = {
     host_placeholder: '默认可留空，会从事件中的 ident 标签获取要执行的机器',
   },
   trigger: {
-    title: '告警条件',
+    title: '阈值判断',
     builder: '简单模式',
     code: '表达式模式',
     label: '关联 Label',
