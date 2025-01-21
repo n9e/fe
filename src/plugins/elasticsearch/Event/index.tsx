@@ -58,7 +58,21 @@ export default function ElasticsearchDetail() {
       label: i18next.t('datasource:es.alert.trigger.title'),
       key: 'rule_config',
       render(val) {
+        const trigger_type = _.get(val, 'trigger_type');
         const triggers = _.get(val, 'triggers', []);
+        const nodata_trigger = _.get(val, 'nodata_trigger', {});
+
+        if (trigger_type === 'nodata') {
+          return (
+            <div className='n9e-fill-color-3' style={{ padding: 8 }}>
+              <span style={{ paddingRight: 4 }}>{i18next.t('alertRules:nodata_trigger.title')}</span>
+              <span>
+                {i18next.t('AlertCurEvents:detail.trigger')} {`${i18next.t(`common:severity.${nodata_trigger?.severity}`)}`}
+              </span>
+            </div>
+          );
+        }
+
         return _.map(triggers, (item, idx) => {
           return (
             <div key={idx} className='n9e-fill-color-3' style={{ padding: 8 }}>
