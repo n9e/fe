@@ -143,8 +143,8 @@ export default function index(props: Props) {
           ref={legendRef}
           className='renderer-timeseries-ng-legend-container'
           style={{
-            maxHeight: legend?.placement === 'bottom' ? legend?.heightInPercentage || 30 + '%' : 'unset',
-            maxWidth: legend?.placement === 'right' ? legend?.widthInPercentage || 60 + '%' : 'unset',
+            maxHeight: legend?.placement === 'bottom' ? (legend?.heightInPercentage || 30) + '%' : 'unset',
+            maxWidth: legend?.placement === 'right' ? (legend?.widthInPercentage || 60) + '%' : 'unset',
           }}
         >
           {legendDisplayMode === 'list' && (
