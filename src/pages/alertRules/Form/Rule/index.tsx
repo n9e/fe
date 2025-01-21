@@ -51,6 +51,7 @@ export default function Rule({ form }) {
             // 获取默认 brain 参数，用于初始化智能告警的设置
             form.setFieldsValue({
               prod: 'anomaly',
+              cate: 'prometheus',
             });
             getBrainParams().then((res) => {
               form.setFieldsValue(getDefaultValuesByProd(prod, res));
