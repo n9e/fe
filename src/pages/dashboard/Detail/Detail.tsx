@@ -80,12 +80,13 @@ export default function DetailV2(props: IProps) {
   const { isPreview = false, isBuiltin = false, gobackPath, builtinParams } = props;
   const { t, i18n } = useTranslation('dashboard');
   const history = useHistory();
+  const location = useLocation();
   const { datasourceList, dashboardDefaultRangeIndex, dashboardSaveMode, perms, groupedDatasourceList, darkMode } = useContext(CommonStateContext);
   const isAuthorized = _.includes(perms, '/dashboards/put') && !isPreview;
   const [dashboardMeta, setDashboardMeta] = useGlobalState('dashboardMeta');
   const [panelClipboard, setPanelClipboard] = useGlobalState('panelClipboard');
   let { id } = useParams<URLParam>();
-  const query = queryString.parse(useLocation().search);
+  const query = queryString.parse(location.search);
   if (isBuiltin) {
     id = builtinParamsToID(query);
   }
@@ -490,6 +491,10 @@ export default function DetailV2(props: IProps) {
             {t('detail.prompt.okText')}
           </Button>,
         ]}
+        validator={(prompt) => {
+          // 如果 pathname 不变意味着是同一个页面，不需要提示
+          return location.pathname === prompt.pathname;
+        }}
       />
     </PageLayout>
   );
