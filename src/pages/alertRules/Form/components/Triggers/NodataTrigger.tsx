@@ -23,7 +23,7 @@ export default function NodataTrigger(props: Props) {
       <div className='mb1'>
         <Space align='baseline'>
           {t('severity_label')}
-          <Form.Item name={[...names, 'severity']} rules={[{ required: true, message: 'Missing severity' }]} noStyle>
+          <Form.Item name={[...names, 'severity']} rules={[{ required: true, message: 'Missing severity' }]} noStyle initialValue={2}>
             <Radio.Group disabled={disabled}>
               <Radio value={1}>{t('common:severity.1')}</Radio>
               <Radio value={2}>{t('common:severity.2')}</Radio>
