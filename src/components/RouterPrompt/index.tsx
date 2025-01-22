@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState, forwardRef, useImperativeHandle } from 'react';
-import { useHistory } from 'react-router';
+import { useHistory } from 'react-router-dom';
+import { Location } from 'history';
 import { Modal } from 'antd';
 
 interface Props {
@@ -11,17 +12,28 @@ interface Props {
   cancelText?: string;
   footer?: React.ReactNode;
   message?: React.ReactNode;
+  validator?: (prompt: Location) => boolean; // 自定义校验器
 }
 
 export default forwardRef(function RouterPrompt(props: Props, ref) {
-  const { when, onOK, onCancel, title = 'Unsaved changes', message = 'Are you sure want to leave this page ?', okText, cancelText, footer } = props;
+  const { when, onOK, onCancel, title = 'Unsaved changes', message = 'Are you sure want to leave this page ?', okText, cancelText, footer, validator } = props;
   const history = useHistory();
   const [showPrompt, setShowPrompt] = useState(false);
   const [currentPath, setCurrentPath] = useState('');
 
   useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (when) {
+        event.preventDefault();
+        event.returnValue = message; // 兼容旧版浏览器
+      }
+    };
+
     if (when) {
       history.block((prompt) => {
+        if (validator && validator(prompt)) {
+          return undefined;
+        }
         setCurrentPath(prompt.pathname);
         setShowPrompt(true);
         return 'CUSTOM';
@@ -30,8 +42,10 @@ export default forwardRef(function RouterPrompt(props: Props, ref) {
       history.block(() => {});
     }
 
+    window.addEventListener('beforeunload', handleBeforeUnload);
     return () => {
       history.block(() => {});
+      window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, [history, when]);
 
