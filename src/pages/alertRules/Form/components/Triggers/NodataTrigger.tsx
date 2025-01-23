@@ -38,8 +38,8 @@ export default function NodataTrigger(props: Props) {
             <Checkbox />
           </Form.Item>
           {t('nodata_trigger.resolve_after')}
-          <Form.Item noStyle name={[...names, 'resolve_after']}>
-            <InputNumber />
+          <Form.Item noStyle name={[...names, 'resolve_after']} initialValue={1800}>
+            <InputNumber min={0} />
           </Form.Item>
           {t('nodata_trigger.resolve_after_unit')}
         </Space>
