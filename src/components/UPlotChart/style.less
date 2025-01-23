@@ -1,0 +1,69 @@
+.n9e-uplot-tooltip-container {
+  pointer-events: none;
+  .n9e-uplot-tooltip {
+    color: var(--fc-text-4);
+    background: var(--fc-fill-1);
+    border: 1px solid var(--fc-border-color);
+    border-radius: 3px;
+    box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.12);
+    padding: 0;
+    margin: 8px;
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 8px;
+      border-top: 1px solid var(--fc-border-color);
+      li {
+        table-layout: fixed;
+        font-size: 12px;
+      }
+    }
+    .n9e-uplot-tooltip-item-closest {
+      color: var(--fc-text-2);
+      font-weight: bolder;
+    }
+    .n9e-uplot-tooltip-header {
+      color: var(--fc-text-2);
+      font-weight: bolder;
+      padding: 4px 8px;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .n9e-uplot-tooltip-header-close {
+      cursor: pointer;
+      display: none;
+    }
+    .n9e-uplot-tooltip-item-symbol {
+      display: inline-block;
+      height: 4px;
+      width: 12px;
+      border-radius: 2px;
+      margin: 0 8px 2px 0;
+    }
+    .n9e-uplot-tooltip-item-name {
+      padding-right: 8px;
+    }
+    .n9e-uplot-tooltip-item-value {
+      color: var(--fc-text-2);
+      font-weight: bolder;
+    }
+    .n9e-uplot-tooltip-footer {
+      display: none;
+      padding: 8px;
+    }
+  }
+}
+.n9e-uplot-tooltip-container-pinned {
+  .n9e-uplot-tooltip {
+    ul {
+      border-bottom: 1px solid var(--fc-border-color);
+    }
+    .n9e-uplot-tooltip-header-close {
+      display: block;
+    }
+    .n9e-uplot-tooltip-footer {
+      display: block;
+    }
+  }
+}

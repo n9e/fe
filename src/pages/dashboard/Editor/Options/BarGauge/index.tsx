@@ -17,6 +17,7 @@
 import React from 'react';
 import GraphStyles from './GraphStyles';
 import StandardOptions from '../../Fields/StandardOptions';
+import Thresholds from '../../Fields/Thresholds';
 import ValueMappings from '../../Fields/ValueMappings';
 
 export default function BarGauge() {
@@ -24,6 +25,7 @@ export default function BarGauge() {
     <>
       <GraphStyles />
       <ValueMappings />
+      <Thresholds showMode />
       <StandardOptions />
     </>
   );

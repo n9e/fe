@@ -43,6 +43,7 @@ function FormCpt(props: IProps, ref) {
   const [chartForm] = Form.useForm();
   const { initialValues, range, id, dashboardId, dashboard } = props;
   const [variableConfigWithOptions, setVariableConfigWithOptions] = useState<IVariable[] | undefined>(props.variableConfigWithOptions);
+  const type = Form.useWatch('type', chartForm);
 
   defaultValues.custom = defaultCustomValuesMap[initialValues?.type || defaultValues.type];
 
@@ -78,7 +79,7 @@ function FormCpt(props: IProps, ref) {
       </Form.Item>
       <div
         style={{
-          height: 'calc(100vh - 173px)',
+          height: 'calc(100vh - 150px)',
         }}
       >
         <Row
@@ -89,77 +90,71 @@ function FormCpt(props: IProps, ref) {
           }}
         >
           <Col flex={1} style={{ minWidth: 100 }}>
-            <div style={{ marginBottom: 10, height: 300 }}>
-              <Form.Item shouldUpdate noStyle>
-                {({ getFieldsValue }) => {
-                  return (
-                    <Renderer
-                      dashboardId={dashboardId}
-                      time={range}
-                      values={getFieldsValue()}
-                      variableConfig={variableConfigWithOptions}
-                      isPreview
-                      themeMode={darkMode ? 'dark' : undefined}
-                    />
-                  );
-                }}
-              </Form.Item>
+            <div className='n9e-dashboard-editor-modal-left-wrapper'>
+              {variableConfigWithOptions && variableConfigWithOptions.length > 0 && (
+                <div className='n9e-dashboard-editor-modal-left-vars-wrapper'>
+                  <span>{t('var.vars')}</span>
+                  <VariableConfig
+                    onChange={(value, bool, withOptions) => {
+                      setVariableConfigWithOptions(withOptions || []);
+                    }}
+                    value={variableConfigWithOptions}
+                    editable={false}
+                    range={range}
+                    id={dashboardId}
+                    dashboard={dashboard}
+                  />
+                </div>
+              )}
+              <div className='n9e-border-base n9e-dashboard-editor-modal-left-chart-wrapper'>
+                <Form.Item shouldUpdate noStyle>
+                  {({ getFieldsValue }) => {
+                    return (
+                      <Renderer
+                        id={id}
+                        dashboardId={dashboardId}
+                        dashboardID={dashboard.id}
+                        time={range}
+                        values={getFieldsValue()}
+                        variableConfig={variableConfigWithOptions}
+                        isPreview
+                        themeMode={darkMode ? 'dark' : undefined}
+                        annotations={[]}
+                      />
+                    );
+                  }}
+                </Form.Item>
+              </div>
+              {!_.includes(['text', 'iframe'], type) && (
+                <div className='n9e-dashboard-editor-modal-left-query-wrapper'>
+                  <QueryEditor chartForm={chartForm} type={type} variableConfig={variableConfigWithOptions} dashboardId={dashboardId} time={range} />
+                </div>
+              )}
             </div>
-            <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.type !== curValues.type} noStyle>
-              {({ getFieldValue }) => {
-                const type = getFieldValue('type');
-                if (type !== 'text' && type !== 'iframe') {
-                  return (
-                    <div style={{ height: 'calc(100% - 310px)', overflowY: 'auto' }}>
-                      <div style={{ marginBottom: 10 }}>
-                        <VariableConfig
-                          onChange={(value, bool, withOptions) => {
-                            setVariableConfigWithOptions(withOptions || []);
-                          }}
-                          value={variableConfigWithOptions}
-                          editable={false}
-                          range={range}
-                          id={dashboardId}
-                          dashboard={dashboard}
-                        />
-                      </div>
-                      <QueryEditor chartForm={chartForm} type={type} variableConfig={variableConfigWithOptions} dashboardId={dashboardId} time={range} />
-                    </div>
-                  );
-                }
-              }}
-            </Form.Item>
           </Col>
           <Col flex='600px' style={{ overflowY: 'auto' }}>
             <Collapse>
               <Panel header={t('panel.base.title')}>
                 <>
-                  <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.type !== curValues.type} noStyle>
-                    {({ getFieldValue }) => {
-                      const type = getFieldValue('type');
-                      return (
-                        <Form.Item
-                          label={t('panel.base.name')}
-                          name='name'
-                          tooltip={t('panel.base.name_tip')}
-                          rules={[
-                            {
-                              required: type === 'table',
-                            },
-                          ]}
-                        >
-                          <Mentions prefix='$' split=''>
-                            {_.map(variableConfigWithOptions, (item) => {
-                              return (
-                                <Mentions.Option key={item.name} value={item.name}>
-                                  {item.name}
-                                </Mentions.Option>
-                              );
-                            })}
-                          </Mentions>
-                        </Form.Item>
-                      );
-                    }}
+                  <Form.Item
+                    label={t('panel.base.name')}
+                    name='name'
+                    tooltip={t('panel.base.name_tip')}
+                    rules={[
+                      {
+                        required: type === 'table',
+                      },
+                    ]}
+                  >
+                    <Mentions prefix='$' split=''>
+                      {_.map(variableConfigWithOptions, (item) => {
+                        return (
+                          <Mentions.Option key={item.name} value={item.name}>
+                            {item.name}
+                          </Mentions.Option>
+                        );
+                      })}
+                    </Mentions>
                   </Form.Item>
                   <Form.Item label={t('panel.base.link.label')} style={{ marginBottom: 0 }}>
                     <Form.List name={'links'}>

@@ -316,7 +316,7 @@ const SideMenu = () => {
             collapsedHover ? `absolute ${uncollapsedWidth} shadow-mf` : '',
             !IS_ENT ? 'border-fc-300' : '',
           )}
-          style={{ background: sideMenuBgColor }}
+          style={{ background: sideMenuBgColor, borderColor: 'var(--fc-border-color)' }}
         >
           <div className='flex flex-1 flex-col justify-between gap-8 overflow-hidden'>
             <SideMenuHeader collapsed={collapsed} collapsedHover={collapsedHover} sideMenuBgMode={sideMenuBgMode} />

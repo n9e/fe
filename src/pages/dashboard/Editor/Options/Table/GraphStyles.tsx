@@ -15,7 +15,7 @@
  *
  */
 import React, { useEffect } from 'react';
-import { Form, Select, Row, Col, Switch, Radio, Button, Mentions, Space, Tooltip, Input } from 'antd';
+import { Form, Select, Row, Col, Switch, Radio, Button, Mentions, Space, Tooltip, Input, InputNumber } from 'antd';
 import { DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
@@ -205,6 +205,9 @@ export default function GraphStyles({ chartForm, variableConfigWithOptions }) {
             </Form.Item>
           </Col>
         </Row>
+        <Form.Item label={t('panel.custom.table.pageLimit')} name={[...namePrefix, 'pageLimit']} initialValue={500}>
+          <InputNumber min={1} max={500} />
+        </Form.Item>
         <Form.Item label={t('panel.custom.table.link.mode')} name={[...namePrefix, 'linkMode']} initialValue='appendLinkColumn'>
           <Radio.Group buttonStyle='solid'>
             <Radio.Button value='appendLinkColumn'>{t('panel.custom.table.link.appendLinkColumn')}</Radio.Button>

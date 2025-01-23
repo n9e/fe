@@ -15,7 +15,9 @@
  *
  */
 import React from 'react';
-import KQLInput from '@/components/KQLInput';
+import _ from 'lodash';
+
+import './style.less';
 
 export default function Demo() {
   return (
@@ -24,15 +26,12 @@ export default function Demo() {
         padding: 100,
       }}
     >
-      <KQLInput
-        datasourceValue={81}
-        query={{
-          index: 'log_with_message_*',
-          date_field: '@timestamp',
+      <div
+        style={{
+          width: 'max-content',
+          border: '1px solid #ddd',
         }}
-        historicalRecords={[]}
-        value=''
-      />
+      ></div>
     </div>
   );
 }

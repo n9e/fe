@@ -1,6 +1,6 @@
 const en_US = {
   default_filter: {
-    title: 'Preset Filters',
+    title: 'Preset filters',
     all: 'All',
   },
 };

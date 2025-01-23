@@ -1,6 +1,6 @@
 const en_US = {
-  title: 'About Product',
-  frontend: 'Frontend Version',
-  backend: 'Backend Version',
+  title: 'About product',
+  frontend: 'Frontend version',
+  backend: 'Backend version',
 };
 export default en_US;

@@ -19,6 +19,7 @@ import reactRefresh from '@vitejs/plugin-react-refresh';
 import { md } from './plugins/md';
 import plusResolve from './plugins/plusResolve';
 import prefixPlugin from './plugins/vite-plugin-prefix';
+import getFontFamily from './src/utils/getFontFamily';
 
 const reactSvgPlugin = require('./plugins/svg');
 
@@ -43,12 +44,10 @@ export default defineConfig(({ mode }) => {
   // 后端接口地址
   // 也可以通过环境变量来设置，创建 `.env` 文件，内容为 `PROXY=http://localhost:8080`
   let proxyURL = env.PROXY || 'http://localhost:8080';
-  let fontFamily = '"Microsoft Yahei",Verdana,Helvetica Neue,sans-serif,PingFangSC-Regular,simsun,"sans-serif"';
   if (env.VITE_IS_PRO) {
     proxyURL = env.PROXY_PRO;
   } else if (env.VITE_IS_ENT) {
     proxyURL = env.PROXY_ENT;
-    fontFamily = 'Helvetica Neue,sans-serif,PingFangSC-Regular,microsoft yahei ui,microsoft yahei,simsun,"sans-serif"';
   }
 
   const baseName = env.VITE_PREFIX || '';
@@ -117,7 +116,7 @@ export default defineConfig(({ mode }) => {
             'menu-item-font-size': '14px',
             'radio-button-checked-bg': '#EAE6F3',
             'form-item-margin-bottom': '18px',
-            'font-family': fontFamily,
+            'font-family': getFontFamily(env.VITE_IS_ENT === 'true'),
             'text-color': '#262626',
             'table-row-hover-bg': '#EAE8F2',
             'table-header-bg': '#f0f0f0',

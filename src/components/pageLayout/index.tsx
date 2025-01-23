@@ -93,7 +93,6 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
             localStorage.removeItem('curBusiId');
             history.push('/login');
           });
-          document.body.className = ''; // 登录页不需要主题，退出登录是清空
         }}
       >
         {t('logout')}

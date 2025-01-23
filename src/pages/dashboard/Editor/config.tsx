@@ -17,6 +17,7 @@
 import _ from 'lodash';
 import { PRIMARY_COLOR } from '@/utils/constant';
 import { colors } from '../Components/ColorRangeMenu/config';
+import { IOptions } from '../types';
 
 export const visualizations = [
   {
@@ -81,7 +82,7 @@ export const calcsOptions = {
 };
 
 export const defaultThreshold = {
-  color: PRIMARY_COLOR,
+  color: 'rgb(44, 157, 61)',
   value: null,
   type: 'base',
 };
@@ -104,7 +105,7 @@ export const gaugeDefaultThresholds = [
 
 export const defaultOptionsValues = {
   tooltip: {
-    mode: 'all',
+    mode: 'single',
     sort: 'none',
   },
   legend: {
@@ -112,6 +113,10 @@ export const defaultOptionsValues = {
   },
   thresholds: {
     steps: [defaultThreshold],
+    mode: 'absolute',
+  },
+  thresholdsStyle: {
+    mode: 'dashed',
   },
 };
 
@@ -177,9 +182,9 @@ export const defaultCustomValuesMap = {
     valueField: 'Value',
     baseColor: '#9470FF',
     displayMode: 'basic',
-    serieWidth: 20,
     sortOrder: 'desc',
     otherPosition: 'none',
+    valueMode: 'color', // 'color' | 'hidden'
   },
   text: {
     textSize: 12,

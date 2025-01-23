@@ -1,11 +1,11 @@
 const en_US = {
-  title: 'Variable List',
+  title: 'Variable list',
   search_placeholder: 'Search by name or note',
-  ckey: 'Variable Name',
-  cval: 'Variable Value',
-  isEncrypted: 'Is Encrypted',
-  resetPassword: 'Reset Password',
-  passwordNotSaved: 'Password Not Saved',
-  passwordRequired: 'Password is Required',
+  ckey: 'Variable name',
+  cval: 'Variable value',
+  isEncrypted: 'Is encrypted',
+  resetPassword: 'Reset password',
+  passwordNotSaved: 'Password not saved',
+  passwordRequired: 'Password is required',
 };
 export default en_US;

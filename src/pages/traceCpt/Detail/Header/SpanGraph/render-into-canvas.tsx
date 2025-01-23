@@ -2,7 +2,7 @@ import { TNil } from '../../../type';
 
 // exported for tests
 export const BG_COLOR = '#fff';
-export const DARK_BG_COLOR = '#272a38';
+export const DARK_BG_COLOR = 'rgb(24,27,31)';
 export const ITEM_ALPHA = 0.8;
 export const MIN_ITEM_HEIGHT = 2;
 export const MAX_TOTAL_HEIGHT = 200;

@@ -29,5 +29,6 @@ const zh_CN = {
   explorer_timeseries_legend_columns_placeholder: '默认值为 Last',
   print_access_log: '开启 Access Log',
   print_body_paths: '打印请求 Body 路径',
+  font_family: '字体',
 };
 export default zh_CN;

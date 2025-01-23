@@ -1,0 +1,31 @@
+.renderer-timeseries-ng-container {
+  height: 100%;
+  display: flex;
+  .renderer-timeseries-ng-graph-container {
+    flex-grow: 1;
+    flex-shrink: 1;
+  }
+  .renderer-timeseries-ng-graph {
+    position: relative;
+    .renderer-timeseries-graph-zoom-resetBtn {
+      display: none;
+      position: absolute !important;
+      z-index: 1 !important;
+      top: 10px !important;
+      right: 10px !important;
+      background-color: var(--fc-fill-1);
+      &:hover {
+        background-color: var(--fc-fill-2);
+      }
+    }
+  }
+}
+
+
+.theme-dark {
+  .renderer-timeseries-ng-container {
+    .u-select {
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+}
