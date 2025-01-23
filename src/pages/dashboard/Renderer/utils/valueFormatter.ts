@@ -145,7 +145,34 @@ const valueFormatter = ({ unit, decimals = 6, dateFormat = 'YYYY-MM-DD HH:mm:ss'
       };
     }
     if (
-      _.includes(['cps', 'cpm', 'ops', 'opm', 'reqps', 'reqpm', 'rps', 'rpm', 'wps', 'wpm', 'iops', 'iopm', 'eps', 'epm', 'mps', 'mpm', 'recps', 'recpm', 'rowsps', 'rowspm'], unit)
+      _.includes(
+        [
+          'cps',
+          'cpm',
+          'ops',
+          'opm',
+          'reqps',
+          'reqpm',
+          'rps',
+          'rpm',
+          'wps',
+          'wpm',
+          'iops',
+          'iopm',
+          'eps',
+          'epm',
+          'mps',
+          'mpm',
+          'recps',
+          'recpm',
+          'rowsps',
+          'rowspm',
+          'celsius',
+          'fahrenheit',
+          'kelvin',
+        ],
+        unit,
+      )
     ) {
       const data = byteConverter.format(val, {
         type: 'si',

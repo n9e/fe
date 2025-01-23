@@ -42,6 +42,9 @@ const zh_CN = {
     recpm: '每分钟的记录次数',
     rowsps: '每秒的处理行数',
     rowspm: '每分钟的处理行数',
+    celsius: '摄氏度 (°C)',
+    fahrenheit: '华氏度 (°F)',
+    kelvin: '开尔文 (K)',
   },
 };
 export default zh_CN;

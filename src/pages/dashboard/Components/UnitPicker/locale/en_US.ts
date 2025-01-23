@@ -42,6 +42,9 @@ const en_US = {
     recpm: 'Records per minute',
     rowsps: 'Rows per second',
     rowspm: 'Rows per minute',
+    celsius: 'Celsius (°C)',
+    fahrenheit: 'Fahrenheit (°F)',
+    kelvin: 'Kelvin (K)',
   },
 };
 export default en_US;
