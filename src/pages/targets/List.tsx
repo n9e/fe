@@ -38,7 +38,7 @@ enum OperateType {
   None = 'none',
 }
 
-interface ITargetProps {
+export interface ITargetProps {
   id: number;
   cluster: string;
   group_id: number;
@@ -50,14 +50,14 @@ interface ITargetProps {
 }
 
 interface IProps {
+  editable?: boolean;
+  explorable?: boolean;
   gids?: string;
-  selectedIdents: string[];
-  setSelectedIdents: (selectedIdents: string[]) => void;
-  selectedRowKeys: any[];
-  setSelectedRowKeys: (selectedRowKeys: any[]) => void;
+  selectedRows: ITargetProps[];
+  setSelectedRows: (selectedRowKeys: ITargetProps[]) => void;
   refreshFlag: string;
   setRefreshFlag: (refreshFlag: string) => void;
-  setOperateType: (operateType: OperateType) => void;
+  setOperateType?: (operateType: OperateType) => void;
 }
 
 const GREEN_COLOR = '#3FC453';
@@ -73,8 +73,9 @@ const Unknown = () => {
 
 export default function List(props: IProps) {
   const { t } = useTranslation('targets');
-  const { gids, selectedIdents, setSelectedIdents, selectedRowKeys, setSelectedRowKeys, refreshFlag, setRefreshFlag, setOperateType } = props;
-  const [selectedRows, setSelectedRows] = useState<ITargetProps[]>([]);
+  const { darkMode } = useContext(CommonStateContext);
+  const { editable = true, explorable = true, gids, selectedRows, setSelectedRows, refreshFlag, setRefreshFlag, setOperateType } = props;
+  const selectedIdents = _.map(selectedRows, 'ident');
   const isAddTagToQueryInput = useRef(false);
   const [searchVal, setSearchVal] = useState('');
   const [tableQueryContent, setTableQueryContent] = useState<string>('');
@@ -83,7 +84,7 @@ export default function List(props: IProps) {
   const [collectsDrawerIdent, setCollectsDrawerIdent] = useState('');
   const [downtime, setDowntime] = useState();
   const [agentVersions, setAgentVersions] = useState<string>();
-  const { darkMode } = useContext(CommonStateContext);
+  const sorterRef = useRef<any>();
   const LOST_COLOR = darkMode ? LOST_COLOR_DARK : LOST_COLOR_LIGHT;
   const columns: ColumnsType<any> = [
     {
@@ -290,7 +291,6 @@ export default function List(props: IProps) {
         title: t('mem_util'),
         width: 100,
         dataIndex: 'mem_util',
-        sorter: (a, b) => a.mem_util - b.mem_util,
         render(text, reocrd) {
           if (reocrd.cpu_num === -1) return <Unknown />;
           let backgroundColor = GREEN_COLOR;
@@ -322,7 +322,6 @@ export default function List(props: IProps) {
         title: t('cpu_util'),
         width: 100,
         dataIndex: 'cpu_util',
-        sorter: (a, b) => a.cpu_util - b.cpu_util,
         render(text, reocrd) {
           if (reocrd.cpu_num === -1) return <Unknown />;
           let backgroundColor = GREEN_COLOR;
@@ -353,7 +352,6 @@ export default function List(props: IProps) {
         title: t('cpu_num'),
         width: 100,
         dataIndex: 'cpu_num',
-        sorter: (a, b) => a.cpu_num - b.cpu_num,
         render: (val, reocrd) => {
           if (reocrd.cpu_num === -1) return <Unknown />;
           return val;
@@ -372,7 +370,6 @@ export default function List(props: IProps) {
         ),
         width: 100,
         dataIndex: 'offset',
-        sorter: (a, b) => a.offset - b.offset,
         render(text, reocrd) {
           if (reocrd.cpu_num === -1) return <Unknown />;
           let backgroundColor = RED_COLOR;
@@ -431,6 +428,7 @@ export default function List(props: IProps) {
           </Space>
         ),
         width: 100,
+        sorter: true,
         dataIndex: 'update_at',
         render: (val, reocrd) => {
           let result = moment.unix(val).format('YYYY-MM-DD HH:mm:ss');
@@ -490,7 +488,7 @@ export default function List(props: IProps) {
     }
   });
 
-  const featchData = ({ current, pageSize }: { current: number; pageSize: number }): Promise<any> => {
+  const featchData = ({ current, pageSize, sorter }: { current: number; pageSize: number; sorter?: any }): Promise<any> => {
     const query = {
       query: tableQueryContent,
       gids: gids,
@@ -498,6 +496,8 @@ export default function List(props: IProps) {
       p: current,
       downtime,
       agent_versions: _.isEmpty(agentVersions) ? undefined : JSON.stringify(agentVersions),
+      order: sorter?.field,
+      desc: sorter?.field ? sorter?.order === 'descend' : undefined,
     };
     return getMonObjectList(query).then((res) => {
       return {
@@ -520,6 +520,7 @@ export default function List(props: IProps) {
     run({
       current: 1,
       pageSize: tableProps.pagination.pageSize,
+      sorter: sorterRef.current,
     });
   }, [tableQueryContent, gids, downtime, agentVersions]);
 
@@ -527,12 +528,18 @@ export default function List(props: IProps) {
     run({
       current: tableProps.pagination.current,
       pageSize: tableProps.pagination.pageSize,
+      sorter: sorterRef.current,
     });
   }, [refreshFlag]);
 
   return (
     <div>
-      <div className='table-operate-box'>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+        }}
+      >
         <Space>
           <Button
             icon={<ReloadOutlined />}
@@ -541,7 +548,7 @@ export default function List(props: IProps) {
             }}
           />
           <Input
-            className='search-input'
+            style={{ width: 300 }}
             prefix={<SearchOutlined />}
             placeholder={t('search_placeholder')}
             value={searchVal}
@@ -556,13 +563,28 @@ export default function List(props: IProps) {
           <Select
             allowClear
             placeholder={t('filterDowntime')}
-            style={{ width: 120 }}
-            options={_.map(downtimeOptions, (item) => {
-              return {
-                label: t('filterDowntimeMin', { count: item }),
-                value: item * 60,
-              };
-            })}
+            style={{ width: 'max-content' }}
+            dropdownMatchSelectWidth={false}
+            options={[
+              {
+                label: t('filterDowntimeNegative'),
+                options: _.map(downtimeOptions, (item) => {
+                  return {
+                    label: t('filterDowntimeNegativeMin', { count: item }),
+                    value: -(item * 60),
+                  };
+                }),
+              },
+              {
+                label: t('filterDowntimePositive'),
+                options: _.map(downtimeOptions, (item) => {
+                  return {
+                    label: t('filterDowntimePositiveMin', { count: item }),
+                    value: item * 60,
+                  };
+                }),
+              },
+            ]}
             value={downtime}
             onChange={(val) => {
               setDowntime(val);
@@ -576,67 +598,65 @@ export default function List(props: IProps) {
           />
         </Space>
         <Space>
-          <Dropdown
-            trigger={['click']}
-            overlay={
-              <Menu
-                onClick={({ key }) => {
-                  if (key) {
-                    setOperateType(key as OperateType);
-                  }
-                }}
-              >
-                <Menu.Item key={OperateType.BindTag}>{t('bind_tag.title')}</Menu.Item>
-                <Menu.Item key={OperateType.UnbindTag}>{t('unbind_tag.title')}</Menu.Item>
-                <Menu.Item key='EditBusinessGroups'>
-                  <EditBusinessGroups
-                    gids={gids}
-                    idents={selectedIdents}
-                    selectedRows={selectedRows}
-                    onOk={() => {
-                      setRefreshFlag(_.uniqueId('refreshFlag_'));
-                      setSelectedIdents([]);
-                      setSelectedRowKeys([]);
-                      setSelectedRows([]);
-                    }}
-                  />
-                </Menu.Item>
-                <Menu.Item key={OperateType.UpdateNote}>{t('update_note.title')}</Menu.Item>
-                <Menu.Item key={OperateType.Delete}>{t('batch_delete.title')}</Menu.Item>
-                <Menu.Item key='UpgradeAgent'>
-                  <UpgradeAgent
-                    selectedIdents={selectedIdents}
-                    onOk={() => {
-                      setRefreshFlag(_.uniqueId('refreshFlag_'));
-                    }}
-                  />
-                </Menu.Item>
-              </Menu>
-            }
-          >
-            <Button>
-              {t('common:btn.batch_operations')} <DownOutlined />
-            </Button>
-          </Dropdown>
-          <Space>
-            <Explorer selectedIdents={selectedIdents} />
-            <Button
-              onClick={() => {
-                OrganizeColumns({
-                  value: columnsConfigs,
-                  onChange: (val) => {
-                    setColumnsConfigs(val);
-                    setDefaultColumnsConfigs(val);
-                  },
-                });
-              }}
-              icon={<EyeOutlined />}
-            />
-          </Space>
+          {editable && (
+            <Dropdown
+              trigger={['click']}
+              overlay={
+                <Menu
+                  onClick={({ key }) => {
+                    if (key && setOperateType) {
+                      setOperateType(key as OperateType);
+                    }
+                  }}
+                >
+                  <Menu.Item key={OperateType.BindTag}>{t('bind_tag.title')}</Menu.Item>
+                  <Menu.Item key={OperateType.UnbindTag}>{t('unbind_tag.title')}</Menu.Item>
+                  <Menu.Item key='EditBusinessGroups'>
+                    <EditBusinessGroups
+                      gids={gids}
+                      idents={selectedIdents}
+                      selectedRows={selectedRows}
+                      onOk={() => {
+                        setRefreshFlag(_.uniqueId('refreshFlag_'));
+                        setSelectedRows([]);
+                      }}
+                    />
+                  </Menu.Item>
+                  <Menu.Item key={OperateType.UpdateNote}>{t('update_note.title')}</Menu.Item>
+                  <Menu.Item key={OperateType.Delete}>{t('batch_delete.title')}</Menu.Item>
+                  <Menu.Item key='UpgradeAgent'>
+                    <UpgradeAgent
+                      selectedIdents={selectedIdents}
+                      onOk={() => {
+                        setRefreshFlag(_.uniqueId('refreshFlag_'));
+                      }}
+                    />
+                  </Menu.Item>
+                </Menu>
+              }
+            >
+              <Button>
+                {t('common:btn.batch_operations')} <DownOutlined />
+              </Button>
+            </Dropdown>
+          )}
+          {explorable && <Explorer selectedIdents={selectedIdents} />}
+          <Button
+            onClick={() => {
+              OrganizeColumns({
+                value: columnsConfigs,
+                onChange: (val) => {
+                  setColumnsConfigs(val);
+                  setDefaultColumnsConfigs(val);
+                },
+              });
+            }}
+            icon={<EyeOutlined />}
+          />
         </Space>
       </div>
       <Table
-        className='mt8'
+        className='mt8 n9e-hosts-table'
         rowKey='id'
         columns={columns}
         size='small'
@@ -644,10 +664,8 @@ export default function List(props: IProps) {
         showSorterTooltip={false}
         rowSelection={{
           type: 'checkbox',
-          selectedRowKeys: selectedRowKeys,
+          selectedRowKeys: _.map(selectedRows, 'id'),
           onChange(selectedRowKeys, selectedRows: ITargetProps[]) {
-            setSelectedRowKeys(selectedRowKeys);
-            setSelectedIdents(selectedRows ? selectedRows.map(({ ident }) => ident) : []);
             setSelectedRows(selectedRows);
           },
         }}
@@ -679,6 +697,10 @@ export default function List(props: IProps) {
                 }}
               />
             ) : undefined,
+        }}
+        onChange={(pagination, filters, sorter) => {
+          sorterRef.current = sorter;
+          tableProps.onChange(pagination, filters, sorter);
         }}
       />
       <CollectsDrawer visible={collectsDrawerVisible} setVisible={setCollectsDrawerVisible} ident={collectsDrawerIdent} />

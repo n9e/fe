@@ -253,6 +253,11 @@ const en_US = {
     host_placeholder: 'Optional, the host to be executed will be obtained from the ident tag in the event',
   },
   trigger: {
+    title: 'Threshold Judgment',
+    builder: 'Builder',
+    code: 'Code',
+    label: 'Label',
+    exp_trigger_disable: 'Enable Threshold Judgment',
     advanced_settings: {
       label: 'Advanced Settings',
     },
@@ -279,6 +284,12 @@ const en_US = {
       join_type_placeholder: 'Select join operation',
       on: 'Label key',
     },
+  },
+  nodata_trigger: {
+    title: 'No data',
+    enable: 'If data was previously retrievable but now cannot be found, trigger an alert; if the data is retrieved again, restore the normal status.',
+    resolve_after: 'Automatically recover after no data for',
+    resolve_after_unit: 's',
   },
   filter_disabled: {
     placeholder: 'Enabled status',

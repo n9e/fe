@@ -13,7 +13,7 @@ import './locale';
 const { confirm } = Modal;
 
 export default function index() {
-  const { t } = useTranslation('permissions');
+  const { t, i18n } = useTranslation('permissions');
   const [roleList, setRoleList] = useState<RoleType[]>([]);
   const [activeRole, setActiveRole] = useState<RoleType>();
   const [roleSearchValue, setRoleSearchValue] = useState<string>('');
@@ -33,7 +33,7 @@ export default function index() {
     getOperations().then((res) => {
       setOperations(res);
     });
-  }, []);
+  }, [i18n.language]);
 
   return (
     <PageLayout

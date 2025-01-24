@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useState, useRef, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { Table, Divider, Popconfirm, Tag, Row, Col, Input, Button, Dropdown, Menu, message, Space } from 'antd';
 import { DownOutlined, SearchOutlined, CodeOutlined } from '@ant-design/icons';
@@ -23,19 +23,33 @@ import _ from 'lodash';
 import moment from 'moment';
 import { useAntdTable } from 'ahooks';
 import { useTranslation } from 'react-i18next';
+
 import request from '@/utils/request';
+import { RequestMethod } from '@/store/common';
 import api from '@/utils/api';
-import BusinessGroup from '@/components/BusinessGroup';
 import PageLayout, { HelpLink } from '@/components/pageLayout';
+import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
+import { CommonStateContext } from '@/App';
+import BusinessGroupSideBarWithAll, { getDefaultGids } from '@/components/BusinessGroup/BusinessGroupSideBarWithAll';
+
 import { Tpl } from './interface';
 import BindTags from './bindTags';
 import UnBindTags from './unBindTags';
-import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
-import { CommonStateContext } from '@/App';
+
+const N9E_GIDS_LOCALKEY = 'N9E_TASK_TPL_NODE_ID';
 
 function getTableData(options: any, gids: string | undefined, query: string) {
   if (gids) {
-    return request(`/api/n9e/busi-groups/task-tpls?gids=${gids}&limit=${options.pageSize}&p=${options.current}&query=${query}`).then((res) => {
+    const ids = gids === '-2' ? undefined : gids;
+    return request(`/api/n9e/busi-groups/task-tpls`, {
+      method: RequestMethod.Get,
+      params: {
+        gids: ids,
+        limit: options.pageSize,
+        p: options.current,
+        query: query,
+      },
+    }).then((res) => {
       return { list: res.dat.list, total: res.dat.total };
     });
   }
@@ -47,8 +61,9 @@ const index = (_props: any) => {
   const [query, setQuery] = useState('');
   const { busiGroups, businessGroup } = useContext(CommonStateContext);
   const [selectedIds, setSelectedIds] = useState([] as any[]);
-  const { tableProps, refresh } = useAntdTable<any, any>((options) => getTableData(options, businessGroup.ids, query), {
-    refreshDeps: [businessGroup.ids, query],
+  const [gids, setGids] = useState<string | undefined>(getDefaultGids(N9E_GIDS_LOCALKEY, businessGroup));
+  const { tableProps, refresh } = useAntdTable<any, any>((options) => getTableData(options, gids, query), {
+    refreshDeps: [gids, query],
     debounceWait: 300,
   });
 
@@ -92,7 +107,7 @@ const index = (_props: any) => {
   }
 
   const columns: ColumnProps<Tpl>[] = _.concat(
-    businessGroup.isLeaf
+    businessGroup.isLeaf && gids !== '-2'
       ? []
       : ([
           {
@@ -171,6 +186,7 @@ const index = (_props: any) => {
       },
     ],
   );
+
   return (
     <PageLayout
       icon={<CodeOutlined />}
@@ -182,8 +198,8 @@ const index = (_props: any) => {
       }
     >
       <div style={{ display: 'flex' }}>
-        <BusinessGroup />
-        {businessGroup.ids ? (
+        <BusinessGroupSideBarWithAll gids={gids} setGids={setGids} localeKey={N9E_GIDS_LOCALKEY} allOptionLabel={t('common:tpl.allOptionLabel')} />
+        {gids ? (
           <div className='n9e-border-base p2' style={{ flex: 1 }}>
             <Row>
               <Col span={14} className='mb10'>
@@ -196,7 +212,7 @@ const index = (_props: any) => {
                   }}
                 />
               </Col>
-              {businessGroup.isLeaf && (
+              {businessGroup.isLeaf && gids !== '-2' && (
                 <Col span={10} className='textAlignRight'>
                   <Link to={{ pathname: `/job-tpls/add` }}>
                     <Button style={{ marginRight: 10 }} type='primary'>

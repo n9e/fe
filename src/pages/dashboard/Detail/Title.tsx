@@ -18,6 +18,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useHistory, useLocation, Link } from 'react-router-dom';
 import querystring from 'query-string';
 import _ from 'lodash';
+import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import { Button, Space, Dropdown, Menu, notification, Input, message, Tooltip } from 'antd';
 import { RollbackOutlined, SettingOutlined, SaveOutlined, FullscreenOutlined, DownOutlined } from '@ant-design/icons';
@@ -29,12 +30,11 @@ import { updateDashboardConfigs, getBusiGroupsDashboards } from '@/services/dash
 import DashboardLinks from '../DashboardLinks';
 import { AddPanelIcon } from '../config';
 import { visualizations } from '../Editor/config';
-import { dashboardTimeCacheKey } from './Detail';
 import FormModal from '../List/FormModal';
 import ImportGrafanaURLFormModal from '../List/ImportGrafanaURLFormModal';
 import { IDashboard, ILink } from '../types';
 import { useGlobalState } from '../globalState';
-import { goBack } from './utils';
+import { goBack, dashboardTimeCacheKey } from './utils';
 
 interface IProps {
   dashboard: IDashboard;
@@ -43,6 +43,8 @@ interface IProps {
   handleUpdateDashboardConfigs: (id: number, params: any) => void;
   range: IRawTimeRange;
   setRange: (range: IRawTimeRange) => void;
+  intervalSeconds?: number;
+  setIntervalSeconds: (intervalSeconds?: number) => void;
   onAddPanel: (type: string) => void;
   isPreview: boolean;
   isBuiltin: boolean;
@@ -64,6 +66,8 @@ export default function Title(props: IProps) {
     handleUpdateDashboardConfigs,
     range,
     setRange,
+    intervalSeconds,
+    setIntervalSeconds,
     onAddPanel,
     isPreview,
     isBuiltin,
@@ -239,15 +243,28 @@ export default function Title(props: IProps) {
                 dateFormat='YYYY-MM-DD HH:mm:ss'
                 value={range}
                 onChange={(val) => {
-                  // 以下 history replace 会触发 beforeunload，在手动保存模式下暂时关闭
-                  if (dashboardSaveMode !== 'manual') {
-                    history.replace({
-                      pathname: location.pathname,
-                      // 重新设置时间范围时，清空 __from 和 __to
-                      search: querystring.stringify(_.omit(querystring.parse(window.location.search), ['__from', '__to'])),
-                    });
-                  }
+                  // 更改时间范围后同步到 URL
+                  history.replace({
+                    pathname: location.pathname,
+                    search: querystring.stringify({
+                      ...querystring.parse(window.location.search),
+                      __from: moment.isMoment(val.start) ? val.start.valueOf() : val.start,
+                      __to: moment.isMoment(val.end) ? val.end.valueOf() : val.end,
+                    }),
+                  });
                   setRange(val);
+                }}
+                intervalSeconds={intervalSeconds}
+                onIntervalSecondsChange={(val) => {
+                  const value = val > 0 ? val : undefined;
+                  history.replace({
+                    pathname: location.pathname,
+                    search: querystring.stringify({
+                      ...querystring.parse(window.location.search),
+                      __refresh: value,
+                    }),
+                  });
+                  setIntervalSeconds(value);
                 }}
               />
               {isAuthorized && dashboardSaveMode === 'manual' && (

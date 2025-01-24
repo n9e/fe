@@ -171,8 +171,9 @@ const zh_HK = {
   'tpl.modify': '編輯腳本',
   'tpl.create.task': '創建任務',
   'tpl.callback': '警告自癒回呼地址',
+  'tpl.allOptionLabel': '全部腳本',
 
-  task: '執行歷史',
+  task: '自癒任務',
   'task.create': '創建任務',
   'task.title': '標題',
   'task.done': '是否完成',
@@ -200,6 +201,8 @@ const zh_HK = {
   'task.save.execute': '儲存立刻執行',
   'task.tip.title': '提示資訊',
   'task.tip.content': '如果你的角色是管理員，則可以在任意機器執行腳本；否則，只能對有管理權限的業務組下的機器執行腳本',
+  'task.allOptionLabel': '全部任務',
+
   'last.7.days': '最近 7 天',
   'last.15.days': '最近 15 天',
   'last.30.days': '最近 30 天',

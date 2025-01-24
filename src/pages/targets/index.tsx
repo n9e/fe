@@ -24,7 +24,7 @@ import { bindTags, unbindTags, moveTargetBusi, deleteTargetBusi, updateTargetNot
 import PageLayout from '@/components/pageLayout';
 import { getBusiGroups } from '@/services/common';
 import { CommonStateContext } from '@/App';
-import List from './List';
+import List, { ITargetProps } from './List';
 import BusinessGroup from './BusinessGroup';
 import BusinessGroup2, { getCleanBusinessGroupIds } from '@/components/BusinessGroup';
 import './locale';
@@ -383,8 +383,7 @@ const Targets: React.FC = () => {
   const { businessGroup } = useContext(CommonStateContext);
   const [gids, setGids] = useState<string | undefined>(businessGroup.ids);
   const [operateType, setOperateType] = useState<OperateType>(OperateType.None);
-  const [selectedRowKeys, setSelectedRowKeys] = useState<(string | number)[]>([]);
-  const [selectedIdents, setSelectedIdents] = useState<string[]>([]);
+  const [selectedRows, setSelectedRows] = useState<ITargetProps[]>([]);
   const [refreshFlag, setRefreshFlag] = useState(_.uniqueId('refreshFlag_'));
 
   useEffect(() => {
@@ -439,10 +438,8 @@ const Targets: React.FC = () => {
         >
           <List
             gids={gids}
-            selectedIdents={selectedIdents}
-            setSelectedIdents={setSelectedIdents}
-            selectedRowKeys={selectedRowKeys}
-            setSelectedRowKeys={setSelectedRowKeys}
+            selectedRows={selectedRows}
+            setSelectedRows={setSelectedRows}
             refreshFlag={refreshFlag}
             setRefreshFlag={setRefreshFlag}
             setOperateType={setOperateType}
@@ -453,7 +450,7 @@ const Targets: React.FC = () => {
         <OperationModal
           operateType={operateType}
           setOperateType={setOperateType}
-          idents={selectedIdents}
+          idents={_.map(selectedRows, 'ident')}
           reloadList={() => {
             setRefreshFlag(_.uniqueId('refreshFlag_'));
           }}

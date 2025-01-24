@@ -251,6 +251,11 @@ const zh_CN = {
     host_placeholder: '默认可留空，会从事件中的 ident 标签获取要执行的机器',
   },
   trigger: {
+    title: '阈值判断',
+    builder: '简单模式',
+    code: '表达式模式',
+    label: '关联 Label',
+    exp_trigger_disable: '启用阈值判断',
     advanced_settings: {
       label: '高级设置',
     },
@@ -277,6 +282,12 @@ const zh_CN = {
       join_type_placeholder: '请选择集合操作',
       on: '标签名',
     },
+  },
+  nodata_trigger: {
+    title: '数据缺失',
+    enable: '之前查到过数据，现在查不到就告警；重新查到数据就恢复',
+    resolve_after: '无数据超过多久之后自动恢复',
+    resolve_after_unit: '秒',
   },
   filter_disabled: {
     placeholder: '启用状态',

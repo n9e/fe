@@ -9,5 +9,8 @@ export type RolePostType = Omit<RoleType, 'id'>;
 export interface OperationType {
   name: string;
   cname: string;
-  ops: string[];
+  ops: {
+    name: string;
+    cname: string;
+  }[];
 }

@@ -28,6 +28,7 @@ export const defaultRuleConfig = {
   logging: {
     queries: [
       {
+        ref: 'A',
         interval_unit: 'min',
         interval: 5,
         date_field: '@timestamp',
@@ -50,6 +51,13 @@ export const defaultRuleConfig = {
         severity: 2,
       },
     ],
+    exp_trigger_disable: false,
+    nodata_trigger: {
+      enable: false,
+      severity: 2,
+      resolve_after_enable: false,
+      resolve_after: undefined,
+    },
   },
   anomaly: {
     severity: 2,
