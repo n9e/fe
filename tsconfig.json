@@ -3,7 +3,7 @@
     "noImplicitAny": false,
     "target": "ESNext",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "types": ["vite/client", "node"],
+    "types": ["vite/client", "node", "jest"],
     "allowJs": true,
     "baseUrl": ".",
     "paths": {
@@ -33,5 +33,5 @@
     "esm": true
   },
   "include": ["./src"],
-  "exclude": ["./src/Packages/", "./node_modules/**/*"]
+  "exclude": ["./src/Packages/", "./node_modules/**/*", "**/*.test.ts"]
 }
