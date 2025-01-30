@@ -16,6 +16,7 @@
  */
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import _ from 'lodash';
+import moment from 'moment';
 import semver from 'semver';
 import { useTranslation } from 'react-i18next';
 import { useInterval } from 'ahooks';
@@ -23,11 +24,11 @@ import { v4 as uuidv4 } from 'uuid';
 import { useParams, useHistory, useLocation } from 'react-router-dom';
 import { useBeforeunload } from 'react-beforeunload';
 import queryString from 'query-string';
-import { Alert, Modal, Button, Affix, message } from 'antd';
+import { Alert, Modal, Button, Affix, message, Spin } from 'antd';
 import PageLayout from '@/components/pageLayout';
-import { IRawTimeRange } from '@/components/TimeRangePicker';
+import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { Dashboard } from '@/store/dashboardInterface';
-import { getDashboard, updateDashboardConfigs, getDashboardPure } from '@/services/dashboardV2';
+import { getDashboard, updateDashboard, updateDashboardConfigs, getDashboardPure, getAnnotations } from '@/services/dashboardV2';
 import { getPayloadByUUID } from '@/pages/builtInComponents/services';
 import { SetTmpChartData } from '@/services/metric';
 import { CommonStateContext, basePrefix } from '@/App';
@@ -44,6 +45,7 @@ import Editor from '../Editor';
 import { sortPanelsByGridLayout, panelsMergeToConfigs, updatePanelsInsertNewPanelToGlobal, ajustPanels } from '../Panels/utils';
 import { useGlobalState } from '../globalState';
 import { scrollToLastPanel, getDefaultTimeRange, getDefaultIntervalSeconds } from './utils';
+import dashboardMigrator from './utils/dashboardMigrator';
 import ajustInitialValues from '../Renderer/utils/ajustInitialValues';
 import './style.less';
 interface URLParam {
@@ -96,6 +98,9 @@ export default function DetailV2(props: IProps) {
   const [variableConfigWithOptions, setVariableConfigWithOptions] = useState<IVariable[]>();
   const [dashboardLinks, setDashboardLinks] = useState<ILink[]>();
   const [panels, setPanels] = useState<any[]>([]);
+  const [annotations, setAnnotations] = useState<any[]>([]);
+  const [annotationsRefreshFlag, setAnnotationsRefreshFlag] = useState<string>(_.uniqueId('annotationsRefreshFlag_'));
+  const [loading, setLoading] = useState(false);
   const [range, setRange] = useState<IRawTimeRange>(getDefaultTimeRange(id, query, dashboardDefaultRangeIndex));
   const [intervalSeconds, setIntervalSeconds] = useState<number | undefined>(getDefaultIntervalSeconds(query));
   const [editable, setEditable] = useState(true);
@@ -108,51 +113,64 @@ export default function DetailV2(props: IProps) {
   const [migrationModalOpen, setMigrationModalOpen] = useState(false);
   const [variableConfigRefreshFlag, setVariableConfigRefreshFlag] = useState<string>(_.uniqueId('variableConfigRefreshFlag_'));
   const [allowedLeave, setAllowedLeave] = useState(true);
+
   const containerRef = useRef<HTMLDivElement>(null);
   let updateAtRef = useRef<number>();
   const routerPromptRef = useRef<any>();
   const refresh = async (cbk?: () => void) => {
+    // 自动保存模式下不显示 loading
+    if (dashboardSaveMode === 'manual') {
+      setLoading(true);
+    }
     fetchDashboard({
       id,
       builtinParams,
-    }).then((res) => {
-      updateAtRef.current = res.update_at;
-      const configs = _.isString(res.configs) ? JSONParse(res.configs) : res.configs;
-      if (props.onLoaded && !props.onLoaded(configs)) {
-        return;
-      }
-      if ((!configs.version || semver.lt(configs.version, '3.0.0')) && !builtinParams) {
-        setMigrationVisible(true);
-      }
-      setDashboardMeta({
-        ...(dashboardMeta || {}),
-        graphTooltip: configs.graphTooltip,
-        graphZoom: configs.graphZoom,
-      });
-      setDashboard({
-        ...res,
-        configs,
-      });
-      if (configs) {
-        // TODO: configs 中可能没有 var 属性会导致 VariableConfig 报错
-        const variableConfig = configs.var
-          ? configs
-          : {
-              ...configs,
-              var: [],
-            };
-        setVariableConfig(
-          _.map(variableConfig.var, (item) => {
-            return _.omit(item, 'options'); // 兼容性代码，去除掉已保存的 options
-          }) as IVariable[],
-        );
-        setDashboardLinks(configs.links);
-        setPanels(sortPanelsByGridLayout(ajustPanels(configs.panels)));
-        if (cbk) {
-          cbk();
+    })
+      .then((res) => {
+        updateAtRef.current = res.update_at;
+        let configs = _.isString(res.configs) ? JSONParse(res.configs) : res.configs;
+        // 仪表盘迁移
+        configs = dashboardMigrator(configs);
+        if (props.onLoaded && !props.onLoaded(configs)) {
+          return;
         }
-      }
-    });
+        if ((!configs.version || semver.lt(configs.version, '3.0.0')) && !builtinParams) {
+          setMigrationVisible(true);
+        }
+        setDashboardMeta({
+          ...(dashboardMeta || {}),
+          graphTooltip: configs.graphTooltip,
+          graphZoom: configs.graphZoom,
+        });
+        const newDashboard = {
+          ...res,
+          configs,
+        };
+        setDashboard(newDashboard);
+
+        if (configs) {
+          // TODO: configs 中可能没有 var 属性会导致 VariableConfig 报错
+          const variableConfig = configs.var
+            ? configs
+            : {
+                ...configs,
+                var: [],
+              };
+          setVariableConfig(
+            _.map(variableConfig.var, (item) => {
+              return _.omit(item, 'options'); // 兼容性代码，去除掉已保存的 options
+            }) as IVariable[],
+          );
+          setDashboardLinks(configs.links);
+          setPanels(sortPanelsByGridLayout(ajustPanels(configs.panels)));
+          if (cbk) {
+            cbk();
+          }
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
   const handleUpdateDashboardConfigs = (id, updateData) => {
     if (dashboardSaveMode === 'manual') {
@@ -162,9 +180,20 @@ export default function DetailV2(props: IProps) {
       } catch (e) {
         console.error(e);
       }
-      setAllowedLeave(false);
+      // 如果是手动保存模式，并且没有编辑权限则不触发 RouterPrompt 提示
+      if (isAuthorized) {
+        setAllowedLeave(false);
+      }
+      setDashboardMeta({
+        ...(dashboardMeta || {}),
+        graphTooltip: configs.graphTooltip,
+        graphZoom: configs.graphZoom,
+      });
       setDashboard({
         ...dashboard,
+        name: updateData.name,
+        ident: updateData.ident,
+        tags: updateData.tags,
         configs,
       });
     } else {
@@ -182,7 +211,11 @@ export default function DetailV2(props: IProps) {
       setVariableConfig(value);
     }
     // 更新变量配置
-    b && handleUpdateDashboardConfigs(dashboard.id, { configs: JSON.stringify(dashboardConfigs) });
+    b &&
+      handleUpdateDashboardConfigs(dashboard.id, {
+        ...dashboard,
+        configs: JSON.stringify(dashboardConfigs),
+      });
     // 更新变量配置状态
     if (valueWithOptions) {
       setVariableConfigWithOptions(valueWithOptions);
@@ -202,7 +235,8 @@ export default function DetailV2(props: IProps) {
   }, [id]);
 
   useInterval(() => {
-    if (import.meta.env.PROD && dashboard.id) {
+    // 2024-12-27 当手动保存模式时，只有仪表盘配置被更改后（!allowedLeave）才会触发 "持续查询" 的检测
+    if (import.meta.env.PROD && dashboard.id && (dashboardSaveMode === 'manual' ? !allowedLeave : true)) {
       getDashboardPure(_.toString(dashboard.id)).then((res) => {
         if (updateAtRef.current && res.update_at > updateAtRef.current) {
           if (editable) setEditable(false);
@@ -215,9 +249,25 @@ export default function DetailV2(props: IProps) {
 
   useBeforeunload(!allowedLeave && import.meta.env.PROD ? () => t('detail.prompt.message') : undefined);
 
+  useEffect(() => {
+    if (dashboard.id) {
+      // 获取 annotations 数据
+      const parsedRange = parseRange(range);
+      getAnnotations({
+        dashboard_id: dashboard.id,
+        from: moment(parsedRange.start).unix(),
+        to: moment(parsedRange.end).unix(),
+        limit: 100,
+      }).then((res) => {
+        setAnnotations(res);
+      });
+    }
+  }, [dashboard.id, JSON.stringify(range), annotationsRefreshFlag]);
+
   return (
     <PageLayout customArea={<div />}>
       <div className='dashboard-detail-container'>
+        <Spin spinning={loading} tip='Loading...' className='dashboard-detail-loading' />
         <div className='dashboard-detail-content scroll-container' ref={containerRef}>
           <Affix
             target={() => {
@@ -237,6 +287,7 @@ export default function DetailV2(props: IProps) {
                 isAuthorized={isAuthorized}
                 editable={editable}
                 updateAtRef={updateAtRef}
+                allowedLeave={allowedLeave}
                 setAllowedLeave={setAllowedLeave}
                 gobackPath={gobackPath}
                 dashboard={dashboard}
@@ -263,6 +314,7 @@ export default function DetailV2(props: IProps) {
                     );
                     setPanels(newPanels);
                     handleUpdateDashboardConfigs(dashboard.id, {
+                      ...dashboard,
                       configs: panelsMergeToConfigs(dashboard.configs, newPanels),
                     });
                   } else if (type === 'pastePanel') {
@@ -271,6 +323,7 @@ export default function DetailV2(props: IProps) {
                       setPanels(newPanels);
                       scrollToLastPanel(newPanels);
                       handleUpdateDashboardConfigs(dashboard.id, {
+                        ...dashboard,
                         configs: panelsMergeToConfigs(dashboard.configs, newPanels),
                       });
                     } else {
@@ -317,6 +370,7 @@ export default function DetailV2(props: IProps) {
                   setPanels={setPanels}
                   dashboard={dashboard}
                   setDashboard={setDashboard}
+                  annotations={annotations}
                   setAllowedLeave={setAllowedLeave}
                   range={range}
                   setRange={setRange}
@@ -360,6 +414,7 @@ export default function DetailV2(props: IProps) {
                     refresh();
                   }}
                   setVariableConfigRefreshFlag={setVariableConfigRefreshFlag}
+                  setAnnotationsRefreshFlag={setAnnotationsRefreshFlag}
                 />
               )}
             </>
@@ -389,6 +444,7 @@ export default function DetailV2(props: IProps) {
             scrollToLastPanel(newPanels);
           }
           handleUpdateDashboardConfigs(dashboard.id, {
+            ...dashboard,
             configs: panelsMergeToConfigs(dashboard.configs, newPanels),
           });
         }}
@@ -408,6 +464,7 @@ export default function DetailV2(props: IProps) {
             onClick={() => {
               setMigrationVisible(false);
               handleUpdateDashboardConfigs(dashboard.id, {
+                ...dashboard,
                 configs: JSON.stringify({
                   ...dashboard.configs,
                   version: '3.0.0',
@@ -479,6 +536,11 @@ export default function DetailV2(props: IProps) {
             type='primary'
             onClick={() => {
               routerPromptRef.current.hidePrompt();
+              updateDashboard(dashboard.id, {
+                name: dashboard.name,
+                ident: dashboard.ident,
+                tags: dashboard.tags,
+              });
               updateDashboardConfigs(dashboard.id, {
                 configs: JSON.stringify(dashboard.configs),
               }).then((res) => {

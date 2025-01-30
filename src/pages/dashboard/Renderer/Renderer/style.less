@@ -32,12 +32,15 @@
 }
 .renderer-header {
   padding: 0;
-  height: 28px;
-  line-height: 28px;
+  height: 32px;
+  line-height: 32px;
   display: flex;
   align-items: center;
   border: 0 none !important;
   background-color: unset;
+}
+.renderer-header-desc {
+  margin-right: 10px;
 }
 .renderer-header-desc,.renderer-header-error {
   text-align: center;
@@ -56,14 +59,15 @@
 .renderer-header-content {
   text-align: left;
   flex: 1;
-  width: calc(100% - 28px);
+  width: calc(100% - 32px);
   display: flex;
   .renderer-header-title {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
-    font-size: 12px;
+    font-size: 14px;
     margin: 0 8px;
+    font-weight: bolder;
   }
 }
 .renderer-header-controllers {

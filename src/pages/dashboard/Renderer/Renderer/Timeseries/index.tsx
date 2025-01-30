@@ -309,7 +309,7 @@ export default function index(props: IProps) {
               };
             },
           ),
-          backgroundColor: themeMode === 'dark' ? '#272a38' : '#fff',
+          backgroundColor: themeMode === 'dark' ? 'rgb(24,27,31)' : '#fff',
           gridLineColor: themeMode === 'dark' ? 'rgba(255,255,255,0.05)' : '#efefef',
           tickValueFormatter: (val) => {
             return valueFormatter(

@@ -338,6 +338,10 @@ export default function index(props: IProps) {
                       }),
                     );
                   }}
+                  style={{
+                    wordBreak: 'break-all',
+                    whiteSpace: 'normal',
+                  }}
                 >
                   {getFieldLabel(filter.key, fieldConfig)} {filter.operator === 'is not' ? '!=' : '='} {filter.value}
                 </Tag>

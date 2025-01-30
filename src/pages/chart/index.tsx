@@ -34,10 +34,9 @@ export default function Chart() {
   const { t } = useTranslation('shareChart');
   const { darkMode } = useContext(CommonStateContext);
   const datasourceCateOptions = getAuthorizedDatasourceCates(undefined, true);
-  const { ids } =
-    useParams<{
-      ids: string;
-    }>();
+  const { ids } = useParams<{
+    ids: string;
+  }>();
   const [chartData, setChartData] = useState<
     Array<{
       ref: any;
@@ -102,7 +101,9 @@ export default function Chart() {
               return (
                 <div style={{ height: 740 }}>
                   <Renderer
+                    id={item.dataProps.id}
                     dashboardId={item.id}
+                    dashboardID={item.id}
                     key={index}
                     time={range}
                     values={_.merge({}, item.dataProps, {
@@ -114,6 +115,7 @@ export default function Chart() {
                     })}
                     isPreview
                     themeMode={darkMode ? 'dark' : undefined}
+                    annotations={[]}
                   />
                 </div>
               );

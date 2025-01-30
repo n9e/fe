@@ -17,11 +17,11 @@ interface IMenuProps {
 }
 
 function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
-  const { item, collapsed, selectedKeys, ...otherProps } = props;
+  const { item, collapsed, selectedKeys, sideMenuBgColor, ...otherProps } = props;
   const keyOfChildrens = item.children?.map((c) => c.key) || [];
   const isActive = selectedKeys?.includes(item.key) || selectedKeys?.some((k) => keyOfChildrens.includes(k));
   const [isExpand, setIsExpand] = useState<boolean>(false);
-
+  const isBgBlack = sideMenuBgColor === 'rgb(24,27,31)';
   useEffect(() => {
     if (isActive) {
       setIsExpand(true);
@@ -42,13 +42,13 @@ function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
           <div
             className={cn(
               'h-4.5 children-icon2:h-4.5 children-icon2:w-4.5',
-              isActive ? (props.isCustomBg ? 'text-[#fff]' : 'text-primary') : props.isCustomBg ? '' : 'text-primary-80',
+              isActive ? (props.isCustomBg ? isBgBlack? 'text-[#ccccdc]': 'text-[#fff]' : 'text-primary') : props.isCustomBg ? '' : 'text-primary-80',
               !collapsed ? 'mr-4' : '',
             )}
           >
             {item.icon}
           </div>
-          {!collapsed && <div className={`overflow-hidden truncate text-l1 tracking-wide ${isActive ? (props.isCustomBg ? 'text-[#fff]' : 'text-title') : ''}`}>{item.label}</div>}
+          {!collapsed && <div className={`overflow-hidden truncate text-l1 tracking-wide ${isActive ? (props.isCustomBg ? isBgBlack? 'text-[#fff]' : 'text-[#ccccdc]' : 'text-title') : ''}`}>{item.label}</div>}
         </div>
         {!collapsed && <RightIcon className={cn('transition', isExpand ? 'rotate-90' : '')} style={{ fontSize: 24 }} />}
       </div>
@@ -57,29 +57,29 @@ function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
         style={{ height: !isExpand || collapsed ? 0 : keyOfChildrens.length * 36 + (keyOfChildrens.length - 1) * 4 }}
       >
         {item.children?.map((c) => (
-          <MenuItem key={c.key} item={c} isSub collapsed={collapsed} selectedKeys={selectedKeys} {...otherProps} />
+          <MenuItem sideMenuBgColor={props.sideMenuBgColor} key={c.key} item={c} isSub collapsed={collapsed} selectedKeys={selectedKeys} isBgBlack={isBgBlack} {...otherProps} />
         ))}
       </div>
     </div>
   );
 }
 
-function MenuItem(props: { item: IMenuItem; isSub?: boolean } & IMenuProps) {
-  const { item, isSub = false, isCustomBg, collapsed, selectedKeys, onClick } = props;
+function MenuItem(props: { item: IMenuItem; isSub?: boolean, isBgBlack?:boolean  } & IMenuProps) {
+  const { item, isSub = false, isCustomBg, collapsed, selectedKeys,isBgBlack, onClick } = props;
   const isActive = selectedKeys?.includes(item.key);
-
   return (
     <Link
       to={item.key}
       className={cn(
         'group flex h-9 cursor-pointer items-center relative rounded px-3.5 transition-colors transition-spacing duration-75',
-        isActive ? (isCustomBg ? 'bg-gray-200/20' : 'bg-fc-200') : '',
-        isCustomBg ? 'hover:bg-gray-200/20' : 'hover:bg-fc-200',
-        isCustomBg ? 'text-[#fff]' : 'text-main',
+        isActive ? (isCustomBg ? '' : 'bg-fc-200') : '',
+        isCustomBg ? 'text-[#ccccdc]' : 'text-main',
+        'hover:bg-[rgba(204,204,220,0.12)]',
       )}
+      style={{background: isActive && isCustomBg ?'rgba(204, 204, 220, 0.08)':undefined }}
     >
       {!isSub ? (
-        <div className={cn('h-4.5 children-icon2:h-4.5 children-icon2:w-4.5', isActive ? (props.isCustomBg ? 'text-[#fff]' : 'text-title') : '', !collapsed ? 'mr-4' : '')}>
+        <div className={cn('h-4.5 children-icon2:h-4.5 children-icon2:w-4.5', isActive ? (props.isCustomBg ? isBgBlack? 'text-[#ccccdc]': 'text-[#fff]' : 'text-title') : '', !collapsed ? 'mr-4' : '')}>
           {item.icon}
         </div>
       ) : (

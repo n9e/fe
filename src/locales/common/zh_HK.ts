@@ -52,9 +52,10 @@ const zh_HK = {
     batch_export: '批量匯出',
     batch_import: '批量匯入',
     test: '測試',
+    copy: '複製',
     expand: '展開',
     collapse: '收起',
-    copy: '複製',
+    config: '設定',
   },
   table: {
     name: '名稱',

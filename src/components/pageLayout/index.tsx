@@ -18,8 +18,8 @@ import React, { ReactNode, useContext, useState, useEffect } from 'react';
 import { useHistory, Link, useLocation } from 'react-router-dom';
 import querystring from 'query-string';
 import { useTranslation } from 'react-i18next';
-import { Menu, Dropdown, Space, Drawer } from 'antd';
-import { DownOutlined, RollbackOutlined } from '@ant-design/icons';
+import { Menu, Dropdown, Space, Drawer, Tooltip } from 'antd';
+import { DownOutlined, RollbackOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { Logout } from '@/services/login';
 import AdvancedWrap, { License } from '@/components/AdvancedWrap';
 import { CommonStateContext } from '@/App';
@@ -93,7 +93,6 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
             localStorage.removeItem('curBusiId');
             history.push('/login');
           });
-          document.body.className = ''; // 登录页不需要主题，退出登录是清空
         }}
       >
         {t('logout')}

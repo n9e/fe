@@ -17,6 +17,7 @@
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 import { N9E_PATHNAME } from '@/utils/constant';
+import { FieldConfig, FieldConfigVersion2 } from './types';
 
 export const getESIndexPatterns = function (datasource_id?: number) {
   return request(`/api/${N9E_PATHNAME}/es-index-pattern-list`, {
@@ -59,3 +60,49 @@ export const deleteESIndexPattern = function (id: number) {
     data: { ids: [id] },
   });
 };
+
+function transforVersion2To1(fieldConfig2: FieldConfigVersion2): FieldConfig {
+  var fieldConfig1 = {
+    attrs: {},
+    formatMap: {},
+    version: 1,
+  };
+  for (var i = 0; i < fieldConfig2.arr.length; i++) {
+    var fieldConfig = fieldConfig2.arr[i];
+    fieldConfig1.attrs[fieldConfig.field] = fieldConfig.attrs;
+    fieldConfig1.formatMap[fieldConfig.field] = fieldConfig.formatMap;
+    // const linkArr = fieldConfig2.linkArr.filter(i=> i.field === fieldConfig.field)
+    // if (linkArr.length > 0 && fieldConfig1.formatMap[fieldConfig.field]) {
+    //   fieldConfig1.formatMap[fieldConfig.field].paramsArr = linkArr
+    // }
+  }
+
+  for (var i = 0; i < fieldConfig2.linkArr.length; i++) {
+    const field = fieldConfig2.linkArr[i].field
+    if(fieldConfig1.formatMap[field]){
+      fieldConfig1.formatMap[field].paramsArr = fieldConfig2.linkArr.filter(i=> i.field === field)
+    }else{
+      fieldConfig1.formatMap[field] = {
+        paramsArr: fieldConfig2.linkArr.filter(i=> i.field === field),
+        type:'url'
+      }
+    }
+  }
+
+  return fieldConfig1;
+}
+
+export function standardizeFieldConfig(fieldConfig: FieldConfig | FieldConfigVersion2): FieldConfig {
+  if (fieldConfig.version === 1) {
+    return fieldConfig as FieldConfig;
+  }
+
+  if (fieldConfig.version === 2) {
+    return transforVersion2To1(fieldConfig as FieldConfigVersion2);
+  }
+  return {
+    attrs: {},
+    formatMap: {},
+    version: 1,
+  };
+}

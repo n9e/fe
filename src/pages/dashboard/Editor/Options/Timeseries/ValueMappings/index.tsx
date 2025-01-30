@@ -15,12 +15,11 @@
  *
  */
 import React from 'react';
-import { Form, Input, InputNumber, Button, Select, Row, Col, Tooltip } from 'antd';
+import { Form, Input, Button, Select, Row, Col, Tooltip } from 'antd';
 import { DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
 import { Panel } from '../../../Components/Collapse';
-import ColorPicker from '../../../../Components/ColorPicker';
 
 interface IProps {
   preNamePrefix?: (string | number)[];
@@ -39,9 +38,12 @@ export default function index(props: IProps) {
             <Button
               style={{ width: '100%', marginBottom: 10 }}
               onClick={() => {
-                add({
-                  type: 'textValue',
-                });
+                add(
+                  {
+                    type: 'textValue',
+                  },
+                  0,
+                );
               }}
             >
               {t('panel.options.valueMappings.btn')}

@@ -47,7 +47,6 @@ interface IProps {
 
 const DEFAULT_LIGTH_COLOR = '#ffffff';
 const DEFAULT_DARK_COLOR = '#333';
-const LIMIT = 500;
 
 const getColumnsKeys = (data: any[]) => {
   const keys = _.reduce(
@@ -95,7 +94,7 @@ function TableCpt(props: IProps, ref: any) {
   const size = useSize(eleRef);
   const { values, themeMode, time, isPreview, series } = props;
   const { custom, options, overrides } = values;
-  const { showHeader, calc, aggrDimension, displayMode, columns, sortColumn, sortOrder, colorMode = 'value', tableLayout = 'fixed' } = custom;
+  const { showHeader, calc, aggrDimension, displayMode, columns, sortColumn, sortOrder, colorMode = 'value', tableLayout = 'fixed', pageLimit = 500 } = custom;
   const [calculatedValues, setCalculatedValues] = useState<any[]>([]);
   const [sortObj, setSortObj] = useState({
     sortColumn,
@@ -394,7 +393,7 @@ function TableCpt(props: IProps, ref: any) {
   }
 
   const headerHeight = showHeader ? 34 : 0;
-  const height = size?.height! - headerHeight - 2 - (tableDataSource.length > LIMIT ? 24 : 0);
+  const height = size?.height! - headerHeight - 2 - (tableDataSource.length > pageLimit ? 30 : 0);
   const realHeight = isNaN(height) ? 0 : height;
 
   const { components, resizableColumns, tableWidth, resetColumns } = useAntdResizableHeader({
@@ -514,10 +513,10 @@ function TableCpt(props: IProps, ref: any) {
           scroll={{ y: realHeight, x: tableWidth ? tableWidth - 30 : tableWidth }}
           bordered={false}
           pagination={
-            tableDataSource.length > LIMIT
+            tableDataSource.length > pageLimit
               ? {
                   size: 'small',
-                  pageSize: LIMIT,
+                  pageSize: pageLimit,
                   showSizeChanger: false,
                   showQuickJumper: false,
                   showTotal: (total) => `Total ${total} items`,
