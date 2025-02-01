@@ -1,6 +1,7 @@
 export interface DataPoint {
   timestamp: number;
   value: number;
+  [key: string]: null | string | number | boolean;
 }
 
 export interface TimeSeries {
