@@ -26,7 +26,7 @@ const ja_JP = {
       OLDEST_FIRST: '最古のものから',
     },
     download: 'ログをダウンロード',
-    export: 'レコードをエクスポート',
+    export: 'ダウンロード記録',
     log_download: {
       title: 'ダウンロード',
       download_title: 'ログデータをダウンロード',
