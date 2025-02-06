@@ -42,6 +42,14 @@
   padding: 0 !important;
   margin-right: 0 !important;
   margin-top: 0 !important;
+  position: relative;
+}
+
+.dashboard-detail-loading {
+  background-color: unset !important; // 覆盖 pageLayout 上面约定的样式
+  position: absolute !important;
+  top: 50%;
+  left: 50%;
 }
 
 .dashboard-detail-content {
@@ -52,6 +60,7 @@
   box-shadow: unset !important;
   overflow: auto;
   overflow-x: hidden;
+
   .variable-area {
     display: flex;
     width: 100%;

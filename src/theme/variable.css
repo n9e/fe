@@ -83,19 +83,23 @@
   --fc-geekblue-4-color: #85a5ff;
   --fc-geekblue-5-color: #597ef7;
   --fc-geekblue-6-color: #2f54eb;
+
+  /* boxshadow*/
+  --fc-boxshadow-base-color: rgba(0, 0, 0, 0.08);
+  --fc-boxshadow-hover-color: rgba(0, 0, 0, 0.15);
 }
 
 /* -------------------  分割线 ------------------- */
 
 /* 深色模式 */
 .theme-dark {
-  --fc-fill-1: rgb(32 34 46);
-  --fc-fill-2: rgb(39 42 56);
-  --fc-fill-3: rgb(50 53 69);
-  --fc-fill-4: rgb(57 60 77);
-  --fc-fill-5: rgb(64 67 84);
-  --fc-fill-6: rgb(71 74 91);
-  --fc-fill-7: rgb(79 82 99);
+  --fc-fill-1: rgb(17 18 23);
+  --fc-fill-2: rgb(24 27 31);
+  --fc-fill-3: rgb(34 37 43);
+  --fc-fill-4: rgb(39 40 47);
+  --fc-fill-5: rgb(47 48 55);
+  --fc-fill-6: rgb(54 55 62);
+  --fc-fill-7: rgb(62 63 70);
   --fc-fill-primary: rgb(148, 112, 255);
   --fc-fill-success: rgb(63 196 83);
   --fc-fill-warning: rgb(230 198 39);
@@ -103,18 +107,18 @@
   --fc-fill-error: rgb(255 101 107);
 
   /* 文本 */
-  --fc-text-1: #ffffff;
-  --fc-text-2: #e6e6e8;
-  --fc-text-3: #bfbfc5;
-  --fc-text-4: #9999a2;
-  --fc-text-5: #737380;
-  --fc-text-link: #8162dc;
-  --fc-text-link-rgb: 129, 98, 220;
-  --fc-text-placeholder: #bfbfbf;
+  --fc-text-link: #9470ff;
+  --fc-text-link-rgb: 148, 112, 255;
+  --fc-text-1: rgba(255, 255, 255);
+  --fc-text-2: rgb(204, 204, 220);
+  --fc-text-3: rgba(204, 204, 220, 0.85);
+  --fc-text-4: rgba(204, 204, 220, 0.65);
+  --fc-text-5: rgba(204, 204, 220, 0.45);
+  --fc-text-placeholder: rgba(204, 204, 220, 0.65);
 
   /* 其他 */
   --fc-primary-color: var(--fc-text-link);
-  --fc-border-color: var(--fc-fill-4);
+  --fc-border-color: rgba(204, 204, 220, 0.12);
   --fc-border-base: var(--fc-fill-5);
   --fc-background-color-light: rgba(255, 255, 255, 0.04);
 
@@ -165,4 +169,8 @@
   --fc-geekblue-4-color: #164c7e;
   --fc-geekblue-5-color: #1765ad;
   --fc-geekblue-6-color: #177ddc;
+
+  /* boxshadow*/
+  --fc-boxshadow-base-color: rgba(0, 0, 0, 0.28);
+  --fc-boxshadow-hover-color: rgba(0, 0, 0, 0.45);
 }

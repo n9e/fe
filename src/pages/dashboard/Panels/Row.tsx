@@ -48,6 +48,7 @@ export default function Row(props: IProps) {
   const [newName, setNewName] = useState<string>();
   const [deleteVisible, setDeleteVisible] = useState(false);
   const [dashboardMeta] = useGlobalState('dashboardMeta');
+  const rowPanels = row.panels?.length ?? 0;
 
   return (
     <div
@@ -61,8 +62,23 @@ export default function Row(props: IProps) {
           onToggle();
         }}
       >
-        <span style={{ paddingRight: 6 }}>{replaceFieldWithVariable(name, dashboardMeta.dashboardId, dashboardMeta.variableConfigWithOptions)}</span>
         {row.collapsed ? <CaretDownOutlined /> : <CaretRightOutlined />}
+        <span className='pl1'>
+          <span>{replaceFieldWithVariable(name, dashboardMeta.dashboardId, dashboardMeta.variableConfigWithOptions)}</span>
+          {!row.collapsed && (
+            <span className='ml2 dashboards-panels-row-name-panels-count'>
+              (
+              {rowPanels > 1
+                ? t('row.panels_plural', {
+                    count: rowPanels,
+                  })
+                : t('row.panels', {
+                    count: rowPanels,
+                  })}
+              )
+            </span>
+          )}
+        </span>
       </div>
       {isAuthorized && (
         <Space>

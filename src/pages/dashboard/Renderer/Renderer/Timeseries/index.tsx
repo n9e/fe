@@ -119,7 +119,7 @@ export default function index(props: IProps) {
   const [dashboardMeta] = useGlobalState('dashboardMeta');
   const { darkMode: appDarkMode } = useContext(CommonStateContext);
   // hoc打开的组件获取不到 App 中 useContext, 这里用localStorage兜底
-  const darkMode = appDarkMode || localStorage.getItem('darkMode') === 'true';
+  const darkMode = appDarkMode || localStorage.getItem('darkMode') === 'true' || document.body.classList.contains('theme-dark');
   const { t } = useTranslation('dashboard');
   const { time, setRange, values, series, inDashboard = true, chartHeight = '200px', tableHeight = '200px', onClick, isPreview, colors } = props;
   const themeMode = props.themeMode || (darkMode ? 'dark' : 'light');
@@ -309,7 +309,7 @@ export default function index(props: IProps) {
               };
             },
           ),
-          backgroundColor: themeMode === 'dark' ? '#272a38' : '#fff',
+          backgroundColor: themeMode === 'dark' ? 'rgb(24,27,31)' : '#fff',
           gridLineColor: themeMode === 'dark' ? 'rgba(255,255,255,0.05)' : '#efefef',
           tickValueFormatter: (val) => {
             return valueFormatter(

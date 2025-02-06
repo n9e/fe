@@ -20,6 +20,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import { Modal, Input, Tabs, Form, Button, Alert, message, Select } from 'antd';
 import Icon from '@ant-design/icons';
 import { createDashboard } from '@/services/dashboardV2';
+import { DASHBOARD_VERSION } from '@/pages/dashboard/config';
 import { getValidImportData, convertDashboardGrafanaToN9E, JSONParse, checkGrafanaDashboardVersion } from '../utils';
 import ImportBuiltinContent from './ImportBuiltinContent';
 
@@ -82,6 +83,7 @@ export default function Import(props: IProps) {
       width={900}
       className='dashboard-import-modal'
       maskClosable={false}
+      destroyOnClose
       title={
         <Tabs activeKey={modalType} onChange={(e: ModalType) => setModalType(e)} className='custom-import-alert-title'>
           <TabPane tab={t('batch.import_builtin')} key='ImportBuiltin'></TabPane>
@@ -123,10 +125,14 @@ export default function Import(props: IProps) {
             createDashboard(busiId, {
               ...data,
               configs: data.configs,
-            }).then(() => {
-              message.success(t('common:success.import'));
-              onOk();
-            });
+            })
+              .then(() => {
+                message.success(t('common:success.import'));
+                onOk();
+              })
+              .finally(() => {
+                setImportLoading(false);
+              });
           }}
         >
           <Form.Item
@@ -220,7 +226,7 @@ export default function Import(props: IProps) {
               configs: JSON.stringify({
                 mode: 'iframe',
                 iframe_url: vals.iframe_url,
-                version: '3.0.0',
+                version: DASHBOARD_VERSION,
               }),
             }).then(() => {
               message.success(t('common:success.import'));
