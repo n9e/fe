@@ -26,7 +26,7 @@ const zh_HK = {
       OLDEST_FIRST: '舊的優先',
     },
     download: '下載日誌',
-    export: '導出記錄',
+    export: '下載記錄',
     log_download: {
       title: '下載',
       download_title: '下載日誌數據',
