@@ -502,7 +502,9 @@ export function filterOptionsByReg(options: string[], reg, formData: IVariable[]
         }
       }
     });
-    return _.union(regFilterOptions);
+    return _.unionBy(regFilterOptions, (item) => {
+      return `${item.label}-${item.value}`;
+    });
   }
   return _.map(options, (item) => {
     return {

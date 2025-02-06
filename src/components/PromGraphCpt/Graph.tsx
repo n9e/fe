@@ -66,7 +66,8 @@ const getSerieName = (metric: any) => {
 };
 
 export default function Graph(props: IProps) {
-  const { datasourceList, darkMode, siteInfo } = useContext(CommonStateContext);
+  const { datasourceList, darkMode: appDarkMode, siteInfo } = useContext(CommonStateContext);
+  const darkMode = appDarkMode || localStorage.getItem('darkMode') === 'true' || document.body.classList.contains('theme-dark');
   const {
     url,
     datasourceValue,

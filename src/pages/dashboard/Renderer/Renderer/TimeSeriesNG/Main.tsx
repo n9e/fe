@@ -191,6 +191,7 @@ export default function index(props: Props) {
         gradientMode: custom.gradientMode,
         points: { show: custom.showPoints === 'always', size: custom.showPoints === 'always' ? custom.pointSize : 6 },
         overrides,
+        spanGaps: custom.spanNulls,
       }),
       axes: [
         axisBuilder({

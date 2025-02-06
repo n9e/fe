@@ -11,10 +11,11 @@ interface Props {
   fillOpacity?: number;
   gradientMode?: 'none' | 'opacity';
   overrides?: any;
+  spanGaps?: boolean;
 }
 
 export default function seriesBuider(props: Props) {
-  const { baseSeries, colors, pathsType, width = 1, points, fillOpacity = 0.1, gradientMode = 'none', overrides } = props;
+  const { baseSeries, colors, pathsType, width = 1, points, fillOpacity = 0.1, gradientMode = 'none', overrides, spanGaps } = props;
   let paths;
   if (pathsType === 'spline') {
     paths = uPlot.paths.spline && uPlot.paths.spline();
@@ -40,6 +41,7 @@ export default function seriesBuider(props: Props) {
         paths,
         width,
         points,
+        spanGaps,
         fill:
           fillOpacity !== 0
             ? (self, seriesIdx) => {
