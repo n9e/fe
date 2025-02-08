@@ -287,6 +287,12 @@ const zh_HK = {
     resolve_after: '無數據超過多久之後自動恢復',
     resolve_after_unit: '秒',
   },
+  anomaly_trigger: {
+    title: '智能告警',
+    enable: '啟用智能告警',
+    algorithm: '算法',
+    algorithm_required: '算法不能為空',
+  },
   filter_disabled: {
     placeholder: '啟用狀態',
     0: '啟用',

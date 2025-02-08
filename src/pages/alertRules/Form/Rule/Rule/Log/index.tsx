@@ -15,15 +15,11 @@
  *
  */
 
-import React, { useContext } from 'react';
-import { Form, Row, Col } from 'antd';
+import React from 'react';
+import { Form } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
-import { CommonStateContext } from '@/App';
-import DatasourceValueSelectV2 from '@/pages/alertRules/Form/components/DatasourceValueSelect/V2';
 import IntervalAndDuration from '@/pages/alertRules/Form/components/IntervalAndDuration';
-import { DatasourceCateSelect } from '@/components/DatasourceSelect';
-import { getDefaultValuesByCate } from '../../../utils';
 import AdvancedSettings from './AdvancedSettings';
 import Loki from './Loki';
 import { AlertRule as ElasticsearchSettings } from '@/plugins/elasticsearch';
@@ -32,10 +28,8 @@ import { AlertRule as ClickHouse } from '@/plugins/clickHouse';
 // @ts-ignore
 import PlusAlertRule from 'plus:/parcels/AlertRule';
 
-export default function index({ form }) {
+export default function index() {
   const { t } = useTranslation('alertRules');
-  const { groupedDatasourceList, datasourceCateOptions, isPlus } = useContext(CommonStateContext);
-  const prod = Form.useWatch('prod');
   const cate = Form.useWatch('cate');
 
   return (
@@ -43,23 +37,6 @@ export default function index({ form }) {
       <Form.Item name='datasource_value' hidden>
         <div />
       </Form.Item>
-      <Form.Item label={t('common:datasource.type')} name='cate'>
-        <DatasourceCateSelect
-          scene='alert'
-          filterCates={(cates) => {
-            return _.filter(cates, (item) => {
-              return _.includes(item.type, prod) && !!item.alertRule && (item.alertPro ? isPlus : true);
-            });
-          }}
-          onChange={(val) => {
-            const cateObj = _.find(datasourceCateOptions, (item) => item.value === val);
-            if (cateObj) {
-              form.setFieldsValue(getDefaultValuesByCate(prod, val));
-            }
-          }}
-        />
-      </Form.Item>
-      <DatasourceValueSelectV2 datasourceList={groupedDatasourceList[cate] || []} showExtra />
       <div style={{ marginBottom: 10 }}>
         <Form.Item
           noStyle

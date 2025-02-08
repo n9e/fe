@@ -15,16 +15,12 @@
  *
  */
 
-import React, { useContext } from 'react';
-import { Form, Row, Col } from 'antd';
+import React from 'react';
+import { Form } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
-import { CommonStateContext } from '@/App';
-import DatasourceValueSelectV2 from '@/pages/alertRules/Form/components/DatasourceValueSelect/V2';
 import IntervalAndDuration from '@/pages/alertRules/Form/components/IntervalAndDuration';
-import { DatasourceCateSelect } from '@/components/DatasourceSelect';
 import { DatasourceCateEnum } from '@/utils/constant';
-import { getDefaultValuesByCate } from '../../../utils';
 import Prometheus from './Prometheus';
 import { AlertRule as TDengine } from '@/plugins/TDengine';
 import { AlertRule as ClickHouse } from '@/plugins/clickHouse';
@@ -32,28 +28,14 @@ import { AlertRule as ClickHouse } from '@/plugins/clickHouse';
 // @ts-ignore
 import PlusAlertRule from 'plus:/parcels/AlertRule';
 
-export default function index({ form }) {
+export default function index() {
   const { t } = useTranslation('alertRules');
-  const { groupedDatasourceList } = useContext(CommonStateContext);
-  const cate = Form.useWatch('cate');
 
   return (
     <div>
       <Form.Item name='datasource_value' hidden>
         <div />
       </Form.Item>
-      <Form.Item label={t('common:datasource.type')} name='cate'>
-        <DatasourceCateSelect
-          scene='alert'
-          filterCates={(cates) => {
-            return _.filter(cates, (item) => _.includes(item.type, 'metric') && !!item.alertRule);
-          }}
-          onChange={(val) => {
-            form.setFieldsValue(getDefaultValuesByCate('metric', val));
-          }}
-        />
-      </Form.Item>
-      <DatasourceValueSelectV2 datasourceList={groupedDatasourceList[cate] || []} showExtra />
       <div style={{ marginBottom: 10 }}>
         <Form.Item
           noStyle

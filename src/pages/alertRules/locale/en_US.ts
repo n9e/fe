@@ -291,6 +291,12 @@ const en_US = {
     resolve_after: 'Automatically recover after no data for',
     resolve_after_unit: 's',
   },
+  anomaly_trigger: {
+    title: 'Anomaly detection',
+    enable: 'Enable anomaly detection',
+    algorithm: 'Algorithm',
+    algorithm_required: 'Algorithm is required',
+  },
   filter_disabled: {
     placeholder: 'Enabled status',
     0: 'Enabled',

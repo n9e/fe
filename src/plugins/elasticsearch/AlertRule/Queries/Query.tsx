@@ -63,7 +63,7 @@ export default function Query(props: Props) {
     <div key={field.key} className='n9e-fill-color-3' style={{ padding: 10, marginBottom: 10, position: 'relative' }}>
       <Row gutter={8}>
         <Col flex='32px'>
-          <Form.Item {...field} name={[field.name, 'ref']}>
+          <Form.Item {...field} name={[field.name, 'ref']} initialValue='A'>
             <QueryName existingNames={_.map(queries, 'ref')} />
           </Form.Item>
         </Col>

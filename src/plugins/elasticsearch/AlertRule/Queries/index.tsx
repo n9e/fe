@@ -35,7 +35,14 @@ export default function index(props: IProps) {
   }, [datasourceValue]);
 
   return (
-    <Form.List name={names}>
+    <Form.List
+      name={names}
+      initialValue={[
+        {
+          ref: 'A',
+        },
+      ]}
+    >
       {(fields, { add, remove }) => (
         <Card
           title={

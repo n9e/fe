@@ -73,6 +73,8 @@ export const defaultRuleConfig = {
   },
 };
 
+const defaultProd = 'host';
+const defaultCate = 'host';
 export const defaultValues = {
   disabled: 0,
   effective_time: [
@@ -86,11 +88,11 @@ export const defaultValues = {
   recover_duration: 0,
   notify_repeat_step: 60,
   notify_max_number: 0,
-  rule_config: defaultRuleConfig.metric,
+  rule_config: defaultRuleConfig[defaultProd],
   prom_eval_interval: 30,
   prom_for_duration: 60,
-  prod: 'metric',
-  cate: 'prometheus',
+  prod: defaultProd,
+  cate: defaultCate,
   enable_status: true,
 };
 
