@@ -284,7 +284,7 @@ export default function tooltipPlugin(options: {
         const maxLength = (renderToHeight - 18 - 100) / 15;
         let overflow = false;
 
-        if (valuesData.length > maxLength) {
+        if (options.mode === 'all' && valuesData.length > maxLength) {
           valuesData = _.slice(valuesData, 0, maxLength);
           overflow = true;
         }
