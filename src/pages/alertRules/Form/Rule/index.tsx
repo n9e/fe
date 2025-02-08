@@ -18,20 +18,24 @@
 import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, Form, Space } from 'antd';
-import { getBrainParams } from '@/services/warning';
+import _ from 'lodash';
+
 import { CommonStateContext } from '@/App';
 import { HelpLink } from '@/components/pageLayout';
+import { DatasourceCateSelectV2 } from '@/components/DatasourceSelect';
+import DatasourceValueSelectV2 from '@/pages/alertRules/Form/components/DatasourceValueSelect/V2';
+
 import { panelBaseProps } from '../../constants';
 import { Host, Metric, Log } from './Rule';
-import { getDefaultValuesByProd } from '../utils';
-import ProdSelect from '../components/ProdSelect';
+import { getDefaultValuesByCate } from '../utils';
 // @ts-ignore
 import PlusAlertRule from 'plus:/parcels/AlertRule';
 
 export default function Rule({ form }) {
   const { t } = useTranslation('alertRules');
-  const { isPlus } = useContext(CommonStateContext);
+  const { isPlus, groupedDatasourceList } = useContext(CommonStateContext);
   const prod = Form.useWatch('prod');
+  const cate = Form.useWatch('cate');
 
   return (
     <Card
@@ -45,22 +49,33 @@ export default function Rule({ form }) {
         </Space>
       }
     >
-      <ProdSelect
-        onChange={(prod) => {
-          if (prod === 'anomaly') {
-            // 获取默认 brain 参数，用于初始化智能告警的设置
-            form.setFieldsValue({
-              prod: 'anomaly',
-              cate: 'prometheus',
+      <Form.Item name='prod' hidden />
+      <Form.Item name='cate'>
+        <DatasourceCateSelectV2
+          filterCates={(cates) => {
+            const filtedCates = _.filter(cates, (item) => {
+              return !!item.alertRule && (item.alertPro ? isPlus : true);
             });
-            getBrainParams().then((res) => {
-              form.setFieldsValue(getDefaultValuesByProd(prod, res));
-            });
-          } else {
-            form.setFieldsValue(getDefaultValuesByProd(prod, {}, isPlus));
-          }
-        }}
-      />
+            return _.concat(
+              {
+                value: 'host',
+                label: 'Host',
+                type: ['host'],
+                alertRule: true,
+                alertPro: false,
+                logo: '/image/logos/host.png',
+              } as any,
+              filtedCates,
+            );
+          }}
+          onChange={(val, record) => {
+            const { type } = record;
+            const curProd = type[0];
+            form.setFieldsValue(getDefaultValuesByCate(curProd, val));
+          }}
+        />
+      </Form.Item>
+      {prod !== 'host' && <DatasourceValueSelectV2 datasourceList={groupedDatasourceList[cate] || []} showExtra />}
       <Form.Item isListField={false} name={['rule_config', 'inhibit']} valuePropName='checked' noStyle hidden>
         <div />
       </Form.Item>
@@ -71,10 +86,10 @@ export default function Rule({ form }) {
             return <Host />;
           }
           if (prod === 'metric') {
-            return <Metric form={form} />;
+            return <Metric />;
           }
           if (prod === 'logging') {
-            return <Log form={form} />;
+            return <Log />;
           }
           return <PlusAlertRule prod={prod} form={form} />;
         }}

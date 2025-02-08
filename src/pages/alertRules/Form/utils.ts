@@ -266,6 +266,14 @@ export function getDefaultValuesByProd(prod, defaultBrainParams, isPlus = false)
 }
 
 export function getDefaultValuesByCate(prod, cate) {
+  if (cate === 'host') {
+    return {
+      prod,
+      cate: 'host',
+      rule_config: defaultRuleConfig.host,
+      ...datasourceDefaultValue,
+    };
+  }
   if (cate === DatasourceCateEnum.prometheus) {
     return {
       prod,

@@ -284,6 +284,12 @@ const ja_JP = {
     resolve_after: 'データがない期間が経過したら自動的に復旧します',
     resolve_after_unit: '秒',
   },
+  anomaly_trigger: {
+    title: 'スマートアラート',
+    enable: 'スマートアラートを有効にする',
+    algorithm: 'アルゴリズム',
+    algorithm_required: 'アルゴリズムは空にできません',
+  },
   filter_disabled: {
     placeholder: 'フィルターを選択',
     0: '有効',

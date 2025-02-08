@@ -289,6 +289,12 @@ const zh_CN = {
     resolve_after: '无数据超过多久之后自动恢复',
     resolve_after_unit: '秒',
   },
+  anomaly_trigger: {
+    title: '智能告警',
+    enable: '启用智能告警',
+    algorithm: '算法',
+    algorithm_required: '算法不能为空',
+  },
   filter_disabled: {
     placeholder: '启用状态',
     0: '启用',
