@@ -73,8 +73,8 @@ export const defaultRuleConfig = {
   },
 };
 
-const defaultProd = 'host';
-const defaultCate = 'host';
+const defaultProd = 'metric';
+const defaultCate = 'prometheus';
 export const defaultValues = {
   disabled: 0,
   effective_time: [

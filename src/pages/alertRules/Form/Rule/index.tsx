@@ -56,17 +56,14 @@ export default function Rule({ form }) {
             const filtedCates = _.filter(cates, (item) => {
               return !!item.alertRule && (item.alertPro ? isPlus : true);
             });
-            return _.concat(
-              {
-                value: 'host',
-                label: 'Host',
-                type: ['host'],
-                alertRule: true,
-                alertPro: false,
-                logo: '/image/logos/host.png',
-              } as any,
-              filtedCates,
-            );
+            return _.concat(filtedCates, {
+              value: 'host',
+              label: 'Host',
+              type: ['host'],
+              alertRule: true,
+              alertPro: false,
+              logo: '/image/logos/host.png',
+            } as any);
           }}
           onChange={(val, record) => {
             const { type } = record;
