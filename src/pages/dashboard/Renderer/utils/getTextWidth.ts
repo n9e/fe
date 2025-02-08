@@ -1,7 +1,9 @@
+import { FONT_FAMILY } from '@/utils/constant';
+
 export const defaultFont: any = {
   fontWeight: 'normal',
   fontSize: '12px',
-  fontFamily: 'Helvetica Neue,sans-serif,PingFangSC-Regular,microsoft yahei ui,microsoft yahei,simsun,"sans-serif"',
+  fontFamily: FONT_FAMILY,
 };
 
 export const getFontStr = (font = defaultFont) => {
