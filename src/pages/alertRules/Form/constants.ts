@@ -1,80 +1,40 @@
 import moment from 'moment';
 
 export const defaultRuleConfig = {
-  host: {
-    queries: [
-      {
-        key: 'all_hosts',
-        op: '==',
-        values: [],
-      },
-    ],
-    triggers: [
-      {
-        type: 'target_miss',
-        severity: 2,
-        duration: 30,
-      },
-    ],
-  },
-  metric: {
-    queries: [
-      {
-        prom_ql: '',
-        severity: 2,
-      },
-    ],
-  },
-  logging: {
-    queries: [
-      {
-        ref: 'A',
-        interval_unit: 'min',
-        interval: 5,
-        date_field: '@timestamp',
-        value: {
-          func: 'count',
+  triggers: [
+    {
+      mode: 0,
+      expressions: [
+        {
+          ref: 'A',
+          comparisonOperator: '>',
+          value: 0,
+          logicalOperator: '&&',
         },
-      },
-    ],
-    triggers: [
-      {
-        mode: 0,
-        expressions: [
-          {
-            ref: 'A',
-            comparisonOperator: '>',
-            value: 0,
-            logicalOperator: '&&',
-          },
-        ],
-        severity: 2,
-      },
-    ],
-    exp_trigger_disable: false,
-    nodata_trigger: {
-      enable: false,
+      ],
       severity: 2,
-      resolve_after_enable: false,
-      resolve_after: undefined,
     },
-  },
-  anomaly: {
+  ],
+  exp_trigger_disable: false,
+  nodata_trigger: {
+    enable: false,
     severity: 2,
-  },
-  loki: {
-    queries: [
-      {
-        // log_ql: '',
-        prom_ql: '', // 为了兼容老版本
-        severity: 2,
-      },
-    ],
+    resolve_after_enable: false,
+    resolve_after: undefined,
   },
 };
 
-const defaultProd = 'metric';
-const defaultCate = 'prometheus';
+export const datasourceDefaultValue = {
+  datasource_queries: [
+    {
+      match_type: 0,
+      op: 'in',
+      values: [],
+    },
+  ],
+  datasource_value: undefined,
+};
+
 export const defaultValues = {
   disabled: 0,
   effective_time: [
@@ -88,11 +48,18 @@ export const defaultValues = {
   recover_duration: 0,
   notify_repeat_step: 60,
   notify_max_number: 0,
-  rule_config: defaultRuleConfig[defaultProd],
+  rule_config: {
+    queries: [
+      {
+        prom_ql: '',
+        severity: 2,
+      },
+    ],
+  },
   prom_eval_interval: 30,
   prom_for_duration: 60,
-  prod: defaultProd,
-  cate: defaultCate,
+  prod: 'metric',
+  cate: 'prometheus',
   enable_status: true,
 };
 

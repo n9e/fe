@@ -1,37 +1,6 @@
 import moment from 'moment';
 import _ from 'lodash';
 
-export function getDefaultValuesByProd(prod, isPlus = false) {
-  if (prod === 'host') {
-    return {
-      prod,
-      cate: 'host',
-      datasource_ids: undefined,
-    };
-  }
-  if (prod === 'anomaly') {
-    return {
-      prod,
-      cate: 'prometheus',
-    };
-  }
-  if (prod === 'metric') {
-    return {
-      prod,
-      cate: 'prometheus',
-    };
-  }
-  if (prod === 'logging') {
-    return {
-      prod,
-      cate: isPlus ? 'elasticsearch' : 'loki',
-    };
-  }
-  return {
-    prod,
-  };
-}
-
 export const processFormValues = (values) => {
   const tags = values?.tags?.map((item) => {
     return {
