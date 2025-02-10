@@ -25,7 +25,7 @@ import { getComponents, getCates, getPayloads, Component, Payload } from '@/page
 import { TypeEnum } from '@/pages/builtInComponents/types';
 import { createRule } from '@/pages/builtInComponents/AlertRules/services';
 
-export default function ImportBuiltinContent({ busiId, onOk, groupedDatasourceList, datasourceCateOptions }) {
+export default function ImportBuiltinContent({ busiId, onOk, groupedDatasourceList, reloadGroupedDatasourceList, datasourceCateOptions }) {
   const { t } = useTranslation('dashboard');
   const [filter, setFilter] = useState<{
     query?: string;
@@ -284,7 +284,13 @@ export default function ImportBuiltinContent({ busiId, onOk, groupedDatasourceLi
               })}
             </Select>
           </Form.Item>
-          {datasourceCate && <DatasourceValueSelectV2 datasourceCate={datasourceCate} datasourceList={groupedDatasourceList[datasourceCate] || []} />}
+          {datasourceCate && (
+            <DatasourceValueSelectV2
+              datasourceCate={datasourceCate}
+              datasourceList={groupedDatasourceList[datasourceCate] || []}
+              reloadGroupedDatasourceList={reloadGroupedDatasourceList}
+            />
+          )}
         </>
       )}
 

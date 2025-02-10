@@ -26,12 +26,13 @@ interface IProps {
   data: string;
   busiGroups: any;
   groupedDatasourceList: any;
+  reloadGroupedDatasourceList: any;
   datasourceCateOptions: any;
 }
 
 function Import(props: IProps & ModalWrapProps) {
   const { t } = useTranslation('builtInComponents');
-  const { visible, destroy, data, busiGroups, groupedDatasourceList, datasourceCateOptions } = props;
+  const { visible, destroy, data, busiGroups, groupedDatasourceList, reloadGroupedDatasourceList, datasourceCateOptions } = props;
   const datasourceCates = _.filter(datasourceCateOptions, (item) => !!item.alertRule);
   const [allowSubmit, setAllowSubmit] = React.useState(true);
   const [form] = Form.useForm();
@@ -157,7 +158,7 @@ function Import(props: IProps & ModalWrapProps) {
             })}
           </Select>
         </Form.Item>
-        {datasourceCate && <DatasourceValueSelectV2 datasourceList={groupedDatasourceList[datasourceCate] || []} />}
+        {datasourceCate && <DatasourceValueSelectV2 datasourceList={groupedDatasourceList[datasourceCate] || []} reloadGroupedDatasourceList={reloadGroupedDatasourceList} />}
         <Form.Item label={t('common:table.enabled')} name='enabled' valuePropName='checked'>
           <Switch />
         </Form.Item>
