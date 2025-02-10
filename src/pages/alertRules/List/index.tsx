@@ -324,6 +324,7 @@ export default function List(props: ListProps) {
       {
         title: t('common:table.operations'),
         render: (record: any) => {
+          const anomalyEnabled = _.get(record, ['rule_config', 'anomaly_trigger', 'enable']);
           return (
             <Space>
               <Link
@@ -358,7 +359,7 @@ export default function List(props: ListProps) {
               >
                 {t('common:btn.delete')}
               </Button>
-              {record.prod === 'anomaly' && (
+              {anomalyEnabled === true && (
                 <div>
                   <Link to={{ pathname: `/alert-rules/brain/${record.id}` }}>{t('brain_result_btn')}</Link>
                 </div>
