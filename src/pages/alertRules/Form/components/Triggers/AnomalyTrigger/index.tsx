@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Space, Switch, Select, Radio } from 'antd';
+import { Form, Space, Switch, Select, Radio, Spin } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
@@ -31,45 +31,45 @@ export default function index(props: Props) {
     }
   }, [active]);
 
-  if (algorithmsLoading) return null;
-
   return (
-    <div>
-      <div className='mb2'>
-        <Space>
-          <Form.Item noStyle name={[...names, 'enable']} valuePropName='checked'>
-            <Switch />
-          </Form.Item>
-          {t('anomaly_trigger.enable')}
-        </Space>
-      </div>
+    <Spin spinning={algorithmsLoading}>
       <div>
-        <Space align='baseline'>
-          {t('anomaly_trigger.algorithm')}
-          <Form.Item name={[...names, 'algorithm']} rules={[{ required: true, message: t('anomaly_trigger.algorithm_required') }]} initialValue={_.keys(algorithms)[0]}>
-            <Select
-              style={{ width: 200 }}
-              disabled={disabled}
-              options={_.map(algorithms, (label, value) => {
-                return { label, value };
-              })}
-            />
-          </Form.Item>
-        </Space>
+        <div className='mb2'>
+          <Space>
+            <Form.Item noStyle name={[...names, 'enable']} valuePropName='checked'>
+              <Switch />
+            </Form.Item>
+            {t('anomaly_trigger.enable')}
+          </Space>
+        </div>
+        <div>
+          <Space align='baseline'>
+            {t('anomaly_trigger.algorithm')}
+            <Form.Item name={[...names, 'algorithm']} rules={[{ required: false, message: t('anomaly_trigger.algorithm_required') }]} initialValue={_.keys(algorithms)[0]}>
+              <Select
+                style={{ width: 200 }}
+                disabled={disabled}
+                options={_.map(algorithms, (label, value) => {
+                  return { label, value };
+                })}
+              />
+            </Form.Item>
+          </Space>
+        </div>
+        <div className='mb2'>
+          <Space align='baseline'>
+            {t('severity_label')}
+            <Form.Item name={[...names, 'severity']} rules={[{ required: true, message: 'Missing severity' }]} noStyle initialValue={2}>
+              <Radio.Group disabled={disabled}>
+                <Radio value={1}>{t('common:severity.1')}</Radio>
+                <Radio value={2}>{t('common:severity.2')}</Radio>
+                <Radio value={3}>{t('common:severity.3')}</Radio>
+              </Radio.Group>
+            </Form.Item>
+          </Space>
+        </div>
+        <AbnormalDetection />
       </div>
-      <div className='mb2'>
-        <Space align='baseline'>
-          {t('severity_label')}
-          <Form.Item name={[...names, 'severity']} rules={[{ required: true, message: 'Missing severity' }]} noStyle initialValue={2}>
-            <Radio.Group disabled={disabled}>
-              <Radio value={1}>{t('common:severity.1')}</Radio>
-              <Radio value={2}>{t('common:severity.2')}</Radio>
-              <Radio value={3}>{t('common:severity.3')}</Radio>
-            </Radio.Group>
-          </Form.Item>
-        </Space>
-      </div>
-      <AbnormalDetection />
-    </div>
+    </Spin>
   );
 }

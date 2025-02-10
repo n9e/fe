@@ -15,7 +15,7 @@
  *
  */
 
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Form, Card, Space, Switch, Button } from 'antd';
 import { PlusOutlined, CloseCircleOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
@@ -47,6 +47,10 @@ export default function index(props: IProps) {
   const exp_trigger_disable = Form.useWatch([...prefixName, 'exp_trigger_disable']);
   const nodata_trigger_enable = Form.useWatch([...prefixName, 'nodata_trigger', 'enable']);
   const anomaly_trigger_enable = Form.useWatch([...prefixName, 'anomaly_trigger', 'enable']);
+
+  useEffect(() => {
+    setActiveKey(defaultActiveKey);
+  }, [defaultActiveKey]);
 
   return (
     <Card

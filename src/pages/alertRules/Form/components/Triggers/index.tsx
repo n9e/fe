@@ -32,9 +32,12 @@ interface IProps {
 export default function index(props: IProps) {
   const exp_trigger_disable = Form.useWatch(['rule_config', 'exp_trigger_disable']);
   const nodata_trigger_enable = Form.useWatch(['rule_config', 'nodata_trigger', 'enable']);
+  const anomaly_trigger_enable = Form.useWatch(['rule_config', 'anomaly_trigger', 'enable']);
   let defaultActiveKey = 'triggers';
-  if (exp_trigger_disable === true && nodata_trigger_enable === true) {
+  if (nodata_trigger_enable === true) {
     defaultActiveKey = 'nodata_trigger';
+  } else if (anomaly_trigger_enable === true) {
+    defaultActiveKey = 'anomaly_trigger';
   }
 
   // if (exp_trigger_disable === undefined || nodata_trigger_enable === undefined) return null;

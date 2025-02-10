@@ -16,7 +16,7 @@
  */
 import React, { useEffect, useState } from 'react';
 import { Form, Select, Space, Row, Col, Button, Tooltip, Modal, Table } from 'antd';
-import { WarningOutlined, PlusCircleOutlined, MinusCircleOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { WarningOutlined, PlusCircleOutlined, MinusCircleOutlined, InfoCircleOutlined, ReloadOutlined } from '@ant-design/icons';
 import { Trans, useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
@@ -27,6 +27,7 @@ import './style.less';
 
 interface IProps {
   datasourceList: { id: number; name: string }[];
+  reloadGroupedDatasourceList: () => void;
   datasourceCate?: string;
   names?: string[];
   required?: boolean;
@@ -170,7 +171,7 @@ function Query({ idx, names, field, remove, invalidDatasourceIds, datasourceList
 }
 
 export default function index(props: IProps) {
-  const { datasourceList, datasourceCate, names = ['datasource_queries'], disabled, showExtra } = props;
+  const { datasourceList, reloadGroupedDatasourceList, datasourceCate, names = ['datasource_queries'], disabled, showExtra } = props;
   const { t } = useTranslation('alertRules');
   const [fullDatasourceList, setFullDatasourceList] = useState<any[]>([]);
   const [datasources, setDatasources] = useState<any[]>([]);
@@ -221,7 +222,13 @@ export default function index(props: IProps) {
       >
         {(fields, { add, remove }) => (
           <div>
-            <div className='mb1'>
+            <div
+              className='mb1'
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+              }}
+            >
               <Space>
                 {t('common:datasource.queries.label')}
                 <PlusCircleOutlined
@@ -232,6 +239,16 @@ export default function index(props: IProps) {
                       values: [],
                     })
                   }
+                />
+              </Space>
+              <Space>
+                <Link to='/help/source' target='_blank'>
+                  {t('common:datasource.managePageLink')}
+                </Link>
+                <ReloadOutlined
+                  onClick={() => {
+                    reloadGroupedDatasourceList();
+                  }}
                 />
               </Space>
             </div>

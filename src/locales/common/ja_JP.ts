@@ -97,6 +97,7 @@ const ja_JP = {
       op_not_in: '含まない',
       preview: 'データソースプレビュー',
     },
+    managePageLink: 'データソース管理',
   },
   confirm: {
     delete: '削除しますか？',

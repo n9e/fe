@@ -33,7 +33,7 @@ import PlusAlertRule from 'plus:/parcels/AlertRule';
 
 export default function Rule({ form }) {
   const { t } = useTranslation('alertRules');
-  const { isPlus, groupedDatasourceList } = useContext(CommonStateContext);
+  const { isPlus, groupedDatasourceList, reloadGroupedDatasourceList } = useContext(CommonStateContext);
   const prod = Form.useWatch('prod');
   const cate = Form.useWatch('cate');
 
@@ -72,7 +72,7 @@ export default function Rule({ form }) {
           }}
         />
       </Form.Item>
-      {prod !== 'host' && <DatasourceValueSelectV2 datasourceList={groupedDatasourceList[cate] || []} showExtra />}
+      {prod !== 'host' && <DatasourceValueSelectV2 datasourceList={groupedDatasourceList[cate] || []} reloadGroupedDatasourceList={reloadGroupedDatasourceList} showExtra />}
       <Form.Item isListField={false} name={['rule_config', 'inhibit']} valuePropName='checked' noStyle hidden>
         <div />
       </Form.Item>

@@ -237,10 +237,12 @@ export function getDefaultValuesByCate(prod, cate) {
       prod,
       cate,
       rule_config: {
+        ...defaultRuleConfig,
         queries: [
           {
             prom_ql: '',
             severity: 2,
+            ref: 'A',
           },
         ],
       },
