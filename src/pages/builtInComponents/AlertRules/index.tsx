@@ -25,7 +25,7 @@ interface Props {
 export default function index(props: Props) {
   const { component_id } = props;
   const { t } = useTranslation('builtInComponents');
-  const { busiGroups, groupedDatasourceList, datasourceCateOptions, darkMode } = useContext(CommonStateContext);
+  const { busiGroups, groupedDatasourceList, reloadGroupedDatasourceList, datasourceCateOptions, darkMode } = useContext(CommonStateContext);
   const [filter, setFilter] = useState<{
     cate?: string;
     query?: string;
@@ -145,6 +145,7 @@ export default function index(props: Props) {
                 data: formatBeautifyJsons(_.map(selectedRows.current, 'content')),
                 busiGroups,
                 groupedDatasourceList,
+                reloadGroupedDatasourceList,
                 datasourceCateOptions,
               });
             }}
@@ -257,6 +258,7 @@ export default function index(props: Props) {
                               data: formatBeautifyJson(record.content),
                               busiGroups,
                               groupedDatasourceList,
+                              reloadGroupedDatasourceList,
                               datasourceCateOptions,
                             });
                           }}

@@ -59,7 +59,7 @@ export default function List(props: ListProps) {
   const { gids } = props;
   const { t } = useTranslation('alertRules');
   const history = useHistory();
-  const { datasourceList, groupedDatasourceList, datasourceCateOptions } = useContext(CommonStateContext);
+  const { datasourceList, groupedDatasourceList, reloadGroupedDatasourceList, datasourceCateOptions } = useContext(CommonStateContext);
   const pagination = usePagination({ PAGESIZE_KEY: 'alert-rules-pagesize' });
   let defaultFilter = {} as Filter;
   try {
@@ -530,6 +530,7 @@ export default function List(props: ListProps) {
                     busiId: businessGroup.id,
                     refreshList: fetchData,
                     groupedDatasourceList,
+                    reloadGroupedDatasourceList,
                     datasourceCateOptions,
                   });
                 }
