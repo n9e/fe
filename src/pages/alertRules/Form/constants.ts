@@ -49,6 +49,7 @@ export const defaultValues = {
   notify_repeat_step: 60,
   notify_max_number: 0,
   rule_config: {
+    ...defaultRuleConfig,
     queries: [
       {
         prom_ql: '',

@@ -96,6 +96,7 @@ const en_US = {
       op_not_in: 'Not in',
       preview: 'Datasource preview',
     },
+    managePageLink: 'Data source management',
   },
   confirm: {
     delete: 'Are you sure to delete?',

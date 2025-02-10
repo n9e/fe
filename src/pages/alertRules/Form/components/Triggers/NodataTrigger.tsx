@@ -14,13 +14,13 @@ export default function NodataTrigger(props: Props) {
 
   return (
     <div>
-      <Space className='mb1'>
+      <Space className='mb2'>
         <Form.Item noStyle name={[...names, 'enable']} valuePropName='checked'>
           <Switch />
         </Form.Item>
         {t('nodata_trigger.enable')}
       </Space>
-      <div className='mb1'>
+      <div className='mb2'>
         <Space align='baseline'>
           {t('severity_label')}
           <Form.Item name={[...names, 'severity']} rules={[{ required: true, message: 'Missing severity' }]} noStyle initialValue={2}>
@@ -32,7 +32,7 @@ export default function NodataTrigger(props: Props) {
           </Form.Item>
         </Space>
       </div>
-      <div className='mb1'>
+      <div className='mb2'>
         <Space align='baseline'>
           <Form.Item noStyle name={[...names, 'resolve_after_enable']} valuePropName='checked'>
             <Checkbox />

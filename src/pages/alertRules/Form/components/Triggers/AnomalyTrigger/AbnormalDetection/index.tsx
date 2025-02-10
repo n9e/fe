@@ -23,7 +23,7 @@ export default function index({ disabled }: { disabled?: boolean }) {
         <div>
           <Space align='baseline'>
             {t('detect.t1')}
-            <Form.Item name={[...names, 'seasonal_duration']}>
+            <Form.Item name={[...names, 'seasonal_duration']} initialValue={86400}>
               <Select style={{ width: 100 }} disabled={disabled}>
                 <Select.Option value={3600}>{t('detect.hour')}</Select.Option>
                 <Select.Option value={86400}>{t('detect.day')}</Select.Option>
@@ -44,10 +44,12 @@ export default function index({ disabled }: { disabled?: boolean }) {
                 getValueFromEvent={(e) => {
                   return e.target.checked ? 1 : 0;
                 }}
+                getValueProps={(value) => ({ checked: value === 1 })}
+                initialValue={1}
               >
                 <Checkbox disabled={disabled}>{t('detect.upper')}</Checkbox>
               </Form.Item>
-              <Form.Item noStyle name={[...names, 'upper_times_num']}>
+              <Form.Item noStyle name={[...names, 'upper_times_num']} initialValue={1}>
                 <InputNumber disabled={disabled} />
               </Form.Item>{' '}
               {t('detect.t2')}
@@ -60,10 +62,12 @@ export default function index({ disabled }: { disabled?: boolean }) {
                 getValueFromEvent={(e) => {
                   return e.target.checked ? 1 : 0;
                 }}
+                getValueProps={(value) => ({ checked: value === 1 })}
+                initialValue={1}
               >
                 <Checkbox disabled={disabled}>{t('detect.downer')}</Checkbox>
               </Form.Item>
-              <Form.Item noStyle name={[...names, 'lower_times_num']}>
+              <Form.Item noStyle name={[...names, 'lower_times_num']} initialValue={1}>
                 <InputNumber disabled={disabled} />
               </Form.Item>{' '}
               {t('detect.t2')}
