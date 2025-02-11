@@ -48,10 +48,6 @@ export default function index(props: IProps) {
   const nodata_trigger_enable = Form.useWatch([...prefixName, 'nodata_trigger', 'enable']);
   const anomaly_trigger_enable = Form.useWatch([...prefixName, 'anomaly_trigger', 'enable']);
 
-  useEffect(() => {
-    setActiveKey(defaultActiveKey);
-  }, [defaultActiveKey]);
-
   return (
     <Card
       size='small'

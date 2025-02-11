@@ -49,6 +49,7 @@ export default function index(props: IProps) {
   const { licenseRulesRemaining, datasourceCateOptions } = useContext(CommonStateContext);
   const disabled = type === 3;
   const containerRef = React.useRef(null);
+  // TODO: 废弃的检测，beta.5 起已经不需要
   const handleCheck = async (values) => {
     if (values.cate === 'prometheus') {
       if (values.rule_config.checked && values.prod === 'anomaly') {

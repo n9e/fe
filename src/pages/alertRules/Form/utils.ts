@@ -79,6 +79,7 @@ export function processFormValues(values) {
   if (values.prod === 'host') {
     cate = 'host';
   } else if (values.prod === 'anomaly') {
+    // TODO: 废弃的设置，beta.5 起已经不需要
     cate = 'prometheus';
   }
   // TODO 如果保存的是 prometheus v2 版本的规则，需要清理掉 v1 版本的 prom_ql 字段
