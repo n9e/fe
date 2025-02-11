@@ -4,9 +4,8 @@ import { DeleteOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import HideButton from '@/pages/dashboard/Components/HideButton';
 import LegendInput from '@/pages/dashboard/Components/LegendInput';
+import { alphabet } from '@/utils/constant';
 import { Panel } from '../Collapse';
-
-const alphabet = 'ABCDEFGHIGKLMNOPQRSTUVWXYZ'.split('');
 
 export default function index({ fields, remove, field }) {
   const { t } = useTranslation('dashboard');

@@ -8,7 +8,7 @@ import TimeRangePicker, { isMathString } from '@/components/TimeRangePicker';
 import Collapse, { Panel } from '@/pages/dashboard/Editor/Components/Collapse';
 import { CommonStateContext } from '@/App';
 import LogQL from '@/components/LogQL';
-import { DatasourceCateEnum } from '@/utils/constant';
+import { DatasourceCateEnum, alphabet } from '@/utils/constant';
 import ExpressionPanel from '@/pages/dashboard/Editor/Components/ExpressionPanel';
 import AddQueryButtons from '@/pages/dashboard/Editor/Components/AddQueryButtons';
 import AdvancedSettings from '../components/AdvancedSettings';
@@ -16,8 +16,6 @@ import DocumentDrawer from '../components/DocumentDrawer';
 import LegendInput from '../components/LegendInput';
 import { NAME_SPACE } from '../constants';
 import './style.less';
-
-const alphabet = 'ABCDEFGHIGKLMNOPQRSTUVWXYZ'.split('');
 
 export default function MySQLQueryBuilder() {
   const { t } = useTranslation('dashboard');

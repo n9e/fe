@@ -5,7 +5,7 @@ import { FormListFieldData } from 'antd/lib/form/FormList';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import HideButton from '@/pages/dashboard/Components/HideButton';
-import { IS_PLUS } from '@/utils/constant';
+import { IS_PLUS, alphabet } from '@/utils/constant';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import KQLInput from '@/components/KQLInput';
 import LegendInput from '@/pages/dashboard/Components/LegendInput';
@@ -16,8 +16,6 @@ import GroupBy from './GroupBy';
 import Time from './Time';
 import { Panel } from '../../Components/Collapse';
 import { replaceExpressionVars } from '../../../VariableConfig/constant';
-
-const alphabet = 'ABCDEFGHIGKLMNOPQRSTUVWXYZ'.split('');
 
 interface Props {
   fields: FormListFieldData[];
