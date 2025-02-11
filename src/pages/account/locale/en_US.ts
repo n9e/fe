@@ -30,6 +30,7 @@ const en_US = {
     title: 'Token Management',
     createToken: 'Create Token',
     tokenName: 'Token Name',
+    last_used: 'Last used',
   },
   editPicture: 'Edit',
   pictureURL: 'URL',

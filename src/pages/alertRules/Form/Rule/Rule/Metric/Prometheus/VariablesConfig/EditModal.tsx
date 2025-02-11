@@ -121,11 +121,12 @@ export default function EditModal(props: Props) {
           <Form.Item
             label={t('var_config.enum_value')}
             name='query'
-            rules={[
-              {
-                required: true,
-              },
-            ]}
+            // TODO: beta.5 关闭校验，不填则代表所有
+            // rules={[
+            //   {
+            //     required: true,
+            //   },
+            // ]}
           >
             <Select mode='tags' open={false} tokenSeparators={[' ']} />
           </Form.Item>

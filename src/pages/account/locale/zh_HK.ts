@@ -30,6 +30,7 @@ const zh_HK = {
     title: 'Token 管理',
     createToken: '創建 Token',
     tokenName: 'Token 名稱',
+    last_used: '最近使用时间',
   },
   editPicture: '修改頭像',
   pictureURL: '頭像地址',

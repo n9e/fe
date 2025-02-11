@@ -30,6 +30,7 @@ const ja_JP = {
     title: 'Token 管理',
     createToken: 'Token を作成',
     tokenName: 'Token 名',
+    last_used: '最終使用日',
   },
   editPicture: 'プロフィール画像を変更',
   pictureURL: 'プロフィール画像のURL',

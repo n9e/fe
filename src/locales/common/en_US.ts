@@ -53,10 +53,11 @@ const en_US = {
     batch_export: 'Batch export',
     batch_import: 'Batch import',
     test: 'Test',
-    copy: 'Copy',
     expand: 'Expand',
     collapse: 'Collapse',
     config: 'Config',
+    copy: 'Copy',
+    copy2: 'Copy',
   },
   table: {
     name: 'Name',
