@@ -56,6 +56,7 @@ const ja_JP = {
     expand: '展開',
     collapse: '折りたたむ',
     copy: 'コピー',
+    copy2: 'コピー',
   },
   table: {
     name: '名前',

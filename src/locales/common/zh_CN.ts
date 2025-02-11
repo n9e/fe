@@ -55,6 +55,7 @@ const zh_CN = {
     expand: '展开',
     collapse: '收起',
     copy: '拷贝',
+    copy2: '复制',
   },
   table: {
     name: '名称',
