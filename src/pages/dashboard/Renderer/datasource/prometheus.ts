@@ -3,13 +3,13 @@ import moment from 'moment';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { fetchHistoryRangeBatch, fetchHistoryInstantBatch, fetchHistoryRangeBatch2 } from '@/services/dashboardV2';
 import i18next from 'i18next';
+import { alphabet } from '@/utils/constant';
 import { ITarget } from '../../types';
 import { IVariable } from '../../VariableConfig/definition';
 import replaceExpressionBracket from '../utils/replaceExpressionBracket';
 import { completeBreakpoints, getSerieName } from './utils';
 import replaceFieldWithVariable from '../utils/replaceFieldWithVariable';
 import { replaceExpressionVars, getOptionsList } from '../../VariableConfig/constant';
-import { alphabet } from '../utils/getFirstUnusedLetter';
 import { N9E_PATHNAME, IS_PLUS } from '@/utils/constant';
 
 interface IOptions {

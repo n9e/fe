@@ -68,20 +68,7 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
                     </Col>
                     <Col flex='auto'>
                       <div className='tdengine-discover-query'>
-                        <InputGroupWithFormItem
-                          label={
-                            <Space>
-                              {t('query.query')}
-                              <InfoCircleOutlined
-                                onClick={() => {
-                                  DocumentDrawer({
-                                    darkMode,
-                                  });
-                                }}
-                              />
-                            </Space>
-                          }
-                        >
+                        <InputGroupWithFormItem label={<Space>{t('query.query')}</Space>}>
                           <Form.Item {...field} name={[field.name, 'sql']}>
                             <LogQL
                               datasourceCate={DatasourceCateEnum.ck}

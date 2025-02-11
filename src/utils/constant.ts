@@ -92,3 +92,4 @@ export const THEME = {
     gridColor: 'rgba(240, 250, 255, 0.09)',
   },
 };
+export const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');

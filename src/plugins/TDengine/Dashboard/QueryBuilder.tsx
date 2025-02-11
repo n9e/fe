@@ -4,6 +4,7 @@ import { DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
+import { alphabet } from '@/utils/constant';
 import TimeRangePicker, { isMathString } from '@/components/TimeRangePicker';
 import AdvancedSettings from '@/plugins/TDengine/components/AdvancedSettings';
 import Collapse, { Panel } from '@/pages/dashboard/Editor/Components/Collapse';
@@ -11,8 +12,6 @@ import getFirstUnusedLetter from '@/pages/dashboard/Renderer/utils/getFirstUnuse
 import { replaceExpressionVars } from '@/pages/dashboard/VariableConfig/constant';
 import SqlTemplates from '../components/SqlTemplates';
 import { MetaModal } from '../components/Meta';
-
-const alphabet = 'ABCDEFGHIGKLMNOPQRSTUVWXYZ'.split('');
 
 export default function TDengineQueryBuilder({ chartForm, variableConfig, dashboardId }) {
   const { t } = useTranslation('dashboard');

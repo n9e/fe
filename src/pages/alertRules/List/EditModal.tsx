@@ -24,7 +24,7 @@ import { getTeamInfoList, getNotifiesList } from '@/services/manage';
 import DatasourceValueSelectV2 from '@/pages/alertRules/Form/components/DatasourceValueSelect/V2';
 import { CommonStateContext } from '@/App';
 import Triggers from '@/pages/alertRules/Form/components/Triggers';
-import { alphabet } from '@/components/QueryName/utils';
+import { alphabet } from '@/utils/constant';
 import { defaultValues } from '../Form/constants';
 
 // @ts-ignore
