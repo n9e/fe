@@ -52,7 +52,7 @@ export const baseCates: Cate[] = [
   {
     value: 'loki',
     label: 'Loki',
-    type: ['loki', 'logging'], // loki 是历史版本里一个过度的分类，后续会废弃
+    type: ['logging'],
     alertRule: true,
     dashboard: false,
     dashboardVariable: false,
