@@ -1,5 +1,3 @@
-import { defaultRuleConfig } from '@/pages/alertRules/Form/constants';
-
 export const normalizeTime = (value?: number, unit?: 'second' | 'min' | 'hour') => {
   if (!value) {
     return value;
@@ -18,11 +16,3 @@ export const normalizeTime = (value?: number, unit?: 'second' | 'min' | 'hour') 
   }
   return value;
 };
-
-export function getDefaultValuesByCate(prod, cate) {
-  return {
-    prod,
-    cate,
-    rule_config: defaultRuleConfig.logging,
-  };
-}

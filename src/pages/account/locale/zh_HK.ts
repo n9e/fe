@@ -26,6 +26,12 @@ const zh_HK = {
     contactLinkToSetting: '聯繫方式管理',
     contactPlaceholder: '請選擇聯繫方式',
   },
+  token: {
+    title: 'Token 管理',
+    createToken: '創建 Token',
+    tokenName: 'Token 名稱',
+    last_used: '最近使用时间',
+  },
   editPicture: '修改頭像',
   pictureURL: '頭像地址',
   pictureMsg: '頭像地址需要以 http 開頭',

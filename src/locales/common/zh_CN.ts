@@ -55,6 +55,7 @@ const zh_CN = {
     expand: '展开',
     collapse: '收起',
     copy: '拷贝',
+    copy2: '复制',
   },
   table: {
     name: '名称',
@@ -95,6 +96,7 @@ const zh_CN = {
       op_not_in: '不包含',
       preview: '数据源预览',
     },
+    managePageLink: '数据源管理',
   },
   confirm: {
     delete: '确认删除吗？',

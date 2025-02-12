@@ -24,7 +24,7 @@ import { getTeamInfoList, getNotifiesList } from '@/services/manage';
 import DatasourceValueSelectV2 from '@/pages/alertRules/Form/components/DatasourceValueSelect/V2';
 import { CommonStateContext } from '@/App';
 import Triggers from '@/pages/alertRules/Form/components/Triggers';
-import { alphabet } from '@/components/QueryName/utils';
+import { alphabet } from '@/utils/constant';
 import { defaultValues } from '../Form/constants';
 
 // @ts-ignore
@@ -125,7 +125,7 @@ interface Props {
 const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedRows }) => {
   const { t } = useTranslation('alertRules');
   const [form] = Form.useForm();
-  const { groupedDatasourceList, isPlus } = useContext(CommonStateContext);
+  const { groupedDatasourceList, reloadGroupedDatasourceList, isPlus } = useContext(CommonStateContext);
   const [contactList, setInitContactList] = useState([]);
   const [notifyGroups, setNotifyGroups] = useState([]);
   const field = Form.useWatch('field', form);
@@ -422,6 +422,7 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
                       names={['datasource_queries']}
                       datasourceCate={selectedRows[0]?.cate}
                       datasourceList={groupedDatasourceList?.[selectedRows[0]?.cate] || []}
+                      reloadGroupedDatasourceList={reloadGroupedDatasourceList}
                     />
                     <Form.Item name='action' initialValue='datasource_change' hidden>
                       <div />

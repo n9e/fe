@@ -15,16 +15,18 @@
  *
  */
 
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Form, Card, Space, Switch, Button } from 'antd';
 import { PlusOutlined, CloseCircleOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
+import { CommonStateContext } from '@/App';
 import Inhibit from '@/pages/alertRules/Form/components/Inhibit';
 
 import Trigger from './Trigger';
 import NodataTrigger from './NodataTrigger';
+import AnomalyTrigger from './AnomalyTrigger';
 
 interface IProps {
   defaultActiveKey: string;
@@ -38,10 +40,13 @@ interface IProps {
 
 export default function index(props: IProps) {
   const { t } = useTranslation('alertRules');
+  const { feats } = useContext(CommonStateContext);
   const { defaultActiveKey, prefixField = {}, fullPrefixName = [], prefixName = [], queries, disabled, initialValue } = props;
   const [activeKey, setActiveKey] = React.useState(defaultActiveKey);
+  const cate = Form.useWatch(['cate']);
   const exp_trigger_disable = Form.useWatch([...prefixName, 'exp_trigger_disable']);
   const nodata_trigger_enable = Form.useWatch([...prefixName, 'nodata_trigger', 'enable']);
+  const anomaly_trigger_enable = Form.useWatch([...prefixName, 'anomaly_trigger', 'enable']);
 
   return (
     <Card
@@ -49,26 +54,41 @@ export default function index(props: IProps) {
       tabProps={{
         size: 'small',
       }}
-      tabList={[
-        {
-          key: 'triggers',
-          tab: (
-            <Space>
-              {t('trigger.title')}
-              {exp_trigger_disable === false && <CheckCircleOutlined style={{ color: 'var(--fc-fill-success)', margin: 0 }} />}
-            </Space>
-          ),
-        },
-        {
-          key: 'nodata_trigger',
-          tab: (
-            <Space>
-              {t('nodata_trigger.title')}
-              {nodata_trigger_enable === true && <CheckCircleOutlined style={{ color: 'var(--fc-fill-success)' }} />}
-            </Space>
-          ),
-        },
-      ]}
+      tabList={_.concat(
+        [
+          {
+            key: 'triggers',
+            tab: (
+              <Space>
+                {t('trigger.title')}
+                {exp_trigger_disable === false && <CheckCircleOutlined style={{ color: 'var(--fc-fill-success)', margin: 0 }} />}
+              </Space>
+            ),
+          },
+          {
+            key: 'nodata_trigger',
+            tab: (
+              <Space>
+                {t('nodata_trigger.title')}
+                {nodata_trigger_enable === true && <CheckCircleOutlined style={{ color: 'var(--fc-fill-success)' }} />}
+              </Space>
+            ),
+          },
+        ],
+        cate === 'prometheus' && feats?.fcBrain === true
+          ? [
+              {
+                key: 'anomaly_trigger',
+                tab: (
+                  <Space>
+                    {t('anomaly_trigger.title')}
+                    {anomaly_trigger_enable === true && <CheckCircleOutlined style={{ color: 'var(--fc-fill-success)' }} />}
+                  </Space>
+                ),
+              },
+            ]
+          : [],
+      )}
       activeTabKey={activeKey}
       onTabChange={(key) => {
         setActiveKey(key);
@@ -140,6 +160,13 @@ export default function index(props: IProps) {
         }}
       >
         <NodataTrigger prefixName={prefixName} />
+      </div>
+      <div
+        style={{
+          display: activeKey === 'anomaly_trigger' ? 'block' : 'none',
+        }}
+      >
+        <AnomalyTrigger prefixName={prefixName} active={activeKey === 'anomaly_trigger'} />
       </div>
     </Card>
   );

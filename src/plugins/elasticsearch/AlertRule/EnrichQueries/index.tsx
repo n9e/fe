@@ -5,6 +5,7 @@ import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
 import { getIndices } from '@/pages/explorer/Elasticsearch/services';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
+import { alphabet } from '@/utils/constant';
 import Value from './Value';
 import DateField from './DateField';
 import GraphPreview from './GraphPreview';
@@ -16,8 +17,6 @@ import EnrichQueryValuesMaxLen from '@/plus/parcels/AlertRule/NotifyExtra/Enrich
 interface IProps {
   disabled?: boolean;
 }
-
-const alphabet = 'ABCDEFGHIGKLMNOPQRSTUVWXYZ'.split('');
 
 export default function index(props: IProps) {
   const { t } = useTranslation('alertRules');

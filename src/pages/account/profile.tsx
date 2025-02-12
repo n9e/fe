@@ -20,6 +20,7 @@ import { useParams, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import PageLayout from '@/components/pageLayout';
 import ChangePassword from './changePassword';
+import Token from './Token';
 import Info from './info';
 import './profile.less';
 import './locale';
@@ -47,6 +48,9 @@ export default function Profile() {
             </TabPane>
             <TabPane tab={t('password.title')} key='pwd'>
               <ChangePassword />
+            </TabPane>
+            <TabPane tab={t('token.title')} key='token'>
+              <Token />
             </TabPane>
           </Tabs>
         </div>

@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useDebounceFn } from 'ahooks';
 import { getFields } from '@/pages/explorer/Elasticsearch/services';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
+import { alphabet } from '@/utils/constant';
 
 interface IProps {
   prefixField?: any;
@@ -16,7 +17,6 @@ interface IProps {
   valueRefVisible?: boolean;
 }
 
-const alphabet = 'ABCDEFGHIGKLMNOPQRSTUVWXYZ'.split('');
 const functions = ['count', 'avg', 'sum', 'max', 'min', 'p90', 'p95', 'p99', 'rawData'];
 const functionsLabelMap = {
   count: 'count',

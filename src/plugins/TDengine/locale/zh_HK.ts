@@ -19,6 +19,10 @@ const zh_HK = {
     power_sql: 'SQL 增強',
     query: '查詢條件',
     query_msg: '請輸入查詢條件',
+    query_tip1: 'TDengine 查詢語法可參考',
+    query_tip2: '官方文檔',
+    sqlTemplates: '查詢模板',
+    sqlTemplates_tip: '以下 SQL 查詢條件僅供參考，在實際使用的時候，需要將其中的 $變量 替換為實際的值',
     mode: {
       timeSeries: '時序值',
       raw: '日誌原文',

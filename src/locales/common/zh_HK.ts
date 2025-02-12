@@ -55,6 +55,7 @@ const zh_HK = {
     expand: '展開',
     collapse: '收起',
     copy: '複製',
+    copy2: '複製',
   },
   table: {
     name: '名稱',
@@ -95,6 +96,7 @@ const zh_HK = {
       op_not_in: '不包含',
       preview: '數據源預覽',
     },
+    managePageLink: '数据源管理',
   },
   confirm: {
     delete: '確認刪除嗎？',

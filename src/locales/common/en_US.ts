@@ -56,6 +56,7 @@ const en_US = {
     expand: 'Expand',
     collapse: 'Collapse',
     copy: 'Copy',
+    copy2: 'Copy',
   },
   table: {
     name: 'Name',
@@ -96,6 +97,7 @@ const en_US = {
       op_not_in: 'Not in',
       preview: 'Datasource preview',
     },
+    managePageLink: 'Data source management',
   },
   confirm: {
     delete: 'Are you sure to delete?',

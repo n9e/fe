@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import moment from 'moment';
 import { DatasourceCateEnum, BaseDatasourceCateEnum } from '@/utils/constant';
-import { defaultRuleConfig, defaultValues } from './constants';
+import { defaultRuleConfig, datasourceDefaultValue, defaultValues } from './constants';
 import { DATASOURCE_ALL } from '../constants';
 // @ts-ignore
 import * as alertUtils from 'plus:/parcels/AlertRule/utils';
@@ -79,6 +79,7 @@ export function processFormValues(values) {
   if (values.prod === 'host') {
     cate = 'host';
   } else if (values.prod === 'anomaly') {
+    // TODO: 废弃的设置，beta.5 起已经不需要
     cate = 'prometheus';
   }
   // TODO 如果保存的是 prometheus v2 版本的规则，需要清理掉 v1 版本的 prom_ql 字段
@@ -208,69 +209,65 @@ export function processInitialValues(values) {
   };
 }
 
-const datasourceDefaultValue = {
-  datasource_queries: [
-    {
-      match_type: 0,
-      op: 'in',
-      values: [],
-    },
-  ],
-  datasource_value: undefined,
-};
-
-export function getDefaultValuesByProd(prod, defaultBrainParams, isPlus = false) {
-  if (prod === 'host') {
+export function getDefaultValuesByCate(prod, cate) {
+  if (cate === 'host') {
     return {
       prod,
       cate: 'host',
-      rule_config: defaultRuleConfig.host,
-      ...datasourceDefaultValue,
-    };
-  }
-  if (prod === 'anomaly') {
-    return {
-      prod,
-      cate: 'prometheus',
       rule_config: {
-        ...defaultRuleConfig.anomaly,
-        algo_params: defaultBrainParams?.holtwinters || {},
+        queries: [
+          {
+            key: 'all_hosts',
+            op: '==',
+            values: [],
+          },
+        ],
+        triggers: [
+          {
+            type: 'target_miss',
+            severity: 2,
+            duration: 30,
+          },
+        ],
       },
       ...datasourceDefaultValue,
     };
   }
-  if (prod === 'metric') {
-    return {
-      prod,
-      cate: 'prometheus',
-      rule_config: defaultRuleConfig.metric,
-      ...datasourceDefaultValue,
-    };
-  }
-  if (prod === 'logging') {
-    return {
-      prod,
-      cate: 'elasticsearch',
-      rule_config: defaultRuleConfig.logging,
-      ...datasourceDefaultValue,
-    };
-  }
-  if (prod === 'loki') {
-    return {
-      prod,
-      cate: 'loki',
-      rule_config: defaultRuleConfig.loki,
-      ...datasourceDefaultValue,
-    };
-  }
-}
-
-export function getDefaultValuesByCate(prod, cate) {
   if (cate === DatasourceCateEnum.prometheus) {
     return {
       prod,
       cate,
-      rule_config: defaultRuleConfig.metric,
+      rule_config: {
+        ...defaultRuleConfig,
+        queries: [
+          {
+            prom_ql: '',
+            severity: 2,
+            ref: 'A',
+          },
+        ],
+      },
+      ...datasourceDefaultValue,
+    };
+  }
+  if (cate === DatasourceCateEnum.elasticsearch) {
+    return {
+      prod,
+      cate,
+      rule_config: {
+        ...defaultRuleConfig,
+        queries: [
+          {
+            ref: 'A',
+            interval_unit: 'min',
+            interval: 5,
+            date_field: '@timestamp',
+            value: {
+              func: 'count',
+            },
+          },
+        ],
+      },
       ...datasourceDefaultValue,
     };
   }
@@ -279,25 +276,12 @@ export function getDefaultValuesByCate(prod, cate) {
       prod,
       cate,
       rule_config: {
+        ...defaultRuleConfig,
         queries: [
           {
             ref: 'A',
             interval: 1,
             interval_unit: 'min',
-          },
-        ],
-        triggers: [
-          {
-            mode: 0,
-            expressions: [
-              {
-                ref: 'A',
-                comparisonOperator: '>',
-                value: 0,
-                logicalOperator: '&&',
-              },
-            ],
-            severity: 2,
           },
         ],
       },
@@ -308,7 +292,15 @@ export function getDefaultValuesByCate(prod, cate) {
     return {
       prod,
       cate,
-      rule_config: defaultRuleConfig.loki,
+      rule_config: {
+        queries: [
+          {
+            // log_ql: '',
+            prom_ql: '', // 为了兼容老版本
+            severity: 2,
+          },
+        ],
+      },
       ...datasourceDefaultValue,
     };
   }

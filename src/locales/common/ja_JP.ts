@@ -56,6 +56,7 @@ const ja_JP = {
     expand: '展開',
     collapse: '折りたたむ',
     copy: 'コピー',
+    copy2: 'コピー',
   },
   table: {
     name: '名前',
@@ -96,6 +97,7 @@ const ja_JP = {
       op_not_in: '含まない',
       preview: 'データソースプレビュー',
     },
+    managePageLink: 'データソース管理',
   },
   confirm: {
     delete: '削除しますか？',
