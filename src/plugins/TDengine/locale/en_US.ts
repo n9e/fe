@@ -37,6 +37,9 @@ const en_US = {
       timeKey_tip: 'Specify which field is the time field and use it as the x-axis coordinate for drawing the curve',
       timeFormat_tip: 'The format of the time, which will convert the time to a timestamp according to this format',
     },
+    schema: 'Schema',
+    table: 'Table',
+    stable: 'Stable',
   },
   trigger: {
     title: 'Trigger',

@@ -37,6 +37,9 @@ const zh_HK = {
       timeKey_tip: '指定哪個字段是時間字段，作為繪製曲線圖的 x 軸座標',
       timeFormat_tip: '時間的格式，會根據此格式將時間轉為時間戳',
     },
+    schema: '元信息',
+    table: '普通表',
+    stable: '超級表',
   },
   trigger: {
     title: '告警條件',

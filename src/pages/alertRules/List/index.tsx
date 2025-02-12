@@ -359,7 +359,7 @@ export default function List(props: ListProps) {
               >
                 {t('common:btn.delete')}
               </Button>
-              {anomalyEnabled === true && (
+              {record.cate === 'prometheus' && anomalyEnabled === true && (
                 <div>
                   <Link to={{ pathname: `/alert-rules/brain/${record.id}` }}>{t('brain_result_btn')}</Link>
                 </div>
