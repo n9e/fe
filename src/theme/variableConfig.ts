@@ -26,3 +26,23 @@ export const tsGraphThemeColor = {
     },
   },
 };
+
+/**
+ * 灭火图首页气泡 特殊处理
+ */
+export const bubbleIcon = {
+  bubbleImage: {
+    red: {
+      light: '/image/outfire/status-bubble/red_bubble_light.png',
+      dark: '/image/outfire/status-bubble/red_bubble_dark.png',
+    },
+    green: {
+      light: '/image/outfire/status-bubble/green_bubble_light.png',
+      dark: '/image/outfire/status-bubble/green_bubble_dark.png',
+    },
+    nodata: {
+      light: '/image/outfire/status-bubble/nodata_bubble_light.png',
+      dark: '/image/outfire/status-bubble/nodata_bubble_dark.png',
+    },
+  },
+};
