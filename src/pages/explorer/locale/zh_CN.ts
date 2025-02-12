@@ -26,7 +26,7 @@ const zh_CN = {
       OLDEST_FIRST: '旧的优先',
     },
     download: '下载日志',
-    export: '导出记录',
+    export: '下载记录',
     log_download: {
       title: '下载',
       download_title: '下载日志数据',

@@ -26,7 +26,7 @@ const en_US = {
       OLDEST_FIRST: 'Oldest first',
     },
     download: 'Download logs',
-    export: 'Export records',
+    export: 'Download records',
     log_download: {
       title: 'Download',
       download_title: 'Download Log Data',
