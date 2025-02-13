@@ -228,7 +228,7 @@ const en_US = {
         btn: 'Add threshold',
         mode: {
           label: 'Mode',
-          tip: 'Thresholds mode Percentage means thresholds relative to min & max',
+          tip: 'Percent mode calculation formula Y-axis minimum value + (Y-axis maximum value - Y-axis minimum value) * (percentage value / 100)',
           absolute: 'Absolute',
           percentage: 'Percentage',
         },

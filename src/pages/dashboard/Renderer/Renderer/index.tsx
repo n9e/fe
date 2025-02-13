@@ -106,7 +106,7 @@ function index(props: IProps) {
   const bodyWrapRef = useRef<HTMLDivElement>(null);
   const [inViewPort] = useInViewport(ref);
   const [inspect, setInspect] = useState(false);
-  const { query, series, error, loading, loaded } = useQuery({
+  const { query, series, error, loading, loaded, range } = useQuery({
     id,
     dashboardId,
     time,
@@ -141,6 +141,7 @@ function index(props: IProps) {
     values,
     series,
   };
+
   const RendererCptMap = {
     timeseries: () => (
       <Timeseries
@@ -149,7 +150,7 @@ function index(props: IProps) {
         annotations={annotations}
         setAnnotationsRefreshFlag={props.setAnnotationsRefreshFlag}
         themeMode={themeMode}
-        time={time}
+        time={range}
         setRange={props.setRange}
         isPreview={isPreview}
       />
