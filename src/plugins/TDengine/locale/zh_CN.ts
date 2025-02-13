@@ -37,6 +37,9 @@ const zh_CN = {
       timeKey_tip: '指定哪个字段是时间字段，作为绘制曲线图的x轴坐标',
       timeFormat_tip: '时间的格式，会根据此格式将时间转为时间戳',
     },
+    schema: '元信息',
+    table: '普通表',
+    stable: '超级表',
   },
   trigger: {
     title: '告警条件',

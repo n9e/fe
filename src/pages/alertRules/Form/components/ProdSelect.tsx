@@ -12,14 +12,6 @@ interface IProps {
 
 export const getProdOptions = (feats) => {
   const prodOptions = _.cloneDeep(ruleTypeOptions);
-
-  if (feats?.fcBrain) {
-    prodOptions.push({
-      label: 'Anomaly',
-      value: 'anomaly',
-      pro: true,
-    });
-  }
   return prodOptions;
 };
 
