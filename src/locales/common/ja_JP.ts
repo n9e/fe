@@ -139,6 +139,9 @@ const ja_JP = {
     },
   },
   invalidDatasource: '無効なデータソース',
+  copyToClipboard: 'クリップボードにコピー',
+  copyToClipboardFailed: 'クリップボードにコピーできませんでした',
+
   tpl: '自己修復スクリプト',
   'tpl.create': '作成',
   'tpl.tag.bind': 'タグをバインド',

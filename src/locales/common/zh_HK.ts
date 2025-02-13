@@ -138,6 +138,8 @@ const zh_HK = {
     },
   },
   invalidDatasource: '無效的數據源',
+  copyToClipboard: '複製到剪貼板',
+  copyToClipboardFailed: '複製到剪貼板失敗',
 
   tpl: '自愈腳本',
   'tpl.create': '創建',

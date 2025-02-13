@@ -139,6 +139,8 @@ const en_US = {
     },
   },
   invalidDatasource: 'Invalid datasource',
+  copyToClipboard: 'Copy to clipboard successfully',
+  copyToClipboardFailed: 'Copy to clipboard failed',
 
   tpl: 'Self-healing',
   'tpl.create': 'Create',

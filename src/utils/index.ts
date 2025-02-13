@@ -89,9 +89,9 @@ export const copy2ClipBoard = (text: string, silent = false): boolean => {
   let succeeded;
   try {
     succeeded = document.execCommand('copy');
-    !silent && message.success(i18next.t('复制到剪贴板'));
+    !silent && message.success(i18next.t('common:copyToClipboard'));
   } catch (err) {
-    message.error(i18next.t('复制失败'));
+    message.error(i18next.t('common:copyToClipboardFailed'));
     succeeded = false;
   }
   if (succeeded) {
