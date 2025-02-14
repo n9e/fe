@@ -131,7 +131,8 @@ export default function getDataFrameAndBaseSeries(oldSeries: OldSeriesItem[]): {
       const index = timestamps.indexOf(ts);
 
       // Add value to frame
-      frame[index] = value;
+      // 如果是 string 类型的数值，转换为 number 类型，其他类似可能为 number、null 等类型的值不做处理
+      frame[index] = _.isString(value) ? _.toNumber(value) : value;
     }
     frames.push(frame);
   }
