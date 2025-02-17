@@ -61,6 +61,21 @@ export const momentLocaleZhCN = {
   weekdays: '星期日_星期一_星期二_星期三_星期四_星期五_星期六'.split('_'),
   weekdaysShort: '周日_周一_周二_周三_周四_周五_周六'.split('_'),
   weekdaysMin: '日_一_二_三_四_五_六'.split('_'),
+  relativeTime: {
+    future: '%s 内',
+    past: '%s 前',
+    s: '几秒',
+    m: '1 分',
+    mm: '%d 分',
+    h: '1 小时',
+    hh: '%d 小时',
+    d: '1 天',
+    dd: '%d 天',
+    M: '1 个月',
+    MM: '%d 个月',
+    y: '1 年',
+    yy: '%d 年',
+  },
 };
 
 export const units: TDurationUnit[] = ['y', 'M', 'w', 'd', 'h', 'm', 's', 'Q'];
