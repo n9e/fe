@@ -122,6 +122,7 @@ const zh_CN = {
     second: '秒',
     minute: '分钟',
     hour: '小时',
+    day: '天',
     weekdays: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
   },
   severity: {
