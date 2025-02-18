@@ -109,6 +109,12 @@ export default function QueryBuilder(props: Props) {
     }
   }, [indexPattern]);
 
+  useEffect(() => {
+    if (params.get('__execute__')) {
+      onExecute();
+    }
+  }, []);
+
   return (
     <>
       <Form.Item name={['query', 'index']} hidden>

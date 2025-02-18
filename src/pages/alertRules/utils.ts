@@ -28,7 +28,7 @@ export const parseTimeToValueAndUnit = (value?: number) => {
   };
 };
 
-export const normalizeTime = (value?: number, unit?: 'second' | 'min' | 'hour') => {
+export const normalizeTime = (value?: number, unit?: 'second' | 'min' | 'hour' | 'day') => {
   if (!value) {
     return value;
   }

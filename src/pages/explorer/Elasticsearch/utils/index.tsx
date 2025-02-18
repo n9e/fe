@@ -297,6 +297,7 @@ export function dslBuilder(params: {
   syntax?: string; // lucene | kuery
   query_string?: string;
   kuery?: string;
+  from?: number;
   limit?: number;
   order?: string;
   orderField?: string;
@@ -336,6 +337,7 @@ export function dslBuilder(params: {
     // ],
     _source: false,
     aggs: {},
+    from: 0,
   };
   body.track_total_hits = true; //get real hits total
   body.highlight = getHighlightRequest(!!params.shouldHighlight);
@@ -349,6 +351,9 @@ export function dslBuilder(params: {
         },
       },
     });
+  }
+  if (_.isNumber(params.from)) {
+    body.from = params.from;
   }
   if (params.limit) {
     body.size = params.limit;

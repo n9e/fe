@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import _ from 'lodash';
-import { Table as AntdTable } from 'antd';
+import { Table as AntdTable, Form } from 'antd';
 import { DownOutlined, RightOutlined } from '@ant-design/icons';
 import { Field } from './utils';
 import { getColumnsFromFields } from './utils/getColumnsFromFields';
@@ -8,15 +8,14 @@ import LogView from './LogView';
 
 interface Props {
   data: any[];
-  fetchData: () => void;
-  sorterRef: any;
-  form: any;
+  onChange: (pagination, filters, sorter, extra) => void;
   getFields: () => Field[];
   selectedFields: Field[];
 }
 
 function Table(props: Props) {
-  const { data, fetchData, sorterRef, form, getFields, selectedFields } = props;
+  const { data, onChange, getFields, selectedFields } = props;
+  const form = Form.useFormInstance();
   const columns = useMemo(() => {
     return getColumnsFromFields(selectedFields, form.getFieldValue(['query']), form.getFieldValue(['fieldConfig']));
   }, [selectedFields]);
@@ -39,15 +38,7 @@ function Table(props: Props) {
         y: 'calc(100% - 36px)',
       }}
       pagination={false}
-      onChange={(pagination, filters, sorter: any, extra) => {
-        sorterRef.current = _.map(_.isArray(sorter) ? sorter : [sorter], (item) => {
-          return {
-            field: item.columnKey,
-            order: item.order === 'ascend' ? 'asc' : 'desc',
-          };
-        });
-        fetchData();
-      }}
+      onChange={onChange}
     />
   );
 }

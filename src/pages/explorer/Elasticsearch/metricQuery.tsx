@@ -10,7 +10,7 @@ interface IOptions {
   start: number;
   end: number;
   interval: number;
-  intervalUnit: 'second' | 'min' | 'hour';
+  intervalUnit: 'second' | 'min' | 'hour' | 'day';
   filters?: any[];
 }
 
