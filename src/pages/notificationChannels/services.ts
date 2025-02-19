@@ -1,0 +1,35 @@
+import request from '@/utils/request';
+import { RequestMethod } from '@/store/common';
+import { ChannelItem } from './types';
+
+export function getItems(): Promise<ChannelItem[]> {
+  return request('/api/n9e/notify-channel-configs', {
+    method: RequestMethod.Get,
+  }).then((res) => {
+    return res.dat ?? [];
+  });
+}
+
+export function postItem(data: ChannelItem) {
+  return request('/api/n9e/notify-channel-configs', {
+    method: RequestMethod.Post,
+    data,
+  });
+}
+
+export function getItem(id: number) {
+  return request(`/api/n9e/notify-channel-config/${id}`, {
+    method: RequestMethod.Get,
+  }).then((res) => {
+    return res.dat;
+  });
+}
+
+export function deleteItems(ids: number[]) {
+  return request('/api/n9e/notify-channel-configs', {
+    method: RequestMethod.Delete,
+    data: {
+      ids,
+    },
+  });
+}

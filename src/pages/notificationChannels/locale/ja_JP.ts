@@ -1,0 +1,63 @@
+const ja_JP = {
+  title: '通知渠道',
+  basic_configuration: '基本設定',
+  variable_configuration: {
+    title: '変数設定',
+    param_type: '変数タイプ',
+    user_info: 'ユーザー情報',
+    flashduty: 'FlashDuty',
+    custom: 'カスタム',
+    contact_key: '連絡先',
+    batch: 'バッチ送信',
+    integration_url: 'URL',
+    params: {
+      title: 'パラメータ設定',
+      key: 'パラメータ識別子',
+      cname: '別名',
+    },
+  },
+  request_configuration: '送信設定',
+  request_type: '送信タイプ',
+  http_request_config: {
+    title: 'HTTP 送信',
+    url: 'URL',
+    method: 'リクエストメソッド',
+    header: 'リクエストヘッダー',
+    header_key: 'パラメータ名',
+    header_value: 'パラメータ値',
+    timeout: 'タイムアウト (単位: ミリ秒)',
+    concurrency: '同時実行数',
+    retry_times: 'リトライ回数',
+    retry_interval: 'リトライ間隔 (単位: ミリ秒)',
+    insecure_skip_verify: '証明書検証をスキップ',
+    proxy: 'プロキシ',
+    params: 'リクエストパラメータ',
+    params_key: 'パラメータ名',
+    params_value: 'パラメータ値',
+    body: 'リクエストボディ',
+  },
+  smtp_request_config: {
+    title: 'SMTP 送信',
+    host: 'サーバー',
+    port: 'ポート',
+    username: 'ユーザー名',
+    password: 'パスワード',
+    from: '差出人',
+    insecure_skip_verify: '証明書検証をスキップ',
+    batch: 'バッチ送信',
+  },
+  script_request_config: {
+    title: 'スクリプト送信',
+    script: {
+      option: 'スクリプトを使用',
+      label: 'スクリプト内容',
+    },
+    path: {
+      option: 'パスを使用',
+      label: 'ファイルパス',
+    },
+    timeout: 'タイムアウト (単位: ミリ秒)',
+  },
+};
+
+export default ja_JP;
