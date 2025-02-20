@@ -7,7 +7,7 @@ import PageLayout from '@/components/pageLayout';
 
 import { NS } from '../constants';
 import { postItems } from '../services';
-import normalizeFormValues from '../utils/normalizeFormValues';
+import { normalizeFormValues } from '../utils/normalizeValues';
 import Form from './Form';
 
 export default function Add() {

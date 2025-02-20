@@ -1,6 +1,7 @@
 const en_US = {
   title: 'Notification Rules',
   basic_configuration: 'Basic Configuration',
+  user_group_ids: 'Authorized Teams',
   notification_configuration: {
     title: 'Notification Configuration',
     add_btn: 'Add Notification Configuration',

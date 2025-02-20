@@ -19,6 +19,13 @@ export function postItems(data: ChannelItem[]) {
   });
 }
 
+export function putItem(data: ChannelItem) {
+  return request(`/api/n9e/notify-channel-config/${data.id}`, {
+    method: RequestMethod.Put,
+    data,
+  });
+}
+
 export function getItem(id: number) {
   return request(`/api/n9e/notify-channel-config/${id}`, {
     method: RequestMethod.Get,

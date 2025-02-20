@@ -178,7 +178,7 @@ export default function ListCpt() {
                 </Space>
               </div>
             </div>
-            <FormCpt form={form} notify_channel_request_type={active?.notify_channel_request_type} />
+            <FormCpt form={form} item={active} />
           </div>
         </div>
       </div>

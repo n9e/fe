@@ -2,9 +2,14 @@ import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 import { Item } from './types';
 
-export function getItems(): Promise<Item[]> {
+export type { Item };
+
+export function getItems(notify_channel_ids?: string): Promise<Item[]> {
   return request('/api/n9e/message-templates', {
     method: RequestMethod.Get,
+    params: {
+      notify_channel_ids,
+    },
   }).then((res) => {
     return res.dat ?? [];
   });

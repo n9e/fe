@@ -1,31 +1,63 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { Form, Card, Space, Input, Select, Switch, Button, Row, Col, Checkbox, TimePicker, Affix } from 'antd';
 import { PlusOutlined, MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
+import { getTeamInfoList } from '@/services/manage';
 import { SIZE, daysOfWeek } from '@/utils/constant';
 import { scrollToFirstError } from '@/utils';
 import KVTagSelect, { validatorOfKVTagSelect } from '@/components/KVTagSelect';
 
 import { NS, DEFAULT_VALUES } from '../../constants';
+import { RuleItem } from '../../types';
 import getValuePropsWithTimeFormItem from '../../utils/getValuePropsWithTimeFormItem';
+import ChannelSelect from './ChannelSelect';
+import TemplateSelect from './TemplateSelect';
 
-export default function FormCpt() {
+interface Props {
+  initialValues?: RuleItem;
+  onOk: (values: RuleItem) => void;
+}
+
+export default function FormCpt(props: Props) {
   const { t } = useTranslation(NS);
   const [form] = Form.useForm();
+  const [userGroups, setUserGroups] = useState<{ id: number; name: string }[]>([]);
+
+  useEffect(() => {
+    getTeamInfoList().then((res) => {
+      setUserGroups(res.dat ?? []);
+    });
+  }, []);
 
   return (
-    <Form form={form} layout='vertical' initialValues={DEFAULT_VALUES}>
+    <Form form={form} layout='vertical' initialValues={props.initialValues ?? DEFAULT_VALUES}>
+      <Form.Item name='id' hidden>
+        <Input />
+      </Form.Item>
       <Card className='mb2' title={<Space>{t('basic_configuration')}</Space>}>
         <Form.Item label={t('common:table.name')} name='name' rules={[{ required: true }]}>
           <Input />
         </Form.Item>
+        <Form.Item label={t('user_group_ids')} name='user_group_ids' rules={[{ required: true }]}>
+          <Select
+            showSearch
+            optionFilterProp='label'
+            mode='multiple'
+            options={_.map(userGroups, (item) => {
+              return {
+                label: item.name,
+                value: item.id,
+              };
+            })}
+          />
+        </Form.Item>
         <Form.Item label={t('common:table.note')} name='note'>
           <Input.TextArea />
         </Form.Item>
-        <Form.Item label={t('common:table.enabled')} name='enabled' valuePropName='checked'>
+        <Form.Item label={t('common:table.enabled')} name='enable' valuePropName='checked'>
           <Switch />
         </Form.Item>
       </Card>
@@ -49,14 +81,10 @@ export default function FormCpt() {
               >
                 <Row gutter={SIZE}>
                   <Col span={12}>
-                    <Form.Item {...field} label={t('notification_configuration.channel')} name={[field.name, 'channel']}>
-                      <Select />
-                    </Form.Item>
+                    <ChannelSelect field={field} />
                   </Col>
                   <Col span={12}>
-                    <Form.Item {...field} label={t('notification_configuration.template')} name={[field.name, 'template']}>
-                      <Select />
-                    </Form.Item>
+                    <TemplateSelect field={field} />
                   </Col>
                 </Row>
                 <Form.Item {...field} label={t('notification_configuration.severities')} name={[field.name, 'severities']}>
@@ -143,7 +171,15 @@ export default function FormCpt() {
                     </>
                   )}
                 </Form.List>
-                <Form.Item {...field} label={t('notification_configuration.label_keys')} name={[field.name, 'label_keys']} rules={[validatorOfKVTagSelect]}>
+                <Form.Item
+                  {...field}
+                  label={t('notification_configuration.label_keys')}
+                  name={[field.name, 'label_keys']}
+                  rules={[validatorOfKVTagSelect]}
+                  getValueProps={(value) => {
+                    return value ?? undefined;
+                  }}
+                >
                   <KVTagSelect />
                 </Form.Item>
                 <Button ghost type='primary' onClick={() => {}}>
@@ -166,7 +202,7 @@ export default function FormCpt() {
                 form
                   .validateFields()
                   .then(async (values) => {
-                    console.log(values);
+                    props.onOk(values);
                   })
                   .catch((err) => {
                     console.error(err);

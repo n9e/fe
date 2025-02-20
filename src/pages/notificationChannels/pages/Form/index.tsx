@@ -28,6 +28,9 @@ export default function FormCpt(props: Props) {
   return (
     <Form form={form} layout='vertical' initialValues={props.initialValues ?? DEFAULT_VALUES}>
       <Card className='mb2' title={<Space>{t('basic_configuration')}</Space>}>
+        <Form.Item name='id' hidden>
+          <Input />
+        </Form.Item>
         <Form.Item label={t('common:table.name')} name='name' rules={[{ required: true }]}>
           <Input />
         </Form.Item>
@@ -37,7 +40,7 @@ export default function FormCpt(props: Props) {
         <Form.Item label={t('common:table.note')} name='note'>
           <Input.TextArea />
         </Form.Item>
-        <Form.Item label={t('common:table.enabled')} name='enabled' valuePropName='checked'>
+        <Form.Item label={t('common:table.enabled')} name='enable' valuePropName='checked'>
           <Switch />
         </Form.Item>
       </Card>
