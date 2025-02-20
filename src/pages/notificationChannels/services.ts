@@ -12,7 +12,7 @@ export function getItems(): Promise<ChannelItem[]> {
   });
 }
 
-export function postItem(data: ChannelItem) {
+export function postItems(data: ChannelItem[]) {
   return request('/api/n9e/notify-channel-configs', {
     method: RequestMethod.Post,
     data,

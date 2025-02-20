@@ -8,7 +8,11 @@ export const DEFAULT_VALUES = {
       batch: true,
     },
     custom: {
-      params: [{}],
+      params: [
+        {
+          type: 'string',
+        },
+      ],
     },
   },
   request_type: 'http',

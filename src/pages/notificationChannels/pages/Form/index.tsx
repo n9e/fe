@@ -96,7 +96,13 @@ export default function FormCpt(props: Props) {
                 <div className='mb1'>
                   <Space>
                     {t('variable_configuration.params.title')}
-                    <PlusCircleOutlined onClick={() => add()} />
+                    <PlusCircleOutlined
+                      onClick={() =>
+                        add({
+                          type: 'string',
+                        })
+                      }
+                    />
                   </Space>
                 </div>
                 <Row gutter={SIZE} className='mb1'>
@@ -114,6 +120,9 @@ export default function FormCpt(props: Props) {
                   <Row gutter={SIZE} key={key}>
                     <Col flex='auto'>
                       <Row gutter={SIZE}>
+                        <Form.Item {...restField} name={[name, 'type']} hidden>
+                          <Input />
+                        </Form.Item>
                         <Col span={12}>
                           <Form.Item {...restField} name={[name, 'key']} rules={[{ required: paramConfigType === 'custom' }]}>
                             <Input />
