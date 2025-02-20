@@ -1,6 +1,7 @@
 const zh_CN = {
   title: '通知规则',
   basic_configuration: '基础配置',
+  user_group_ids: '授权团队',
   notification_configuration: {
     title: '通知配置',
     add_btn: '添加通知配置',

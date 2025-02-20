@@ -1,6 +1,7 @@
 const ja_JP = {
   title: '通知ルール',
   basic_configuration: '基本設定',
+  user_group_ids: '権限のあるチーム',
   notification_configuration: {
     title: '通知設定',
     add_btn: '通知設定を追加',

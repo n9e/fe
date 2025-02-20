@@ -7,21 +7,19 @@ import _ from 'lodash';
 import PageLayout from '@/components/pageLayout';
 
 import { NS } from '../constants';
-import { getItem, putItem } from '../services';
-import { ChannelItem } from '../types';
-import { normalizeInitialValues, normalizeFormValues } from '../utils/normalizeValues';
+import { getItem, putItem, RuleItem } from '../services';
 import Form from './Form';
 
 export default function Add() {
   const { t } = useTranslation(NS);
   const { id } = useParams<{ id: string }>();
   const history = useHistory();
-  const [data, setData] = useState<ChannelItem>();
+  const [data, setData] = useState<RuleItem>();
 
   useEffect(() => {
     if (id) {
       getItem(_.toNumber(id)).then((res) => {
-        setData(normalizeInitialValues(res));
+        setData(res);
       });
     }
   }, []);
@@ -33,7 +31,7 @@ export default function Add() {
           <Form
             initialValues={data}
             onOk={(values) => {
-              putItem(normalizeFormValues(values)).then(() => {
+              putItem(values).then(() => {
                 message.success(t('common:success.add'));
                 history.push({
                   pathname: `/${NS}`,

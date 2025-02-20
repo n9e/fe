@@ -2,6 +2,8 @@ import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 import { ChannelItem } from './types';
 
+export type { ChannelItem };
+
 export function getItems(): Promise<ChannelItem[]> {
   return request('/api/n9e/notify-channel-configs', {
     method: RequestMethod.Get,
@@ -10,9 +12,16 @@ export function getItems(): Promise<ChannelItem[]> {
   });
 }
 
-export function postItem(data: ChannelItem) {
+export function postItems(data: ChannelItem[]) {
   return request('/api/n9e/notify-channel-configs', {
     method: RequestMethod.Post,
+    data,
+  });
+}
+
+export function putItem(data: ChannelItem) {
+  return request(`/api/n9e/notify-channel-config/${data.id}`, {
+    method: RequestMethod.Put,
     data,
   });
 }

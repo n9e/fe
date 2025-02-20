@@ -5,9 +5,9 @@ import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
 
-import PageLayout, { HelpLink } from '@/components/pageLayout';
+import PageLayout from '@/components/pageLayout';
 
-import { getList } from '../services';
+import { getItems, putItem, deleteItems } from '../services';
 import { NS } from '../constants';
 import { RuleItem } from '../types';
 
@@ -17,7 +17,7 @@ export default function List() {
   const [data, setData] = useState<RuleItem[]>([]);
   const fetchData = () => {
     setLoading(true);
-    getList()
+    getItems()
       .then((res) => {
         setData(res);
       })
@@ -69,12 +69,34 @@ export default function List() {
               title: t('common:table.enabled'),
               width: 100,
               dataIndex: 'enable',
-              render: (val) => <Switch checked={val} size='small' onChange={(checked) => {}} />,
+              render: (val, record) => (
+                <Switch
+                  checked={val}
+                  size='small'
+                  onChange={(checked) => {
+                    putItem({
+                      ...record,
+                      enable: checked,
+                    }).then(() => {
+                      const newData = _.map(data, (item) => {
+                        if (item.id === record.id) {
+                          return {
+                            ...item,
+                            enable: checked,
+                          };
+                        }
+                        return item;
+                      });
+                      setData(newData);
+                    });
+                  }}
+                />
+              ),
             },
             {
               title: t('common:table.operations'),
               width: 100,
-              render: (record: any) => {
+              render: (record) => {
                 return (
                   <Space>
                     <Button
@@ -87,7 +109,11 @@ export default function List() {
                       onClick={() => {
                         Modal.confirm({
                           title: t('common:confirm.delete'),
-                          onOk: () => {},
+                          onOk: () => {
+                            deleteItems([record.id]).then(() => {
+                              fetchData();
+                            });
+                          },
                         });
                       }}
                     >

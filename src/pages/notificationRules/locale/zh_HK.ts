@@ -1,6 +1,7 @@
 const zh_HK = {
   title: '通知規則',
   basic_configuration: '基礎配置',
+  user_group_ids: '授權團隊',
   notification_configuration: {
     title: '通知配置',
     add_btn: '添加通知配置',

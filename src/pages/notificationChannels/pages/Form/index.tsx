@@ -28,6 +28,9 @@ export default function FormCpt(props: Props) {
   return (
     <Form form={form} layout='vertical' initialValues={props.initialValues ?? DEFAULT_VALUES}>
       <Card className='mb2' title={<Space>{t('basic_configuration')}</Space>}>
+        <Form.Item name='id' hidden>
+          <Input />
+        </Form.Item>
         <Form.Item label={t('common:table.name')} name='name' rules={[{ required: true }]}>
           <Input />
         </Form.Item>
@@ -37,7 +40,7 @@ export default function FormCpt(props: Props) {
         <Form.Item label={t('common:table.note')} name='note'>
           <Input.TextArea />
         </Form.Item>
-        <Form.Item label={t('common:table.enabled')} name='enabled' valuePropName='checked'>
+        <Form.Item label={t('common:table.enabled')} name='enable' valuePropName='checked'>
           <Switch />
         </Form.Item>
       </Card>
@@ -96,7 +99,13 @@ export default function FormCpt(props: Props) {
                 <div className='mb1'>
                   <Space>
                     {t('variable_configuration.params.title')}
-                    <PlusCircleOutlined onClick={() => add()} />
+                    <PlusCircleOutlined
+                      onClick={() =>
+                        add({
+                          type: 'string',
+                        })
+                      }
+                    />
                   </Space>
                 </div>
                 <Row gutter={SIZE} className='mb1'>
@@ -114,6 +123,9 @@ export default function FormCpt(props: Props) {
                   <Row gutter={SIZE} key={key}>
                     <Col flex='auto'>
                       <Row gutter={SIZE}>
+                        <Form.Item {...restField} name={[name, 'type']} hidden>
+                          <Input />
+                        </Form.Item>
                         <Col span={12}>
                           <Form.Item {...restField} name={[name, 'key']} rules={[{ required: paramConfigType === 'custom' }]}>
                             <Input />

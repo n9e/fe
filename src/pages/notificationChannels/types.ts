@@ -19,8 +19,9 @@ interface HttpRequestConfig {
   url: string;
   method: 'GET' | 'POST' | 'PUT' | 'DELETE';
   headers: {
-    [index: string]: string;
-  };
+    key: string;
+    value: string;
+  }[];
   timeout: number;
   concurrency: number;
   retry_times: number;
@@ -31,8 +32,9 @@ interface HttpRequestConfig {
   };
   request: {
     parameters: {
-      [index: string]: string;
-    };
+      key: string;
+      value: string;
+    }[];
     body: string;
   };
 }
