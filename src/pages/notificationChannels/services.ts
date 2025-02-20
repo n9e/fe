@@ -2,6 +2,8 @@ import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 import { ChannelItem } from './types';
 
+export type { ChannelItem };
+
 export function getItems(): Promise<ChannelItem[]> {
   return request('/api/n9e/notify-channel-configs', {
     method: RequestMethod.Get,
