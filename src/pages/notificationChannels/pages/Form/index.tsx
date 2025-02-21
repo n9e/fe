@@ -146,7 +146,13 @@ export default function FormCpt(props: Props) {
           </Form.List>
         </div>
       </Card>
-      <Card className='mb2' title={<Space>{t('request_configuration')}</Space>}>
+      <Card
+        className='mb2'
+        title={<Space>{t('request_configuration')}</Space>}
+        style={{
+          display: paramConfigType !== 'flashduty' ? 'block' : 'none',
+        }}
+      >
         <Form.Item name='request_type'>
           <Segmented
             options={[
