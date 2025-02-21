@@ -27,6 +27,9 @@ export default function FormCpt(props: Props) {
           <Form.List name='content'>
             {(fields, { add, remove }) => (
               <div className={`${CN}-main-content`}>
+                {fields.map((field) => {
+                  return <ContentItem key={field.key} field={field} remove={remove} notify_channel_request_type={item?.notify_channel_request_type} />;
+                })}
                 <Button
                   className='mb2'
                   type='dashed'
@@ -43,9 +46,6 @@ export default function FormCpt(props: Props) {
                 >
                   {t('content.add_title')}
                 </Button>
-                {fields.map((field) => {
-                  return <ContentItem key={field.key} field={field} remove={remove} notify_channel_request_type={item?.notify_channel_request_type} />;
-                })}
               </div>
             )}
           </Form.List>

@@ -94,8 +94,8 @@ function FormModal(props: IProps & ModalWrapProps) {
           />
         </Form.Item>
         <Form.Item
-          label={t('notify_channel_id')}
-          name='notify_channel_id'
+          label={t('notify_channel_ident')}
+          name='notify_channel_ident'
           rules={[
             {
               required: true,
@@ -108,7 +108,7 @@ function FormModal(props: IProps & ModalWrapProps) {
             options={_.map(notifyChannels, (item) => {
               return {
                 label: item.name,
-                value: item.id,
+                value: item.ident,
               };
             })}
           />

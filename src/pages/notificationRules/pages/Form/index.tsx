@@ -15,6 +15,7 @@ import { RuleItem } from '../../types';
 import getValuePropsWithTimeFormItem from '../../utils/getValuePropsWithTimeFormItem';
 import ChannelSelect from './ChannelSelect';
 import TemplateSelect from './TemplateSelect';
+import ChannelParams from './ChannelParams';
 
 interface Props {
   initialValues?: RuleItem;
@@ -87,6 +88,7 @@ export default function FormCpt(props: Props) {
                     <TemplateSelect field={field} />
                   </Col>
                 </Row>
+                <ChannelParams field={field} />
                 <Form.Item {...field} label={t('notification_configuration.severities')} name={[field.name, 'severities']}>
                   <Checkbox.Group>
                     <Checkbox value={1}>{t('common:severity.1')}</Checkbox>

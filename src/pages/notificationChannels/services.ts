@@ -34,6 +34,17 @@ export function getItem(id: number) {
   });
 }
 
+export function getItemByIdent(ident: string) {
+  return request('/api/n9e/notify-channel-config', {
+    method: RequestMethod.Get,
+    params: {
+      ident,
+    },
+  }).then((res) => {
+    return res.dat;
+  });
+}
+
 export function deleteItems(ids: number[]) {
   return request('/api/n9e/notify-channel-configs', {
     method: RequestMethod.Delete,

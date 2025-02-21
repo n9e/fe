@@ -15,9 +15,9 @@ interface IProps {
 
 const LIMIT_SIZE = 1000;
 
-export const dingtalkRules = generateRules(LIMIT_SIZE);
+export const markdownRules = generateRules(LIMIT_SIZE);
 
-export default function Dingtalk(props: IProps) {
+export default function Markdown(props: IProps) {
   const { label, extra, value, onChange } = props;
 
   return (
@@ -35,7 +35,6 @@ export default function Dingtalk(props: IProps) {
       renderPreview={(newValue) => {
         return <ReactMarkdown>{newValue || ''}</ReactMarkdown>;
       }}
-      limitSize={LIMIT_SIZE}
     />
   );
 }

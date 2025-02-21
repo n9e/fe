@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
 import PageLayout from '@/components/pageLayout';
-import { getItem as getNotificationChannel } from '@/pages/notificationChannels/services';
+import { getItemByIdent as getNotificationChannel } from '@/pages/notificationChannels/services';
 
 import { getItems, deleteItem } from '../../services';
 import { NS, CN } from '../../constants';
@@ -55,8 +55,8 @@ export default function ListCpt() {
 
   useEffect(() => {
     if (active) {
-      if (active.notify_channel_id) {
-        getNotificationChannel(active.notify_channel_id).then((res) => {
+      if (active.notify_channel_ident) {
+        getNotificationChannel(active.notify_channel_ident).then((res) => {
           setActive({
             ...active,
             notify_channel_name: res.name,
@@ -173,7 +173,7 @@ export default function ListCpt() {
                     {t('common:table.ident')}：{active?.ident ?? '-'}
                   </span>
                   <span>
-                    {t('notify_channel_id')}：{active?.notify_channel_name ?? '-'}
+                    {t('notify_channel_ident')}：{active?.notify_channel_name ?? '-'}
                   </span>
                 </Space>
               </div>

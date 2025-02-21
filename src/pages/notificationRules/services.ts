@@ -46,3 +46,11 @@ export function deleteItems(ids: number[]) {
     return res.dat;
   });
 }
+
+export function getFlashdutyChannelList(id: number) {
+  return request(`/api/n9e/flushduty-channel-list/${id}`, {
+    method: RequestMethod.Get,
+  }).then((res) => {
+    return res.dat;
+  });
+}

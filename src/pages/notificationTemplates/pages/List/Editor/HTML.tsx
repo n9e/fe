@@ -15,9 +15,9 @@ interface IProps {
 
 const LIMIT_SIZE = 1000;
 
-export const emailRules = generateRules(LIMIT_SIZE);
+export const htmlRules = generateRules(LIMIT_SIZE);
 
-export default function Email(props: IProps) {
+export default function HTML(props: IProps) {
   const { label, extra, value, onChange } = props;
 
   return (
@@ -35,7 +35,6 @@ export default function Email(props: IProps) {
       renderPreview={(newValue) => {
         return <iframe srcDoc={purify.sanitize(newValue, { FORCE_BODY: true })} style={{ border: 'none', width: '100%' }} />;
       }}
-      limitSize={LIMIT_SIZE}
     />
   );
 }

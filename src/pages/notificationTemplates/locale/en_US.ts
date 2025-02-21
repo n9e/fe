@@ -8,7 +8,7 @@ const en_US = {
     0: 'Public',
     1: 'Private',
   },
-  notify_channel_id: 'Notification Channel',
+  notify_channel_ident: 'Notification Channel',
   content: {
     add_title: 'Add Template Field',
     edit_title: 'Edit Template Field',

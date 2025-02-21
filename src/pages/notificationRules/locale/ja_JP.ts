@@ -16,6 +16,13 @@ const ja_JP = {
     effective_time_end_msg: '終了時間を選択してください',
     label_keys: '適用タグ',
     run_test_btn: 'テストを実行',
+    user_info: {
+      user_ids: '受信者',
+      user_group_ids: '受信チーム',
+    },
+    flashduty: {
+      ids: '協力スペース',
+    },
   },
 };
 

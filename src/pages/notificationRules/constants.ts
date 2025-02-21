@@ -1,6 +1,6 @@
 export const NS = 'notification-rules';
 export const DEFAULT_VALUES = {
-  enabled: true,
+  enable: true,
   notify_configs: [
     {
       severities: [1, 2, 3],

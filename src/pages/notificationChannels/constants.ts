@@ -1,6 +1,6 @@
 export const NS = 'notification-channels';
 export const DEFAULT_VALUES = {
-  enabled: true,
+  enable: true,
   param_config: {
     param_type: 'user_info',
     user_info: {
