@@ -16,6 +16,13 @@ const en_US = {
     effective_time_end_msg: 'Please select the end time',
     label_keys: 'Applicable Tags',
     run_test_btn: 'Run Test',
+    user_info: {
+      user_ids: 'Users',
+      user_group_ids: 'Teams',
+    },
+    flashduty: {
+      ids: 'Channels',
+    },
   },
 };
 export default en_US;

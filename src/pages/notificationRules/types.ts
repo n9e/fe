@@ -2,8 +2,8 @@ interface RuleConfig {
   channel: string;
   template: string;
   params: {
-    [index: string]: string | number;
-  };
+    [index: string]: any;
+  }[];
   severities: number[];
   time_ranges: {
     start: string;

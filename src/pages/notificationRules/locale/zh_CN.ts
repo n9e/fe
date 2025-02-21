@@ -16,6 +16,13 @@ const zh_CN = {
     effective_time_end_msg: '请选择结束时间',
     label_keys: '适用标签',
     run_test_btn: '通知测试',
+    user_info: {
+      user_ids: '接收人',
+      user_group_ids: '接收团队',
+    },
+    flashduty: {
+      ids: '协作空间',
+    },
   },
 };
 export default zh_CN;

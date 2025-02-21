@@ -7,6 +7,6 @@ export interface Item {
   };
   user_group_ids: number[];
   private: 0 | 1; // 0: 公共 1: 私有
-  notify_channel_id: number;
+  notify_channel_ident: string;
   create_by: string;
 }

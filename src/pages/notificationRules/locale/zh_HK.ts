@@ -16,6 +16,13 @@ const zh_HK = {
     effective_time_end_msg: '請選擇結束時間',
     label_keys: '適用標籤',
     run_test_btn: '通知測試',
+    user_info: {
+      user_ids: '接收人',
+      user_group_ids: '接收團隊',
+    },
+    flashduty: {
+      ids: '協作空間',
+    },
   },
 };
 

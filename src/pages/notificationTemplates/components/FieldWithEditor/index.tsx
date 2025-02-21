@@ -10,7 +10,6 @@ interface IProps {
   onChange?: (value?: string) => void;
   extensions: any[];
   renderPreview?: (value?: string) => React.ReactNode;
-  limitSize: number;
 }
 
 export const generateRules = (limitSize) => {
