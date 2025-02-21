@@ -42,6 +42,9 @@ const zh_HK = {
     recpm: '每分鐘的記錄次數',
     rowsps: '每秒的處理行數',
     rowspm: '每分鐘的處理行數',
+    celsius: '攝氏度 (°C)',
+    fahrenheit: '華氏度 (°F)',
+    kelvin: '開爾文 (K)',
   },
 };
 

@@ -148,6 +148,26 @@ export const units: any = [
       },
     ],
   },
+  {
+    label: 'Temperature',
+    options: [
+      {
+        label: 'Celsius (°C)',
+        value: 'celsius',
+        symbol: '°C',
+      },
+      {
+        label: 'Fahrenheit (°F)',
+        value: 'fahrenheit',
+        symbol: '°F',
+      },
+      {
+        label: 'Kelvin (K)',
+        value: 'kelvin',
+        symbol: 'K',
+      },
+    ],
+  },
 ];
 
 export const buildUnitOptions = (hideLabel = false, hideSIOption = false, filter?: (units: any) => any) => {

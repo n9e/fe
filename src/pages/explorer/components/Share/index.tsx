@@ -24,7 +24,7 @@ export default function index(props: Props) {
           const values = form.getFieldsValue();
           const locationsearch = getLocationSearchByFormValues(values);
           if (locationsearch) {
-            copyToClipBoard(`${window.location.origin}${location.pathname}?${locationsearch}`);
+            copyToClipBoard(`${window.location.origin}${location.pathname}?${locationsearch}&__execute__=true`);
           }
         }}
       />

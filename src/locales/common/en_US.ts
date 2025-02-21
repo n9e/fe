@@ -125,6 +125,7 @@ const en_US = {
     second: 'Second',
     minute: 'Minute',
     hour: 'Hour',
+    day: 'Day',
     weekdays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
   },
   severity: {
