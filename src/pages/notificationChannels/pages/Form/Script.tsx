@@ -10,9 +10,10 @@ import { NS } from '../../constants';
 export default function Script() {
   const { t } = useTranslation(NS);
   const names = ['script_request_config'];
+  const paramConfigType = Form.useWatch(['param_config', 'param_type']);
   const request_type = Form.useWatch('request_type');
   const script_type = Form.useWatch([...names, 'script_type']);
-  const isRequired = request_type === 'script';
+  const isRequired = paramConfigType !== 'flashduty' && request_type === 'script';
 
   return (
     <div

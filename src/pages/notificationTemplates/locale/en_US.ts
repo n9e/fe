@@ -18,5 +18,9 @@ const en_US = {
     prompt: 'The content has been modified. Do you want to discard the changes?',
     value_msg: 'Please enter the field content',
   },
+  preview: {
+    select_events: 'Select Alarm Events',
+    result: 'Preview Result',
+  },
 };
 export default en_US;

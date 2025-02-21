@@ -11,9 +11,10 @@ import { NS } from '../../constants';
 export default function HTTP() {
   const { t } = useTranslation(NS);
   const names = ['http_request_config'];
+  const paramConfigType = Form.useWatch(['param_config', 'param_type']);
   const request_type = Form.useWatch('request_type');
   const method = Form.useWatch([...names, 'method']);
-  const isRequired = request_type === 'http';
+  const isRequired = paramConfigType !== 'flashduty' && request_type === 'http';
 
   return (
     <div

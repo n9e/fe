@@ -18,6 +18,10 @@ const zh_HK = {
     prompt: '內容有修改，是否放棄修改的內容？',
     value_msg: '請輸入字段內容',
   },
+  preview: {
+    select_events: '選擇告警事件',
+    result: '預覽結果',
+  },
 };
 
 export default zh_HK;

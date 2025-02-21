@@ -7,10 +7,11 @@ import { Space } from 'antd';
 import FieldWithEditor, { generateRules } from '../../../components/FieldWithEditor';
 
 interface IProps {
-  label: React.ReactNode;
-  extra: React.ReactNode;
+  label?: React.ReactNode;
+  extra?: React.ReactNode;
   value?: string;
   onChange?: (value?: string) => void;
+  previewResultStr?: string;
 }
 
 const LIMIT_SIZE = 1000;
@@ -18,7 +19,7 @@ const LIMIT_SIZE = 1000;
 export const markdownRules = generateRules(LIMIT_SIZE);
 
 export default function Markdown(props: IProps) {
-  const { label, extra, value, onChange } = props;
+  const { label, extra, value, onChange, previewResultStr } = props;
 
   return (
     <FieldWithEditor
@@ -32,9 +33,7 @@ export default function Markdown(props: IProps) {
       value={value}
       onChange={onChange}
       extensions={[markdown()]}
-      renderPreview={(newValue) => {
-        return <ReactMarkdown>{newValue || ''}</ReactMarkdown>;
-      }}
+      previewResult={previewResultStr ? <ReactMarkdown>{previewResultStr}</ReactMarkdown> : undefined}
     />
   );
 }

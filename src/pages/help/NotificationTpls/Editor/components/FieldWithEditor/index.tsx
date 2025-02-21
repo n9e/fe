@@ -30,12 +30,11 @@ export const generateRules = (limitSize) => {
 
 export default function FieldWithEditor(props: IProps) {
   const { value, onChange, extensions, renderPreview, titleExtra, record } = props;
-  const [previewResult, setPreviewResult] =
-    useState<{
-      content: string;
-      success: boolean;
-      message: string;
-    }>();
+  const [previewResult, setPreviewResult] = useState<{
+    content: string;
+    success: boolean;
+    message: string;
+  }>();
   const [previewLoading, setPreviewLoading] = useState<boolean>(false);
 
   return (

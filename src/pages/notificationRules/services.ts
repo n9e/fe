@@ -48,7 +48,7 @@ export function deleteItems(ids: number[]) {
 }
 
 export function getFlashdutyChannelList(id: number) {
-  return request(`/api/n9e/flushduty-channel-list/${id}`, {
+  return request(`/api/n9e/flashduty-channel-list/${id}`, {
     method: RequestMethod.Get,
   }).then((res) => {
     return res.dat;

@@ -18,6 +18,10 @@ const ja_JP = {
     prompt: 'コンテンツが変更されました。変更を破棄しますか？',
     value_msg: 'フィールドコンテンツを入力してください',
   },
+  preview: {
+    select_events: 'アラームイベントを選択',
+    result: 'プレビュー結果',
+  },
 };
 
 export default ja_JP;
