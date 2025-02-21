@@ -8,6 +8,7 @@ import { CN, NS } from '../../../constants';
 import { putItem, Item } from '../../../services';
 import ContentKeyFormModal from './ContentKeyFormModal';
 import ContentItem from './ContentItem';
+import PreviewModal from './PreviewModal';
 
 interface Props {
   form: FormInstance<any>;
@@ -19,6 +20,8 @@ interface Props {
 export default function FormCpt(props: Props) {
   const { t } = useTranslation(NS);
   const { form, item } = props;
+  const [previewModalVisible, setPreviewModalVisible] = React.useState(false);
+  const content = Form.useWatch(['content'], form);
 
   return (
     <>
@@ -70,9 +73,21 @@ export default function FormCpt(props: Props) {
           >
             {t('common:btn.save')}
           </Button>
-          <Button>{t('content.preview')}</Button>
+          <Button
+            onClick={() => {
+              setPreviewModalVisible(true);
+            }}
+          >
+            {t('content.preview')}
+          </Button>
         </Space>
       </div>
+      <PreviewModal
+        visible={previewModalVisible}
+        setVisible={setPreviewModalVisible}
+        content={_.fromPairs(_.map(content, (item) => [item.key, item.value]))}
+        notify_channel_request_type={item?.notify_channel_request_type}
+      />
     </>
   );
 }

@@ -18,5 +18,9 @@ const zh_CN = {
     prompt: '内容有修改，是否放弃修改的内容？',
     value_msg: '请输入字段内容',
   },
+  preview: {
+    select_events: '选择告警事件',
+    result: '预览结果',
+  },
 };
 export default zh_CN;

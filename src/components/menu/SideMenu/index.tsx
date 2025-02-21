@@ -112,6 +112,18 @@ export const getMenuList = (t) => {
           key: '/help/notification-tpls',
           label: t('通知模板'),
         },
+        {
+          key: '/notification-rule',
+          label: t('notification-rules:title'),
+        },
+        {
+          key: '/notification-channels',
+          label: t('notification-channels:title'),
+        },
+        {
+          key: '/notification-templates',
+          label: t('notification-templates:title'),
+        },
       ],
     },
     {

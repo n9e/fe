@@ -49,3 +49,19 @@ export function deleteItem(ids: number[]) {
     return res.dat;
   });
 }
+
+export function preview(data: {
+  event_ids: number[];
+  tpl: {
+    content: {
+      [index: string]: string;
+    };
+  };
+}) {
+  return request('/api/n9e/events-message', {
+    method: RequestMethod.Post,
+    data,
+  }).then((res) => {
+    return res.dat;
+  });
+}

@@ -1,6 +1,7 @@
 import React from 'react';
 import CodeMirror from '@/components/CodeMirror';
 import _ from 'lodash';
+
 import './style.less';
 
 interface IProps {
@@ -9,7 +10,7 @@ interface IProps {
   value?: string;
   onChange?: (value?: string) => void;
   extensions: any[];
-  renderPreview?: (value?: string) => React.ReactNode;
+  previewResult?: React.ReactNode;
 }
 
 export const generateRules = (limitSize) => {
@@ -26,7 +27,7 @@ export const generateRules = (limitSize) => {
 };
 
 export default function FieldWithEditor(props: IProps) {
-  const { label, titleExtra, value, onChange, extensions } = props;
+  const { label, titleExtra, value, onChange, extensions, previewResult } = props;
 
   return (
     <div className='n9e-notification-template-content'>
@@ -35,7 +36,7 @@ export default function FieldWithEditor(props: IProps) {
           <div>{label}</div>
           <div>{titleExtra}</div>
         </div>
-        <CodeMirror value={value} height='100%' extensions={extensions} onChange={onChange} />
+        {previewResult ? <div className='template-field-preview'>{previewResult}</div> : <CodeMirror value={value} height='100%' extensions={extensions} onChange={onChange} />}
       </div>
     </div>
   );
