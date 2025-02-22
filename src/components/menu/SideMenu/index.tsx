@@ -113,7 +113,7 @@ export const getMenuList = (t) => {
           label: t('通知模板'),
         },
         {
-          key: '/notification-rule',
+          key: '/notification-rules',
           label: t('notification-rules:title'),
         },
         {
