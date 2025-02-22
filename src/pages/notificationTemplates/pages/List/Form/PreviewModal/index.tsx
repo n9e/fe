@@ -36,7 +36,7 @@ export default function PreviewModal(props: Props) {
         setPreviewData(res);
       });
     }
-  }, [resultModalVisible]);
+  }, [resultModalVisible, _.join(selectedEventIds)]);
 
   return (
     <>
@@ -50,7 +50,6 @@ export default function PreviewModal(props: Props) {
         }}
         onOk={() => {
           setVisible(false);
-          setSelectedEventIds([]);
           setResultModalVisible(true);
         }}
       >
@@ -62,6 +61,7 @@ export default function PreviewModal(props: Props) {
         width='80%'
         onCancel={() => {
           setResultModalVisible(false);
+          setSelectedEventIds([]);
         }}
         footer={null}
       >
