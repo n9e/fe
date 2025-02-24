@@ -44,6 +44,7 @@ export const defaultValues = {
       enable_etime: moment('00:00', 'HH:mm'), // 起止时间一致时，表示全天有效
     },
   ],
+  notify_version: 1, // v8-beta.6 新版通知规则，旧版为 0
   notify_recovered: true,
   recover_duration: 0,
   notify_repeat_step: 60,

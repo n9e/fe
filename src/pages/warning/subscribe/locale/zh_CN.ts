@@ -1,5 +1,3 @@
-import { placeholder } from '@codemirror/view';
-
 const zh_CN = {
   title: '订阅规则',
   search_placeholder: '搜索订阅名称、订阅的规则、订阅标签、告警接收组',

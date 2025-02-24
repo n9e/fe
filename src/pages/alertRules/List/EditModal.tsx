@@ -24,6 +24,7 @@ import { getTeamInfoList, getNotifiesList } from '@/services/manage';
 import DatasourceValueSelectV2 from '@/pages/alertRules/Form/components/DatasourceValueSelect/V2';
 import { CommonStateContext } from '@/App';
 import Triggers from '@/pages/alertRules/Form/components/Triggers';
+import NotificationRuleSelect from '@/pages/alertRules/Form/Notify/NotificationRuleSelect';
 import { alphabet } from '@/utils/constant';
 import { defaultValues } from '../Form/constants';
 
@@ -74,6 +75,10 @@ const fields = [
   {
     field: 'notify_groups',
     name: '告警接收组',
+  },
+  {
+    field: 'notify_rule_ids',
+    name: '通知规则',
   },
   {
     field: 'notify_recovered',
@@ -264,7 +269,7 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
         if (key === 'annotations') {
           data[key] = _.chain(data[key]).keyBy('key').mapValues('value').value();
         } else {
-          if (Array.isArray(data[key]) && field !== 'datasource_ids' && key !== 'service_cal_ids' && field !== 'triggers') {
+          if (Array.isArray(data[key]) && field !== 'datasource_ids' && key !== 'service_cal_ids' && field !== 'triggers' && field !== 'notify_rule_ids') {
             data[key] = data[key].join(' ');
           }
         }
@@ -512,6 +517,12 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
                         {notifyGroupsOptions}
                       </Select>
                     </Form.Item>
+                  </>
+                );
+              case 'notify_rule_ids':
+                return (
+                  <>
+                    <NotificationRuleSelect label={changetoText} />
                   </>
                 );
               case 'notify_recovered':

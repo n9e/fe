@@ -34,7 +34,10 @@ const en_US = {
   enable_in_bg: 'Enable in buisness group',
   enable_in_bg_tip:
     'Determined according to the ownership relationship of the ident tag in the alert event, that is: if the machine corresponding to the ident tag in the alert event does not belong to the business group, the alert event will be discarded',
-  notify_configs: 'Notify Configuration',
+  notify_configs: 'Notification Configuration',
+  notify_rule_ids: 'Notification rule',
+  switch_to_old: 'Switch to old version',
+  switch_to_new: 'Switch to new version',
   notify_channels: 'Channels',
   notify_channels_doc: 'Document',
   notify_channels_tpl: 'Channels template',

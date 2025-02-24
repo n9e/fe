@@ -2,7 +2,10 @@ import React, { useCallback } from 'react';
 import { Select, Tag, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 import i18next from 'i18next';
+import KVTags from './KVTags';
 import './locale';
+
+export { KVTags };
 
 // 校验单个标签格式是否正确
 function isTagValid(tag) {

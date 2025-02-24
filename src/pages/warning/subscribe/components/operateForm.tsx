@@ -25,6 +25,8 @@ import { addSubscribe, editSubscribe, deleteSubscribes } from '@/services/subscr
 import { getNotifiesList, getTeamInfoList } from '@/services/manage';
 import { subscribeItem } from '@/store/warningInterface/subscribe';
 import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
+import VersionSwitch from '@/pages/alertRules/Form/Notify/VersionSwitch';
+import NotificationRuleSelect from '@/pages/alertRules/Form/Notify/NotificationRuleSelect';
 import { CommonStateContext } from '@/App';
 import { DatasourceCateSelect } from '@/components/DatasourceSelect';
 import { panelBaseProps } from '@/pages/alertRules/constants';
@@ -59,6 +61,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
   const redefineChannels = Form.useWatch(['redefine_channels'], form);
   const redefineWebhooks = Form.useWatch(['redefine_webhooks'], form);
   const new_channels = Form.useWatch(['new_channels'], form);
+  const notify_version = Form.useWatch(['notify_version'], form);
 
   useEffect(() => {
     getNotifyChannel();
@@ -152,6 +155,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
           scrollToFirstError();
         }}
         initialValues={{
+          notify_version: 1, // v8-beta.6 默认通知版本为1，旧版本为 0
           ...detail,
           busi_groups: _.map(detail.busi_groups || [{}], (item) => {
             return {
@@ -360,62 +364,75 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
             </div>
           </div>
         </Card>
-        <Card {...panelBaseProps} title={t('notify_configs')}>
-          <Form.Item label={t('user_group_ids')} name='user_group_ids'>
-            <Select mode='multiple' showSearch optionFilterProp='children' filterOption={false} onSearch={(e) => debounceFetcher(e)} onBlur={() => getGroups('')}>
-              {notifyGroupsOptions}
-            </Select>
-          </Form.Item>
-          <div>
-            <Space>
-              {t('redefine_severity')}
-              <Form.Item name='redefine_severity' valuePropName='checked' noStyle>
-                <Switch />
-              </Form.Item>
-            </Space>
-            <div
-              style={{
-                display: redefineSeverity ? 'block' : 'none',
-                marginTop: 10,
-              }}
-            >
-              <Form.Item name='new_severity' noStyle initialValue={2}>
-                <Radio.Group>
-                  <Radio value={1}>{t('common:severity.1')}</Radio>
-                  <Radio value={2}>{t('common:severity.2')}</Radio>
-                  <Radio value={3}>{t('common:severity.3')}</Radio>
-                </Radio.Group>
-              </Form.Item>
-            </div>
-          </div>
-          <div className='mt16 mb16'>
-            <Space>
-              {t('redefine_channels')}
-              <Form.Item name='redefine_channels' valuePropName='checked' noStyle>
-                <Switch />
-              </Form.Item>
-            </Space>
-            <div
-              style={{
-                display: redefineChannels ? 'block' : 'none',
-                marginTop: 10,
-              }}
-            >
-              <Form.Item name='new_channels' noStyle>
-                <Checkbox.Group>
-                  {_.map(contactList, (item: any) => {
-                    return (
-                      <Checkbox value={item.key} key={item.label}>
-                        {item.label}
-                      </Checkbox>
-                    );
-                  })}
-                </Checkbox.Group>
-              </Form.Item>
-              <div className='mt16'>
-                <NotifyChannelsTpl contactList={contactList} notify_channels={new_channels} name={['extra_config', 'custom_notify_tpl']} />
+        <Card {...panelBaseProps} title={t('notify_configs')} extra={<VersionSwitch />}>
+          <div
+            style={{
+              display: notify_version === 0 ? 'block' : 'none',
+            }}
+          >
+            <Form.Item label={t('user_group_ids')} name='user_group_ids'>
+              <Select mode='multiple' showSearch optionFilterProp='children' filterOption={false} onSearch={(e) => debounceFetcher(e)} onBlur={() => getGroups('')}>
+                {notifyGroupsOptions}
+              </Select>
+            </Form.Item>
+            <div>
+              <Space>
+                {t('redefine_severity')}
+                <Form.Item name='redefine_severity' valuePropName='checked' noStyle>
+                  <Switch />
+                </Form.Item>
+              </Space>
+              <div
+                style={{
+                  display: redefineSeverity ? 'block' : 'none',
+                  marginTop: 10,
+                }}
+              >
+                <Form.Item name='new_severity' noStyle initialValue={2}>
+                  <Radio.Group>
+                    <Radio value={1}>{t('common:severity.1')}</Radio>
+                    <Radio value={2}>{t('common:severity.2')}</Radio>
+                    <Radio value={3}>{t('common:severity.3')}</Radio>
+                  </Radio.Group>
+                </Form.Item>
               </div>
             </div>
+            <div className='mt16 mb16'>
+              <Space>
+                {t('redefine_channels')}
+                <Form.Item name='redefine_channels' valuePropName='checked' noStyle>
+                  <Switch />
+                </Form.Item>
+              </Space>
+              <div
+                style={{
+                  display: redefineChannels ? 'block' : 'none',
+                  marginTop: 10,
+                }}
+              >
+                <Form.Item name='new_channels' noStyle>
+                  <Checkbox.Group>
+                    {_.map(contactList, (item: any) => {
+                      return (
+                        <Checkbox value={item.key} key={item.label}>
+                          {item.label}
+                        </Checkbox>
+                      );
+                    })}
+                  </Checkbox.Group>
+                </Form.Item>
+                <div className='mt16'>
+                  <NotifyChannelsTpl contactList={contactList} notify_channels={new_channels} name={['extra_config', 'custom_notify_tpl']} />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            style={{
+              display: notify_version === 1 ? 'block' : 'none',
+            }}
+          >
+            <NotificationRuleSelect />
           </div>
           <div className='mb16'>
             <Space>
