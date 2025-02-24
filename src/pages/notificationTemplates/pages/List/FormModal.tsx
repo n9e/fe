@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, Input, Form, Button, message, Select, Radio } from 'antd';
+import { Modal, Input, Form, Button, message, Select, Radio, Space } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
+import { Link } from 'react-router-dom';
 
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { getTeamInfoList } from '@/services/manage';
@@ -23,15 +24,26 @@ function FormModal(props: IProps & ModalWrapProps) {
   const [form] = Form.useForm();
   const [userGroups, setUserGroups] = useState<{ id: number; name: string }[]>([]);
   const [notifyChannels, setNotifyChannels] = useState<ChannelItem[]>([]);
+  const fetchNotificationChannels = () => {
+    getNotificationChannels()
+      .then((res) => {
+        setNotifyChannels(res);
+      })
+      .catch(() => {
+        setNotifyChannels([]);
+      });
+  };
 
   useEffect(() => {
     form.setFieldsValue(data);
-    getTeamInfoList().then((res) => {
-      setUserGroups(res.dat ?? []);
-    });
-    getNotificationChannels().then((res) => {
-      setNotifyChannels(res);
-    });
+    getTeamInfoList()
+      .then((res) => {
+        setUserGroups(res.dat ?? []);
+      })
+      .catch(() => {
+        setUserGroups([]);
+      });
+    fetchNotificationChannels();
   }, []);
 
   return (
@@ -94,7 +106,27 @@ function FormModal(props: IProps & ModalWrapProps) {
           />
         </Form.Item>
         <Form.Item
-          label={t('notify_channel_ident')}
+          label={
+            <Space>
+              {t('notify_channel_ident')}
+              <Link
+                to='/notification-channels'
+                onClick={(e) => {
+                  e.preventDefault();
+                }}
+              >
+                {t('common:manage')}
+              </Link>
+              <a
+                onClick={(e) => {
+                  e.preventDefault();
+                  fetchNotificationChannels();
+                }}
+              >
+                {t('common:reload')}
+              </a>
+            </Space>
+          }
           name='notify_channel_ident'
           rules={[
             {

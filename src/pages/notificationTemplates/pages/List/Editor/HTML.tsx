@@ -34,6 +34,7 @@ export default function HTML(props: IProps) {
       onChange={onChange}
       extensions={[html()]}
       previewResult={previewResultStr ? <iframe srcDoc={purify.sanitize(previewResultStr, { FORCE_BODY: true })} style={{ border: 'none', width: '100%' }} /> : undefined}
+      scrolling={false}
     />
   );
 }

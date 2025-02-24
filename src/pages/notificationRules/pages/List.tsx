@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Table, Space, Button, Switch, Modal } from 'antd';
-import { NotificationOutlined } from '@ant-design/icons';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Table, Space, Button, Switch, Modal, Input } from 'antd';
+import { NotificationOutlined, SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
@@ -14,7 +14,18 @@ import { RuleItem } from '../types';
 export default function List() {
   const { t } = useTranslation(NS);
   const [loading, setLoading] = useState(false);
+  const [filter, setFilter] = useState<{
+    search: string;
+  }>();
   const [data, setData] = useState<RuleItem[]>([]);
+  const filteredData = useMemo(() => {
+    return _.filter(data, (item) => {
+      if (filter?.search) {
+        return _.includes(item.name, filter.search);
+      }
+      return true;
+    });
+  }, [JSON.stringify(data), JSON.stringify(filter)]);
   const fetchData = () => {
     setLoading(true);
     getItems()
@@ -37,7 +48,20 @@ export default function List() {
     <PageLayout title={<Space>{t('title')}</Space>} icon={<NotificationOutlined />}>
       <div className='n9e'>
         <div className='pb2 n9e-flex n9e-justify-between'>
-          <div />
+          <Space>
+            <Input
+              placeholder={t('common:search_placeholder')}
+              style={{ width: 200 }}
+              value={filter?.search}
+              onChange={(e) => {
+                setFilter({
+                  ...filter,
+                  search: e.target.value,
+                });
+              }}
+              prefix={<SearchOutlined />}
+            />
+          </Space>
           <Space>
             <Link to={`/${NS}/add`}>
               <Button type='primary'>{t('common:btn.add')}</Button>
@@ -48,7 +72,7 @@ export default function List() {
           size='small'
           loading={loading}
           rowKey='id'
-          dataSource={data}
+          dataSource={filteredData}
           columns={[
             {
               title: t('common:table.name'),

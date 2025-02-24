@@ -13,7 +13,9 @@ const zh_CN = {
     params: {
       title: '参数配置',
       key: '参数标识',
+      key_required: '参数标识不能为空',
       cname: '别名',
+      cname_required: '别名不能为空',
     },
   },
   request_configuration: '发送配置',

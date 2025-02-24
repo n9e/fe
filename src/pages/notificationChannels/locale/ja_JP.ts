@@ -13,7 +13,9 @@ const ja_JP = {
     params: {
       title: 'パラメータ設定',
       key: 'パラメータ識別子',
+      key_required: 'パラメータ識別子は必須です',
       cname: '別名',
+      cname_required: '別名は必須です',
     },
   },
   request_configuration: '送信設定',

@@ -13,7 +13,9 @@ const zh_HK = {
     params: {
       title: '參數配置',
       key: '參數標識',
+      key_required: '參數標識不能為空',
       cname: '別名',
+      cname_required: '別名不能為空',
     },
   },
   request_configuration: '發送配置',

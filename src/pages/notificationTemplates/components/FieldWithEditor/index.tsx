@@ -11,6 +11,7 @@ interface IProps {
   onChange?: (value?: string) => void;
   extensions: any[];
   previewResult?: React.ReactNode;
+  scrolling?: boolean; // iframe 有自身的滚动条，不需要额外的滚动条
 }
 
 export const generateRules = (limitSize) => {
@@ -27,7 +28,7 @@ export const generateRules = (limitSize) => {
 };
 
 export default function FieldWithEditor(props: IProps) {
-  const { label, titleExtra, value, onChange, extensions, previewResult } = props;
+  const { label, titleExtra, value, onChange, extensions, previewResult, scrolling = true } = props;
 
   return (
     <div className='n9e-notification-template-content'>
@@ -36,7 +37,18 @@ export default function FieldWithEditor(props: IProps) {
           <div>{label}</div>
           <div>{titleExtra}</div>
         </div>
-        {previewResult ? <div className='template-field-preview'>{previewResult}</div> : <CodeMirror value={value} height='100%' extensions={extensions} onChange={onChange} />}
+        {previewResult ? (
+          <div
+            className='template-field-preview'
+            style={{
+              overflowY: scrolling ? 'auto' : 'hidden',
+            }}
+          >
+            {previewResult}
+          </div>
+        ) : (
+          <CodeMirror value={value} height='100%' extensions={extensions} onChange={onChange} />
+        )}
       </div>
     </div>
   );
