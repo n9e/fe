@@ -39,19 +39,17 @@ export default function NotificationRuleSelect(props: Props) {
     <Form.Item
       name='notify_rule_ids'
       label={
-        <Space>
+        <Space
+          onClick={(e) => {
+            e.preventDefault();
+          }}
+        >
           {label}
-          <Link
-            to='/notification-rule'
-            onClick={(e) => {
-              e.preventDefault();
-            }}
-          >
+          <Link to='/notification-rules' target='_blank'>
             {t('common:manage')}
           </Link>
           <a
             onClick={(e) => {
-              e.preventDefault();
               fetchData();
             }}
           >

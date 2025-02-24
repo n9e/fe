@@ -42,19 +42,17 @@ export default function ChannelSelect(props: Props) {
     <Form.Item
       {...field}
       label={
-        <Space>
+        <Space
+          onClick={(e) => {
+            e.preventDefault();
+          }}
+        >
           {t('notification_configuration.channel')}
-          <Link
-            to='/notification-channels'
-            onClick={(e) => {
-              e.preventDefault();
-            }}
-          >
+          <Link to='/notification-channels' target='_blank'>
             {t('common:manage')}
           </Link>
           <a
             onClick={(e) => {
-              e.preventDefault();
               fetchData();
             }}
           >
