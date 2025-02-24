@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 import { getTeamInfoList } from '@/services/manage';
 import { SIZE, daysOfWeek } from '@/utils/constant';
 import { scrollToFirstError } from '@/utils';
-import KVTagSelect, { validatorOfKVTagSelect } from '@/components/KVTagSelect';
+import { KVTags } from '@/components/KVTagSelect';
 
 import { NS, DEFAULT_VALUES } from '../../constants';
 import { RuleItem } from '../../types';
@@ -173,17 +173,7 @@ export default function FormCpt(props: Props) {
                     </>
                   )}
                 </Form.List>
-                <Form.Item
-                  {...field}
-                  label={t('notification_configuration.label_keys')}
-                  name={[field.name, 'label_keys']}
-                  rules={[validatorOfKVTagSelect]}
-                  getValueProps={(value) => {
-                    return value ?? undefined;
-                  }}
-                >
-                  <KVTagSelect />
-                </Form.Item>
+                <KVTags field={field} fullName={['notify_configs']} name={[field.name, 'label_keys']} keyLabel={t('notification_configuration.label_keys')} funcName='op' />
                 <Button ghost type='primary' onClick={() => {}}>
                   {t('notification_configuration.run_test_btn')}
                 </Button>

@@ -35,6 +35,9 @@ const ja_JP = {
   enable_in_bg_tip:
     'アラートイベントの ident ラベルに基づいて所属関係を判断し、つまり：アラートイベントに ident ラベルがあり、その ident に対応するマシンがこのビジネスグループに属していない場合、このアラートイベントは破棄されます',
   notify_configs: '通知設定',
+  notify_rule_ids: '通知ルール',
+  switch_to_old: '切り替え旧版',
+  switch_to_new: '切り替え新版',
   notify_channels: '通知メディア',
   notify_channels_doc: 'ドキュメントを使用',
   notify_channels_tpl: '通知メディアテンプレート',
