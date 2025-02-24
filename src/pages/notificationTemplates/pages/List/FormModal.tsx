@@ -107,19 +107,17 @@ function FormModal(props: IProps & ModalWrapProps) {
         </Form.Item>
         <Form.Item
           label={
-            <Space>
+            <Space
+              onClick={(e) => {
+                e.preventDefault();
+              }}
+            >
               {t('notify_channel_ident')}
-              <Link
-                to='/notification-channels'
-                onClick={(e) => {
-                  e.preventDefault();
-                }}
-              >
+              <Link to='/notification-channels' target='_blank'>
                 {t('common:manage')}
               </Link>
               <a
                 onClick={(e) => {
-                  e.preventDefault();
                   fetchNotificationChannels();
                 }}
               >
