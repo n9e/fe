@@ -105,14 +105,6 @@ export const getMenuList = (t) => {
       label: t('告警通知'),
       children: [
         {
-          key: '/help/notification-settings',
-          label: t('通知设置'),
-        },
-        {
-          key: '/help/notification-tpls',
-          label: t('通知模板'),
-        },
-        {
           key: '/notification-rules',
           label: t('notification-rules:title'),
         },
@@ -123,6 +115,14 @@ export const getMenuList = (t) => {
         {
           key: '/notification-templates',
           label: t('notification-templates:title'),
+        },
+        {
+          key: '/help/notification-settings',
+          label: t('通知设置'),
+        },
+        {
+          key: '/help/notification-tpls',
+          label: t('通知模板'),
         },
       ],
     },

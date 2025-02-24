@@ -127,12 +127,20 @@ export default function FormCpt(props: Props) {
                           <Input />
                         </Form.Item>
                         <Col span={12}>
-                          <Form.Item {...restField} name={[name, 'key']} rules={[{ required: paramConfigType === 'custom' }]}>
+                          <Form.Item
+                            {...restField}
+                            name={[name, 'key']}
+                            rules={[{ required: paramConfigType === 'custom', message: t('variable_configuration.params.key_required') }]}
+                          >
                             <Input />
                           </Form.Item>
                         </Col>
                         <Col span={12}>
-                          <Form.Item {...restField} name={[name, 'cname']} rules={[{ required: paramConfigType === 'custom' }]}>
+                          <Form.Item
+                            {...restField}
+                            name={[name, 'cname']}
+                            rules={[{ required: paramConfigType === 'custom', message: t('variable_configuration.params.cname_required') }]}
+                          >
                             <Input />
                           </Form.Item>
                         </Col>

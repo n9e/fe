@@ -141,6 +141,8 @@ const en_US = {
   invalidDatasource: 'Invalid datasource',
   copyToClipboard: 'Copy to clipboard successfully',
   copyToClipboardFailed: 'Copy to clipboard failed',
+  manage: 'Manage',
+  reload: 'Reload',
 
   tpl: 'Self-healing',
   'tpl.create': 'Create',

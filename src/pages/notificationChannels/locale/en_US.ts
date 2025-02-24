@@ -13,7 +13,9 @@ const en_US = {
     params: {
       title: 'Parameter Configuration',
       key: 'Key',
+      key_required: 'Key is required',
       cname: 'Alias',
+      cname_required: 'Alias is required',
     },
   },
   request_configuration: 'Request Configuration',
