@@ -67,8 +67,8 @@ export default function FormCpt(props: Props) {
           <>
             {fields.map((field) => (
               <Card
-                className='mb2'
                 key={field.key}
+                className='mb2'
                 title={<Space>{t('notification_configuration.title')}</Space>}
                 extra={
                   fields.length > 1 && (
@@ -96,7 +96,7 @@ export default function FormCpt(props: Props) {
                     <Checkbox value={3}>{t('common:severity.3')}</Checkbox>
                   </Checkbox.Group>
                 </Form.Item>
-                <Form.List {...field} name={[field.name, 'time_ranges']}>
+                <Form.List {..._.omit(field, 'key')} name={[field.name, 'time_ranges']}>
                   {(fields, { add, remove }) => (
                     <>
                       <Space>
@@ -109,67 +109,69 @@ export default function FormCpt(props: Props) {
                         <div style={{ width: 110 }}>{t('notification_configuration.effective_time_start')}</div>
                         <div style={{ width: 110 }}>{t('notification_configuration.effective_time_end')}</div>
                       </Space>
-                      {fields.map(({ key, name, ...restField }) => (
-                        <Space
-                          key={key}
-                          style={{
-                            display: 'flex',
-                            marginBottom: 8,
-                          }}
-                          align='baseline'
-                        >
-                          <Form.Item
-                            {...restField}
-                            name={[name, 'week']}
-                            style={{ width: 450 }}
-                            rules={[
-                              {
-                                required: true,
-                                message: t('notification_configuration.effective_time_week_msg'),
-                              },
-                            ]}
+                      {fields.map(({ key, name, ...restField }) => {
+                        return (
+                          <Space
+                            key={`time_ranges-${key}`}
+                            style={{
+                              display: 'flex',
+                              marginBottom: 8,
+                            }}
+                            align='baseline'
                           >
-                            <Select mode='tags'>
-                              {daysOfWeek.map((item) => {
-                                return (
-                                  <Select.Option key={item} value={item}>
-                                    {t(`common:time.weekdays.${item}`)}
-                                  </Select.Option>
-                                );
-                              })}
-                            </Select>
-                          </Form.Item>
-                          <Form.Item
-                            {...restField}
-                            name={[name, 'start']}
-                            style={{ width: 110 }}
-                            rules={[
-                              {
-                                required: true,
-                                message: t('notification_configuration.effective_time_start_msg'),
-                              },
-                            ]}
-                            getValueProps={getValuePropsWithTimeFormItem}
-                          >
-                            <TimePicker format='HH:mm' />
-                          </Form.Item>
-                          <Form.Item
-                            {...restField}
-                            name={[name, 'end']}
-                            style={{ width: 110 }}
-                            rules={[
-                              {
-                                required: true,
-                                message: t('notification_configuration.effective_time_end_msg'),
-                              },
-                            ]}
-                            getValueProps={getValuePropsWithTimeFormItem}
-                          >
-                            <TimePicker format='HH:mm' />
-                          </Form.Item>
-                          <MinusCircleOutlined onClick={() => remove(name)} />
-                        </Space>
-                      ))}
+                            <Form.Item
+                              {...restField}
+                              name={[name, 'week']}
+                              style={{ width: 450 }}
+                              rules={[
+                                {
+                                  required: true,
+                                  message: t('notification_configuration.effective_time_week_msg'),
+                                },
+                              ]}
+                            >
+                              <Select
+                                mode='multiple'
+                                options={_.map(daysOfWeek, (item) => {
+                                  return {
+                                    label: t(`common:time.weekdays.${item}`),
+                                    value: item,
+                                  };
+                                })}
+                              />
+                            </Form.Item>
+                            <Form.Item
+                              {...restField}
+                              name={[name, 'start']}
+                              style={{ width: 110 }}
+                              rules={[
+                                {
+                                  required: true,
+                                  message: t('notification_configuration.effective_time_start_msg'),
+                                },
+                              ]}
+                              getValueProps={getValuePropsWithTimeFormItem}
+                            >
+                              <TimePicker format='HH:mm' />
+                            </Form.Item>
+                            <Form.Item
+                              {...restField}
+                              name={[name, 'end']}
+                              style={{ width: 110 }}
+                              rules={[
+                                {
+                                  required: true,
+                                  message: t('notification_configuration.effective_time_end_msg'),
+                                },
+                              ]}
+                              getValueProps={getValuePropsWithTimeFormItem}
+                            >
+                              <TimePicker format='HH:mm' />
+                            </Form.Item>
+                            <MinusCircleOutlined onClick={() => remove(name)} />
+                          </Space>
+                        );
+                      })}
                     </>
                   )}
                 </Form.List>
