@@ -47,11 +47,7 @@ export default function TemplateSelect(props: Props) {
     <Form.Item
       {...field}
       label={
-        <Space
-          onClick={(e) => {
-            e.preventDefault();
-          }}
-        >
+        <Space>
           {t('notification_configuration.template')}
           <Link to='/notification-templates' target='_blank'>
             {t('common:manage')}
@@ -59,6 +55,7 @@ export default function TemplateSelect(props: Props) {
           <a
             onClick={(e) => {
               fetchData(channel_id);
+              e.preventDefault();
             }}
           >
             {t('common:reload')}

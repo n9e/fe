@@ -41,8 +41,8 @@ export default function index(props: Props) {
             <Col span={3}>{funcLabel}</Col>
             <Col span={16}>{valueLabel}</Col>
           </Row>
-          {fields.map((field, index) => (
-            <TagItem key={index} fullName={_.concat(fullName, name)} keyName={keyName} funcName={funcName} valueName={valueName} field={field} remove={remove} />
+          {fields.map((field) => (
+            <TagItem key={field.key} fullName={_.concat(fullName, name)} keyName={keyName} funcName={funcName} valueName={valueName} field={field} remove={remove} />
           ))}
           <Row>
             <Col span={23}>
