@@ -1,24 +1,16 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { useTranslation, Trans } from 'react-i18next';
-import { Row, Col, Form, Tooltip, AutoComplete, Input, InputNumber, Select, Space } from 'antd';
+import React, { useState } from 'react';
+import { Form, Input, Row, Col, Tooltip, AutoComplete, InputNumber, Select, Space } from 'antd';
 import { QuestionCircleOutlined, SettingOutlined } from '@ant-design/icons';
 import _ from 'lodash';
-import { useDebounceFn } from 'ahooks';
+import { useTranslation, Trans } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
-import GroupBy from '@/pages/dashboard/Editor/QueryEditor/Elasticsearch/GroupBy';
-import QueryName from '@/components/QueryName';
-import DocumentDrawer from '@/components/DocumentDrawer';
-import { CommonStateContext } from '@/App';
-import { getFullFields } from '@/pages/explorer/Elasticsearch/services';
 import { useIsAuthorized } from '@/components/AuthorizationWrapper';
-
-import GraphPreview from '../GraphPreview';
-import Value from './Value';
-import DateField from './DateField';
-import AdvancedSettings from './AdvancedSettings';
-import IndexPatternsSelect from './IndexPatternsSelect';
+import { alphabet } from '@/utils/constant';
+import IndexPatternsSelect from '@/plugins/elasticsearch/AlertRule/Queries/IndexPatternsSelect';
+import DateField from '@/plugins/elasticsearch/AlertRule/Queries/DateField';
+import Value from '@/plugins/elasticsearch/AlertRule/Queries/Value';
 
 interface Props {
   field: any;
@@ -29,47 +21,20 @@ interface Props {
 }
 
 export default function Query(props: Props) {
-  const { t, i18n } = useTranslation('alertRules');
-  const { darkMode } = useContext(CommonStateContext);
-  const { field } = props;
-  const { datasourceValue, indexOptions, disabled, children } = props;
+  const { t } = useTranslation('alertRules');
+  const { field, datasourceValue, indexOptions, disabled, children } = props;
   const indexPatternsAuthorized = useIsAuthorized(['/log/index-patterns']);
   const [indexSearch, setIndexSearch] = useState('');
-  const names = ['rule_config', 'queries'];
-  const form = Form.useFormInstance();
-  const queries = Form.useWatch(names);
+  const names = ['extra_config', 'enrich_queries'];
   const index_type = Form.useWatch([...names, field.name, 'index_type']);
   const indexValue = Form.useWatch([...names, field.name, 'index']);
 
-  const { run: onIndexChange } = useDebounceFn(
-    (val) => {
-      if (datasourceValue && val) {
-        getFullFields(datasourceValue, val, {
-          type: 'date',
-        }).then((res) => {
-          const defaultDateField = _.find(res.fields, { name: '@timestamp' })?.name || res.fields[0]?.name;
-          const newValues = _.set(_.cloneDeep(form.getFieldsValue()), [...names, field.key, 'date_field'], defaultDateField);
-          form.setFieldsValue(newValues);
-        });
-      }
-    },
-    {
-      wait: 500,
-    },
-  );
-
-  useEffect(() => {
-    if (indexValue) {
-      onIndexChange(indexValue);
-    }
-  }, [indexValue]);
-
   return (
-    <div key={field.key} className='n9e-fill-color-3 p2 mb2' style={{ position: 'relative' }}>
+    <div key={field.key} className='n9e-fill-color-3' style={{ padding: 10, marginBottom: 10, position: 'relative' }}>
       <Row gutter={8}>
         <Col flex='32px'>
-          <Form.Item {...field} name={[field.name, 'ref']} initialValue='A'>
-            <QueryName existingNames={_.map(queries, 'ref')} />
+          <Form.Item name={[field.name, 'ref']} initialValue={alphabet[field.name]}>
+            <Input readOnly style={{ width: '32px' }} />
           </Form.Item>
         </Col>
         <Col flex='auto'>
@@ -144,20 +109,9 @@ export default function Query(props: Props) {
                 label={
                   <span>
                     {t('datasource:es.filter')}{' '}
-                    <Tooltip title={t('common:page_help')}>
-                      <QuestionCircleOutlined
-                        onClick={() => {
-                          DocumentDrawer({
-                            language: i18n.language,
-                            darkMode,
-                            title: t('common:page_help'),
-                            type: 'iframe',
-                            documentPath:
-                              'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/alarm-management/alert-rules/rule-configuration/business/es-alarm-rules/',
-                          });
-                        }}
-                      />
-                    </Tooltip>
+                    <a href='https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax ' target='_blank'>
+                      <QuestionCircleOutlined />
+                    </a>
                   </span>
                 }
                 labelWidth={90}
@@ -176,7 +130,7 @@ export default function Query(props: Props) {
               <Input.Group>
                 <span className='ant-input-group-addon'>{t('datasource:es.interval')}</span>
                 <Form.Item {...field} name={[field.name, 'interval']} noStyle>
-                  <InputNumber disabled={disabled} style={{ width: '100%' }} min={0} />
+                  <InputNumber disabled={disabled} style={{ width: '100%' }} />
                 </Form.Item>
                 <span className='ant-input-group-addon'>
                   <Form.Item {...field} name={[field.name, 'interval_unit']} noStyle initialValue='min'>
@@ -192,20 +146,8 @@ export default function Query(props: Props) {
           </Row>
         </Col>
       </Row>
-      <Value
-        datasourceValue={datasourceValue}
-        index={indexValue}
-        field={field}
-        preName={names}
-        disabled={disabled}
-        functions={['count', 'avg', 'sum', 'max', 'min', 'p90', 'p95', 'p99']}
-      />
-      <div style={{ marginTop: 8 }}>
-        <GroupBy datasourceValue={datasourceValue} index={indexValue} parentNames={names} prefixField={field} prefixFieldNames={[field.name]} disabled={disabled} />
-      </div>
-      <AdvancedSettings field={field} />
+      <Value datasourceValue={datasourceValue} index={indexValue} field={field} preName={names} disabled={disabled} functions={['rawData']} />
       {children}
-      <GraphPreview datasourceValue={datasourceValue} />
     </div>
   );
 }
