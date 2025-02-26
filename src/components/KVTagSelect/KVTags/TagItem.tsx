@@ -21,14 +21,14 @@ const TagItem = (props: Props) => {
 
   return (
     <>
-      <Row gutter={[10, 10]} style={{ marginBottom: '10px' }}>
+      <Row gutter={[10, 10]}>
         <Col span={5}>
-          <Form.Item style={{ marginBottom: 0 }} name={[field.name, keyName]} rules={[{ required: true, message: t('tag.key.msg') }]}>
+          <Form.Item name={[field.name, keyName]} rules={[{ required: true, message: t('tag.key.msg') }]}>
             <Input />
           </Form.Item>
         </Col>
         <Col span={3}>
-          <Form.Item style={{ marginBottom: 0 }} name={[field.name, funcName]}>
+          <Form.Item name={[field.name, funcName]}>
             <Select>
               <Select.Option value='=='>==</Select.Option>
               <Select.Option value='=~'>=~</Select.Option>
@@ -42,7 +42,6 @@ const TagItem = (props: Props) => {
         <Col span={15}>
           {isSelect ? (
             <Form.Item
-              style={{ marginBottom: 0 }}
               name={[field.name, valueName]}
               rules={[{ required: true, message: t('tag.value.msg') }]}
               getValueFromEvent={(value) => {

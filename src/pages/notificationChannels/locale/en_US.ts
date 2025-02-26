@@ -3,13 +3,7 @@ const en_US = {
   basic_configuration: 'Basic Configuration',
   variable_configuration: {
     title: 'Variable Configuration',
-    param_type: 'Variable Type',
-    user_info: 'User Info',
-    flashduty: 'FlashDuty',
-    custom: 'Custom',
     contact_key: 'Contact',
-    batch: 'Batch',
-    integration_url: 'URL',
     params: {
       title: 'Parameter Configuration',
       key: 'Key',
@@ -18,7 +12,12 @@ const en_US = {
       cname_required: 'Alias is required',
     },
   },
-  request_configuration: 'Request Configuration',
+  request_configuration: {
+    http: 'HTTP Request Configuration',
+    smtp: 'SMTP Request Configuration',
+    script: 'Script Request Configuration',
+    flashduty: 'FlashDuty Request Configuration',
+  },
   request_type: 'Request Type',
   http_request_config: {
     title: 'HTTP Request',
@@ -59,6 +58,11 @@ const en_US = {
       label: 'File Path',
     },
     timeout: 'Timeout (unit: ms)',
+  },
+  flashduty_request_config: {
+    title: 'FlashDuty Request',
+    integration_url: 'URL',
+    proxy: 'Proxy',
   },
 };
 export default en_US;

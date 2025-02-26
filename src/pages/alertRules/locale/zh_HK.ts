@@ -147,6 +147,7 @@ const zh_HK = {
         append_tags: '附加標籤',
         notify_channels: '通知媒介',
         notify_groups: '告警接收組',
+        notify_rule_ids: '通知規則',
         notify_recovered: '啟用恢復通知',
         notify_repeat_step: '重複傳送頻率',
         recover_duration: '留觀時長',

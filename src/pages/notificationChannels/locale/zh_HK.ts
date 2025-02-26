@@ -3,13 +3,7 @@ const zh_HK = {
   basic_configuration: '基礎配置',
   variable_configuration: {
     title: '變量配置',
-    param_type: '變量類型',
-    user_info: '用戶信息',
-    flashduty: 'FlashDuty',
-    custom: '自定義',
     contact_key: '聯繫方式',
-    batch: '批量發送',
-    integration_url: 'URL',
     params: {
       title: '參數配置',
       key: '參數標識',
@@ -18,7 +12,12 @@ const zh_HK = {
       cname_required: '別名不能為空',
     },
   },
-  request_configuration: '發送配置',
+  request_configuration: {
+    http: 'HTTP 發送配置',
+    smtp: 'SMTP 發送配置',
+    script: '腳本發送配置',
+    flashduty: 'FlashDuty 發送配置',
+  },
   request_type: '發送類型',
   http_request_config: {
     title: 'HTTP 發送',
@@ -59,6 +58,11 @@ const zh_HK = {
       label: '文件路徑',
     },
     timeout: '超時時間 (單位: 毫秒)',
+  },
+  flashduty_request_config: {
+    title: 'FlashDuty 發送',
+    integration_url: 'URL',
+    proxy: '代理',
   },
 };
 

@@ -1,6 +1,8 @@
 interface RuleConfig {
-  channel: string;
-  template: string;
+  channel_id: number;
+  channel?: string;
+  template_id: number;
+  template?: string;
   params: {
     [index: string]: any;
   }[];

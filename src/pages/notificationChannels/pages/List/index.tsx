@@ -3,13 +3,15 @@ import { Table, Space, Button, Switch, Modal, Input, message } from 'antd';
 import { NotificationOutlined, SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
+import moment from 'moment';
 import { Link } from 'react-router-dom';
 
 import PageLayout from '@/components/pageLayout';
+import { Import, Export } from '@/components/ExportImport';
 
-import { getItems, putItem, deleteItems } from '../services';
-import { NS } from '../constants';
-import { ChannelItem } from '../types';
+import { getItems, putItem, deleteItems, postItems } from '../../services';
+import { NS } from '../../constants';
+import { ChannelItem } from '../../types';
 
 export default function List() {
   const { t } = useTranslation(NS);
@@ -18,6 +20,7 @@ export default function List() {
     search: string;
   }>();
   const [data, setData] = useState<ChannelItem[]>([]);
+  const [selectedRows, setSelectedRows] = useState<ChannelItem[]>([]);
   const filteredData = useMemo(() => {
     return _.filter(data, (item) => {
       if (filter?.search) {
@@ -66,6 +69,40 @@ export default function List() {
             <Link to={`/${NS}/add`}>
               <Button type='primary'>{t('common:btn.add')}</Button>
             </Link>
+            <Button
+              onClick={() => {
+                Import({
+                  title: t('common:btn.import'),
+                  onOk: (data) => {
+                    try {
+                      const newData = JSON.parse(data);
+                      postItems(newData).then(() => {
+                        fetchData();
+                        message.success(t('common:success.import'));
+                      });
+                    } catch (e) {
+                      console.error(e);
+                    }
+                  },
+                });
+              }}
+            >
+              {t('common:btn.import')}
+            </Button>
+            <Button
+              onClick={() => {
+                if (selectedRows.length) {
+                  Export({
+                    title: t('common:btn.export'),
+                    data: JSON.stringify(selectedRows, null, 4),
+                  });
+                } else {
+                  message.warning(t('common:batch.not_select'));
+                }
+              }}
+            >
+              {t('common:btn.export')}
+            </Button>
           </Space>
         </div>
         <Table
@@ -87,6 +124,24 @@ export default function List() {
                     {val}
                   </Link>
                 );
+              },
+            },
+            {
+              title: t('request_type'),
+              dataIndex: 'request_type',
+              render: (val) => {
+                return t(`${val}_request_config.title`);
+              },
+            },
+            {
+              title: t('common:table.update_by'),
+              dataIndex: 'update_by',
+            },
+            {
+              title: t('common:table.update_at'),
+              dataIndex: 'update_at',
+              render: (val) => {
+                return moment.unix(val).format('YYYY-MM-DD HH:mm:ss');
               },
             },
             {
@@ -123,6 +178,15 @@ export default function List() {
               render: (record) => {
                 return (
                   <Space>
+                    <Link
+                      className='table-operator-area-normal'
+                      to={{
+                        pathname: `/${NS}/edit/${record.id}?mode=clone`,
+                      }}
+                      target='_blank'
+                    >
+                      {t('common:btn.clone')}
+                    </Link>
                     <Button
                       size='small'
                       type='link'
@@ -149,6 +213,12 @@ export default function List() {
               },
             },
           ]}
+          rowSelection={{
+            selectedRowKeys: _.map(selectedRows, 'id'),
+            onChange: (_selectedRowKeys, selectedRows: ChannelItem[]) => {
+              setSelectedRows(selectedRows);
+            },
+          }}
         />
       </div>
     </PageLayout>

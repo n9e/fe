@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Select, Space } from 'antd';
+import { SettingOutlined, SyncOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
@@ -14,6 +15,7 @@ export default function NotificationRuleSelect(props: Props) {
   const { t } = useTranslation('alertRules');
   const { label = t('notify_rule_ids') } = props;
   const [options, setOptions] = useState<{ label: string; value: number }[]>([]);
+  const [loading, setLoading] = useState(false);
   const fetchData = () => {
     getNotificationRules()
       .then((res) => {
@@ -28,6 +30,9 @@ export default function NotificationRuleSelect(props: Props) {
       })
       .catch(() => {
         setOptions([]);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
@@ -42,19 +47,17 @@ export default function NotificationRuleSelect(props: Props) {
         <Space>
           {label}
           <Link to='/notification-rules' target='_blank'>
-            {t('common:manage')}
+            <SettingOutlined />
           </Link>
-          <a
+          <SyncOutlined
+            spin={loading}
             onClick={(e) => {
               fetchData();
               e.preventDefault();
             }}
-          >
-            {t('common:reload')}
-          </a>
+          />
         </Space>
       }
-      rules={[{ required: true }]}
     >
       <Select options={options} showSearch optionFilterProp='label' mode='multiple' />
     </Form.Item>

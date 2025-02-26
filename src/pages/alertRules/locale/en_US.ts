@@ -149,6 +149,7 @@ const en_US = {
         append_tags: 'Tags',
         notify_channels: 'Channels',
         notify_groups: 'Notify groups',
+        notify_rule_ids: 'Notification rule',
         notify_recovered: 'Recovered',
         notify_repeat_step: 'Repeat interval',
         recover_duration: 'Recover duration',

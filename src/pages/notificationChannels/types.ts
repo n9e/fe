@@ -1,10 +1,6 @@
 interface ParamConfig {
-  param_type: 'user_info' | 'flashduty' | 'custom';
   user_info: {
     contact_key: string;
-  };
-  flashduty: {
-    integration_url: string;
   };
   custom: {
     params: {
@@ -56,6 +52,11 @@ interface ScriptRequestConfig {
   path: string;
 }
 
+interface FlashdutyRequestConfig {
+  integration_url: string;
+  proxy: string;
+}
+
 export interface ChannelItem {
   id: number;
   name: string;
@@ -63,8 +64,9 @@ export interface ChannelItem {
   description: string;
   enable: boolean;
   param_config: ParamConfig;
-  request_type: 'http' | 'smtp' | 'script';
+  request_type: 'http' | 'smtp' | 'script' | 'flashduty';
   http_request_config: HttpRequestConfig;
   smtp_request_config: SmtpRequestConfig;
   script_request_config: ScriptRequestConfig;
+  flashduty_request_config: FlashdutyRequestConfig;
 }

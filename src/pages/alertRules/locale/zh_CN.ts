@@ -147,6 +147,7 @@ const zh_CN = {
         append_tags: '附加标签',
         notify_channels: '通知媒介',
         notify_groups: '告警接收组',
+        notify_rule_ids: '通知规则',
         notify_recovered: '启用恢复通知',
         notify_repeat_step: '重复发送频率',
         recover_duration: '留观时长',

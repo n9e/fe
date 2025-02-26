@@ -6,6 +6,7 @@ import _ from 'lodash';
 
 import PageLayout from '@/components/pageLayout';
 import { getItemByIdent as getNotificationChannel } from '@/pages/notificationChannels/services';
+import { Document } from '@/components/DocumentDrawer';
 
 import { getItems, deleteItem } from '../../services';
 import { NS, CN } from '../../constants';
@@ -128,7 +129,18 @@ export default function ListCpt() {
                     }
                   }}
                 >
-                  {item.name}
+                  <div className='n9e-flex n9e-justify-between n9e-w-full'>
+                    <span>{item.name}</span>
+                    {item.private === 0 && (
+                      <span
+                        style={{
+                          color: 'var(--fc-text-5)',
+                        }}
+                      >
+                        {t('common:public')}
+                      </span>
+                    )}
+                  </div>
                 </List.Item>
               )}
             />
@@ -179,6 +191,9 @@ export default function ListCpt() {
               </div>
             </div>
             <FormCpt form={form} item={active} />
+          </div>
+          <div className={`${CN}-right`}>
+            <Document documentPath='/docs/notification-template' />
           </div>
         </div>
       </div>
