@@ -82,7 +82,19 @@ export default function FormCpt(props: Props) {
               >
                 <Row gutter={SIZE}>
                   <Col span={12}>
-                    <ChannelSelect field={field} />
+                    <ChannelSelect
+                      field={field}
+                      onChange={() => {
+                        form.setFieldsValue({
+                          notify_configs: _.map(form.getFieldValue('notify_configs'), (item, index: number) => {
+                            if (index === field.name) {
+                              return _.omit(item, 'template_id');
+                            }
+                            return item;
+                          }),
+                        });
+                      }}
+                    />
                   </Col>
                   <Col span={12}>
                     <TemplateSelect field={field} />
@@ -99,77 +111,72 @@ export default function FormCpt(props: Props) {
                 <Form.List {..._.omit(field, 'key')} name={[field.name, 'time_ranges']}>
                   {(fields, { add, remove }) => (
                     <>
-                      <Space>
+                      <Space className='mb1'>
                         <div style={{ width: 450 }}>
                           <Space align='baseline'>
                             {t('notification_configuration.time_ranges')}
-                            <PlusCircleOutlined className='control-icon-normal' onClick={() => add(DEFAULT_VALUES.notify_configs[0].time_ranges[0])} />
+                            <PlusCircleOutlined onClick={() => add(DEFAULT_VALUES.notify_configs[0].time_ranges[0])} />
                           </Space>
                         </div>
-                        <div style={{ width: 110 }}>{t('notification_configuration.effective_time_start')}</div>
-                        <div style={{ width: 110 }}>{t('notification_configuration.effective_time_end')}</div>
+                        {fields.length ? <div style={{ width: 110 }}>{t('notification_configuration.effective_time_start')}</div> : null}
+                        {fields.length ? <div style={{ width: 110 }}>{t('notification_configuration.effective_time_end')}</div> : null}
                       </Space>
                       {fields.map(({ key, name, ...restField }) => {
                         return (
-                          <Space
-                            key={`time_ranges-${key}`}
-                            style={{
-                              display: 'flex',
-                              marginBottom: 8,
-                            }}
-                            align='baseline'
-                          >
-                            <Form.Item
-                              {...restField}
-                              name={[name, 'week']}
-                              style={{ width: 450 }}
-                              rules={[
-                                {
-                                  required: true,
-                                  message: t('notification_configuration.effective_time_week_msg'),
-                                },
-                              ]}
-                            >
-                              <Select
-                                mode='multiple'
-                                options={_.map(daysOfWeek, (item) => {
-                                  return {
-                                    label: t(`common:time.weekdays.${item}`),
-                                    value: item,
-                                  };
-                                })}
-                              />
-                            </Form.Item>
-                            <Form.Item
-                              {...restField}
-                              name={[name, 'start']}
-                              style={{ width: 110 }}
-                              rules={[
-                                {
-                                  required: true,
-                                  message: t('notification_configuration.effective_time_start_msg'),
-                                },
-                              ]}
-                              getValueProps={getValuePropsWithTimeFormItem}
-                            >
-                              <TimePicker format='HH:mm' />
-                            </Form.Item>
-                            <Form.Item
-                              {...restField}
-                              name={[name, 'end']}
-                              style={{ width: 110 }}
-                              rules={[
-                                {
-                                  required: true,
-                                  message: t('notification_configuration.effective_time_end_msg'),
-                                },
-                              ]}
-                              getValueProps={getValuePropsWithTimeFormItem}
-                            >
-                              <TimePicker format='HH:mm' />
-                            </Form.Item>
-                            <MinusCircleOutlined onClick={() => remove(name)} />
-                          </Space>
+                          <div key={`time_ranges-${key}`}>
+                            <Space align='baseline'>
+                              <Form.Item
+                                {...restField}
+                                name={[name, 'week']}
+                                style={{ width: 450 }}
+                                rules={[
+                                  {
+                                    required: true,
+                                    message: t('notification_configuration.effective_time_week_msg'),
+                                  },
+                                ]}
+                              >
+                                <Select
+                                  mode='multiple'
+                                  options={_.map(daysOfWeek, (item) => {
+                                    return {
+                                      label: t(`common:time.weekdays.${item}`),
+                                      value: item,
+                                    };
+                                  })}
+                                />
+                              </Form.Item>
+                              <Form.Item
+                                {...restField}
+                                name={[name, 'start']}
+                                style={{ width: 110 }}
+                                rules={[
+                                  {
+                                    required: true,
+                                    message: t('notification_configuration.effective_time_start_msg'),
+                                  },
+                                ]}
+                                getValueProps={getValuePropsWithTimeFormItem}
+                              >
+                                <TimePicker format='HH:mm' />
+                              </Form.Item>
+                              <Form.Item
+                                {...restField}
+                                name={[name, 'end']}
+                                style={{ width: 110 }}
+                                rules={[
+                                  {
+                                    required: true,
+                                    message: t('notification_configuration.effective_time_end_msg'),
+                                  },
+                                ]}
+                                getValueProps={getValuePropsWithTimeFormItem}
+                              >
+                                <TimePicker format='HH:mm' />
+                              </Form.Item>
+                              <MinusCircleOutlined onClick={() => remove(name)} />
+                            </Space>
+                          </div>
                         );
                       })}
                     </>
@@ -181,7 +188,7 @@ export default function FormCpt(props: Props) {
                 </Button>
               </Card>
             ))}
-            <Button type='dashed' onClick={() => add()} style={{ width: '100%' }} icon={<PlusOutlined />}>
+            <Button type='dashed' onClick={() => add(DEFAULT_VALUES.notify_configs[0])} style={{ width: '100%' }} icon={<PlusOutlined />}>
               {t('notification_configuration.add_btn')}
             </Button>
           </>

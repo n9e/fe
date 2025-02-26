@@ -8,10 +8,9 @@ import { NS } from '../../constants';
 
 export default function SMTP() {
   const { t } = useTranslation(NS);
-  const names = ['smtp_request_config'];
-  const paramConfigType = Form.useWatch(['param_config', 'param_type']);
+  const names = ['request_config', 'smtp_request_config'];
   const request_type = Form.useWatch('request_type');
-  const isRequired = paramConfigType !== 'flashduty' && request_type === 'smtp';
+  const isRequired = request_type === 'smtp';
 
   return (
     <div

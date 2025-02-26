@@ -3,13 +3,8 @@ const zh_CN = {
   basic_configuration: '基础配置',
   variable_configuration: {
     title: '变量配置',
-    param_type: '变量类型',
-    user_info: '用户信息',
-    flashduty: 'FlashDuty',
     custom: '自定义',
     contact_key: '联系方式',
-    batch: '批量发送',
-    integration_url: 'URL',
     params: {
       title: '参数配置',
       key: '参数标识',
@@ -18,7 +13,12 @@ const zh_CN = {
       cname_required: '别名不能为空',
     },
   },
-  request_configuration: '发送配置',
+  request_configuration: {
+    http: 'HTTP 发送配置',
+    smtp: 'SMTP 发送配置',
+    script: '脚本发送配置',
+    flashduty: 'FlashDuty 发送配置',
+  },
   request_type: '发送类型',
   http_request_config: {
     title: 'HTTP 发送',
@@ -59,6 +59,11 @@ const zh_CN = {
       label: '文件路径',
     },
     timeout: '超时时间 (单位: 毫秒)',
+  },
+  flashduty_request_config: {
+    title: 'FlashDuty 发送',
+    integration_url: 'URL',
+    proxy: '代理',
   },
 };
 export default zh_CN;

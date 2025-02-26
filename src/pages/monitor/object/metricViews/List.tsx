@@ -143,11 +143,7 @@ export default function List(props: IProps) {
                       <span className='name'>{item.name}</span>
                       {item.cate === 1 || profile.admin ? (
                         <span>
-                          {item.cate === 0 && (
-                            <span className='n9e-metric-views-list-content-item-cate' style={{ color: '#ccc' }}>
-                              {t('list.public')}
-                            </span>
-                          )}
+                          {item.cate === 0 && <span className='n9e-metric-views-list-content-item-cate'>{t('list.public')}</span>}
                           <div className='n9e-metric-views-list-content-item-opes'>
                             <EditOutlined
                               onClick={(e) => {

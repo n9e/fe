@@ -24,5 +24,7 @@ const en_US = {
       ids: 'Channels',
     },
   },
+  user_group_id_invalid_tip: 'Authorized team does not exist',
+  channel_invalid_tip: 'Notification medium does not exist',
 };
 export default en_US;

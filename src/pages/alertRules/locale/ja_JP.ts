@@ -148,6 +148,7 @@ const ja_JP = {
         append_tags: '追加タグ',
         notify_channels: '通知メディア',
         notify_groups: 'アラート受信グループ',
+        notify_rule_ids: '通知ルール',
         notify_recovered: '復旧通知を有効',
         notify_repeat_step: '繰り返し通知間隔',
         recover_duration: '監視時間',

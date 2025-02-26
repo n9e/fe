@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Form, Select, Space } from 'antd';
+import { SettingOutlined, SyncOutlined } from '@ant-design/icons';
 import { FormListFieldData } from 'antd/lib/form/FormList';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -17,9 +18,11 @@ export default function TemplateSelect(props: Props) {
   const { t } = useTranslation(NS);
   const { field } = props;
   const [options, setOptions] = useState<{ label: string; value: number }[]>([]);
+  const [loading, setLoading] = useState(false);
   const channel_id = Form.useWatch(['notify_configs', field.name, 'channel_id']);
   const fetchData = (channel_id) => {
     if (channel_id) {
+      setLoading(true);
       getNotificationTemplates(channel_id)
         .then((res) => {
           setOptions(
@@ -33,6 +36,9 @@ export default function TemplateSelect(props: Props) {
         })
         .catch(() => {
           setOptions([]);
+        })
+        .finally(() => {
+          setLoading(false);
         });
     } else {
       setOptions([]);
@@ -50,16 +56,15 @@ export default function TemplateSelect(props: Props) {
         <Space>
           {t('notification_configuration.template')}
           <Link to='/notification-templates' target='_blank'>
-            {t('common:manage')}
+            <SettingOutlined />
           </Link>
-          <a
+          <SyncOutlined
+            spin={loading}
             onClick={(e) => {
               fetchData(channel_id);
               e.preventDefault();
             }}
-          >
-            {t('common:reload')}
-          </a>
+          />
         </Space>
       }
       name={[field.name, 'template_id']}

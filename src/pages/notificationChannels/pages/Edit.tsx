@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory, useParams, useLocation } from 'react-router-dom';
+import queryString from 'query-string';
 import { Spin, message } from 'antd';
 import _ from 'lodash';
 
 import PageLayout from '@/components/pageLayout';
 
 import { NS } from '../constants';
-import { getItem, putItem } from '../services';
+import { getItem, putItem, postItems } from '../services';
 import { ChannelItem } from '../types';
 import { normalizeInitialValues, normalizeFormValues } from '../utils/normalizeValues';
 import Form from './Form';
@@ -16,6 +17,8 @@ export default function Add() {
   const { t } = useTranslation(NS);
   const { id } = useParams<{ id: string }>();
   const history = useHistory();
+  const { search } = useLocation();
+  const { mode } = queryString.parse(search);
   const [data, setData] = useState<ChannelItem>();
 
   useEffect(() => {
@@ -33,12 +36,21 @@ export default function Add() {
           <Form
             initialValues={data}
             onOk={(values) => {
-              putItem(normalizeFormValues(values)).then(() => {
-                message.success(t('common:success.add'));
-                history.push({
-                  pathname: `/${NS}`,
+              if (mode === 'clone') {
+                postItems([_.omit(normalizeFormValues(values), ['id']) as ChannelItem]).then(() => {
+                  message.success(t('common:success.add'));
+                  history.push({
+                    pathname: `/${NS}`,
+                  });
                 });
-              });
+              } else {
+                putItem(normalizeFormValues(values)).then(() => {
+                  message.success(t('common:success.add'));
+                  history.push({
+                    pathname: `/${NS}`,
+                  });
+                });
+              }
             }}
           />
         ) : (

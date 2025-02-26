@@ -1,6 +1,6 @@
 import React from 'react';
-import { Form, Row, Col, Button } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { Form, Row, Col, Space } from 'antd';
+import { PlusCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
@@ -36,31 +36,25 @@ export default function index(props: Props) {
     <Form.List {...field} name={name}>
       {(fields, { add, remove }) => (
         <>
-          <Row gutter={[10, 10]} style={{ marginBottom: '8px' }}>
-            <Col span={5}>{keyLabel}</Col>
-            <Col span={3}>{funcLabel}</Col>
-            <Col span={16}>{valueLabel}</Col>
+          <Row gutter={[10, 10]} className='mb1'>
+            <Col span={5}>
+              <Space align='baseline'>
+                {keyLabel}
+                <PlusCircleOutlined
+                  onClick={() => {
+                    add({
+                      [funcName]: '==',
+                    });
+                  }}
+                />
+              </Space>
+            </Col>
+            {fields.length ? <Col span={3}>{funcLabel}</Col> : null}
+            {fields.length ? <Col span={16}>{valueLabel}</Col> : null}
           </Row>
           {fields.map((field) => (
             <TagItem key={field.key} fullName={_.concat(fullName, name)} keyName={keyName} funcName={funcName} valueName={valueName} field={field} remove={remove} />
           ))}
-          <Row>
-            <Col span={23}>
-              <Button
-                className='mb2'
-                style={{ width: '100%' }}
-                type='dashed'
-                onClick={() =>
-                  add({
-                    [funcName]: '==',
-                  })
-                }
-              >
-                <PlusOutlined />
-                {t('tag.add')}
-              </Button>
-            </Col>
-          </Row>
         </>
       )}
     </Form.List>

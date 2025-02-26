@@ -24,6 +24,8 @@ const ja_JP = {
       ids: '協力スペース',
     },
   },
+  user_group_id_invalid_tip: '権限のあるチームが存在しません',
+  channel_invalid_tip: '通知メディアが存在しません',
 };
 
 export default ja_JP;

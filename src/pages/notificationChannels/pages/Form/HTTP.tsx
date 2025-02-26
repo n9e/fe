@@ -10,11 +10,10 @@ import { NS } from '../../constants';
 
 export default function HTTP() {
   const { t } = useTranslation(NS);
-  const names = ['http_request_config'];
-  const paramConfigType = Form.useWatch(['param_config', 'param_type']);
+  const names = ['request_config', 'http_request_config'];
   const request_type = Form.useWatch('request_type');
   const method = Form.useWatch([...names, 'method']);
-  const isRequired = paramConfigType !== 'flashduty' && request_type === 'http';
+  const isRequired = request_type === 'http';
 
   return (
     <div
@@ -23,30 +22,37 @@ export default function HTTP() {
       }}
     >
       <Row gutter={SIZE}>
-        <Col span={12}>
-          <Form.Item label={t('http_request_config.url')} name={[...names, 'url']} rules={[{ required: isRequired }]}>
-            <Input />
-          </Form.Item>
+        <Col flex='auto'>
+          <Row gutter={SIZE}>
+            <Col span={12}>
+              <Form.Item label={t('http_request_config.url')} name={[...names, 'url']} rules={[{ required: isRequired }]}>
+                <Input />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item label={t('http_request_config.method')} name={[...names, 'method']} rules={[{ required: isRequired }]}>
+                <Select
+                  options={[
+                    {
+                      label: 'GET',
+                      value: 'GET',
+                    },
+                    {
+                      label: 'POST',
+                      value: 'POST',
+                    },
+                    {
+                      label: 'PUT',
+                      value: 'PUT',
+                    },
+                  ]}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
         </Col>
-        <Col span={12}>
-          <Form.Item label={t('http_request_config.method')} name={[...names, 'method']} rules={[{ required: isRequired }]}>
-            <Select
-              options={[
-                {
-                  label: 'GET',
-                  value: 'GET',
-                },
-                {
-                  label: 'POST',
-                  value: 'POST',
-                },
-                {
-                  label: 'PUT',
-                  value: 'PUT',
-                },
-              ]}
-            />
-          </Form.Item>
+        <Col flex='none'>
+          <div style={{ width: 12 }} />
         </Col>
       </Row>
       <Form.List name={[...names, 'headers']}>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Form, Select, Space } from 'antd';
+import { SettingOutlined, SyncOutlined } from '@ant-design/icons';
 import { FormListFieldData } from 'antd/lib/form/FormList';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -11,13 +12,16 @@ import { NS } from '../../constants';
 
 interface Props {
   field: FormListFieldData;
+  onChange?: (value?: any) => void;
 }
 
 export default function ChannelSelect(props: Props) {
   const { t } = useTranslation(NS);
-  const { field } = props;
+  const { field, onChange } = props;
   const [options, setOptions] = useState<{ label: string; value: number }[]>([]);
+  const [loading, setLoading] = useState(false);
   const fetchData = () => {
+    setLoading(true);
     getNotificationChannels()
       .then((res) => {
         setOptions(
@@ -31,6 +35,9 @@ export default function ChannelSelect(props: Props) {
       })
       .catch(() => {
         setOptions([]);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
@@ -45,22 +52,21 @@ export default function ChannelSelect(props: Props) {
         <Space>
           {t('notification_configuration.channel')}
           <Link to='/notification-channels' target='_blank'>
-            {t('common:manage')}
+            <SettingOutlined />
           </Link>
-          <a
+          <SyncOutlined
+            spin={loading}
             onClick={(e) => {
               fetchData();
               e.preventDefault();
             }}
-          >
-            {t('common:reload')}
-          </a>
+          />
         </Space>
       }
       name={[field.name, 'channel_id']}
       rules={[{ required: true }]}
     >
-      <Select options={options} showSearch optionFilterProp='label' />
+      <Select options={options} showSearch optionFilterProp='label' onChange={onChange} />
     </Form.Item>
   );
 }

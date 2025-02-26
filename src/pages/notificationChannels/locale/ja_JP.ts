@@ -3,13 +3,7 @@ const ja_JP = {
   basic_configuration: '基本設定',
   variable_configuration: {
     title: '変数設定',
-    param_type: '変数タイプ',
-    user_info: 'ユーザー情報',
-    flashduty: 'FlashDuty',
-    custom: 'カスタム',
     contact_key: '連絡先',
-    batch: 'バッチ送信',
-    integration_url: 'URL',
     params: {
       title: 'パラメータ設定',
       key: 'パラメータ識別子',
@@ -18,7 +12,12 @@ const ja_JP = {
       cname_required: '別名は必須です',
     },
   },
-  request_configuration: '送信設定',
+  request_configuration: {
+    http: 'HTTP 送信設定',
+    smtp: 'SMTP 送信設定',
+    script: 'スクリプト送信設定',
+    flashduty: 'FlashDuty 送信設定',
+  },
   request_type: '送信タイプ',
   http_request_config: {
     title: 'HTTP 送信',
@@ -59,6 +58,11 @@ const ja_JP = {
       label: 'ファイルパス',
     },
     timeout: 'タイムアウト (単位: ミリ秒)',
+  },
+  flashduty_request_config: {
+    title: 'FlashDuty 送信',
+    integration_url: 'URL',
+    proxy: 'プロキシ',
   },
 };
 

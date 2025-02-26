@@ -1,21 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import _ from 'lodash';
-import { Drawer, Space, Spin } from 'antd';
-import { ExportOutlined } from '@ant-design/icons';
+import { Spin } from 'antd';
+import { useTranslation } from 'react-i18next';
 import MDEditor from '@uiw/react-md-editor';
-import ModalHOC, { ModalWrapProps } from '../ModalHOC';
-import Document from './Document';
+
+import { CommonStateContext } from '@/App';
+
 import './style.less';
 
-export { Document };
 interface Props {
-  darkMode?: boolean;
-  language?: string;
-  width?: string | number;
-  title: string;
   documentPath: string;
   type?: 'md' | 'iframe';
-  onClose?: (destroy: () => void) => void;
 }
 
 const filenameMap = {
@@ -24,8 +19,10 @@ const filenameMap = {
   en_US: '_en',
 };
 
-function index(props: Props & ModalWrapProps) {
-  const { visible, destroy, darkMode, language = 'zh_CN', title, width = '60%', documentPath, onClose, type = 'md' } = props;
+export default function index(props: Props) {
+  const { i18n } = useTranslation();
+  const { darkMode } = useContext(CommonStateContext);
+  const { documentPath, type = 'md' } = props;
   const [document, setDocument] = useState('');
   const [loading, setLoading] = useState(true);
   // 去除 documentPath 结尾的 /
@@ -33,7 +30,7 @@ function index(props: Props & ModalWrapProps) {
 
   useEffect(() => {
     if (documentPath && type === 'md') {
-      fetch(`${documentPath}/${language}.md`)
+      fetch(`${documentPath}/${i18n.language}.md`)
         .then((res) => {
           return res.text();
         })
@@ -41,31 +38,10 @@ function index(props: Props & ModalWrapProps) {
           setDocument(res);
         });
     }
-  }, []);
+  }, [documentPath]);
 
   return (
-    <Drawer
-      width={width}
-      title={
-        <Space>
-          {title}
-          {type === 'iframe' && (
-            <a target='_blank' href={`${realDocumentPath}${filenameMap[language]}`}>
-              <ExportOutlined />
-            </a>
-          )}
-        </Space>
-      }
-      placement='right'
-      onClose={() => {
-        if (onClose) {
-          onClose(destroy);
-        } else {
-          destroy();
-        }
-      }}
-      visible={visible}
-    >
+    <>
       {type === 'md' && (
         <div data-color-mode={darkMode ? 'dark' : 'light'}>
           <MDEditor.Markdown
@@ -81,7 +57,7 @@ function index(props: Props & ModalWrapProps) {
       {type === 'iframe' && (
         <Spin spinning={loading} wrapperClassName='n9e-document-drawer-iframe-loading'>
           <iframe
-            src={`${realDocumentPath}${filenameMap[language]}/?onlyContent`}
+            src={`${realDocumentPath}${filenameMap[i18n.language]}/?onlyContent`}
             style={{ width: '100%', height: '100%', border: '0 none', visibility: loading ? 'hidden' : 'visible' }}
             onLoad={() => {
               setLoading(false);
@@ -89,8 +65,6 @@ function index(props: Props & ModalWrapProps) {
           />
         </Spin>
       )}
-    </Drawer>
+    </>
   );
 }
-
-export default ModalHOC<Props>(index);
