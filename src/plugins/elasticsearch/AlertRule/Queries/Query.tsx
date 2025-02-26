@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { Row, Col, Form, Tooltip, AutoComplete, Input, InputNumber, Select, Space } from 'antd';
-import { QuestionCircleOutlined, SettingOutlined } from '@ant-design/icons';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useDebounceFn } from 'ahooks';
-import { Link } from 'react-router-dom';
 
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import GroupBy from '@/pages/dashboard/Editor/QueryEditor/Elasticsearch/GroupBy';
@@ -13,6 +12,7 @@ import DocumentDrawer from '@/components/DocumentDrawer';
 import { CommonStateContext } from '@/App';
 import { getFullFields } from '@/pages/explorer/Elasticsearch/services';
 import { useIsAuthorized } from '@/components/AuthorizationWrapper';
+import IndexPatternSettingsBtn from '@/pages/explorer/Elasticsearch/components/IndexPatternSettingsBtn';
 
 import GraphPreview from '../GraphPreview';
 import Value from './Value';
@@ -35,6 +35,7 @@ export default function Query(props: Props) {
   const { datasourceValue, indexOptions, disabled, children } = props;
   const indexPatternsAuthorized = useIsAuthorized(['/log/index-patterns']);
   const [indexSearch, setIndexSearch] = useState('');
+  const [indexPatternsRefreshFlag, setIndexPatternsRefreshFlag] = useState(_.uniqueId('indexPatternsRefreshFlag_'));
   const names = ['rule_config', 'queries'];
   const form = Form.useFormInstance();
   const queries = Form.useWatch(names);
@@ -100,13 +101,13 @@ export default function Query(props: Props) {
                   </Space>
                 }
                 addonAfter={
-                  indexPatternsAuthorized && index_type === 'index_pattern' ? (
-                    <Tooltip title={t('datasource:es.indexPatterns_manage')}>
-                      <Link to='/log/index-patterns'>
-                        <SettingOutlined />
-                      </Link>
-                    </Tooltip>
-                  ) : undefined
+                  indexPatternsAuthorized && (
+                    <IndexPatternSettingsBtn
+                      onReload={() => {
+                        setIndexPatternsRefreshFlag(_.uniqueId('indexPatternsRefreshFlag_'));
+                      }}
+                    />
+                  )
                 }
               >
                 {index_type === 'index' && (
@@ -136,7 +137,7 @@ export default function Query(props: Props) {
                     />
                   </Form.Item>
                 )}
-                {index_type === 'index_pattern' && <IndexPatternsSelect field={field} datasourceValue={datasourceValue} />}
+                {index_type === 'index_pattern' && <IndexPatternsSelect field={field} datasourceValue={datasourceValue} refreshFlag={indexPatternsRefreshFlag} />}
               </InputGroupWithFormItem>
             </Col>
             <Col span={index_type === 'index' ? 7 : 12}>

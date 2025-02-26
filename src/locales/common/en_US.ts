@@ -58,6 +58,7 @@ const en_US = {
     config: 'Config',
     copy: 'Copy',
     copy2: 'Copy',
+    reload: 'Reload',
   },
   table: {
     name: 'Name',

@@ -15,6 +15,7 @@ interface IProps {
 
 export default function index(props: IProps) {
   const { children, label, labelWidth = 'max-content', noStyle = false, customStyle, addonAfter, addonAfterWithContainer } = props;
+
   return (
     <Input.Group compact className='input-group-with-form-item'>
       <span

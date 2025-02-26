@@ -18,9 +18,9 @@ function bytesToSize(bytes, precision) {
   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
   let posttxt = 0;
   if (bytes == 0) return '0.00';
-  while (bytes >= 1000) {
+  while (bytes >= 1024) {
     posttxt++;
-    bytes = bytes / 1000;
+    bytes = bytes / 1024;
   }
   return bytes.toFixed(precision) + ' ' + sizes[posttxt];
 }
@@ -94,7 +94,7 @@ function RenderFilesystem({ value }) {
             <div className='target-information-filesystem-mounted_on-value'>
               <Tag color={darkMode ? 'rgb(50 53 69)' : '#f4f4f5'}>{item.mounted_on}</Tag>
             </div>
-            <div className='target-information-filesystem-kb_size'>{bytesToSize(item.kb_size * 1000, 2)}</div>
+            <div className='target-information-filesystem-kb_size'>{bytesToSize(item.kb_size * 1024, 2)}</div>
           </div>
         );
       })}

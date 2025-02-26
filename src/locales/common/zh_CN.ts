@@ -57,6 +57,7 @@ const zh_CN = {
     config: '配置',
     copy: '拷贝',
     copy2: '复制',
+    reload: '刷新',
   },
   table: {
     name: '名称',

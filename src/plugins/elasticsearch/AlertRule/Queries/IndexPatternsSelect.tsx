@@ -9,11 +9,12 @@ interface Props {
   field: any;
   datasourceValue: number;
   name?: string[]; // 订阅规则里在 field.name 和 index_pattern 之间插入的字段
+  refreshFlag?: string;
 }
 
 export default function IndexPatternsSelect(props: Props) {
   const { t } = useTranslation();
-  const { field, datasourceValue, name = [] } = props;
+  const { field, datasourceValue, name = [], refreshFlag } = props;
   const [indexPatterns, setIndexPatterns] = useState<any[]>([]);
 
   useEffect(() => {
@@ -22,7 +23,7 @@ export default function IndexPatternsSelect(props: Props) {
         setIndexPatterns(res);
       });
     }
-  }, [datasourceValue]);
+  }, [datasourceValue, refreshFlag]);
 
   return (
     <Form.Item
