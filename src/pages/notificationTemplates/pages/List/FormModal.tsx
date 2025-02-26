@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, Input, Form, Button, message, Select, Radio, Space } from 'antd';
+import { SettingOutlined, SyncOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
@@ -24,13 +25,18 @@ function FormModal(props: IProps & ModalWrapProps) {
   const [form] = Form.useForm();
   const [userGroups, setUserGroups] = useState<{ id: number; name: string }[]>([]);
   const [notifyChannels, setNotifyChannels] = useState<ChannelItem[]>([]);
+  const [loading, setLoading] = useState(false);
   const fetchNotificationChannels = () => {
+    setLoading(true);
     getNotificationChannels()
       .then((res) => {
         setNotifyChannels(res);
       })
       .catch(() => {
         setNotifyChannels([]);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
@@ -110,16 +116,15 @@ function FormModal(props: IProps & ModalWrapProps) {
             <Space>
               {t('notify_channel_ident')}
               <Link to='/notification-channels' target='_blank'>
-                {t('common:manage')}
+                <SettingOutlined />
               </Link>
-              <a
+              <SyncOutlined
+                spin={loading}
                 onClick={(e) => {
                   fetchNotificationChannels();
                   e.preventDefault();
                 }}
-              >
-                {t('common:reload')}
-              </a>
+              />
             </Space>
           }
           name='notify_channel_ident'
