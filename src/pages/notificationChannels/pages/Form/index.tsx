@@ -36,17 +36,29 @@ export default function FormCpt(props: Props) {
         <Form.Item name='id' hidden>
           <Input />
         </Form.Item>
-        <Form.Item label={t('common:table.name')} name='name' rules={[{ required: true }]}>
-          <Input />
-        </Form.Item>
-        <Form.Item label={t('common:table.ident')} name='ident' rules={[{ required: true }]}>
-          <Input />
-        </Form.Item>
+        <Row gutter={SIZE}>
+          <Col flex='auto'>
+            <Row gutter={SIZE}>
+              <Col span={12}>
+                <Form.Item label={t('common:table.name')} name='name' rules={[{ required: true }]}>
+                  <Input />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item label={t('common:table.ident')} name='ident' rules={[{ required: true }]}>
+                  <Input />
+                </Form.Item>
+              </Col>
+            </Row>
+          </Col>
+          <Col flex='none'>
+            <Form.Item label={t('common:table.enabled')} name='enable' valuePropName='checked'>
+              <Switch />
+            </Form.Item>
+          </Col>
+        </Row>
         <Form.Item label={t('common:table.note')} name='note'>
           <Input.TextArea />
-        </Form.Item>
-        <Form.Item label={t('common:table.enabled')} name='enable' valuePropName='checked'>
-          <Switch />
         </Form.Item>
       </Card>
       <Form.Item name='request_type'>
@@ -82,7 +94,7 @@ export default function FormCpt(props: Props) {
               }}
             >
               <Form.Item label={t('variable_configuration.contact_key')} name={['param_config', 'user_info', 'contact_key']}>
-                <ContactKeysSelect showSearch optionFilterProp='label' />
+                <ContactKeysSelect showSearch optionFilterProp='label' allowClear />
               </Form.Item>
               <Form.List name={['param_config', 'custom', 'params']}>
                 {(fields, { add, remove }) => (
