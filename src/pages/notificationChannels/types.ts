@@ -65,8 +65,10 @@ export interface ChannelItem {
   enable: boolean;
   param_config: ParamConfig;
   request_type: 'http' | 'smtp' | 'script' | 'flashduty';
-  http_request_config: HttpRequestConfig;
-  smtp_request_config: SmtpRequestConfig;
-  script_request_config: ScriptRequestConfig;
-  flashduty_request_config: FlashdutyRequestConfig;
+  request_config: {
+    http_request_config: HttpRequestConfig;
+    smtp_request_config: SmtpRequestConfig;
+    script_request_config: ScriptRequestConfig;
+    flashduty_request_config: FlashdutyRequestConfig;
+  };
 }

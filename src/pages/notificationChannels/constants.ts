@@ -20,7 +20,7 @@ export const DEFAULT_VALUES = {
     smtp_request_config: {
       insecure_skip_verify: true,
       port: 465,
-      batch: 5,
+      batch: 16,
     },
     script_request_config: {
       timeout: 10000,

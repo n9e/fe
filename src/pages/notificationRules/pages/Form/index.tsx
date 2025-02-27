@@ -39,27 +39,39 @@ export default function FormCpt(props: Props) {
         <Input />
       </Form.Item>
       <Card className='mb2' title={<Space>{t('basic_configuration')}</Space>}>
-        <Form.Item label={t('common:table.name')} name='name' rules={[{ required: true }]}>
-          <Input />
-        </Form.Item>
-        <Form.Item label={t('user_group_ids')} name='user_group_ids' rules={[{ required: true }]}>
-          <Select
-            showSearch
-            optionFilterProp='label'
-            mode='multiple'
-            options={_.map(userGroups, (item) => {
-              return {
-                label: item.name,
-                value: item.id,
-              };
-            })}
-          />
-        </Form.Item>
+        <Row gutter={SIZE}>
+          <Col flex='auto'>
+            <Row gutter={SIZE}>
+              <Col span={12}>
+                <Form.Item label={t('common:table.name')} name='name' rules={[{ required: true }]}>
+                  <Input />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item label={t('user_group_ids')} name='user_group_ids' rules={[{ required: true }]}>
+                  <Select
+                    showSearch
+                    optionFilterProp='label'
+                    mode='multiple'
+                    options={_.map(userGroups, (item) => {
+                      return {
+                        label: item.name,
+                        value: item.id,
+                      };
+                    })}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+          </Col>
+          <Col flex='none'>
+            <Form.Item label={t('common:table.enabled')} name='enable' valuePropName='checked'>
+              <Switch />
+            </Form.Item>
+          </Col>
+        </Row>
         <Form.Item label={t('common:table.note')} name='note'>
           <Input.TextArea />
-        </Form.Item>
-        <Form.Item label={t('common:table.enabled')} name='enable' valuePropName='checked'>
-          <Switch />
         </Form.Item>
       </Card>
       <Form.List name='notify_configs'>
@@ -188,7 +200,7 @@ export default function FormCpt(props: Props) {
                 </Button>
               </Card>
             ))}
-            <Button type='dashed' onClick={() => add(DEFAULT_VALUES.notify_configs[0])} style={{ width: '100%' }} icon={<PlusOutlined />}>
+            <Button className='n9e-w-full mb2' type='dashed' onClick={() => add(DEFAULT_VALUES.notify_configs[0])} icon={<PlusOutlined />}>
               {t('notification_configuration.add_btn')}
             </Button>
           </>
