@@ -66,6 +66,7 @@ export default function Query(props: Props) {
                   </Space>
                 }
                 addonAfter={
+                  index_type === 'index_pattern' &&
                   indexPatternsAuthorized && (
                     <IndexPatternSettingsBtn
                       onReload={() => {
