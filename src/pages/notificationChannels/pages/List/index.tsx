@@ -130,7 +130,12 @@ export default function List() {
               title: t('request_type'),
               dataIndex: 'request_type',
               render: (val) => {
-                return t(`${val}_request_config.title`);
+                return (
+                  <div className='n9e-flex n9e-items-center n9e-gap-1'>
+                    <img height={16} src={`/image/notification/${val}.png`} alt={val} />
+                    {t(`${val}_request_config.title`)}
+                  </div>
+                );
               },
             },
             {
