@@ -65,19 +65,39 @@ export default function FormCpt(props: Props) {
         <Segmented
           options={[
             {
-              label: t('http_request_config.title'),
+              label: (
+                <div className='n9e-flex n9e-items-center n9e-gap-1'>
+                  <img height={16} src='/image/notification/http.png' />
+                  {t('http_request_config.title')}
+                </div>
+              ),
               value: 'http',
             },
             {
-              label: t('smtp_request_config.title'),
+              label: (
+                <div className='n9e-flex n9e-items-center n9e-gap-1'>
+                  <img height={16} src='/image/notification/smtp.png' />
+                  {t('smtp_request_config.title')}
+                </div>
+              ),
               value: 'smtp',
             },
             {
-              label: t('script_request_config.title'),
+              label: (
+                <div className='n9e-flex n9e-items-center n9e-gap-1'>
+                  <img height={16} src='/image/notification/script.png' />
+                  {t('script_request_config.title')}
+                </div>
+              ),
               value: 'script',
             },
             {
-              label: t('flashduty_request_config.title'),
+              label: (
+                <div className='n9e-flex n9e-items-center n9e-gap-1'>
+                  <img height={16} src='/image/notification/flashduty.png' />
+                  {t('flashduty_request_config.title')}
+                </div>
+              ),
               value: 'flashduty',
             },
           ]}
