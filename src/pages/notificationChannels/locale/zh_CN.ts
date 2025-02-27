@@ -14,14 +14,14 @@ const zh_CN = {
     },
   },
   request_configuration: {
-    http: 'HTTP 发送配置',
-    smtp: 'SMTP 发送配置',
-    script: '脚本发送配置',
-    flashduty: 'FlashDuty 发送配置',
+    http: 'HTTP 配置',
+    smtp: 'SMTP 配置',
+    script: '脚本配置',
+    flashduty: 'FlashDuty 配置',
   },
   request_type: '发送类型',
   http_request_config: {
-    title: 'HTTP 发送',
+    title: 'HTTP',
     url: 'URL',
     method: '请求方法',
     header: '请求头',
@@ -39,7 +39,7 @@ const zh_CN = {
     body: '请求体',
   },
   smtp_request_config: {
-    title: 'SMTP 发送',
+    title: 'SMTP',
     host: '服务器',
     port: '端口',
     username: '用户名',
@@ -49,7 +49,7 @@ const zh_CN = {
     batch: '批量发送',
   },
   script_request_config: {
-    title: '脚本发送',
+    title: '脚本',
     script: {
       option: '使用脚本',
       label: '脚本内容',
@@ -61,7 +61,7 @@ const zh_CN = {
     timeout: '超时时间 (单位: 毫秒)',
   },
   flashduty_request_config: {
-    title: 'FlashDuty 发送',
+    title: 'FlashDuty',
     integration_url: 'URL',
     proxy: '代理',
   },
