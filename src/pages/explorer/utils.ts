@@ -46,6 +46,7 @@ const getESFilterByQuery = (query: { [index: string]: string | null }) => {
       'mode',
       'syntax',
       'query',
+      '__execute__',
     ]);
     _.forEach(validParmas, (value, key) => {
       if (value) {
