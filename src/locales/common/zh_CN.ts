@@ -56,6 +56,7 @@ const zh_CN = {
     collapse: '收起',
     copy: '拷贝',
     copy2: '复制',
+    reload: '刷新',
   },
   table: {
     name: '名称',

@@ -56,6 +56,7 @@ const zh_HK = {
     collapse: '收起',
     copy: '複製',
     copy2: '複製',
+    reload: '刷新',
   },
   table: {
     name: '名稱',

@@ -96,11 +96,11 @@ function FormModal(props: Props & ModalWrapProps) {
   useEffect(() => {
     fetchIndices(datasourceID, name, allow_hide_system_indices, cross_cluster_enabled);
     fetchFields(datasourceID, name, cross_cluster_enabled);
-  }, [datasourceID, name]);
+  }, [datasourceID, name, cross_cluster_enabled]);
 
   useEffect(() => {
     fetchIndices(datasourceID, name, allow_hide_system_indices, cross_cluster_enabled);
-  }, [allow_hide_system_indices]);
+  }, [allow_hide_system_indices, cross_cluster_enabled]);
 
   useEffect(() => {
     if (visible) {
@@ -158,6 +158,15 @@ function FormModal(props: Props & ModalWrapProps) {
               />
             </Form.Item>
             <Form.Item
+              name='cross_cluster_enabled'
+              label={t('cross_cluster_enabled')}
+              valuePropName='checked'
+              getValueFromEvent={(checked) => (checked ? 1 : 0)}
+              getValueProps={(value) => ({ checked: value === 1 })}
+            >
+              <Switch />
+            </Form.Item>
+            <Form.Item
               name='name'
               label={t('name')}
               normalize={(value) => {
@@ -201,15 +210,7 @@ function FormModal(props: Props & ModalWrapProps) {
             <Form.Item name='allow_hide_system_indices' label={t('allow_hide_system_indices')} valuePropName='checked'>
               <Switch />
             </Form.Item>
-            <Form.Item
-              name='cross_cluster_enabled'
-              label={t('cross_cluster_enabled')}
-              valuePropName='checked'
-              getValueFromEvent={(checked) => (checked ? 1 : 0)}
-              getValueProps={(value) => ({ checked: value === 1 })}
-            >
-              <Switch />
-            </Form.Item>
+
             <Form.Item>
               <Button type='primary' htmlType='submit'>
                 {t('common:btn.create')}
