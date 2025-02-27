@@ -13,14 +13,14 @@ const en_US = {
     },
   },
   request_configuration: {
-    http: 'HTTP Request Configuration',
-    smtp: 'SMTP Request Configuration',
-    script: 'Script Request Configuration',
-    flashduty: 'FlashDuty Request Configuration',
+    http: 'HTTP Configuration',
+    smtp: 'SMTP Configuration',
+    script: 'Script Configuration',
+    flashduty: 'FlashDuty Configuration',
   },
   request_type: 'Request Type',
   http_request_config: {
-    title: 'HTTP Request',
+    title: 'HTTP',
     url: 'URL',
     method: 'Method',
     header: 'Header',
@@ -38,7 +38,7 @@ const en_US = {
     body: 'Body',
   },
   smtp_request_config: {
-    title: 'SMTP Request',
+    title: 'SMTP',
     host: 'Host',
     port: 'Port',
     username: 'Username',
@@ -48,7 +48,7 @@ const en_US = {
     batch: 'Batch',
   },
   script_request_config: {
-    title: 'Script Request',
+    title: 'Script',
     script: {
       option: 'Script',
       label: 'Script Content',
@@ -60,7 +60,7 @@ const en_US = {
     timeout: 'Timeout (unit: ms)',
   },
   flashduty_request_config: {
-    title: 'FlashDuty Request',
+    title: 'FlashDuty',
     integration_url: 'URL',
     proxy: 'Proxy',
   },

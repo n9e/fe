@@ -13,14 +13,14 @@ const ja_JP = {
     },
   },
   request_configuration: {
-    http: 'HTTP 送信設定',
-    smtp: 'SMTP 送信設定',
-    script: 'スクリプト送信設定',
-    flashduty: 'FlashDuty 送信設定',
+    http: 'HTTP 設定',
+    smtp: 'SMTP 設定',
+    script: 'スクリプト設定',
+    flashduty: 'FlashDuty 設定',
   },
   request_type: '送信タイプ',
   http_request_config: {
-    title: 'HTTP 送信',
+    title: 'HTTP',
     url: 'URL',
     method: 'リクエストメソッド',
     header: 'リクエストヘッダー',
@@ -38,7 +38,7 @@ const ja_JP = {
     body: 'リクエストボディ',
   },
   smtp_request_config: {
-    title: 'SMTP 送信',
+    title: 'SMTP',
     host: 'サーバー',
     port: 'ポート',
     username: 'ユーザー名',
@@ -48,7 +48,7 @@ const ja_JP = {
     batch: 'バッチ送信',
   },
   script_request_config: {
-    title: 'スクリプト送信',
+    title: 'スクリプト',
     script: {
       option: 'スクリプトを使用',
       label: 'スクリプト内容',
@@ -60,7 +60,7 @@ const ja_JP = {
     timeout: 'タイムアウト (単位: ミリ秒)',
   },
   flashduty_request_config: {
-    title: 'FlashDuty 送信',
+    title: 'FlashDuty',
     integration_url: 'URL',
     proxy: 'プロキシ',
   },

@@ -13,14 +13,14 @@ const zh_HK = {
     },
   },
   request_configuration: {
-    http: 'HTTP 發送配置',
-    smtp: 'SMTP 發送配置',
-    script: '腳本發送配置',
-    flashduty: 'FlashDuty 發送配置',
+    http: 'HTTP 配置',
+    smtp: 'SMTP 配置',
+    script: '腳本配置',
+    flashduty: 'FlashDuty 配置',
   },
   request_type: '發送類型',
   http_request_config: {
-    title: 'HTTP 發送',
+    title: 'HTTP',
     url: 'URL',
     method: '請求方法',
     header: '請求頭',
@@ -38,7 +38,7 @@ const zh_HK = {
     body: '請求體',
   },
   smtp_request_config: {
-    title: 'SMTP 發送',
+    title: 'SMTP',
     host: '服務器',
     port: '端口',
     username: '用戶名',
@@ -48,7 +48,7 @@ const zh_HK = {
     batch: '批量發送',
   },
   script_request_config: {
-    title: '腳本發送',
+    title: '腳本',
     script: {
       option: '使用腳本',
       label: '腳本內容',
@@ -60,7 +60,7 @@ const zh_HK = {
     timeout: '超時時間 (單位: 毫秒)',
   },
   flashduty_request_config: {
-    title: 'FlashDuty 發送',
+    title: 'FlashDuty',
     integration_url: 'URL',
     proxy: '代理',
   },
