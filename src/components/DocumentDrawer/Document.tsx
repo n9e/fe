@@ -38,7 +38,7 @@ export default function index(props: Props) {
           setDocument(res);
         });
     }
-  }, [documentPath]);
+  }, [documentPath, i18n.language]);
 
   return (
     <>

@@ -10,7 +10,7 @@ import { SIZE, daysOfWeek } from '@/utils/constant';
 import { scrollToFirstError } from '@/utils';
 import { KVTags } from '@/components/KVTagSelect';
 
-import { NS, DEFAULT_VALUES } from '../../constants';
+import { NS, DEFAULT_VALUES, DEFAULT_VALUES_TIME_RANGE } from '../../constants';
 import { RuleItem } from '../../types';
 import getValuePropsWithTimeFormItem from '../../utils/getValuePropsWithTimeFormItem';
 import ChannelSelect from './ChannelSelect';
@@ -127,7 +127,7 @@ export default function FormCpt(props: Props) {
                         <div style={{ width: 450 }}>
                           <Space align='baseline'>
                             {t('notification_configuration.time_ranges')}
-                            <PlusCircleOutlined onClick={() => add(DEFAULT_VALUES.notify_configs[0].time_ranges[0])} />
+                            <PlusCircleOutlined onClick={() => add(DEFAULT_VALUES_TIME_RANGE)} />
                           </Space>
                         </div>
                         {fields.length ? <div style={{ width: 110 }}>{t('notification_configuration.effective_time_start')}</div> : null}
