@@ -187,10 +187,8 @@ if __name__ == "__main__":
 4. **调试方法**
    - 在脚本中添加日志输出
    - 将 stdin 数据保存到文件中分析
-   - 使用以下命令手动测试脚本：
-     ```bash
-     echo '{"event":{},"tpl":{"title":"测试","text":"内容"},"params":{},"sendto":"test"}' | ./your_script.py
-     ```
+   - 使用以下命令手动测试脚本：   
+```echo '{"event":{},"tpl":{"title":"测试","content":"内容"},"params":{"access_token":"xxx"}' | ./your_script.py```
 
 5. **环境依赖问题**
    - 确保所需的第三方库已正确安装

@@ -187,9 +187,9 @@ if __name__ == "__main__":
    - スクリプトにログ出力を追加
    - stdin データをファイルに保存して分析
    - 以下のコマンドでスクリプトを手動でテスト：
-     ```bash
-     echo '{"event":{},"tpl":{"title":"test","text":"content"},"params":{},"sendto":"test"}' | ./your_script.py
-     ```
+    ```bash
+     echo '{"event":{},"tpl":{"title":"test","content":"content"},"params":{"access_token":"xxx"}' | ./your_script.py
+    ```
 
 5. **環境依存の問題**
    - 必要なサードパーティライブラリが適切にインストールされていることを確認
