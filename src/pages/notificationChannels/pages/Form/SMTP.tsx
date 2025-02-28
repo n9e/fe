@@ -1,5 +1,6 @@
 import React from 'react';
-import { Row, Col, Form, Input, Switch, InputNumber, Space } from 'antd';
+import { Row, Col, Form, Input, Switch, InputNumber, Space, Tooltip } from 'antd';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
 import { SIZE } from '@/utils/constant';
@@ -40,7 +41,18 @@ export default function SMTP() {
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item label={t('smtp_request_config.from')} tooltip={t('smtp_request_config.from_tip')} name={[...names, 'from']} rules={[{ required: isRequired }]}>
+          <Form.Item
+            label={
+              <Space size={4}>
+                {t('smtp_request_config.from')}
+                <Tooltip className='n9e-ant-from-item-tooltip' overlayClassName='ant-tooltip-max-width-400' title={t('smtp_request_config.from_tip')}>
+                  <QuestionCircleOutlined />
+                </Tooltip>
+              </Space>
+            }
+            name={[...names, 'from']}
+            rules={[{ required: isRequired }]}
+          >
             <Input />
           </Form.Item>
         </Col>
