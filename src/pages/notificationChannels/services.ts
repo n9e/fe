@@ -12,6 +12,14 @@ export function getItems(): Promise<ChannelItem[]> {
   });
 }
 
+export function getSimplifiedItems(): Promise<ChannelItem[]> {
+  return request('/api/n9e/simplified-notify-channel-configs', {
+    method: RequestMethod.Get,
+  }).then((res) => {
+    return res.dat ?? [];
+  });
+}
+
 export function postItems(data: ChannelItem[]) {
   return request('/api/n9e/notify-channel-configs', {
     method: RequestMethod.Post,

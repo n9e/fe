@@ -20,36 +20,42 @@ export default function SMTP() {
     >
       <Row gutter={SIZE}>
         <Col span={12}>
-          <Form.Item label={t('smtp_request_config.host')} name={[...names, 'host']} rules={[{ required: isRequired }]}>
+          <Form.Item label={t('smtp_request_config.host')} tooltip={t('smtp_request_config.host_tip')} name={[...names, 'host']} rules={[{ required: isRequired }]}>
             <Input />
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item label={t('smtp_request_config.port')} name={[...names, 'port']} rules={[{ required: isRequired }]}>
+          <Form.Item label={t('smtp_request_config.port')} tooltip={t('smtp_request_config.port_tip')} name={[...names, 'port']} rules={[{ required: isRequired }]}>
             <InputNumber style={{ width: '100%' }} min={0} />
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item label={t('smtp_request_config.username')} name={[...names, 'username']} rules={[{ required: isRequired }]}>
+          <Form.Item label={t('smtp_request_config.username')} tooltip={t('smtp_request_config.username_tip')} name={[...names, 'username']} rules={[{ required: isRequired }]}>
             <Input />
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item label={t('smtp_request_config.password')} name={[...names, 'password']} rules={[{ required: isRequired }]}>
+          <Form.Item label={t('smtp_request_config.password')} tooltip={t('smtp_request_config.password_tip')} name={[...names, 'password']} rules={[{ required: isRequired }]}>
             <Input.Password />
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item label={t('smtp_request_config.from')} name={[...names, 'from']} rules={[{ required: isRequired }]}>
+          <Form.Item label={t('smtp_request_config.from')} tooltip={t('smtp_request_config.from_tip')} name={[...names, 'from']} rules={[{ required: isRequired }]}>
             <Input />
           </Form.Item>
         </Col>
         <Col span={12}>
           <Space>
-            <Form.Item label={t('smtp_request_config.insecure_skip_verify')} name={[...names, 'insecure_skip_verify']} valuePropName='checked' rules={[{ required: isRequired }]}>
+            <Form.Item
+              label={t('smtp_request_config.insecure_skip_verify')}
+              tooltip={t('smtp_request_config.insecure_skip_verify_tip')}
+              name={[...names, 'insecure_skip_verify']}
+              valuePropName='checked'
+              rules={[{ required: isRequired }]}
+            >
               <Switch />
             </Form.Item>
-            <Form.Item label={t('smtp_request_config.batch')} name={[...names, 'batch']} rules={[{ required: isRequired }]}>
+            <Form.Item label={t('smtp_request_config.batch')} tooltip={t('smtp_request_config.batch_tip')} name={[...names, 'batch']} rules={[{ required: isRequired }]}>
               <InputNumber min={0} />
             </Form.Item>
           </Space>

@@ -54,3 +54,10 @@ export function getFlashdutyChannelList(id: number) {
     return res.dat;
   });
 }
+
+export function notifyRuleTest(data: { event_ids: number[]; notify_config: any }) {
+  return request('/api/n9e/notify-rule/test', {
+    method: RequestMethod.Post,
+    data,
+  });
+}
