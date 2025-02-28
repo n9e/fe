@@ -20,6 +20,7 @@ export default function ChannelSelect(props: Props) {
   const { field, onChange } = props;
   const [options, setOptions] = useState<{ label: string; value: number; item: ChannelItem }[]>([]);
   const [loading, setLoading] = useState(false);
+  const channel_id = Form.useWatch(['notify_configs', field.name, 'channel_id']);
   const fetchData = () => {
     setLoading(true);
     getNotificationChannels()
@@ -41,6 +42,11 @@ export default function ChannelSelect(props: Props) {
         setLoading(false);
       });
   };
+
+  useEffect(() => {
+    const item = _.find(options, { value: channel_id })?.item;
+    onChange && onChange(channel_id, item);
+  }, [channel_id, JSON.stringify(options)]);
 
   useEffect(() => {
     fetchData();
@@ -70,15 +76,7 @@ export default function ChannelSelect(props: Props) {
       name={[field.name, 'channel_id']}
       rules={[{ required: true }]}
     >
-      <Select
-        options={options}
-        showSearch
-        optionFilterProp='label'
-        onChange={(val) => {
-          const item = _.find(options, { value: val })?.item;
-          onChange && onChange(val, item);
-        }}
-      />
+      <Select options={options} showSearch optionFilterProp='label' />
     </Form.Item>
   );
 }

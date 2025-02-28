@@ -4,22 +4,24 @@ import { FormListFieldData } from 'antd/lib/form/FormList';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
+import { ChannelItem } from '@/pages/notificationChannels/types';
+
 import { getFlashdutyChannelList } from '../../../services';
 import { NS } from '../../../constants';
 
 interface Props {
   field: FormListFieldData;
+  channelItem?: ChannelItem;
 }
 
 export default function Flashduty(props: Props) {
   const { t } = useTranslation(NS);
-  const { field } = props;
-  const channel_id = Form.useWatch(['notify_configs', field.name, 'channel_id']);
+  const { field, channelItem } = props;
   const [channelOptions, setChannelOptions] = useState<any[]>();
 
   useEffect(() => {
-    if (channel_id) {
-      getFlashdutyChannelList(channel_id)
+    if (channelItem?.id) {
+      getFlashdutyChannelList(channelItem?.id)
         .then((res) => {
           setChannelOptions(
             _.map(res, (item) => {
@@ -36,7 +38,7 @@ export default function Flashduty(props: Props) {
     } else {
       setChannelOptions([]);
     }
-  }, [channel_id]);
+  }, [channelItem?.id]);
 
   return (
     <div>
