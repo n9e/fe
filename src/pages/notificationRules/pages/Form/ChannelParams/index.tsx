@@ -20,13 +20,13 @@ export default function index(props: Props) {
   const customParams = channelItem?.param_config?.custom?.params ?? [];
 
   if (request_type === 'flashduty') {
-    return <Flashduty field={field} />;
+    return <Flashduty field={field} channelItem={channelItem} />;
   }
 
-  if (contactKey && _.includes(['http', 'script'], request_type)) {
+  if (_.includes(['http', 'script'], request_type)) {
     return (
       <>
-        <UserInfo field={field} />
+        {contactKey && <UserInfo field={field} />}
         <Custom field={field} customParams={customParams} />
       </>
     );
