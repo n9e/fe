@@ -40,7 +40,7 @@ export default function Flashduty(props: Props) {
 
   return (
     <div>
-      <Form.Item {...field} label={t('notification_configuration.flashduty.ids')} name={[field.name, 'params', 'ids']} rules={[{ required: true }]}>
+      <Form.Item {...field} label={t('notification_configuration.flashduty.ids')} name={[field.name, 'params', 'ids']}>
         <Select options={channelOptions} showSearch optionFilterProp='label' mode='multiple' />
       </Form.Item>
     </div>
