@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Select, Space } from 'antd';
-import { SettingOutlined, SyncOutlined } from '@ant-design/icons';
+import { Form, Select, Space, Tooltip } from 'antd';
+import { QuestionCircleOutlined, SettingOutlined, SyncOutlined } from '@ant-design/icons';
 import { FormListFieldData } from 'antd/lib/form/FormList';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -19,6 +19,7 @@ export default function TemplateSelect(props: Props) {
   const { field } = props;
   const [options, setOptions] = useState<{ label: string; value: number }[]>([]);
   const [loading, setLoading] = useState(false);
+  const form = Form.useFormInstance();
   const channel_id = Form.useWatch(['notify_configs', field.name, 'channel_id']);
   const fetchData = (channel_id) => {
     if (channel_id) {
@@ -33,6 +34,12 @@ export default function TemplateSelect(props: Props) {
               };
             }),
           );
+          // 将第一个模板的id设置到表单中
+          if (res.length > 0) {
+            const formValues = _.cloneDeep(form.getFieldsValue());
+            _.set(formValues, ['notify_configs', field.name, 'template_id'], res[0].id);
+            form.setFieldsValue(formValues);
+          }
         })
         .catch(() => {
           setOptions([]);
@@ -53,8 +60,11 @@ export default function TemplateSelect(props: Props) {
     <Form.Item
       {...field}
       label={
-        <Space>
+        <Space size={4}>
           {t('notification_configuration.template')}
+          <Tooltip className='n9e-ant-from-item-tooltip' title={t('notification_configuration.template_tip')}>
+            <QuestionCircleOutlined />
+          </Tooltip>
           <Link to='/notification-templates' target='_blank'>
             <SettingOutlined />
           </Link>

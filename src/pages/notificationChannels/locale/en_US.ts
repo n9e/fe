@@ -1,11 +1,19 @@
 const en_US = {
   title: 'Notification Channels',
   basic_configuration: 'Basic Configuration',
+  ident_tip: 'The identifier used to identify the notification channel in the system, generally a combination of English, numbers, or underscores, cannot be repeated',
+  note_tip: 'You can fill in supplementary explanations or usage scenarios for the notification channel to facilitate viewing during subsequent maintenance or collaboration',
+  enable_tip:
+    'Whether to enable the configuration of this notification channel. After closing, the configuration will be temporarily invalid, and notifications will not be sent. The notification channel will also be hidden in the notification rule media selection',
   variable_configuration: {
     title: 'Variable Configuration',
     contact_key: 'Contact',
+    contact_key_tip:
+      'Select the target type for notification sending, such as "Phone" means sending via phone, SMS, etc., you can add new contact methods on the contact method management page',
     params: {
       title: 'Parameter Configuration',
+      title_tip:
+        'You can set the custom parameters required by the notification channel (such as DingTalk robot Token, API Key, etc.) here, and specify an alias for them. In this way, the same notification channel template can use different parameter values in different notification rules (such as different DingTalk robot Tokens), and flexibly send to different receiving objects or scenarios',
       key: 'Key',
       key_required: 'Key is required',
       cname: 'Alias',
@@ -22,16 +30,21 @@ const en_US = {
   http_request_config: {
     title: 'HTTP',
     url: 'URL',
+    url_tip: 'The target address to receive notification requests, such as a Webhook address or a self-built service interface',
     method: 'Method',
     header: 'Header',
+    header_tip: 'Custom Header parameters that need to be attached to the request, such as authentication information or data format declaration',
     header_key: 'Key',
     header_value: 'Value',
     timeout: 'Timeout (unit: ms)',
     concurrency: 'Concurrency',
+    concurrency_tip:
+      'The maximum number of parallel requests initiated at the same time. Appropriately increasing it can improve sending efficiency, but pay attention to the processing capacity of the target service',
     retry_times: 'Retry Times',
     retry_interval: 'Retry Interval (unit: ms)',
     insecure_skip_verify: 'Skip Verify',
     proxy: 'Proxy',
+    proxy_tip: 'When the system needs to make external HTTP requests through a specific proxy server, you can fill in the proxy address and port here',
     params: 'Params',
     params_key: 'Key',
     params_value: 'Value',
@@ -40,12 +53,20 @@ const en_US = {
   smtp_request_config: {
     title: 'SMTP',
     host: 'Host',
+    host_tip: 'The domain name or IP address of the SMTP server, such as smtp.example.com, used to send emails',
     port: 'Port',
+    port_tip: 'The port number of the SMTP server. Common ports are 25, 465 (SSL), 587 (STARTTLS); please confirm the correct port with the provider',
     username: 'Username',
+    username_tip: 'The username required to log in to the SMTP server, usually an email address or account',
     password: 'Password',
+    password_tip: 'The login password or authorization code corresponding to the SMTP username. It is recommended to use an authorization code to enhance security',
     from: 'From',
+    from_tip: 'The sender name or email alias displayed in the email, which can help the recipient better identify the source of the email',
     insecure_skip_verify: 'Skip Verify',
+    insecure_skip_verify_tip:
+      'If enabled, ignore the SSL certificate verification of the SMTP server, which is mostly used for testing or self-signed certificate environments; it is recommended to turn off in the production environment',
     batch: 'Batch',
+    batch_tip: 'The maximum number of emails that can be sent simultaneously when sending notifications, to avoid delays or server rejection caused by sending too many at once',
   },
   script_request_config: {
     title: 'Script',
@@ -62,7 +83,9 @@ const en_US = {
   flashduty_request_config: {
     title: 'FlashDuty',
     integration_url: 'URL',
+    integration_url_tip: 'The integration address created by the Flashduty Integration Center can be found at https://console.flashcat.cloud/settings/source/alert/add/n9e',
     proxy: 'Proxy',
+    proxy_tip: 'When the system needs to make external HTTP requests through a specific proxy server, you can fill in the proxy address and port here',
   },
 };
 export default en_US;

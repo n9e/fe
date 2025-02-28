@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
-import { Form, Card, Space, Input, Select, Switch, Button, Row, Col, Checkbox, TimePicker, Affix } from 'antd';
-import { PlusOutlined, MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
+import { Form, Card, Space, Input, Select, Switch, Button, Row, Col, Checkbox, TimePicker, Affix, Tooltip } from 'antd';
+import { PlusOutlined, MinusCircleOutlined, PlusCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
@@ -9,6 +9,7 @@ import { getTeamInfoList } from '@/services/manage';
 import { SIZE, daysOfWeek } from '@/utils/constant';
 import { scrollToFirstError } from '@/utils';
 import { KVTags } from '@/components/KVTagSelect';
+import { ChannelItem } from '@/pages/notificationChannels/services';
 
 import { NS, DEFAULT_VALUES, DEFAULT_VALUES_TIME_RANGE } from '../../constants';
 import { RuleItem } from '../../types';
@@ -16,6 +17,7 @@ import getValuePropsWithTimeFormItem from '../../utils/getValuePropsWithTimeForm
 import ChannelSelect from './ChannelSelect';
 import TemplateSelect from './TemplateSelect';
 import ChannelParams from './ChannelParams';
+import TestButton from './TestButton';
 
 interface Props {
   initialValues?: RuleItem;
@@ -26,6 +28,7 @@ export default function FormCpt(props: Props) {
   const { t } = useTranslation(NS);
   const [form] = Form.useForm();
   const [userGroups, setUserGroups] = useState<{ id: number; name: string }[]>([]);
+  const [channelItem, setChannelItem] = useState<ChannelItem>();
 
   useEffect(() => {
     getTeamInfoList().then((res) => {
@@ -48,7 +51,7 @@ export default function FormCpt(props: Props) {
                 </Form.Item>
               </Col>
               <Col span={12}>
-                <Form.Item label={t('user_group_ids')} name='user_group_ids' rules={[{ required: true }]}>
+                <Form.Item label={t('user_group_ids')} tooltip={t('user_group_ids_tip')} name='user_group_ids' rules={[{ required: true }]}>
                   <Select
                     showSearch
                     optionFilterProp='label'
@@ -65,12 +68,12 @@ export default function FormCpt(props: Props) {
             </Row>
           </Col>
           <Col flex='none'>
-            <Form.Item label={t('common:table.enabled')} name='enable' valuePropName='checked'>
+            <Form.Item label={t('common:table.enabled')} tooltip={t('enabled_tip')} name='enable' valuePropName='checked'>
               <Switch />
             </Form.Item>
           </Col>
         </Row>
-        <Form.Item label={t('common:table.note')} name='note'>
+        <Form.Item label={t('common:table.note')} tooltip={t('note_tip')} name='note' className='mb0'>
           <Input.TextArea />
         </Form.Item>
       </Card>
@@ -93,10 +96,10 @@ export default function FormCpt(props: Props) {
                 }
               >
                 <Row gutter={SIZE}>
-                  <Col span={12}>
+                  <Col span={channelItem?.request_type !== 'flashduty' ? 12 : 24}>
                     <ChannelSelect
                       field={field}
-                      onChange={() => {
+                      onChange={(_val, item) => {
                         form.setFieldsValue({
                           notify_configs: _.map(form.getFieldValue('notify_configs'), (item, index: number) => {
                             if (index === field.name) {
@@ -105,15 +108,18 @@ export default function FormCpt(props: Props) {
                             return item;
                           }),
                         });
+                        setChannelItem(item);
                       }}
                     />
                   </Col>
-                  <Col span={12}>
-                    <TemplateSelect field={field} />
-                  </Col>
+                  {channelItem?.request_type !== 'flashduty' && (
+                    <Col span={12}>
+                      <TemplateSelect field={field} />
+                    </Col>
+                  )}
                 </Row>
-                <ChannelParams field={field} />
-                <Form.Item {...field} label={t('notification_configuration.severities')} name={[field.name, 'severities']}>
+                <ChannelParams field={field} channelItem={channelItem} />
+                <Form.Item {...field} label={t('notification_configuration.severities')} tooltip={t('notification_configuration.severities_tip')} name={[field.name, 'severities']}>
                   <Checkbox.Group>
                     <Checkbox value={1}>{t('common:severity.1')}</Checkbox>
                     <Checkbox value={2}>{t('common:severity.2')}</Checkbox>
@@ -125,8 +131,11 @@ export default function FormCpt(props: Props) {
                     <>
                       <Space className='mb1'>
                         <div style={{ width: 450 }}>
-                          <Space align='baseline'>
+                          <Space align='baseline' size={4}>
                             {t('notification_configuration.time_ranges')}
+                            <Tooltip className='n9e-ant-from-item-tooltip' title={t('notification_configuration.time_ranges_tip')}>
+                              <QuestionCircleOutlined />
+                            </Tooltip>
                             <PlusCircleOutlined onClick={() => add(DEFAULT_VALUES_TIME_RANGE)} />
                           </Space>
                         </div>
@@ -194,10 +203,15 @@ export default function FormCpt(props: Props) {
                     </>
                   )}
                 </Form.List>
-                <KVTags field={field} fullName={['notify_configs']} name={[field.name, 'label_keys']} keyLabel={t('notification_configuration.label_keys')} funcName='op' />
-                <Button ghost type='primary' onClick={() => {}}>
-                  {t('notification_configuration.run_test_btn')}
-                </Button>
+                <KVTags
+                  field={field}
+                  fullName={['notify_configs']}
+                  name={[field.name, 'label_keys']}
+                  keyLabel={t('notification_configuration.label_keys')}
+                  keyLabel_tip={t('notification_configuration.label_keys_tip')}
+                  funcName='op'
+                />
+                <TestButton field={field} />
               </Card>
             ))}
             <Button className='n9e-w-full mb2' type='dashed' onClick={() => add(DEFAULT_VALUES.notify_configs[0])} icon={<PlusOutlined />}>

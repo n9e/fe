@@ -1,7 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
-import { Form, Card, Space, Input, Switch, Button, Row, Col, Affix, Segmented } from 'antd';
-import { MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
+import { Form, Card, Space, Input, Switch, Button, Row, Col, Affix, Segmented, Tooltip } from 'antd';
+import { MinusCircleOutlined, PlusCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useSize } from 'ahooks';
@@ -12,7 +12,7 @@ import { Document } from '@/components/DocumentDrawer';
 
 import { NS, DEFAULT_VALUES } from '../../constants';
 import { ChannelItem } from '../../types';
-import ContactKeysSelect from './components/ContactKeysSelect';
+import ContactKeysSelect from './ContactKeysSelect';
 import HTTP from './HTTP';
 import SMTP from './SMTP';
 import Script from './Script';
@@ -45,19 +45,19 @@ export default function FormCpt(props: Props) {
                 </Form.Item>
               </Col>
               <Col span={12}>
-                <Form.Item label={t('common:table.ident')} name='ident' rules={[{ required: true }]}>
+                <Form.Item label={t('common:table.ident')} tooltip={t('ident_tip')} name='ident' rules={[{ required: true }]}>
                   <Input />
                 </Form.Item>
               </Col>
             </Row>
           </Col>
           <Col flex='none'>
-            <Form.Item label={t('common:table.enabled')} name='enable' valuePropName='checked'>
+            <Form.Item label={t('common:table.enabled')} tooltip={t('enable_tip')} name='enable' valuePropName='checked'>
               <Switch />
             </Form.Item>
           </Col>
         </Row>
-        <Form.Item label={t('common:table.note')} name='note'>
+        <Form.Item label={t('common:table.note')} name='note' tooltip={t('note_tip')} className='mb0'>
           <Input.TextArea />
         </Form.Item>
       </Card>
@@ -113,15 +113,16 @@ export default function FormCpt(props: Props) {
                 display: _.includes(['http', 'script'], requestType) ? 'block' : 'none',
               }}
             >
-              <Form.Item label={t('variable_configuration.contact_key')} name={['param_config', 'user_info', 'contact_key']}>
-                <ContactKeysSelect showSearch optionFilterProp='label' allowClear />
-              </Form.Item>
+              <ContactKeysSelect showSearch optionFilterProp='label' allowClear />
               <Form.List name={['param_config', 'custom', 'params']}>
                 {(fields, { add, remove }) => (
                   <>
                     <div className='mb1'>
-                      <Space>
+                      <Space size={4}>
                         {t('variable_configuration.params.title')}
+                        <Tooltip className='n9e-ant-from-item-tooltip' title={t('variable_configuration.params.title_tip')}>
+                          <QuestionCircleOutlined />
+                        </Tooltip>
                         <PlusCircleOutlined
                           onClick={() =>
                             add({
@@ -172,7 +173,7 @@ export default function FormCpt(props: Props) {
                 )}
               </Form.List>
             </Card>
-            <Card className='mb2' title={<Space>{t(`request_configuration.${requestType}`)}</Space>}>
+            <Card className='mb2' title={<Space size={4}>{t(`request_configuration.${requestType}`)}</Space>}>
               <HTTP />
               <SMTP />
               <Script />

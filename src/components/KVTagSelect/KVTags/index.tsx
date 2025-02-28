@@ -1,6 +1,6 @@
 import React from 'react';
-import { Form, Row, Col, Space } from 'antd';
-import { PlusCircleOutlined } from '@ant-design/icons';
+import { Form, Row, Col, Space, Tooltip } from 'antd';
+import { PlusCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
@@ -8,6 +8,7 @@ import TagItem from './TagItem';
 
 interface Props {
   keyLabel?: React.ReactNode;
+  keyLabel_tip?: React.ReactNode;
   funcLabel?: React.ReactNode;
   valueLabel?: React.ReactNode;
   keyName?: string;
@@ -22,6 +23,7 @@ export default function index(props: Props) {
   const { t } = useTranslation('KVTagSelect');
   const {
     keyLabel = t('tag.key.label'),
+    keyLabel_tip,
     funcLabel = t('tag.func.label'),
     valueLabel = t('tag.value.label'),
     keyName = 'key',
@@ -38,8 +40,13 @@ export default function index(props: Props) {
         <>
           <Row gutter={[10, 10]} className='mb1'>
             <Col span={5}>
-              <Space align='baseline'>
+              <Space align='baseline' size={4}>
                 {keyLabel}
+                {keyLabel_tip && (
+                  <Tooltip className='n9e-ant-from-item-tooltip' title={keyLabel_tip}>
+                    <QuestionCircleOutlined />
+                  </Tooltip>
+                )}
                 <PlusCircleOutlined
                   onClick={() => {
                     add({

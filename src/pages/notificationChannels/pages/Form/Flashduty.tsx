@@ -16,10 +16,15 @@ export default function Flashduty() {
         display: request_type === 'flashduty' ? 'block' : 'none',
       }}
     >
-      <Form.Item label={t('flashduty_request_config.integration_url')} name={[...names, 'integration_url']} rules={[{ required: isRequired }]}>
+      <Form.Item
+        label={t('flashduty_request_config.integration_url')}
+        tooltip={t('flashduty_request_config.integration_url_tip')}
+        name={[...names, 'integration_url']}
+        rules={[{ required: isRequired }]}
+      >
         <Input />
       </Form.Item>
-      <Form.Item label={t('flashduty_request_config.proxy')} name={[...names, 'proxy']}>
+      <Form.Item label={t('flashduty_request_config.proxy')} tooltip={t('flashduty_request_config.proxy_tip')} name={[...names, 'proxy']}>
         <Input />
       </Form.Item>
     </div>

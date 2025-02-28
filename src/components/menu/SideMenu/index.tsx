@@ -106,15 +106,15 @@ export const getMenuList = (t) => {
       children: [
         {
           key: '/notification-rules',
-          label: t('notification-rules:title'),
+          label: t('notification_rules'),
         },
         {
           key: '/notification-channels',
-          label: t('notification-channels:title'),
+          label: t('notification_channels'),
         },
         {
           key: '/notification-templates',
-          label: t('notification-templates:title'),
+          label: t('notification_templates'),
         },
         {
           key: '/help/notification-settings',

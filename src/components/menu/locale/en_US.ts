@@ -57,5 +57,8 @@ const en_US = {
   站内公告: 'Announcements',
   integrations: 'Integrations',
   built_in_components: 'Built-in components',
+  notification_rules: 'Rules',
+  notification_channels: 'Channels',
+  notification_templates: 'Templates',
 };
 export default en_US;

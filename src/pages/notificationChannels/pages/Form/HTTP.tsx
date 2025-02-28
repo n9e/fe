@@ -1,7 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
-import { Form, Row, Col, Input, Select, Space, InputNumber, Switch } from 'antd';
-import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
+import { Form, Row, Col, Input, Select, Space, InputNumber, Switch, Tooltip } from 'antd';
+import { PlusCircleOutlined, MinusCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
 import { SIZE } from '@/utils/constant';
@@ -25,7 +25,7 @@ export default function HTTP() {
         <Col flex='auto'>
           <Row gutter={SIZE}>
             <Col span={12}>
-              <Form.Item label={t('http_request_config.url')} name={[...names, 'url']} rules={[{ required: isRequired }]}>
+              <Form.Item label={t('http_request_config.url')} tooltip={t('http_request_config.url_tip')} name={[...names, 'url']} rules={[{ required: isRequired }]}>
                 <Input />
               </Form.Item>
             </Col>
@@ -59,8 +59,11 @@ export default function HTTP() {
         {(fields, { add, remove }) => (
           <>
             <div className='mb1'>
-              <Space>
+              <Space size={4}>
                 {t('http_request_config.header')}
+                <Tooltip className='n9e-ant-from-item-tooltip' title={t('http_request_config.header_tip')}>
+                  <QuestionCircleOutlined />
+                </Tooltip>
                 <PlusCircleOutlined onClick={() => add()} />
               </Space>
             </div>
@@ -118,14 +121,14 @@ export default function HTTP() {
       <Form.Item label={t('http_request_config.insecure_skip_verify')} name={[...names, 'insecure_skip_verify']} valuePropName='checked'>
         <Switch />
       </Form.Item>
-      <Form.Item label={t('http_request_config.proxy')} name={[...names, 'proxy']}>
+      <Form.Item label={t('http_request_config.proxy')} tooltip={t('http_request_config.proxy_tip')} name={[...names, 'proxy']}>
         <Input />
       </Form.Item>
       <Form.List name={[...names, 'request', 'parameters']}>
         {(fields, { add, remove }) => (
           <>
             <div className='mb1'>
-              <Space>
+              <Space size={4}>
                 {t('http_request_config.params')}
                 <PlusCircleOutlined onClick={() => add()} />
               </Space>

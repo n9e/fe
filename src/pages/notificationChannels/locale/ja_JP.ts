@@ -1,11 +1,17 @@
 const ja_JP = {
   title: '通知渠道',
   basic_configuration: '基本設定',
+  ident_tip: 'システムで通知チャネルを識別するための識別子で、一般的に英語、数字、またはアンダースコアの組み合わせで、繰り返すことはできません',
+  note_tip: '通知チャネルに関する補足説明や使用シナリオを記入して、後続のメンテナンスや協力時に表示しやすくします',
+  enable_tip: 'この通知チャネルの設定を有効にするかどうか。閉じると、設定が一時的に無効になり、通知が送信されません。通知チャネルは通知ルールのメディア選択からも非表示になります',
   variable_configuration: {
     title: '変数設定',
     contact_key: '連絡先',
+    contact_key_tip: '通知送信の対象タイプを選択します。たとえば、「電話」は電話や SMS などの方法で送信します。新しい連絡先を追加するには、連絡先管理ページに移動します',
     params: {
       title: 'パラメータ設定',
+      title_tip:
+        'ここで、通知チャネルに必要なカスタムパラメータ（DingTalk ロボットトークン、API キーなど）を設定し、別名を指定します。これにより、同じ通知チャネルテンプレートを異なる通知ルールで異なるパラメータ値（たとえば、異なる DingTalk ロボットトークン）で使用できるようになり、異なる受信オブジェクトまたはシーンに柔軟に送信できます',
       key: 'パラメータ識別子',
       key_required: 'パラメータ識別子は必須です',
       cname: '別名',
@@ -22,16 +28,20 @@ const ja_JP = {
   http_request_config: {
     title: 'HTTP',
     url: 'URL',
+    url_tip: '通知リクエストを受信するターゲットアドレス、Webhook アドレスまたはカスタムサービスインターフェースなど',
     method: 'リクエストメソッド',
     header: 'リクエストヘッダー',
+    header_tip: 'リクエストに含めるカスタムヘッダーパラメータ、認証情報やデータ形式の宣言など',
     header_key: 'パラメータ名',
     header_value: 'パラメータ値',
     timeout: 'タイムアウト (単位: ミリ秒)',
     concurrency: '同時実行数',
+    concurrency_tip: '同時に実行される最大並行リクエスト数。適度に増やすと送信効率が向上しますが、対象サービスの処理能力に注意してください',
     retry_times: 'リトライ回数',
     retry_interval: 'リトライ間隔 (単位: ミリ秒)',
     insecure_skip_verify: '証明書検証をスキップ',
     proxy: 'プロキシ',
+    proxy_tip: 'システムが特定のプロキシサーバーを介して外部 HTTP リクエストを行う必要がある場合は、プロキシアドレスとポートをここに入力してください',
     params: 'リクエストパラメータ',
     params_key: 'パラメータ名',
     params_value: 'パラメータ値',
@@ -40,12 +50,19 @@ const ja_JP = {
   smtp_request_config: {
     title: 'SMTP',
     host: 'サーバー',
+    host_tip: 'メールを送信するための SMTP サーバーのドメイン名または IP アドレス、例: smtp.example.com',
     port: 'ポート',
+    port_tip: 'SMTP サーバーのポート番号。一般的なポートは 25、465（SSL）、587（STARTTLS）です。正しいポートを確認してください',
     username: 'ユーザー名',
+    username_tip: 'SMTP サーバーにログインするためのユーザー名、通常はメールアドレスまたはアカウントです',
     password: 'パスワード',
+    password_tip: 'SMTP ユーザー名に対応するログインパスワードまたは認証コード。セキュリティを強化するために認証コードを使用することをお勧めします',
     from: '差出人',
+    from_tip: 'メールに表示される差出人名またはメール別名。受信者がメールの出所をよりよく認識できるようにします',
     insecure_skip_verify: '証明書検証をスキップ',
+    insecure_skip_verify_tip: '有効にすると、SMTP サーバーの SSL 証明書の検証を無視します。テストまたは自己署名証明書環境で使用されます。本番環境では無効にすることをお勧めします',
     batch: 'バッチ送信',
+    batch_tip: '通知時に一度に送信できるメールの最大数。一度に多くのメールを送信することを避け、遅延やサーバーによる拒否を防ぎます',
   },
   script_request_config: {
     title: 'スクリプト',
@@ -62,7 +79,10 @@ const ja_JP = {
   flashduty_request_config: {
     title: 'FlashDuty',
     integration_url: 'URL',
+    integration_url_tip:
+      'ここに入力されるのは、Flashduty 統合センターによって作成された統合アドレスです。これは https://console.flashcat.cloud/settings/source/alert/add/n9e で作成できます',
     proxy: 'プロキシ',
+    proxy_tip: 'システムが特定のプロキシサーバーを介して外部 HTTP リクエストを行う必要がある場合は、プロキシアドレスとポートをここに入力してください',
   },
 };
 
