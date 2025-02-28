@@ -36,6 +36,9 @@
   --fc-border-base: var(--fc-fill-5);
   --fc-background-color-light: rgba(250, 250, 250, 1);
 
+  /* 需特殊处理额外加的变量 */
+  --fc-variable-fill-1: var(--fc-fill-2);
+
   /* 红色 */
   --fc-red-1-color: #fff1f0;
   --fc-red-2-color: #ffccc7;
@@ -121,6 +124,9 @@
   --fc-border-color: rgba(204, 204, 220, 0.12);
   --fc-border-base: var(--fc-fill-5);
   --fc-background-color-light: rgba(255, 255, 255, 0.04);
+
+  /* 需特殊处理额外加的变量 */
+  --fc-variable-fill-1: var(--fc-fill-3);
 
   /* 红色 */
   --fc-red-1-color: #2a1215;
