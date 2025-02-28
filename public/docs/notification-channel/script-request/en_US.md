@@ -187,9 +187,9 @@ if __name__ == "__main__":
    - Add log outputs in the script
    - Save stdin data to a file for analysis
    - Use the following command to manually test the script:
-     ```bash
-     echo '{"event":{},"tpl":{"title":"test","text":"content"},"params":{},"sendto":"test"}' | ./your_script.py
-     ```
+    ```bash
+     echo '{"event":{},"tpl":{"title":"test","content":"content"},"params":{"access_token":"xxx"}' | ./your_script.py
+    ```
 
 5. **Environment Dependency Issues**
    - Ensure required third-party libraries are properly installed

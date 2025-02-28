@@ -178,7 +178,9 @@ if __name__ == "__main__":
    - 在腳本中添加日誌輸出
    - 將 stdin 數據保存到文件中分析
    - 使用以下命令手動測試腳本
-    ```echo '{"event":{},"tpl":{"title":"測試","text":"內容"},"params":{},"sendto":"test"}' | ./your_script.py```
+    ```bash
+     echo '{"event":{},"tpl":{"title":"test","content":"content"},"params":{"access_token":"xxx"}' | ./your_script.py
+    ```
 
 5. 環境依賴問題
    
