@@ -305,7 +305,7 @@ const SideMenu = () => {
     }
   }, [menuPaths, location.pathname, selectedKeys]);
 
-  const uncollapsedWidth = i18n.language === 'en_US' ? 'w-[210px]' : 'w-[172px]';
+  const uncollapsedWidth = i18n.language === 'en_US' ? 'w-[250px]' : 'w-[172px]';
 
   return (
     <div

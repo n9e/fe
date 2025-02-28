@@ -58,7 +58,7 @@ const zh_HK = {
   integrations: '集成中心',
   built_in_components: '模板中心',
   notification_rules: '通知規則',
-  notification_channels: '通知渠道',
+  notification_channels: '通知媒介',
   notification_templates: '消息模板',
 };
 

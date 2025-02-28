@@ -7,24 +7,27 @@ import ContentKeyFormModal from './ContentKeyFormModal';
 interface Props {
   value?: string;
   onChange?: (value: string) => void;
+  hideEdit?: boolean;
 }
 
 export default function ContentItemKey(props: Props) {
-  const { value, onChange } = props;
+  const { value, onChange, hideEdit } = props;
   return (
     <Space>
       {value}
-      <EditOutlined
-        onClick={() => {
-          ContentKeyFormModal({
-            mode: 'edit',
-            contentKey: value,
-            onOk: (contentKey) => {
-              onChange && onChange(contentKey);
-            },
-          });
-        }}
-      />
+      {!hideEdit && (
+        <EditOutlined
+          onClick={() => {
+            ContentKeyFormModal({
+              mode: 'edit',
+              contentKey: value,
+              onOk: (contentKey) => {
+                onChange && onChange(contentKey);
+              },
+            });
+          }}
+        />
+      )}
     </Space>
   );
 }

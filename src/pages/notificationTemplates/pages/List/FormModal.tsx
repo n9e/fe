@@ -158,6 +158,13 @@ function FormModal(props: IProps & ModalWrapProps) {
             onClick={() => {
               form.validateFields().then((values) => {
                 if (mode === 'add') {
+                  const channelRequestType = _.find(notifyChannels, { ident: values.notify_channel_ident })?.request_type;
+                  if (channelRequestType === 'smtp') {
+                    values.content = {
+                      subject: '',
+                      content: '',
+                    };
+                  }
                   postItems([values]).then(() => {
                     message.success(t('common:success.add'));
                     destroy();

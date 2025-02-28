@@ -33,22 +33,24 @@ export default function FormCpt(props: Props) {
                 {fields.map((field) => {
                   return <ContentItem key={field.key} field={field} remove={remove} notify_channel_request_type={item?.notify_channel_request_type} />;
                 })}
-                <Button
-                  className='mb2'
-                  type='dashed'
-                  onClick={() => {
-                    ContentKeyFormModal({
-                      mode: 'add',
-                      onOk: (contentKey) => {
-                        add({
-                          key: contentKey,
-                        });
-                      },
-                    });
-                  }}
-                >
-                  {t('content.add_title')}
-                </Button>
+                {item?.notify_channel_request_type !== 'smtp' && (
+                  <Button
+                    className='mb2'
+                    type='dashed'
+                    onClick={() => {
+                      ContentKeyFormModal({
+                        mode: 'add',
+                        onOk: (contentKey) => {
+                          add({
+                            key: contentKey,
+                          });
+                        },
+                      });
+                    }}
+                  >
+                    {t('content.add_title')}
+                  </Button>
+                )}
               </div>
             )}
           </Form.List>
