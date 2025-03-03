@@ -66,5 +66,7 @@ const en_US = {
   share_tip: 'Click to copy the share link',
   share_tip_2: 'Click to copy the share link, currently only supports sharing log text queries',
   help: 'Show data source Help',
+  clear_tabs: 'Clear',
+  clear_tabs_tip: 'Only keep the current tab',
 };
 export default en_US;
