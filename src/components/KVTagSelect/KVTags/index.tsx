@@ -8,7 +8,12 @@ import TagItem from './TagItem';
 
 interface Props {
   keyLabel?: React.ReactNode;
-  keyLabel_tip?: React.ReactNode;
+  keyLabelTootip?: React.ReactNode;
+  keyType?: 'input' | 'select';
+  keyOptions?: {
+    label: string;
+    value: string | number;
+  }[];
   funcLabel?: React.ReactNode;
   valueLabel?: React.ReactNode;
   keyName?: string;
@@ -17,13 +22,16 @@ interface Props {
   field?: any;
   fullName?: string[];
   name: string | (string | number)[];
+  addWapper?: (add: (defaultValue?: any, insertIndex?: number) => void) => void;
 }
 
 export default function index(props: Props) {
   const { t } = useTranslation('KVTagSelect');
   const {
     keyLabel = t('tag.key.label'),
-    keyLabel_tip,
+    keyLabelTootip,
+    keyType = 'input',
+    keyOptions,
     funcLabel = t('tag.func.label'),
     valueLabel = t('tag.value.label'),
     keyName = 'key',
@@ -32,6 +40,7 @@ export default function index(props: Props) {
     field = {},
     fullName = [],
     name,
+    addWapper,
   } = props;
 
   return (
@@ -42,16 +51,18 @@ export default function index(props: Props) {
             <Col span={5}>
               <Space align='baseline' size={4}>
                 {keyLabel}
-                {keyLabel_tip && (
-                  <Tooltip className='n9e-ant-from-item-tooltip' title={keyLabel_tip}>
+                {keyLabelTootip && (
+                  <Tooltip className='n9e-ant-from-item-tooltip' title={keyLabelTootip}>
                     <QuestionCircleOutlined />
                   </Tooltip>
                 )}
                 <PlusCircleOutlined
                   onClick={() => {
-                    add({
-                      [funcName]: '==',
-                    });
+                    addWapper
+                      ? addWapper(add)
+                      : add({
+                          [funcName]: '==',
+                        });
                   }}
                 />
               </Space>
@@ -60,7 +71,17 @@ export default function index(props: Props) {
             {fields.length ? <Col span={16}>{valueLabel}</Col> : null}
           </Row>
           {fields.map((field) => (
-            <TagItem key={field.key} fullName={_.concat(fullName, name)} keyName={keyName} funcName={funcName} valueName={valueName} field={field} remove={remove} />
+            <TagItem
+              key={field.key}
+              fullName={_.concat(fullName, name)}
+              keyName={keyName}
+              keyType={keyType}
+              keyOptions={keyOptions}
+              funcName={funcName}
+              valueName={valueName}
+              field={field}
+              remove={remove}
+            />
           ))}
         </>
       )}

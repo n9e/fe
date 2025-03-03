@@ -25,6 +25,13 @@ const en_US = {
     label_keys: 'Applicable tags',
     label_keys_tip:
       'The notification rule can limit only part of the alarm events that meet the conditions (filtered by event tags) to take effect, not configured means no restriction',
+    attributes: 'Applicable attributes',
+    attributes_value: 'Attribute value',
+    attributes_tip: 'The notification rule can limit only part of the alarm events that meet certain event attributes to take effect, not configured means no restriction',
+    attributes_options: {
+      group_name: 'Business group',
+      cluster: 'Cluster',
+    },
     run_test_btn: 'Run test',
     run_test_btn_tip:
       'You can select a few events that have already occurred to test whether this notification configuration is correct. If it is correct, you should receive relevant notification messages',

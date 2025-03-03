@@ -21,6 +21,7 @@ export default function TemplateSelect(props: Props) {
   const [loading, setLoading] = useState(false);
   const form = Form.useFormInstance();
   const channel_id = Form.useWatch(['notify_configs', field.name, 'channel_id']);
+  const template_id = Form.useWatch(['notify_configs', field.name, 'template_id']);
   const fetchData = (channel_id) => {
     if (channel_id) {
       setLoading(true);
@@ -34,8 +35,8 @@ export default function TemplateSelect(props: Props) {
               };
             }),
           );
-          // 将第一个模板的id设置到表单中
-          if (res.length > 0) {
+          // 如果 template_id 不存在，且返回的模板列表不为空，则设置第一个模板为默认值
+          if (res.length > 0 && template_id === undefined) {
             const formValues = _.cloneDeep(form.getFieldsValue());
             _.set(formValues, ['notify_configs', field.name, 'template_id'], res[0].id);
             form.setFieldsValue(formValues);

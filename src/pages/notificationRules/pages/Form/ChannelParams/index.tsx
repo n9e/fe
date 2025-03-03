@@ -23,14 +23,10 @@ export default function index(props: Props) {
     return <Flashduty field={field} channelItem={channelItem} />;
   }
 
-  if (_.includes(['http', 'script'], request_type)) {
-    return (
-      <>
-        {contactKey && <UserInfo field={field} />}
-        <Custom field={field} customParams={customParams} />
-      </>
-    );
-  }
-
-  return null;
+  return (
+    <>
+      {contactKey && <UserInfo field={field} />}
+      <Custom field={field} customParams={customParams} />
+    </>
+  );
 }
