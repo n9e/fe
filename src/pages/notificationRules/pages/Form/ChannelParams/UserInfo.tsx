@@ -53,9 +53,9 @@ export default function UserInfo(props: Props) {
   }, []);
 
   return (
-    <div>
+    <>
       <Form.Item
-        {...field}
+        {..._.omit(field, ['key'])}
         label={t('notification_configuration.user_info.user_ids')}
         name={[field.name, 'params', 'user_ids']}
         rules={[
@@ -82,7 +82,7 @@ export default function UserInfo(props: Props) {
         />
       </Form.Item>
       <Form.Item
-        {...field}
+        {..._.omit(field, ['key'])}
         label={t('notification_configuration.user_info.user_group_ids')}
         name={[field.name, 'params', 'user_group_ids']}
         rules={[
@@ -108,6 +108,6 @@ export default function UserInfo(props: Props) {
           }}
         />
       </Form.Item>
-    </div>
+    </>
   );
 }

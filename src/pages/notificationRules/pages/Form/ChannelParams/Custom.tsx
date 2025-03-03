@@ -17,26 +17,31 @@ export default function Custom(props: Props) {
   const { field, customParams } = props;
   const form = Form.useFormInstance();
   const channel_id = Form.useWatch(['notify_configs', field.name, 'channel_id']);
-  const [paramsValues, setParamsValues] = React.useState<any[]>([]);
+  const [paramsData, setParamsData] = React.useState<
+    {
+      __id__: string;
+      data: { name: string; cname: string; value: string }[];
+    }[]
+  >();
 
   useEffect(() => {
     if (channel_id) {
       getCustomParamsValues(channel_id)
         .then((res) => {
-          setParamsValues(
+          setParamsData(
             _.map(res, (item) => {
               return {
-                ...item,
                 __id__: _.uniqueId(),
+                data: item,
               };
             }),
           );
         })
         .catch(() => {
-          setParamsValues([]);
+          setParamsData([]);
         });
     } else {
-      setParamsValues([]);
+      setParamsData([]);
     }
   }, [channel_id]);
 
@@ -47,16 +52,23 @@ export default function Custom(props: Props) {
           <div key={item.key}>
             <Form.Item {...field} label={item.cname} name={[field.name, 'params', item.key]} rules={[{ required: true }]}>
               <AutoComplete
-                options={_.map(paramsValues, (paramsValue: { [key: string]: string }) => {
+                options={_.map(paramsData, (paramsDataItem: { __id__: string; data: { name: string; cname: string; value: string }[] }) => {
                   return {
-                    id: paramsValue.__id__,
+                    id: paramsDataItem.__id__,
                     label: (
-                      <div>
-                        {_.map(paramsValue, (value, key) => {
+                      <div
+                        onClick={() => {
+                          const newValues = _.cloneDeep(form.getFieldsValue());
+                          _.map(paramsDataItem.data, (paramItem) => {
+                            _.set(newValues, ['notify_configs', field.name, 'params', paramItem.name], paramItem.value);
+                          });
+                          form.setFieldsValue(newValues);
+                        }}
+                      >
+                        {_.map(paramsDataItem.data, (paramItem) => {
                           return (
-                            <span key={key}>
+                            <span key={paramItem.name}>
                               <span
-                                key={key}
                                 style={{
                                   backgroundColor: 'var(--fc-fill-4)',
                                   padding: '1px 2px',
@@ -64,31 +76,22 @@ export default function Custom(props: Props) {
                                   borderRadius: 4,
                                 }}
                               >
-                                {key}:
+                                {paramItem.cname}:
                               </span>
                               <span
                                 style={{
                                   padding: '0 8px 0 2px',
                                 }}
                               >
-                                {value}
+                                {paramItem.value}
                               </span>
                             </span>
                           );
                         })}
                       </div>
                     ),
-                    value: paramsValue[item.key],
                   };
                 })}
-                onChange={(_value, option: any) => {
-                  const record = _.find(paramsValues, { __id__: option?.id });
-                  const newValues = _.cloneDeep(form.getFieldsValue());
-                  _.map(_.omit(record, ['__id__']), (value, key) => {
-                    _.set(newValues, ['notify_configs', field.name, 'params', key], value);
-                  });
-                  form.setFieldsValue(newValues);
-                }}
               />
             </Form.Item>
           </div>
