@@ -53,5 +53,8 @@ const zh_CN = {
   quickMenus: '快捷菜单',
   integrations: '集成中心',
   built_in_components: '模板中心',
+  notification_rules: '通知规则',
+  notification_channels: '通知媒介',
+  notification_templates: '消息模板',
 };
 export default zh_CN;

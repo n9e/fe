@@ -60,10 +60,9 @@
       padding: 16px 6px 16px 16px; // 将原来 paddingRight 10px 拆开，以兼容出现滚动条的时候有距离右侧 6px 的间距
       margin-right: 8px;
       height: 100%;
-      &:not(.srm) > * {
+      // 2025-02-19 n9e 也默认关闭这个背景色，后面有必要就整体都去掉
+      &:not(.srm):not(.n9e) > * {
         background: var(--fc-fill-2);
-        // border: 1px solid var(--fc-border-color);
-        // box-shadow: 0px 1px 8px 0 rgb(0 0 0 / 10%);
       }
     }
   }
