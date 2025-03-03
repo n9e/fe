@@ -23,6 +23,13 @@ const zh_HK = {
     effective_time_end_msg: '請選擇結束時間',
     label_keys: '適用標籤',
     label_keys_tip: '通知規則可以限制僅對符合條件（通過事件標籤做篩選）的部分告警事件生效，不配置表示不做限制',
+    attributes: '適用屬性',
+    attributes_value: '屬性值',
+    attributes_tip: '通知規則可以限制僅對符合某些事件屬性的部分告警事件生效，不配置表示不做限制',
+    attributes_options: {
+      group_name: '業務組',
+      cluster: '數據源',
+    },
     run_test_btn: '通知測試',
     run_test_btn_tip: '可以選擇幾個已經產生的事件，測試一下此通知配置是否正確，如果正確，應該會收到相關的通知消息',
     run_test_request_success: '提交測試成功',

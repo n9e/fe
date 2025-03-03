@@ -23,6 +23,13 @@ const zh_CN = {
     effective_time_end_msg: '请选择结束时间',
     label_keys: '适用标签',
     label_keys_tip: '通知规则可以限制仅对符合条件（通过事件标签做筛选）的部分告警事件生效，不配置表示不做限制',
+    attributes: '适用属性',
+    attributes_value: '属性值',
+    attributes_tip: '通知规则可以限制仅对符合某些事件属性的部分告警事件生效，不配置表示不做限制',
+    attributes_options: {
+      group_name: '业务组',
+      cluster: '数据源',
+    },
     run_test_btn: '通知测试',
     run_test_btn_tip: '可以选择几个已经产生的事件，测试一下此通知配置是否正确，如果正确，应该会收到相关的通知消息',
     run_test_request_success: '提交测试成功',

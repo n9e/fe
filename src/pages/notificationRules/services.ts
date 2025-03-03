@@ -61,3 +61,12 @@ export function notifyRuleTest(data: { event_ids: number[]; notify_config: any }
     data,
   });
 }
+
+export function getCustomParamsValues(notify_channel_id: number) {
+  return request('/api/n9e/notify-rule/custom-params', {
+    method: RequestMethod.Get,
+    params: { notify_channel_id },
+  }).then((res) => {
+    return res.dat ?? [];
+  });
+}

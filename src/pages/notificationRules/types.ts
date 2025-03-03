@@ -15,6 +15,11 @@ interface RuleConfig {
   label_keys: {
     [index: string]: string;
   }[];
+  attributes: {
+    key: string;
+    func: string;
+    value: string;
+  }[];
 }
 
 export interface RuleItem {

@@ -7,6 +7,11 @@ import _ from 'lodash';
 interface Props {
   fullName?: string | (string | number)[];
   keyName: string;
+  keyType: 'input' | 'select';
+  keyOptions?: {
+    label: string;
+    value: string | number;
+  }[];
   funcName: string;
   valueName: string;
   field: any;
@@ -15,7 +20,7 @@ interface Props {
 
 const TagItem = (props: Props) => {
   const { t } = useTranslation('KVTagSelect');
-  const { fullName = [], keyName, funcName, valueName, field, remove } = props;
+  const { fullName = [], keyName, keyType, keyOptions, funcName, valueName, field, remove } = props;
   const func = Form.useWatch([...fullName, field.name, funcName]);
   const isSelect = _.includes(['not in', 'in'], func);
 
@@ -23,9 +28,16 @@ const TagItem = (props: Props) => {
     <>
       <Row gutter={[10, 10]}>
         <Col span={5}>
-          <Form.Item name={[field.name, keyName]} rules={[{ required: true, message: t('tag.key.msg') }]}>
-            <Input />
-          </Form.Item>
+          {keyType === 'input' && (
+            <Form.Item name={[field.name, keyName]} rules={[{ required: true, message: t('tag.key.msg') }]}>
+              <Input />
+            </Form.Item>
+          )}
+          {keyType === 'select' && (
+            <Form.Item name={[field.name, keyName]} rules={[{ required: true, message: t('tag.key.msg') }]}>
+              <Select options={keyOptions} />
+            </Form.Item>
+          )}
         </Col>
         <Col span={3}>
           <Form.Item name={[field.name, funcName]}>

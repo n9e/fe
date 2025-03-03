@@ -15,7 +15,7 @@ const ja_JP = {
     value: {
       label: 'タグ値',
       placeholder1: '複数の値を入力できます。改行で区切ります',
-      placeholder2: 'タグ値に一致する正規表現を入力してください',
+      placeholder2: '値に一致する正規表現を入力してください',
       msg: 'タグ値は必須です',
     },
     add: 'タグを追加',
