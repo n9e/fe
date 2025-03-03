@@ -27,36 +27,23 @@ import SystemInfoSvg from '../../../../public/image/system-info.svg';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
 import './locale';
 
-const convertDataToRowSpan = (data: any[] = [], columns: any[] = []) => {
-  const keys = columns.map((item) => item.dataIndex);
-  for (const key of keys) {
-    for (let i = 0; i < data.length; i++) {
-      let count = 1;
-      let r = i;
-
+function calculateRowSpans(data, field) {
+  const spans: number[] = [];
+  let count = 0;
+  for (let i = 0; i < data.length; i++) {
+    if (i === 0 || data[i][field] !== data[i - 1][field]) {
+      count = 1;
       for (let j = i + 1; j < data.length; j++) {
-        if (data[i][key] === data[j][key]) {
-          count++;
-          i = j;
-          if (!data[j].row_span_map) {
-            data[j].row_span_map = {};
-          }
-          data[j].row_span_map[key] = 0;
-        } else {
-          break;
-        }
+        if (data[j][field] === data[i][field]) count++;
+        else break;
       }
-
-      if (!data[r].row_span_map) {
-        data[r].row_span_map = {};
-      }
-
-      data[r].row_span_map[key] = count;
+      spans.push(count);
+    } else {
+      spans.push(0);
     }
   }
-
-  return data;
-};
+  return spans;
+}
 
 export default function Servers() {
   const { t } = useTranslation('servers');
@@ -71,9 +58,13 @@ export default function Servers() {
       sorter: (a: any, b: any) => {
         return localeCompare(a.cluster, b.cluster);
       },
-      onCell: (record) => {
+      render: (text, record, index) => {
+        const rowSpan = calculateRowSpans(data, 'cluster')[index];
         return {
-          rowSpan: record.row_span_map?.['cluster'],
+          children: text,
+          props: {
+            rowSpan: rowSpan,
+          },
         };
       },
     },
@@ -84,9 +75,13 @@ export default function Servers() {
       sorter: (a: any, b: any) => {
         return localeCompare(a.instance, b.instance);
       },
-      onCell: (record) => {
+      render: (text, record, index) => {
+        const rowSpan = calculateRowSpans(data, 'instance')[index];
         return {
-          rowSpan: record.row_span_map?.['instance'],
+          children: text,
+          props: {
+            rowSpan: rowSpan,
+          },
         };
       },
     },
@@ -100,11 +95,6 @@ export default function Servers() {
       render: (text) => {
         return _.get(_.find(datasourceList, { id: text }), 'name');
       },
-      // onCell: (record) => {
-      //   return {
-      //     rowSpan: record.row_span_map?.['datasource_id'],
-      //   };
-      // },
     },
     {
       title: t('clock'),
@@ -121,7 +111,7 @@ export default function Servers() {
   const fetchData = () => {
     getN9EServers()
       .then((res) => {
-        setData(convertDataToRowSpan(res.dat, columns));
+        setData(res.dat);
       })
       .finally(() => {
         setLoading(false);
