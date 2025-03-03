@@ -21,6 +21,7 @@ export default function ChannelSelect(props: Props) {
   const [options, setOptions] = useState<{ label: string; value: number; item: ChannelItem }[]>([]);
   const [loading, setLoading] = useState(false);
   const form = Form.useFormInstance();
+  const channel_id = Form.useWatch(['notify_configs', field.name, 'channel_id']);
   const fetchData = () => {
     setLoading(true);
     getNotificationChannels()
@@ -42,6 +43,11 @@ export default function ChannelSelect(props: Props) {
         setLoading(false);
       });
   };
+
+  useEffect(() => {
+    const item = _.find(options, { value: channel_id })?.item;
+    onChange && onChange(channel_id, item);
+  }, [channel_id, JSON.stringify(options)]);
 
   useEffect(() => {
     fetchData();
@@ -75,7 +81,7 @@ export default function ChannelSelect(props: Props) {
         options={options}
         showSearch
         optionFilterProp='label'
-        onChange={(value) => {
+        onChange={() => {
           // 修改 channel_id 时，清空 template_id
           form.setFieldsValue({
             notify_configs: _.map(form.getFieldValue('notify_configs'), (item, index: number) => {
@@ -85,9 +91,6 @@ export default function ChannelSelect(props: Props) {
               return item;
             }),
           });
-
-          const item = _.find(options, { value })?.item;
-          onChange && onChange(value, item);
         }}
       />
     </Form.Item>
