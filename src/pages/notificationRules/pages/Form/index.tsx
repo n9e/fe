@@ -66,7 +66,7 @@ export default function FormCpt(props: Props) {
             </Form.Item>
           </Col>
         </Row>
-        <Form.Item label={t('common:table.note')} tooltip={t('note_tip')} name='note' className='mb0'>
+        <Form.Item label={t('common:table.note')} tooltip={t('note_tip')} name='description' className='mb0'>
           <Input.TextArea />
         </Form.Item>
       </Card>

@@ -20,7 +20,6 @@ export default function ContentItem(props: Props) {
   const { t } = useTranslation(NS);
   const { field, remove, notify_channel_request_type } = props;
   const fieldKey = Form.useWatch(['content', field.name, 'key']);
-  console.log(fieldKey);
 
   return (
     <div className={`${CN}-main-content-item`}>

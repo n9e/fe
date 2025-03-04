@@ -15,11 +15,18 @@ interface Props {
   item?: Item & {
     notify_channel_request_type?: string;
   };
+  contentRef: React.MutableRefObject<
+    | {
+        key: string;
+        value?: string;
+      }[]
+    | undefined
+  >;
 }
 
 export default function FormCpt(props: Props) {
   const { t } = useTranslation(NS);
-  const { form, item } = props;
+  const { form, item, contentRef } = props;
   const [previewModalVisible, setPreviewModalVisible] = React.useState(false);
   const content = Form.useWatch(['content'], form);
 
@@ -67,6 +74,7 @@ export default function FormCpt(props: Props) {
                     ..._.omit(item, ['notify_channel_request_type']),
                     content: _.fromPairs(_.map(values.content, (item) => [item.key, item.value])),
                   }).then(() => {
+                    contentRef.current = values.content;
                     message.success(t('common:success.save'));
                   });
                 }
