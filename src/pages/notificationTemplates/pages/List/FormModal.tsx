@@ -145,10 +145,10 @@ function FormModal(props: IProps & ModalWrapProps) {
             })}
           />
         </Form.Item>
-        <Form.Item label={t('privite.title')} name='privite' initialValue={0}>
+        <Form.Item label={t('private.title')} name='private' initialValue={0}>
           <Radio.Group>
-            <Radio value={0}>{t('privite.0')}</Radio>
-            <Radio value={1}>{t('privite.1')}</Radio>
+            <Radio value={0}>{t('private.0')}</Radio>
+            <Radio value={1}>{t('private.1')}</Radio>
           </Radio.Group>
         </Form.Item>
         <Form.Item>
