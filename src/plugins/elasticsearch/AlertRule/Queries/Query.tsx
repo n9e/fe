@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { Row, Col, Form, Tooltip, AutoComplete, Input, InputNumber, Select, Space } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
@@ -13,12 +13,13 @@ import { CommonStateContext } from '@/App';
 import { getFullFields } from '@/pages/explorer/Elasticsearch/services';
 import { useIsAuthorized } from '@/components/AuthorizationWrapper';
 import IndexPatternSettingsBtn from '@/pages/explorer/Elasticsearch/components/IndexPatternSettingsBtn';
+import { getESIndexPatterns } from '@/pages/log/IndexPatterns/services';
 
 import GraphPreview from '../GraphPreview';
 import Value from './Value';
 import DateField from './DateField';
 import AdvancedSettings from './AdvancedSettings';
-import IndexPatternsSelect from './IndexPatternsSelect';
+import IndexPatternSelect from './IndexPatternSelect';
 
 interface Props {
   field: any;
@@ -36,11 +37,19 @@ export default function Query(props: Props) {
   const indexPatternsAuthorized = useIsAuthorized(['/log/index-patterns']);
   const [indexSearch, setIndexSearch] = useState('');
   const [indexPatternsRefreshFlag, setIndexPatternsRefreshFlag] = useState(_.uniqueId('indexPatternsRefreshFlag_'));
+  const [indexPatterns, setIndexPatterns] = useState<any[]>([]);
   const names = ['rule_config', 'queries'];
   const form = Form.useFormInstance();
   const queries = Form.useWatch(names);
-  const index_type = Form.useWatch([...names, field.name, 'index_type']);
+  const indexType = Form.useWatch([...names, field.name, 'index_type']);
   const indexValue = Form.useWatch([...names, field.name, 'index']);
+  const indexPatternId = Form.useWatch([...names, field.name, 'index_pattern']);
+  const curIndexValue = useMemo(() => {
+    if (indexType === 'index') {
+      return indexValue;
+    }
+    return _.find(indexPatterns, { id: indexPatternId })?.name;
+  }, [indexType, indexValue, indexPatternId, JSON.stringify(indexPatterns)]);
 
   const { run: onIndexChange } = useDebounceFn(
     (val) => {
@@ -64,6 +73,14 @@ export default function Query(props: Props) {
       onIndexChange(indexValue);
     }
   }, [indexValue]);
+
+  useEffect(() => {
+    if (datasourceValue) {
+      getESIndexPatterns(datasourceValue).then((res) => {
+        setIndexPatterns(res);
+      });
+    }
+  }, [datasourceValue, indexPatternsRefreshFlag]);
 
   return (
     <div key={field.key} className='n9e-fill-color-3 p2 mb2' style={{ position: 'relative' }}>
@@ -101,7 +118,7 @@ export default function Query(props: Props) {
                   </Space>
                 }
                 addonAfter={
-                  index_type === 'index_pattern' &&
+                  indexType === 'index_pattern' &&
                   indexPatternsAuthorized && (
                     <IndexPatternSettingsBtn
                       onReload={() => {
@@ -111,7 +128,7 @@ export default function Query(props: Props) {
                   )
                 }
               >
-                {index_type === 'index' && (
+                {indexType === 'index' && (
                   <Form.Item
                     {...field}
                     name={[field.name, 'index']}
@@ -138,10 +155,10 @@ export default function Query(props: Props) {
                     />
                   </Form.Item>
                 )}
-                {index_type === 'index_pattern' && <IndexPatternsSelect field={field} datasourceValue={datasourceValue} refreshFlag={indexPatternsRefreshFlag} />}
+                {indexType === 'index_pattern' && <IndexPatternSelect field={field} indexPatterns={indexPatterns} />}
               </InputGroupWithFormItem>
             </Col>
-            <Col span={index_type === 'index' ? 7 : 12}>
+            <Col span={indexType === 'index' ? 7 : 12}>
               <InputGroupWithFormItem
                 label={
                   <span>
@@ -169,7 +186,7 @@ export default function Query(props: Props) {
                 </Form.Item>
               </InputGroupWithFormItem>
             </Col>
-            {index_type === 'index' && (
+            {indexType === 'index' && (
               <Col span={5}>
                 <DateField disabled={disabled} datasourceValue={datasourceValue} index={indexValue} field={field} preName={names} />
               </Col>
@@ -196,14 +213,14 @@ export default function Query(props: Props) {
       </Row>
       <Value
         datasourceValue={datasourceValue}
-        index={indexValue}
+        index={curIndexValue}
         field={field}
         preName={names}
         disabled={disabled}
         functions={['count', 'avg', 'sum', 'max', 'min', 'p90', 'p95', 'p99']}
       />
       <div style={{ marginTop: 8 }}>
-        <GroupBy datasourceValue={datasourceValue} index={indexValue} parentNames={names} prefixField={field} prefixFieldNames={[field.name]} disabled={disabled} />
+        <GroupBy datasourceValue={datasourceValue} index={curIndexValue} parentNames={names} prefixField={field} prefixFieldNames={[field.name]} disabled={disabled} />
       </div>
       <AdvancedSettings field={field} />
       {children}

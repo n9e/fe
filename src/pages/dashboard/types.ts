@@ -34,6 +34,7 @@ export interface ITarget {
   maxDataPoints?: number; // 2024-01-24 新增 maxDataPoints 用于计算默认的 step (v7)
   query?: {
     index: string;
+    index_type: 'index' | 'index_pattern';
     filters: string;
     values: {
       func: string;

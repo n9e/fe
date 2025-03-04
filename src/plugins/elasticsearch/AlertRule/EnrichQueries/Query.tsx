@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Form, Input, Row, Col, Tooltip, AutoComplete, InputNumber, Select, Space } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
@@ -7,10 +7,11 @@ import { useTranslation, Trans } from 'react-i18next';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { useIsAuthorized } from '@/components/AuthorizationWrapper';
 import { alphabet } from '@/utils/constant';
-import IndexPatternsSelect from '@/plugins/elasticsearch/AlertRule/Queries/IndexPatternsSelect';
+import IndexPatternSelect from '@/plugins/elasticsearch/AlertRule/Queries/IndexPatternSelect';
 import DateField from '@/plugins/elasticsearch/AlertRule/Queries/DateField';
 import Value from '@/plugins/elasticsearch/AlertRule/Queries/Value';
 import IndexPatternSettingsBtn from '@/pages/explorer/Elasticsearch/components/IndexPatternSettingsBtn';
+import { getESIndexPatterns } from '@/pages/log/IndexPatterns/services';
 
 interface Props {
   field: any;
@@ -26,9 +27,25 @@ export default function Query(props: Props) {
   const indexPatternsAuthorized = useIsAuthorized(['/log/index-patterns']);
   const [indexSearch, setIndexSearch] = useState('');
   const [indexPatternsRefreshFlag, setIndexPatternsRefreshFlag] = useState(_.uniqueId('indexPatternsRefreshFlag_'));
+  const [indexPatterns, setIndexPatterns] = useState<any[]>([]);
   const names = ['extra_config', 'enrich_queries'];
-  const index_type = Form.useWatch([...names, field.name, 'index_type']);
+  const indexType = Form.useWatch([...names, field.name, 'index_type']);
   const indexValue = Form.useWatch([...names, field.name, 'index']);
+  const indexPatternId = Form.useWatch([...names, field.name, 'index_pattern']);
+  const curIndexValue = useMemo(() => {
+    if (indexType === 'index') {
+      return indexValue;
+    }
+    return _.find(indexPatterns, { id: indexPatternId })?.name;
+  }, [indexType, indexValue, indexPatternId, JSON.stringify(indexPatterns)]);
+
+  useEffect(() => {
+    if (datasourceValue) {
+      getESIndexPatterns(datasourceValue).then((res) => {
+        setIndexPatterns(res);
+      });
+    }
+  }, [datasourceValue, indexPatternsRefreshFlag]);
 
   return (
     <div key={field.key} className='n9e-fill-color-3' style={{ padding: 10, marginBottom: 10, position: 'relative' }}>
@@ -66,7 +83,7 @@ export default function Query(props: Props) {
                   </Space>
                 }
                 addonAfter={
-                  index_type === 'index_pattern' &&
+                  indexType === 'index_pattern' &&
                   indexPatternsAuthorized && (
                     <IndexPatternSettingsBtn
                       onReload={() => {
@@ -76,7 +93,7 @@ export default function Query(props: Props) {
                   )
                 }
               >
-                {index_type === 'index' && (
+                {indexType === 'index' && (
                   <Form.Item
                     {...field}
                     name={[field.name, 'index']}
@@ -103,10 +120,10 @@ export default function Query(props: Props) {
                     />
                   </Form.Item>
                 )}
-                {index_type === 'index_pattern' && <IndexPatternsSelect field={field} datasourceValue={datasourceValue} refreshFlag={indexPatternsRefreshFlag} />}
+                {indexType === 'index_pattern' && <IndexPatternSelect field={field} indexPatterns={indexPatterns} />}
               </InputGroupWithFormItem>
             </Col>
-            <Col span={index_type === 'index' ? 7 : 12}>
+            <Col span={indexType === 'index' ? 7 : 12}>
               <InputGroupWithFormItem
                 label={
                   <span>
@@ -123,7 +140,7 @@ export default function Query(props: Props) {
                 </Form.Item>
               </InputGroupWithFormItem>
             </Col>
-            {index_type === 'index' && (
+            {indexType === 'index' && (
               <Col span={5}>
                 <DateField disabled={disabled} datasourceValue={datasourceValue} index={indexValue} field={field} preName={names} />
               </Col>
@@ -148,7 +165,7 @@ export default function Query(props: Props) {
           </Row>
         </Col>
       </Row>
-      <Value datasourceValue={datasourceValue} index={indexValue} field={field} preName={names} disabled={disabled} functions={['rawData']} />
+      <Value datasourceValue={datasourceValue} index={curIndexValue} field={field} preName={names} disabled={disabled} functions={['rawData']} />
       {children}
     </div>
   );
