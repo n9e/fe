@@ -32,7 +32,7 @@ export default function Custom(props: Props) {
             _.map(res, (item) => {
               return {
                 __id__: _.uniqueId(),
-                data: item,
+                data: _.sortBy(item, 'cname'),
               };
             }),
           );
