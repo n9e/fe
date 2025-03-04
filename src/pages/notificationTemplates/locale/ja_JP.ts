@@ -3,7 +3,7 @@ const ja_JP = {
   add_title: '新しい通知テンプレート',
   edit_title: '通知テンプレートを編集',
   user_group_ids: '認可されたチーム',
-  privite: {
+  private: {
     title: '表示モード',
     0: '公開',
     1: '非公開',

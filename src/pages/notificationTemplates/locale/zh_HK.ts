@@ -3,7 +3,7 @@ const zh_HK = {
   add_title: '新增消息模板',
   edit_title: '編輯消息模板',
   user_group_ids: '授權團隊',
-  privite: {
+  private: {
     title: '顯示模式',
     0: '公共',
     1: '私有',

@@ -3,7 +3,7 @@ const en_US = {
   add_title: 'Add message template',
   edit_title: 'Edit message template',
   user_group_ids: 'Authorized Teams',
-  privite: {
+  private: {
     title: 'Display mode',
     0: 'Public',
     1: 'Private',

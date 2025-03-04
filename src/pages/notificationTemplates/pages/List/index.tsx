@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Space, Modal, Input, List, Form, message } from 'antd';
-import { NotificationOutlined, SearchOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Space, Modal, Input, List } from 'antd';
+import { NotificationOutlined, SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
 import PageLayout from '@/components/pageLayout';
-import { getItemByIdent as getNotificationChannel } from '@/pages/notificationChannels/services';
 import { Document } from '@/components/DocumentDrawer';
 
-import { getItems, deleteItem } from '../../services';
+import { getItems } from '../../services';
 import { NS, CN } from '../../constants';
 import { Item } from '../../types';
 import FormModal from './FormModal';
-import FormCpt from './Form';
+import ItemDetail from './ItemDetail';
 
 import './style.less';
 
@@ -20,33 +19,15 @@ export default function ListCpt() {
   const { t } = useTranslation(NS);
   const [search, setSearch] = useState('');
   const [data, setData] = useState<Item[]>([]);
-  const [active, setActive] = useState<
-    Item & {
-      notify_channel_name?: string;
-      notify_channel_request_type?: string;
-    }
-  >();
-  const [form] = Form.useForm();
+  const [active, setActive] = useState<Item>();
+  const itemDetailRef = React.useRef<any>();
 
-  const fetchData = () => {
+  const fetchData = (useHeadSetActive = false) => {
     getItems()
       .then((res) => {
         setData(res);
-        const firstItem = res[0];
-        const formValues = form.getFieldsValue();
-        if (formValues.content === undefined) {
-          setActive(firstItem);
-        } else {
-          const findActive = _.find(res, { id: active?.id });
-          if (findActive) {
-            setActive({
-              ...findActive,
-              notify_channel_name: active?.notify_channel_name,
-              notify_channel_request_type: active?.notify_channel_request_type,
-            });
-          } else {
-            setActive(firstItem);
-          }
+        if (res.length > 0 && useHeadSetActive) {
+          setActive(res[0]);
         }
       })
       .catch(() => {
@@ -55,29 +36,7 @@ export default function ListCpt() {
   };
 
   useEffect(() => {
-    if (active) {
-      if (active.notify_channel_ident) {
-        getNotificationChannel(active.notify_channel_ident).then((res) => {
-          setActive({
-            ...active,
-            notify_channel_name: res.name,
-            notify_channel_request_type: res.request_type,
-          });
-        });
-      }
-      // 将 content: {[key:string]: string} 转换为 content: {key: string, value: string}[]
-      const content = _.map(active.content, (value, key) => {
-        return {
-          key,
-          value,
-        };
-      });
-      form.setFieldsValue({ content });
-    }
-  }, [active?.id]);
-
-  useEffect(() => {
-    fetchData();
+    fetchData(true);
   }, []);
 
   return (
@@ -116,16 +75,18 @@ export default function ListCpt() {
                   key={item.id}
                   className={active?.id === item.id ? 'is-active' : ''}
                   onClick={() => {
-                    const activeOrigin = _.find(data, { id: active?.id });
-                    if (activeOrigin && active && !_.isEqual(activeOrigin.content, active?.content)) {
-                      Modal.confirm({
-                        title: t('content.prompt'),
-                        onOk: () => {
-                          setActive(item);
-                        },
-                      });
-                    } else {
-                      setActive(item);
+                    if (itemDetailRef.current) {
+                      const savedState = itemDetailRef.current.getSavedState();
+                      if (savedState) {
+                        setActive(item);
+                      } else {
+                        Modal.confirm({
+                          title: t('content.prompt'),
+                          onOk: () => {
+                            setActive(item);
+                          },
+                        });
+                      }
                     }
                   }}
                 >
@@ -146,51 +107,18 @@ export default function ListCpt() {
             />
           </div>
           <div className={`${CN}-main`}>
-            <div className={`${CN}-main-header`}>
-              <Space
-                style={{
-                  fontSize: 14,
+            {active?.id && (
+              <ItemDetail
+                ref={itemDetailRef}
+                id={active?.id}
+                onChange={() => {
+                  fetchData();
                 }}
-              >
-                <span>{active?.name}</span>
-                <EditOutlined
-                  onClick={() => {
-                    if (active) {
-                      FormModal({ mode: 'edit', data: active, onOk: () => fetchData() });
-                    }
-                  }}
-                />
-                {active?.create_by !== 'system' && (
-                  <DeleteOutlined
-                    onClick={() => {
-                      Modal.confirm({
-                        title: t('common:confirm.delete'),
-                        onOk: () => {
-                          if (active?.id) {
-                            deleteItem([active.id]).then(() => {
-                              message.success(t('common:success.delete'));
-                              fetchData();
-                            });
-                          }
-                        },
-                        onCancel: () => {},
-                      });
-                    }}
-                  />
-                )}
-              </Space>
-              <div>
-                <Space>
-                  <span>
-                    {t('common:table.ident')}：{active?.ident ?? '-'}
-                  </span>
-                  <span>
-                    {t('notify_channel_ident')}：{active?.notify_channel_name ?? '-'}
-                  </span>
-                </Space>
-              </div>
-            </div>
-            <FormCpt form={form} item={active} />
+                onDelete={() => {
+                  fetchData(true);
+                }}
+              />
+            )}
           </div>
           <div className={`${CN}-right`}>
             <Document documentPath='/docs/notification-template' />
