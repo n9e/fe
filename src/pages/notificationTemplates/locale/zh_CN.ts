@@ -3,7 +3,7 @@ const zh_CN = {
   add_title: '新增消息模板',
   edit_title: '编辑消息模板',
   user_group_ids: '授权团队',
-  privite: {
+  private: {
     title: '显示模式',
     0: '公共',
     1: '私有',

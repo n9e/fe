@@ -19,7 +19,7 @@ export function getItem(id: number): Promise<Item> {
   return request(`/api/n9e/message-template/${id}`, {
     method: RequestMethod.Get,
   }).then((res) => {
-    return res.dat;
+    return res.dat ?? {};
   });
 }
 
