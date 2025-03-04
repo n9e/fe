@@ -46,7 +46,9 @@ export default function GraphPreview(props: IProps) {
           const interval = normalizeTime(item.interval, item.interval_unit) ?? 300; // 默认5分钟
           return {
             ref: item.ref,
+            index_type: item.index_type || 'index',
             index: item.index,
+            index_pattern: item.index_pattern,
             filter: item.filter,
             value: item.value,
             group_by: item.group_by,
