@@ -546,7 +546,7 @@ export default function index(props: IProps) {
                 )}
               </div>
               <div
-                className='p1 n9e-flex n9e-justify-between n9e-align-items-center'
+                className='p1 n9e-flex n9e-justify-between n9e-items-center'
                 style={{
                   borderTop: '1px solid var(--fc-border-color)',
                 }}

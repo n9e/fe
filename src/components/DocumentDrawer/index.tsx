@@ -4,8 +4,10 @@ import { Drawer, Space, Spin } from 'antd';
 import { ExportOutlined } from '@ant-design/icons';
 import MDEditor from '@uiw/react-md-editor';
 import ModalHOC, { ModalWrapProps } from '../ModalHOC';
+import Document from './Document';
 import './style.less';
 
+export { Document };
 interface Props {
   darkMode?: boolean;
   language?: string;
