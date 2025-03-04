@@ -73,7 +73,7 @@ const TagItem = (props: Props) => {
             </Form.Item>
           ) : (
             <Form.Item style={{ marginBottom: 0 }} name={[field.name, 'value']} rules={[{ required: true, message: t('tag.value.msg') }]}>
-              <Input placeholder={t('tag.value.placeholder2')} />
+              <Input placeholder={_.includes(['=~', '!~'], func) ? t('tag.value.placeholder2') : undefined} />
             </Form.Item>
           )}
         </Col>

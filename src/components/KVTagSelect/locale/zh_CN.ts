@@ -15,7 +15,7 @@ const zh_CN = {
     value: {
       label: '标签值',
       placeholder1: '可以输入多个值，用回车分割',
-      placeholder2: '请输入正则表达式匹配值',
+      placeholder2: '请输入正则表达式',
       msg: '标签值不能为空',
     },
     add: '新增标签',

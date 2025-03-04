@@ -15,7 +15,7 @@ const en_US = {
     value: {
       label: 'Tag Value',
       placeholder1: 'You can enter multiple values, separated by carriage return',
-      placeholder2: 'Please enter a regular expression to match the value',
+      placeholder2: 'Please enter a regular expression',
       msg: 'Tag value is required',
     },
     add: 'Add Tag',
