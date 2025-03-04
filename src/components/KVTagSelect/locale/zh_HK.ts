@@ -15,7 +15,7 @@ const zh_HK = {
     value: {
       label: '標籤值',
       placeholder1: '可以輸入多個值，用回車分割',
-      placeholder2: '請輸入正則表達式匹配值',
+      placeholder2: '請輸入正則表達式',
       msg: '標籤值不能為空',
     },
     add: '新增標籤',
