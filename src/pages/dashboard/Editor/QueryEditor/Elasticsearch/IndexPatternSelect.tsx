@@ -1,33 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Form, Select } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { getESIndexPatterns } from '@/pages/log/IndexPatterns/services';
-
 interface Props {
   field: any;
-  datasourceValue: number;
   name?: string[]; // 订阅规则里在 field.name 和 index_pattern 之间插入的字段
-  refreshFlag?: string;
+  indexPatterns: any[];
 }
 
-export default function IndexPatternsSelect(props: Props) {
+export default function IndexPatternSelect(props: Props) {
   const { t } = useTranslation();
-  const { field, datasourceValue, name = [], refreshFlag } = props;
-  const [indexPatterns, setIndexPatterns] = useState<any[]>([]);
-
-  useEffect(() => {
-    if (datasourceValue) {
-      getESIndexPatterns(datasourceValue).then((res) => {
-        setIndexPatterns(res);
-      });
-    }
-  }, [datasourceValue, refreshFlag]);
+  const { field, name = [], indexPatterns } = props;
 
   return (
     <Form.Item
       {...field}
+      label={t('datasource:es.indexPatterns')}
       name={[field.name, ...name, 'index_pattern']}
       rules={[
         {
