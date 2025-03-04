@@ -14,6 +14,7 @@ import getValuePropsWithTimeFormItem from '../../utils/getValuePropsWithTimeForm
 import ChannelSelect from './ChannelSelect';
 import TemplateSelect from './TemplateSelect';
 import ChannelParams from './ChannelParams';
+import Attributes from './Attributes';
 import TestButton from './TestButton';
 
 interface Props {
@@ -151,32 +152,7 @@ export default function NotifyConfig(props: Props) {
         keyLabelTootip={t('notification_configuration.label_keys_tip')}
         funcName='op'
       />
-      <KVTags
-        field={field}
-        fullName={['notify_configs']}
-        name={[field.name, 'attributes']}
-        keyLabel={t('notification_configuration.attributes')}
-        keyLabelTootip={t('notification_configuration.attributes_tip')}
-        keyType='select'
-        keyOptions={[
-          {
-            label: t('notification_configuration.attributes_options.group_name'),
-            value: 'group_name',
-          },
-          {
-            label: t('notification_configuration.attributes_options.cluster'),
-            value: 'cluster',
-          },
-        ]}
-        funcName='func'
-        valueLabel={t('notification_configuration.attributes_value')}
-        addWapper={(add) => {
-          add({
-            key: 'group_name',
-            func: '==',
-          });
-        }}
-      />
+      <Attributes field={field} fullName={['notify_configs']} />
       <TestButton field={field} />
     </Card>
   );
