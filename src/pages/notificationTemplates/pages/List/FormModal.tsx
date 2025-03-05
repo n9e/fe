@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { getTeamInfoList } from '@/services/manage';
-import { getItems as getNotificationChannels, ChannelItem } from '@/pages/notificationChannels/services';
+import { getSimplifiedItems as getNotificationChannels, ChannelItem } from '@/pages/notificationChannels/services';
 
 import { NS } from '../../constants';
 import { Item } from '../../types';
