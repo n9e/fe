@@ -58,7 +58,7 @@ export default function index({ prefixField = {}, prefixFields = [], prefixNameF
   }, [datasourceValue, index]);
 
   return (
-    <Form.List {...prefixField} name={[...prefixNameField, 'query', 'values']}>
+    <Form.List {...prefixField} name={[...prefixNameField, 'query', 'values']} initialValue={[{ func: 'count' }]}>
       {(fields, { add, remove }) => (
         <div>
           <Form.Item
