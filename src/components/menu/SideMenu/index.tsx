@@ -175,6 +175,10 @@ export const getMenuList = (t) => {
           key: '/permissions',
           label: t('权限管理'),
         },
+        {
+          key: '/contacts',
+          label: t('contacts:title'),
+        },
       ],
     },
     {
