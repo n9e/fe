@@ -1,3 +1,5 @@
+import { Moment } from 'moment';
+
 interface RuleConfig {
   channel_id: number;
   channel?: string;
@@ -8,8 +10,8 @@ interface RuleConfig {
   }[];
   severities: number[];
   time_ranges: {
-    start: string;
-    end: string;
+    start: Moment;
+    end: Moment;
     week: number[];
   }[];
   label_keys: {
