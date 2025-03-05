@@ -26,7 +26,7 @@ export default function Channels() {
       title={
         <Space>
           {t('title')}
-          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/notification_set/-connect/' />
+          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/system-configuration/notification-set/open-source/connect/' />
         </Space>
       }
     >
