@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Card, Space, Row, Col, Form, Checkbox, Tooltip, TimePicker, Select } from 'antd';
-import { MinusCircleOutlined, PlusCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { MinusCircleOutlined, PlusCircleOutlined, QuestionCircleOutlined, CopyOutlined, UpCircleOutlined, DownCircleOutlined } from '@ant-design/icons';
 import { FormListFieldData } from 'antd/lib/form/FormList';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -20,28 +20,55 @@ import TestButton from './TestButton';
 interface Props {
   fields: FormListFieldData[];
   field: FormListFieldData;
+  activeIndex?: number;
+  setActiveIndex: (index?: number) => void;
+  add: (defaultValue?: any, insertIndex?: number) => void;
   remove: (index: number | number[]) => void;
+  move: (from: number, to: number) => void;
 }
 
 export default function NotifyConfig(props: Props) {
   const { t } = useTranslation(NS);
-  const { fields, field, remove } = props;
+  const { fields, field, activeIndex, setActiveIndex, add, remove, move } = props;
   const [channelItem, setChannelItem] = useState<ChannelItem>();
-  const form = Form.useFormInstance();
+  const ruleConfig = Form.useWatch(['notify_configs', field.name]);
 
   return (
     <Card
       key={field.key}
-      className='mb2'
+      className={`mb2 ${activeIndex === field.name ? 'rule-config-border-animate' : ''}`}
       title={<Space>{t('notification_configuration.title')}</Space>}
       extra={
-        fields.length > 1 && (
-          <MinusCircleOutlined
+        <Space>
+          <CopyOutlined
             onClick={() => {
-              remove(field.name);
+              add(ruleConfig, field.name + 1);
             }}
           />
-        )
+          {fields.length > 1 && (
+            <>
+              {field.name !== 0 && (
+                <UpCircleOutlined
+                  onClick={() => {
+                    move(field.name, field.name - 1);
+                  }}
+                />
+              )}
+              {field.name !== fields.length - 1 && (
+                <DownCircleOutlined
+                  onClick={() => {
+                    move(field.name, field.name + 1);
+                  }}
+                />
+              )}
+              <MinusCircleOutlined
+                onClick={() => {
+                  remove(field.name);
+                }}
+              />
+            </>
+          )}
+        </Space>
       }
     >
       <Row gutter={SIZE}>
