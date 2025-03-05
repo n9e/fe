@@ -426,6 +426,47 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
                 </div>
               </div>
             </div>
+            <div className='mb16'>
+              <Space>
+                {t('redefine_webhooks')}
+                <Form.Item name='redefine_webhooks' valuePropName='checked' noStyle>
+                  <Switch />
+                </Form.Item>
+              </Space>
+              <div
+                style={{
+                  display: redefineWebhooks ? 'block' : 'none',
+                  marginTop: 10,
+                }}
+              >
+                <Form.List name='webhooks' initialValue={[]}>
+                  {(fields, { add, remove }) => (
+                    <>
+                      <Row gutter={10} style={{ marginBottom: '8px' }}>
+                        <Col span={5}>
+                          <Space align='baseline'>
+                            <span>{t('webhooks')}</span>
+                            <PlusCircleOutlined onClick={() => add()} />
+                          </Space>
+                        </Col>
+                      </Row>
+                      {fields.map((field, index) => (
+                        <Row gutter={10}>
+                          <Col flex='auto'>
+                            <Form.Item name={[field.name]} key={index} rules={[{ required: true, message: t('webhooks_msg') }]}>
+                              <Input />
+                            </Form.Item>
+                          </Col>
+                          <Col flex='32px'>
+                            <MinusCircleOutlined style={{ marginTop: '8px' }} onClick={() => remove(field.name)} />
+                          </Col>
+                        </Row>
+                      ))}
+                    </>
+                  )}
+                </Form.List>
+              </div>
+            </div>
           </div>
           <div
             style={{
@@ -433,47 +474,6 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
             }}
           >
             <NotificationRuleSelect />
-          </div>
-          <div className='mb16'>
-            <Space>
-              {t('redefine_webhooks')}
-              <Form.Item name='redefine_webhooks' valuePropName='checked' noStyle>
-                <Switch />
-              </Form.Item>
-            </Space>
-            <div
-              style={{
-                display: redefineWebhooks ? 'block' : 'none',
-                marginTop: 10,
-              }}
-            >
-              <Form.List name='webhooks' initialValue={[]}>
-                {(fields, { add, remove }) => (
-                  <>
-                    <Row gutter={10} style={{ marginBottom: '8px' }}>
-                      <Col span={5}>
-                        <Space align='baseline'>
-                          <span>{t('webhooks')}</span>
-                          <PlusCircleOutlined onClick={() => add()} />
-                        </Space>
-                      </Col>
-                    </Row>
-                    {fields.map((field, index) => (
-                      <Row gutter={10}>
-                        <Col flex='auto'>
-                          <Form.Item name={[field.name]} key={index} rules={[{ required: true, message: t('webhooks_msg') }]}>
-                            <Input />
-                          </Form.Item>
-                        </Col>
-                        <Col flex='32px'>
-                          <MinusCircleOutlined style={{ marginTop: '8px' }} onClick={() => remove(field.name)} />
-                        </Col>
-                      </Row>
-                    ))}
-                  </>
-                )}
-              </Form.List>
-            </div>
           </div>
         </Card>
         <NotifyExtra />
