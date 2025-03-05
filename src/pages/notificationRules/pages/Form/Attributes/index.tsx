@@ -39,7 +39,7 @@ export default function index(props: Props) {
               </Space>
             </Col>
             {fields.length ? <Col span={3}>{t('tag.func.label')}</Col> : null}
-            {fields.length ? <Col span={16}>{t('tag.value.label')}</Col> : null}
+            {fields.length ? <Col span={16}>{t(`${NS}:notification_configuration.attributes_value`)}</Col> : null}
           </Row>
           {fields.map((field) => (
             <TagItem key={field.key} fullName={_.concat(fullName, name)} field={field} remove={remove} />
