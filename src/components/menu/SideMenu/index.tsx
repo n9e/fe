@@ -119,10 +119,12 @@ export const getMenuList = (t) => {
         {
           key: '/help/notification-settings',
           label: t('通知设置'),
+          deprecated: true,
         },
         {
           key: '/help/notification-tpls',
           label: t('通知模板'),
+          deprecated: true,
         },
       ],
     },
@@ -172,6 +174,10 @@ export const getMenuList = (t) => {
         {
           key: '/permissions',
           label: t('权限管理'),
+        },
+        {
+          key: '/contacts',
+          label: t('contacts:title'),
         },
       ],
     },
