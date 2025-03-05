@@ -208,10 +208,12 @@ const getMenuList = (t) => {
         {
           key: '/help/notification-settings',
           label: t('通知设置'),
+          deprecated: true,
         },
         {
           key: '/help/notification-tpls',
           label: t('通知模板'),
+          deprecated: true,
         },
         {
           key: '/help/sso',
