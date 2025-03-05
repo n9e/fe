@@ -7,7 +7,7 @@ import _ from 'lodash';
 
 import PageLayout from '@/components/pageLayout';
 
-import { NS } from '../constants';
+import { NS, CN } from '../constants';
 import { getItem, putItem, RuleItem, postItems } from '../services';
 import Form from './Form';
 
@@ -29,7 +29,7 @@ export default function Add() {
 
   return (
     <PageLayout title={t('title')} showBack backPath={`/${NS}`}>
-      <div className='n9e'>
+      <div className={`n9e ${CN}`}>
         {data ? (
           <Form
             initialValues={data}

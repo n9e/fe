@@ -1,4 +1,5 @@
 export const NS = 'notification-rules';
+export const CN = 'n9e-notification-rules';
 export const DEFAULT_VALUES = {
   enable: true,
   notify_configs: [

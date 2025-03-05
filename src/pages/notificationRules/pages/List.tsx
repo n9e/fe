@@ -11,7 +11,7 @@ import { getItems as getNotificationChannels } from '@/pages/notificationChannel
 import { getTeamInfoList } from '@/services/manage';
 
 import { getItems, putItem, deleteItems } from '../services';
-import { NS } from '../constants';
+import { NS, CN } from '../constants';
 import { RuleItem } from '../types';
 
 export default function List() {
@@ -72,7 +72,7 @@ export default function List() {
 
   return (
     <PageLayout title={<Space>{t('title')}</Space>} icon={<NotificationOutlined />}>
-      <div className='n9e'>
+      <div className={`n9e ${CN}`}>
         <div className='pb2 n9e-flex n9e-justify-between'>
           <Space>
             <Input

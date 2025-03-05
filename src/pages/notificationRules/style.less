@@ -1,0 +1,11 @@
+.n9e-notification-rules {
+  @keyframes borderFlash {
+    0% { border: 0 solid transparent; }
+    50% { border: 2px solid var(--fc-fill-primary); }
+    100% { border: 0 solid transparent; }
+  }
+  
+  .rule-config-border-animate {
+    animation: borderFlash 1s ease-in-out forwards;
+  }
+}

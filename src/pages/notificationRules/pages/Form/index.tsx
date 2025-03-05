@@ -22,6 +22,7 @@ export default function FormCpt(props: Props) {
   const { t } = useTranslation(NS);
   const [form] = Form.useForm();
   const [userGroups, setUserGroups] = useState<{ id: number; name: string }[]>([]);
+  const [activeIndex, setActiveIndex] = useState<number>();
 
   useEffect(() => {
     getTeamInfoList().then((res) => {
@@ -71,10 +72,10 @@ export default function FormCpt(props: Props) {
         </Form.Item>
       </Card>
       <Form.List name='notify_configs'>
-        {(fields, { add, remove }) => (
+        {(fields, { add, remove, move }) => (
           <>
             {fields.map((field) => (
-              <RuleConfig fields={fields} field={field} remove={remove} />
+              <RuleConfig fields={fields} field={field} activeIndex={activeIndex} setActiveIndex={setActiveIndex} add={add} remove={remove} move={move} />
             ))}
             <Button className='n9e-w-full mb2' type='dashed' onClick={() => add(DEFAULT_VALUES.notify_configs[0])} icon={<PlusOutlined />}>
               {t('notification_configuration.add_btn')}

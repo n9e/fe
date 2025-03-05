@@ -21,6 +21,26 @@ const TagItem = (props: Props) => {
   const form = Form.useFormInstance();
   const key = Form.useWatch([...fullName, field.name, 'key']);
   const func = Form.useWatch([...fullName, field.name, 'func']);
+  let selectOptions: {
+    label: string;
+    value: string;
+  }[] = [];
+
+  if (key === 'group_name') {
+    selectOptions = _.map(busiGroups, (item) => {
+      return {
+        label: item.name,
+        value: item.name,
+      };
+    });
+  } else if (key === 'cluster') {
+    selectOptions = _.map(datasourceList, (item) => {
+      return {
+        label: item.name,
+        value: item.name,
+      };
+    });
+  }
 
   return (
     <>
@@ -76,40 +96,13 @@ const TagItem = (props: Props) => {
                 return { value };
               }}
             >
-              <Select mode='tags' open={false} style={{ width: '100%' }} placeholder={t('tag.value.placeholder1')} tokenSeparators={[' ']}></Select>
+              <Select mode='multiple' style={{ width: '100%' }} options={selectOptions} />
             </Form.Item>
           )}
           {_.includes(['==', '!='], func) && (
-            <>
-              {key === 'group_name' && (
-                <Form.Item name={[field.name, 'value']} rules={[{ required: true, message: t('tag.value.msg') }]}>
-                  <Select
-                    showSearch
-                    optionFilterProp='label'
-                    options={_.map(busiGroups, (item) => {
-                      return {
-                        label: item.name,
-                        value: item.name,
-                      };
-                    })}
-                  />
-                </Form.Item>
-              )}
-              {key === 'cluster' && (
-                <Form.Item name={[field.name, 'value']} rules={[{ required: true, message: t('tag.value.msg') }]}>
-                  <Select
-                    showSearch
-                    optionFilterProp='label'
-                    options={_.map(datasourceList, (item) => {
-                      return {
-                        label: item.name,
-                        value: item.name,
-                      };
-                    })}
-                  />
-                </Form.Item>
-              )}
-            </>
+            <Form.Item name={[field.name, 'value']} rules={[{ required: true, message: t('tag.value.msg') }]}>
+              <Select showSearch optionFilterProp='label' options={selectOptions} />
+            </Form.Item>
           )}
           {_.includes(['=~', '!~'], func) && (
             <Form.Item style={{ marginBottom: 0 }} name={[field.name, 'value']} rules={[{ required: true, message: t('tag.value.msg') }]}>
