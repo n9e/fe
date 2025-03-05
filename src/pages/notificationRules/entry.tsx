@@ -1,10 +1,11 @@
 import React from 'react';
 
-import './locale';
 import { NS } from './constants';
 import List from './pages/List';
 import Add from './pages/Add';
 import Edit from './pages/Edit';
+import './style.less';
+import './locale';
 
 export default {
   routes: [

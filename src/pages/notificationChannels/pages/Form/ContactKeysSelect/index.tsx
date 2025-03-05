@@ -50,7 +50,7 @@ export default function ContactKeysSelect(props: SelectProps) {
           <Tooltip className='n9e-ant-from-item-tooltip' title={t('variable_configuration.contact_key_tip')}>
             <QuestionCircleOutlined />
           </Tooltip>
-          <Link to='/help/notification-settings?tab=contacts' target='_blank'>
+          <Link to='/contacts' target='_blank'>
             <SettingOutlined />
           </Link>
           <SyncOutlined

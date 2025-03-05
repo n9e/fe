@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Card, Space, Row, Col, Form, Checkbox, Tooltip, TimePicker, Select } from 'antd';
-import { MinusCircleOutlined, PlusCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { MinusCircleOutlined, PlusCircleOutlined, QuestionCircleOutlined, CopyOutlined, UpCircleOutlined, DownCircleOutlined } from '@ant-design/icons';
 import { FormListFieldData } from 'antd/lib/form/FormList';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -14,33 +14,61 @@ import getValuePropsWithTimeFormItem from '../../utils/getValuePropsWithTimeForm
 import ChannelSelect from './ChannelSelect';
 import TemplateSelect from './TemplateSelect';
 import ChannelParams from './ChannelParams';
+import Attributes from './Attributes';
 import TestButton from './TestButton';
 
 interface Props {
   fields: FormListFieldData[];
   field: FormListFieldData;
+  activeIndex?: number;
+  setActiveIndex: (index?: number) => void;
+  add: (defaultValue?: any, insertIndex?: number) => void;
   remove: (index: number | number[]) => void;
+  move: (from: number, to: number) => void;
 }
 
 export default function NotifyConfig(props: Props) {
   const { t } = useTranslation(NS);
-  const { fields, field, remove } = props;
+  const { fields, field, activeIndex, setActiveIndex, add, remove, move } = props;
   const [channelItem, setChannelItem] = useState<ChannelItem>();
-  const form = Form.useFormInstance();
+  const ruleConfig = Form.useWatch(['notify_configs', field.name]);
 
   return (
     <Card
       key={field.key}
-      className='mb2'
+      className={`mb2 ${activeIndex === field.name ? 'rule-config-border-animate' : ''}`}
       title={<Space>{t('notification_configuration.title')}</Space>}
       extra={
-        fields.length > 1 && (
-          <MinusCircleOutlined
+        <Space>
+          <CopyOutlined
             onClick={() => {
-              remove(field.name);
+              add(ruleConfig, field.name + 1);
             }}
           />
-        )
+          {fields.length > 1 && (
+            <>
+              {field.name !== 0 && (
+                <UpCircleOutlined
+                  onClick={() => {
+                    move(field.name, field.name - 1);
+                  }}
+                />
+              )}
+              {field.name !== fields.length - 1 && (
+                <DownCircleOutlined
+                  onClick={() => {
+                    move(field.name, field.name + 1);
+                  }}
+                />
+              )}
+              <MinusCircleOutlined
+                onClick={() => {
+                  remove(field.name);
+                }}
+              />
+            </>
+          )}
+        </Space>
       }
     >
       <Row gutter={SIZE}>
@@ -151,32 +179,7 @@ export default function NotifyConfig(props: Props) {
         keyLabelTootip={t('notification_configuration.label_keys_tip')}
         funcName='op'
       />
-      <KVTags
-        field={field}
-        fullName={['notify_configs']}
-        name={[field.name, 'attributes']}
-        keyLabel={t('notification_configuration.attributes')}
-        keyLabelTootip={t('notification_configuration.attributes_tip')}
-        keyType='select'
-        keyOptions={[
-          {
-            label: t('notification_configuration.attributes_options.group_name'),
-            value: 'group_name',
-          },
-          {
-            label: t('notification_configuration.attributes_options.cluster'),
-            value: 'cluster',
-          },
-        ]}
-        funcName='func'
-        valueLabel={t('notification_configuration.attributes_value')}
-        addWapper={(add) => {
-          add({
-            key: 'group_name',
-            func: '==',
-          });
-        }}
-      />
+      <Attributes field={field} fullName={['notify_configs']} />
       <TestButton field={field} />
     </Card>
   );

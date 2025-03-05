@@ -6,6 +6,7 @@ import { RightIcon } from '@/components/BusinessGroup/components/Tree/constant';
 import { IMenuItem } from './types';
 import { cn } from './utils';
 import IconFont from '../../IconFont';
+import DeprecatedIcon from './DeprecatedIcon';
 
 interface IMenuProps {
   collapsed: boolean;
@@ -42,13 +43,17 @@ function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
           <div
             className={cn(
               'h-4.5 children-icon2:h-4.5 children-icon2:w-4.5',
-              isActive ? (props.isCustomBg ? isBgBlack? 'text-[#ccccdc]': 'text-[#fff]' : 'text-primary') : props.isCustomBg ? '' : 'text-primary-80',
+              isActive ? (props.isCustomBg ? (isBgBlack ? 'text-[#ccccdc]' : 'text-[#fff]') : 'text-primary') : props.isCustomBg ? '' : 'text-primary-80',
               !collapsed ? 'mr-4' : '',
             )}
           >
             {item.icon}
           </div>
-          {!collapsed && <div className={`overflow-hidden truncate text-l1 tracking-wide ${isActive ? (props.isCustomBg ? isBgBlack? 'text-[#fff]' : 'text-[#ccccdc]' : 'text-title') : ''}`}>{item.label}</div>}
+          {!collapsed && (
+            <div className={`overflow-hidden truncate text-l1 tracking-wide ${isActive ? (props.isCustomBg ? (isBgBlack ? 'text-[#fff]' : 'text-[#ccccdc]') : 'text-title') : ''}`}>
+              {item.label}
+            </div>
+          )}
         </div>
         {!collapsed && <RightIcon className={cn('transition', isExpand ? 'rotate-90' : '')} style={{ fontSize: 24 }} />}
       </div>
@@ -64,9 +69,10 @@ function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
   );
 }
 
-function MenuItem(props: { item: IMenuItem; isSub?: boolean, isBgBlack?:boolean  } & IMenuProps) {
-  const { item, isSub = false, isCustomBg, collapsed, selectedKeys,isBgBlack, onClick } = props;
+function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: boolean } & IMenuProps) {
+  const { item, isSub = false, isCustomBg, collapsed, selectedKeys, isBgBlack, onClick } = props;
   const isActive = selectedKeys?.includes(item.key);
+
   return (
     <Link
       to={item.key}
@@ -76,10 +82,16 @@ function MenuItem(props: { item: IMenuItem; isSub?: boolean, isBgBlack?:boolean 
         isCustomBg ? 'text-[#ccccdc]' : 'text-main',
         'hover:bg-[rgba(204,204,220,0.12)]',
       )}
-      style={{background: isActive && isCustomBg ?'rgba(204, 204, 220, 0.08)':undefined }}
+      style={{ background: isActive && isCustomBg ? 'rgba(204, 204, 220, 0.08)' : undefined }}
     >
       {!isSub ? (
-        <div className={cn('h-4.5 children-icon2:h-4.5 children-icon2:w-4.5', isActive ? (props.isCustomBg ? isBgBlack? 'text-[#ccccdc]': 'text-[#fff]' : 'text-title') : '', !collapsed ? 'mr-4' : '')}>
+        <div
+          className={cn(
+            'h-4.5 children-icon2:h-4.5 children-icon2:w-4.5',
+            isActive ? (props.isCustomBg ? (isBgBlack ? 'text-[#ccccdc]' : 'text-[#fff]') : 'text-title') : '',
+            !collapsed ? 'mr-4' : '',
+          )}
+        >
           {item.icon}
         </div>
       ) : (
@@ -87,13 +99,18 @@ function MenuItem(props: { item: IMenuItem; isSub?: boolean, isBgBlack?:boolean 
       )}
       {!collapsed && (
         <div className={`overflow-hidden truncate text-l1 tracking-wide ${isActive ? (props.isCustomBg ? 'text-[#fff]' : 'text-title') : ''}`}>
-          {item.label}{' '}
+          {item.label}
           {item.beta && (
             <span
               className='absolute border text-[9px] px-[3px] py-[1px] right-[25px] top-[4px] h-[18px] scale-75 rounded-full bg-gradient-to-r from-yellow-400 to-yellow-300 text-yellow-700'
               style={{ lineHeight: '15px' }}
             >
               Beta
+            </span>
+          )}
+          {item.deprecated && (
+            <span className='absolute right-[0px] top-[0px]'>
+              <DeprecatedIcon />
             </span>
           )}
         </div>
