@@ -9,6 +9,7 @@ import PageLayout from '@/components/pageLayout';
 
 import { NS, CN } from '../constants';
 import { getItem, putItem, RuleItem, postItems } from '../services';
+import { normalizeInitialValues } from '../utils/normalizeValues';
 import Form from './Form';
 
 export default function Add() {
@@ -22,7 +23,7 @@ export default function Add() {
   useEffect(() => {
     if (id) {
       getItem(_.toNumber(id)).then((res) => {
-        setData(res);
+        setData(normalizeInitialValues(res));
       });
     }
   }, []);
