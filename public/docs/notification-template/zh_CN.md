@@ -1,5 +1,30 @@
 模板使用 [Go template 语法](https://pkg.go.dev/text/template)，可以引用告警事件(AlertCurEvent)的各个字段进行个性化消息配置。模板支持条件判断、循环、变量赋值等丰富功能。
 
+## 模板字段标识
+消息模板的字段标识，在配置对应的消息媒介中会用到，所以在创建消息模板的时候，需要注意，使用的字段标识必须和对应通知媒介中可以匹配上。   
+
+以钉钉消息模板举例，在钉钉通知媒介中，消息模板在 body 配置中有使用
+```
+{"msgtype": "markdown", "markdown": {"title": "{{$tpl.title}}", "text": "{{$tpl.content}}}, "at": {"atMobiles": []}}
+```
+在钉钉通知媒介中，引用方式为为：`{{$tpl.title}}` 和 `{{$tpl.content}}`。所以通知媒介为钉钉的消息模板，字段标识需要使用 `title` 和 `content`
+
+其他的消息模板也类似，可以根据通知媒介中需要用到哪些字段，来创建对应的字段标识
+
+## 模板示例
+下面是一个简单的模板示例，可以在告警事件触发时，发送告警事件的基本信息。
+```toml
+级别状态: S{{$event.Severity}} {{if $event.IsRecovered}}Recovered{{else}}Triggered{{end}}   
+规则名称: {{$event.RuleName}}{{if $event.RuleNote}}   
+规则备注: {{$event.RuleNote}}{{end}}   
+监控指标: {{$event.TagsJSON}}
+{{if $event.IsRecovered}}恢复时间：{{timeformat $event.LastEvalTime}}{{else}}触发时间: {{timeformat $event.TriggerTime}}
+触发时值: {{$event.TriggerValue}}{{end}}
+发送时间: {{timestamp}}
+{{$domain := "http://n9e-domain" }}   
+事件详情: {{$domain}}/alert-his-events/{{$event.Id}}
+```
+
 ## 可用字段说明
 
 以下是可在模板中使用的 AlertCurEvent 主要字段：
@@ -77,21 +102,6 @@
 | --------------- | ------ | -------------- | --------------------------- |
 | TriggerValues   | string | 触发值(原始格式) | {{$event.TriggerValues}}    |
 | IsRecovered     | bool   | 是否已恢复      | {{$event.IsRecovered}}      |
-
-## 模板示例
-### 基础模板示例
-```toml
-级别状态: S{{$event.Severity}} {{if $event.IsRecovered}}Recovered{{else}}Triggered{{end}}   
-规则名称: {{$event.RuleName}}{{if $event.RuleNote}}   
-规则备注: {{$event.RuleNote}}{{end}}   
-监控指标: {{$event.TagsJSON}}
-{{if $event.IsRecovered}}恢复时间：{{timeformat $event.LastEvalTime}}{{else}}触发时间: {{timeformat $event.TriggerTime}}
-触发时值: {{$event.TriggerValue}}{{end}}
-发送时间: {{timestamp}}
-{{$domain := "http://请联系管理员修改通知模板将域名替换为实际的域名" }}   
-事件详情: {{$domain}}/alert-his-events/{{$event.Id}}
-屏蔽1小时: {{$domain}}/alert-mutes/add?busiGroup={{$event.GroupId}}&cate={{$event.Cate}}&datasource_ids={{$event.DatasourceId}}&prod={{$event.RuleProd}}{{range $key, $value := $event.TagsMap}}&tags={{$key}}%3D{{$value}}{{end}}`
-```
 
 ## 模板常用语法介绍
 

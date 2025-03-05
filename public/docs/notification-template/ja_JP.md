@@ -1,5 +1,29 @@
 テンプレートは [Go template 構文](https://pkg.go.dev/text/template) を使用し、アラートイベント(AlertCurEvent)の各フィールドを参照してパーソナライズされたメッセージを設定できます。テンプレートは条件判断、ループ、変数代入などの豊富な機能をサポートしています。
 
+## テンプレートフィールド識別子
+メッセージテンプレートのフィールド識別子は、対応するメッセージチャネルの設定で使用されます。そのため、メッセージテンプレートを作成する際は、使用するフィールド識別子が対応する通知チャネルと一致する必要があることに注意してください。
+
+DingTalkメッセージテンプレートを例に挙げると、DingTalk通知チャネルでは、メッセージテンプレートはbody設定で使用されます：
+```
+{"msgtype": "markdown", "markdown": {"title": "{{$tpl.title}}", "text": "{{$tpl.content}}}, "at": {"atMobiles": []}}
+```
+DingTalk通知チャネルでは、参照方法は `{{$tpl.title}}` と `{{$tpl.content}}` です。したがって、DingTalkを通知チャネルとするメッセージテンプレートでは、フィールド識別子として `title` と `content` を使用する必要があります。
+
+他のメッセージテンプレートも同様で、通知チャネルで必要なフィールドに基づいて、対応するフィールド識別子を作成できます。
+
+## テンプレート例
+以下は簡単なテンプレート例で、アラートイベントがトリガーされた時にアラートイベントの基本情報を送信できます。
+```toml
+レベル状態: S{{$event.Severity}} {{if $event.IsRecovered}}復旧済み{{else}}発生中{{end}}   
+ルール名: {{$event.RuleName}}{{if $event.RuleNote}}   
+ルール備考: {{$event.RuleNote}}{{end}}   
+監視指標: {{$event.TagsJSON}}
+{{if $event.IsRecovered}}復旧時間：{{timeformat $event.LastEvalTime}}{{else}}トリガー時間: {{timeformat $event.TriggerTime}}
+トリガー値: {{$event.TriggerValue}}{{end}}
+送信時間: {{timestamp}}
+{{$domain := "http://n9e-domain" }}   
+イベント詳細: {{$domain}}/alert-his-events/{{$event.Id}}
+
 ## 利用可能なフィールドの説明
 
 以下はテンプレートで使用できる AlertCurEvent の主要フィールドです：
