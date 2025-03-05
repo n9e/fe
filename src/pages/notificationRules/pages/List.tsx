@@ -7,7 +7,7 @@ import moment from 'moment';
 import { Link } from 'react-router-dom';
 
 import PageLayout from '@/components/pageLayout';
-import { getItems as getNotificationChannels } from '@/pages/notificationChannels/services';
+import { getSimplifiedItems as getNotificationChannels } from '@/pages/notificationChannels/services';
 import { getTeamInfoList } from '@/services/manage';
 
 import { getItems, putItem, deleteItems } from '../services';
