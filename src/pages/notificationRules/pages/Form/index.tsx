@@ -11,6 +11,7 @@ import { scrollToFirstError } from '@/utils';
 
 import { NS, DEFAULT_VALUES } from '../../constants';
 import { RuleItem } from '../../types';
+import { normalizeFormValues } from '../../utils/normalizeValues';
 import RuleConfig from './RuleConfig';
 
 interface Props {
@@ -92,7 +93,7 @@ export default function FormCpt(props: Props) {
                 form
                   .validateFields()
                   .then(async (values) => {
-                    props.onOk(values);
+                    props.onOk(normalizeFormValues(values));
                   })
                   .catch((err) => {
                     console.error(err);
