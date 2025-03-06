@@ -137,10 +137,15 @@ const zh_HK = {
     export: {
       copy: '複製 JSON 到剪貼板',
     },
+    not_select: '請先選擇數據',
   },
   invalidDatasource: '無效的數據源',
   copyToClipboard: '複製到剪貼板',
   copyToClipboardFailed: '複製到剪貼板失敗',
+  manage: '管理',
+  reload: '刷新',
+  public: '公開',
+  private: '私有',
 
   tpl: '自愈腳本',
   'tpl.create': '創建',

@@ -105,12 +105,26 @@ export const getMenuList = (t) => {
       label: t('告警通知'),
       children: [
         {
+          key: '/notification-rules',
+          label: t('notification_rules'),
+        },
+        {
+          key: '/notification-channels',
+          label: t('notification_channels'),
+        },
+        {
+          key: '/notification-templates',
+          label: t('notification_templates'),
+        },
+        {
           key: '/help/notification-settings',
           label: t('通知设置'),
+          deprecated: true,
         },
         {
           key: '/help/notification-tpls',
           label: t('通知模板'),
+          deprecated: true,
         },
       ],
     },
@@ -160,6 +174,10 @@ export const getMenuList = (t) => {
         {
           key: '/permissions',
           label: t('权限管理'),
+        },
+        {
+          key: '/contacts',
+          label: t('contacts:title'),
         },
       ],
     },
@@ -293,7 +311,7 @@ const SideMenu = () => {
     }
   }, [menuPaths, location.pathname, selectedKeys]);
 
-  const uncollapsedWidth = i18n.language === 'en_US' ? 'w-[210px]' : 'w-[172px]';
+  const uncollapsedWidth = i18n.language === 'en_US' ? 'w-[250px]' : 'w-[172px]';
 
   return (
     <div
