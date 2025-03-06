@@ -207,7 +207,7 @@ export default function Content() {
 
         <Route exact path='/permissions' component={Permissions} />
 
-        <Route exact path='/site-settings' component={SiteSettings} />
+        {import.meta.env.VITE_IS_ENT !== 'true' && <Route exact path='/site-settings' component={SiteSettings} />}
 
         {lazyRoutes.map((route, i) => (
           <RouteWithSubRoutes key={i} {...route} />
