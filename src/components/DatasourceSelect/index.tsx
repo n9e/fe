@@ -4,6 +4,7 @@ import DatasourceCateSelect, { ProSvg } from './DatasourceCateSelect';
 import ProdSelect from './ProdSelect';
 import DatasourceSelect from './DatasourceSelect';
 import DatasourceCateSelectV2 from './DatasourceCateSelectV2';
+import DatasourceSelectV2 from './DatasourceSelectV2';
 
 import './locale';
-export { DatasourceCateSelect, ProSvg, ProdSelect, DatasourceSelect, DatasourceCateSelectV2 };
+export { DatasourceCateSelect, ProSvg, ProdSelect, DatasourceSelect, DatasourceCateSelectV2, DatasourceSelectV2 };

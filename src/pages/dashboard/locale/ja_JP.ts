@@ -86,7 +86,6 @@ const ja_JP = {
       constant: '定数 (Constant)',
       datasource: 'データソース (Datasource)',
       hostIdent: 'ホスト識別子 (Host ident)',
-      businessGroupIdent: 'ビジネスグループ識別子 (Business group ident)',
     },
     hide: '変数を非表示',
     hide_map: {
@@ -120,9 +119,9 @@ const ja_JP = {
       regex_tip:
         'オプション、オプションをフィルタリングするために正規表現を使用できます。ここに記入するのは<a>正規表現リテラル</a>で、それはスラッシュで囲まれたパターンで構成されます。',
     },
-    businessGroupIdent: {
-      ident: 'ビジネスグループ識別子',
-      invalid: '現在のビジネスグループの識別子が見つかりません。ビジネスグループ管理設定に行ってください',
+    hostIdent: {
+      invalid: 'マシンの識別には承認されたアクセスが必要であり、ダッシュボードは匿名アクセス モードでアクセス失敗を引き起こします。',
+      invalid2: 'ダッシュボードはマシン識別変数を使用して構成されており、匿名でアクセスすることはできません。',
     },
   },
   row: {

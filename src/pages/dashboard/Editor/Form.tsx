@@ -90,9 +90,9 @@ function FormCpt(props: IProps, ref) {
           }}
         >
           <Col flex={1} style={{ minWidth: 100 }}>
-            <div className='n9e-dashboard-editor-modal-left-wrapper'>
+            <div className='n9e-dashboard-editor-modal-left-wrapper n9e-gap-2'>
               {variableConfigWithOptions && variableConfigWithOptions.length > 0 && (
-                <div className='n9e-dashboard-editor-modal-left-vars-wrapper'>
+                <div className='n9e-dashboard-editor-modal-left-vars-wrapper n9e-gap-2'>
                   <span>{t('var.vars')}</span>
                   <VariableConfig
                     onChange={(value, bool, withOptions) => {

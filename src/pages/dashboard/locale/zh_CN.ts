@@ -89,7 +89,6 @@ const zh_CN = {
       constant: '常量 (Constant)',
       datasource: '数据源 (Datasource)',
       hostIdent: '机器标识 (Host ident)',
-      businessGroupIdent: '业务组标识 (Business group ident)',
     },
     hide: '隐藏变量',
     hide_map: {
@@ -121,9 +120,9 @@ const zh_CN = {
       regex: '数据源过滤',
       regex_tip: '可选，可通过正则来过滤可选项。这里是填写的<a>正则表达式字面量</a>，其由包含在斜杠之间的模式组成。',
     },
-    businessGroupIdent: {
-      ident: '业务组标识',
-      invalid: '没有找到当前业务组的标识，请先先去业务组管理设置',
+    hostIdent: {
+      invalid: '机器标识需要授权访问，仪表盘在匿名模式下会导致访问失败',
+      invalid2: '仪表盘已配置机器标识变量，无法匿名访问',
     },
     help_tip: `
       变量使用说明
