@@ -88,7 +88,6 @@ const en_US = {
       constant: 'Constant',
       datasource: 'Datasource',
       hostIdent: 'Host ident',
-      businessGroupIdent: 'Business group ident',
     },
     hide: 'Hide',
     hide_map: {
@@ -120,9 +119,9 @@ const en_US = {
       regex: 'Datasource name filter',
       regex_tip: 'Optional, can filter options, Using a <a>regular expression literal</a>, which consists of a pattern enclosed between slashes',
     },
-    businessGroupIdent: {
-      ident: 'Business group ident',
-      invalid: 'Invalid business group ident, Please go to the business group management settings first.',
+    hostIdent: {
+      invalid: 'Host identification requires authorized access, and the dashboard will cause access failure in anonymous access mode',
+      invalid2: 'The dashboard has been configured with a host_ident variable and cannot be accessed anonymously',
     },
     help_tip: `
       Variables usage

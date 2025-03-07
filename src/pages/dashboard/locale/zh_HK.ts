@@ -88,7 +88,6 @@ const zh_HK = {
       constant: '常量',
       datasource: '數據源',
       hostIdent: '主機標識',
-      businessGroupIdent: '業務組標識',
     },
     hide: '隱藏變數',
     hide_map: {
@@ -120,9 +119,9 @@ const zh_HK = {
       regex: '數據源過濾',
       regex_tip: '可選，可通過正則來過濾可選項。這裡是填寫的<a>正規表示式字面量</a>，其由包含在斜線之間的模式組成',
     },
-    businessGroupIdent: {
-      ident: '業務組標識',
-      invalid: '沒有找到目前業務組的標識，請先去業務組管理設置',
+    hostIdent: {
+      invalid: '機器標識需要授權訪問，儀表板在匿名模式下會導致訪問失敗',
+      invalid2: '儀表板已配置機器識別變量，無法匿名訪問',
     },
     help_tip: `
       變數使用說明
