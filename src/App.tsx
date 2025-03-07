@@ -72,6 +72,7 @@ export interface ICommonState {
   reloadGroupedDatasourceList: () => void;
   datasourceList: Datasource[];
   setDatasourceList: (list: Datasource[]) => void;
+  reloadDatasourceList: () => void;
   busiGroups: {
     name: string;
     id: number;
@@ -140,6 +141,14 @@ function App() {
     datasourceList: [],
     setDatasourceList: (datasourceList) => {
       setCommonState((state) => ({ ...state, datasourceList, groupedDatasourceList: _.groupBy(datasourceList, 'plugin_type') }));
+    },
+    reloadDatasourceList: async () => {
+      const datasourceList = await getDatasourceBriefList();
+      const datasourceCateOptions = getAuthorizedDatasourceCates(commonState.feats, isPlus, (cate) => {
+        const groupedDatasourceList = _.groupBy(datasourceList, 'plugin_type');
+        return !_.isEmpty(groupedDatasourceList[cate.value]);
+      });
+      setCommonState((state) => ({ ...state, datasourceList, groupedDatasourceList: _.groupBy(datasourceList, 'plugin_type'), datasourceCateOptions }));
     },
     busiGroups: [],
     setBusiGroups: (busiGroups) => {

@@ -1,10 +1,9 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import type { InputRef } from 'antd';
 import { message, Table, Modal, Button, Space, Popconfirm, Input, Tooltip } from 'antd';
 import { ColumnProps } from 'antd/es/table';
-import { SearchOutlined, CheckCircleFilled, MinusCircleFilled } from '@ant-design/icons';
+import { CheckCircleFilled, MinusCircleFilled } from '@ant-design/icons';
 import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
 import { allCates } from '@/components/AdvancedWrap/utils';
@@ -39,7 +38,7 @@ const TableSource = (props: IPropsType) => {
   const isPlus = useIsPlus();
   const { nameClick, pluginList, debouncedSearchValue } = props;
   const [auth, setAuth] = useState<{ visible: boolean; name: string; type: AutoDatasourcetypeValue; dataSourceId: number }>();
-  const { setDatasourceList } = useContext(CommonStateContext);
+  const { reloadDatasourceList } = useContext(CommonStateContext);
   const [tableData, setTableData] = useState<any>([]);
   const [refresh, setRefresh] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -59,7 +58,7 @@ const TableSource = (props: IPropsType) => {
     getDataSourceList()
       .then((res) => {
         setTableData(res);
-        setDatasourceList(res);
+        reloadDatasourceList();
       })
       .finally(() => {
         setLoading(false);
