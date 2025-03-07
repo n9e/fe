@@ -33,7 +33,9 @@ export default function GraphPreview({ datasourceValue, disabled }: IProps) {
       datasource_id: datasourceValue,
       query: _.map(queries, (item) => {
         return {
+          index_type: item.index_type || 'index',
           index: item.index,
+          index_pattern: item.index_pattern,
           filter: item.filter,
           value: item.value,
           group_by: item.group_by,

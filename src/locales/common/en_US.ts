@@ -57,6 +57,7 @@ const en_US = {
     collapse: 'Collapse',
     copy: 'Copy',
     copy2: 'Copy',
+    reload: 'Reload',
   },
   table: {
     name: 'Name',
