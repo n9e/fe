@@ -28,7 +28,7 @@ export default function TimeSeriesDetail(props: Props) {
       onClose={onClose}
       visible={visible}
       footer={
-        <Button style={{ float: 'right' }}>
+        <Button type='primary'>
           <Link to={`/help/source/edit/${data.plugin_type}/${data.id}`}>{t('common:btn.edit')}</Link>
         </Button>
       }
