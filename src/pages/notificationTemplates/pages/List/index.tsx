@@ -3,6 +3,8 @@ import { Space, Modal, Input, List } from 'antd';
 import { NotificationOutlined, SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
+import { useLocation } from 'react-router-dom';
+import queryString from 'query-string';
 
 import PageLayout from '@/components/pageLayout';
 import { Document } from '@/components/DocumentDrawer';
@@ -17,26 +19,37 @@ import './style.less';
 
 export default function ListCpt() {
   const { t } = useTranslation(NS);
+  const urlQuery = queryString.parse(useLocation().search);
   const [search, setSearch] = useState('');
   const [data, setData] = useState<Item[]>([]);
   const [active, setActive] = useState<Item>();
   const itemDetailRef = React.useRef<any>();
 
-  const fetchData = (useHeadSetActive = false) => {
-    getItems()
+  const fetchData = () => {
+    return getItems()
       .then((res) => {
         setData(res);
-        if (res.length > 0 && useHeadSetActive) {
-          setActive(res[0]);
-        }
+        return res;
       })
       .catch(() => {
         setData([]);
+        return [];
       });
   };
 
   useEffect(() => {
-    fetchData(true);
+    fetchData().then((res) => {
+      if (urlQuery.id) {
+        const item = _.find(res, { id: _.toNumber(urlQuery.id) });
+        if (item) {
+          setActive(item);
+        } else {
+          setActive(res[0]);
+        }
+      } else {
+        setActive(res[0]);
+      }
+    });
   }, []);
 
   return (
@@ -115,7 +128,9 @@ export default function ListCpt() {
                   fetchData();
                 }}
                 onDelete={() => {
-                  fetchData(true);
+                  fetchData().then((res) => {
+                    setActive(res[0]);
+                  });
                 }}
               />
             )}
