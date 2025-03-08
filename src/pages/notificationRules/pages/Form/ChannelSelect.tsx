@@ -78,9 +78,23 @@ export default function ChannelSelect(props: Props) {
       rules={[{ required: true }]}
     >
       <Select
-        options={options}
+        options={_.map(options, (item) => {
+          return {
+            label: (
+              <Space>
+                {item.label}
+                <Link to={`/notification-channels/edit/${item.value}`} target='_blank'>
+                  {t('common:btn.view')}
+                </Link>
+              </Space>
+            ),
+            optionLabel: item.label,
+            value: item.value,
+          };
+        })}
+        optionLabelProp='optionLabel'
         showSearch
-        optionFilterProp='label'
+        optionFilterProp='optionLabel'
         onChange={() => {
           // 修改 channel_id 时，清空 template_id
           form.setFieldsValue({

@@ -6,6 +6,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
 
+import usePagination from '@/components/usePagination';
 import PageLayout from '@/components/pageLayout';
 import { Import, Export } from '@/components/ExportImport';
 
@@ -15,6 +16,7 @@ import { ChannelItem } from '../../types';
 
 export default function List() {
   const { t } = useTranslation(NS);
+  const pagination = usePagination({ PAGESIZE_KEY: 'notification-channels-pagesize' });
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState<{
     search: string;
@@ -224,6 +226,7 @@ export default function List() {
               setSelectedRows(selectedRows);
             },
           }}
+          pagination={pagination}
         />
       </div>
     </PageLayout>
