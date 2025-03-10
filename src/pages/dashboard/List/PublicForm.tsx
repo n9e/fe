@@ -55,6 +55,9 @@ function PublicForm(props: IProps & ModalWrapProps) {
           });
         });
       }}
+      okButtonProps={{
+        disabled: hasHostIdentVariable && publicVal === 1 && publicCate === 0,
+      }}
     >
       <Form
         layout='vertical'
