@@ -171,7 +171,7 @@ export default function HTTP() {
         )}
       </Form.List>
       {_.includes(['POST', 'PUT'], method) && (
-        <Form.Item label={t('http_request_config.body')} name={[...names, 'request', 'body']} rules={[{ required: isRequired }]}>
+        <Form.Item label={t('http_request_config.body')} name={[...names, 'request', 'body']}>
           <Input.TextArea autoSize={{ minRows: 4 }} />
         </Form.Item>
       )}
