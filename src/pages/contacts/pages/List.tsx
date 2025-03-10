@@ -39,7 +39,7 @@ export default function Channels() {
                 type='primary'
                 onClick={() => {
                   AddModal({
-                    idents: data.map((item) => item.ident),
+                    idents: _.map(data, (item) => item.ident),
                     onOk: (values) => {
                       const newData = [...data, values];
                       putNotifyContacts(newData).then(() => {
