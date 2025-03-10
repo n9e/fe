@@ -383,6 +383,7 @@ function EditItem(props: IProps) {
                 onOk(res);
               });
             }}
+            disabled={varType === 'hostIdent' && anonymousAccess}
           >
             {t('common:btn.save')}
           </Button>
