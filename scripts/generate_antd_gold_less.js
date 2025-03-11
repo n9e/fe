@@ -42,7 +42,7 @@ function saveLess(filePath, filename, callback) {
         'link-color': '#4880FF',
         'tabs-ink-bar-color': '#FFBC0D',
         'radio-button-checked-bg': '#FFF2CB',
-        'checkbox-check-color': '#FFBC0D',
+        // 'checkbox-check-color': '#333',
         'btn-primary-color': '#222',
 
         'table-header-bg': '#fff8e6', //fc-fill-3
