@@ -422,16 +422,16 @@ input::placeholder {
   }
 }
 
-.theme-light-gold {
+.theme-light.theme-light-gold {
   .ant-table-thead {
-    .ant-table-cell {
+    .ant-table-cell:not(.resizable-container) {
       &::after {
         position: absolute;
         left: 0;
         bottom: 0;
         width: calc(100% - 2px);
         height: 2px;
-        background-color: #ffbc0d !important;
+        background-color: var(--fc-fill-gold) !important;
         content: "";
       }
     }
@@ -451,4 +451,12 @@ input::placeholder {
       height: 2px !important;
     }
   }
+
+  .ant-btn-primary {
+    text-shadow: none !important;
+  }
+}
+
+.theme-light-gold .ant-radio-group-solid .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+  color: #222 !important;
 }

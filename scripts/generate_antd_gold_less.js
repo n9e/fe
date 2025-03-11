@@ -46,7 +46,7 @@ function saveLess(filePath, filename, callback) {
         'btn-primary-color': '#222',
 
         'table-header-bg': '#fff8e6', //fc-fill-3
-        'table-row-hover-bg': '#EAE8F2',
+        'table-row-hover-bg': '#fff2cb',
         'table-header-sort-bg': '#fff8e6',
         'font-family': 'Helvetica Neue,sans-serif,PingFangSC-Regular,microsoft yahei ui,microsoft yahei,simsun,"sans-serif"',
       },
