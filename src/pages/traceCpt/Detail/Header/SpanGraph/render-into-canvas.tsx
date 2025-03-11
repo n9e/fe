@@ -27,7 +27,7 @@ export default function renderIntoCanvas(
   const itemYChange = cHeight / items.length;
 
   const ctx = canvas.getContext('2d', { alpha: false }) as CanvasRenderingContext2D;
-  const darkMode = localStorage.getItem('n9e-dark-mode') === 'true';
+  const darkMode = localStorage.getItem('n9e-dark-mode') === 'true' || localStorage.getItem('n9e-dark-mode') === '1';
   ctx.fillStyle = darkMode ? DARK_BG_COLOR : BG_COLOR;
   ctx.fillRect(0, 0, cWidth, cHeight);
   for (let i = 0; i < items.length; i++) {
