@@ -21,7 +21,8 @@ export interface Record {
 interface Props {
   data?: Record;
 }
-
+import { useContext } from 'react';
+import { CommonStateContext } from '@/App';
 export default function ExplorerDrawer(props: Props) {
   const { t } = useTranslation('metricsBuiltin');
   const { data } = props;

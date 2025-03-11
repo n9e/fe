@@ -25,6 +25,7 @@ export default function index(props: Props) {
   const { component_id } = props;
   const { t } = useTranslation('builtInComponents');
   const { busiGroups, darkMode } = useContext(CommonStateContext);
+
   const [filter, setFilter] = useState<{
     query?: string;
   }>({ query: undefined });

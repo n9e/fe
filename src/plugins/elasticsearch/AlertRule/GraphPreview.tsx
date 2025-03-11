@@ -21,7 +21,6 @@ const getSerieName = (metric: Object) => {
   });
   return _.trim(name);
 };
-
 export default function GraphPreview(props: IProps) {
   const { t } = useTranslation('alertRules');
   const { groupedDatasourceList } = useContext(CommonStateContext);

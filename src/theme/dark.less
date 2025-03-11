@@ -1,45 +1,63 @@
 @backgroupColor: var(--fc-fill-1);
-@baseColor: var(--fc-text-1);
+@baseColor: var(--fc-text-2); // 应设计要求把正文字体颜色从犯text-1，改成text-2，如果不符合，可以改回来
 @cardBackgroundColor: var(--fc-fill-2);
+
 .theme-dark {
+
   a,
   .ant-btn-link {
     color: rgb(148, 112, 255);
   }
+
   color-scheme: dark;
   background-color: @backgroupColor;
   color: @baseColor;
-  h1, h2, h3, h4, h5, h6 {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     color: @baseColor;
   }
+
   .dashboard-detail-header {
     background-color: unset !important;
     border: unset !important;
   }
+
   .dashboard-detail-header-left {
     .title {
       color: #fefefe;
     }
   }
+
   .tag-content-close-item-tagName {
     color: rgba(255, 255, 255, 0.85);
     background-color: rgba(255, 255, 255, 0.04);
   }
+
   .renderer-timeseries-legend-list {
-    & > div.disabled {
+    &>div.disabled {
       color: #74778A
     }
   }
-  .react-grid-item > .react-resizable-handle::after{
+
+  .react-grid-item>.react-resizable-handle::after {
     border-right: 2px solid #46495C;
     border-bottom: 2px solid #46495C;
   }
+
   .is-active {
     background: rgba(204, 204, 220, 0.08);
   }
-  .n9e-metric-views-list-content-item.active, .n9e-metric-views-dimensionLabel-content-item.active {
+
+  .n9e-metric-views-list-content-item.active,
+  .n9e-metric-views-dimensionLabel-content-item.active {
     background-color: rgba(204, 204, 220, 0.08);
   }
+
   .ts-graph-zoom-resetBtn {
     color: var(--fc-text-1);
     border: 1px solid var(--fc-border-color);
@@ -50,14 +68,17 @@
     height: 10px;
     width: 4px;
   }
+
   .scroll-container::-webkit-scrollbar-corner {
     background-color: transparent;
   }
+
   .scroll-container::-webkit-scrollbar-thumb {
     border-radius: 10px;
     box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
     background: #404354;
   }
+
   .scroll-container::-webkit-scrollbar-track {
     box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
     border-radius: 10px;
@@ -69,5 +90,13 @@
     color: var(--fc-text-link) !important;
     background: rgba(var(--fc-text-link-rgb), 0.2) !important;
     border-color: rgba(var(--fc-text-link-rgb), 0.3) !important;
+  }
+
+  .ant-btn-dangerous.ant-btn-link {
+    color: var(--fc-fill-error);
+  }
+
+  .ant-segmented-item-selected {
+    background-color: var(--fc-fill-5);
   }
 }

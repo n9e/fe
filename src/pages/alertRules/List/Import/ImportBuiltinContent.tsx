@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -24,12 +24,15 @@ import DatasourceValueSelectV2 from '@/pages/alertRules/Form/components/Datasour
 import { getComponents, getCates, getPayloads, Component, Payload } from '@/pages/builtInComponents/services';
 import { TypeEnum } from '@/pages/builtInComponents/types';
 import { createRule } from '@/pages/builtInComponents/AlertRules/services';
+import { CommonStateContext } from '@/App';
 
 export default function ImportBuiltinContent({ busiId, onOk, groupedDatasourceList, reloadGroupedDatasourceList, datasourceCateOptions }) {
   const { t } = useTranslation('dashboard');
   const [filter, setFilter] = useState<{
     query?: string;
   }>({ query: undefined });
+  const { darkMode } = useContext(CommonStateContext);
+
   const [components, setComponents] = useState<Component[]>([]);
   const [data, setData] = useState<Payload[]>([]);
   const [cateList, setCateList] = useState<string[]>([]);

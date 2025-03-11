@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import _ from 'lodash';
 import { useDebounceFn } from 'ahooks';
 import { Modal, Space, Select, Table, Tag, message } from 'antd';
@@ -7,7 +7,6 @@ import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { getTargetList } from '@/services/targets';
 import { rulesClone } from '@/pages/alertRules/services';
 import ValuesSelect from './ValuesSelect';
-
 interface Props {
   gid: number;
   ids: React.Key[];

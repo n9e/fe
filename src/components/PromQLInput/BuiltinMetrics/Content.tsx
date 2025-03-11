@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SearchOutlined } from '@ant-design/icons';
 import { Input, Row, Col, Select, Tag } from 'antd';
@@ -7,7 +7,6 @@ import { Filter, getTypes, getCollectors, getDefaultTypes, Record } from '@/page
 import Markdown from '@/components/Markdown';
 import { getUnitLabel } from '@/pages/dashboard/Components/UnitPicker/utils';
 import MetricsList from './MetricsList';
-
 interface Props {
   onSelect: (expression: string, metric: Record) => void;
   setOpen: (open: boolean) => void;

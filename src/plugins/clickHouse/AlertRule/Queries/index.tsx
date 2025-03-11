@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import AdvancedSettings from '../../components/AdvancedSettings';
 import QueryName, { generateQueryName } from '@/components/QueryName';
-import { CommonStateContext } from '@/App';
 import GraphPreview from './GraphPreview';
 import DocumentDrawer from '../../components/DocumentDrawer';
 import LogQL from '@/components/LogQL';
@@ -24,7 +23,6 @@ interface IProps {
 
 export default function index({ form, prefixField = {}, fullPrefixName = [], prefixName = [], disabled, datasourceValue }: IProps) {
   const { t } = useTranslation(NAME_SPACE);
-  const { darkMode } = useContext(CommonStateContext);
   const datasourceID = _.isArray(datasourceValue) ? datasourceValue[0] : datasourceValue;
   const queries = Form.useWatch(['rule_config', 'queries']);
 

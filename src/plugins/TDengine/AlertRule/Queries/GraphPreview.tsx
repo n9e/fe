@@ -7,7 +7,6 @@ import TimeRangePicker, { IRawTimeRange, parseRange } from '@/components/TimeRan
 import Timeseries from '@/pages/dashboard/Renderer/Renderer/Timeseries';
 import { getDsQuery } from '../../services';
 import { getSerieName } from '../../utils';
-
 export default function GraphPreview({ cate, datasourceValue, query }) {
   const { t } = useTranslation('db_tdengine');
   const divRef = useRef<HTMLDivElement>(null);

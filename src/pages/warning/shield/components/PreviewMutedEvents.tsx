@@ -18,6 +18,7 @@ interface Props {
 export default function PreviewMutedEvents(props: Props) {
   const { t } = useTranslation('AlertCurEvents');
   const { groupedDatasourceList } = useContext(CommonStateContext);
+
   const { form, onOk } = props;
   const [visible, setVisible] = useState(false);
   const [data, setData] = useState<any[]>([]);

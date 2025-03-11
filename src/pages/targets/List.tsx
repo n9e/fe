@@ -74,6 +74,7 @@ const Unknown = () => {
 export default function List(props: IProps) {
   const { t } = useTranslation('targets');
   const { darkMode } = useContext(CommonStateContext);
+
   const { editable = true, explorable = true, gids, selectedRows, setSelectedRows, refreshFlag, setRefreshFlag, setOperateType } = props;
   const selectedIdents = _.map(selectedRows, 'ident');
   const isAddTagToQueryInput = useRef(false);

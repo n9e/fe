@@ -11,7 +11,6 @@ interface IProps {
   datasourceValue: number;
   disabled?: boolean;
 }
-
 export default function GraphPreview({ datasourceValue, disabled }: IProps) {
   const { t } = useTranslation('alertRules');
   const divRef = useRef<HTMLDivElement>(null);

@@ -19,6 +19,7 @@ interface Props {
 export default function EventsModal(props: Props) {
   const { t } = useTranslation('AlertHisEvents');
   const { groupedDatasourceList } = useContext(CommonStateContext);
+
   const [visible, setVisible] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [filter, setFilter] = useState<{

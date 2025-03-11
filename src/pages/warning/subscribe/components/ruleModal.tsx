@@ -43,6 +43,7 @@ const ruleModal: React.FC<props> = (props) => {
   const { t } = useTranslation('alertSubscribes');
   const pagination = usePagination({ PAGESIZE_KEY: 'alert-rules-pagesize' });
   const { businessGroup, datasourceList } = useContext(CommonStateContext);
+
   const curBusiId = businessGroup.id!;
   const [busiGroups, setBusiGroups] = useState<{ id: number; name: string }[]>([]);
   const [currentStrategyDataAll, setCurrentStrategyDataAll] = useState([]);
