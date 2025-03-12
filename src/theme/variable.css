@@ -180,3 +180,9 @@
   --fc-boxshadow-base-color: rgba(0, 0, 0, 0.28);
   --fc-boxshadow-hover-color: rgba(0, 0, 0, 0.45);
 }
+
+
+.theme-light-gold {
+  --fc-fill-primary: #FFBC0D;
+  --fc-primary-color: #FFBC0D;
+}

@@ -10,7 +10,7 @@ export function getDarkMode() {
   }
   const localDarkMode = localStorage.getItem(cacheKey);
   if (localDarkMode) {
-    return localDarkMode === 'true';
+    return localDarkMode === 'true' || localDarkMode === '1';
   }
   return false;
 }
