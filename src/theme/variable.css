@@ -18,6 +18,7 @@
   --fc-fill-warning: rgb(250 200 0);
   --fc-fill-alert: rgb(250 125 0);
   --fc-fill-error: rgb(200 0 0);
+  --fc-fill-gold: #FFBC0D;
 
   /* 文本 */
   --fc-text-1: #1a1a1a;
@@ -108,7 +109,8 @@
   --fc-fill-warning: rgb(230 198 39);
   --fc-fill-alert: rgb(250 125 0);
   --fc-fill-error: rgb(255 101 107);
-
+  --fc-fill-gold: #FFBC0D;
+  
   /* 文本 */
   --fc-text-link: #9470ff;
   --fc-text-link-rgb: 148, 112, 255;
