@@ -9,6 +9,7 @@ import { CommonStateContext } from '@/App';
 import { NS } from '../../../constants';
 
 interface Props {
+  disabled?: boolean;
   fullName?: string | (string | number)[];
   field: any;
   remove: Function;
@@ -17,7 +18,7 @@ interface Props {
 const TagItem = (props: Props) => {
   const { t } = useTranslation('KVTagSelect');
   const { busiGroups, datasourceList } = useContext(CommonStateContext);
-  const { fullName = [], field, remove } = props;
+  const { disabled, fullName = [], field, remove } = props;
   const form = Form.useFormInstance();
   const key = Form.useWatch([...fullName, field.name, 'key']);
   const func = Form.useWatch([...fullName, field.name, 'func']);
@@ -110,9 +111,7 @@ const TagItem = (props: Props) => {
             </Form.Item>
           )}
         </Col>
-        <Col>
-          <MinusCircleOutlined style={{ marginTop: '8px' }} onClick={() => remove(field.name)} />
-        </Col>
+        <Col>{!disabled && <MinusCircleOutlined style={{ marginTop: '8px' }} onClick={() => remove(field.name)} />}</Col>
       </Row>
     </>
   );

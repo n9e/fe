@@ -18,6 +18,7 @@ import Attributes from './Attributes';
 import TestButton from './TestButton';
 
 interface Props {
+  disabled?: boolean;
   fields: FormListFieldData[];
   field: FormListFieldData;
   activeIndex?: number;
@@ -29,7 +30,7 @@ interface Props {
 
 export default function NotifyConfig(props: Props) {
   const { t } = useTranslation(NS);
-  const { fields, field, activeIndex, setActiveIndex, add, remove, move } = props;
+  const { disabled, fields, field, activeIndex, setActiveIndex, add, remove, move } = props;
   const [channelItem, setChannelItem] = useState<ChannelItem>();
   const ruleConfig = Form.useWatch(['notify_configs', field.name]);
 
@@ -39,36 +40,38 @@ export default function NotifyConfig(props: Props) {
       className={`mb2 ${activeIndex === field.name ? 'rule-config-border-animate' : ''}`}
       title={<Space>{t('notification_configuration.title')}</Space>}
       extra={
-        <Space>
-          <CopyOutlined
-            onClick={() => {
-              add(ruleConfig, field.name + 1);
-            }}
-          />
-          {fields.length > 1 && (
-            <>
-              {field.name !== 0 && (
-                <UpCircleOutlined
+        !disabled && (
+          <Space>
+            <CopyOutlined
+              onClick={() => {
+                add(ruleConfig, field.name + 1);
+              }}
+            />
+            {fields.length > 1 && (
+              <>
+                {field.name !== 0 && (
+                  <UpCircleOutlined
+                    onClick={() => {
+                      move(field.name, field.name - 1);
+                    }}
+                  />
+                )}
+                {field.name !== fields.length - 1 && (
+                  <DownCircleOutlined
+                    onClick={() => {
+                      move(field.name, field.name + 1);
+                    }}
+                  />
+                )}
+                <MinusCircleOutlined
                   onClick={() => {
-                    move(field.name, field.name - 1);
+                    remove(field.name);
                   }}
                 />
-              )}
-              {field.name !== fields.length - 1 && (
-                <DownCircleOutlined
-                  onClick={() => {
-                    move(field.name, field.name + 1);
-                  }}
-                />
-              )}
-              <MinusCircleOutlined
-                onClick={() => {
-                  remove(field.name);
-                }}
-              />
-            </>
-          )}
-        </Space>
+              </>
+            )}
+          </Space>
+        )
       }
     >
       <Row gutter={SIZE}>
@@ -88,7 +91,7 @@ export default function NotifyConfig(props: Props) {
       </Row>
       <ChannelParams field={field} channelItem={channelItem} />
       <Form.Item {...field} label={t('notification_configuration.severities')} tooltip={t('notification_configuration.severities_tip')} name={[field.name, 'severities']}>
-        <Checkbox.Group>
+        <Checkbox.Group disabled={disabled}>
           <Checkbox value={1}>{t('common:severity.1')}</Checkbox>
           <Checkbox value={2}>{t('common:severity.2')}</Checkbox>
           <Checkbox value={3}>{t('common:severity.3')}</Checkbox>
@@ -104,7 +107,7 @@ export default function NotifyConfig(props: Props) {
                   <Tooltip className='n9e-ant-from-item-tooltip' title={t('notification_configuration.time_ranges_tip')}>
                     <QuestionCircleOutlined />
                   </Tooltip>
-                  <PlusCircleOutlined onClick={() => add(DEFAULT_VALUES_TIME_RANGE)} />
+                  {!disabled && <PlusCircleOutlined onClick={() => add(DEFAULT_VALUES_TIME_RANGE)} />}
                 </Space>
               </div>
               {fields.length ? <div style={{ width: 110 }}>{t('notification_configuration.effective_time_start')}</div> : null}
@@ -163,7 +166,7 @@ export default function NotifyConfig(props: Props) {
                     >
                       <TimePicker format='HH:mm' />
                     </Form.Item>
-                    <MinusCircleOutlined onClick={() => remove(name)} />
+                    {!disabled && <MinusCircleOutlined onClick={() => remove(name)} />}
                   </Space>
                 </div>
               );
@@ -172,6 +175,7 @@ export default function NotifyConfig(props: Props) {
         )}
       </Form.List>
       <KVTags
+        disabled={disabled}
         field={field}
         fullName={['notify_configs']}
         name={[field.name, 'label_keys']}
@@ -179,8 +183,8 @@ export default function NotifyConfig(props: Props) {
         keyLabelTootip={t('notification_configuration.label_keys_tip')}
         funcName='op'
       />
-      <Attributes field={field} fullName={['notify_configs']} />
-      <TestButton field={field} />
+      <Attributes disabled={disabled} field={field} fullName={['notify_configs']} />
+      {!disabled && <TestButton field={field} />}
     </Card>
   );
 }

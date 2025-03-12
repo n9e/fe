@@ -2,6 +2,7 @@ const en_US = {
   title: 'Message templates',
   add_title: 'Add message template',
   edit_title: 'Edit message template',
+  clone_title: 'Clone message template',
   user_group_ids: 'Authorized Teams',
   private: {
     title: 'Display mode',

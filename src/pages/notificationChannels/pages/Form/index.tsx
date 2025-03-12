@@ -45,7 +45,7 @@ export default function FormCpt(props: Props) {
                 </Form.Item>
               </Col>
               <Col span={12}>
-                <Form.Item label={t('common:table.ident')} tooltip={t('ident_tip')} name='ident' rules={[{ required: true }]}>
+                <Form.Item label={t('ident')} tooltip={t('ident_tip')} name='ident' rules={[{ required: true }]}>
                   <Input />
                 </Form.Item>
               </Col>

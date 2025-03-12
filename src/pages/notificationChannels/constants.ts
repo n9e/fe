@@ -1,4 +1,5 @@
 export const NS = 'notification-channels';
+export const PERM = `/${NS}`;
 export const DEFAULT_VALUES = {
   enable: true,
   param_config: {

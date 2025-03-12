@@ -7,6 +7,7 @@ import _ from 'lodash';
 import TagItem from './TagItem';
 
 interface Props {
+  disabled?: boolean;
   keyLabel?: React.ReactNode;
   keyLabelTootip?: React.ReactNode;
   keyType?: 'input' | 'select';
@@ -28,6 +29,7 @@ interface Props {
 export default function index(props: Props) {
   const { t } = useTranslation('KVTagSelect');
   const {
+    disabled,
     keyLabel = t('tag.key.label'),
     keyLabelTootip,
     keyType = 'input',
@@ -56,15 +58,17 @@ export default function index(props: Props) {
                     <QuestionCircleOutlined />
                   </Tooltip>
                 )}
-                <PlusCircleOutlined
-                  onClick={() => {
-                    addWapper
-                      ? addWapper(add)
-                      : add({
-                          [funcName]: '==',
-                        });
-                  }}
-                />
+                {!disabled && (
+                  <PlusCircleOutlined
+                    onClick={() => {
+                      addWapper
+                        ? addWapper(add)
+                        : add({
+                            [funcName]: '==',
+                          });
+                    }}
+                  />
+                )}
               </Space>
             </Col>
             {fields.length ? <Col span={3}>{funcLabel}</Col> : null}
@@ -73,6 +77,7 @@ export default function index(props: Props) {
           {fields.map((field) => (
             <TagItem
               key={field.key}
+              disabled={disabled}
               fullName={_.concat(fullName, name)}
               keyName={keyName}
               keyType={keyType}

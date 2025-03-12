@@ -23,6 +23,13 @@ export default function ListCpt() {
   const [search, setSearch] = useState('');
   const [data, setData] = useState<Item[]>([]);
   const [active, setActive] = useState<Item>();
+  const [formModalState, setFormModalState] = useState<{
+    mode: 'add';
+    visible: boolean;
+  }>({
+    mode: 'add',
+    visible: false,
+  });
   const itemDetailRef = React.useRef<any>();
 
   const fetchData = () => {
@@ -61,7 +68,7 @@ export default function ListCpt() {
               {t('title')}
               <a
                 onClick={() => {
-                  FormModal({ mode: 'add', onOk: () => fetchData() });
+                  setFormModalState({ mode: 'add', visible: true });
                 }}
               >
                 {t('common:btn.add')}
@@ -140,6 +147,17 @@ export default function ListCpt() {
           </div>
         </div>
       </div>
+      <FormModal
+        visible={formModalState.visible}
+        mode={formModalState.mode}
+        onOk={() => {
+          fetchData();
+          setFormModalState({ ...formModalState, visible: false });
+        }}
+        onCancel={() => {
+          setFormModalState({ ...formModalState, visible: false });
+        }}
+      />
     </PageLayout>
   );
 }
