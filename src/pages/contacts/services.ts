@@ -6,7 +6,7 @@ export const getNotifyContacts = function (): Promise<ContactType[]> {
   return request('/api/n9e/notify-contact', {
     method: RequestMethod.Get,
   }).then((res) => {
-    return res.dat;
+    return res.dat ?? [];
   });
 };
 

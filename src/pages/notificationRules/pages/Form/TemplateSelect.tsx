@@ -81,7 +81,31 @@ export default function TemplateSelect(props: Props) {
       name={[field.name, 'template_id']}
       rules={[{ required: true }]}
     >
-      <Select options={options} showSearch optionFilterProp='label' />
+      <Select
+        options={_.map(options, (item) => {
+          return {
+            label: (
+              <Space>
+                {item.label}
+                <Link
+                  to={{
+                    pathname: '/notification-templates',
+                    search: `id=${item.value}`,
+                  }}
+                  target='_blank'
+                >
+                  {t('common:btn.view')}
+                </Link>
+              </Space>
+            ),
+            optionLabel: item.label,
+            value: item.value,
+          };
+        })}
+        optionLabelProp='optionLabel'
+        showSearch
+        optionFilterProp='optionLabel'
+      />
     </Form.Item>
   );
 }

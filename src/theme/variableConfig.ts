@@ -5,11 +5,11 @@ export const tsGraphThemeColor = {
   xAxis: {
     lineColor: {
       light: '#ccc',
-      dark: 'rgba(255,255,255,0.2)',
+      dark: 'rgba(204, 204, 220, 0.2)',
     },
     tickColor: {
       light: '#ccc',
-      dark: 'rgba(255,255,255,0.2)',
+      dark: 'rgba(204, 204, 220, 0.2)',
     },
   },
   yAxis: {
@@ -22,7 +22,7 @@ export const tsGraphThemeColor = {
     },
     gridLineColor: {
       light: '#f6f6f6',
-      dark: '#4f5263',
+      dark: 'rgba(204, 204, 220, 0.2)',
     },
   },
 };
