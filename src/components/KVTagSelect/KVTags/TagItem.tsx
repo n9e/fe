@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
 interface Props {
+  disabled?: boolean;
   fullName?: string | (string | number)[];
   keyName: string;
   keyType: 'input' | 'select';
@@ -20,7 +21,7 @@ interface Props {
 
 const TagItem = (props: Props) => {
   const { t } = useTranslation('KVTagSelect');
-  const { fullName = [], keyName, keyType, keyOptions, funcName, valueName, field, remove } = props;
+  const { disabled, fullName = [], keyName, keyType, keyOptions, funcName, valueName, field, remove } = props;
   const func = Form.useWatch([...fullName, field.name, funcName]);
   const isSelect = _.includes(['not in', 'in'], func);
 
@@ -77,9 +78,7 @@ const TagItem = (props: Props) => {
             </Form.Item>
           )}
         </Col>
-        <Col>
-          <MinusCircleOutlined style={{ marginTop: '8px' }} onClick={() => remove(field.name)} />
-        </Col>
+        <Col>{!disabled && <MinusCircleOutlined style={{ marginTop: '8px' }} onClick={() => remove(field.name)} />}</Col>
       </Row>
     </>
   );

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Select } from 'antd';
+import { Form, Select, Row, Col } from 'antd';
 import { FormListFieldData } from 'antd/lib/form/FormList';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
 import { getUserInfoList, getTeamInfoList } from '@/services/manage';
+import { SIZE } from '@/utils/constant';
 
 import { NS } from '../../../constants';
 
@@ -53,61 +54,65 @@ export default function UserInfo(props: Props) {
   }, []);
 
   return (
-    <>
-      <Form.Item
-        {..._.omit(field, ['key'])}
-        label={t('notification_configuration.user_info.user_ids')}
-        name={[field.name, 'params', 'user_ids']}
-        rules={[
-          {
-            validator: (_rule, value) => {
-              // 如果 user_ids 和 user_group_ids 都为空，则报错
-              if (_.isEmpty(value) && _.isEmpty(user_group_ids)) {
-                return Promise.reject(new Error(t('notification_configuration.user_info.error')));
-              }
-              return Promise.resolve();
-            },
-          },
-        ]}
-      >
-        <Select
-          options={userOptions}
-          showSearch
-          optionFilterProp='label'
-          mode='multiple'
-          onChange={() => {
-            // 校验 user_ids 和 user_group_ids
-            form.validateFields([['notify_configs', field.name, 'params', 'user_group_ids']]);
-          }}
-        />
-      </Form.Item>
-      <Form.Item
-        {..._.omit(field, ['key'])}
-        label={t('notification_configuration.user_info.user_group_ids')}
-        name={[field.name, 'params', 'user_group_ids']}
-        rules={[
-          {
-            validator: (_rule, value) => {
-              // 如果 user_ids 和 user_group_ids 都为空，则报错
-              if (_.isEmpty(value) && _.isEmpty(user_ids)) {
-                return Promise.reject(new Error(t('notification_configuration.user_info.error')));
-              }
-              return Promise.resolve();
-            },
-          },
-        ]}
-      >
-        <Select
-          options={teamOptions}
-          showSearch
-          optionFilterProp='label'
-          mode='multiple'
-          onChange={() => {
-            // 校验 user_ids 和 user_group_ids
-            form.validateFields([['notify_configs', field.name, 'params', 'user_ids']]);
-          }}
-        />
-      </Form.Item>
-    </>
+    <Row gutter={SIZE}>
+      <Col span={12}>
+        <Form.Item
+          {..._.omit(field, ['key'])}
+          label={t('notification_configuration.user_info.user_ids')}
+          name={[field.name, 'params', 'user_ids']}
+          // rules={[
+          //   {
+          //     validator: (_rule, value) => {
+          //       // 如果 user_ids 和 user_group_ids 都为空，则报错
+          //       if (_.isEmpty(value) && _.isEmpty(user_group_ids)) {
+          //         return Promise.reject(new Error(t('notification_configuration.user_info.error')));
+          //       }
+          //       return Promise.resolve();
+          //     },
+          //   },
+          // ]}
+        >
+          <Select
+            options={userOptions}
+            showSearch
+            optionFilterProp='label'
+            mode='multiple'
+            onChange={() => {
+              // 校验 user_ids 和 user_group_ids
+              form.validateFields([['notify_configs', field.name, 'params', 'user_group_ids']]);
+            }}
+          />
+        </Form.Item>
+      </Col>
+      <Col span={12}>
+        <Form.Item
+          {..._.omit(field, ['key'])}
+          label={t('notification_configuration.user_info.user_group_ids')}
+          name={[field.name, 'params', 'user_group_ids']}
+          // rules={[
+          //   {
+          //     validator: (_rule, value) => {
+          //       // 如果 user_ids 和 user_group_ids 都为空，则报错
+          //       if (_.isEmpty(value) && _.isEmpty(user_ids)) {
+          //         return Promise.reject(new Error(t('notification_configuration.user_info.error')));
+          //       }
+          //       return Promise.resolve();
+          //     },
+          //   },
+          // ]}
+        >
+          <Select
+            options={teamOptions}
+            showSearch
+            optionFilterProp='label'
+            mode='multiple'
+            onChange={() => {
+              // 校验 user_ids 和 user_group_ids
+              form.validateFields([['notify_configs', field.name, 'params', 'user_ids']]);
+            }}
+          />
+        </Form.Item>
+      </Col>
+    </Row>
   );
 }

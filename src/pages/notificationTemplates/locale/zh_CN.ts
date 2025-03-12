@@ -2,6 +2,7 @@ const zh_CN = {
   title: '消息模板',
   add_title: '新增消息模板',
   edit_title: '编辑消息模板',
+  clone_title: '克隆消息模板',
   user_group_ids: '授权团队',
   private: {
     title: '显示模式',

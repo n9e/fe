@@ -2,6 +2,7 @@ const ja_JP = {
   title: '通知模板',
   add_title: '新しい通知テンプレート',
   edit_title: '通知テンプレートを編集',
+  clone_title: '通知テンプレートを複製',
   user_group_ids: '認可されたチーム',
   private: {
     title: '表示モード',

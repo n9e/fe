@@ -15,12 +15,15 @@ import { normalizeFormValues } from '../../utils/normalizeValues';
 import RuleConfig from './RuleConfig';
 
 interface Props {
+  disabled?: boolean;
   initialValues?: RuleItem;
-  onOk: (values: RuleItem) => void;
+  onOk?: (values: RuleItem) => void;
+  onCancel?: () => void;
 }
 
 export default function FormCpt(props: Props) {
   const { t } = useTranslation(NS);
+  const { disabled, initialValues, onOk, onCancel } = props;
   const [form] = Form.useForm();
   const [userGroups, setUserGroups] = useState<{ id: number; name: string }[]>([]);
   const [activeIndex, setActiveIndex] = useState<number>();
@@ -32,7 +35,7 @@ export default function FormCpt(props: Props) {
   }, []);
 
   return (
-    <Form form={form} layout='vertical' initialValues={props.initialValues ?? DEFAULT_VALUES}>
+    <Form form={form} layout='vertical' initialValues={initialValues ?? DEFAULT_VALUES} disabled={disabled}>
       <Form.Item name='id' hidden>
         <Input />
       </Form.Item>
@@ -76,39 +79,47 @@ export default function FormCpt(props: Props) {
         {(fields, { add, remove, move }) => (
           <>
             {fields.map((field) => (
-              <RuleConfig fields={fields} field={field} activeIndex={activeIndex} setActiveIndex={setActiveIndex} add={add} remove={remove} move={move} />
+              <RuleConfig disabled={disabled} fields={fields} field={field} activeIndex={activeIndex} setActiveIndex={setActiveIndex} add={add} remove={remove} move={move} />
             ))}
-            <Button className='n9e-w-full mb2' type='dashed' onClick={() => add(DEFAULT_VALUES.notify_configs[0])} icon={<PlusOutlined />}>
-              {t('notification_configuration.add_btn')}
-            </Button>
+            {!disabled && (
+              <Button className='n9e-w-full mb2' type='dashed' onClick={() => add(DEFAULT_VALUES.notify_configs[0])} icon={<PlusOutlined />}>
+                {t('notification_configuration.add_btn')}
+              </Button>
+            )}
           </>
         )}
       </Form.List>
-      <Affix offsetBottom={0}>
-        <Card size='small' className='affix-bottom-shadow'>
-          <Space>
-            <Button
-              type='primary'
-              onClick={() => {
-                form
-                  .validateFields()
-                  .then(async (values) => {
-                    props.onOk(normalizeFormValues(values));
-                  })
-                  .catch((err) => {
-                    console.error(err);
-                    scrollToFirstError();
-                  });
-              }}
-            >
-              {t('common:btn.save')}
-            </Button>
-            <Link to={`/${NS}`}>
-              <Button>{t('common:btn.cancel')}</Button>
-            </Link>
-          </Space>
-        </Card>
-      </Affix>
+      {!disabled && (
+        <Affix offsetBottom={0}>
+          <Card size='small' className='affix-bottom-shadow'>
+            <Space>
+              <Button
+                type='primary'
+                onClick={() => {
+                  form
+                    .validateFields()
+                    .then(async (values) => {
+                      onOk && onOk(normalizeFormValues(values));
+                    })
+                    .catch((err) => {
+                      console.error(err);
+                      scrollToFirstError();
+                    });
+                }}
+              >
+                {t('common:btn.save')}
+              </Button>
+              {onCancel ? (
+                <Button onClick={onCancel}>{t('common:btn.cancel')}</Button>
+              ) : (
+                <Link to={`/${NS}`}>
+                  <Button>{t('common:btn.cancel')}</Button>
+                </Link>
+              )}
+            </Space>
+          </Card>
+        </Affix>
+      )}
     </Form>
   );
 }

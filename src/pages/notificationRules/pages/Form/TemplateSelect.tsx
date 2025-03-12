@@ -7,6 +7,8 @@ import _ from 'lodash';
 import { Link } from 'react-router-dom';
 
 import { getItems as getNotificationTemplates } from '@/pages/notificationTemplates/services';
+import { useIsAuthorized } from '@/components/AuthorizationWrapper';
+import { PERM } from '@/pages/notificationTemplates/constants';
 
 import { NS } from '../../constants';
 
@@ -22,6 +24,7 @@ export default function TemplateSelect(props: Props) {
   const form = Form.useFormInstance();
   const channel_id = Form.useWatch(['notify_configs', field.name, 'channel_id']);
   const template_id = Form.useWatch(['notify_configs', field.name, 'template_id']);
+  const isAuthorized = useIsAuthorized([PERM]);
   const fetchData = (channel_id) => {
     if (channel_id) {
       setLoading(true);
@@ -66,9 +69,11 @@ export default function TemplateSelect(props: Props) {
           <Tooltip className='n9e-ant-from-item-tooltip' title={t('notification_configuration.template_tip')}>
             <QuestionCircleOutlined />
           </Tooltip>
-          <Link to='/notification-templates' target='_blank'>
-            <SettingOutlined />
-          </Link>
+          {isAuthorized && (
+            <Link to='/notification-templates' target='_blank'>
+              <SettingOutlined />
+            </Link>
+          )}
           <SyncOutlined
             spin={loading}
             onClick={(e) => {
@@ -79,7 +84,7 @@ export default function TemplateSelect(props: Props) {
         </Space>
       }
       name={[field.name, 'template_id']}
-      rules={[{ required: true }]}
+      rules={[{ required: true, message: t('notification_configuration.template_msg') }]}
     >
       <Select
         options={_.map(options, (item) => {
@@ -87,15 +92,17 @@ export default function TemplateSelect(props: Props) {
             label: (
               <Space>
                 {item.label}
-                <Link
-                  to={{
-                    pathname: '/notification-templates',
-                    search: `id=${item.value}`,
-                  }}
-                  target='_blank'
-                >
-                  {t('common:btn.view')}
-                </Link>
+                {isAuthorized && (
+                  <Link
+                    to={{
+                      pathname: '/notification-templates',
+                      search: `id=${item.value}`,
+                    }}
+                    target='_blank'
+                  >
+                    {t('common:btn.view')}
+                  </Link>
+                )}
               </Space>
             ),
             optionLabel: item.label,

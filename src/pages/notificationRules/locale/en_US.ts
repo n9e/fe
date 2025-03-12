@@ -11,10 +11,13 @@ const en_US = {
     channel: 'Media type',
     channel_tip:
       'Select which medium to use to send alarm event notifications. If the existing medium does not meet the requirements, you can contact the administrator to create a new medium',
+    channel_msg: 'Please select the notification medium',
     template: 'Message template',
     template_tip: 'The template of the notification content, different templates can be used according to different scenarios',
+    template_msg: 'Please select the message template',
     severities: 'Applicable Level',
-    severities_tip: 'Select which level of alarm event to notify, only the level that is checked will be notified',
+    severities_tip:
+      'Select which level of alarm event to notify, only the checked level will be notified. If none of the three levels are checked, this medium will not match the alarm event, which is equivalent to disabling this medium',
     time_ranges: 'Applicable Time Period',
     time_ranges_tip: 'The notification rule can limit the effective time period, not configured means no restriction',
     effective_time_start: 'Start time',
