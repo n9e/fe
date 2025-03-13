@@ -51,7 +51,8 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
   const { t } = useTranslation('alertSubscribes');
   const [form] = Form.useForm(null as any);
   const history = useHistory();
-  const { groupedDatasourceList, isPlus, businessGroup } = useContext(CommonStateContext);
+  const { groupedDatasourceList, isPlus, businessGroup, isMcDonalds } = useContext(CommonStateContext);
+  const tagColor = isMcDonalds ? 'default' : 'purple';
   const curBusiId = detail.group_id || businessGroup.id!; // 修改和克隆是用 detail.group_id , 新增用 businessGroup.id
   const [ruleModalShow, setRuleModalShow] = useState<boolean>(false);
   const [selectedRules, setSelectedRules] = useState<any[]>([]); // 选中的规则
@@ -244,7 +245,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
                 <Space wrap>
                   {_.map(selectedRules, (item) => (
                     <Tag
-                      color='purple'
+                      color={tagColor}
                       key={item.id}
                       closable
                       onClose={() => {

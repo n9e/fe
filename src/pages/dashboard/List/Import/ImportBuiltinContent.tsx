@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { Form, Select, Input, Table, Space, Tag, Button, Modal } from 'antd';
@@ -9,8 +9,11 @@ import { TypeEnum } from '@/pages/builtInComponents/types';
 import { createDashboard } from '@/services/dashboardV2';
 import EditItems from '@/pages/dashboard/VariableConfig/EditItems';
 import { IVariable } from '@/pages/dashboard/VariableConfig/definition';
+import { CommonStateContext } from '@/App';
 
 export default function ImportBuiltinContent({ busiId, onOk }) {
+  const { darkMode, isMcDonalds } = useContext(CommonStateContext);
+  const tagColor = isMcDonalds ? 'default' : 'purple';
   const { t } = useTranslation('dashboard');
   const [filter, setFilter] = useState<{
     query?: string;
@@ -162,7 +165,7 @@ export default function ImportBuiltinContent({ busiId, onOk }) {
                           return (
                             <Tag
                               key={idx}
-                              color='purple'
+                              color={tagColor}
                               style={{ cursor: 'pointer' }}
                               onClick={() => {
                                 const queryItem = _.compact(_.split(filter.query, ' '));

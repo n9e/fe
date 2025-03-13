@@ -42,7 +42,8 @@ const ruleModal: React.FC<props> = (props) => {
   const { visible, ruleModalClose, subscribe } = props;
   const { t } = useTranslation('alertSubscribes');
   const pagination = usePagination({ PAGESIZE_KEY: 'alert-rules-pagesize' });
-  const { businessGroup, datasourceList } = useContext(CommonStateContext);
+  const { businessGroup, datasourceList, isMcDonalds } = useContext(CommonStateContext);
+  const tagColor = isMcDonalds ? 'default' : 'purple';
   const curBusiId = businessGroup.id!;
   const [busiGroups, setBusiGroups] = useState<{ id: number; name: string }[]>([]);
   const [currentStrategyDataAll, setCurrentStrategyDataAll] = useState([]);
@@ -124,7 +125,7 @@ const ruleModal: React.FC<props> = (props) => {
             {_.map(record.datasource_ids, (item) => {
               if (item === 0) {
                 return (
-                  <Tag color='purple' key={item}>
+                  <Tag color={tagColor} key={item}>
                     $all
                   </Tag>
                 );
@@ -132,7 +133,7 @@ const ruleModal: React.FC<props> = (props) => {
               const name = _.find(datasourceList, { id: item })?.name;
               if (!name) return '';
               return (
-                <Tag color='purple' key={item}>
+                <Tag color={tagColor} key={item}>
                   {name}
                 </Tag>
               );
@@ -185,7 +186,7 @@ const ruleModal: React.FC<props> = (props) => {
                 index: number,
               ) => {
                 return (
-                  <Tag color='purple' key={index}>
+                  <Tag color={tagColor} key={index}>
                     {user.nickname || user.username || user.name}
                   </Tag>
                 );
@@ -203,7 +204,7 @@ const ruleModal: React.FC<props> = (props) => {
           (array.length &&
             array.map((tag: string, index: number) => {
               return (
-                <Tag color='purple' key={index}>
+                <Tag color={tagColor} key={index}>
                   {tag}
                 </Tag>
               );
@@ -277,7 +278,7 @@ const ruleModal: React.FC<props> = (props) => {
               <span>{t('sub_rule_selected')}: </span>
               {_.map(selectedRules, (item) => (
                 <Tag
-                  color='purple'
+                  color={tagColor}
                   key={item.id}
                   closable
                   onClose={() => {
