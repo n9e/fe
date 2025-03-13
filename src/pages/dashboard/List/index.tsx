@@ -52,7 +52,8 @@ const getDefaultPublicSelectGids = (localKey: string) => {
 
 export default function index() {
   const { t } = useTranslation('dashboard');
-  const { businessGroup, perms } = useContext(CommonStateContext);
+  const { businessGroup, perms, isMcDonalds } = useContext(CommonStateContext);
+  const tagColor = isMcDonalds ? 'default' : 'purple';
   const [gids, setGids] = useState<string | undefined>(getDefaultGidsInDashboard(N9E_GIDS_LOCALKEY, businessGroup));
   const [list, setList] = useState<any[]>([]);
   const [selectRowKeys, setSelectRowKeys] = useState<number[]>([]);
@@ -178,7 +179,7 @@ export default function index() {
                         {_.map(_.split(text, ' '), (tag, index) => {
                           return tag ? (
                             <Tag
-                              color='purple'
+                              color={tagColor}
                               key={index}
                               style={{
                                 cursor: 'pointer',

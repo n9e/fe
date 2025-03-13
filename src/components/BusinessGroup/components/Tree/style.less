@@ -4,16 +4,20 @@
     padding: 0;
     margin: 0;
   }
+
   .n9e-tree-node-title {
     cursor: pointer;
     border-radius: 3px;
+
     &:hover {
       background-color: rgba(0, 0, 0, 0.03);
     }
   }
+
   .n9e-tree-node-title-selected {
     background-color: rgba(108, 83, 177, 0.1) !important;
   }
+
   .n9e-tree-node-title {
     display: flex;
     flex-direction: row;
@@ -22,35 +26,39 @@
     position: relative;
     padding: 8px 20px 8px 0;
   }
+
   .n9e-tree-node-indent {
     flex: 0 0 16px;
     height: 18px;
     position: relative;
   }
+
   .n9e-tree-node-indent-next-branch {
-    border-left: 1px solid rgba(122,131,148,1);
+    border-left: 1px solid rgba(122, 131, 148, 1);
     bottom: -8px;
     left: 3px;
     position: absolute;
     right: 8px;
     top: -8px;
   }
+
   .n9e-tree-node-indent-current-branch {
-    border-bottom: 1px solid rgba(122,131,148,1);
+    border-bottom: 1px solid rgba(122, 131, 148, 1);
     border-bottom-left-radius: 4px;
-    border-left: 1px solid rgba(122,131,148,1);
+    border-left: 1px solid rgba(122, 131, 148, 1);
     bottom: 9px;
     left: 3px;
     position: absolute;
     right: 6px;
     top: -8px;
   }
-  
+
   .n9e-tree-node-title-content {
     flex: 1;
     min-height: 1px;
     min-width: 1px;
   }
+
   .n9e-tree-node-icon {
     font-size: 24px;
     position: absolute;
@@ -59,18 +67,30 @@
     transform: translateY(-50%);
   }
 }
+
 .theme-dark {
   .n9e-tree-container {
     .n9e-tree-node-title {
       &:hover {
-        background-color:  rgba(204, 204, 220, 0.12);
+        background-color: rgba(204, 204, 220, 0.12);
       }
     }
-    .n9e-tree-node-indent-current-branch-active,.n9e-tree-node-indent-next-branch-active {
+
+    .n9e-tree-node-indent-current-branch-active,
+    .n9e-tree-node-indent-next-branch-active {
       border-color: #fff;
     }
+
     .n9e-tree-node-title-selected {
       background-color: rgba(204, 204, 220, 0.08) !important;
+    }
+  }
+}
+
+.theme-light-gold {
+  .n9e-tree-container {
+    .n9e-tree-node-title-selected {
+      background-color: #fff2cb !important;
     }
   }
 }

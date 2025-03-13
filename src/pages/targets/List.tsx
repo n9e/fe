@@ -73,7 +73,8 @@ const Unknown = () => {
 
 export default function List(props: IProps) {
   const { t } = useTranslation('targets');
-  const { darkMode } = useContext(CommonStateContext);
+  const { darkMode, isMcDonalds } = useContext(CommonStateContext);
+  const tagColor = isMcDonalds ? 'default' : 'purple';
   const { editable = true, explorable = true, gids, selectedRows, setSelectedRows, refreshFlag, setRefreshFlag, setOperateType } = props;
   const selectedIdents = _.map(selectedRows, 'ident');
   const isAddTagToQueryInput = useRef(false);
@@ -191,7 +192,7 @@ export default function List(props: IProps) {
             tagArr &&
             tagArr.map((item) => (
               <Tag
-                color='purple'
+                color={tagColor}
                 key={item}
                 onClick={(e) => {
                   if (!tableQueryContent.includes(item)) {
@@ -235,7 +236,7 @@ export default function List(props: IProps) {
             tagArr &&
             tagArr.map((item) => (
               <Tag
-                color='purple'
+                color={tagColor}
                 key={item}
                 onClick={(e) => {
                   if (!tableQueryContent.includes(item)) {
@@ -272,7 +273,7 @@ export default function List(props: IProps) {
           const content =
             tagArr &&
             tagArr.map((item) => (
-              <Tag color='purple' key={item.name}>
+              <Tag color={tagColor} key={item.name}>
                 {item.name}
               </Tag>
             ));

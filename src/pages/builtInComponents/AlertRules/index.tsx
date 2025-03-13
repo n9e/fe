@@ -25,7 +25,8 @@ interface Props {
 export default function index(props: Props) {
   const { component_id } = props;
   const { t } = useTranslation('builtInComponents');
-  const { busiGroups, groupedDatasourceList, reloadGroupedDatasourceList, datasourceCateOptions, darkMode } = useContext(CommonStateContext);
+  const { busiGroups, groupedDatasourceList, reloadGroupedDatasourceList, datasourceCateOptions, darkMode, isMcDonalds } = useContext(CommonStateContext);
+  const tagColor = isMcDonalds ? 'default' : 'purple';
   const [filter, setFilter] = useState<{
     cate?: string;
     query?: string;
@@ -210,7 +211,7 @@ export default function index(props: Props) {
                     return (
                       <Tag
                         key={idx}
-                        color='purple'
+                        color={tagColor}
                         style={{ cursor: 'pointer' }}
                         onClick={() => {
                           const queryItem = _.compact(_.split(filter.query, ' '));

@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import _ from 'lodash';
 import { Modal, Table, Button, Tag } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { getTargetList } from '@/services/targets';
+import { CommonStateContext } from '@/App';
 
 interface IProps {
   queries: any[];
@@ -12,6 +13,8 @@ interface IProps {
 }
 
 export default function Preview(props: IProps) {
+  const { darkMode, isMcDonalds } = useContext(CommonStateContext);
+  const tagColor = isMcDonalds ? 'default' : 'purple';
   const { t } = useTranslation('DeviceSelect');
   const { queries, children, targetType = 'button' } = props;
   const [visible, setVisible] = useState<boolean>(false);
@@ -62,7 +65,7 @@ export default function Preview(props: IProps) {
               render: (val) => {
                 return _.map(val, (item) => {
                   return (
-                    <Tag key={item} color='purple'>
+                    <Tag key={item} color={tagColor}>
                       {item}
                     </Tag>
                   );
@@ -75,7 +78,7 @@ export default function Preview(props: IProps) {
               render: (val) => {
                 return _.map(val, (item) => {
                   return (
-                    <Tag key={item} color='purple'>
+                    <Tag key={item} color={tagColor}>
                       {item}
                     </Tag>
                   );
@@ -90,7 +93,7 @@ export default function Preview(props: IProps) {
                   ? t('common:not_grouped')
                   : _.map(groupObjs, (item) => {
                       return (
-                        <Tag color='purple' key={item.id}>
+                        <Tag color={tagColor} key={item.id}>
                           {item.name}
                         </Tag>
                       );

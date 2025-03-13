@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SearchOutlined } from '@ant-design/icons';
 import { Input, Row, Col, Select, Tag } from 'antd';
@@ -7,6 +7,7 @@ import { Filter, getTypes, getCollectors, getDefaultTypes, Record } from '@/page
 import Markdown from '@/components/Markdown';
 import { getUnitLabel } from '@/pages/dashboard/Components/UnitPicker/utils';
 import MetricsList from './MetricsList';
+import { CommonStateContext } from '@/App';
 
 interface Props {
   onSelect: (expression: string, metric: Record) => void;
@@ -14,6 +15,8 @@ interface Props {
 }
 
 export default function Content(props: Props) {
+  const { darkMode, isMcDonalds } = useContext(CommonStateContext);
+  const tagColor = isMcDonalds ? 'default' : 'purple';
   const { t } = useTranslation('promQLInput');
   const { onSelect, setOpen } = props;
   const [filter, setFilter] = useState({} as Filter);
@@ -106,7 +109,7 @@ export default function Content(props: Props) {
               return (
                 <Tag
                   key={item}
-                  color='purple'
+                  color={tagColor}
                   onClick={() => {
                     setFilter({ ...filter, typ: item });
                   }}

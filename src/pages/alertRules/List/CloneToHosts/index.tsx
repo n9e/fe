@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import _ from 'lodash';
 import { useDebounceFn } from 'ahooks';
 import { Modal, Space, Select, Table, Tag, message } from 'antd';
@@ -7,6 +7,7 @@ import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { getTargetList } from '@/services/targets';
 import { rulesClone } from '@/pages/alertRules/services';
 import ValuesSelect from './ValuesSelect';
+import { CommonStateContext } from '@/App';
 
 interface Props {
   gid: number;
@@ -19,6 +20,8 @@ const queryKeyOptions = ['all_hosts', 'group_ids', 'tags'];
 
 function index(props: Props & ModalWrapProps) {
   const { t } = useTranslation('alertRules');
+  const { darkMode, isMcDonalds } = useContext(CommonStateContext);
+  const tagColor = isMcDonalds ? 'default' : 'purple';
   const { gid, ids, busiGroups, onOk, visible, destroy } = props;
   const [filterHost, setFilterHost] = useState<{
     key: string;
@@ -174,7 +177,7 @@ function index(props: Props & ModalWrapProps) {
             render: (val) => {
               return _.map(val, (item) => {
                 return (
-                  <Tag key={item} color='purple'>
+                  <Tag key={item} color={tagColor}>
                     {item}
                   </Tag>
                 );
@@ -187,7 +190,7 @@ function index(props: Props & ModalWrapProps) {
             render: (val) => {
               return _.map(val, (item) => {
                 return (
-                  <Tag key={item} color='purple'>
+                  <Tag key={item} color={tagColor}>
                     {item}
                   </Tag>
                 );
@@ -202,7 +205,7 @@ function index(props: Props & ModalWrapProps) {
                 ? t('common:not_grouped')
                 : _.map(groupObjs, (item) => {
                     return (
-                      <Tag color='purple' key={item.id}>
+                      <Tag color={tagColor} key={item.id}>
                         {item.name}
                       </Tag>
                     );
