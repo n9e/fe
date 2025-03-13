@@ -4,93 +4,118 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+
   .ant-tabs {
     height: 100%;
   }
+
   .ant-tabs-nav-wrap {
     border-left: 1px solid @border-color;
   }
-  .ant-tabs-card > .ant-tabs-nav .ant-tabs-tab {
+
+  .ant-tabs-card>.ant-tabs-nav .ant-tabs-tab {
     border: 1px solid @border-color;
     border-left: 0 none;
     color: #c1c1c1;
   }
-  .ant-tabs-card.ant-tabs-top > .ant-tabs-nav .ant-tabs-tab-active {
+
+  .ant-tabs-card.ant-tabs-top>.ant-tabs-nav .ant-tabs-tab-active {
     border-bottom-color: var(--fc-fill-2);
-    border-top: 2px solid  @primary-color;
+    border-top: 2px solid var(--fc-primary-color);
     background-color: var(--fc-fill-2);
   }
-  .ant-tabs-top > .ant-tabs-nav {
+
+  .ant-tabs-top>.ant-tabs-nav {
     margin-bottom: 0 !important;
   }
+
   .ant-tabs-content {
     height: 100%;
   }
+
   .ant-tabs-content-holder {
     border: 1px solid @border-color;
     border-top: 0 none;
     padding: 16px;
   }
-  .ant-tabs-top > .ant-tabs-nav::before {
+
+  .ant-tabs-top>.ant-tabs-nav::before {
     border-bottom: 1px solid @border-color;
   }
+
   .ant-spin-nested-loading {
     height: 100%;
   }
+
   .prom-graph-metrics-target {
     cursor: pointer;
   }
 }
+
 .prom-graph-global-operate {
   margin-bottom: 10px;
 }
+
 .prom-graph-expression-input {
   display: flex;
   gap: 8px;
   margin-bottom: 16px;
+
   .ant-input-affix-wrapper {
     padding: 6px 11px;
+
     &:hover {
       z-index: 2 !important; // TODO: 修复 promql 下拉层会被遮挡的问题
     }
   }
-  .ant-input-affix-wrapper > .ant-input {
+
+  .ant-input-affix-wrapper>.ant-input {
     padding: 0;
     border: none;
     outline: none;
   }
+
   .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
     z-index: unset;
   }
 }
+
 .prom-graph-table-container {
   height: 100%;
   display: flex;
   flex-direction: column;
+
   .prom-graph-table-controls {
     padding-bottom: 16px;
+
     .ant-picker {
       border-radius: unset
     }
   }
+
   .prom-graph-table-list {
     overflow: auto;
     min-height: 0;
     max-height: unset !important;
   }
+
   .ant-list-items {
     border-top: 1px solid var(--fc-border-color);
     border-bottom: 1px solid var(--fc-border-color);
   }
+
   .ant-list-item {
     padding: 8px;
   }
+
   .prom-graph-table-metric-name {
     color: #09885a
   }
+
   .prom-graph-table-bracket {
     padding: 4px;
   }
+
   .prom-graph-table-label-key {
     background-color: var(--fc-fill-4);
     color: var(--fc-text-1);
@@ -99,32 +124,39 @@
     border-radius: 4px;
   }
 }
+
 .prom-graph-graph-container {
   height: 100%;
   display: flex;
   flex-direction: column;
+
   .renderer-timeseries-container {
     display: flex !important;
     flex-direction: column;
     min-height: 0;
+
     .renderer-timeseries-graph {
       margin-top: 8px;
       min-height: unset !important;
     }
+
     .renderer-timeseries-legend-table {
       max-height: unset !important;
       min-height: 0;
     }
   }
 }
+
 .prom-graph-metrics-explorer-list {
   margin-top: 16px;
   max-height: 56vh;
   overflow: auto;
 }
+
 .prom-graph-metrics-explorer-list-item {
   padding: 6px 8px;
   cursor: pointer;
+
   &:hover {
     background-color: var(--fc-fill-3);
   }

@@ -92,6 +92,7 @@ export interface ICommonState {
   businessGroupOnChange: (key: string) => void;
   profile: IProfile;
   setProfile: (profile: IProfile) => void;
+  isMcDonalds?: boolean;
   licenseRulesRemaining?: number;
   licenseExpireDays?: number;
   licenseExpired: boolean;
