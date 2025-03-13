@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import { useLocation } from 'react-router-dom';
 import queryString from 'query-string';
+import { Resizable } from 're-resizable';
 
 import PageLayout from '@/components/pageLayout';
 import { Document } from '@/components/DocumentDrawer';
@@ -16,6 +17,9 @@ import FormModal from './FormModal';
 import ItemDetail from './ItemDetail';
 
 import './style.less';
+
+const DOCUMENT_WIDTH_KEY = 'notification_templates_document_width';
+const DEFAULT_DOCUMENT_WIDTH = 600;
 
 export default function ListCpt() {
   const { t } = useTranslation(NS);
@@ -31,6 +35,7 @@ export default function ListCpt() {
     visible: false,
   });
   const itemDetailRef = React.useRef<any>();
+  const [width, setWidth] = useState(_.toNumber(localStorage.getItem(DOCUMENT_WIDTH_KEY) || DEFAULT_DOCUMENT_WIDTH));
 
   const fetchData = () => {
     return getItems()
@@ -142,9 +147,24 @@ export default function ListCpt() {
               />
             )}
           </div>
-          <div className={`${CN}-right`}>
-            <Document documentPath='/docs/notification-template' />
-          </div>
+          <Resizable
+            size={{ width, height: '100%' }}
+            enable={{
+              left: true,
+            }}
+            onResizeStop={(e, direction, ref, d) => {
+              let curWidth = width + d.width;
+              if (curWidth < DEFAULT_DOCUMENT_WIDTH) {
+                curWidth = DEFAULT_DOCUMENT_WIDTH;
+              }
+              setWidth(curWidth);
+              localStorage.setItem(DOCUMENT_WIDTH_KEY, curWidth.toString());
+            }}
+          >
+            <div className={`${CN}-right`}>
+              <Document documentPath='/docs/notification-template' />
+            </div>
+          </Resizable>
         </div>
       </div>
       <FormModal
