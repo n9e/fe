@@ -98,24 +98,22 @@ export default forwardRef(function ItemDetail(props: Props, ref) {
               }
             }}
           />
-          {data?.create_by !== 'system' && (
-            <DeleteOutlined
-              onClick={() => {
-                Modal.confirm({
-                  title: t('common:confirm.delete'),
-                  onOk: () => {
-                    if (data?.id) {
-                      deleteItem([data.id]).then(() => {
-                        message.success(t('common:success.delete'));
-                        onDelete();
-                      });
-                    }
-                  },
-                  onCancel: () => {},
-                });
-              }}
-            />
-          )}
+          <DeleteOutlined
+            onClick={() => {
+              Modal.confirm({
+                title: t('common:confirm.delete'),
+                onOk: () => {
+                  if (data?.id) {
+                    deleteItem([data.id]).then(() => {
+                      message.success(t('common:success.delete'));
+                      onDelete();
+                    });
+                  }
+                },
+                onCancel: () => {},
+              });
+            }}
+          />
         </Space>
         <div>
           <Space>

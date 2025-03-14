@@ -85,6 +85,7 @@ const zh_HK = {
       status: '通知狀態',
       detail: '通知詳情',
       sub_id: '規則 ID',
+      notify_rule_id: '通知規則 ID',
     },
     task_tpls: {
       label: '自癒模板',

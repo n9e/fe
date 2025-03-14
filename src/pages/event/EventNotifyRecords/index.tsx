@@ -35,6 +35,18 @@ export default function index(props: Props) {
   const [visible, setVisible] = useState(false);
   const columns = [
     {
+      title: t('detail.event_notify_records.notify_rule_id'),
+      dataIndex: 'notify_rule_id',
+      key: 'notify_rule_id',
+      render: (val) => {
+        return (
+          <Link target='_blank' to={`/notification-rules/edit/${val}`}>
+            {val}
+          </Link>
+        );
+      },
+    },
+    {
       title: t('detail.event_notify_records.channel'),
       dataIndex: 'channel',
       key: 'channel',
