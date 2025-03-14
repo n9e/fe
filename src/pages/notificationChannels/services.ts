@@ -61,3 +61,11 @@ export function deleteItems(ids: number[]) {
     },
   });
 }
+
+export function getItemsIdents(): Promise<string[]> {
+  return request('/api/n9e/notify-channel-config/idents', {
+    method: RequestMethod.Get,
+  }).then((res) => {
+    return res.dat ?? [];
+  });
+}

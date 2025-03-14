@@ -9,7 +9,7 @@ const ja_JP = {
     0: '公開',
     1: '非公開',
   },
-  notify_channel_ident: '通知チャンネル',
+  notify_channel_ident: 'メディアタイプ',
   content: {
     add_title: 'テンプレートフィールドを追加',
     edit_title: 'テンプレートフィールドを編集',
