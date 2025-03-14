@@ -87,6 +87,7 @@ const zh_CN = {
       status: '通知状态',
       detail: '结果详情',
       sub_id: '规则 ID',
+      notify_rule_id: '通知规则 ID',
     },
     task_tpls: {
       label: '自愈模板',
