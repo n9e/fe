@@ -6,7 +6,7 @@ import _ from 'lodash';
 import { Link } from 'react-router-dom';
 
 import { getTeamInfoList } from '@/services/manage';
-import { getSimplifiedItems as getNotificationChannels, ChannelItem } from '@/pages/notificationChannels/services';
+import { getSimplifiedItems as getNotificationChannels, getItemsIdents as getNotificationChannelsIdents, ChannelItem } from '@/pages/notificationChannels/services';
 import { useIsAuthorized } from '@/components/AuthorizationWrapper';
 import { PERM } from '@/pages/notificationChannels/constants';
 
@@ -28,16 +28,17 @@ export default function FormModal(props: IProps) {
   const [form] = Form.useForm();
   const [userGroups, setUserGroups] = useState<{ id: number; name: string }[]>([]);
   const [notifyChannels, setNotifyChannels] = useState<ChannelItem[]>([]);
+  const [notifyChannelsIdents, setNotifyChannelsIdents] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const isAuthorized = useIsAuthorized([PERM]);
-  const fetchNotificationChannels = () => {
+  const fetchNotificationChannelsIdents = () => {
     setLoading(true);
-    getNotificationChannels()
+    getNotificationChannelsIdents()
       .then((res) => {
-        setNotifyChannels(res);
+        setNotifyChannelsIdents(res);
       })
       .catch(() => {
-        setNotifyChannels([]);
+        setNotifyChannelsIdents([]);
       })
       .finally(() => {
         setLoading(false);
@@ -52,7 +53,18 @@ export default function FormModal(props: IProps) {
       .catch(() => {
         setUserGroups([]);
       });
-    fetchNotificationChannels();
+
+    getNotificationChannels()
+      .then((res) => {
+        setNotifyChannels(res);
+      })
+      .catch(() => {
+        setNotifyChannels([]);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+    fetchNotificationChannelsIdents();
   }, []);
 
   useEffect(() => {
@@ -127,7 +139,7 @@ export default function FormModal(props: IProps) {
               <SyncOutlined
                 spin={loading}
                 onClick={(e) => {
-                  fetchNotificationChannels();
+                  fetchNotificationChannelsIdents();
                   e.preventDefault();
                 }}
               />
@@ -144,20 +156,11 @@ export default function FormModal(props: IProps) {
             showSearch
             optionFilterProp='optionLabel'
             optionLabelProp='optionLabel'
-            options={_.map(notifyChannels, (item) => {
+            options={_.map(notifyChannelsIdents, (item) => {
               return {
-                label: (
-                  <Space>
-                    {item.name}
-                    {isAuthorized && (
-                      <Link to={`/notification-channels/edit/${item.id}`} target='_blank'>
-                        {t('common:btn.view')}
-                      </Link>
-                    )}
-                  </Space>
-                ),
-                optionLabel: item.name,
-                value: item.ident,
+                label: item,
+                optionLabel: item,
+                value: item,
               };
             })}
           />

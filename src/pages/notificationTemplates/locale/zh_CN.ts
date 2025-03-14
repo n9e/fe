@@ -9,7 +9,7 @@ const zh_CN = {
     0: '公共',
     1: '私有',
   },
-  notify_channel_ident: '通知媒介',
+  notify_channel_ident: '媒介类型',
   content: {
     add_title: '添加模板字段',
     edit_title: '编辑模板字段',
