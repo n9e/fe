@@ -6,8 +6,10 @@ import { EditorView } from '@codemirror/view';
 import CodeMirror from '@/components/CodeMirror';
 import { getNotifyScript, putNotifyScript } from './services';
 import { ScriptType } from './types';
-
+import { useContext } from 'react';
+import { CommonStateContext } from '@/App';
 export default function Script() {
+  const { darkMode, isMcDonalds } = useContext(CommonStateContext);
   const [form] = Form.useForm();
   const { t } = useTranslation('notificationSettings');
 
@@ -42,7 +44,7 @@ export default function Script() {
           <InputNumber style={{ width: '100%' }} />
         </Form.Item>
         <Form.Item name='type'>
-          <Radio.Group optionType='button'>
+          <Radio.Group optionType='button' buttonStyle={isMcDonalds ? 'solid' : 'outline'}>
             <Radio value={0}>{t('script.type.0')}</Radio>
             <Radio value={1}>{t('script.type.1')}</Radio>
           </Radio.Group>
