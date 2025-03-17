@@ -6,17 +6,18 @@ import './locale';
 interface Props {
   name: string | (string | number)[];
   label?: string;
+  initialValue?: string;
 }
 
 export default function CronPattern(props: Props) {
-  const { name, label } = props;
+  const { name, label, initialValue } = props;
   const { t } = useTranslation('CronPattern');
   return (
     <Form.Item
       name={name}
       label={label || t('cron_pattern')}
       rules={[{ required: true, message: t('cron_pattern_msg') }]}
-      initialValue='@every 15s'
+      initialValue={initialValue ?? '@every 15s'}
       tooltip={t('cron_pattern_tip')}
     >
       <AutoComplete
