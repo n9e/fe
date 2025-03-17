@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import _ from 'lodash';
 import { Button, Modal, Form, Select, Space, Tag } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -6,7 +6,9 @@ import { name } from './';
 import EventsModal from './EventsModal';
 import { relabelTest } from './services';
 
+import { CommonStateContext } from '@/App';
 export default function TestModal() {
+  const { darkMode, isMcDonalds } = useContext(CommonStateContext);
   const { t } = useTranslation('alertRules');
   const eventRelabelConfig = Form.useWatch(name);
   const [visible, setVisible] = useState(false);
@@ -18,7 +20,7 @@ export default function TestModal() {
   return (
     <>
       <Button
-        ghost
+        ghost={!isMcDonalds}
         type='primary'
         className='mt2'
         disabled={_.isEmpty(eventRelabelConfig)}

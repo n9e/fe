@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Form, Select, Space, Row, Col, Button, Tooltip, Modal, Table } from 'antd';
 import { WarningOutlined, PlusCircleOutlined, MinusCircleOutlined, InfoCircleOutlined, ReloadOutlined } from '@ant-design/icons';
 import { Trans, useTranslation } from 'react-i18next';
@@ -170,7 +170,9 @@ function Query({ idx, names, field, remove, invalidDatasourceIds, datasourceList
   );
 }
 
+import { CommonStateContext } from '@/App';
 export default function index(props: IProps) {
+  const { darkMode, isMcDonalds } = useContext(CommonStateContext);
   const { datasourceList, reloadGroupedDatasourceList, datasourceCate, names = ['datasource_queries'], disabled, showExtra } = props;
   const { t } = useTranslation('alertRules');
   const [fullDatasourceList, setFullDatasourceList] = useState<any[]>([]);
@@ -270,7 +272,7 @@ export default function index(props: IProps) {
               <Space>
                 <Button
                   type='primary'
-                  ghost
+                  ghost={!isMcDonalds}
                   onClick={() => {
                     setPreviewModalVisible(true);
                   }}

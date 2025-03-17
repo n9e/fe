@@ -16,7 +16,7 @@ interface Props {
 
 export default function Preview(props: Props) {
   const { t } = useTranslation('DeviceSelect');
-  const { busiGroups } = useContext(CommonStateContext);
+  const { busiGroups, isMcDonalds } = useContext(CommonStateContext);
   const { queries, children, targetType = 'button' } = props;
   const [visible, setVisible] = useState<boolean>(false);
   const [data, setData] = useState<any[]>([]);
@@ -86,7 +86,7 @@ export default function Preview(props: Props) {
           <Button
             size='small'
             type='primary'
-            ghost
+            ghost={!isMcDonalds}
             onClick={() => {
               setVisible(true);
             }}

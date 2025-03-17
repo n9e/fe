@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Form, Row, Col, Input, Switch, InputNumber, Space, Tag, Tooltip } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import _ from 'lodash';
@@ -14,8 +14,10 @@ import Collapse, { Panel } from '../Components/Collapse';
 import ExpressionPanel from '../Components/ExpressionPanel';
 import AddQueryButtons from '../Components/AddQueryButtons';
 import { replaceExpressionVars } from '../../VariableConfig/constant';
+import { CommonStateContext } from '@/App';
 
 export default function Prometheus({ chartForm, variableConfig, dashboardId, time }) {
+  const { darkMode, isMcDonalds } = useContext(CommonStateContext);
   const { t } = useTranslation('dashboard');
   const varNams = _.map(variableConfig, (item) => {
     return `$${item.name}`;
@@ -46,7 +48,7 @@ export default function Prometheus({ chartForm, variableConfig, dashboardId, tim
                               {name}
                               {step ? (
                                 <Tooltip placement='right' title={t('query.prometheus.step.tag_tip')}>
-                                  <Tag color='purple'>{`step=${step}s`}</Tag>
+                                  <Tag color={isMcDonalds ? 'default' : 'purple'}>{`step=${step}s`}</Tag>
                                 </Tooltip>
                               ) : null}
                             </Space>

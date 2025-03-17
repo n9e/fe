@@ -120,7 +120,7 @@ export default function Preview(props: IProps) {
           <Button
             size='small'
             type='primary'
-            ghost
+            ghost={!isMcDonalds}
             onClick={() => {
               setVisible(true);
             }}

@@ -80,7 +80,7 @@ export default function Title(props: IProps) {
   } = props;
   const history = useHistory();
   const location = useLocation();
-  const { siteInfo, dashboardSaveMode } = useContext(CommonStateContext);
+  const { siteInfo, dashboardSaveMode, isMcDonalds } = useContext(CommonStateContext);
   const query = querystring.parse(location.search);
   const { viewMode, __public__ } = query;
   const isClickTrigger = useRef(false);
@@ -263,7 +263,7 @@ export default function Title(props: IProps) {
                     </Menu>
                   }
                 >
-                  <Button type='primary' ghost icon={<AddPanelIcon />}>
+                  <Button type='primary' ghost={!isMcDonalds} icon={<AddPanelIcon />}>
                     {t('add_panel')}
                   </Button>
                 </Dropdown>
