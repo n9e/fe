@@ -187,4 +187,6 @@
 .theme-light-gold {
   --fc-fill-primary: #FFBC0D;
   --fc-primary-color: #FFBC0D;
+  --fc-gold-text: #222;
+  --fc-text-link: #4880FF;
 }

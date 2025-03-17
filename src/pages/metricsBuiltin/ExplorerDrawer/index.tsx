@@ -8,7 +8,8 @@ import { useGetState } from 'ahooks';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { Record } from '../services';
 import Panel from './Panel';
-
+import { useContext } from 'react';
+import { CommonStateContext } from '@/App';
 interface Props {
   visible: boolean;
   onClose: () => void;
@@ -16,6 +17,7 @@ interface Props {
 }
 
 export default function ExplorerDrawer(props: Props) {
+  const { darkMode, isMcDonalds } = useContext(CommonStateContext);
   const { t } = useTranslation('metricsBuiltin');
   const { visible, onClose, data } = props;
   const [panels, setPanels, getPanels] = useGetState<Record[]>([]);
@@ -70,7 +72,7 @@ export default function ExplorerDrawer(props: Props) {
             {idx === 0 && panels.length > 1 && (
               <Button
                 danger
-                ghost
+                ghost={!isMcDonalds}
                 type='dashed'
                 className='mb2'
                 style={{ width: '100%' }}

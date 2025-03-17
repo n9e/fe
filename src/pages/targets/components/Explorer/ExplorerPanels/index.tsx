@@ -21,8 +21,10 @@ export interface Record {
 interface Props {
   data?: Record;
 }
-
+import { useContext } from 'react';
+import { CommonStateContext } from '@/App';
 export default function ExplorerDrawer(props: Props) {
+  const { darkMode, isMcDonalds } = useContext(CommonStateContext);
   const { t } = useTranslation('metricsBuiltin');
   const { data } = props;
   const [panels, setPanels, getPanels] = useGetState<Record[]>([]);
@@ -77,7 +79,7 @@ export default function ExplorerDrawer(props: Props) {
             {idx === 0 && panels.length > 1 && (
               <Button
                 danger
-                ghost
+                ghost={!isMcDonalds}
                 type='dashed'
                 className='mb2'
                 style={{ width: '100%' }}

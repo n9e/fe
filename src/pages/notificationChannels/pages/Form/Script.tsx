@@ -24,7 +24,7 @@ export default function Script() {
         <InputNumber style={{ width: '100%' }} min={0} />
       </Form.Item>
       <Form.Item name={[...names, 'script_type']}>
-        <Radio.Group>
+        <Radio.Group buttonStyle='solid'>
           <Radio value='script'>{t('script_request_config.script.option')}</Radio>
           <Radio value='path'>{t('script_request_config.path.option')}</Radio>
         </Radio.Group>

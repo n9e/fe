@@ -7,8 +7,10 @@ import TimeRangePicker, { IRawTimeRange, parseRange } from '@/components/TimeRan
 import Timeseries from '@/pages/dashboard/Renderer/Renderer/Timeseries';
 import { getDsQuery } from '../../services';
 import { getSerieName } from '../../utils';
-
+import { useContext } from 'react';
+import { CommonStateContext } from '@/App';
 export default function GraphPreview({ cate, datasourceValue, query }) {
+  const { darkMode, isMcDonalds } = useContext(CommonStateContext);
   const { t } = useTranslation('db_tdengine');
   const divRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
@@ -115,7 +117,7 @@ export default function GraphPreview({ cate, datasourceValue, query }) {
         <Button
           size='small'
           type='primary'
-          ghost
+          ghost={!isMcDonalds}
           onClick={() => {
             if (!visible) {
               fetchData();

@@ -7,8 +7,10 @@ import TimeRangePicker, { IRawTimeRange, parseRange } from '@/components/TimeRan
 import { DatasourceCateEnum } from '@/utils/constant';
 import getTextWidth from '@/pages/dashboard/Renderer/utils/getTextWidth';
 import { getLogsQuery } from '../../services';
-
+import { useContext } from 'react';
+import { CommonStateContext } from '@/App';
 export default function GraphPreview({ datasourceValue, query }) {
+  const { darkMode, isMcDonalds } = useContext(CommonStateContext);
   const { t } = useTranslation('db_tdengine');
   const divRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
@@ -152,7 +154,7 @@ export default function GraphPreview({ datasourceValue, query }) {
         <Button
           size='small'
           type='primary'
-          ghost
+          ghost={!isMcDonalds}
           onClick={() => {
             if (!visible) {
               fetchData();

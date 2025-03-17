@@ -9,12 +9,15 @@ import Events from '@/pages/notificationTemplates/pages/List/Form/PreviewModal/E
 
 import { NS } from '../../constants';
 import { notifyRuleTest } from '../../services';
+import { useContext } from 'react';
+import { CommonStateContext } from '@/App';
 
 interface Props {
   field: FormListFieldData;
 }
 
 export default function TestButton(props: Props) {
+  const { darkMode, isMcDonalds } = useContext(CommonStateContext);
   const { t } = useTranslation(NS);
   const { field } = props;
   const [visible, setVisible] = useState(false);
@@ -24,7 +27,7 @@ export default function TestButton(props: Props) {
   return (
     <>
       <Button
-        ghost
+        ghost={!isMcDonalds}
         type='primary'
         onClick={() => {
           setVisible(true);

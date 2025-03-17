@@ -21,10 +21,9 @@ const getSerieName = (metric: Object) => {
   });
   return _.trim(name);
 };
-
 export default function GraphPreview(props: IProps) {
   const { t } = useTranslation('alertRules');
-  const { groupedDatasourceList } = useContext(CommonStateContext);
+  const { groupedDatasourceList, isMcDonalds } = useContext(CommonStateContext);
   const { disabled } = props;
   const divRef = useRef<HTMLDivElement>(null);
   const form = Form.useFormInstance();
@@ -173,7 +172,7 @@ export default function GraphPreview(props: IProps) {
         <Button
           size='small'
           type='primary'
-          ghost
+          ghost={!isMcDonalds}
           onClick={() => {
             if (!visible) {
               fetchSeries();
