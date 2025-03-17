@@ -176,7 +176,7 @@ const operateForm: React.FC<Props> = ({ type, detail = {} }) => {
             </Form.Item>
             <Form.Item>
               <Button type='primary' onClick={addSubmit} style={{ marginRight: '8px' }}>
-                {type === 1 ? t('common:btn.edit') : type === 2 ? t('common:btn.clone') : t('common:btn.add')}
+                {t('common:btn.save')}
               </Button>
               {type === 1 && (
                 <Button
