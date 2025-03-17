@@ -1,4 +1,4 @@
-本文档介绍如何在告警通知媒介中使用 HTTP 配置，通过自定义请求地址、请求头、请求参数和请求体，将告警消息发送到钉钉或其他任意自定义通知渠道。同时也介绍如何在这些配置项中使用 `{{$event}}`、`{{$tpl}}`、`{{$params}}`、`{{$sendto}}` 等变量，以实现发送不同的通知内容。
+本文档介绍如何在告警通知媒介中使用 HTTP 配置，通过自定义请求地址、请求头、请求参数和请求体，将告警消息发送到钉钉或其他任意自定义通知渠道。同时也介绍如何在这些配置项中使用 `{{$event}}`、`{{$tpl}}`、`{{$params}}`、`{{$sendtos}}`、`{{$sendto}}` 等变量，以实现发送不同的通知内容。
 
 ## 一、配置概览
 
@@ -9,7 +9,7 @@
 3. **请求参数（Query Parameters / Request Parameters）**
 4. **请求体（Request Body）**
 
-> 四个配置都支持使用 `{{$event}}`、`{{$tpl}}`、`{{$params}}`、`{{$sendto}}` 这四个变量。
+> 四个配置都支持使用 `{{$event}}`、`{{$tpl}}`、`{{$params}}`、`{{$sendto}}`、`{{$sendto}}` 这几个变量。
 
 变量说明
 
@@ -29,13 +29,26 @@
 - 可以在请求体、URL、请求头等任意位置使用，用于区分不同的发送目标。
 - 使用 `{{$sendto}}` 时，需要在 “变量配置” 中配置用户联系方式，最终会根据用户配置的联系方式，将 $sendto 变量替换为实际的联系方式。
 
-4. $event
+4. $sendtos
+在有的通知媒介 API 中，一次请求中支持写多个联系方式，比如腾讯短信通知，支持写多个手机 `"PhoneNumberSet": ["+8618501234444","+8618501234445"],`，这个时候我们可以在媒介中像下面这配置，可以实现一次发送多个手机号的效果
+   ```json
+   {
+       "PhoneNumberSet": {{batchContactsJsonMarshal $sendtos}},
+       "SignName": "",
+       "SmsSdkAppId": "",
+       "TemplateId": "",
+       "TemplateParamSet": [
+          "{{$tpl.content}}"
+       ]
+   }
+   ```
 
+5. $event
 - 表示告警事件对象，适用于想直接引用事件原始数据或进行更多灵活拼接的场景。
 
 另外还有以下配置：
 
-- 请求超时时间、重试次数、并发数、重试间隔等。
+- 请求超时时间、重试次数、并发数、重试间隔。
 - 是否跳过证书校验。
 - 代理设置等。
 
@@ -86,7 +99,7 @@ https://oapi.dingtalk.com/robot/send?access_token={{$params.access_token}}
 **说明**
 
 - 在 URL 查询字符串（`?key=value`）上附加的参数可在这里配置，或者也可以直接写在 URL 中。
-- 如果要将一些变量以 query param 的形式传递，既可以使用 `{{$params.xxx}}` 这种方式，也可以将 `{{$event}}`、`{{$tpl}}`、`{{$sendto}}` 的部分内容进行组合。
+- 如果要将一些变量以 query param 的形式传递，可以使用 `{{$params.xxx}}` 这种方式。
 
 ### 4. 请求体（Request Body）
 
@@ -95,22 +108,21 @@ https://oapi.dingtalk.com/robot/send?access_token={{$params.access_token}}
 
 ```json
 {
-  "msgtype": "markdown",
-  "markdown": {
-    "title": "{{$tpl.title}}",
-    "text": "{{$tpl.text}}"
-  },
-  "at": {
-    "atMobiles": ["{{$params.ats}}"],
-    "isAtAll": false
-  }
+    "msgtype": "markdown",
+    "markdown": {
+        "title": "{{$tpl.title}}",
+        "text": "{{$tpl.content}}\n{{batchContactsAts $sendtos}}"
+    },
+    "at": {
+        "atMobiles": {{batchContactsJsonMarshal $sendtos}}
+    }
 }
 ```
 
 **说明**
 
-- 以 JSON 形式（通常常见于钉钉、企业微信机器人）或表单形式（application/x-www-form-urlencoded）发送。
-- 在请求体中，可以直接嵌入 $event、$tpl、$params、$sendto 等变量进行动态替换。
+- Body 以 JSON 形式（通常常见于钉钉、企业微信机器人）发送。
+- 在请求体中，可以直接嵌入 $event、$tpl、$params、$sendto、$sendtos 等变量进行动态替换。
 - $tpl 通常代表告警模板渲染后的文本内容；$sendto 可以代表要通知的目标人（如手机号、企业微信账号等）。
 
 ## 三、示例：发送到钉钉机器人
@@ -118,12 +130,12 @@ https://oapi.dingtalk.com/robot/send?access_token={{$params.access_token}}
 以下示例展示了一个将告警消息发送到钉钉群机器人的配置思路。钉钉机器人的 access_token 和 @ 某个手机号的信息，已经通过配置通过规则，传入到 $params 变量中，然后通过 $params.access_token 和 $sendto 变量，在请求体中引用。
 
 1.变量配置   
-在变量配置中添加参数标识 `access_token` 和 `ats`
+在变量配置中添加参数标识 `access_token` 和 `bot_name`
 
 2.URL
 
 ```
-https://oapi.dingtalk.com/robot/send?access_token={{$params.access_token}}
+https://oapi.dingtalk.com/robot/send
 ```
 
 3. 请求头（Request Header）
@@ -135,27 +147,27 @@ https://oapi.dingtalk.com/robot/send?access_token={{$params.access_token}}
 4.请求参数
 | 参数名 | 参数值 |
 |--------------|---------------------|
-| `access_token` | `your-access-token` |
+| `access_token` | `{{$params.access_token}}` |
 
 5.请求体
 
 ```json
 {
-  "msgtype": "markdown",
-  "markdown": {
-    "title": "{{$tpl.title}}",
-    "text": "{{$tpl.text}}"
-  },
-  "at": {
-    "atMobiles": ["{{$params.ats}}"],
-    "isAtAll": false
-  }
+    "msgtype": "markdown",
+    "markdown": {
+        "title": "{{$tpl.title}}",
+        "text": "{{$tpl.content}}\n{{batchContactsAts $sendtos}}"
+    },
+    "at": {
+        "atMobiles": {{batchContactsJsonMarshal $sendtos}}
+    }
 }
 ```
 
 在该示例中：
 
-- {{$params.access_token}} 被替换为实际的钉钉群机器人 access_token。
-- {{$params.ats}} 被替换为实际的钉钉群内 @ 的手机号。
-- {{$tpl.title}} 会是渲染后最终要发送的告警信息标题，比如 “CPU 使用率超出阈值”。
-- {{$tpl.text}} 会是渲染后最终要发送的告警信息文本，比如 “CPU 使用率超出阈值,触发时间：2024-01-01 12:00:00”。
+- {{$params.access_token}} 将被替换为实际的钉钉群机器人 access_token。
+- {{$tpl.title}} 渲染后为最终要发送的告警信息标题，比如 “CPU 使用率超出阈值”。
+- {{$tpl.text}} 渲染后为最终要发送的告警信息文本，比如 “CPU 使用率超出阈值,触发时间：2024-01-01 12:00:00”。
+- {{batchContactsAts $sendtos}} 渲染后将在手机号前面加@，比如 “@12312312311 @12312312312”。
+- {{batchContactsJsonMarshal $sendtos}} 渲染后为字符串数组的形式 ["12312312311","12312312312"]。

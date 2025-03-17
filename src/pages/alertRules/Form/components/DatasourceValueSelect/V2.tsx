@@ -21,6 +21,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
 import { getDatasourceBriefList } from '@/services/common';
+import { IS_ENT } from '@/utils/constant';
 import DatasourceSelectExtra from '@/pages/alertRules/Form/components/DatasourceSelectExtra';
 import { getDatasourcesByQueries } from './services';
 import './style.less';
@@ -242,7 +243,7 @@ export default function index(props: IProps) {
                 />
               </Space>
               <Space>
-                <Link to='/help/source' target='_blank'>
+                <Link to={IS_ENT ? '/settings/source/timeseries' : '/help/source'} target='_blank'>
                   {t('common:datasource.managePageLink')}
                 </Link>
                 <ReloadOutlined
@@ -287,7 +288,7 @@ export default function index(props: IProps) {
                             const result = _.find(fullDatasourceList, { id: item });
                             if (result) {
                               let url = `/help/source/edit/${result.plugin_type}/${result.id}`;
-                              if (import.meta.env.VITE_IS_ENT === 'true') {
+                              if (IS_ENT) {
                                 const cateMap = {
                                   timeseries: 'datasource',
                                   logging: 'logsource',
