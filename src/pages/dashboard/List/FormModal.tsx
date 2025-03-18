@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect } from 'react';
 import { Modal, Form, Input, Select, Radio, message } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -23,7 +23,6 @@ import { updateDashboard, createDashboard, getDashboard, updateDashboardConfigs 
 import { DASHBOARD_VERSION } from '@/pages/dashboard/config';
 import { IDashboard, IDashboardConfig } from '../types';
 import { JSONParse } from '../utils';
-import { CommonStateContext } from '@/App';
 
 interface Props {
   action: 'create' | 'edit';
@@ -34,7 +33,6 @@ interface Props {
 }
 
 function index(props: Props & ModalWrapProps) {
-  const { darkMode, isMcDonalds } = useContext(CommonStateContext);
   const { t } = useTranslation('dashboard');
   const { visible, destroy, busiId, action, initialValues, dashboardSaveMode, onOk } = props;
   const [form] = Form.useForm();
@@ -142,7 +140,7 @@ function index(props: Props & ModalWrapProps) {
         <Form.Item label={t('settings.graphTooltip.label')} name='graphTooltip' tooltip={t('settings.graphTooltip.tip')}>
           <Radio.Group
             optionType='button'
-            buttonStyle={isMcDonalds ? 'solid' : 'outline'}
+            buttonStyle={localStorage.getItem('n9e-dark-mode') === '2' ? 'solid' : 'outline'}
             options={[
               {
                 label: t('settings.graphTooltip.default'),
