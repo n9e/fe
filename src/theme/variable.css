@@ -87,6 +87,9 @@
   --fc-geekblue-5-color: #597ef7;
   --fc-geekblue-6-color: #2f54eb;
 
+  /* 渐变色 */
+  --fc-gradient-1-color: linear-gradient(90deg, #ebf4fe 0%, #edf5fb 25%, #f1f1f9 50%, #f4f3f7 75%, #f3f4f6 100%);
+
   /* boxshadow*/
   --fc-boxshadow-base-color: rgba(0, 0, 0, 0.08);
   --fc-boxshadow-hover-color: rgba(0, 0, 0, 0.15);
@@ -175,6 +178,9 @@
   --fc-geekblue-4-color: #164c7e;
   --fc-geekblue-5-color: #1765ad;
   --fc-geekblue-6-color: #177ddc;
+
+  /* 渐变色 */
+  --fc-gradient-1-color: linear-gradient(90deg, #272c3c 0%, #24253b 25%, #221f33 50%, #1e1e28 75%, #181b1f 100%);
 
   /* boxshadow*/
   --fc-boxshadow-base-color: rgba(0, 0, 0, 0.28);
