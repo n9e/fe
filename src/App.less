@@ -486,11 +486,6 @@ input::placeholder {
     border-bottom: 1px solid var(--fc-primary-color);
   }
 
-  .selected-num,
-  .ant-switch-inner {
-    color: var(--fc-gold-text);
-  }
-
   .ant-pagination-item-active a {
     background-color: var(--fc-primary-color);
     color: var(--fc-gold-text)
@@ -500,13 +495,26 @@ input::placeholder {
     background-color: #fff8e6;
   }
 
+  //金色背景下 黑色文字
+  .ant-steps-item-process>.ant-steps-item-container>.ant-steps-item-icon .ant-steps-icon,
+  .selected-num,
+  .ant-switch-inner,
+  .ant-picker-cell-in-view.ant-picker-cell-selected .ant-picker-cell-inner,
+  .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn,
+  .ant-dropdown-menu-item-selected,
   .ant-btn:hover {
-    color: var(--fc-gold-text);
-  }
-
-  .ant-picker-cell-in-view.ant-picker-cell-selected .ant-picker-cell-inner {
     color: var(--fc-gold-text) !important;
   }
+
+  ::selection {
+    color: #5E3A00;
+    background: rgba(255, 188, 13, 0.1);
+  }
+
+  .event-filters-item-value {
+    color: #b37400;
+  }
+
 }
 
 .theme-light-gold .ant-radio-group-solid .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {

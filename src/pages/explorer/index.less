@@ -1,10 +1,14 @@
 .explorer-container {
   width: 100%;
   flex: 1;
-  .ant-card,.ant-card-body,.ant-form {
+
+  .ant-card,
+  .ant-card-body,
+  .ant-form {
     height: 100%;
   }
 }
+
 .explorer-content {
   display: flex;
   flex-direction: column;
@@ -15,8 +19,10 @@
   .metric-list {
     max-height: 56vh;
     overflow: auto;
+
     &-item {
       padding: 6px 8px;
+
       &:hover {
         cursor: pointer;
         background-color: @colorGray2;
@@ -33,35 +39,43 @@
 
 .logs-explorer-container {
   height: 100%;
-  & > .ant-tabs {
+
+  &>.ant-tabs {
     height: 100%;
   }
-  & > .ant-tabs-top > .ant-tabs-nav {
+
+  &>.ant-tabs-top>.ant-tabs-nav {
     margin-bottom: 8px;
   }
-  & > .ant-tabs-card > .ant-tabs-content-holder > .ant-tabs-content > .ant-tabs-tabpane {
+
+  &>.ant-tabs-card>.ant-tabs-content-holder>.ant-tabs-content>.ant-tabs-tabpane {
     padding: 16px;
     background: var(--fc-fill-2);
     box-shadow: 0 1px 8px #0000001a;
     display: flex;
   }
-  & > .ant-tabs-card > .ant-tabs-nav::before {
+
+  &>.ant-tabs-card>.ant-tabs-nav::before {
     display: none;
   }
-  & > .ant-tabs-card > .ant-tabs-nav > .ant-tabs-nav-wrap > .ant-tabs-nav-list > .ant-tabs-tab-active {
+
+  &>.ant-tabs-card>.ant-tabs-nav>.ant-tabs-nav-wrap>.ant-tabs-nav-list>.ant-tabs-tab-active {
     background: var(--fc-fill-2);
     border-color: var(--fc-fill-2);
     box-shadow: 0 1px 8px #0000001a;
-    border-top: 1px solid #6C53B1;
+    border-top: 1px solid var(--fc-primary-color);
   }
-  & > .ant-tabs-card > .ant-tabs-content-holder > .ant-tabs-content {
+
+  &>.ant-tabs-card>.ant-tabs-content-holder>.ant-tabs-content {
     height: 120px;
     margin-top: -8px;
     height: 100%;
   }
+
   .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
     z-index: unset !important; // 修复 hover codemirror 后莫名其妙的会透出问题
   }
+
   .ant-table-column-title {
     z-index: unset !important; // 修复 hover codemirror 后莫名其妙的会透出问题
   }
