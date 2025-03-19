@@ -52,7 +52,19 @@ export default function index({ dashboardId, chartForm, variableConfig }) {
             )}
             onChange={(val) => {
               const preCate = chartForm.getFieldValue('datasourceCate');
-              const curCate = _.find(datasourceList, { id: val })?.plugin_type;
+              const curCate = _.find(
+                _.concat(
+                  _.map(datasourceVars, (item) => {
+                    return {
+                      id: `\${${item.name}}`,
+                      name: `\${${item.name}}`,
+                      plugin_type: item.definition,
+                    };
+                  }),
+                  datasourceList as any,
+                ),
+                { id: val },
+              )?.plugin_type;
               // TODO: 调整数据源类型后需要重置配置
               if (preCate !== curCate) {
                 if (_.includes(['elasticsearch', 'opensearch'], curCate)) {
