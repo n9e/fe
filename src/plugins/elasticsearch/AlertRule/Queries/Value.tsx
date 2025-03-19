@@ -75,7 +75,7 @@ export default function Value(props: IProps) {
       {func !== 'count' && func !== 'rawData' && (
         <Col span={12}>
           <InputGroupWithFormItem label='Field key'>
-            <Form.Item {...field} name={[field.name, , ...midName, 'value', 'field']} noStyle>
+            <Form.Item {...field} name={[field.name, ...midName, 'value', 'field']} noStyle>
               <AutoComplete
                 options={_.filter(fieldsOptions, (item) => {
                   if (search) {
