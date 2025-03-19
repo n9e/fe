@@ -203,7 +203,7 @@ export default function index(props: IProps) {
         });
       });
     }
-  }, [JSON.stringify(datasource_queries)]);
+  }, [JSON.stringify(datasource_queries), JSON.stringify(fullDatasourceList)]);
 
   useEffect(() => {
     fetchDatasourceList();
@@ -282,8 +282,13 @@ export default function index(props: IProps) {
                 {!_.isEmpty(invalidDatasourceIds) && (
                   <span style={{ color: '#ff4d4f' }}>
                     <Tooltip
+                      overlayClassName='ant-tooltip-with-link'
                       title={
-                        <div>
+                        <div
+                          style={{
+                            padding: '0 4px',
+                          }}
+                        >
                           {_.map(invalidDatasourceIds, (item) => {
                             const result = _.find(fullDatasourceList, { id: item });
                             if (result) {
@@ -299,7 +304,7 @@ export default function index(props: IProps) {
                                 }
                               }
                               return (
-                                <Link style={{ paddingLeft: 8 }} target='_blank' to={url}>
+                                <Link style={{ padding: '0 4px' }} target='_blank' to={url}>
                                   {result.name}
                                 </Link>
                               );
@@ -313,9 +318,9 @@ export default function index(props: IProps) {
                       </span>
                     </Tooltip>
 
-                    <span style={{ paddingLeft: 8 }}>{t('invalid_datasource_tip_2')}</span>
+                    <span className='pl1'>{t('invalid_datasource_tip_2')}</span>
                     <a
-                      style={{ paddingLeft: 8 }}
+                      className='pl1'
                       onClick={(e) => {
                         e.preventDefault();
                         fetchDatasourceList();
