@@ -11,7 +11,14 @@ import DatasourceSelectExtra from 'plus:/components/DatasourceSelectExtra';
 export default function index({ dashboardId, variableConfig }) {
   const datasourceCate = Form.useWatch('datasourceCate');
   const datasourceValue = Form.useWatch('datasourceValue');
-  const curDatasourceValue = variableConfig ? replaceExpressionVars(datasourceValue, variableConfig, variableConfig.length, dashboardId) : datasourceValue;
+  const curDatasourceValue = variableConfig
+    ? replaceExpressionVars({
+        text: datasourceValue,
+        variables: variableConfig,
+        limit: variableConfig.length,
+        dashboardId,
+      })
+    : datasourceValue;
 
   if (IS_PLUS) {
     return <DatasourceSelectExtra datasourceCate={datasourceCate} datasourceValue={curDatasourceValue} />;

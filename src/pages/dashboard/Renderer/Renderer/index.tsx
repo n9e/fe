@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import _ from 'lodash';
 import classNames from 'classnames';
 import { useInViewport } from 'ahooks';
@@ -36,6 +36,8 @@ import {
   FieldTimeOutlined,
 } from '@ant-design/icons';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
+import { CommonStateContext } from '@/App';
+import { replaceExpressionVars } from '@/pages/dashboard/VariableConfig/constant';
 import PanelEmpty from '../components/PanelEmpty';
 import CloneIcon from '../components/CloneIcon';
 import Timeseries from './TimeSeriesNG';
@@ -98,6 +100,7 @@ function index(props: IProps) {
     onDeleteClick,
     onCopyClick,
   } = props;
+  const { datasourceList } = useContext(CommonStateContext);
   const [time, setTime] = useState(props.time);
   const [visible, setVisible] = useState(false);
   const values = _.cloneDeep(props.values);
@@ -106,6 +109,18 @@ function index(props: IProps) {
   const bodyWrapRef = useRef<HTMLDivElement>(null);
   const [inViewPort] = useInViewport(ref);
   const [inspect, setInspect] = useState(false);
+  let currentDatasourceValue = values.datasourceValue || datasourceValue;
+  currentDatasourceValue = variableConfig
+    ? _.toNumber(
+        replaceExpressionVars({
+          text: currentDatasourceValue as any,
+          variables: variableConfig,
+          limit: variableConfig.length,
+          dashboardId,
+          datasourceList,
+        }),
+      )
+    : currentDatasourceValue;
   const { query, series, error, loading, loaded, range } = useQuery({
     id,
     dashboardId,
@@ -114,7 +129,7 @@ function index(props: IProps) {
     variableConfig,
     inViewPort: isPreview || inViewPort,
     datasourceCate: values.datasourceCate || 'prometheus',
-    datasourceValue: values.datasourceValue || datasourceValue,
+    datasourceValue: currentDatasourceValue,
     spanNulls: values.custom?.spanNulls,
     scopedVars: values.scopedVars,
     inspect,

@@ -125,7 +125,16 @@ function index(props: IProps) {
           const item = _.cloneDeep(value[idx]);
           if (item.type === 'query' && item.definition) {
             const datasourceCate = item.datasource?.cate;
-            const definition = idx > 0 ? replaceExpressionVars(item.definition, result, idx, id, true) : item.definition;
+            const definition =
+              idx > 0
+                ? replaceExpressionVars({
+                    text: item.definition,
+                    variables: result,
+                    limit: idx,
+                    dashboardId: id,
+                    isEscapeJsonString: true,
+                  })
+                : item.definition;
 
             let options: string[] = [];
             try {
@@ -136,7 +145,14 @@ function index(props: IProps) {
                   ...item,
                   datasource: {
                     ...(item?.datasource || {}),
-                    value: result.length ? (replaceExpressionVars(item?.datasource?.value as any, result, result.length, id) as any) : item?.datasource?.value,
+                    value: result.length
+                      ? (replaceExpressionVars({
+                          text: item?.datasource?.value as any,
+                          variables: result,
+                          limit: result.length,
+                          dashboardId: id,
+                        }) as any)
+                      : item?.datasource?.value,
                   },
                 },
                 id,
@@ -210,6 +226,27 @@ function index(props: IProps) {
               } else {
                 if (query.__variable_value_fixed === undefined) {
                   setVaraiableSelected({ name: item.name, value: options?.[0]?.id, id, urlAttach: true });
+                }
+              }
+            }
+          } else if (item.type === 'datasourceName') {
+            const options = item.definition ? (groupedDatasourceList[item.definition] as any) : [];
+            const regex = item.regex ? stringToRegex(item.regex) : null;
+            result[idx] = item;
+            if (regex) {
+              result[idx].options = _.filter(options, (option) => {
+                return regex.test(option.name);
+              });
+            } else {
+              result[idx].options = options;
+            }
+            const selected = getVaraiableSelected(item, id);
+            if (selected === null) {
+              if (item.defaultValue) {
+                setVaraiableSelected({ name: item.name, value: item.defaultValue, id, urlAttach: true });
+              } else {
+                if (query.__variable_value_fixed === undefined) {
+                  setVaraiableSelected({ name: item.name, value: options?.[0]?.name, id, urlAttach: true });
                 }
               }
             }

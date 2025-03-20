@@ -50,7 +50,12 @@ export default function index(props) {
         <Form.Item shouldUpdate={(prevValues, curValues) => prevValues?.datasource?.value !== curValues?.datasource?.value} noStyle>
           {({ getFieldValue }) => {
             let datasourceValue = getFieldValue(['datasource', 'value']);
-            datasourceValue = replaceExpressionVars(datasourceValue as any, vars, vars.length, id);
+            datasourceValue = replaceExpressionVars({
+              text: datasourceValue,
+              variables: vars,
+              limit: vars.length,
+              dashboardId: id,
+            });
             return <IndexSelect name={['config', 'index']} cate='elasticsearch' datasourceValue={datasourceValue} />;
           }}
         </Form.Item>

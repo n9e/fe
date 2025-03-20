@@ -64,6 +64,10 @@ const typeOptions = [
     value: 'datasource',
   },
   {
+    label: 'Datasource name',
+    value: 'datasourceName',
+  },
+  {
     label: 'Host ident',
     value: 'hostIdent',
   },
@@ -308,13 +312,16 @@ function EditItem(props: IProps) {
                 <Form.Item
                   label={t('var.datasource.regex')}
                   name='regex'
-                  tooltip={
-                    <Trans
-                      ns='dashboard'
-                      i18nKey='var.datasource.regex_tip'
-                      components={{ a: <a target='_blank' href='https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions' /> }}
-                    />
-                  }
+                  tooltip={{
+                    title: (
+                      <Trans
+                        ns='dashboard'
+                        i18nKey='var.datasource.regex_tip'
+                        components={{ a: <a target='_blank' href='https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions' /> }}
+                      />
+                    ),
+                    overlayClassName: 'ant-tooltip-with-link',
+                  }}
                   rules={[{ pattern: new RegExp('^/(.*?)/(g?i?m?y?)$'), message: 'invalid regex' }]}
                 >
                   <Input placeholder='/vm/' />
@@ -336,6 +343,63 @@ function EditItem(props: IProps) {
                             }),
                             (item) => (
                               <Select.Option key={item.id} value={item.id}>
+                                {item.name}
+                              </Select.Option>
+                            ),
+                          )}
+                        </Select>
+                      </Form.Item>
+                    );
+                  }}
+                </Form.Item>
+              </>
+            );
+          } else if (type === 'datasourceName') {
+            return (
+              <>
+                <Form.Item label={t('var.datasource.definition')} name='definition' rules={[{ required: true }]}>
+                  <Select disabled={editMode === 0}>
+                    {_.map(datasourceCateOptions, (item) => (
+                      <Select.Option key={item.value} value={item.value}>
+                        {item.label}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+                <Form.Item
+                  label={t('var.datasource.regex')}
+                  name='regex'
+                  tooltip={{
+                    title: (
+                      <Trans
+                        ns='dashboard'
+                        i18nKey='var.datasource.regex_tip'
+                        components={{ a: <a target='_blank' href='https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions' /> }}
+                      />
+                    ),
+                    overlayClassName: 'ant-tooltip-with-link',
+                  }}
+                  rules={[{ pattern: new RegExp('^/(.*?)/(g?i?m?y?)$'), message: 'invalid regex' }]}
+                >
+                  <Input placeholder='/vm/' />
+                </Form.Item>
+                <Form.Item shouldUpdate={(prevValues, curValues) => prevValues?.definition !== curValues?.regex || prevValues?.regex} noStyle>
+                  {({ getFieldValue }) => {
+                    const definition = getFieldValue('definition');
+                    const regex = getFieldValue('regex');
+                    return (
+                      <Form.Item label={t('var.datasource.defaultValue')} name='defaultValue'>
+                        <Select>
+                          {_.map(
+                            _.filter(groupedDatasourceList[definition], (item) => {
+                              if (regex) {
+                                const reg = stringToRegex(regex);
+                                return reg ? reg.test(item.name) : false;
+                              }
+                              return true;
+                            }),
+                            (item) => (
+                              <Select.Option key={item.name} value={item.name}>
                                 {item.name}
                               </Select.Option>
                             ),
