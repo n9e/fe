@@ -66,6 +66,10 @@ const typeOptions = [
     value: 'datasource',
   },
   {
+    label: 'Datasource name',
+    value: 'datasourceName',
+  },
+  {
     label: 'Host ident',
     value: 'hostIdent',
   },

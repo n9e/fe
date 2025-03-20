@@ -9,13 +9,13 @@ import { IVariable } from '../../VariableConfig/definition';
 import replaceExpressionBracket from '../utils/replaceExpressionBracket';
 import { completeBreakpoints, getSerieName } from './utils';
 import replaceFieldWithVariable from '../utils/replaceFieldWithVariable';
-import { replaceExpressionVars, getOptionsList } from '../../VariableConfig/constant';
+import { getOptionsList } from '../../VariableConfig/constant';
 import { N9E_PATHNAME, IS_PLUS } from '@/utils/constant';
 
 interface IOptions {
   id?: string; // panelId
   dashboardId: string;
-  datasourceValue: number; // 关联变量时 datasourceValue: string
+  datasourceValue: number;
   time: IRawTimeRange;
   targets: ITarget[];
   variableConfig?: IVariable[];
@@ -62,7 +62,7 @@ interface Result {
 }
 
 export default async function prometheusQuery(options: IOptions): Promise<Result> {
-  const { dashboardId, id, time, targets, variableConfig, spanNulls, scopedVars, type } = options;
+  const { dashboardId, id, time, targets, variableConfig, spanNulls, scopedVars, type, datasourceValue } = options;
   if (!time.start) return Promise.resolve({ series: [] });
   const parsedRange = parseRange(time);
   const series: any[] = [];
@@ -72,7 +72,7 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
   let exprs: string[] = [];
   let refIds: string[] = [];
   let signalKey = `${id}`;
-  const datasourceValue = variableConfig ? replaceExpressionVars(options.datasourceValue as any, variableConfig, variableConfig.length, dashboardId) : options.datasourceValue;
+
   if (targets && typeof datasourceValue === 'number') {
     _.forEach(targets, (target, idx) => {
       // 兼容没有 refId 数据的旧版内置大盘
@@ -265,6 +265,7 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
       return Promise.reject(e);
     }
   }
+  // @ts-ignore
   if (datasourceValue !== 'number' && type !== 'text' && type !== 'iframe') {
     return Promise.reject({
       message: i18next.t('dashboard:detail.invalidDatasource'),

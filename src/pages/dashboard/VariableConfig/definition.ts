@@ -28,7 +28,7 @@ export interface IVariable {
     label: string;
     value: string;
   }[];
-  type: 'query' | 'textbox' | 'custom' | 'constant' | 'datasource' | 'hostIdent';
+  type: 'query' | 'textbox' | 'custom' | 'constant' | 'datasource' | 'datasourceName' | 'hostIdent';
   defaultValue?: string; // textbox 的默认值
   datasource: {
     // v5.14.3 新增 datasource 储存数据源类型和名称

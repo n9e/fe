@@ -6,7 +6,7 @@ import ExpressionPanel from '../../Components/ExpressionPanel';
 import AddQueryButtons from '../../Components/AddQueryButtons';
 import QueryPanel from './QueryPanel';
 
-export default function Elasticsearch({ chartForm, variableConfig, dashboardId }) {
+export default function Elasticsearch({ datasourceValue }) {
   const targets = Form.useWatch('targets');
 
   return (
@@ -20,7 +20,7 @@ export default function Elasticsearch({ chartForm, variableConfig, dashboardId }
                 if (__mode__ === '__expr__') {
                   return <ExpressionPanel key={field.key} fields={fields} remove={remove} field={field} />;
                 }
-                return <QueryPanel key={field.key} field={field} index={index} fields={fields} remove={remove} dashboardId={dashboardId} variableConfig={variableConfig} />;
+                return <QueryPanel key={field.key} field={field} index={index} fields={fields} remove={remove} datasourceValue={datasourceValue} />;
               })}
 
               <Form.ErrorList errors={errors} />

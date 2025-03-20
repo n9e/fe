@@ -254,6 +254,7 @@ export const replaceExpressionVarsSpecifyRule = (
     formData: IVariable[];
     limit: number;
     id: string;
+    datasourceList?: any[];
   },
   rule: {
     regex: string;
@@ -261,7 +262,7 @@ export const replaceExpressionVarsSpecifyRule = (
   },
   isEscapeJsonString = false,
 ) => {
-  const { expression, formData, limit, id } = params;
+  const { expression, formData, limit, id, datasourceList } = params;
   const { regex, getPlaceholder } = rule;
   let newExpression = expression;
   const vars: any[] | null = newExpression && typeof newExpression.match === 'function' ? newExpression.match(new RegExp(regex, 'g')) : [];
@@ -331,6 +332,9 @@ export const replaceExpressionVarsSpecifyRule = (
             newExpression = replaceAllPolyfill(newExpression, placeholder, realSelected);
           } else if (typeof selected === 'string') {
             newExpression = replaceAllPolyfill(newExpression, placeholder, ajustVarSingleValue(newExpression, placeholder, selected, formData[i], isEscapeJsonString));
+            if (type === 'datasourceName') {
+              newExpression = _.find(datasourceList, { name: selected })?.id;
+            }
           } else if (selected === null || selected === undefined) {
             // 未选择或填写变量值时替换为传入的value
             newExpression = replaceAllPolyfill(newExpression, placeholder, value ? (_.isArray(value) ? _.trim(_.join(value, separator), separator) : value) : '');
@@ -352,10 +356,18 @@ export const replaceExpressionVarsSpecifyRule = (
   return newExpression;
 };
 
-export const replaceExpressionVars = (expression: string, formData: IVariable[], limit: number, id: string, isEscapeJsonString = false) => {
-  let newExpression = expression;
+export const replaceExpressionVars = (options: {
+  text: string;
+  variables: IVariable[];
+  limit: number;
+  dashboardId: string;
+  isEscapeJsonString?: boolean;
+  datasourceList?: any[];
+}) => {
+  const { text, variables, limit, dashboardId, isEscapeJsonString = false, datasourceList } = options;
+  let newExpression = text;
   newExpression = replaceExpressionVarsSpecifyRule(
-    { expression: newExpression, formData, limit, id },
+    { expression: newExpression, formData: variables, limit, id: dashboardId, datasourceList },
     {
       regex: '\\$[0-9a-zA-Z_]+',
       getPlaceholder: (expression: string) => `$${expression}`,
@@ -363,7 +375,7 @@ export const replaceExpressionVars = (expression: string, formData: IVariable[],
     isEscapeJsonString,
   );
   newExpression = replaceExpressionVarsSpecifyRule(
-    { expression: newExpression, formData, limit, id },
+    { expression: newExpression, formData: variables, limit, id: dashboardId, datasourceList },
     {
       regex: '\\${[0-9a-zA-Z_]+}',
       getPlaceholder: (expression: string) => '${' + expression + '}',
@@ -371,7 +383,7 @@ export const replaceExpressionVars = (expression: string, formData: IVariable[],
     isEscapeJsonString,
   );
   newExpression = replaceExpressionVarsSpecifyRule(
-    { expression: newExpression, formData, limit, id },
+    { expression: newExpression, formData: variables, limit, id: dashboardId, datasourceList },
     {
       regex: '\\[\\[[0-9a-zA-Z_]+\\]\\]',
       getPlaceholder: (expression: string) => '[[' + expression + ']]',
@@ -430,7 +442,12 @@ export function replaceFieldWithVariable(value: string, dashboardId?: string, va
   if (!dashboardId || !variableConfig) {
     return value;
   }
-  return replaceExpressionVars(value, variableConfig, variableConfig.length, dashboardId);
+  return replaceExpressionVars({
+    text: value,
+    variables: variableConfig,
+    limit: variableConfig.length,
+    dashboardId,
+  });
 }
 
 export const getOptionsList = (
@@ -469,7 +486,12 @@ export const getOptionsList = (
 };
 
 export function filterOptionsByReg(options: string[], reg, formData: IVariable[], limit: number, id: string) {
-  reg = replaceExpressionVars(reg, formData, limit, id);
+  reg = replaceExpressionVars({
+    text: reg,
+    variables: formData,
+    limit,
+    dashboardId: id,
+  });
   const regex = stringToRegex(reg);
 
   if (reg && regex) {

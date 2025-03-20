@@ -197,6 +197,29 @@ export default function DisplayItem(props: IProps) {
             ))}
           </Select>
         ) : null}
+        {type === 'datasourceName' ? (
+          <Select
+            style={{
+              width: '180px',
+            }}
+            maxTagCount='responsive'
+            defaultActiveFirstOption={false}
+            showSearch
+            dropdownMatchSelectWidth={false}
+            value={selected}
+            onChange={(value) => {
+              setSelected(value as any);
+              onChange(value);
+            }}
+            optionFilterProp='children'
+          >
+            {_.map(options as any, (item) => (
+              <Select.Option key={item.name} value={item.name}>
+                {item.name}
+              </Select.Option>
+            ))}
+          </Select>
+        ) : null}
         {type === 'hostIdent' ? (
           <Select
             allowClear

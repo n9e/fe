@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Form, Row, Col, Input, Switch, InputNumber, Space, Tag, Tooltip } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import _ from 'lodash';
@@ -13,15 +13,13 @@ import { IS_PLUS, alphabet } from '@/utils/constant';
 import Collapse, { Panel } from '../Components/Collapse';
 import ExpressionPanel from '../Components/ExpressionPanel';
 import AddQueryButtons from '../Components/AddQueryButtons';
-import { replaceExpressionVars } from '../../VariableConfig/constant';
-import { CommonStateContext } from '@/App';
 
-export default function Prometheus({ chartForm, variableConfig, dashboardId, time }) {
-  const { darkMode, isMcDonalds } = useContext(CommonStateContext);
+export default function Prometheus({ variableConfig, time, datasourceValue }) {
   const { t } = useTranslation('dashboard');
   const varNams = _.map(variableConfig, (item) => {
     return `$${item.name}`;
   });
+  const chartForm = Form.useFormInstance();
   const targets = Form.useWatch('targets');
 
   return (
@@ -48,7 +46,7 @@ export default function Prometheus({ chartForm, variableConfig, dashboardId, tim
                               {name}
                               {step ? (
                                 <Tooltip placement='right' title={t('query.prometheus.step.tag_tip')}>
-                                  <Tag color={isMcDonalds ? 'default' : 'purple'}>{`step=${step}s`}</Tag>
+                                  <Tag color='purple'>{`step=${step}s`}</Tag>
                                 </Tooltip>
                               ) : null}
                             </Space>
@@ -78,39 +76,31 @@ export default function Prometheus({ chartForm, variableConfig, dashboardId, tim
                       <div />
                     </Form.Item>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                      <Form.Item shouldUpdate={(prevValues, curValues) => _.isEqual(prevValues.datasourceValue, curValues.datasourceValue)} noStyle>
-                        {({ getFieldValue }) => {
-                          let datasourceValue = getFieldValue('datasourceValue');
-                          datasourceValue = variableConfig ? replaceExpressionVars(datasourceValue, variableConfig, variableConfig.length, dashboardId) : datasourceValue;
-                          return (
-                            <Form.Item
-                              label='PromQL'
-                              tooltip={{
-                                overlayInnerStyle: { width: 330 },
-                                title: <Trans ns='dashboard' i18nKey='dashboard:var.help_tip' components={{ 1: <br /> }} />,
-                              }}
-                              {...field}
-                              name={[field.name, 'expr']}
-                              validateTrigger={['onBlur']}
-                              rules={[
-                                {
-                                  required: true,
-                                  message: '',
-                                },
-                              ]}
-                              style={{ flex: 1 }}
-                            >
-                              <PromQLInputWithBuilder
-                                validateTrigger={['onBlur']}
-                                datasourceValue={datasourceValue}
-                                extraLabelValues={varNams}
-                                rangeVectorCompletion
-                                showBuiltinMetrics
-                                showBuilder={false}
-                              />
-                            </Form.Item>
-                          );
+                      <Form.Item
+                        label='PromQL'
+                        tooltip={{
+                          overlayInnerStyle: { width: 330 },
+                          title: <Trans ns='dashboard' i18nKey='dashboard:var.help_tip' components={{ 1: <br /> }} />,
                         }}
+                        {...field}
+                        name={[field.name, 'expr']}
+                        validateTrigger={['onBlur']}
+                        rules={[
+                          {
+                            required: true,
+                            message: '',
+                          },
+                        ]}
+                        style={{ flex: 1 }}
+                      >
+                        <PromQLInputWithBuilder
+                          validateTrigger={['onBlur']}
+                          datasourceValue={datasourceValue}
+                          extraLabelValues={varNams}
+                          rangeVectorCompletion
+                          showBuiltinMetrics
+                          showBuilder={false}
+                        />
                       </Form.Item>
                     </div>
                     <Row gutter={10}>

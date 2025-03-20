@@ -9,12 +9,12 @@ import TimeRangePicker, { isMathString } from '@/components/TimeRangePicker';
 import AdvancedSettings from '@/plugins/TDengine/components/AdvancedSettings';
 import Collapse, { Panel } from '@/pages/dashboard/Editor/Components/Collapse';
 import getFirstUnusedLetter from '@/pages/dashboard/Renderer/utils/getFirstUnusedLetter';
-import { replaceExpressionVars } from '@/pages/dashboard/VariableConfig/constant';
 import SqlTemplates from '../components/SqlTemplates';
 import { MetaModal } from '../components/Meta';
 
-export default function TDengineQueryBuilder({ chartForm, variableConfig, dashboardId }) {
+export default function TDengineQueryBuilder({ datasourceValue }) {
   const { t } = useTranslation('dashboard');
+  const chartForm = Form.useFormInstance();
 
   return (
     <Form.List name='targets'>
@@ -98,30 +98,22 @@ export default function TDengineQueryBuilder({ chartForm, variableConfig, dashbo
                       </Col>
                       <Col flex='62px'>
                         <div style={{ marginTop: 27 }}>
-                          <Form.Item shouldUpdate={(prevValues, curValues) => _.isEqual(prevValues.datasourceValue, curValues.datasourceValue)} noStyle>
-                            {({ getFieldValue }) => {
-                              let datasourceValue = getFieldValue('datasourceValue');
-                              datasourceValue = variableConfig ? replaceExpressionVars(datasourceValue, variableConfig, variableConfig.length, dashboardId) : datasourceValue;
-                              return (
-                                <MetaModal
-                                  datasourceValue={datasourceValue}
-                                  onTreeNodeClick={(nodeData) => {
-                                    const targets = _.cloneDeep(chartForm.getFieldValue('targets'));
-                                    _.set(targets, [field.name, 'query', 'query'], `select * from ${nodeData.database}.${nodeData.table} where _ts >= $from and _ts < $to`);
-                                    if (nodeData.levelType === 'field') {
-                                      _.set(targets, [field.name, 'query', 'keys'], {
-                                        ...(targets?.[field.name]?.query?.keys || {}),
-                                        metricKey: [nodeData.field],
-                                      });
-                                    }
-                                    chartForm.setFieldsValue({
-                                      targets,
-                                    });
-                                  }}
-                                />
-                              );
+                          <MetaModal
+                            datasourceValue={datasourceValue}
+                            onTreeNodeClick={(nodeData) => {
+                              const targets = _.cloneDeep(chartForm.getFieldValue('targets'));
+                              _.set(targets, [field.name, 'query', 'query'], `select * from ${nodeData.database}.${nodeData.table} where _ts >= $from and _ts < $to`);
+                              if (nodeData.levelType === 'field') {
+                                _.set(targets, [field.name, 'query', 'keys'], {
+                                  ...(targets?.[field.name]?.query?.keys || {}),
+                                  metricKey: [nodeData.field],
+                                });
+                              }
+                              chartForm.setFieldsValue({
+                                targets,
+                              });
                             }}
-                          </Form.Item>
+                          />
                         </div>
                       </Col>
                     </Row>

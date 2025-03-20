@@ -17,13 +17,12 @@ import LegendInput from '../components/LegendInput';
 import { NAME_SPACE } from '../constants';
 import './style.less';
 
-export default function MySQLQueryBuilder() {
+export default function MySQLQueryBuilder({ datasourceValue }) {
   const { t } = useTranslation('dashboard');
+  const { darkMode } = useContext(CommonStateContext);
   const chartForm = Form.useFormInstance();
   const type = Form.useWatch('type');
   const targets = Form.useWatch('targets');
-  const datasourceValue = Form.useWatch('datasourceValue');
-  const { darkMode } = useContext(CommonStateContext);
 
   if (!type) return null;
 

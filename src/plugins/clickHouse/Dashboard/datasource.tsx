@@ -3,7 +3,6 @@ import moment from 'moment';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { DatasourceCateEnum } from '@/utils/constant';
 import { IVariable } from '@/pages/dashboard/VariableConfig/definition';
-import { replaceExpressionVars } from '@/pages/dashboard/VariableConfig/constant';
 import replaceFieldWithVariable from '@/pages/dashboard/Renderer/utils/replaceFieldWithVariable';
 import { getDsQuery2, getLogsQuery } from '../services';
 
@@ -17,7 +16,6 @@ interface IOptions {
   spanNulls?: boolean;
   scopedVars?: any;
   inspect?: boolean;
-  custom: any;
 }
 
 interface Result {
@@ -26,7 +24,7 @@ interface Result {
 }
 
 export default async function mysqlQuery(options: IOptions): Promise<Result> {
-  const { dashboardId, time, targets, variableConfig, custom } = options;
+  const { dashboardId, time, targets, variableConfig, datasourceValue } = options;
   if (!time.start) return Promise.resolve({ series: [] });
   const parsedRange = parseRange(time);
   let start = moment(parsedRange.start).unix();
@@ -35,7 +33,6 @@ export default async function mysqlQuery(options: IOptions): Promise<Result> {
   let batchTimeRawParams: any[] = [];
   let exps: any[] = []; // 表达式查询条件
   let series: any[] = [];
-  const datasourceValue = variableConfig ? replaceExpressionVars(options.datasourceValue as any, variableConfig, variableConfig.length, dashboardId) : options.datasourceValue;
   if (targets && typeof datasourceValue === 'number') {
     _.forEach(targets, (target) => {
       if (target.time) {

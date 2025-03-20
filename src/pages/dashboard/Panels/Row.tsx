@@ -38,7 +38,12 @@ function replaceFieldWithVariable(value: string, dashboardId?: string, variableC
   if (!dashboardId || !variableConfig) {
     return value;
   }
-  return replaceExpressionVars(value, variableConfig, variableConfig.length, dashboardId);
+  return replaceExpressionVars({
+    text: value,
+    variables: variableConfig,
+    limit: variableConfig.length,
+    dashboardId,
+  });
 }
 
 export default function Row(props: IProps) {
