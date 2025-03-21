@@ -12,8 +12,8 @@ import { IVariable } from '@/pages/dashboard/VariableConfig/definition';
 import { CommonStateContext } from '@/App';
 
 export default function ImportBuiltinContent({ busiId, onOk }) {
-  const { darkMode, isMcDonalds } = useContext(CommonStateContext);
-  const tagColor = isMcDonalds ? 'default' : 'purple';
+  const { darkMode } = useContext(CommonStateContext);
+
   const { t } = useTranslation('dashboard');
   const [filter, setFilter] = useState<{
     query?: string;
@@ -165,7 +165,7 @@ export default function ImportBuiltinContent({ busiId, onOk }) {
                           return (
                             <Tag
                               key={idx}
-                              color={tagColor}
+                              color='purple'
                               style={{ cursor: 'pointer' }}
                               onClick={() => {
                                 const queryItem = _.compact(_.split(filter.query, ' '));

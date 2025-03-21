@@ -20,8 +20,8 @@ const queryKeyOptions = ['all_hosts', 'group_ids', 'tags'];
 
 function index(props: Props & ModalWrapProps) {
   const { t } = useTranslation('alertRules');
-  const { darkMode, isMcDonalds } = useContext(CommonStateContext);
-  const tagColor = isMcDonalds ? 'default' : 'purple';
+  const { darkMode } = useContext(CommonStateContext);
+
   const { gid, ids, busiGroups, onOk, visible, destroy } = props;
   const [filterHost, setFilterHost] = useState<{
     key: string;
@@ -177,7 +177,7 @@ function index(props: Props & ModalWrapProps) {
             render: (val) => {
               return _.map(val, (item) => {
                 return (
-                  <Tag key={item} color={tagColor}>
+                  <Tag key={item} color='purple'>
                     {item}
                   </Tag>
                 );
@@ -190,7 +190,7 @@ function index(props: Props & ModalWrapProps) {
             render: (val) => {
               return _.map(val, (item) => {
                 return (
-                  <Tag key={item} color={tagColor}>
+                  <Tag key={item} color='purple'>
                     {item}
                   </Tag>
                 );
@@ -205,7 +205,7 @@ function index(props: Props & ModalWrapProps) {
                 ? t('common:not_grouped')
                 : _.map(groupObjs, (item) => {
                     return (
-                      <Tag color={tagColor} key={item.id}>
+                      <Tag color='purple' key={item.id}>
                         {item.name}
                       </Tag>
                     );

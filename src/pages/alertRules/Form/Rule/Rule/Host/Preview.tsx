@@ -10,8 +10,8 @@ interface IProps {
 }
 
 export default function Preview(props: IProps) {
-  const { darkMode, isMcDonalds } = useContext(CommonStateContext);
-  const tagColor = isMcDonalds ? 'default' : 'purple';
+  const { darkMode } = useContext(CommonStateContext);
+
   const { t } = useTranslation('alertRules');
   const { queries } = props;
   const [visible, setVisible] = useState<boolean>(false);
@@ -62,7 +62,7 @@ export default function Preview(props: IProps) {
               render: (val) => {
                 return _.map(val, (item) => {
                   return (
-                    <Tag key={item} color={tagColor}>
+                    <Tag key={item} color='purple'>
                       {item}
                     </Tag>
                   );
@@ -75,7 +75,7 @@ export default function Preview(props: IProps) {
               render: (val) => {
                 return _.map(val, (item) => {
                   return (
-                    <Tag key={item} color={tagColor}>
+                    <Tag key={item} color='purple'>
                       {item}
                     </Tag>
                   );
@@ -90,7 +90,7 @@ export default function Preview(props: IProps) {
                   ? t('common:not_grouped')
                   : _.map(groupObjs, (item) => {
                       return (
-                        <Tag color={tagColor} key={item.id}>
+                        <Tag color='purple' key={item.id}>
                           {item.name}
                         </Tag>
                       );
@@ -114,7 +114,7 @@ export default function Preview(props: IProps) {
       <Button
         size='small'
         type='primary'
-        ghost={!isMcDonalds}
+        ghost
         onClick={() => {
           setVisible(true);
         }}

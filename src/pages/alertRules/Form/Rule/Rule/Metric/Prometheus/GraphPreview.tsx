@@ -15,7 +15,7 @@ const getDefaultStepByStartAndEnd = (start: number, end: number) => {
 };
 
 export default function GraphPreview({ form, fieldName, promqlFieldName = 'prom_ql' }) {
-  const { groupedDatasourceList, isMcDonalds } = useContext(CommonStateContext);
+  const { groupedDatasourceList } = useContext(CommonStateContext);
   const { t } = useTranslation('alertRules');
   const divRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
@@ -203,7 +203,7 @@ export default function GraphPreview({ form, fieldName, promqlFieldName = 'prom_
         <Button
           size='small'
           type='primary'
-          ghost={!isMcDonalds}
+          ghost
           onClick={() => {
             if (!visible) {
               const datasource_id = form.getFieldValue('datasource_value');

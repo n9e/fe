@@ -17,7 +17,7 @@ import { replaceExpressionVars } from '../../VariableConfig/constant';
 import { CommonStateContext } from '@/App';
 
 export default function Prometheus({ chartForm, variableConfig, dashboardId, time }) {
-  const { darkMode, isMcDonalds } = useContext(CommonStateContext);
+  const { darkMode } = useContext(CommonStateContext);
   const { t } = useTranslation('dashboard');
   const varNams = _.map(variableConfig, (item) => {
     return `$${item.name}`;
@@ -48,7 +48,7 @@ export default function Prometheus({ chartForm, variableConfig, dashboardId, tim
                               {name}
                               {step ? (
                                 <Tooltip placement='right' title={t('query.prometheus.step.tag_tip')}>
-                                  <Tag color={isMcDonalds ? 'default' : 'purple'}>{`step=${step}s`}</Tag>
+                                  <Tag color='purple'>{`step=${step}s`}</Tag>
                                 </Tooltip>
                               ) : null}
                             </Space>

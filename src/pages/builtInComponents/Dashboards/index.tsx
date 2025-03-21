@@ -24,8 +24,8 @@ interface Props {
 export default function index(props: Props) {
   const { component_id } = props;
   const { t } = useTranslation('builtInComponents');
-  const { busiGroups, darkMode, isMcDonalds } = useContext(CommonStateContext);
-  const tagColor = isMcDonalds ? 'default' : 'purple';
+  const { busiGroups, darkMode } = useContext(CommonStateContext);
+
   const [filter, setFilter] = useState<{
     query?: string;
   }>({ query: undefined });
@@ -166,7 +166,7 @@ export default function index(props: Props) {
                     return (
                       <Tag
                         key={idx}
-                        color={tagColor}
+                        color='purple'
                         style={{ cursor: 'pointer' }}
                         onClick={() => {
                           const queryItem = _.compact(_.split(filter.query, ' '));

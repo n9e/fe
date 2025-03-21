@@ -8,7 +8,7 @@ import { relabelTest } from './services';
 
 import { CommonStateContext } from '@/App';
 export default function TestModal() {
-  const { darkMode, isMcDonalds } = useContext(CommonStateContext);
+  const { darkMode } = useContext(CommonStateContext);
   const { t } = useTranslation('alertRules');
   const eventRelabelConfig = Form.useWatch(name);
   const [visible, setVisible] = useState(false);
@@ -20,7 +20,7 @@ export default function TestModal() {
   return (
     <>
       <Button
-        ghost={!isMcDonalds}
+        ghost
         type='primary'
         className='mt2'
         disabled={_.isEmpty(eventRelabelConfig)}

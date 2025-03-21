@@ -18,8 +18,8 @@ interface Props {
 
 export default function EventsModal(props: Props) {
   const { t } = useTranslation('AlertHisEvents');
-  const { groupedDatasourceList, isMcDonalds } = useContext(CommonStateContext);
-  const tagColor = isMcDonalds ? 'default' : 'purple';
+  const { groupedDatasourceList } = useContext(CommonStateContext);
+
   const [visible, setVisible] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [filter, setFilter] = useState<{
@@ -205,7 +205,7 @@ export default function EventsModal(props: Props) {
                 const content =
                   tags &&
                   tags.map((item) => (
-                    <Tag color={tagColor} key={item}>
+                    <Tag color='purple' key={item}>
                       {item}
                     </Tag>
                   ));

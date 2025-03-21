@@ -17,8 +17,8 @@ interface Props {
 
 export default function PreviewMutedEvents(props: Props) {
   const { t } = useTranslation('AlertCurEvents');
-  const { groupedDatasourceList, isMcDonalds } = useContext(CommonStateContext);
-  const tagColor = isMcDonalds ? 'default' : 'purple';
+  const { groupedDatasourceList } = useContext(CommonStateContext);
+
   const { form, onOk } = props;
   const [visible, setVisible] = useState(false);
   const [data, setData] = useState<any[]>([]);
@@ -53,7 +53,7 @@ export default function PreviewMutedEvents(props: Props) {
               {_.map(tags, (item) => {
                 return (
                   <Tooltip key={item} title={item}>
-                    <Tag color={tagColor} style={{ maxWidth: '100%' }}>
+                    <Tag color='purple' style={{ maxWidth: '100%' }}>
                       <div
                         style={{
                           maxWidth: 'max-content',

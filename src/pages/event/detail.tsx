@@ -50,8 +50,8 @@ const EventDetailPage: React.FC = () => {
   const { t } = useTranslation('AlertCurEvents');
   const { busiId, eventId } = useParams<{ busiId: string; eventId: string }>();
   const commonState = useContext(CommonStateContext);
-  const { busiGroups, datasourceList, isMcDonalds } = commonState;
-  const tagColor = isMcDonalds ? 'default' : 'purple';
+  const { busiGroups, datasourceList } = commonState;
+
   const handleNavToWarningList = (id) => {
     if (busiGroups.find((item) => item.id === id)) {
       window.open(`${basePrefix}/alert-rules?ids=${id}&isLeaf=true`);
@@ -152,7 +152,7 @@ const EventDetailPage: React.FC = () => {
       render(tags) {
         return tags
           ? tags.map((tag) => (
-              <Tag color={tagColor} key={tag}>
+              <Tag color='purple' key={tag}>
                 {tag}
               </Tag>
             ))
@@ -262,7 +262,7 @@ const EventDetailPage: React.FC = () => {
       label: t('detail.notify_groups_obj'),
       key: 'notify_groups_obj',
       render(groups) {
-        return groups ? groups.map((group) => <Tag color={tagColor}>{group.name}</Tag>) : '';
+        return groups ? groups.map((group) => <Tag color='purple'>{group.name}</Tag>) : '';
       },
     },
     {
