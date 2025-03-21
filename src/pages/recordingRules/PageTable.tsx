@@ -40,7 +40,6 @@ const PageTable: React.FC<Props> = ({ gids }) => {
   const [selectRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
   const [selectedRows, setSelectedRows] = useState<strategyItem[]>([]);
   const { groupedDatasourceList, businessGroup, busiGroups } = useContext(CommonStateContext);
-
   const [query, setQuery] = useState<string>('');
   const [isModalVisible, setisModalVisible] = useState<boolean>(false);
   const [currentStrategyDataAll, setCurrentStrategyDataAll] = useState([]);

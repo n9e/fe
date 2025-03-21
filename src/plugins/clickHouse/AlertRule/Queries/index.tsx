@@ -7,6 +7,7 @@ import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import AdvancedSettings from '../../components/AdvancedSettings';
 import QueryName, { generateQueryName } from '@/components/QueryName';
 import GraphPreview from './GraphPreview';
+import { CommonStateContext } from '@/App';
 import DocumentDrawer from '../../components/DocumentDrawer';
 import LogQL from '@/components/LogQL';
 import { DatasourceCateEnum } from '@/utils/constant';
@@ -23,6 +24,7 @@ interface IProps {
 
 export default function index({ form, prefixField = {}, fullPrefixName = [], prefixName = [], disabled, datasourceValue }: IProps) {
   const { t } = useTranslation(NAME_SPACE);
+  const { darkMode } = useContext(CommonStateContext);
   const datasourceID = _.isArray(datasourceValue) ? datasourceValue[0] : datasourceValue;
   const queries = Form.useWatch(['rule_config', 'queries']);
 

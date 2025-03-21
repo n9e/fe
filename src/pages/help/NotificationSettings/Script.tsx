@@ -6,6 +6,7 @@ import { EditorView } from '@codemirror/view';
 import CodeMirror from '@/components/CodeMirror';
 import { getNotifyScript, putNotifyScript } from './services';
 import { ScriptType } from './types';
+
 export default function Script() {
   const [form] = Form.useForm();
   const { t } = useTranslation('notificationSettings');

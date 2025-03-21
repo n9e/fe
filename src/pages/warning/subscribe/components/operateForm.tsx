@@ -52,7 +52,6 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
   const [form] = Form.useForm(null as any);
   const history = useHistory();
   const { groupedDatasourceList, isPlus, businessGroup } = useContext(CommonStateContext);
-
   const curBusiId = detail.group_id || businessGroup.id!; // 修改和克隆是用 detail.group_id , 新增用 businessGroup.id
   const [ruleModalShow, setRuleModalShow] = useState<boolean>(false);
   const [selectedRules, setSelectedRules] = useState<any[]>([]); // 选中的规则

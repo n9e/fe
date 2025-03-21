@@ -7,6 +7,7 @@ import { Filter, getTypes, getCollectors, getDefaultTypes, Record } from '@/page
 import Markdown from '@/components/Markdown';
 import { getUnitLabel } from '@/pages/dashboard/Components/UnitPicker/utils';
 import MetricsList from './MetricsList';
+
 interface Props {
   onSelect: (expression: string, metric: Record) => void;
   setOpen: (open: boolean) => void;

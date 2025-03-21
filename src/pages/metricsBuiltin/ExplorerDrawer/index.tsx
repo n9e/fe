@@ -8,6 +8,7 @@ import { useGetState } from 'ahooks';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { Record } from '../services';
 import Panel from './Panel';
+
 interface Props {
   visible: boolean;
   onClose: () => void;

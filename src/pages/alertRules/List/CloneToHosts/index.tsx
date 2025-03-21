@@ -7,6 +7,7 @@ import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { getTargetList } from '@/services/targets';
 import { rulesClone } from '@/pages/alertRules/services';
 import ValuesSelect from './ValuesSelect';
+
 interface Props {
   gid: number;
   ids: React.Key[];

@@ -21,6 +21,7 @@ export interface Record {
 interface Props {
   data?: Record;
 }
+
 export default function ExplorerDrawer(props: Props) {
   const { t } = useTranslation('metricsBuiltin');
   const { data } = props;
