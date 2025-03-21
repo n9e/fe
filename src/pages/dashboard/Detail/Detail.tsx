@@ -381,6 +381,7 @@ export default function DetailV2(props: IProps) {
                       variables: variableConfigWithOptions,
                       limit: variableConfigWithOptions.length,
                       dashboardId: id,
+                      datasourceList,
                     });
                     const serielData = {
                       dataProps: {
