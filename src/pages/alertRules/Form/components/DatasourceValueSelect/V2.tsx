@@ -172,7 +172,6 @@ function Query({ idx, names, field, remove, invalidDatasourceIds, datasourceList
 
 import { CommonStateContext } from '@/App';
 export default function index(props: IProps) {
-  const { darkMode } = useContext(CommonStateContext);
   const { datasourceList, reloadGroupedDatasourceList, datasourceCate, names = ['datasource_queries'], disabled, showExtra } = props;
   const { t } = useTranslation('alertRules');
   const [fullDatasourceList, setFullDatasourceList] = useState<any[]>([]);

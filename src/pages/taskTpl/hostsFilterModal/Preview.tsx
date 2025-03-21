@@ -3,16 +3,12 @@ import _ from 'lodash';
 import { Modal, Table, Button, Tag } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { getTargetList } from '@/services/targets';
-import { CommonStateContext } from '@/App';
-
 interface IProps {
   queries: any[];
 }
 
 export default function Preview(props: IProps) {
   const { t } = useTranslation('alertRules');
-  const { darkMode } = useContext(CommonStateContext);
-
   const { queries } = props;
   const [visible, setVisible] = useState<boolean>(false);
   const [data, setData] = useState<any[]>([]);

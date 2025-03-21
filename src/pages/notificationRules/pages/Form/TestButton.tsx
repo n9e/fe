@@ -17,7 +17,6 @@ interface Props {
 }
 
 export default function TestButton(props: Props) {
-  const { darkMode } = useContext(CommonStateContext);
   const { t } = useTranslation(NS);
   const { field } = props;
   const [visible, setVisible] = useState(false);

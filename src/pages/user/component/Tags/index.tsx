@@ -15,8 +15,6 @@ interface Props {
 
 export default function index(props: Props) {
   const { data, tagLinkTo } = props;
-  const { darkMode } = useContext(CommonStateContext);
-
   const displayData = _.slice(data, 0, 3);
   return (
     <Tooltip title={_.join(_.map(data, 'name'), ', ')}>

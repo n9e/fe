@@ -24,7 +24,6 @@ interface Props {
 import { useContext } from 'react';
 import { CommonStateContext } from '@/App';
 export default function ExplorerDrawer(props: Props) {
-  const { darkMode } = useContext(CommonStateContext);
   const { t } = useTranslation('metricsBuiltin');
   const { data } = props;
   const [panels, setPanels, getPanels] = useGetState<Record[]>([]);

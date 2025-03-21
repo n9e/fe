@@ -14,10 +14,8 @@ import Collapse, { Panel } from '../Components/Collapse';
 import ExpressionPanel from '../Components/ExpressionPanel';
 import AddQueryButtons from '../Components/AddQueryButtons';
 import { replaceExpressionVars } from '../../VariableConfig/constant';
-import { CommonStateContext } from '@/App';
 
 export default function Prometheus({ chartForm, variableConfig, dashboardId, time }) {
-  const { darkMode } = useContext(CommonStateContext);
   const { t } = useTranslation('dashboard');
   const varNams = _.map(variableConfig, (item) => {
     return `$${item.name}`;

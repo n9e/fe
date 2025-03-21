@@ -4,7 +4,6 @@ import { Modal, Table, Button, Tag } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { getTargetList } from '@/services/targets';
-import { CommonStateContext } from '@/App';
 
 interface IProps {
   queries: any[];
@@ -13,8 +12,6 @@ interface IProps {
 }
 
 export default function Preview(props: IProps) {
-  const { darkMode } = useContext(CommonStateContext);
-
   const { t } = useTranslation('DeviceSelect');
   const { queries, children, targetType = 'button' } = props;
   const [visible, setVisible] = useState<boolean>(false);

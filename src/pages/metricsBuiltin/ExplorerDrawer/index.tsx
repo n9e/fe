@@ -17,7 +17,6 @@ interface Props {
 }
 
 export default function ExplorerDrawer(props: Props) {
-  const { darkMode } = useContext(CommonStateContext);
   const { t } = useTranslation('metricsBuiltin');
   const { visible, onClose, data } = props;
   const [panels, setPanels, getPanels] = useGetState<Record[]>([]);

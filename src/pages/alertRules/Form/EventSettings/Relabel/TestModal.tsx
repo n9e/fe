@@ -8,7 +8,6 @@ import { relabelTest } from './services';
 
 import { CommonStateContext } from '@/App';
 export default function TestModal() {
-  const { darkMode } = useContext(CommonStateContext);
   const { t } = useTranslation('alertRules');
   const eventRelabelConfig = Form.useWatch(name);
   const [visible, setVisible] = useState(false);

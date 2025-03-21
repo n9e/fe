@@ -7,8 +7,6 @@ import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { getTargetList } from '@/services/targets';
 import { rulesClone } from '@/pages/alertRules/services';
 import ValuesSelect from './ValuesSelect';
-import { CommonStateContext } from '@/App';
-
 interface Props {
   gid: number;
   ids: React.Key[];
@@ -20,8 +18,6 @@ const queryKeyOptions = ['all_hosts', 'group_ids', 'tags'];
 
 function index(props: Props & ModalWrapProps) {
   const { t } = useTranslation('alertRules');
-  const { darkMode } = useContext(CommonStateContext);
-
   const { gid, ids, busiGroups, onOk, visible, destroy } = props;
   const [filterHost, setFilterHost] = useState<{
     key: string;

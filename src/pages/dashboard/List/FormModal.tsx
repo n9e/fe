@@ -140,7 +140,6 @@ function index(props: Props & ModalWrapProps) {
         <Form.Item label={t('settings.graphTooltip.label')} name='graphTooltip' tooltip={t('settings.graphTooltip.tip')}>
           <Radio.Group
             optionType='button'
-            buttonStyle={localStorage.getItem('n9e-dark-mode') === '2' ? 'solid' : 'outline'}
             options={[
               {
                 label: t('settings.graphTooltip.default'),
@@ -160,7 +159,6 @@ function index(props: Props & ModalWrapProps) {
         <Form.Item label={t('settings.graphZoom.label')} name='graphZoom' tooltip={t('settings.graphZoom.tip')}>
           <Radio.Group
             optionType='button'
-            buttonStyle={localStorage.getItem('n9e-dark-mode') === '2' ? 'solid' : 'outline'}
             options={[
               {
                 label: t('settings.graphZoom.default'),

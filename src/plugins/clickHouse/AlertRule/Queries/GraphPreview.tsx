@@ -10,7 +10,6 @@ import { getLogsQuery } from '../../services';
 import { useContext } from 'react';
 import { CommonStateContext } from '@/App';
 export default function GraphPreview({ cate, datasourceValue, query }) {
-  const { darkMode } = useContext(CommonStateContext);
   const { t } = useTranslation('db_tdengine');
   const divRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);

@@ -11,10 +11,7 @@ interface IProps {
   datasourceValue: number;
   disabled?: boolean;
 }
-import { useContext } from 'react';
-import { CommonStateContext } from '@/App';
 export default function GraphPreview({ datasourceValue, disabled }: IProps) {
-  const { darkMode } = useContext(CommonStateContext);
   const { t } = useTranslation('alertRules');
   const divRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);

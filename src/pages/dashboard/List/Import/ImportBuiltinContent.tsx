@@ -12,8 +12,6 @@ import { IVariable } from '@/pages/dashboard/VariableConfig/definition';
 import { CommonStateContext } from '@/App';
 
 export default function ImportBuiltinContent({ busiId, onOk }) {
-  const { darkMode } = useContext(CommonStateContext);
-
   const { t } = useTranslation('dashboard');
   const [filter, setFilter] = useState<{
     query?: string;

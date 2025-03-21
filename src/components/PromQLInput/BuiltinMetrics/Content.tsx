@@ -7,16 +7,12 @@ import { Filter, getTypes, getCollectors, getDefaultTypes, Record } from '@/page
 import Markdown from '@/components/Markdown';
 import { getUnitLabel } from '@/pages/dashboard/Components/UnitPicker/utils';
 import MetricsList from './MetricsList';
-import { CommonStateContext } from '@/App';
-
 interface Props {
   onSelect: (expression: string, metric: Record) => void;
   setOpen: (open: boolean) => void;
 }
 
 export default function Content(props: Props) {
-  const { darkMode } = useContext(CommonStateContext);
-
   const { t } = useTranslation('promQLInput');
   const { onSelect, setOpen } = props;
   const [filter, setFilter] = useState({} as Filter);

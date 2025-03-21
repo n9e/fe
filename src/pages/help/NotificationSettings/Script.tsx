@@ -6,10 +6,7 @@ import { EditorView } from '@codemirror/view';
 import CodeMirror from '@/components/CodeMirror';
 import { getNotifyScript, putNotifyScript } from './services';
 import { ScriptType } from './types';
-import { useContext } from 'react';
-import { CommonStateContext } from '@/App';
 export default function Script() {
-  const { darkMode } = useContext(CommonStateContext);
   const [form] = Form.useForm();
   const { t } = useTranslation('notificationSettings');
 
