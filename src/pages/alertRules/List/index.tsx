@@ -55,8 +55,8 @@ interface Filter {
 const FILTER_LOCAL_STORAGE_KEY = 'alert-rules-filter';
 
 export default function List(props: ListProps) {
-  const { businessGroup, busiGroups, isMcDonalds } = useContext(CommonStateContext);
-  const tagColor = isMcDonalds ? 'default' : 'purple';
+  const { businessGroup, busiGroups } = useContext(CommonStateContext);
+
   const { gids } = props;
   const { t } = useTranslation('alertRules');
   const history = useHistory();
@@ -152,7 +152,7 @@ export default function List(props: ListProps) {
           if (!value) return '';
           return (
             <Tags
-              color={tagColor}
+              color='purple'
               width={70}
               data={_.compact(
                 _.map(value, (item) => {
@@ -229,7 +229,7 @@ export default function List(props: ListProps) {
               {_.map(value, (item) => {
                 return (
                   <Tooltip key={item} title={item}>
-                    <Tag color={tagColor} style={{ maxWidth: '100%', marginRight: 0 }}>
+                    <Tag color='purple' style={{ maxWidth: '100%', marginRight: 0 }}>
                       <div
                         style={{
                           maxWidth: 'max-content',
@@ -263,7 +263,7 @@ export default function List(props: ListProps) {
                 const val = user.nickname || user.username || user.name;
                 return (
                   <Tooltip key={val} title={val}>
-                    <Tag color={tagColor} style={{ maxWidth: '100%', marginRight: 0 }}>
+                    <Tag color='purple' style={{ maxWidth: '100%', marginRight: 0 }}>
                       <div
                         style={{
                           maxWidth: 'max-content',

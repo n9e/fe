@@ -31,8 +31,8 @@ export default function ImportBuiltinContent({ busiId, onOk, groupedDatasourceLi
   const [filter, setFilter] = useState<{
     query?: string;
   }>({ query: undefined });
-  const { darkMode, isMcDonalds } = useContext(CommonStateContext);
-  const tagColor = isMcDonalds ? 'default' : 'purple';
+  const { darkMode } = useContext(CommonStateContext);
+
   const [components, setComponents] = useState<Component[]>([]);
   const [data, setData] = useState<Payload[]>([]);
   const [cateList, setCateList] = useState<string[]>([]);
@@ -215,7 +215,7 @@ export default function ImportBuiltinContent({ busiId, onOk, groupedDatasourceLi
                         return (
                           <Tag
                             key={idx}
-                            color={tagColor}
+                            color='purple'
                             style={{ cursor: 'pointer' }}
                             onClick={() => {
                               const queryItem = _.compact(_.split(filter.query, ' '));

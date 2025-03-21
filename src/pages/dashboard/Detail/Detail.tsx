@@ -83,7 +83,7 @@ export default function DetailV2(props: IProps) {
   const { t, i18n } = useTranslation('dashboard');
   const history = useHistory();
   const location = useLocation();
-  const { datasourceList, dashboardDefaultRangeIndex, dashboardSaveMode, perms, groupedDatasourceList, darkMode, isMcDonalds } = useContext(CommonStateContext);
+  const { datasourceList, dashboardDefaultRangeIndex, dashboardSaveMode, perms, groupedDatasourceList, darkMode } = useContext(CommonStateContext);
   const isAuthorized = _.includes(perms, '/dashboards/put') && !isPreview;
   const [dashboardMeta, setDashboardMeta] = useGlobalState('dashboardMeta');
   const [panelClipboard, setPanelClipboard] = useGlobalState('panelClipboard');
@@ -489,7 +489,7 @@ export default function DetailV2(props: IProps) {
           <Button
             key='batchMigrate'
             type='primary'
-            ghost={!isMcDonalds}
+            ghost
             onClick={() => {
               history.push('/help/migrate');
             }}

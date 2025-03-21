@@ -39,8 +39,8 @@ const PageTable: React.FC<Props> = ({ gids }) => {
   const history = useHistory();
   const [selectRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
   const [selectedRows, setSelectedRows] = useState<strategyItem[]>([]);
-  const { groupedDatasourceList, businessGroup, busiGroups, isMcDonalds } = useContext(CommonStateContext);
-  const tagColor = isMcDonalds ? 'default' : 'purple';
+  const { groupedDatasourceList, businessGroup, busiGroups } = useContext(CommonStateContext);
+
   const [query, setQuery] = useState<string>('');
   const [isModalVisible, setisModalVisible] = useState<boolean>(false);
   const [currentStrategyDataAll, setCurrentStrategyDataAll] = useState([]);
@@ -122,7 +122,7 @@ const PageTable: React.FC<Props> = ({ gids }) => {
             (item) => {
               if (item === 0) {
                 return (
-                  <Tag color={tagColor} key={item}>
+                  <Tag color='purple' key={item}>
                     $all
                   </Tag>
                 );
@@ -164,7 +164,7 @@ const PageTable: React.FC<Props> = ({ gids }) => {
             (array.length &&
               array.map((tag: string, index: number) => {
                 return (
-                  <Tag color={tagColor} key={index}>
+                  <Tag color='purple' key={index}>
                     {tag}
                   </Tag>
                 );

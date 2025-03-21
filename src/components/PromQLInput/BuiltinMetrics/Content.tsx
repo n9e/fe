@@ -15,8 +15,8 @@ interface Props {
 }
 
 export default function Content(props: Props) {
-  const { darkMode, isMcDonalds } = useContext(CommonStateContext);
-  const tagColor = isMcDonalds ? 'default' : 'purple';
+  const { darkMode } = useContext(CommonStateContext);
+
   const { t } = useTranslation('promQLInput');
   const { onSelect, setOpen } = props;
   const [filter, setFilter] = useState({} as Filter);
@@ -109,7 +109,7 @@ export default function Content(props: Props) {
               return (
                 <Tag
                   key={item}
-                  color={tagColor}
+                  color='purple'
                   onClick={() => {
                     setFilter({ ...filter, typ: item });
                   }}

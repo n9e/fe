@@ -17,7 +17,7 @@ interface Props {
 }
 
 export default function ExplorerDrawer(props: Props) {
-  const { darkMode, isMcDonalds } = useContext(CommonStateContext);
+  const { darkMode } = useContext(CommonStateContext);
   const { t } = useTranslation('metricsBuiltin');
   const { visible, onClose, data } = props;
   const [panels, setPanels, getPanels] = useGetState<Record[]>([]);
@@ -72,7 +72,7 @@ export default function ExplorerDrawer(props: Props) {
             {idx === 0 && panels.length > 1 && (
               <Button
                 danger
-                ghost={!isMcDonalds}
+                ghost
                 type='dashed'
                 className='mb2'
                 style={{ width: '100%' }}

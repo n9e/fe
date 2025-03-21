@@ -15,8 +15,8 @@ interface Props {
 
 export default function index(props: Props) {
   const { data, tagLinkTo } = props;
-  const { darkMode, isMcDonalds } = useContext(CommonStateContext);
-  const tagColor = isMcDonalds ? 'default' : 'purple';
+  const { darkMode } = useContext(CommonStateContext);
+
   const displayData = _.slice(data, 0, 3);
   return (
     <Tooltip title={_.join(_.map(data, 'name'), ', ')}>
@@ -24,7 +24,7 @@ export default function index(props: Props) {
         {_.map(displayData, (item) => {
           return (
             <Link key={item.id} to={tagLinkTo(item)}>
-              <Tag color={tagColor} style={{ maxWidth: '100%', marginRight: 8 }}>
+              <Tag color='purple' style={{ maxWidth: '100%', marginRight: 8 }}>
                 <div
                   style={{
                     maxWidth: 'max-content',
