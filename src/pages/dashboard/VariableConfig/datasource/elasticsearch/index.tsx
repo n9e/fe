@@ -1,18 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import _ from 'lodash';
 import { useDebounceFn } from 'ahooks';
 import { Form, Row, Col, AutoComplete } from 'antd';
 import { useTranslation } from 'react-i18next';
+import { CommonStateContext } from '@/App';
 import IndexSelect from '@/pages/dashboard/Editor/QueryEditor/Elasticsearch/IndexSelect';
 import { getFullFields, Field } from '@/pages/explorer/Elasticsearch/services';
 import { replaceExpressionVars } from '../../constant';
 
 export default function index(props) {
   const { vars, id } = props;
+  const { datasourceList } = useContext(CommonStateContext);
   const { t } = useTranslation('dashboard');
   const [dateFields, setDateFields] = useState<Field[]>([]);
   const form = Form.useFormInstance();
-  const datasourceValue = Form.useWatch(['datasource', 'value']);
+  let datasourceValue = Form.useWatch(['datasource', 'value']);
+  datasourceValue = replaceExpressionVars({
+    text: datasourceValue,
+    variables: vars,
+    limit: vars.length,
+    dashboardId: id,
+    datasourceList,
+  });
   const indexValue = Form.useWatch(['config', 'index']);
   const { run: onIndexChange } = useDebounceFn(
     (val) => {
@@ -47,18 +56,7 @@ export default function index(props) {
   return (
     <Row gutter={16}>
       <Col span={12}>
-        <Form.Item shouldUpdate={(prevValues, curValues) => prevValues?.datasource?.value !== curValues?.datasource?.value} noStyle>
-          {({ getFieldValue }) => {
-            let datasourceValue = getFieldValue(['datasource', 'value']);
-            datasourceValue = replaceExpressionVars({
-              text: datasourceValue,
-              variables: vars,
-              limit: vars.length,
-              dashboardId: id,
-            });
-            return <IndexSelect name={['config', 'index']} cate='elasticsearch' datasourceValue={datasourceValue} />;
-          }}
-        </Form.Item>
+        <IndexSelect name={['config', 'index']} cate='elasticsearch' datasourceValue={datasourceValue} />
       </Col>
       <Col span={12}>
         <Form.Item label={t('datasource:es.date_field')} name={['config', 'date_field']} rules={[{ required: true, message: t('datasource:es.date_field_msg') }]}>
