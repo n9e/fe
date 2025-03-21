@@ -6,11 +6,10 @@ import { getTextWidth } from '@/pages/dashboard/Renderer/Renderer/Hexbin/utils';
 interface Props {
   width: number;
   data: string[];
-  color?: string;
 }
 
 export default function index(props: Props) {
-  const { width, data, color = 'purple' } = props;
+  const { width, data } = props;
   const displayData = _.slice(data, 0, 2);
   return (
     <Tooltip title={_.join(data, ', ')}>
@@ -20,13 +19,13 @@ export default function index(props: Props) {
           if (textWidth < width) {
             return (
               <div key={index}>
-                <Tag color={color}>{item}</Tag>
+                <Tag color='purple'>{item}</Tag>
               </div>
             );
           }
           return (
             <div key={index}>
-              <Tag color={color}>
+              <Tag color='purple'>
                 <div
                   style={{
                     maxWidth: width,

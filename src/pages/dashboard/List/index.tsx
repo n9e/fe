@@ -53,7 +53,6 @@ const getDefaultPublicSelectGids = (localKey: string) => {
 export default function index() {
   const { t } = useTranslation('dashboard');
   const { businessGroup, perms } = useContext(CommonStateContext);
-
   const [gids, setGids] = useState<string | undefined>(getDefaultGidsInDashboard(N9E_GIDS_LOCALKEY, businessGroup));
   const [list, setList] = useState<any[]>([]);
   const [selectRowKeys, setSelectRowKeys] = useState<number[]>([]);

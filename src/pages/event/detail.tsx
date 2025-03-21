@@ -51,7 +51,6 @@ const EventDetailPage: React.FC = () => {
   const { busiId, eventId } = useParams<{ busiId: string; eventId: string }>();
   const commonState = useContext(CommonStateContext);
   const { busiGroups, datasourceList } = commonState;
-
   const handleNavToWarningList = (id) => {
     if (busiGroups.find((item) => item.id === id)) {
       window.open(`${basePrefix}/alert-rules?ids=${id}&isLeaf=true`);

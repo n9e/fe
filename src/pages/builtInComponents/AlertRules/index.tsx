@@ -26,7 +26,6 @@ export default function index(props: Props) {
   const { component_id } = props;
   const { t } = useTranslation('builtInComponents');
   const { busiGroups, groupedDatasourceList, reloadGroupedDatasourceList, datasourceCateOptions, darkMode } = useContext(CommonStateContext);
-
   const [filter, setFilter] = useState<{
     cate?: string;
     query?: string;

@@ -30,7 +30,6 @@ export default function ImportBuiltinContent({ busiId, onOk, groupedDatasourceLi
   const [filter, setFilter] = useState<{
     query?: string;
   }>({ query: undefined });
-
   const [components, setComponents] = useState<Component[]>([]);
   const [data, setData] = useState<Payload[]>([]);
   const [cateList, setCateList] = useState<string[]>([]);

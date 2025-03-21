@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import _ from 'lodash';
 import { Button, Modal, Form, Select, Space, Tag } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -6,7 +6,6 @@ import { name } from './';
 import EventsModal from './EventsModal';
 import { relabelTest } from './services';
 
-import { CommonStateContext } from '@/App';
 export default function TestModal() {
   const { t } = useTranslation('alertRules');
   const eventRelabelConfig = Form.useWatch(name);

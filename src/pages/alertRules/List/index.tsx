@@ -56,7 +56,6 @@ const FILTER_LOCAL_STORAGE_KEY = 'alert-rules-filter';
 
 export default function List(props: ListProps) {
   const { businessGroup, busiGroups } = useContext(CommonStateContext);
-
   const { gids } = props;
   const { t } = useTranslation('alertRules');
   const history = useHistory();
@@ -152,7 +151,6 @@ export default function List(props: ListProps) {
           if (!value) return '';
           return (
             <Tags
-              color='purple'
               width={70}
               data={_.compact(
                 _.map(value, (item) => {

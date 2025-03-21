@@ -8,8 +8,6 @@ import { useGetState } from 'ahooks';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { Record } from '../services';
 import Panel from './Panel';
-import { useContext } from 'react';
-import { CommonStateContext } from '@/App';
 interface Props {
   visible: boolean;
   onClose: () => void;
