@@ -327,6 +327,7 @@ export default function tooltipPlugin(options: {
             _.forEach(valuesData, (item) => {
               const seriesItem = item.seriesItem;
               let value = item.values[idx];
+              if (value === null) return; // 2025-3-21 null 可能是对齐曲线补的空值，也可能是查询结果的空值（尚未遇到该情况）这里统一做不显示处理
               if (seriesItem.n9e_internal?.values) {
                 value = seriesItem.n9e_internal.values[idx];
               }
