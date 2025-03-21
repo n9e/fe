@@ -26,7 +26,7 @@ const zh_HK = {
     team_search_placeholder: '搜尋團隊名稱',
     create: '創建業務組',
     edit: '編輯業務組',
-    add_team: '新增團隊',
+    add_team: '授權團隊',
     perm_flag: '權限',
     note_content: '告警規則，告警事件，監控機器，自愈腳本等都歸屬業務組，是一個在系統裡可以自閉環的組織',
     empty: '業務組（監控機器、監控儀表盤、告警規則、自愈腳本都要歸屬某個業務組）為空，請先',
