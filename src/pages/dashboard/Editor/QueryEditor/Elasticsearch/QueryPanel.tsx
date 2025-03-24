@@ -62,12 +62,12 @@ export default function QueryPanel({ fields, field, index, remove, dashboardId, 
   const isRawData = _.get(targetQueryValues, [0, 'func']) === 'rawData';
 
   useEffect(() => {
-    if (datasourceValue) {
-      getESIndexPatterns(datasourceValue).then((res) => {
+    if (realDatasourceValue) {
+      getESIndexPatterns(realDatasourceValue).then((res) => {
         setIndexPatterns(res);
       });
     }
-  }, [datasourceValue]);
+  }, [realDatasourceValue]);
 
   return (
     <Panel
@@ -155,7 +155,7 @@ export default function QueryPanel({ fields, field, index, remove, dashboardId, 
         ) : (
           <Form.Item {...field} name={[field.name, 'query', 'filter']}>
             <KQLInput
-              datasourceValue={datasourceValue}
+              datasourceValue={realDatasourceValue}
               query={{
                 index: curIndexValues.index,
                 date_field: curIndexValues.date_field,
@@ -174,7 +174,7 @@ export default function QueryPanel({ fields, field, index, remove, dashboardId, 
         valueRefVisible={false}
       />
       {!isRawData && (
-        <GroupBy parentNames={['targets']} prefixField={field} prefixFieldNames={[field.name, 'query']} datasourceValue={datasourceValue} index={curIndexValues.index} />
+        <GroupBy parentNames={['targets']} prefixField={field} prefixFieldNames={[field.name, 'query']} datasourceValue={realDatasourceValue} index={curIndexValues.index} />
       )}
       {isRawData ? (
         <Row gutter={10}>
