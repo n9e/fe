@@ -226,7 +226,13 @@ function index(props: IProps) {
               </Tooltip>
             ) : null}
             {panelCustomTimeDescribe && (
-              <span>
+              <span
+                style={{
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              >
                 <FieldTimeOutlined /> {panelCustomTimeDescribe}
               </span>
             )}
