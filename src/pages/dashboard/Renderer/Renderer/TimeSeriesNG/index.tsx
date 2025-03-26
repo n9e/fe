@@ -65,11 +65,12 @@ export default function index(props: Props) {
   };
   const options = mainProps.panel.options;
   const legend = options?.legend;
+  const legendPlacement = legend?.placement || 'bottom'; // 适配旧版的默认值
   const legendDisplayMode = options.legend?.displayMode || 'table';
   const legendColumns = !_.isEmpty(options.legend?.columns) ? options.legend?.columns : legendDisplayMode === 'table' ? ['max', 'min', 'avg', 'sum', 'last'] : [];
   const legendBehaviour = options.legend?.behaviour || 'showItem';
   const legendSelectMode = options.legend?.selectMode || 'single';
-  const chartContainerSize = getChartContainerSize(PADDING, containerSize, legendSize, legendDisplayMode, legend?.placement);
+  const chartContainerSize = getChartContainerSize(PADDING, containerSize, legendSize, legendDisplayMode, legendPlacement);
   const [dataRefresh, setDataRefresh] = useState(_.uniqueId('dataRefresh_'));
   const [activeLegend, setActiveLegend] = useState<string>(); // legendSelectMode === 'single'
   const [activeLegends, setActiveLegends] = useState<string[]>([]); // legendSelectMode === 'multiple'
@@ -120,7 +121,7 @@ export default function index(props: Props) {
       ref={containerRef}
       className='renderer-timeseries-ng-container'
       style={{
-        flexDirection: legend?.placement === 'right' ? 'row' : 'column',
+        flexDirection: legendPlacement === 'right' ? 'row' : 'column',
         padding: PADDING,
       }}
     >
@@ -143,8 +144,8 @@ export default function index(props: Props) {
           ref={legendRef}
           className='renderer-timeseries-ng-legend-container'
           style={{
-            maxHeight: legend?.placement === 'bottom' ? (legend?.heightInPercentage || 30) + '%' : 'unset',
-            maxWidth: legend?.placement === 'right' ? (legend?.widthInPercentage || 60) + '%' : 'unset',
+            maxHeight: legendPlacement === 'bottom' ? (legend?.heightInPercentage || 30) + '%' : 'unset',
+            maxWidth: legendPlacement === 'right' ? (legend?.widthInPercentage || 60) + '%' : 'unset',
           }}
         >
           {legendDisplayMode === 'list' && (
@@ -153,7 +154,7 @@ export default function index(props: Props) {
               range={mainProps.range}
               data={legendData}
               legendColumns={legendColumns}
-              placement={legend?.placement}
+              placement={legendPlacement}
               onRowClick={(record) => {
                 if (legendSelectMode === 'multiple') {
                   setActiveLegends(_.xor(activeLegends, [record.id]));

@@ -13,7 +13,8 @@ export const getColumnsKeys = (data: any[]) => {
 
 export function calculatePercentage(value: number, min: number, max: number): number {
   if (min > max) {
-    throw new Error('min should be less than max');
+    console.error('min should be less than max');
+    return 0;
   }
   if (min === max) {
     return 100;

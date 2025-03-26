@@ -205,16 +205,18 @@ export default function tooltipPlugin(options: {
             seriesItem: series[idx],
           };
         });
+        const { event, left, top, idx } = u.cursor;
+
         let valuesData: {
           values: number[];
           seriesIndex: number;
           seriesItem: any;
         }[] = _.slice(originData, 1);
         valuesData = _.filter(valuesData, (item) => {
-          return item.seriesItem.show !== false;
+          const value = item.values[idx];
+          // 2025-3-21 null 可能是对齐曲线补的空值，也可能是查询结果的空值（尚未遇到该情况）这里统一做不显示处理
+          return item.seriesItem.show !== false && value !== null;
         });
-
-        const { event, left, top, idx } = u.cursor;
 
         if (graphTooltip === 'sharedTooltip' || graphTooltip === 'sharedCrosshair') {
           if (event && hoveringUplotID === id) {

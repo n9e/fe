@@ -131,10 +131,10 @@ function InputFilter(props: Props, ref) {
 
   const triggerChange = (val) => {
     let newValue = val;
-    newValue = _.replace(newValue, / AND /i, ' AND ');
-    newValue = _.replace(newValue, / OR /i, ' OR ');
-    newValue = _.replace(newValue, / NOT /i, ' NOT ');
-    newValue = _.replace(newValue, / NOT:/i, ' NOT:');
+    newValue = _.replace(newValue, /(['"])(.*?)\1| AND /gi, (match, quote) => (quote ? match : ' AND '));
+    newValue = _.replace(newValue, /(['"])(.*?)\1| OR /gi, (match, quote) => (quote ? match : ' OR '));
+    newValue = _.replace(newValue, /(['"])(.*?)\1| NOT /gi, (match, quote) => (quote ? match : ' NOT '));
+    newValue = _.replace(newValue, /(['"])(.*?)\1| NOT:/gi, (match, quote) => (quote ? match : ' NOT:'));
 
     if (onChange) {
       onChange(newValue);
