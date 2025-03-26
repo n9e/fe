@@ -283,7 +283,7 @@ export const replaceExpressionVarsSpecifyRule = (
                     _.filter(options, (i) => !reg || !stringToRegex(reg) || (stringToRegex(reg) as RegExp).test(i.value)),
                     (item) => {
                       if (datasource?.cate === 'elasticsearch') {
-                        return `"${item}"`;
+                        return `"${item.value}"`;
                       }
                       // 2024-07-24 如果是 prometheus 数据源的变量，需要对 {}[]().- 进行转义
                       return escapePromQLString(item.value);
