@@ -13,7 +13,6 @@ import LegendInput from '@/pages/dashboard/Components/LegendInput';
 import { getESIndexPatterns } from '@/pages/log/IndexPatterns/services';
 
 import { Panel } from '../../Components/Collapse';
-import { replaceExpressionVars } from '../../../VariableConfig/constant';
 import DateField from './DateField';
 import IndexSelect from './IndexSelect';
 import Values from './Values';
@@ -26,19 +25,15 @@ interface Props {
   field: FormListFieldData;
   index: number;
   remove: (index: number | number[]) => void;
-
-  dashboardId: number;
-  variableConfig: any;
+  datasourceValue: number;
 }
 
-export default function QueryPanel({ fields, field, index, remove, dashboardId, variableConfig }: Props) {
+export default function QueryPanel({ fields, field, index, remove, datasourceValue }: Props) {
   const { t } = useTranslation('dashboard');
   const [indexPatterns, setIndexPatterns] = useState<any[]>([]);
   const prefixName = ['targets', field.name];
   const chartForm = Form.useFormInstance();
   const datasourceCate = Form.useWatch('datasourceCate');
-  const datasourceValue = Form.useWatch('datasourceValue');
-  const realDatasourceValue = _.toNumber(replaceExpressionVars(datasourceValue as any, variableConfig, variableConfig.length, _.toString(dashboardId)));
   const targets = Form.useWatch('targets');
   const refId = Form.useWatch([...prefixName, 'refId']) || alphabet[index];
   const indexType = Form.useWatch([...prefixName, 'query', 'index_type']);
@@ -97,7 +92,7 @@ export default function QueryPanel({ fields, field, index, remove, dashboardId, 
           <Radio value='index_pattern'>{t('datasource:es.indexPatterns')}</Radio>
         </Radio.Group>
       </Form.Item>
-      {indexType === 'index' && <IndexSelect prefixField={field} prefixName={[field.name]} cate={datasourceCate} datasourceValue={realDatasourceValue} />}
+      {indexType === 'index' && <IndexSelect prefixField={field} prefixName={[field.name]} cate={datasourceCate} datasourceValue={datasourceValue} />}
       {indexType === 'index_pattern' && <IndexPatternSelect field={field} name={['query']} indexPatterns={indexPatterns} />}
       <Form.Item
         label={
@@ -169,7 +164,7 @@ export default function QueryPanel({ fields, field, index, remove, dashboardId, 
         prefixField={field}
         prefixFields={['targets']}
         prefixNameField={[field.name]}
-        datasourceValue={realDatasourceValue}
+        datasourceValue={datasourceValue}
         index={curIndexValues.index}
         valueRefVisible={false}
       />
@@ -184,7 +179,7 @@ export default function QueryPanel({ fields, field, index, remove, dashboardId, 
               display: indexType === 'index_pattern' ? 'none' : 'block',
             }}
           >
-            <DateField datasourceValue={realDatasourceValue} index={curIndexValues.index} prefixField={field} prefixNames={[field.name, 'query']} />
+            <DateField datasourceValue={datasourceValue} index={curIndexValues.index} prefixField={field} prefixNames={[field.name, 'query']} />
           </Col>
           <Col span={8}>
             <InputGroupWithFormItem
@@ -211,7 +206,7 @@ export default function QueryPanel({ fields, field, index, remove, dashboardId, 
           </Col>
         </Row>
       ) : (
-        <Time prefixField={field} prefixNameField={[field.name]} chartForm={chartForm} variableConfig={variableConfig} dashboardId={dashboardId} />
+        <Time prefixField={field} prefixNameField={[field.name]} datasourceValue={datasourceValue} />
       )}
       {IS_PLUS && (
         <Form.Item

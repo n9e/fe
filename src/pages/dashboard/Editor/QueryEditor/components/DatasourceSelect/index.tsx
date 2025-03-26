@@ -14,7 +14,9 @@ export default function index({ dashboardId, chartForm, variableConfig }) {
   const cates = _.filter(datasourceCateOptions, (item) => {
     return !!item.dashboard;
   });
-  const datasourceVars = _.filter(variableConfig, { type: 'datasource' });
+  const datasourceVars = _.filter(variableConfig, (item) => {
+    return _.includes(['datasource', 'datasourceName'], item.type);
+  });
   const datasourceCate = Form.useWatch('datasourceCate');
   const getDefaultDatasourceValue = (datasourceCate) => {
     const finded = _.find(datasourceVars, { definition: datasourceCate });

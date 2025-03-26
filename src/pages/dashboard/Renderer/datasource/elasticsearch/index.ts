@@ -43,7 +43,7 @@ interface Result {
 }
 
 export default async function elasticSearchQuery(options: IOptions): Promise<Result> {
-  const { id, dashboardId, time, targets, variableConfig } = options;
+  const { id, dashboardId, time, targets, variableConfig, datasourceValue } = options;
   if (!time.start) return Promise.resolve({ series: [] });
   const parsedRange = parseRange(time);
   let start = moment(parsedRange.start).valueOf();
@@ -65,9 +65,6 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
       return !query.index || !query.date_field;
     },
   );
-  const datasourceValue = variableConfig
-    ? (replaceExpressionVars(options.datasourceValue as any, variableConfig, variableConfig.length, dashboardId) as any)
-    : options.datasourceValue;
   const hasIndexPattern = _.some(targets, (target) => target.query?.index_type === 'index_pattern');
   const indexPatterns = hasIndexPattern ? await getESIndexPatterns(datasourceValue) : [];
   if (targets && datasourceValue && !isInvalid) {
@@ -78,7 +75,14 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
         end = moment(parsedRange.end).valueOf();
       }
       const query: any = target.query || {};
-      const filter = variableConfig ? replaceExpressionVars(query.filter, variableConfig, variableConfig.length, dashboardId) : query.filter;
+      const filter = variableConfig
+        ? replaceExpressionVars({
+            text: query.filter,
+            variables: variableConfig,
+            limit: variableConfig.length,
+            dashboardId,
+          })
+        : query.filter;
       if (target.__mode__ === '__expr__') {
         exps.push({
           ref: target.refId,

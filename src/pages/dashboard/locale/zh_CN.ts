@@ -88,6 +88,7 @@ const zh_CN = {
       textbox: '文本框 (Text box)',
       constant: '常量 (Constant)',
       datasource: '数据源 (Datasource)',
+      datasourceName: '数据源名称 (Datasource name)',
       hostIdent: '机器标识 (Host ident)',
       businessGroupIdent: '业务组标识 (Business group ident)',
     },

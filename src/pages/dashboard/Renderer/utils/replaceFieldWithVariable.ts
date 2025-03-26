@@ -58,5 +58,10 @@ export default function replaceFieldWithVariable(dashboardId, value: string, var
   if (!variableConfig) {
     return value;
   }
-  return replaceExpressionVars(value, variableConfig, variableConfig.length, dashboardId);
+  return replaceExpressionVars({
+    text: value,
+    variables: variableConfig,
+    limit: variableConfig.length,
+    dashboardId,
+  });
 }
