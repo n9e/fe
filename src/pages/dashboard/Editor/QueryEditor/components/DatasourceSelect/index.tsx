@@ -15,44 +15,27 @@ export default function index({ dashboardId, chartForm, variableConfig }) {
   const datasourceVars = _.filter(variableConfig, { type: 'datasource' });
 
   return (
-    <Space align='start'>
+    <>
       <Form.Item name='datasourceCate' hidden>
         <div />
       </Form.Item>
-      <InputGroupWithFormItem label={t('common:datasource.id')}>
-        <Form.Item
-          name='datasourceValue'
-          rules={[
-            {
-              required: true,
-              message: t('query.datasource_msg'),
-            },
-          ]}
-        >
-          <DatasourceSelectV2
-            style={{ minWidth: 220 }}
-            datasourceCateList={_.filter(datasourceCateOptions, (item) => {
-              return item.dashboard === true;
-            })}
-            datasourceList={_.filter(
-              _.concat(
-                _.map(datasourceVars, (item) => {
-                  return {
-                    id: `\${${item.name}}`,
-                    name: `\${${item.name}}`,
-                    plugin_type: item.definition,
-                  };
-                }),
-                datasourceList as any,
-              ),
-              (item) => {
-                const cateData = _.find(datasourceCateOptions, { value: item.plugin_type });
-                return cateData?.dashboard === true;
+      <Space align='start'>
+        <InputGroupWithFormItem label={t('common:datasource.id')}>
+          <Form.Item
+            name='datasourceValue'
+            rules={[
+              {
+                required: true,
+                message: t('query.datasource_msg'),
               },
-            )}
-            onChange={(val) => {
-              const preCate = chartForm.getFieldValue('datasourceCate');
-              const curCate = _.find(
+            ]}
+          >
+            <DatasourceSelectV2
+              style={{ minWidth: 220 }}
+              datasourceCateList={_.filter(datasourceCateOptions, (item) => {
+                return item.dashboard === true;
+              })}
+              datasourceList={_.filter(
                 _.concat(
                   _.map(datasourceVars, (item) => {
                     return {
@@ -63,58 +46,77 @@ export default function index({ dashboardId, chartForm, variableConfig }) {
                   }),
                   datasourceList as any,
                 ),
-                { id: val },
-              )?.plugin_type;
-              // TODO: 调整数据源类型后需要重置配置
-              if (preCate !== curCate) {
-                if (_.includes(['elasticsearch', 'opensearch'], curCate)) {
-                  chartForm.setFieldsValue({
-                    datasourceCate: curCate,
-                    targets: [
-                      {
-                        refId: 'A',
-                        query: {
-                          index: '',
-                          filters: '',
-                          values: [
-                            {
-                              func: 'count',
-                            },
-                          ],
-                          date_field: '@timestamp',
+                (item) => {
+                  const cateData = _.find(datasourceCateOptions, { value: item.plugin_type });
+                  return cateData?.dashboard === true;
+                },
+              )}
+              onChange={(val) => {
+                const preCate = chartForm.getFieldValue('datasourceCate');
+                const curCate = _.find(
+                  _.concat(
+                    _.map(datasourceVars, (item) => {
+                      return {
+                        id: `\${${item.name}}`,
+                        name: `\${${item.name}}`,
+                        plugin_type: item.definition,
+                      };
+                    }),
+                    datasourceList as any,
+                  ),
+                  { id: val },
+                )?.plugin_type;
+                // TODO: 调整数据源类型后需要重置配置
+                if (preCate !== curCate) {
+                  if (_.includes(['elasticsearch', 'opensearch'], curCate)) {
+                    chartForm.setFieldsValue({
+                      datasourceCate: curCate,
+                      targets: [
+                        {
+                          refId: 'A',
+                          query: {
+                            index: '',
+                            filters: '',
+                            values: [
+                              {
+                                func: 'count',
+                              },
+                            ],
+                            date_field: '@timestamp',
+                          },
                         },
-                      },
-                    ],
-                  });
-                } else if (curCate === 'zabbix') {
-                  chartForm.setFieldsValue({
-                    datasourceCate: curCate,
-                    targets: [
-                      {
-                        refId: 'A',
-                        query: {
-                          mode: 'timeseries',
-                          subMode: 'metrics',
+                      ],
+                    });
+                  } else if (curCate === 'zabbix') {
+                    chartForm.setFieldsValue({
+                      datasourceCate: curCate,
+                      targets: [
+                        {
+                          refId: 'A',
+                          query: {
+                            mode: 'timeseries',
+                            subMode: 'metrics',
+                          },
                         },
-                      },
-                    ],
-                  });
-                } else {
-                  chartForm.setFieldsValue({
-                    datasourceCate: curCate,
-                    targets: [
-                      {
-                        refId: 'A',
-                      },
-                    ],
-                  });
+                      ],
+                    });
+                  } else {
+                    chartForm.setFieldsValue({
+                      datasourceCate: curCate,
+                      targets: [
+                        {
+                          refId: 'A',
+                        },
+                      ],
+                    });
+                  }
                 }
-              }
-            }}
-          />
-        </Form.Item>
-      </InputGroupWithFormItem>
-      <DatasourceSelectExtra dashboardId={dashboardId} variableConfig={variableConfig} />
-    </Space>
+              }}
+            />
+          </Form.Item>
+        </InputGroupWithFormItem>
+        <DatasourceSelectExtra dashboardId={dashboardId} variableConfig={variableConfig} />
+      </Space>
+    </>
   );
 }
