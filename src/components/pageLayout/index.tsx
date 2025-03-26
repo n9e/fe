@@ -87,11 +87,15 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
       )}
       <Menu.Item
         onClick={() => {
-          Logout().then(() => {
+          Logout().then((res) => {
             localStorage.removeItem(AccessTokenKey);
             localStorage.removeItem('refresh_token');
             localStorage.removeItem('curBusiId');
-            history.push('/login');
+            if (res?.dat) {
+              window.location.href = res.dat;
+            } else {
+              history.push('/login');
+            }
           });
         }}
       >
