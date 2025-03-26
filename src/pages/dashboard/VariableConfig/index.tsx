@@ -236,12 +236,12 @@ function index(props: IProps) {
                 setVaraiableSelected({ name: item.name, value: defaultVal, id, urlAttach: true });
               }
             }
-          } else if (item.type === 'businessGroupIdent') {
+          } else if ((item.type as any) === 'businessGroupIdent') {
+            // @deprecated 兼容旧版已经配置的 businessGroupIdent 变量，这里直接该变量的值统一设置为空字符串
             result[idx] = item;
-            const hostIdent = _.find(busiGroups, { id: dashboard.group_id })?.label_value;
             const selected = getVaraiableSelected(item, id);
-            if (hostIdent && selected === null && query.__variable_value_fixed === undefined) {
-              setVaraiableSelected({ name: item.name, value: hostIdent, id, urlAttach: true });
+            if (selected === null && query.__variable_value_fixed === undefined) {
+              setVaraiableSelected({ name: item.name, value: '', id, urlAttach: true });
             }
           }
         }

@@ -1,9 +1,9 @@
-import React from 'react';
-import { Form, Radio, Modal, Select } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Form, Radio, Modal, Select, Alert } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
-import { updateBoardPublic } from '@/services/dashboardV2';
+import { updateBoardPublic, getDashboard } from '@/services/dashboardV2';
 
 interface IProps {
   boardId: number;
@@ -18,6 +18,29 @@ function PublicForm(props: IProps & ModalWrapProps) {
   const [form] = Form.useForm();
   const publicVal = Form.useWatch('public', form);
   const publicCate = Form.useWatch('public_cate', form);
+  const [dashboardConfig, setDashboardConfig] = useState<any>({});
+  const hasHostIdentVariable = _.some(dashboardConfig.var, (item) => {
+    return item.type === 'hostIdent';
+  });
+
+  useEffect(() => {
+    if (boardId) {
+      getDashboard(boardId)
+        .then((res) => {
+          try {
+            setDashboardConfig(JSON.parse(res.configs));
+          } catch (e) {
+            console.error(e);
+            setDashboardConfig({});
+          }
+        })
+        .catch(() => {
+          setDashboardConfig({});
+        });
+    } else {
+      setDashboardConfig({});
+    }
+  }, [boardId]);
 
   return (
     <Modal
@@ -31,6 +54,9 @@ function PublicForm(props: IProps & ModalWrapProps) {
             destroy();
           });
         });
+      }}
+      okButtonProps={{
+        disabled: hasHostIdentVariable && publicVal === 1 && publicCate === 0,
       }}
     >
       <Form
@@ -73,6 +99,7 @@ function PublicForm(props: IProps & ModalWrapProps) {
             )}
           </>
         )}
+        {hasHostIdentVariable && publicVal === 1 && publicCate === 0 && <Alert message={t('var.hostIdent.invalid2')} type='warning' />}
       </Form>
     </Modal>
   );
