@@ -176,7 +176,19 @@ function EditItem(props: IProps) {
                 },
               )}
               onChange={(val) => {
-                const cate = _.find(datasourceList, { id: val })?.plugin_type;
+                const cate = _.find(
+                  _.concat(
+                    _.map(datasourceVars, (item) => {
+                      return {
+                        id: `\${${item.name}}`,
+                        name: `\${${item.name}}`,
+                        plugin_type: item.definition,
+                      };
+                    }),
+                    datasourceList as any,
+                  ),
+                  { id: val },
+                )?.plugin_type;
                 form.setFieldsValue({
                   datasource: {
                     cate: cate,
