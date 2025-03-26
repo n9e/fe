@@ -16,17 +16,19 @@
  */
 import React, { useEffect, useState } from 'react';
 import { Form, Select, Space, Row, Col, Button, Tooltip, Modal, Table } from 'antd';
-import { WarningOutlined, PlusCircleOutlined, MinusCircleOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { WarningOutlined, PlusCircleOutlined, MinusCircleOutlined, InfoCircleOutlined, ReloadOutlined } from '@ant-design/icons';
 import { Trans, useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
 import { getDatasourceBriefList } from '@/services/common';
+import { IS_ENT } from '@/utils/constant';
 import DatasourceSelectExtra from '@/pages/alertRules/Form/components/DatasourceSelectExtra';
 import { getDatasourcesByQueries } from './services';
 import './style.less';
 
 interface IProps {
   datasourceList: { id: number; name: string }[];
+  reloadGroupedDatasourceList: () => void;
   datasourceCate?: string;
   names?: string[];
   required?: boolean;
@@ -170,7 +172,7 @@ function Query({ idx, names, field, remove, invalidDatasourceIds, datasourceList
 }
 
 export default function index(props: IProps) {
-  const { datasourceList, datasourceCate, names = ['datasource_queries'], disabled, showExtra } = props;
+  const { datasourceList, reloadGroupedDatasourceList, datasourceCate, names = ['datasource_queries'], disabled, showExtra } = props;
   const { t } = useTranslation('alertRules');
   const [fullDatasourceList, setFullDatasourceList] = useState<any[]>([]);
   const [datasources, setDatasources] = useState<any[]>([]);
@@ -201,7 +203,7 @@ export default function index(props: IProps) {
         });
       });
     }
-  }, [JSON.stringify(datasource_queries)]);
+  }, [JSON.stringify(datasource_queries), JSON.stringify(fullDatasourceList)]);
 
   useEffect(() => {
     fetchDatasourceList();
@@ -221,7 +223,13 @@ export default function index(props: IProps) {
       >
         {(fields, { add, remove }) => (
           <div>
-            <div className='mb1'>
+            <div
+              className='mb1'
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+              }}
+            >
               <Space>
                 {t('common:datasource.queries.label')}
                 <PlusCircleOutlined
@@ -232,6 +240,16 @@ export default function index(props: IProps) {
                       values: [],
                     })
                   }
+                />
+              </Space>
+              <Space>
+                <Link to={IS_ENT ? '/settings/source/timeseries' : '/help/source'} target='_blank'>
+                  {t('common:datasource.managePageLink')}
+                </Link>
+                <ReloadOutlined
+                  onClick={() => {
+                    reloadGroupedDatasourceList();
+                  }}
                 />
               </Space>
             </div>
@@ -264,13 +282,18 @@ export default function index(props: IProps) {
                 {!_.isEmpty(invalidDatasourceIds) && (
                   <span style={{ color: '#ff4d4f' }}>
                     <Tooltip
+                      overlayClassName='ant-tooltip-with-link'
                       title={
-                        <div>
+                        <div
+                          style={{
+                            padding: '0 4px',
+                          }}
+                        >
                           {_.map(invalidDatasourceIds, (item) => {
                             const result = _.find(fullDatasourceList, { id: item });
                             if (result) {
                               let url = `/help/source/edit/${result.plugin_type}/${result.id}`;
-                              if (import.meta.env.VITE_IS_ENT === 'true') {
+                              if (IS_ENT) {
                                 const cateMap = {
                                   timeseries: 'datasource',
                                   logging: 'logsource',
@@ -281,7 +304,7 @@ export default function index(props: IProps) {
                                 }
                               }
                               return (
-                                <Link style={{ paddingLeft: 8 }} target='_blank' to={url}>
+                                <Link style={{ padding: '0 4px' }} target='_blank' to={url}>
                                   {result.name}
                                 </Link>
                               );
@@ -295,9 +318,9 @@ export default function index(props: IProps) {
                       </span>
                     </Tooltip>
 
-                    <span style={{ paddingLeft: 8 }}>{t('invalid_datasource_tip_2')}</span>
+                    <span className='pl1'>{t('invalid_datasource_tip_2')}</span>
                     <a
-                      style={{ paddingLeft: 8 }}
+                      className='pl1'
                       onClick={(e) => {
                         e.preventDefault();
                         fetchDatasourceList();

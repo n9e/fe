@@ -14,8 +14,10 @@
  * limitations under the License.
  *
  */
+import getFontFamily from './getFontFamily';
 // @ts-ignore
 import { AdvancedDatasourceCateEnum } from 'plus:/types';
+
 export const PAGE_SIZE = 15;
 export const PAGE_SIZE_MAX = 100000;
 export const PAGE_SIZE_OPTION = 20;
@@ -75,3 +77,20 @@ export const IS_ENT = import.meta.env.VITE_IS_ENT === 'true';
 export const AccessTokenKey = 'access_token';
 export const PRIMARY_COLOR = '#6C53B1';
 export const SIZE = 8;
+export const FONT_FAMILY = getFontFamily(IS_ENT);
+export const THEME = {
+  light: {
+    text: {
+      primary: '#333',
+    },
+    gridColor: 'rgba(0, 10, 23, 0.09)',
+  },
+  dark: {
+    text: {
+      primary: '#fff',
+    },
+    gridColor: 'rgba(240, 250, 255, 0.09)',
+  },
+};
+export const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+export const daysOfWeek = [0, 1, 2, 3, 4, 5, 6];

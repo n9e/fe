@@ -26,7 +26,7 @@ const zh_CN = {
       OLDEST_FIRST: '旧的优先',
     },
     download: '下载日志',
-    export: '导出记录',
+    export: '下载记录',
     log_download: {
       title: '下载',
       download_title: '下载日志数据',
@@ -66,5 +66,7 @@ const zh_CN = {
   share_tip: '点击复制分享链接',
   share_tip_2: '点击复制分享链接, 目前仅支持分享日志原文查询',
   help: '使用说明',
+  clear_tabs: '清空',
+  clear_tabs_tip: '只保留当前标签页',
 };
 export default zh_CN;

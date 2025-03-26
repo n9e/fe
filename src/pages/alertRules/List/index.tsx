@@ -59,7 +59,7 @@ export default function List(props: ListProps) {
   const { gids } = props;
   const { t } = useTranslation('alertRules');
   const history = useHistory();
-  const { datasourceList, groupedDatasourceList, datasourceCateOptions } = useContext(CommonStateContext);
+  const { datasourceList, groupedDatasourceList, reloadGroupedDatasourceList, datasourceCateOptions } = useContext(CommonStateContext);
   const pagination = usePagination({ PAGESIZE_KEY: 'alert-rules-pagesize' });
   let defaultFilter = {} as Filter;
   try {
@@ -324,6 +324,7 @@ export default function List(props: ListProps) {
       {
         title: t('common:table.operations'),
         render: (record: any) => {
+          const anomalyEnabled = _.get(record, ['rule_config', 'anomaly_trigger', 'enable']);
           return (
             <Space>
               <Link
@@ -358,7 +359,7 @@ export default function List(props: ListProps) {
               >
                 {t('common:btn.delete')}
               </Button>
-              {record.prod === 'anomaly' && (
+              {record.cate === 'prometheus' && anomalyEnabled === true && (
                 <div>
                   <Link to={{ pathname: `/alert-rules/brain/${record.id}` }}>{t('brain_result_btn')}</Link>
                 </div>
@@ -381,6 +382,7 @@ export default function List(props: ListProps) {
   const filterData = () => {
     return data.filter((item) => {
       const { datasourceIds, search, prod, severities } = filter;
+      const datasourceIdsWithoutHost = _.filter(datasourceIds, (id) => id !== -999);
       const lowerCaseQuery = search?.toLowerCase() || '';
       return (
         (item.name.toLowerCase().indexOf(lowerCaseQuery) > -1 || item.append_tags.join(' ').toLowerCase().indexOf(lowerCaseQuery) > -1) &&
@@ -392,11 +394,14 @@ export default function List(props: ListProps) {
           })) ||
           !item.severities) &&
         (_.some(item.datasource_ids, (id) => {
-          if (includesProm(datasourceIds) && id === 0) return true;
-          return _.includes(datasourceIds, id);
+          if (includesProm(datasourceIdsWithoutHost) && id === 0) return true;
+          return _.includes(datasourceIdsWithoutHost, id);
         }) ||
+          // 没有选择数据源时显示全部
           datasourceIds?.length === 0 ||
-          !datasourceIds) &&
+          !datasourceIds ||
+          // 如果数据源值包含 host (-999) 则以 prod 判断
+          (_.includes(datasourceIds, -999) && item.prod === 'host')) &&
         (filter.disabled === undefined || item.disabled === filter.disabled)
       );
     });
@@ -437,22 +442,11 @@ export default function List(props: ListProps) {
               fetchData();
             }}
           />
-          <ProdSelect
-            style={{ width: 90 }}
-            value={filter.prod}
-            onChange={(val) => {
-              const newFilter = {
-                ...filter,
-                prod: val,
-              };
-              setFilter(newFilter);
-              window.sessionStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
-            }}
-          />
           <DatasourceSelect
             style={{ minWidth: 100 }}
             filterKey='alertRule'
             disableResponsive
+            showHost
             value={filter.datasourceIds}
             onChange={(val) => {
               const newFilter = {
@@ -536,6 +530,7 @@ export default function List(props: ListProps) {
                     busiId: businessGroup.id,
                     refreshList: fetchData,
                     groupedDatasourceList,
+                    reloadGroupedDatasourceList,
                     datasourceCateOptions,
                   });
                 }

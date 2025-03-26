@@ -67,8 +67,10 @@ const zh_CN = {
     name: '链接名称',
     url: '链接地址',
     isNewBlank: '是否新窗口打开',
+    dashboardIds_placeholder: '请选择仪表盘',
   },
   var: {
+    vars: '变量',
     btn: '添加变量',
     title: {
       list: '变量列表',
@@ -163,6 +165,8 @@ const zh_CN = {
     cancel: '取消',
     ok: '删除分组和图表',
     ok2: '仅删除分组',
+    panels: '{{count}} 个图表',
+    panels_plural: '{{count}} 个图表',
   },
   panel: {
     title: {
@@ -217,10 +221,26 @@ const zh_CN = {
         },
         heightInPercentage: '高度百分比',
         heightInPercentage_tip: 'Legend 高度占据面板的最大高度百分比，最小值为 20%，最大值为 80%',
+        widthInPercentage: '宽度百分比',
+        widthInPercentage_tip: 'Legend 宽度占据面板的最大宽度百分比，最小值为 20%，最大值为 80%',
       },
       thresholds: {
         title: '阈值',
-        btn: '添加',
+        btn: '添加阈值',
+        mode: {
+          label: '阈值模式',
+          tip: '百分比模式计算公式 Y轴最小值 + (Y轴最大值 - Y轴最小值) * (百分比值 / 100)',
+          absolute: '绝对值',
+          percentage: '百分比',
+        },
+      },
+      thresholdsStyle: {
+        label: '阈值样式',
+        off: '关闭',
+        line: '线',
+        dashed: '虚线',
+        'line+area': '线+区域',
+        'dashed+area': '虚线+区域',
       },
       tooltip: {
         mode: '模式',
@@ -288,7 +308,7 @@ const zh_CN = {
       calc_tip: '时序数据需要对所有时间点数据做取值计算，非时序数据忽略此设置',
       maxValue: '最大值',
       baseColor: '基础颜色',
-      serieWidth: '序列名宽度',
+      serieWidth: '名称宽度',
       sortOrder: '排序',
       textMode: '显示内容',
       valueAndName: '值和名称',
@@ -363,6 +383,7 @@ const zh_CN = {
         nowrap: '单元格不换行',
         organizeFields: '字段整理',
         colorMode_tip: '颜色模式是针对 "值字段" 的颜色设置。值模式下颜色作用于值文字；背景模式下颜色作用于字段所在单元格背景色。',
+        pageLimit: '每页显示行数',
       },
       text: {
         textColor: '文字颜色',
@@ -446,6 +467,12 @@ const zh_CN = {
             bottom: '最后',
           },
         },
+        displayMode: '显示模式',
+        valueMode: {
+          label: '数值显示',
+          color: '显示',
+          hidden: '隐藏',
+        },
       },
     },
     inspect: {
@@ -514,6 +541,7 @@ const zh_CN = {
       default: '默认',
       updateTimeRange: '更新时间范围',
     },
+    save: '保存仪表盘',
   },
   visualizations: {
     timeseries: '时序图',
@@ -541,6 +569,14 @@ const zh_CN = {
     sum: '总和',
     count: '数量',
     origin: '原始值',
+  },
+  annotation: {
+    add: '添加注释',
+    edit: '编辑注释',
+    description: '描述',
+    tags: '标签',
+    updated: '注释已更新',
+    deleted: '注释已删除',
   },
 };
 export default zh_CN;

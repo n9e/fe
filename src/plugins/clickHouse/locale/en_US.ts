@@ -3,8 +3,8 @@ const en_US = {
   query: {
     title: 'Query',
     execute: 'Execute',
-    query: 'Query Conditions',
-    query_required: 'Query Conditions is required',
+    query: 'SQL',
+    query_required: 'SQL is required',
     query_placeholder: 'Enter SQL to query, Press Shift+Enter to wrap',
     query_placeholder2: 'Press Shift+Enter to wrap',
     advancedSettings: {

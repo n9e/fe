@@ -20,6 +20,7 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { updateDashboard, createDashboard, getDashboard, updateDashboardConfigs } from '@/services/dashboardV2';
+import { DASHBOARD_VERSION } from '@/pages/dashboard/config';
 import { IDashboard, IDashboardConfig } from '../types';
 import { JSONParse } from '../utils';
 
@@ -27,12 +28,13 @@ interface Props {
   action: 'create' | 'edit';
   busiId?: number;
   initialValues?: IDashboard;
-  onOk?: () => void;
+  dashboardSaveMode?: string;
+  onOk?: (values) => void;
 }
 
 function index(props: Props & ModalWrapProps) {
   const { t } = useTranslation('dashboard');
-  const { visible, destroy, busiId, action, initialValues, onOk } = props;
+  const { visible, destroy, busiId, action, initialValues, dashboardSaveMode, onOk } = props;
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -45,12 +47,15 @@ function index(props: Props & ModalWrapProps) {
           console.warn(e);
         }
         form.setFieldsValue({
+          name: initialValues?.name,
+          ident: initialValues?.ident,
+          tags: initialValues?.tags ? _.split(initialValues.tags, ' ') : undefined,
           graphTooltip: configs.graphTooltip,
           graphZoom: configs.graphZoom,
         });
       });
     }
-  }, [initialValues?.id]);
+  }, [JSON.stringify(initialValues)]);
 
   return (
     <Modal
@@ -60,55 +65,52 @@ function index(props: Props & ModalWrapProps) {
       onCancel={destroy}
       onOk={() => {
         form.validateFields().then(async (values) => {
-          let result;
-          if (action === 'edit' && initialValues?.id) {
-            result = await updateDashboard(initialValues.id, {
-              name: values.name,
-              ident: values.ident,
-              tags: _.join(values.tags, ' '),
-            });
-            message.success(t('common:success.edit'));
-          } else if (action === 'create' && busiId) {
-            result = await createDashboard(busiId, {
-              name: values.name,
-              ident: values.ident,
-              tags: _.join(values.tags, ' '),
-              configs: JSON.stringify({
-                var: [],
-                panels: [],
-                version: '3.0.0',
-              }),
-            });
-            message.success(t('common:success.create'));
+          if (dashboardSaveMode === 'manual') {
+            if (onOk) {
+              onOk(values);
+            }
+            destroy();
+          } else {
+            let result;
+            if (action === 'edit' && initialValues?.id) {
+              result = await updateDashboard(initialValues.id, {
+                name: values.name,
+                ident: values.ident,
+                tags: _.join(values.tags, ' '),
+              });
+              message.success(t('common:success.edit'));
+            } else if (action === 'create' && busiId) {
+              result = await createDashboard(busiId, {
+                name: values.name,
+                ident: values.ident,
+                tags: _.join(values.tags, ' '),
+                configs: JSON.stringify({
+                  var: [],
+                  panels: [],
+                  version: DASHBOARD_VERSION,
+                }),
+              });
+              message.success(t('common:success.create'));
+            }
+            if (result) {
+              const configs = JSONParse(result.configs);
+              await updateDashboardConfigs(result.id, {
+                configs: JSON.stringify({
+                  ...configs,
+                  graphTooltip: values.graphTooltip,
+                  graphZoom: values.graphZoom,
+                }),
+              });
+            }
+            if (onOk) {
+              onOk(values);
+            }
+            destroy();
           }
-          if (result) {
-            const configs = JSONParse(result.configs);
-            await updateDashboardConfigs(result.id, {
-              configs: JSON.stringify({
-                ...configs,
-                graphTooltip: values.graphTooltip,
-                graphZoom: values.graphZoom,
-              }),
-            });
-          }
-          if (onOk) {
-            onOk();
-          }
-          destroy();
         });
       }}
     >
-      <Form
-        form={form}
-        layout='vertical'
-        initialValues={{
-          name: initialValues?.name,
-          ident: initialValues?.ident,
-          tags: initialValues?.tags ? _.split(initialValues.tags, ' ') : undefined,
-          graphTooltip: _.get(initialValues, 'configs.graphTooltip', 'default'),
-          graphZoom: _.get(initialValues, 'configs.graphZoom', 'default'),
-        }}
-      >
+      <Form form={form} layout='vertical' preserve={false}>
         <Form.Item
           label={t('name')}
           name='name'

@@ -1,23 +1,25 @@
-import React from 'react';
-import { Form, Row, Col, Input, InputNumber, Space, Select, Tooltip } from 'antd';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Form, Row, Col, Input, InputNumber, Space, Select, Tooltip, Radio } from 'antd';
 import { DeleteOutlined, InfoCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { FormListFieldData } from 'antd/lib/form/FormList';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
+
 import HideButton from '@/pages/dashboard/Components/HideButton';
-import { IS_PLUS } from '@/utils/constant';
+import { IS_PLUS, alphabet } from '@/utils/constant';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import KQLInput from '@/components/KQLInput';
 import LegendInput from '@/pages/dashboard/Components/LegendInput';
+import { getESIndexPatterns } from '@/pages/log/IndexPatterns/services';
+
+import { Panel } from '../../Components/Collapse';
+import { replaceExpressionVars } from '../../../VariableConfig/constant';
 import DateField from './DateField';
 import IndexSelect from './IndexSelect';
 import Values from './Values';
 import GroupBy from './GroupBy';
 import Time from './Time';
-import { Panel } from '../../Components/Collapse';
-import { replaceExpressionVars } from '../../../VariableConfig/constant';
-
-const alphabet = 'ABCDEFGHIGKLMNOPQRSTUVWXYZ'.split('');
+import IndexPatternSelect from './IndexPatternSelect';
 
 interface Props {
   fields: FormListFieldData[];
@@ -31,6 +33,7 @@ interface Props {
 
 export default function QueryPanel({ fields, field, index, remove, dashboardId, variableConfig }: Props) {
   const { t } = useTranslation('dashboard');
+  const [indexPatterns, setIndexPatterns] = useState<any[]>([]);
   const prefixName = ['targets', field.name];
   const chartForm = Form.useFormInstance();
   const datasourceCate = Form.useWatch('datasourceCate');
@@ -38,9 +41,33 @@ export default function QueryPanel({ fields, field, index, remove, dashboardId, 
   const realDatasourceValue = _.toNumber(replaceExpressionVars(datasourceValue as any, variableConfig, variableConfig.length, _.toString(dashboardId)));
   const targets = Form.useWatch('targets');
   const refId = Form.useWatch([...prefixName, 'refId']) || alphabet[index];
+  const indexType = Form.useWatch([...prefixName, 'query', 'index_type']);
   const indexValue = Form.useWatch([...prefixName, 'query', 'index']);
   const syntax = Form.useWatch([...prefixName, 'query', 'syntax']);
-  const date_field = Form.useWatch([...prefixName, 'query', 'date_field']);
+  const dateField = Form.useWatch([...prefixName, 'query', 'date_field']);
+  const indexPatternId = Form.useWatch([...prefixName, 'query', 'index_pattern']);
+  const curIndexValues = useMemo(() => {
+    if (indexType === 'index') {
+      return {
+        index: indexValue,
+        date_field: dateField,
+      };
+    }
+    return {
+      index: _.find(indexPatterns, { id: indexPatternId })?.name,
+      date_field: _.find(indexPatterns, { id: indexPatternId })?.time_field,
+    };
+  }, [indexType, indexValue, indexPatternId, JSON.stringify(indexPatterns)]);
+  const targetQueryValues = Form.useWatch([...prefixName, 'query', 'values']);
+  const isRawData = _.get(targetQueryValues, [0, 'func']) === 'rawData';
+
+  useEffect(() => {
+    if (realDatasourceValue) {
+      getESIndexPatterns(realDatasourceValue).then((res) => {
+        setIndexPatterns(res);
+      });
+    }
+  }, [realDatasourceValue]);
 
   return (
     <Panel
@@ -64,7 +91,14 @@ export default function QueryPanel({ fields, field, index, remove, dashboardId, 
       }
     >
       <Form.Item noStyle {...field} name={[field.name, 'refId']} hidden />
-      <IndexSelect prefixField={field} prefixName={[field.name]} cate={datasourceCate} datasourceValue={realDatasourceValue} />
+      <Form.Item {...field} name={[field.name, 'query', 'index_type']} initialValue='index'>
+        <Radio.Group>
+          <Radio value='index'>{t('datasource:es.index')}</Radio>
+          <Radio value='index_pattern'>{t('datasource:es.indexPatterns')}</Radio>
+        </Radio.Group>
+      </Form.Item>
+      {indexType === 'index' && <IndexSelect prefixField={field} prefixName={[field.name]} cate={datasourceCate} datasourceValue={realDatasourceValue} />}
+      {indexType === 'index_pattern' && <IndexPatternSelect field={field} name={['query']} indexPatterns={indexPatterns} />}
       <Form.Item
         label={
           <div
@@ -121,88 +155,64 @@ export default function QueryPanel({ fields, field, index, remove, dashboardId, 
         ) : (
           <Form.Item {...field} name={[field.name, 'query', 'filter']}>
             <KQLInput
-              datasourceValue={datasourceValue}
+              datasourceValue={realDatasourceValue}
               query={{
-                index: indexValue,
-                date_field: date_field,
+                index: curIndexValues.index,
+                date_field: curIndexValues.date_field,
               }}
               historicalRecords={[]}
             />
           </Form.Item>
         )}
       </Form.Item>
-      <Values prefixField={field} prefixFields={['targets']} prefixNameField={[field.name]} datasourceValue={realDatasourceValue} index={indexValue} valueRefVisible={false} />
-      <Form.Item
-        shouldUpdate={(prevValues, curValues) => {
-          const preQueryValues = _.get(prevValues, [...prefixName, 'query', 'values']);
-          const curQueryValues = _.get(curValues, [...prefixName, 'query', 'values']);
-          return !_.isEqual(preQueryValues, curQueryValues);
-        }}
-        noStyle
-      >
-        {({ getFieldValue }) => {
-          const targetQueryValues = getFieldValue([...prefixName, 'query', 'values']);
-          // 当提取日志原文时不显示 groupBy 设置
-          if (_.get(targetQueryValues, [0, 'func']) === 'rawData') {
-            return null;
-          }
-          return (
-            <GroupBy
-              parentNames={['targets']}
-              prefixField={field}
-              prefixFieldNames={[field.name, 'query']}
-              datasourceValue={datasourceValue}
-              index={getFieldValue([...prefixName, 'query', 'index'])}
-            />
-          );
-        }}
-      </Form.Item>
-      <Form.Item
-        shouldUpdate={(prevValues, curValues) => {
-          const preQueryValues = _.get(prevValues, [...prefixName, 'query', 'values']);
-          const curQueryValues = _.get(curValues, [...prefixName, 'query', 'values']);
-          return !_.isEqual(preQueryValues, curQueryValues);
-        }}
-        noStyle
-      >
-        {({ getFieldValue }) => {
-          const targetQueryValues = getFieldValue([...prefixName, 'query', 'values']);
-          // 当提取日志原文时不显示 groupBy 设置
-          if (_.get(targetQueryValues, [0, 'func']) === 'rawData') {
-            return (
-              <Row gutter={10}>
-                <Col span={8}>
-                  <DateField datasourceValue={realDatasourceValue} index={indexValue} prefixField={field} prefixNames={[field.name, 'query']} />
-                </Col>
-                <Col span={8}>
-                  <InputGroupWithFormItem
-                    label={
-                      <Space>
-                        {t('datasource:es.raw.date_format')}
-                        <Tooltip title={t('datasource:es.raw.date_format_tip')}>
-                          <InfoCircleOutlined />
-                        </Tooltip>
-                      </Space>
-                    }
-                  >
-                    <Form.Item {...field} name={[field.name, 'query', 'date_format']}>
-                      <Input />
-                    </Form.Item>
-                  </InputGroupWithFormItem>
-                </Col>
-                <Col span={8}>
-                  <InputGroupWithFormItem label={t('datasource:es.raw.limit')}>
-                    <Form.Item {...field} name={[field.name, 'query', 'limit']}>
-                      <InputNumber style={{ width: '100%' }} />
-                    </Form.Item>
-                  </InputGroupWithFormItem>
-                </Col>
-              </Row>
-            );
-          }
-          return <Time prefixField={field} prefixNameField={[field.name]} chartForm={chartForm} variableConfig={variableConfig} dashboardId={dashboardId} />;
-        }}
-      </Form.Item>
+      <Values
+        prefixField={field}
+        prefixFields={['targets']}
+        prefixNameField={[field.name]}
+        datasourceValue={realDatasourceValue}
+        index={curIndexValues.index}
+        valueRefVisible={false}
+      />
+      {!isRawData && (
+        <GroupBy parentNames={['targets']} prefixField={field} prefixFieldNames={[field.name, 'query']} datasourceValue={realDatasourceValue} index={curIndexValues.index} />
+      )}
+      {isRawData ? (
+        <Row gutter={10}>
+          <Col
+            span={8}
+            style={{
+              display: indexType === 'index_pattern' ? 'none' : 'block',
+            }}
+          >
+            <DateField datasourceValue={realDatasourceValue} index={curIndexValues.index} prefixField={field} prefixNames={[field.name, 'query']} />
+          </Col>
+          <Col span={8}>
+            <InputGroupWithFormItem
+              label={
+                <Space>
+                  {t('datasource:es.raw.date_format')}
+                  <Tooltip title={t('datasource:es.raw.date_format_tip')}>
+                    <InfoCircleOutlined />
+                  </Tooltip>
+                </Space>
+              }
+            >
+              <Form.Item {...field} name={[field.name, 'query', 'date_format']}>
+                <Input />
+              </Form.Item>
+            </InputGroupWithFormItem>
+          </Col>
+          <Col span={8}>
+            <InputGroupWithFormItem label={t('datasource:es.raw.limit')}>
+              <Form.Item {...field} name={[field.name, 'query', 'limit']}>
+                <InputNumber style={{ width: '100%' }} />
+              </Form.Item>
+            </InputGroupWithFormItem>
+          </Col>
+        </Row>
+      ) : (
+        <Time prefixField={field} prefixNameField={[field.name]} chartForm={chartForm} variableConfig={variableConfig} dashboardId={dashboardId} />
+      )}
       {IS_PLUS && (
         <Form.Item
           label='Legend'

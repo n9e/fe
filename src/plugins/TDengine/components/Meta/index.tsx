@@ -3,6 +3,7 @@ import { Tree, Modal, Button } from 'antd';
 import _ from 'lodash';
 import type { DraggableData, DraggableEvent } from 'react-draggable';
 import Draggable from 'react-draggable';
+import { useTranslation } from 'react-i18next';
 import { DatasourceCateEnum } from '@/utils/constant';
 import { getDatabases, getTables, getColumns } from '../../services';
 import './style.less';
@@ -42,6 +43,7 @@ const updateTreeData = (list: DataNode[], key: React.Key, children: DataNode[]):
 const numberTypes = ['BIGINT', 'INT', 'INT UNSIGNED', 'BIGINT UNSIGNED', 'FLOAT', 'DOUBLE', 'SMALLINT', 'SMALLINT UNSIGNED', 'TINYINT', 'TINYINT UNSIGNED'];
 
 export default function Meta(props: Props) {
+  const { t } = useTranslation('db_tdengine');
   const { datasourceValue, onTreeNodeClick } = props;
   const [treeData, setTreeData] = useState<DataNode[]>([]);
   const baseParams = {
@@ -121,13 +123,13 @@ export default function Meta(props: Props) {
         selectable: false,
         children: [
           {
-            title: '普通表',
+            title: t('query.table'),
             key: `${item}.table`,
             database: item,
             selectable: false,
           },
           {
-            title: '超级表',
+            title: t('query.stable'),
             key: `${item}.stable`,
             database: item,
             selectable: false,
@@ -171,6 +173,7 @@ export default function Meta(props: Props) {
 }
 
 export function MetaModal(props: Props) {
+  const { t } = useTranslation('db_tdengine');
   const { datasourceValue, onTreeNodeClick } = props;
   const [open, setOpen] = useState(false);
   const [disabled, setDisabled] = useState(true);
@@ -223,7 +226,7 @@ export function MetaModal(props: Props) {
             onBlur={() => {}}
             // end
           >
-            元信息
+            {t('query.schema')}
           </div>
         }
         visible={open}
@@ -244,7 +247,7 @@ export function MetaModal(props: Props) {
           setOpen(true);
         }}
       >
-        元信息
+        {t('query.schema')}
       </Button>
     </>
   );

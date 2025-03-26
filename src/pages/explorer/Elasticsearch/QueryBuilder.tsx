@@ -83,8 +83,11 @@ export default function QueryBuilder(props: Props) {
   }, [datasourceValue, allowHideSystemIndices]);
 
   useEffect(() => {
-    // 假设 URL 携带了 index_name 和 timestamp，则触发一次查询
-    if (params.get('timestamp') && params.get('index_name')) {
+    if (params.get('__execute__')) {
+      onExecute();
+    } else if (params.get('timestamp') && params.get('index_name')) {
+      // @deprecated 立即执行查询
+      // 假设 URL 携带了 index_name 和 timestamp，则触发一次查询
       onExecute();
     }
   }, []);

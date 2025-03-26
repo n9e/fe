@@ -69,6 +69,7 @@ export interface ICommonState {
   groupedDatasourceList: {
     [index: string]: Datasource[];
   };
+  reloadGroupedDatasourceList: () => void;
   datasourceList: Datasource[];
   setDatasourceList: (list: Datasource[]) => void;
   busiGroups: {
@@ -113,6 +114,7 @@ export interface ICommonState {
   dashboardSaveMode: 'auto' | 'manual';
   perms?: string[];
   screenTemplates?: string[];
+  tablePaginationPosition?: string; // 表格分页位置
 }
 
 export const basePrefix = import.meta.env.VITE_PREFIX || '';
@@ -131,6 +133,10 @@ function App() {
   const [commonState, setCommonState] = useState<ICommonState>({
     datasourceCateOptions: [],
     groupedDatasourceList: {},
+    reloadGroupedDatasourceList: async () => {
+      const datasourceList = await getDatasourceBriefList();
+      setCommonState((state) => ({ ...state, groupedDatasourceList: _.groupBy(datasourceList, 'plugin_type') }));
+    },
     datasourceList: [],
     setDatasourceList: (datasourceList) => {
       setCommonState((state) => ({ ...state, datasourceList, groupedDatasourceList: _.groupBy(datasourceList, 'plugin_type') }));
@@ -184,7 +190,7 @@ function App() {
       setCommonState((state) => ({ ...state, darkMode: mode }));
     },
     esIndexMode: 'all',
-    dashboardSaveMode: 'auto',
+    dashboardSaveMode: 'manual',
     screenTemplates: [],
   });
 
@@ -209,6 +215,9 @@ function App() {
         document.title = siteInfo?.page_title || 'Nightingale';
         if (iconLink) {
           iconLink.href = siteInfo?.favicon_url || '/image/favicon.ico';
+        }
+        if (siteInfo?.font_family) {
+          document.body.style.fontFamily = siteInfo.font_family;
         }
         // 非匿名访问，需要初始化一些公共数据
         if (!anonymous) {

@@ -19,7 +19,7 @@ import { initReactI18next } from 'react-i18next';
 import _ from 'lodash';
 import resources from './locales/resources';
 
-const languages = ['zh_CN', 'en_US', 'zh_HK'];
+const languages = ['zh_CN', 'en_US', 'zh_HK', 'ja_JP'];
 const localStorageLanguage = localStorage.getItem('language');
 let language = 'zh_CN';
 if (localStorageLanguage && _.includes(languages, localStorageLanguage)) {

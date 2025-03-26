@@ -35,6 +35,9 @@ const ja_JP = {
   enable_in_bg_tip:
     'アラートイベントの ident ラベルに基づいて所属関係を判断し、つまり：アラートイベントに ident ラベルがあり、その ident に対応するマシンがこのビジネスグループに属していない場合、このアラートイベントは破棄されます',
   notify_configs: '通知設定',
+  notify_rule_ids: '通知ルール',
+  switch_to_old: '切り替え旧版',
+  switch_to_new: '切り替え新版',
   notify_channels: '通知メディア',
   notify_channels_doc: 'ドキュメントを使用',
   notify_channels_tpl: '通知メディアテンプレート',
@@ -145,6 +148,7 @@ const ja_JP = {
         append_tags: '追加タグ',
         notify_channels: '通知メディア',
         notify_groups: 'アラート受信グループ',
+        notify_rule_ids: '通知ルール',
         notify_recovered: '復旧通知を有効',
         notify_repeat_step: '繰り返し通知間隔',
         recover_duration: '監視時間',
@@ -283,6 +287,12 @@ const ja_JP = {
     enable: '以前にデータが見つかり、現在データが見つからない場合にアラートをトリガーします。データが再度見つかると復旧します',
     resolve_after: 'データがない期間が経過したら自動的に復旧します',
     resolve_after_unit: '秒',
+  },
+  anomaly_trigger: {
+    title: 'スマートアラート',
+    enable: 'スマートアラートを有効にする',
+    algorithm: 'アルゴリズム',
+    algorithm_required: 'アルゴリズムは空にできません',
   },
   filter_disabled: {
     placeholder: 'フィルターを選択',

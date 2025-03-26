@@ -1,5 +1,3 @@
-import { placeholder } from '@codemirror/view';
-
 const zh_CN = {
   title: '告警规则',
   search_placeholder: '搜索名称或标签',
@@ -36,6 +34,9 @@ const zh_CN = {
   enable_in_bg: '仅在本业务组生效',
   enable_in_bg_tip: '根据告警事件中的 ident 归属关系判断，即：如果告警事件中有 ident 标签且 ident 对应的机器不属于该业务组，则丢弃此告警事件',
   notify_configs: '通知配置',
+  notify_rule_ids: '通知规则',
+  switch_to_old: '切换旧版',
+  switch_to_new: '切换新版',
   notify_channels: '通知媒介',
   notify_channels_doc: '使用文档',
   notify_channels_tpl: '通知媒介模板',
@@ -146,6 +147,7 @@ const zh_CN = {
         append_tags: '附加标签',
         notify_channels: '通知媒介',
         notify_groups: '告警接收组',
+        notify_rule_ids: '通知规则',
         notify_recovered: '启用恢复通知',
         notify_repeat_step: '重复发送频率',
         recover_duration: '留观时长',
@@ -288,6 +290,12 @@ const zh_CN = {
     enable: '之前查到过数据，现在查不到就告警；重新查到数据就恢复',
     resolve_after: '无数据超过多久之后自动恢复',
     resolve_after_unit: '秒',
+  },
+  anomaly_trigger: {
+    title: '智能告警',
+    enable: '启用智能告警',
+    algorithm: '算法',
+    algorithm_required: '算法不能为空',
   },
   filter_disabled: {
     placeholder: '启用状态',

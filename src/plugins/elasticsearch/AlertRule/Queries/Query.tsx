@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
-import { Row, Col, Form, Tooltip, AutoComplete, Input, InputNumber, Select } from 'antd';
+import { Row, Col, Form, Tooltip, AutoComplete, Input, InputNumber, Select, Space } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useDebounceFn } from 'ahooks';
@@ -11,11 +11,15 @@ import QueryName from '@/components/QueryName';
 import DocumentDrawer from '@/components/DocumentDrawer';
 import { CommonStateContext } from '@/App';
 import { getFullFields } from '@/pages/explorer/Elasticsearch/services';
+import { useIsAuthorized } from '@/components/AuthorizationWrapper';
+import IndexPatternSettingsBtn from '@/pages/explorer/Elasticsearch/components/IndexPatternSettingsBtn';
+import { getESIndexPatterns } from '@/pages/log/IndexPatterns/services';
 
 import GraphPreview from '../GraphPreview';
 import Value from './Value';
 import DateField from './DateField';
 import AdvancedSettings from './AdvancedSettings';
+import IndexPatternSelect from './IndexPatternSelect';
 
 interface Props {
   field: any;
@@ -30,11 +34,22 @@ export default function Query(props: Props) {
   const { darkMode } = useContext(CommonStateContext);
   const { field } = props;
   const { datasourceValue, indexOptions, disabled, children } = props;
+  const indexPatternsAuthorized = useIsAuthorized(['/log/index-patterns']);
   const [indexSearch, setIndexSearch] = useState('');
+  const [indexPatternsRefreshFlag, setIndexPatternsRefreshFlag] = useState(_.uniqueId('indexPatternsRefreshFlag_'));
+  const [indexPatterns, setIndexPatterns] = useState<any[]>([]);
   const names = ['rule_config', 'queries'];
   const form = Form.useFormInstance();
   const queries = Form.useWatch(names);
+  const indexType = Form.useWatch([...names, field.name, 'index_type']);
   const indexValue = Form.useWatch([...names, field.name, 'index']);
+  const indexPatternId = Form.useWatch([...names, field.name, 'index_pattern']);
+  const curIndexValue = useMemo(() => {
+    if (indexType === 'index') {
+      return indexValue;
+    }
+    return _.find(indexPatterns, { id: indexPatternId })?.name;
+  }, [indexType, indexValue, indexPatternId, JSON.stringify(indexPatterns)]);
 
   const { run: onIndexChange } = useDebounceFn(
     (val) => {
@@ -59,11 +74,19 @@ export default function Query(props: Props) {
     }
   }, [indexValue]);
 
+  useEffect(() => {
+    if (datasourceValue) {
+      getESIndexPatterns(datasourceValue).then((res) => {
+        setIndexPatterns(res);
+      });
+    }
+  }, [datasourceValue, indexPatternsRefreshFlag]);
+
   return (
-    <div key={field.key} className='n9e-fill-color-3' style={{ padding: 10, marginBottom: 10, position: 'relative' }}>
+    <div key={field.key} className='n9e-fill-color-3 p2 mb2' style={{ position: 'relative' }}>
       <Row gutter={8}>
         <Col flex='32px'>
-          <Form.Item {...field} name={[field.name, 'ref']}>
+          <Form.Item {...field} name={[field.name, 'ref']} initialValue='A'>
             <QueryName existingNames={_.map(queries, 'ref')} />
           </Form.Item>
         </Col>
@@ -72,42 +95,70 @@ export default function Query(props: Props) {
             <Col span={7}>
               <InputGroupWithFormItem
                 label={
-                  <span>
-                    {t('datasource:es.index')}{' '}
+                  <Space>
+                    <Form.Item {...field} name={[field.name, 'index_type']} noStyle initialValue='index'>
+                      <Select
+                        bordered={false}
+                        options={[
+                          {
+                            label: t('datasource:es.index'),
+                            value: 'index',
+                          },
+                          {
+                            label: t('datasource:es.indexPatterns'),
+                            value: 'index_pattern',
+                          },
+                        ]}
+                        dropdownMatchSelectWidth={false}
+                      />
+                    </Form.Item>
                     <Tooltip title={<Trans ns='datasource' i18nKey='datasource:es.index_tip' components={{ 1: <br /> }} />}>
                       <QuestionCircleOutlined />
                     </Tooltip>
-                  </span>
+                  </Space>
+                }
+                addonAfter={
+                  indexType === 'index_pattern' &&
+                  indexPatternsAuthorized && (
+                    <IndexPatternSettingsBtn
+                      onReload={() => {
+                        setIndexPatternsRefreshFlag(_.uniqueId('indexPatternsRefreshFlag_'));
+                      }}
+                    />
+                  )
                 }
               >
-                <Form.Item
-                  {...field}
-                  name={[field.name, 'index']}
-                  rules={[
-                    {
-                      required: true,
-                      message: t('datasource:es.index_msg'),
-                    },
-                  ]}
-                >
-                  <AutoComplete
-                    style={{ width: '100%' }}
-                    dropdownMatchSelectWidth={false}
-                    options={_.filter(indexOptions, (item) => {
-                      if (indexSearch) {
-                        return item.value.includes(indexSearch);
-                      }
-                      return true;
-                    })}
-                    onSearch={(val) => {
-                      setIndexSearch(val);
-                    }}
-                    disabled={disabled}
-                  />
-                </Form.Item>
+                {indexType === 'index' && (
+                  <Form.Item
+                    {...field}
+                    name={[field.name, 'index']}
+                    rules={[
+                      {
+                        required: true,
+                        message: t('datasource:es.index_msg'),
+                      },
+                    ]}
+                  >
+                    <AutoComplete
+                      style={{ width: '100%' }}
+                      dropdownMatchSelectWidth={false}
+                      options={_.filter(indexOptions, (item) => {
+                        if (indexSearch) {
+                          return item.value.includes(indexSearch);
+                        }
+                        return true;
+                      })}
+                      onSearch={(val) => {
+                        setIndexSearch(val);
+                      }}
+                      disabled={disabled}
+                    />
+                  </Form.Item>
+                )}
+                {indexType === 'index_pattern' && <IndexPatternSelect field={field} indexPatterns={indexPatterns} />}
               </InputGroupWithFormItem>
             </Col>
-            <Col span={7}>
+            <Col span={indexType === 'index' ? 7 : 12}>
               <InputGroupWithFormItem
                 label={
                   <span>
@@ -135,14 +186,11 @@ export default function Query(props: Props) {
                 </Form.Item>
               </InputGroupWithFormItem>
             </Col>
-            <Col span={5}>
-              <Form.Item shouldUpdate noStyle>
-                {({ getFieldValue }) => {
-                  const index = getFieldValue([...names, field.name, 'index']);
-                  return <DateField disabled={disabled} datasourceValue={datasourceValue} index={index} prefixField={field} prefixNames={names} />;
-                }}
-              </Form.Item>
-            </Col>
+            {indexType === 'index' && (
+              <Col span={5}>
+                <DateField disabled={disabled} datasourceValue={datasourceValue} index={indexValue} field={field} preName={names} />
+              </Col>
+            )}
             <Col span={5}>
               <Input.Group>
                 <span className='ant-input-group-addon'>{t('datasource:es.interval')}</span>
@@ -163,9 +211,16 @@ export default function Query(props: Props) {
           </Row>
         </Col>
       </Row>
-      <Value datasourceValue={datasourceValue} index={indexValue} prefixField={field} prefixNames={names} disabled={disabled} />
+      <Value
+        datasourceValue={datasourceValue}
+        index={curIndexValue}
+        field={field}
+        preName={names}
+        disabled={disabled}
+        functions={['count', 'avg', 'sum', 'max', 'min', 'p90', 'p95', 'p99']}
+      />
       <div style={{ marginTop: 8 }}>
-        <GroupBy datasourceValue={datasourceValue} index={indexValue} parentNames={names} prefixField={field} prefixFieldNames={[field.name]} disabled={disabled} />
+        <GroupBy datasourceValue={datasourceValue} index={curIndexValue} parentNames={names} prefixField={field} prefixFieldNames={[field.name]} disabled={disabled} />
       </div>
       <AdvancedSettings field={field} />
       {children}

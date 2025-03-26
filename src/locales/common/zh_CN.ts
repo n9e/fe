@@ -55,6 +55,8 @@ const zh_CN = {
     expand: '展开',
     collapse: '收起',
     copy: '拷贝',
+    copy2: '复制',
+    reload: '刷新',
   },
   table: {
     name: '名称',
@@ -95,6 +97,7 @@ const zh_CN = {
       op_not_in: '不包含',
       preview: '数据源预览',
     },
+    managePageLink: '数据源管理',
   },
   confirm: {
     delete: '确认删除吗？',
@@ -122,6 +125,7 @@ const zh_CN = {
     second: '秒',
     minute: '分钟',
     hour: '小时',
+    day: '天',
     weekdays: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
   },
   severity: {
@@ -134,8 +138,15 @@ const zh_CN = {
     export: {
       copy: '复制 JSON 到剪贴板',
     },
+    not_select: '请先选择数据',
   },
   invalidDatasource: '无效的数据源',
+  copyToClipboard: '复制到剪贴板',
+  copyToClipboardFailed: '复制到剪贴板失败',
+  manage: '管理',
+  reload: '刷新',
+  public: '公开',
+  private: '私有',
 
   // 临时把 task 的翻译放在这里
   tpl: '自愈脚本',

@@ -114,7 +114,11 @@ export default function Content() {
      * 所以这里现在只能通过白名单的方式来单独处理个别未配置权限点的路径
      * /docs/等页面不进行权限校验
      */
-    if (profile?.roles?.length > 0 && !_.includes(['/', '/account/profile/info', '/account/profile/pwd'], location.pathname) && !location.pathname.includes('/docs/')) {
+    if (
+      profile?.roles?.length > 0 &&
+      !_.includes(['/', '/account/profile/info', '/account/profile/pwd', '/account/profile/token'], location.pathname) &&
+      !location.pathname.includes('/docs/')
+    ) {
       if (profile?.roles.indexOf('Admin') === -1) {
         // 如果没有权限则重定向到 403 页面
         if (

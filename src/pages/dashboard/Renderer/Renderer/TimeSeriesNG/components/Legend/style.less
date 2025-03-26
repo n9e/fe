@@ -1,0 +1,64 @@
+.renderer-timeseries-ng-legend-container {
+  .renderer-timeseries-ng-legend-color-symbol {
+    width: 14px;
+    height: 4px;
+    border-radius: 10px;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+  .renderer-timeseries-ng-legend-table {
+    .renderer-timeseries-ng-legend-table-name-column {
+      width: 100%;
+      display: flex;
+      white-space: nowrap;
+      align-items: center;
+      gap: 8px;
+    }
+    .renderer-timeseries-ng-legend-table-name-content {
+      white-space: nowrap;
+      background: none;
+      border: none;
+      font-size: inherit;
+      padding: 0px;
+      max-width: 600px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      user-select: text;
+    }
+
+    .renderer-timeseries-ng-legend-table-row {
+      cursor: pointer;
+    }
+    .renderer-timeseries-ng-legend-table-row.disabled {
+      color: var(--fc-text-4);
+    }
+
+    .ant-table-thead,.ant-table-tbody {
+      .ant-table-cell {
+        padding: 2px 4px !important;
+        white-space: nowrap; // 强制不换行解决换行可能会产生的宽度抖动问题
+      }
+    }
+  }
+  .renderer-timeseries-ng-legend-list {
+    padding: 0;
+    margin: 4px 0 0;
+    list-style: none;
+    .renderer-timeseries-ng-legend-list-item {
+      width: 100%;
+      display: flex;
+      white-space: nowrap;
+      align-items: center;
+      gap: 8px;
+      padding-right: 10px;
+      cursor: pointer;
+      &.disabled {
+        color: var(--fc-text-4);
+      }
+    }
+    .renderer-timeseries-ng-legend-list-stat {
+      flex-grow: 1;
+      text-align: right;
+    }
+  }
+}

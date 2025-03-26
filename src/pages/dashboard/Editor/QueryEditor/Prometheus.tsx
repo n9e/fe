@@ -9,13 +9,11 @@ import Resolution from '@/components/Resolution';
 import { PromQLInputWithBuilder } from '@/components/PromQLInput';
 import { getRealStep } from '@/pages/dashboard/Renderer/datasource/prometheus';
 import HideButton from '@/pages/dashboard/Components/HideButton';
-import { IS_PLUS } from '@/utils/constant';
+import { IS_PLUS, alphabet } from '@/utils/constant';
 import Collapse, { Panel } from '../Components/Collapse';
 import ExpressionPanel from '../Components/ExpressionPanel';
 import AddQueryButtons from '../Components/AddQueryButtons';
 import { replaceExpressionVars } from '../../VariableConfig/constant';
-
-const alphabet = 'ABCDEFGHIGKLMNOPQRSTUVWXYZ'.split('');
 
 export default function Prometheus({ chartForm, variableConfig, dashboardId, time }) {
   const { t } = useTranslation('dashboard');

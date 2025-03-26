@@ -26,7 +26,7 @@ const zh_HK = {
       OLDEST_FIRST: '舊的優先',
     },
     download: '下載日誌',
-    export: '導出記錄',
+    export: '下載記錄',
     log_download: {
       title: '下載',
       download_title: '下載日誌數據',
@@ -66,6 +66,8 @@ const zh_HK = {
   share_tip: '點擊複製分享鏈接',
   share_tip_2: '點擊複製分享鏈接, 目前僅支持分享日誌原文查詢',
   help: '使用說明',
+  clear_tabs: '清空',
+  clear_tabs_tip: '只保留當前標籤頁',
 };
 
 export default zh_HK;

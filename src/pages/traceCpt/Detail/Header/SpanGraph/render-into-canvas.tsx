@@ -2,7 +2,7 @@ import { TNil } from '../../../type';
 
 // exported for tests
 export const BG_COLOR = '#fff';
-export const DARK_BG_COLOR = '#272a38';
+export const DARK_BG_COLOR = 'rgb(24,27,31)';
 export const ITEM_ALPHA = 0.8;
 export const MIN_ITEM_HEIGHT = 2;
 export const MAX_TOTAL_HEIGHT = 200;
@@ -27,7 +27,7 @@ export default function renderIntoCanvas(
   const itemYChange = cHeight / items.length;
 
   const ctx = canvas.getContext('2d', { alpha: false }) as CanvasRenderingContext2D;
-  const darkMode = localStorage.getItem('n9e-dark-mode') === 'true';
+  const darkMode = localStorage.getItem('n9e-dark-mode') === 'true' || localStorage.getItem('n9e-dark-mode') === '1';
   ctx.fillStyle = darkMode ? DARK_BG_COLOR : BG_COLOR;
   ctx.fillRect(0, 0, cWidth, cHeight);
   for (let i = 0; i < items.length; i++) {

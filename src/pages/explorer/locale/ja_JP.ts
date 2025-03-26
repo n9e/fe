@@ -26,7 +26,7 @@ const ja_JP = {
       OLDEST_FIRST: '最古のものから',
     },
     download: 'ログをダウンロード',
-    export: 'レコードをエクスポート',
+    export: 'ダウンロード記録',
     log_download: {
       title: 'ダウンロード',
       download_title: 'ログデータをダウンロード',
@@ -66,6 +66,8 @@ const ja_JP = {
   share_tip: 'クリックして共有リンクをコピー',
   share_tip_2: 'クリックして共有リンクをコピー、現在はログの元のクエリのみを共有できます',
   help: 'データソースヘルプを表示',
+  clear_tabs: 'クリア',
+  clear_tabs_tip: '現在のタブのみを保持',
 };
 
 export default ja_JP;

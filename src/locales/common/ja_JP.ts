@@ -56,6 +56,8 @@ const ja_JP = {
     expand: '展開',
     collapse: '折りたたむ',
     copy: 'コピー',
+    copy2: 'コピー',
+    reload: 'リロード',
   },
   table: {
     name: '名前',
@@ -96,6 +98,7 @@ const ja_JP = {
       op_not_in: '含まない',
       preview: 'データソースプレビュー',
     },
+    managePageLink: 'データソース管理',
   },
   confirm: {
     delete: '削除しますか？',
@@ -123,6 +126,7 @@ const ja_JP = {
     second: '秒',
     minute: '分',
     hour: '時間',
+    day: '日',
     weekdays: ['日曜日', '月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日'],
   },
   severity: {
@@ -135,8 +139,16 @@ const ja_JP = {
     export: {
       copy: 'JSONをクリップボードにコピー',
     },
+    not_select: 'データを選択してください',
   },
   invalidDatasource: '無効なデータソース',
+  copyToClipboard: 'クリップボードにコピー',
+  copyToClipboardFailed: 'クリップボードにコピーできませんでした',
+  manage: '管理',
+  reload: 'リロード',
+  public: '公開',
+  private: '非公開',
+
   tpl: '自己修復スクリプト',
   'tpl.create': '作成',
   'tpl.tag.bind': 'タグをバインド',
