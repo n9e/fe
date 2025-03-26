@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Space, Form, Radio } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { DatasourceCateEnum } from '@/utils/constant';
 import { QueryBuilder as TDengine } from '@/plugins/TDengine';
 import { QueryBuilder as CK } from '@/plugins/clickHouse';
+import { CommonStateContext } from '@/App';
+import { replaceExpressionVars } from '@/pages/dashboard/VariableConfig/constant';
 import OrganizeFields from '../TransformationsEditor/OrganizeFields';
 import DatasourceSelect from './components/DatasourceSelect';
 import Prometheus from './Prometheus';
@@ -16,6 +18,17 @@ import PlusQueryBuilder from 'plus:/parcels/Dashboard/QueryBuilder';
 export default function index({ chartForm, type, variableConfig, dashboardId, time }) {
   const { t } = useTranslation('dashboard');
   const [mode, setMode] = useState('query');
+  const { datasourceList } = useContext(CommonStateContext);
+  let datasourceValue = Form.useWatch('datasourceValue');
+  datasourceValue = variableConfig
+    ? replaceExpressionVars({
+        text: datasourceValue,
+        variables: variableConfig,
+        limit: variableConfig.length,
+        dashboardId,
+        datasourceList,
+      })
+    : datasourceValue;
 
   return (
     <div>
@@ -43,18 +56,18 @@ export default function index({ chartForm, type, variableConfig, dashboardId, ti
           {({ getFieldValue }) => {
             const cate = getFieldValue('datasourceCate') || 'prometheus';
             if (cate === DatasourceCateEnum.prometheus) {
-              return <Prometheus chartForm={chartForm} variableConfig={variableConfig} dashboardId={dashboardId} time={time} />;
+              return <Prometheus variableConfig={variableConfig} time={time} datasourceValue={datasourceValue} />;
             }
             if (cate === DatasourceCateEnum.elasticsearch) {
-              return <Elasticsearch chartForm={chartForm} variableConfig={variableConfig} dashboardId={dashboardId} />;
+              return <Elasticsearch datasourceValue={datasourceValue} />;
             }
             if (cate === DatasourceCateEnum.tdengine) {
-              return <TDengine chartForm={chartForm} variableConfig={variableConfig} dashboardId={dashboardId} />;
+              return <TDengine datasourceValue={datasourceValue} />;
             }
             if (cate === DatasourceCateEnum.ck) {
-              return <CK />;
+              return <CK datasourceValue={datasourceValue} />;
             }
-            return <PlusQueryBuilder cate={cate} form={chartForm} variableConfig={variableConfig} dashboardId={dashboardId} time={time} />;
+            return <PlusQueryBuilder cate={cate} datasourceValue={datasourceValue} />;
           }}
         </Form.Item>
       </div>

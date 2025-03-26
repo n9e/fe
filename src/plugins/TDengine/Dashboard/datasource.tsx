@@ -3,18 +3,14 @@ import moment from 'moment';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { DatasourceCateEnum } from '@/utils/constant';
 import { getDsQuery } from '@/plugins/TDengine/services';
-import { IVariable } from '@/pages/dashboard/VariableConfig/definition';
 import replaceExpressionBracket from '@/pages/dashboard/Renderer/utils/replaceExpressionBracket';
-import { replaceExpressionVars } from '@/pages/dashboard/VariableConfig/constant';
 import { getSerieName } from '../utils';
 import { N9E_PATHNAME } from '@/utils/constant';
 interface IOptions {
   id?: string; // panelId
-  dashboardId: string;
   datasourceValue: number;
   time: IRawTimeRange;
   targets: any[];
-  variableConfig?: IVariable[];
   spanNulls?: boolean;
   scopedVars?: any;
   inspect?: boolean;
@@ -26,14 +22,13 @@ interface Result {
 }
 
 export default async function prometheusQuery(options: IOptions): Promise<Result> {
-  const { dashboardId, time, targets, variableConfig } = options;
+  const { time, targets, datasourceValue } = options;
   if (!time.start) return Promise.resolve({ series: [] });
   const parsedRange = parseRange(time);
   let start = moment(parsedRange.start).toISOString();
   let end = moment(parsedRange.end).toISOString();
   const series: any[] = [];
   let refIds: string[] = [];
-  const datasourceValue = variableConfig ? replaceExpressionVars(options.datasourceValue as any, variableConfig, variableConfig.length, dashboardId) : options.datasourceValue;
   if (targets && typeof datasourceValue === 'number') {
     _.forEach(targets, (target) => {
       refIds.push(target.refId);
