@@ -36,16 +36,7 @@ const en_US = {
     value_msg: 'Please input expression value',
   },
   datasource: {
-    shards: {
-      title: 'Basic Information of Data Source',
-      title_tip:
-        'Whether the database can be connected depends on whether the DBA has granted the corresponding DB user authorization. If it cannot be connected due to this reason, you can continue to complete the subsequent settings first, and then verify later.',
-      addr: 'Database Address',
-      addr_tip: 'The database address must be unique',
-      user: 'Username',
-      password: 'Password',
-      help: 'Note: The account needs to have read permission for the corresponding database to continue subsequent operations. If you change to another account, try to use a read-only account.',
-    },
+    max_query_rows: 'Maximum number of rows allowed to be retrieved in a single request',
   },
 };
 export default en_US;

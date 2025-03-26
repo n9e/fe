@@ -5,29 +5,55 @@ import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
 
-import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { getTeamInfoList } from '@/services/manage';
-import { getSimplifiedItems as getNotificationChannels, ChannelItem } from '@/pages/notificationChannels/services';
+import { getSimplifiedItems as getNotificationChannels, getItemsIdents as getNotificationChannelsIdents, ChannelItem } from '@/pages/notificationChannels/services';
+import { useIsAuthorized } from '@/components/AuthorizationWrapper';
+import { PERM } from '@/pages/notificationChannels/constants';
 
 import { NS } from '../../constants';
 import { Item } from '../../types';
 import { postItems, putItem } from '../../services';
 
 interface IProps {
-  mode: 'add' | 'edit';
+  visible: boolean;
+  mode: 'add' | 'edit' | 'clone';
   data?: Item;
   onOk: () => void;
+  onCancel: () => void;
 }
 
-function FormModal(props: IProps & ModalWrapProps) {
+export default function FormModal(props: IProps) {
   const { t } = useTranslation(NS);
-  const { mode, visible, destroy, onOk, data } = props;
+  const { mode, visible, onOk, onCancel, data } = props;
   const [form] = Form.useForm();
   const [userGroups, setUserGroups] = useState<{ id: number; name: string }[]>([]);
   const [notifyChannels, setNotifyChannels] = useState<ChannelItem[]>([]);
+  const [notifyChannelsIdents, setNotifyChannelsIdents] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
-  const fetchNotificationChannels = () => {
+  const isAuthorized = useIsAuthorized([PERM]);
+  const fetchNotificationChannelsIdents = () => {
     setLoading(true);
+    getNotificationChannelsIdents()
+      .then((res) => {
+        setNotifyChannelsIdents(res);
+      })
+      .catch(() => {
+        setNotifyChannelsIdents([]);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    getTeamInfoList()
+      .then((res) => {
+        setUserGroups(res.dat ?? []);
+      })
+      .catch(() => {
+        setUserGroups([]);
+      });
+
     getNotificationChannels()
       .then((res) => {
         setNotifyChannels(res);
@@ -38,33 +64,23 @@ function FormModal(props: IProps & ModalWrapProps) {
       .finally(() => {
         setLoading(false);
       });
-  };
-
-  useEffect(() => {
-    form.setFieldsValue(data);
-    getTeamInfoList()
-      .then((res) => {
-        setUserGroups(res.dat ?? []);
-      })
-      .catch(() => {
-        setUserGroups([]);
-      });
-    fetchNotificationChannels();
+    fetchNotificationChannelsIdents();
   }, []);
 
+  useEffect(() => {
+    if (visible && _.includes(['edit', 'clone'], mode)) {
+      form.setFieldsValue(data);
+    }
+  }, [visible]);
+
   return (
-    <Modal
-      title={t(`${mode}_title`)}
-      visible={visible}
-      onCancel={() => {
-        destroy();
-      }}
-      footer={null}
-    >
-      <Form layout='vertical' form={form}>
-        <Form.Item name='id' hidden>
-          <div />
-        </Form.Item>
+    <Modal title={t(`${mode}_title`)} visible={visible} onCancel={onCancel} footer={null} destroyOnClose>
+      <Form layout='vertical' form={form} preserve={false}>
+        {mode === 'edit' && (
+          <Form.Item name='id' hidden>
+            <div />
+          </Form.Item>
+        )}
         <Form.Item name='content' hidden>
           <div />
         </Form.Item>
@@ -115,13 +131,15 @@ function FormModal(props: IProps & ModalWrapProps) {
           label={
             <Space>
               {t('notify_channel_ident')}
-              <Link to='/notification-channels' target='_blank'>
-                <SettingOutlined />
-              </Link>
+              {isAuthorized && (
+                <Link to='/notification-channels' target='_blank'>
+                  <SettingOutlined />
+                </Link>
+              )}
               <SyncOutlined
                 spin={loading}
                 onClick={(e) => {
-                  fetchNotificationChannels();
+                  fetchNotificationChannelsIdents();
                   e.preventDefault();
                 }}
               />
@@ -136,16 +154,18 @@ function FormModal(props: IProps & ModalWrapProps) {
         >
           <Select
             showSearch
-            optionFilterProp='label'
-            options={_.map(notifyChannels, (item) => {
+            optionFilterProp='optionLabel'
+            optionLabelProp='optionLabel'
+            options={_.map(notifyChannelsIdents, (item) => {
               return {
-                label: item.name,
-                value: item.ident,
+                label: item,
+                optionLabel: item,
+                value: item,
               };
             })}
           />
         </Form.Item>
-        <Form.Item label={t('private.title')} name='private' initialValue={0}>
+        <Form.Item label={t('private.title')} name='private' initialValue={1}>
           <Radio.Group>
             <Radio value={0}>{t('private.0')}</Radio>
             <Radio value={1}>{t('private.1')}</Radio>
@@ -157,7 +177,7 @@ function FormModal(props: IProps & ModalWrapProps) {
             htmlType='submit'
             onClick={() => {
               form.validateFields().then((values) => {
-                if (mode === 'add') {
+                if (mode === 'add' || mode === 'clone') {
                   const channelRequestType = _.find(notifyChannels, { ident: values.notify_channel_ident })?.request_type;
                   if (channelRequestType === 'smtp') {
                     values.content = {
@@ -167,13 +187,11 @@ function FormModal(props: IProps & ModalWrapProps) {
                   }
                   postItems([values]).then(() => {
                     message.success(t('common:success.add'));
-                    destroy();
                     onOk();
                   });
                 } else if (mode === 'edit') {
                   putItem(values).then(() => {
                     message.success(t('common:success.edit'));
-                    destroy();
                     onOk();
                   });
                 }
@@ -187,5 +205,3 @@ function FormModal(props: IProps & ModalWrapProps) {
     </Modal>
   );
 }
-
-export default ModalHOC<IProps>(FormModal);

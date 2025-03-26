@@ -26,7 +26,7 @@ const zh_CN = {
     team_search_placeholder: '搜索团队名称',
     create: '创建业务组',
     edit: '编辑业务组',
-    add_team: '添加团队',
+    add_team: '授权团队',
     perm_flag: '权限',
     note_content: '告警规则，告警事件，监控对象，自愈脚本等都归属业务组，是一个在系统里可以自闭环的组织',
     empty: '业务组（监控对象、监控仪表盘、告警规则、自愈脚本都要归属某个业务组）为空，请先',

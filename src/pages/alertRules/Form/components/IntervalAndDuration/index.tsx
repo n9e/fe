@@ -31,7 +31,7 @@ export default function index({ intervalTip, durationTip }: IProps) {
   return (
     <Row gutter={10}>
       <Col span={12}>
-        <CronPattern name='cron_pattern' />
+        <CronPattern name='cron_pattern' initialValue='@every 60s' />
       </Col>
       <Col span={12}>
         <Form.Item name='prom_for_duration' label={t('prom_for_duration')} tooltip={durationTip ? durationTip(prom_for_duration) : undefined}>

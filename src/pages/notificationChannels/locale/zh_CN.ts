@@ -1,7 +1,8 @@
 const zh_CN = {
   title: '通知媒介',
   basic_configuration: '基础配置',
-  ident_tip: '系统中用于识别该通知媒介的标识码，一般为英文、数字或下划线组合，不可重复',
+  ident: '媒介类型',
+  ident_tip: '通知媒介的分类，例如多个钉钉通知媒介，类型都可以设置为 dingtalk',
   note_tip: '可填写对该通知媒介的补充说明或使用场景，方便后续维护或协作时查看',
   enable_tip: '是否启用此通知媒介的配置。关闭后，该配置将暂时失效，不会再发送通知',
   variable_configuration: {

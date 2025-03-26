@@ -2,13 +2,14 @@ const zh_HK = {
   title: '消息模板',
   add_title: '新增消息模板',
   edit_title: '編輯消息模板',
+  clone_title: '克隆消息模板',
   user_group_ids: '授權團隊',
   private: {
     title: '顯示模式',
     0: '公共',
     1: '私有',
   },
-  notify_channel_ident: '通知媒介',
+  notify_channel_ident: '媒介類型',
   content: {
     add_title: '添加模板字段',
     edit_title: '編輯模板字段',

@@ -1,7 +1,8 @@
 const en_US = {
   title: 'Media types',
   basic_configuration: 'Basic configuration',
-  ident_tip: 'The identifier used to identify the media type in the system, generally a combination of English, numbers, or underscores, cannot be repeated',
+  ident: 'Media type',
+  ident_tip: 'The classification of the media type, for example, multiple DingTalk notification media types can be set to dingtalk',
   note_tip: 'You can fill in supplementary explanations or usage scenarios for the media type to facilitate viewing during subsequent maintenance or collaboration',
   enable_tip: 'Whether to enable the configuration of this media type. After closing, the configuration will be temporarily invalid and notifications will not be sent',
   variable_configuration: {

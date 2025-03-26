@@ -87,6 +87,7 @@ const en_US = {
       status: 'Status',
       detail: 'Detail',
       sub_id: 'Rule ID',
+      notify_rule_id: 'Notification rule ID',
     },
     task_tpls: {
       label: 'Self-healing template',

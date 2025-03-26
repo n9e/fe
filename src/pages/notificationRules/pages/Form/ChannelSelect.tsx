@@ -7,6 +7,8 @@ import _ from 'lodash';
 import { Link } from 'react-router-dom';
 
 import { getSimplifiedItems as getNotificationChannels, ChannelItem } from '@/pages/notificationChannels/services';
+import { useIsAuthorized } from '@/components/AuthorizationWrapper';
+import { PERM } from '@/pages/notificationChannels/constants';
 
 import { NS } from '../../constants';
 
@@ -22,6 +24,7 @@ export default function ChannelSelect(props: Props) {
   const [loading, setLoading] = useState(false);
   const form = Form.useFormInstance();
   const channel_id = Form.useWatch(['notify_configs', field.name, 'channel_id']);
+  const isAuthorized = useIsAuthorized([PERM]);
   const fetchData = () => {
     setLoading(true);
     getNotificationChannels()
@@ -62,9 +65,11 @@ export default function ChannelSelect(props: Props) {
           <Tooltip className='n9e-ant-from-item-tooltip' title={t('notification_configuration.channel_tip')}>
             <QuestionCircleOutlined />
           </Tooltip>
-          <Link to='/notification-channels' target='_blank'>
-            <SettingOutlined />
-          </Link>
+          {isAuthorized && (
+            <Link to='/notification-channels' target='_blank'>
+              <SettingOutlined />
+            </Link>
+          )}
           <SyncOutlined
             spin={loading}
             onClick={(e) => {
@@ -75,7 +80,7 @@ export default function ChannelSelect(props: Props) {
         </Space>
       }
       name={[field.name, 'channel_id']}
-      rules={[{ required: true }]}
+      rules={[{ required: true, message: t('notification_configuration.channel_msg') }]}
     >
       <Select
         options={_.map(options, (item) => {
@@ -83,9 +88,11 @@ export default function ChannelSelect(props: Props) {
             label: (
               <Space>
                 {item.label}
-                <Link to={`/notification-channels/edit/${item.value}`} target='_blank'>
-                  {t('common:btn.view')}
-                </Link>
+                {isAuthorized && (
+                  <Link to={`/notification-channels/edit/${item.value}`} target='_blank'>
+                    {t('common:btn.view')}
+                  </Link>
+                )}
               </Space>
             ),
             optionLabel: item.label,

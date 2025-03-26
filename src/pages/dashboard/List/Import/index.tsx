@@ -17,8 +17,9 @@
 import React, { useState } from 'react';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
-import { Modal, Input, Tabs, Form, Button, Alert, message, Select } from 'antd';
+import { Modal, Input, Tabs, Form, Button, Alert, message, Select, Space } from 'antd';
 import Icon from '@ant-design/icons';
+import { HelpLink } from '@/components/pageLayout';
 import { createDashboard } from '@/services/dashboardV2';
 import { DASHBOARD_VERSION } from '@/pages/dashboard/config';
 import { getValidImportData, convertDashboardGrafanaToN9E, JSONParse, checkGrafanaDashboardVersion } from '../utils';
@@ -261,7 +262,12 @@ export default function Import(props: IProps) {
             <Select mode='tags' tokenSeparators={[' ']} open={false} />
           </Form.Item>
           <Form.Item
-            label={t('batch.import_grafana_url_label')}
+            label={
+              <Space>
+                {t('batch.import_grafana_url_label')}
+                <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/dashboard/integrated-dashboard/' />
+              </Space>
+            }
             name='iframe_url'
             rules={[
               {

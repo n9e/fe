@@ -36,15 +36,7 @@ const zh_CN = {
     value_msg: '请输入表达式值',
   },
   datasource: {
-    shards: {
-      title: '数据源基本信息',
-      title_tip: '数据库是否能够连通依赖DBA是否已给相应DB用户授权，如因此未能连通仍可先继续完成后面的设置，后续再做验证。',
-      addr: '数据库地址',
-      addr_tip: '数据库地址需唯一',
-      user: '用户名',
-      password: '密码',
-      help: '说明：账号需对相应数据库有读权限才可继续后续操作，如修改为其它账号请尽量使用只读权限账号。',
-    },
+    max_query_rows: '单次请求允许检索的最大行数',
   },
 };
 export default zh_CN;

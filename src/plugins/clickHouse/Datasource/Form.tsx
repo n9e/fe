@@ -8,6 +8,7 @@ import Name from '@/pages/datasource/components/items/Name';
 import Description from '@/pages/datasource/components/items/Description';
 import Footer from '@/pages/datasource/components/items/Footer';
 import Cluster from '@/pages/datasource/components/items/Cluster';
+import { NAME_SPACE } from '@/plugins/clickHouse/constants';
 
 export default function FormCpt({ action, data, onFinish, submitLoading }: any) {
   const { t } = useTranslation('datasourceManage');
@@ -104,6 +105,24 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
             label={t('form.timeout')}
             name={[...names, 'ck.timeout']}
             rules={[
+              {
+                type: 'number',
+                min: 0,
+              },
+            ]}
+          >
+            <InputNumber
+              style={{
+                width: '100%',
+              }}
+              controls={false}
+            />
+          </Form.Item>
+          <Form.Item
+            label={t(`${NAME_SPACE}:datasource.max_query_rows`)}
+            name={[...names, 'ck.max_query_rows']}
+            rules={[
+              { required: true },
               {
                 type: 'number',
                 min: 0,

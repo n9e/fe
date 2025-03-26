@@ -50,7 +50,7 @@ export default function Edit() {
   }, [alertRuleId]);
 
   useInterval(() => {
-    if (import.meta.env.PROD && typeof alertRuleId === 'number') {
+    if (import.meta.env.PROD && typeof alertRuleId === 'number' && mode === undefined) {
       getAlertRulePure(alertRuleId).then((res) => {
         if (updateAtRef.current && res.update_at > updateAtRef.current) {
           if (editable) setEditable(false);

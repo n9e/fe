@@ -2,13 +2,14 @@ const ja_JP = {
   title: '通知模板',
   add_title: '新しい通知テンプレート',
   edit_title: '通知テンプレートを編集',
+  clone_title: '通知テンプレートを複製',
   user_group_ids: '認可されたチーム',
   private: {
     title: '表示モード',
     0: '公開',
     1: '非公開',
   },
-  notify_channel_ident: '通知チャンネル',
+  notify_channel_ident: 'メディアタイプ',
   content: {
     add_title: 'テンプレートフィールドを追加',
     edit_title: 'テンプレートフィールドを編集',

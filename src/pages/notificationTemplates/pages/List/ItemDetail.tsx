@@ -1,6 +1,6 @@
 import React, { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import { Space, message, Modal, Form } from 'antd';
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { EditOutlined, CopyOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
@@ -28,6 +28,14 @@ export default forwardRef(function ItemDetail(props: Props, ref) {
   >();
   const [form] = Form.useForm();
   const contentRef = React.useRef<{ key: string; value?: string }[]>();
+  const [formModalState, setFormModalState] = useState<{
+    mode: 'edit' | 'clone';
+    visible: boolean;
+    data?: Item;
+  }>({
+    mode: 'edit',
+    visible: false,
+  });
   const fetchData = () => {
     if (id) {
       getItem(id).then((itemData) => {
@@ -79,35 +87,33 @@ export default forwardRef(function ItemDetail(props: Props, ref) {
           <EditOutlined
             onClick={() => {
               if (data) {
-                FormModal({
-                  mode: 'edit',
-                  data,
-                  onOk: () => {
-                    onChange();
-                    fetchData();
-                  },
-                });
+                setFormModalState({ mode: 'edit', data, visible: true });
               }
             }}
           />
-          {data?.create_by !== 'system' && (
-            <DeleteOutlined
-              onClick={() => {
-                Modal.confirm({
-                  title: t('common:confirm.delete'),
-                  onOk: () => {
-                    if (data?.id) {
-                      deleteItem([data.id]).then(() => {
-                        message.success(t('common:success.delete'));
-                        onDelete();
-                      });
-                    }
-                  },
-                  onCancel: () => {},
-                });
-              }}
-            />
-          )}
+          <CopyOutlined
+            onClick={() => {
+              if (data) {
+                setFormModalState({ mode: 'clone', data, visible: true });
+              }
+            }}
+          />
+          <DeleteOutlined
+            onClick={() => {
+              Modal.confirm({
+                title: t('common:confirm.delete'),
+                onOk: () => {
+                  if (data?.id) {
+                    deleteItem([data.id]).then(() => {
+                      message.success(t('common:success.delete'));
+                      onDelete();
+                    });
+                  }
+                },
+                onCancel: () => {},
+              });
+            }}
+          />
         </Space>
         <div>
           <Space>
@@ -121,6 +127,21 @@ export default forwardRef(function ItemDetail(props: Props, ref) {
         </div>
       </div>
       <FormCpt form={form} item={data} contentRef={contentRef} />
+      <FormModal
+        visible={formModalState.visible}
+        mode={formModalState.mode}
+        data={formModalState.data}
+        onOk={() => {
+          if (formModalState.mode === 'edit') {
+            fetchData();
+          }
+          onChange();
+          setFormModalState({ ...formModalState, visible: false });
+        }}
+        onCancel={() => {
+          setFormModalState({ ...formModalState, visible: false });
+        }}
+      />
     </>
   );
 });
