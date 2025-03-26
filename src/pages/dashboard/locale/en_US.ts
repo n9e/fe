@@ -87,6 +87,7 @@ const en_US = {
       textbox: 'Text box',
       constant: 'Constant',
       datasource: 'Datasource',
+      datasourceName: 'Datasource name',
       hostIdent: 'Host ident',
     },
     hide: 'Hide',
