@@ -67,28 +67,30 @@ function transforVersion2To1(fieldConfig2: FieldConfigVersion2): FieldConfig {
     formatMap: {},
     version: 1,
   };
-  for (var i = 0; i < fieldConfig2.arr.length; i++) {
-    var fieldConfig = fieldConfig2.arr[i];
-    fieldConfig1.attrs[fieldConfig.field] = fieldConfig.attrs;
-    fieldConfig1.formatMap[fieldConfig.field] = fieldConfig.formatMap;
-    // const linkArr = fieldConfig2.linkArr.filter(i=> i.field === fieldConfig.field)
-    // if (linkArr.length > 0 && fieldConfig1.formatMap[fieldConfig.field]) {
-    //   fieldConfig1.formatMap[fieldConfig.field].paramsArr = linkArr
-    // }
+  if (fieldConfig2.arr) {
+    for (var i = 0; i < fieldConfig2.arr.length; i++) {
+      var fieldConfig = fieldConfig2.arr[i];
+      fieldConfig1.attrs[fieldConfig.field] = fieldConfig.attrs;
+      fieldConfig1.formatMap[fieldConfig.field] = fieldConfig.formatMap;
+      // const linkArr = fieldConfig2.linkArr.filter(i=> i.field === fieldConfig.field)
+      // if (linkArr.length > 0 && fieldConfig1.formatMap[fieldConfig.field]) {
+      //   fieldConfig1.formatMap[fieldConfig.field].paramsArr = linkArr
+      // }
+    }
   }
-
-  for (var i = 0; i < fieldConfig2.linkArr.length; i++) {
-    const field = fieldConfig2.linkArr[i].field
-    if(fieldConfig1.formatMap[field]){
-      fieldConfig1.formatMap[field].paramsArr = fieldConfig2.linkArr.filter(i=> i.field === field)
-    }else{
-      fieldConfig1.formatMap[field] = {
-        paramsArr: fieldConfig2.linkArr.filter(i=> i.field === field),
-        type:'url'
+  if (fieldConfig2.linkArr) {
+    for (var i = 0; i < fieldConfig2.linkArr.length; i++) {
+      const field = fieldConfig2.linkArr[i].field;
+      if (fieldConfig1.formatMap[field]) {
+        fieldConfig1.formatMap[field].paramsArr = fieldConfig2.linkArr.filter((i) => i.field === field);
+      } else {
+        fieldConfig1.formatMap[field] = {
+          paramsArr: fieldConfig2.linkArr.filter((i) => i.field === field),
+          type: 'url',
+        };
       }
     }
   }
-
   return fieldConfig1;
 }
 
