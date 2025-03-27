@@ -23,10 +23,15 @@ export default function Preview(props: IProps) {
       p: page,
       limit,
       queries,
-    }).then((res) => {
-      setData(res?.dat?.list || []);
-      setTotal(res?.dat?.total || 0);
-    });
+    })
+      .then((res) => {
+        setData(res?.dat?.list || []);
+        setTotal(res?.dat?.total || 0);
+      })
+      .catch(() => {
+        setData([]);
+        setTotal(0);
+      });
   }, [visible, page, limit]);
 
   return (
@@ -76,9 +81,17 @@ export default function Preview(props: IProps) {
             },
             {
               title: t('common:business_group'),
-              dataIndex: 'group_obj',
-              render(groupObj) {
-                return groupObj ? groupObj.name : t('not_grouped');
+              dataIndex: 'group_objs',
+              render(groupObjs: any[]) {
+                return _.isEmpty(groupObjs)
+                  ? t('common:not_grouped')
+                  : _.map(groupObjs, (item) => {
+                      return (
+                        <Tag color='purple' key={item.id}>
+                          {item.name}
+                        </Tag>
+                      );
+                    });
               },
             },
           ]}

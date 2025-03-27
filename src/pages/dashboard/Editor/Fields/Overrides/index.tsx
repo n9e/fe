@@ -43,15 +43,18 @@ export default function index({ targets, matcherNames = ['byFrameRefID', 'byName
         fields.map(({ key, name, ...restField }) => {
           return (
             <Panel
+              isActive={false}
               key={key}
               isInner
-              header='override'
+              header='Override'
               extra={
                 <Space>
                   <PlusCircleOutlined
                     onClick={() => {
                       add({
-                        type: 'special',
+                        matcher: {
+                          id: 'byFrameRefID',
+                        },
                       });
                     }}
                   />

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import queryString from 'query-string';
-import { Input, Drawer, Space, Tabs, Button, Modal } from 'antd';
-import { SafetyCertificateOutlined, SearchOutlined, CloseOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Input, Drawer, Space, Tabs, Button, Modal, Tooltip } from 'antd';
+import { SafetyCertificateOutlined, SearchOutlined, CloseOutlined, EditOutlined, DeleteOutlined, StopOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useHistory } from 'react-router-dom';
 import PageLayout from '@/components/pageLayout';
@@ -16,6 +16,7 @@ import Dashboards from './Dashboards';
 import { getComponents, Component, deleteComponents, putComponent } from './services';
 import ComponentFormModal from './components/ComponentFormModal';
 
+const LIST_SEARCH_VALUE = 'builtin-list-search-value';
 const BUILT_IN_ACTIVE_TAB_KEY = 'builtin-drawer-active-tab';
 
 export default function index() {
@@ -24,7 +25,7 @@ export default function index() {
   const { search } = useLocation();
   const query = queryString.parse(search);
   const defaultComponent = query.component as string;
-  const [searchValue, setSearchValue] = useState('');
+  const [searchValue, setSearchValue] = useState(localStorage.getItem(LIST_SEARCH_VALUE) || '');
   const [data, setData] = useState<Component[]>([]);
   const [activeComponent, setActiveComponent] = useState<Component>();
   const [readme, setReadme] = useState('');
@@ -60,6 +61,7 @@ export default function index() {
               value={searchValue}
               onChange={(e) => {
                 setSearchValue(e.target.value);
+                localStorage.setItem(LIST_SEARCH_VALUE, e.target.value);
               }}
               allowClear
               placeholder={t('common:search_placeholder')}
@@ -147,6 +149,13 @@ export default function index() {
                         </AuthorizationWrapper>
                       </Space>
                     </div>
+                    {item.disabled === 1 && (
+                      <Tooltip title={t('disabled')}>
+                        <div className='builtin-cates-grid-item-status'>
+                          <StopOutlined />
+                        </div>
+                      </Tooltip>
+                    )}
                   </div>
                 );
               },

@@ -18,7 +18,8 @@ import React, { useContext } from 'react';
 import { Button, Card, message } from 'antd';
 import { RollbackOutlined } from '@ant-design/icons';
 import _ from 'lodash';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
+import queryString from 'query-string';
 import { useTranslation } from 'react-i18next';
 import PageLayout from '@/components/pageLayout';
 import request from '@/utils/request';
@@ -28,8 +29,10 @@ import { CommonStateContext } from '@/App';
 
 const Add = (props: any) => {
   const history = useHistory();
+  const location = useLocation();
+  const query = queryString.parse(location.search);
   const { businessGroup } = useContext(CommonStateContext);
-  const curBusiId = businessGroup.id!;
+  const curBusiId = (query.gid as string) || businessGroup.id!;
   const { t } = useTranslation('common');
   const handleSubmit = (values: any) => {
     values.pause = _.join(values.pause, ',');
@@ -38,9 +41,8 @@ const Add = (props: any) => {
       body: JSON.stringify(values),
     }).then(() => {
       message.success(t('msg.create.success'));
-      props.history.push({
-        pathname: `/job-tpls`,
-      });
+      // TODO: 这里返回列表页时需要获取参数里的 ids，不能用 history.push
+      window.location.href = `/job-tpls?ids=${curBusiId}&isLeaf=true`;
     });
   };
 
@@ -56,6 +58,7 @@ const Add = (props: any) => {
       <div className='p2'>
         <Card title={t('common:btn.create')}>
           <TplForm
+            bgid={_.toNumber(curBusiId)}
             onSubmit={handleSubmit}
             footer={
               <div>

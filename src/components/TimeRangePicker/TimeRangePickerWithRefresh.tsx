@@ -47,10 +47,12 @@ export default function TimeRangePickerWithRefresh(props: ITimeRangePickerWithRe
           if (localKey) {
             localStorage.setItem(
               localKey,
-              JSON.stringify({
-                start: valueAsString(val.start, dateFormat),
-                end: valueAsString(val.end, dateFormat),
-              }),
+              val
+                ? JSON.stringify({
+                    start: valueAsString(val.start, dateFormat),
+                    end: valueAsString(val.end, dateFormat),
+                  })
+                : '',
             );
           }
           if (onChange) {

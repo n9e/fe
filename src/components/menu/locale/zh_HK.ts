@@ -48,7 +48,7 @@ const zh_HK = {
   拨测状态: '撥測狀態',
   网络探测: '網路探測',
   数据采集: '數據採集',
-  对象列表: '對象列錶',
+  对象列表: '對象列表',
   Pingmesh配置: 'Pingmesh配置',
   quickJump: '快速跳轉',
   quickOpenClose: '打開/關閉',
@@ -57,6 +57,9 @@ const zh_HK = {
   站内公告: '站內公告',
   integrations: '集成中心',
   built_in_components: '模板中心',
+  notification_rules: '通知規則',
+  notification_channels: '通知媒介',
+  notification_templates: '消息模板',
 };
 
 export default zh_HK;

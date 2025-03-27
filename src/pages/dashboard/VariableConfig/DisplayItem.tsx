@@ -119,8 +119,9 @@ export default function DisplayItem(props: IProps) {
                 setSelected([]);
                 onChange([]);
               } else {
-                setSelected(undefined);
-                onChange(undefined);
+                // 2024-10-28 清空变量时将 undefined 转为 '', 使之能缓存清空值状态，以便下次访问时变量值为空
+                setSelected('');
+                onChange('');
               }
             }}
             dropdownMatchSelectWidth={_.toNumber(options?.length) > 100}
@@ -147,12 +148,11 @@ export default function DisplayItem(props: IProps) {
                 All
               </Select.Option>
             )}
-            {options &&
-              options.map((value) => (
-                <Select.Option key={value} value={value} style={{ maxWidth: 500 }}>
-                  {value}
-                </Select.Option>
-              ))}
+            {_.map(options, (item) => (
+              <Select.Option key={item.value} value={item.value} style={{ maxWidth: 500 }}>
+                {item.label}
+              </Select.Option>
+            ))}
           </Select>
         ) : null}
         {type === 'textbox' ? (
@@ -241,12 +241,12 @@ export default function DisplayItem(props: IProps) {
           >
             {allOption && (
               <Select.Option key={'all'} value={'all'}>
-                all
+                All
               </Select.Option>
             )}
-            {_.map(options, (value) => (
-              <Select.Option key={value} value={value} style={{ maxWidth: 500 }}>
-                {value}
+            {_.map(options, (item) => (
+              <Select.Option key={item.value} value={item.value} style={{ maxWidth: 500 }}>
+                {item.label}
               </Select.Option>
             ))}
           </Select>

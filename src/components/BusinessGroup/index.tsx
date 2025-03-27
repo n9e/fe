@@ -4,17 +4,28 @@ import _ from 'lodash';
 import classNames from 'classnames';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
-import { Input, Tree } from 'antd';
+import { Input } from 'antd';
 import { LeftOutlined, RightOutlined, SettingOutlined, SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { CommonStateContext } from '@/App';
-import { listToTree, getCollapsedKeys, getCleanBusinessGroupIds, getDefaultBusinessGroupKey, getDefaultBusiness } from './utils';
+import Tree from '@/components/BusinessGroup/components/Tree';
+import { listToTree, getCollapsedKeys, getCleanBusinessGroupIds, getDefaultBusinessGroupKey, getDefaultBusiness, getVaildBusinessGroup } from './utils';
 import BusinessGroupSelect from './BusinessGroupSelect';
 import BusinessGroupSelectWithAll from './BusinessGroupSelectWithAll';
 import { getBusiGroups } from './services';
 import './style.less';
 
-export { listToTree, getCollapsedKeys, getCleanBusinessGroupIds, BusinessGroupSelect, getDefaultBusinessGroupKey, getDefaultBusiness, BusinessGroupSelectWithAll, getBusiGroups };
+export {
+  listToTree,
+  getCollapsedKeys,
+  getCleanBusinessGroupIds,
+  BusinessGroupSelect,
+  getDefaultBusinessGroupKey,
+  getDefaultBusiness,
+  BusinessGroupSelectWithAll,
+  getBusiGroups,
+  getVaildBusinessGroup,
+};
 
 interface IProps {
   onSelect?: (key: string, item: any) => void;
@@ -153,11 +164,8 @@ export default function index(props: IProps) {
             <div className='radio-list'>
               {!_.isEmpty(businessGroupTreeData) && (
                 <Tree
-                  rootClassName='business-group-tree'
-                  defaultExpandParent={false}
                   defaultExpandedKeys={getCollapsedKeys(businessGroupTreeData, getLocaleExpandedKeys(), businessGroup.key)}
                   selectedKeys={showSelected && businessGroup.key ? [businessGroup.key] : undefined}
-                  blockNode
                   onSelect={(_selectedKeys, e) => {
                     const itemKey = e.node.key;
                     businessGroupOnChange(itemKey);

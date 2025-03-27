@@ -1,5 +1,8 @@
 const en_US = {
   title: 'Dashboards',
+  list: 'Dashboards',
+  back_icon_tip: 'Move back one page in the session history. If there is no previous page, return to the dashboards',
+  back_icon_tip_is_built_in: 'Move back one page in the session history. If there is no previous page, return to the built-in components',
   name: 'Name',
   tags: 'Tags',
   ident: 'Ident',
@@ -21,27 +24,33 @@ const en_US = {
       2: 'Authorized access',
     },
     bgids: 'Authorized business groups',
+    theme_link: {
+      dark: 'Dark theme',
+      light: 'Light theme',
+    },
   },
   default_filter: {
-    title: 'Preset Filters',
-    public: 'Public Dashboards',
-    all: 'My Business Groups Dashboards',
+    title: 'Preset filters',
+    public: 'Public dashboards',
+    all: 'My business groups dashboards',
     all_tip: 'Display all my business groups dashboards',
   },
-  create_title: 'Create Dashboard',
-  edit_title: 'Edit Dashboard',
+  create_title: 'Create dashboard',
+  edit_title: 'Edit dashboard',
   add_panel: 'Add panel',
   cluster: 'Cluster',
   full_screen: 'Full screen',
   exit_full_screen: 'Exit full screen',
   copyPanelTip: 'Panel copied. Click "Add panel" to paste.',
   batch: {
-    import: 'Import dashboard',
+    import: 'Import dashboard JSON',
     label: 'Dashboard JSON',
     import_grafana: 'Import Grafana dashboard',
     import_grafana_tip: 'Imported panels only support the chart types and features that n9e currently supports, <a>feedback</a>',
     import_grafana_tip_version_error: 'Import of dashboard config less than v7 version is not supported',
     import_grafana_tip_version_warning: 'The imported dashboard config version is less than v8, some panels may not be displayed properly, do you want to continue importing?',
+    import_grafana_url: 'Import Grafana dashboard URL',
+    import_grafana_url_label: 'Grafana dashboard URL',
     continueToImport: 'Continue to import',
     noSelected: 'Please select any dashboard',
     import_builtin: 'Import built-in dashboard',
@@ -56,30 +65,11 @@ const en_US = {
     title: 'Links',
     name: 'Name',
     url: 'URL',
-    url_tip: `
-      Variables usage
-      <1 />
-      \${variable_name}: dashboard variable value
-      <1 />
-      \${__field.name}: series name
-      <1 />
-      \${__field.value}: series value
-      <1 />
-      \${__field.labels.X}: specified label value
-      <1 />
-      \${__field.labels.__name__}: metric name
-      <1 />
-      \${__from}: Unix millisecond
-      <1 />
-      \${__from_date_seconds}: Unix seconds epoch
-      <1 />
-      \${__from_date_iso}: ISO 8601/RFC 3339
-      <1 />
-      The syntax above also works with \${__to}
-      `,
     isNewBlank: 'Open in new tab',
+    dashboardIds_placeholder: 'Select dashboards',
   },
   var: {
+    vars: 'Variables',
     btn: 'Add variable',
     title: {
       list: 'Variables',
@@ -88,6 +78,7 @@ const en_US = {
     },
     name: 'Name',
     name_msg: 'Only support number and character underline',
+    name_repeat_msg: 'Variable name already exists',
     label: 'Label',
     type: 'Type',
     type_map: {
@@ -133,6 +124,37 @@ const en_US = {
       ident: 'Business group ident',
       invalid: 'Invalid business group ident, Please go to the business group management settings first.',
     },
+    help_tip: `
+      Variables usage
+      <1 />
+      \${variable_name}: dashboard variable value
+      <1 />
+      \${__field.name}: series name
+      <1 />
+      \${__field.value}: series value
+      <1 />
+      \${__field.labels.X}: specified label value
+      <1 />
+      \${__field.labels.__name__}: metric name
+      <1 />
+      \${__interval}: Time interval (seconds)
+      <1 />
+      \${__interval_ms}: Time interval (milliseconds)
+      <1 />
+      \${__range}: Time range (seconds)
+      <1 />
+      \${__range_ms}: Time range (milliseconds)
+      <1 />
+      \${__rate_interval}: Time interval (seconds), __interval * 4
+      <1 />
+      \${__from}: Unix millisecond
+      <1 />
+      \${__from_date_seconds}: Unix seconds epoch
+      <1 />
+      \${__from_date_iso}: ISO 8601/RFC 3339
+      <1 />
+      The syntax above also works with \${__to}
+    `,
   },
   row: {
     edit_title: 'Edit row',
@@ -142,6 +164,8 @@ const en_US = {
     cancel: 'Cancel',
     ok: 'Delete row and panels',
     ok2: 'Delete row',
+    panels: '{{count}} panel',
+    panels_plural: '{{count}} panels',
   },
   panel: {
     title: {
@@ -196,10 +220,26 @@ const en_US = {
         },
         heightInPercentage: 'Height in percentage',
         heightInPercentage_tip: 'Legend height occupies the maximum height percentage of the panel, the minimum value is 20%, the maximum value is 80%',
+        widthInPercentage: 'Width in percentage',
+        widthInPercentage_tip: 'Legend width occupies the maximum width percentage of the panel, the minimum value is 20%, the maximum value is 80%',
       },
       thresholds: {
         title: 'Thresholds',
-        btn: 'Add',
+        btn: 'Add threshold',
+        mode: {
+          label: 'Mode',
+          tip: 'Percent mode calculation formula Y-axis minimum value + (Y-axis maximum value - Y-axis minimum value) * (percentage value / 100)',
+          absolute: 'Absolute',
+          percentage: 'Percentage',
+        },
+      },
+      thresholdsStyle: {
+        label: 'Thresholds style',
+        off: 'Off',
+        line: 'Line',
+        dashed: 'Dashed',
+        'line+area': 'Line+Area',
+        'dashed+area': 'Dashed+Area',
       },
       tooltip: {
         mode: 'Mode',
@@ -256,7 +296,7 @@ const en_US = {
       calc_tip: 'Time series data requires value calculation for all time point data. Non-time series data ignores this setting',
       maxValue: 'Max',
       baseColor: 'Base color',
-      serieWidth: 'Serie width',
+      serieWidth: 'Name width',
       sortOrder: 'Order',
       textMode: 'Text mode',
       valueAndName: 'Value and name',
@@ -333,6 +373,7 @@ const en_US = {
         organizeFields: 'Organize fields',
         colorMode_tip:
           'Color mode is the color setting for the "value field". In value mode, the color is applied to the value text; in background mode, the color is applied to the background color of the cell where the field is located.',
+        pageLimit: 'Page limit',
       },
       text: {
         textColor: 'TextColor',
@@ -403,6 +444,21 @@ const en_US = {
         topn: 'TopN',
         combine_other: 'Other',
         combine_other_tip: 'The number of series that exceed the topN value will be merged into the "Other" series',
+        otherPosition: {
+          label: 'Other position',
+          tip: 'The position of the "Other" series',
+          options: {
+            none: 'None',
+            top: 'Top',
+            bottom: 'Bottom',
+          },
+        },
+        displayMode: 'Display mode',
+        valueMode: {
+          label: 'Value display',
+          color: 'Color',
+          hidden: 'Hidden',
+        },
       },
     },
     inspect: {
@@ -471,6 +527,7 @@ const en_US = {
       default: 'Default',
       updateTimeRange: 'Update time range',
     },
+    save: 'Save dashboard',
   },
   visualizations: {
     timeseries: 'Time Series',
@@ -498,6 +555,14 @@ const en_US = {
     sum: 'Sum',
     count: 'Count',
     origin: 'Origin',
+  },
+  annotation: {
+    add: 'Add annotation',
+    edit: 'Edit annotation',
+    description: 'Description',
+    tags: 'Tags',
+    updated: 'Annotation updated',
+    deleted: 'Annotation deleted',
   },
 };
 export default en_US;

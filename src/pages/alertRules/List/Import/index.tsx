@@ -28,6 +28,7 @@ interface IProps {
   busiId: number;
   refreshList: () => void;
   groupedDatasourceList: any;
+  reloadGroupedDatasourceList: any;
   datasourceCateOptions: any;
   type?: ModalType;
 }
@@ -36,7 +37,7 @@ const TabPane = Tabs.TabPane;
 
 function Import(props: IProps & ModalWrapProps) {
   const { t } = useTranslation('alertRules');
-  const { visible, destroy, busiId, refreshList, groupedDatasourceList, datasourceCateOptions, type = 'ImportBuiltin' } = props;
+  const { visible, destroy, busiId, refreshList, groupedDatasourceList, reloadGroupedDatasourceList, datasourceCateOptions, type = 'ImportBuiltin' } = props;
   const [modalType, setModalType] = useState(type);
 
   return (
@@ -64,6 +65,7 @@ function Import(props: IProps & ModalWrapProps) {
             destroy();
           }}
           groupedDatasourceList={groupedDatasourceList}
+          reloadGroupedDatasourceList={reloadGroupedDatasourceList}
           datasourceCateOptions={datasourceCateOptions}
         />
       )}
@@ -75,6 +77,7 @@ function Import(props: IProps & ModalWrapProps) {
             destroy();
           }}
           groupedDatasourceList={groupedDatasourceList}
+          reloadGroupedDatasourceList={reloadGroupedDatasourceList}
           datasourceCateOptions={datasourceCateOptions}
         />
       )}
@@ -86,6 +89,7 @@ function Import(props: IProps & ModalWrapProps) {
             destroy();
           }}
           groupedDatasourceList={groupedDatasourceList}
+          reloadGroupedDatasourceList={reloadGroupedDatasourceList}
         />
       )}
     </Modal>

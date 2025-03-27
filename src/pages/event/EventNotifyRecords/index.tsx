@@ -16,11 +16,10 @@
  */
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Card, Drawer, Space, Table, Tag, Tooltip } from 'antd';
+import { Card, Drawer, Space, Table, Tooltip } from 'antd';
 import _ from 'lodash';
-import { getEventNotifyRecords, DatasourceItem } from './services';
-import { render } from 'react-dom';
 import { Link } from 'react-router-dom';
+import { getEventNotifyRecords, DatasourceItem } from './services';
 
 interface Props {
   eventId: number;
@@ -56,16 +55,17 @@ export default function index(props: Props) {
     },
     {
       title: t('detail.event_notify_records.status'),
-      dataIndex: 'status',
-      key: 'status',
-      width: 70,
-      render: (val, record) => {
-        return (
-          <Tooltip title={record.detail} placement='left'>
-            <Tag color={val === 0 ? 'red' : 'green'}>{val === 0 ? 'fail' : 'ok'}</Tag>
-          </Tooltip>
-        );
+      dataIndex: 'detail',
+      key: 'detail',
+      width: 400,
+      ellipsis: {
+        showTitle: false,
       },
+      render: (val) => (
+        <Tooltip placement='topLeft' title={val}>
+          {val}
+        </Tooltip>
+      ),
     },
   ];
 

@@ -1,23 +1,25 @@
 import React from 'react';
 import { Form } from 'antd';
+import { IS_PLUS } from '@/utils/constant';
 import { DatasourceCateEnum } from '@/utils/constant';
 import { replaceExpressionVars } from '@/pages/dashboard/VariableConfig/constant';
+import * as CKMeta from '@/plugins/clickHouse/components/Meta';
+
 // @ts-ignore
-import * as MySQLMeta from 'plus:/datasource/mysql/components/Meta';
-// @ts-ignore
-import * as CKMeta from 'plus:/datasource/clickHouse/components/Meta';
+import DatasourceSelectExtra from 'plus:/components/DatasourceSelectExtra';
 
 export default function index({ dashboardId, variableConfig }) {
   const datasourceCate = Form.useWatch('datasourceCate');
   const datasourceValue = Form.useWatch('datasourceValue');
+  const curDatasourceValue = variableConfig ? replaceExpressionVars(datasourceValue, variableConfig, variableConfig.length, dashboardId) : datasourceValue;
 
-  if (datasourceCate === DatasourceCateEnum.mysql && datasourceValue !== undefined) {
-    const curDatasourceValue = variableConfig ? replaceExpressionVars(datasourceValue, variableConfig, variableConfig.length, dashboardId) : datasourceValue;
-    return <MySQLMeta.MetaModal datasourceValue={curDatasourceValue} />;
+  if (IS_PLUS) {
+    return <DatasourceSelectExtra datasourceCate={datasourceCate} datasourceValue={curDatasourceValue} />;
+  } else {
+    if (datasourceCate === DatasourceCateEnum.ck && datasourceValue !== undefined) {
+      return <CKMeta.MetaModal datasourceValue={datasourceValue} />;
+    }
   }
-  if (datasourceCate === DatasourceCateEnum.ck && datasourceValue !== undefined) {
-    const curDatasourceValue = variableConfig ? replaceExpressionVars(datasourceValue, variableConfig, variableConfig.length, dashboardId) : datasourceValue;
-    return <CKMeta.MetaModal datasourceValue={curDatasourceValue} />;
-  }
+
   return null;
 }

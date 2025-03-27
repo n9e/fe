@@ -1,5 +1,8 @@
 const zh_HK = {
   title: '監控儀表盤',
+  list: '儀表盤列表',
+  back_icon_tip: '返返回上一頁，沒有上一頁則返回儀表板列表',
+  back_icon_tip_is_built_in: '返回上一頁，沒有上一頁則返回模板中心',
   name: '儀表盤名稱',
   tags: '分類標籤',
   ident: '英文標識',
@@ -21,11 +24,15 @@ const zh_HK = {
       2: '授權訪問',
     },
     bgids: '授權業務組',
+    theme_link: {
+      dark: '暗色主題連結',
+      light: '亮色主題連結',
+    },
   },
   default_filter: {
     title: '預置篩選',
     public: '公開儀表盤',
-    all: '所屬業務組儀錶板',
+    all: '所屬業務組儀表板',
     all_tip: '此選項會顯示您所在業務群組下關聯的所有儀表板',
   },
   create_title: '創建儀表盤',
@@ -36,12 +43,14 @@ const zh_HK = {
   exit_full_screen: '退出全屏',
   copyPanelTip: '圖表已複製。點擊 "添加圖表" 進行貼上。',
   batch: {
-    import: '匯入儀表盤',
+    import: '匯入儀表盤 JSON',
     label: '儀表盤 JSON',
     import_grafana: '匯入 Grafana 儀表盤',
     import_grafana_tip: '匯入完的圖表只支援夜鶯目前支援的圖表類型和功能, <a>問題反饋</a>',
     import_grafana_tip_version_error: '不支援匯入小於 v7 版本的儀表盤配置',
     import_grafana_tip_version_warning: '匯入的儀表盤配置版本小於 v8，部分圖表可能無法正常顯示，是否繼續匯入？',
+    import_grafana_url: 'Grafana 儀表板地址（建議）',
+    import_grafana_url_label: 'Grafana 儀表板地址',
     continueToImport: '繼續匯入',
     noSelected: '請選擇儀表盤',
     import_builtin: '匯入內置儀表盤',
@@ -56,30 +65,11 @@ const zh_HK = {
     title: '儀表盤連結',
     name: '連結名稱',
     url: '連結地址',
-    url_tip: `
-      變數使用說明
-      <1/>
-      \${variable_name}: 顯示儀表盤變數值
-      <1/>
-      \${__field.name}: 顯示序列的名稱
-      <1/>
-      \${__field.value}: 顯示序列的數值
-      <1/>
-      \${__field.labels.X}: 顯示指定的標籤值
-      <1/>
-      \${__field.labels.__name__}: 顯示指標名
-      <1/>
-      \${__from}: 起始時間, 毫秒
-      <1/>
-      \${__from_date_seconds}: 起始時間, 秒
-      <1/>
-      \${__from_date_iso}: 起始時間, ISO 8601/RFC 3339
-      <1/>
-      上面語法適用於 \${__to}
-    `,
     isNewBlank: '是否新視窗開啟',
+    dashboardIds_placeholder: '請選擇儀表盤',
   },
   var: {
+    vars: '變數',
     btn: '新增變數',
     title: {
       list: '變數列表',
@@ -88,6 +78,7 @@ const zh_HK = {
     },
     name: '變數名稱',
     name_msg: '僅支援數字和字元下劃線',
+    name_repeat_msg: '變數名稱已存在',
     label: '顯示名稱',
     type: '變數類型',
     type_map: {
@@ -133,6 +124,37 @@ const zh_HK = {
       ident: '業務組標識',
       invalid: '沒有找到目前業務組的標識，請先去業務組管理設置',
     },
+    help_tip: `
+      變數使用說明
+      <1/>
+      \${variable_name}: 儀表盤變數值
+      <1/>
+      \${__field.name}: 圖例的名稱
+      <1/>
+      \${__field.value}: 圖例的數值
+      <1/>
+      \${__field.labels.X}: 標籤值
+      <1/>
+      \${__field.labels.__name__}: 指標名
+      <1/>
+      \${__interval}: 時間間隔（秒）, 例如 15s
+      <1 />
+      \${__interval_ms}: 時間間隔（毫秒）, 例如 15000ms
+      <1 />
+      \${__range}: 時間範圍（秒）, 例如 3600s
+      <1 />
+      \${__range_ms}: 時間範圍（毫秒）, 例如 3600000ms
+      <1 />
+      \${__rate_interval}: 時間間隔（秒）, __interval * 4
+      <1/>
+       \${__from}: 起始時間（毫秒）
+      <1/>
+      \${__from_date_seconds}: 起始時間（秒）
+      <1/>
+      \${__from_date_iso}: 起始時間, ISO 8601/RFC 3339
+      <1 />
+      上面語法適用於 \${__to}
+    `,
   },
   row: {
     edit_title: '編輯分組',
@@ -142,6 +164,8 @@ const zh_HK = {
     cancel: '取消',
     ok: '刪除分組和圖表',
     ok2: '僅刪除分組',
+    panels: '{{count}} 張圖表',
+    panels_plural: '{{count}} 張圖表',
   },
   panel: {
     title: {
@@ -196,10 +220,26 @@ const zh_HK = {
         },
         heightInPercentage: '高度百分比',
         heightInPercentage_tip: 'Legend 高度佔據面板的最大高度百分比，最小值為 20%，最大值為 80%',
+        widthInPercentage: '寬度百分比',
+        widthInPercentage_tip: 'Legend 寬度佔據面板的最大寬度百分比，最小值為 20%，最大值為 80%',
       },
       thresholds: {
         title: '閾值',
-        btn: '新增',
+        btn: '新增閾值',
+        mode: {
+          label: '閾值模式',
+          tip: '百分比模式計算公式 Y軸最小值 + (Y軸最大值 - Y軸最小值) * (百分比值 / 100)',
+          absolute: '絕對值',
+          percentage: '百分比',
+        },
+      },
+      thresholdsStyle: {
+        label: '閾值樣式',
+        off: '關閉',
+        line: '線條',
+        dashed: '虛線',
+        'line+area': '線條+區域',
+        'dashed+area': '虛線+區域',
       },
       tooltip: {
         mode: '模式',
@@ -262,7 +302,7 @@ const zh_HK = {
       calc_tip: '時序資料需要對所有時間點資料做取值計算，非時序資料忽略此設置',
       maxValue: '最大值',
       baseColor: '基礎顏色',
-      serieWidth: '序列名寬度',
+      serieWidth: '名稱寬度',
       sortOrder: '排序',
       textMode: '顯示內容',
       valueAndName: '值和名稱',
@@ -315,7 +355,7 @@ const zh_HK = {
       },
       table: {
         displayMode: '顯示模式',
-        showHeader: '顯示錶頭',
+        showHeader: '顯示表頭',
         seriesToRows: '每行展示 serie 的值',
         labelsOfSeriesToRows: '每行展示 labels 的值',
         labelValuesToRows: '每行展示指定聚合維度的值',
@@ -337,6 +377,7 @@ const zh_HK = {
         nowrap: '單元格不換行',
         organizeFields: '組織字段',
         colorMode_tip: '顏色模式是針對 "值欄位" 的顏色設定。值模式下顏色作用於值文字；背景模式下顏色作用於欄位所在儲存格背景色。',
+        pageLimit: '每頁顯示行數',
       },
       text: {
         textColor: '文字顏色',
@@ -411,6 +452,21 @@ const zh_HK = {
         topn: '最多排名',
         combine_other: '其他',
         combine_other_tip: '超過最多排名的數據將合併為其他',
+        otherPosition: {
+          label: '其他項目位置',
+          tip: '其他項目的位置，可選項在最前或最後',
+          options: {
+            none: '預設',
+            top: '最前',
+            bottom: '最後',
+          },
+        },
+        displayMode: '顯示模式',
+        valueMode: {
+          label: '值模式',
+          color: '顯示',
+          hidden: '隱藏',
+        },
       },
     },
     inspect: {
@@ -479,10 +535,11 @@ const zh_HK = {
       default: '默认',
       updateTimeRange: '更新時間範圍',
     },
+    save: '儲存儀表板',
   },
   visualizations: {
     timeseries: '時序圖',
-    barchart: '柱狀圖',
+    barchart: '棒形圖',
     stat: '指標圖',
     table: '表格',
     pie: '餅圖',
@@ -506,6 +563,14 @@ const zh_HK = {
     sum: '總和',
     count: '數量',
     origin: '原始值',
+  },
+  annotation: {
+    add: '新增注釋',
+    edit: '編輯注釋',
+    description: '描述',
+    tags: '標籤',
+    updated: '注釋已更新',
+    deleted: '注釋已刪除',
   },
 };
 

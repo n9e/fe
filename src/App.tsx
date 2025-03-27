@@ -30,11 +30,12 @@ import { GetProfile } from '@/services/account';
 import { getBusiGroups, getDatasourceBriefList, getMenuPerm } from '@/services/common';
 import { getLicense } from '@/components/AdvancedWrap';
 import { getVersions } from '@/components/pageLayout/Version/services';
-import { getCleanBusinessGroupIds, getDefaultBusiness } from '@/components/BusinessGroup';
+import { getCleanBusinessGroupIds, getDefaultBusiness, getVaildBusinessGroup } from '@/components/BusinessGroup';
 import Feedback from '@/components/Feedback';
 import { getN9eConfig } from '@/pages/siteSettings/services';
 import HeaderMenu from './components/menu/SideMenu';
 import Content from './routers';
+import { getDarkMode, updateDarkMode } from '@/utils/darkMode';
 
 // @ts-ignore
 import useIsPlus from 'plus:/components/useIsPlus';
@@ -68,6 +69,7 @@ export interface ICommonState {
   groupedDatasourceList: {
     [index: string]: Datasource[];
   };
+  reloadGroupedDatasourceList: () => void;
   datasourceList: Datasource[];
   setDatasourceList: (list: Datasource[]) => void;
   busiGroups: {
@@ -84,6 +86,8 @@ export interface ICommonState {
     id?: number; // 叶子节点的id 用于兼容旧的代码
     isLeaf?: boolean;
   };
+  setBusiGroup: (group: { key?: string; ids?: string; id?: number; isLeaf?: boolean }) => void;
+  getVaildBusinessGroup: (busiGroups: any[], businessGroupKey: { key?: string; ids?: string; id?: number; isLeaf?: boolean }) => void;
   businessGroupOnChange: (key: string) => void;
   profile: IProfile;
   setProfile: (profile: IProfile) => void;
@@ -109,6 +113,8 @@ export interface ICommonState {
   esIndexMode: string;
   dashboardSaveMode: 'auto' | 'manual';
   perms?: string[];
+  screenTemplates?: string[];
+  tablePaginationPosition?: string; // 表格分页位置
 }
 
 export const basePrefix = import.meta.env.VITE_PREFIX || '';
@@ -127,6 +133,10 @@ function App() {
   const [commonState, setCommonState] = useState<ICommonState>({
     datasourceCateOptions: [],
     groupedDatasourceList: {},
+    reloadGroupedDatasourceList: async () => {
+      const datasourceList = await getDatasourceBriefList();
+      setCommonState((state) => ({ ...state, groupedDatasourceList: _.groupBy(datasourceList, 'plugin_type') }));
+    },
     datasourceList: [],
     setDatasourceList: (datasourceList) => {
       setCommonState((state) => ({ ...state, datasourceList, groupedDatasourceList: _.groupBy(datasourceList, 'plugin_type') }));
@@ -141,6 +151,10 @@ function App() {
       setCommonState((state) => ({ ...state, curBusiId: id }));
     },
     businessGroup: {},
+    setBusiGroup: (businessGroup) => {
+      setCommonState((state) => ({ ...state, businessGroup }));
+    },
+    getVaildBusinessGroup,
     businessGroupOnChange: (key: string) => {
       window.localStorage.setItem('businessGroupKey', key);
       const ids = getCleanBusinessGroupIds(key);
@@ -170,13 +184,14 @@ function App() {
       window.localStorage.setItem('sideMenuBgMode', mode);
       setCommonState((state) => ({ ...state, sideMenuBgMode: mode }));
     },
-    darkMode: localStorage.getItem('darkMode') === 'true',
+    darkMode: getDarkMode(),
     setDarkMode: (mode: boolean) => {
-      window.localStorage.setItem('darkMode', String(mode));
+      updateDarkMode(mode);
       setCommonState((state) => ({ ...state, darkMode: mode }));
     },
     esIndexMode: 'all',
-    dashboardSaveMode: 'auto',
+    dashboardSaveMode: 'manual',
+    screenTemplates: [],
   });
 
   useEffect(() => {
@@ -200,6 +215,9 @@ function App() {
         document.title = siteInfo?.page_title || 'Nightingale';
         if (iconLink) {
           iconLink.href = siteInfo?.favicon_url || '/image/favicon.ico';
+        }
+        if (siteInfo?.font_family) {
+          document.body.style.fontFamily = siteInfo.font_family;
         }
         // 非匿名访问，需要初始化一些公共数据
         if (!anonymous) {

@@ -16,12 +16,9 @@
  */
 
 import React from 'react';
-import { Form, Card, Space } from 'antd';
-import { PlusCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { Form } from 'antd';
 import _ from 'lodash';
-import { useTranslation } from 'react-i18next';
-import Inhibit from '@/pages/alertRules/Form/components/Inhibit';
-import Trigger from './Trigger';
+import Triggers from './Triggers';
 
 interface IProps {
   prefixField?: any;
@@ -33,60 +30,16 @@ interface IProps {
 }
 
 export default function index(props: IProps) {
-  const { t } = useTranslation('alertRules');
-  const { prefixField = {}, fullPrefixName = [], prefixName = [], queries, disabled, initialValue } = props;
-  return (
-    <Form.List {...prefixField} name={[...prefixName, 'triggers']} initialValue={initialValue}>
-      {(fields, { add, remove }) => (
-        <Card
-          title={
-            <Space>
-              <span>{t('datasource:es.alert.trigger.title')}</span>
-              <PlusCircleOutlined
-                onClick={() =>
-                  add({
-                    mode: 0,
-                    expressions: [
-                      {
-                        ref: queries?.[0]?.ref || 'A',
-                        comparisonOperator: '==',
-                        logicalOperator: '&&',
-                      },
-                    ],
-                    severity: 1,
-                  })
-                }
-              />
-              <Inhibit triggersKey='triggers' />
-            </Space>
-          }
-          size='small'
-        >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {fields.map((field) => {
-              return (
-                <div key={field.key} style={{ position: 'relative' }}>
-                  <Trigger
-                    prefixField={_.omit(field, 'key')}
-                    fullPrefixName={[...prefixName, 'triggers', field.name]}
-                    prefixName={[field.name]}
-                    queries={queries}
-                    disabled={disabled}
-                  />
-                  {fields.length > 1 && (
-                    <CloseCircleOutlined
-                      style={{ position: 'absolute', right: -4, top: -4 }}
-                      onClick={() => {
-                        remove(field.name);
-                      }}
-                    />
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </Card>
-      )}
-    </Form.List>
-  );
+  const exp_trigger_disable = Form.useWatch(['rule_config', 'exp_trigger_disable']);
+  const nodata_trigger_enable = Form.useWatch(['rule_config', 'nodata_trigger', 'enable']);
+  const anomaly_trigger_enable = Form.useWatch(['rule_config', 'anomaly_trigger', 'enable']);
+  let defaultActiveKey = 'triggers';
+  if (nodata_trigger_enable === true) {
+    defaultActiveKey = 'nodata_trigger';
+  } else if (anomaly_trigger_enable === true) {
+    defaultActiveKey = 'anomaly_trigger';
+  }
+
+  // if (exp_trigger_disable === undefined || nodata_trigger_enable === undefined) return null;
+  return <Triggers {...props} defaultActiveKey={defaultActiveKey} />;
 }

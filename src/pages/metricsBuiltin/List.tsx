@@ -297,7 +297,9 @@ export default function index() {
   );
 
   useEffect(() => {
-    getComponents().then((res) => {
+    getComponents({
+      disabled: 0,
+    }).then((res) => {
       setTypsMeta(res);
     });
 
@@ -312,7 +314,9 @@ export default function index() {
   }, []);
 
   useEffect(() => {
-    getTypes().then((res) => {
+    getTypes({
+      disabled: 0,
+    }).then((res) => {
       setTypesList(res);
     });
     getCollectors().then((res) => {

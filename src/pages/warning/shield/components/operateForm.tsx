@@ -452,10 +452,14 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
       <Affix offsetBottom={0}>
         <Card size='small' className='affix-bottom-shadow'>
           <Space>
-            <Button type='primary' htmlType='submit'>
-              {type === 1 ? t('common:btn.edit') : type === 2 ? t('common:btn.clone') : t('common:btn.create')}
-            </Button>
-            <PreviewMutedEvents form={form} />
+            <PreviewMutedEvents
+              form={form}
+              onOk={() => {
+                form.validateFields().then((values: any) => {
+                  onFinish(values);
+                });
+              }}
+            />
             <Button onClick={() => window.history.back()}>{t('common:btn.cancel')}</Button>
           </Space>
         </Card>

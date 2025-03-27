@@ -1,16 +1,19 @@
 import _ from 'lodash';
 import moment from 'moment';
 import semver from 'semver';
+
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { getDsQuery, getESVersion } from '@/services/warning';
 import { fetchHistoryRangeBatch2 } from '@/services/dashboardV2';
+import { flattenHits } from '@/pages/explorer/Elasticsearch/utils';
+import { N9E_PATHNAME, IS_PLUS } from '@/utils/constant';
+import { getESIndexPatterns } from '@/pages/log/IndexPatterns/services';
+
 import { ITarget } from '../../../types';
 import { IVariable } from '../../../VariableConfig/definition';
 import { replaceExpressionVars } from '../../../VariableConfig/constant';
 import { getSeriesQuery, getLogsQuery } from './queryBuilder';
 import { processResponseToSeries } from './processResponse';
-import { flattenHits } from '@/pages/explorer/Elasticsearch/utils';
-import { N9E_PATHNAME, IS_PLUS } from '@/utils/constant';
 import { normalizeInterval } from './utils';
 
 interface IOptions {
@@ -56,12 +59,17 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
     }),
     (target) => {
       const query: any = target.query || {};
+      if (query.index_type === 'index_pattern') {
+        return !query.index_pattern;
+      }
       return !query.index || !query.date_field;
     },
   );
   const datasourceValue = variableConfig
     ? (replaceExpressionVars(options.datasourceValue as any, variableConfig, variableConfig.length, dashboardId) as any)
     : options.datasourceValue;
+  const hasIndexPattern = _.some(targets, (target) => target.query?.index_type === 'index_pattern');
+  const indexPatterns = hasIndexPattern ? await getESIndexPatterns(datasourceValue) : [];
   if (targets && datasourceValue && !isInvalid) {
     _.forEach(targets, (target) => {
       if (target.time) {
@@ -79,7 +87,9 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
       } else {
         if (isRawDataQuery(target)) {
           batchLogParams.push({
+            index_type: query.index_type || 'index',
             index: query.index,
+            index_pattern: query.index_pattern,
             filter,
             syntax: query.syntax,
             date_field: query.date_field,
@@ -90,7 +100,9 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
         } else {
           if (!IS_PLUS) {
             batchDsParams.push({
+              index_type: query.index_type || 'index',
               index: query.index,
+              index_pattern: query.index_pattern,
               filter,
               syntax: query.syntax,
               values: query?.values,
@@ -108,7 +120,9 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
                 ds_cate: 'elasticsearch',
                 query: {
                   ref: target.refId,
+                  index_type: query.index_type || 'index',
                   index: query.index,
+                  index_pattern: query.index_pattern,
                   filter,
                   syntax: query.syntax,
                   value: item,
@@ -138,7 +152,13 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
         } catch (e) {
           console.error(new Error('get es version error'));
         }
+
         _.forEach(batchDsParams, (item) => {
+          if (item.index_type === 'index_pattern') {
+            const currentIndexPattern = _.find(indexPatterns, { id: item.index_pattern });
+            item.index = currentIndexPattern?.name;
+            item.date_field = currentIndexPattern?.time_field;
+          }
           const esQuery = JSON.stringify(getSeriesQuery(item, intervalkey));
           const header = JSON.stringify({
             search_type: 'query_then_fetch',
@@ -180,7 +200,12 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
     let logRes;
     let logPlayload = '';
     if (!_.isEmpty(batchLogParams)) {
-      _.forEach(batchLogParams, (item) => {
+      _.forEach(batchLogParams, async (item) => {
+        if (item.index_type === 'index_pattern') {
+          const currentIndexPattern = _.find(indexPatterns, { id: item.index_pattern });
+          item.index = currentIndexPattern?.name;
+          item.date_field = currentIndexPattern?.time_field;
+        }
         const esQuery = JSON.stringify(getLogsQuery(item));
         const header = JSON.stringify({
           search_type: 'query_then_fetch',
@@ -192,7 +217,11 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
       });
       logRes = await getDsQuery(datasourceValue, logPlayload);
       // TODO: 暂时以第一个查询条件是否配置 date_format 为准，如果配置了 date_format 则所有日志的 date_field 值都会去格式化
-      const dateField = _.get(targets, '[0].query.date_field');
+      let dateField = _.get(targets, '[0].query.date_field');
+      if (_.get(targets, '[0].query.index_type') === 'index_pattern') {
+        dateField = _.get(_.find(indexPatterns, { id: _.get(targets, '[0].query.index_pattern') }), 'time_field');
+      }
+
       const dateFormat = _.get(targets, '[0].query.date_format');
       _.forEach(logRes, (item) => {
         const { docs } = flattenHits(item?.hits?.hits);

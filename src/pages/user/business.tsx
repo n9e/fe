@@ -18,9 +18,9 @@ import React, { useContext, useEffect, useState } from 'react';
 import moment from 'moment';
 import _ from 'lodash';
 import classNames from 'classnames';
-import PageLayout from '@/components/pageLayout';
-import { Button, Table, Input, message, Row, Col, Modal, Space, Tree } from 'antd';
-import { EditOutlined, DeleteOutlined, SearchOutlined, UserOutlined, InfoCircleOutlined, DownOutlined } from '@ant-design/icons';
+import PageLayout, { HelpLink } from '@/components/pageLayout';
+import { Button, Table, Input, message, Row, Col, Modal, Space } from 'antd';
+import { EditOutlined, DeleteOutlined, SearchOutlined, UserOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import UserInfoModal from './component/createModal';
 import { deleteBusinessTeamMember, getBusinessTeamList, getBusinessTeamInfo, deleteBusinessTeam } from '@/services/manage';
 import { Team, ActionType } from '@/store/manageInterface';
@@ -28,7 +28,8 @@ import { CommonStateContext } from '@/App';
 import { ColumnsType } from 'antd/lib/table';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@/utils';
-import { listToTree, getCollapsedKeys, getLocaleExpandedKeys, setLocaleExpandedKeys } from '@/components/BusinessGroup';
+import { listToTree, getCollapsedKeys, getLocaleExpandedKeys, setLocaleExpandedKeys, getDefaultBusiness } from '@/components/BusinessGroup';
+import Tree from '@/components/BusinessGroup/components/Tree';
 import '@/components/BlankBusinessPlaceholder/index.less';
 import './index.less';
 
@@ -36,7 +37,7 @@ const { confirm } = Modal;
 export const PAGE_SIZE = 5000;
 
 const Resource: React.FC = () => {
-  const { setBusiGroups, siteInfo } = useContext(CommonStateContext);
+  const { setBusiGroups, siteInfo, setBusiGroup } = useContext(CommonStateContext);
   const { t } = useTranslation('user');
   const urlQuery = useQuery();
   const id = urlQuery.get('id');
@@ -132,6 +133,7 @@ const Resource: React.FC = () => {
         teamId && getTeamInfoDetail(teamId);
       }
       setBusiGroups(data.dat || []);
+      setBusiGroup(getDefaultBusiness(data.dat));
     });
   };
 
@@ -162,7 +164,15 @@ const Resource: React.FC = () => {
   };
 
   return (
-    <PageLayout title={t('business.title')} icon={<UserOutlined />}>
+    <PageLayout
+      title={
+        <Space>
+          {t('business.title')}
+          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/personnel-permissions/-business-group/' />
+        </Space>
+      }
+      icon={<UserOutlined />}
+    >
       <div className='user-manage-content'>
         <div style={{ display: 'flex', gap: 10, height: '100%', background: 'unset' }}>
           <div className='left-tree-area'>
@@ -218,11 +228,8 @@ const Resource: React.FC = () => {
               <div className='radio-list' style={{ overflowY: 'auto' }}>
                 {!_.isEmpty(teamList) && (
                   <Tree
-                    rootClassName='business-group-tree'
-                    defaultExpandParent={false}
                     defaultExpandedKeys={getCollapsedKeys(listToTree(teamList as any, siteInfo?.businessGroupSeparator), getLocaleExpandedKeys(), teamId as any)}
                     selectedKeys={teamId ? [_.toString(teamId)] : []}
-                    blockNode
                     onSelect={(_selectedKeys, e: any) => {
                       const nodeId = e.node.id;
                       setTeamId(nodeId as any);

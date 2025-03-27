@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Card, Form, Input, Button, message, Row, Space, Select } from 'antd';
-import PageLayout from '@/components/pageLayout';
+import { Card, Form, Input, Button, message, Row, Col, Space, Select, Switch } from 'antd';
+import PageLayout, { HelpLink } from '@/components/pageLayout';
 import { getN9eConfig, putN9eConfig } from './services';
 import './locale';
 
@@ -31,7 +31,14 @@ export default function index() {
   }, []);
 
   return (
-    <PageLayout title={t('title')}>
+    <PageLayout
+      title={
+        <Space>
+          {t('title')}
+          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/system-configuration/site-settings/' />
+        </Space>
+      }
+    >
       <div className='srm'>
         <div>
           <Card>
@@ -76,7 +83,7 @@ export default function index() {
               </div>
               <div>
                 <Space>
-                  <Form.Item label={t('teamDisplayMode')} name={['teamDisplayMode']} initialValue='tree'>
+                  <Form.Item label={t('teamDisplayMode')} name={['teamDisplayMode']} initialValue='list'>
                     <Select
                       style={{ width: 200 }}
                       options={[
@@ -109,6 +116,23 @@ export default function index() {
                     };
                   })}
                 />
+              </Form.Item>
+              <div>
+                <Row>
+                  <Col span={4}>
+                    <Form.Item label={t('print_access_log')} name={['print_access_log']} initialValue={false} valuePropName='checked'>
+                      <Switch />
+                    </Form.Item>
+                  </Col>
+                  <Col span={20}>
+                    <Form.Item label={t('print_body_paths')} name={['print_body_paths']}>
+                      <Select mode='tags' placeholder='/api/n9e/busi-groups/alert-rules' style={{ width: '100%' }} open={false} />
+                    </Form.Item>
+                  </Col>
+                </Row>
+              </div>
+              <Form.Item label={t('font_family')} name={['font_family']}>
+                <Input />
               </Form.Item>
               <Button type='primary' htmlType='submit'>
                 {t('common:btn.save')}

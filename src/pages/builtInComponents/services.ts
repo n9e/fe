@@ -21,9 +21,10 @@ import { Component, ComponentPost, ComponentPut, PayloadQuery, TypeEnum, Payload
 
 export type { Component, TypeEnum, Payload };
 
-export const getComponents = function (): Promise<Component[]> {
+export const getComponents = function (params = {}): Promise<Component[]> {
   return request('/api/n9e/builtin-components', {
     method: RequestMethod.Get,
+    params,
   }).then((res) => {
     return res.dat;
   });
@@ -50,6 +51,15 @@ export const getPayloads = <T>(params: PayloadQuery): Promise<T> => {
 export const getPayload = (id: number): Promise<{ content: string }> => {
   return request(`/api/n9e/builtin-payload/${id}`, {
     method: RequestMethod.Get,
+  }).then((res) => {
+    return res.dat;
+  });
+};
+
+export const getPayloadByUUID = (uuid: number): Promise<{ content: string }> => {
+  return request(`/api/n9e/builtin-payload`, {
+    method: RequestMethod.Get,
+    params: { uuid },
   }).then((res) => {
     return res.dat;
   });

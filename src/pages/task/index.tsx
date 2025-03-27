@@ -16,27 +16,42 @@
  */
 import React, { useContext, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import { Table, Divider, Checkbox, Row, Col, Input, Select, Button } from 'antd';
+import { Table, Divider, Checkbox, Row, Col, Input, Select, Button, Space } from 'antd';
 import { SearchOutlined, CodeOutlined } from '@ant-design/icons';
 import { ColumnProps } from 'antd/lib/table';
 import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import { useAntdTable } from 'ahooks';
+
 import request from '@/utils/request';
-import BusinessGroup from '@/components/BusinessGroup';
-import PageLayout from '@/components/pageLayout';
+import { RequestMethod } from '@/store/common';
+import PageLayout, { HelpLink } from '@/components/pageLayout';
 import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
 import { CommonStateContext } from '@/App';
+import BusinessGroupSideBarWithAll, { getDefaultGids } from '@/components/BusinessGroup/BusinessGroupSideBarWithAll';
 
 interface DataItem {
   id: number;
   title: string;
 }
 
+const N9E_GIDS_LOCALKEY = 'N9E_TASK_NODE_ID';
+
 function getTableData(options: any, gids: string | undefined, query: string, mine: boolean, days: number) {
   if (gids) {
-    return request(`/api/n9e/busi-groups/tasks?gids=${gids}&limit=${options.pageSize}&p=${options.current}&query=${query}&mine=${mine ? 1 : 0}&days=${days}`).then((res) => {
+    const ids = gids === '-2' ? undefined : gids;
+    return request(`/api/n9e/busi-groups/tasks`, {
+      method: RequestMethod.Get,
+      params: {
+        gids: ids,
+        limit: options.pageSize,
+        p: options.current,
+        query: query,
+        mine: mine ? 1 : 0,
+        days: days,
+      },
+    }).then((res) => {
       return { list: res.dat.list, total: res.dat.total };
     });
   }
@@ -50,9 +65,10 @@ const index = (_props: any) => {
   const [mine, setMine] = useState(true);
   const [days, setDays] = useState(7);
   const { businessGroup, busiGroups } = useContext(CommonStateContext);
-  const { tableProps } = useAntdTable((options) => getTableData(options, businessGroup.ids, query, mine, days), { refreshDeps: [businessGroup.ids, query, mine, days] });
+  const [gids, setGids] = useState<string | undefined>(getDefaultGids(N9E_GIDS_LOCALKEY, businessGroup));
+  const { tableProps } = useAntdTable((options) => getTableData(options, gids, query, mine, days), { refreshDeps: [gids, query, mine, days] });
   const columns: ColumnProps<DataItem>[] = _.concat(
-    businessGroup.isLeaf
+    businessGroup.isLeaf && gids !== '-2'
       ? []
       : ([
           {
@@ -106,18 +122,20 @@ const index = (_props: any) => {
       },
     ],
   );
+
   return (
     <PageLayout
+      icon={<CodeOutlined />}
       title={
-        <>
-          <CodeOutlined />
+        <Space>
           {t('task')}
-        </>
+          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/alarm_self-healing/create-temporary-task/' />
+        </Space>
       }
     >
       <div style={{ display: 'flex' }}>
-        <BusinessGroup />
-        {businessGroup.ids ? (
+        <BusinessGroupSideBarWithAll gids={gids} setGids={setGids} localeKey={N9E_GIDS_LOCALKEY} allOptionLabel={t('common:task.allOptionLabel')} />
+        {gids ? (
           <div className='n9e-border-base p2' style={{ flex: 1 }}>
             <Row>
               <Col span={16} className='mb10'>
@@ -151,7 +169,7 @@ const index = (_props: any) => {
                   {t('task.only.mine')}
                 </Checkbox>
               </Col>
-              {businessGroup.isLeaf && (
+              {businessGroup.isLeaf && gids !== '-2' && (
                 <Col span={8} style={{ textAlign: 'right' }}>
                   <Button
                     type='primary'

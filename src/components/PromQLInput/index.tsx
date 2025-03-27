@@ -80,6 +80,7 @@ const ExpressionInput = (
   ref,
 ) => {
   const { darkMode } = useContext(CommonStateContext);
+  const workaroundDarkMode = document.body.classList.contains('theme-dark');
   const containerRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
   const executeQueryCallback = useRef(executeQuery);
@@ -122,7 +123,7 @@ const ExpressionInput = (
       );
 
     // Create or reconfigure the editor.
-    const dynamicConfig = [darkMode ? darkTheme : lightTheme];
+    const dynamicConfig = [darkMode || workaroundDarkMode ? darkTheme : lightTheme];
     const view = viewRef.current;
     if (view === null) {
       // If the editor does not exist yet, create it.

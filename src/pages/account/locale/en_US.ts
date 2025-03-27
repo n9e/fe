@@ -26,6 +26,12 @@ const en_US = {
     contactLinkToSetting: 'Please go to the settings page to add',
     contactPlaceholder: 'Please select contact method',
   },
+  token: {
+    title: 'Token Management',
+    createToken: 'Create Token',
+    tokenName: 'Token Name',
+    last_used: 'Last used',
+  },
   editPicture: 'Edit',
   pictureURL: 'URL',
   pictureMsg: 'The address needs to start with http',

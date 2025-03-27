@@ -26,7 +26,7 @@ const zh_CN = {
       OLDEST_FIRST: '旧的优先',
     },
     download: '下载日志',
-    export: '导出记录',
+    export: '下载记录',
     log_download: {
       title: '下载',
       download_title: '下载日志数据',
@@ -39,7 +39,7 @@ const zh_CN = {
       time_sort_asc: '时间升序',
       all: '全部',
       custom: '自定义',
-      custom_validated: '數量必須在1-65535之间',
+      custom_validated: '数量必须在1-65535之间',
       all_quantity: '总数约',
       createSuccess: '任务创建成功',
     },
@@ -63,5 +63,10 @@ const zh_CN = {
     button: '历史记录',
     searchPlaceholder: '搜索历史记录',
   },
+  share_tip: '点击复制分享链接',
+  share_tip_2: '点击复制分享链接, 目前仅支持分享日志原文查询',
+  help: '使用说明',
+  clear_tabs: '清空',
+  clear_tabs_tip: '只保留当前标签页',
 };
 export default zh_CN;

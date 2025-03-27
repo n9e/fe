@@ -23,7 +23,7 @@ import { useAntdTable } from 'ahooks';
 import { Input, Tag, Button, Space, Table, Select, message } from 'antd';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
-import PageLayout from '@/components/pageLayout';
+import PageLayout, { HelpLink } from '@/components/pageLayout';
 import RefreshIcon from '@/components/RefreshIcon';
 import { CommonStateContext } from '@/App';
 import { getProdOptions } from '@/pages/alertRules/Form/components/ProdSelect';
@@ -100,7 +100,7 @@ const Event: React.FC = () => {
                 if (!_.includes(filter.query, item)) {
                   setFilter({
                     ...filter,
-                    queryContent: filter.query ? `${filter.query.trim()} ${item}` : item,
+                    query: filter.query ? `${filter.query.trim()} ${item}` : item,
                   });
                 }
               }}
@@ -211,7 +211,15 @@ const Event: React.FC = () => {
   });
 
   return (
-    <PageLayout icon={<AlertOutlined />} title={t('title')}>
+    <PageLayout
+      icon={<AlertOutlined />}
+      title={
+        <Space>
+          {t('title')}
+          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/alarm-management/historical-alarms/' />
+        </Space>
+      }
+    >
       <div className='event-content'>
         <div className='table-area n9e-border-base'>
           {!query.ids && (
@@ -286,10 +294,11 @@ const Event: React.FC = () => {
                       severity: val,
                     });
                   }}
+                  dropdownMatchSelectWidth={false}
                 >
-                  <Select.Option value={1}>S1</Select.Option>
-                  <Select.Option value={2}>S2</Select.Option>
-                  <Select.Option value={3}>S3</Select.Option>
+                  <Select.Option value={1}>S1（Critical）</Select.Option>
+                  <Select.Option value={2}>S2（Warning）</Select.Option>
+                  <Select.Option value={3}>S3（Info）</Select.Option>
                 </Select>
                 <Select
                   style={{ minWidth: 60 }}

@@ -1,0 +1,34 @@
+.n9e-dashboard-editor-modal {
+  max-width: 100% !important;
+  height: 100% !important;
+  .n9e-dashboard-editor-modal-left-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: 100%;
+  }
+  .n9e-dashboard-editor-modal-left-vars-wrapper {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .n9e-dashboard-editor-modal-left-chart-wrapper {
+    height: 300px;
+    flex-shrink: 0;
+  }
+  .n9e-dashboard-editor-modal-left-query-wrapper {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  .ant-modal-content {
+    height: 100% !important;
+  }
+}
+.theme-dark {
+  .n9e-dashboard-editor-modal {
+    .ant-modal-content {
+      background-color: var(--fc-fill-1) !important;
+    }
+  }
+}

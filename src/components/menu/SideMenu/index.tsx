@@ -4,7 +4,6 @@ import Icon, { MenuUnfoldOutlined, MenuFoldOutlined, NotificationFilled } from '
 import _ from 'lodash';
 import querystring from 'query-string';
 import { useTranslation } from 'react-i18next';
-import { getMenuPerm } from '@/services/common';
 import { ScrollArea } from '@/components/ScrollArea';
 import { CommonStateContext } from '@/App';
 import { getSideMenuBgColor } from '@/components/pageLayout/SideMenuColorSetting';
@@ -106,12 +105,26 @@ export const getMenuList = (t) => {
       label: t('告警通知'),
       children: [
         {
+          key: '/notification-rules',
+          label: t('notification_rules'),
+        },
+        {
+          key: '/notification-channels',
+          label: t('notification_channels'),
+        },
+        {
+          key: '/notification-templates',
+          label: t('notification_templates'),
+        },
+        {
           key: '/help/notification-settings',
           label: t('通知设置'),
+          deprecated: true,
         },
         {
           key: '/help/notification-tpls',
           label: t('通知模板'),
+          deprecated: true,
         },
       ],
     },
@@ -162,6 +175,10 @@ export const getMenuList = (t) => {
           key: '/permissions',
           label: t('权限管理'),
         },
+        {
+          key: '/contacts',
+          label: t('contacts:title'),
+        },
       ],
     },
     {
@@ -203,7 +220,7 @@ export const getMenuList = (t) => {
         },
         {
           key: '/help/version',
-          label: t('系统版本'),
+          label: t('version:title'),
         },
       ],
     },
@@ -294,7 +311,7 @@ const SideMenu = () => {
     }
   }, [menuPaths, location.pathname, selectedKeys]);
 
-  const uncollapsedWidth = i18n.language === 'en_US' ? 'w-[210px]' : 'w-[172px]';
+  const uncollapsedWidth = i18n.language === 'en_US' ? 'w-[250px]' : 'w-[172px]';
 
   return (
     <div
@@ -317,7 +334,7 @@ const SideMenu = () => {
             collapsedHover ? `absolute ${uncollapsedWidth} shadow-mf` : '',
             !IS_ENT ? 'border-fc-300' : '',
           )}
-          style={{ background: sideMenuBgColor }}
+          style={{ background: sideMenuBgColor, borderColor: 'var(--fc-border-color)' }}
         >
           <div className='flex flex-1 flex-col justify-between gap-8 overflow-hidden'>
             <SideMenuHeader collapsed={collapsed} collapsedHover={collapsedHover} sideMenuBgMode={sideMenuBgMode} />

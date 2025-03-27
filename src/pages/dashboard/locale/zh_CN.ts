@@ -1,5 +1,8 @@
 const zh_CN = {
   title: '监控仪表盘',
+  list: '仪表盘列表',
+  back_icon_tip: '返回上一页，没有上一页则返回仪表盘列表',
+  back_icon_tip_is_built_in: '返回上一页，没有上一页则返回模板中心',
   name: '仪表盘名称',
   tags: '分类标签',
   ident: '英文标识',
@@ -22,6 +25,10 @@ const zh_CN = {
       2: '授权访问',
     },
     bgids: '授权业务组',
+    theme_link: {
+      dark: '暗色主题链接',
+      light: '亮色主题链接',
+    },
   },
   default_filter: {
     title: '预置筛选',
@@ -37,12 +44,14 @@ const zh_CN = {
   exit_full_screen: '退出全屏',
   copyPanelTip: '图表已复制。单击 "添加图表" 进行粘贴。',
   batch: {
-    import: '导入仪表盘',
+    import: '导入仪表盘 JSON',
     label: '仪表盘 JSON',
     import_grafana: '导入 Grafana 仪表盘',
     import_grafana_tip: '导入完的图表只支持夜莺目前支持的图表类型和功能，<a>问题反馈</a>',
     import_grafana_tip_version_error: '不支持导入小于 v7 版本的仪表盘配置',
     import_grafana_tip_version_warning: '导入小于 v8 版本的仪表盘配置，可能会有部分图表不支持，以及图表无法正常渲染问题',
+    import_grafana_url: 'Grafana 仪表盘链接（推荐）',
+    import_grafana_url_label: 'Grafana 仪表盘链接',
     continueToImport: '继续导入',
     noSelected: '请选择仪表盘',
     import_builtin: '导入内置仪表盘',
@@ -57,30 +66,11 @@ const zh_CN = {
     title: '仪表盘链接',
     name: '链接名称',
     url: '链接地址',
-    url_tip: `
-      变量使用说明
-      <1 />
-      \${variable_name}: 显示仪表盘变量值
-      <1 />
-      \${__field.name}: 显示序列的名称
-      <1 />
-      \${__field.value}: 显示序列的数值
-      <1 />
-      \${__field.labels.X}: 显示指定的标签值
-      <1 />
-      \${__field.labels.__name__}: 显示指标名
-      <1 />
-      \${__from}: 起始时间, 毫秒
-      <1 />
-      \${__from_date_seconds}: 起始时间, 秒
-      <1 />
-      \${__from_date_iso}: 起始时间, ISO 8601/RFC 3339
-      <1 />
-      上面语法适用于 \${__to}
-      `,
     isNewBlank: '是否新窗口打开',
+    dashboardIds_placeholder: '请选择仪表盘',
   },
   var: {
+    vars: '变量',
     btn: '添加变量',
     title: {
       list: '变量列表',
@@ -89,6 +79,7 @@ const zh_CN = {
     },
     name: '变量名称',
     name_msg: '仅支持数字和字符下划线',
+    name_repeat_msg: '变量名称已存在',
     label: '显示名称',
     type: '变量类型',
     type_map: {
@@ -134,6 +125,37 @@ const zh_CN = {
       ident: '业务组标识',
       invalid: '没有找到当前业务组的标识，请先先去业务组管理设置',
     },
+    help_tip: `
+      变量使用说明
+      <1 />
+      \${variable_name}: 仪表盘变量值
+      <1 />
+      \${__field.name}: 图例的名称
+      <1 />
+      \${__field.value}: 图例的数值
+      <1 />
+      \${__field.labels.X}: 标签值
+      <1 />
+      \${__field.labels.__name__}: 指标名
+      <1 />
+      \${__interval}: 时间间隔（秒）, 例如 15s
+      <1 />
+      \${__interval_ms}: 时间间隔（毫秒）, 例如 15000ms
+      <1 />
+      \${__range}: 时间范围（秒）, 例如 3600s
+      <1 />
+      \${__range_ms}: 时间范围（毫秒）, 例如 3600000ms
+      <1 />
+      \${__rate_interval}: 时间间隔（秒）, __interval * 4
+      <1 />
+      \${__from}: 起始时间（毫秒）
+      <1 />
+      \${__from_date_seconds}: 起始时间（秒）
+      <1 />
+      \${__from_date_iso}: 起始时间, ISO 8601/RFC 3339
+      <1 />
+      上面语法适用于 \${__to}
+    `,
   },
   row: {
     edit_title: '编辑分组',
@@ -143,6 +165,8 @@ const zh_CN = {
     cancel: '取消',
     ok: '删除分组和图表',
     ok2: '仅删除分组',
+    panels: '{{count}} 个图表',
+    panels_plural: '{{count}} 个图表',
   },
   panel: {
     title: {
@@ -197,10 +221,26 @@ const zh_CN = {
         },
         heightInPercentage: '高度百分比',
         heightInPercentage_tip: 'Legend 高度占据面板的最大高度百分比，最小值为 20%，最大值为 80%',
+        widthInPercentage: '宽度百分比',
+        widthInPercentage_tip: 'Legend 宽度占据面板的最大宽度百分比，最小值为 20%，最大值为 80%',
       },
       thresholds: {
         title: '阈值',
-        btn: '添加',
+        btn: '添加阈值',
+        mode: {
+          label: '阈值模式',
+          tip: '百分比模式计算公式 Y轴最小值 + (Y轴最大值 - Y轴最小值) * (百分比值 / 100)',
+          absolute: '绝对值',
+          percentage: '百分比',
+        },
+      },
+      thresholdsStyle: {
+        label: '阈值样式',
+        off: '关闭',
+        line: '线',
+        dashed: '虚线',
+        'line+area': '线+区域',
+        'dashed+area': '虚线+区域',
       },
       tooltip: {
         mode: '模式',
@@ -268,7 +308,7 @@ const zh_CN = {
       calc_tip: '时序数据需要对所有时间点数据做取值计算，非时序数据忽略此设置',
       maxValue: '最大值',
       baseColor: '基础颜色',
-      serieWidth: '序列名宽度',
+      serieWidth: '名称宽度',
       sortOrder: '排序',
       textMode: '显示内容',
       valueAndName: '值和名称',
@@ -343,6 +383,7 @@ const zh_CN = {
         nowrap: '单元格不换行',
         organizeFields: '字段整理',
         colorMode_tip: '颜色模式是针对 "值字段" 的颜色设置。值模式下颜色作用于值文字；背景模式下颜色作用于字段所在单元格背景色。',
+        pageLimit: '每页显示行数',
       },
       text: {
         textColor: '文字颜色',
@@ -417,6 +458,21 @@ const zh_CN = {
         topn: '最多排名',
         combine_other: '其他',
         combine_other_tip: '超过最多排名的数据将会合并为一个其他项',
+        otherPosition: {
+          label: '其他项位置',
+          tip: '其他项的位置，可选项在最前或最后',
+          options: {
+            none: '默认',
+            top: '最前',
+            bottom: '最后',
+          },
+        },
+        displayMode: '显示模式',
+        valueMode: {
+          label: '数值显示',
+          color: '显示',
+          hidden: '隐藏',
+        },
       },
     },
     inspect: {
@@ -485,6 +541,7 @@ const zh_CN = {
       default: '默认',
       updateTimeRange: '更新时间范围',
     },
+    save: '保存仪表盘',
   },
   visualizations: {
     timeseries: '时序图',
@@ -512,6 +569,14 @@ const zh_CN = {
     sum: '总和',
     count: '数量',
     origin: '原始值',
+  },
+  annotation: {
+    add: '添加注释',
+    edit: '编辑注释',
+    description: '描述',
+    tags: '标签',
+    updated: '注释已更新',
+    deleted: '注释已删除',
   },
 };
 export default zh_CN;

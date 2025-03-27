@@ -23,6 +23,9 @@ import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { IVariable } from './definition';
 import { normalizeESQueryRequestBody, ajustVarSingleValue, escapeJsonString, escapePromQLString } from './utils';
 
+// @ts-ignore
+import variableDatasource from 'plus:/parcels/Dashboard/variableDatasource';
+
 // https://grafana.com/docs/grafana/latest/datasources/prometheus/#query-variable 根据文档解析表达式
 // 每一个promtheus接口都接受start和end参数来限制返回值
 export const convertExpressionToQuery = (expression: string, range: IRawTimeRange, item: IVariable, dashboardId, groupedDatasourceList: { [index: string]: any[] }) => {
@@ -34,7 +37,7 @@ export const convertExpressionToQuery = (expression: string, range: IRawTimeRang
   if (!datasourceValue) {
     return Promise.resolve([]);
   }
-  if (datasource?.cate === 'elasticsearch' && datasourceValue) {
+  if (datasource.cate === 'elasticsearch') {
     try {
       const query = JSON.parse(expression);
       const start = moment(parsedRange.start).valueOf();
@@ -44,7 +47,7 @@ export const convertExpressionToQuery = (expression: string, range: IRawTimeRang
       console.error(e);
       return Promise.resolve([]);
     }
-  } else {
+  } else if (datasource.cate === 'prometheus') {
     // 非 ES 源或是老配置都默认为 prometheus 源
     if (expression === 'label_names()') {
       return getLabelNames({ start, end }, datasourceValue).then((res) => res.data);
@@ -104,6 +107,21 @@ export const convertExpressionToQuery = (expression: string, range: IRawTimeRang
           return `${metricName || ''} {${labels}} ${values}`;
         }),
       );
+    }
+  } else {
+    try {
+      const start = moment(parsedRange.start).unix();
+      const end = moment(parsedRange.end).unix();
+      return variableDatasource({
+        datasourceCate: datasource.cate,
+        datasourceValue,
+        start,
+        end,
+        sql: expression,
+      });
+    } catch (e) {
+      console.error(e);
+      return Promise.resolve([]);
     }
   }
   return Promise.resolve(expression.length > 0 ? expression.split(',').map((i) => i.trim()) : '');
@@ -262,13 +280,13 @@ export const replaceExpressionVarsSpecifyRule = (
               let newValue = `(${_.trim(
                 _.join(
                   _.map(
-                    _.filter(options, (i) => !reg || !stringToRegex(reg) || (stringToRegex(reg) as RegExp).test(i)),
+                    _.filter(options, (i) => !reg || !stringToRegex(reg) || (stringToRegex(reg) as RegExp).test(i.value)),
                     (item) => {
                       if (datasource?.cate === 'elasticsearch') {
-                        return `"${item}"`;
+                        return `"${item.value}"`;
                       }
                       // 2024-07-24 如果是 prometheus 数据源的变量，需要对 {}[]().- 进行转义
-                      return escapePromQLString(item);
+                      return escapePromQLString(item.value);
                     },
                   ),
                   separator,
@@ -349,6 +367,14 @@ export const replaceExpressionVars = (expression: string, formData: IVariable[],
     {
       regex: '\\${[0-9a-zA-Z_]+}',
       getPlaceholder: (expression: string) => '${' + expression + '}',
+    },
+    isEscapeJsonString,
+  );
+  newExpression = replaceExpressionVarsSpecifyRule(
+    { expression: newExpression, formData, limit, id },
+    {
+      regex: '\\[\\[[0-9a-zA-Z_]+\\]\\]',
+      getPlaceholder: (expression: string) => '[[' + expression + ']]',
     },
     isEscapeJsonString,
   );
@@ -442,25 +468,48 @@ export const getOptionsList = (
   ];
 };
 
-export function filterOptionsByReg(options, reg, formData: IVariable[], limit: number, id: string) {
+export function filterOptionsByReg(options: string[], reg, formData: IVariable[], limit: number, id: string) {
   reg = replaceExpressionVars(reg, formData, limit, id);
   const regex = stringToRegex(reg);
 
   if (reg && regex) {
-    const regFilterOptions: string[] = [];
+    const regFilterOptions: {
+      label: string;
+      value: string;
+    }[] = [];
     _.forEach(options, (option) => {
       if (!!option) {
         const matchResult = option.match(regex);
-        if (matchResult && matchResult.length > 0) {
-          if (matchResult[1]) {
-            regFilterOptions.push(matchResult[1]);
-          } else {
-            regFilterOptions.push(option);
+        if (matchResult) {
+          if (matchResult.groups) {
+            regFilterOptions.push({
+              label: matchResult.groups?.text,
+              value: matchResult.groups?.value,
+            });
+          } else if (matchResult.length > 0) {
+            if (matchResult[1]) {
+              regFilterOptions.push({
+                label: matchResult[1],
+                value: matchResult[1],
+              });
+            } else {
+              regFilterOptions.push({
+                label: option,
+                value: option,
+              });
+            }
           }
         }
       }
     });
-    return _.union(regFilterOptions);
+    return _.unionBy(regFilterOptions, (item) => {
+      return `${item.label}-${item.value}`;
+    });
   }
-  return options;
+  return _.map(options, (item) => {
+    return {
+      label: item,
+      value: item,
+    };
+  });
 }

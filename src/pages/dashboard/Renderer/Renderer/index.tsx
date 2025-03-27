@@ -33,11 +33,12 @@ import {
   WarningOutlined,
   ExportOutlined,
   ClearOutlined,
+  FieldTimeOutlined,
 } from '@ant-design/icons';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import PanelEmpty from '../components/PanelEmpty';
 import CloneIcon from '../components/CloneIcon';
-import Timeseries from './Timeseries';
+import Timeseries from './TimeSeriesNG';
 import Stat from './Stat';
 import Table from './Table';
 import Pie from './Pie';
@@ -53,30 +54,50 @@ import Markdown from '../../Editor/Components/Markdown';
 import useQuery from '../datasource/useQuery';
 import { IPanel } from '../../types';
 import replaceFieldWithVariable from '../utils/replaceFieldWithVariable';
+import getPanelCustomTimeDescribe from '../utils/getPanelCustomTimeDescribe';
 import Inspect from '../Inspect';
+
 import './style.less';
 
 interface IProps {
   datasourceValue?: number; // 全局数据源，如 values.datasourceValue 未设置则用全局数据源
   themeMode?: 'dark';
-  dashboardId: string;
-  id?: string;
+  dashboardId: string; // 仪表盘 ID 或者 ident
+  dashboardID: number; // 仪表盘 ID
+  id: string;
   time: IRawTimeRange;
   setRange?: (range: IRawTimeRange) => void;
   values: IPanel;
   variableConfig?: IVariable[];
   isPreview?: boolean; // 是否是预览，预览中不显示编辑和分享
   isAuthorized?: boolean; // 是否有权限
+  annotations: any[];
   onCloneClick?: () => void;
   onShareClick?: () => void;
   onEditClick?: () => void;
   onDeleteClick?: () => void;
   onCopyClick?: () => void;
+  setAnnotationsRefreshFlag?: (flag: string) => void;
 }
 
 function index(props: IProps) {
   const { t } = useTranslation('dashboard');
-  const { datasourceValue, themeMode, dashboardId, id, variableConfig, isPreview, isAuthorized, onCloneClick, onShareClick, onEditClick, onDeleteClick, onCopyClick } = props;
+  const {
+    datasourceValue,
+    themeMode,
+    dashboardId,
+    dashboardID,
+    id,
+    variableConfig,
+    isPreview,
+    isAuthorized,
+    annotations,
+    onCloneClick,
+    onShareClick,
+    onEditClick,
+    onDeleteClick,
+    onCopyClick,
+  } = props;
   const [time, setTime] = useState(props.time);
   const [visible, setVisible] = useState(false);
   const values = _.cloneDeep(props.values);
@@ -85,7 +106,7 @@ function index(props: IProps) {
   const bodyWrapRef = useRef<HTMLDivElement>(null);
   const [inViewPort] = useInViewport(ref);
   const [inspect, setInspect] = useState(false);
-  const { query, series, error, loading, loaded } = useQuery({
+  const { query, series, error, loading, loaded, range } = useQuery({
     id,
     dashboardId,
     time,
@@ -103,6 +124,7 @@ function index(props: IProps) {
   const name = replaceFieldWithVariable(dashboardId, values.name, variableConfig, values.scopedVars);
   const description = replaceFieldWithVariable(dashboardId, values.description, variableConfig, values.scopedVars);
   const tipsVisible = description || !_.isEmpty(values.links);
+  const panelCustomTimeDescribe = getPanelCustomTimeDescribe(series);
 
   useEffect(() => {
     setTime(props.time);
@@ -115,11 +137,24 @@ function index(props: IProps) {
     _.set(values, 'custom.colorRange', _.split(_.get(values, 'custom.colorRange'), ','));
   }
   const subProps = {
+    id,
     values,
     series,
   };
+
   const RendererCptMap = {
-    timeseries: () => <Timeseries {...subProps} themeMode={themeMode} time={time} setRange={props.setRange} isPreview={isPreview} />,
+    timeseries: () => (
+      <Timeseries
+        {...subProps}
+        dashboardID={dashboardID}
+        annotations={annotations}
+        setAnnotationsRefreshFlag={props.setAnnotationsRefreshFlag}
+        themeMode={themeMode}
+        time={range}
+        setRange={props.setRange}
+        isPreview={isPreview}
+      />
+    ),
     stat: () => <Stat {...subProps} bodyWrapRef={bodyWrapRef} themeMode={themeMode} isPreview={isPreview} />,
     table: () => <Table {...subProps} themeMode={themeMode} time={time} isPreview={isPreview} ref={tableRef} />,
     pie: () => <Pie {...subProps} themeMode={themeMode} time={time} isPreview={isPreview} />,
@@ -190,6 +225,17 @@ function index(props: IProps) {
                 <div className='renderer-header-desc'>{description ? <InfoCircleOutlined /> : <LinkOutlined />}</div>
               </Tooltip>
             ) : null}
+            {panelCustomTimeDescribe && (
+              <span
+                style={{
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                <FieldTimeOutlined /> {panelCustomTimeDescribe}
+              </span>
+            )}
           </div>
           <div
             className='renderer-header-controllers'

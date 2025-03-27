@@ -24,7 +24,6 @@ interface Props {
 export default function LogView(props: Props) {
   const { t } = useTranslation('explorer');
   const { value, fieldConfig, fields, highlight, range } = props;
-  console.log('fieldConfig', fieldConfig);
 
   const allParamsArr = fieldConfig?.formatMap
     ? Object.keys(fieldConfig.formatMap).reduce((prev, cur) => {

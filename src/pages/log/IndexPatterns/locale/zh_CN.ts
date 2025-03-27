@@ -8,6 +8,8 @@ const zh_CN = {
   allow_hide_system_indices: '匹配隐藏的索引',
   create_btn: '新增索引模式',
   create_title: '创建索引模式',
+  edit_title: '编辑索引模式',
+  cross_cluster_enabled: '跨集群',
   indexes_empty: '没有匹配的索引',
   keyword: '字段',
   should_not_empty: '不可为空',

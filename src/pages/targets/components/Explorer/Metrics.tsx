@@ -127,10 +127,14 @@ export default function Metrics(props: Props) {
   );
 
   useEffect(() => {
-    getComponents().then((res) => {
+    getComponents({
+      disabled: 0,
+    }).then((res) => {
       setTypsMeta(res);
     });
-    getTypes().then((res) => {
+    getTypes({
+      disabled: 0,
+    }).then((res) => {
       setTypesList(res);
     });
     getCollectors().then((res) => {

@@ -7,6 +7,8 @@ const zh_HK = {
   tab_dashboards: '儀表板模板',
   ident: '模板名稱',
   logo: '圖標',
+  enable: '啟用',
+  disabled: '未啟用',
   readme: '採集說明',
   componentFormModal: {
     edit: '編輯模板',
@@ -16,6 +18,7 @@ const zh_HK = {
   name: '名稱',
   payload_name: '模板名稱',
   tags: '標籤',
+  variable: '變量',
   component: '組件',
   cate: '分類',
   content: '內容',

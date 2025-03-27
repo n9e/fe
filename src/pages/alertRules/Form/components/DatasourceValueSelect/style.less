@@ -1,0 +1,19 @@
+.alert-rule-datasource-and {
+  position: relative;
+  min-width: 32px;
+  padding: 0 8px;
+  height: 32px;
+  line-height: 32px;
+  text-align: center;
+  background-color: var(--fc-fill-3);
+  color: var(--fc-text-1);
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: -16px;
+    left: 16px;
+    height: 16px;
+    border-left: 1px dashed var(--fc-border-color);
+  }
+}

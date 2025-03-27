@@ -1,6 +1,6 @@
 const zh_CN = {
   title: '屏蔽规则',
-  search_placeholder: '搜索标签、屏蔽原因',
+  search_placeholder: '搜索规则说明、标签、屏蔽原因',
   datasource_type: '数据源类型',
   datasource_id: '数据源',
   cause: '屏蔽原因',
@@ -52,6 +52,8 @@ const zh_CN = {
   filter_configs_tip: '符合筛选条件的告警事件会命中屏蔽规则，进而被屏蔽。筛选条件本质就是对告警事件的筛选，通过事件的数据源、等级、标签等信息进行筛选',
   mute_configs: '屏蔽时长',
   alert_content: '为了防止误配屏蔽规则屏蔽掉公司所有的告警，此屏蔽规则只会生效于特定业务组下的告警事件',
-  preview_muted_btn: '预览并删除相关事件',
+  preview_muted_title: '预览相关事件',
+  preview_muted_save_only: '仅保存',
+  preview_muted_save_and_delete: '保存并删除相关事件',
 };
 export default zh_CN;

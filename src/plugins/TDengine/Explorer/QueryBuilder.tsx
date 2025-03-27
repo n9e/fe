@@ -27,7 +27,7 @@ export default function QueryBuilder(props: Props) {
                 title={
                   <span>
                     TDengine 查询语法可参考
-                    <a target='_blank' href='https://docs.taosdata.com/taos-sql/select/'>
+                    <a target='_blank' href='https://docs.taosdata.com/basic/query/'>
                       官方文档
                     </a>
                   </span>

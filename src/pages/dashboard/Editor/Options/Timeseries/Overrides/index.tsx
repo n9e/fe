@@ -34,6 +34,7 @@ export default function index({ targets }) {
         fields.map(({ key, name, ...restField }) => {
           return (
             <Panel
+              isActive={false}
               key={key}
               isInner
               header='Override'
@@ -42,7 +43,9 @@ export default function index({ targets }) {
                   <PlusCircleOutlined
                     onClick={() => {
                       add({
-                        type: 'special',
+                        matcher: {
+                          id: 'byFrameRefID',
+                        },
                       });
                     }}
                   />

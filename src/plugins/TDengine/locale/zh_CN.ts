@@ -19,6 +19,10 @@ const zh_CN = {
     power_sql: 'SQL增强',
     query: '查询条件',
     query_msg: '请输入查询条件',
+    query_tip1: 'TDengine 查询语法可参考',
+    query_tip2: '官方文档',
+    sqlTemplates: '查询模板',
+    sqlTemplates_tip: '以下 SQL 查询条件仅供参考，在实际使用的时候，需要将其中的 $变量 替换为实际的值',
     mode: {
       timeSeries: '时序值',
       raw: '日志原文',
@@ -33,6 +37,9 @@ const zh_CN = {
       timeKey_tip: '指定哪个字段是时间字段，作为绘制曲线图的x轴坐标',
       timeFormat_tip: '时间的格式，会根据此格式将时间转为时间戳',
     },
+    schema: '元信息',
+    table: '普通表',
+    stable: '超级表',
   },
   trigger: {
     title: '告警条件',

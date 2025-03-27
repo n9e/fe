@@ -4,8 +4,10 @@ import { Drawer, Space, Spin } from 'antd';
 import { ExportOutlined } from '@ant-design/icons';
 import MDEditor from '@uiw/react-md-editor';
 import ModalHOC, { ModalWrapProps } from '../ModalHOC';
+import Document from './Document';
 import './style.less';
 
+export { Document };
 interface Props {
   darkMode?: boolean;
   language?: string;
@@ -26,6 +28,8 @@ function index(props: Props & ModalWrapProps) {
   const { visible, destroy, darkMode, language = 'zh_CN', title, width = '60%', documentPath, onClose, type = 'md' } = props;
   const [document, setDocument] = useState('');
   const [loading, setLoading] = useState(true);
+  // 去除 documentPath 结尾的 /
+  const realDocumentPath = documentPath.replace(/\/$/, '');
 
   useEffect(() => {
     if (documentPath && type === 'md') {
@@ -46,7 +50,7 @@ function index(props: Props & ModalWrapProps) {
         <Space>
           {title}
           {type === 'iframe' && (
-            <a target='_blank' href={`${documentPath}${filenameMap[language]}`}>
+            <a target='_blank' href={`${realDocumentPath}${filenameMap[language]}`}>
               <ExportOutlined />
             </a>
           )}
@@ -77,7 +81,7 @@ function index(props: Props & ModalWrapProps) {
       {type === 'iframe' && (
         <Spin spinning={loading} wrapperClassName='n9e-document-drawer-iframe-loading'>
           <iframe
-            src={`${documentPath}${filenameMap[language]}?onlyContent`}
+            src={`${realDocumentPath}${filenameMap[language]}/?onlyContent`}
             style={{ width: '100%', height: '100%', border: '0 none', visibility: loading ? 'hidden' : 'visible' }}
             onLoad={() => {
               setLoading(false);

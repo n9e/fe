@@ -29,6 +29,8 @@ import FormCpt from './Form';
 import { IPanel } from '../types';
 import { normalizeInitialValues } from './util';
 
+import './style.less';
+
 interface IProps {
   mode: string;
   visible: boolean;
@@ -59,7 +61,7 @@ function index(props: IProps) {
           _.set(values, 'custom.colorRange', _.split(values.custom.colorRange, ','));
         }
         let formData = Object.assign(values, {
-          version: '3.0.0',
+          version: '3.1.0',
         });
         if (values && values.id) {
           formData.id = values.id;
@@ -90,6 +92,7 @@ function index(props: IProps) {
 
   return (
     <Modal
+      className='n9e-dashboard-editor-modal'
       width='100%'
       title={
         <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -116,7 +119,10 @@ function index(props: IProps) {
               {_.map(visualizations, (item) => {
                 return (
                   <Select.Option value={item.type} key={item.type}>
-                    {t(`visualizations.${item.type}`)}
+                    <Space align='center' style={{ lineHeight: 1 }}>
+                      <img height={16} alt={item.type} src={`/image/dashboard/${item.type}.svg`} />
+                      {t(`visualizations.${item.type}`)}
+                    </Space>
                   </Select.Option>
                 );
               })}
@@ -138,7 +144,7 @@ function index(props: IProps) {
           </Space>
         </div>
       }
-      style={{ top: 10, padding: 0 }}
+      style={{ top: 0, padding: 0 }}
       visible={visible}
       closable={false}
       destroyOnClose
@@ -167,7 +173,7 @@ function index(props: IProps) {
         props.onCancel && props.onCancel();
       }}
       bodyStyle={{
-        padding: '10px 24px 24px 24px',
+        padding: 10,
       }}
     >
       {/* 除了 text 和 iframe 类型其他的类型比如存在 initialValues?.datasourceCate */}

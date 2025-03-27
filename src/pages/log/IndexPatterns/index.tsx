@@ -24,7 +24,7 @@ import AuthorizationWrapper from '@/components/AuthorizationWrapper';
 import { CommonStateContext } from '@/App';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
 import { getESIndexPatterns, deleteESIndexPattern, putESIndexPattern } from './services';
-import Add from './Add';
+import FormModal from './FormModal';
 import { IndexPattern } from './types';
 import './locale';
 import { SearchOutlined } from '@ant-design/icons';
@@ -69,7 +69,8 @@ export default function Servers() {
                 <Button
                   type='primary'
                   onClick={() => {
-                    Add({
+                    FormModal({
+                      mode: 'create',
                       indexPatterns: data,
                       datasourceList: groupedDatasourceList.elasticsearch,
                       onOk: () => {
@@ -119,15 +120,14 @@ export default function Servers() {
                     render: (record) => {
                       return (
                         <Space>
-                          <Button
-                            type='link'
+                          <a
                             onClick={() => {
                               if (record) {
                                 EditField({
                                   id: record.id,
                                   datasourceList,
                                   onOk(values, name) {
-                                    console.log('values', values)
+                                    console.log('values', values);
                                     const newFieldConfig = {
                                       ...values,
                                       version: 2,
@@ -146,7 +146,22 @@ export default function Servers() {
                             }}
                           >
                             {t('common:btn.config')}
-                          </Button>
+                          </a>
+                          <a
+                            onClick={() => {
+                              FormModal({
+                                mode: 'edit',
+                                initialValues: record,
+                                indexPatterns: data,
+                                datasourceList: groupedDatasourceList.elasticsearch,
+                                onOk: () => {
+                                  fetchData();
+                                },
+                              });
+                            }}
+                          >
+                            {t('common:btn.edit')}
+                          </a>
                           <Popconfirm
                             title={t('common:confirm.delete')}
                             onConfirm={() => {

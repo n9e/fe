@@ -1,15 +1,11 @@
 const en_US = {
-  title: 'Recording Rules',
+  title: 'Recording rules',
   search_placeholder: 'Search by name or tags',
-  name: 'Metric Name',
+  name: 'Metric name',
   name_msg: 'Metric name is invalid',
   name_tip: 'Promql is calculated periodically, and a new metric is generated. Fill in the name of the new metric here',
   note: 'Note',
   disabled: 'Enable',
-  cron_pattern: 'Execution frequency',
-  cron_pattern_msg: 'Please enter Cron expression',
-  cron_pattern_tip:
-    'Cron expression, support to second, that is: second minute hour day month week, such as 1 * * * * * means execute the first second every minute. You can also abbreviate @every 60s',
   append_tags: 'Tags',
   append_tags_msg: 'Invalid tag format, please check!',
   append_tags_msg1: 'Tag length should be less than or equal to 64 bits',
@@ -18,16 +14,16 @@ const en_US = {
   batch: {
     must_select_one: 'No rule selected',
     import: {
-      title: 'Import Recording Rules',
-      name: 'Recording Rule',
+      title: 'Import recording rules',
+      name: 'Recording rule',
     },
     export: {
-      title: 'Export Recording Rules',
+      title: 'Export recording rules',
       copy: 'Copy JSON to clipboard',
     },
-    delete: 'Delete Recording Rules',
+    delete: 'Delete recording rules',
     update: {
-      title: 'Update Recording Rules',
+      title: 'Update recording rules',
       field: 'Field',
       changeto: 'Change to',
       options: {

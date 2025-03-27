@@ -160,7 +160,7 @@ export default function Info() {
               label={
                 <Space>
                   {t('account:profile.contact')}
-                  <Link to='/help/notification-settings?tab=contacts' target='_blank'>
+                  <Link to='/contacts' target='_blank'>
                     {t('account:profile.contactLinkToSetting')}
                   </Link>
                 </Space>

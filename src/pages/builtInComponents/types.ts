@@ -3,6 +3,7 @@ export interface Component {
   ident: string;
   logo: string;
   readme: string;
+  disabled: 0 | 1;
 }
 
 export type ComponentPost = Omit<Component, 'id'>;
@@ -23,6 +24,7 @@ export interface PayloadQuery {
 
 export interface Payload {
   id: number;
+  uuid: number;
   type: TypeEnum;
   component_id: number;
   cate: string;

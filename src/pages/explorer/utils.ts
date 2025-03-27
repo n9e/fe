@@ -1,27 +1,53 @@
 import _ from 'lodash';
-import { isMathString, IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import moment from 'moment';
+import queryString from 'query-string';
+import { isMathString, IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
+import { DatasourceCateEnum } from '@/utils/constant';
+
+// @ts-ignore
+import getPlusFormValuesByParams from 'plus:/parcels/Explorer/utils/getPlusFormValuesByParams';
+// @ts-ignore
+import getPlusLocationSearchByFormValues from 'plus:/parcels/Explorer/utils/getPlusLocationSearchByFormValues';
+
 interface FormValue {
   datasourceCate: string;
   datasourceValue: number;
   query: {
-    [index: string]: string | IRawTimeRange | null | undefined;
+    [index: string]: any;
   };
 }
 
 /**
  * 从 URL query 中获取 filter
- * 存在 query_string 时直接作为 filter 值
+ * 存在 query || query_string 时直接作为 filter 值
  * 否则排查掉 data_source_name, data_source_id, index_name, timestamp, index_pattern 之后的参数合并为 filter
  * 合并后的 filter 为 AND 关系
  */
 
 const getESFilterByQuery = (query: { [index: string]: string | null }) => {
-  if (query?.query_string) {
+  if (query?.query) {
+    return query?.query;
+    // @deprecated 2024-11-26 未来会废弃，后面标准化为 query
+  } else if (query?.query_string) {
     return query?.query_string;
   } else {
+    // @deprecated 2024-11-26 未来会废弃，后面标准化为 query
     const filtersArr: string[] = [];
-    const validParmas = _.omit(query, ['data_source_name', 'data_source_id', 'index_name', 'timestamp', 'index_pattern', 'start', 'end', 'mode']);
+    const validParmas = _.omit(query, [
+      'data_source_name',
+      'data_source_id',
+      'index',
+      'index_name',
+      'date_field',
+      'timestamp',
+      'index_pattern',
+      'start',
+      'end',
+      'mode',
+      'syntax',
+      'query',
+      '__execute__',
+    ]);
     _.forEach(validParmas, (value, key) => {
       if (value) {
         filtersArr.push(`${key}:"${value}"`);
@@ -31,7 +57,7 @@ const getESFilterByQuery = (query: { [index: string]: string | null }) => {
   }
 };
 
-export const getFormValuesBySearch = (params: { [index: string]: string | null }) => {
+export const getFormValuesBySearchParams = (params: { [index: string]: string | null }) => {
   const data_source_name = _.get(params, 'data_source_name');
   const data_source_id = _.get(params, 'data_source_id');
   if (data_source_name && data_source_id) {
@@ -42,74 +68,47 @@ export const getFormValuesBySearch = (params: { [index: string]: string | null }
       datasourceCate: data_source_name,
       datasourceValue: _.toNumber(data_source_id),
     };
-    const queryString = _.get(params, 'query') || undefined;
-    if (data_source_name === 'aliyun-sls') {
-      const project = _.get(params, 'project');
-      const logstore = _.get(params, 'logstore');
-      const range_start = _.get(params, 'start');
-      const range_end = _.get(params, 'end');
-      const defaultRange =
-        range_start && range_end
-          ? { start: !isMathString(range_start) ? moment(Number(range_start)) : range_start, end: !isMathString(range_end) ? moment(Number(range_end)) : range_end }
-          : undefined;
-      if (project && logstore) {
+    const range_start = _.get(params, 'start');
+    const range_end = _.get(params, 'end');
+    const range =
+      range_start && range_end
+        ? { start: !isMathString(range_start) ? moment(Number(range_start)) : range_start, end: !isMathString(range_end) ? moment(Number(range_end)) : range_end }
+        : undefined;
+    if (data_source_name === DatasourceCateEnum.elasticsearch) {
+      // @deprecated 2024-11-26 标准参数名为 index 同时兼容 index_name
+      const index = _.get(params, 'index') || _.get(params, 'index_name');
+      const index_pattern = _.get(params, 'index_pattern');
+      // @deprecated 2024-11-26 标准参数名为 date_field 同时兼容 timestamp
+      const date_field = _.get(params, 'date_field') || _.get(params, 'timestamp', '@timestamp');
+      const syntax = _.get(params, 'syntax');
+      const mode = _.get(params, 'mode');
+
+      if (mode === 'index-patterns' || index_pattern) {
         return {
           ...formValues,
           query: {
-            project,
-            logstore,
-            query: queryString,
-            range: defaultRange,
+            mode: 'index-patterns',
+            indexPattern: _.toNumber(index_pattern),
+            filter: getESFilterByQuery(params),
+            date_field,
+            range,
+            syntax,
           },
         };
-      }
-    }
-    if (data_source_name === 'tencent-cls') {
-      const logset_id = _.get(params, 'logset_id');
-      const topic_id = _.get(params, 'topic_id');
-      if (logset_id && topic_id) {
+      } else if (index) {
         return {
           ...formValues,
           query: {
-            logset_id,
-            topic_id,
-            query: queryString,
-          },
-        };
-      }
-    }
-    if (data_source_name === 'elasticsearch') {
-      const index = _.get(params, 'index_name');
-      const indexPattern = _.get(params, 'index_pattern');
-      const timestamp = _.get(params, 'timestamp', '@timestamp');
-      const range_start = _.get(params, 'start');
-      const range_end = _.get(params, 'end');
-      const defaultRange =
-        range_start && range_end
-          ? { start: !isMathString(range_start) ? moment(Number(range_start)) : range_start, end: !isMathString(range_end) ? moment(Number(range_end)) : range_end }
-          : undefined;
-      if (index) {
-        return {
-          ...formValues,
-          query: {
+            mode: 'indices',
             index,
             filter: getESFilterByQuery(params),
-            date_field: timestamp,
-            range: defaultRange,
-          },
-        };
-      } else if (indexPattern) {
-        return {
-          ...formValues,
-          query: {
-            filter: getESFilterByQuery(params),
-            indexPattern,
-            range: defaultRange,
+            date_field,
+            range,
+            syntax,
           },
         };
       }
-    }
-    if (data_source_name === 'loki') {
+    } else if (data_source_name === DatasourceCateEnum.loki) {
       const query = _.get(params, 'query');
       const limit = _.get(params, 'limit');
       if (query) {
@@ -118,58 +117,58 @@ export const getFormValuesBySearch = (params: { [index: string]: string | null }
           query: {
             query,
             limit,
+            range,
           },
         };
       }
-    }
-    if (data_source_name === 'doris') {
-      const range_start = _.get(params, 'start');
-      const range_end = _.get(params, 'end');
-      const defaultRange =
-        range_start && range_end
-          ? { start: !isMathString(range_start) ? moment(Number(range_start)) : range_start, end: !isMathString(range_end) ? moment(Number(range_end)) : range_end }
-          : undefined;
+    } else if (data_source_name === DatasourceCateEnum.ck) {
       return {
         ...formValues,
         query: {
-          condition: _.get(params, 'condition'),
-          time_field: _.get(params, 'time_field'),
-          range: defaultRange,
+          query: queryString,
+          range,
         },
       };
-    }
-    if (data_source_name === 'ck') {
-      return {
-        ...formValues,
-        query: {
-          sql: _.get(params, 'querySql'),
-          time_field: _.get(params, 'queryTimeField'),
-        },
-      };
-    }
-    if (data_source_name === 'volc-tls') {
-      const project_id = _.get(params, 'project_id');
-      const topic_id = _.get(params, 'topic_id');
-      const range_start = _.get(params, 'start');
-      const range_end = _.get(params, 'end');
-      const defaultRange =
-        range_start && range_end
-          ? { start: !isMathString(range_start) ? moment(Number(range_start)) : range_start, end: !isMathString(range_end) ? moment(Number(range_end)) : range_end }
-          : undefined;
-      if (project_id && topic_id) {
-        return {
-          ...formValues,
-          query: {
-            project_id,
-            topic_id,
-            query: queryString,
-            range: defaultRange,
-          },
-        };
-      }
+    } else {
+      return getPlusFormValuesByParams(params);
     }
   }
   return undefined;
+};
+
+export const getLocationSearchByFormValues = (formValues: FormValue) => {
+  const data_source_name = formValues.datasourceCate;
+  const data_source_id = formValues.datasourceValue;
+  const query: any = {
+    data_source_name,
+    data_source_id,
+  };
+  const range = formValues.query?.range as IRawTimeRange;
+  if (moment.isMoment(range?.start) && moment.isMoment(range?.end)) {
+    query.start = range.start.valueOf();
+    query.end = range.end.valueOf();
+  } else if (isMathString(range?.start) && isMathString(range?.end)) {
+    query.start = range.start;
+    query.end = range.end;
+  }
+  if (data_source_name === DatasourceCateEnum.elasticsearch) {
+    query.mode = formValues.query?.mode;
+    query.index = formValues.query?.index;
+    query.index_pattern = formValues.query?.indexPattern;
+    query.date_field = formValues.query?.date_field;
+    query.syntax = formValues.query?.syntax;
+    query.query = formValues.query?.filter; // TODO 早期 ES 的 query 参数名被起名为 filter 这里就不单独处理了
+    return queryString.stringify(query);
+  } else if (data_source_name === DatasourceCateEnum.loki) {
+    query.query = formValues.query?.query;
+    query.limit = formValues.query?.limit;
+    return queryString.stringify(query);
+  } else if (data_source_name === DatasourceCateEnum.ck) {
+    query.query = formValues.query?.query;
+    return queryString.stringify(query);
+  } else {
+    return getPlusLocationSearchByFormValues(formValues);
+  }
 };
 
 export const formValuesIsInItems = (
@@ -261,7 +260,7 @@ export const getLocalItems = (params) => {
       },
     ];
   }
-  const formValues = getFormValuesBySearch(params);
+  const formValues = getFormValuesBySearchParams(params);
   if (formValues) {
     if (formValuesIsInItems(formValues, items)) {
       const range_start = _.get(params, 'start');
@@ -310,7 +309,7 @@ export const setLocalItems = (items: any) => {
 const localeActiveKey = 'logs_explorer_items_active_key';
 export const getLocalActiveKey = (params: { [index: string]: string | null }, items: any[]) => {
   let activeKey = localStorage.getItem(localeActiveKey);
-  const formValues = getFormValuesBySearch(params);
+  const formValues = getFormValuesBySearchParams(params);
   if (formValues) {
     const item = _.find(items, (item) => {
       return formValuesIsInItems(formValues, [item]);

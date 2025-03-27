@@ -9,6 +9,7 @@ import usePagination from '@/components/usePagination';
 import Export from '@/pages/dashboard/List/Export';
 import AuthorizationWrapper from '@/components/AuthorizationWrapper';
 import { CommonStateContext } from '@/App';
+import { HelpLink } from '@/components/pageLayout';
 import { RuleType } from './types';
 import Import from './Import';
 import { getPayloads, deletePayloads, getCates } from '../services';
@@ -24,7 +25,7 @@ interface Props {
 export default function index(props: Props) {
   const { component_id } = props;
   const { t } = useTranslation('builtInComponents');
-  const { busiGroups, groupedDatasourceList, datasourceCateOptions, darkMode } = useContext(CommonStateContext);
+  const { busiGroups, groupedDatasourceList, reloadGroupedDatasourceList, datasourceCateOptions, darkMode } = useContext(CommonStateContext);
   const [filter, setFilter] = useState<{
     cate?: string;
     query?: string;
@@ -108,6 +109,7 @@ export default function index(props: Props) {
           />
         </Space>
         <Space>
+          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/template-center/open-source/alarm-rule-template/' />
           <AuthorizationWrapper allowedPerms={['/built-in-components/add']}>
             <Button
               type='primary'
@@ -143,6 +145,7 @@ export default function index(props: Props) {
                 data: formatBeautifyJsons(_.map(selectedRows.current, 'content')),
                 busiGroups,
                 groupedDatasourceList,
+                reloadGroupedDatasourceList,
                 datasourceCateOptions,
               });
             }}
@@ -255,6 +258,7 @@ export default function index(props: Props) {
                               data: formatBeautifyJson(record.content),
                               busiGroups,
                               groupedDatasourceList,
+                              reloadGroupedDatasourceList,
                               datasourceCateOptions,
                             });
                           }}

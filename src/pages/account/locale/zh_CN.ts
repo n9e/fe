@@ -26,6 +26,12 @@ const zh_CN = {
     contactLinkToSetting: '联系方式管理',
     contactPlaceholder: '请选择联系方式',
   },
+  token: {
+    title: 'Token 管理',
+    createToken: '创建 Token',
+    tokenName: 'Token 名称',
+    last_used: '最近使用时间',
+  },
   editPicture: '修改头像',
   pictureURL: '头像地址',
   pictureMsg: '头像地址需要以http开头',

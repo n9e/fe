@@ -25,7 +25,7 @@ import { CommonStateContext } from '@/App';
 import { BusinessGroupSelectWithAll } from '@/components/BusinessGroup';
 import { LOCAL_STORAGE_KEY } from './constants';
 import FormModal from './FormModal';
-import Import from './Import';
+import Import, { ModalType } from './Import';
 import BatchClone from './BatchClone';
 
 interface IProps {
@@ -44,6 +44,13 @@ export default function Header(props: IProps) {
   const { businessGroup, busiGroups } = useContext(CommonStateContext);
   const { t } = useTranslation('dashboard');
   const { gids, selectRowKeys, refreshList, searchVal, onSearchChange, columnsConfigs, setColumnsConfigs, selectedBusinessGroup, setSelectedBusinessGroup } = props;
+  const [importData, setImportData] = React.useState<{
+    visible: boolean;
+    busiId?: number;
+    type?: ModalType;
+  }>({
+    visible: false,
+  });
 
   return (
     <>
@@ -89,10 +96,10 @@ export default function Header(props: IProps) {
             <Button
               onClick={() => {
                 if (businessGroup.id) {
-                  Import({
+                  setImportData({
+                    visible: true,
                     busiId: businessGroup.id,
                     type: 'ImportBuiltin',
-                    refreshList,
                   });
                 }
               }}
@@ -129,11 +136,8 @@ export default function Header(props: IProps) {
                             onOk: async () => {
                               removeDashboards(selectRowKeys).then(() => {
                                 message.success(t('common:success.delete'));
-                              });
-                              // TODO: 删除完后立马刷新数据有时候不是实时的，这里暂时间隔0.5s后再刷新列表
-                              setTimeout(() => {
                                 refreshList();
-                              }, 500);
+                              });
                             },
                           });
                         } else {
@@ -173,6 +177,20 @@ export default function Header(props: IProps) {
           />
         </Space>
       </div>
+      {importData.busiId && importData.type && (
+        <Import
+          visible={importData.visible}
+          busiId={importData.busiId}
+          type={importData.type}
+          onOk={() => {
+            setImportData({
+              ...importData,
+              visible: false,
+            });
+            refreshList();
+          }}
+        />
+      )}
     </>
   );
 }
