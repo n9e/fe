@@ -30,7 +30,7 @@ function Table(props: Props) {
       dataSource={data}
       expandable={{
         expandedRowRender: (record) => {
-          return <LogView value={record.json} fieldConfig={form.getFieldValue(['fieldConfig'])} fields={getFields()} highlight={record.highlight} />;
+          return <LogView value={record.json} fieldConfig={form.getFieldValue(['fieldConfig'])} fields={getFields()} highlight={record.highlight} range={form.getFieldValue(['query','range'])} />;
         },
         expandIcon: ({ expanded, onExpand, record }) => (expanded ? <DownOutlined onClick={(e) => onExpand(record, e)} /> : <RightOutlined onClick={(e) => onExpand(record, e)} />),
       }}

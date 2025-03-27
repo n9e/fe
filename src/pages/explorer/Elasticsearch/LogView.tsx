@@ -7,22 +7,34 @@ import { EditorView } from '@codemirror/view';
 import { json } from '@codemirror/lang-json';
 import { defaultHighlightStyle } from '@codemirror/highlight';
 import { copyToClipBoard } from '@/utils';
-import CodeMirror from '@/components/CodeMirror';
+import HighLightJSON from './HighLightJSON';
 import { Field, getFieldLabel, getFieldValue, RenderValue } from './utils';
 import { typeIconMap } from './FieldsSidebar/Field';
 import { typeMap } from '../Elasticsearch/services';
-
+import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
+import moment from 'moment';
 interface Props {
   value: Record<string, any>;
   fieldConfig: any;
   fields: Field[];
   highlight: any;
+  range: IRawTimeRange;
 }
 
 export default function LogView(props: Props) {
   const { t } = useTranslation('explorer');
-  const { value, fieldConfig, fields, highlight } = props;
+  const { value, fieldConfig, fields, highlight, range } = props;
+
+  const allParamsArr = fieldConfig?.formatMap
+    ? Object.keys(fieldConfig.formatMap).reduce((prev, cur) => {
+        return fieldConfig.formatMap[cur].paramsArr?.length > 0 ? [...prev, ...fieldConfig.formatMap[cur].paramsArr] : [];
+      }, [])
+    : [];
+
   const [type, setType] = useState<string>('table');
+  const parsedRange = range ? parseRange(range) : null;
+  let start = parsedRange ? moment(parsedRange.start).unix() : 0;
+  let end = parsedRange ? moment(parsedRange.end).unix() : 0;
   let jsonValue = '';
   try {
     jsonValue = JSON.stringify(value, null, 4);
@@ -31,6 +43,17 @@ export default function LogView(props: Props) {
     jsonValue = '无法解析';
   }
 
+  const dataSource = _.filter(
+    _.map(value, (val, key) => {
+      return {
+        field: key,
+        value: val,
+      };
+    }),
+    (item) => {
+      return item.value !== undefined && item.value !== null && item.value !== '';
+    },
+  );
   return (
     <Tabs
       activeKey={type}
@@ -53,17 +76,7 @@ export default function LogView(props: Props) {
     >
       <Tabs.TabPane tab='Table' key='table'>
         <Table
-          dataSource={_.filter(
-            _.map(value, (val, key) => {
-              return {
-                field: key,
-                value: val,
-              };
-            }),
-            (item) => {
-              return item.value !== undefined && item.value !== null && item.value !== '';
-            },
-          )}
+          dataSource={dataSource}
           columns={[
             {
               title: 'Field',
@@ -85,11 +98,11 @@ export default function LogView(props: Props) {
               key: 'value',
               render: (val: any, record: { field: string }) => {
                 const field = record.field;
-                const fieldVal = getFieldValue(field, val, fieldConfig);
-                const value = _.isArray(fieldVal) ? _.join(fieldVal, ',') : fieldVal;
+                const fieldVal = getFieldValue(field, val, fieldConfig, value, range);
+                const v = _.isArray(fieldVal) ? _.join(fieldVal, ',') : fieldVal;
                 return (
                   <div>
-                    <RenderValue value={value} highlights={highlight?.[field]} />
+                    <RenderValue value={v} highlights={highlight?.[field]} />
                   </div>
                 );
               },
@@ -100,25 +113,7 @@ export default function LogView(props: Props) {
         />
       </Tabs.TabPane>
       <Tabs.TabPane tab='JSON' key='json'>
-        <CodeMirror
-          value={jsonValue}
-          height='auto'
-          basicSetup={false}
-          editable={false}
-          extensions={[
-            defaultHighlightStyle.fallback,
-            json(),
-            EditorView.lineWrapping,
-            EditorView.theme({
-              '&': {
-                backgroundColor: '#F6F6F6 !important',
-              },
-              '&.cm-editor.cm-focused': {
-                outline: 'unset',
-              },
-            }),
-          ]}
-        />
+        <HighLightJSON value={value} query={{ start, end }} features={allParamsArr} />
       </Tabs.TabPane>
     </Tabs>
   );

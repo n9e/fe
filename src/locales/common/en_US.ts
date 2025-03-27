@@ -56,6 +56,7 @@ const en_US = {
     expand: 'Expand',
     collapse: 'Collapse',
     copy: 'Copy',
+    config: 'Config',
     copy2: 'Copy',
     reload: 'Reload',
   },

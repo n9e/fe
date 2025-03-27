@@ -23,13 +23,12 @@ import PageLayout from '@/components/pageLayout';
 import AuthorizationWrapper from '@/components/AuthorizationWrapper';
 import { CommonStateContext } from '@/App';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
-import { getESIndexPatterns, deleteESIndexPattern } from './services';
+import { getESIndexPatterns, deleteESIndexPattern, putESIndexPattern } from './services';
 import FormModal from './FormModal';
 import { IndexPattern } from './types';
 import './locale';
 import { SearchOutlined } from '@ant-design/icons';
-
-export { default as Fields } from './Fields';
+import EditField from './EditField';
 
 export default function Servers() {
   const { t } = useTranslation('es-index-patterns');
@@ -109,9 +108,6 @@ export default function Servers() {
                   {
                     title: t('name'),
                     dataIndex: 'name',
-                    render: (val, record) => {
-                      return <Link to={`/log/index-patterns/${record.id}`}>{val}</Link>;
-                    },
                     sorter: (a, b) => localeCompare(a.name, b.name),
                   },
                   {
@@ -124,6 +120,33 @@ export default function Servers() {
                     render: (record) => {
                       return (
                         <Space>
+                          <a
+                            onClick={() => {
+                              if (record) {
+                                EditField({
+                                  id: record.id,
+                                  datasourceList,
+                                  onOk(values, name) {
+                                    console.log('values', values);
+                                    const newFieldConfig = {
+                                      ...values,
+                                      version: 2,
+                                    };
+                                    putESIndexPattern(record.id, {
+                                      ..._.omit(record, ['fieldConfig', 'id']),
+                                      fields_format: JSON.stringify(newFieldConfig),
+                                      name,
+                                    }).then(() => {
+                                      fetchData();
+                                      message.success(t('common:success.save'));
+                                    });
+                                  },
+                                });
+                              }
+                            }}
+                          >
+                            {t('common:btn.config')}
+                          </a>
                           <a
                             onClick={() => {
                               FormModal({
@@ -148,7 +171,7 @@ export default function Servers() {
                               });
                             }}
                           >
-                            <Button type='link' style={{ padding: 0 }}>
+                            <Button type='link' style={{ padding: 0 }} danger>
                               {t('common:btn.delete')}
                             </Button>
                           </Popconfirm>

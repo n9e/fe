@@ -23,8 +23,8 @@ function localeCompareFunc(a, b) {
   return a.localeCompare(b);
 }
 
-export function getColumnsFromFields(selectedFields: { name: string; type: string }[], queryValue: any, fieldConfig?: any) {
-  const { date_field: dateField } = queryValue;
+export function getColumnsFromFields(selectedFields: { name: string; type: string }[], queryValue: any, fieldConfig?: any, dataSource?: any) {
+  const { date_field: dateField, range } = queryValue;
   let columns: any[] = [];
   if (_.isEmpty(selectedFields)) {
     columns = [
@@ -51,7 +51,7 @@ export function getColumnsFromFields(selectedFields: { name: string; type: strin
                 const val = fields[key];
                 const label = getFieldLabel(key, fieldConfig);
                 if (!_.isPlainObject(val) && fieldConfig?.formatMap?.[key]) {
-                  const value = getFieldValue(key, val, fieldConfig);
+                  const value = getFieldValue(key, val, fieldConfig, record.json, range);
                   return (
                     <React.Fragment key={label}>
                       <dt>{label}:</dt> <dd>{value}</dd>
@@ -79,7 +79,7 @@ export function getColumnsFromFields(selectedFields: { name: string; type: strin
         key: fieldKey,
         render: (fields, record) => {
           const { highlight } = record;
-          const fieldVal = getFieldValue(item.name, fields[fieldKey], fieldConfig);
+          const fieldVal = getFieldValue(item.name, fields[fieldKey], fieldConfig, record.json, range);
           const value = _.isArray(fieldVal) ? _.join(fieldVal, ',') : fieldVal;
           return <RenderValue value={value} highlights={highlight?.[fieldKey]} />;
         },
@@ -98,7 +98,7 @@ export function getColumnsFromFields(selectedFields: { name: string; type: strin
       dataIndex: 'fields',
       key: dateField,
       width: 200,
-      render: (fields) => {
+      render: (fields, record) => {
         const format = fieldConfig?.formatMap?.[dateField];
         return getFieldValue(dateField, fields[dateField], {
           formatMap: {

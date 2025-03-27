@@ -7,11 +7,11 @@ import { Form, Select, Button } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 
 import TimeRangePicker from '@/components/TimeRangePicker';
+import { getESIndexPatterns, standardizeFieldConfig } from '@/pages/log/IndexPatterns/services';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { useIsAuthorized } from '@/components/AuthorizationWrapper';
 import KQLInput from '@/components/KQLInput';
 import { getLocalQueryHistory, setLocalQueryHistory } from '@/components/KQLInput/utils';
-import { getESIndexPatterns } from '@/pages/log/IndexPatterns/services';
 import IndexPatternSettingsBtn from '@/pages/explorer/Elasticsearch/components/IndexPatternSettingsBtn';
 
 import { getFullFields, Field } from './services';
@@ -47,7 +47,8 @@ export default function QueryBuilder(props: Props) {
           let fieldConfig;
           try {
             if (finded.fields_format) {
-              fieldConfig = JSON.parse(finded.fields_format);
+              fieldConfig = standardizeFieldConfig(JSON.parse(finded.fields_format));
+              form.setFields([{ name: 'fieldConfig', value: undefined }]);
             }
           } catch (error) {
             console.warn(error);
@@ -91,7 +92,7 @@ export default function QueryBuilder(props: Props) {
             let fieldConfig;
             try {
               if (indexPattern.fields_format) {
-                fieldConfig = JSON.parse(indexPattern.fields_format);
+                fieldConfig = standardizeFieldConfig(JSON.parse(indexPattern.fields_format));
               }
             } catch (error) {
               console.warn(error);
