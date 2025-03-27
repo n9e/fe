@@ -120,8 +120,7 @@ export default function Servers() {
                     render: (record) => {
                       return (
                         <Space>
-                          <Button
-                            type='link'
+                          <a
                             onClick={() => {
                               if (record) {
                                 EditField({
@@ -147,7 +146,7 @@ export default function Servers() {
                             }}
                           >
                             {t('common:btn.config')}
-                          </Button>
+                          </a>
                           <a
                             onClick={() => {
                               FormModal({
