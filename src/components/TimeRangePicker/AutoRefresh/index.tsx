@@ -21,7 +21,7 @@ import _ from 'lodash';
 import './style.less';
 
 const refreshMap = {
-  0: 'off',
+  0: 'Off',
   5: '5s',
   10: '10s',
   20: '20s',

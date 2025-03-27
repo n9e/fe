@@ -19,6 +19,7 @@ import semver from 'semver';
 import { convertDashboardV1ToV2 } from '../../help/migrate/utils';
 export { convertDashboardV1ToV2 } from '../../help/migrate/utils';
 import { JSONParse } from '../utils';
+import moment from 'moment';
 export { JSONParse } from '../utils';
 export { convertDashboardGrafanaToN9E, checkGrafanaDashboardVersion } from '../utils';
 
@@ -28,6 +29,7 @@ export function exportDataStringify(data: any) {
       name: data.name,
       tags: data.tags,
       ident: data.ident,
+      uuid: moment().valueOf() * 1000,
       configs: JSONParse(data.configs),
     },
     null,

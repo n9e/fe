@@ -6,4 +6,5 @@ export interface IMenuItem {
   // permissions?: IAccountPermission[];
   children?: IMenuItem[] | undefined;
   beta?: boolean;
+  deprecated?: boolean;
 }

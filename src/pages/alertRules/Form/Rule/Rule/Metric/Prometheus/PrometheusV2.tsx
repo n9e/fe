@@ -19,37 +19,27 @@
  * 新版查询条件和告警条件表单
  */
 import React, { useContext } from 'react';
-import { Form, Row, Col, Card, Space, Input } from 'antd';
+import { Form, Row, Col, Card, Space } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
-import { CommonStateContext } from '@/App';
 import { PromQLInputWithBuilder } from '@/components/PromQLInput';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import Triggers from '@/pages/alertRules/Form/components/Triggers';
 import { FormStateContext } from '@/pages/alertRules/Form';
 import QueryName, { generateQueryName } from '@/components/QueryName';
 import GraphPreview from './GraphPreview';
+import AdvancedSettings from './components/AdvancedSettings';
 
 interface Props {
   form: any;
-  datasourceCate: string;
-  datasourceValue: number[];
-}
-
-const DATASOURCE_ALL = 0;
-
-export function getFirstDatasourceId(datasourceIds: number[] = [], datasourceList: { id: number }[] = []) {
-  return _.isEqual(datasourceIds, [DATASOURCE_ALL]) && datasourceList.length > 0 ? datasourceList[0]?.id : datasourceIds?.[0];
+  datasourceValue: number;
 }
 
 export default function PrometheusV2(props: Props) {
-  const { form, datasourceCate, datasourceValue } = props;
+  const { form, datasourceValue } = props;
   const { t } = useTranslation('alertRules');
-  const { groupedDatasourceList } = useContext(CommonStateContext);
   const { disabled } = useContext(FormStateContext);
-  const curDatasourceList = groupedDatasourceList[datasourceCate] || [];
-  const datasourceId = getFirstDatasourceId(datasourceValue, curDatasourceList);
   const queries = Form.useWatch(['rule_config', 'queries']);
 
   return (
@@ -61,11 +51,12 @@ export default function PrometheusV2(props: Props) {
               <Space>
                 <span>{t('ruleConfigPromVersionV2.query.title')}</span>
                 <PlusCircleOutlined
-                  onClick={() =>
-                    add({
+                  onClick={() => {
+                    return add({
+                      ref: generateQueryName(_.map(queries, 'ref')),
                       query: '',
-                    })
-                  }
+                    });
+                  }}
                 />
               </Space>
             }
@@ -76,7 +67,7 @@ export default function PrometheusV2(props: Props) {
                 <div key={field.key} className='alert-rule-trigger-container'>
                   <Row gutter={8}>
                     <Col flex='32px'>
-                      <Form.Item {...field} name={[field.name, 'ref']} initialValue={generateQueryName(_.map(queries, 'ref'))}>
+                      <Form.Item {...field} name={[field.name, 'ref']}>
                         <QueryName existingNames={_.map(queries, 'ref')} />
                       </Form.Item>
                     </Col>
@@ -89,12 +80,13 @@ export default function PrometheusV2(props: Props) {
                           trigger='onChange'
                           rules={[{ required: true, message: t('promQLInput:required') }]}
                         >
-                          <PromQLInputWithBuilder readonly={disabled} datasourceValue={datasourceId} />
+                          <PromQLInputWithBuilder readonly={disabled} datasourceValue={datasourceValue} />
                         </Form.Item>
                       </InputGroupWithFormItem>
                     </Col>
                   </Row>
-                  <div style={{ marginTop: 8 }}>
+                  <AdvancedSettings field={field} />
+                  <div className='mt2'>
                     <GraphPreview form={form} fieldName={field.name} promqlFieldName='query' />
                   </div>
                   <MinusCircleOutlined className='alert-rule-trigger-remove' onClick={() => remove(field.name)} />

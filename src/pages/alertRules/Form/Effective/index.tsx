@@ -19,6 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { Card, Form, Switch, Space, Select, TimePicker } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { CommonStateContext } from '@/App';
+import { HelpLink } from '@/components/pageLayout';
 import { panelBaseProps, daysOfWeek } from '../../constants';
 
 // @ts-ignore
@@ -29,7 +30,15 @@ export default function index() {
   const { isPlus } = useContext(CommonStateContext);
 
   return (
-    <Card {...panelBaseProps} title={t('effective_configs')}>
+    <Card
+      {...panelBaseProps}
+      title={
+        <Space>
+          {t('effective_configs')}
+          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/alarm-management/alert-rules/effective-configuration/' />
+        </Space>
+      }
+    >
       <div style={{ marginBottom: 10 }}>
         <Space>
           <span>{t('enable_status')}</span>

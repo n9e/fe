@@ -8,6 +8,10 @@ export const adjustURL = (url: string, darkMode: boolean) => {
   try {
     const urlObj = new URL(url);
     const searchParams = urlObj.searchParams;
+    const windowSearchParams = new URLSearchParams(window.location.search);
+    for (const [key, value] of windowSearchParams) {
+      searchParams.set(key, value);
+    }
     searchParams.set('theme', theme);
     return urlObj.toString();
   } catch (e) {

@@ -46,24 +46,16 @@ export default function index(props: IProps) {
   const { bgid } = useParams<{ bgid: string }>();
   const { t } = useTranslation('alertRules');
   const [form] = Form.useForm();
-  const { groupedDatasourceList, licenseRulesRemaining } = useContext(CommonStateContext);
+  const { licenseRulesRemaining, datasourceCateOptions } = useContext(CommonStateContext);
   const disabled = type === 3;
   const containerRef = React.useRef(null);
+  // TODO: 废弃的检测，beta.5 起已经不需要
   const handleCheck = async (values) => {
     if (values.cate === 'prometheus') {
       if (values.rule_config.checked && values.prod === 'anomaly') {
         message.warning('请先校验指标');
         return;
       }
-      // TODO: 多个 promql 怎么校验？
-      // const datasourceId = getFirstDatasourceId(values.datasource_ids, groupedDatasourceList[values.cate]);
-      // const res = await prometheusQuery({ query: values.prom_ql }, datasourceId);
-      // if (res.error) {
-      //   notification.error({
-      //     message: res.error,
-      //   });
-      //   return false;
-      // }
     } else if (type !== 1) {
       if (licenseRulesRemaining === 0 && values.prod === 'anomaly') {
         message.error('可添加的智能告警规则数量已达上限，请联系客服');
@@ -99,10 +91,30 @@ export default function index(props: IProps) {
     if (type === 1 || type === 2 || type === 3 || !_.isEmpty(initialValues)) {
       form.setFieldsValue(processInitialValues(initialValues));
     } else {
-      form.setFieldsValue({
+      const newValues = {
         ...defaultValues,
         group_id: Number(bgid),
-      });
+      };
+      // 如果有prometheus数据源，则默认选择prometheus
+      if (
+        _.find(datasourceCateOptions, {
+          value: 'prometheus',
+        })
+      ) {
+        newValues.prod = 'metric';
+        newValues.cate = 'prometheus';
+      } else {
+        // 否则选择第一个数据源
+        if (datasourceCateOptions.length) {
+          newValues.prod = datasourceCateOptions[0].type[0];
+          newValues.cate = datasourceCateOptions[0].value;
+        } else {
+          // 如果没有数据源，则默认选择host
+          newValues.prod = 'host';
+          newValues.cate = 'host';
+        }
+      }
+      form.setFieldsValue(newValues);
     }
   }, [initialValues]);
 

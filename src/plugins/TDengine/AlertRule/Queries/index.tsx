@@ -20,8 +20,6 @@ interface IProps {
   datasourceValue: number | number[];
 }
 
-const alphabet = 'ABCDEFGHIGKLMNOPQRSTUVWXYZ'.split('');
-
 export default function index({ form, prefixField = {}, fullPrefixName = [], prefixName = [], disabled, datasourceValue }: IProps) {
   const { t } = useTranslation('db_tdengine');
   const datasourceID = _.isArray(datasourceValue) ? datasourceValue[0] : datasourceValue;
@@ -69,21 +67,21 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
                       <div className='tdengine-discover-query'>
                         <InputGroupWithFormItem
                           label={
-                            <span>
-                              查询条件{' '}
+                            <Space>
+                              {t('query.query')}
                               <Tooltip
                                 title={
                                   <span>
-                                    TDengine 查询语法可参考
-                                    <a target='_blank' href='https://docs.taosdata.com/taos-sql/select/'>
-                                      官方文档
+                                    {t('query.query_tip1')}
+                                    <a className='pl1' target='_blank' href='https://docs.taosdata.com/basic/query/'>
+                                      {t('query.query_tip2')}
                                     </a>
                                   </span>
                                 }
                               >
                                 <InfoCircleOutlined />
                               </Tooltip>
-                            </span>
+                            </Space>
                           }
                         >
                           <Form.Item {...field} name={[field.name, 'query']}>
@@ -139,7 +137,7 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
                       </div>
                     </Col>
                   </Row>
-                  <AdvancedSettings mode='graph' prefixField={field} prefixName={[field.name]} disabled={disabled} />
+                  <AdvancedSettings mode='graph' prefixField={field} prefixName={[field.name]} disabled={disabled} showUnit expanded />
                   {fields.length > 1 && (
                     <CloseCircleOutlined
                       style={{ position: 'absolute', right: -4, top: -4 }}

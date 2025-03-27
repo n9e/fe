@@ -1,5 +1,5 @@
 const en_US = {
-  title: 'Quick View',
+  title: 'Quick view',
   list: {
     title: 'List',
     public: 'Public',
@@ -12,8 +12,8 @@ const en_US = {
     isPublic: 'Is it public',
     filters_title: 'Filters',
     filters: 'Filters',
-    dynamicLabels: 'Dynamic Labels',
-    dimensionLabels: 'Dimension Labels',
+    dynamicLabels: 'Dynamic labels',
+    dimensionLabels: 'Dimension labels',
     preview: 'Preview',
     count: 'Count',
     sample: 'Sample',
@@ -24,7 +24,7 @@ const en_US = {
   },
   metrics: {
     title: 'Metrics',
-    search_placeholder: 'Enter Space to separate different keywords',
+    search_placeholder: 'Enter space to separate different keywords',
     clear: 'Clear',
     noData: 'No data, please select the Labels',
     chart_title: 'Trend chart',

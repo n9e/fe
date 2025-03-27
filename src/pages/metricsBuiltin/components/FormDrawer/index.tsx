@@ -43,7 +43,9 @@ export default function index(props: Props) {
   const [typsMeta, setTypsMeta] = useState<Component[]>([]);
 
   useEffect(() => {
-    getComponents().then((res) => {
+    getComponents({
+      disabled: 0,
+    }).then((res) => {
       setTypsMeta(res);
     });
   }, []);

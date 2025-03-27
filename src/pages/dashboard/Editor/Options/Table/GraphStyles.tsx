@@ -15,7 +15,7 @@
  *
  */
 import React, { useEffect } from 'react';
-import { Form, Select, Row, Col, Switch, Radio, Button, Mentions, Space, Tooltip, Input } from 'antd';
+import { Form, Select, Row, Col, Switch, Radio, Button, Mentions, Space, Tooltip, Input, InputNumber } from 'antd';
 import { DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
@@ -205,6 +205,9 @@ export default function GraphStyles({ chartForm, variableConfigWithOptions }) {
             </Form.Item>
           </Col>
         </Row>
+        <Form.Item label={t('panel.custom.table.pageLimit')} name={[...namePrefix, 'pageLimit']} initialValue={500}>
+          <InputNumber min={1} max={500} />
+        </Form.Item>
         <Form.Item label={t('panel.custom.table.link.mode')} name={[...namePrefix, 'linkMode']} initialValue='appendLinkColumn'>
           <Radio.Group buttonStyle='solid'>
             <Radio.Button value='appendLinkColumn'>{t('panel.custom.table.link.appendLinkColumn')}</Radio.Button>
@@ -215,7 +218,7 @@ export default function GraphStyles({ chartForm, variableConfigWithOptions }) {
           label={
             <Space>
               {t('panel.base.link.label')}
-              <Tooltip title={<Trans ns='dashboard' i18nKey='dashboard:link.url_tip' components={{ 1: <br /> }} />}>
+              <Tooltip title={<Trans ns='dashboard' i18nKey='dashboard:var.help_tip' components={{ 1: <br /> }} />}>
                 <InfoCircleOutlined />
               </Tooltip>
             </Space>

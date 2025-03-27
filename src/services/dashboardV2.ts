@@ -300,3 +300,30 @@ export const boardsClones = function (data: { board_ids: number[]; bgids: number
     data,
   });
 };
+
+export const getAnnotations = function (params: { dashboard_id: number; from: number; to: number; limit?: number }) {
+  return request('/api/n9e/dashboard-annotations', {
+    method: RequestMethod.Get,
+    params,
+  }).then((res) => res.dat || []);
+};
+
+export const postAnnotations = function (data: any) {
+  return request('/api/n9e/dashboard-annotations', {
+    method: RequestMethod.Post,
+    data,
+  });
+};
+
+export const putAnnotations = function (id: number, data: any) {
+  return request(`/api/n9e/dashboard-annotation/${id}`, {
+    method: RequestMethod.Put,
+    data,
+  });
+};
+
+export const deleteAnnotations = function (id: number) {
+  return request(`/api/n9e/dashboard-annotation/${id}`, {
+    method: RequestMethod.Delete,
+  });
+};

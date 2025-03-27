@@ -158,7 +158,7 @@ const UserForm = React.forwardRef<ReactNode, UserAndPasswordFormProps>((props, r
         label={
           <Space>
             {t('account:profile.contact')}
-            <Link to='/help/notification-settings?tab=contacts' target='_blank'>
+            <Link to='/contacts' target='_blank'>
               {t('account:profile.contactLinkToSetting')}
             </Link>
           </Space>

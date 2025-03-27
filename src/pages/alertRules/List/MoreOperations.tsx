@@ -16,14 +16,17 @@
  */
 import React, { useContext, useState } from 'react';
 import _ from 'lodash';
+import moment from 'moment';
 import { Dropdown, Button, Modal, message } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import { json2csv } from 'json-2-csv';
 import { deleteStrategy, updateAlertRules, updateServiceCal, updateNotifyChannels } from '@/services/warning';
 import { CommonStateContext } from '@/App';
 import Export from './Export';
 import EditModal from './EditModal';
 import CloneToHosts from './CloneToHosts';
+import { downloadFile } from './utils';
 
 interface MoreOperationsProps {
   bgid: number;
@@ -109,6 +112,10 @@ export default function MoreOperations(props: MoreOperationsProps) {
               <li
                 className='ant-dropdown-menu-item'
                 onClick={() => {
+                  if (selectRowKeys.length == 0) {
+                    message.warning(t('batch.not_select'));
+                    return;
+                  }
                   CloneToHosts({
                     gid: bgid,
                     ids: selectRowKeys,
@@ -120,6 +127,24 @@ export default function MoreOperations(props: MoreOperationsProps) {
                 <span>{t('batch.cloneToHosts.title')}</span>
               </li>
             )}
+            <li
+              className='ant-dropdown-menu-item'
+              onClick={() => {
+                if (selectRowKeys.length == 0) {
+                  message.warning(t('batch.not_select'));
+                  return;
+                }
+                json2csv(selectedRows, (err, csv) => {
+                  if (err) {
+                    message.error(t('export_failed'));
+                  } else {
+                    downloadFile(csv, `alert_rules_${moment().format('YYYY-MM-DD_HH-mm-ss')}.csv`);
+                  }
+                });
+              }}
+            >
+              <span>{t('batch.export_to_csv')}</span>
+            </li>
           </ul>
         }
         trigger={['click']}

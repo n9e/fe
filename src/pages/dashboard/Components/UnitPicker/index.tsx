@@ -1,3 +1,6 @@
+/**
+ * 如只需要在 option 里显示单位名称，则设置 optionLabelProp='cleanLabel'
+ */
 import React from 'react';
 import _ from 'lodash';
 import { Select, SelectProps } from 'antd';

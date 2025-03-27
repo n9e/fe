@@ -20,6 +20,7 @@ import { Form } from 'antd';
 import { useDebounceFn } from 'ahooks';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { datasource as tdengineQuery } from '@/plugins/TDengine';
+import { datasource as ckQuery } from '@/plugins/clickHouse';
 import flatten from '@/utils/flatten';
 import { ITarget } from '../../types';
 import { getVaraiableSelected } from '../../VariableConfig/constant';
@@ -49,6 +50,9 @@ interface IProps {
 export default function useQuery(props: IProps) {
   const { dashboardId, datasourceCate, time, targets, variableConfig, inViewPort, spanNulls, datasourceValue } = props;
   const form = Form.useFormInstance();
+  // beta.5 新增 range 状态，用于 uplot 图表更新时 time 和 data 同时更新
+  // 解决之前 time 先更新后面 data 再更新导致 x 轴时间范围会变成 data 的时间范围
+  const [range, setRange] = useState<IRawTimeRange>(time);
   const [series, setSeries] = useState<any[]>([]);
   const [query, setQuery] = useState<any[]>([]);
   const [error, setError] = useState('');
@@ -62,6 +66,7 @@ export default function useQuery(props: IProps) {
     prometheus: prometheusQuery,
     elasticsearch: elasticsearchQuery,
     tdengine: tdengineQuery,
+    ck: ckQuery,
     ...plusDatasource,
   };
   const { run: fetchData } = useDebounceFn(
@@ -97,6 +102,7 @@ export default function useQuery(props: IProps) {
           console.error(e);
         })
         .finally(() => {
+          setRange(time);
           setLoading(false);
           setLoaded(true);
         });
@@ -123,5 +129,5 @@ export default function useQuery(props: IProps) {
     }
   }, [inViewPort]);
 
-  return { query, series, error, loading, loaded };
+  return { query, series, error, loading, loaded, range };
 }

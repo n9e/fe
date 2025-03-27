@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { useDebounceFn } from 'ahooks';
-import { Modal, Space, Select, Table, message } from 'antd';
+import { Modal, Space, Select, Table, Tag, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { getTargetList } from '@/services/targets';
@@ -49,6 +49,9 @@ function index(props: Props & ModalWrapProps) {
       })
         .then((res) => {
           setHosts(res?.dat?.list || []);
+        })
+        .catch(() => {
+          setHosts([]);
         })
         .finally(() => {
           setLoading(false);
@@ -169,25 +172,41 @@ function index(props: Props & ModalWrapProps) {
             title: t('common:host.host_tags'),
             dataIndex: 'host_tags',
             render: (val) => {
-              return _.join(val, ', ');
+              return _.map(val, (item) => {
+                return (
+                  <Tag key={item} color='purple'>
+                    {item}
+                  </Tag>
+                );
+              });
             },
           },
           {
             title: t('common:host.tags'),
             dataIndex: 'tags',
             render: (val) => {
-              return _.join(val, ', ');
+              return _.map(val, (item) => {
+                return (
+                  <Tag key={item} color='purple'>
+                    {item}
+                  </Tag>
+                );
+              });
             },
           },
           {
             title: t('batch.cloneToHosts.select_hosts.group'),
-            dataIndex: 'group_id',
-            render: (val) => {
-              return _.get(
-                _.find(busiGroups, (item) => item.id === val),
-                'name',
-                '',
-              );
+            dataIndex: 'group_objs',
+            render(groupObjs: any[]) {
+              return _.isEmpty(groupObjs)
+                ? t('common:not_grouped')
+                : _.map(groupObjs, (item) => {
+                    return (
+                      <Tag color='purple' key={item.id}>
+                        {item.name}
+                      </Tag>
+                    );
+                  });
             },
           },
         ]}

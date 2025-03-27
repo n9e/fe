@@ -31,12 +31,15 @@ import { getDefaultDatasourceValue, setDefaultDatasourceValue } from '@/utils';
 import { CommonStateContext } from '@/App';
 import { DatasourceCateSelect } from '@/components/DatasourceSelect';
 import { Explorer as TDengine } from '@/plugins/TDengine';
+import { Explorer as CK } from '@/plugins/clickHouse';
 import Prometheus from './Prometheus';
 import Elasticsearch from './Elasticsearch';
 import Loki from './Loki';
+import Help from './components/Help';
+import './index.less';
+
 // @ts-ignore
 import PlusExplorer from 'plus:/parcels/Explorer';
-import './index.less';
 
 type Type = 'logging' | 'metric' | 'loki';
 
@@ -61,9 +64,11 @@ const Panel = ({ type, defaultCate, panelIdx, defaultFormValuesControl }: IProps
   const params = new URLSearchParams(useLocation().search);
   const defaultDatasourceCate = params.get('data_source_name') || localStorage.getItem(`explorer_datasource_cate_${type}`) || defaultCate;
   const defaultDatasourceValue = params.get('data_source_id') ? _.toNumber(params.get('data_source_id')) : getDefaultDatasourceValue(defaultDatasourceCate, groupedDatasourceList);
+  const datasourceCate = Form.useWatch('datasourceCate', form);
+  const explorerContainerRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div className='explorer-container'>
+    <div className='explorer-container' ref={explorerContainerRef}>
       <Form
         form={form}
         initialValues={{
@@ -74,7 +79,7 @@ const Panel = ({ type, defaultCate, panelIdx, defaultFormValuesControl }: IProps
         <div className='explorer-content'>
           <Row gutter={8}>
             <Col>
-              <InputGroupWithFormItem label={t('common:datasource.type')}>
+              <InputGroupWithFormItem label={t('common:datasource.type')} addonAfterWithContainer={<Help datasourceCate={datasourceCate} />}>
                 <Form.Item name='datasourceCate' noStyle>
                   <DatasourceCateSelect
                     scene='graph'
@@ -107,71 +112,75 @@ const Panel = ({ type, defaultCate, panelIdx, defaultFormValuesControl }: IProps
               </InputGroupWithFormItem>
             </Col>
             <Col>
-              <Form.Item shouldUpdate={(prev, curr) => prev.datasourceCate !== curr.datasourceCate} noStyle>
-                {({ getFieldValue }) => {
-                  const cate = getFieldValue('datasourceCate');
-                  return (
-                    <EmptyDatasourcePopover datasourceCate={cate} datasourceList={groupedDatasourceList[cate]}>
-                      <Input.Group compact>
-                        <span
-                          className='ant-input-group-addon'
-                          style={{
-                            width: 'max-content',
-                            height: 32,
-                            lineHeight: '32px',
-                          }}
-                        >
-                          {t('common:datasource.id')}
-                        </span>
+              {explorerContainerRef.current && (
+                <EmptyDatasourcePopover
+                  datasourceCate={datasourceCate}
+                  datasourceList={groupedDatasourceList[datasourceCate]}
+                  getPopupContainer={() => {
+                    if (explorerContainerRef.current) {
+                      return explorerContainerRef.current;
+                    }
+                    return document.body;
+                  }}
+                >
+                  <Input.Group compact>
+                    <span
+                      className='ant-input-group-addon'
+                      style={{
+                        width: 'max-content',
+                        height: 32,
+                        lineHeight: '32px',
+                      }}
+                    >
+                      {t('common:datasource.id')}
+                    </span>
 
-                        <Form.Item
-                          name='datasourceValue'
-                          rules={[
-                            {
-                              required: true,
-                              message: t('common:datasource.id_required'),
-                            },
-                          ]}
-                        >
-                          <Select
-                            style={{ minWidth: 70 }}
-                            dropdownMatchSelectWidth={false}
-                            onChange={(val: string) => {
-                              setDefaultDatasourceValue(cate, val);
-                              if (cate !== 'prometheus') {
-                                form.setFieldsValue({
-                                  query: undefined,
-                                });
-                                form.setFieldsValue({
-                                  query: {
-                                    range: {
-                                      start: 'now-1h',
-                                      end: 'now',
-                                    },
-                                  },
-                                });
-                              }
-                              if (panelIdx === 0) {
-                                history.replace({
-                                  search: `?data_source_name=${cate}&data_source_id=${val}`,
-                                });
-                              }
-                            }}
-                            showSearch
-                            optionFilterProp='children'
-                          >
-                            {_.map(groupedDatasourceList[cate], (item) => (
-                              <Select.Option value={item.id} key={item.id}>
-                                {item.name}
-                              </Select.Option>
-                            ))}
-                          </Select>
-                        </Form.Item>
-                      </Input.Group>
-                    </EmptyDatasourcePopover>
-                  );
-                }}
-              </Form.Item>
+                    <Form.Item
+                      name='datasourceValue'
+                      rules={[
+                        {
+                          required: true,
+                          message: t('common:datasource.id_required'),
+                        },
+                      ]}
+                    >
+                      <Select
+                        style={{ minWidth: 70 }}
+                        dropdownMatchSelectWidth={false}
+                        onChange={(val: string) => {
+                          setDefaultDatasourceValue(datasourceCate, val);
+                          if (datasourceCate !== 'prometheus') {
+                            form.setFieldsValue({
+                              query: undefined,
+                            });
+                            form.setFieldsValue({
+                              query: {
+                                range: {
+                                  start: 'now-1h',
+                                  end: 'now',
+                                },
+                              },
+                            });
+                          }
+                          if (panelIdx === 0) {
+                            history.replace({
+                              search: `?data_source_name=${datasourceCate}&data_source_id=${val}`,
+                            });
+                          }
+                        }}
+                        showSearch
+                        optionFilterProp='children'
+                      >
+                        {_.map(groupedDatasourceList[datasourceCate], (item) => (
+                          <Select.Option value={item.id} key={item.id}>
+                            {item.name}
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  </Input.Group>
+                </EmptyDatasourcePopover>
+              )}
             </Col>
             <Col flex={'1'}>
               <div ref={headerExtraRef} />
@@ -192,6 +201,8 @@ const Panel = ({ type, defaultCate, panelIdx, defaultFormValuesControl }: IProps
                   return <TDengine datasourceValue={datasourceValue} form={form} />;
                 } else if (datasourceCate === DatasourceCateEnum.loki) {
                   return <Loki datasourceValue={datasourceValue} headerExtra={headerExtraRef.current} form={form} defaultFormValuesControl={defaultFormValuesControl} />;
+                } else if (datasourceCate === DatasourceCateEnum.ck) {
+                  return <CK datasourceValue={datasourceValue} headerExtra={headerExtraRef.current} />;
                 }
                 return (
                   <PlusExplorer

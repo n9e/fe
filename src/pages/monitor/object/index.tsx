@@ -17,9 +17,9 @@
 import React, { useState, useContext } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Select, Result } from 'antd';
+import { Select, Result, Space } from 'antd';
 import { LineChartOutlined } from '@ant-design/icons';
-import PageLayout from '@/components/pageLayout';
+import PageLayout, { HelpLink } from '@/components/pageLayout';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
 import { getDefaultDatasourceValue, setDefaultDatasourceValue } from '@/utils';
@@ -37,7 +37,6 @@ export default function index() {
     start: 'now-1h',
     end: 'now',
   });
-  const [rerenderFlag, setRerenderFlag] = useState(_.uniqueId('rerenderFlag_'));
   const { groupedDatasourceList } = useContext(CommonStateContext);
   const datasources = groupedDatasourceList.prometheus;
   const [datasourceValue, setDatasourceValue] = useState<number>(getDefaultDatasourceValue('prometheus', groupedDatasourceList));
@@ -52,7 +51,12 @@ export default function index() {
 
   return (
     <PageLayout
-      title={t('title')}
+      title={
+        <Space>
+          {t('title')}
+          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/timing-indicators/quick-view/' />
+        </Space>
+      }
       icon={<LineChartOutlined />}
       rightArea={
         <div
@@ -69,7 +73,7 @@ export default function index() {
             onChange={(val) => {
               setDatasourceValue(val);
               setDefaultDatasourceValue('prometheus', _.toString(val));
-              setRerenderFlag(_.uniqueId('rerenderFlag_'));
+              setMatch(undefined);
             }}
           >
             {_.map(datasources, (item) => {
@@ -83,7 +87,7 @@ export default function index() {
         </div>
       }
     >
-      <div className='n9e-metric-views' key={rerenderFlag}>
+      <div className='n9e-metric-views'>
         <List
           datasourceValue={datasourceValue}
           onSelect={(record: IMatch) => {

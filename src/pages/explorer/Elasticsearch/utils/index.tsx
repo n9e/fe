@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
 import { Popover } from 'antd';
+import semver from 'semver';
 import purify from 'dompurify';
 import { useTranslation } from 'react-i18next';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
@@ -40,8 +41,8 @@ const handleNav = (link: string, rawValue: object, query: { start: number; end: 
   }
   const unReplaceKeyReg = /\$\{(.+?)\}/g;
   reallink = reallink.replace(unReplaceKeyReg, function (a, b) {
-    const wholeWord = rawValue[b]
-    return wholeWord || _.get(rawValue, b.split('.')) 
+    const wholeWord = rawValue[b];
+    return wholeWord || _.get(rawValue, b.split('.'));
   });
   window.open(basePrefix + reallink.replace(unReplaceKeyReg, ''), '_blank');
 };
@@ -296,6 +297,7 @@ export function dslBuilder(params: {
   syntax?: string; // lucene | kuery
   query_string?: string;
   kuery?: string;
+  from?: number;
   limit?: number;
   order?: string;
   orderField?: string;
@@ -310,6 +312,7 @@ export function dslBuilder(params: {
     intervalkey: string;
   };
   shouldHighlight?: boolean;
+  version?: string;
 }) {
   const syntax = params.syntax || 'lucene';
   const header = {
@@ -334,6 +337,7 @@ export function dslBuilder(params: {
     // ],
     _source: false,
     aggs: {},
+    from: 0,
   };
   body.track_total_hits = true; //get real hits total
   body.highlight = getHighlightRequest(!!params.shouldHighlight);
@@ -347,6 +351,9 @@ export function dslBuilder(params: {
         },
       },
     });
+  }
+  if (_.isNumber(params.from)) {
+    body.from = params.from;
   }
   if (params.limit) {
     body.size = params.limit;
@@ -374,7 +381,12 @@ export function dslBuilder(params: {
     body._source = params._source;
   }
   if (_.isArray(params.fields)) {
-    body.fields = params.fields;
+    // 如果版本小于 7.10.0，不支持 fields 改用 docvalue_fields
+    if (params.version && semver.lt(params.version, '7.10.0')) {
+      body.docvalue_fields = params.fields;
+    } else {
+      body.fields = params.fields;
+    }
   }
   if (_.isArray(params.filters)) {
     _.forEach(params.filters, (item) => {
@@ -420,4 +432,11 @@ export function dslBuilder(params: {
     });
   }
   return `${JSON.stringify(header)}\n${JSON.stringify(body)}\n`;
+}
+
+export function ajustFieldParamValue(field: Field, version: string) {
+  if (semver.lt(version, '7.10.0') && field.type === 'text') {
+    return `${field.name}.keyword`;
+  }
+  return field.name;
 }

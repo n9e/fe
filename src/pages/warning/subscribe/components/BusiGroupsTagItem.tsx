@@ -26,22 +26,23 @@ interface Itag {
   remove: Function;
   add: Function;
   fields: any[];
+  index: number;
   form: any;
 }
 
 const { Option } = Select;
 
-const TagItem = ({ field, remove, form }: Itag) => {
+const TagItem = ({ field, remove, form, fields, index }: Itag) => {
   const { t } = useTranslation('alertSubscribes');
   const { busiGroups } = useContext(CommonStateContext);
   const [valuePlaceholder, setValuePlaceholder] = useState<string>('');
   const [funcCur, setfuncCur] = useState('==');
   const funcChange = (val) => {
-    let text = '';
-    if (val === 'in') {
-      text = '可以输入多个值，用回车分割';
-    } else if (val === '=~') {
-      text = '请输入正则表达式匹配标签value';
+    let text = t('tag.value.equal_placeholder');
+    if (val === 'in' || val === 'not in') {
+      text = t('tag.value.include_placeholder');
+    } else if (val === '=~' || val === '!~') {
+      text = t('tag.value.regex_placeholder');
     }
     setfuncCur(val);
     setValuePlaceholder(text);
@@ -53,62 +54,76 @@ const TagItem = ({ field, remove, form }: Itag) => {
   }, []);
 
   return (
-    <>
-      <Row gutter={[10, 10]} style={{ marginBottom: '16px' }}>
-        <Form.Item style={{ marginBottom: 0 }} name={[field.name, 'key']} rules={[{ required: true, message: t('key不能为空') }]} hidden>
-          <Input />
-        </Form.Item>
-        <Col span={5}>
-          <Input disabled value={t('group.key.placeholder') as string} />
-        </Col>
-        <Col span={3}>
-          <Form.Item style={{ marginBottom: 0 }} name={[field.name, 'func']} initialValue='=='>
-            <Select suffixIcon={<CaretDownOutlined />} onChange={funcChange}>
-              <Option value='=='>==</Option>
-              <Option value='=~'>=~</Option>
-              <Option value='in'>in</Option>
-              <Option value='not in'>not in</Option>
-              <Option value='!='>!=</Option>
-              <Option value='!~'>!~</Option>
-            </Select>
-          </Form.Item>
-        </Col>
-        <Col span={15}>
-          <Form.Item style={{ marginBottom: 0 }} name={[field.name, 'value']} rules={[{ required: true, message: t('value不能为空') }]}>
-            {['not in', 'in'].includes(funcCur) ? (
-              <Select
-                mode='tags'
-                style={{ width: '100%' }}
-                placeholder={t(valuePlaceholder)}
-                tokenSeparators={[' ']}
-                options={_.map(busiGroups, (item) => {
-                  return {
-                    value: item.name,
-                    label: item.name,
-                  };
-                })}
-              />
-            ) : (
-              <AutoComplete
-                placeholder={t(valuePlaceholder)}
-                options={_.map(busiGroups, (item) => {
-                  return {
-                    value: item.name,
-                    label: item.name,
-                  };
-                })}
-                filterOption={(inputValue, option) => {
-                  return option?.value ? String(option?.value).toUpperCase().indexOf(inputValue.toUpperCase()) !== -1 : false;
-                }}
-              />
-            )}
-          </Form.Item>
-        </Col>
-        <Col>
-          <MinusCircleOutlined style={{ marginTop: '8px' }} onClick={() => remove(field.name)} />
-        </Col>
-      </Row>
-    </>
+    <div className='filter-settings-row'>
+      {fields.length > 1 && (
+        <div className='filter-settings-row-connector'>
+          {fields.length - 1 !== index && <div className='filter-settings-row-connector-line' />}
+          <div className='filter-settings-row-connector-text-container'>
+            <div className='filter-settings-row-connector-text'>{t('and')}</div>
+          </div>
+        </div>
+      )}
+      <div className='filter-settings-row-content' style={{ marginTop: 0 }}>
+        <Row gutter={10} className='mb2'>
+          <Col flex='auto'>
+            <Row gutter={10}>
+              <Form.Item style={{ marginBottom: 0 }} name={[field.name, 'key']} hidden>
+                <Input />
+              </Form.Item>
+              <Col span={5}>
+                <Input disabled value={t('group.key.placeholder') as string} />
+              </Col>
+              <Col span={4}>
+                <Form.Item style={{ marginBottom: 0 }} name={[field.name, 'func']} initialValue='=='>
+                  <Select suffixIcon={<CaretDownOutlined />} onChange={funcChange}>
+                    <Option value='=='>==</Option>
+                    <Option value='=~'>=~</Option>
+                    <Option value='in'>in</Option>
+                    <Option value='not in'>not in</Option>
+                    <Option value='!='>!=</Option>
+                    <Option value='!~'>!~</Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col span={15}>
+                <Form.Item style={{ marginBottom: 0 }} name={[field.name, 'value']} rules={[{ required: true, message: t('group.value.required') }]}>
+                  {['not in', 'in'].includes(funcCur) ? (
+                    <Select
+                      mode='tags'
+                      style={{ width: '100%' }}
+                      placeholder={t(valuePlaceholder)}
+                      tokenSeparators={[' ']}
+                      options={_.map(busiGroups, (item) => {
+                        return {
+                          value: item.name,
+                          label: item.name,
+                        };
+                      })}
+                    />
+                  ) : (
+                    <AutoComplete
+                      placeholder={t(valuePlaceholder)}
+                      options={_.map(busiGroups, (item) => {
+                        return {
+                          value: item.name,
+                          label: item.name,
+                        };
+                      })}
+                      filterOption={(inputValue, option) => {
+                        return option?.value ? String(option?.value).toUpperCase().indexOf(inputValue.toUpperCase()) !== -1 : false;
+                      }}
+                    />
+                  )}
+                </Form.Item>
+              </Col>
+            </Row>
+          </Col>
+          <Col flex='32px'>
+            <MinusCircleOutlined style={{ lineHeight: '32px' }} onClick={() => remove(field.name)} />
+          </Col>
+        </Row>
+      </div>
+    </div>
   );
 };
 

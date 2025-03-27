@@ -107,7 +107,7 @@ export default function StatItem(props) {
           </div>
         )}
         <div className='renderer-stat-item-content'>
-          {textMode === 'valueAndName' && (
+          {(textMode === 'valueAndName' || textMode === 'name') && (
             <div
               className='renderer-stat-header'
               style={{
@@ -118,16 +118,18 @@ export default function StatItem(props) {
               {item.name}
             </div>
           )}
-          <div
-            className='renderer-stat-value'
-            style={{
-              color: getTextColor(color, colorMode),
-              fontSize: valueAndUnitFontSize,
-            }}
-          >
-            {item.value}
-            <span style={{ fontSize: valueAndUnitFontSize * 0.6, paddingLeft: UNIT_PADDING }}>{item.unit}</span>
-          </div>
+          {(textMode === 'valueAndName' || textMode === 'value') && (
+            <div
+              className='renderer-stat-value'
+              style={{
+                color: getTextColor(color, colorMode),
+                fontSize: valueAndUnitFontSize,
+              }}
+            >
+              {item.value}
+              <span style={{ fontSize: valueAndUnitFontSize * 0.6, paddingLeft: UNIT_PADDING }}>{item.unit}</span>
+            </div>
+          )}
         </div>
       </div>
     </div>

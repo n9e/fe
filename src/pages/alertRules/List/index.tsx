@@ -22,7 +22,7 @@ import { useDebounceFn } from 'ahooks';
 import moment from 'moment';
 import { Table, Tag, Switch, Modal, Space, Button, Row, Col, message, Select, Tooltip, Input } from 'antd';
 import { ColumnType } from 'antd/lib/table';
-import { EyeOutlined, SearchOutlined } from '@ant-design/icons';
+import { EyeOutlined, InfoCircleOutlined, SearchOutlined, WarningFilled, CheckCircleFilled } from '@ant-design/icons';
 import RefreshIcon from '@/components/RefreshIcon';
 import usePagination from '@/components/usePagination';
 import { getBusiGroupsAlertRules, updateAlertRules, deleteStrategy } from '@/services/warning';
@@ -37,6 +37,7 @@ import { allCates } from '@/components/AdvancedWrap/utils';
 import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
 import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
 import { priorityColor } from '@/utils/constant';
+import EventsDrawer, { Props as EventsDrawerProps } from './EventsDrawer';
 
 interface ListProps {
   gids?: string;
@@ -48,6 +49,7 @@ interface Filter {
   search?: string;
   prod?: string;
   severities?: number[];
+  disabled?: 0 | 1;
 }
 
 const FILTER_LOCAL_STORAGE_KEY = 'alert-rules-filter';
@@ -57,11 +59,11 @@ export default function List(props: ListProps) {
   const { gids } = props;
   const { t } = useTranslation('alertRules');
   const history = useHistory();
-  const { datasourceList, groupedDatasourceList, datasourceCateOptions } = useContext(CommonStateContext);
+  const { datasourceList, groupedDatasourceList, reloadGroupedDatasourceList, datasourceCateOptions } = useContext(CommonStateContext);
   const pagination = usePagination({ PAGESIZE_KEY: 'alert-rules-pagesize' });
   let defaultFilter = {} as Filter;
   try {
-    defaultFilter = JSON.parse(window.localStorage.getItem(FILTER_LOCAL_STORAGE_KEY) || '{}');
+    defaultFilter = JSON.parse(window.sessionStorage.getItem(FILTER_LOCAL_STORAGE_KEY) || '{}');
   } catch (e) {
     console.error(e);
   }
@@ -72,7 +74,52 @@ export default function List(props: ListProps) {
   const [data, setData] = useState<AlertRuleType<any>[]>([]);
   const [loading, setLoading] = useState(false);
   const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
+  const [eventsDrawerProps, setEventsDrawerProps] = useState<EventsDrawerProps>({
+    visible: false,
+    onClose: () => {
+      setEventsDrawerProps({
+        ...eventsDrawerProps,
+        visible: false,
+      });
+    },
+  });
   const columns: ColumnType<AlertRuleType<any>>[] = _.concat(
+    [
+      {
+        title: (
+          <Space>
+            {t('table.status')}
+            <Tooltip title={t('table.status_tip')}>
+              <InfoCircleOutlined />
+            </Tooltip>
+          </Space>
+        ),
+        dataIndex: 'cur_event_count',
+        sorter: (a, b) => {
+          return localeCompare(a.cur_event_count, b.cur_event_count);
+        },
+        render: (val, record) => {
+          return (
+            <a
+              onClick={() => {
+                setEventsDrawerProps({
+                  ...eventsDrawerProps,
+                  visible: true,
+                  title: record.name,
+                  rid: record.id,
+                });
+              }}
+              style={{
+                fontSize: 20,
+                color: val > 0 ? '#e6522c' : '#00a700',
+              }}
+            >
+              {val > 0 ? <WarningFilled /> : <CheckCircleFilled />}
+            </a>
+          );
+        },
+      },
+    ],
     businessGroup.isLeaf && gids !== '-2'
       ? []
       : ([
@@ -243,8 +290,12 @@ export default function List(props: ListProps) {
         },
       },
       {
-        title: t('table.update_by'),
+        title: t('common:table.username'),
         dataIndex: 'update_by',
+      },
+      {
+        title: t('common:table.nickname'),
+        dataIndex: 'update_by_nickname',
       },
       {
         title: t('table.disabled'),
@@ -273,6 +324,7 @@ export default function List(props: ListProps) {
       {
         title: t('common:table.operations'),
         render: (record: any) => {
+          const anomalyEnabled = _.get(record, ['rule_config', 'anomaly_trigger', 'enable']);
           return (
             <Space>
               <Link
@@ -307,7 +359,7 @@ export default function List(props: ListProps) {
               >
                 {t('common:btn.delete')}
               </Button>
-              {record.prod === 'anomaly' && (
+              {record.cate === 'prometheus' && anomalyEnabled === true && (
                 <div>
                   <Link to={{ pathname: `/alert-rules/brain/${record.id}` }}>{t('brain_result_btn')}</Link>
                 </div>
@@ -330,6 +382,7 @@ export default function List(props: ListProps) {
   const filterData = () => {
     return data.filter((item) => {
       const { datasourceIds, search, prod, severities } = filter;
+      const datasourceIdsWithoutHost = _.filter(datasourceIds, (id) => id !== -999);
       const lowerCaseQuery = search?.toLowerCase() || '';
       return (
         (item.name.toLowerCase().indexOf(lowerCaseQuery) > -1 || item.append_tags.join(' ').toLowerCase().indexOf(lowerCaseQuery) > -1) &&
@@ -341,11 +394,15 @@ export default function List(props: ListProps) {
           })) ||
           !item.severities) &&
         (_.some(item.datasource_ids, (id) => {
-          if (includesProm(datasourceIds) && id === 0) return true;
-          return _.includes(datasourceIds, id);
+          if (includesProm(datasourceIdsWithoutHost) && id === 0) return true;
+          return _.includes(datasourceIdsWithoutHost, id);
         }) ||
+          // 没有选择数据源时显示全部
           datasourceIds?.length === 0 ||
-          !datasourceIds)
+          !datasourceIds ||
+          // 如果数据源值包含 host (-999) 则以 prod 判断
+          (_.includes(datasourceIds, -999) && item.prod === 'host')) &&
+        (filter.disabled === undefined || item.disabled === filter.disabled)
       );
     });
   };
@@ -367,7 +424,7 @@ export default function List(props: ListProps) {
     (search) => {
       const newFilter = { ...filter, search };
       setFilter(newFilter);
-      window.localStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
+      window.sessionStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
     },
     {
       wait: 500,
@@ -378,123 +435,133 @@ export default function List(props: ListProps) {
 
   return (
     <div className='n9e-border-base alert-rules-list-container' style={{ height: '100%', overflowY: 'auto' }}>
-      <Row justify='space-between'>
-        <Col span={16}>
-          <Space>
-            <RefreshIcon
+      <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+        <Space>
+          <RefreshIcon
+            onClick={() => {
+              fetchData();
+            }}
+          />
+          <DatasourceSelect
+            style={{ minWidth: 100 }}
+            filterKey='alertRule'
+            disableResponsive
+            showHost
+            value={filter.datasourceIds}
+            onChange={(val) => {
+              const newFilter = {
+                ...filter,
+                datasourceIds: val,
+              };
+              setFilter(newFilter);
+              window.sessionStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
+            }}
+          />
+          <Select
+            mode='multiple'
+            placeholder={t('severity')}
+            style={{ minWidth: 120 }}
+            value={filter.severities}
+            onChange={(val) => {
+              const newFilter = {
+                ...filter,
+                severities: val,
+              };
+              setFilter(newFilter);
+              window.sessionStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
+            }}
+            dropdownMatchSelectWidth={false}
+          >
+            <Select.Option value={1}>S1（Critical）</Select.Option>
+            <Select.Option value={2}>S2（Warning）</Select.Option>
+            <Select.Option value={3}>S3（Info）</Select.Option>
+          </Select>
+          <Input
+            placeholder={t('search_placeholder')}
+            style={{ width: 200 }}
+            value={queryValue}
+            onChange={(e) => {
+              setQueryValue(e.target.value);
+              searchChange(e.target.value);
+            }}
+            prefix={<SearchOutlined />}
+          />
+          <Select
+            allowClear
+            placeholder={t('filter_disabled.placeholder')}
+            options={[
+              {
+                label: t('filter_disabled.0'),
+                value: 0,
+              },
+              {
+                label: t('filter_disabled.1'),
+                value: 1,
+              },
+            ]}
+            value={filter.disabled}
+            onChange={(val) => {
+              const newFilter = {
+                ...filter,
+                disabled: val,
+              };
+              setFilter(newFilter);
+              window.sessionStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
+            }}
+          />
+        </Space>
+        <Space>
+          {businessGroup.isLeaf && gids !== '-2' && (
+            <Button
+              type='primary'
               onClick={() => {
-                fetchData();
+                history.push(`/alert-rules/add/${businessGroup.id}`);
               }}
-            />
-            <ProdSelect
-              style={{ width: 90 }}
-              value={filter.prod}
-              onChange={(val) => {
-                const newFilter = {
-                  ...filter,
-                  prod: val,
-                };
-                setFilter(newFilter);
-                window.localStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
-              }}
-            />
-            <DatasourceSelect
-              style={{ width: 100 }}
-              filterKey='alertRule'
-              value={filter.datasourceIds}
-              onChange={(val) => {
-                const newFilter = {
-                  ...filter,
-                  datasourceIds: val,
-                };
-                setFilter(newFilter);
-                window.localStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
-              }}
-            />
-            <Select
-              mode='multiple'
-              placeholder={t('severity')}
-              style={{ width: 120 }}
-              maxTagCount='responsive'
-              value={filter.severities}
-              onChange={(val) => {
-                const newFilter = {
-                  ...filter,
-                  severities: val,
-                };
-                setFilter(newFilter);
-                window.localStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
-              }}
+              className='strategy-table-search-right-create'
             >
-              <Select.Option value={1}>S1</Select.Option>
-              <Select.Option value={2}>S2</Select.Option>
-              <Select.Option value={3}>S3</Select.Option>
-            </Select>
-            <Input
-              placeholder={t('search_placeholder')}
-              style={{ width: 200 }}
-              value={queryValue}
-              onChange={(e) => {
-                setQueryValue(e.target.value);
-                searchChange(e.target.value);
-              }}
-              prefix={<SearchOutlined />}
-            />
-          </Space>
-        </Col>
-
-        <Col>
-          <Space>
-            {businessGroup.isLeaf && gids !== '-2' && (
-              <Button
-                type='primary'
-                onClick={() => {
-                  history.push(`/alert-rules/add/${businessGroup.id}`);
-                }}
-                className='strategy-table-search-right-create'
-              >
-                {t('common:btn.add')}
-              </Button>
-            )}
-            {businessGroup.isLeaf && businessGroup.id && gids !== '-2' && (
-              <Button
-                onClick={() => {
-                  if (businessGroup.id) {
-                    Import({
-                      busiId: businessGroup.id,
-                      refreshList: fetchData,
-                      groupedDatasourceList,
-                      datasourceCateOptions,
-                    });
-                  }
-                }}
-              >
-                {t('common:btn.import')}
-              </Button>
-            )}
-            {businessGroup.isLeaf && businessGroup.id && gids !== '-2' && (
-              <MoreOperations bgid={businessGroup.id} selectRowKeys={selectRowKeys} selectedRows={selectedRows} getAlertRules={fetchData} />
-            )}
+              {t('common:btn.add')}
+            </Button>
+          )}
+          {businessGroup.isLeaf && businessGroup.id && gids !== '-2' && (
             <Button
               onClick={() => {
-                OrganizeColumns({
-                  i18nNs: 'alertRules',
-                  value: columnsConfigs,
-                  onChange: (val) => {
-                    setColumnsConfigs(val);
-                    setDefaultColumnsConfigs(val, LOCAL_STORAGE_KEY);
-                  },
-                });
+                if (businessGroup.id) {
+                  Import({
+                    busiId: businessGroup.id,
+                    refreshList: fetchData,
+                    groupedDatasourceList,
+                    reloadGroupedDatasourceList,
+                    datasourceCateOptions,
+                  });
+                }
               }}
-              icon={<EyeOutlined />}
-            />
-          </Space>
-        </Col>
-      </Row>
+            >
+              {t('common:btn.import')}
+            </Button>
+          )}
+          {businessGroup.isLeaf && businessGroup.id && gids !== '-2' && (
+            <MoreOperations bgid={businessGroup.id} selectRowKeys={selectRowKeys} selectedRows={selectedRows} getAlertRules={fetchData} />
+          )}
+          <Button
+            onClick={() => {
+              OrganizeColumns({
+                i18nNs: 'alertRules',
+                value: columnsConfigs,
+                onChange: (val) => {
+                  setColumnsConfigs(val);
+                  setDefaultColumnsConfigs(val, LOCAL_STORAGE_KEY);
+                },
+              });
+            }}
+            icon={<EyeOutlined />}
+          />
+        </Space>
+      </div>
       <Table
         className='mt8'
         size='small'
         rowKey='id'
+        showSorterTooltip={false}
         pagination={pagination}
         loading={loading}
         dataSource={filteredData}
@@ -507,6 +574,7 @@ export default function List(props: ListProps) {
         }}
         columns={ajustColumns(columns, columnsConfigs)}
       />
+      <EventsDrawer {...eventsDrawerProps} />
     </div>
   );
 }

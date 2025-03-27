@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import moment from 'moment';
-import { DatasourceCateEnum } from '@/utils/constant';
-import { defaultRuleConfig, defaultValues } from './constants';
+import { DatasourceCateEnum, BaseDatasourceCateEnum } from '@/utils/constant';
+import { defaultRuleConfig, datasourceDefaultValue, defaultValues } from './constants';
 import { DATASOURCE_ALL } from '../constants';
 // @ts-ignore
 import * as alertUtils from 'plus:/parcels/AlertRule/utils';
@@ -17,7 +17,14 @@ export const parseTimeToValueAndUnit = (value?: number) => {
       unit: 'min',
     };
   }
-  let time = value / 60;
+  let time = value;
+  if (time < 60) {
+    return {
+      value,
+      unit: 'second',
+    };
+  }
+  time = time / 60;
   if (time < 60) {
     return {
       value: time,
@@ -25,16 +32,9 @@ export const parseTimeToValueAndUnit = (value?: number) => {
     };
   }
   time = time / 60;
-  if (time < 24) {
-    return {
-      value: time,
-      unit: 'hour',
-    };
-  }
-  time = time / 24;
   return {
     value: time,
-    unit: 'day',
+    unit: 'hour',
   };
 };
 
@@ -50,9 +50,6 @@ export const normalizeTime = (value?: number, unit?: 'second' | 'min' | 'hour') 
   }
   if (unit === 'hour') {
     return value * 60 * 60;
-  }
-  if (unit === 'day') {
-    return value * 60 * 60 * 24;
   }
   return value;
 };
@@ -82,9 +79,18 @@ export function processFormValues(values) {
   if (values.prod === 'host') {
     cate = 'host';
   } else if (values.prod === 'anomaly') {
+    // TODO: 废弃的设置，beta.5 起已经不需要
     cate = 'prometheus';
   }
-  if (_.isFunction(alertUtils.processFormValues)) {
+  // TODO 如果保存的是 prometheus v2 版本的规则，需要清理掉 v1 版本的 prom_ql 字段
+  if (values.cate === 'prometheus' && values.rule_config?.version === 'v2') {
+    _.set(
+      values,
+      'rule_config.queries',
+      _.map(values.rule_config.queries, (item) => _.omit(item, 'prom_ql')),
+    );
+  }
+  if (_.isFunction(alertUtils.processFormValues) && !BaseDatasourceCateEnum[cate]) {
     values = alertUtils.processFormValues(values);
   } else {
     if (values?.rule_config?.queries) {
@@ -112,10 +118,24 @@ export function processFormValues(values) {
             exp: stringifyExpressions(trigger.expressions),
           };
         }
+        // 如果是表达式模式 mode=1 则清理掉 expressions 字段值
+        if (trigger.mode === 1) {
+          return {
+            ...trigger,
+            expressions: [{ ref: 'A', comparisonOperator: '>' }],
+          };
+        }
         return trigger;
       });
     }
   }
+  const extra_config = values?.extra_config || {};
+  const enrich_queries = _.map(extra_config?.enrich_queries, (item) => {
+    return {
+      ..._.omit(item, 'interval_unit'),
+      interval: normalizeTime(item.interval, item.interval_unit),
+    };
+  });
   const data = {
     ..._.omit(values, 'effective_time'),
     cate,
@@ -126,21 +146,25 @@ export function processFormValues(values) {
     notify_recovered: values.notify_recovered ? 1 : 0,
     enable_in_bg: values.enable_in_bg ? 1 : 0,
     callbacks: _.map(values.callbacks, (item) => item.url),
-    datasource_ids: _.isArray(values.datasource_ids) ? values.datasource_ids : values.datasource_ids ? [values.datasource_ids] : [],
     annotations: _.chain(values.annotations).keyBy('key').mapValues('value').value(),
+    extra_config: {
+      ...extra_config,
+      enrich_queries,
+    },
   };
   return data;
 }
 
 export function processInitialValues(values) {
-  if (_.isFunction(alertUtils.processInitialValues)) {
+  let cate = values.cate;
+  if (_.isFunction(alertUtils.processInitialValues) && !BaseDatasourceCateEnum[cate]) {
     values = alertUtils.processInitialValues(values);
   } else {
     if (values?.rule_config?.queries) {
       values.rule_config.queries = _.map(values.rule_config.queries, (item) => {
         _.set(item, 'keys.labelKey', item?.keys?.labelKey ? _.split(item.keys.labelKey, ' ') : []);
         _.set(item, 'keys.valueKey', item?.keys?.valueKey ? _.split(item.keys.valueKey, ' ') : []);
-        _.set(item, 'keys.valueKey', item?.keys?.metricKey ? _.split(item.keys.metricKey, ' ') : []);
+        _.set(item, 'keys.metricKey', item?.keys?.metricKey ? _.split(item.keys.metricKey, ' ') : []);
         return {
           ...item,
           interval: parseTimeToValueAndUnit(item.interval).value,
@@ -149,6 +173,14 @@ export function processInitialValues(values) {
       });
     }
   }
+  const extra_config = values?.extra_config || {};
+  const enrich_queries = _.map(extra_config?.enrich_queries, (item) => {
+    return {
+      ...item,
+      interval: parseTimeToValueAndUnit(item.interval).value,
+      interval_unit: parseTimeToValueAndUnit(item.interval).unit,
+    };
+  });
   return {
     ...values,
     enable_in_bg: values?.enable_in_bg === 1,
@@ -170,78 +202,81 @@ export function processInitialValues(values) {
       key,
       value,
     })),
+    extra_config: {
+      ...extra_config,
+      enrich_queries,
+    },
   };
 }
 
-export function getDefaultValuesByProd(prod, defaultBrainParams, isPlus = false) {
-  if (prod === 'host') {
+export function getDefaultValuesByCate(prod, cate) {
+  if (cate === 'host') {
     return {
       prod,
       cate: 'host',
-      datasource_ids: undefined,
-      rule_config: defaultRuleConfig.host,
-    };
-  }
-  if (prod === 'anomaly') {
-    return {
-      prod,
-      cate: 'prometheus',
-      datasource_ids: [DATASOURCE_ALL],
       rule_config: {
-        ...defaultRuleConfig.anomaly,
-        algo_params: defaultBrainParams?.holtwinters || {},
+        queries: [
+          {
+            key: 'all_hosts',
+            op: '==',
+            values: [],
+          },
+        ],
+        triggers: [
+          {
+            type: 'target_miss',
+            severity: 2,
+            duration: 30,
+          },
+        ],
       },
+      ...datasourceDefaultValue,
     };
   }
-  if (prod === 'metric') {
-    return {
-      prod,
-      cate: 'prometheus',
-      datasource_ids: [DATASOURCE_ALL],
-      rule_config: defaultRuleConfig.metric,
-    };
-  }
-  if (prod === 'logging') {
-    if (isPlus) {
-      return {
-        prod,
-        cate: 'elasticsearch',
-        datasource_ids: undefined,
-        rule_config: defaultRuleConfig.logging,
-      };
-    }
-    return {
-      prod,
-      cate: 'loki',
-      datasource_ids: [DATASOURCE_ALL],
-      rule_config: defaultRuleConfig.loki,
-    };
-  }
-  if (prod === 'loki') {
-    return {
-      prod,
-      cate: 'loki',
-      datasource_ids: [DATASOURCE_ALL],
-      rule_config: defaultRuleConfig.loki,
-    };
-  }
-}
-
-export function getDefaultValuesByCate(prod, cate) {
   if (cate === DatasourceCateEnum.prometheus) {
     return {
       prod,
       cate,
-      datasource_ids: [DATASOURCE_ALL],
-      rule_config: defaultRuleConfig.metric,
+      rule_config: {
+        ...defaultRuleConfig,
+        queries: [
+          {
+            prom_ql: '',
+            severity: 2,
+            ref: 'A',
+          },
+        ],
+      },
+      ...datasourceDefaultValue,
+    };
+  }
+  if (cate === DatasourceCateEnum.elasticsearch) {
+    return {
+      prod,
+      cate,
+      rule_config: {
+        ...defaultRuleConfig,
+        queries: [
+          {
+            ref: 'A',
+            interval_unit: 'min',
+            interval: 5,
+            date_field: '@timestamp',
+            value: {
+              func: 'count',
+            },
+          },
+        ],
+      },
+      ...datasourceDefaultValue,
     };
   }
   if (cate === DatasourceCateEnum.tdengine) {
     return {
       prod,
       cate,
-      datasource_ids: undefined,
       rule_config: {
+        ...defaultRuleConfig,
         queries: [
           {
             ref: 'A',
@@ -249,29 +284,24 @@ export function getDefaultValuesByCate(prod, cate) {
             interval_unit: 'min',
           },
         ],
-        triggers: [
-          {
-            mode: 0,
-            expressions: [
-              {
-                ref: 'A',
-                comparisonOperator: '>',
-                value: 0,
-                logicalOperator: '&&',
-              },
-            ],
-            severity: 2,
-          },
-        ],
       },
+      ...datasourceDefaultValue,
     };
   }
   if (cate === DatasourceCateEnum.loki) {
     return {
       prod,
       cate,
-      datasource_ids: [DATASOURCE_ALL],
-      rule_config: defaultRuleConfig.loki,
+      rule_config: {
+        queries: [
+          {
+            // log_ql: '',
+            prom_ql: '', // 为了兼容老版本
+            severity: 2,
+          },
+        ],
+      },
+      ...datasourceDefaultValue,
     };
   }
   if (_.isFunction(alertUtils.getDefaultValuesByCate)) {

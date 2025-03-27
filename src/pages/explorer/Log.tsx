@@ -17,11 +17,13 @@
 import React, { useState } from 'react';
 import { LineChartOutlined } from '@ant-design/icons';
 import _ from 'lodash';
-import { Tabs } from 'antd';
+import { Tabs, Button, Tooltip } from 'antd';
 import queryString from 'query-string';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+
 import PageLayout from '@/components/pageLayout';
+
 import Explorer from './Explorer';
 import { getuuid, getLocalItems, setLocalItems, getLocalActiveKey, setLocalActiveKey } from './utils';
 import './index.less';
@@ -42,6 +44,23 @@ const MetricExplorerPage = () => {
               size='small'
               type='editable-card'
               activeKey={activeKey}
+              tabBarExtraContent={{
+                right: (
+                  <Tooltip title={t('clear_tabs_tip')}>
+                    <a
+                      className='pl2'
+                      onClick={() => {
+                        // 只保留当前 tab
+                        const newItems = [items.find((item) => item.key === activeKey)!];
+                        setItems(newItems);
+                        setLocalItems(newItems);
+                      }}
+                    >
+                      {t('clear_tabs')}
+                    </a>
+                  </Tooltip>
+                ),
+              }}
               onEdit={(targetKey: string, action: 'add' | 'remove') => {
                 if (action === 'add') {
                   const newActiveKey = getuuid();

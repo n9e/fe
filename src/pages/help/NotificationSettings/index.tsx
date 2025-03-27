@@ -36,11 +36,11 @@ export default function index() {
       tab: t('channels.title'),
       content: <Channels />,
     },
-    {
-      key: 'contacts',
-      tab: t('contacts.title'),
-      content: <Contacts />,
-    },
+    // {
+    //   key: 'contacts',
+    //   tab: t('contacts.title'),
+    //   content: <Contacts />,
+    // },
     {
       key: 'smtp',
       tab: t('smtp.title'),

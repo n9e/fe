@@ -186,3 +186,28 @@ export const getBusinessGroupsOptions = (myBusiGroups, allBusiGroups) => {
     },
   ];
 };
+
+export function getVaildBusinessGroup(
+  busiGroups,
+  businessGroupKey: {
+    key: string;
+    ids: string;
+    id: number;
+    isLeaf: boolean;
+  },
+) {
+  let ids = getCleanBusinessGroupIds(businessGroupKey.key);
+  let idsArr = _.map(_.compact(_.split(ids, ',')), _.toNumber);
+  const isValid = !_.isEmpty(idsArr)
+    ? _.every(idsArr, (id) => {
+        if (!_.find(busiGroups, { id })) {
+          return false;
+        }
+        return true;
+      })
+    : false;
+  if (!isValid) {
+    return getDefaultBusiness(busiGroups);
+  }
+  return businessGroupKey;
+}

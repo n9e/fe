@@ -20,14 +20,19 @@ import { CloseOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import { useTranslation } from 'react-i18next';
+
+import { SIZE } from '@/utils/constant';
 import TimeRangePicker, { IRawTimeRange } from '@/components/TimeRangePicker';
 import { Dashboard } from '@/store/dashboardInterface';
 import { CommonStateContext } from '@/App';
-import { visualizations, defaultValues, defaultCustomValuesMap, defaultOptionsValuesMap } from './config';
+
 import { IVariable } from '../VariableConfig';
+import { visualizations, defaultValues, defaultCustomValuesMap, defaultOptionsValuesMap } from './config';
 import FormCpt from './Form';
 import { IPanel } from '../types';
 import { normalizeInitialValues } from './util';
+
+import './style.less';
 
 interface IProps {
   mode: string;
@@ -59,7 +64,7 @@ function index(props: IProps) {
           _.set(values, 'custom.colorRange', _.split(values.custom.colorRange, ','));
         }
         let formData = Object.assign(values, {
-          version: '3.0.0',
+          version: '3.1.0',
         });
         if (values && values.id) {
           formData.id = values.id;
@@ -90,6 +95,7 @@ function index(props: IProps) {
 
   return (
     <Modal
+      className='n9e-dashboard-editor-modal'
       width='100%'
       title={
         <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -116,7 +122,10 @@ function index(props: IProps) {
               {_.map(visualizations, (item) => {
                 return (
                   <Select.Option value={item.type} key={item.type}>
-                    {t(`visualizations.${item.type}`)}
+                    <Space align='center' style={{ lineHeight: 1 }}>
+                      <img height={16} alt={item.type} src={`/image/dashboard/${item.type}.svg`} />
+                      {t(`visualizations.${item.type}`)}
+                    </Space>
                   </Select.Option>
                 );
               })}
@@ -138,7 +147,7 @@ function index(props: IProps) {
           </Space>
         </div>
       }
-      style={{ top: 10, padding: 0 }}
+      style={{ top: 0, padding: 0 }}
       visible={visible}
       closable={false}
       destroyOnClose
@@ -167,7 +176,7 @@ function index(props: IProps) {
         props.onCancel && props.onCancel();
       }}
       bodyStyle={{
-        padding: '10px 24px 24px 24px',
+        padding: SIZE * 2,
       }}
     >
       {/* 除了 text 和 iframe 类型其他的类型比如存在 initialValues?.datasourceCate */}

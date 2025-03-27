@@ -20,9 +20,9 @@ import { useTranslation } from 'react-i18next';
 import { Input, Form, Table, Button, Divider, message, Select, Switch, Alert } from 'antd';
 import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { importStrategy } from '@/services/warning';
-import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
+import DatasourceValueSelectV2 from '@/pages/alertRules/Form/components/DatasourceValueSelect/V2';
 
-export default function ImportBase({ busiId, onOk, groupedDatasourceList, datasourceCateOptions }) {
+export default function ImportBase({ busiId, onOk, groupedDatasourceList, reloadGroupedDatasourceList, datasourceCateOptions }) {
   const { t } = useTranslation('alertRules');
   const [importResult, setImportResult] = useState<{ name: string; msg: string }[]>();
   const datasourceCates = _.filter(datasourceCateOptions, (item) => !!item.alertRule);
@@ -73,7 +73,7 @@ export default function ImportBase({ busiId, onOk, groupedDatasourceList, dataso
               return {
                 ...item,
                 cate: item.cate === 'host' ? 'host' : vals.datasource_cate,
-                datasource_ids: item.cate === 'host' ? item.datasource_ids : vals.datasource_ids,
+                datasource_queries: vals?.datasource_queries,
                 disabled: vals.enabled ? 0 : 1,
               };
             });
@@ -123,7 +123,11 @@ export default function ImportBase({ busiId, onOk, groupedDatasourceList, dataso
               </Select>
             </Form.Item>
             {datasourceCate && (
-              <DatasourceValueSelect mode='multiple' setFieldsValue={form.setFieldsValue} cate={datasourceCate} datasourceList={groupedDatasourceList[datasourceCate] || []} />
+              <DatasourceValueSelectV2
+                datasourceCate={datasourceCate}
+                datasourceList={groupedDatasourceList[datasourceCate] || []}
+                reloadGroupedDatasourceList={reloadGroupedDatasourceList}
+              />
             )}
             <Form.Item label={t('common:table.enabled')} name='enabled' valuePropName='checked'>
               <Switch />

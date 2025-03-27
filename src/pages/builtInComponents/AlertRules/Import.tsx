@@ -19,19 +19,20 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Modal, Input, Form, Button, Select, Switch, message, Alert } from 'antd';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
-import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
+import DatasourceValueSelectV2 from '@/pages/alertRules/Form/components/DatasourceValueSelect/V2';
 import { createRule } from './services';
 
 interface IProps {
   data: string;
   busiGroups: any;
   groupedDatasourceList: any;
+  reloadGroupedDatasourceList: any;
   datasourceCateOptions: any;
 }
 
 function Import(props: IProps & ModalWrapProps) {
   const { t } = useTranslation('builtInComponents');
-  const { visible, destroy, data, busiGroups, groupedDatasourceList, datasourceCateOptions } = props;
+  const { visible, destroy, data, busiGroups, groupedDatasourceList, reloadGroupedDatasourceList, datasourceCateOptions } = props;
   const datasourceCates = _.filter(datasourceCateOptions, (item) => !!item.alertRule);
   const [allowSubmit, setAllowSubmit] = React.useState(true);
   const [form] = Form.useForm();
@@ -90,8 +91,11 @@ function Import(props: IProps & ModalWrapProps) {
               return {
                 ...record,
                 cate: record.cate === 'host' ? 'host' : vals.datasource_cate,
-                datasource_ids: record.cate === 'host' ? record.datasource_ids : vals.datasource_ids,
                 disabled: vals.enabled ? 0 : 1,
+                rule_config: {
+                  ...item.rule_config,
+                  datasource_queries: vals?.datasource_queries,
+                },
               };
             });
           } catch (e) {
@@ -154,9 +158,7 @@ function Import(props: IProps & ModalWrapProps) {
             })}
           </Select>
         </Form.Item>
-        {datasourceCate && (
-          <DatasourceValueSelect mode='multiple' setFieldsValue={form.setFieldsValue} cate={datasourceCate} datasourceList={groupedDatasourceList[datasourceCate] || []} />
-        )}
+        {datasourceCate && <DatasourceValueSelectV2 datasourceList={groupedDatasourceList[datasourceCate] || []} reloadGroupedDatasourceList={reloadGroupedDatasourceList} />}
         <Form.Item label={t('common:table.enabled')} name='enabled' valuePropName='checked'>
           <Switch />
         </Form.Item>

@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Button, Popover, Spin, Empty, Space, Select, Form } from 'antd';
+import { Button, Popover, Spin, Empty, Space, Select, Form, InputNumber, message } from 'antd';
 import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
-import { parseRange } from '@/components/TimeRangePicker';
+import TimeRangePicker, { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import Timeseries from '@/pages/dashboard/Renderer/Renderer/Timeseries';
 import { getSerieName } from '@/pages/dashboard/Renderer/datasource/utils';
 import { fetchHistoryRangeBatch } from '@/services/dashboardV2';
@@ -22,19 +22,22 @@ export default function GraphPreview({ form, fieldName, promqlFieldName = 'prom_
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [datasourceId, setDatasourceId] = useState<number>();
+  const [range, setRange] = useState<IRawTimeRange>({
+    start: 'now-24h',
+    end: 'now',
+  });
+  const [step, setStep] = useState<number | null>();
+  const var_enabled = Form.useWatch(['rule_config', 'queries', fieldName, 'var_enabled']);
 
   const fetchData = () => {
     const query = form.getFieldValue(['rule_config', 'queries', fieldName]);
-    const parsedRange = parseRange({
-      start: 'now-24h',
-      end: 'now',
-    });
+    const parsedRange = parseRange(range);
     const from = moment(parsedRange.start).unix();
     const to = moment(parsedRange.end).unix();
 
     if (datasourceId) {
       setLoading(true);
-      const step = getDefaultStepByStartAndEnd(from, to);
+      const curStep = step || getDefaultStepByStartAndEnd(from, to);
       fetchHistoryRangeBatch(
         {
           datasource_id: datasourceId,
@@ -43,7 +46,7 @@ export default function GraphPreview({ form, fieldName, promqlFieldName = 'prom_
               query: query[promqlFieldName],
               start: from,
               end: to,
-              step,
+              step: curStep,
             },
           ],
         },
@@ -65,11 +68,19 @@ export default function GraphPreview({ form, fieldName, promqlFieldName = 'prom_
                 name: getSerieName(serie.metric),
                 metric: serie.metric,
                 expr: item.expr,
-                data: completeBreakpoints(step, serie.values),
+                data: completeBreakpoints(curStep, serie.values),
               });
             });
           }
           setData(series);
+        })
+        .catch((res) => {
+          try {
+            message.error(res.message);
+          } catch (e) {
+            console.log(e);
+          }
+          setData([]);
         })
         .finally(() => {
           setLoading(false);
@@ -81,7 +92,10 @@ export default function GraphPreview({ form, fieldName, promqlFieldName = 'prom_
     if (visible && datasourceId) {
       fetchData();
     }
-  }, [visible, datasourceId]);
+  }, [visible, datasourceId, range]);
+
+  // 启用变量时无法预览，这里隐藏预览按钮
+  if (!!var_enabled) return null;
 
   return (
     <div ref={divRef}>
@@ -117,6 +131,20 @@ export default function GraphPreview({ form, fieldName, promqlFieldName = 'prom_
                   };
                 })}
               />
+              <TimeRangePicker value={range} onChange={setRange} dateFormat='YYYY-MM-DD HH:mm:ss' />
+              <InputNumber
+                placeholder='step'
+                value={step}
+                onChange={(val) => {
+                  setStep(val);
+                }}
+                onBlur={() => {
+                  fetchData();
+                }}
+                onPressEnter={() => {
+                  fetchData();
+                }}
+              />
             </Space>
           </div>
         }
@@ -135,6 +163,7 @@ export default function GraphPreview({ form, fieldName, promqlFieldName = 'prom_
                     }}
                   >
                     <Timeseries
+                      time={range}
                       series={data}
                       values={
                         {
@@ -177,11 +206,7 @@ export default function GraphPreview({ form, fieldName, promqlFieldName = 'prom_
           ghost
           onClick={() => {
             if (!visible) {
-              const datasource_ids = form.getFieldValue('datasource_ids');
-              let datasource_id = _.isArray(datasource_ids) ? datasource_ids?.[0] : datasource_ids;
-              if (!datasource_id || datasource_id === 0) {
-                datasource_id = groupedDatasourceList.prometheus?.[0]?.id;
-              }
+              const datasource_id = form.getFieldValue('datasource_value');
               setDatasourceId(datasource_id);
               setVisible(true);
             }

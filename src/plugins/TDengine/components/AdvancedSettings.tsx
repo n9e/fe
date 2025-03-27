@@ -4,6 +4,7 @@ import { DownOutlined, RightOutlined, QuestionCircleOutlined } from '@ant-design
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
+import UnitPicker from '@/pages/dashboard/Components/UnitPicker';
 
 interface IProps {
   span?: number;
@@ -13,11 +14,12 @@ interface IProps {
   mode: 'graph' | 'table';
   expanded?: boolean;
   expandTriggerVisible?: boolean;
+  showUnit?: boolean;
 }
 
 function AdvancedSettings(props: IProps) {
   const { t } = useTranslation('db_tdengine');
-  const { span = 6, prefixField = {}, prefixName = [], disabled, mode, expandTriggerVisible = true } = props;
+  const { span = 6, prefixField = {}, prefixName = [], disabled, mode, expandTriggerVisible = true, showUnit } = props;
   const [open, setOpen] = useState(!!props.expanded);
 
   return (
@@ -72,6 +74,15 @@ function AdvancedSettings(props: IProps) {
                   </Form.Item>
                 </InputGroupWithFormItem>
               </Col>
+              {showUnit && (
+                <Col span={span}>
+                  <InputGroupWithFormItem label={t('common:unit')}>
+                    <Form.Item {...prefixField} name={[prefixField.name, 'unit']} initialValue='none' noStyle>
+                      <UnitPicker optionLabelProp='cleanLabel' style={{ width: '100%' }} dropdownMatchSelectWidth={false} />
+                    </Form.Item>
+                  </InputGroupWithFormItem>
+                </Col>
+              )}
             </>
           )}
           {mode === 'table' && (

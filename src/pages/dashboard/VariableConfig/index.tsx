@@ -43,12 +43,18 @@ interface IProps {
   dashboard: Dashboard;
 }
 
-function includes(source, target) {
+function includes(
+  source: {
+    label: string;
+    value: string;
+  }[],
+  target,
+) {
   if (_.isArray(target)) {
     // 不为空则有交集
-    return !_.isEmpty(_.intersection(source, target));
+    return !_.isEmpty(_.intersection(_.map(source, 'value'), target));
   }
-  return _.includes(source, target);
+  return _.includes(_.map(source, 'value'), target);
 }
 
 function index(props: IProps) {
@@ -119,7 +125,16 @@ function index(props: IProps) {
           const item = _.cloneDeep(value[idx]);
           if (item.type === 'query' && item.definition) {
             const datasourceCate = item.datasource?.cate;
-            const definition = idx > 0 ? replaceExpressionVars(item.definition, result, idx, id, true) : item.definition;
+            const definition =
+              idx > 0
+                ? replaceExpressionVars({
+                    text: item.definition,
+                    variables: result,
+                    limit: idx,
+                    dashboardId: id,
+                    isEscapeJsonString: true,
+                  })
+                : item.definition;
 
             let options: string[] = [];
             try {
@@ -130,7 +145,14 @@ function index(props: IProps) {
                   ...item,
                   datasource: {
                     ...(item?.datasource || {}),
-                    value: result.length ? (replaceExpressionVars(item?.datasource?.value as any, result, result.length, id) as any) : item?.datasource?.value,
+                    value: result.length
+                      ? (replaceExpressionVars({
+                          text: item?.datasource?.value as any,
+                          variables: result,
+                          limit: result.length,
+                          dashboardId: id,
+                        }) as any)
+                      : item?.datasource?.value,
                   },
                 },
                 id,
@@ -144,23 +166,34 @@ function index(props: IProps) {
             const regFilterOptions = filterOptionsByReg(options, item.reg, result, idx, id);
             result[idx] = item;
             result[idx].fullDefinition = definition;
-            result[idx].options = item.type === 'query' ? (datasourceCate === 'prometheus' ? _.sortBy(regFilterOptions) : regFilterOptions) : regFilterOptions;
+            result[idx].options = regFilterOptions;
+            if (item.type === 'query') {
+              if (datasourceCate === 'prometheus') {
+                // TODO prometheus 对变量可选项排序
+                result[idx].options = _.sortBy(regFilterOptions, 'value');
+              }
+            }
             // 当仪表盘变量值为空时，设置默认值
             // 如果已选项不在待选项里也视做空值处理
             const selected = getVaraiableSelected(item, id);
             if (query.__variable_value_fixed === undefined) {
               if (selected === null || (selected && !_.isEmpty(regFilterOptions) && !includes(regFilterOptions, selected))) {
-                const head = regFilterOptions?.[0] || ''; // 2014-01-22 添加默认值（空字符）
+                const head = regFilterOptions?.[0]?.value || ''; // 2014-01-22 添加默认值（空字符）
                 const defaultVal = item.multi ? (item.allOption ? ['all'] : head ? [head] : []) : head;
                 setVaraiableSelected({ name: item.name, value: defaultVal, id, urlAttach: true });
               }
             }
           } else if (item.type === 'custom') {
             result[idx] = item;
-            result[idx].options = _.map(_.compact(_.split(item.definition, ',')), _.trim);
+            result[idx].options = _.map(_.map(_.compact(_.split(item.definition, ',')), _.trim), (item) => {
+              return {
+                label: item,
+                value: item,
+              };
+            });
             const selected = getVaraiableSelected(item, id);
             if (selected === null && query.__variable_value_fixed === undefined) {
-              const head = _.head(result[idx].options)!;
+              const head = _.head(result[idx].options)?.value;
               const defaultVal = item.multi ? (item.allOption ? ['all'] : head ? [head] : []) : head;
               setVaraiableSelected({ name: item.name, value: defaultVal, id, urlAttach: true });
             }
@@ -196,6 +229,27 @@ function index(props: IProps) {
                 }
               }
             }
+          } else if (item.type === 'datasourceName') {
+            const options = item.definition ? (groupedDatasourceList[item.definition] as any) : [];
+            const regex = item.regex ? stringToRegex(item.regex) : null;
+            result[idx] = item;
+            if (regex) {
+              result[idx].options = _.filter(options, (option) => {
+                return regex.test(option.name);
+              });
+            } else {
+              result[idx].options = options;
+            }
+            const selected = getVaraiableSelected(item, id);
+            if (selected === null) {
+              if (item.defaultValue) {
+                setVaraiableSelected({ name: item.name, value: item.defaultValue, id, urlAttach: true });
+              } else {
+                if (query.__variable_value_fixed === undefined) {
+                  setVaraiableSelected({ name: item.name, value: options?.[0]?.name, id, urlAttach: true });
+                }
+              }
+            }
           } else if (item.type === 'hostIdent') {
             let options: string[] = [];
             try {
@@ -214,17 +268,17 @@ function index(props: IProps) {
             const selected = getVaraiableSelected(item, id);
             if (query.__variable_value_fixed === undefined) {
               if (selected === null || (selected && !_.isEmpty(regFilterOptions) && !includes(regFilterOptions, selected))) {
-                const head = regFilterOptions?.[0] || ''; // 2014-01-22 添加默认值（空字符）
+                const head = regFilterOptions?.[0]?.value || ''; // 2014-01-22 添加默认值（空字符）
                 const defaultVal = item.multi ? (item.allOption ? ['all'] : head ? [head] : []) : head;
                 setVaraiableSelected({ name: item.name, value: defaultVal, id, urlAttach: true });
               }
             }
-          } else if (item.type === 'businessGroupIdent') {
+          } else if ((item.type as any) === 'businessGroupIdent') {
+            // @deprecated 兼容旧版已经配置的 businessGroupIdent 变量，这里直接该变量的值统一设置为空字符串
             result[idx] = item;
-            const hostIdent = _.find(busiGroups, { id: dashboard.group_id })?.label_value;
             const selected = getVaraiableSelected(item, id);
-            if (hostIdent && selected === null && query.__variable_value_fixed === undefined) {
-              setVaraiableSelected({ name: item.name, value: hostIdent, id, urlAttach: true });
+            if (selected === null && query.__variable_value_fixed === undefined) {
+              setVaraiableSelected({ name: item.name, value: '', id, urlAttach: true });
             }
           }
         }

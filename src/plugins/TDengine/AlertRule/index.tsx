@@ -2,7 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import { Form } from 'antd';
 import Queries from './Queries';
-import Triggers from './Triggers';
+import Triggers from '@/pages/alertRules/Form/components/Triggers';
 
 export default function index({ form, datasourceValue }) {
   return (

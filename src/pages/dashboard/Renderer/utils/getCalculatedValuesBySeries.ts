@@ -23,7 +23,13 @@ const getValueAndToNumber = (value: any[]) => {
   return _.toNumber(_.get(value, 1, NaN));
 };
 
-export const getSerieTextObj = (value: number | string | null | undefined, standardOptions?: any, valueMappings?: IValueMapping[], thresholds?: IThresholds) => {
+export const getSerieTextObj = (
+  value: number | string | null | undefined,
+  standardOptions?: any,
+  valueMappings?: IValueMapping[],
+  thresholds?: IThresholds,
+  valueRange?: [number, number],
+) => {
   const { decimals, dateFormat } = standardOptions || {};
   const unit = standardOptions?.unit || standardOptions?.util; // TODO: 兼容之前写错的 util
   const matchedValueMapping = _.find(valueMappings, (item: any) => {
@@ -38,6 +44,9 @@ export const getSerieTextObj = (value: number | string | null | undefined, stand
       }
       return false;
     } else {
+      if (type === 'textValue') {
+        return value === match?.textValue;
+      }
       const toNumberValue = _.toNumber(value) as number;
       if (type === 'special') {
         return toNumberValue === match?.special;
@@ -66,8 +75,17 @@ export const getSerieTextObj = (value: number | string | null | undefined, stand
     (item) => {
       if (_.isNumber(item.value) && value) {
         const toNumberValue = _.toNumber(value) as number;
-        if (toNumberValue >= item.value) {
-          matchedThresholdsColor = item.color;
+        if (thresholds?.mode === 'percentage' && valueRange) {
+          const minValue = valueRange[0];
+          const maxValue = valueRange[1];
+          const percentageToNumberValue = minValue + (maxValue - minValue) * (item.value / 100);
+          if (toNumberValue >= percentageToNumberValue) {
+            matchedThresholdsColor = item.color;
+          }
+        } else {
+          if (toNumberValue >= item.value) {
+            matchedThresholdsColor = item.color;
+          }
         }
       }
     },
@@ -147,13 +165,20 @@ const getCalculatedValuesBySeries = (
             __time__: item[0],
           },
           stat: item[1],
-          ...getSerieTextObj(item[1], { unit, decimals, dateFormat }, valueMappings, thresholds),
         });
       });
     });
+    const minValue = _.minBy(values, (item) => item.stat)?.stat;
+    const maxValue = _.maxBy(values, (item) => item.stat)?.stat;
+    values = _.map(values, (item) => {
+      return {
+        ...item,
+        ...getSerieTextObj(item.stat, { unit, decimals, dateFormat }, valueMappings, thresholds, [minValue, maxValue]),
+      };
+    });
     return values;
   }
-  const values = _.map(series, (serie) => {
+  let values = _.map(series, (serie) => {
     const results = {
       lastNotNull: () => _.get(_.last(_.filter(serie.data, (item) => item[1] !== null && !_.isNaN(_.toNumber(item[1])))), 1),
       last: () => _.get(_.last(serie.data), 1),
@@ -199,17 +224,25 @@ const getCalculatedValuesBySeries = (
         refId: serie.refId,
       },
       stat: _.toNumber(stat),
-      ...getSerieTextObj(stat, { unit, decimals, dateFormat }, valueMappings, thresholds),
+    };
+  });
+  const minValue = _.minBy(values, (item) => item.stat)?.stat ?? 0;
+  const maxValue = _.maxBy(values, (item) => item.stat)?.stat ?? 0;
+  values = _.map(values, (item) => {
+    return {
+      ...item,
+      ...getSerieTextObj(item.stat, { unit, decimals, dateFormat }, valueMappings, thresholds, [minValue, maxValue]),
     };
   });
   return values;
 };
 
 export const getLegendValues = (series: any[], standardOptions, hexPalette: string[], stack = false, valueMappings?: IValueMapping[], overrides?: IOverride[]) => {
-  let { unit, decimals, dateFormat } = standardOptions || {};
+  let { decimals, dateFormat } = standardOptions || {};
+  let unit = standardOptions?.unit || standardOptions?.util; // TODO: 兼容之前写错的 util
   const newSeries = stack ? _.reverse(_.clone(series)) : series;
   const values = _.map(newSeries, (serie, idx) => {
-    const override = _.find(overrides, (item) => item.matcher.value === serie.refId);
+    const override = _.find(overrides, (item) => item.matcher?.value === serie.refId);
     if (override) {
       unit = override?.properties?.standardOptions?.util;
       decimals = override?.properties?.standardOptions?.decimals;

@@ -1,6 +1,6 @@
 const zh_HK = {
   title: '屏蔽規則',
-  search_placeholder: '搜尋標籤、屏蔽原因',
+  search_placeholder: '搜索規則說明、標籤、屏蔽原因',
   datasource_type: '數據源類型',
   datasource_id: '數據源',
   cause: '屏蔽原因',
@@ -52,7 +52,9 @@ const zh_HK = {
   filter_configs_tip: '符合篩選條件的告警事件會命中屏蔽規則，進而被屏蔽。篩選條件本質就是對告警事件的篩選，通過事件的數據源、等級、標籤等信息進行篩選',
   mute_configs: '屏蔽時長',
   alert_content: '為了防止誤配屏蔽規則屏蔽掉公司所有的告警，此屏蔽規則只會生效於特定業務組下的告警事件',
-  preview_muted_btn: '預覽並刪除相關事件',
+  preview_muted_title: '預覽相關事件',
+  preview_muted_save_only: '僅保存',
+  preview_muted_save_and_delete: '保存並刪除相關事件',
 };
 
 export default zh_HK;

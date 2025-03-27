@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import _ from 'lodash';
+import semver from 'semver';
 import { useTranslation } from 'react-i18next';
 import { Popover, Progress, Space, Spin, Tooltip } from 'antd';
 import Icon, { PlusCircleOutlined, CloseCircleOutlined, CalendarOutlined, QuestionOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import type { CustomIconComponentProps } from '@ant-design/icons/lib/components/Icon';
-import { getFieldLabel } from '../../Elasticsearch/utils';
-import { dslBuilder } from '../../Elasticsearch/utils';
-import { getFieldValues, typeMap } from '../../Elasticsearch/services';
+import { getFieldLabel, dslBuilder, ajustFieldParamValue } from '../../Elasticsearch/utils';
+import { getESVersion, getFieldValues, typeMap } from '../../Elasticsearch/services';
 import { Field as FieldType, Filter } from '../services';
 
 interface Props {
@@ -128,27 +128,30 @@ export default function Field(props: Props) {
           setTop5Loading(true);
           const values = form.getFieldsValue();
           try {
-            getFieldValues(
-              datasourceValue,
-              dslBuilder({
-                index: values.query.index,
-                date_field: values.query.date_field,
-                ...timesRef.current,
-                filters,
-                syntax: values.query.syntax,
-                query_string: values.query.filter,
-                kuery: values.query.filter,
-                limit,
-                fields: [item],
-              }),
-              item,
-            )
-              .then((res) => {
-                setTop5Data(res);
-              })
-              .finally(() => {
-                setTop5Loading(false);
-              });
+            getESVersion(datasourceValue).then((version) => {
+              getFieldValues(
+                datasourceValue,
+                dslBuilder({
+                  version,
+                  index: values.query.index,
+                  date_field: values.query.date_field,
+                  ...timesRef.current,
+                  filters,
+                  syntax: values.query.syntax,
+                  query_string: values.query.filter,
+                  kuery: values.query.filter,
+                  limit,
+                  fields: [ajustFieldParamValue(record, version)],
+                }),
+                ajustFieldParamValue(record, version),
+              )
+                .then((res) => {
+                  setTop5Data(res);
+                })
+                .finally(() => {
+                  setTop5Loading(false);
+                });
+            });
           } catch (e) {
             console.error(e);
             setTop5Loading(false);

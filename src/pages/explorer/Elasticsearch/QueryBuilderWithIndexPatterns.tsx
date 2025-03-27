@@ -2,17 +2,20 @@ import React, { useState, useEffect, useRef } from 'react';
 import _ from 'lodash';
 import { useDebounceFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
-import { Form, Select, Button, Tooltip } from 'antd';
-import { QuestionCircleOutlined, SettingOutlined } from '@ant-design/icons';
+import { useLocation } from 'react-router-dom';
+import { Form, Select, Button } from 'antd';
+import { QuestionCircleOutlined } from '@ant-design/icons';
+
 import TimeRangePicker from '@/components/TimeRangePicker';
 import { getESIndexPatterns, standardizeFieldConfig } from '@/pages/log/IndexPatterns/services';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { useIsAuthorized } from '@/components/AuthorizationWrapper';
 import KQLInput from '@/components/KQLInput';
 import { getLocalQueryHistory, setLocalQueryHistory } from '@/components/KQLInput/utils';
+import IndexPatternSettingsBtn from '@/pages/explorer/Elasticsearch/components/IndexPatternSettingsBtn';
+
 import { getFullFields, Field } from './services';
 import InputFilter from './InputFilter';
-import { Link, useLocation } from 'react-router-dom';
 
 interface Props {
   onExecute: () => void;
@@ -45,7 +48,7 @@ export default function QueryBuilder(props: Props) {
           try {
             if (finded.fields_format) {
               fieldConfig = standardizeFieldConfig(JSON.parse(finded.fields_format));
-              form.setFields([{name:'fieldConfig',value:undefined}]);
+              form.setFields([{ name: 'fieldConfig', value: undefined }]);
             }
           } catch (error) {
             console.warn(error);
@@ -60,6 +63,7 @@ export default function QueryBuilder(props: Props) {
           onIndexChange();
           getFullFields(datasourceValue, finded.name, {
             allowHideSystemIndices: finded.allow_hide_system_indices,
+            crossClusterEnabled: finded.cross_cluster_enabled === 1,
           }).then((res) => {
             setFields(res.allFields);
             setAllFields(res.allFields);
@@ -71,11 +75,16 @@ export default function QueryBuilder(props: Props) {
       wait: 500,
     },
   );
+  const fetchESIndexPatterns = (callback?: (res) => void) => {
+    getESIndexPatterns(datasourceValue).then((res) => {
+      setIndexPatterns(res);
+      callback && callback(res);
+    });
+  };
 
   useEffect(() => {
     if (datasourceValue) {
-      getESIndexPatterns(datasourceValue).then((res) => {
-        setIndexPatterns(res);
+      fetchESIndexPatterns((res) => {
         if (params.get('index_pattern')) {
           const indexPattern = _.find(res, (item) => item.name === params.get('index_pattern'));
           if (indexPattern) {
@@ -108,6 +117,12 @@ export default function QueryBuilder(props: Props) {
     }
   }, [indexPattern]);
 
+  useEffect(() => {
+    if (params.get('__execute__')) {
+      onExecute();
+    }
+  }, []);
+
   return (
     <>
       <Form.Item name={['query', 'index']} hidden>
@@ -124,13 +139,13 @@ export default function QueryBuilder(props: Props) {
           <InputGroupWithFormItem
             label={t('datasource:es.indexPatterns')}
             addonAfter={
-              indexPatternsAuthorized ? (
-                <Tooltip title={t('datasource:es.indexPatterns_manage')}>
-                  <Link to='/log/index-patterns'>
-                    <SettingOutlined />
-                  </Link>
-                </Tooltip>
-              ) : undefined
+              indexPatternsAuthorized && (
+                <IndexPatternSettingsBtn
+                  onReload={() => {
+                    fetchESIndexPatterns();
+                  }}
+                />
+              )
             }
           >
             <Form.Item

@@ -16,3 +16,16 @@ export function getTargetInformationByIdent(ident: string) {
     }
   });
 }
+
+export function putTargetsBgids(data: { bgids: number[]; idents: string[]; action: string }) {
+  return request('/api/n9e/targets/bgids', {
+    method: RequestMethod.Put,
+    data,
+  });
+}
+
+export function getBusiGroupsTags() {
+  return request('/api/n9e/busi-groups/tags', {
+    method: RequestMethod.Get,
+  }).then((res) => res.dat);
+}

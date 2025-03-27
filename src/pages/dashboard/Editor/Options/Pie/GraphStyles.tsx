@@ -93,7 +93,7 @@ export default function GraphStyles() {
           </Col>
           <Col span={10}>
             <Form.Item label={t('panel.custom.pie.max')} name={[...namePrefix, 'max']} tooltip={t('panel.custom.pie.max_tip')}>
-              <InputNumber style={{ width: '100%' }} />
+              <InputNumber style={{ width: '100%' }} min={1} />
             </Form.Item>
           </Col>
           <Col span={4}>
@@ -122,7 +122,7 @@ export default function GraphStyles() {
               name={[...namePrefix, 'detailUrl']}
               tooltip={{
                 overlayInnerStyle: { width: 330 },
-                title: <Trans ns='dashboard' i18nKey='dashboard:link.url_tip' components={{ 1: <br /> }} />,
+                title: <Trans ns='dashboard' i18nKey='dashboard:var.help_tip' components={{ 1: <br /> }} />,
               }}
             >
               <Input style={{ width: '100%' }} />

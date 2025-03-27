@@ -1,5 +1,5 @@
 const zh_HK = {
-  title: '系統版本',
+  title: '關於產品',
   frontend: '前端版本',
   backend: '後端版本',
 };

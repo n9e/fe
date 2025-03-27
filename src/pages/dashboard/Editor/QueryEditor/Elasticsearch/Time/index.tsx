@@ -5,10 +5,11 @@ import moment from 'moment';
 import _ from 'lodash';
 import TimeRangePicker, { isMathString } from '@/components/TimeRangePicker';
 import DateField from '../DateField';
-import { replaceExpressionVars } from '../../../../VariableConfig/constant';
 
-export default function index({ prefixField = {}, prefixNameField = [], chartForm, variableConfig, dashboardId }: any) {
+export default function index({ prefixField = {}, prefixNameField = [], datasourceValue }: { prefixField: any; prefixNameField: any[]; datasourceValue: number }) {
   const { t } = useTranslation('datasource');
+  const chartForm = Form.useFormInstance();
+  const indexType = Form.useWatch(['targets', prefixField.name, 'query', 'index_type']);
 
   return (
     <>
@@ -22,16 +23,16 @@ export default function index({ prefixField = {}, prefixNameField = [], chartFor
       </Row>
 
       <Row gutter={10}>
-        <Col span={8}>
-          <Form.Item shouldUpdate noStyle>
-            {({ getFieldValue }) => {
-              let datasourceValue = getFieldValue('datasourceValue');
-              datasourceValue = replaceExpressionVars(datasourceValue as any, variableConfig, variableConfig.length, dashboardId);
-              const index = getFieldValue(['targets', ...prefixNameField, 'query', 'index']);
-              return <DateField datasourceValue={datasourceValue} index={index} prefixField={prefixField} prefixNames={[...prefixNameField, 'query']} />;
-            }}
-          </Form.Item>
-        </Col>
+        {indexType === 'index' && (
+          <Col span={8}>
+            <Form.Item shouldUpdate noStyle>
+              {({ getFieldValue }) => {
+                const index = getFieldValue(['targets', ...prefixNameField, 'query', 'index']);
+                return <DateField datasourceValue={datasourceValue} index={index} prefixField={prefixField} prefixNames={[...prefixNameField, 'query']} />;
+              }}
+            </Form.Item>
+          </Col>
+        )}
         <Col span={8}>
           <Input.Group>
             <span className='ant-input-group-addon'>{t('datasource:es.interval')}</span>
@@ -58,6 +59,7 @@ export default function index({ prefixField = {}, prefixNameField = [], chartFor
               title: t('query.time_tip'),
             }}
             normalize={(val) => {
+              if (val === undefined || val === null || val === '') return undefined;
               return {
                 start: isMathString(val.start) ? val.start : moment(val.start).format('YYYY-MM-DD HH:mm:ss'),
                 end: isMathString(val.end) ? val.end : moment(val.end).format('YYYY-MM-DD HH:mm:ss'),

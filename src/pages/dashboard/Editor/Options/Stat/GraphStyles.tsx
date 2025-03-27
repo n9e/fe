@@ -15,7 +15,7 @@
  *
  */
 import React, { useEffect } from 'react';
-import { Form, Radio, Select, Row, Col, InputNumber, Input } from 'antd';
+import { Form, Radio, Select, Row, Col, InputNumber } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Panel } from '../../Components/Collapse';
@@ -25,7 +25,7 @@ import { useGlobalState } from '../../../globalState';
 const colSpans = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 export default function GraphStyles() {
-  const { t, i18n } = useTranslation('dashboard');
+  const { t } = useTranslation('dashboard');
   const namePrefix = ['custom'];
   const [statFields, setStatFields] = useGlobalState('statFields');
   const fields = _.compact(_.concat(statFields, 'Value'));
@@ -43,10 +43,22 @@ export default function GraphStyles() {
         <Row gutter={10}>
           <Col span={8}>
             <Form.Item label={t('panel.custom.textMode')} name={[...namePrefix, 'textMode']}>
-              <Radio.Group buttonStyle='solid'>
-                <Radio.Button value='valueAndName'>{t('panel.custom.valueAndName')}</Radio.Button>
-                <Radio.Button value='value'>{t('panel.custom.value')}</Radio.Button>
-              </Radio.Group>
+              <Select
+                options={[
+                  {
+                    label: t('panel.custom.valueAndName'),
+                    value: 'valueAndName',
+                  },
+                  {
+                    label: t('panel.custom.name'),
+                    value: 'name',
+                  },
+                  {
+                    label: t('panel.custom.value'),
+                    value: 'value',
+                  },
+                ]}
+              />
             </Form.Item>
           </Col>
           <Col span={8}>
@@ -110,12 +122,12 @@ export default function GraphStyles() {
         <Row gutter={10}>
           <Col span={8}>
             <Form.Item label={t('panel.custom.textSize.title')} name={[...namePrefix, 'textSize', 'title']}>
-              <InputNumber placeholder='auto' style={{ width: '100%' }} min={12} max={100} />
+              <InputNumber placeholder='auto' style={{ width: '100%' }} min={1} />
             </Form.Item>
           </Col>
           <Col span={8}>
             <Form.Item label={t('panel.custom.textSize.value')} name={[...namePrefix, 'textSize', 'value']}>
-              <InputNumber placeholder='auto' style={{ width: '100%' }} min={12} max={100} />
+              <InputNumber placeholder='auto' style={{ width: '100%' }} min={1} />
             </Form.Item>
           </Col>
           <Col span={8}>
