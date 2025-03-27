@@ -25,6 +25,7 @@ import { FieldConfigVersion2, convertToVersion2, FieldConfig } from './types';
 import _ from 'lodash';
 import { copy2ClipBoard } from '@/utils';
 import InputEnlarge from '@/components/InputEnlarge';
+import { IS_ENT } from '@/utils/constant';
 
 interface IField {
   name: string;
@@ -116,22 +117,24 @@ export const LinkTip = (t, replace: 'frontend' | 'backend', collapse: boolean) =
             </a>
           </li>
         )}
-        <li style={{ marginTop: 8 }}>
-          {t('跳转到灭火图')}: ${'{'}local_url{'}'}/firemap?spaceId=2517270059626?label_1=${leftBrace}key1{rightBrace}&label_2=${leftBrace}key2{rightBrace}
-          <a
-            style={{
-              fontWeight: 'bold',
-              marginLeft: 5,
-              marginRight: 5,
-            }}
-            onClick={() => {
-              const address = '${local_url}/firemap?spaceId=2517270059626&label_1=$' + leftBrace + 'key1' + rightBrace + '&label_2=$' + leftBrace + 'key2' + rightBrace + '';
-              copy2ClipBoard(address);
-            }}
-          >
-            {t('复制')}
-          </a>
-        </li>
+        {IS_ENT && (
+          <li style={{ marginTop: 8 }}>
+            {t('跳转到灭火图')}: ${'{'}local_url{'}'}/firemap?spaceId=2517270059626?label_1=${leftBrace}key1{rightBrace}&label_2=${leftBrace}key2{rightBrace}
+            <a
+              style={{
+                fontWeight: 'bold',
+                marginLeft: 5,
+                marginRight: 5,
+              }}
+              onClick={() => {
+                const address = '${local_url}/firemap?spaceId=2517270059626&label_1=$' + leftBrace + 'key1' + rightBrace + '&label_2=$' + leftBrace + 'key2' + rightBrace + '';
+                copy2ClipBoard(address);
+              }}
+            >
+              {t('复制')}
+            </a>
+          </li>
+        )}
         <li style={{ marginTop: 8 }}>
           {t('跳转到日志查询')}: ${'{'}local_url{'}'}/log/explorer?data_source_name=elasticsearch&data_source_id=16&mode=Pattern&index_pattern=ds*&query_string=appname:${leftBrace}
           key1

@@ -21,7 +21,6 @@ export default function highlightJson(props: IProps) {
   // };
 
   const { value, features, query } = props;
-  console.log('features', features);
   return (
     <div className='highlight-json'>
       <div>{'{'}</div>
@@ -44,10 +43,10 @@ function renderValue(value, keyPath: string[], param: IParam) {
   const links = features.filter((i) => i.field === keyPathStr);
   const [hoveringIndex, setHoveringIndex] = useState(0);
   const [relations, setRelations] = useState<
-  {
-    name: string;
-    link: string;
-  }[]
+    {
+      name: string;
+      link: string;
+    }[]
   >([]);
   const handleNav = (link: string) => {
     const param = new URLSearchParams(link);
@@ -70,8 +69,8 @@ function renderValue(value, keyPath: string[], param: IParam) {
     }
     const unReplaceKeyReg = /\$\{(.+?)\}/g;
     reallink = reallink.replace(unReplaceKeyReg, function (a, b) {
-      const wholeWord = rawValue[b]
-      return wholeWord || _.get(rawValue, b.split('.')) 
+      const wholeWord = rawValue[b];
+      return wholeWord || _.get(rawValue, b.split('.'));
     });
     window.open(basePrefix + reallink.replace(unReplaceKeyReg, ''), '_blank');
   };
@@ -97,16 +96,14 @@ function renderValue(value, keyPath: string[], param: IParam) {
         }}
         content={relations.map((item, i) => (
           <div key={i} style={{ lineHeight: '24px' }}>
-            <a onClick={() => handleNav(item.link)}>
-              {item.name}
-            </a>
+            <a onClick={() => handleNav(item.link)}>{item.name}</a>
           </div>
         ))}
       >
         <a
           style={{ textDecoration: 'underline', fontWeight: 'bold' }}
           onMouseEnter={() => {
-            setRelations(links.map(i=>({name:i.name, link:i.urlTemplate})));
+            setRelations(links.map((i) => ({ name: i.name, link: i.urlTemplate })));
           }}
           onClick={() => {
             if (relations.length > 0) {
