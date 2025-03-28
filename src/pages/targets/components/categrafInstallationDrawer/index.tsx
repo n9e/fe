@@ -6,6 +6,7 @@ import Markdown from '@/components/Markdown';
 import categraf_zh_CN from '../../../../../public/docs/categraf/categraf_zh_CN.md';
 import categraf_en_US from '../../../../../public/docs/categraf/categraf_en_US.md';
 import categraf_zh_HK from '../../../../../public/docs/categraf/categraf_zh_HK.md';
+import categraf_ru_RU from '../../../../../public/docs/categraf/categraf_ru_RU.md';
 
 interface Props {
   darkMode: boolean;
@@ -21,6 +22,9 @@ function index(props: Props & ModalWrapProps) {
   }
   if (i18n.language === 'zh_HK') {
     categrafDoc = categraf_zh_HK;
+  }
+  if (i18n.language === 'ru_RU') {
+    categrafDoc = categraf_ru_RU;
   }
 
   return (

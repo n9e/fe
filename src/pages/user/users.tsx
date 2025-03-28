@@ -133,7 +133,7 @@ const Resource: React.FC = () => {
     },
     {
       title: t('common:table.operations'),
-      width: i18n.language === 'en_US' ? 80 : 40,
+      width: i18n.language === 'en_US' || i18n.language === 'ru_RU' ? 80 : 40,
       render: (text: string, record) => {
         return (
           <Dropdown
