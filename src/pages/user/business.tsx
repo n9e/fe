@@ -32,6 +32,7 @@ import { listToTree, getCollapsedKeys, getLocaleExpandedKeys, setLocaleExpandedK
 import Tree from '@/components/BusinessGroup/components/Tree';
 import '@/components/BlankBusinessPlaceholder/index.less';
 import './index.less';
+import usePagination from '@/components/usePagination';
 
 const { confirm } = Modal;
 export const PAGE_SIZE = 5000;
@@ -40,6 +41,7 @@ const Resource: React.FC = () => {
   const { setBusiGroups, siteInfo, setBusiGroup } = useContext(CommonStateContext);
   const { t } = useTranslation('user');
   const urlQuery = useQuery();
+  const pagination = usePagination({ PAGESIZE_KEY: 'business' });
   const id = urlQuery.get('id');
   const [visible, setVisible] = useState<boolean>(false);
   const [action, setAction] = useState<ActionType>();
@@ -328,6 +330,7 @@ const Resource: React.FC = () => {
                 columns={teamMemberColumns}
                 dataSource={memberList && memberList.length > 0 ? memberList.filter((item) => item.user_group && item.user_group.name.indexOf(searchMemberValue) !== -1) : []}
                 loading={memberLoading}
+                pagination={pagination}
               />
             </div>
           ) : (

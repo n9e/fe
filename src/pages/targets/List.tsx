@@ -16,6 +16,7 @@ import TargetMetaDrawer from './TargetMetaDrawer';
 import categrafInstallationDrawer from './components/categrafInstallationDrawer';
 import Explorer from './components/Explorer';
 import EditBusinessGroups from './components/EditBusinessGroups';
+import usePagination from '@/components/usePagination';
 
 // @ts-ignore
 import CollectsDrawer from 'plus:/pages/collects/CollectsDrawer';
@@ -73,6 +74,7 @@ const Unknown = () => {
 
 export default function List(props: IProps) {
   const { t } = useTranslation('targets');
+  const pagination = usePagination({ PAGESIZE_KEY: 'targets' });
   const { darkMode } = useContext(CommonStateContext);
   const { editable = true, explorable = true, gids, selectedRows, setSelectedRows, refreshFlag, setRefreshFlag, setOperateType } = props;
   const selectedIdents = _.map(selectedRows, 'ident');
@@ -507,10 +509,6 @@ export default function List(props: IProps) {
     });
   };
 
-  const showTotal = (total: number) => {
-    return t('common:table.total', { total });
-  };
-
   const { tableProps, run } = useAntdTable(featchData, {
     manual: true,
     defaultPageSize: localStorage.getItem('targetsListPageSize') ? _.toNumber(localStorage.getItem('targetsListPageSize')) : 30,
@@ -671,10 +669,7 @@ export default function List(props: IProps) {
         }}
         pagination={{
           ...tableProps.pagination,
-          showTotal: showTotal,
-          showSizeChanger: true,
-          showQuickJumper: true,
-          pageSizeOptions: pageSizeOptions,
+          ...pagination,
           onChange(page, pageSize) {
             localStorage.setItem('targetsListPageSize', _.toString(pageSize));
           },

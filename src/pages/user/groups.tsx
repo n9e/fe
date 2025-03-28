@@ -32,6 +32,7 @@ import { CommonStateContext } from '@/App';
 import Tree from '@/components/BusinessGroup/components/Tree';
 import './index.less';
 import './locale';
+import usePagination from '@/components/usePagination';
 
 const { confirm } = Modal;
 export const PAGE_SIZE = 20;
@@ -59,6 +60,7 @@ export function setLocaleExpandedKeys(nodes: string[]) {
 const Resource: React.FC = () => {
   const { siteInfo } = useContext(CommonStateContext);
   const teamDisplayMode = siteInfo?.teamDisplayMode || 'list';
+  const pagination = usePagination({ PAGESIZE_KEY: 'userGroups' });
   const { t } = useTranslation('user');
   const location = useLocation();
   const query = queryString.parse(location.search);
@@ -379,7 +381,7 @@ const Resource: React.FC = () => {
                 </Button>
               </Row>
 
-              <Table className='mt8' size='small' rowKey='id' columns={teamMemberColumns} dataSource={memberList} loading={memberLoading} />
+              <Table className='mt8' size='small' rowKey='id' columns={teamMemberColumns} dataSource={memberList} loading={memberLoading} pagination={pagination} />
             </div>
           ) : (
             <div className='blank-busi-holder'>
