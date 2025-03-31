@@ -18,7 +18,7 @@
   --fc-fill-warning: rgb(250 200 0);
   --fc-fill-alert: rgb(250 125 0);
   --fc-fill-error: rgb(200 0 0);
-  --fc-fill-gold: #FFBC0D;
+  --fc-fill-gold: #ffbc0d;
 
   /* 文本 */
   --fc-text-1: #1a1a1a;
@@ -91,6 +91,9 @@
   --fc-geekblue-5-color: #597ef7;
   --fc-geekblue-6-color: #2f54eb;
 
+  /* 渐变色 */
+  --fc-gradient-1-color: linear-gradient(90deg, #ebf4fe 0%, #edf5fb 25%, #f1f1f9 50%, #f4f3f7 75%, #f3f4f6 100%);
+
   /* boxshadow*/
   --fc-boxshadow-base-color: rgba(0, 0, 0, 0.08);
   --fc-boxshadow-hover-color: rgba(0, 0, 0, 0.15);
@@ -113,8 +116,8 @@
   --fc-fill-warning: rgb(230 198 39);
   --fc-fill-alert: rgb(250 125 0);
   --fc-fill-error: rgb(255 101 107);
-  --fc-fill-gold: #FFBC0D;
-  
+  --fc-fill-gold: #ffbc0d;
+
   /* 文本 */
   --fc-text-link: #9470ff;
   --fc-text-link-rgb: 148, 112, 255;
@@ -183,6 +186,9 @@
   --fc-geekblue-5-color: #1765ad;
   --fc-geekblue-6-color: #177ddc;
 
+  /* 渐变色 */
+  --fc-gradient-1-color: linear-gradient(90deg, #272c3c 0%, #24253b 25%, #221f33 50%, #1e1e28 75%, #181b1f 100%);
+
   /* boxshadow*/
   /* --fc-boxshadow-base-color: green;
   --fc-boxshadow-hover-color: red; */
@@ -191,8 +197,8 @@
 }
 
 .theme-light-gold {
-  --fc-fill-primary: #FFBC0D;
-  --fc-primary-color: #FFBC0D;
+  --fc-fill-primary: #ffbc0d;
+  --fc-primary-color: #ffbc0d;
   --fc-gold-text: #222;
-  --fc-text-link: #4880FF;
+  --fc-text-link: #4880ff;
 }
