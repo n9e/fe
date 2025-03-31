@@ -506,7 +506,8 @@ const ja_JP = {
     timeseries: '時系列グラフ',
     barchart: '棒グラフ',
     stat: '指標値',
-    table: 'テーブル',
+    table: 'テーブル(旧)',
+    tableNG: 'テーブル',
     pie: '円グラフ',
     hexbin: '六角ビン',
     barGauge: 'ランキング',
@@ -536,6 +537,14 @@ const ja_JP = {
     tags: 'タグ',
     updated: '注釈が更新されました',
     deleted: '注釈が削除されました',
+  },
+  transformations: {
+    organize: {
+      title: 'フィールドの整理',
+    },
+    merge: {
+      title: 'マージ',
+    },
   },
 };
 

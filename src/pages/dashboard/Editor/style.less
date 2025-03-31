@@ -4,14 +4,14 @@
   .n9e-dashboard-editor-modal-left-wrapper {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 16px;
     height: 100%;
   }
   .n9e-dashboard-editor-modal-left-vars-wrapper {
     flex-shrink: 0;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 16px;
   }
   .n9e-dashboard-editor-modal-left-chart-wrapper {
     height: 300px;
@@ -24,6 +24,19 @@
   .ant-modal-content {
     height: 100% !important;
   }
+}
+.n9e-dashboard-editor-transformationNG-item {
+  background-color: var(--fc-fill-3);
+  padding: 16px;
+  cursor: pointer;
+  border-radius: 2px;
+  height: 100px;
+  &:hover {
+    background-color: var(--fc-fill-4);
+  }
+}
+.n9e-dashboard-editor-transformationNG-organizeFields-row-dragging {
+  z-index: 99999;
 }
 .theme-dark {
   .n9e-dashboard-editor-modal {

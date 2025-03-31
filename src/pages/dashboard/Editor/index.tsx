@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next';
 import TimeRangePicker, { IRawTimeRange } from '@/components/TimeRangePicker';
 import { Dashboard } from '@/store/dashboardInterface';
 import { CommonStateContext } from '@/App';
+import { SIZE } from '@/utils/constant';
 import { visualizations, defaultValues, defaultCustomValuesMap, defaultOptionsValuesMap } from './config';
 import { IVariable } from '../VariableConfig';
 import FormCpt from './Form';
@@ -173,7 +174,8 @@ function index(props: IProps) {
         props.onCancel && props.onCancel();
       }}
       bodyStyle={{
-        padding: 10,
+        padding: SIZE * 2,
+        backgroundColor: 'var(--fc-fill-1)',
       }}
     >
       {/* 除了 text 和 iframe 类型其他的类型比如存在 initialValues?.datasourceCate */}

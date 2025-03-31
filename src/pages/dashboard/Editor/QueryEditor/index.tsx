@@ -6,6 +6,7 @@ import { DatasourceCateEnum } from '@/utils/constant';
 import { QueryBuilder as TDengine } from '@/plugins/TDengine';
 import { QueryBuilder as CK } from '@/plugins/clickHouse';
 import OrganizeFields from '../TransformationsEditor/OrganizeFields';
+import TransformationsEditorNG from '../TransformationsEditorNG';
 import DatasourceSelect from './components/DatasourceSelect';
 import Prometheus from './Prometheus';
 import Elasticsearch from './Elasticsearch';
@@ -20,7 +21,7 @@ export default function index({ chartForm, type, variableConfig, dashboardId, ti
   return (
     <div>
       <Space align='start'>
-        {type === 'table' && (
+        {_.includes(['table', 'tableNG'], type) && (
           <Radio.Group
             value={mode}
             onChange={(e) => {
@@ -29,7 +30,8 @@ export default function index({ chartForm, type, variableConfig, dashboardId, ti
             buttonStyle='solid'
           >
             <Radio.Button value='query'>{t('query.title')}</Radio.Button>
-            <Radio.Button value='transform'>{t('query.transform')} (beta)</Radio.Button>
+            {type === 'table' && <Radio.Button value='transform'>{t('query.transform')} (beta)</Radio.Button>}
+            {type === 'tableNG' && <Radio.Button value='transformNG'>{t('query.transform')} (beta)</Radio.Button>}
           </Radio.Group>
         )}
         <DatasourceSelect dashboardId={dashboardId} chartForm={chartForm} variableConfig={variableConfig} />
@@ -58,13 +60,8 @@ export default function index({ chartForm, type, variableConfig, dashboardId, ti
           }}
         </Form.Item>
       </div>
-      <div
-        style={{
-          display: mode === 'transform' ? 'block' : 'none',
-        }}
-      >
-        <OrganizeFields chartForm={chartForm} />
-      </div>
+      {mode === 'transform' && <OrganizeFields />}
+      {mode === 'transformNG' && <TransformationsEditorNG />}
     </div>
   );
 }

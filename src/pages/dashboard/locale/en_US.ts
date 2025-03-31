@@ -533,7 +533,8 @@ const en_US = {
     timeseries: 'Time Series',
     barchart: 'Bar Chart',
     stat: 'Stat',
-    table: 'Table',
+    table: 'Table(old)',
+    tableNG: 'Table',
     pie: 'Pie Chart',
     hexbin: 'Hexmap',
     barGauge: 'Bar Gauge',
@@ -563,6 +564,14 @@ const en_US = {
     tags: 'Tags',
     updated: 'Annotation updated',
     deleted: 'Annotation deleted',
+  },
+  transformations: {
+    organize: {
+      title: 'Organize fields',
+    },
+    merge: {
+      title: 'Merge',
+    },
   },
 };
 export default en_US;

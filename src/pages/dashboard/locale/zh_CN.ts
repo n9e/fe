@@ -547,7 +547,8 @@ const zh_CN = {
     timeseries: '时序图',
     barchart: '柱状图',
     stat: '指标值',
-    table: '表格',
+    table: '表格(旧)',
+    tableNG: '表格',
     pie: '饼图',
     hexbin: '蜂窝图',
     barGauge: '排行榜',
@@ -577,6 +578,14 @@ const zh_CN = {
     tags: '标签',
     updated: '注释已更新',
     deleted: '注释已删除',
+  },
+  transformations: {
+    organize: {
+      title: '字段整理',
+    },
+    merge: {
+      title: '合并',
+    },
   },
 };
 export default zh_CN;

@@ -21,12 +21,15 @@ import classnames from 'classnames';
 interface IProps {
   isActive?: boolean;
   header: React.ReactNode;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   extra?: React.ReactNode;
   isInner?: boolean;
+  showArrow?: boolean;
+  collapsible?: 'header' | 'icon';
 }
 
 export default function Panel(props: IProps) {
+  const { showArrow = true, collapsible = 'header' } = props;
   const [isActive, setIsActive] = useState<boolean>(props.isActive ?? true);
 
   return (
@@ -40,10 +43,18 @@ export default function Panel(props: IProps) {
       <div
         className='n9e-collapse-header'
         onClick={() => {
-          setIsActive(!isActive);
+          collapsible === 'header' && setIsActive(!isActive);
         }}
       >
-        {isActive ? <DownOutlined className='n9e-collapse-arrow' /> : <RightOutlined className='n9e-collapse-arrow' />}
+        {showArrow ? (
+          <span
+            onClick={() => {
+              collapsible === 'icon' && setIsActive(!isActive);
+            }}
+          >
+            {isActive ? <DownOutlined className='n9e-collapse-arrow' /> : <RightOutlined className='n9e-collapse-arrow' />}
+          </span>
+        ) : null}
         {props.header}
         <div
           className='n9e-collapse-extra'
@@ -55,14 +66,16 @@ export default function Panel(props: IProps) {
           {props.extra}
         </div>
       </div>
-      <div
-        className={classnames({
-          'n9e-collapse-content': true,
-          'n9e-collapse-content-hidden': !isActive,
-        })}
-      >
-        <div className='n9e-collapse-content-box'>{props.children}</div>
-      </div>
+      {props.children && (
+        <div
+          className={classnames({
+            'n9e-collapse-content': true,
+            'n9e-collapse-content-hidden': !isActive,
+          })}
+        >
+          <div className='n9e-collapse-content-box'>{props.children}</div>
+        </div>
+      )}
     </div>
   );
 }

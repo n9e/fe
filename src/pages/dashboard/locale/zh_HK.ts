@@ -541,7 +541,8 @@ const zh_HK = {
     timeseries: '時序圖',
     barchart: '棒形圖',
     stat: '指標圖',
-    table: '表格',
+    table: '表格(舊)',
+    tableNG: '表格',
     pie: '餅圖',
     hexbin: '蜂窩圖',
     barGauge: '排行榜',
@@ -571,6 +572,14 @@ const zh_HK = {
     tags: '標籤',
     updated: '注釋已更新',
     deleted: '注釋已刪除',
+  },
+  transformations: {
+    organize: {
+      title: '整理字段',
+    },
+    merge: {
+      title: '合併',
+    },
   },
 };
 
