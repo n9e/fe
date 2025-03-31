@@ -1,5 +1,5 @@
 const en_US = {
-  title: 'Explorer',
+  title: 'Discover',
   add_btn: 'Add a query panel',
   query_btn: 'Execute',
   query_tab: 'Query',
