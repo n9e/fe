@@ -1,5 +1,5 @@
 const ja_JP = {
-  title: '即時クエリ',
+  title: 'ログ検索',
   add_btn: 'クエリパネルを追加',
   query_btn: 'クエリ実行',
   query_tab: 'クエリ',
