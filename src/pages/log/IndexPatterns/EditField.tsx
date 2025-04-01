@@ -38,51 +38,40 @@ interface Props {
   onOk: (values: any, name: string) => void;
 }
 
-export const LinkTip = (t, replace: 'frontend' | 'backend', collapse: boolean) => {
-  const leftBrace = replace === 'backend' ? '' : '{';
-  const rightBrace = replace === 'backend' ? '' : '}';
+export const LinkTip = (t, collapse: boolean) => {
   if (collapse) {
-    return (
-      <div>
-        {t('日志中的字段均可被作为变量引用，如')}${'{'}key1{'}'}，${'{'}key2{'}'}，${'{'}a.b{'}'} ...
-      </div>
-    );
+    return <div>{t('日志中的字段均可被作为变量引用，如')}$key1，$key2，$a.b ...</div>;
   }
   return (
     <>
-      <div>
-        {t('日志中的字段均可被作为变量引用，如')}${'{'}key1{'}'}，${'{'}key2{'}'}，${'{'}a.b{'}'}
-      </div>
+      <div>{t('日志中的字段均可被作为变量引用，如')}$key1，$key2，$a.b</div>
       <div>{t('内置变量')}：</div>
       <ul style={{ paddingInlineStart: 24 }}>
         <li>
-          {t('起止时间')}：${'{'}__start_time__{'} '}
-          {t('和')}${' {'}__end_time__{'}'}
+          {t('起止时间')}：$__from
+          {t('和')}$__to
         </li>
-        {replace === 'frontend' && (
-          <li>
-            {t('时间偏移(单位毫秒，可为负数)')}：${'{'}__start_time_margin__{'} '}
-            {t('和')}${' {'}__end_time_margin__{'}'}
-          </li>
-        )}
         <li>
-          {t('本系统地址')}：${'{'}local_url{'}'}
+          {t('时间偏移(单位毫秒，可为负数)')}：$__start_time_margin__
+          {t('和')}$__end_time_margin__
+        </li>
+        <li>
+          {t('本系统地址')}：$local_url
           {t('，包含了协议和域名')}
         </li>
         <li>
-          {t('本系统协议')}：${'{'}local_protocol{'}'}
+          {t('本系统协议')}：$local_protocol
           {t('，如')}: {t('“http')}:{t('” 或 “https')}:{t('”')}
         </li>
         <li>
-          {t('本系统的域名')}：{'${'}local_domain{'}'}
+          {t('本系统的域名')}：$local_domain
           {t('，如 flashcat.cloud')}
         </li>
       </ul>
       <div>{t('样例')}：</div>
       <ul style={{ paddingInlineStart: 24 }}>
         <li style={{ marginTop: 8 }}>
-          {t('跳转到仪表盘')}: ${'{'}local_url{'}'}/dashboards/132?p1=${leftBrace}key1{rightBrace}&p2=${leftBrace}key2{rightBrace}&__from=${'{'}__start_time__{'}'}
-          &__to=${'{'}__end_time__{'}'}{' '}
+          {t('跳转到仪表盘')}: $local_url/dashboards/132?p1=$key1&p2=$key2&__from=$__from&__to=$__to
           <a
             style={{
               fontWeight: 'bold',
@@ -90,36 +79,32 @@ export const LinkTip = (t, replace: 'frontend' | 'backend', collapse: boolean) =
               marginRight: 5,
             }}
             onClick={() => {
-              const address =
-                '${local_url}/dashboards/132?p1=$' + leftBrace + 'key1' + rightBrace + '&p2=$' + leftBrace + 'key2' + rightBrace + '&__from=${__start_time__}&__to=${__end_time__}';
+              const address = '$local_url/dashboards/132?p1=$key1&p2=$key2&__from=$__from&__to=$__to';
               copy2ClipBoard(address);
             }}
           >
             {t('复制')}
           </a>
         </li>
-        {replace === 'frontend' && (
-          <li style={{ marginTop: 8 }}>
-            {t('时间偏移')}: ${'{'}local_url{'}'}/dashboards/132?__from=${'{'}__start_time__{'}'}
-            &__to=${'{'}__end_time__{'}'}&${'{'}__start_time_margin__{'}'}=100&${'{'}__end_time_margin__{'}'}=100
-            <a
-              style={{
-                fontWeight: 'bold',
-                marginLeft: 5,
-                marginRight: 5,
-              }}
-              onClick={() => {
-                const address = '${local_url}/dashboards/132?__from=${__start_time__}&__to=${__end_time__}&${__start_time_margin__}=100&${__end_time_margin__}=200';
-                copy2ClipBoard(address);
-              }}
-            >
-              {t('复制')}
-            </a>
-          </li>
-        )}
+        <li style={{ marginTop: 8 }}>
+          {t('时间偏移')}: $local_url/dashboards/132?__from=$__from&__to=$__to&$__start_time_margin__=100&$__end_time_margin__=100
+          <a
+            style={{
+              fontWeight: 'bold',
+              marginLeft: 5,
+              marginRight: 5,
+            }}
+            onClick={() => {
+              const address = '$local_url/dashboards/132?__from=$__from&__to=$__to&$__start_time_margin__=100&$__end_time_margin__=100';
+              copy2ClipBoard(address);
+            }}
+          >
+            {t('复制')}
+          </a>
+        </li>
         {IS_ENT && (
           <li style={{ marginTop: 8 }}>
-            {t('跳转到灭火图')}: ${'{'}local_url{'}'}/firemap?spaceId=2517270059626?label_1=${leftBrace}key1{rightBrace}&label_2=${leftBrace}key2{rightBrace}
+            {t('跳转到灭火图')}: $local_url/firemap?spaceId=2517270059626?label_1=$key1&label_2=$key2
             <a
               style={{
                 fontWeight: 'bold',
@@ -127,7 +112,7 @@ export const LinkTip = (t, replace: 'frontend' | 'backend', collapse: boolean) =
                 marginRight: 5,
               }}
               onClick={() => {
-                const address = '${local_url}/firemap?spaceId=2517270059626&label_1=$' + leftBrace + 'key1' + rightBrace + '&label_2=$' + leftBrace + 'key2' + rightBrace + '';
+                const address = '$local_url/firemap?spaceId=2517270059626&label_1=$key1&label_2=$key2';
                 copy2ClipBoard(address);
               }}
             >
@@ -136,9 +121,8 @@ export const LinkTip = (t, replace: 'frontend' | 'backend', collapse: boolean) =
           </li>
         )}
         <li style={{ marginTop: 8 }}>
-          {t('跳转到日志查询')}: ${'{'}local_url{'}'}/log/explorer?data_source_name=elasticsearch&data_source_id=16&mode=Pattern&index_pattern=ds*&query_string=appname:${leftBrace}
-          key1
-          {rightBrace} AND logLevel:${leftBrace}key2{rightBrace}&start=${'{'}__start_time__{'}'}&end=${'{'}__end_time__{'}'}{' '}
+          {t('跳转到日志查询')}: $local_url/log/explorer?data_source_name=elasticsearch&data_source_id=16&mode=Pattern&index_pattern=998&query_string=appname:$ key1 AND
+          logLevel:$key2&start=$__from&end=$__to
           <a
             style={{
               fontWeight: 'bold',
@@ -147,15 +131,7 @@ export const LinkTip = (t, replace: 'frontend' | 'backend', collapse: boolean) =
             }}
             onClick={() => {
               const address =
-                '${local_url}/log/explorer?data_source_name=elasticsearch&data_source_id=16&mode=Pattern&index_pattern=ds*&query_string=appname:$' +
-                leftBrace +
-                'key1' +
-                rightBrace +
-                ' AND logLevel:$' +
-                leftBrace +
-                'key2' +
-                rightBrace +
-                '&start=${__start_time__}&end=${__end_time__}';
+                '$local_url/log/explorer?data_source_name=elasticsearch&data_source_id=16&mode=Pattern&index_pattern=998&query_string=appname:$ key1 AND logLevel:$key2&start=$__from&end=$__to';
               copy2ClipBoard(address);
             }}
           >
@@ -265,7 +241,7 @@ function EditField(props: Props & ModalWrapProps) {
               <InfoCircleOutlined style={{ margin: '2px 4px' }} className='text-primary' />
               <div>
                 {t('可为指定字段设置链接')}
-                {LinkTip(t, 'frontend', collapse)}
+                {LinkTip(t, collapse)}
                 {collapse ? (
                   <Button type='link' onClick={() => setCollapse(!collapse)} style={{ padding: 0 }} size='small'>
                     {t('tipDisplay')} <DownOutlined />
@@ -351,7 +327,7 @@ function Link({ form, fieldsAll, t }) {
                 <Col span={16}>
                   {t('链接地址')}
                   <Tooltip
-                    title={LinkTip(t, 'frontend', false)}
+                    title={LinkTip(t, false)}
                     overlayInnerStyle={{
                       width: 500,
                     }}
