@@ -268,6 +268,7 @@ export default function Title(props: IProps) {
                   </Button>
                 </Dropdown>
               )}
+              {console.log('TimeRangePickerWithRefresh value', range)}
               <TimeRangePickerWithRefresh
                 localKey={`${dashboardTimeCacheKey}_${dashboard.id}`}
                 dateFormat='YYYY-MM-DD HH:mm:ss'
