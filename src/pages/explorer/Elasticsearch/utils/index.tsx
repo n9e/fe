@@ -22,6 +22,7 @@ export function getFieldType(fieldKey: string, fieldConfig?: any) {
 
 const handleNav = (link: string, rawValue: object, query: { start: number; end: number }) => {
   const param = new URLSearchParams(link);
+  // 为了兼容旧逻辑，所以${} 中的也需要替换
   const startMargin = param.get('${__start_time_margin__}');
   const endMargin = param.get('${__end_time_margin__}');
   const startMarginNum = startMargin && !isNaN(Number(startMargin)) ? Number(startMargin) : 0;
@@ -39,12 +40,36 @@ const handleNav = (link: string, rawValue: object, query: { start: number; end: 
   if (endMargin) {
     reallink = reallink.replace('&${__end_time_margin__}' + '=' + endMargin, '');
   }
-  const unReplaceKeyReg = /\$\{(.+?)\}/g;
+  // 旧逻辑Endding，开启新逻辑，替换不带括号的 $local_protocol
+  // 我把上边的一坨代码复制下来，然后改成不带括号的了
+  const startMarginNew = param.get('${__start_time_margin__}');
+  const endMarginNew = param.get('${__end_time_margin__}');
+  const startMarginNumNew = startMarginNew && !isNaN(Number(startMarginNew)) ? Number(startMarginNew) : 0;
+  const endMarginNumNew = endMarginNew && !isNaN(Number(endMarginNew)) ? Number(endMarginNew) : 0;
+  reallink = reallink
+    .replace('$local_protocol', location.protocol)
+    .replace('$local_domain', location.host)
+    .replace('$local_url', location.origin)
+    .replace('$__from', typeof query.start === 'number' ? String(1000 * query.start + startMarginNumNew) : '')
+    .replace('$__to', typeof query.end === 'number' ? String(1000 * query.end + endMarginNumNew) : '');
+
+  if (startMarginNew) {
+    reallink = reallink.replace('&$__start_time_margin__' + '=' + startMargin, '');
+  }
+  if (endMarginNew) {
+    reallink = reallink.replace('&$__end_time_margin__' + '=' + endMargin, '');
+  }
+  const unReplaceKeyReg = /\$\{(.+?)\}(?=&|$)/gm;
   reallink = reallink.replace(unReplaceKeyReg, function (a, b) {
     const wholeWord = rawValue[b];
     return wholeWord || _.get(rawValue, b.split('.'));
   });
-  window.open(basePrefix + reallink.replace(unReplaceKeyReg, ''), '_blank');
+  const unReplaceKeyRegNew = /\$(.+?)(?=&|$)/gm;
+  reallink = reallink.replace(unReplaceKeyRegNew, function (a, b) {
+    const wholeWord = rawValue[b];
+    return wholeWord || _.get(rawValue, b.split('.'));
+  });
+  window.open(basePrefix + reallink.replace(unReplaceKeyRegNew, ''), '_blank');
 };
 
 export function getFieldValue(fieldKey, fieldValue, fieldConfig: any, rawValue?: { [field: string]: string }, range?: IRawTimeRange) {
