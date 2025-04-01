@@ -274,7 +274,6 @@ export default function Title(props: IProps) {
                 dateFormat='YYYY-MM-DD HH:mm:ss'
                 value={range}
                 onChange={(val) => {
-                  console.log('TimeRangePickerWithRefresh onChange', val);
                   // 更改时间范围后同步到 URL
                   history.replace({
                     pathname: location.pathname,
@@ -288,7 +287,6 @@ export default function Title(props: IProps) {
                 }}
                 intervalSeconds={intervalSeconds}
                 onIntervalSecondsChange={(val) => {
-                  console.log('TimeRangePickerWithRefresh onIntervalSecondsChange', val);
                   const value = val > 0 ? val : undefined;
                   history.replace({
                     pathname: location.pathname,
