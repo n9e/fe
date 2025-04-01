@@ -44,8 +44,8 @@ const MetricExplorerPage = () => {
                     <CloseCircleOutlined
                       style={{
                         position: 'absolute',
-                        top: 8,
-                        right: 8,
+                        top: 4,
+                        right: 4,
                         fontSize: 14,
                       }}
                       onClick={() => {

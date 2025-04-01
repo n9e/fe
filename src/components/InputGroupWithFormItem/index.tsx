@@ -7,6 +7,7 @@ interface IProps {
   children: React.ReactNode;
   label: React.ReactNode;
   labelWidth?: number | string;
+  labelMinWidth?: number | string;
   noStyle?: boolean;
   customStyle?: CSSProperties;
   addonAfter?: React.ReactNode;
@@ -14,7 +15,7 @@ interface IProps {
 }
 
 export default function index(props: IProps) {
-  const { children, label, labelWidth = 'max-content', noStyle = false, customStyle, addonAfter, addonAfterWithContainer } = props;
+  const { children, label, labelWidth = 'max-content', labelMinWidth, noStyle = false, customStyle, addonAfter, addonAfterWithContainer } = props;
 
   return (
     <Input.Group compact className='input-group-with-form-item'>
@@ -24,6 +25,7 @@ export default function index(props: IProps) {
           'input-group-with-form-item-label': true,
         })}
         style={{
+          minWidth: labelMinWidth,
           width: labelWidth,
           maxWidth: 'unset',
           ...customStyle,
