@@ -1,6 +1,6 @@
 const ru_RU = {
   default_filter: {
-    title: 'Предварительный фильтр',
+    title: 'Фильтр',
     all: 'Все правила',
   },
 };

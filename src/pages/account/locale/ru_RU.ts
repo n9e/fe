@@ -22,8 +22,8 @@ const ru_RU = {
     role: 'Роль',
     email: 'Электронная почта',
     phone: 'Номер телефона',
-    contact: 'Контактная информация',
-    contactLinkToSetting: 'Управление контактной информацией',
+    contact: 'Контакт',
+    contactLinkToSetting: 'Управление контактом',
     contactPlaceholder: 'Пожалуйста, выберите способ связи',
   },
   token: {

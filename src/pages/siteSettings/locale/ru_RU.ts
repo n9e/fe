@@ -25,10 +25,10 @@ const ru_RU = {
   teamSeparator: 'Разделитель команд',
   darkTheme: 'Темная тема',
   lightTheme: 'Светлая тема',
-  explorer_timeseries_legend_columns: 'Примеры легенд графика быстрого запроса',
+  explorer_timeseries_legend_columns: 'Условное обозначение полей графика',
   explorer_timeseries_legend_columns_placeholder: 'По умолчанию Last',
   print_access_log: 'Включить журнал доступа',
-  print_body_paths: 'Вывод путей тела запроса',
+  print_body_paths: 'Отображать пути элементов тела запроса',
   font_family: 'Шрифт',
 };
 

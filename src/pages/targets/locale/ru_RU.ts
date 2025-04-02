@@ -1,6 +1,6 @@
 const ru_RU = {
   title: 'Список хостов',
-  default_filter: 'Стандартный фильтр',
+  default_filter: 'Фильтр',
   ungrouped_targets: 'Не сгруппированные хосты',
   all_targets: 'Все хосты',
   datasource: 'Источник данных',
