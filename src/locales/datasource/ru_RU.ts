@@ -8,7 +8,7 @@ const ru_RU = {
     indexPatterns: 'Шаблоны индексов',
     indexPattern_msg: 'Шаблон индекса не может быть пустым',
     indexPatterns_manage: 'Управление шаблонами индексов',
-    filter: 'Фильтры',
+    filter: 'Фильтр',
     time_label: 'Гранулярность времени',
     date_field: 'Поле даты',
     date_field_msg: 'Поле даты не может быть пустым',

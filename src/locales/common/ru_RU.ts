@@ -147,7 +147,7 @@ const ru_RU = {
   copyToClipboardFailed: 'Не удалось скопировать в буфер обмена',
   manage: 'Управление',
   reload: 'Обновить',
-  public: 'Общедоступно',
+  public: 'Публичное',
   private: 'Частное',
   tpl: 'Скрипт самовосстановления',
   'tpl.create': 'Создать',
