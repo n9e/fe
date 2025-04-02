@@ -127,6 +127,7 @@ export default function index(props: IProps) {
   const [loading, setLoading] = useState(false); // table
   const [timeseriesLoading, setTimeseriesLoading] = useState(false); // timeseries
   const [data, setData] = useState<any[]>([]);
+  const [total, setTotal] = useState(0);
   const [paginationOptions, setPaginationOptions] = useState({
     current: 1,
     pageSize: 20,
@@ -241,6 +242,7 @@ export default function index(props: IProps) {
             };
           });
           setData(newData);
+          setTotal(res.total);
           setPaginationOptions({
             ...paginationOptions,
             total: res.total > MAX_RESULT_WINDOW ? MAX_RESULT_WINDOW : res.total,
@@ -252,6 +254,7 @@ export default function index(props: IProps) {
           console.error(e);
           setErrorContent(_.get(e, 'message', t('datasource:es.queryFailed')));
           setData([]);
+          setTotal(0);
           setPaginationOptions({
             ...paginationOptions,
             total: 0,
@@ -305,6 +308,7 @@ export default function index(props: IProps) {
                   });
                   setMode(val);
                   setData([]);
+                  setTotal(0);
                 }}
                 allowHideSystemIndices={allowHideSystemIndices}
                 setAllowHideSystemIndices={setAllowHideSystemIndices}
@@ -426,13 +430,13 @@ export default function index(props: IProps) {
                 }}
               >
                 <div className='es-discover-chart-title'>
-                  <div
-                    style={{
-                      width: 32,
-                    }}
-                  >
+                  <div style={{ width: 40, height: 32, lineHeight: '32px' }}>
                     <Spin spinning={timeseriesLoading} size='small' className='ml1' />
                   </div>
+                  <Space size={4}>
+                    <strong>{total}</strong>
+                    hits
+                  </Space>
                   {!_.isEmpty(series) && (
                     <>
                       <div className='es-discover-chart-title-content'>
