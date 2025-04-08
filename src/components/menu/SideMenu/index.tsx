@@ -68,7 +68,7 @@ export const getMenuList = (t) => {
       children: [
         {
           key: '/log/explorer',
-          label: t('即时查询'),
+          label: t('explorer:log_title'),
         },
       ],
     },
