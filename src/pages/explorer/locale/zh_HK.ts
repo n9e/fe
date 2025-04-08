@@ -1,5 +1,6 @@
 const zh_HK = {
   title: '日誌檢索',
+  log_title: '日誌檢索',
   add_btn: '新增一個查詢面板',
   query_btn: '查詢',
   query_tab: '查詢',
