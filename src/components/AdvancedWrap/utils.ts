@@ -82,6 +82,17 @@ export const baseCates: Cate[] = [
     alertPro: false,
     logo: '/image/logos/ck.png',
   },
+  {
+    value: 'cloudwatch',
+    label: 'CloudWatch',
+    type: ['metric'],
+    alertRule: true,
+    dashboard: true,
+    dashboardVariable: false,
+    graphPro: true,
+    alertPro: true,
+    logo: '/image/logos/cloudwatch.png',
+  },
 ];
 
 export const allCates = [...baseCates, ...advancedCates];
