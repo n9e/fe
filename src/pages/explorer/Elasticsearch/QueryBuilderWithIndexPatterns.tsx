@@ -166,6 +166,8 @@ export default function QueryBuilder(props: Props) {
                   };
                 })}
                 dropdownMatchSelectWidth={false}
+                showSearch
+                optionFilterProp='label'
               />
             </Form.Item>
           </InputGroupWithFormItem>
