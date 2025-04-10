@@ -6,7 +6,7 @@ import { Space, Tag } from 'antd';
 export default function ElasticsearchDetail(
   options: {
     indexPatterns: {
-      id: string;
+      id: number;
       name: string;
     }[];
   } = {
