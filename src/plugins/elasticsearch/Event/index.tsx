@@ -3,7 +3,17 @@ import _ from 'lodash';
 import i18next from 'i18next';
 import { Space, Tag } from 'antd';
 
-export default function ElasticsearchDetail({ indexPatterns }) {
+export default function ElasticsearchDetail(
+  options: {
+    indexPatterns: {
+      id: string;
+      name: string;
+    }[];
+  } = {
+    indexPatterns: [],
+  },
+) {
+  const { indexPatterns } = options;
   return [
     {
       label: i18next.t('datasource:es.value'),
