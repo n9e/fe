@@ -168,21 +168,37 @@ export function getFullFields(
   }
 }
 
-export function getLogsQuery(datasourceValue: number, requestBody) {
+const queryControllerMap = new Map();
+
+export function getLogsQuery(datasourceValue: number, requestBody: any, requestId: string) {
+  if (queryControllerMap.has(requestId)) {
+    queryControllerMap.get(requestId).abort();
+    queryControllerMap.delete(requestId);
+  }
+
+  const controller = new AbortController();
+  queryControllerMap.set(requestId, controller);
   return request(`/api/${N9E_PATHNAME}/proxy/${datasourceValue}/_msearch`, {
     method: RequestMethod.Post,
     data: requestBody,
     headers: {
       'Content-Type': 'application/json',
     },
-  }).then((res) => {
-    const dat = _.get(res, 'responses[0].hits');
-    const { docs } = flattenHits(dat.hits);
-    return {
-      total: dat.total.value,
-      list: docs,
-    };
-  });
+    signal: controller.signal,
+  })
+    .then((res) => {
+      const dat = _.get(res, 'responses[0].hits');
+      const { docs } = flattenHits(dat.hits);
+      return {
+        total: dat.total.value,
+        list: docs,
+      };
+    })
+    .finally(() => {
+      if (queryControllerMap.has(requestId)) {
+        queryControllerMap.delete(requestId);
+      }
+    });
 }
 
 export function getDsQuery(datasourceValue: number, requestBody) {
