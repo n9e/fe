@@ -128,7 +128,7 @@ export default function index(props: IProps) {
   const [timeseriesLoading, setTimeseriesLoading] = useState(false); // timeseries
   const [data, setData] = useState<any[]>([]);
   const [total, setTotal] = useState(0);
-  const [paginationOptions, setPaginationOptions] = useState({
+  const [paginationOptions, setPaginationOptions, getPaginationOptions] = useGetState({
     current: 1,
     pageSize: 20,
   });
@@ -263,9 +263,22 @@ export default function index(props: IProps) {
     });
   };
 
+  const resetThenRefresh = () => {
+    const paginationOptions = getPaginationOptions();
+    if (paginationOptions.current !== 1) {
+      setPaginationOptions({
+        ...paginationOptions,
+        current: 1,
+      });
+    } else {
+      fetchData();
+    }
+  };
+
   useEffect(() => {
     if (_.isArray(filters)) {
-      fetchData();
+      // 如果有过滤条件，则清空当前页码，重新查询
+      resetThenRefresh();
     }
   }, [JSON.stringify(filters)]);
 
@@ -334,7 +347,7 @@ export default function index(props: IProps) {
         <QueryBuilder
           loading={loading}
           key={datasourceValue}
-          onExecute={fetchData}
+          onExecute={resetThenRefresh}
           datasourceValue={datasourceValue}
           setFields={setFields}
           allowHideSystemIndices={allowHideSystemIndices}
@@ -345,13 +358,13 @@ export default function index(props: IProps) {
         <QueryBuilderWithIndexPatterns
           loading={loading}
           key={datasourceValue}
-          onExecute={fetchData}
+          onExecute={resetThenRefresh}
           datasourceValue={datasourceValue}
           form={form}
           setFields={setFields}
           onIndexChange={() => {
             setSelectedFields([]);
-            fetchData();
+            resetThenRefresh();
           }}
         />
       )}
@@ -579,10 +592,7 @@ export default function index(props: IProps) {
                       order: item.order === 'ascend' ? 'asc' : 'desc',
                     };
                   });
-                  setPaginationOptions({
-                    ...paginationOptions,
-                    current: 1,
-                  });
+                  resetThenRefresh();
                 }}
                 getFields={getFields}
                 selectedFields={selectedFields}
