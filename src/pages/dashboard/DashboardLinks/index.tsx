@@ -19,6 +19,9 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Button, Space, Dropdown, Menu } from 'antd';
 import { EditOutlined, LinkOutlined, DashboardOutlined } from '@ant-design/icons';
+
+import { useIsAuthorized } from '@/components/AuthorizationWrapper';
+
 import Edit from './Edit';
 import { ILink } from '../types';
 import './style.less';
@@ -32,6 +35,7 @@ interface IProps {
 export default function index(props: IProps) {
   const { t } = useTranslation('dashboard');
   const { editable = true, value } = props;
+  const indexPatternsAuthorized = useIsAuthorized(['/dashboards/put']);
   const links = useMemo(() => {
     const data: {
       id: string;
@@ -60,6 +64,9 @@ export default function index(props: IProps) {
     });
     return data;
   }, [JSON.stringify(value)]);
+
+  // 如果没有编辑权限并且没有配置链接，则不渲染
+  if (!indexPatternsAuthorized && _.isEmpty(value)) return null;
 
   return (
     <div className='dashboard-detail-links'>
