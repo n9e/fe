@@ -376,14 +376,16 @@ const EventDetailPage: React.FC = () => {
                   ]
                 : eventDetail?.rule_prod === 'firemap'
                 ? [
-                    <Button
-                      type='primary'
-                      onClick={() => {
-                        window.open(eventDetail.rule_config.detail_url + '&mute=1', '_blank');
-                      }}
-                    >
-                      {t('shield')}
-                    </Button>,
+                    <div className='action-btns'>
+                      <Button
+                        type='primary'
+                        onClick={() => {
+                          window.open(eventDetail.rule_config.detail_url + '&mute=1', '_blank');
+                        }}
+                      >
+                        {t('shield')}
+                      </Button>
+                    </div>,
                   ]
                 : []
             }
