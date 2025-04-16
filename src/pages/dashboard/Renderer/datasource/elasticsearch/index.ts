@@ -150,7 +150,7 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
         let intervalkey = 'interval';
         try {
           const version = await getESVersion(datasourceValue);
-          if (semver.gte(version, '8.0.0')) {
+          if (semver.gte(version, '7.17.0')) {
             intervalkey = 'fixed_interval';
           }
         } catch (e) {
