@@ -143,8 +143,9 @@ function App() {
       setCommonState((state) => ({ ...state, datasourceList, groupedDatasourceList: _.groupBy(datasourceList, 'plugin_type') }));
     },
     reloadDatasourceList: async () => {
+      const { feats } = await getLicense(t);
       const datasourceList = await getDatasourceBriefList();
-      const datasourceCateOptions = getAuthorizedDatasourceCates(commonState.feats, isPlus, (cate) => {
+      const datasourceCateOptions = getAuthorizedDatasourceCates(feats, isPlus, (cate) => {
         const groupedDatasourceList = _.groupBy(datasourceList, 'plugin_type');
         return !_.isEmpty(groupedDatasourceList[cate.value]);
       });
