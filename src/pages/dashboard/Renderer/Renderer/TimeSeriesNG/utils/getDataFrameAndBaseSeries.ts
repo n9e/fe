@@ -26,7 +26,7 @@ interface OldSeriesItem {
   isExp?: boolean;
 }
 
-type DataFrame = [xValues: number[], ...yValues: (number | null | undefined)[][]];
+export type DataFrame = [xValues: number[], ...yValues: (number | null | undefined)[][]];
 
 /**
  * Convert the result to a DataFrame
