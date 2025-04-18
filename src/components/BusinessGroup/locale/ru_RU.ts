@@ -3,6 +3,9 @@ const ru_RU = {
     title: 'Фильтр',
     all: 'Все правила',
   },
+  btn: {
+    add: 'Добавить',
+  },
 };
 
 export default ru_RU;
