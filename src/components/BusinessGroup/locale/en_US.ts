@@ -3,8 +3,5 @@ const en_US = {
     title: 'Preset filters',
     all: 'All',
   },
-  btn: {
-    add: 'Add',
-  },
 };
 export default en_US;

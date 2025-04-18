@@ -3,8 +3,5 @@ const zh_CN = {
     title: '预置筛选',
     all: '全部规则',
   },
-  btn: {
-    add: '新增',
-  },
 };
 export default zh_CN;

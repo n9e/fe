@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import { TreeNode } from './types';
 import { RightIcon, DownIcon } from './constant';
 import './style.less';
+import { EditOutlined } from '@ant-design/icons';
 
 interface Props {
   treeData: TreeNode[];
@@ -11,6 +12,7 @@ interface Props {
   selectedKeys?: string[];
   onSelect?: (selectedKeys: string[], info: any) => void;
   onExpand?: (expandedKeys: string[]) => void;
+  onEdit?: (selectedKeys: string[], info: any) => void;
 }
 
 const renderTree = (
@@ -21,6 +23,7 @@ const renderTree = (
   selectedKeys?: string[],
   onSelect?: (selectedKeys: string[], info: any) => void,
   onExpand?: (expandedKeys: string[]) => void,
+  onEdit?: (selectedKeys: string[], info: any) => void,
 ) => {
   return (
     <ul className='n9e-tree-nodes'>
@@ -89,9 +92,19 @@ const renderTree = (
                     {isExpanded ? <DownIcon /> : <RightIcon />}
                   </span>
                 )}
+                {!item.children && onEdit && (
+                  <EditOutlined
+                    className='edit-icon'
+                    style={{ fontSize: 12 }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEdit([item.key], { node: item });
+                    }}
+                  />
+                )}
               </div>
             </div>
-            {hasChildren && isExpanded && renderTree(item.children || [], newEachLevelIsLast, level + 1, expandedKeys, selectedKeys, onSelect, onExpand)}
+            {hasChildren && isExpanded && renderTree(item.children || [], newEachLevelIsLast, level + 1, expandedKeys, selectedKeys, onSelect, onExpand, onEdit)}
           </li>
         );
       })}
@@ -100,7 +113,7 @@ const renderTree = (
 };
 
 function index(props: Props) {
-  const { treeData, defaultExpandedKeys, selectedKeys, onSelect, onExpand } = props;
+  const { treeData, defaultExpandedKeys, selectedKeys, onSelect, onExpand, onEdit } = props;
   const [expandedKeys, setExpandedKeys] = useState<string[]>(defaultExpandedKeys || []);
 
   useEffect(() => {
@@ -109,10 +122,19 @@ function index(props: Props) {
 
   return (
     <div className='n9e-tree-container'>
-      {renderTree(treeData, [false], 1, expandedKeys, selectedKeys, onSelect, (newExpandedKeys) => {
-        setExpandedKeys(newExpandedKeys);
-        onExpand && onExpand(newExpandedKeys);
-      })}
+      {renderTree(
+        treeData,
+        [false],
+        1,
+        expandedKeys,
+        selectedKeys,
+        onSelect,
+        (newExpandedKeys) => {
+          setExpandedKeys(newExpandedKeys);
+          onExpand && onExpand(newExpandedKeys);
+        },
+        onEdit,
+      )}
     </div>
   );
 }

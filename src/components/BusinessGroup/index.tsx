@@ -9,6 +9,7 @@ import { LeftOutlined, RightOutlined, SettingOutlined, SearchOutlined } from '@a
 import { useTranslation } from 'react-i18next';
 import { CommonStateContext } from '@/App';
 import Tree from '@/components/BusinessGroup/components/Tree';
+import EditBusinessDrawer from '@/components/BusinessGroup/components/EditBusinessDrawer';
 import { listToTree, getCollapsedKeys, getCleanBusinessGroupIds, getDefaultBusinessGroupKey, getDefaultBusiness, getVaildBusinessGroup } from './utils';
 import BusinessGroupSelect from './BusinessGroupSelect';
 import BusinessGroupSelectWithAll from './BusinessGroupSelectWithAll';
@@ -80,7 +81,6 @@ export default function index(props: IProps) {
 
   const [visible, setVisible] = useState<boolean>(false);
   const [action, setAction] = useState<ActionType>();
-
   const urlQuery = useQuery();
   const id = urlQuery.get('id');
   const [teamId, setTeamId] = useState<string>(id || '');
@@ -89,6 +89,10 @@ export default function index(props: IProps) {
   const [teamList, setTeamList] = useState<Team[]>([]);
   const [memberLoading, setMemberLoading] = useState<boolean>(false);
 
+  useEffect(() => {
+    teamId && getTeamInfoDetail(teamId);
+  }, [teamId]);
+  const [editDrawerVisible, setEditDrawerVisible] = useState(false);
   const handleClick = (type: ActionType) => {
     setAction(type);
     setVisible(true);
@@ -124,10 +128,11 @@ export default function index(props: IProps) {
   // 获取业务组详情
   const getTeamInfoDetail = (id: string) => {
     setMemberLoading(true);
-    getBusinessTeamInfo(id).then((data) => {
+    return getBusinessTeamInfo(id).then((data) => {
       setTeamInfo(data);
       setMemberList(data.user_groups);
       setMemberLoading(false);
+      return data;
     });
   };
   const handleClose = (action) => {
@@ -187,7 +192,7 @@ export default function index(props: IProps) {
                   handleClick(ActionType.CreateBusiness);
                 }}
               >
-                {t('btn.add')}
+                {t('common:btn.add')}
               </Button>
             )}
           </div>
@@ -256,6 +261,11 @@ export default function index(props: IProps) {
                   onExpand={(expandedKeys: string[]) => {
                     setLocaleExpandedKeys(expandedKeys);
                   }}
+                  onEdit={(_selectedKeys, e) => {
+                    const nodeId = e.node.id as any;
+                    setTeamId(nodeId);
+                    setEditDrawerVisible(true);
+                  }}
                   treeData={businessGroupTreeData as Node[]}
                 />
               )}
@@ -263,7 +273,13 @@ export default function index(props: IProps) {
           )}
         </div>
       </div>
-
+      <EditBusinessDrawer
+        open={editDrawerVisible}
+        onCloseDrawer={() => {
+          setEditDrawerVisible(false);
+        }}
+        id={teamId}
+      />
       <UserInfoModal
         visible={visible}
         action={action as ActionType}
