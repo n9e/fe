@@ -165,7 +165,7 @@ export default function index(props: Props) {
   };
   return (
     <Drawer
-      width={900}
+      width={700}
       closable={false}
       title={t('common:btn.edit')}
       destroyOnClose
@@ -225,7 +225,7 @@ export default function index(props: Props) {
                 // color: '#666',
               }}
             >
-              <Space>
+              <Space wrap>
                 <span>ID：{teamInfo?.id}</span>
                 <span>
                   {t('common:table.note')}：{t('user:business.note_content')}
