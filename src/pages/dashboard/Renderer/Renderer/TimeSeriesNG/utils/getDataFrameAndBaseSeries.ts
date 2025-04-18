@@ -18,9 +18,9 @@ interface ResultItem {
 interface OldSeriesItem {
   id: string;
   refId: string;
-  offset: number;
+  offset?: number;
   metric: { [key: string]: string };
-  target: { expr: string; legend: string };
+  target?: { expr: string; legend: string };
   data: [Ts: number, Value: number][]; // [unixTimestamp, value]
   name?: string;
   isExp?: boolean;
