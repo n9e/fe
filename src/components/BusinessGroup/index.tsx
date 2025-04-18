@@ -4,17 +4,22 @@ import _ from 'lodash';
 import classNames from 'classnames';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
-import { Input } from 'antd';
+import { Button, Input } from 'antd';
 import { LeftOutlined, RightOutlined, SettingOutlined, SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { CommonStateContext } from '@/App';
 import Tree from '@/components/BusinessGroup/components/Tree';
+import EditBusinessDrawer from '@/components/BusinessGroup/components/EditBusinessDrawer';
 import { listToTree, getCollapsedKeys, getCleanBusinessGroupIds, getDefaultBusinessGroupKey, getDefaultBusiness, getVaildBusinessGroup } from './utils';
 import BusinessGroupSelect from './BusinessGroupSelect';
 import BusinessGroupSelectWithAll from './BusinessGroupSelectWithAll';
 import { getBusiGroups } from './services';
 import './style.less';
-
+import UserInfoModal from '@/pages/user/component/createModal';
+import { Team, ActionType } from '@/store/manageInterface';
+import { PAGE_SIZE } from '@/pages/user/business';
+import { getBusinessTeamList, getBusinessTeamInfo } from '@/services/manage';
+import { useQuery } from '@/utils';
 export {
   listToTree,
   getCollapsedKeys,
@@ -62,7 +67,7 @@ export function setLocaleExpandedKeys(nodes: string[]) {
 }
 
 export default function index(props: IProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation('BusinessGroup');
   const { businessGroup, businessGroupOnChange } = useContext(CommonStateContext);
   const location = useLocation();
   const query = queryString.parse(location.search);
@@ -70,10 +75,75 @@ export default function index(props: IProps) {
   const { title = t('common:business_groups'), renderHeadExtra, onSelect, showSelected = true } = props;
   const [collapse, setCollapse] = useState(localStorage.getItem('leftlist') === '1');
   const [width, setWidth] = useState(_.toNumber(localStorage.getItem('leftwidth') || 200));
-  const { busiGroups, siteInfo } = useContext(CommonStateContext);
+  const { busiGroups, siteInfo, setBusiGroups, setBusiGroup } = useContext(CommonStateContext);
   const [businessGroupTreeData, setBusinessTreeGroupData] = useState<Node[]>([]);
   const [busiGroupsListData, setBusiGroupsListData] = useState<any[]>([]);
 
+  const [visible, setVisible] = useState<boolean>(false);
+  const [action, setAction] = useState<ActionType>();
+  const urlQuery = useQuery();
+  const id = urlQuery.get('id');
+  const [teamId, setTeamId] = useState<string>(id || '');
+  const [memberList, setMemberList] = useState<{ user_group: any }[]>([]);
+  const [teamInfo, setTeamInfo] = useState<{ name: string; id: number; update_by: string; update_at: number }>();
+  const [teamList, setTeamList] = useState<Team[]>([]);
+  const [memberLoading, setMemberLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    teamId && getTeamInfoDetail(teamId);
+  }, [teamId]);
+  const [editDrawerVisible, setEditDrawerVisible] = useState(false);
+  const handleClick = (type: ActionType) => {
+    setAction(type);
+    setVisible(true);
+  };
+  const getList = (action) => {
+    getTeamList(undefined, action === 'delete');
+  };
+  // 获取业务组列表
+  const getTeamList = (search?: string, isDelete?: boolean) => {
+    let params = {
+      query: search,
+      limit: PAGE_SIZE,
+    };
+    getBusinessTeamList(params).then((data) => {
+      setTeamList(_.sortBy(data.dat, (item) => _.lowerCase(item.name)));
+      if (
+        (!teamId ||
+          isDelete ||
+          _.every(data.dat, (item) => {
+            return _.toNumber(item.id) !== _.toNumber(teamId);
+          })) &&
+        data.dat.length > 0
+      ) {
+        setTeamId(data.dat[0].id);
+      } else {
+        teamId && getTeamInfoDetail(teamId);
+      }
+      setBusiGroups(data.dat || []);
+      setBusiGroup(getDefaultBusiness(data.dat));
+    });
+  };
+
+  // 获取业务组详情
+  const getTeamInfoDetail = (id: string) => {
+    setMemberLoading(true);
+    return getBusinessTeamInfo(id).then((data) => {
+      setTeamInfo(data);
+      setMemberList(data.user_groups);
+      setMemberLoading(false);
+      return data;
+    });
+  };
+  const handleClose = (action) => {
+    setVisible(false);
+    if (['create', 'delete', 'update'].includes(action)) {
+      getList(action);
+    }
+    if (teamId && ['update', 'addMember', 'deleteMember'].includes(action)) {
+      getTeamInfoDetail(teamId);
+    }
+  };
   useEffect(() => {
     setBusinessTreeGroupData(listToTree(busiGroups, siteInfo?.businessGroupSeparator));
     setBusiGroupsListData(busiGroups);
@@ -112,9 +182,18 @@ export default function index(props: IProps) {
           <div className='n9e-biz-group-container-group-title'>
             {title}
             {title === t('common:business_group') && (
-              <Link to='/busi-groups' target='_blank'>
-                <SettingOutlined />
-              </Link>
+              <Button
+                style={{
+                  height: '30px',
+                }}
+                size='small'
+                type='link'
+                onClick={() => {
+                  handleClick(ActionType.CreateBusiness);
+                }}
+              >
+                {t('common:btn.add')}
+              </Button>
             )}
           </div>
           <Input
@@ -182,6 +261,11 @@ export default function index(props: IProps) {
                   onExpand={(expandedKeys: string[]) => {
                     setLocaleExpandedKeys(expandedKeys);
                   }}
+                  onEdit={(_selectedKeys, e) => {
+                    const nodeId = e.node.id as any;
+                    setTeamId(nodeId);
+                    setEditDrawerVisible(true);
+                  }}
                   treeData={businessGroupTreeData as Node[]}
                 />
               )}
@@ -189,6 +273,23 @@ export default function index(props: IProps) {
           )}
         </div>
       </div>
+      <EditBusinessDrawer
+        open={editDrawerVisible}
+        onCloseDrawer={() => {
+          setEditDrawerVisible(false);
+        }}
+        id={teamId}
+      />
+      <UserInfoModal
+        visible={visible}
+        action={action as ActionType}
+        userType={'business'}
+        onClose={handleClose}
+        teamId={teamId}
+        onSearch={(val) => {
+          setTeamId(val);
+        }}
+      />
     </Resizable>
   );
 }
