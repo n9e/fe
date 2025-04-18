@@ -52,6 +52,22 @@ export default function index(props: Props) {
   const [action, setAction] = useState<ActionType>();
   const [teamId, setTeamId] = useState<string>(id);
 
+  useEffect(() => {
+    if (id !== teamId) {
+      setTeamId(id);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    if (teamId) {
+      getTeamInfoDetail(teamId);
+    }
+  }, [teamId]);
+
+  useEffect(() => {
+    getTeamList();
+  }, []);
+
   const teamMemberColumns: ColumnsType<any> = [
     {
       title: t('user:team.name'),
@@ -102,13 +118,6 @@ export default function index(props: Props) {
       ),
     },
   ];
-  useEffect(() => {
-    teamId && getTeamInfoDetail(teamId);
-  }, [teamId]);
-
-  useEffect(() => {
-    getTeamList();
-  }, []);
 
   const getList = (action) => {
     getTeamList(undefined, action === 'delete');
