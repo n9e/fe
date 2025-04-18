@@ -1,14 +1,19 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Resizable } from 're-resizable';
 import _ from 'lodash';
 import classNames from 'classnames';
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import { Resizable } from 're-resizable';
+import { useHistory, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
-import { Input } from 'antd';
-import { LeftOutlined, RightOutlined, SettingOutlined, SearchOutlined } from '@ant-design/icons';
+import { Button, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
+import { LeftOutlined, RightOutlined, SearchOutlined } from '@ant-design/icons';
+
 import { CommonStateContext } from '@/App';
+import { ActionType } from '@/store/manageInterface';
 import Tree from '@/components/BusinessGroup/components/Tree';
+import EditBusinessDrawer from '@/components/BusinessGroup/components/EditBusinessDrawer';
+import CreateBusinessModal from '@/pages/user/component/createModal';
+
 import { listToTree, getCollapsedKeys, getCleanBusinessGroupIds, getDefaultBusinessGroupKey, getDefaultBusiness, getVaildBusinessGroup } from './utils';
 import BusinessGroupSelect from './BusinessGroupSelect';
 import BusinessGroupSelectWithAll from './BusinessGroupSelectWithAll';
@@ -62,7 +67,7 @@ export function setLocaleExpandedKeys(nodes: string[]) {
 }
 
 export default function index(props: IProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation('BusinessGroup');
   const { businessGroup, businessGroupOnChange } = useContext(CommonStateContext);
   const location = useLocation();
   const query = queryString.parse(location.search);
@@ -73,6 +78,9 @@ export default function index(props: IProps) {
   const { busiGroups, siteInfo } = useContext(CommonStateContext);
   const [businessGroupTreeData, setBusinessTreeGroupData] = useState<Node[]>([]);
   const [busiGroupsListData, setBusiGroupsListData] = useState<any[]>([]);
+  const [createBusiVisible, setCreateBusiVisible] = useState<boolean>(false);
+  const [editBusiDrawerVisible, setEditBusiDrawerVisible] = useState<boolean>(false);
+  const [editBusiId, setEditBusiId] = useState<string>();
 
   useEffect(() => {
     setBusinessTreeGroupData(listToTree(busiGroups, siteInfo?.businessGroupSeparator));
@@ -88,7 +96,7 @@ export default function index(props: IProps) {
       enable={{
         right: collapse ? false : true,
       }}
-      onResizeStop={(e, direction, ref, d) => {
+      onResizeStop={(_e, _direction, _ref, d) => {
         let curWidth = width + d.width;
         if (curWidth < 200) {
           curWidth = 200;
@@ -112,9 +120,18 @@ export default function index(props: IProps) {
           <div className='n9e-biz-group-container-group-title'>
             {title}
             {title === t('common:business_group') && (
-              <Link to='/busi-groups' target='_blank'>
-                <SettingOutlined />
-              </Link>
+              <Button
+                style={{
+                  height: '30px',
+                }}
+                size='small'
+                type='link'
+                onClick={() => {
+                  setCreateBusiVisible(true);
+                }}
+              >
+                {t('common:btn.add')}
+              </Button>
             )}
           </div>
           <Input
@@ -182,6 +199,11 @@ export default function index(props: IProps) {
                   onExpand={(expandedKeys: string[]) => {
                     setLocaleExpandedKeys(expandedKeys);
                   }}
+                  onEdit={(_selectedKeys, e) => {
+                    const itemKey = e.node.key;
+                    setEditBusiId(itemKey);
+                    setEditBusiDrawerVisible(true);
+                  }}
                   treeData={businessGroupTreeData as Node[]}
                 />
               )}
@@ -189,6 +211,29 @@ export default function index(props: IProps) {
           )}
         </div>
       </div>
+      {editBusiId && (
+        <EditBusinessDrawer
+          id={editBusiId}
+          open={editBusiDrawerVisible}
+          onCloseDrawer={() => {
+            setEditBusiDrawerVisible(false);
+          }}
+        />
+      )}
+      <CreateBusinessModal
+        visible={createBusiVisible}
+        action={ActionType.CreateBusiness}
+        userType='business'
+        onClose={(type: string) => {
+          setCreateBusiVisible(false);
+          if (type === 'create') {
+            getBusiGroups().then((res) => {
+              setBusinessTreeGroupData(listToTree(res || [], siteInfo?.businessGroupSeparator));
+              setBusiGroupsListData(res || []);
+            });
+          }
+        }}
+      />
     </Resizable>
   );
 }

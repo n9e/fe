@@ -15,10 +15,10 @@
  *
  */
 import React, { ReactNode, useContext, useState, useEffect } from 'react';
-import { useHistory, Link, useLocation } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import querystring from 'query-string';
 import { useTranslation } from 'react-i18next';
-import { Menu, Dropdown, Space, Drawer } from 'antd';
+import { Menu, Dropdown, Space, Drawer, Button } from 'antd';
 import { DownOutlined, RollbackOutlined } from '@ant-design/icons';
 
 import { Logout } from '@/services/login';
@@ -26,18 +26,24 @@ import AdvancedWrap, { License } from '@/components/AdvancedWrap';
 import { CommonStateContext } from '@/App';
 import { AccessTokenKey, IS_ENT } from '@/utils/constant';
 import DarkModeSelect from '@/components/DarkModeSelect';
+import { getMenuList } from '@/components/SideMenu/menu';
 
-import Version from './Version';
-import SideMenuColorSetting from './SideMenuColorSetting';
-import PageLayout from './PageLayoutWithTabs';
-import HelpLink from './HelpLink';
-import './index.less';
-import './locale';
+import { findMenuByPath, TabMenu } from './TabMenu';
+import { MenuMatchResult } from './types';
+import LanguageIcon from '../icons/LanguageIcon';
+import DocIcon from '../icons/DocIcon';
+import Version from '../Version';
+import SideMenuColorSetting from '../SideMenuColorSetting';
+import HelpLink from '../HelpLink';
+import '../index.less';
+import '../locale';
+
+// @ts-ignore
+import getPlusMenuList from 'plus:/menu';
+import FeatureNotification from 'plus:/pages/FeatureNotification';
 
 export { HelpLink };
 
-// @ts-ignore
-import FeatureNotification from 'plus:/pages/FeatureNotification';
 interface IPageLayoutProps {
   icon?: ReactNode;
   title?: String | JSX.Element;
@@ -48,6 +54,7 @@ interface IPageLayoutProps {
   showBack?: Boolean;
   backPath?: string;
   docFn?: Function;
+  tabGroup?: string;
 }
 
 const i18nMap = {
@@ -58,18 +65,23 @@ const i18nMap = {
   ru_RU: 'Русский',
 };
 
-const PageLayoutOld: React.FC<IPageLayoutProps> = ({ icon, title, datasource, introIcon, children, customArea, showBack, backPath, docFn }) => {
+const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, datasource, introIcon, children, customArea, showBack, backPath, docFn, tabGroup }) => {
   const { t, i18n } = useTranslation('pageLayout');
   const history = useHistory();
   const location = useLocation();
   const query = querystring.parse(location.search);
-  const { profile, siteInfo } = useContext(CommonStateContext);
+  const { profile, siteInfo, isPlus } = useContext(CommonStateContext);
   const embed = localStorage.getItem('embed') === '1' && window.self !== window.top;
-  const [curLanguage, setCurLanguage] = useState(i18nMap[i18n.language] || '中文');
   const [themeVisible, setThemeVisible] = useState(false);
+  const [currentMenu, setCurrentMenu] = useState<MenuMatchResult | null>(null);
+  const menuList = isPlus ? getPlusMenuList() : getMenuList();
+
   useEffect(() => {
-    setCurLanguage(i18nMap[i18n.language] || '中文');
-  }, [i18n.language]);
+    const result = findMenuByPath(location.pathname, menuList);
+    if (result) {
+      setCurrentMenu(result);
+    }
+  }, [location.pathname]);
 
   const menu = (
     <Menu>
@@ -108,7 +120,6 @@ const PageLayoutOld: React.FC<IPageLayoutProps> = ({ icon, title, datasource, in
     <div className={'page-wrapper'}>
       {!embed && (
         <>
-          {' '}
           {customArea ? (
             <div className={'page-top-header'}>{customArea}</div>
           ) : (
@@ -120,53 +131,48 @@ const PageLayoutOld: React.FC<IPageLayoutProps> = ({ icon, title, datasource, in
                   display: query.viewMode === 'fullscreen' ? 'none' : 'flex',
                 }}
               >
-                <div className={'page-header-title'}>
-                  {showBack && window.history.state && (
-                    <RollbackOutlined
-                      onClick={() => {
-                        if (backPath) {
-                          history.push(backPath);
-                        } else {
-                          history.goBack();
-                        }
-                      }}
-                      style={{
-                        marginRight: '5px',
-                      }}
-                    />
-                  )}
-                  {icon}
-                  {title}
+                <div className='flex gap-4 align-center'>
+                  <div className={'page-header-title'}>
+                    {showBack && window.history.state && (
+                      <RollbackOutlined
+                        onClick={() => {
+                          if (backPath) {
+                            history.push(backPath);
+                          } else {
+                            history.goBack();
+                          }
+                        }}
+                        style={{
+                          marginRight: '5px',
+                        }}
+                      />
+                    )}
+                    {currentMenu?.icon || icon}
+                    {t(`sideMenu:${currentMenu?.parentItem?.label || ''}`) || title}
+                  </div>
+                  <TabMenu currentMenu={currentMenu} />
                 </div>
 
                 <div className={'page-header-right-area'} style={{ display: sessionStorage.getItem('menuHide') === '1' ? 'none' : undefined }}>
                   {introIcon}
-                  {docFn && (
-                    <a onClick={() => docFn()} style={{ marginRight: 20 }}>
-                      {t('docs')}
-                    </a>
-                  )}
-
+                  {docFn && <a onClick={() => docFn()}>{t('docs')}</a>}
                   <Version />
 
-                  <Space style={{ marginRight: 16 }}>
+                  <Space className='mr-2'>{datasource}</Space>
+
+                  <Space>
                     {/* 整合版本关闭文档链接 */}
                     {!IS_ENT && (
-                      <div style={{ marginRight: 8, position: 'relative' }}>
-                        <a target='_blank' href={siteInfo?.document_url || 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/introduction/'}>
-                          {t('docs')}
-                        </a>
-                      </div>
-                    )}
-                    {profile?.admin && (
-                      <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
-                        <Link to='/audits'>{t('audits:title')}</Link>
-                      </AdvancedWrap>
+                      <Button
+                        target='_blank'
+                        href={siteInfo?.document_url || 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/introduction/'}
+                        size='small'
+                        type='text'
+                      >
+                        <DocIcon className='text-[12px]' />
+                      </Button>
                     )}
                   </Space>
-
-                  {datasource}
-
                   <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
                     <License />
                   </AdvancedWrap>
@@ -179,7 +185,6 @@ const PageLayoutOld: React.FC<IPageLayoutProps> = ({ icon, title, datasource, in
                       <Menu
                         onSelect={({ key }) => {
                           i18n.changeLanguage(key);
-                          setCurLanguage(i18nMap[key]);
                           localStorage.setItem('language', key);
                         }}
                         selectable
@@ -190,9 +195,9 @@ const PageLayoutOld: React.FC<IPageLayoutProps> = ({ icon, title, datasource, in
                       </Menu>
                     }
                   >
-                    <a style={{ marginRight: 12 }} onClick={(e) => e.preventDefault()} id='i18n-btn'>
-                      {curLanguage}
-                    </a>
+                    <Button size='small' type='text'>
+                      <LanguageIcon className='text-[12px]' />
+                    </Button>
                   </Dropdown>
 
                   <div style={{ marginRight: 12 }}>
@@ -201,7 +206,7 @@ const PageLayoutOld: React.FC<IPageLayoutProps> = ({ icon, title, datasource, in
 
                   <Dropdown overlay={menu} trigger={['click']}>
                     <span className='avator' style={{ cursor: 'pointer' }}>
-                      <img src={profile.portrait || '/image/avatar1.png'} alt='' />
+                      <img src={profile.portrait || '/image/avatar1.png'} />
                       <span className='display-name'>{profile.nickname || profile.username}</span>
                       <DownOutlined />
                     </span>
@@ -212,6 +217,7 @@ const PageLayoutOld: React.FC<IPageLayoutProps> = ({ icon, title, datasource, in
           )}
         </>
       )}
+
       {children && children}
       <Drawer
         closable={false}

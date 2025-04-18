@@ -58,10 +58,9 @@ export default function index() {
         </Space>
       }
       icon={<LineChartOutlined />}
-      rightArea={
+      datasource={
         <div
           style={{
-            marginRight: 20,
             display: 'flex',
             alignItems: 'center',
           }}
