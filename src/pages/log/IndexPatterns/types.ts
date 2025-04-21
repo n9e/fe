@@ -19,44 +19,50 @@ export interface FieldConfig {
       params: {
         [index: string]: string; // pattern
       };
-      paramsArr:{
+      paramsArr: {
         name: string;
         urlTemplate: string;
       }[]; // 兼容从FieldConfigVersion2 合并过来的多个跳转链接的情况
+      regExtractArr: IndexPatternExtract[];
     };
   };
   version: number;
+}
+
+export interface IndexPatternExtract {
+  field: string;
+  reg: string;
+  newField: string;
 }
 
 export interface FieldConfigVersion2 {
   arr: {
     attrs: {
       // [index: string]: {   这里没有这一层！！
-        [index: string]: string; 
+      [index: string]: string;
       // };
     };
     field: string;
     type: string;
     formatMap: {
-      // [index: string]: {  这里没有这一层！！
-        type: string; // date
-        params: {
-          [index: string]: string; // pattern
-        };
-      // };
+      type: string; // date
+      params: {
+        [index: string]: string; // pattern
+      };
     };
   }[];
-  linkArr:{
+  linkArr: {
     name: string;
     field: string;
     urlTemplate: string;
   }[];
+  regExtractArr?: IndexPatternExtract[];
   version: number;
 }
 
 export function convertToVersion2(data: FieldConfig): FieldConfigVersion2 {
   const version2Data: FieldConfigVersion2 = {
-    arr: Object.keys(data.attrs).map(key => ({
+    arr: Object.keys(data.attrs).map((key) => ({
       attrs: data.attrs[key],
       field: key,
       type: data.formatMap[key]?.type,

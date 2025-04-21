@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Space, Table, Tabs } from 'antd';
@@ -12,10 +12,11 @@ import { Field, getFieldLabel, getFieldValue, RenderValue } from './utils';
 import { typeIconMap } from './FieldsSidebar/Field';
 import { typeMap } from '../Elasticsearch/services';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
+import { FieldConfig, IndexPatternExtract } from '@/pages/log/IndexPatterns/types';
 import moment from 'moment';
 interface Props {
   value: Record<string, any>;
-  fieldConfig: any;
+  fieldConfig: FieldConfig;
   fields: Field[];
   highlight: any;
   range: IRawTimeRange;
@@ -24,12 +25,25 @@ interface Props {
 export default function LogView(props: Props) {
   const { t } = useTranslation('explorer');
   const { value, fieldConfig, fields, highlight, range } = props;
-
+  const [extractArr, setExtractArr] = useState<IndexPatternExtract[]>([]);
   const allParamsArr = fieldConfig?.formatMap
     ? Object.keys(fieldConfig.formatMap).reduce((prev, cur) => {
-        return fieldConfig.formatMap[cur].paramsArr?.length > 0 ? [...prev, ...fieldConfig.formatMap[cur].paramsArr] : [];
+        if (fieldConfig.formatMap[cur].paramsArr?.length > 0) {
+          return [...prev, ...fieldConfig.formatMap[cur].paramsArr];
+        } else {
+          return [];
+        }
       }, [])
     : [];
+  useEffect(() => {
+    if (fieldConfig?.formatMap) {
+      Object.keys(fieldConfig.formatMap).forEach((cur) => {
+        if (fieldConfig.formatMap[cur].paramsArr?.length > 0 && fieldConfig.formatMap[cur].regExtractArr.length > 0) {
+          setExtractArr(fieldConfig.formatMap[cur].regExtractArr);
+        }
+      });
+    }
+  }, [fieldConfig]);
 
   const [type, setType] = useState<string>('table');
   const parsedRange = range ? parseRange(range) : null;
@@ -113,7 +127,7 @@ export default function LogView(props: Props) {
         />
       </Tabs.TabPane>
       <Tabs.TabPane tab='JSON' key='json'>
-        <HighLightJSON value={value} query={{ start, end }} features={allParamsArr} />
+        <HighLightJSON value={value} query={{ start, end }} features={allParamsArr} extractArr={extractArr} />
       </Tabs.TabPane>
     </Tabs>
   );

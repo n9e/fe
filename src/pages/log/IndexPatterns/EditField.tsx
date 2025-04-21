@@ -26,6 +26,7 @@ import _ from 'lodash';
 import { copy2ClipBoard } from '@/utils';
 import InputEnlarge from '@/components/InputEnlarge';
 import { IS_ENT } from '@/utils/constant';
+import RegExtractModal from './regExtractModal';
 
 interface IField {
   name: string;
@@ -49,7 +50,7 @@ export const LinkTip = (t, collapse: boolean) => {
       <ul style={{ paddingInlineStart: 24 }}>
         <li>
           {t('起止时间')}：$__from
-          {t('和')}$__to
+          {t('和')}$__to, {t('link-tip-time-format')}
         </li>
         <li>
           {t('时间偏移(单位毫秒，可为负数)')}：$__start_time_margin__
@@ -145,6 +146,7 @@ export const LinkTip = (t, collapse: boolean) => {
 
 function EditField(props: Props & ModalWrapProps) {
   const { t } = useTranslation('es-index-patterns');
+  const [regExtractModalVisible, setRegExtractModalVisible] = useState(false);
   const { visible, destroy, id, onOk, datasourceList } = props;
   const [fieldsAll, setFields] = useState<IField[]>([]);
   const [name, setName] = useState('');
@@ -206,9 +208,10 @@ function EditField(props: Props & ModalWrapProps) {
               } else {
                 await styleConfigForm.validateFields();
               }
+              const regExtractArr = await linkForm.getFieldValue('regExtractArr');
               const linkArr = await linkForm.getFieldValue('linkArr');
               const arr = await styleConfigForm.getFieldValue('arr');
-              onOk({ linkArr, arr }, name);
+              onOk({ linkArr, arr, regExtractArr }, name);
               destroy();
             }}
           >
@@ -239,8 +242,10 @@ function EditField(props: Props & ModalWrapProps) {
           <div style={{ marginBottom: 20, background: 'var(--fc-fill-3)', padding: '8px 12px', borderRadius: 6 }}>
             <div style={{ display: 'flex' }} className='tip-collapse'>
               <InfoCircleOutlined style={{ margin: '2px 4px' }} className='text-primary' />
-              <div>
-                {t('可为指定字段设置链接')}
+              <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  {t('可为指定字段设置链接')} <a onClick={() => setRegExtractModalVisible(true)}>{t('字段提取')}</a>
+                </div>
                 {LinkTip(t, collapse)}
                 {collapse ? (
                   <Button type='link' onClick={() => setCollapse(!collapse)} style={{ padding: 0 }} size='small'>
@@ -255,6 +260,12 @@ function EditField(props: Props & ModalWrapProps) {
             </div>
           </div>
           <Link {...{ form: linkForm, fieldsAll, t }} />
+          <RegExtractModal
+            visible={regExtractModalVisible}
+            form={linkForm}
+            onClose={() => setRegExtractModalVisible(false)}
+            selectOption={fieldsAll.map((item) => ({ label: item.name, value: item.name }))}
+          />
         </Tabs.TabPane>
         <Tabs.TabPane tab={t('displayStyle')} key='displayStyle'>
           <div style={{ display: 'flex', marginBottom: 20, background: 'var(--fc-fill-3)', padding: '8px 12px', borderRadius: 6 }} className='tip-collapse'>

@@ -11,7 +11,8 @@ import flatten from '../flatten';
 import { getHighlightRequest, getHighlightHtml } from './highlight';
 import { basePrefix } from '@/App';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
-
+import { IndexPatternExtract } from '@/pages/log/IndexPatterns/types';
+import IconFont from '@/components/IconFont';
 export function getFieldLabel(fieldKey: string, fieldConfig?: any) {
   return fieldConfig?.attrs?.[fieldKey]?.alias || fieldKey;
 }
@@ -20,7 +21,7 @@ export function getFieldType(fieldKey: string, fieldConfig?: any) {
   return fieldConfig?.formatMap?.[fieldKey]?.type;
 }
 
-const handleNav = (link: string, rawValue: object, query: { start: number; end: number }) => {
+const handleNav = (link: string, rawValue: object, query: { start: number; end: number }, regExtractArr: IndexPatternExtract[]) => {
   const param = new URLSearchParams(link);
   // 为了兼容旧逻辑，所以${} 中的也需要替换
   const startMargin = param.get('${__start_time_margin__}');
@@ -42,37 +43,75 @@ const handleNav = (link: string, rawValue: object, query: { start: number; end: 
   }
   // 旧逻辑Endding，开启新逻辑，替换不带括号的 $local_protocol
   // 我把上边的一坨代码复制下来，然后改成不带括号的了
+  const timeFormat = param.get('$__time_format__');
   const startMarginNew = param.get('${__start_time_margin__}');
   const endMarginNew = param.get('${__end_time_margin__}');
   const startMarginNumNew = startMarginNew && !isNaN(Number(startMarginNew)) ? Number(startMarginNew) : 0;
   const endMarginNumNew = endMarginNew && !isNaN(Number(endMarginNew)) ? Number(endMarginNew) : 0;
+  let fromValue: string | number = '';
+  if (typeof query.start === 'number') {
+    if (timeFormat) {
+      if (timeFormat === 'unix') {
+        fromValue = moment(1000 * query.start + startMarginNumNew).unix();
+      } else {
+        fromValue = moment(1000 * query.start + startMarginNumNew).format(timeFormat);
+      }
+    } else {
+      fromValue = String(1000 * query.start + startMarginNumNew);
+    }
+  }
+  let toValue: string | number = '';
+  if (typeof query.start === 'number') {
+    if (timeFormat) {
+      if (timeFormat === 'unix') {
+        toValue = moment(1000 * query.end + endMarginNumNew).unix();
+      } else {
+        toValue = moment(1000 * query.end + endMarginNumNew).format(timeFormat);
+      }
+    } else {
+      toValue = String(1000 * query.end + endMarginNumNew);
+    }
+  }
   reallink = reallink
     .replace('$local_protocol', location.protocol)
     .replace('$local_domain', location.host)
     .replace('$local_url', location.origin)
-    .replace('$__from', typeof query.start === 'number' ? String(1000 * query.start + startMarginNumNew) : '')
-    .replace('$__to', typeof query.end === 'number' ? String(1000 * query.end + endMarginNumNew) : '');
+    .replace('$__from', fromValue + '')
+    .replace('$__to', toValue + '');
 
   if (startMarginNew) {
-    reallink = reallink.replace('&$__start_time_margin__' + '=' + startMargin, '');
+    reallink = reallink.replace('&$__start_time_margin__' + '=' + startMarginNew, '');
   }
   if (endMarginNew) {
-    reallink = reallink.replace('&$__end_time_margin__' + '=' + endMargin, '');
+    reallink = reallink.replace('&$__end_time_margin__' + '=' + endMarginNew, '');
   }
-  const unReplaceKeyReg = /\$\{(.+?)\}(?=&|$)/gm;
+  if (timeFormat) {
+    reallink = reallink.replace('&$__time_format__' + '=' + timeFormat, '');
+  }
+  const unReplaceKeyReg = /\$\{(.+?)\}/g;
+  const valueWithExtract = _.cloneDeep(rawValue);
+  regExtractArr.forEach((i) => {
+    const { field, newField, reg } = i;
+    const fieldValue = _.get(rawValue, field.split('.'));
+    const arr = new RegExp(reg).exec(fieldValue);
+    if (arr && arr.length > 1) {
+      valueWithExtract[newField] = arr[1];
+    }
+  });
   reallink = reallink.replace(unReplaceKeyReg, function (a, b) {
-    const wholeWord = rawValue[b];
-    return wholeWord || _.get(rawValue, b.split('.'));
+    const wholeWord = valueWithExtract[b];
+    return wholeWord || _.get(valueWithExtract, b.split('.'));
   });
   const unReplaceKeyRegNew = /\$(.+?)(?=&|$)/gm;
   reallink = reallink.replace(unReplaceKeyRegNew, function (a, b) {
-    const wholeWord = rawValue[b];
-    return wholeWord || _.get(rawValue, b.split('.'));
+    const wholeWord = valueWithExtract[b];
+    return wholeWord || _.get(valueWithExtract, b.split('.'));
   });
   window.open(basePrefix + reallink.replace(unReplaceKeyRegNew, ''), '_blank');
 };
 
 export function getFieldValue(fieldKey, fieldValue, fieldConfig: any, rawValue?: { [field: string]: string }, range?: IRawTimeRange) {
+  const isGold = localStorage.getItem('n9e-dark-mode') === '2';
   const format = fieldConfig?.formatMap?.[fieldKey];
   if (format && format?.type === 'date' && format?.params?.pattern) {
     return moment(fieldValue).format(format?.params?.pattern);
@@ -87,27 +126,41 @@ export function getFieldValue(fieldKey, fieldValue, fieldConfig: any, rawValue?:
         overlayClassName='popover-json'
         content={format?.paramsArr.map((item, i) => (
           <div key={i} style={{ lineHeight: '24px' }}>
-            <a onClick={() => handleNav(item.urlTemplate, rawValue, { start, end })}>{item.name}</a>
+            <a onClick={() => handleNav(item.urlTemplate, rawValue, { start, end }, format.regExtractArr)}>{item.name}</a>
           </div>
         ))}
       >
-        <a
-          style={{ textDecoration: 'underline', fontWeight: 'bold' }}
+        <span
+          style={{
+            display: 'inline-flex',
+            textDecoration: 'underline',
+            fontWeight: 'bold',
+            borderRadius: 4,
+            padding: '2px 2px 2px 6px',
+            background: 'var(--fc-fill-primary)',
+            color: isGold ? 'var(--fc-gold-text)' : '#fff',
+            marginBottom: 2,
+            cursor: 'pointer',
+            height: 22,
+            alignItems: 'center',
+          }}
           onClick={() => {
             if (format?.paramsArr.length > 0) {
-              handleNav(format?.paramsArr[0].urlTemplate, rawValue, { start, end });
+              handleNav(format?.paramsArr[0].urlTemplate, rawValue, { start, end }, format?.regExtractArr);
             }
           }}
         >
           {format?.params?.labelTemplate.replace('{{value}}', fieldValue) || fieldValue}
-        </a>
+          <span style={{ background: '#fff', marginLeft: 6, display: 'inline-flex', padding: 3, borderRadius: 2 }}>
+            <IconFont type='icon-ic_arrow_right' style={{ color: 'var(--fc-fill-primary)', height: 12 }} />
+          </span>
+        </span>
       </Popover>
     );
   }
   if (format && format?.type === 'url' && format?.params?.urlTemplate) {
     let realLink = format?.params?.urlTemplate.replace('{{value}}', fieldValue);
     const dataSource = rawValue ? Object.keys(rawValue).map((key) => ({ field: key, value: rawValue[key] })) : [];
-
     if (dataSource && dataSource.length > 0) {
       dataSource.forEach((item) => {
         realLink = realLink.replace('${' + item.field + '}', item.value);
