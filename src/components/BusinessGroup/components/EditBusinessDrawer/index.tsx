@@ -15,20 +15,20 @@
  *
  */
 import React, { useContext, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
-import { Col, Drawer, Form, Input, Row, Space, Button, message, Table, Modal } from 'antd';
+import moment from 'moment';
+import { useTranslation } from 'react-i18next';
+import { Col, Drawer, Input, Row, Space, Button, message, Table, Modal } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 import { Team, ActionType } from '@/store/manageInterface';
 import { EditOutlined, DeleteOutlined, SearchOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { deleteBusinessTeamMember, getBusinessTeamList, getBusinessTeamInfo, deleteBusinessTeam } from '@/services/manage';
 import { getDefaultBusiness } from '@/components/BusinessGroup';
 import { CommonStateContext } from '@/App';
+import { ColumnsType } from 'antd/lib/table';
 import usePagination from '@/components/usePagination';
-import moment from 'moment';
 import UserInfoModal from '@/pages/user/component/createModal';
 
-import { ColumnsType } from 'antd/lib/table';
 interface Props {
   open?: boolean;
   id: string;
@@ -36,12 +36,11 @@ interface Props {
 }
 
 export default function index(props: Props) {
-  const { setBusiGroups, siteInfo, setBusiGroup } = useContext(CommonStateContext);
+  const { setBusiGroups, setBusiGroup } = useContext(CommonStateContext);
   const { t } = useTranslation();
   const { confirm } = Modal;
   const PAGE_SIZE = 5000;
   const { open, id, onCloseDrawer } = props;
-  const [form] = Form.useForm();
   const pagination = usePagination({ PAGESIZE_KEY: 'business' });
   const [memberList, setMemberList] = useState<{ user_group: any }[]>([]);
   const [teamInfo, setTeamInfo] = useState<{ name: string; id: number; update_by: string; update_at: number }>();
@@ -50,19 +49,12 @@ export default function index(props: Props) {
   const [searchMemberValue, setSearchMemberValue] = useState<string>('');
   const [visible, setVisible] = useState<boolean>(false);
   const [action, setAction] = useState<ActionType>();
-  const [teamId, setTeamId] = useState<string>(id);
+  const [teamId, setTeamId] = useState<string>(id || '');
 
   useEffect(() => {
-    if (id !== teamId) {
-      setTeamId(id);
-    }
+    getTeamInfoDetail(id);
+    setTeamId(id);
   }, [id]);
-
-  useEffect(() => {
-    if (teamId) {
-      getTeamInfoDetail(teamId);
-    }
-  }, [teamId]);
 
   useEffect(() => {
     getTeamList();
@@ -78,7 +70,7 @@ export default function index(props: Props) {
       title: t('common:table.note'),
       dataIndex: ['user_group', 'note'],
       ellipsis: true,
-      render: (text: string, record) => record['user_group'].note || '-',
+      render: (_: string, record) => record['user_group'].note || '-',
     },
     {
       title: t('user:business.perm_flag'),
@@ -87,7 +79,7 @@ export default function index(props: Props) {
     {
       title: t('common:table.operations'),
       width: '100px',
-      render: (text: string, record) => (
+      render: (_: string, record) => (
         <Button
           type='link'
           danger={memberList.length > 1}
@@ -119,7 +111,7 @@ export default function index(props: Props) {
     },
   ];
 
-  const getList = (action) => {
+  const getList = (action: string) => {
     getTeamList(undefined, action === 'delete');
   };
 
@@ -164,6 +156,7 @@ export default function index(props: Props) {
 
   // 弹窗关闭回调
   const handleClose = (action) => {
+    console.log(teamId);
     setVisible(false);
     if (['create', 'delete', 'update'].includes(action)) {
       getList(action);
@@ -191,7 +184,7 @@ export default function index(props: Props) {
       visible={open}
     >
       {teamList.length > 0 ? (
-        <div className=''>
+        <div>
           <Row className='team-info'>
             <Col
               span='24'
@@ -218,7 +211,7 @@ export default function index(props: Props) {
                   confirm({
                     title: t('common:btn.delete'),
                     onOk: () => {
-                      deleteBusinessTeam(id).then((_) => {
+                      deleteBusinessTeam(teamId).then((_) => {
                         message.success(t('common:success.delete'));
                         handleClose('delete');
                       });
@@ -231,7 +224,6 @@ export default function index(props: Props) {
             <Col
               style={{
                 marginTop: '8px',
-                // color: '#666',
               }}
             >
               <Space wrap>
@@ -289,16 +281,7 @@ export default function index(props: Props) {
           </p>
         </div>
       )}
-      <UserInfoModal
-        visible={visible}
-        action={action as ActionType}
-        userType={'business'}
-        onClose={handleClose}
-        teamId={teamId}
-        onSearch={(val) => {
-          setTeamId(val);
-        }}
-      />
+      <UserInfoModal visible={visible} action={action as ActionType} userType='business' onClose={handleClose} teamId={teamId} />
     </Drawer>
   );
 }
