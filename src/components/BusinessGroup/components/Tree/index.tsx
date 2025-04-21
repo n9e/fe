@@ -35,7 +35,7 @@ const renderTree = (
         return (
           <li key={item.key} className='n9e-tree-node'>
             <div
-              className={classNames('n9e-tree-node-title', {
+              className={classNames('n9e-tree-node-title group', {
                 'n9e-tree-node-title-selected': isSelected,
               })}
               onClick={() => {
@@ -94,8 +94,7 @@ const renderTree = (
                 )}
                 {!item.children && onEdit && (
                   <EditOutlined
-                    className='edit-icon'
-                    style={{ fontSize: 12 }}
+                    className='opacity-0 absolute right-[8px] top-1/2 -translate-y-1/2 cursor-pointer z-10 hover:opacity-100 group-hover:opacity-100'
                     onClick={(e) => {
                       e.stopPropagation();
                       onEdit([item.key], { node: item });

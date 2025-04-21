@@ -19,13 +19,13 @@ import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import { Col, Drawer, Input, Row, Space, Button, message, Table, Modal } from 'antd';
+import { ColumnsType } from 'antd/lib/table';
 import { CloseOutlined } from '@ant-design/icons';
 import { Team, ActionType } from '@/store/manageInterface';
 import { EditOutlined, DeleteOutlined, SearchOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { deleteBusinessTeamMember, getBusinessTeamList, getBusinessTeamInfo, deleteBusinessTeam } from '@/services/manage';
 import { getDefaultBusiness } from '@/components/BusinessGroup';
 import { CommonStateContext } from '@/App';
-import { ColumnsType } from 'antd/lib/table';
 import usePagination from '@/components/usePagination';
 import UserInfoModal from '@/pages/user/component/createModal';
 
