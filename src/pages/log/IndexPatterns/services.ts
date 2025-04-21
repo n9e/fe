@@ -83,9 +83,11 @@ function transforVersion2To1(fieldConfig2: FieldConfigVersion2): FieldConfig {
       const field = fieldConfig2.linkArr[i].field;
       if (fieldConfig1.formatMap[field]) {
         fieldConfig1.formatMap[field].paramsArr = fieldConfig2.linkArr.filter((i) => i.field === field);
+        fieldConfig1.formatMap[field].regExtractArr = fieldConfig2.regExtractArr;
       } else {
         fieldConfig1.formatMap[field] = {
           paramsArr: fieldConfig2.linkArr.filter((i) => i.field === field),
+          regExtractArr: fieldConfig2.regExtractArr,
           type: 'url',
         };
       }
