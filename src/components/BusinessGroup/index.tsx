@@ -6,12 +6,14 @@ import { useHistory, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import { Button, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
+
 import { LeftOutlined, RightOutlined, SearchOutlined } from '@ant-design/icons';
 import { CommonStateContext } from '@/App';
 import { ActionType } from '@/store/manageInterface';
 import Tree from '@/components/BusinessGroup/components/Tree';
 import EditBusinessDrawer from '@/components/BusinessGroup/components/EditBusinessDrawer';
-import UserInfoModal from '@/pages/user/component/createModal';
+import CreateBusinessModal from '@/pages/user/component/createModal';
+
 import { listToTree, getCollapsedKeys, getCleanBusinessGroupIds, getDefaultBusinessGroupKey, getDefaultBusiness, getVaildBusinessGroup } from './utils';
 import BusinessGroupSelect from './BusinessGroupSelect';
 import BusinessGroupSelectWithAll from './BusinessGroupSelectWithAll';
@@ -76,17 +78,10 @@ export default function index(props: IProps) {
   const { busiGroups, siteInfo } = useContext(CommonStateContext);
   const [businessGroupTreeData, setBusinessTreeGroupData] = useState<Node[]>([]);
   const [busiGroupsListData, setBusiGroupsListData] = useState<any[]>([]);
-  const [visible, setVisible] = useState<boolean>(false);
-  const [action, setAction] = useState<ActionType>();
+  const [createBusiVisible, setCreateBusiVisible] = useState<boolean>(false);
+  const [editBusiDrawerVisible, setEditBusiDrawerVisible] = useState<boolean>(false);
   const [editBusiId, setEditBusiId] = useState<string>();
-  const [editDrawerVisible, setEditDrawerVisible] = useState(false);
-  const handleClick = (type: ActionType) => {
-    setAction(type);
-    setVisible(true);
-  };
-  const handleClose = () => {
-    setVisible(false);
-  };
+
   useEffect(() => {
     setBusinessTreeGroupData(listToTree(busiGroups, siteInfo?.businessGroupSeparator));
     setBusiGroupsListData(busiGroups);
@@ -101,7 +96,7 @@ export default function index(props: IProps) {
       enable={{
         right: collapse ? false : true,
       }}
-      onResizeStop={(e, direction, ref, d) => {
+      onResizeStop={(_e, _direction, _ref, d) => {
         let curWidth = width + d.width;
         if (curWidth < 200) {
           curWidth = 200;
@@ -132,7 +127,7 @@ export default function index(props: IProps) {
                 size='small'
                 type='link'
                 onClick={() => {
-                  handleClick(ActionType.CreateBusiness);
+                  setCreateBusiVisible(true);
                 }}
               >
                 {t('common:btn.add')}
@@ -207,7 +202,7 @@ export default function index(props: IProps) {
                   onEdit={(_selectedKeys, e) => {
                     const itemKey = e.node.key;
                     setEditBusiId(itemKey);
-                    setEditDrawerVisible(true);
+                    setEditBusiDrawerVisible(true);
                   }}
                   treeData={businessGroupTreeData as Node[]}
                 />
@@ -218,12 +213,19 @@ export default function index(props: IProps) {
       </div>
       <EditBusinessDrawer
         id={editBusiId || ''}
-        open={editDrawerVisible}
+        open={editBusiDrawerVisible}
         onCloseDrawer={() => {
-          setEditDrawerVisible(false);
+          setEditBusiDrawerVisible(false);
         }}
       />
-      <UserInfoModal visible={visible} action={action as ActionType} userType={'business'} onClose={handleClose} />
+      <CreateBusinessModal
+        visible={createBusiVisible}
+        action={ActionType.CreateBusiness}
+        userType='business'
+        onClose={() => {
+          setCreateBusiVisible(false);
+        }}
+      />
     </Resizable>
   );
 }

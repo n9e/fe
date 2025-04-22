@@ -20,14 +20,14 @@ import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import { Col, Drawer, Input, Row, Space, Button, message, Table, Modal } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
-import { CloseOutlined } from '@ant-design/icons';
+
 import { Team, ActionType } from '@/store/manageInterface';
-import { EditOutlined, DeleteOutlined, SearchOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { CloseOutlined, EditOutlined, DeleteOutlined, SearchOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { deleteBusinessTeamMember, getBusinessTeamList, getBusinessTeamInfo, deleteBusinessTeam } from '@/services/manage';
 import { getDefaultBusiness } from '@/components/BusinessGroup';
 import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
-import UserInfoModal from '@/pages/user/component/createModal';
+import BusinessModal from '@/pages/user/component/createModal';
 
 interface Props {
   open?: boolean;
@@ -47,7 +47,7 @@ export default function index(props: Props) {
   const [teamList, setTeamList] = useState<Team[]>([]);
   const [memberLoading, setMemberLoading] = useState<boolean>(false);
   const [searchMemberValue, setSearchMemberValue] = useState<string>('');
-  const [visible, setVisible] = useState<boolean>(false);
+  const [businessModalVisible, setBusinessModalVisible] = useState<boolean>(false);
   const [action, setAction] = useState<ActionType>();
   const [teamId, setTeamId] = useState<string>(id || '');
 
@@ -111,10 +111,6 @@ export default function index(props: Props) {
     },
   ];
 
-  const getList = (action: string) => {
-    getTeamList(undefined, action === 'delete');
-  };
-
   // 获取业务组列表
   const getTeamList = (search?: string, isDelete?: boolean) => {
     let params = {
@@ -149,17 +145,11 @@ export default function index(props: Props) {
     });
   };
 
-  const handleClick = (type: ActionType) => {
-    setAction(type);
-    setVisible(true);
-  };
-
   // 弹窗关闭回调
-  const handleClose = (action) => {
-    console.log(teamId);
-    setVisible(false);
+  const handleClose = (action: string) => {
+    setBusinessModalVisible(false);
     if (['create', 'delete', 'update'].includes(action)) {
-      getList(action);
+      getTeamList(undefined, action === 'delete');
     }
     if (teamId && ['update', 'addMember', 'deleteMember'].includes(action)) {
       getTeamInfoDetail(teamId);
@@ -200,7 +190,10 @@ export default function index(props: Props) {
                   marginLeft: '8px',
                   fontSize: '14px',
                 }}
-                onClick={() => handleClick(ActionType.EditBusiness)}
+                onClick={() => {
+                  setAction(ActionType.EditBusiness);
+                  setBusinessModalVisible(true);
+                }}
               ></EditOutlined>
               <DeleteOutlined
                 style={{
@@ -245,7 +238,7 @@ export default function index(props: Props) {
               <Input
                 prefix={<SearchOutlined />}
                 value={searchMemberValue}
-                className={'searchInput'}
+                className='searchInput'
                 onChange={(e) => setSearchMemberValue(e.target.value)}
                 placeholder={t('user:business.team_search_placeholder')}
               />
@@ -253,7 +246,8 @@ export default function index(props: Props) {
             <Button
               type='primary'
               onClick={() => {
-                handleClick(ActionType.AddBusinessMember);
+                setAction(ActionType.AddBusinessMember);
+                setBusinessModalVisible(true);
               }}
             >
               {t('user:business.add_team')}
@@ -277,11 +271,18 @@ export default function index(props: Props) {
           </p>
           <p>
             {t('user:business.empty')}&nbsp;
-            <a onClick={() => handleClick(ActionType.CreateBusiness)}>{t('user:business.create')}</a>
+            <a
+              onClick={() => {
+                setAction(ActionType.CreateBusiness);
+                setBusinessModalVisible(true);
+              }}
+            >
+              {t('user:business.create')}
+            </a>
           </p>
         </div>
       )}
-      <UserInfoModal visible={visible} action={action as ActionType} userType='business' onClose={handleClose} teamId={teamId} />
+      <BusinessModal visible={businessModalVisible} action={action as ActionType} userType='business' onClose={handleClose} teamId={teamId} />
     </Drawer>
   );
 }
