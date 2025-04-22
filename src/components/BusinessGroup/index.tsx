@@ -6,8 +6,8 @@ import { useHistory, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import { Button, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
-
 import { LeftOutlined, RightOutlined, SearchOutlined } from '@ant-design/icons';
+
 import { CommonStateContext } from '@/App';
 import { ActionType } from '@/store/manageInterface';
 import Tree from '@/components/BusinessGroup/components/Tree';
