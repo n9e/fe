@@ -67,7 +67,7 @@ export default function index({ chartForm, type, variableConfig, dashboardId, ti
             if (cate === DatasourceCateEnum.ck) {
               return <CK datasourceValue={datasourceValue} />;
             }
-            return <PlusQueryBuilder cate={cate} datasourceValue={datasourceValue} />;
+            return <PlusQueryBuilder cate={cate} datasourceValue={datasourceValue} variables={variableConfig} dashboardId={dashboardId} />;
           }}
         </Form.Item>
       </div>

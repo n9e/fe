@@ -37,7 +37,7 @@ export default function LegendList(props: Props) {
         {_.map(data, (item) => {
           return (
             <li
-              key={item.name}
+              key={item.id}
               style={{
                 display: placement === 'right' ? 'block' : 'inline-block',
               }}
