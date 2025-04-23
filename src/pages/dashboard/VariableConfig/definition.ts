@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-export interface IVariable {
+export interface IVariable<QueryType = any> {
   name: string;
   label?: string;
   definition: string;
@@ -43,4 +43,5 @@ export interface IVariable {
   };
   value?: string | string[];
   hide?: boolean; // v6 新增，用于隐藏变量
+  query?: QueryType; // v8 新增，用于规范各类数据的查询条件
 }

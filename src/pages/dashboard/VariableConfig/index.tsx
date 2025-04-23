@@ -21,14 +21,18 @@ import { useLocation } from 'react-router-dom';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { EditOutlined } from '@ant-design/icons';
+
+import { DatasourceCateEnum } from '@/utils/constant';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
 import { Dashboard } from '@/store/dashboardInterface';
 import { getMonObjectList } from '@/services/targets';
+
 import { convertExpressionToQuery, replaceExpressionVars, getVaraiableSelected, setVaraiableSelected, filterOptionsByReg, stringToRegex } from './constant';
 import { IVariable } from './definition';
 import DisplayItem from './DisplayItem';
 import EditItems from './EditItems';
+import datasource from './datasource';
 import './index.less';
 
 interface IProps {
@@ -123,9 +127,17 @@ function index(props: IProps) {
       (async () => {
         for (let idx = 0; idx < value.length; idx++) {
           const item = _.cloneDeep(value[idx]);
-          if (item.type === 'query' && item.definition) {
+          if (item.type === 'query') {
             const datasourceCate = item.datasource?.cate;
-            const definition =
+            const datasourceValue = result.length
+              ? (replaceExpressionVars({
+                  text: item?.datasource?.value as any,
+                  variables: result,
+                  limit: result.length,
+                  dashboardId: id,
+                }) as any)
+              : item?.datasource?.value;
+            let definition =
               idx > 0
                 ? replaceExpressionVars({
                     text: item.definition,
@@ -135,44 +147,58 @@ function index(props: IProps) {
                     isEscapeJsonString: true,
                   })
                 : item.definition;
-
             let options: string[] = [];
-            try {
-              options = await convertExpressionToQuery(
-                definition,
-                range,
-                {
-                  ...item,
-                  datasource: {
-                    ...(item?.datasource || {}),
-                    value: result.length
-                      ? (replaceExpressionVars({
-                          text: item?.datasource?.value as any,
-                          variables: result,
-                          limit: result.length,
-                          dashboardId: id,
-                        }) as any)
-                      : item?.datasource?.value,
+
+            /**
+             * v8
+             * prometheus、es 还是通过老的 convertExpressionToQuery 去查询
+             * 其他数据源通过 统一在 datasource 文件里处理
+             */
+            if (_.includes([DatasourceCateEnum.prometheus, DatasourceCateEnum.elasticsearch], datasourceCate)) {
+              try {
+                options = await convertExpressionToQuery(
+                  definition,
+                  range,
+                  {
+                    ...item,
+                    datasource: {
+                      ...(item?.datasource || {}),
+                      value: datasourceValue,
+                    },
                   },
-                },
-                id,
-                groupedDatasourceList,
-              );
-              options = datasourceCate === 'prometheus' ? _.sortBy(_.uniq(options)) : _.uniq(options);
-              options = _.map(options, _.toString); // 2024-09-03 统一将选项转为字符串，以防一些数据返回非字符串类型，比如 ES 的 status: 200
-            } catch (error) {
-              console.error(error);
+                  id,
+                  groupedDatasourceList,
+                );
+                options = datasourceCate === 'prometheus' ? _.sortBy(_.uniq(options)) : _.uniq(options);
+                options = _.map(options, _.toString); // 2024-09-03 统一将选项转为字符串，以防一些数据返回非字符串类型，比如 ES 的 status: 200
+              } catch (error) {
+                console.error(error);
+              }
+            } else {
+              try {
+                options = await datasource({
+                  dashboardId: id,
+                  datasourceCate,
+                  datasourceValue,
+                  variables: result,
+                  query: {
+                    ...item.query,
+                    range,
+                    definition,
+                  },
+                });
+                options = _.sortBy(_.uniq(options));
+                options = _.map(options, _.toString);
+              } catch (error) {
+                console.error(error);
+              }
             }
+
             const regFilterOptions = filterOptionsByReg(options, item.reg, result, idx, id);
             result[idx] = item;
             result[idx].fullDefinition = definition;
             result[idx].options = regFilterOptions;
-            if (item.type === 'query') {
-              if (datasourceCate === 'prometheus') {
-                // TODO prometheus 对变量可选项排序
-                result[idx].options = _.sortBy(regFilterOptions, 'value');
-              }
-            }
+            result[idx].options = _.sortBy(regFilterOptions, 'value');
             // 当仪表盘变量值为空时，设置默认值
             // 如果已选项不在待选项里也视做空值处理
             const selected = getVaraiableSelected(item, id);
