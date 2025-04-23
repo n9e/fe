@@ -34,25 +34,25 @@ export default function FormCpt() {
   const [saveMode] = useGlobalState('saveMode');
   const onFinish = async (values: any) => {
     setSubmitLoading(true);
-    // 转换 http.headers 格式
-    if (type === 'influxdb') {
+    // 转换 headers 格式
+    if (_.get(values, ['http', 'headers'])) {
       _.set(
         values,
-        ['settings', 'influxdb.headers'],
+        'http.headers',
         _.transform(
-          values?.settings?.['influxdb.headers'],
+          values?.http?.headers,
           (result, item) => {
             result[item.key] = item.value;
           },
           {},
         ),
       );
-    } else {
+    } else if (_.get(values, ['settings', `${type}.headers`])) {
       _.set(
         values,
-        'http.headers',
+        ['settings', `${type}.headers`],
         _.transform(
-          values?.http?.headers,
+          values?.settings?.[`${type}.headers`],
           (result, item) => {
             result[item.key] = item.value;
           },
@@ -84,9 +84,14 @@ export default function FormCpt() {
   useEffect(() => {
     if (action === 'edit' && id !== undefined) {
       getDataSourceDetailById(id).then((res: any) => {
-        _.set(res, 'http.headers', _.map(res?.http?.headers, (value, key) => ({ key, value })) || []);
+        const plugin_type = res.plugin_type;
+        if (res?.http?.headers) {
+          _.set(res, 'http.headers', _.map(res?.http?.headers, (value, key) => ({ key, value })) || []);
+        } else if (_.get(res, ['settings', `${plugin_type}.headers`])) {
+          _.set(res, ['settings', `${plugin_type}.headers`], _.map(_.get(res, ['settings', `${plugin_type}.headers`]), (value, key) => ({ key, value })) || []);
+        }
         setData(res);
-        setType(res.plugin_type);
+        setType(plugin_type);
       });
     }
   }, []);
