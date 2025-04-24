@@ -7,6 +7,8 @@
   height: 100%;
   flex-shrink: 0;
   border: 1px solid var(--fc-border-color);
+  display: flex;
+  flex-direction: column;
 }
 .loki-discover-chart {
   height: 200px;
@@ -43,7 +45,7 @@
   border-radius: 0 0 4px 4px;
   height: 52px;
   line-height: 52px;
-  margin: 10px 5px;
+  margin: 0 5px 10px 5px;
   padding: 0 20px;
   display: flex;
   justify-content: space-between;
@@ -89,9 +91,10 @@
 
 
 .loki-discover-rows-container {
+  height: 100%;
+  min-height: 0;
   overflow: hidden;
   overflow-y: auto;
-  height: calc(100% - 272px);
 }
 
 .value-tags-container {
