@@ -12,7 +12,7 @@ export function WrapLines(props: { onChange: (v: boolean) => void }) {
   return (
     <>
       <span>Wrap Lines </span>
-      <Switch defaultChecked checked={value} />
+      <Switch defaultChecked checked={value} onChange={handleChange} />
     </>
   );
 }
