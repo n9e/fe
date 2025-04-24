@@ -15,29 +15,33 @@
  *
  */
 import React, { ReactNode, useContext, useState, useEffect } from 'react';
-import { useHistory, Link, useLocation } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import querystring from 'query-string';
 import { useTranslation } from 'react-i18next';
 import { Menu, Dropdown, Space, Drawer } from 'antd';
+import Icon, { DownOutlined, RollbackOutlined } from '@ant-design/icons';
 
-import { DownOutlined, RollbackOutlined } from '@ant-design/icons';
 import { Logout } from '@/services/login';
 import AdvancedWrap, { License } from '@/components/AdvancedWrap';
 import { CommonStateContext } from '@/App';
 import { AccessTokenKey, IS_ENT } from '@/utils/constant';
 import DarkModeSelect from '@/components/DarkModeSelect';
 
-import Version from './Version';
-import SideMenuColorSetting from './SideMenuColorSetting';
-import PageLayout from './PageLayoutWithTabs';
-import HelpLink from './HelpLink';
-import './index.less';
-import './locale';
+import menuList from './menu';
+import { findMenuByPath, TabMenu } from './TabMenu';
+import { MenuMatchResult } from './types';
+import LanguageIcon from '../icons/LanguageIcon';
+import Version from '../Version';
+import SideMenuColorSetting from '../SideMenuColorSetting';
+import HelpLink from '../HelpLink';
+import '../index.less';
+import '../locale';
 
 export { HelpLink };
 
 // @ts-ignore
 import FeatureNotification from 'plus:/pages/FeatureNotification';
+import DocIcon from '../icons/DocIcon';
 interface IPageLayoutProps {
   icon?: ReactNode;
   title?: String | JSX.Element;
@@ -48,6 +52,7 @@ interface IPageLayoutProps {
   showBack?: Boolean;
   backPath?: string;
   docFn?: Function;
+  tabGroup?: string;
 }
 
 const i18nMap = {
@@ -58,18 +63,22 @@ const i18nMap = {
   ru_RU: 'Русский',
 };
 
-const PageLayoutOld: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introIcon, children, customArea, showBack, backPath, docFn }) => {
+const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introIcon, children, customArea, showBack, backPath, docFn, tabGroup }) => {
   const { t, i18n } = useTranslation('pageLayout');
   const history = useHistory();
   const location = useLocation();
   const query = querystring.parse(location.search);
   const { profile, siteInfo } = useContext(CommonStateContext);
   const embed = localStorage.getItem('embed') === '1' && window.self !== window.top;
-  const [curLanguage, setCurLanguage] = useState(i18nMap[i18n.language] || '中文');
   const [themeVisible, setThemeVisible] = useState(false);
+  const [currentMenu, setCurrentMenu] = useState<MenuMatchResult | null>(null);
+
   useEffect(() => {
-    setCurLanguage(i18nMap[i18n.language] || '中文');
-  }, [i18n.language]);
+    const result = findMenuByPath(location.pathname, menuList);
+    if (result) {
+      setCurrentMenu(result);
+    }
+  }, [location.pathname]);
 
   const menu = (
     <Menu>
@@ -108,7 +117,6 @@ const PageLayoutOld: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, int
     <div className={'page-wrapper'}>
       {!embed && (
         <>
-          {' '}
           {customArea ? (
             <div className={'page-top-header'}>{customArea}</div>
           ) : (
@@ -120,23 +128,26 @@ const PageLayoutOld: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, int
                   display: query.viewMode === 'fullscreen' ? 'none' : 'flex',
                 }}
               >
-                <div className={'page-header-title'}>
-                  {showBack && window.history.state && (
-                    <RollbackOutlined
-                      onClick={() => {
-                        if (backPath) {
-                          history.push(backPath);
-                        } else {
-                          history.goBack();
-                        }
-                      }}
-                      style={{
-                        marginRight: '5px',
-                      }}
-                    />
-                  )}
-                  {icon}
-                  {title}
+                <div className='flex gap-4 align-center'>
+                  <div className={'page-header-title'}>
+                    {showBack && window.history.state && (
+                      <RollbackOutlined
+                        onClick={() => {
+                          if (backPath) {
+                            history.push(backPath);
+                          } else {
+                            history.goBack();
+                          }
+                        }}
+                        style={{
+                          marginRight: '5px',
+                        }}
+                      />
+                    )}
+                    {icon}
+                    {t(currentMenu?.parentItem?.label || '') || title}
+                  </div>
+                  <TabMenu currentMenu={currentMenu} />
                 </div>
 
                 <div className={'page-header-right-area'} style={{ display: sessionStorage.getItem('menuHide') === '1' ? 'none' : undefined }}>
@@ -154,14 +165,9 @@ const PageLayoutOld: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, int
                     {!IS_ENT && (
                       <div style={{ marginRight: 8, position: 'relative' }}>
                         <a target='_blank' href={siteInfo?.document_url || 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/introduction/'}>
-                          {t('docs')}
+                          <Icon width={16} height={16} component={DocIcon} />
                         </a>
                       </div>
-                    )}
-                    {profile?.admin && (
-                      <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
-                        <Link to='/audits'>{t('audits:title')}</Link>
-                      </AdvancedWrap>
                     )}
                   </Space>
 
@@ -179,7 +185,6 @@ const PageLayoutOld: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, int
                       <Menu
                         onSelect={({ key }) => {
                           i18n.changeLanguage(key);
-                          setCurLanguage(i18nMap[key]);
                           localStorage.setItem('language', key);
                         }}
                         selectable
@@ -191,7 +196,7 @@ const PageLayoutOld: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, int
                     }
                   >
                     <a style={{ marginRight: 12 }} onClick={(e) => e.preventDefault()} id='i18n-btn'>
-                      {curLanguage}
+                      <Icon width={12} height={12} component={LanguageIcon} />
                     </a>
                   </Dropdown>
 
@@ -201,7 +206,7 @@ const PageLayoutOld: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, int
 
                   <Dropdown overlay={menu} trigger={['click']}>
                     <span className='avator' style={{ cursor: 'pointer' }}>
-                      <img src={profile.portrait || '/image/avatar1.png'} alt='' />
+                      <img src={profile.portrait || '/image/avatar1.png'} />
                       <span className='display-name'>{profile.nickname || profile.username}</span>
                       <DownOutlined />
                     </span>
@@ -212,6 +217,7 @@ const PageLayoutOld: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, int
           )}
         </>
       )}
+
       {children && children}
       <Drawer
         closable={false}
