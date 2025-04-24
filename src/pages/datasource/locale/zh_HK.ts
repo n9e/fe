@@ -42,6 +42,7 @@ const zh_HK = {
     username: '使用者名稱',
     password: '密碼',
     skip_ssl_verify: '跳過 SSL 驗證',
+    skip_tls_verify: '跳過 TLS 驗證',
     yes: '是',
     no: '否',
     headers: '自定義 HTTP 標頭',
