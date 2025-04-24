@@ -4,6 +4,7 @@ import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import { Form, Button, Empty, Spin, message, Space, Select, Typography, Result, Row as AntdRow, Col as AntdCol } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
+import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 import { useLocation } from 'react-router-dom';
 import { getLogsQuery } from './services';
 import TimeRangePicker, { IRawTimeRange, isMathString, parseRange } from '@/components/TimeRangePicker';
@@ -37,6 +38,7 @@ interface IProps {
 const { Paragraph } = Typography;
 
 const LOGS_LIMIT = [100, 300, 500, 700, 1000];
+const GRAPH_VISIBLE_CACHE_KEY = 'loki_graph_visible_cachekey';
 
 export default function index(props: IProps) {
   const { t } = useTranslation('explorer');
@@ -56,6 +58,7 @@ export default function index(props: IProps) {
   const [showTime, setShowTime] = useState<boolean>(true);
   const [prettifyJson, setPrettifyJson] = useState<boolean>(false);
   const [range, setRange] = useState<IRawTimeRange>({ start: 'now-1h', end: 'now' }); // for change time to fetch data
+  const [graphVisible, setGraphVisible] = useState<boolean>(localStorage.getItem(GRAPH_VISIBLE_CACHE_KEY) === 'false' ? false : true);
 
   let defaultTime: undefined | IRawTimeRange;
   if (typeof params.start === 'string' && typeof params.end === 'string') {
@@ -154,7 +157,7 @@ export default function index(props: IProps) {
         setData(parseResponse(result).dataRows);
         setSeries(createSeries(volume_result?.result || []));
         setLoading(false);
-      } else {
+      } else if (queryValue) {
         const [query_result] = await Promise.all([getLogsQuery(values.datasourceValue, queryParams)]);
         const { resultType, result } = query_result;
         switch (resultType) {
@@ -211,7 +214,7 @@ export default function index(props: IProps) {
           <TimeRangePicker dateFormat='YYYY-MM-DD HH:mm:ss' onChange={setRange} />
         </Form.Item>
       )}
-      <div className='mb2'>
+      <div>
         <AntdRow gutter={8}>
           <AntdCol flex='auto'>
             <Form.Item name={['query', 'query']}>
@@ -236,29 +239,49 @@ export default function index(props: IProps) {
             {typeIsStreams ? (
               <div className='loki-discover-main'>
                 {series.length > 0 ? (
-                  <div className='loki-discover-chart'>
-                    <div className='loki-discover-chart-content'>
-                      <Timeseries
-                        series={series}
-                        values={
-                          {
-                            custom: {
-                              drawStyle: 'lines',
-                              lineInterpolation: 'smooth',
-                            },
-                            options: {
-                              legend: {
-                                displayMode: 'list',
-                              },
-                              tooltip: {
-                                mode: 'all',
-                              },
-                            },
-                          } as any
-                        }
+                  <>
+                    <div className='n9e-flex n9e-justify-between n9e-items-center'>
+                      <div />
+                      <Button
+                        size='small'
+                        type='text'
+                        icon={graphVisible ? <EyeOutlined /> : <EyeInvisibleOutlined />}
+                        onClick={() => {
+                          setGraphVisible(!graphVisible);
+                          localStorage.setItem(GRAPH_VISIBLE_CACHE_KEY, !graphVisible ? 'true' : 'false');
+                        }}
                       />
                     </div>
-                  </div>
+                    <div
+                      className='loki-discover-chart'
+                      style={{
+                        display: graphVisible ? 'block' : 'none',
+                        flexShrink: 0,
+                      }}
+                    >
+                      <div className='loki-discover-chart-content'>
+                        <Timeseries
+                          series={series}
+                          values={
+                            {
+                              custom: {
+                                drawStyle: 'lines',
+                                lineInterpolation: 'smooth',
+                              },
+                              options: {
+                                legend: {
+                                  displayMode: 'list',
+                                },
+                                tooltip: {
+                                  mode: 'all',
+                                },
+                              },
+                            } as any
+                          }
+                        />
+                      </div>
+                    </div>
+                  </>
                 ) : (
                   <>
                     <Result
