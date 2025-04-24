@@ -59,7 +59,17 @@ export default function Chart() {
       const data = res.dat
         .filter((item) => !!item)
         .map((item) => {
-          return { ...JSON.parse(item.configs), ref: React.createRef() };
+          let configs: any = {};
+          try {
+            configs = JSON.parse(item.configs);
+            // Renderer 必须有 id 部分临时图场景没有 id 这里临时加上
+            if (!configs.dataProps?.id) {
+              _.set(configs, ['dataProps', 'id'], _.uniqueId('chart_'));
+            }
+          } catch (e) {
+            console.error('Error parsing configs:', e);
+          }
+          return { ...configs, ref: React.createRef() };
         });
       datasourceCate.current = _.find(datasourceCateOptions, { value: data[0].dataProps.datasourceCate })?.label;
       datasourceName.current = data[0].dataProps.datasourceName;
