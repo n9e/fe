@@ -1,8 +1,9 @@
 import React from 'react';
 import _ from 'lodash';
 import purify from 'dompurify';
-import { getFieldLabel, getFieldValue, RenderValue } from './index';
+import { getFieldLabel } from './index';
 import { getHighlightHtml } from './highlight';
+import RenderValue from '@/pages/explorer/components/RenderValue';
 
 export const typeMap: Record<string, string> = {
   float: 'number',
@@ -49,18 +50,12 @@ export function getColumnsFromFields(selectedFields: { name: string; type: strin
               {/*2024-0807 限制只渲染前 20 个字段*/}
               {_.map(_.slice(fieldKeys, 0, 20), (key) => {
                 const val = fields[key];
+                // todo: highlight 传入
                 const label = getFieldLabel(key, fieldConfig);
-                if (!_.isPlainObject(val) && fieldConfig?.formatMap?.[key]) {
-                  const value = getFieldValue(key, val, fieldConfig, record.json, range);
-                  return (
-                    <React.Fragment key={label}>
-                      <dt>{label}:</dt> <dd>{value}</dd>
-                    </React.Fragment>
-                  );
-                }
+                const value = <RenderValue fieldKey={key} fieldValue={val} fieldConfig={fieldConfig} rawValue={record.json} range={range} />;
                 return (
                   <React.Fragment key={label}>
-                    <dt>{label}:</dt> <dd dangerouslySetInnerHTML={{ __html: purify.sanitize(getHighlightHtml(val, highlight?.[key])) }}></dd>
+                    <dt>{label}:</dt> <dd>{value}</dd>
                   </React.Fragment>
                 );
               })}
@@ -79,9 +74,8 @@ export function getColumnsFromFields(selectedFields: { name: string; type: strin
         key: fieldKey,
         render: (fields, record) => {
           const { highlight } = record;
-          const fieldVal = getFieldValue(item.name, fields[fieldKey], fieldConfig, record.json, range);
-          const value = _.isArray(fieldVal) ? _.join(fieldVal, ',') : fieldVal;
-          return <RenderValue value={value} highlights={highlight?.[fieldKey]} />;
+          // todo: highlight 传入
+          return <RenderValue fieldKey={item.name} fieldValue={fields[item.name]} fieldConfig={fieldConfig} rawValue={record.json} range={range} />;
         },
         sorter: _.includes(['date', 'number'], typeMap[item.type])
           ? {
@@ -99,17 +93,7 @@ export function getColumnsFromFields(selectedFields: { name: string; type: strin
       key: dateField,
       width: 200,
       render: (fields, record) => {
-        const format = fieldConfig?.formatMap?.[dateField];
-        return getFieldValue(dateField, fields[dateField], {
-          formatMap: {
-            [dateField]: {
-              type: 'date',
-              params: {
-                pattern: format?.params?.pattern || 'YYYY-MM-DD HH:mm:ss',
-              },
-            },
-          },
-        });
+        return <RenderValue fieldKey={dateField} fieldValue={fields[dateField]} fieldConfig={fieldConfig} rawValue={record.json} range={range} />;
       },
       defaultSortOrder: 'descend',
       sorter: {

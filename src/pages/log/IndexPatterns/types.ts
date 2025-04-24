@@ -19,17 +19,20 @@ export interface FieldConfig {
       params: {
         [index: string]: string; // pattern
       };
-      paramsArr: {
-        name: string;
-        urlTemplate: string;
-      }[]; // 兼容从FieldConfigVersion2 合并过来的多个跳转链接的情况
-      regExtractArr: IndexPatternExtract[];
+      paramsArr: ILogURL[]; // 兼容从FieldConfigVersion2 合并过来的多个跳转链接的情况
+      regExtractArr: ILogExtract[];
     };
   };
   version: number;
 }
 
-export interface IndexPatternExtract {
+export interface ILogURL {
+  name: string;
+  urlTemplate: string;
+  field?: string;
+}
+
+export interface ILogExtract {
   field: string;
   reg: string;
   newField: string;
@@ -51,12 +54,8 @@ export interface FieldConfigVersion2 {
       };
     };
   }[];
-  linkArr: {
-    name: string;
-    field: string;
-    urlTemplate: string;
-  }[];
-  regExtractArr?: IndexPatternExtract[];
+  linkArr: ILogURL[];
+  regExtractArr?: ILogExtract[];
   version: number;
 }
 
