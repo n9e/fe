@@ -8,15 +8,16 @@ import { json } from '@codemirror/lang-json';
 import { defaultHighlightStyle } from '@codemirror/highlight';
 import { copyToClipBoard } from '@/utils';
 import HighLightJSON from './HighLightJSON';
-import { Field, getFieldLabel, getFieldValue, RenderValue } from './utils';
+import { Field, getFieldLabel } from './utils';
+import RenderValue from '@/pages/explorer/components/RenderValue';
 import { typeIconMap } from './FieldsSidebar/Field';
 import { typeMap } from '../Elasticsearch/services';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
-import { FieldConfig, IndexPatternExtract } from '@/pages/log/IndexPatterns/types';
+import { FieldConfigVersion2, ILogExtract } from '@/pages/log/IndexPatterns/types';
 import moment from 'moment';
 interface Props {
   value: Record<string, any>;
-  fieldConfig: FieldConfig;
+  fieldConfig?: FieldConfigVersion2;
   fields: Field[];
   highlight: any;
   range: IRawTimeRange;
@@ -25,25 +26,6 @@ interface Props {
 export default function LogView(props: Props) {
   const { t } = useTranslation('explorer');
   const { value, fieldConfig, fields, highlight, range } = props;
-  const [extractArr, setExtractArr] = useState<IndexPatternExtract[]>([]);
-  const allParamsArr = fieldConfig?.formatMap
-    ? Object.keys(fieldConfig.formatMap).reduce((prev, cur) => {
-        if (fieldConfig.formatMap[cur].paramsArr?.length > 0) {
-          return [...prev, ...fieldConfig.formatMap[cur].paramsArr];
-        } else {
-          return [];
-        }
-      }, [])
-    : [];
-  useEffect(() => {
-    if (fieldConfig?.formatMap) {
-      Object.keys(fieldConfig.formatMap).forEach((cur) => {
-        if (fieldConfig.formatMap[cur].paramsArr?.length > 0 && fieldConfig.formatMap[cur].regExtractArr.length > 0) {
-          setExtractArr(fieldConfig.formatMap[cur].regExtractArr);
-        }
-      });
-    }
-  }, [fieldConfig]);
 
   const [type, setType] = useState<string>('table');
   const parsedRange = range ? parseRange(range) : null;
@@ -112,13 +94,8 @@ export default function LogView(props: Props) {
               key: 'value',
               render: (val: any, record: { field: string }) => {
                 const field = record.field;
-                const fieldVal = getFieldValue(field, val, fieldConfig, value, range);
-                const v = _.isArray(fieldVal) ? _.join(fieldVal, ',') : fieldVal;
-                return (
-                  <div>
-                    <RenderValue value={v} highlights={highlight?.[field]} />
-                  </div>
-                );
+                // todo: highlight 传入
+                return <RenderValue fieldKey={field} fieldValue={val} fieldConfig={fieldConfig} rawValue={value} range={range} />;
               },
             },
           ]}
@@ -127,7 +104,7 @@ export default function LogView(props: Props) {
         />
       </Tabs.TabPane>
       <Tabs.TabPane tab='JSON' key='json'>
-        <HighLightJSON value={value} query={{ start, end }} features={allParamsArr} extractArr={extractArr} />
+        <HighLightJSON value={value} query={{ start, end }} urlTemplates={fieldConfig?.linkArr} extractArr={fieldConfig?.regExtractArr} />
       </Tabs.TabPane>
     </Tabs>
   );

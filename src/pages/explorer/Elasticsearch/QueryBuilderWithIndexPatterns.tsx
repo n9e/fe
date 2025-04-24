@@ -44,21 +44,10 @@ export default function QueryBuilder(props: Props) {
         const finded = indexPatterns.find((i) => i.id === indexPattern || i.name === indexPattern); //从url上带过来时indexPattern不是id，是name，兼容下这种情况
         if (finded) {
           const formValuesQuery = form.getFieldValue('query');
-          let fieldConfig;
-          try {
-            if (finded.fields_format) {
-              fieldConfig = standardizeFieldConfig(JSON.parse(finded.fields_format));
-              form.setFields([{ name: 'fieldConfig', value: undefined }]);
-            }
-          } catch (error) {
-            console.warn(error);
-          }
-
           formValuesQuery.date_field = finded.time_field;
           formValuesQuery.index = finded.name;
           form.setFieldsValue({
             query: formValuesQuery,
-            fieldConfig,
           });
           onIndexChange();
           getFullFields(datasourceValue, finded.name, {

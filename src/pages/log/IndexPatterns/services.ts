@@ -17,7 +17,7 @@
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 import { N9E_PATHNAME } from '@/utils/constant';
-import { FieldConfig, FieldConfigVersion2 } from './types';
+import { FieldConfig, FieldConfigVersion2, convertToVersion2 } from './types';
 
 export const getESIndexPatterns = function (datasource_id?: number) {
   return request(`/api/${N9E_PATHNAME}/es-index-pattern-list`, {
@@ -96,17 +96,17 @@ function transforVersion2To1(fieldConfig2: FieldConfigVersion2): FieldConfig {
   return fieldConfig1;
 }
 
-export function standardizeFieldConfig(fieldConfig: FieldConfig | FieldConfigVersion2): FieldConfig {
+export function standardizeFieldConfig(fieldConfig: FieldConfig | FieldConfigVersion2): FieldConfigVersion2 {
   if (fieldConfig.version === 1) {
-    return fieldConfig as FieldConfig;
+    return convertToVersion2(fieldConfig as FieldConfig);
   }
 
   if (fieldConfig.version === 2) {
-    return transforVersion2To1(fieldConfig as FieldConfigVersion2);
+    return fieldConfig as FieldConfigVersion2;
   }
   return {
-    attrs: {},
-    formatMap: {},
-    version: 1,
+    arr: [],
+    linkArr: [],
+    version: 2,
   };
 }
