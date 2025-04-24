@@ -36,12 +36,12 @@ import SideMenuColorSetting from '../SideMenuColorSetting';
 import HelpLink from '../HelpLink';
 import '../index.less';
 import '../locale';
-
-export { HelpLink };
-
 // @ts-ignore
 import FeatureNotification from 'plus:/pages/FeatureNotification';
 import DocIcon from '../icons/DocIcon';
+
+export { HelpLink };
+
 interface IPageLayoutProps {
   icon?: ReactNode;
   title?: String | JSX.Element;
