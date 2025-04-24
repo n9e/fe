@@ -1,10 +1,16 @@
+import React from 'react';
 import i18next from 'i18next';
+import { NotificationFilled } from '@ant-design/icons';
+
+import IconFont from '@/components/IconFont';
+
 import { MenuItem } from './types';
 
 const menu: MenuItem[] = [
   {
     key: 'infrastructure',
     label: i18next.t('pageLayout:infrastructure.title'),
+    icon: <IconFont type='icon-Menu_Infrastructure' />,
     children: [
       {
         key: 'bgroup',
@@ -33,6 +39,7 @@ const menu: MenuItem[] = [
   {
     key: 'query',
     label: i18next.t('pageLayout:query.title'),
+    icon: <IconFont type='icon-IndexManagement1' />,
     children: [
       {
         key: 'metric',
@@ -55,6 +62,7 @@ const menu: MenuItem[] = [
   {
     key: 'alert',
     label: i18next.t('pageLayout:alert.title'),
+    icon: <IconFont type='icon-Menu_AlarmManagement' />,
     children: [
       {
         key: 'rules',
@@ -95,6 +103,7 @@ const menu: MenuItem[] = [
   {
     key: 'notification',
     label: i18next.t('pageLayout:notification.title'),
+    icon: <NotificationFilled />,
     children: [
       {
         key: 'notify_rule',
@@ -126,6 +135,7 @@ const menu: MenuItem[] = [
   {
     key: 'integrations',
     label: i18next.t('pageLayout:integrations.title'),
+    icon: <IconFont type='icon-shujujicheng' />,
     children: [
       {
         key: 'data_source',
@@ -162,6 +172,7 @@ const menu: MenuItem[] = [
   {
     key: 'organization',
     label: i18next.t('pageLayout:organization.title'),
+    icon: <IconFont type='icon-Menu_PersonnelOrganization' />,
     children: [
       {
         key: 'users',
@@ -188,6 +199,7 @@ const menu: MenuItem[] = [
   {
     key: 'setting',
     label: i18next.t('pageLayout:setting.title'),
+    icon: <IconFont type='icon-Menu_SystemInformation' />,
     children: [
       {
         key: 'site_setting',

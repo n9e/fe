@@ -1,5 +1,4 @@
-import React from 'react';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Tabs } from 'antd';
@@ -16,16 +15,6 @@ export const findMenuByPath = (path: string, menuList: MenuItem[]): MenuMatchRes
     if (!parent.children) continue;
 
     for (const child of parent.children) {
-      // 检查当前项
-      if (child.path === path) {
-        return {
-          currentItem: child,
-          parentItem: parent,
-          showTabs: child.type === 'tabs',
-        };
-      }
-
-      // 检查子项
       if (child.children) {
         for (const grandChild of child.children) {
           if (grandChild.path === path) {
@@ -33,6 +22,7 @@ export const findMenuByPath = (path: string, menuList: MenuItem[]): MenuMatchRes
               currentItem: grandChild,
               parentItem: child,
               showTabs: child.type === 'tabs',
+              icon: parent?.icon,
             };
           }
         }

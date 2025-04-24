@@ -144,7 +144,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                         }}
                       />
                     )}
-                    {icon}
+                    {currentMenu?.icon || icon}
                     {t(currentMenu?.parentItem?.label || '') || title}
                   </div>
                   <TabMenu currentMenu={currentMenu} />
