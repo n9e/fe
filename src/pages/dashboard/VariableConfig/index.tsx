@@ -20,6 +20,7 @@ import queryString from 'query-string';
 import { useLocation } from 'react-router-dom';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
+import { Spin } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 
 import { DatasourceCateEnum } from '@/utils/constant';
@@ -68,6 +69,7 @@ function index(props: IProps) {
   const { id, editable = true, range, onChange, onOpenFire, isPreview = false, dashboard } = props;
   const [editing, setEditing] = useState<boolean>(false);
   const [data, setData] = useState<IVariable[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const dataWithoutConstant = _.filter(data, (item) => item.type !== 'constant');
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refreshFlag_'));
   const value = _.map(props.value, (item) => {
@@ -125,6 +127,7 @@ function index(props: IProps) {
     if (value) {
       let result: IVariable[] = [];
       (async () => {
+        setLoading(true);
         for (let idx = 0; idx < value.length; idx++) {
           const item = _.cloneDeep(value[idx]);
           if (item.type === 'query') {
@@ -318,6 +321,7 @@ function index(props: IProps) {
         });
         setData(result);
         onChange(value, false, result);
+        setLoading(false);
       })();
     }
   }, [JSON.stringify(value), refreshFlag, range]);
@@ -357,6 +361,7 @@ function index(props: IProps) {
           );
         })}
         {renderBtns()}
+        <Spin spinning={loading} />
       </div>
       <EditItems
         visible={editing}
