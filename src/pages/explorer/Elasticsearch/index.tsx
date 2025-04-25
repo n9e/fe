@@ -186,7 +186,7 @@ export default function index(props: IProps) {
 
   const fetchData = () => {
     form.validateFields().then((values) => {
-      if (!values.query?.range) return;
+      if (!values.query) return;
       const { start, end } = parseRange(values.query.range);
       timesRef.current = {
         start: moment(start).valueOf(),
