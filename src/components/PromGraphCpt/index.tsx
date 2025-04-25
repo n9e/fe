@@ -43,6 +43,7 @@ interface IProps {
   type?: 'table' | 'graph';
   onTypeChange?: (type: 'table' | 'graph') => void;
   defaultTime?: IRawTimeRange | number;
+  defaultRange?: IRawTimeRange;
   onTimeChange?: (time: IRawTimeRange) => void; // 用于外部控制时间范围
   promQL?: string;
   graphOperates?: {
@@ -92,6 +93,7 @@ export default function index(props: IProps) {
     onChange,
     promQLInputTooltip,
     extra,
+    defaultRange,
   } = props;
   const [value, setValue] = useState<string | undefined>(promQL); // for promQLInput
   const [promql, setPromql] = useState<string | undefined>(promQL);
@@ -119,6 +121,12 @@ export default function index(props: IProps) {
       }
     }
   }, [defaultTime]);
+
+  useEffect(() => {
+    if (defaultRange?.start && defaultRange?.end) {
+      setRange(defaultRange);
+    }
+  }, [defaultRange]);
 
   useEffect(() => {
     if (type) {
