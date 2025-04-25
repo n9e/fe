@@ -19,9 +19,9 @@ import { v4 as uuidv4 } from 'uuid';
 import moment from 'moment';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { DASHBOARD_VERSION } from '@/pages/dashboard/config';
-import { IDashboardConfig, IVariable } from './types';
-import { defaultValues, calcsOptions } from './Editor/config';
-import updateSchema from './updateSchema';
+import { IDashboardConfig, IVariable } from '../types';
+import { defaultValues, calcsOptions } from '../Editor/config';
+import updateSchema from '../updateSchema';
 
 // @ts-ignore
 import convertVariableQuery from 'plus:/utils/convertDashboardGrafanaToN9E/convertVariableQuery';

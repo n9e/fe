@@ -8,7 +8,7 @@ import { hexPalette } from '@/pages/dashboard/config';
 
 import { IPanel } from '../../../types';
 
-import getDataFrameAndBaseSeries from './utils/getDataFrameAndBaseSeries';
+import getDataFrameAndBaseSeries, { BaseSeriesItem } from './utils/getDataFrameAndBaseSeries';
 import getLegendData from './utils/getLegendData';
 import getChartContainerSize from './utils/getChartContainerSize';
 import { LegendList, LegendTable } from './components/Legend';
@@ -16,6 +16,7 @@ import Main from './Main';
 import './style.less';
 
 export { getDataFrameAndBaseSeries };
+export type { BaseSeriesItem };
 
 interface Props {
   dashboardID: number;
