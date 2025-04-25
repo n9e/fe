@@ -94,3 +94,7 @@ export const THEME = {
 };
 export const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 export const daysOfWeek = [0, 1, 2, 3, 4, 5, 6];
+export const SIZE_CONFIG = {
+  gap: 8,
+  formItemHeight: 32,
+};

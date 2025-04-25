@@ -44,6 +44,7 @@ function FormCpt(props: IProps, ref) {
   const { initialValues, range, id, dashboardId, dashboard } = props;
   const [variableConfigWithOptions, setVariableConfigWithOptions] = useState<IVariable[] | undefined>(props.variableConfigWithOptions);
   const type = Form.useWatch('type', chartForm);
+  const values = Form.useWatch([], chartForm);
 
   defaultValues.custom = defaultCustomValuesMap[initialValues?.type || defaultValues.type];
 
@@ -107,23 +108,19 @@ function FormCpt(props: IProps, ref) {
                 </div>
               )}
               <div className='n9e-border-base n9e-dashboard-editor-modal-left-chart-wrapper'>
-                <Form.Item shouldUpdate noStyle>
-                  {({ getFieldsValue }) => {
-                    return (
-                      <Renderer
-                        id={id}
-                        dashboardId={dashboardId}
-                        dashboardID={dashboard.id}
-                        time={range}
-                        values={getFieldsValue()}
-                        variableConfig={variableConfigWithOptions}
-                        isPreview
-                        themeMode={darkMode ? 'dark' : undefined}
-                        annotations={[]}
-                      />
-                    );
-                  }}
-                </Form.Item>
+                {values && (
+                  <Renderer
+                    id={id}
+                    dashboardId={dashboardId}
+                    dashboardID={dashboard.id}
+                    time={range}
+                    values={values}
+                    variableConfig={variableConfigWithOptions}
+                    isPreview
+                    themeMode={darkMode ? 'dark' : undefined}
+                    annotations={[]}
+                  />
+                )}
               </div>
               {!_.includes(['text', 'iframe'], type) && (
                 <div className='n9e-dashboard-editor-modal-left-query-wrapper'>

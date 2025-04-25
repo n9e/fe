@@ -23,9 +23,6 @@ import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { IVariable } from './definition';
 import { normalizeESQueryRequestBody, ajustVarSingleValue, escapeJsonString, escapePromQLString } from './utils';
 
-// @ts-ignore
-import variableDatasource from 'plus:/parcels/Dashboard/variableDatasource';
-
 // https://grafana.com/docs/grafana/latest/datasources/prometheus/#query-variable 根据文档解析表达式
 // 每一个promtheus接口都接受start和end参数来限制返回值
 export const convertExpressionToQuery = (expression: string, range: IRawTimeRange, item: IVariable, dashboardId, groupedDatasourceList: { [index: string]: any[] }) => {
@@ -107,21 +104,6 @@ export const convertExpressionToQuery = (expression: string, range: IRawTimeRang
           return `${metricName || ''} {${labels}} ${values}`;
         }),
       );
-    }
-  } else {
-    try {
-      const start = moment(parsedRange.start).unix();
-      const end = moment(parsedRange.end).unix();
-      return variableDatasource({
-        datasourceCate: datasource.cate,
-        datasourceValue,
-        start,
-        end,
-        sql: expression,
-      });
-    } catch (e) {
-      console.error(e);
-      return Promise.resolve([]);
     }
   }
   return Promise.resolve(expression.length > 0 ? expression.split(',').map((i) => i.trim()) : '');
