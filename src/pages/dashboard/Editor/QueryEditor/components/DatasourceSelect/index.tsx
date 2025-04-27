@@ -13,7 +13,9 @@ import DatasourceSelectExtra from './DatasourceSelectExtra';
 export default function index({ dashboardId, chartForm, variableConfig }) {
   const { t } = useTranslation('dashboard');
   const { datasourceCateOptions, datasourceList } = useContext(CommonStateContext);
-  const datasourceVars = _.filter(variableConfig, { type: 'datasource' });
+  const datasourceVars = _.filter(variableConfig, (item) => {
+    return _.includes(['datasource', 'datasourceIdentifier'], item.type);
+  });
 
   return (
     <>

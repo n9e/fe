@@ -37,6 +37,7 @@ const zh_HK = {
     name: '名稱',
     name_msg: '請輸入字母/數字/下劃線，必須以字母開頭',
     name_msg2: '最少輸入三位',
+    identifier: '唯一識別',
     timeout: '超時 (單位：ms)',
     auth: '授權',
     username: '使用者名稱',

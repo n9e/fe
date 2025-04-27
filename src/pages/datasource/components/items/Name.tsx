@@ -12,6 +12,9 @@ export default function Name() {
       <FormItem label={t('form.name')} name='name' rules={[{ required: true }, { min: 3, message: t('form.name_msg2') }]}>
         <Input />
       </FormItem>
+      <FormItem label={t('form.identifier')} name='identifier'>
+        <Input />
+      </FormItem>
     </div>
   );
 }

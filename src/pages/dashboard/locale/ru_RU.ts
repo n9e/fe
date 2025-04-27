@@ -88,7 +88,7 @@ const ru_RU = {
       textbox: 'Текстовое поле (Text box)',
       constant: 'Константа (Constant)',
       datasource: 'Источник данных (Datasource)',
-      datasourceName: 'Название источника данных (Datasource name)',
+      datasourceIdentifier: 'Идентификатор источника данных (Datasource identifier)',
       hostIdent: 'Идентификатор хоста (Host ident)',
     },
     hide: 'Скрыть переменную',

@@ -64,7 +64,7 @@ function includes(
 
 function index(props: IProps) {
   const { t } = useTranslation('dashboard');
-  const { groupedDatasourceList, busiGroups } = useContext(CommonStateContext);
+  const { groupedDatasourceList, datasourceList } = useContext(CommonStateContext);
   const query = queryString.parse(useLocation().search);
   const { id, editable = true, range, onChange, onOpenFire, isPreview = false, dashboard } = props;
   const [editing, setEditing] = useState<boolean>(false);
@@ -138,6 +138,7 @@ function index(props: IProps) {
                   variables: result,
                   limit: result.length,
                   dashboardId: id,
+                  datasourceList,
                 }) as any)
               : item?.datasource?.value;
             let definition =
@@ -258,13 +259,17 @@ function index(props: IProps) {
                 }
               }
             }
-          } else if (item.type === 'datasourceName') {
-            const options = item.definition ? (groupedDatasourceList[item.definition] as any) : [];
+          } else if (item.type === 'datasourceIdentifier') {
+            const options = item.definition
+              ? _.filter(groupedDatasourceList[item.definition] as any, (item) => {
+                  return item.identifier;
+                })
+              : [];
             const regex = item.regex ? stringToRegex(item.regex) : null;
             result[idx] = item;
             if (regex) {
               result[idx].options = _.filter(options, (option) => {
-                return regex.test(option.name);
+                return regex.test(option.identifier);
               });
             } else {
               result[idx].options = options;
@@ -275,7 +280,7 @@ function index(props: IProps) {
                 setVaraiableSelected({ name: item.name, value: item.defaultValue, id, urlAttach: true });
               } else {
                 if (query.__variable_value_fixed === undefined) {
-                  setVaraiableSelected({ name: item.name, value: options?.[0]?.name, id, urlAttach: true });
+                  setVaraiableSelected({ name: item.name, value: options?.[0]?.identifier, id, urlAttach: true });
                 }
               }
             }
