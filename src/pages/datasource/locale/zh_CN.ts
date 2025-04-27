@@ -37,6 +37,7 @@ const zh_CN = {
     name: '名称',
     name_msg: '请输入字母/数字/下划线，必须以字母开头',
     name_msg2: '最少输入三位',
+    identifier: '唯一标识',
     timeout: '超时(单位:ms)',
     auth: '授权',
     username: '用户名',

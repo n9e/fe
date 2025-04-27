@@ -40,7 +40,9 @@ interface IProps {
 export default function EditItems(props: IProps) {
   const { t } = useTranslation('dashboard');
   const { visible, setVisible, onChange, value, range, id, dashboard, editMode } = props;
-  const datasourceVars = _.filter(value, { type: 'datasource' });
+  const datasourceVars = _.filter(value, (item) => {
+    return _.includes(['datasource', 'datasourceIdentifier'], item.type);
+  });
   const [data, setData] = useState<IVariable[]>(value || []);
   const [record, setRecord] = useState<IVariable>({
     name: '',

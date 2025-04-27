@@ -63,6 +63,7 @@ interface Datasource {
   id: number;
   name: string;
   plugin_type: string;
+  identifier?: string;
 }
 
 export interface ICommonState {
