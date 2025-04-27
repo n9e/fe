@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Card, Space, Row, Col, Select, Switch, Button } from 'antd';
+import { Form, Input, Card, Space, Row, Col, Select, Switch, Button, Affix } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
+import { Link } from 'react-router-dom';
 
 import { getTeamInfoList } from '@/services/manage';
 import { SIZE } from '@/utils/constant';
@@ -100,6 +101,37 @@ export default function index(props: Props) {
           </Space>
         )}
       </Form.List>
+      {!disabled && (
+        <Affix offsetBottom={0}>
+          <Card size='small' className='affix-bottom-shadow'>
+            <Space>
+              <Button
+                type='primary'
+                onClick={() => {
+                  form
+                    .validateFields()
+                    .then(async (values) => {
+                      onOk && onOk(values);
+                    })
+                    .catch((err) => {
+                      console.error(err);
+                      scrollToFirstError();
+                    });
+                }}
+              >
+                {t('common:btn.save')}
+              </Button>
+              {onCancel ? (
+                <Button onClick={onCancel}>{t('common:btn.cancel')}</Button>
+              ) : (
+                <Link to={`/${NS}`}>
+                  <Button>{t('common:btn.cancel')}</Button>
+                </Link>
+              )}
+            </Space>
+          </Card>
+        </Affix>
+      )}
     </Form>
   );
 }

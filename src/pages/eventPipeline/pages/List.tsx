@@ -24,34 +24,14 @@ export default function List() {
     loading: false,
   });
   const featchData = () => {
-    setData({
-      list: [
-        {
-          id: 1,
-          name: 'test',
-          team_names: ['team1', 'team2'],
-          description: 'test',
-          update_at: 1234567890,
-          update_by: 'user1',
-          filter_enable: true,
-          label_filters: [],
-          attribute_filters: [],
-          processors: {
-            type: 'relabel',
-            config: {},
-          },
-        },
-      ],
-      loading: false,
-    });
-    // setData((prev) => ({ ...prev, loading: true }));
-    // getList()
-    //   .then((res) => {
-    //     setData({ list: res, loading: false });
-    //   })
-    //   .catch(() => {
-    //     setData((prev) => ({ ...prev, loading: false }));
-    //   });
+    setData((prev) => ({ ...prev, loading: true }));
+    getList()
+      .then((res) => {
+        setData({ list: res, loading: false });
+      })
+      .catch(() => {
+        setData((prev) => ({ ...prev, loading: false }));
+      });
   };
 
   useEffect(() => {
@@ -111,7 +91,7 @@ export default function List() {
               title: t('common:table.update_at'),
               dataIndex: 'update_at',
               render: (val) => {
-                return moment(val).format('YYYY-MM-DD HH:mm:ss');
+                return moment.unix(val).format('YYYY-MM-DD HH:mm:ss');
               },
             },
             {

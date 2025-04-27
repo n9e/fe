@@ -8,7 +8,7 @@ import { Item } from './types';
 export type { Item };
 
 export const getList = function (): Promise<Item[]> {
-  return request('/api/n9e/event-pipeline', {
+  return request('/api/n9e/event-pipelines', {
     method: RequestMethod.Get,
   }).then((res) => res.dat ?? []);
 };
