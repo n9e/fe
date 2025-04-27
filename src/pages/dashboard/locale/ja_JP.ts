@@ -86,7 +86,7 @@ const ja_JP = {
       textbox: 'テキストボックス (Text box)',
       constant: '定数 (Constant)',
       datasource: 'データソース (Datasource)',
-      datasourceName: 'データソース名 (Datasource name)',
+      datasourceIdentifier: 'データソース識別子 (Datasource ident)',
       hostIdent: 'ホスト識別子 (Host ident)',
     },
     hide: '変数を非表示',

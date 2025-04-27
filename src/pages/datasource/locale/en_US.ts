@@ -37,6 +37,7 @@ const en_US = {
     name: 'Name',
     name_msg: 'Please enter letters,numbers,underscores, must start with a letter',
     name_msg2: 'At least 3 characters',
+    identifier: 'Identifier',
     timeout: 'Timeout(ms)',
     auth: 'Auth',
     username: 'User',

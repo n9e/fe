@@ -314,8 +314,8 @@ export const replaceExpressionVarsSpecifyRule = (
             newExpression = replaceAllPolyfill(newExpression, placeholder, realSelected);
           } else if (typeof selected === 'string') {
             newExpression = replaceAllPolyfill(newExpression, placeholder, ajustVarSingleValue(newExpression, placeholder, selected, formData[i], isEscapeJsonString));
-            if (type === 'datasourceName') {
-              newExpression = _.find(datasourceList, { name: selected })?.id;
+            if (type === 'datasourceIdentifier') {
+              newExpression = _.find(datasourceList, { identifier: selected })?.id;
             }
           } else if (selected === null || selected === undefined) {
             // 未选择或填写变量值时替换为传入的value

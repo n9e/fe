@@ -197,7 +197,7 @@ export default function DisplayItem(props: IProps) {
             ))}
           </Select>
         ) : null}
-        {type === 'datasourceName' ? (
+        {type === 'datasourceIdentifier' ? (
           <Select
             style={{
               width: '180px',
@@ -214,8 +214,8 @@ export default function DisplayItem(props: IProps) {
             optionFilterProp='children'
           >
             {_.map(options as any, (item) => (
-              <Select.Option key={item.name} value={item.name}>
-                {item.name}
+              <Select.Option key={item.identifier} value={item.identifier}>
+                {item.identifier}
               </Select.Option>
             ))}
           </Select>

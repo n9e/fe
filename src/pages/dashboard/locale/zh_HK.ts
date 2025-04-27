@@ -87,7 +87,7 @@ const zh_HK = {
       textbox: '文本框 (Text box)',
       constant: '常量 (Constant)',
       datasource: '數據源 (Datasource)',
-      datasourceName: '數據源名稱 (Datasource name)',
+      datasourceIdentifier: '數據源標識 (Datasource identifier)',
       hostIdent: '主機標識 (Host ident)',
     },
     hide: '隱藏變數',
