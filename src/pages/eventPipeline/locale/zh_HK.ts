@@ -38,6 +38,12 @@ const zh_HK = {
       target_key_placeholder: '標籤 Key',
     },
   },
+  test_modal: {
+    title: {
+      settings: '選擇告警事件',
+      result: '事件預覽',
+    },
+  },
 };
 
 export default zh_HK;

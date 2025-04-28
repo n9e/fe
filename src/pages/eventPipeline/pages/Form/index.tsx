@@ -14,6 +14,7 @@ import { Item } from '../../types';
 import { NS, DEFAULT_VALUES } from '../../constants';
 import Attributes from './Attributes';
 import Processor from './Processor';
+import TestModal from './TestModal';
 
 interface Props {
   disabled?: boolean;
@@ -27,6 +28,7 @@ export default function index(props: Props) {
   const { disabled, initialValues, onOk, onCancel } = props;
   const [form] = Form.useForm();
   const [userGroups, setUserGroups] = useState<{ id: number; name: string }[]>([]);
+  const formValues = Form.useWatch([], form);
   const filter_enable = Form.useWatch(['filter_enable'], form);
 
   useEffect(() => {
@@ -127,6 +129,7 @@ export default function index(props: Props) {
               >
                 {t('common:btn.save')}
               </Button>
+              <TestModal type='pipeline' config={formValues} />
               {onCancel ? (
                 <Button onClick={onCancel}>{t('common:btn.cancel')}</Button>
               ) : (

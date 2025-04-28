@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, Space, Form, Select } from 'antd';
 import { MinusCircleOutlined, CopyOutlined, UpCircleOutlined, DownCircleOutlined } from '@ant-design/icons';
 import { FormListFieldData } from 'antd/lib/form/FormList';
@@ -11,6 +11,7 @@ import { IS_PLUS } from '@/utils/constant';
 import LabelEnrich from 'plus:/parcels/eventPipeline/LabelEnrich';
 
 import { NS } from '../../../constants';
+import TestModal from '../TestModal';
 import Relabel from './Relabel';
 
 interface Props {
@@ -93,6 +94,8 @@ export default function NotifyConfig(props: Props) {
       </Form.Item>
       {processorType === 'relabel' && <Relabel field={field} namePath={[field.name, 'config']} prefixNamePath={['processors']} />}
       {processorType === 'label_enrich' && <LabelEnrich field={field} namePath={[field.name, 'config']} prefixNamePath={['processors']} />}
+
+      <TestModal type='processor' config={processorConfig} />
     </Card>
   );
 }

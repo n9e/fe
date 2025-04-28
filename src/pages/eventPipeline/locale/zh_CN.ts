@@ -38,5 +38,11 @@ const zh_CN = {
       target_key_placeholder: '标签 Key',
     },
   },
+  test_modal: {
+    title: {
+      settings: '选择告警事件',
+      result: '事件预览',
+    },
+  },
 };
 export default zh_CN;

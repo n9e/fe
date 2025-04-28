@@ -38,5 +38,11 @@ const en_US = {
       target_key_placeholder: 'Label Key',
     },
   },
+  test_modal: {
+    title: {
+      settings: 'Select event',
+      result: 'Event preview',
+    },
+  },
 };
 export default en_US;

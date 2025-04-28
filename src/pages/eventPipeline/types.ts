@@ -25,7 +25,7 @@ export type RelabelItem = BaseItem & {
   processors: {
     type: 'relabel';
     config: {};
-  };
+  }[];
 };
 
 export type LabelEnrichItem = BaseItem & {
@@ -44,7 +44,7 @@ export type LabelEnrichItem = BaseItem & {
         target_key: string;
       };
     };
-  };
+  }[];
 };
 
 export type Item = RelabelItem | LabelEnrichItem;

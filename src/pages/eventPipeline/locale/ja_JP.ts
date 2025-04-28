@@ -38,6 +38,12 @@ const ja_JP = {
       target_key_placeholder: 'ラベルキー',
     },
   },
+  test_modal: {
+    title: {
+      settings: 'アラームイベントを選択',
+      result: 'イベントプレビュー',
+    },
+  },
 };
 
 export default ja_JP;
