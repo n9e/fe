@@ -99,7 +99,7 @@ export function getCollapsedKeys(treeData: any[], collapsedKeys: string[], busin
 
 export function getCleanBusinessGroupIds(businessGroupIds?: string) {
   if (!businessGroupIds) return undefined;
-  return _.replace(businessGroupIds, /group,/, '');
+  return _.replace(businessGroupIds, /group,/g, '');
 }
 
 export function getDefaultBusinessGroupKey() {
