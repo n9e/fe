@@ -18,17 +18,24 @@ const zh_CN = {
     typ: '类型',
   },
   label_enrich: {
-    label_source_type: '信息来源',
+    label_source_type: {
+      label: '标签来源',
+      options: {
+        built_in_mapping: '内置标签词表',
+      },
+    },
     label_mapping_id: '词表名称',
+    help: '使用源标签中指定的标签查询词表，将词表中查询到的字段根据 "新增标签" 配置追加到告警事件中',
     source_keys: {
       label: '源标签',
-      text: '词表中的字段 {{field}} 对应事件中的标签',
+      text: '词表中的字段 <strong>{{field}}</strong> 对应事件中的标签',
+      target_key_required: '标签名不能为空',
     },
     append_keys: {
-      label: '附加标签',
-      source_key: '词表字段',
-      rename_key: '重命名标签',
-      target_key: '新标签名',
+      label: '新增标签',
+      source_key_placeholder: '词表中的字段',
+      rename_key: '重命名标签 Key',
+      target_key_placeholder: '标签 Key',
     },
   },
 };

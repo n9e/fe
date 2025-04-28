@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { Row, Col, Form, Select, Input } from 'antd';
 import { FormListFieldData } from 'antd/lib/form/FormList';
 
+import { SIZE } from '@/utils/constant';
+
 interface Props {
   field: FormListFieldData;
   namePath: (string | number)[];
@@ -17,7 +19,7 @@ export default function Relabel(props: Props) {
   const action = Form.useWatch([...prefixNamePath, ...namePath, 'action']);
 
   return (
-    <Row gutter={10}>
+    <Row gutter={SIZE}>
       <Col span={12}>
         <Form.Item {...resetField} name={[...namePath, 'action']} label='action'>
           <Select
