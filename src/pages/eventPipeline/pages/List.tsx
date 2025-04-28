@@ -69,6 +69,18 @@ export default function List() {
             {
               title: t('common:table.name'),
               dataIndex: 'name',
+              render: (val, item) => {
+                return (
+                  <Link
+                    to={{
+                      pathname: `/${NS}/edit/${item.id}`,
+                    }}
+                    target='_blank'
+                  >
+                    {val}
+                  </Link>
+                );
+              },
             },
             {
               title: t('common:table.note'),
