@@ -18,15 +18,15 @@ interface ResultItem {
 interface OldSeriesItem {
   id: string;
   refId: string;
-  offset: number;
+  offset?: number;
   metric: { [key: string]: string };
-  target: { expr: string; legend: string };
+  target?: { expr: string; legend: string };
   data: [Ts: number, Value: number][]; // [unixTimestamp, value]
   name?: string;
   isExp?: boolean;
 }
 
-type DataFrame = [xValues: number[], ...yValues: (number | null | undefined)[][]];
+export type DataFrame = [xValues: number[], ...yValues: (number | null | undefined)[][]];
 
 /**
  * Convert the result to a DataFrame
@@ -112,10 +112,12 @@ export default function getDataFrameAndBaseSeries(oldSeries: OldSeriesItem[]): {
         metric: item.metric,
       },
     });
-    for (const [ts] of item.data) {
-      // Add timestamp if not exists
-      if (!timestamps.includes(ts)) {
-        timestamps.push(ts);
+    if (item.data) {
+      for (const [ts] of item.data) {
+        // Add timestamp if not exists
+        if (!timestamps.includes(ts)) {
+          timestamps.push(ts);
+        }
       }
     }
   }
@@ -127,12 +129,14 @@ export default function getDataFrameAndBaseSeries(oldSeries: OldSeriesItem[]): {
   // Create frames
   for (const item of oldSeries) {
     const frame: (number | null | undefined)[] = _.fill(Array(timestamps.length), null);
-    for (const [ts, value] of item.data) {
-      const index = timestamps.indexOf(ts);
+    if (item.data) {
+      for (const [ts, value] of item.data) {
+        const index = timestamps.indexOf(ts);
 
-      // Add value to frame
-      // 如果是 string 类型的数值，转换为 number 类型，其他类似可能为 number、null 等类型的值不做处理
-      frame[index] = _.isString(value) ? _.toNumber(value) : value;
+        // Add value to frame
+        // 如果是 string 类型的数值，转换为 number 类型，其他类似可能为 number、null 等类型的值不做处理
+        frame[index] = _.isString(value) ? _.toNumber(value) : value;
+      }
     }
     frames.push(frame);
   }

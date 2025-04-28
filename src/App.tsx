@@ -20,6 +20,7 @@ import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { ConfigProvider, Modal, Spin } from 'antd';
 import zhCN from 'antd/lib/locale/zh_CN';
 import enUS from 'antd/lib/locale/en_US';
+import ruRU from 'antd/lib/locale/ru_RU';
 import 'antd/dist/antd.less';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -62,6 +63,7 @@ interface Datasource {
   id: number;
   name: string;
   plugin_type: string;
+  identifier?: string;
 }
 
 export interface ICommonState {
@@ -143,8 +145,9 @@ function App() {
       setCommonState((state) => ({ ...state, datasourceList, groupedDatasourceList: _.groupBy(datasourceList, 'plugin_type') }));
     },
     reloadDatasourceList: async () => {
+      const { feats } = await getLicense(t);
       const datasourceList = await getDatasourceBriefList();
-      const datasourceCateOptions = getAuthorizedDatasourceCates(commonState.feats, isPlus, (cate) => {
+      const datasourceCateOptions = getAuthorizedDatasourceCates(feats, isPlus, (cate) => {
         const groupedDatasourceList = _.groupBy(datasourceList, 'plugin_type');
         return !_.isEmpty(groupedDatasourceList[cate.value]);
       });
@@ -307,7 +310,7 @@ function App() {
   return (
     <div className='App'>
       <CommonStateContext.Provider value={commonState}>
-        <ConfigProvider locale={i18n.language == 'en_US' ? enUS : zhCN}>
+        <ConfigProvider locale={i18n.language == 'en_US' ? enUS : i18n.language == 'ru_RU' ? ruRU : zhCN}>
           <Router
             getUserConfirmation={(message, callback) => {
               if (message === 'CUSTOM') return;

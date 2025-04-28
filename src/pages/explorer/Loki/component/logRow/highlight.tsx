@@ -29,7 +29,7 @@ const HighlightText = (props: IProps) => {
 
   // 转义<>之间有内容<>
   const tagPattern = /<.+?>/g;
-  formattedText = formattedText.replace(tagPattern, (match) => {
+  formattedText = _.replace(formattedText, tagPattern, (match) => {
     return match.replace(/</g, '&lt;').replace(/>/g, '&gt;');
   });
 

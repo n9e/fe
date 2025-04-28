@@ -16,20 +16,19 @@
  */
 import React, { useContext } from 'react';
 import { Form, Input, Row, Col, Select, Switch, Button, Space, Alert } from 'antd';
-import { QuestionCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
 
+import { DatasourceCateEnum } from '@/utils/constant';
 import { DatasourceSelectV2 } from '@/components/DatasourceSelect';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
 import { Dashboard } from '@/store/dashboardInterface';
-import DocumentDrawer from '@/components/DocumentDrawer';
 import { allCates } from '@/components/AdvancedWrap/utils';
 
 import { IVariable } from './definition';
 import { stringToRegex } from './constant';
-import ElasticsearchSettings from './datasource/elasticsearch';
+import Querybuilder from './Querybuilder';
 
 interface IProps {
   id: string;
@@ -65,10 +64,10 @@ const typeOptions = [
     label: 'Datasource',
     value: 'datasource',
   },
-  // {
-  //   label: 'Datasource name',
-  //   value: 'datasourceName',
-  // },
+  {
+    label: 'Datasource identifier',
+    value: 'datasourceIdentifier',
+  },
   {
     label: 'Host ident',
     value: 'hostIdent',
@@ -76,15 +75,14 @@ const typeOptions = [
 ];
 
 function EditItem(props: IProps) {
-  const { t, i18n } = useTranslation('dashboard');
-  const { data, vars, range, id, index, datasourceVars, onOk, onCancel, dashboard, editMode } = props;
+  const { t } = useTranslation('dashboard');
+  const { data, vars, id, datasourceVars, onOk, onCancel, dashboard, editMode } = props;
   const anonymousAccess = dashboard.public === 1 && dashboard.public_cate === 0;
   const [form] = Form.useForm();
-  const { groupedDatasourceList, datasourceCateOptions, darkMode, datasourceList } = useContext(CommonStateContext);
+  const { groupedDatasourceList, datasourceCateOptions, datasourceList } = useContext(CommonStateContext);
   const otherVars = _.filter(vars, (item) => item.name !== data.name);
   const varType = Form.useWatch(['type'], form);
-  const datasourceCate = Form.useWatch(['datasource', 'cate'], form);
-  const definition = Form.useWatch(['definition'], form);
+  const datesourceCate = Form.useWatch(['datasource', 'cate'], form);
 
   return (
     <Form layout='vertical' autoComplete='off' preserve={false} form={form} initialValues={data}>
@@ -202,53 +200,7 @@ function EditItem(props: IProps) {
               }}
             />
           </Form.Item>
-          {datasourceCate === 'elasticsearch' && <ElasticsearchSettings vars={vars} id={id} />}
-          <Form.Item
-            label={
-              <Space>
-                {t('var.definition')}
-                {_.includes(['prometheus', 'elasticsearch'], datasourceCate) && (
-                  <QuestionCircleOutlined
-                    onClick={() => {
-                      if (datasourceCate === 'prometheus') {
-                        window.open('https://flashcat.cloud/media/?type=夜莺监控&source=aHR0cHM6Ly9kb3dubG9hZC5mbGFzaGNhdC5jbG91ZC9uOWUtMTMtZGFzaGJvYXJkLWludHJvLm1wNA==');
-                      } else if (datasourceCate === 'elasticsearch') {
-                        DocumentDrawer({
-                          language: i18n.language,
-                          darkMode,
-                          title: t('var.definition'),
-                          documentPath: '/docs/elasticsearch-template-variables',
-                        });
-                      }
-                    }}
-                  />
-                )}
-              </Space>
-            }
-            name='definition'
-            rules={[
-              () => ({
-                validator(_) {
-                  if (definition) {
-                    if (datasourceCate === 'elasticsearch') {
-                      try {
-                        JSON.parse(definition);
-                        return Promise.resolve();
-                      } catch (e) {
-                        return Promise.reject(t('var.definition_msg2'));
-                      }
-                    }
-                    return Promise.resolve();
-                  } else {
-                    return Promise.reject(new Error(t('var.definition_msg1')));
-                  }
-                },
-              }),
-            ]}
-            required
-          >
-            <Input.TextArea autoSize={{ minRows: 2, maxRows: 6 }} />
-          </Form.Item>
+          <Querybuilder dashboardId={id} variables={vars} />
           <Form.Item
             label={t('var.reg')}
             name='reg'
@@ -333,6 +285,62 @@ function EditItem(props: IProps) {
           </Form.Item>
         </>
       )}
+      {varType === 'datasourceIdentifier' && (
+        <>
+          <Form.Item label={t('var.datasource.definition')} name='definition' rules={[{ required: true }]}>
+            <Select disabled={editMode === 0}>
+              {_.map(datasourceCateOptions, (item) => (
+                <Select.Option key={item.value} value={item.value}>
+                  {item.label}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item
+            label={t('var.datasource.regex')}
+            name='regex'
+            tooltip={
+              <Trans
+                ns='dashboard'
+                i18nKey='var.datasource.regex_tip'
+                components={{ a: <a target='_blank' href='https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions' /> }}
+              />
+            }
+            rules={[{ pattern: new RegExp('^/(.*?)/(g?i?m?y?)$'), message: 'invalid regex' }]}
+          >
+            <Input placeholder='/vm/' />
+          </Form.Item>
+          <Form.Item shouldUpdate={(prevValues, curValues) => prevValues?.definition !== curValues?.regex || prevValues?.regex} noStyle>
+            {({ getFieldValue }) => {
+              const definition = getFieldValue('definition');
+              const regex = getFieldValue('regex');
+              return (
+                <Form.Item label={t('var.datasource.defaultValue')} name='defaultValue'>
+                  <Select>
+                    {_.map(
+                      _.filter(groupedDatasourceList[definition], (item) => {
+                        if (item.identifier) {
+                          if (regex) {
+                            const reg = stringToRegex(regex);
+                            return reg ? reg.test(item.identifier) : false;
+                          }
+                          return true;
+                        }
+                        return false;
+                      }),
+                      (item) => (
+                        <Select.Option key={item.identifier} value={item.identifier}>
+                          {item.identifier}
+                        </Select.Option>
+                      ),
+                    )}
+                  </Select>
+                </Form.Item>
+              );
+            }}
+          </Form.Item>
+        </>
+      )}
       {varType === 'hostIdent' && (
         <>
           {anonymousAccess && <Alert className='mb2' type='warning' message={t('var.hostIdent.invalid')} />}
@@ -352,44 +360,45 @@ function EditItem(props: IProps) {
           </Form.Item>
         </>
       )}
-      {_.includes(['query', 'custom', 'hostIdent'], varType) && (
-        <Row gutter={16}>
-          <Col flex='120px'>
-            <Form.Item label={t('var.multi')} name='multi' valuePropName='checked'>
-              <Switch />
-            </Form.Item>
-          </Col>
-          <Col flex='120px'>
-            <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.multi !== curValues.multi} noStyle>
-              {({ getFieldValue }) => {
-                const multi = getFieldValue('multi');
-                if (multi) {
-                  return (
-                    <Form.Item label={t('var.allOption')} name='allOption' valuePropName='checked'>
-                      <Switch />
-                    </Form.Item>
-                  );
-                }
-              }}
-            </Form.Item>
-          </Col>
-          <Col flex='auto'>
-            <Form.Item shouldUpdate noStyle>
-              {({ getFieldValue }) => {
-                const multi = getFieldValue('multi');
-                const allOption = getFieldValue('allOption');
-                if (multi && allOption) {
-                  return (
-                    <Form.Item label={t('var.allValue')} name='allValue'>
-                      <Input placeholder='.*' />
-                    </Form.Item>
-                  );
-                }
-              }}
-            </Form.Item>
-          </Col>
-        </Row>
-      )}
+      {_.includes(['custom', 'hostIdent'], varType) ||
+        (_.includes([DatasourceCateEnum.prometheus, DatasourceCateEnum.elasticsearch, DatasourceCateEnum.pgsql], datesourceCate) && (
+          <Row gutter={16}>
+            <Col flex='120px'>
+              <Form.Item label={t('var.multi')} name='multi' valuePropName='checked'>
+                <Switch />
+              </Form.Item>
+            </Col>
+            <Col flex='120px'>
+              <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.multi !== curValues.multi} noStyle>
+                {({ getFieldValue }) => {
+                  const multi = getFieldValue('multi');
+                  if (multi) {
+                    return (
+                      <Form.Item label={t('var.allOption')} name='allOption' valuePropName='checked'>
+                        <Switch />
+                      </Form.Item>
+                    );
+                  }
+                }}
+              </Form.Item>
+            </Col>
+            <Col flex='auto'>
+              <Form.Item shouldUpdate noStyle>
+                {({ getFieldValue }) => {
+                  const multi = getFieldValue('multi');
+                  const allOption = getFieldValue('allOption');
+                  if (multi && allOption) {
+                    return (
+                      <Form.Item label={t('var.allValue')} name='allValue'>
+                        <Input placeholder='.*' />
+                      </Form.Item>
+                    );
+                  }
+                }}
+              </Form.Item>
+            </Col>
+          </Row>
+        ))}
       <Form.Item>
         <Space>
           <Button

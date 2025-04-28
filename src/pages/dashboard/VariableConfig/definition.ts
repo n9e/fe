@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-export interface IVariable {
+export interface IVariable<QueryType = any> {
   name: string;
   label?: string;
   definition: string;
@@ -28,7 +28,7 @@ export interface IVariable {
     label: string;
     value: string;
   }[];
-  type: 'query' | 'textbox' | 'custom' | 'constant' | 'datasource' | 'datasourceName' | 'hostIdent';
+  type: 'query' | 'textbox' | 'custom' | 'constant' | 'datasource' | 'datasourceIdentifier' | 'hostIdent';
   defaultValue?: string; // textbox 的默认值
   datasource: {
     // v5.14.3 新增 datasource 储存数据源类型和名称
@@ -43,4 +43,5 @@ export interface IVariable {
   };
   value?: string | string[];
   hide?: boolean; // v6 新增，用于隐藏变量
+  query?: QueryType; // v8 新增，用于规范各类数据的查询条件
 }

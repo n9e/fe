@@ -46,7 +46,7 @@ const en_US = {
   notify_recovered_tip: 'Send notification when the alert is recovered',
   recover_duration: 'Recover duration (s)',
   recover_duration_tip: 'Continue {{num}} seconds without triggering the threshold again to send the recovery notification',
-  notify_repeat_step: 'Repeat tnterval (mins)',
+  notify_repeat_step: 'Repeat interval (mins)',
   notify_repeat_step_tip: 'If the alert continues to be unrecovered, the member of the alert receiving group will be reminded again after {{num}} minutes',
   notify_max_number: 'Max send times',
   notify_max_number_tip: 'The maximum number of times the alert is sent to the alert receiving group',

@@ -1,27 +1,16 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { useDebounceFn } from 'ahooks';
 import { Form, Row, Col, AutoComplete } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { CommonStateContext } from '@/App';
 import IndexSelect from '@/pages/dashboard/Editor/QueryEditor/Elasticsearch/IndexSelect';
 import { getFullFields, Field } from '@/pages/explorer/Elasticsearch/services';
-import { replaceExpressionVars } from '../../constant';
 
-export default function index(props) {
-  const { vars, id } = props;
-  const { datasourceList } = useContext(CommonStateContext);
+export default function index(props: { datasourceValue: number }) {
+  const { datasourceValue } = props;
   const { t } = useTranslation('dashboard');
   const [dateFields, setDateFields] = useState<Field[]>([]);
   const form = Form.useFormInstance();
-  let datasourceValue = Form.useWatch(['datasource', 'value']);
-  datasourceValue = replaceExpressionVars({
-    text: datasourceValue,
-    variables: vars,
-    limit: vars.length,
-    dashboardId: id,
-    datasourceList,
-  });
   const indexValue = Form.useWatch(['config', 'index']);
   const { run: onIndexChange } = useDebounceFn(
     (val) => {

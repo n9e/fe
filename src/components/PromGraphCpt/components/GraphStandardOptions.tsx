@@ -21,12 +21,13 @@ import UnitPicker from '@/pages/dashboard/Components/UnitPicker';
 
 interface IProps {
   type?: 'vertical' | 'horizontal';
+  showLegend?: boolean;
   highLevelConfig: any;
   setHighLevelConfig: (val: any) => void;
 }
 
 export default function GraphStandardOptions(props: IProps) {
-  const { type, highLevelConfig, setHighLevelConfig } = props;
+  const { type, showLegend = true, highLevelConfig, setHighLevelConfig } = props;
 
   if (type === 'horizontal') {
     return (
@@ -51,16 +52,20 @@ export default function GraphStandardOptions(props: IProps) {
           />
         </span>
         <Space>
-          <Divider type='vertical' />
-          <Checkbox
-            checked={highLevelConfig.legend}
-            onChange={(e) => {
-              setHighLevelConfig({ ...highLevelConfig, legend: e.target.checked });
-            }}
-            className='n9e-checkbox-padding-right-0'
-          >
-            Show Legend
-          </Checkbox>
+          {showLegend && (
+            <Space>
+              <Divider type='vertical' />
+              <Checkbox
+                checked={highLevelConfig.legend}
+                onChange={(e) => {
+                  setHighLevelConfig({ ...highLevelConfig, legend: e.target.checked });
+                }}
+                className='n9e-checkbox-padding-right-0'
+              >
+                Show Legend
+              </Checkbox>
+            </Space>
+          )}
           <Divider type='vertical' />
           <span>
             <Checkbox

@@ -36,7 +36,7 @@ const MetricExplorerPage = () => {
   const [activeKey, setActiveKey] = useState<string>(getLocalActiveKey(params, defaultItems));
 
   return (
-    <PageLayout title={t('title')} icon={<LineChartOutlined />}>
+    <PageLayout title={t('log_title')} icon={<LineChartOutlined />}>
       <div>
         <div className='logs-explorer-container-wrapper'>
           <div className='logs-explorer-container'>

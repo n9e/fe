@@ -1,8 +1,12 @@
 import { v4 as uuidv4 } from 'uuid';
 import _ from 'lodash';
+
+import { DatasourceCateEnum } from '@/utils/constant';
+
 import { defaultCustomValuesMap, defaultOptionsValuesMap } from '../../Editor/config';
 import { sortPanelsByGridLayout } from '../../Panels/utils';
 import { IVariable } from '../../VariableConfig';
+import getDefaultTargets from '../../utils/getDefaultTargets';
 
 const getDefaultDatasourceValue = (datasourceCate, variableConfig, groupedDatasourceList) => {
   const datasourceVars = _.filter(variableConfig, { type: 'datasource' });
@@ -36,11 +40,7 @@ const ajustInitialValues = (type: string, groupedDatasourceList: any, panels: an
       type,
       datasourceCate,
       datasourceValue: getDefaultDatasourceValue(datasourceCate, variableConfig, groupedDatasourceList),
-      targets: [
-        {
-          refId: 'A',
-        },
-      ],
+      targets: getDefaultTargets(datasourceCate as DatasourceCateEnum),
       custom: defaultCustomValuesMap[type],
       options: defaultOptionsValuesMap[type],
     },

@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from 'react';
+import React, { useContext } from 'react';
 import { Form, Space } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -6,13 +6,16 @@ import { useTranslation } from 'react-i18next';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { DatasourceSelectV2 } from '@/components/DatasourceSelect';
 import { CommonStateContext } from '@/App';
+import getDefaultTargets from '@/pages/dashboard/utils/getDefaultTargets';
 
 import DatasourceSelectExtra from './DatasourceSelectExtra';
 
 export default function index({ dashboardId, chartForm, variableConfig }) {
   const { t } = useTranslation('dashboard');
   const { datasourceCateOptions, datasourceList } = useContext(CommonStateContext);
-  const datasourceVars = _.filter(variableConfig, { type: 'datasource' });
+  const datasourceVars = _.filter(variableConfig, (item) => {
+    return _.includes(['datasource', 'datasourceIdentifier'], item.type);
+  });
 
   return (
     <>
@@ -68,48 +71,10 @@ export default function index({ dashboardId, chartForm, variableConfig }) {
                 )?.plugin_type;
                 // TODO: 调整数据源类型后需要重置配置
                 if (preCate !== curCate) {
-                  if (_.includes(['elasticsearch', 'opensearch'], curCate)) {
-                    chartForm.setFieldsValue({
-                      datasourceCate: curCate,
-                      targets: [
-                        {
-                          refId: 'A',
-                          query: {
-                            index: '',
-                            filters: '',
-                            values: [
-                              {
-                                func: 'count',
-                              },
-                            ],
-                            date_field: '@timestamp',
-                          },
-                        },
-                      ],
-                    });
-                  } else if (curCate === 'zabbix') {
-                    chartForm.setFieldsValue({
-                      datasourceCate: curCate,
-                      targets: [
-                        {
-                          refId: 'A',
-                          query: {
-                            mode: 'timeseries',
-                            subMode: 'metrics',
-                          },
-                        },
-                      ],
-                    });
-                  } else {
-                    chartForm.setFieldsValue({
-                      datasourceCate: curCate,
-                      targets: [
-                        {
-                          refId: 'A',
-                        },
-                      ],
-                    });
-                  }
+                  chartForm.setFieldsValue({
+                    datasourceCate: curCate,
+                    targets: getDefaultTargets(curCate),
+                  });
                 }
               }}
             />

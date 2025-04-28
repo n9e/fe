@@ -15,9 +15,9 @@
  *
  */
 import _ from 'lodash';
-import { PRIMARY_COLOR } from '@/utils/constant';
+
 import { colors } from '../Components/ColorRangeMenu/config';
-import { IOptions } from '../types';
+import getDefaultQuery from '../utils/getDefaultTargets';
 
 export const visualizations = [
   {

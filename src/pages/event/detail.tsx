@@ -29,6 +29,8 @@ import { deleteAlertEventsModal } from '.';
 import { CommonStateContext, basePrefix } from '@/App';
 import TDengineDetail from '@/plugins/TDengine/Event';
 import { Event as ElasticsearchDetail } from '@/plugins/elasticsearch';
+import { getESIndexPatterns } from '@/pages/log/IndexPatterns/services';
+import { DatasourceCateEnum } from '@/utils/constant';
 
 import EventNotifyRecords from './EventNotifyRecords';
 import TaskTpls from './TaskTpls';
@@ -61,7 +63,19 @@ const EventDetailPage: React.FC = () => {
   const history = useHistory();
   const isHistory = history.location.pathname.includes('alert-his-events');
   const [eventDetail, setEventDetail] = useState<any>();
+
   if (eventDetail) eventDetail.cate = eventDetail.cate || 'prometheus'; // TODO: 兼容历史的告警事件
+
+  const [indexPatterns, setIndexPatterns] = useState<{ id: number; name: string }[]>([]);
+
+  useEffect(() => {
+    if (eventDetail?.cate === DatasourceCateEnum.elasticsearch) {
+      getESIndexPatterns().then((res) => {
+        setIndexPatterns(res);
+      });
+    }
+  }, [eventDetail?.cate]);
+
   const descriptionInfo = [
     {
       label: t('detail.rule_name'),
@@ -234,7 +248,7 @@ const EventDetailPage: React.FC = () => {
       : [false]),
     ...(eventDetail?.cate === 'host' ? Host(t, commonState) : [false]),
     ...(eventDetail?.cate === 'tdengine' ? TDengineDetail(t) : [false]),
-    ...(eventDetail?.cate === 'elasticsearch' ? ElasticsearchDetail() : [false]),
+    ...(eventDetail?.cate === 'elasticsearch' ? ElasticsearchDetail({ indexPatterns }) : [false]),
     ...(plusEventDetail(eventDetail?.cate, t) || []),
     {
       label: t('detail.prom_eval_interval'),
@@ -358,6 +372,19 @@ const EventDetailPage: React.FC = () => {
                           </Button>
                         )}
                       </Space>
+                    </div>,
+                  ]
+                : eventDetail?.rule_prod === 'firemap'
+                ? [
+                    <div className='action-btns'>
+                      <Button
+                        type='primary'
+                        onClick={() => {
+                          window.open(eventDetail.rule_config.detail_url + '&mute=1', '_blank');
+                        }}
+                      >
+                        {t('shield')}
+                      </Button>
                     </div>,
                   ]
                 : []

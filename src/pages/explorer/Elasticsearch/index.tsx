@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, { useState, useEffect, useRef, useContext, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import _ from 'lodash';
 import moment from 'moment';
@@ -127,10 +127,10 @@ export default function index(props: IProps) {
   const [loading, setLoading] = useState(false); // table
   const [timeseriesLoading, setTimeseriesLoading] = useState(false); // timeseries
   const [data, setData] = useState<any[]>([]);
-  const [paginationOptions, setPaginationOptions] = useState({
+  const [total, setTotal] = useState(0);
+  const [paginationOptions, setPaginationOptions, getPaginationOptions] = useGetState({
     current: 1,
     pageSize: 20,
-    total: 0,
   });
   const [series, setSeries] = useState<any[]>([]);
   const [displayTimes, setDisplayTimes] = useState('');
@@ -151,6 +151,7 @@ export default function index(props: IProps) {
   }>();
   const [mode, setMode] = useState<IMode>(getDefaultMode(query, isOpenSearch, esIndexMode));
   const [allowHideSystemIndices, setAllowHideSystemIndices] = useState<boolean>(false);
+  const requestId = useMemo(() => _.uniqueId('requestId_'), []);
 
   const fetchSeries = (
     values,
@@ -186,6 +187,7 @@ export default function index(props: IProps) {
 
   const fetchData = () => {
     form.validateFields().then((values) => {
+      if (!values.query) return;
       const { start, end } = parseRange(values.query.range);
       timesRef.current = {
         start: moment(start).valueOf(),
@@ -230,6 +232,7 @@ export default function index(props: IProps) {
           _source: true,
           shouldHighlight: true,
         }),
+        requestId,
       )
         .then((res) => {
           const newData = _.map(res.list, (item) => {
@@ -241,21 +244,17 @@ export default function index(props: IProps) {
             };
           });
           setData(newData);
-          setPaginationOptions({
-            ...paginationOptions,
-            total: res.total > MAX_RESULT_WINDOW ? MAX_RESULT_WINDOW : res.total,
-          });
+          setTotal(res.total);
           const tableEleNodes = document.querySelectorAll(`.es-discover-logs-table .ant-table-body`)[0];
           tableEleNodes?.scrollTo(0, 0);
         })
         .catch((e: any) => {
           console.error(e);
-          setErrorContent(_.get(e, 'message', t('datasource:es.queryFailed')));
-          setData([]);
-          setPaginationOptions({
-            ...paginationOptions,
-            total: 0,
-          });
+          if (e.name !== 'AbortError') {
+            setErrorContent(_.get(e, 'message', t('datasource:es.queryFailed')));
+            setData([]);
+            setTotal(0);
+          }
         })
         .finally(() => {
           setLoading(false);
@@ -264,9 +263,22 @@ export default function index(props: IProps) {
     });
   };
 
+  const resetThenRefresh = () => {
+    const paginationOptions = getPaginationOptions();
+    if (paginationOptions.current !== 1) {
+      setPaginationOptions({
+        ...paginationOptions,
+        current: 1,
+      });
+    } else {
+      fetchData();
+    }
+  };
+
   useEffect(() => {
     if (_.isArray(filters)) {
-      fetchData();
+      // 如果有过滤条件，则清空当前页码，重新查询
+      resetThenRefresh();
     }
   }, [JSON.stringify(filters)]);
 
@@ -305,6 +317,7 @@ export default function index(props: IProps) {
                   });
                   setMode(val);
                   setData([]);
+                  setTotal(0);
                 }}
                 allowHideSystemIndices={allowHideSystemIndices}
                 setAllowHideSystemIndices={setAllowHideSystemIndices}
@@ -334,7 +347,7 @@ export default function index(props: IProps) {
         <QueryBuilder
           loading={loading}
           key={datasourceValue}
-          onExecute={fetchData}
+          onExecute={resetThenRefresh}
           datasourceValue={datasourceValue}
           setFields={setFields}
           allowHideSystemIndices={allowHideSystemIndices}
@@ -345,13 +358,13 @@ export default function index(props: IProps) {
         <QueryBuilderWithIndexPatterns
           loading={loading}
           key={datasourceValue}
-          onExecute={fetchData}
+          onExecute={resetThenRefresh}
           datasourceValue={datasourceValue}
           form={form}
           setFields={setFields}
           onIndexChange={() => {
             setSelectedFields([]);
-            fetchData();
+            resetThenRefresh();
           }}
         />
       )}
@@ -426,13 +439,13 @@ export default function index(props: IProps) {
                 }}
               >
                 <div className='es-discover-chart-title'>
-                  <div
-                    style={{
-                      width: 32,
-                    }}
-                  >
+                  <div style={{ width: 40, height: 32, lineHeight: '32px' }}>
                     <Spin spinning={timeseriesLoading} size='small' className='ml1' />
                   </div>
+                  <Space size={4}>
+                    <strong>{total}</strong>
+                    hits
+                  </Space>
                   {!_.isEmpty(series) && (
                     <>
                       <div className='es-discover-chart-title-content'>
@@ -502,7 +515,7 @@ export default function index(props: IProps) {
                         >
                           {chartVisible ? t('log.hideChart') : t('log.showChart')}
                         </a>
-                        {isPlus && <DownloadModal queryData={{ ...form.getFieldsValue(), mode, total: paginationOptions.total }} />}
+                        {isPlus && <DownloadModal queryData={{ ...form.getFieldsValue(), mode, total: total }} />}
                       </div>
                     </>
                   )}
@@ -557,6 +570,7 @@ export default function index(props: IProps) {
                 <Pagination
                   size='small'
                   {...paginationOptions}
+                  total={total > MAX_RESULT_WINDOW ? MAX_RESULT_WINDOW : total}
                   onChange={(current, pageSize) => {
                     setPaginationOptions({
                       ...paginationOptions,
@@ -578,10 +592,7 @@ export default function index(props: IProps) {
                       order: item.order === 'ascend' ? 'asc' : 'desc',
                     };
                   });
-                  setPaginationOptions({
-                    ...paginationOptions,
-                    current: 1,
-                  });
+                  resetThenRefresh();
                 }}
                 getFields={getFields}
                 selectedFields={selectedFields}
