@@ -16,8 +16,8 @@ interface IProps {
 
 export default function RenderValue(props: IProps) {
   const { fieldKey, fieldValue, fieldConfig, rawValue, range, adjustFieldValue } = props;
-  const fieldAttr = fieldConfig?.arr.find((i) => i.field === fieldKey);
-  const fieldLinks = fieldConfig?.linkArr.filter((i) => i.field === fieldKey);
+  const fieldAttr = fieldConfig?.arr?.find((i) => i.field === fieldKey);
+  const fieldLinks = fieldConfig?.linkArr?.filter((i) => i.field === fieldKey);
   let displayValue = fieldValue;
   if (fieldAttr?.formatMap?.type === 'date' && fieldAttr?.formatMap?.params?.pattern) {
     displayValue = moment(fieldValue).format(fieldAttr?.formatMap?.params?.pattern);
