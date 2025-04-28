@@ -17,5 +17,19 @@ const zh_CN = {
     add_btn: '添加处理器',
     typ: '类型',
   },
+  label_enrich: {
+    label_source_type: '信息来源',
+    label_mapping_id: '词表名称',
+    source_keys: {
+      label: '源标签',
+      text: '词表中的字段 {{field}} 对应事件中的标签',
+    },
+    append_keys: {
+      label: '附加标签',
+      source_key: '词表字段',
+      rename_key: '重命名标签',
+      target_key: '新标签名',
+    },
+  },
 };
 export default zh_CN;

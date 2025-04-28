@@ -44,7 +44,13 @@ export default function index(props: Props) {
       <Form.Item name='id' hidden>
         <Input />
       </Form.Item>
-      <Card className='mb2' title={<Space>{t('basic_configuration')}</Space>}>
+      <Card
+        className='mb-2'
+        title={<Space>{t('basic_configuration')}</Space>}
+        bodyStyle={{
+          padding: '16px 16px 8px 16px',
+        }}
+      >
         <Row gutter={SIZE}>
           <Col span={12}>
             <Form.Item label={t('common:table.name')} name='name' rules={[{ required: true }]}>
@@ -89,12 +95,12 @@ export default function index(props: Props) {
       </Card>
       <Form.List name='processors'>
         {(fields, { add, remove, move }) => (
-          <Space direction='vertical' size={SIZE} className='w-full'>
+          <Space direction='vertical' size={SIZE * 2} className='w-full'>
             {fields.map((field) => (
               <Processor disabled={disabled} fields={fields} field={field} add={add} remove={remove} move={move} />
             ))}
             {!disabled && (
-              <Button className='w-full' type='dashed' onClick={() => add(DEFAULT_VALUES.processors[0])} icon={<PlusOutlined />}>
+              <Button className='w-full mb-2' type='dashed' onClick={() => add(DEFAULT_VALUES.processors[0])} icon={<PlusOutlined />}>
                 {t('processor.add_btn')}
               </Button>
             )}

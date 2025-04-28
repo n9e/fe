@@ -32,6 +32,9 @@ export default function NotifyConfig(props: Props) {
   return (
     <Card
       key={field.key}
+      bodyStyle={{
+        padding: '16px 16px 8px 16px',
+      }}
       title={<Space>{t('processor.title')}</Space>}
       extra={
         !disabled && (
