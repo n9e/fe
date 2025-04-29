@@ -52,7 +52,9 @@ const ja_JP = {
   channel_invalid_tip: '通知メディアが存在しません',
   pipeline_configuration: {
     title: 'イベント処理',
-    add_btn: '新しいパイプラインを追加',
+    name_placeholder: 'イベント処理を入力してください',
+    name_required: 'イベント処理は空にできません',
+    add_btn: '新しいイベント処理を追加',
   },
 };
 

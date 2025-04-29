@@ -52,6 +52,8 @@ const ru_RU = {
   channel_invalid_tip: 'Канал уведомления не существует',
   pipeline_configuration: {
     title: 'Обработка событий',
+    name_placeholder: 'Пожалуйста, введите обработку событий',
+    name_required: 'Обработка событий не может быть пустой',
     add_btn: 'Добавить обработку событий',
   },
 };

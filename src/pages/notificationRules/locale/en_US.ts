@@ -51,8 +51,10 @@ const en_US = {
   user_group_id_invalid_tip: 'Authorized team does not exist',
   channel_invalid_tip: 'Notification medium does not exist',
   pipeline_configuration: {
-    title: 'Pipeline',
-    add_btn: 'Add a new pipeline',
+    title: 'Event Pipeline',
+    name_placeholder: 'Please enter event pipeline',
+    name_required: 'Event pipeline cannot be empty',
+    add_btn: 'Add a new event pipeline',
   },
 };
 export default en_US;
