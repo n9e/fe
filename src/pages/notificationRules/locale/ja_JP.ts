@@ -50,6 +50,10 @@ const ja_JP = {
   },
   user_group_id_invalid_tip: '権限のあるチームが存在しません',
   channel_invalid_tip: '通知メディアが存在しません',
+  pipeline_configuration: {
+    title: 'イベント処理',
+    add_btn: '新しいパイプラインを追加',
+  },
 };
 
 export default ja_JP;

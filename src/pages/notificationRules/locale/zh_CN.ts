@@ -46,5 +46,9 @@ const zh_CN = {
   },
   user_group_id_invalid_tip: '授权团队不存在',
   channel_invalid_tip: '通知媒介不存在',
+  pipeline_configuration: {
+    title: '事件处理',
+    add_btn: '添加事件处理',
+  },
 };
 export default zh_CN;
