@@ -52,8 +52,8 @@ const en_US = {
   channel_invalid_tip: 'Notification medium does not exist',
   pipeline_configuration: {
     title: 'Event Pipeline',
-    name_placeholder: 'Please enter event pipeline',
-    name_required: 'Event pipeline cannot be empty',
+    name_placeholder: 'Please select event pipeline',
+    name_required: 'Event pipeline is required',
     add_btn: 'Add a new event pipeline',
   },
 };
