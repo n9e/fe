@@ -338,7 +338,7 @@ const SideMenu: FC = () => {
       }}
       className={classNames({
         'menu-container': true,
-        'menu-container-en': i18n.language === 'en_US' || i18n.language === 'ru_RU' && collapsed === '0',
+        'menu-container-en': (i18n.language === 'en_US' || i18n.language === 'ru_RU') && collapsed === '0',
       })}
     >
       {collapsed !== '2' && (

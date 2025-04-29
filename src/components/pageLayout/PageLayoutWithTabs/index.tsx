@@ -39,7 +39,8 @@ import '../index.less';
 import '../locale';
 
 // @ts-ignore
-import getPlusMenuList from 'plus:/menu';
+import getPlusMenuList from 'plus:/parcels/SideMenu/menu';
+// @ts-ignore
 import FeatureNotification from 'plus:/pages/FeatureNotification';
 
 export { HelpLink };
@@ -49,7 +50,7 @@ interface IPageLayoutProps {
   title?: String | JSX.Element;
   children?: ReactNode;
   introIcon?: ReactNode;
-  datasource?: ReactNode;
+  rightArea?: ReactNode;
   customArea?: ReactNode;
   showBack?: Boolean;
   backPath?: string;
@@ -65,7 +66,7 @@ const i18nMap = {
   ru_RU: 'Русский',
 };
 
-const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, datasource, introIcon, children, customArea, showBack, backPath, docFn, tabGroup }) => {
+const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introIcon, children, customArea, showBack, backPath, docFn, tabGroup }) => {
   const { t, i18n } = useTranslation('pageLayout');
   const history = useHistory();
   const location = useLocation();
@@ -158,7 +159,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, datasource, intro
                   {docFn && <a onClick={() => docFn()}>{t('docs')}</a>}
                   <Version />
 
-                  <Space className='mr-2'>{datasource}</Space>
+                  <Space className='mr-2'>{rightArea}</Space>
 
                   <Space>
                     {/* 整合版本关闭文档链接 */}
