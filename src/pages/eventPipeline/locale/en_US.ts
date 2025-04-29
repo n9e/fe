@@ -29,7 +29,8 @@ const en_US = {
     source_keys: {
       label: 'Source label',
       text: 'The field in the mapping <strong>{{field}}</strong> corresponds to the label in the event',
-      target_key_required: 'Label name cannot be empty',
+      target_key_placeholder: 'Label key',
+      target_key_required: 'Label key cannot be empty',
     },
     append_keys: {
       label: 'Add label',

@@ -29,7 +29,8 @@ const zh_CN = {
     source_keys: {
       label: '源标签',
       text: '词表中的字段 <strong>{{field}}</strong> 对应事件中的标签',
-      target_key_required: '标签名不能为空',
+      target_key_placeholder: '标签 Key',
+      target_key_required: '标签 Key 不能为空',
     },
     append_keys: {
       label: '新增标签',

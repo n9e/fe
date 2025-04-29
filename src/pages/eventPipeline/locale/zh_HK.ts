@@ -29,7 +29,8 @@ const zh_HK = {
     source_keys: {
       label: '源標籤',
       text: '詞表中的字段 <strong>{{field}}</strong> 對應事件中的標籤',
-      target_key_required: '標籤名不能為空',
+      target_key_placeholder: '標籤 Key',
+      target_key_required: '標籤 Key 不能為空',
     },
     append_keys: {
       label: '新增標籤',

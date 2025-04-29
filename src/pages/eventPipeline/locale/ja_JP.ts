@@ -29,7 +29,8 @@ const ja_JP = {
     source_keys: {
       label: 'ソースラベル',
       text: 'マッピングのフィールド <strong>{{field}}</strong> は、イベントのラベルに対応しています',
-      target_key_required: 'ラベル名は空にできません',
+      target_key_placeholder: 'ラベルキー',
+      target_key_required: 'ラベルキーは空にできません',
     },
     append_keys: {
       label: '追加ラベル',
