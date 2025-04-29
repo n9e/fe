@@ -20,7 +20,7 @@ import './menu.less';
 import './locale';
 
 // @ts-ignore
-import getPlusMenuList from 'plus:/menu';
+import getPlusMenuList from 'plus:/parcels/SideMenu/menu';
 
 const SideMenu = () => {
   const { i18n } = useTranslation('sideMenu');

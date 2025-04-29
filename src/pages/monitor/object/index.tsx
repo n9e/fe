@@ -58,7 +58,7 @@ export default function index() {
         </Space>
       }
       icon={<LineChartOutlined />}
-      datasource={
+      rightArea={
         <div
           style={{
             display: 'flex',

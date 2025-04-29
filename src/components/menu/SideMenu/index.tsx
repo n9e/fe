@@ -243,8 +243,7 @@ const SideMenu = () => {
   const [collapsedHover, setCollapsedHover] = useState<boolean>(false);
   const quickMenuRef = useRef<{ open: () => void }>({ open: () => {} });
   const isCustomBg = sideMenuBgMode !== 'light';
-  const menuList = isPlus ? [] : getMenuList(t);
-  // const menuList = [isPlus ? getPlusMenu(t) : getMenuList(t);]
+  const menuList = isPlus ? getPlusMenu(t) : getMenuList(t);
   const [menus, setMenus] = useState<IMenuItem[]>(menuList);
   const menuPaths = useMemo(
     () =>

@@ -29,7 +29,7 @@ import DarkModeSelect from '@/components/DarkModeSelect';
 
 import Version from './Version';
 import SideMenuColorSetting from './SideMenuColorSetting';
-import PageLayout from './PageLayoutWithTabs';
+import PageLayoutWithTabs from './PageLayoutWithTabs';
 import HelpLink from './HelpLink';
 import './index.less';
 import './locale';
@@ -43,7 +43,7 @@ interface IPageLayoutProps {
   title?: String | JSX.Element;
   children?: ReactNode;
   introIcon?: ReactNode;
-  datasource?: ReactNode;
+  rightArea?: ReactNode;
   customArea?: ReactNode;
   showBack?: Boolean;
   backPath?: string;
@@ -58,7 +58,7 @@ const i18nMap = {
   ru_RU: 'Русский',
 };
 
-const PageLayoutOld: React.FC<IPageLayoutProps> = ({ icon, title, datasource, introIcon, children, customArea, showBack, backPath, docFn }) => {
+const PageLayoutOld: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introIcon, children, customArea, showBack, backPath, docFn }) => {
   const { t, i18n } = useTranslation('pageLayout');
   const history = useHistory();
   const location = useLocation();
@@ -114,7 +114,7 @@ const PageLayoutOld: React.FC<IPageLayoutProps> = ({ icon, title, datasource, in
           ) : (
             <div className={'page-top-header'}>
               <div
-                className={`page-header-content relative ${!IS_ENT ? 'n9e-page-header-content' : ''}`}
+                className={`page-header-content ${!IS_ENT ? 'n9e-page-header-content' : ''}`}
                 style={{
                   // 2024-07-10 用途集成仪表盘全屏模式，未来其他页面的全屏模式皆是 viewMode=fullscreen
                   display: query.viewMode === 'fullscreen' ? 'none' : 'flex',
@@ -165,7 +165,7 @@ const PageLayoutOld: React.FC<IPageLayoutProps> = ({ icon, title, datasource, in
                     )}
                   </Space>
 
-                  {datasource}
+                  {rightArea}
 
                   <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
                     <License />
@@ -236,5 +236,11 @@ const PageLayoutOld: React.FC<IPageLayoutProps> = ({ icon, title, datasource, in
     </div>
   );
 };
+
+let PageLayout = PageLayoutWithTabs;
+
+if (IS_ENT) {
+  PageLayout = PageLayoutOld;
+}
 
 export default PageLayout;
