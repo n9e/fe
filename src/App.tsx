@@ -34,7 +34,7 @@ import { getVersions } from '@/components/pageLayout/Version/services';
 import { getCleanBusinessGroupIds, getDefaultBusiness, getVaildBusinessGroup } from '@/components/BusinessGroup';
 import Feedback from '@/components/Feedback';
 import { getN9eConfig } from '@/pages/siteSettings/services';
-import HeaderMenu from './components/menu/SideMenu';
+import HeaderMenu from './components/SideMenu';
 import Content from './routers';
 import { getDarkMode, updateDarkMode } from '@/utils/darkMode';
 

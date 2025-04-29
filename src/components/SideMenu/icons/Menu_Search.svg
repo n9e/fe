@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>✧ Icon/search</title>
+    <defs>
+        <linearGradient x1="-53.7138826%" y1="244.517625%" x2="78.2209507%" y2="17.3822031%" id="linearGradient-1">
+            <stop stop-color="#0019F4" offset="0%"></stop>
+            <stop stop-color="#8A62FF" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="✧-Icon/search">
+            <rect id="矩形" fill="#FFFFFF" opacity="0" x="0" y="0" width="16" height="16"></rect>
+            <path d="M7.5,2 C10.5375661,2 13,4.46243388 13,7.5 C13,8.81791992 12.5364558,10.0275733 11.763513,10.9748145 L14.2366331,13.4478496 C14.4544571,13.6656758 14.4544554,14.01884 14.2366293,14.2366641 C14.043006,14.4302854 13.7424489,14.4517976 13.5250641,14.3012014 L13.4478148,14.2366602 L10.9748145,11.763513 C10.0275733,12.5364558 8.81791992,13 7.5,13 C4.46243388,13 2,10.5375661 2,7.5 C2,4.46243388 4.46243388,2 7.5,2 Z" id="形状结合" fill="url(#linearGradient-1)"></path>
+        </g>
+    </g>
+</svg>
