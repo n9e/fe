@@ -89,7 +89,7 @@ const EmbeddedProductModal: React.FC<EmbeddedProductModalProps> = ({ open, initi
                         })}
                       />
                     </Form.Item>
-                    <Form.Item style={{ width: 150 }} {...restField} name={[name, 'is_private']} label={t('is_private')} valuePropName='checked' initialValue={false}>
+                    <Form.Item style={{ width: 150 }} {...restField} name={[name, 'is_private']} label={t('common:private')} valuePropName='checked' initialValue={false}>
                       <Switch />
                     </Form.Item>
                     {!initialValues && (
