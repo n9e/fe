@@ -145,7 +145,12 @@ export default function List() {
               },
             },
           ]}
-          dataSource={data.list}
+          dataSource={_.filter(data.list, (item) => {
+            if (filter?.search) {
+              return _.includes(item.name, filter.search);
+            }
+            return true;
+          })}
           loading={data.loading}
         />
       </div>
