@@ -13,41 +13,44 @@ export const getMenuList = () => {
       icon: <IconFont type='icon-Menu_Infrastructure' />,
       children: [
         {
-          key: 'bgroup',
-          label: 'menu.bgGroup',
+          key: 'business_group',
+          label: 'menu.business_group',
           type: 'tabs',
-          children: [
-            { key: '/targets', label: 'menu.bgGroup_targets' },
-            { key: '/dashboards', label: 'menu.bgGroup_dashboards' },
-          ],
+          children: [{ key: '/targets', label: 'menu.targets' }],
         },
       ],
     },
     {
-      key: 'query',
-      label: 'menu.query',
+      key: 'explorer',
+      label: 'menu.explorer',
       icon: <IconFont type='icon-IndexManagement1' />,
       children: [
         {
-          key: 'metric',
-          label: 'menu.metric',
+          key: 'metrics',
+          label: 'menu.metrics',
           type: 'tabs',
           children: [
             { key: '/metric/explorer', label: 'menu.metric_explorer' },
-            { key: '/metrics-built-in', label: 'menu.metric_metricsBuiltIn' },
-            { key: '/object/explorer', label: 'menu.metric_objectExplorer' },
-            { key: '/recording-rules', label: 'menu.metric_recordingRules' },
+            { key: '/metrics-built-in', label: 'menu.metrics_built_in' },
+            { key: '/object/explorer', label: 'menu.object_explorer' },
+            { key: '/recording-rules', label: 'menu.recording_rules' },
           ],
         },
         {
           key: '/log/explorer',
-          label: 'menu.log_analysis',
+          label: 'menu.logs_explorer',
+        },
+        {
+          key: 'dashboards',
+          label: 'menu.dashboards',
+          type: 'tabs',
+          children: [{ key: '/dashboards', label: 'menu.dashboards' }],
         },
       ],
     },
     {
-      key: 'alert',
-      label: 'menu.alert',
+      key: 'monitors',
+      label: 'menu.monitors',
       icon: <IconFont type='icon-Menu_AlarmManagement' />,
       children: [
         {
@@ -55,9 +58,9 @@ export const getMenuList = () => {
           label: 'menu.rules',
           type: 'tabs',
           children: [
-            { key: '/alert-rules', label: 'menu.rules_alertRules' },
-            { key: '/alert-mutes', label: 'menu.rules_warningShield' },
-            { key: '/alert-subscribes', label: 'menu.rules_warningSubscribe' },
+            { key: '/alert-rules', label: 'menu.alert_rules' },
+            { key: '/alert-mutes', label: 'menu.alert_mutes' },
+            { key: '/alert-subscribes', label: 'menu.alert_subscribes' },
           ],
         },
         {
@@ -65,18 +68,18 @@ export const getMenuList = () => {
           label: 'menu.job',
           type: 'tabs',
           children: [
-            { key: '/job-tpls', label: 'menu.job_taskTpl' },
-            { key: '/job-tasks', label: 'menu.job_task' },
+            { key: '/job-tpls', label: 'menu.job_tpls' },
+            { key: '/job-tasks', label: 'menu.job_tasks' },
           ],
         },
         {
-          key: '/alert-cur-events',
-          label: 'menu.active_alert',
-        },
-        {
-          key: '/alert-his-events',
-          role: ['Admin'],
-          label: 'menu.historical_alert',
+          key: 'events',
+          label: 'menu.events',
+          type: 'tabs',
+          children: [
+            { key: '/alert-cur-events', label: 'menu.cur_events' },
+            { key: '/alert-his-events', role: ['Admin'], label: 'menu.his_events' },
+          ],
         },
       ],
     },
@@ -87,24 +90,24 @@ export const getMenuList = () => {
       children: [
         {
           key: '/notification-rules',
-          label: 'menu.notify_rule',
+          label: 'menu.notification_rules',
         },
         {
           key: '/notification-channels',
-          label: 'menu.notify_channels',
+          label: 'menu.notification_channels',
         },
         {
           key: '/notification-templates',
-          label: 'menu.notify_configs',
+          label: 'menu.notification_templates',
         },
         {
           key: '/help/notification-settings',
-          label: 'menu.notify_settings',
+          label: 'menu.notification_settings',
           deprecated: true,
         },
         {
           key: '/help/notification-tpls',
-          label: 'menu.notify_template',
+          label: 'menu.notification_tpls',
           deprecated: true,
         },
       ],
@@ -123,8 +126,8 @@ export const getMenuList = () => {
           label: 'menu.built_in_components',
         },
         // {
-        //   key: 'system_built_in',
-        //   label: i18next.t('sideMenu:integrations.system_built_in'),
+        //   key: 'embedded_products',
+        //   label: i18next.t('menu.embedded_products'),
         //   path: '',
         // },
       ],
@@ -159,7 +162,7 @@ export const getMenuList = () => {
       children: [
         {
           key: '/site-settings',
-          label: 'menu.site_setting',
+          label: 'menu.site_settings',
         },
         {
           key: '/help/variable-configs',
