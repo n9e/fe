@@ -63,7 +63,7 @@ export const TabMenu: React.FC<TabMenuProps> = ({ currentMenu, onTabChange }) =>
   }
 
   return (
-    <div className='flex items-center gap-0 px-4 h-[50px] -mt-[10px] -mb-[10px] border-b border-fc-200'>
+    <div className='flex items-center gap-0 h-[50px] -mt-[10px] -mb-[10px] border-b border-fc-200'>
       {currentMenu.parentItem.children.map((item) => (
         <div
           key={item.key}

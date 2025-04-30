@@ -133,24 +133,25 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                 }}
               >
                 <div className='flex gap-4 align-center'>
-                  <div className={'page-header-title'}>
-                    {showBack && window.history.state && (
-                      <RollbackOutlined
-                        onClick={() => {
-                          if (backPath) {
-                            history.push(backPath);
-                          } else {
-                            history.goBack();
-                          }
-                        }}
-                        style={{
-                          marginRight: '5px',
-                        }}
-                      />
-                    )}
-                    {currentMenu?.icon || icon}
-                    {t(`sideMenu:${currentMenu?.parentItem?.label || ''}`) || title}
-                  </div>
+                  {!currentMenu?.parentItem?.label && (
+                    <div className={'page-header-title'}>
+                      {showBack && window.history.state && (
+                        <RollbackOutlined
+                          onClick={() => {
+                            if (backPath) {
+                              history.push(backPath);
+                            } else {
+                              history.goBack();
+                            }
+                          }}
+                          style={{
+                            marginRight: '5px',
+                          }}
+                        />
+                      )}
+                      {title}
+                    </div>
+                  )}
                   <TabMenu currentMenu={currentMenu} />
                 </div>
 

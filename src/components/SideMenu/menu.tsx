@@ -16,10 +16,7 @@ export const getMenuList = () => {
           key: 'business_group',
           label: 'menu.business_group',
           type: 'tabs',
-          children: [
-            { key: '/targets', label: 'menu.targets' },
-            { key: '/dashboards', label: 'menu.dashboards' },
-          ],
+          children: [{ key: '/targets', label: 'menu.targets' }],
         },
       ],
     },
@@ -29,8 +26,8 @@ export const getMenuList = () => {
       icon: <IconFont type='icon-IndexManagement1' />,
       children: [
         {
-          key: 'metric',
-          label: 'menu.metric',
+          key: 'metrics',
+          label: 'menu.metrics',
           type: 'tabs',
           children: [
             { key: '/metric/explorer', label: 'menu.metric_explorer' },
@@ -41,13 +38,19 @@ export const getMenuList = () => {
         },
         {
           key: '/log/explorer',
-          label: 'menu.log_explorer',
+          label: 'menu.logs_explorer',
+        },
+        {
+          key: 'dashboards',
+          label: 'menu.dashboards',
+          type: 'tabs',
+          children: [{ key: '/dashboards', label: 'menu.dashboards' }],
         },
       ],
     },
     {
-      key: 'alerting',
-      label: 'menu.alerting',
+      key: 'monitors',
+      label: 'menu.monitors',
       icon: <IconFont type='icon-Menu_AlarmManagement' />,
       children: [
         {
@@ -70,13 +73,13 @@ export const getMenuList = () => {
           ],
         },
         {
-          key: '/alert-cur-events',
-          label: 'menu.cur_events',
-        },
-        {
-          key: '/alert-his-events',
-          role: ['Admin'],
-          label: 'menu.his_events',
+          key: 'events',
+          label: 'menu.events',
+          type: 'tabs',
+          children: [
+            { key: '/alert-cur-events', label: 'menu.cur_events' },
+            { key: '/alert-his-events', role: ['Admin'], label: 'menu.his_events' },
+          ],
         },
       ],
     },
