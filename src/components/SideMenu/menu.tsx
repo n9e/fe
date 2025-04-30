@@ -5,7 +5,7 @@ import IconFont from '@/components/IconFont';
 
 import { MenuItem } from './types';
 
-export const getMenuList = (productMenuItems: MenuItem[] = []) => {
+export const getMenuList = (embeddedProductMenu: MenuItem[] = []) => {
   const menu: MenuItem[] = [
     {
       key: 'infrastructure',
@@ -129,7 +129,7 @@ export const getMenuList = (productMenuItems: MenuItem[] = []) => {
           key: '/embedded-product',
           label: 'menu.embedded_products',
         },
-        ...productMenuItems,
+        ...embeddedProductMenu,
       ],
     },
     {

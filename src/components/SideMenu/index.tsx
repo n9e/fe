@@ -37,9 +37,31 @@ const SideMenu = () => {
   const [collapsedHover, setCollapsedHover] = useState<boolean>(false);
   const quickMenuRef = useRef<{ open: () => void }>({ open: () => {} });
   const isCustomBg = sideMenuBgMode !== 'light';
-  const [productMenuItems, setProductMenuItems] = useState<MenuItem[]>([]);
+  const [embeddedProductMenu, setEmbeddedProductMenu] = useState<MenuItem[]>([]);
+  const hideSideMenu = useMemo(() => {
+    if (
+      location.pathname === '/login' ||
+      location.pathname.startsWith('/chart/') ||
+      location.pathname.startsWith('/events/screen/') ||
+      location.pathname.startsWith('/dashboards/share/') ||
+      location.pathname === '/callback' ||
+      location.pathname.indexOf('/polaris/screen') === 0 ||
+      location.pathname.indexOf('/template/screens/detail') === 0
+    ) {
+      return true;
+    }
+    if (location.pathname.indexOf('/dashboard') === 0 || location.pathname.indexOf('/embedded-dashboards') === 0) {
+      const query = querystring.parse(location.search);
+      if (query?.viewMode === 'fullscreen') {
+        return true;
+      }
+      return false;
+    }
+    return false;
+  }, [location.pathname, location.search]);
 
   useEffect(() => {
+    if (hideSideMenu) return;
     getEmbeddedProducts().then((res) => {
       if (res) {
         const items = res.map((product) => ({
@@ -47,12 +69,12 @@ const SideMenu = () => {
           label: product.name,
           children: [],
         }));
-        setProductMenuItems(items);
+        setEmbeddedProductMenu(items);
       }
     });
-  }, []);
+  }, [hideSideMenu]);
 
-  const menus = isPlus ? getPlusMenuList(productMenuItems) : getMenuList(productMenuItems);
+  const menus = isPlus ? getPlusMenuList(embeddedProductMenu) : getMenuList(embeddedProductMenu);
 
   const menuPaths = useMemo(
     () =>
@@ -90,28 +112,6 @@ const SideMenu = () => {
       setSelectedKeys(finalPath);
     }
   }, [menuPaths, location.pathname, selectedKeys]);
-
-  const hideSideMenu = useMemo(() => {
-    if (
-      location.pathname === '/login' ||
-      location.pathname.startsWith('/chart/') ||
-      location.pathname.startsWith('/events/screen/') ||
-      location.pathname.startsWith('/dashboards/share/') ||
-      location.pathname === '/callback' ||
-      location.pathname.indexOf('/polaris/screen') === 0 ||
-      location.pathname.indexOf('/template/screens/detail') === 0
-    ) {
-      return true;
-    }
-    if (location.pathname.indexOf('/dashboard') === 0 || location.pathname.indexOf('/embedded-dashboards') === 0) {
-      const query = querystring.parse(location.search);
-      if (query?.viewMode === 'fullscreen') {
-        return true;
-      }
-      return false;
-    }
-    return false;
-  }, [location.pathname, location.search]);
 
   const uncollapsedWidth = i18n.language === 'en_US' || i18n.language === 'ru_RU' ? 'w-[250px]' : 'w-[172px]';
 
