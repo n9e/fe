@@ -24,22 +24,10 @@ export default function Index() {
   const [userGroups, setUserGroups] = useState<{ id: number; name: string }[]>([]);
   const columns: ColumnType<EmbeddedProductResponse>[] = [
     {
-      title: t('ID'),
-      dataIndex: 'id',
-      sorter: true,
-      render: (id) => {
-        return <Space>{id}</Space>;
-      },
-    },
-    {
       title: t('common:table.name'),
       dataIndex: 'name',
-    },
-    {
-      title: t('url'),
-      dataIndex: 'url',
-      render: (url, record) => {
-        return <Link to={`/embedded-product/${record.id}`}>{url}</Link>;
+      render: (name, record) => {
+        return <Link to={`/embedded-product/${record.id}`}>{name}</Link>;
       },
     },
     {
@@ -64,7 +52,7 @@ export default function Index() {
       },
     },
     {
-      title: t('common:table.update_by'),
+      title: <span style={{ whiteSpace: 'nowrap' }}>{t('common:table.update_by')}</span>,
       dataIndex: 'update_by',
       sorter: true,
     },
@@ -81,7 +69,7 @@ export default function Index() {
     {
       title: t('common:table.operations'),
       dataIndex: 'operator',
-      width: 120,
+
       render: (data, record: any) => {
         return (
           <Space>
@@ -130,13 +118,13 @@ export default function Index() {
     });
   }, []);
 
-  const handleModalOk = async (values: EmbeddedProductParams[]) => {
+  const handleModalOk = async (values: EmbeddedProductParams) => {
     try {
       if (currentRecord) {
-        await updateEmbeddedProducts(currentRecord.id.toString(), values[0]);
-        message.success(t('common:success.update'));
+        await updateEmbeddedProducts(currentRecord.id.toString(), values);
+        message.success(t('common:success.edit'));
       } else {
-        await addEmbeddedProducts(values);
+        await addEmbeddedProducts([values]);
         message.success(t('common:success.create'));
       }
       setModalVisible(false);

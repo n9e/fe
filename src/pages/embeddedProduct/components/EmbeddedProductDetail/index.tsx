@@ -95,7 +95,7 @@ export default function Index() {
         </Space>
       }
     >
-      {activeRecord ? <iframe className='w-full h-full' src={adjustURL(activeRecord.url, darkMode)} /> : null}
+      {activeRecord ? <iframe className='w-full h-full border-0' src={adjustURL(activeRecord.url, darkMode)} /> : null}
     </PageLayout>
   );
 }

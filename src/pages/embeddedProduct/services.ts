@@ -17,12 +17,10 @@ export const getEmbeddedProduct = (id: string): Promise<EmbeddedProductResponse>
 };
 
 export const addEmbeddedProducts = (data: EmbeddedProductParams[]) => {
-  console.log(data);
   return request(`/api/n9e/embedded-product`, {
     method: RequestMethod.Post,
     data,
   }).then((res) => {
-    console.log(res);
     return res.dat;
   });
 };
