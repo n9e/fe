@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import _ from 'lodash';
 import { Modal, Form, Space, Input, Button, Switch, Select } from 'antd';
 import { useTranslation } from 'react-i18next';
+
 import { EmbeddedProductParams } from '../../types';
+
 import { getTeamInfoList } from '@/services/manage';
-import _ from 'lodash';
 
 interface EmbeddedProductModalProps {
   initialValues?: EmbeddedProductParams;

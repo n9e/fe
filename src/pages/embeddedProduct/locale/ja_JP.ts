@@ -1,5 +1,6 @@
 const ja_JP = {
-  title: '統合ダッシュボード',
+  title: 'システム統合',
+  id: 'ID',
   edit_title: '統合ダッシュボードを編集',
   add_title: '統合ダッシュボードを追加',
   name: '名前',

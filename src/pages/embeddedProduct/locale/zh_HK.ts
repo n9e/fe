@@ -1,5 +1,6 @@
 const zh_HK = {
-  title: '集成儀表板',
+  title: '系統集成',
+  id: 'ID',
   edit_title: '編輯集成儀表板',
   add_title: '添加集成儀表板',
   name: '名稱',

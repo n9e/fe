@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import usePagination from '@/components/usePagination';
 import { getTeamInfoList } from '@/services/manage';
 import PageLayout from '@/components/pageLayout';
+import { eventBus, EVENT_KEYS } from '@/pages/embeddedProduct/eventBus';
 
 import { EmbeddedProductParams, EmbeddedProductResponse } from '../../types';
 import { deleteEmbeddedProducts, getEmbeddedProducts, addEmbeddedProducts, updateEmbeddedProducts } from '../../services';
@@ -100,6 +101,7 @@ export default function Index() {
                     deleteEmbeddedProducts(record.id).then(() => {
                       message.success(t('common:success.delete'));
                       fetchData();
+                      eventBus.emit(EVENT_KEYS.EMBEDDED_PRODUCT_UPDATED);
                     });
                   },
                   onCancel() {},
@@ -140,6 +142,7 @@ export default function Index() {
       }
       setModalVisible(false);
       fetchData();
+      eventBus.emit(EVENT_KEYS.EMBEDDED_PRODUCT_UPDATED);
     } catch (error) {
       message.error(currentRecord ? t('common:error.update') : t('common:error.create'));
     }

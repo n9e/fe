@@ -1,5 +1,6 @@
 const zh_CN = {
-  title: '集成仪表盘',
+  title: '系统集成',
+  id: 'ID',
   edit_title: '编辑集成仪表盘',
   add_title: '添加集成仪表盘',
   name: '名称',

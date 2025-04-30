@@ -11,6 +11,7 @@ import { getSideMenuBgColor } from '@/components/pageLayout/SideMenuColorSetting
 import { IS_ENT } from '@/utils/constant';
 import { getMenuList } from '@/components/SideMenu/menu';
 import { getEmbeddedProducts } from '@/pages/embeddedProduct/services';
+import { eventBus, EVENT_KEYS } from '@/pages/embeddedProduct/eventBus';
 
 import { cn } from './utils';
 import SideMenuHeader from './Header';
@@ -60,7 +61,7 @@ const SideMenu = () => {
     return false;
   }, [location.pathname, location.search]);
 
-  useEffect(() => {
+  const fetchEmbeddedProducts = () => {
     if (hideSideMenu) return;
     getEmbeddedProducts().then((res) => {
       if (res) {
@@ -72,6 +73,14 @@ const SideMenu = () => {
         setEmbeddedProductMenu(items);
       }
     });
+  };
+
+  useEffect(() => {
+    fetchEmbeddedProducts();
+    eventBus.on(EVENT_KEYS.EMBEDDED_PRODUCT_UPDATED, fetchEmbeddedProducts);
+    return () => {
+      eventBus.off(EVENT_KEYS.EMBEDDED_PRODUCT_UPDATED, fetchEmbeddedProducts);
+    };
   }, [hideSideMenu]);
 
   const menus = isPlus ? getPlusMenuList(embeddedProductMenu) : getMenuList(embeddedProductMenu);
