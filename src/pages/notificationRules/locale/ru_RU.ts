@@ -50,6 +50,12 @@ const ru_RU = {
   },
   user_group_id_invalid_tip: 'Команда не существует',
   channel_invalid_tip: 'Канал уведомления не существует',
+  pipeline_configuration: {
+    title: 'Обработка событий',
+    name_placeholder: 'Пожалуйста, выберите обработку событий',
+    name_required: 'Обработка событий не может быть пустой',
+    add_btn: 'Добавить обработку событий',
+  },
 };
 
 export default ru_RU;
