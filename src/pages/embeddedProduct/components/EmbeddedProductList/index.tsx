@@ -126,7 +126,6 @@ export default function Index() {
   useEffect(() => {
     fetchData();
     getTeamInfoList().then((res) => {
-      console.log('res', res);
       setUserGroups(res.dat ?? []);
     });
   }, []);

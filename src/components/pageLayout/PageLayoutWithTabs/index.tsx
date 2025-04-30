@@ -18,7 +18,7 @@ import React, { ReactNode, useContext, useState, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import querystring from 'query-string';
 import { useTranslation } from 'react-i18next';
-import { Menu, Dropdown, Space, Drawer, Button } from 'antd';
+import { Menu, Dropdown, Space, Drawer, Button, Tooltip } from 'antd';
 import { DownOutlined, RollbackOutlined } from '@ant-design/icons';
 
 import { Logout } from '@/services/login';
@@ -171,7 +171,9 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                         size='small'
                         type='text'
                       >
-                        <DocIcon className='text-[12px]' />
+                        <Tooltip title={t('docs')}>
+                          <DocIcon className='text-[12px]' />
+                        </Tooltip>
                       </Button>
                     )}
                   </Space>
