@@ -10,12 +10,13 @@ import { CommonStateContext } from '@/App';
 import { getSideMenuBgColor } from '@/components/pageLayout/SideMenuColorSetting';
 import { IS_ENT } from '@/utils/constant';
 import { getMenuList } from '@/components/SideMenu/menu';
+import { getEmbeddedProducts } from '@/pages/embeddedProduct/services';
 
 import { cn } from './utils';
 import SideMenuHeader from './Header';
 import MenuList from './MenuList';
 import QuickMenu from './QuickMenu';
-import { IMenuItem } from './types';
+import { MenuItem } from './types';
 import './menu.less';
 import './locale';
 
@@ -36,8 +37,22 @@ const SideMenu = () => {
   const [collapsedHover, setCollapsedHover] = useState<boolean>(false);
   const quickMenuRef = useRef<{ open: () => void }>({ open: () => {} });
   const isCustomBg = sideMenuBgMode !== 'light';
-  const menuList = isPlus ? getPlusMenuList() : getMenuList();
-  const [menus] = useState<IMenuItem[]>(menuList);
+  const [productMenuItems, setProductMenuItems] = useState<MenuItem[]>([]);
+
+  useEffect(() => {
+    getEmbeddedProducts().then((res) => {
+      if (res) {
+        const items = res.map((product) => ({
+          key: `/embedded-product/${product.id}`,
+          label: product.name,
+          children: [],
+        }));
+        setProductMenuItems(items);
+      }
+    });
+  }, []);
+
+  const menus = isPlus ? getPlusMenuList(productMenuItems) : getMenuList(productMenuItems);
 
   const menuPaths = useMemo(
     () =>
