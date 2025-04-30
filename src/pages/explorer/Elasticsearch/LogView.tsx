@@ -6,9 +6,11 @@ import { QuestionOutlined, CopyOutlined } from '@ant-design/icons';
 import { EditorView } from '@codemirror/view';
 import { json } from '@codemirror/lang-json';
 import { defaultHighlightStyle } from '@codemirror/highlight';
+import purify from 'dompurify';
 import { copyToClipBoard } from '@/utils';
 import HighLightJSON from './HighLightJSON';
 import { Field, getFieldLabel } from './utils';
+import { getHighlightHtml } from './utils/highlight';
 import RenderValue from '@/pages/explorer/components/RenderValue';
 import { typeIconMap } from './FieldsSidebar/Field';
 import { typeMap } from '../Elasticsearch/services';
@@ -94,8 +96,21 @@ export default function LogView(props: Props) {
               key: 'value',
               render: (val: any, record: { field: string }) => {
                 const field = record.field;
-                // todo: highlight 传入
-                return <RenderValue fieldKey={field} fieldValue={val} fieldConfig={fieldConfig} rawValue={value} range={range} />;
+                return (
+                  <RenderValue
+                    fieldKey={field}
+                    fieldValue={val}
+                    fieldConfig={fieldConfig}
+                    rawValue={value}
+                    range={range}
+                    adjustFieldValue={(formatedValue) => {
+                      if (highlight?.[field]) {
+                        return <span dangerouslySetInnerHTML={{ __html: purify.sanitize(getHighlightHtml(formatedValue, highlight[field])) }} />;
+                      }
+                      return formatedValue;
+                    }}
+                  />
+                );
               },
             },
           ]}
