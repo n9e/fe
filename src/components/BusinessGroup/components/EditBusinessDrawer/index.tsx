@@ -130,9 +130,21 @@ export default function index(props: Props) {
   // 弹窗关闭回调
   const handleClose = (action: string) => {
     setBusinessModalVisible(false);
-
+    const savedSearchValue = sessionStorage.getItem('businessGroupSearchValue') || '';
     if (['create', 'delete', 'update'].includes(action)) {
-      getTeamList(undefined, action === 'delete');
+      getBusinessTeamList({
+        query: savedSearchValue,
+        limit: PAGE_SIZE,
+      }).then((data) => {
+        const results = data.dat || [];
+        setBusiGroups(results);
+        setBusiGroup(getDefaultBusiness(results));
+        // 保存搜索结果
+        if (savedSearchValue) {
+          sessionStorage.setItem('businessGroupSearchValue', savedSearchValue);
+          sessionStorage.setItem('businessGroupSearchResults', JSON.stringify(results));
+        }
+      });
     }
     if (teamId && ['update', 'addMember'].includes(action)) {
       getTeamInfoDetail(teamId);
