@@ -23,12 +23,10 @@ export default function index({ dashboardId, variableConfig }) {
       })
     : datasourceValue;
 
-  if (IS_PLUS) {
+  if (datasourceCate === DatasourceCateEnum.ck && curDatasourceValue !== undefined) {
+    return <CKMeta.MetaModal datasourceValue={curDatasourceValue} />;
+  } else if (IS_PLUS) {
     return <DatasourceSelectExtra datasourceCate={datasourceCate} datasourceValue={curDatasourceValue} />;
-  } else {
-    if (datasourceCate === DatasourceCateEnum.ck && datasourceValue !== undefined) {
-      return <CKMeta.MetaModal datasourceValue={datasourceValue} />;
-    }
   }
 
   return null;

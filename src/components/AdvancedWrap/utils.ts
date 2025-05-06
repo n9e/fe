@@ -78,7 +78,7 @@ export const baseCates: Cate[] = [
     alertRule: true,
     dashboard: true,
     dashboardVariable: false,
-    graphPro: false,
+    graphPro: true,
     alertPro: false,
     logo: '/image/logos/ck.png',
   },
