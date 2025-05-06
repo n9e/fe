@@ -6,7 +6,7 @@ const ja_JP = {
   name_msg: '名前を入力してください',
   url: 'リンク',
   url_msg: 'リンクを入力してください',
-  team_ids: 'チーム',
+  team_ids: '承認チーム',
   team_ids_msg: 'チームを選択してください',
   exitFullScreen_tip: '全画面を退出するには、iframeのセキュリティ制限により制御できません。URLにviewMode=fullscreenパラメータを削除してください。',
 };

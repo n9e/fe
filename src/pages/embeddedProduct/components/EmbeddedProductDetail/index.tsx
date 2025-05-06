@@ -90,8 +90,6 @@ export default function Index() {
               />
             </Tooltip>
           </Space>
-
-          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/dashboard/integrated-dashboard/' />
         </Space>
       }
     >

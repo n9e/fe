@@ -54,10 +54,10 @@ const EmbeddedProductModal: React.FC<EmbeddedProductModalProps> = ({ open, initi
     >
       <Form layout='vertical' form={form}>
         <Form.Item name='name' label={t('name')} rules={[{ required: true, message: t('name_msg') }]}>
-          <Input placeholder={t('name')} />
+          <Input />
         </Form.Item>
         <Form.Item name='url' label={t('url')} rules={[{ required: true, message: t('url_msg') }]}>
-          <Input.TextArea placeholder={t('url')} />
+          <Input.TextArea />
         </Form.Item>
 
         <Form.Item name='team_ids' label={t('team_ids')} rules={[{ required: true, message: t('team_ids_msg') }]}>
@@ -65,7 +65,6 @@ const EmbeddedProductModal: React.FC<EmbeddedProductModalProps> = ({ open, initi
             mode='multiple'
             allowClear
             showSearch
-            placeholder={t('team_ids')}
             options={_.map(teamList, (item) => {
               return {
                 label: item.name,

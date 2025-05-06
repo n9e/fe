@@ -36,19 +36,15 @@ export default function Index() {
       render: (val) => {
         return _.map(val, (item) => {
           const name = _.find(userGroups, { id: item })?.name;
-          return (
-            <Tag key={item} color='purple'>
-              {name || item}
-            </Tag>
-          );
+          return <Tag key={item}>{name || item}</Tag>;
         });
       },
     },
     {
-      title: t('common:private'),
+      title: t('common:table.status'),
       dataIndex: 'is_private',
       render: (val) => {
-        return <Switch checked={val} disabled />;
+        return val ? t('common:public') : t('common:private');
       },
     },
     {
