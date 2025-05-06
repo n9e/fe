@@ -52,7 +52,7 @@ function renderMultipleLineValue(value: string) {
     if (valArr.length > 1) {
       const lines = !expand ? _.slice(valArr, 0, limit) : valArr;
       return (
-        <div style={{ display: 'inline-block', wordBreak: 'break-all' }}>
+        <div style={{ display: 'inline-block', wordBreak: 'break-all', lineHeight: 1.4 }}>
           {_.map(lines, (v, idx) => {
             return (
               <div key={idx}>
