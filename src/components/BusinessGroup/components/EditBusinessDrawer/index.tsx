@@ -44,7 +44,6 @@ export default function index(props: Props) {
   const pagination = usePagination({ PAGESIZE_KEY: 'business' });
   const [memberList, setMemberList] = useState<{ user_group: any }[]>([]);
   const [teamInfo, setTeamInfo] = useState<{ name: string; id: number; update_by: string; update_at: number }>();
-  const [teamList, setTeamList] = useState<Team[]>([]);
   const [memberLoading, setMemberLoading] = useState<boolean>(false);
   const [searchMemberValue, setSearchMemberValue] = useState<string>('');
   const [businessModalVisible, setBusinessModalVisible] = useState<boolean>(false);
@@ -55,10 +54,6 @@ export default function index(props: Props) {
     getTeamInfoDetail(id);
     setTeamId(id);
   }, [id]);
-
-  useEffect(() => {
-    getTeamList();
-  }, []);
 
   const teamMemberColumns: ColumnsType<any> = [
     {
@@ -98,7 +93,7 @@ export default function index(props: Props) {
               onOk: () => {
                 deleteBusinessTeamMember(teamId, params).then(() => {
                   message.success(t('common:success.delete'));
-                  getTeamList();
+                  getTeamInfoDetail(teamId);
                 });
               },
               onCancel: () => {},
@@ -118,19 +113,6 @@ export default function index(props: Props) {
       limit: PAGE_SIZE,
     };
     getBusinessTeamList(params).then((data) => {
-      setTeamList(_.sortBy(data.dat, (item) => _.lowerCase(item.name)));
-      if (
-        (!teamId ||
-          isDelete ||
-          _.every(data.dat, (item) => {
-            return _.toNumber(item.id) !== _.toNumber(teamId);
-          })) &&
-        data.dat.length > 0
-      ) {
-        setTeamId(data.dat[0].id);
-      } else {
-        teamId && getTeamInfoDetail(teamId);
-      }
       setBusiGroups(data.dat || []);
       setBusiGroup(getDefaultBusiness(data.dat));
     });
@@ -148,124 +130,108 @@ export default function index(props: Props) {
   // 弹窗关闭回调
   const handleClose = (action: string) => {
     setBusinessModalVisible(false);
+
     if (['create', 'delete', 'update'].includes(action)) {
       getTeamList(undefined, action === 'delete');
     }
-    if (teamId && ['update', 'addMember', 'deleteMember'].includes(action)) {
+    if (teamId && ['update', 'addMember'].includes(action)) {
       getTeamInfoDetail(teamId);
     }
   };
   return (
     <Drawer width={700} closable={false} title={t('common:btn.edit')} destroyOnClose extra={<CloseOutlined onClick={onCloseDrawer} />} onClose={onCloseDrawer} visible={open}>
-      {teamList.length > 0 ? (
-        <div>
-          <Row className='team-info'>
-            <Col
-              span='24'
+      <div>
+        <Row className='team-info'>
+          <Col
+            span='24'
+            style={{
+              fontSize: '14px',
+              fontWeight: 'bold',
+              display: 'inline',
+            }}
+          >
+            {teamInfo && teamInfo.name}
+            <EditOutlined
               style={{
+                marginLeft: '8px',
                 fontSize: '14px',
-                fontWeight: 'bold',
-                display: 'inline',
               }}
-            >
-              {teamInfo && teamInfo.name}
-              <EditOutlined
-                style={{
-                  marginLeft: '8px',
-                  fontSize: '14px',
-                }}
-                onClick={() => {
-                  setAction(ActionType.EditBusiness);
-                  setBusinessModalVisible(true);
-                }}
-              ></EditOutlined>
-              <DeleteOutlined
-                style={{
-                  marginLeft: '8px',
-                  fontSize: '14px',
-                }}
-                onClick={() => {
-                  confirm({
-                    title: t('common:btn.delete'),
-                    onOk: () => {
-                      deleteBusinessTeam(teamId).then((_) => {
-                        message.success(t('common:success.delete'));
-                        handleClose('delete');
-                      });
-                    },
-                    onCancel: () => {},
-                  });
-                }}
-              />
-            </Col>
-            <Col
+              onClick={() => {
+                setAction(ActionType.EditBusiness);
+                setBusinessModalVisible(true);
+              }}
+            ></EditOutlined>
+            <DeleteOutlined
               style={{
-                marginTop: '8px',
+                marginLeft: '8px',
+                fontSize: '14px',
               }}
-            >
-              <Space wrap>
-                <span>ID：{teamInfo?.id}</span>
-                <span>
-                  {t('common:table.note')}：{t('user:business.note_content')}
-                </span>
-                <span>
-                  {t('common:table.update_by')}：{teamInfo?.update_by ? teamInfo.update_by : '-'}
-                </span>
-                <span>
-                  {t('common:table.update_at')}：{teamInfo?.update_at ? moment.unix(teamInfo.update_at).format('YYYY-MM-DD HH:mm:ss') : '-'}
-                </span>
-              </Space>
-            </Col>
-          </Row>
-          <Row justify='space-between' align='middle'>
-            <Col span='12'>
-              <Input
-                prefix={<SearchOutlined />}
-                value={searchMemberValue}
-                className='searchInput'
-                onChange={(e) => setSearchMemberValue(e.target.value)}
-                placeholder={t('user:business.team_search_placeholder')}
-              />
-            </Col>
-            <Button
-              type='primary'
               onClick={() => {
-                setAction(ActionType.AddBusinessMember);
-                setBusinessModalVisible(true);
+                confirm({
+                  title: t('common:btn.delete'),
+                  onOk: () => {
+                    deleteBusinessTeam(teamId).then((_) => {
+                      message.success(t('common:success.delete'));
+                      handleClose('delete');
+                      onCloseDrawer();
+                    });
+                  },
+                  onCancel: () => {},
+                });
               }}
-            >
-              {t('user:business.add_team')}
-            </Button>
-          </Row>
+            />
+          </Col>
+          <Col
+            style={{
+              marginTop: '8px',
+            }}
+          >
+            <Space wrap>
+              <span>ID：{teamInfo?.id}</span>
+              <span>
+                {t('common:table.note')}：{t('user:business.note_content')}
+              </span>
+              <span>
+                {t('common:table.update_by')}：{teamInfo?.update_by ? teamInfo.update_by : '-'}
+              </span>
+              <span>
+                {t('common:table.update_at')}：{teamInfo?.update_at ? moment.unix(teamInfo.update_at).format('YYYY-MM-DD HH:mm:ss') : '-'}
+              </span>
+            </Space>
+          </Col>
+        </Row>
+        <Row justify='space-between' align='middle'>
+          <Col span='12'>
+            <Input
+              prefix={<SearchOutlined />}
+              value={searchMemberValue}
+              className='searchInput'
+              onChange={(e) => setSearchMemberValue(e.target.value)}
+              placeholder={t('user:business.team_search_placeholder')}
+            />
+          </Col>
+          <Button
+            type='primary'
+            onClick={() => {
+              setAction(ActionType.AddBusinessMember);
+              setBusinessModalVisible(true);
+            }}
+          >
+            {t('user:business.add_team')}
+          </Button>
+        </Row>
 
-          <Table
-            className='mt8'
-            size='small'
-            rowKey='id'
-            columns={teamMemberColumns}
-            dataSource={memberList && memberList.length > 0 ? memberList.filter((item) => item.user_group && item.user_group.name.indexOf(searchMemberValue) !== -1) : []}
-            loading={memberLoading}
-            pagination={pagination}
-          />
-        </div>
-      ) : (
-        <div className='blank-busi-holder'>
-          <p style={{ textAlign: 'left', fontWeight: 'bold' }}>
-            <InfoCircleOutlined style={{ color: '#1473ff' }} /> {t('Tips')}
-          </p>
-          <p>
-            {t('user:business.empty')}&nbsp;
-            <a
-              onClick={() => {
-                setAction(ActionType.CreateBusiness);
-                setBusinessModalVisible(true);
-              }}
-            >
-              {t('user:business.create')}
-            </a>
-          </p>
-        </div>
-      )}
+        <Table
+          className='mt8'
+          size='small'
+          rowKey='id'
+          columns={teamMemberColumns}
+          dataSource={memberList && memberList.length > 0 ? memberList.filter((item) => item.user_group && item.user_group.name.indexOf(searchMemberValue) !== -1) : []}
+          loading={memberLoading}
+          pagination={pagination}
+        />
+      </div>
+
       <BusinessModal visible={businessModalVisible} action={action as ActionType} userType='business' onClose={handleClose} teamId={teamId} />
     </Drawer>
   );
