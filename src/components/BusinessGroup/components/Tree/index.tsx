@@ -95,7 +95,7 @@ const renderTree = (
                 )}
                 {!item.children && onEdit && (
                   <EditOutlined
-                    className='opacity-0 absolute right-[8px] top-1/2 -translate-y-1/2 cursor-pointer z-10 hover:opacity-100 group-hover:opacity-100'
+                    className='opacity-0 absolute right-0 top-1/2 -translate-y-1/2 cursor-pointer z-10 hover:opacity-100 group-hover:opacity-100 bg-[#F7F7F7] p-2 rounded'
                     onClick={(e) => {
                       e.stopPropagation();
                       onEdit([item.key], { node: item });
