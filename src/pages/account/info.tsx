@@ -19,11 +19,12 @@ import { Form, Input, Button, Modal, Row, Col, message, Space, Select } from 'an
 import { MinusCircleOutlined, PlusCircleOutlined, CaretDownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
-import { Link } from 'react-router-dom';
+
 import { getNotifyChannels } from '@/services/manage';
 import { ContactsItem } from '@/store/manageInterface';
 import { CommonStateContext } from '@/App';
 import { UpdateProfile } from '@/services/account';
+import ContactDrawer from '@/components/Contacts';
 
 const { Option } = Select;
 export default function Info() {
@@ -35,6 +36,7 @@ export default function Info() {
   const [selectAvatar, setSelectAvatar] = useState<string>(profile.portrait || '/image/avatar1.png');
   const [customAvatar, setCustomAvatar] = useState('');
   const contacts = Form.useWatch('contacts', form);
+  const [contactDrawerVisible, setContactDrawerVisible] = useState(false);
 
   useEffect(() => {
     const { nickname, email, phone, contacts, portrait } = profile;
@@ -160,9 +162,7 @@ export default function Info() {
               label={
                 <Space>
                   {t('account:profile.contact')}
-                  <Link to='/contacts' target='_blank'>
-                    {t('account:profile.contactLinkToSetting')}
-                  </Link>
+                  <a onClick={() => setContactDrawerVisible(true)}>{t('account:profile.contactLinkToSetting')}</a>
                 </Space>
               }
             >
@@ -250,6 +250,13 @@ export default function Info() {
         </div>
         <Input addonBefore={<span>{t('pictureURL')}:</span>} onChange={(e) => setCustomAvatar(e.target.value)} value={customAvatar} />
       </Modal>
+
+      <ContactDrawer
+        open={contactDrawerVisible}
+        onCloseDrawer={() => {
+          setContactDrawerVisible(false);
+        }}
+      />
     </>
   );
 }

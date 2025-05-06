@@ -149,10 +149,6 @@ export const getMenuList = (embeddedProductMenu: MenuItem[] = []) => {
           key: '/permissions',
           label: 'menu.permission',
         },
-        {
-          key: '/contacts',
-          label: 'menu.contact',
-        },
       ],
     },
     {

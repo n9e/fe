@@ -21,7 +21,8 @@ import { UserAndPasswordFormProps, Contacts, ContactsItem, User } from '@/store/
 import { MinusCircleOutlined, PlusCircleOutlined, CaretDownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
-import { Link } from 'react-router-dom';
+
+import ContactDrawer from '@/components/Contacts';
 
 const { Option } = Select;
 const UserForm = React.forwardRef<ReactNode, UserAndPasswordFormProps>((props, ref) => {
@@ -33,6 +34,7 @@ const UserForm = React.forwardRef<ReactNode, UserAndPasswordFormProps>((props, r
   const [contactsList, setContactsList] = useState<ContactsItem[]>([]);
   const [roleList, setRoleList] = useState<{ name: string; note: string }[]>([]);
   const contacts = Form.useWatch('contacts', form);
+  const [contactDrawerVisible, setContactDrawerVisible] = useState(false);
 
   useImperativeHandle(ref, () => ({
     form: form,
@@ -158,9 +160,7 @@ const UserForm = React.forwardRef<ReactNode, UserAndPasswordFormProps>((props, r
         label={
           <Space>
             {t('account:profile.contact')}
-            <Link to='/contacts' target='_blank'>
-              {t('account:profile.contactLinkToSetting')}
-            </Link>
+            <a onClick={() => setContactDrawerVisible(true)}>{t('account:profile.contactLinkToSetting')}</a>
           </Space>
         }
       >
@@ -219,6 +219,12 @@ const UserForm = React.forwardRef<ReactNode, UserAndPasswordFormProps>((props, r
           )}
         </Form.List>
       </Form.Item>
+      <ContactDrawer
+        open={contactDrawerVisible}
+        onCloseDrawer={() => {
+          setContactDrawerVisible(false);
+        }}
+      />
     </Form>
   ) : null;
 });

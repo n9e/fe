@@ -3,7 +3,8 @@ import _ from 'lodash';
 import { Select, SelectProps, Form, Space, Tooltip } from 'antd';
 import { SyncOutlined, SettingOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+
+import ContactDrawer from '@/components/Contacts';
 
 import { getContactKeys, Item } from './services';
 import { NS } from '../../../constants';
@@ -12,6 +13,7 @@ export default function ContactKeysSelect(props: SelectProps) {
   const { t } = useTranslation(NS);
   const [data, setData] = useState<Item[]>([]);
   const [loading, setLoading] = useState(false);
+  const [contactDrawerVisible, setContactDrawerVisible] = useState(false);
   const fetchData = () => {
     setLoading(true);
     getContactKeys()
@@ -50,9 +52,7 @@ export default function ContactKeysSelect(props: SelectProps) {
           <Tooltip className='n9e-ant-from-item-tooltip' title={t('variable_configuration.contact_key_tip')}>
             <QuestionCircleOutlined />
           </Tooltip>
-          <Link to='/contacts' target='_blank'>
-            <SettingOutlined />
-          </Link>
+          <SettingOutlined onClick={() => setContactDrawerVisible(true)} />
           <SyncOutlined
             spin={loading}
             onClick={(e) => {
@@ -71,6 +71,13 @@ export default function ContactKeysSelect(props: SelectProps) {
             value: item.key,
           };
         })}
+      />
+
+      <ContactDrawer
+        open={contactDrawerVisible}
+        onCloseDrawer={() => {
+          setContactDrawerVisible(false);
+        }}
       />
     </Form.Item>
   );
