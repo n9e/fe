@@ -67,9 +67,14 @@ export default forwardRef(function QuickMenu(props: Props, ref) {
   const menusRef = React.useRef<HTMLDivElement>(null);
   const isMac = /Mac/i.test(navigator.userAgent) || navigator.platform.includes('Mac');
   const filteredMenus = _.filter(menus, (item: any) => {
+    if (!search) return true;
     const parentName = item?.parent?.label;
     const tabParentName = item?.tabParent?.label;
-    return !search || match(item.label, search) || (parentName && match(parentName, search)) || (tabParentName && match(tabParentName, search));
+    const translatedLabel = t(item.label);
+    const translatedParentName = parentName ? t(parentName) : '';
+    const translatedTabParentName = tabParentName ? t(tabParentName) : '';
+
+    return match(translatedLabel, search) || (parentName && match(translatedParentName, search)) || (tabParentName && match(translatedTabParentName, search));
   });
 
   useEffect(() => {

@@ -19,7 +19,7 @@ const zh_CN = {
     metrics_built_in: '指标视图',
     object_explorer: '快捷视图',
     recording_rules: '记录规则',
-    logs_explorer: '日志检索',
+    logs_explorer: '日志',
     monitors: '告警',
     rules: '规则管理',
     alert_rules: '告警规则',

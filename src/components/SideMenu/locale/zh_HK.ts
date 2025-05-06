@@ -19,7 +19,7 @@ const zh_HK = {
     metrics_built_in: '指標視圖',
     object_explorer: '快捷視圖',
     recording_rules: '記錄規則',
-    logs_explorer: '日誌檢索',
+    logs_explorer: '日誌',
     monitors: '告警',
     rules: '規則管理',
     alert_rules: '告警規則',

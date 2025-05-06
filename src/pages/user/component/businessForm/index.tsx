@@ -41,7 +41,9 @@ const TeamForm = React.forwardRef<ReactNode, TeamProps>((props, ref) => {
   }));
 
   useEffect(() => {
-    if (businessId && action === ActionType.EditBusiness) {
+    if (action === ActionType.CreateBusiness || action === ActionType.AddBusinessMember) {
+      getList('');
+    } else if (businessId && action === ActionType.EditBusiness) {
       getTeamInfoDetail(businessId);
     } else {
       setLoading(false);
@@ -61,13 +63,10 @@ const TeamForm = React.forwardRef<ReactNode, TeamProps>((props, ref) => {
     });
   };
 
-  useEffect(() => {
-    getList('');
-  }, []);
-
   const getList = (str: string) => {
     getTeamInfoList({ query: str }).then((res) => {
       setUserTeam(res.dat);
+      setLoading(false);
     });
   };
 

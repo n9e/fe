@@ -5,7 +5,7 @@ import IconFont from '@/components/IconFont';
 
 import { MenuItem } from './types';
 
-export const getMenuList = () => {
+export const getMenuList = (embeddedProductMenu: MenuItem[] = []) => {
   const menu: MenuItem[] = [
     {
       key: 'infrastructure',
@@ -129,11 +129,11 @@ export const getMenuList = () => {
           key: '/built-in-components',
           label: 'menu.built_in_components',
         },
-        // {
-        //   key: 'embedded_products',
-        //   label: i18next.t('menu.embedded_products'),
-        //   path: '',
-        // },
+        {
+          key: '/embedded-product',
+          label: 'menu.embedded_products',
+        },
+        ...embeddedProductMenu,
       ],
     },
     {
@@ -152,10 +152,6 @@ export const getMenuList = () => {
         {
           key: '/permissions',
           label: 'menu.permission',
-        },
-        {
-          key: '/contacts',
-          label: 'menu.contact',
         },
       ],
     },

@@ -33,6 +33,7 @@ import LoginCallbackCustom from '@/pages/loginCallback/Custom';
 import AlertRules, { Add as AlertRuleAdd, Edit as AlertRuleEdit } from '@/pages/alertRules';
 import Profile from '@/pages/account/profile';
 import { List as Dashboard, Detail as DashboardDetail, Share as DashboardShare } from '@/pages/dashboard';
+import { List as EmbeddedProduct, Detail as EmbeddedProductDetail } from '@/pages/embeddedProduct';
 import { getDefaultThemeMode } from '@/pages/dashboard/Detail/utils';
 import Chart from '@/pages/chart';
 import Groups from '@/pages/user/groups';
@@ -157,6 +158,8 @@ export default function Content() {
         <Route path='/dashboards/share/:id' component={DashboardShare} />
         <Route path='/dashboards' component={Dashboard} />
         <Route path='/chart/:ids' component={Chart} />
+        <Route path='/embedded-product/:id' exact component={EmbeddedProductDetail} />
+        <Route path='/embedded-product' component={EmbeddedProduct} />
 
         <Route exact path='/alert-rules/add/:bgid' component={AlertRuleAdd} />
         <Route exact path='/alert-rules/edit/:id' component={AlertRuleEdit} />
