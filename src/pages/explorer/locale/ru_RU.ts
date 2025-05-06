@@ -1,5 +1,6 @@
 const ru_RU = {
   title: 'Поиск метрик',
+  log_title: 'Логи',
   add_btn: 'Добавить новую панель запроса',
   query_btn: 'Запрос',
   query_tab: 'Запрос',

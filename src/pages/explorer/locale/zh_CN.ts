@@ -1,6 +1,6 @@
 const zh_CN = {
   title: '即时查询',
-  log_title: '日志检索',
+  log_title: '日志',
   add_btn: '新增一个查询面板',
   query_btn: '查询',
   query_tab: '查询',
