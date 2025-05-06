@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Space, Table, Tabs } from 'antd';
@@ -6,16 +6,20 @@ import { QuestionOutlined, CopyOutlined } from '@ant-design/icons';
 import { EditorView } from '@codemirror/view';
 import { json } from '@codemirror/lang-json';
 import { defaultHighlightStyle } from '@codemirror/highlight';
+import purify from 'dompurify';
 import { copyToClipBoard } from '@/utils';
 import HighLightJSON from './HighLightJSON';
-import { Field, getFieldLabel, getFieldValue, RenderValue } from './utils';
+import { Field, getFieldLabel } from './utils';
+import { getHighlightHtml } from './utils/highlight';
+import RenderValue from '@/pages/explorer/components/RenderValue';
 import { typeIconMap } from './FieldsSidebar/Field';
 import { typeMap } from '../Elasticsearch/services';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
+import { FieldConfigVersion2, ILogExtract } from '@/pages/log/IndexPatterns/types';
 import moment from 'moment';
 interface Props {
   value: Record<string, any>;
-  fieldConfig: any;
+  fieldConfig?: FieldConfigVersion2;
   fields: Field[];
   highlight: any;
   range: IRawTimeRange;
@@ -24,12 +28,6 @@ interface Props {
 export default function LogView(props: Props) {
   const { t } = useTranslation('explorer');
   const { value, fieldConfig, fields, highlight, range } = props;
-
-  const allParamsArr = fieldConfig?.formatMap
-    ? Object.keys(fieldConfig.formatMap).reduce((prev, cur) => {
-        return fieldConfig.formatMap[cur].paramsArr?.length > 0 ? [...prev, ...fieldConfig.formatMap[cur].paramsArr] : [];
-      }, [])
-    : [];
 
   const [type, setType] = useState<string>('table');
   const parsedRange = range ? parseRange(range) : null;
@@ -98,12 +96,20 @@ export default function LogView(props: Props) {
               key: 'value',
               render: (val: any, record: { field: string }) => {
                 const field = record.field;
-                const fieldVal = getFieldValue(field, val, fieldConfig, value, range);
-                const v = _.isArray(fieldVal) ? _.join(fieldVal, ',') : fieldVal;
                 return (
-                  <div>
-                    <RenderValue value={v} highlights={highlight?.[field]} />
-                  </div>
+                  <RenderValue
+                    fieldKey={field}
+                    fieldValue={val}
+                    fieldConfig={fieldConfig}
+                    rawValue={value}
+                    range={range}
+                    adjustFieldValue={(formatedValue) => {
+                      if (highlight?.[field]) {
+                        return <span dangerouslySetInnerHTML={{ __html: purify.sanitize(getHighlightHtml(formatedValue, highlight[field])) }} />;
+                      }
+                      return formatedValue;
+                    }}
+                  />
                 );
               },
             },
@@ -113,7 +119,7 @@ export default function LogView(props: Props) {
         />
       </Tabs.TabPane>
       <Tabs.TabPane tab='JSON' key='json'>
-        <HighLightJSON value={value} query={{ start, end }} features={allParamsArr} />
+        <HighLightJSON value={value} query={{ start, end }} urlTemplates={fieldConfig?.linkArr} extractArr={fieldConfig?.regExtractArr} />
       </Tabs.TabPane>
     </Tabs>
   );
