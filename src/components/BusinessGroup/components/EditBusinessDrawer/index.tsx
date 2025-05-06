@@ -90,7 +90,7 @@ export default function index(props: Props) {
             const params = [
               {
                 user_group_id: record['user_group'].id,
-                busi_group_id: teamId,
+                busi_group_id: parseInt(teamId),
               },
             ];
             confirm({
