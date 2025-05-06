@@ -5,7 +5,7 @@ import { DownOutlined, RightOutlined } from '@ant-design/icons';
 import { Field } from './utils';
 import { getColumnsFromFields } from './utils/getColumnsFromFields';
 import LogView from './LogView';
-
+import useFieldConfig from '../components/RenderValue/useFieldConfig';
 interface Props {
   data: any[];
   onChange: (pagination, filters, sorter, extra) => void;
@@ -16,9 +16,11 @@ interface Props {
 function Table(props: Props) {
   const { data, onChange, getFields, selectedFields } = props;
   const form = Form.useFormInstance();
+  const indexPatternId = Form.useWatch(['query', 'indexPattern']);
+  const fieldConfig = useFieldConfig('elasticsearch', indexPatternId);
   const columns = useMemo(() => {
-    return getColumnsFromFields(selectedFields, form.getFieldValue(['query']), form.getFieldValue(['fieldConfig']));
-  }, [selectedFields]);
+    return getColumnsFromFields(selectedFields, form.getFieldValue(['query']), fieldConfig);
+  }, [selectedFields, fieldConfig]);
 
   return (
     <AntdTable
@@ -30,7 +32,7 @@ function Table(props: Props) {
       dataSource={data}
       expandable={{
         expandedRowRender: (record) => {
-          return <LogView value={record.json} fieldConfig={form.getFieldValue(['fieldConfig'])} fields={getFields()} highlight={record.highlight} range={form.getFieldValue(['query','range'])} />;
+          return <LogView value={record.json} fieldConfig={fieldConfig} fields={getFields()} highlight={record.highlight} range={form.getFieldValue(['query', 'range'])} />;
         },
         expandIcon: ({ expanded, onExpand, record }) => (expanded ? <DownOutlined onClick={(e) => onExpand(record, e)} /> : <RightOutlined onClick={(e) => onExpand(record, e)} />),
       }}
