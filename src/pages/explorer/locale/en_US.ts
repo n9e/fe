@@ -1,6 +1,6 @@
 const en_US = {
   title: 'Explorer',
-  log_title: 'Logs',
+  log_title: 'Logs Explorer',
   add_btn: 'Add a query panel',
   query_btn: 'Execute',
   query_tab: 'Query',

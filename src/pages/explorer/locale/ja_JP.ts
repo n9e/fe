@@ -1,6 +1,6 @@
 const ja_JP = {
   title: 'エクスプローラー',
-  log_title: 'ログ',
+  log_title: 'ログエクスプローラー',
   add_btn: 'クエリパネルを追加',
   query_btn: 'クエリ実行',
   query_tab: 'クエリ',
