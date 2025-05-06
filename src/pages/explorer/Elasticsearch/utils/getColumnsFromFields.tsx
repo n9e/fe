@@ -50,12 +50,25 @@ export function getColumnsFromFields(selectedFields: { name: string; type: strin
               {/*2024-0807 限制只渲染前 20 个字段*/}
               {_.map(_.slice(fieldKeys, 0, 20), (key) => {
                 const val = fields[key];
-                // todo: highlight 传入
                 const label = getFieldLabel(key, fieldConfig);
-                const value = <RenderValue fieldKey={key} fieldValue={val} fieldConfig={fieldConfig} rawValue={record.json} range={range} />;
                 return (
                   <React.Fragment key={label}>
-                    <dt>{label}:</dt> <dd>{value}</dd>
+                    <dt>{label}:</dt>{' '}
+                    <dd>
+                      <RenderValue
+                        fieldKey={key}
+                        fieldValue={val}
+                        fieldConfig={fieldConfig}
+                        rawValue={record.json}
+                        range={range}
+                        adjustFieldValue={(formatedValue) => {
+                          if (highlight?.[key]) {
+                            return <span dangerouslySetInnerHTML={{ __html: purify.sanitize(getHighlightHtml(formatedValue, highlight[key])) }} />;
+                          }
+                          return formatedValue;
+                        }}
+                      />
+                    </dd>
                   </React.Fragment>
                 );
               })}
@@ -74,8 +87,21 @@ export function getColumnsFromFields(selectedFields: { name: string; type: strin
         key: fieldKey,
         render: (fields, record) => {
           const { highlight } = record;
-          // todo: highlight 传入
-          return <RenderValue fieldKey={item.name} fieldValue={fields[item.name]} fieldConfig={fieldConfig} rawValue={record.json} range={range} />;
+          return (
+            <RenderValue
+              fieldKey={item.name}
+              fieldValue={fields[item.name]}
+              fieldConfig={fieldConfig}
+              rawValue={record.json}
+              range={range}
+              adjustFieldValue={(formatedValue) => {
+                if (highlight?.[item.name]) {
+                  return <span dangerouslySetInnerHTML={{ __html: purify.sanitize(getHighlightHtml(formatedValue, highlight[item.name])) }} />;
+                }
+                return formatedValue;
+              }}
+            />
+          );
         },
         sorter: _.includes(['date', 'number'], typeMap[item.type])
           ? {
