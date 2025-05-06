@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useEffect, useState, useImperativeHandle, ReactNode } from 'react';
+import React, { useEffect, useState, useImperativeHandle, ReactNode, useContext } from 'react';
 import { Form, Input, Select, Space } from 'antd';
 import { getUserInfo, getNotifyChannels, getRoles } from '@/services/manage';
 import { UserAndPasswordFormProps, Contacts, ContactsItem, User } from '@/store/manageInterface';
@@ -23,10 +23,12 @@ import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
 import ContactDrawer from '@/components/Contacts';
+import { CommonStateContext } from '@/App';
 
 const { Option } = Select;
 const UserForm = React.forwardRef<ReactNode, UserAndPasswordFormProps>((props, ref) => {
   const { t } = useTranslation();
+  const { profile } = useContext(CommonStateContext);
   const { userId } = props;
   const [form] = Form.useForm();
   const [initialValues, setInitialValues] = useState<User>();
@@ -160,7 +162,7 @@ const UserForm = React.forwardRef<ReactNode, UserAndPasswordFormProps>((props, r
         label={
           <Space>
             {t('account:profile.contact')}
-            <a onClick={() => setContactDrawerVisible(true)}>{t('account:profile.contactLinkToSetting')}</a>
+            {profile.roles?.includes('Admin') && <a onClick={() => setContactDrawerVisible(true)}>{t('account:profile.contactLinkToSetting')}</a>}
           </Space>
         }
       >
@@ -219,6 +221,7 @@ const UserForm = React.forwardRef<ReactNode, UserAndPasswordFormProps>((props, r
           )}
         </Form.List>
       </Form.Item>
+
       <ContactDrawer
         open={contactDrawerVisible}
         onCloseDrawer={() => {

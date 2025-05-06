@@ -162,7 +162,7 @@ export default function Info() {
               label={
                 <Space>
                   {t('account:profile.contact')}
-                  <a onClick={() => setContactDrawerVisible(true)}>{t('account:profile.contactLinkToSetting')}</a>
+                  {profile.roles?.includes('Admin') && <a onClick={() => setContactDrawerVisible(true)}>{t('account:profile.contactLinkToSetting')}</a>}
                 </Space>
               }
             >
