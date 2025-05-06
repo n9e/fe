@@ -1,11 +1,7 @@
 import React, { useState } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
-import { Popover } from 'antd';
 import semver from 'semver';
-import purify from 'dompurify';
-import { useTranslation } from 'react-i18next';
-import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { buildESQueryFromKuery } from '@fc-components/es-query';
 import flatten from '../flatten';
 import { getHighlightRequest, getHighlightHtml } from './highlight';
@@ -13,113 +9,6 @@ import { basePrefix } from '@/App';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 export function getFieldLabel(fieldKey: string, fieldConfig?: any) {
   return fieldConfig?.attrs?.[fieldKey]?.alias || fieldKey;
-}
-
-export function getFieldType(fieldKey: string, fieldConfig?: any) {
-  return fieldConfig?.formatMap?.[fieldKey]?.type;
-}
-
-export function RenderHighlightValue({ value, highlights }: { value: string; highlights: string[] }): React.ReactNode {
-  const limit = 18;
-  const { t } = useTranslation();
-  const [expand, setExpand] = useState(false);
-  const splitRegex = /\r\n|\n|\r|\\r\\n|\\n|\\r/g;
-  const valArr = _.split(value, splitRegex);
-  if (valArr.length > 1) {
-    const lines = !expand ? _.slice(valArr, 0, limit) : valArr;
-    return (
-      <div style={{ display: 'inline-block', wordBreak: 'break-all' }}>
-        {_.map(lines, (v, idx) => {
-          return (
-            <div key={idx}>
-              <span
-                dangerouslySetInnerHTML={{
-                  __html: purify.sanitize(
-                    getHighlightHtml(
-                      v,
-                      _.map(highlights, (item) => {
-                        const itemArr = _.split(item, '\n');
-                        return itemArr[idx];
-                      }),
-                    ),
-                  ),
-                }}
-              />
-              {idx === lines.length - 1 && valArr.length > limit && (
-                <a
-                  onClick={() => {
-                    setExpand(!expand);
-                  }}
-                  style={{
-                    marginLeft: 8,
-                  }}
-                >
-                  {expand ? t('common:btn.collapse') : t('common:btn.expand')}
-                  {expand ? <LeftOutlined /> : <RightOutlined />}
-                </a>
-              )}
-
-              <br />
-            </div>
-          );
-        })}
-      </div>
-    );
-  }
-  return <div style={{ display: 'inline-block', wordBreak: 'break-all' }} dangerouslySetInnerHTML={{ __html: purify.sanitize(getHighlightHtml(value, highlights)) }}></div>;
-}
-
-export function RenderValue({ value, highlights }: { value: any; highlights: string[] }): React.ReactNode {
-  const limit = 18;
-  const { t } = useTranslation();
-  const [expand, setExpand] = useState(false);
-  const splitRegex = /\r\n|\n|\r|\\r\\n|\\n|\\r/g;
-  const valArr = _.split(value, splitRegex);
-  if (typeof value === 'string') {
-    if (valArr.length > 1) {
-      const lines = !expand ? _.slice(valArr, 0, limit) : valArr;
-      return (
-        <div style={{ display: 'inline-block', wordBreak: 'break-all' }}>
-          {_.map(lines, (v, idx) => {
-            return (
-              <div key={idx}>
-                <span
-                  dangerouslySetInnerHTML={{
-                    __html: purify.sanitize(
-                      getHighlightHtml(
-                        v,
-                        _.map(highlights, (item) => {
-                          const itemArr = _.split(item, '\n');
-                          return itemArr[idx];
-                        }),
-                      ),
-                    ),
-                  }}
-                />
-                {idx === lines.length - 1 && valArr.length > limit && (
-                  <a
-                    onClick={() => {
-                      setExpand(!expand);
-                    }}
-                    style={{
-                      marginLeft: 8,
-                    }}
-                  >
-                    {expand ? t('common:btn.collapse') : t('common:btn.expand')}
-                    {expand ? <LeftOutlined /> : <RightOutlined />}
-                  </a>
-                )}
-
-                <br />
-              </div>
-            );
-          })}
-        </div>
-      );
-    }
-    return <div style={{ display: 'inline-block', wordBreak: 'break-all' }} dangerouslySetInnerHTML={{ __html: purify.sanitize(getHighlightHtml(value, highlights)) }}></div>;
-  }
-  return <div style={{ display: 'inline-block', wordBreak: 'break-all' }}>{value}</div>;
 }
 
 interface Mappings {
