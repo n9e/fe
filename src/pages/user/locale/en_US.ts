@@ -26,7 +26,7 @@ const en_US = {
     team_search_placeholder: 'Search team name',
     create: 'Create business group',
     edit: 'Edit business group',
-    add_team: 'Authorize teams',
+    add_team: 'Authorized teams',
     perm_flag: 'Permission',
     note_content: 'Alert rules, alert events, monitoring objects, self-healing scripts, etc. all belong to the business group, which is a closed-loop organization in the system',
     empty: 'Business group (monitoring objects, monitoring dashboards, alert rules, self-healing scripts, etc.) is empty, please',
@@ -38,7 +38,7 @@ const en_US = {
       - monitoring <1 />
       - login <1 />
     `,
-    team_name: 'Team',
+    team_name: 'Authorized teams',
     perm_flag_0: 'ro',
     perm_flag_1: 'rw',
     user_group_msg: 'Business group team is required',

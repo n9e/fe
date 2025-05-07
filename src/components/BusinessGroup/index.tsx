@@ -13,7 +13,6 @@ import { ActionType } from '@/store/manageInterface';
 import Tree from '@/components/BusinessGroup/components/Tree';
 import EditBusinessDrawer from '@/components/BusinessGroup/components/EditBusinessDrawer';
 import CreateBusinessModal from '@/pages/user/component/createModal';
-import { getBusinessTeamList } from '@/services/manage';
 
 import { listToTree, getCollapsedKeys, getCleanBusinessGroupIds, getDefaultBusinessGroupKey, getDefaultBusiness, getVaildBusinessGroup } from './utils';
 import BusinessGroupSelect from './BusinessGroupSelect';
@@ -251,6 +250,7 @@ export default function index(props: IProps) {
         />
       )}
       <CreateBusinessModal
+        width={600}
         visible={createBusiVisible}
         action={ActionType.CreateBusiness}
         userType='business'

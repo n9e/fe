@@ -26,7 +26,7 @@ export default function ContactDrawer(props: Props) {
   }, []);
 
   return (
-    <Drawer width={700} closable={false} title={t('title')} destroyOnClose extra={<CloseOutlined onClick={onCloseDrawer} />} onClose={onCloseDrawer} visible={open}>
+    <Drawer width={960} closable={false} title={t('title')} destroyOnClose extra={<CloseOutlined onClick={onCloseDrawer} />} onClose={onCloseDrawer} visible={open}>
       <div className='n9e'>
         <div className={CN}>
           <div className='mb2 n9e-flex n9e-justify-between'>
@@ -74,6 +74,7 @@ export default function ContactDrawer(props: Props) {
                 render: (val: boolean, record) => {
                   return (
                     <Switch
+                      size='small'
                       checked={!val}
                       onChange={(checked) => {
                         const newData = _.map(data, (item) => {
