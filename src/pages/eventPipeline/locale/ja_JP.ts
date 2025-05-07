@@ -1,5 +1,5 @@
 const ja_JP = {
-  title: 'イベントパイプライン',
+  title: 'イベント Pipelines',
   teams: '権限のあるチーム',
   basic_configuration: '基本設定',
   filter_enable: 'フィルター条件',

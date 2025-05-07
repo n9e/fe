@@ -1,5 +1,5 @@
 const en_US = {
-  title: 'Event piepline',
+  title: 'Event pieplines',
   teams: 'Authorized teams',
   basic_configuration: 'Basic configuration',
   filter_enable: 'Filter conditions',

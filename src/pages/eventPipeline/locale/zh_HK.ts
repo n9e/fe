@@ -1,5 +1,5 @@
 const zh_HK = {
-  title: '事件 Pipeline',
+  title: '事件 Pipelines',
   teams: '授權團隊',
   basic_configuration: '基本配置',
   filter_enable: '過濾條件',
