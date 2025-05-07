@@ -45,6 +45,12 @@ const zh_CN = {
     celsius: '摄氏度 (°C)',
     fahrenheit: '华氏度 (°F)',
     kelvin: '开尔文 (K)',
+    millimeter: '毫米 (mm)',
+    meter: '米 (m)',
+    kilometer: '千米 (km)',
+    inch: '英寸 (in)',
+    foot: '英尺 (ft)',
+    mile: '英里 (mi)',
   },
 };
 export default zh_CN;
