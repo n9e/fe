@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
-import { Space, Table, Button, Switch, Modal, Tag, message } from 'antd';
+import { Space, Table, Button, Modal, Tag, message } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -11,12 +11,13 @@ import { getTeamInfoList } from '@/services/manage';
 import PageLayout from '@/components/pageLayout';
 import { eventBus, EVENT_KEYS } from '@/pages/embeddedProduct/eventBus';
 
+import { NS, PATH } from '../../constants';
 import { EmbeddedProductParams, EmbeddedProductResponse } from '../../types';
 import { deleteEmbeddedProducts, getEmbeddedProducts, addEmbeddedProducts, updateEmbeddedProducts } from '../../services';
-import EmbeddedProductModal from '../EmbeddedProductModal';
+import EmbeddedProductModal from '../../components/EmbeddedProductModal';
 
 export default function Index() {
-  const { t } = useTranslation('embeddedProduct');
+  const { t } = useTranslation(NS);
   const pagination = usePagination({ PAGESIZE_KEY: 'embedded-products-pagesize' });
   const [data, setData] = useState<EmbeddedProductResponse[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
@@ -27,7 +28,7 @@ export default function Index() {
       title: t('common:table.name'),
       dataIndex: 'name',
       render: (name, record) => {
-        return <Link to={`/embedded-product/${record.id}`}>{name}</Link>;
+        return <Link to={`${PATH}/${record.id}`}>{name}</Link>;
       },
     },
     {
@@ -44,7 +45,7 @@ export default function Index() {
       title: t('common:table.status'),
       dataIndex: 'is_private',
       render: (val) => {
-        return val ? t('common:public') : t('common:private');
+        return !val ? t('common:public') : t('common:private');
       },
     },
     {

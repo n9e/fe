@@ -110,7 +110,7 @@ export default function index(props: Props) {
         </Space>
         <Space>
           <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/template-center/open-source/alarm-rule-template/' />
-          <AuthorizationWrapper allowedPerms={['/built-in-components/add']}>
+          <AuthorizationWrapper allowedPerms={['/components/add']}>
             <Button
               type='primary'
               onClick={() => {
@@ -277,7 +277,7 @@ export default function index(props: Props) {
                           {t('common:btn.export')}
                         </a>
                       </Menu.Item>
-                      <AuthorizationWrapper allowedPerms={['/built-in-components/put']}>
+                      <AuthorizationWrapper allowedPerms={['/components/put']}>
                         <Menu.Item>
                           <a
                             onClick={() => {
@@ -300,7 +300,7 @@ export default function index(props: Props) {
                         </Menu.Item>
                       </AuthorizationWrapper>
                       {record.created_by !== 'system' && (
-                        <AuthorizationWrapper allowedPerms={['/built-in-components/del']}>
+                        <AuthorizationWrapper allowedPerms={['/components/del']}>
                           <Menu.Item>
                             <Button
                               type='link'

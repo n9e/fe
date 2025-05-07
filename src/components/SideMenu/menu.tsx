@@ -126,7 +126,7 @@ export const getMenuList = (embeddedProductMenu: MenuItem[] = []) => {
           label: 'menu.data_source',
         },
         {
-          key: '/built-in-components',
+          key: '/components',
           label: 'menu.built_in_components',
         },
         {

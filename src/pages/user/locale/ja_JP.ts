@@ -33,7 +33,7 @@ const ja_JP = {
     name: 'ビジネスグループ名',
     name_tip:
       '\n      {{separator}} で区切られた後、ツリースタイルでレンダリングされます <1 />\n      例えば、redis{{separator}}監控 と redis{{separator}}ログイン は以下のように表示されます <1 />\n      redis <1 />\n      - 監控 <1 />\n      - ログイン <1 />\n    ',
-    team_name: 'チーム',
+    team_name: 'チームを許可',
     perm_flag_0: '読み取りのみ',
     perm_flag_1: '読み取り/書き込み',
     user_group_msg: 'ビジネスグループのチームは空できません',

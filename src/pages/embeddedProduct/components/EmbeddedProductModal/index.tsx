@@ -3,9 +3,10 @@ import _ from 'lodash';
 import { Modal, Form, Input, Switch, Select } from 'antd';
 import { useTranslation } from 'react-i18next';
 
-import { EmbeddedProductParams } from '../../types';
-
 import { getTeamInfoList } from '@/services/manage';
+
+import { NS } from '../../constants';
+import { EmbeddedProductParams } from '../../types';
 
 interface EmbeddedProductModalProps {
   initialValues?: EmbeddedProductParams;
@@ -15,7 +16,7 @@ interface EmbeddedProductModalProps {
 }
 
 const EmbeddedProductModal: React.FC<EmbeddedProductModalProps> = ({ open, initialValues, onOk, onCancel }) => {
-  const { t } = useTranslation('embeddedProduct');
+  const { t } = useTranslation(NS);
   const [form] = Form.useForm();
   const [teamList, setTeamList] = useState<{ id: number; name: string }[]>([]);
 

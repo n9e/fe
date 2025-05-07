@@ -141,7 +141,7 @@ export default function ImportBuiltinContent({ busiId, onOk }) {
                     return (
                       <Link
                         to={{
-                          pathname: '/built-in-components/dashboard/detail',
+                          pathname: '/components/dashboard/detail',
                           search: `?__uuid__=${record.uuid}`,
                         }}
                         target='_blank'

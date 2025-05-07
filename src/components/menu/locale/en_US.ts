@@ -56,7 +56,7 @@ const en_US = {
   quickMenus: 'Quick menus',
   站内公告: 'Announcements',
   integrations: 'Integrations',
-  built_in_components: 'Built-in components',
+  built_in_components: 'Components',
   notification_rules: 'Rules',
   notification_channels: 'Media types',
   notification_templates: 'Message templates',

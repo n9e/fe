@@ -55,7 +55,7 @@ export default function Edit() {
   if (loading) return null;
 
   return (
-    <PageLayout title={t('title')} showBack backPath='/built-in-components'>
+    <PageLayout title={t('title')} showBack backPath='/components'>
       {initialValues ? <Form type={3} initialValues={initialValues} /> : <div>{t('alertRulesBuiltin:detail_no_result')}</div>}
     </PageLayout>
   );
