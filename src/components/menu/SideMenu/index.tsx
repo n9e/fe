@@ -188,7 +188,7 @@ export const getMenuList = (t) => {
           label: t('数据源'),
         },
         {
-          key: '/built-in-components',
+          key: '/components',
           label: t('built_in_components'),
         },
       ],

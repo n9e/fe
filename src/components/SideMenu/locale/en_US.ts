@@ -40,7 +40,7 @@ const en_US = {
     notification_tpls: 'Template',
     integrations: 'Integrations',
     data_source: 'Data sources',
-    built_in_components: 'Built in components',
+    built_in_components: 'Components',
     embedded_products: 'Embedded products',
     organization: 'Organization',
     personnel_orgs: 'Personnel orgs',
