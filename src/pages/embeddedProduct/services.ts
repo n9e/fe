@@ -8,6 +8,7 @@ export const getEmbeddedProducts = (): Promise<EmbeddedProductResponse[]> => {
     method: RequestMethod.Get,
   }).then((res) => res.dat);
 };
+
 export const getEmbeddedProduct = (id: string): Promise<EmbeddedProductResponse> => {
   return request(`/api/n9e/embedded-product/${id}`, {
     method: RequestMethod.Get,
@@ -24,6 +25,7 @@ export const addEmbeddedProducts = (data: EmbeddedProductParams[]) => {
     return res.dat;
   });
 };
+
 export const deleteEmbeddedProducts = (id: string): Promise<EmbeddedProductResponse[] | undefined> => {
   return request(`/api/n9e/embedded-product/${id}`, {
     method: RequestMethod.Delete,
