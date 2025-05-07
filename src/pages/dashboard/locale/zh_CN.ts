@@ -208,6 +208,8 @@ const zh_CN = {
         avg: '平均值',
         sum: '汇总值',
         last: '当前值',
+        variance: '方差',
+        stdDev: '标准差',
         columns: '显示列',
         behaviour: {
           label: '单击触发行为',
