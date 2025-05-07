@@ -63,6 +63,7 @@ interface Datasource {
   id: number;
   name: string;
   plugin_type: string;
+  is_default: boolean;
   identifier?: string;
 }
 
