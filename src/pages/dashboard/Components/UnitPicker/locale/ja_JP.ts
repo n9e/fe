@@ -45,6 +45,12 @@ const ja_JP = {
     celsius: '摂氏 (°C)',
     fahrenheit: '華氏 (°F)',
     kelvin: 'ケルビン (K)',
+    millimeter: 'ミリメートル (mm)',
+    meter: 'メートル (m)',
+    kilometer: 'キロメートル (km)',
+    inch: 'インチ (in)',
+    foot: 'フィート (ft)',
+    mile: 'マイル (mi)',
   },
 };
 export default ja_JP;

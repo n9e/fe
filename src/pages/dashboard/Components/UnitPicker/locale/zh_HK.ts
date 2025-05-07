@@ -45,6 +45,12 @@ const zh_HK = {
     celsius: '攝氏度 (°C)',
     fahrenheit: '華氏度 (°F)',
     kelvin: '開爾文 (K)',
+    millimeter: '毫米 (mm)',
+    meter: '米 (m)',
+    kilometer: '千米 (km)',
+    inch: '英吋 (in)',
+    foot: '英尺 (ft)',
+    mile: '英哩 (mi)',
   },
 };
 

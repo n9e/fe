@@ -4,6 +4,7 @@ import { AlignedData } from 'uplot';
 import { IValueMapping, IThresholds, IOverride } from '../../../../types';
 import { getMappedTextObj } from '../../../utils/getCalculatedValuesBySeries';
 import valueFormatter from '../../../utils/valueFormatter';
+import { calculateVariance, calculateStdDev } from '../../../utils/calculateField';
 
 import { BaseSeriesItem } from './getDataFrameAndBaseSeries';
 
@@ -58,6 +59,8 @@ export default function getLegendData(props: Props): DataItem[] {
       avg: _.mean(item),
       sum: _.sum(item),
       last: _.last(item),
+      variance: calculateVariance(item as number[]),
+      stdDev: calculateStdDev(item as number[]),
     };
     return {
       id: seriesItem.n9e_internal.id,
@@ -78,6 +81,8 @@ export default function getLegendData(props: Props): DataItem[] {
       avg: valueFormatter({ unit, decimals, dateFormat }, statValues.avg),
       sum: valueFormatter({ unit, decimals, dateFormat }, statValues.sum),
       last: valueFormatter({ unit, decimals, dateFormat }, statValues.last),
+      variance: valueFormatter({ unit, decimals, dateFormat }, statValues.variance),
+      stdDev: valueFormatter({ unit, decimals, dateFormat }, statValues.stdDev),
     };
   });
 

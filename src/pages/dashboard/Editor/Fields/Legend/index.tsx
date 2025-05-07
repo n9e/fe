@@ -23,7 +23,7 @@ import { Panel } from '../../Components/Collapse';
 export default function index() {
   const { t } = useTranslation('dashboard');
   const namePrefix = ['options', 'legend'];
-  const tableColumn = ['max', 'min', 'avg', 'sum', 'last'];
+  const tableColumn = ['max', 'min', 'avg', 'sum', 'last', 'variance', 'stdDev'];
   const displayMode = Form.useWatch([...namePrefix, 'displayMode']);
   const placement = Form.useWatch([...namePrefix, 'placement']);
   const legendSizeKey = placement === 'bottom' ? 'height' : 'width';

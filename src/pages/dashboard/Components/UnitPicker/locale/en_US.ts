@@ -45,6 +45,12 @@ const en_US = {
     celsius: 'Celsius (°C)',
     fahrenheit: 'Fahrenheit (°F)',
     kelvin: 'Kelvin (K)',
+    millimeter: 'Millimeter (mm)',
+    meter: 'Meter (m)',
+    kilometer: 'Kilometer (km)',
+    inch: 'Inch (in)',
+    foot: 'Foot (ft)',
+    mile: 'Mile (mi)',
   },
 };
 export default en_US;
