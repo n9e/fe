@@ -207,6 +207,8 @@ const zh_HK = {
         avg: '平均值',
         sum: '彙總值',
         last: '當前值',
+        variance: '方差',
+        stdDev: '標準差',
         columns: '顯示列',
         behaviour: {
           label: '點擊觸發的行為',

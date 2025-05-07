@@ -177,6 +177,8 @@ const ja_JP = {
         avg: '平均値',
         sum: '合計値',
         last: '現在値',
+        variance: '分散',
+        stdDev: '標準偏差',
         columns: '表示列',
         behaviour: {
           label: 'クリックで行動',

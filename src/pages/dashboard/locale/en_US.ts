@@ -207,6 +207,8 @@ const en_US = {
         avg: 'Avg',
         sum: 'Sum',
         last: 'Last',
+        variance: 'Variance',
+        stdDev: 'StdDev',
         columns: 'Columns',
         behaviour: {
           label: 'Behavior triggered by click',
