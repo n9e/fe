@@ -18,6 +18,9 @@ import React from 'react';
 import _ from 'lodash';
 import i18next from 'i18next';
 
+import { SIPrefix } from '@/pages/dashboard/Renderer/utils/symbolFormatters';
+import { toFixedUnit } from '@/pages/dashboard/Renderer/utils/valueFormats';
+
 export const units: any = [
   {
     label: 'none',
@@ -168,6 +171,47 @@ export const units: any = [
       },
     ],
   },
+  {
+    label: 'Length',
+    options: [
+      {
+        label: 'millimeter (mm)',
+        value: 'millimeter',
+        symbol: 'mm',
+        fn: SIPrefix('m', -1),
+      },
+      {
+        label: 'meter (m)',
+        value: 'meter',
+        symbol: 'm',
+        fn: SIPrefix('m'),
+      },
+      {
+        label: 'kilometer (km)',
+        value: 'kilometer',
+        symbol: 'km',
+        fn: SIPrefix('m', 1),
+      },
+      {
+        label: 'inch (in)',
+        value: 'inch',
+        symbol: 'in',
+        fn: toFixedUnit('in'),
+      },
+      {
+        label: 'foot (ft)',
+        value: 'foot',
+        symbol: 'ft',
+        fn: toFixedUnit('ft'),
+      },
+      {
+        label: 'mile (mi)',
+        value: 'mile',
+        symbol: 'mi',
+        fn: toFixedUnit('mi'),
+      },
+    ],
+  },
 ];
 
 export const buildUnitOptions = (hideLabel = false, hideSIOption = false, filter?: (units: any) => any) => {
@@ -247,4 +291,21 @@ export const getUnitSymbol = (value: string) => {
     return '';
   }
   return '';
+};
+
+export const getUnitFn = (value: string) => {
+  const unit = _.find(units, (item) => {
+    if (item.options) {
+      return _.find(item.options, { value });
+    }
+    return item.value === value;
+  });
+  if (unit) {
+    if (unit.options) {
+      const option = _.find(unit.options, { value });
+      if (option) {
+        return option.fn;
+      }
+    }
+  }
 };

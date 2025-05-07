@@ -1,3 +1,6 @@
+import _ from 'lodash';
+import { ValueFormatter } from './symbolFormatters';
+
 export type DecimalCount = number | null | undefined;
 
 export interface FormattedValue {
@@ -82,4 +85,42 @@ function appendPluralIf(ext: string | undefined, condition: boolean): string | u
     default:
       return ext;
   }
+}
+
+const logb = (b: number, x: number) => Math.log10(x) / Math.log10(b);
+
+export function scaledUnits(factor: number, extArray: string[], offset = 0): ValueFormatter {
+  return (size: number, decimals: number) => {
+    if (size === null || size === undefined) {
+      return { text: '' };
+    }
+
+    if (size === Number.NEGATIVE_INFINITY || size === Number.POSITIVE_INFINITY || isNaN(size)) {
+      return { text: size.toLocaleString() };
+    }
+
+    const siIndex = size === 0 ? 0 : Math.floor(logb(factor, Math.abs(size)));
+    const suffix = extArray[_.clamp(offset + siIndex, 0, extArray.length - 1)];
+
+    return {
+      text: _.toString(_.round(size / factor ** _.clamp(siIndex, -offset, extArray.length - offset - 1), decimals)),
+      suffix,
+    };
+  };
+}
+
+export function toFixedUnit(unit: string, asPrefix?: boolean): ValueFormatter {
+  return (size: number, decimals: number) => {
+    if (size === null) {
+      return { text: '' };
+    }
+    const text = _.toString(_.round(size, decimals));
+    if (unit) {
+      if (asPrefix) {
+        return { text, prefix: unit };
+      }
+      return { text, suffix: ' ' + unit };
+    }
+    return { text };
+  };
 }

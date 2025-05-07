@@ -16,7 +16,7 @@
  */
 import _ from 'lodash';
 import moment from 'moment';
-import { getUnitSymbol } from '@/pages/dashboard/Components/UnitPicker/utils';
+import { getUnitSymbol, getUnitFn } from '@/pages/dashboard/Components/UnitPicker/utils';
 import { utilValMap } from '../config';
 import * as byteConverter from './byteConverter';
 import { toNanoSeconds, toMicroSeconds, toMilliSeconds, toSeconds } from './dateTimeFormatters';
@@ -46,6 +46,7 @@ export function timeFormatter(val, type: 'seconds' | 'milliseconds' | 'microseco
   if (type === 'nanoseconds') {
     formattedValue = toNanoSeconds(val, decimals);
   }
+
   return {
     value: _.toNumber(formattedValue.text),
     unit: formattedValue.suffix,
@@ -67,6 +68,7 @@ const valueFormatter = ({ unit, decimals = 6, dateFormat = 'YYYY-MM-DD HH:mm:ss'
   if (typeof val !== 'number') {
     val = _.toNumber(val);
   }
+  const fn = getUnitFn(unit);
   if (unit) {
     const utilValObj = utilValMap[unit];
     if (utilValObj) {
@@ -184,6 +186,15 @@ const valueFormatter = ({ unit, decimals = 6, dateFormat = 'YYYY-MM-DD HH:mm:ss'
         unit: data.unit + ' ' + symbol,
         text: data.text + ' ' + symbol,
         stat: data.stat,
+      };
+    }
+    if (fn) {
+      const formattedValue = fn(val, decimals);
+      return {
+        value: formattedValue.text,
+        unit: formattedValue.suffix,
+        text: formattedValue.text + ' ' + formattedValue.suffix,
+        stat: val,
       };
     }
     return {
