@@ -1,5 +1,5 @@
 const zh_CN = {
-  title: '事件 Pipeline',
+  title: '事件 Pipelines',
   teams: '授权团队',
   basic_configuration: '基本配置',
   filter_enable: '过滤条件',
