@@ -46,7 +46,7 @@ const en_US = {
     personnel_orgs: 'Personnel orgs',
     users: 'Users',
     teams: 'Teams',
-    permission: 'Permission',
+    roles: 'Roles',
     contact: 'Contact',
     setting: 'System setting',
     site_setting: 'Site setting',

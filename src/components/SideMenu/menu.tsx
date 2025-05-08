@@ -146,8 +146,8 @@ export const getMenuList = (embeddedProductMenu: MenuItem[] = []) => {
           label: 'menu.teams',
         },
         {
-          key: '/permissions',
-          label: 'menu.permission',
+          key: '/roles',
+          label: 'menu.roles',
         },
       ],
     },

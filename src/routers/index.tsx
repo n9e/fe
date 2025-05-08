@@ -204,7 +204,7 @@ export default function Content() {
         <Route exact path='/trace/explorer' component={TraceExplorer} />
         <Route exact path='/trace/dependencies' component={TraceDependencies} />
 
-        <Route exact path='/permissions' component={Permissions} />
+        <Route exact path='/roles' component={Permissions} />
 
         {import.meta.env.VITE_IS_ENT !== 'true' && <Route exact path='/site-settings' component={SiteSettings} />}
 

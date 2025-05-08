@@ -45,7 +45,7 @@ const ru_RU = {
     organization: 'Организация',
     users: 'Пользователи',
     teams: 'Команды',
-    permission: 'Параметры доступа',
+    roles: 'Параметры доступа',
     contact: 'Контакт',
     setting: 'Настройки системы',
     site_setting: 'Настройки сайта',
