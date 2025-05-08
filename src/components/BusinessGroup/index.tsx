@@ -6,7 +6,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import { Button, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { LeftOutlined, RightOutlined, SearchOutlined } from '@ant-design/icons';
+import { LeftOutlined, RightOutlined, SearchOutlined, PlusSquareOutlined } from '@ant-design/icons';
 
 import { CommonStateContext } from '@/App';
 import { ActionType } from '@/store/manageInterface';
@@ -66,6 +66,24 @@ export function setLocaleExpandedKeys(nodes: string[]) {
   localStorage.setItem('biz_group_expanded_keys', JSON.stringify(nodes));
 }
 
+const filterData = (
+  value: string,
+  data: {
+    name: string;
+    id: number;
+    label_value?: string;
+  }[],
+) => {
+  const filteredData = _.filter(data, (item) => {
+    if (!value) return true;
+    return _.includes(_.toLower(item.name), _.toLower(value));
+  });
+  return filteredData;
+};
+
+const BUSINESS_GROUP_SEARCH_KEY = 'businessGroupSearchValue';
+const savedSearchValue = sessionStorage.getItem(BUSINESS_GROUP_SEARCH_KEY);
+
 export default function index(props: IProps) {
   const { t } = useTranslation('BusinessGroup');
   const { businessGroup, businessGroupOnChange } = useContext(CommonStateContext);
@@ -77,51 +95,26 @@ export default function index(props: IProps) {
   const [width, setWidth] = useState(_.toNumber(localStorage.getItem('leftwidth') || 200));
   const { busiGroups, siteInfo, setBusiGroups } = useContext(CommonStateContext);
   const [businessGroupTreeData, setBusinessGroupTreeData] = useState<Node[]>([]);
-  const [busiGroupsListData, setBusiGroupsListData] = useState<any[]>([]);
   const [createBusiVisible, setCreateBusiVisible] = useState<boolean>(false);
   const [editBusiDrawerVisible, setEditBusiDrawerVisible] = useState<boolean>(false);
   const [editBusiId, setEditBusiId] = useState<string>();
-
-  const savedSearchValue = sessionStorage.getItem('businessGroupSearchValue');
-  const savedSearchResults = sessionStorage.getItem('businessGroupSearchResults');
-  const [searchValue, setSearchValue] = useState<string>(savedSearchValue || '');
+  const [searchValue, setSearchValue] = useState<string>('');
+  const reloadData = () => {
+    getBusiGroups().then((res = []) => {
+      setBusiGroups(res);
+      const filteredData = filterData(searchValue, res);
+      setBusinessGroupTreeData(listToTree(filteredData, siteInfo?.businessGroupSeparator));
+    });
+  };
 
   useEffect(() => {
-    setBusinessGroupTreeData(listToTree(busiGroups, siteInfo?.businessGroupSeparator));
-    setBusiGroupsListData(busiGroups);
-  }, [busiGroups]);
-
-  useEffect(() => {
-    const savedSearchValue = sessionStorage.getItem('businessGroupSearchValue');
-    const savedSearchResults = sessionStorage.getItem('businessGroupSearchResults');
-
+    let data = busiGroups;
     if (savedSearchValue) {
       setSearchValue(savedSearchValue);
+      data = filterData(savedSearchValue, busiGroups);
     }
-    if (savedSearchResults) {
-      const parsedResults = JSON.parse(savedSearchResults);
-      setBusinessGroupTreeData(listToTree(parsedResults, siteInfo?.businessGroupSeparator));
-      setBusiGroupsListData(parsedResults);
-    }
+    setBusinessGroupTreeData(listToTree(data, siteInfo?.businessGroupSeparator));
   }, []);
-
-  const debouncedSearch = _.debounce((value: string) => {
-    getBusiGroups({
-      query: value,
-    }).then((res) => {
-      const results = res || [];
-      setBusinessGroupTreeData(listToTree(results, siteInfo?.businessGroupSeparator));
-      setBusiGroupsListData(results);
-      sessionStorage.setItem('businessGroupSearchValue', value);
-      sessionStorage.setItem('businessGroupSearchResults', JSON.stringify(results));
-    });
-  }, 300);
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearchValue(value);
-    debouncedSearch(value);
-  };
 
   return (
     <Resizable
@@ -155,31 +148,34 @@ export default function index(props: IProps) {
           {renderHeadExtra && renderHeadExtra()}
           <div className='n9e-biz-group-container-group-title'>
             {title}
-            {title === t('common:business_group') && (
-              <Button
-                style={{
-                  height: '30px',
-                }}
-                size='small'
-                type='link'
-                onClick={() => {
-                  setCreateBusiVisible(true);
-                }}
-              >
-                {t('common:btn.add')}
-              </Button>
-            )}
+            <Button
+              style={{
+                height: '30px',
+              }}
+              size='small'
+              type='link'
+              onClick={() => {
+                setCreateBusiVisible(true);
+              }}
+              icon={<PlusSquareOutlined />}
+            />
           </div>
           <Input
             className='n9e-biz-group-container-group-search'
             prefix={<SearchOutlined />}
             value={searchValue}
-            onChange={handleSearchChange}
+            onChange={(e) => {
+              const value = e.target.value;
+              setSearchValue(value);
+              sessionStorage.setItem(BUSINESS_GROUP_SEARCH_KEY, value);
+              const filteredData = filterData(value, busiGroups);
+              setBusinessGroupTreeData(listToTree(filteredData, siteInfo?.businessGroupSeparator));
+            }}
             placeholder={t('common:search_placeholder')}
           />
           {siteInfo?.businessGroupDisplayMode == 'list' ? (
             <div className='radio-list'>
-              {_.map(busiGroupsListData, (item) => {
+              {_.map(busiGroups, (item) => {
                 const itemKey = _.toString(item.id);
                 return (
                   <div
@@ -246,6 +242,7 @@ export default function index(props: IProps) {
           open={editBusiDrawerVisible}
           onCloseDrawer={() => {
             setEditBusiDrawerVisible(false);
+            reloadData();
           }}
         />
       )}
@@ -257,10 +254,7 @@ export default function index(props: IProps) {
         onClose={(type: string) => {
           setCreateBusiVisible(false);
           if (type === 'create') {
-            getBusiGroups({ query: searchValue }).then((res) => {
-              setBusinessGroupTreeData(listToTree(res || [], siteInfo?.businessGroupSeparator));
-              setBusiGroupsListData(res || []);
-            });
+            reloadData();
           }
         }}
       />
