@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Input, Card, Space, Row, Col, Select, Switch, Button, Affix } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
 
@@ -60,7 +60,15 @@ export default function index(props: Props) {
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label={t('teams')} tooltip={t('teams_tip')} name='team_ids' rules={[{ required: true }]}>
+            <Form.Item
+              label={t('teams')}
+              tooltip={{
+                title: <Trans ns={NS} i18nKey={`${NS}:teams_tip`} components={{ br: <br /> }} />,
+                overlayClassName: 'ant-tooltip-auto-width',
+              }}
+              name='team_ids'
+              rules={[{ required: true }]}
+            >
               <Select
                 showSearch
                 optionFilterProp='label'
@@ -91,7 +99,13 @@ export default function index(props: Props) {
             display: filter_enable ? 'block' : 'none',
           }}
         >
-          <KVTags disabled={disabled} name={['label_filters']} keyLabel={t('label_filters')} keyLabelTootip={t('label_filters_tip')} funcName='op' />
+          <KVTags
+            disabled={disabled}
+            name={['label_filters']}
+            keyLabel={t('label_filters')}
+            keyLabelTootip={<Trans ns={NS} i18nKey={`${NS}:label_filters_tip`} components={{ br: <br /> }} />}
+            funcName='op'
+          />
           <Attributes disabled={disabled} name={['attribute_filters']} />
         </div>
       </Card>

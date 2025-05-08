@@ -75,7 +75,6 @@ export default function List() {
                     to={{
                       pathname: `/${NS}/edit/${item.id}`,
                     }}
-                    target='_blank'
                   >
                     {val}
                   </Link>
@@ -116,7 +115,6 @@ export default function List() {
                       to={{
                         pathname: `/${NS}/edit/${item.id}`,
                       }}
-                      target='_blank'
                     >
                       {t('common:btn.edit')}
                     </Link>

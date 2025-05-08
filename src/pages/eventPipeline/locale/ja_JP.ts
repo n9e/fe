@@ -1,12 +1,16 @@
 const ja_JP = {
   title: 'イベント Pipelines',
   teams: '権限のあるチーム',
+  teams_tip:
+    'この設定を表示および変更できるチームメンバーを制限します。複数のチームを関連付けることができます<br />例：infra-teamに設定を付与すると、infra-teamのメンバーのみがこの設定にアクセスまたは調整できます。',
   basic_configuration: '基本設定',
   filter_enable: 'フィルター条件',
   label_filters: '適用ラベル',
-  label_filters_tip: '適用ラベル',
+  label_filters_tip:
+    'イベント処理のタグ フィルタ条件を設定します。イベントは、ここでの設定に一致するタグが含まれている場合にのみ処理されます。 <br />例: service=mon と入力します。これは、イベントにラベル service=mon が含まれている場合にのみこの処理フローが開始されることを意味します。',
   attribute_filters: '適用属性',
-  attribute_filters_tip: '適用属性',
+  attribute_filters_tip:
+    'イベント処理の属性フィルタ条件を設定します。イベントは、ここでの設定に一致する属性が含まれている場合にのみ処理されます。 <br />例: Business Group == DefaultBusiGroup と入力します。これは、イベントの「ビジネス グループ」属性が DefaultBusiGroup の場合にのみ、この処理フローが開始されることを意味します。',
   attribute_filters_value: '属性値',
   attribute_filters_options: {
     group_name: 'ビジネスグループ',
@@ -16,6 +20,7 @@ const ja_JP = {
     title: 'プロセッサー',
     add_btn: 'プロセッサーを追加',
     typ: 'タイプ',
+    help_btn: '使用説明',
   },
   label_enrich: {
     label_source_type: {
