@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
 import { Card, Space, Form, Select } from 'antd';
 import { MinusCircleOutlined, CopyOutlined, UpCircleOutlined, DownCircleOutlined } from '@ant-design/icons';
 import { FormListFieldData } from 'antd/lib/form/FormList';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
+import { CommonStateContext } from '@/App';
 import { IS_PLUS } from '@/utils/constant';
+import DocumentDrawer from '@/components/DocumentDrawer';
 
 // @ts-ignore
 import LabelEnrich from 'plus:/parcels/eventPipeline/LabelEnrich';
@@ -24,7 +26,8 @@ interface Props {
 }
 
 export default function NotifyConfig(props: Props) {
-  const { t } = useTranslation(NS);
+  const { t, i18n } = useTranslation(NS);
+  const { darkMode } = useContext(CommonStateContext);
   const { disabled, fields, field, add, remove, move } = props;
   const resetField = _.omit(field, ['name', 'key']);
   const processorConfig = Form.useWatch(['processors', field.name]);
@@ -69,19 +72,42 @@ export default function NotifyConfig(props: Props) {
         )
       }
     >
-      <Form.Item {...resetField} name={[field.name, 'typ']} label={t('processor.typ')}>
+      <Form.Item
+        {...resetField}
+        name={[field.name, 'typ']}
+        label={
+          <Space>
+            {t('processor.typ')}
+            {processorType === 'relabel' && (
+              <a
+                onClick={(event) => {
+                  event.stopPropagation();
+                  DocumentDrawer({
+                    language: i18n.language,
+                    darkMode,
+                    title: t('processor.help_btn'),
+                    documentPath: '/docs/alert-event-relabel',
+                  });
+                }}
+              >
+                {t('processor.help_btn')}
+              </a>
+            )}
+          </Space>
+        }
+      >
         <Select
           options={_.concat(
             [
               {
-                label: 'relabel',
+                label: 'Relabel',
                 value: 'relabel',
               },
             ],
             IS_PLUS
               ? [
                   {
-                    label: 'label_enrich',
+                    label: 'Label Enrich',
                     value: 'label_enrich',
                   },
                 ]
