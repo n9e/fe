@@ -19,6 +19,7 @@ import { Form, Input, Button, message, Space, Dropdown, Menu } from 'antd';
 import { useLocation } from 'react-router-dom';
 import { PictureOutlined, UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import _ from 'lodash';
 
 import { ifShowCaptcha, getCaptcha, getSsoConfig, getRedirectURL, getRedirectURLCAS, getRedirectURLOAuth, getRedirectURLCustom, authLogin, getRSAConfig } from '@/services/login';
 import { RsaEncry } from '@/utils/rsa';
@@ -199,72 +200,76 @@ export default function Login() {
                 {t('login')}
               </Button>
             </Form.Item>
-            <div className='mb1 text-[14px]'>
-              <Space align='baseline'>
-                <div>{t('other_types')}:</div>
-                {displayName.oidc && (
-                  <a
-                    onClick={() => {
-                      getRedirectURL().then((res) => {
-                        if (res.dat) {
-                          window.location.href = res.dat;
-                        } else {
-                          message.warning('没有配置 OIDC 登录地址！');
-                        }
-                      });
-                    }}
-                  >
-                    {displayName.oidc}
-                  </a>
-                )}
-                {displayName.cas && (
-                  <a
-                    onClick={() => {
-                      getRedirectURLCAS().then((res) => {
-                        if (res.dat) {
-                          window.location.href = res.dat.redirect;
-                          localStorage.setItem('CAS_state', res.dat.state);
-                        } else {
-                          message.warning('没有配置 CAS 登录地址！');
-                        }
-                      });
-                    }}
-                  >
-                    {displayName.cas}
-                  </a>
-                )}
-                {displayName.oauth && (
-                  <a
-                    onClick={() => {
-                      getRedirectURLOAuth().then((res) => {
-                        if (res.dat) {
-                          window.location.href = res.dat;
-                        } else {
-                          message.warning('没有配置 OAuth 登录地址！');
-                        }
-                      });
-                    }}
-                  >
-                    {displayName.oauth}
-                  </a>
-                )}
-                {displayName.custom && (
-                  <a
-                    onClick={() => {
-                      getRedirectURLCustom().then((res) => {
-                        if (res.dat) {
-                          window.location.href = res.dat;
-                        } else {
-                          message.warning('没有配置 custom 登录地址！');
-                        }
-                      });
-                    }}
-                  >
-                    {displayName.custom}
-                  </a>
-                )}
-              </Space>
-            </div>
+            {_.some(displayName, (value) => {
+              return !!value;
+            }) && (
+              <div className='mb1 text-[14px]'>
+                <Space align='baseline'>
+                  <div>{t('other_types')}:</div>
+                  {displayName.oidc && (
+                    <a
+                      onClick={() => {
+                        getRedirectURL().then((res) => {
+                          if (res.dat) {
+                            window.location.href = res.dat;
+                          } else {
+                            message.warning('没有配置 OIDC 登录地址！');
+                          }
+                        });
+                      }}
+                    >
+                      {displayName.oidc}
+                    </a>
+                  )}
+                  {displayName.cas && (
+                    <a
+                      onClick={() => {
+                        getRedirectURLCAS().then((res) => {
+                          if (res.dat) {
+                            window.location.href = res.dat.redirect;
+                            localStorage.setItem('CAS_state', res.dat.state);
+                          } else {
+                            message.warning('没有配置 CAS 登录地址！');
+                          }
+                        });
+                      }}
+                    >
+                      {displayName.cas}
+                    </a>
+                  )}
+                  {displayName.oauth && (
+                    <a
+                      onClick={() => {
+                        getRedirectURLOAuth().then((res) => {
+                          if (res.dat) {
+                            window.location.href = res.dat;
+                          } else {
+                            message.warning('没有配置 OAuth 登录地址！');
+                          }
+                        });
+                      }}
+                    >
+                      {displayName.oauth}
+                    </a>
+                  )}
+                  {displayName.custom && (
+                    <a
+                      onClick={() => {
+                        getRedirectURLCustom().then((res) => {
+                          if (res.dat) {
+                            window.location.href = res.dat;
+                          } else {
+                            message.warning('没有配置 custom 登录地址！');
+                          }
+                        });
+                      }}
+                    >
+                      {displayName.custom}
+                    </a>
+                  )}
+                </Space>
+              </div>
+            )}
             <div className='text-[14px]'>
               <Space>
                 <div>{t('language')}:</div>
