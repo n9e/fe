@@ -36,7 +36,7 @@ const zh_HK = {
     notification_rules: '通知規則',
     notification_channels: '通知媒介',
     notification_templates: '消息模板',
-    event_pipeline: '事件 Pipeline',
+    event_pipeline: '事件 Pipelines',
     notification_settings: '通知設置',
     notification_tpls: '通知模板',
     integrations: '集成中心',
