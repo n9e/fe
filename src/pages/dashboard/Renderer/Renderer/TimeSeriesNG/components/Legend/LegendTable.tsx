@@ -67,6 +67,7 @@ export default function LegendTable(props: Props) {
   return (
     <div
       style={{
+        minWidth: 0,
         height: '100%',
         overflow: 'auto',
       }}

@@ -29,6 +29,7 @@ export default function LegendList(props: Props) {
   return (
     <div
       style={{
+        minWidth: 0,
         height: '100%',
         overflow: 'auto',
       }}
