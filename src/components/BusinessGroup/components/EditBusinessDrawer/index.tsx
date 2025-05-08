@@ -20,9 +20,9 @@ import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import { Col, Drawer, Input, Row, Space, Button, message, Table, Modal } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
-import { CloseOutlined, EditOutlined, DeleteOutlined, SearchOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { CloseOutlined, EditOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons';
 
-import { Team, ActionType } from '@/store/manageInterface';
+import { ActionType } from '@/store/manageInterface';
 import { deleteBusinessTeamMember, getBusinessTeamList, getBusinessTeamInfo, deleteBusinessTeam } from '@/services/manage';
 import { getDefaultBusiness } from '@/components/BusinessGroup';
 import { CommonStateContext } from '@/App';
@@ -106,17 +106,6 @@ export default function index(props: Props) {
     },
   ];
 
-  // 获取业务组列表
-  const getTeamList = (search?: string, isDelete?: boolean) => {
-    let params = {
-      query: search,
-      limit: PAGE_SIZE,
-    };
-    getBusinessTeamList(params).then((data) => {
-      setBusiGroups(data.dat || []);
-      setBusiGroup(getDefaultBusiness(data.dat));
-    });
-  };
   // 获取业务组详情
   const getTeamInfoDetail = (id: string) => {
     setMemberLoading(true);
@@ -244,7 +233,7 @@ export default function index(props: Props) {
         />
       </div>
 
-      <BusinessModal visible={businessModalVisible} action={action as ActionType} userType='business' onClose={handleClose} teamId={teamId} />
+      <BusinessModal width={600} visible={businessModalVisible} action={action as ActionType} userType='business' onClose={handleClose} teamId={teamId} />
     </Drawer>
   );
 }

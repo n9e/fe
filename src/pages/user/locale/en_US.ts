@@ -39,6 +39,7 @@ const en_US = {
       - login <1 />
     `,
     team_name: 'Authorized teams',
+    team_name_tip: 'The following teams can manage this business group',
     perm_flag_0: 'ro',
     perm_flag_1: 'rw',
     user_group_msg: 'Business group team is required',
