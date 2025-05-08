@@ -42,7 +42,7 @@ const zh_HK = {
     integrations: '集成中心',
     data_source: '數據源',
     built_in_components: '模板中心',
-    label_mapping: '標籤映射',
+    label_mapping: '標籤詞表',
     embedded_products: '系統集成',
     organization: '人員組織',
     users: '用戶管理',

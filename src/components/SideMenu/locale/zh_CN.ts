@@ -42,7 +42,7 @@ const zh_CN = {
     integrations: '集成中心',
     data_source: '数据源',
     built_in_components: '模板中心',
-    label_mapping: '标签映射',
+    label_mapping: '标签词表',
     embedded_products: '系统集成',
     organization: '人员组织',
     users: '用户管理',
