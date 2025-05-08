@@ -47,7 +47,7 @@ const zh_CN = {
     organization: '人员组织',
     users: '用户管理',
     teams: '团队管理',
-    roles: '权限管理',
+    roles: '角色管理',
     contact: '联系方式',
     setting: '系统配置',
     site_setting: '站点设置',

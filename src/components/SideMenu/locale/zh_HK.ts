@@ -47,7 +47,7 @@ const zh_HK = {
     organization: '人員組織',
     users: '用戶管理',
     teams: '團隊管理',
-    roles: '權限管理',
+    roles: '角色管理',
     contact: '聯繫方式',
     setting: '系統配置',
     site_setting: '站點設置',

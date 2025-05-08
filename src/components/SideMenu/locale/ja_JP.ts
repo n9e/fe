@@ -47,7 +47,7 @@ const ja_JP = {
     organization: '組織',
     users: 'ユーザー管理',
     teams: 'チーム管理',
-    roles: '権限管理',
+    roles: 'ロール管理',
     contact: '連絡先',
     setting: 'システム設定',
     site_setting: 'サイト設定',
