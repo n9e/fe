@@ -1,5 +1,5 @@
 const en_US = {
-  title: 'Permissions',
+  title: 'Roles',
   roles: 'Roles',
   role_add: 'Add Role',
   edit_title: {
