@@ -82,7 +82,6 @@ const filterData = (
 };
 
 const BUSINESS_GROUP_SEARCH_KEY = 'businessGroupSearchValue';
-const savedSearchValue = sessionStorage.getItem(BUSINESS_GROUP_SEARCH_KEY);
 
 export default function index(props: IProps) {
   const { t } = useTranslation('BusinessGroup');
@@ -99,6 +98,8 @@ export default function index(props: IProps) {
   const [editBusiDrawerVisible, setEditBusiDrawerVisible] = useState<boolean>(false);
   const [editBusiId, setEditBusiId] = useState<string>();
   const [searchValue, setSearchValue] = useState<string>('');
+  const savedSearchValue = sessionStorage.getItem(BUSINESS_GROUP_SEARCH_KEY);
+
   const reloadData = () => {
     getBusiGroups().then((res = []) => {
       setBusiGroups(res);
