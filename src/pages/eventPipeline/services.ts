@@ -34,7 +34,7 @@ export const putItem = function (data: Item) {
 };
 
 export const deleteItems = function (ids: number[]) {
-  return request('/api/n9e/event-pipeline', {
+  return request('/api/n9e/event-pipelines', {
     method: RequestMethod.Delete,
     data: { ids },
   }).then((res) => res.dat);
