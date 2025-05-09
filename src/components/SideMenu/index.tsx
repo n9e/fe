@@ -40,6 +40,8 @@ const SideMenu = () => {
   const quickMenuRef = useRef<{ open: () => void }>({ open: () => {} });
   const isCustomBg = sideMenuBgMode !== 'light';
   const [embeddedProductMenu, setEmbeddedProductMenu] = useState<MenuItem[]>([]);
+  const [menus, setMenus] = useState<MenuItem[]>([]);
+
   const hideSideMenu = useMemo(() => {
     if (
       location.pathname === '/login' ||
@@ -84,7 +86,30 @@ const SideMenu = () => {
     };
   }, [hideSideMenu]);
 
-  const menus = isPlus ? getPlusMenuList(embeddedProductMenu) : getMenuList(embeddedProductMenu);
+  const menuList = isPlus ? getPlusMenuList(embeddedProductMenu) : getMenuList(embeddedProductMenu);
+
+  useEffect(() => {
+    const filteredMenus = menuList
+      .map((menu) => {
+        const filteredChildren = menu.children
+          .map((child) => {
+            if (child.type === 'tabs' && child.children) {
+              const filteredTabs = child.children.filter((tab) => perms?.includes(tab.key));
+              return { ...child, children: filteredTabs };
+            }
+            return perms?.includes(child.key) ? child : null;
+          })
+          .filter(Boolean);
+
+        if (filteredChildren.length > 0) {
+          return { ...menu, children: filteredChildren };
+        }
+        return null;
+      })
+      .filter(Boolean) as MenuItem[];
+
+    setMenus(filteredMenus);
+  }, [i18n.language, perms]);
 
   const menuPaths = useMemo(
     () =>
@@ -92,7 +117,12 @@ const SideMenu = () => {
         .filter((item) => item && item.children && item.children.length > 0)
         .map((item) => {
           return item
-            .children!.filter((child) => child && _.includes(perms, child.key) && (child.type === 'tabs' ? child.children && child.children.length > 0 : true))
+            .children!.filter((child) => {
+              if (child.type === 'tabs' && child.children && child.children.length > 0) {
+                return child.children.some((tabChild) => _.includes(perms, tabChild.key));
+              }
+              return child && _.includes(perms, child.key);
+            })
             .map((c) => {
               if (c.type === 'tabs' && c.children && c.children.length) {
                 return c.children.filter((tabChild) => _.includes(perms, tabChild.key)).map((g) => `${item.key}|${g.key}`);
