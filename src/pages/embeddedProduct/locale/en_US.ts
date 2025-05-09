@@ -1,5 +1,5 @@
 const en_US = {
-  title: 'Embedded product',
+  title: 'Embedded products',
   add: 'Add',
   edit: 'Edit',
   name: 'Name',

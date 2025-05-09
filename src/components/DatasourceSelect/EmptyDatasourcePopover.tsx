@@ -19,9 +19,9 @@ export default function EmptyDatasourcePopover(props: IProps) {
   const { t } = useTranslation();
   const { profile } = useContext(CommonStateContext);
   const { datasourceCate, datasourceList, children, placement, getPopupContainer } = props;
-  let linkUrl = IS_ENT ? '/settings/source/timeseries' : '/help/source';
+  let linkUrl = IS_ENT ? '/settings/source/timeseries' : '/datasources';
   if (datasourceCate === 'prometheus') {
-    linkUrl = IS_ENT ? '/settings/datasource/add/prometheus' : '/help/source/add/prometheus';
+    linkUrl = IS_ENT ? '/settings/datasource/add/prometheus' : '/datasources/add/prometheus';
   }
 
   return (

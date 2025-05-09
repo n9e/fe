@@ -122,7 +122,7 @@ export const getMenuList = (embeddedProductMenu: MenuItem[] = []) => {
       icon: <IconFont type='icon-shujujicheng' />,
       children: [
         {
-          key: '/help/source',
+          key: '/datasources',
           label: 'menu.data_source',
         },
         {
@@ -130,7 +130,7 @@ export const getMenuList = (embeddedProductMenu: MenuItem[] = []) => {
           label: 'menu.built_in_components',
         },
         {
-          key: '/embedded-product',
+          key: '/embedded-products',
           label: 'menu.embedded_products',
         },
         ...embeddedProductMenu,
@@ -161,23 +161,23 @@ export const getMenuList = (embeddedProductMenu: MenuItem[] = []) => {
       icon: <IconFont type='icon-Menu_SystemInformation' />,
       children: [
         {
-          key: '/site-settings',
+          key: '/system/site-settings',
           label: 'menu.site_setting',
         },
         {
-          key: '/help/variable-configs',
+          key: '/system/variable-settings',
           label: 'menu.variable_configs',
         },
         {
-          key: '/help/sso',
+          key: '/system/sso-settings',
           label: 'menu.sso',
         },
         {
-          key: '/help/servers',
+          key: '/system/alerting-engines',
           label: 'menu.alert_servers',
         },
         {
-          key: '/help/version',
+          key: '/system/version',
           label: 'menu.about',
         },
       ],
