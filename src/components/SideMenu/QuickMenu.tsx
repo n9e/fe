@@ -218,6 +218,7 @@ export default forwardRef(function QuickMenu(props: Props, ref) {
                   onClick={() => {
                     setOpen(false);
                     history.push(item.key);
+                    localStorage.setItem(`tab_selection_${item?.tabParent?.key}`, item.key);
                     saveSelectedCount(item.key);
                   }}
                   onMouseOver={() => {
