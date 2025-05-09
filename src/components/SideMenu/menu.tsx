@@ -158,7 +158,7 @@ export const getMenuList = (embeddedProductMenu: MenuItem[] = []) => {
       children: [
         {
           key: '/site-settings',
-          label: 'menu.site_settings',
+          label: 'menu.site_setting',
         },
         {
           key: '/help/variable-configs',
