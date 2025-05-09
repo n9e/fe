@@ -49,7 +49,7 @@ const en_US = {
     roles: 'Roles',
     contact: 'Contact',
     setting: 'System setting',
-    site_setting: 'Site setting',
+    site_setting: 'Site settings',
     variable_configs: 'Variable configs',
     sso: 'SSO',
     audit_log: 'Audit log',
