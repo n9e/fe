@@ -27,7 +27,7 @@ import getPlusMenuList from 'plus:/parcels/SideMenu/menu';
 
 const SideMenu = () => {
   const { i18n } = useTranslation('sideMenu');
-  const { isPlus, darkMode } = useContext(CommonStateContext);
+  const { isPlus, darkMode, perms } = useContext(CommonStateContext);
   let { sideMenuBgMode } = useContext(CommonStateContext);
   if (darkMode) {
     sideMenuBgMode = 'dark';
@@ -92,17 +92,17 @@ const SideMenu = () => {
         .filter((item) => item && item.children && item.children.length > 0)
         .map((item) => {
           return item
-            .children!.filter((child) => child && (child.type === 'tabs' ? child.children && child.children.length > 0 : true))
+            .children!.filter((child) => child && _.includes(perms, child.key) && (child.type === 'tabs' ? child.children && child.children.length > 0 : true))
             .map((c) => {
               if (c.type === 'tabs' && c.children && c.children.length) {
-                return c.children.map((g) => `${item.key}|${g.key}`);
+                return c.children.filter((tabChild) => _.includes(perms, tabChild.key)).map((g) => `${item.key}|${g.key}`);
               }
               return `${item.key}|${c.key}`;
             });
         })
         .filter(Boolean)
         .flat(2),
-    [menus],
+    [menus, perms],
   );
 
   useEffect(() => {
