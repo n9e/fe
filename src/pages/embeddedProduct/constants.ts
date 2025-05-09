@@ -1,2 +1,2 @@
-export const NS = 'embedded-product';
+export const NS = 'embedded-products';
 export const PATH = `/${NS}`;

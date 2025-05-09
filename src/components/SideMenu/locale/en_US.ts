@@ -50,10 +50,10 @@ const en_US = {
     contact: 'Contact',
     setting: 'System setting',
     site_setting: 'Site settings',
-    variable_configs: 'Variable configs',
-    sso: 'SSO',
+    variable_configs: 'Variable settings',
+    sso: 'SSO settings',
     audit_log: 'Audit log',
-    alert_servers: 'Alert server',
+    alert_servers: 'Alerting engines',
     about: 'About',
   },
 };

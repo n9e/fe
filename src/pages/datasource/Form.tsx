@@ -72,7 +72,7 @@ export default function FormCpt() {
         message.success(action === 'add' ? t('common:success.add') : t('common:success.modify'));
         setTimeout(() => {
           history.push({
-            pathname: '/help/source',
+            pathname: '/datasources',
           });
         }, 2000);
       })
@@ -100,7 +100,7 @@ export default function FormCpt() {
             crumbs={[
               {
                 text: t('title'),
-                link: '/help/source',
+                link: '/datasources',
               },
               {
                 text: _.find(allCates, { value: type })?.label || type,

@@ -12,6 +12,7 @@ import { IS_ENT } from '@/utils/constant';
 import { getMenuList } from '@/components/SideMenu/menu';
 import { getEmbeddedProducts } from '@/pages/embeddedProduct/services';
 import { eventBus, EVENT_KEYS } from '@/pages/embeddedProduct/eventBus';
+import { NS as embeddedProductNS } from '@/pages/embeddedProduct/constants';
 
 import { cn } from './utils';
 import SideMenuHeader from './Header';
@@ -66,7 +67,7 @@ const SideMenu = () => {
     getEmbeddedProducts().then((res) => {
       if (res) {
         const items = res.map((product) => ({
-          key: `/embedded-product/${product.id}`,
+          key: `/${embeddedProductNS}/${product.id}`,
           label: product.name,
           children: [],
         }));
