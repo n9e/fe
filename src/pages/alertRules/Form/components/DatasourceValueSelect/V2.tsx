@@ -243,7 +243,7 @@ export default function index(props: IProps) {
                 />
               </Space>
               <Space>
-                <Link to={IS_ENT ? '/settings/source/timeseries' : '/help/source'} target='_blank'>
+                <Link to={IS_ENT ? '/settings/source/timeseries' : '/datasources'} target='_blank'>
                   {t('common:datasource.managePageLink')}
                 </Link>
                 <ReloadOutlined
@@ -292,7 +292,7 @@ export default function index(props: IProps) {
                           {_.map(invalidDatasourceIds, (item) => {
                             const result = _.find(fullDatasourceList, { id: item });
                             if (result) {
-                              let url = `/help/source/edit/${result.plugin_type}/${result.id}`;
+                              let url = `/datasources/edit/${result.plugin_type}/${result.id}`;
                               if (IS_ENT) {
                                 const cateMap = {
                                   timeseries: 'datasource',

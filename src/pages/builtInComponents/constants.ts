@@ -14,4 +14,4 @@
  * limitations under the License.
  *
  */
-export const pathname = '/built-in-components';
+export const pathname = '/components';

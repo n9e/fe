@@ -175,10 +175,6 @@ export const getMenuList = (t) => {
           key: '/permissions',
           label: t('权限管理'),
         },
-        {
-          key: '/contacts',
-          label: t('contacts:title'),
-        },
       ],
     },
     {
@@ -188,11 +184,11 @@ export const getMenuList = (t) => {
       label: t('integrations'),
       children: [
         {
-          key: '/help/source',
+          key: '/datasources',
           label: t('数据源'),
         },
         {
-          key: '/built-in-components',
+          key: '/components',
           label: t('built_in_components'),
         },
       ],
@@ -203,23 +199,23 @@ export const getMenuList = (t) => {
       label: t('系统配置'),
       children: [
         {
-          key: '/help/variable-configs',
+          key: '/system/variable-settings',
           label: t('变量设置'),
         },
         {
-          key: '/help/sso',
+          key: '/system/sso-settings',
           label: t('单点登录'),
         },
         {
-          key: '/help/servers',
+          key: '/system/alerting-engines',
           label: t('告警引擎'),
         },
         {
-          key: '/site-settings',
+          key: '/system/site-settings',
           label: t('siteInfo:title'),
         },
         {
-          key: '/help/version',
+          key: '/system/version',
           label: t('version:title'),
         },
       ],

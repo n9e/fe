@@ -1,5 +1,5 @@
 const en_US = {
-  title: 'Alert engines',
+  title: 'Alerting engines',
   instance: 'Instance',
   cluster: 'Cluster',
   datasource: 'Datasource',

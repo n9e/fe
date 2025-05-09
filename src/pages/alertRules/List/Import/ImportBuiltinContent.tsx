@@ -191,7 +191,7 @@ export default function ImportBuiltinContent({ busiId, onOk, groupedDatasourceLi
                   return (
                     <Link
                       to={{
-                        pathname: '/built-in-components/alert/detail',
+                        pathname: '/components/alert/detail',
                         search: `?id=${record.id}`,
                       }}
                       target='_blank'

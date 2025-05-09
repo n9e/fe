@@ -66,7 +66,7 @@ export default function index() {
               allowClear
               placeholder={t('common:search_placeholder')}
             />
-            <AuthorizationWrapper allowedPerms={['/built-in-components/add']}>
+            <AuthorizationWrapper allowedPerms={['/components/add']}>
               <Button
                 type='primary'
                 onClick={() => {
@@ -108,7 +108,7 @@ export default function index() {
                     <div>{item.ident}</div>
                     <div className='builtin-cates-grid-item-operations'>
                       <Space size={0}>
-                        <AuthorizationWrapper allowedPerms={['/built-in-components/put']}>
+                        <AuthorizationWrapper allowedPerms={['/components/put']}>
                           <Button
                             size='small'
                             type='link'
@@ -127,7 +127,7 @@ export default function index() {
                             icon={<EditOutlined />}
                           />
                         </AuthorizationWrapper>
-                        <AuthorizationWrapper allowedPerms={['/built-in-components/del']}>
+                        <AuthorizationWrapper allowedPerms={['/components/del']}>
                           <Button
                             size='small'
                             type='link'
@@ -227,7 +227,7 @@ export default function index() {
               </Button>
             </Space>
           ) : (
-            <AuthorizationWrapper allowedPerms={['/built-in-components/put']}>
+            <AuthorizationWrapper allowedPerms={['/components/put']}>
               <Button
                 type='primary'
                 onClick={() => {

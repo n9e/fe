@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="12px" height="14px" viewBox="0 0 12 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Infrastructure</title>
+    <defs>
+        <linearGradient x1="-42.229325%" y1="258.336924%" x2="80.624237%" y2="20.9938348%" id="linearGradient-1">
+            <stop stop-color="#0019F4" offset="0%"></stop>
+            <stop stop-color="#8A62FF" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="✧Icon/Infrastructure" transform="translate(-2.000000, -1.000000)">
+            <rect id="矩形" fill="#FFFFFF" opacity="0" x="0" y="0" width="16" height="16"></rect>
+            <path d="M12.8,1.2 C13.4627417,1.2 14,1.73725832 14,2.40000005 L14,5.99999995 C14,6.66274168 13.4627417,7.2 12.8,7.2 L3.20000005,7.2 C2.53725832,7.2 2,6.66274168 2,5.99999995 L2,2.40000005 C2,1.73725832 2.53725832,1.2 3.20000005,1.2 L12.8,1.2 Z M12.8,8.8 C13.4627417,8.8 14,9.33725832 14,10 L14,13.6 C14,14.2627417 13.4627417,14.8 12.8,14.8 L3.20000005,14.8 C2.53725832,14.8 2,14.2627417 2,13.6 L2,10 C2,9.33725832 2.53725832,8.8 3.20000005,8.8 L12.8,8.8 Z" id="形状结合" fill="url(#linearGradient-1)"></path>
+            <rect id="矩形" fill="#FFFFFF" x="4" y="3.6" width="4.4" height="1.2" rx="0.6"></rect>
+            <rect id="矩形" fill="#FFFFFF" x="4" y="11.2" width="4.4" height="1.2" rx="0.6"></rect>
+        </g>
+    </g>
+</svg>

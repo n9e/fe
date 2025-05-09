@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>✧ Icon/PersonnelOrganization</title>
+    <defs>
+        <linearGradient x1="-54.1686726%" y1="258.575838%" x2="74.8218593%" y2="18.6024421%" id="linearGradient-1">
+            <stop stop-color="#0019F4" offset="0%"></stop>
+            <stop stop-color="#8A62FF" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="✧-Icon/PersonnelOrganization">
+            <rect id="矩形" fill="#FFFFFF" opacity="0" x="0" y="0" width="16" height="16"></rect>
+            <path d="M2.4,12.4 L13.6,12.4 C14.2627417,12.4 14.8,12.9372583 14.8,13.6 C14.8,14.2627417 14.2627417,14.8 13.6,14.8 L2.4,14.8 C1.7372583,14.8 1.2,14.2627417 1.2,13.6 C1.2,12.9372583 1.7372583,12.4 2.4,12.4 Z M8,1.2 C10.7614237,1.2 13,3.43857625 13,6.2 C13,8.96142375 10.7614237,11.2 8,11.2 C5.23857625,11.2 3,8.96142375 3,6.2 C3,3.43857625 5.23857625,1.2 8,1.2 Z" id="形状结合" fill="url(#linearGradient-1)"></path>
+        </g>
+    </g>
+</svg>

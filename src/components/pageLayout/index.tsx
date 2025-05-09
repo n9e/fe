@@ -20,13 +20,16 @@ import querystring from 'query-string';
 import { useTranslation } from 'react-i18next';
 import { Menu, Dropdown, Space, Drawer } from 'antd';
 import { DownOutlined, RollbackOutlined } from '@ant-design/icons';
+
 import { Logout } from '@/services/login';
 import AdvancedWrap, { License } from '@/components/AdvancedWrap';
 import { CommonStateContext } from '@/App';
 import { AccessTokenKey, IS_ENT } from '@/utils/constant';
 import DarkModeSelect from '@/components/DarkModeSelect';
+
 import Version from './Version';
 import SideMenuColorSetting from './SideMenuColorSetting';
+import PageLayoutWithTabs from './PageLayoutWithTabs';
 import HelpLink from './HelpLink';
 import './index.less';
 import './locale';
@@ -55,7 +58,7 @@ const i18nMap = {
   ru_RU: 'Русский',
 };
 
-const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introIcon, children, customArea, showBack, backPath, docFn }) => {
+const PageLayoutOld: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introIcon, children, customArea, showBack, backPath, docFn }) => {
   const { t, i18n } = useTranslation('pageLayout');
   const history = useHistory();
   const location = useLocation();
@@ -233,5 +236,11 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
     </div>
   );
 };
+
+let PageLayout = PageLayoutWithTabs;
+
+if (IS_ENT) {
+  PageLayout = PageLayoutOld;
+}
 
 export default PageLayout;

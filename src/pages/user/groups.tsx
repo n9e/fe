@@ -21,7 +21,7 @@ import { useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import PageLayout, { HelpLink } from '@/components/pageLayout';
 import { Button, Table, Input, message, List, Row, Col, Modal, Space } from 'antd';
-import { EditOutlined, DeleteOutlined, SearchOutlined, UserOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined, SearchOutlined, UserOutlined, InfoCircleOutlined, PlusSquareOutlined } from '@ant-design/icons';
 import UserInfoModal from './component/createModal';
 import { getTeamInfoList, getTeamInfo, deleteTeam, deleteMember } from '@/services/manage';
 import { User, Team, UserType, ActionType, TeamInfo } from '@/store/manageInterface';
@@ -245,9 +245,8 @@ const Resource: React.FC = () => {
                 onClick={() => {
                   handleClick(ActionType.CreateTeam);
                 }}
-              >
-                {t('common:btn.add')}
-              </Button>
+                icon={<PlusSquareOutlined />}
+              />
             </div>
             <div style={{ display: 'flex', margin: '5px 0px 12px' }}>
               <Input

@@ -9,5 +9,5 @@ export default function index() {
   const query = queryString.parse(search);
   const id = _.toNumber(query.__uuid__);
 
-  return <Detail isPreview isBuiltin gobackPath='/built-in-components' builtinParams={id} />;
+  return <Detail isPreview isBuiltin gobackPath='/components' builtinParams={id} />;
 }

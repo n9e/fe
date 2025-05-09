@@ -1,5 +1,5 @@
 const en_US = {
-  title: 'Built-in components',
+  title: 'Components',
   tab_instructions: 'Instructions',
   tab_alertRules: 'Alert rules',
   tab_collectTpls: 'Collect templates',

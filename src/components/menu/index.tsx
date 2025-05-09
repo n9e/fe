@@ -198,11 +198,11 @@ const getMenuList = (t) => {
       label: t('系统配置'),
       children: [
         {
-          key: '/help/source',
+          key: '/datasources',
           label: t('数据源'),
         },
         {
-          key: '/help/variable-configs',
+          key: '/system/variable-settings',
           label: t('变量设置'),
         },
         {
@@ -216,11 +216,11 @@ const getMenuList = (t) => {
           deprecated: true,
         },
         {
-          key: '/help/sso',
+          key: '/system/sso-settings',
           label: t('单点登录'),
         },
         {
-          key: '/help/servers',
+          key: '/system/alerting-engines',
           label: t('告警引擎'),
         },
         {
@@ -228,7 +228,7 @@ const getMenuList = (t) => {
           label: t('仪表盘迁移'),
         },
         {
-          key: '/help/version',
+          key: '/system/version',
           label: t('系统版本'),
         },
       ],
@@ -338,7 +338,7 @@ const SideMenu: FC = () => {
       }}
       className={classNames({
         'menu-container': true,
-        'menu-container-en': i18n.language === 'en_US' || i18n.language === 'ru_RU' && collapsed === '0',
+        'menu-container-en': (i18n.language === 'en_US' || i18n.language === 'ru_RU') && collapsed === '0',
       })}
     >
       {collapsed !== '2' && (

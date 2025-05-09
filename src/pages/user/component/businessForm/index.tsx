@@ -15,8 +15,8 @@
  *
  */
 import React, { useEffect, useState, useImperativeHandle, ReactNode, useCallback, useContext } from 'react';
-import { Form, Input, Select, Switch, Tag, Space, Button } from 'antd';
-import { MinusCircleOutlined, PlusOutlined, CaretDownOutlined, PlusCircleOutlined } from '@ant-design/icons';
+import { Form, Input, Select, Switch, Tag, Space, Button, Tooltip } from 'antd';
+import { MinusCircleOutlined, PlusOutlined, CaretDownOutlined, PlusCircleOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { getBusinessTeamInfo, getTeamInfoList } from '@/services/manage';
 import { TeamProps, Team, ActionType } from '@/store/manageInterface';
 import { useTranslation, Trans } from 'react-i18next';
@@ -41,7 +41,9 @@ const TeamForm = React.forwardRef<ReactNode, TeamProps>((props, ref) => {
   }));
 
   useEffect(() => {
-    if (businessId && action === ActionType.EditBusiness) {
+    if (action === ActionType.CreateBusiness || action === ActionType.AddBusinessMember) {
+      getList('');
+    } else if (businessId && action === ActionType.EditBusiness) {
       getTeamInfoDetail(businessId);
     } else {
       setLoading(false);
@@ -61,13 +63,10 @@ const TeamForm = React.forwardRef<ReactNode, TeamProps>((props, ref) => {
     });
   };
 
-  useEffect(() => {
-    getList('');
-  }, []);
-
   const getList = (str: string) => {
     getTeamInfoList({ query: str }).then((res) => {
       setUserTeam(res.dat);
+      setLoading(false);
     });
   };
 
@@ -111,6 +110,9 @@ const TeamForm = React.forwardRef<ReactNode, TeamProps>((props, ref) => {
                 <div className='mb8'>
                   <Space>
                     {t('business.team_name')}
+                    <Tooltip title={t('business.team_name_tip')}>
+                      <InfoCircleOutlined />
+                    </Tooltip>
                     <PlusCircleOutlined
                       onClick={() =>
                         add({

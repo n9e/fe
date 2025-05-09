@@ -38,7 +38,8 @@ const zh_CN = {
       - 监控 <1 />
       - 登录 <1 />
     `,
-    team_name: '团队',
+    team_name: '授权团队',
+    team_name_tip: '如下团队可以管理该业务组',
     perm_flag_0: '只读',
     perm_flag_1: '读写',
     user_group_msg: '业务组团队不能为空',
