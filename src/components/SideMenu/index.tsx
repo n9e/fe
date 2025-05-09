@@ -87,7 +87,7 @@ const SideMenu = () => {
   }, [hideSideMenu]);
 
   const menuList = isPlus ? getPlusMenuList(embeddedProductMenu) : getMenuList(embeddedProductMenu);
-  console.log(menuList);
+
   useEffect(() => {
     const filteredMenus = menuList
       .map((menu) => {
@@ -134,6 +134,7 @@ const SideMenu = () => {
         .flat(2),
     [menus, perms],
   );
+
   useEffect(() => {
     let finalPath = ['', ''];
     menuPaths.forEach((path) => {
@@ -151,7 +152,7 @@ const SideMenu = () => {
       setSelectedKeys(finalPath);
     }
   }, [menuPaths, location.pathname, selectedKeys]);
-  console.log(menuPaths);
+
   const uncollapsedWidth = i18n.language === 'en_US' || i18n.language === 'ru_RU' ? 'w-[250px]' : 'w-[172px]';
 
   return (
