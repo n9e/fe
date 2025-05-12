@@ -93,6 +93,9 @@ const SideMenu = () => {
       .map((menu) => {
         const filteredChildren = menu.children
           .map((child) => {
+            if (child.key.startsWith('/embedded-products/')) {
+              return child;
+            }
             if (child.type === 'tabs' && child.children) {
               const filteredTabs = child.children.filter((tab) => perms?.includes(tab.key));
               return { ...child, children: filteredTabs };
@@ -109,7 +112,7 @@ const SideMenu = () => {
       .filter(Boolean) as MenuItem[];
 
     setMenus(filteredMenus);
-  }, [i18n.language, perms]);
+  }, [i18n.language, embeddedProductMenu]);
 
   const menuPaths = useMemo(
     () =>
