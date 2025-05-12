@@ -1,5 +1,5 @@
 const zh_CN = {
-  title: '事件 Pipelines',
+  title: '事件管道',
   teams: '授权团队',
   teams_tip: '限定哪些团队成员可以查看和修改此配置，可以关联多个团队<br />例如：将配置授权给 infra-team，则只有 infra-team 团队下的成员可以访问或调整本配置。',
   basic_configuration: '基本配置',
