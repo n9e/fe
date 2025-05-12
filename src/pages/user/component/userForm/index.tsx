@@ -141,16 +141,22 @@ const UserForm = React.forwardRef<ReactNode, UserAndPasswordFormProps>((props, r
           },
         ]}
       >
-        <Select mode='multiple'>
-          {roleList.map((item, index) => (
-            <Option value={item.name} key={index}>
-              <div>
-                <div>{item.name}</div>
-                <div style={{ color: '#8c8c8c' }}>{item.note}</div>
-              </div>
-            </Option>
-          ))}
-        </Select>
+        <Select
+          mode='multiple'
+          options={_.map(roleList, (item) => {
+            return {
+              label: (
+                <div>
+                  <div>{item.name}</div>
+                  <div style={{ color: '#8c8c8c' }}>{item.note}</div>
+                </div>
+              ),
+              originLabel: item.name,
+              value: item.name,
+            };
+          })}
+          optionLabelProp='originLabel'
+        />
       </Form.Item>
       <Form.Item label={t('account:profile.email')} name='email'>
         <Input />
