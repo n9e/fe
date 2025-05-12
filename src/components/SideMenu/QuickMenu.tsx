@@ -154,6 +154,7 @@ export default forwardRef(function QuickMenu(props: Props, ref) {
         if (activeIndex > -1) {
           const item = filteredMenus[activeIndex] as QuickMenuItem;
           setOpen(false);
+          localStorage.setItem(`tab_selection_${item?.tabParent?.key}`, item.key);
           history.push(item.key);
           saveSelectedCount(item.key);
         }
