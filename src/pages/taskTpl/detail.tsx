@@ -80,45 +80,45 @@ const Detail = (props: any) => {
                       </colgroup>
                       <tbody className='ant-table-tbody'>
                         <tr className='ant-table-row ant-table-row-level-0'>
-                          <td className='text-right pr-2'>{t('task.title')}:</td>
+                          <td className='text-right pr-2'>{t('task.title')} :</td>
                           <td>{data.title}</td>
                         </tr>
                         <tr className='ant-table-row ant-table-row-level-0'>
-                          <td className='text-right pr-2'>{t('tpl.creator')}:</td>
+                          <td className='text-right pr-2'>{t('tpl.creator')} :</td>
                           <td>{data.create_by}</td>
                         </tr>
                         <tr className='ant-table-row ant-table-row-level-0'>
-                          <td className='text-right pr-2'>{t('tpl.last_updated')}:</td>
+                          <td className='text-right pr-2'>{t('tpl.last_updated')} :</td>
                           <td>{moment.unix(data.update_at).format('YYYY-MM-DD HH:mm:ss')}</td>
                         </tr>
                         <tr className='ant-table-row ant-table-row-level-0'>
-                          <td className='text-right pr-2'>{t('task.control.params')}:</td>
+                          <td className='text-right pr-2'>{t('task.control.params')} :</td>
                           <td>
-                            {t('task.account')}：{data.account}
+                            {t('task.account')} : {data.account}
                             <Divider type='vertical' />
-                            {t('task.batch')}：{data.batch}
+                            {t('task.batch')} : {data.batch}
                             <Divider type='vertical' />
-                            {t('task.tolerance')}：{data.tolerance}
+                            {t('task.tolerance')} : {data.tolerance}
                             <Divider type='vertical' />
-                            {t('task.timeout')}：{data.timeout}
+                            {t('task.timeout')} : {data.timeout}
                           </td>
                         </tr>
                         <tr className='ant-table-row ant-table-row-level-0'>
-                          <td className='text-right pr-2'>{t('task.script')}:</td>
+                          <td className='text-right pr-2'>{t('task.script')} :</td>
                           <td>
                             <Editor value={data.script} readOnly height='200px' />
                           </td>
                         </tr>
                         <tr className='ant-table-row ant-table-row-level-0'>
-                          <td className='text-right pr-2'>{t('task.script.args')}:</td>
+                          <td className='text-right pr-2'>{t('task.script.args')} :</td>
                           <td>{data.args}</td>
                         </tr>
                         <tr className='ant-table-row ant-table-row-level-0'>
-                          <td className='text-right pr-2'>{t('task.pause')}:</td>
+                          <td className='text-right pr-2'>{t('task.pause')} :</td>
                           <td>{data.pause}</td>
                         </tr>
                         <tr className='ant-table-row ant-table-row-level-0'>
-                          <td className='text-right pr-2'>{t('task.host.list')}:</td>
+                          <td className='text-right pr-2'>{t('task.host.list')} :</td>
                           <td>
                             {_.map(data.hosts, (host) => {
                               return <div key={host}>{host}</div>;
