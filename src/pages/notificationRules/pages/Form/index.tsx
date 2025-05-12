@@ -13,6 +13,7 @@ import { NS, DEFAULT_VALUES } from '../../constants';
 import { RuleItem } from '../../types';
 import { normalizeFormValues } from '../../utils/normalizeValues';
 import RuleConfig from './RuleConfig';
+import EventPipelineConfigs from './EventPipelineConfigs';
 
 interface Props {
   disabled?: boolean;
@@ -75,6 +76,7 @@ export default function FormCpt(props: Props) {
           <Input.TextArea />
         </Form.Item>
       </Card>
+      <EventPipelineConfigs />
       <Form.List name='notify_configs'>
         {(fields, { add, remove, move }) => (
           <>

@@ -7,6 +7,7 @@ interface Props {
   name: string | (string | number)[];
   label?: string;
   initialValue?: string;
+  options?: { label: string; value: string }[];
 }
 
 export default function CronPattern(props: Props) {
@@ -21,16 +22,18 @@ export default function CronPattern(props: Props) {
       tooltip={t('cron_pattern_tip')}
     >
       <AutoComplete
-        options={[
-          { label: '@every 15s', value: '@every 15s' },
-          { label: '@every 30s', value: '@every 30s' },
-          { label: '@every 45s', value: '@every 45s' },
-          { label: '@every 60s', value: '@every 60s' },
-          { label: '@every 120s', value: '@every 120s' },
-          { label: '@every 150s', value: '@every 150s' },
-          { label: '@every 180s', value: '@every 180s' },
-          { label: '@every 300s', value: '@every 300s' },
-        ]}
+        options={
+          props.options ?? [
+            { label: '@every 15s', value: '@every 15s' },
+            { label: '@every 30s', value: '@every 30s' },
+            { label: '@every 45s', value: '@every 45s' },
+            { label: '@every 60s', value: '@every 60s' },
+            { label: '@every 120s', value: '@every 120s' },
+            { label: '@every 150s', value: '@every 150s' },
+            { label: '@every 180s', value: '@every 180s' },
+            { label: '@every 300s', value: '@every 300s' },
+          ]
+        }
       />
     </Form.Item>
   );
