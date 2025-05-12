@@ -54,7 +54,7 @@ export default function index(props: Props) {
               <Space align='baseline' size={4}>
                 {keyLabel}
                 {keyLabelTootip && (
-                  <Tooltip className='n9e-ant-from-item-tooltip' title={keyLabelTootip}>
+                  <Tooltip className='n9e-ant-from-item-tooltip' title={keyLabelTootip} overlayClassName='ant-tooltip-auto-width'>
                     <QuestionCircleOutlined />
                   </Tooltip>
                 )}
