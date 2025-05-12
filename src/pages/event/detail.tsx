@@ -268,7 +268,7 @@ const EventDetailPage: React.FC = () => {
       label: t('detail.notify_channels'),
       key: 'notify_channels',
       render(channels) {
-        return channels.join(' ');
+        return _.join(channels, ' ');
       },
     },
     {
