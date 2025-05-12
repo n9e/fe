@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
-import { Modal, Form, Input, Switch, Select } from 'antd';
+import { Modal, Form, Input, Select, Radio } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import { getTeamInfoList } from '@/services/manage';
@@ -19,6 +19,7 @@ const EmbeddedProductModal: React.FC<EmbeddedProductModalProps> = ({ open, initi
   const { t } = useTranslation(NS);
   const [form] = Form.useForm();
   const [teamList, setTeamList] = useState<{ id: number; name: string }[]>([]);
+  const isPrivate = Form.useWatch('is_private', form);
 
   useEffect(() => {
     if (open) {
@@ -47,6 +48,7 @@ const EmbeddedProductModal: React.FC<EmbeddedProductModalProps> = ({ open, initi
             ...values,
             id: initialValues?.id || Number(values.id),
             is_private: values.is_private,
+            // team_ids: values.team_ids || [],
           };
           onOk(formattedData);
         });
@@ -60,23 +62,25 @@ const EmbeddedProductModal: React.FC<EmbeddedProductModalProps> = ({ open, initi
         <Form.Item name='url' label={t('url')} rules={[{ required: true, message: t('url_msg') }]}>
           <Input.TextArea />
         </Form.Item>
-
-        <Form.Item name='team_ids' label={t('team_ids')} rules={[{ required: true, message: t('team_ids_msg') }]}>
-          <Select
-            mode='multiple'
-            allowClear
-            showSearch
-            options={_.map(teamList, (item) => {
-              return {
+        <Form.Item name='is_private' label={t('visibility')} initialValue={false} rules={[{ required: true, message: t('visibility_msg') }]}>
+          <Radio.Group>
+            <Radio.Button value={false}>{t('login_user_visible')}</Radio.Button>
+            <Radio.Button value={true}>{t('team_visible')}</Radio.Button>
+          </Radio.Group>
+        </Form.Item>
+        {isPrivate && (
+          <Form.Item name='team_ids' label={t('team_ids')} rules={[{ required: true, message: t('team_ids_msg') }]}>
+            <Select
+              mode='multiple'
+              allowClear
+              showSearch
+              options={_.map(teamList, (item) => ({
                 label: item.name,
                 value: item.id,
-              };
-            })}
-          />
-        </Form.Item>
-        <Form.Item name='is_private' label={t('common:private')} valuePropName='checked' initialValue={false}>
-          <Switch />
-        </Form.Item>
+              }))}
+            />
+          </Form.Item>
+        )}
       </Form>
     </Modal>
   );
