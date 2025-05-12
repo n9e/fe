@@ -152,22 +152,22 @@ export default function List(props: IProps) {
             style={{
               width: '100%',
               display: 'flex',
-              justifyContent: 'flex-end',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              gap: 8,
             }}
           >
-            <Space>
-              <TargetMetaDrawer ident={text} />
-              {import.meta.env['VITE_IS_PRO'] && (
-                <Tooltip title='查看关联采集配置'>
-                  <ApartmentOutlined
-                    onClick={() => {
-                      setCollectsDrawerVisible(true);
-                      setCollectsDrawerIdent(text);
-                    }}
-                  />
-                </Tooltip>
-              )}
-            </Space>
+            <TargetMetaDrawer ident={text} />
+            {import.meta.env['VITE_IS_PRO'] && (
+              <Tooltip title='查看关联采集配置'>
+                <ApartmentOutlined
+                  onClick={() => {
+                    setCollectsDrawerVisible(true);
+                    setCollectsDrawerIdent(text);
+                  }}
+                />
+              </Tooltip>
+            )}
           </div>
         );
       },
