@@ -83,22 +83,9 @@ const Modify = (props: any) => {
                 onSubmit={handleSubmit}
                 initialValues={data}
                 footer={
-                  <>
-                    <div style={{ marginBottom: 16 }}>
-                      <Space>
-                        <strong>{t('tpl.callback')}:</strong>
-                        <span>{`\${ibex}/${id}`}</span>
-                        <CopyOutlined
-                          onClick={() => {
-                            copyToClipBoard(`\${ibex}/${id}`);
-                          }}
-                        />
-                      </Space>
-                    </div>
-                    <Button type='primary' htmlType='submit'>
-                      {t('btn.submit')}
-                    </Button>
-                  </>
+                  <Button type='primary' htmlType='submit'>
+                    {t('btn.submit')}
+                  </Button>
                 }
               />
             ) : null}
