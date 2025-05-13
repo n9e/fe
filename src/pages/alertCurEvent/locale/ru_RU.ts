@@ -22,6 +22,7 @@ const ru_RU = {
   prod: 'Тип мониторинга',
   aggregate_rule: 'Правило сбора',
   aggregate_rule_mgs: 'Выберите правило сбора',
+  aggr_result: 'результатов сбора',
   aggregate_rule_name: 'Название правила',
   public: 'Открытый',
   isPublic: 'Открытое',

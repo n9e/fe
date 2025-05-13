@@ -7,9 +7,11 @@ import { getAggrAlerts, AddAggrAlerts, updateAggrAlerts, deleteAggrAlerts } from
 import { CommonStateContext } from '@/App';
 
 import './index.less';
+import { CardType } from './AlertCard';
 
 interface Props {
   onRefreshRule: (rule: string) => void;
+  cardList: CardType[];
 }
 
 export interface CardAlertType {
@@ -23,7 +25,7 @@ export interface CardAlertType {
 }
 
 export default function AggrRuleDropdown(props: Props) {
-  const { onRefreshRule } = props;
+  const { onRefreshRule, cardList } = props;
   const { t } = useTranslation('AlertCurEvents');
   const [form] = Form.useForm();
   const [alertList, setAlertList] = useState<CardAlertType[]>();
@@ -159,7 +161,7 @@ export default function AggrRuleDropdown(props: Props) {
   );
 
   return (
-    <div>
+    <div className='flex items-center gap-2'>
       <Dropdown overlay={dropdownMenu} trigger={['click']} visible={visibleDropdown} onVisibleChange={setVisibleDropdown}>
         <Input
           addonBefore={t('aggregate_rule')}
@@ -171,6 +173,9 @@ export default function AggrRuleDropdown(props: Props) {
         />
       </Dropdown>
 
+      <div className=' text-[var(--fc-text-4)]'>
+        {cardList?.length} {t('aggr_result')}
+      </div>
       <Modal title={editForm ? t('common:btn.edit') : t('common:btn.add')} visible={visibleAggrRuleModal} onOk={handleOk} onCancel={handleCancel} destroyOnClose>
         <Form
           form={form}

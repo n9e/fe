@@ -22,6 +22,7 @@ const ja_JP = {
   prod: '監視タイプ',
   aggregate_rule: '集計ルール',
   aggregate_rule_mgs: '集計ルールを選択してください',
+  aggr_result: '集計結果',
   aggregate_rule_name: 'ルール名',
   public: '公開',
   isPublic: '公開するかどうか',

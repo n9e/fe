@@ -26,7 +26,7 @@ interface Props {
   refreshFlag: string;
 }
 
-interface CardType {
+export interface CardType {
   severity: number;
   title: string;
   total: number;
@@ -266,7 +266,7 @@ function Card(props: Props, ref) {
 
   return (
     <div className='cur-events p-2' ref={Ref}>
-      <AggrRuleDropdown onRefreshRule={setRule} />
+      <AggrRuleDropdown cardList={cardList || []} onRefreshRule={setRule} />
       <div className='w-full overflow-y-auto pt-2 h-[172px] gap-4 items-start'>
         {cardList?.map((card, i) => (
           <div

@@ -21,6 +21,7 @@ const en_US = {
   shield: 'Blackout',
   aggregate_rule: 'Aggregate rule',
   aggregate_rule_mgs: 'Please select aggregate rule',
+  aggr_result: 'aggregate results',
   aggregate_rule_name: 'Rule name',
   public: 'Public',
   isPublic: 'Is public',
