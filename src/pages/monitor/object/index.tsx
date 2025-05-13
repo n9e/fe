@@ -61,7 +61,6 @@ export default function index() {
       rightArea={
         <div
           style={{
-            marginRight: 20,
             display: 'flex',
             alignItems: 'center',
           }}

@@ -163,7 +163,7 @@ const CreateModal: React.FC<ModalProps> = (props: ModalProps) => {
         const params = members.map(({ perm_flag, user_group_id }) => ({
           user_group_id,
           perm_flag: perm_flag ? 'rw' : 'ro',
-          busi_group_id: teamId,
+          busi_group_id: parseInt(teamId),
         }));
         addBusinessMember(teamId, params).then((_) => {
           message.success(t('common:success.add'));

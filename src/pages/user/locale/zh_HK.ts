@@ -38,7 +38,8 @@ const zh_HK = {
       - 監控 <1 />
       - 登錄 <1 />
     `,
-    team_name: '團隊',
+    team_name: '授權團隊',
+    team_name_tip: '如下團隊可以管理該業務組',
     perm_flag_0: '只讀',
     perm_flag_1: '讀寫',
     user_group_msg: '業務組團隊不能為空',

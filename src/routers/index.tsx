@@ -190,23 +190,23 @@ export default function Content() {
         <Route exact path='/job-tasks/:id/result' component={TaskResult} />
         <Route exact path='/job-tasks/:id/detail' component={TaskDetail} />
 
-        <Route exact path='/help/version' component={Version} />
-        <Route exact path='/help/servers' component={Servers} />
-        <Route exact path='/help/source' component={Datasource} />
-        <Route exact path='/help/source/:action/:type' component={DatasourceAdd} />
-        <Route exact path='/help/source/:action/:type/:id' component={DatasourceAdd} />
-        <Route exact path='/help/sso' component={SSOConfigs} />
+        <Route exact path='/system/version' component={Version} />
+        <Route exact path='/system/alerting-engines' component={Servers} />
+        <Route exact path='/datasources' component={Datasource} />
+        <Route exact path='/datasources/:action/:type' component={DatasourceAdd} />
+        <Route exact path='/datasources/:action/:type/:id' component={DatasourceAdd} />
+        <Route exact path='/system/sso-settings' component={SSOConfigs} />
         <Route exact path='/help/notification-tpls' component={NotificationTpls} />
         <Route exact path='/help/notification-settings' component={NotificationSettings} />
         <Route exact path='/help/migrate' component={MigrateDashboards} />
-        <Route exact path='/help/variable-configs' component={VariableConfigs} />
+        <Route exact path='/system/variable-settings' component={VariableConfigs} />
 
         <Route exact path='/trace/explorer' component={TraceExplorer} />
         <Route exact path='/trace/dependencies' component={TraceDependencies} />
 
-        <Route exact path='/permissions' component={Permissions} />
+        <Route exact path='/roles' component={Permissions} />
 
-        {import.meta.env.VITE_IS_ENT !== 'true' && <Route exact path='/site-settings' component={SiteSettings} />}
+        {import.meta.env.VITE_IS_ENT !== 'true' && <Route exact path='/system/site-settings' component={SiteSettings} />}
 
         {lazyRoutes.map((route, i) => (
           <RouteWithSubRoutes key={i} {...route} />

@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.quick-menu-modal {
+  .border-b {
+    box-sizing: border-box;
+    border-width: 0;
+    border-style: solid; // tailwindcss reset
+  }
+  .ant-modal-content {
+    border-radius: 8px;
+  }
+  .ant-modal-close-x {
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+  }
+  .ant-modal-footer {
+    padding: 0;
+  }
+  .bg-fc-200 {
+    background-color: var(--fc-fill-3) !important;
+  }
+}

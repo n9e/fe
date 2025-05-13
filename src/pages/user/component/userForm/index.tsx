@@ -14,18 +14,21 @@
  * limitations under the License.
  *
  */
-import React, { useEffect, useState, useImperativeHandle, ReactNode } from 'react';
+import React, { useEffect, useState, useImperativeHandle, ReactNode, useContext } from 'react';
 import { Form, Input, Select, Space } from 'antd';
 import { getUserInfo, getNotifyChannels, getRoles } from '@/services/manage';
 import { UserAndPasswordFormProps, Contacts, ContactsItem, User } from '@/store/manageInterface';
 import { MinusCircleOutlined, PlusCircleOutlined, CaretDownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
-import { Link } from 'react-router-dom';
+
+import ContactDrawer from '@/components/Contacts';
+import { CommonStateContext } from '@/App';
 
 const { Option } = Select;
 const UserForm = React.forwardRef<ReactNode, UserAndPasswordFormProps>((props, ref) => {
   const { t } = useTranslation();
+  const { profile } = useContext(CommonStateContext);
   const { userId } = props;
   const [form] = Form.useForm();
   const [initialValues, setInitialValues] = useState<User>();
@@ -33,6 +36,7 @@ const UserForm = React.forwardRef<ReactNode, UserAndPasswordFormProps>((props, r
   const [contactsList, setContactsList] = useState<ContactsItem[]>([]);
   const [roleList, setRoleList] = useState<{ name: string; note: string }[]>([]);
   const contacts = Form.useWatch('contacts', form);
+  const [contactDrawerVisible, setContactDrawerVisible] = useState(false);
 
   useImperativeHandle(ref, () => ({
     form: form,
@@ -137,16 +141,22 @@ const UserForm = React.forwardRef<ReactNode, UserAndPasswordFormProps>((props, r
           },
         ]}
       >
-        <Select mode='multiple'>
-          {roleList.map((item, index) => (
-            <Option value={item.name} key={index}>
-              <div>
-                <div>{item.name}</div>
-                <div style={{ color: '#8c8c8c' }}>{item.note}</div>
-              </div>
-            </Option>
-          ))}
-        </Select>
+        <Select
+          mode='multiple'
+          options={_.map(roleList, (item) => {
+            return {
+              label: (
+                <div>
+                  <div>{item.name}</div>
+                  <div style={{ color: '#8c8c8c' }}>{item.note}</div>
+                </div>
+              ),
+              originLabel: item.name,
+              value: item.name,
+            };
+          })}
+          optionLabelProp='originLabel'
+        />
       </Form.Item>
       <Form.Item label={t('account:profile.email')} name='email'>
         <Input />
@@ -158,9 +168,7 @@ const UserForm = React.forwardRef<ReactNode, UserAndPasswordFormProps>((props, r
         label={
           <Space>
             {t('account:profile.contact')}
-            <Link to='/contacts' target='_blank'>
-              {t('account:profile.contactLinkToSetting')}
-            </Link>
+            {profile.roles?.includes('Admin') && <a onClick={() => setContactDrawerVisible(true)}>{t('account:profile.contactLinkToSetting')}</a>}
           </Space>
         }
       >
@@ -219,6 +227,13 @@ const UserForm = React.forwardRef<ReactNode, UserAndPasswordFormProps>((props, r
           )}
         </Form.List>
       </Form.Item>
+
+      <ContactDrawer
+        open={contactDrawerVisible}
+        onCloseDrawer={() => {
+          setContactDrawerVisible(false);
+        }}
+      />
     </Form>
   ) : null;
 });

@@ -6,9 +6,11 @@ import { useAntdTable } from 'ahooks';
 import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation, Trans } from 'react-i18next';
+
 import { getMonObjectList } from '@/services/targets';
 import { timeFormatter } from '@/pages/dashboard/Renderer/utils/valueFormatter';
 import { CommonStateContext } from '@/App';
+
 import clipboard from './clipboard';
 import OrganizeColumns from './OrganizeColumns';
 import { getDefaultColumnsConfigs, setDefaultColumnsConfigs } from './utils';
@@ -144,9 +146,17 @@ export default function List(props: IProps) {
       ),
       dataIndex: 'ident',
       className: 'n9e-hosts-table-column-ident',
-      render: (text, record) => {
+      render: (text) => {
         return (
-          <Space>
+          <div
+            style={{
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              gap: 8,
+            }}
+          >
             <TargetMetaDrawer ident={text} />
             {import.meta.env['VITE_IS_PRO'] && (
               <Tooltip title='查看关联采集配置'>
@@ -158,7 +168,7 @@ export default function List(props: IProps) {
                 />
               </Tooltip>
             )}
-          </Space>
+          </div>
         );
       },
     },
@@ -291,7 +301,6 @@ export default function List(props: IProps) {
     if (item.name === 'mem_util') {
       columns.push({
         title: t('mem_util'),
-        width: 100,
         dataIndex: 'mem_util',
         render(text, reocrd) {
           if (reocrd.cpu_num === -1) return <Unknown />;
@@ -322,7 +331,6 @@ export default function List(props: IProps) {
     if (item.name === 'cpu_util') {
       columns.push({
         title: t('cpu_util'),
-        width: 100,
         dataIndex: 'cpu_util',
         render(text, reocrd) {
           if (reocrd.cpu_num === -1) return <Unknown />;
@@ -352,7 +360,6 @@ export default function List(props: IProps) {
     if (item.name === 'cpu_num') {
       columns.push({
         title: t('cpu_num'),
-        width: 100,
         dataIndex: 'cpu_num',
         render: (val, reocrd) => {
           if (reocrd.cpu_num === -1) return <Unknown />;
@@ -370,7 +377,6 @@ export default function List(props: IProps) {
             </Tooltip>
           </Space>
         ),
-        width: 100,
         dataIndex: 'offset',
         render(text, reocrd) {
           if (reocrd.cpu_num === -1) return <Unknown />;
@@ -400,7 +406,6 @@ export default function List(props: IProps) {
     if (item.name === 'os') {
       columns.push({
         title: t('os'),
-        width: 100,
         dataIndex: 'os',
         render: (val, reocrd) => {
           if (reocrd.cpu_num === -1) return <Unknown />;
@@ -411,7 +416,6 @@ export default function List(props: IProps) {
     if (item.name === 'arch') {
       columns.push({
         title: t('arch'),
-        width: 100,
         dataIndex: 'arch',
         render: (val, reocrd) => {
           if (reocrd.cpu_num === -1) return <Unknown />;
@@ -429,7 +433,6 @@ export default function List(props: IProps) {
             </Tooltip>
           </Space>
         ),
-        width: 100,
         sorter: true,
         dataIndex: 'update_at',
         render: (val, reocrd) => {
@@ -463,7 +466,6 @@ export default function List(props: IProps) {
             </Tooltip>
           </Space>
         ),
-        width: 100,
         dataIndex: 'remote_addr',
         render: (val, reocrd) => {
           if (reocrd.cpu_num === -1) return <Unknown />;
@@ -660,6 +662,7 @@ export default function List(props: IProps) {
         size='small'
         {...tableProps}
         showSorterTooltip={false}
+        tableLayout='auto'
         rowSelection={{
           type: 'checkbox',
           selectedRowKeys: _.map(selectedRows, 'id'),

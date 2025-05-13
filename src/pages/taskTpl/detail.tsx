@@ -16,18 +16,19 @@
  */
 import React, { useState, useEffect, useContext } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import { Button, Spin, Divider, Card, Space } from 'antd';
-import { RollbackOutlined, CopyOutlined } from '@ant-design/icons';
+import { Button, Spin, Divider, Card } from 'antd';
+import { RollbackOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
+
 import PageLayout from '@/components/pageLayout';
 import request from '@/utils/request';
 import api from '@/utils/api';
+import { CommonStateContext } from '@/App';
+
 import Editor from './editor';
 import { Tpl } from './interface';
-import { CommonStateContext } from '@/App';
-import { copyToClipBoard } from '@/utils';
 
 const Detail = (props: any) => {
   const history = useHistory();
@@ -79,64 +80,49 @@ const Detail = (props: any) => {
                       </colgroup>
                       <tbody className='ant-table-tbody'>
                         <tr className='ant-table-row ant-table-row-level-0'>
-                          <td>{t('task.title')}</td>
+                          <td className='text-right pr-2'>{t('task.title')} :</td>
                           <td>{data.title}</td>
                         </tr>
                         <tr className='ant-table-row ant-table-row-level-0'>
-                          <td>{t('tpl.creator')}</td>
+                          <td className='text-right pr-2'>{t('tpl.creator')} :</td>
                           <td>{data.create_by}</td>
                         </tr>
                         <tr className='ant-table-row ant-table-row-level-0'>
-                          <td>{t('tpl.last_updated')}</td>
+                          <td className='text-right pr-2'>{t('tpl.last_updated')} :</td>
                           <td>{moment.unix(data.update_at).format('YYYY-MM-DD HH:mm:ss')}</td>
                         </tr>
                         <tr className='ant-table-row ant-table-row-level-0'>
-                          <td>{t('task.control.params')}</td>
+                          <td className='text-right pr-2'>{t('task.control.params')} :</td>
                           <td>
-                            {t('task.account')}：{data.account}
+                            {t('task.account')} : {data.account}
                             <Divider type='vertical' />
-                            {t('task.batch')}：{data.batch}
+                            {t('task.batch')} : {data.batch}
                             <Divider type='vertical' />
-                            {t('task.tolerance')}：{data.tolerance}
+                            {t('task.tolerance')} : {data.tolerance}
                             <Divider type='vertical' />
-                            {t('task.timeout')}：{data.timeout}
+                            {t('task.timeout')} : {data.timeout}
                           </td>
                         </tr>
                         <tr className='ant-table-row ant-table-row-level-0'>
-                          <td>
-                            <div style={{ height: '100%' }}>{t('task.script')}</div>
-                          </td>
+                          <td className='text-right pr-2'>{t('task.script')} :</td>
                           <td>
                             <Editor value={data.script} readOnly height='200px' />
                           </td>
                         </tr>
                         <tr className='ant-table-row ant-table-row-level-0'>
-                          <td>{t('task.script.args')}</td>
+                          <td className='text-right pr-2'>{t('task.script.args')} :</td>
                           <td>{data.args}</td>
                         </tr>
                         <tr className='ant-table-row ant-table-row-level-0'>
-                          <td>{t('task.pause')}</td>
+                          <td className='text-right pr-2'>{t('task.pause')} :</td>
                           <td>{data.pause}</td>
                         </tr>
                         <tr className='ant-table-row ant-table-row-level-0'>
-                          <td>{t('task.host.list')}</td>
+                          <td className='text-right pr-2'>{t('task.host.list')} :</td>
                           <td>
                             {_.map(data.hosts, (host) => {
                               return <div key={host}>{host}</div>;
                             })}
-                          </td>
-                        </tr>
-                        <tr className='ant-table-row ant-table-row-level-0'>
-                          <td>{t('tpl.callback')}</td>
-                          <td>
-                            <Space>
-                              <span>{`\${ibex}/${id}`}</span>
-                              <CopyOutlined
-                                onClick={() => {
-                                  copyToClipBoard(`\${ibex}/${id}`);
-                                }}
-                              />
-                            </Space>
                           </td>
                         </tr>
                       </tbody>

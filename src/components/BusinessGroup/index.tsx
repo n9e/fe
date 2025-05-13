@@ -1,14 +1,19 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Resizable } from 're-resizable';
 import _ from 'lodash';
 import classNames from 'classnames';
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import { Resizable } from 're-resizable';
+import { useHistory, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
-import { Input } from 'antd';
-import { LeftOutlined, RightOutlined, SettingOutlined, SearchOutlined } from '@ant-design/icons';
+import { Button, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
+import { LeftOutlined, RightOutlined, SearchOutlined, PlusSquareOutlined } from '@ant-design/icons';
+
 import { CommonStateContext } from '@/App';
+import { ActionType } from '@/store/manageInterface';
 import Tree from '@/components/BusinessGroup/components/Tree';
+import EditBusinessDrawer from '@/components/BusinessGroup/components/EditBusinessDrawer';
+import CreateBusinessModal from '@/pages/user/component/createModal';
+
 import { listToTree, getCollapsedKeys, getCleanBusinessGroupIds, getDefaultBusinessGroupKey, getDefaultBusiness, getVaildBusinessGroup } from './utils';
 import BusinessGroupSelect from './BusinessGroupSelect';
 import BusinessGroupSelectWithAll from './BusinessGroupSelectWithAll';
@@ -61,8 +66,25 @@ export function setLocaleExpandedKeys(nodes: string[]) {
   localStorage.setItem('biz_group_expanded_keys', JSON.stringify(nodes));
 }
 
+const filterData = (
+  value: string,
+  data: {
+    name: string;
+    id: number;
+    label_value?: string;
+  }[],
+) => {
+  const filteredData = _.filter(data, (item) => {
+    if (!value) return true;
+    return _.includes(_.toLower(item.name), _.toLower(value));
+  });
+  return filteredData;
+};
+
+const BUSINESS_GROUP_SEARCH_KEY = 'businessGroupSearchValue';
+
 export default function index(props: IProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation('BusinessGroup');
   const { businessGroup, businessGroupOnChange } = useContext(CommonStateContext);
   const location = useLocation();
   const query = queryString.parse(location.search);
@@ -70,14 +92,30 @@ export default function index(props: IProps) {
   const { title = t('common:business_groups'), renderHeadExtra, onSelect, showSelected = true } = props;
   const [collapse, setCollapse] = useState(localStorage.getItem('leftlist') === '1');
   const [width, setWidth] = useState(_.toNumber(localStorage.getItem('leftwidth') || 200));
-  const { busiGroups, siteInfo } = useContext(CommonStateContext);
-  const [businessGroupTreeData, setBusinessTreeGroupData] = useState<Node[]>([]);
-  const [busiGroupsListData, setBusiGroupsListData] = useState<any[]>([]);
+  const { busiGroups, siteInfo, setBusiGroups } = useContext(CommonStateContext);
+  const [businessGroupTreeData, setBusinessGroupTreeData] = useState<Node[]>([]);
+  const [createBusiVisible, setCreateBusiVisible] = useState<boolean>(false);
+  const [editBusiDrawerVisible, setEditBusiDrawerVisible] = useState<boolean>(false);
+  const [editBusiId, setEditBusiId] = useState<string>();
+  const [searchValue, setSearchValue] = useState<string>('');
+  const savedSearchValue = sessionStorage.getItem(BUSINESS_GROUP_SEARCH_KEY);
+
+  const reloadData = () => {
+    getBusiGroups().then((res = []) => {
+      setBusiGroups(res);
+      const filteredData = filterData(searchValue, res);
+      setBusinessGroupTreeData(listToTree(filteredData, siteInfo?.businessGroupSeparator));
+    });
+  };
 
   useEffect(() => {
-    setBusinessTreeGroupData(listToTree(busiGroups, siteInfo?.businessGroupSeparator));
-    setBusiGroupsListData(busiGroups);
-  }, [busiGroups]);
+    let data = busiGroups;
+    if (savedSearchValue) {
+      setSearchValue(savedSearchValue);
+      data = filterData(savedSearchValue, busiGroups);
+    }
+    setBusinessGroupTreeData(listToTree(data, siteInfo?.businessGroupSeparator));
+  }, []);
 
   return (
     <Resizable
@@ -88,7 +126,7 @@ export default function index(props: IProps) {
       enable={{
         right: collapse ? false : true,
       }}
-      onResizeStop={(e, direction, ref, d) => {
+      onResizeStop={(_e, _direction, _ref, d) => {
         let curWidth = width + d.width;
         if (curWidth < 200) {
           curWidth = 200;
@@ -111,29 +149,34 @@ export default function index(props: IProps) {
           {renderHeadExtra && renderHeadExtra()}
           <div className='n9e-biz-group-container-group-title'>
             {title}
-            {title === t('common:business_group') && (
-              <Link to='/busi-groups' target='_blank'>
-                <SettingOutlined />
-              </Link>
-            )}
+            <Button
+              style={{
+                height: '30px',
+              }}
+              size='small'
+              type='link'
+              onClick={() => {
+                setCreateBusiVisible(true);
+              }}
+              icon={<PlusSquareOutlined />}
+            />
           </div>
           <Input
             className='n9e-biz-group-container-group-search'
             prefix={<SearchOutlined />}
-            onPressEnter={(e) => {
-              e.preventDefault();
-              const value = e.currentTarget.value;
-              getBusiGroups({
-                query: value,
-              }).then((res) => {
-                setBusinessTreeGroupData(listToTree(res || [], siteInfo?.businessGroupSeparator));
-                setBusiGroupsListData(res || []);
-              });
+            value={searchValue}
+            onChange={(e) => {
+              const value = e.target.value;
+              setSearchValue(value);
+              sessionStorage.setItem(BUSINESS_GROUP_SEARCH_KEY, value);
+              const filteredData = filterData(value, busiGroups);
+              setBusinessGroupTreeData(listToTree(filteredData, siteInfo?.businessGroupSeparator));
             }}
+            placeholder={t('common:search_placeholder')}
           />
           {siteInfo?.businessGroupDisplayMode == 'list' ? (
             <div className='radio-list'>
-              {_.map(busiGroupsListData, (item) => {
+              {_.map(busiGroups, (item) => {
                 const itemKey = _.toString(item.id);
                 return (
                   <div
@@ -182,6 +225,11 @@ export default function index(props: IProps) {
                   onExpand={(expandedKeys: string[]) => {
                     setLocaleExpandedKeys(expandedKeys);
                   }}
+                  onEdit={(_selectedKeys, e) => {
+                    const itemKey = e.node.key;
+                    setEditBusiId(itemKey);
+                    setEditBusiDrawerVisible(true);
+                  }}
                   treeData={businessGroupTreeData as Node[]}
                 />
               )}
@@ -189,6 +237,28 @@ export default function index(props: IProps) {
           )}
         </div>
       </div>
+      {editBusiId && (
+        <EditBusinessDrawer
+          id={editBusiId}
+          open={editBusiDrawerVisible}
+          onCloseDrawer={() => {
+            setEditBusiDrawerVisible(false);
+            reloadData();
+          }}
+        />
+      )}
+      <CreateBusinessModal
+        width={600}
+        visible={createBusiVisible}
+        action={ActionType.CreateBusiness}
+        userType='business'
+        onClose={(type: string) => {
+          setCreateBusiVisible(false);
+          if (type === 'create') {
+            reloadData();
+          }
+        }}
+      />
     </Resizable>
   );
 }

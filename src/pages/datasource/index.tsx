@@ -106,7 +106,7 @@ export default function index() {
           setChooseDataSourceTypeModalVisible(false);
         }}
       >
-        <SourceCards sourceMap={pluginList} urlPrefix='help/source' />
+        <SourceCards sourceMap={pluginList} urlPrefix='datasources' />
       </Modal>
     </PageLayout>
   );
