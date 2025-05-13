@@ -12,7 +12,7 @@ import { IS_ENT } from '@/utils/constant';
 import { getMenuList } from '@/components/SideMenu/menu';
 import { getEmbeddedProducts } from '@/pages/embeddedProduct/services';
 import { eventBus, EVENT_KEYS } from '@/pages/embeddedProduct/eventBus';
-import { NS as embeddedProductNS } from '@/pages/embeddedProduct/constants';
+import { DETAIL_PATH as embeddedProductDetailPath } from '@/pages/embeddedProduct/constants';
 
 import { cn } from './utils';
 import SideMenuHeader from './Header';
@@ -69,7 +69,7 @@ const SideMenu = () => {
     getEmbeddedProducts().then((res) => {
       if (res) {
         const items = res.map((product) => ({
-          key: `/${embeddedProductNS}/${product.id}`,
+          key: `${embeddedProductDetailPath}/${product.id}`,
           label: product.name,
           children: [],
         }));
@@ -93,7 +93,7 @@ const SideMenu = () => {
       .map((menu) => {
         const filteredChildren = menu.children
           .map((child) => {
-            if (child.key.startsWith('/embedded-products/')) {
+            if (child.key.startsWith(`${embeddedProductDetailPath}/`)) {
               return child;
             }
             if (child.type === 'tabs' && child.children) {
@@ -121,6 +121,9 @@ const SideMenu = () => {
         .map((item) => {
           return item
             .children!.filter((child) => {
+              if (child.key.startsWith(`${embeddedProductDetailPath}/`)) {
+                return child;
+              }
               if (child.type === 'tabs' && child.children && child.children.length > 0) {
                 return child.children.some((tabChild) => _.includes(perms, tabChild.key));
               }
