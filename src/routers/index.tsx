@@ -30,6 +30,7 @@ import LoginCallback from '@/pages/loginCallback';
 import LoginCallbackCAS from '@/pages/loginCallback/cas';
 import LoginCallbackOAuth from '@/pages/loginCallback/oauth';
 import AlertRules, { Add as AlertRuleAdd, Edit as AlertRuleEdit } from '@/pages/alertRules';
+import AlertCurEvent from '@/pages/alertCurEvent';
 import Profile from '@/pages/account/profile';
 import { List as Dashboard, Detail as DashboardDetail, Share as DashboardShare } from '@/pages/dashboard';
 import { getDefaultThemeMode } from '@/pages/dashboard/Detail/utils';
@@ -173,7 +174,7 @@ export default function Content() {
           <Route key='recording-rules-edit' exact path='/recording-rules/edit/:id' component={RecordingRuleEdit} />,
         ]}
 
-        <Route exact path='/alert-cur-events' component={Event} />
+        <Route exact path='/alert-cur-events' component={AlertCurEvent} />
         <Route exact path='/alert-his-events' component={historyEvents} />
         <Route exact path='/alert-cur-events/:eventId' component={EventDetail} />
         <Route exact path='/alert-his-events/:eventId' component={EventDetail} />
