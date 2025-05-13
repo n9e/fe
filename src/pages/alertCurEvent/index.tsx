@@ -15,7 +15,7 @@
  *
  */
 import React, { useContext, useState } from 'react';
-import { Button, Input, message, Modal, Space, Row, Col, Dropdown, Checkbox, Collapse } from 'antd';
+import { Button, Input, message, Modal, Space, Row, Col, Dropdown, Checkbox, Collapse, Divider } from 'antd';
 import { AlertOutlined, ExclamationCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -126,7 +126,7 @@ const AlertCurEvent: React.FC = () => {
             dateFormat='YYYY-MM-DD HH:mm:ss'
           />
 
-          {/*选择我的业务组/全部业务组*/}
+          {/*TODO：选择我的业务组/全部业务组*/}
 
           <BusinessGroupSelectWithAll
             value={filter.bgid}
@@ -222,7 +222,7 @@ const AlertCurEvent: React.FC = () => {
             {/* 左侧筛选区 */}
             <div className='w-[190px] pr-[16px] overflow-y-auto h-full'>
               <Collapse bordered={false} defaultActiveKey={['prod', 'severity', 'datasource']} expandIconPosition='start'>
-                <Collapse.Panel header='监控类型' key='prod'>
+                <Collapse.Panel header={t('prod')} key='prod'>
                   <Checkbox.Group
                     style={{ width: '100%' }}
                     value={filter.rule_prods}
@@ -243,7 +243,7 @@ const AlertCurEvent: React.FC = () => {
                     ))}
                   </Checkbox.Group>
                 </Collapse.Panel>
-                <Collapse.Panel header='告警级别' key='severity'>
+                <Collapse.Panel header={t('severity')} key='severity'>
                   <Checkbox.Group
                     style={{ width: '100%' }}
                     value={filter.severity ? [filter.severity] : []}
@@ -255,20 +255,23 @@ const AlertCurEvent: React.FC = () => {
                     }}
                   >
                     <Checkbox className='py-1' value={1}>
+                      <div className='inline-block mr-2 w-[4px] h-[12px] rounded-lg event-card-circle yellow' />
                       S1（Critical）
                     </Checkbox>
                     <br />
                     <Checkbox className='py-1' value={2}>
+                      <div className='inline-block mr-2 w-[4px] h-[12px] rounded-lg event-card-circle orange' />
                       S2（Warning）
                     </Checkbox>
                     <br />
                     <Checkbox className='py-1' value={3}>
+                      <div className='inline-block mr-2 w-[4px] h-[12px] rounded-lg event-card-circle red' />
                       S3（Info）
                     </Checkbox>
                     <br />
                   </Checkbox.Group>
                 </Collapse.Panel>
-                <Collapse.Panel header='数据源' key='datasource'>
+                <Collapse.Panel header={t('detail.datasource_id')} key='datasource'>
                   <DatasourceCheckbox
                     value={filter.datasource_ids}
                     onChange={(val: number[]) => {

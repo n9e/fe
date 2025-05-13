@@ -162,9 +162,9 @@ export default function AggrRuleDropdown(props: Props) {
     <div>
       <Dropdown overlay={dropdownMenu} trigger={['click']} visible={visibleDropdown} onVisibleChange={setVisibleDropdown}>
         <Input
-          addonBefore='聚合规则'
+          addonBefore={t('aggregate_rule')}
           value={selectedAlert ? selectedAlert.name + (selectedAlert.cate === 0 || profile.admin ? ' 公开' : '') : ''}
-          placeholder='请选择聚合规则'
+          placeholder={t('aggregate_rule_mgs')}
           readOnly
           onClick={() => setVisibleDropdown(true)}
           style={{ width: 340 }}

@@ -22,6 +22,7 @@ const zh_CN = {
   prod: '监控类型',
 
   aggregate_rule: '聚合规则',
+  aggregate_rule_mgs: '请选择聚合规则',
   aggregate_rule_name: '规则名称',
   public: '公开',
   isPublic: '是否公开',

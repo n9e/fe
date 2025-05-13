@@ -20,6 +20,7 @@ const en_US = {
   trigger_time: 'Triggered',
   shield: 'Blackout',
   aggregate_rule: 'Aggregate rule',
+  aggregate_rule_mgs: 'Please select aggregate rule',
   aggregate_rule_name: 'Rule name',
   public: 'Public',
   isPublic: 'Is public',

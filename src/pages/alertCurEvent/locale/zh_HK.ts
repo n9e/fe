@@ -21,6 +21,7 @@ const zh_HK = {
   shield: '屏蔽',
   prod: '監控類型',
   aggregate_rule: '聚合規則',
+  aggregate_rule_mgs: '請選擇聚合規則',
   aggregate_rule_name: '規則名稱',
   public: '公開',
   isPublic: '是否公開',

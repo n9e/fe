@@ -21,6 +21,7 @@ const ru_RU = {
   shield: 'Заблокировать',
   prod: 'Тип мониторинга',
   aggregate_rule: 'Правило сбора',
+  aggregate_rule_mgs: 'Выберите правило сбора',
   aggregate_rule_name: 'Название правила',
   public: 'Открытый',
   isPublic: 'Открытое',
