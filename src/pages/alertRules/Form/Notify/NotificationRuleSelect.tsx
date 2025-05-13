@@ -92,11 +92,13 @@ export default function NotificationRuleSelect(props: Props) {
                   )}
                 </Space>
               ),
+              originalLabel: item.label,
               value: item.value,
             };
           })}
           showSearch
           optionFilterProp='label'
+          optionLabelProp='originalLabel'
           mode='multiple'
         />
       </Form.Item>
