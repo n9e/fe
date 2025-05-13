@@ -36,11 +36,13 @@ const zh_CN = {
     notification_rules: '通知规则',
     notification_channels: '通知媒介',
     notification_templates: '消息模板',
+    event_pipeline: '事件管道',
     notification_settings: '通知设置', // 废弃的
     notification_tpls: '通知模板', // 废弃的
     integrations: '集成中心',
     data_source: '数据源',
     built_in_components: '模板中心',
+    label_mapping: '标签词表',
     embedded_products: '系统集成',
     organization: '人员组织',
     users: '用户管理',

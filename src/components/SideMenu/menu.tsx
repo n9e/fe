@@ -101,6 +101,10 @@ export const getMenuList = (embeddedProductMenu: MenuItem[] = []) => {
           label: 'menu.notification_templates',
         },
         {
+          key: '/event-pipelines',
+          label: 'menu.event_pipeline',
+        },
+        {
           key: '/help/notification-settings',
           label: 'menu.notification_settings',
           deprecated: true,
