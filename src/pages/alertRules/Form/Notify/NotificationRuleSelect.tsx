@@ -108,6 +108,7 @@ export default function NotificationRuleSelect(props: Props) {
         width='80%'
         onClose={() => {
           setDrawerVisible(false);
+          setDrawerData(undefined);
         }}
         visible={drawerVisible}
       >
