@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 import { uplotsMap } from '../index';
 
@@ -64,11 +64,12 @@ export default function tooltipPlugin(options: {
   pinningEnabled?: boolean;
   zIndex?: number;
   graphTooltip?: 'default' | 'sharedCrosshair' | 'sharedTooltip';
+  timeZone?: string;
   renderFooter?: (domNode: HTMLDivElement, closeOverlay: () => void) => void;
   pointNameformatter?: (label: string, point: any) => string;
   pointValueformatter?: (value: number, point: any) => string;
 }) {
-  const { id, pinningEnabled, zIndex = 999, graphTooltip, renderFooter } = options;
+  const { id, pinningEnabled, zIndex = 999, graphTooltip, timeZone, renderFooter } = options;
   let uplot;
   let over;
   let isPinned = false;
@@ -294,7 +295,11 @@ export default function tooltipPlugin(options: {
         const headerNode = overlay!.querySelector('.n9e-uplot-tooltip-header');
         if (headerNode) {
           headerNode.innerHTML = '';
-          const headerText = timeData[idx] ? moment.unix(timeData[idx]).format('YYYY-MM-DD HH:mm:ss') : 'Invalid Time';
+          const headerText = timeData[idx]
+            ? timeZone
+              ? moment.unix(timeData[idx]).tz(timeZone).format('YYYY-MM-DD HH:mm:ss')
+              : moment.unix(timeData[idx]).format('YYYY-MM-DD HH:mm:ss')
+            : 'Invalid Time';
           const headerTextNode = document.createTextNode(headerText);
           headerNode.appendChild(headerTextNode);
           if (pinningEnabled) {

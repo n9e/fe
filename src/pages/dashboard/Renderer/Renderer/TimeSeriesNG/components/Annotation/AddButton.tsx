@@ -12,6 +12,7 @@ interface Props {
   uplotRef: React.MutableRefObject<uPlot>;
   dashboardID: number;
   panelID: string;
+  timeZone?: string;
   closeOverlay: () => void;
   setAnnotationSettingUp: (settingUp: boolean) => void;
   onOk: () => void;
@@ -19,7 +20,7 @@ interface Props {
 
 export default function AddButton(props: Props) {
   const { t } = useTranslation('dashboard');
-  const { uplotRef, dashboardID, panelID, closeOverlay, setAnnotationSettingUp, onOk } = props;
+  const { uplotRef, dashboardID, panelID, timeZone, closeOverlay, setAnnotationSettingUp, onOk } = props;
   const [visible, setVisible] = React.useState(false);
   const [initialValues, setInitialValues] = React.useState({} as Values);
   const handleAdd = () => {
@@ -93,6 +94,7 @@ export default function AddButton(props: Props) {
       <FormModal
         visible={visible}
         action='add'
+        timeZone={timeZone}
         onOk={(values) => {
           postAnnotations(values).then(() => {
             onOk();

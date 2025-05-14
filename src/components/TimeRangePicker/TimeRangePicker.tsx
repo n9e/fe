@@ -27,9 +27,14 @@ import classNames from 'classnames';
 import moment from 'moment';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
+
+import { InternalTimeZones } from '@/utils/datetime/types';
+import { getTimeZoneInfo } from '@/utils/datetime/timezones';
+
 import { isValid, describeTimeRange, valueAsString, isMathString } from './utils';
 import { IRawTimeRange, ITimeRangePickerProps } from './types';
 import { rangeOptions, momentLocaleZhCN } from './config';
+import TimeZonePicker from './TimeZonePicker';
 import './style.less';
 
 moment.locale('zh-cn', momentLocaleZhCN);
@@ -120,18 +125,6 @@ const AbsoluteTimePicker = ({
               } as IRawTimeRange);
             }
           }}
-          onBlur={(e) => {
-            const val = e.target.value;
-            const otherKey = type === 'start' ? 'end' : 'start';
-            // 2013-12-21 不再限制只能缓存绝对时间
-            setAbsoluteHistoryCache(
-              {
-                ...range,
-                [type]: val,
-              },
-              dateFormat,
-            );
-          }}
         />
         <Popover
           title={
@@ -177,7 +170,6 @@ const AbsoluteTimePicker = ({
                   newRange.start = moment(newRange.end).startOf('day');
                 }
                 setRange(newRange as IRawTimeRange);
-                setAbsoluteHistoryCache(newRange, dateFormat);
               }}
             />
           }
@@ -204,9 +196,11 @@ export default function index(props: ITimeRangePickerProps) {
     placeholder = t('placeholder'),
     allowClear = false,
     onClear = () => {},
-    extraFooter,
     disabled,
     ajustTimeOptions,
+    showTimezone = false,
+    timezone = InternalTimeZones.localBrowserTime,
+    onTimezoneChange,
   } = props;
   const [visible, setVisible] = useState(false);
   const [range, setRange] = useState<IRawTimeRange>();
@@ -239,9 +233,21 @@ export default function index(props: ITimeRangePickerProps) {
                   <div className='flashcat-timeRangePicker-left'>
                     <AbsoluteTimePicker type='start' range={range} setRange={setRange} rangeStatus={rangeStatus} setRangeStatus={setRangeStatus} dateFormat={dateFormat} />
                     <AbsoluteTimePicker type='end' range={range} setRange={setRange} rangeStatus={rangeStatus} setRangeStatus={setRangeStatus} dateFormat={dateFormat} />
+                    <Button
+                      type='primary'
+                      onClick={() => {
+                        if (rangeStatus.start !== 'invalid' && rangeStatus.end !== 'invalid') {
+                          onChange(range as IRawTimeRange);
+                          setAbsoluteHistoryCache(range as IRawTimeRange, dateFormat);
+                          setVisible(false);
+                        }
+                      }}
+                    >
+                      {t('ok')}
+                    </Button>
                     <div className='flashcat-timeRangePicker-absolute-history'>
                       <span>{t('history')}</span>
-                      <ul style={{ marginTop: 8 }}>
+                      <ul style={{ marginTop: 4 }}>
                         {_.map(
                           _.filter(absoluteHistoryCache, (item) => {
                             return item?.start && item?.end;
@@ -257,7 +263,6 @@ export default function index(props: ITimeRangePickerProps) {
                                   };
                                   setRange(newValue);
                                   onChange(newValue);
-                                  setAbsoluteHistoryCache(newValue, dateFormat);
                                   setVisible(false);
                                 }}
                               >
@@ -314,20 +319,11 @@ export default function index(props: ITimeRangePickerProps) {
                 </Col>
               </Row>
             </div>
-            <div className='flashcat-timeRangePicker-footer'>
-              <Button
-                type='primary'
-                onClick={() => {
-                  if (rangeStatus.start !== 'invalid' && rangeStatus.end !== 'invalid') {
-                    onChange(range as IRawTimeRange);
-                    setVisible(false);
-                  }
-                }}
-              >
-                {t('ok')}
-              </Button>
-              {extraFooter && extraFooter(setVisible)}
-            </div>
+            {showTimezone && (
+              <div className='flashcat-timeRangePicker-footer'>
+                <TimeZonePicker value={timezone} onChange={onTimezoneChange} />
+              </div>
+            )}
           </>
         }
         trigger='click'
@@ -349,6 +345,17 @@ export default function index(props: ITimeRangePickerProps) {
           disabled={disabled}
         >
           {props.label || label || <span style={{ color: '#bfbfbf' }}>{placeholder}</span>}
+
+          {timezone && timezone !== InternalTimeZones.localBrowserTime ? (
+            <span
+              className='pl-1'
+              style={{
+                color: 'var(--fc-gold-6-color)',
+              }}
+            >
+              {getTimeZoneInfo(timezone, Date.now())?.abbreviation}
+            </span>
+          ) : null}
           {!props.label && (
             <span className='flashcat-timeRangePicker-target-icon'>
               {visible ? <UpOutlined /> : <DownOutlined />}
