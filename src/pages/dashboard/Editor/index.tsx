@@ -43,6 +43,8 @@ interface IProps {
   id: string; // panel id
   dashboardId: string;
   time: IRawTimeRange;
+  timezone: string;
+  setTimezone: (timezone: string) => void;
   onOK: (formData: any, mode: string) => void;
   onCancel?: () => void;
   dashboard: Dashboard;
@@ -52,7 +54,7 @@ function index(props: IProps) {
   const { t } = useTranslation('dashboard');
   const { groupedDatasourceList } = useContext(CommonStateContext);
   const formRef = useRef<any>();
-  const { mode, visible, setVisible, variableConfigWithOptions, id, dashboardId, time, dashboard } = props;
+  const { mode, visible, setVisible, variableConfigWithOptions, id, dashboardId, time, dashboard, timezone, setTimezone } = props;
   const [initialValues, setInitialValues] = useState<IPanel>(_.cloneDeep(props.initialValues));
   const [range, setRange] = useState<IRawTimeRange>(time);
   const handleAddChart = async () => {
@@ -136,6 +138,9 @@ function index(props: IProps) {
               onChange={(val: IRawTimeRange) => {
                 setRange(val);
               }}
+              showTimezone
+              timezone={timezone}
+              onTimezoneChange={setTimezone}
             />
             <CloseOutlined
               style={{ fontSize: 18 }}
@@ -186,6 +191,7 @@ function index(props: IProps) {
           initialValues={normalizeInitialValues(initialValues)}
           variableConfigWithOptions={variableConfigWithOptions}
           range={range}
+          timezone={timezone}
           id={id}
           dashboardId={dashboardId}
           key={initialValues.type} // 每次切换图表类型，都重新渲染

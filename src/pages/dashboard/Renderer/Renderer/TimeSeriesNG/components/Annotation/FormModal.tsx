@@ -17,6 +17,7 @@ export interface Values {
 interface Props {
   action: 'add' | 'edit';
   visible: boolean;
+  timeZone?: string;
   onOk: (values: Values) => void;
   onCancel: () => void;
   initialValues: Values;
@@ -26,8 +27,10 @@ const format = 'YYYY-MM-DD HH:mm:ss';
 
 export default function FormModal(props: Props) {
   const { t } = useTranslation('dashboard');
-  const { action, visible, onOk, onCancel, initialValues } = props;
+  const { action, visible, timeZone, onOk, onCancel, initialValues } = props;
   const [form] = Form.useForm();
+  const startTimeFormat = timeZone ? moment.unix(initialValues.time_start).tz(timeZone).format(format) : moment.unix(initialValues.time_start).format(format);
+  const endTimeFormat = timeZone ? moment.unix(initialValues.time_end).tz(timeZone).format(format) : moment.unix(initialValues.time_end).format(format);
 
   useEffect(() => {
     if (visible) {
@@ -47,8 +50,8 @@ export default function FormModal(props: Props) {
         >
           {t(`annotation.${action}`)}
           <span>
-            {moment.unix(initialValues.time_start).format(format)}
-            {initialValues.time_start !== initialValues.time_end ? ` - ${moment.unix(initialValues.time_end).format(format)}` : ''}
+            {startTimeFormat}
+            {initialValues.time_start !== initialValues.time_end ? ` - ${endTimeFormat}` : ''}
           </span>
         </div>
       }

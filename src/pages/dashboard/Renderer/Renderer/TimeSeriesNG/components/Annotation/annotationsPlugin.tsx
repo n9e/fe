@@ -19,14 +19,17 @@ const TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 interface MarkersProps {
   annotations: any[];
   uplotRef: React.MutableRefObject<uPlot>;
+  timeZone?: string;
   onEdit: () => void;
   onDelete: () => void;
 }
 
-function Marker({ annotation, content, onEdit, onDelete }) {
+function Marker({ annotation, content, timeZone, onEdit, onDelete }) {
   const { t } = useTranslation('dashboard');
   const { time_start, time_end, description, tags } = annotation;
   const [popoverVisible, setPopoverVisible] = React.useState(false);
+  const startTimeFormat = timeZone ? moment.unix(time_start).tz(timeZone).format(TIME_FORMAT) : moment.unix(time_start).format(TIME_FORMAT);
+  const endTimeFormat = timeZone ? moment.unix(time_end).tz(timeZone).format(TIME_FORMAT) : moment.unix(time_end).format(TIME_FORMAT);
 
   return (
     <Popover
@@ -45,14 +48,15 @@ function Marker({ annotation, content, onEdit, onDelete }) {
         >
           {time_start !== time_end ? (
             <span>
-              {moment.unix(time_start).format(TIME_FORMAT)} - {moment.unix(time_end).format(TIME_FORMAT)}
+              {startTimeFormat} - {endTimeFormat}
             </span>
           ) : (
-            <span>{moment.unix(time_start).format(TIME_FORMAT)}</span>
+            <span>{startTimeFormat}</span>
           )}
           <Space>
             <EditButton
               initialValues={annotation}
+              timeZone={timeZone}
               onOk={() => {
                 message.success(t('annotation.updated'));
                 onEdit();
@@ -95,7 +99,7 @@ function Marker({ annotation, content, onEdit, onDelete }) {
 }
 
 export function Markers(props: MarkersProps) {
-  const { annotations, uplotRef, onEdit, onDelete } = props;
+  const { annotations, uplotRef, timeZone, onEdit, onDelete } = props;
   const uplot = uplotRef.current;
 
   return (
@@ -135,7 +139,7 @@ export function Markers(props: MarkersProps) {
               );
             }
           }
-          return <Marker annotation={annotation} content={content} onEdit={onEdit} onDelete={onDelete} />;
+          return <Marker annotation={annotation} content={content} timeZone={timeZone} onEdit={onEdit} onDelete={onDelete} />;
         }
       })}
     </>

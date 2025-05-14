@@ -9,6 +9,8 @@ interface Props {
   dashboardId: string;
   variableConfig: any;
   range: IRawTimeRange;
+  timezone: string;
+  setTimezone: (timezone: string) => void;
   dashboard: Dashboard;
   panels: any[];
   setPanels: (panels: any[]) => void;
@@ -18,7 +20,7 @@ interface Props {
 }
 
 function EditorModal(props: Props, ref) {
-  const { dashboardId, variableConfig, range, dashboard, panels, setPanels, updateDashboardConfigs, onUpdated } = props;
+  const { dashboardId, variableConfig, range, timezone, setTimezone, dashboard, panels, setPanels, updateDashboardConfigs, onUpdated } = props;
   const [editorData, setEditorData] = useState({
     mode: 'add',
     visible: false,
@@ -48,6 +50,8 @@ function EditorModal(props: Props, ref) {
       id={editorData.id}
       dashboardId={_.toString(dashboardId)}
       time={range}
+      timezone={timezone}
+      setTimezone={setTimezone}
       initialValues={editorData.initialValues}
       onOK={(values, mode) => {
         props.setVariableConfigRefreshFlag(_.uniqueId('refreshFlag_')); // TODO 2024-01-30 临时解决编辑状态下变量值修改后没有同步预览视图的问题，后续需要重构变量值方案，抛弃不能状态驱动的 localStorage 方案

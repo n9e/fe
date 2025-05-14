@@ -68,9 +68,11 @@ export interface ITimeRangePickerProps {
   allowClear?: boolean;
   onClear?: () => void;
   label?: React.ReactElement;
-  extraFooter?: (fn: Function) => React.ReactElement;
   disabled?: boolean;
   ajustTimeOptions?: (options: ITimeOption[]) => ITimeOption[];
+  showTimezone?: boolean;
+  timezone?: string;
+  onTimezoneChange?: (value: string) => void;
 }
 
 export interface ITimeRangePickerWithRefreshProps extends ITimeRangePickerProps {

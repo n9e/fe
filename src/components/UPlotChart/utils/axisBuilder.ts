@@ -106,6 +106,7 @@ export interface AxisProps {
   color?: uPlot.Axis.Stroke;
   border?: uPlot.Axis.Border;
   distr?: ScaleDistribution;
+  timeZone?: string;
 }
 
 export default function axisBuilder(props: AxisProps) {
@@ -129,13 +130,16 @@ export default function axisBuilder(props: AxisProps) {
     size,
     color,
     border,
+    timeZone,
   } = props;
 
   const font = `${UPLOT_AXIS_FONT_SIZE}px ${FONT_FAMILY}`;
 
   const gridColor = theme === 'dark' ? 'rgba(240, 250, 255, 0.09)' : 'rgba(0, 10, 23, 0.09)';
 
-  let config: Axis = {
+  let config: Axis & {
+    timeZone?: string;
+  } = {
     show,
     stroke: color ?? THEME?.[theme]?.text?.primary,
     font,
@@ -170,6 +174,7 @@ export default function axisBuilder(props: AxisProps) {
       }),
     filter,
     incrs,
+    timeZone,
   };
 
   if (scaleKey) {
