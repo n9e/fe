@@ -10,8 +10,9 @@ import './index.less';
 
 interface Props {
   filter: any;
-  onUpdateAlertEventIds: (eventIds: number[]) => void;
   refreshFlag: string;
+  onUpdateAlertEventIds: (eventIds: number[]) => void;
+  onUpdateCardNum: (cardNum: number) => void;
 }
 
 export interface CardType {
@@ -21,23 +22,20 @@ export interface CardType {
   event_ids: number[];
 }
 
-function Card(props: Props, ref) {
-  const { filter, refreshFlag, onUpdateAlertEventIds } = props;
+const AlertCard = (props: Props) => {
+  const { filter, refreshFlag, onUpdateAlertEventIds, onUpdateCardNum } = props;
   const [cardList, setCardList] = useState<CardType[]>();
-  const [drawerList, setDrawerList] = useState<any>();
   const [selectedCardId, setSelectedCardId] = useState<string>();
 
   useEffect(() => {
-    console.log('filter', filter);
     reloadCard();
-  }, [filter.rule_id, refreshFlag]);
+  }, [filter.rule_id, refreshFlag, filter.my_groups]);
 
   const { run: reloadCard } = useDebounceFn(
     () => {
-      if (!filter.rule_id) return;
-      console.log('filter.rule_id', filter.rule_id);
-      getAlertCards({ view_id: filter.rule_id }).then((res) => {
+      getAlertCards({ view_id: filter.rule_id, my_groups: String(filter.my_groups) === 'true' }).then((res) => {
         setCardList(res.dat);
+        onUpdateCardNum(res.dat.length);
       });
     },
     {
@@ -45,13 +43,7 @@ function Card(props: Props, ref) {
     },
   );
 
-  const fetchCardDetail = (card: CardType) => {
-    onUpdateAlertEventIds(card.event_ids);
-    getCardDetail(card.event_ids).then((res) => {
-      setDrawerList(res.dat);
-    });
-  };
-  console.log(drawerList);
+  console.log(filter.my_groups);
 
   return (
     <div className='w-full overflow-y-auto pt-2 max-h-[172px] gap-4 items-start'>
@@ -66,7 +58,6 @@ function Card(props: Props, ref) {
             } else {
               setSelectedCardId(card.title);
               onUpdateAlertEventIds(card.event_ids);
-              fetchCardDetail(card);
             }
           }}
         >
@@ -79,6 +70,6 @@ function Card(props: Props, ref) {
       ))}
     </div>
   );
-}
+};
 
-export default React.forwardRef(Card);
+export default AlertCard;

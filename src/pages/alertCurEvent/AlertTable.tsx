@@ -45,16 +45,12 @@ interface IProps {
 }
 function formatDuration(seconds: number) {
   const duration = moment.duration(seconds, 'seconds');
-  const years = Math.floor(duration.asYears());
-  const months = Math.floor(duration.asMonths()) % 12;
-  const days = duration.days();
+  const days = Math.floor(duration.asDays());
   const hours = duration.hours();
   const minutes = duration.minutes();
   const secs = duration.seconds();
 
   let result: string[] = [];
-  if (years) result.push(`${years} y`);
-  if (months) result.push(`${months} mo`);
   if (days) result.push(`${days} d`);
   if (hours) result.push(`${hours} h`);
   if (minutes) result.push(`${minutes} min`);
@@ -62,7 +58,7 @@ function formatDuration(seconds: number) {
 
   return result.join(' ');
 }
-export default function TableCpt(props: IProps) {
+export default function AlertTable(props: IProps) {
   const { filterObj, filter, setFilter, selectedRowKeys, setSelectedRowKeys } = props;
   const history = useHistory();
   const { t } = useTranslation('AlertCurEvents');
@@ -235,7 +231,8 @@ export default function TableCpt(props: IProps) {
       const params: any = {
         p: current,
         limit: pageSize,
-        ..._.omit(filterObj, 'range'),
+        my_groups: filter.my_groups,
+        ..._.omit(filterObj, 'range', 'rule_id'),
       };
 
       if (filterObj.range) {

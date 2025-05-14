@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-import React, { useContext, useEffect, useState } from 'react';
-import { Button, Input, message, Modal, Space, Row, Col, Dropdown, Checkbox, Collapse, Divider } from 'antd';
+import React, { useContext, useState } from 'react';
+import { Input, message, Modal, Space, Row, Col, Checkbox, Collapse, Radio } from 'antd';
 import { AlertOutlined, ExclamationCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -23,7 +23,7 @@ import queryString from 'query-string';
 import { useLocation, useHistory } from 'react-router-dom';
 
 import PageLayout from '@/components/pageLayout';
-import { deleteAlertEvents, getAlertCards } from '@/services/warning';
+import { deleteAlertEvents } from '@/services/warning';
 import { AutoRefresh } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
 import { getProdOptions } from '@/pages/alertRules/Form/components/ProdSelect';
@@ -32,16 +32,14 @@ import { IS_ENT } from '@/utils/constant';
 import { BusinessGroupSelectWithAll } from '@/components/BusinessGroup';
 
 import AggrRuleDropdown from './AggrRuleDropdown';
-import Card, { CardType } from './AlertCard';
-import Table from './AlertTable';
+import AlertCard from './AlertCard';
+import AlertTable from './AlertTable';
 import './locale';
 import './index.less';
 
 // @ts-ignore
-import BatchAckBtn from 'plus:/parcels/Event/Acknowledge/BatchAckBtn';
 import DatasourceCheckbox from '@/components/DatasourceSelect/DatasourceCheckbox';
 import { getAlertCurEventsDatasource } from './services';
-import { useDebounceFn } from 'ahooks';
 const CACHE_KEY = 'alert_active_events_range';
 const getFilter = (query) => {
   return {
@@ -54,6 +52,7 @@ const getFilter = (query) => {
     rule_prods: query.rule_prods ? _.split(query.rule_prods, ',') : [],
     rule_id: query.rule_id ? Number(query.rule_id) : undefined,
     event_ids: query.event_ids ? _.split(query.event_ids, ',') : [],
+    my_groups: query.my_groups ? query.my_groups : 'false',
   };
 };
 
@@ -104,7 +103,8 @@ const AlertCurEvent: React.FC = () => {
   };
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
-  const [cardList, setCardList] = useState<CardType[]>();
+  const [cardNum, setCardNum] = useState<number>(0);
+
   let prodOptions = getProdOptions(feats);
   if (IS_ENT) {
     prodOptions = [
@@ -139,7 +139,18 @@ const AlertCurEvent: React.FC = () => {
             dateFormat='YYYY-MM-DD HH:mm:ss'
           />
 
-          {/*TODO：选择我的业务组/全部业务组*/}
+          <Radio.Group
+            defaultValue={filter.my_groups}
+            onChange={(e) => {
+              setFilter({
+                ...filter,
+                my_groups: e.target.value,
+              });
+            }}
+          >
+            <Radio.Button value={'true'}>{t('我的业务组')}</Radio.Button>
+            <Radio.Button value={'false'}>{t('全部业务组')}</Radio.Button>
+          </Radio.Group>
 
           <BusinessGroupSelectWithAll
             value={filter.bgid}
@@ -224,24 +235,9 @@ const AlertCurEvent: React.FC = () => {
     filter.rule_prods.length ? { rule_prods: _.join(filter.rule_prods, ',') } : {},
     filter.rule_id ? { rule_id: filter.rule_id } : {},
     filter.event_ids.length ? { event_ids: filter.event_ids } : {},
-  );
-  const { run: reloadCard } = useDebounceFn(
-    () => {
-      if (!filter.rule_id) return;
-      getAlertCards({ view_id: filter.rule_id }).then((res) => {
-        setCardList(res.dat);
-      });
-    },
-    {
-      wait: 500,
-    },
+    filter.my_groups ? { my_groups: filter.my_groups } : {},
   );
 
-  useEffect(() => {
-    if (filter.rule_id) {
-      reloadCard();
-    }
-  }, [filter.rule_id]);
   return (
     <PageLayout icon={<AlertOutlined />} title={t('title')}>
       <div className='event-container'>
@@ -317,10 +313,13 @@ const AlertCurEvent: React.FC = () => {
             {/* 右侧内容区 */}
             <div className='n9e-border-base' style={{ flex: 1, minWidth: 0 }}>
               <div className='cur-events p-2'>
-                <AggrRuleDropdown cardList={cardList || []} onRefreshRule={(ruleId) => setFilter({ ...filter, rule_id: ruleId })} />
-                <Card
+                <AggrRuleDropdown cardNum={cardNum} onRefreshRule={(ruleId) => setFilter({ ...filter, rule_id: ruleId })} />
+                <AlertCard
                   filter={filter}
                   refreshFlag={refreshFlag}
+                  onUpdateCardNum={(cardNum: number) => {
+                    setCardNum(cardNum);
+                  }}
                   onUpdateAlertEventIds={(eventIds: number[]) => {
                     setFilter({
                       ...filter,
@@ -332,7 +331,7 @@ const AlertCurEvent: React.FC = () => {
 
               <div className='h-[1px] bg-[var(--fc-border-color)]' />
               <div className='p-2'>
-                <Table
+                <AlertTable
                   filter={filter}
                   filterObj={filterObj}
                   setFilter={setFilter}
