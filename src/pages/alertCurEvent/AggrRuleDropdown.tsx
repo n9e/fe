@@ -108,7 +108,7 @@ export default function AggrRuleDropdown(props: Props) {
     <Menu className='min-w-[220px] max-h-[300px] overflow-auto bg-var(--fc-fill-1)'>
       {(alertList || []).map((alert) => (
         <Menu.Item onClick={() => handleSelect(alert)} className='p-0 m-0' key={alert.id}>
-          <div className={`px-2 py-1 flex items-center justify-between ${alert.id === selectedAlert?.id ? ' is-active' : ''}`}>
+          <div className={`px-2 py-2 flex items-center justify-between ${alert.id === selectedAlert?.id ? ' is-active' : ''}`}>
             <div>{alert.name}</div>
             {(alert.cate === 1 || profile.admin) && (
               <div className='flex gap-2'>
@@ -135,16 +135,18 @@ export default function AggrRuleDropdown(props: Props) {
           </div>
         </Menu.Item>
       ))}
-      <Menu.Item key='add-rule' className='border-t bg-transparent text-right p-0 m-0 border-top'>
-        <Button
-          type='link'
-          onClick={() => {
-            setVisibleDropdown(false);
-            setVisibleAggrRuleModal(true);
-          }}
-        >
-          + 新增规则
-        </Button>
+      <Menu.Item key='add-rule' className='p-0'>
+        <div className='text-right bg-transparent m-0 p-0' style={{ borderTop: '1px solid var(--fc-border-color)' }}>
+          <Button
+            type='link'
+            onClick={() => {
+              setVisibleDropdown(false);
+              setVisibleAggrRuleModal(true);
+            }}
+          >
+            + 新增规则
+          </Button>
+        </div>
       </Menu.Item>
     </Menu>
   );
