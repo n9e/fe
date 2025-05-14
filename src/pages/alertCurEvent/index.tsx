@@ -287,7 +287,7 @@ const AlertCurEvent: React.FC = () => {
             {/* 右侧内容区 */}
             <div className='n9e-border-base' style={{ flex: 1, minWidth: 0 }}>
               <Card filter={filterObj} refreshFlag={refreshFlag} />
-              <div className='h-[1px]' style={{ backgroundColor: 'var(--fc-border-color)' }} />
+              <div className='h-[1px] bg-[var(--fc-border-color)]' />
               <div className='p-2'>
                 <Table
                   filter={filter}
