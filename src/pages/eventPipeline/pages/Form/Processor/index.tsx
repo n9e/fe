@@ -15,6 +15,7 @@ import LabelEnrich from 'plus:/parcels/eventPipeline/LabelEnrich';
 import { NS } from '../../../constants';
 import TestModal from '../TestModal';
 import Relabel from './Relabel';
+import Callback from './Callback';
 
 interface Props {
   disabled?: boolean;
@@ -103,6 +104,10 @@ export default function NotifyConfig(props: Props) {
                 label: 'Relabel',
                 value: 'relabel',
               },
+              {
+                label: 'Callback',
+                value: 'callback',
+              },
             ],
             IS_PLUS
               ? [
@@ -116,6 +121,7 @@ export default function NotifyConfig(props: Props) {
         />
       </Form.Item>
       {processorType === 'relabel' && <Relabel field={field} namePath={[field.name, 'config']} prefixNamePath={['processors']} />}
+      {processorType === 'callback' && <Callback field={field} namePath={[field.name, 'config']} prefixNamePath={['processors']} />}
       {processorType === 'label_enrich' && <LabelEnrich field={field} namePath={[field.name, 'config']} prefixNamePath={['processors']} />}
 
       <TestModal type='processor' config={processorConfig} />

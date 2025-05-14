@@ -3,6 +3,7 @@ import { Modal, Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import DetailNG from '@/pages/event/DetailNG';
+import { normalizeFormValues } from '@/pages/eventPipeline/utils/normalizeValues';
 
 import { NS } from '../../../constants';
 import { eventProcessorTryrun, eventPipelineTryrun } from '../../../services';
@@ -82,7 +83,7 @@ export default function TestModal(props: Props) {
                   } else if (type === 'pipeline') {
                     eventPipelineTryrun({
                       event_id: eventID,
-                      pipeline_config: config,
+                      pipeline_config: normalizeFormValues(config),
                     })
                       .then((res) => {
                         setData({

@@ -49,6 +49,22 @@ const zh_HK = {
       result: '事件預覽',
     },
   },
+  callback: {
+    url: '回調地址',
+    url_placeholder: '請輸入回調地址',
+    url_required: '回調地址不能為空',
+    advanced_settings: '高級設置',
+    basic_auth_user: '授權用戶名',
+    basic_auth_user_placeholder: '請輸入授權用戶名',
+    basic_auth_pass: '授權密碼',
+    basic_auth_pass_placeholder: '請輸入授權密碼',
+    headers: '請求頭',
+    headerKey: 'Key',
+    headerValue: 'Value',
+    timeout: '超時時間',
+    insecure_skip_verify: '跳過證書校驗',
+    proxy: '代理',
+  },
 };
 
 export default zh_HK;

@@ -50,6 +50,22 @@ const ja_JP = {
       result: 'イベントプレビュー',
     },
   },
+  callback: {
+    url: '回調アドレス',
+    url_placeholder: '回調アドレスを入力してください',
+    url_required: '回調アドレスは必須です',
+    advanced_settings: '詳細設定',
+    basic_auth_user: 'ユーザー名',
+    basic_auth_user_placeholder: 'ユーザー名を入力してください',
+    basic_auth_pass: 'パスワード',
+    basic_auth_pass_placeholder: 'パスワードを入力してください',
+    headers: 'ヘッダー',
+    headerKey: 'キー',
+    headerValue: '値',
+    timeout: 'タイムアウト',
+    insecure_skip_verify: '証明書の検証をスキップ',
+    proxy: 'プロキシ',
+  },
 };
 
 export default ja_JP;
