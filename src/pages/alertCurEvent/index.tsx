@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Button, Input, message, Modal, Space, Row, Col, Dropdown, Checkbox, Collapse, Divider } from 'antd';
 import { AlertOutlined, ExclamationCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
@@ -23,7 +23,7 @@ import queryString from 'query-string';
 import { useLocation, useHistory } from 'react-router-dom';
 
 import PageLayout from '@/components/pageLayout';
-import { deleteAlertEvents } from '@/services/warning';
+import { deleteAlertEvents, getAlertCards } from '@/services/warning';
 import { AutoRefresh } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
 import { getProdOptions } from '@/pages/alertRules/Form/components/ProdSelect';
@@ -31,7 +31,8 @@ import TimeRangePicker, { getDefaultValue } from '@/components/TimeRangePicker';
 import { IS_ENT } from '@/utils/constant';
 import { BusinessGroupSelectWithAll } from '@/components/BusinessGroup';
 
-import Card from './AlertCard';
+import AggrRuleDropdown from './AggrRuleDropdown';
+import Card, { CardType } from './AlertCard';
 import Table from './AlertTable';
 import './locale';
 import './index.less';
@@ -39,7 +40,8 @@ import './index.less';
 // @ts-ignore
 import BatchAckBtn from 'plus:/parcels/Event/Acknowledge/BatchAckBtn';
 import DatasourceCheckbox from '@/components/DatasourceSelect/DatasourceCheckbox';
-
+import { getAlertCurEventsDatasource } from './services';
+import { useDebounceFn } from 'ahooks';
 const CACHE_KEY = 'alert_active_events_range';
 const getFilter = (query) => {
   return {
@@ -50,7 +52,18 @@ const getFilter = (query) => {
     query: query.query,
     is_recovered: query.is_recovered ? Number(query.is_recovered) : undefined,
     rule_prods: query.rule_prods ? _.split(query.rule_prods, ',') : [],
+    rule_id: query.rule_id ? Number(query.rule_id) : undefined,
+    event_ids: query.event_ids ? _.split(query.event_ids, ',') : [],
   };
+};
+
+const fetchDatasource = () => {
+  const params = {
+    my_groups: true,
+  };
+  return getAlertCurEventsDatasource(params).then((res) => {
+    return res.dat;
+  });
 };
 
 const { confirm } = Modal;
@@ -75,7 +88,6 @@ export function deleteAlertEventsModal(ids: number[], onSuccess = () => {}, t) {
 
 const AlertCurEvent: React.FC = () => {
   const { t } = useTranslation('AlertCurEvents');
-  const [view, setView] = useState<'card' | 'list'>('card');
   const { feats } = useContext(CommonStateContext);
   const location = useLocation();
   const history = useHistory();
@@ -92,6 +104,7 @@ const AlertCurEvent: React.FC = () => {
   };
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
+  const [cardList, setCardList] = useState<CardType[]>();
   let prodOptions = getProdOptions(feats);
   if (IS_ENT) {
     prodOptions = [
@@ -158,41 +171,40 @@ const AlertCurEvent: React.FC = () => {
             justifyContent: 'flex-end',
           }}
         >
-          {view === 'list' && (
-            <Dropdown
-              overlay={
-                <ul className='ant-dropdown-menu'>
-                  <li
-                    className='ant-dropdown-menu-item'
-                    onClick={() =>
-                      deleteAlertEventsModal(
-                        selectedRowKeys,
-                        () => {
-                          setSelectedRowKeys([]);
-                          setRefreshFlag(_.uniqueId('refresh_'));
-                        },
-                        t,
-                      )
-                    }
-                  >
-                    {t('common:btn.batch_delete')}
-                  </li>
-                  <BatchAckBtn
-                    selectedIds={selectedRowKeys}
-                    onOk={() => {
-                      setSelectedRowKeys([]);
-                      setRefreshFlag(_.uniqueId('refresh_'));
-                    }}
-                  />
-                </ul>
-              }
-              trigger={['click']}
-            >
-              <Button style={{ marginRight: 8 }} disabled={selectedRowKeys.length === 0}>
-                {t('batch_btn')}
-              </Button>
-            </Dropdown>
-          )}
+          {/* <Dropdown
+            overlay={
+              <ul className='ant-dropdown-menu'>
+                <li
+                  className='ant-dropdown-menu-item'
+                  onClick={() =>
+                    deleteAlertEventsModal(
+                      selectedRowKeys,
+                      () => {
+                        setSelectedRowKeys([]);
+                        setRefreshFlag(_.uniqueId('refresh_'));
+                      },
+                      t,
+                    )
+                  }
+                >
+                  {t('common:btn.batch_delete')}
+                </li>
+                <BatchAckBtn
+                  selectedIds={selectedRowKeys}
+                  onOk={() => {
+                    setSelectedRowKeys([]);
+                    setRefreshFlag(_.uniqueId('refresh_'));
+                  }}
+                />
+              </ul>
+            }
+            trigger={['click']}
+          >
+            <Button style={{ marginRight: 8 }} disabled={selectedRowKeys.length === 0}>
+              {t('batch_btn')}
+            </Button>
+          </Dropdown> */}
+
           <AutoRefresh
             onRefresh={() => {
               setRefreshFlag(_.uniqueId('refresh_'));
@@ -210,8 +222,26 @@ const AlertCurEvent: React.FC = () => {
     filter.query ? { query: filter.query } : {},
     { bgid: filter.bgid },
     filter.rule_prods.length ? { rule_prods: _.join(filter.rule_prods, ',') } : {},
+    filter.rule_id ? { rule_id: filter.rule_id } : {},
+    filter.event_ids.length ? { event_ids: filter.event_ids } : {},
+  );
+  const { run: reloadCard } = useDebounceFn(
+    () => {
+      if (!filter.rule_id) return;
+      getAlertCards({ view_id: filter.rule_id }).then((res) => {
+        setCardList(res.dat);
+      });
+    },
+    {
+      wait: 500,
+    },
   );
 
+  useEffect(() => {
+    if (filter.rule_id) {
+      reloadCard();
+    }
+  }, [filter.rule_id]);
   return (
     <PageLayout icon={<AlertOutlined />} title={t('title')}>
       <div className='event-container'>
@@ -286,7 +316,20 @@ const AlertCurEvent: React.FC = () => {
             </div>
             {/* 右侧内容区 */}
             <div className='n9e-border-base' style={{ flex: 1, minWidth: 0 }}>
-              <Card filter={filterObj} refreshFlag={refreshFlag} />
+              <div className='cur-events p-2'>
+                <AggrRuleDropdown cardList={cardList || []} onRefreshRule={(ruleId) => setFilter({ ...filter, rule_id: ruleId })} />
+                <Card
+                  filter={filter}
+                  refreshFlag={refreshFlag}
+                  onUpdateAlertEventIds={(eventIds: number[]) => {
+                    setFilter({
+                      ...filter,
+                      event_ids: eventIds,
+                    });
+                  }}
+                />
+              </div>
+
               <div className='h-[1px] bg-[var(--fc-border-color)]' />
               <div className='p-2'>
                 <Table

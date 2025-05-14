@@ -20,7 +20,7 @@ const zh_CN = {
   trigger_time: '触发时间',
   shield: '屏蔽',
   prod: '监控类型',
-
+  duration: '持续时长',
   aggregate_rule: '聚合规则',
   aggregate_rule_mgs: '请选择聚合规则',
   aggr_result: '个聚合结果',

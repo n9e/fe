@@ -12,3 +12,10 @@ export function getEvents(params) {
     params,
   });
 }
+
+export function getAlertCurEventsDatasource(params) {
+  return request('/api/n9e/alert-cur-events/datasource', {
+    method: RequestMethod.Get,
+    params,
+  });
+}

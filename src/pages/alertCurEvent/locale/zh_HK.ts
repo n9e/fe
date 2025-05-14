@@ -20,6 +20,7 @@ const zh_HK = {
   trigger_time: '觸發時間',
   shield: '屏蔽',
   prod: '監控類型',
+  duration: '持續時長',
   aggregate_rule: '聚合規則',
   aggregate_rule_mgs: '請選擇聚合規則',
   aggr_result: '個聚合結果',

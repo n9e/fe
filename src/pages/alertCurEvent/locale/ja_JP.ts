@@ -20,6 +20,7 @@ const ja_JP = {
   trigger_time: 'トリガ時間',
   shield: 'シールド',
   prod: '監視タイプ',
+  duration: '持続時間',
   aggregate_rule: '集計ルール',
   aggregate_rule_mgs: '集計ルールを選択してください',
   aggr_result: '集計結果',

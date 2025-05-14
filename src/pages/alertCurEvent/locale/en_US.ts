@@ -26,6 +26,7 @@ const en_US = {
   public: 'Public',
   isPublic: 'Is public',
   prod: 'Type',
+  duration: 'Duration',
   status: 'Status',
   status_1: 'Claimed',
   status_0: 'Unclaimed',

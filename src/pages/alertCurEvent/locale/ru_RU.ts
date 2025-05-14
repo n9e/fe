@@ -20,6 +20,7 @@ const ru_RU = {
   trigger_time: 'Время срабатывания',
   shield: 'Заблокировать',
   prod: 'Тип мониторинга',
+  duration: 'Продолжительность',
   aggregate_rule: 'Правило сбора',
   aggregate_rule_mgs: 'Выберите правило сбора',
   aggr_result: 'результатов сбора',

@@ -33,6 +33,7 @@ import { SeverityColor } from './index';
 
 // @ts-ignore
 import AckBtn from 'plus:/parcels/Event/Acknowledge/AckBtn';
+import { getCardDetail } from '@/services/warning';
 
 interface IProps {
   filterObj: any;
@@ -42,7 +43,25 @@ interface IProps {
   selectedRowKeys: number[];
   setSelectedRowKeys: (selectedRowKeys: number[]) => void;
 }
+function formatDuration(seconds: number) {
+  const duration = moment.duration(seconds, 'seconds');
+  const years = Math.floor(duration.asYears());
+  const months = Math.floor(duration.asMonths()) % 12;
+  const days = duration.days();
+  const hours = duration.hours();
+  const minutes = duration.minutes();
+  const secs = duration.seconds();
 
+  let result: string[] = [];
+  if (years) result.push(`${years} y`);
+  if (months) result.push(`${months} mo`);
+  if (days) result.push(`${days} d`);
+  if (hours) result.push(`${hours} h`);
+  if (minutes) result.push(`${minutes} min`);
+  if (secs && result.length === 0) result.push(`${secs} s`); // 只在全为0时显示秒
+
+  return result.join(' ');
+}
 export default function TableCpt(props: IProps) {
   const { filterObj, filter, setFilter, selectedRowKeys, setSelectedRowKeys } = props;
   const history = useHistory();
@@ -105,19 +124,19 @@ export default function TableCpt(props: IProps) {
       },
     },
     {
-      title: t('first_trigger_time'),
-      dataIndex: 'first_trigger_time',
+      title: t('trigger_time'),
+      dataIndex: 'trigger_time',
       width: 120,
       render(value) {
         return moment(value * 1000).format('YYYY-MM-DD HH:mm:ss');
       },
     },
     {
-      title: t('trigger_time'),
-      dataIndex: 'trigger_time',
+      title: t('duration'), //持续时长
+      dataIndex: 'duration',
       width: 120,
-      render(value) {
-        return moment(value * 1000).format('YYYY-MM-DD HH:mm:ss');
+      render(_, record) {
+        return formatDuration(moment().diff(moment(record.trigger_time * 1000)));
       },
     },
     {
@@ -189,8 +208,9 @@ export default function TableCpt(props: IProps) {
       },
     },
   ];
+
   if (import.meta.env.VITE_IS_PRO === 'true') {
-    columns.splice(5, 0, {
+    columns.splice(4, 0, {
       title: t('claimant'),
       dataIndex: 'claimant',
       width: 100,
@@ -202,23 +222,34 @@ export default function TableCpt(props: IProps) {
       },
     });
   }
+
   const fetchData = ({ current, pageSize }) => {
-    const params: any = {
-      p: current,
-      limit: pageSize,
-      ..._.omit(filterObj, 'range'),
-    };
-    if (filterObj.range) {
-      const parsedRange = parseRange(filterObj.range);
-      params.stime = moment(parsedRange.start).unix();
-      params.etime = moment(parsedRange.end).unix();
-    }
-    return getEvents(params).then((res) => {
-      return {
-        total: res.dat.total,
-        list: res.dat.list,
+    if (filterObj.event_ids) {
+      return getCardDetail(filterObj.event_ids.map((id) => Number(id))).then((res) => {
+        return {
+          total: res.dat.length,
+          list: res.dat,
+        };
+      });
+    } else {
+      const params: any = {
+        p: current,
+        limit: pageSize,
+        ..._.omit(filterObj, 'range'),
       };
-    });
+
+      if (filterObj.range) {
+        const parsedRange = parseRange(filterObj.range);
+        params.stime = moment(parsedRange.start).unix();
+        params.etime = moment(parsedRange.end).unix();
+      }
+      return getEvents(params).then((res) => {
+        return {
+          total: res.dat.total,
+          list: res.dat.list,
+        };
+      });
+    }
   };
   const { tableProps } = useAntdTable(fetchData, {
     refreshDeps: [refreshFlag, JSON.stringify(filterObj), props.refreshFlag],

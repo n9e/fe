@@ -10,7 +10,7 @@ import './index.less';
 import { CardType } from './AlertCard';
 
 interface Props {
-  onRefreshRule: (rule: string) => void;
+  onRefreshRule: (rule: number) => void;
   cardList: CardType[];
 }
 
@@ -30,8 +30,7 @@ export default function AggrRuleDropdown(props: Props) {
   const [form] = Form.useForm();
   const [alertList, setAlertList] = useState<CardAlertType[]>();
   const [editForm, setEditForm] = useState<CardAlertType>();
-  const localSelectId = localStorage.getItem('selectedAlertRule');
-  const [activeId, setActiveId] = useState<number>(localSelectId ? Number(localSelectId) : 0);
+  const localSelectId = Number(localStorage.getItem('selectedAlertRule'));
   const { profile } = useContext(CommonStateContext);
   const [selectedAlert, setSelectedAlert] = useState<CardAlertType>();
   const [visibleDropdown, setVisibleDropdown] = useState(false);
@@ -39,39 +38,25 @@ export default function AggrRuleDropdown(props: Props) {
 
   useEffect(() => {
     getList(true).then((res) => {
-      if (activeId && res && res.length > 0) {
-        const currentAlert = res?.find((item) => item.id === activeId) as CardAlertType;
-        if (currentAlert) {
-          onRefreshRule(currentAlert.rule);
-        } else {
-          saveActiveId(res[0].id);
-        }
+      let initAlert: CardAlertType | undefined;
+      if (localSelectId && res.length > 0) {
+        initAlert = res.find((item) => item.id === localSelectId) || res[0];
+      } else {
+        initAlert = res[0];
+      }
+      if (initAlert) {
+        setSelectedAlert(initAlert);
+        onRefreshRule(initAlert.id);
+        localStorage.setItem('selectedAlertRule', String(initAlert.id));
       }
     });
   }, []);
-
-  useEffect(() => {
-    if (activeId && alertList && alertList.length > 0) {
-      const currentAlert = alertList?.find((item) => item.id === activeId) as CardAlertType;
-      if (currentAlert) {
-        onRefreshRule(currentAlert.rule);
-      } else {
-        saveActiveId(alertList[0].id);
-      }
-    }
-  }, [activeId]);
-
-  function saveActiveId(id: number) {
-    if (!id) return;
-    setActiveId(id);
-    localStorage.setItem('selectedAlertRule', String(id));
-  }
 
   const getList = (selectTheFirst = false) => {
     return getAggrAlerts().then((res) => {
       const sortedList = res.dat.sort((a: CardAlertType, b: CardAlertType) => a.cate - b.cate);
       setAlertList(sortedList);
-      selectTheFirst && sortedList.length > 0 && !sortedList.find((item) => item.id === activeId) && saveActiveId(sortedList[0].id);
+      selectTheFirst && sortedList.length > 0 && !sortedList.find((item) => item.id === localSelectId) && localStorage.setItem('selectedAlertRule', String(sortedList[0].id));
       return sortedList;
     });
   };
@@ -86,8 +71,8 @@ export default function AggrRuleDropdown(props: Props) {
     });
     setVisibleAggrRuleModal(false);
     await getList();
-    saveActiveId(editForm ? editForm.id : cur.dat.id);
-    editForm && onRefreshRule(values.rule + ' ');
+    localStorage.setItem('selectedAlertRule', String(editForm ? editForm.id : cur.dat.id));
+    editForm && onRefreshRule(values.id);
   };
 
   const handleCancel = () => {
@@ -107,19 +92,18 @@ export default function AggrRuleDropdown(props: Props) {
     });
   };
 
+  const handleSelect = (alert: CardAlertType) => {
+    setSelectedAlert(alert);
+    onRefreshRule(alert.id);
+    localStorage.setItem('selectedAlertRule', String(alert.id));
+    setVisibleDropdown(false);
+  };
+
   const dropdownMenu = (
     <Menu className='min-w-[220px] max-h-[300px] overflow-auto bg-var(--fc-fill-1)'>
       {(alertList || []).map((alert) => (
-        <Menu.Item
-          onClick={() => {
-            saveActiveId(alert.id);
-            setSelectedAlert(alert);
-            setVisibleDropdown(false);
-          }}
-          className='p-0 m-0'
-          key={alert.id}
-        >
-          <div className={`px-2 py-1 flex items-center justify-between ${alert.id === activeId ? ' is-active' : ''}`}>
+        <Menu.Item onClick={() => handleSelect(alert)} className='p-0 m-0' key={alert.id}>
+          <div className={`px-2 py-1 flex items-center justify-between ${alert.id === selectedAlert?.id ? ' is-active' : ''}`}>
             <div>{alert.name}</div>
             {(alert.cate === 1 || profile.admin) && (
               <div className='flex gap-2'>
@@ -132,7 +116,7 @@ export default function AggrRuleDropdown(props: Props) {
                       ...alert,
                       cate: alert.cate === 0,
                     });
-                    onRefreshRule(alert.rule);
+                    onRefreshRule(alert.id);
                   }}
                 />
                 <DeleteOutlined
