@@ -360,45 +360,45 @@ function EditItem(props: IProps) {
           </Form.Item>
         </>
       )}
-      {_.includes(['custom', 'hostIdent'], varType) ||
-        (_.includes([DatasourceCateEnum.prometheus, DatasourceCateEnum.elasticsearch, DatasourceCateEnum.pgsql], datesourceCate) && (
-          <Row gutter={16}>
-            <Col flex='120px'>
-              <Form.Item label={t('var.multi')} name='multi' valuePropName='checked'>
-                <Switch />
-              </Form.Item>
-            </Col>
-            <Col flex='120px'>
-              <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.multi !== curValues.multi} noStyle>
-                {({ getFieldValue }) => {
-                  const multi = getFieldValue('multi');
-                  if (multi) {
-                    return (
-                      <Form.Item label={t('var.allOption')} name='allOption' valuePropName='checked'>
-                        <Switch />
-                      </Form.Item>
-                    );
-                  }
-                }}
-              </Form.Item>
-            </Col>
-            <Col flex='auto'>
-              <Form.Item shouldUpdate noStyle>
-                {({ getFieldValue }) => {
-                  const multi = getFieldValue('multi');
-                  const allOption = getFieldValue('allOption');
-                  if (multi && allOption) {
-                    return (
-                      <Form.Item label={t('var.allValue')} name='allValue'>
-                        <Input placeholder='.*' />
-                      </Form.Item>
-                    );
-                  }
-                }}
-              </Form.Item>
-            </Col>
-          </Row>
-        ))}
+      {(_.includes(['custom', 'hostIdent'], varType) ||
+        _.includes([DatasourceCateEnum.prometheus, DatasourceCateEnum.elasticsearch, DatasourceCateEnum.pgsql], datesourceCate)) && (
+        <Row gutter={16}>
+          <Col flex='120px'>
+            <Form.Item label={t('var.multi')} name='multi' valuePropName='checked'>
+              <Switch />
+            </Form.Item>
+          </Col>
+          <Col flex='120px'>
+            <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.multi !== curValues.multi} noStyle>
+              {({ getFieldValue }) => {
+                const multi = getFieldValue('multi');
+                if (multi) {
+                  return (
+                    <Form.Item label={t('var.allOption')} name='allOption' valuePropName='checked'>
+                      <Switch />
+                    </Form.Item>
+                  );
+                }
+              }}
+            </Form.Item>
+          </Col>
+          <Col flex='auto'>
+            <Form.Item shouldUpdate noStyle>
+              {({ getFieldValue }) => {
+                const multi = getFieldValue('multi');
+                const allOption = getFieldValue('allOption');
+                if (multi && allOption) {
+                  return (
+                    <Form.Item label={t('var.allValue')} name='allValue'>
+                      <Input placeholder='.*' />
+                    </Form.Item>
+                  );
+                }
+              }}
+            </Form.Item>
+          </Col>
+        </Row>
+      )}
       <Form.Item>
         <Space>
           <Button
