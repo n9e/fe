@@ -86,13 +86,13 @@ const TagItem = (props: Props) => {
               rules={[{ required: true, message: t('tag.value.msg') }]}
               getValueFromEvent={(value) => {
                 if (_.isArray(value)) {
-                  return _.join(value, ',');
+                  return _.join(value, ' ');
                 }
                 return value;
               }}
               getValueProps={(value) => {
                 if (_.isString(value)) {
-                  return { value: _.split(value, ',') };
+                  return { value: _.split(value, ' ') };
                 }
                 return { value };
               }}
