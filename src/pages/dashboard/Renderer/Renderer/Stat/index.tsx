@@ -121,7 +121,7 @@ export default function Stat(props: IProps) {
       const grid = calculateGridDimensions(eleSize.width, eleSize.height, ITEM_SPACIING, calculatedValues.length);
       setGrid(grid);
     }
-  }, [eleSize?.width, eleSize?.height, calculatedValues.length, orientation]);
+  }, [eleSize?.width, eleSize?.height, calculatedValues.length, colSpan, orientation]);
 
   return (
     <div className='renderer-stat-container'>
