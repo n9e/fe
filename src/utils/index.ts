@@ -136,13 +136,13 @@ export interface Entry {
 }
 
 export const dynamicPackages = (): Entry[] => {
-  const Packages = import.meta.globEager('../Packages/*/entry.tsx');
-  return Object.values(Packages).map((obj) => obj.default);
+  const Packages = import.meta.glob('../Packages/*/entry.tsx', { eager: true });
+  return Object.values(Packages).map((obj: any) => obj.default);
 };
 
 export const dynamicPages = (): Entry[] => {
-  const Packages = import.meta.globEager('../pages/*/entry.tsx');
-  return Object.values(Packages).map((obj) => obj.default);
+  const Packages = import.meta.glob('../pages/*/entry.tsx', { eager: true });
+  return Object.values(Packages).map((obj: any) => obj.default);
 };
 
 export const generateID = (): string => {
