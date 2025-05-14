@@ -36,6 +36,7 @@ const ru_RU = {
   claim: 'Принятие',
   unclaim: 'Отмена принятия',
   claimant: 'Лицо, принявшее решение',
+  search: 'Поиск источника данных',
   delete_confirm: {
     title: 'Удалить событие предупреждения',
     content:

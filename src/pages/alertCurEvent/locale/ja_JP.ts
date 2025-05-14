@@ -36,6 +36,7 @@ const ja_JP = {
   claim: '認領',
   unclaim: '認領解除',
   claimant: '認領者',
+  search: 'データソースを検索',
   delete_confirm: {
     title: 'アラートイベントを削除',
     content:

@@ -36,7 +36,7 @@ const en_US = {
   claim: 'Claim',
   unclaim: 'Unclaim',
   claimant: 'Claimant by',
-
+  search: 'Search datasource',
   delete_confirm: {
     title: 'Delete alert event',
     content:

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Input, Form, Modal, Switch, message, Dropdown, Button, Menu } from 'antd';
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined, CloseCircleOutlined } from '@ant-design/icons';
 
 import { getAggrAlerts, AddAggrAlerts, updateAggrAlerts, deleteAggrAlerts } from '@/services/warning';
 import { CommonStateContext } from '@/App';
@@ -9,7 +9,7 @@ import { CommonStateContext } from '@/App';
 import './index.less';
 
 interface Props {
-  onRefreshRule: (rule: number) => void;
+  onRefreshRule: (rule: number | undefined) => void;
   cardNum: number;
 }
 
@@ -36,12 +36,10 @@ export default function AggrRuleDropdown(props: Props) {
   const [visibleAggrRuleModal, setVisibleAggrRuleModal] = useState(false);
 
   useEffect(() => {
-    getList(true).then((res) => {
+    getList().then((res) => {
       let initAlert: CardAlertType | undefined;
       if (localSelectId && res.length > 0) {
-        initAlert = res.find((item) => item.id === localSelectId) || res[0];
-      } else {
-        initAlert = res[0];
+        initAlert = res.find((item) => item.id === localSelectId);
       }
       if (initAlert) {
         setSelectedAlert(initAlert);
@@ -98,6 +96,14 @@ export default function AggrRuleDropdown(props: Props) {
     setVisibleDropdown(false);
   };
 
+  const handleClear = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedAlert(undefined);
+    onRefreshRule(undefined);
+    localStorage.removeItem('selectedAlertRule');
+    setVisibleDropdown(false);
+  };
+
   const dropdownMenu = (
     <Menu className='min-w-[220px] max-h-[300px] overflow-auto bg-var(--fc-fill-1)'>
       {(alertList || []).map((alert) => (
@@ -129,7 +135,7 @@ export default function AggrRuleDropdown(props: Props) {
           </div>
         </Menu.Item>
       ))}
-      <Menu.Item key='add-rule' className='bg-transparent text-right p-0 m-0 border-top'>
+      <Menu.Item key='add-rule' className='border-t bg-transparent text-right p-0 m-0 border-top'>
         <Button
           type='link'
           onClick={() => {
@@ -153,6 +159,7 @@ export default function AggrRuleDropdown(props: Props) {
           readOnly
           onClick={() => setVisibleDropdown(true)}
           style={{ width: 340 }}
+          suffix={selectedAlert && <CloseCircleOutlined onClick={handleClear} style={{ cursor: 'pointer' }} />}
         />
       </Dropdown>
 

@@ -3,7 +3,7 @@ import { CheckOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useDebounceFn } from 'ahooks';
 
-import { getAlertCards, getCardDetail } from '@/services/warning';
+import { getAlertCards } from '@/services/warning';
 
 import { SeverityColor } from './index';
 import './index.less';
@@ -33,6 +33,10 @@ const AlertCard = (props: Props) => {
 
   const { run: reloadCard } = useDebounceFn(
     () => {
+      if (!filter.rule_id) {
+        setCardList([]);
+        return;
+      }
       getAlertCards({ view_id: filter.rule_id, my_groups: String(filter.my_groups) === 'true' }).then((res) => {
         setCardList(res.dat);
         onUpdateCardNum(res.dat.length);
@@ -42,8 +46,6 @@ const AlertCard = (props: Props) => {
       wait: 500,
     },
   );
-
-  console.log(filter.my_groups);
 
   return (
     <div className='w-full overflow-y-auto pt-2 max-h-[172px] gap-4 items-start'>

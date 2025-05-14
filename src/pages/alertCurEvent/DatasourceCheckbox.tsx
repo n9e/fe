@@ -1,25 +1,34 @@
-import React, { useContext, useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Checkbox, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SearchOutlined } from '@ant-design/icons';
 
-import { CommonStateContext } from '@/App';
 import { allCates } from '@/components/AdvancedWrap/utils';
+import { getAlertCurEventsDatasource } from './services';
 
 interface Props {
+  filter: any;
   value?: number[];
   onChange: (val?: number[]) => void;
 }
 
-const DatasourceCheckbox: React.FC<Props> = ({ value = [], onChange }) => {
-  const { t } = useTranslation('datasourceSelect');
-  const { groupedDatasourceList } = useContext(CommonStateContext);
+interface Datasource {
+  id: number;
+  name: string;
+  plugin_type: string;
+}
+
+const DatasourceCheckbox: React.FC<Props> = ({ filter, value = [], onChange }) => {
+  const { t } = useTranslation('AlertCurEvents');
   const [search, setSearch] = useState('');
-  const allDatasource = useMemo(() => Object.values(groupedDatasourceList).flat(), [groupedDatasourceList]);
-  const filteredDatasource = useMemo(() => allDatasource.filter((ds) => ds.name.toLowerCase().includes(search.toLowerCase())), [allDatasource, search]);
+  const [datasourceList, setDatasourceList] = useState<Datasource[]>([]);
+
+  const filteredDatasource = useMemo(() => datasourceList.filter((ds) => ds.name.toLowerCase().includes(search.toLowerCase())), [datasourceList, search]);
+
   const filteredIds = filteredDatasource.map((ds) => ds.id);
   const allChecked = filteredIds.length > 0 && filteredIds.every((id) => value.includes(id));
   const indeterminate = filteredIds.some((id) => value.includes(id)) && !allChecked;
+
   const handleCheckAll = (checked: boolean) => {
     if (checked) {
       onChange(Array.from(new Set([...value, ...filteredIds])));
@@ -27,6 +36,26 @@ const DatasourceCheckbox: React.FC<Props> = ({ value = [], onChange }) => {
       onChange(value.filter((id) => !filteredIds.includes(id)));
     }
   };
+
+  const fetchDatasource = () => {
+    const params = {
+      my_groups: filter.my_groups,
+      query: filter.query,
+      cate: filter.cate,
+      rid: filter.rule_id,
+      severity: filter.severity,
+      prods: filter.rule_prods,
+    };
+    return getAlertCurEventsDatasource(params).then((res) => {
+      setDatasourceList(res.dat);
+      return res.dat;
+    });
+  };
+
+  useEffect(() => {
+    fetchDatasource();
+  }, [filter.my_groups, filter.query, filter.cate, filter.rule_id, filter.severity, filter.rule_prods]);
+
   return (
     <div>
       <div className='mt-1 flex items-center'>

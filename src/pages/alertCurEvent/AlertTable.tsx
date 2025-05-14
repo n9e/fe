@@ -231,8 +231,8 @@ export default function AlertTable(props: IProps) {
       const params: any = {
         p: current,
         limit: pageSize,
-        my_groups: filter.my_groups,
-        ..._.omit(filterObj, 'range', 'rule_id'),
+        my_groups: filterObj.my_groups,
+        ..._.omit(filterObj, 'range'),
       };
 
       if (filterObj.range) {

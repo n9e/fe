@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useMemo } from 'react';
 import { Input, message, Modal, Space, Row, Col, Checkbox, Collapse, Radio } from 'antd';
 import { AlertOutlined, ExclamationCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
@@ -38,8 +38,8 @@ import './locale';
 import './index.less';
 
 // @ts-ignore
-import DatasourceCheckbox from '@/components/DatasourceSelect/DatasourceCheckbox';
-import { getAlertCurEventsDatasource } from './services';
+import DatasourceCheckbox from '@/pages/alertCurEvent/DatasourceCheckbox';
+
 const CACHE_KEY = 'alert_active_events_range';
 const getFilter = (query) => {
   return {
@@ -47,22 +47,13 @@ const getFilter = (query) => {
     datasource_ids: query.datasource_ids ? _.split(query.datasource_ids, ',').map(Number) : [],
     bgid: query.bgid ? Number(query.bgid) : undefined,
     severity: query.severity ? Number(query.severity) : undefined,
-    query: query.query,
+    query: query.query ? query.query : undefined,
     is_recovered: query.is_recovered ? Number(query.is_recovered) : undefined,
     rule_prods: query.rule_prods ? _.split(query.rule_prods, ',') : [],
     rule_id: query.rule_id ? Number(query.rule_id) : undefined,
     event_ids: query.event_ids ? _.split(query.event_ids, ',') : [],
-    my_groups: query.my_groups ? query.my_groups : 'false',
+    my_groups: query.my_groups ? query.my_groups : undefined,
   };
-};
-
-const fetchDatasource = () => {
-  const params = {
-    my_groups: true,
-  };
-  return getAlertCurEventsDatasource(params).then((res) => {
-    return res.dat;
-  });
 };
 
 const { confirm } = Modal;
@@ -91,7 +82,7 @@ const AlertCurEvent: React.FC = () => {
   const location = useLocation();
   const history = useHistory();
   const query = queryString.parse(location.search);
-  const filter = getFilter(query);
+  const filter = useMemo(() => getFilter(query), [JSON.stringify(query)]);
   const setFilter = (newFilter) => {
     history.replace({
       pathname: location.pathname,
@@ -140,7 +131,6 @@ const AlertCurEvent: React.FC = () => {
           />
 
           <Radio.Group
-            defaultValue={filter.my_groups}
             onChange={(e) => {
               setFilter({
                 ...filter,
@@ -299,6 +289,7 @@ const AlertCurEvent: React.FC = () => {
                 </Collapse.Panel>
                 <Collapse.Panel header={t('detail.datasource_id')} key='datasource'>
                   <DatasourceCheckbox
+                    filter={filter}
                     value={filter.datasource_ids}
                     onChange={(val: number[]) => {
                       setFilter({

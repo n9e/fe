@@ -14,7 +14,7 @@ export function getEvents(params) {
 }
 
 export function getAlertCurEventsDatasource(params) {
-  return request('/api/n9e/alert-cur-events/datasource', {
+  return request('/api/n9e/alert-cur-events-datasources', {
     method: RequestMethod.Get,
     params,
   });
