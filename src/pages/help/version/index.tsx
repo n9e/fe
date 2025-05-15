@@ -18,7 +18,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Icon from '@ant-design/icons';
 import PageLayout from '@/components/pageLayout';
-import SystemInfoSvg from '../../../../public/image/system-info.svg';
+import SystemInfoSvg from '@/assets/n9e/image/system-info.svg?react';
 import pkgJson from '../../../../package.json';
 import './locale';
 // @ts-ignore

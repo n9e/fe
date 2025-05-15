@@ -60,7 +60,6 @@ export default defineConfig(({ mode }) => {
       react(),
       svgr({
         svgrOptions: {
-          plugins: ['@svgr/plugin-svgo', '@svgr/plugin-jsx'],
           svgoConfig: {
             floatPrecision: 2,
           },
