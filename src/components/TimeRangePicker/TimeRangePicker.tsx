@@ -202,6 +202,7 @@ export default function index(props: ITimeRangePickerProps) {
     placeholder = t('placeholder'),
     allowClear = false,
     onClear = () => {},
+    extraFooter,
     limitHour,
     disabled,
     ajustTimeOptions,
@@ -379,6 +380,7 @@ export default function index(props: ITimeRangePickerProps) {
             {showTimezone && (
               <div className='flashcat-timeRangePicker-footer'>
                 <TimeZonePicker value={timezone} onChange={onTimezoneChange} />
+                {extraFooter && extraFooter(setVisible)}
               </div>
             )}
           </>

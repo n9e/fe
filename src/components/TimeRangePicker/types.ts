@@ -71,6 +71,7 @@ export interface ITimeRangePickerProps {
   allowClear?: boolean;
   onClear?: () => void;
   label?: React.ReactElement;
+  extraFooter?: (fn: Function) => React.ReactElement; // 底部右侧额外的内容
   disabled?: boolean;
   size?: SizeType; // trigger button size
   ajustTimeOptions?: (options: ITimeOption[]) => ITimeOption[];
