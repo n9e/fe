@@ -6,7 +6,7 @@ import { EditOutlined, DeleteOutlined, CloseCircleOutlined } from '@ant-design/i
 import { getAggrAlerts, AddAggrAlerts, updateAggrAlerts, deleteAggrAlerts } from '@/services/warning';
 import { CommonStateContext } from '@/App';
 
-import './index.less';
+import { NS } from '../../constants';
 
 interface Props {
   onRefreshRule: (rule: number | undefined) => void;
@@ -25,7 +25,7 @@ export interface CardAlertType {
 
 export default function AggrRuleDropdown(props: Props) {
   const { onRefreshRule, cardNum } = props;
-  const { t } = useTranslation('AlertCurEvents');
+  const { t } = useTranslation(NS);
   const [form] = Form.useForm();
   const [alertList, setAlertList] = useState<CardAlertType[]>();
   const [editForm, setEditForm] = useState<CardAlertType>();
