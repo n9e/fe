@@ -16,9 +16,9 @@
  */
 import React, { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Tag, Button, Table, Tooltip, Dropdown, Menu } from 'antd';
-import { MoreOutlined } from '@ant-design/icons';
-import { useHistory, Link } from 'react-router-dom';
+import { Tag, Button, Table, Tooltip, Dropdown, Menu, Drawer } from 'antd';
+import { MoreOutlined, CloseOutlined } from '@ant-design/icons';
+import { useHistory } from 'react-router-dom';
 import moment from 'moment';
 import _ from 'lodash';
 import queryString from 'query-string';
@@ -30,6 +30,7 @@ import { parseRange } from '@/components/TimeRangePicker';
 import { getEvents } from './services';
 import { deleteAlertEventsModal } from './index';
 import { SeverityColor } from './index';
+import DetailNG from '../event/DetailNG';
 
 // @ts-ignore
 import AckBtn from 'plus:/parcels/Event/Acknowledge/AckBtn';
@@ -85,6 +86,8 @@ export default function AlertTable(props: IProps) {
   const { t } = useTranslation('AlertCurEvents');
   const { groupedDatasourceList } = useContext(CommonStateContext);
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
+  const [openAlertDetailDrawer, setOpenAlertDetailDrawer] = useState<boolean>(false);
+  const [currentRecord, setCurrentRecord] = useState<any>(null);
   const columns = [
     {
       title: t('common:datasource.id'),
@@ -100,12 +103,18 @@ export default function AlertTable(props: IProps) {
     {
       title: t('rule_name'),
       dataIndex: 'rule_name',
-      render(title, { id, tags }) {
+      render(title, { id, tags, ...record }) {
         return (
           <>
-            <div className='mb1'>
-              <Link to={`/alert-cur-events/${id}`}>{title}</Link>
-            </div>
+            <a
+              onClick={() => {
+                setCurrentRecord(record);
+                setOpenAlertDetailDrawer(true);
+              }}
+              className='mb1'
+            >
+              {title}
+            </a>
             <div>
               {_.map(tags, (item) => {
                 return (
@@ -281,26 +290,39 @@ export default function AlertTable(props: IProps) {
   });
 
   return (
-    <Table
-      className='mt8'
-      size='small'
-      tableLayout='fixed'
-      rowKey={(record) => record.id}
-      columns={columns}
-      {...tableProps}
-      rowClassName={(record: { severity: number; is_recovered: number }) => {
-        return SeverityColor[record.is_recovered ? 3 : record.severity - 1] + '-left-border';
-      }}
-      rowSelection={{
-        selectedRowKeys: selectedRowKeys,
-        onChange(selectedRowKeys: number[]) {
-          setSelectedRowKeys(selectedRowKeys);
-        },
-      }}
-      pagination={{
-        ...tableProps.pagination,
-        pageSizeOptions: ['30', '100', '200', '500'],
-      }}
-    />
+    <>
+      <Table
+        className='mt8'
+        size='small'
+        tableLayout='fixed'
+        rowKey={(record) => record.id}
+        columns={columns}
+        {...tableProps}
+        rowClassName={(record: { severity: number; is_recovered: number }) => {
+          return SeverityColor[record.is_recovered ? 3 : record.severity - 1] + '-left-border';
+        }}
+        rowSelection={{
+          selectedRowKeys: selectedRowKeys,
+          onChange(selectedRowKeys: number[]) {
+            setSelectedRowKeys(selectedRowKeys);
+          },
+        }}
+        pagination={{
+          ...tableProps.pagination,
+          pageSizeOptions: ['30', '100', '200', '500'],
+        }}
+      />
+      <Drawer
+        width={960}
+        closable={false}
+        title={t('title')}
+        destroyOnClose
+        extra={<CloseOutlined onClick={() => setOpenAlertDetailDrawer(false)} />}
+        onClose={() => setOpenAlertDetailDrawer(false)}
+        visible={openAlertDetailDrawer}
+      >
+        {currentRecord && <DetailNG data={currentRecord} />}
+      </Drawer>
+    </>
   );
 }
