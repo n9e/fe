@@ -187,7 +187,7 @@ const AbsoluteTimePicker = ({
 };
 
 export default function index(props: ITimeRangePickerProps) {
-  const { t } = useTranslation('timeRangePicker');
+  const { t, i18n } = useTranslation('timeRangePicker');
   const absoluteHistoryCache = getAbsoluteHistoryCache();
   const {
     value,
@@ -219,7 +219,7 @@ export default function index(props: ITimeRangePickerProps) {
       setRange(value);
       setLabel(describeTimeRange(value, dateFormat));
     }
-  }, [JSON.stringify(value), visible]);
+  }, [JSON.stringify(value), visible, i18n.language]);
 
   return (
     <>
