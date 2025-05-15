@@ -43,20 +43,41 @@ interface IProps {
   selectedRowKeys: number[];
   setSelectedRowKeys: (selectedRowKeys: number[]) => void;
 }
-function formatDuration(seconds: number) {
-  const duration = moment.duration(seconds, 'seconds');
-  const days = Math.floor(duration.asDays());
-  const hours = duration.hours();
-  const minutes = duration.minutes();
-  const secs = duration.seconds();
+function formatDuration(ms: number) {
+  const d = moment.duration(ms);
+  const days = Math.floor(d.asDays());
+  const hours = d.hours();
+  const minutes = d.minutes();
+  const seconds = d.seconds();
 
   let result: string[] = [];
   if (days) result.push(`${days} d`);
   if (hours) result.push(`${hours} h`);
   if (minutes) result.push(`${minutes} min`);
-  if (secs && result.length === 0) result.push(`${secs} s`); // 只在全为0时显示秒
+  if (seconds) result.push(`${seconds} s`);
 
   return result.join(' ');
+}
+
+function DurationBar({ duration }: { duration: number }) {
+  const maxGrids = 18;
+  const hours = duration / 3600000;
+  const highlight = hours >= 72 ? maxGrids : Math.floor(hours / 4);
+  const getColorClass = (idx: number) => {
+    if (idx < 6) return 'gold';
+    if (idx < 12) return 'orange';
+    return 'red';
+  };
+
+  return (
+    <div className='flex gap-[2px]'>
+      {Array.from({ length: maxGrids }).map((_, idx) => {
+        const colorClass = getColorClass(idx);
+        const isActive = idx < highlight;
+        return <div key={idx} className={`duration-bar-segment ${colorClass} ${isActive ? 'active' : 'inactive'}`} />;
+      })}
+    </div>
+  );
 }
 export default function AlertTable(props: IProps) {
   const { filterObj, filter, setFilter, selectedRowKeys, setSelectedRowKeys } = props;
@@ -128,11 +149,16 @@ export default function AlertTable(props: IProps) {
       },
     },
     {
-      title: t('duration'), //持续时长
+      title: t('duration'),
       dataIndex: 'duration',
-      width: 120,
+      width: 160,
       render(_, record) {
-        return formatDuration(moment().diff(moment(record.trigger_time * 1000)));
+        return (
+          <div>
+            {formatDuration(moment().diff(moment(record.trigger_time * 1000)))}
+            <DurationBar duration={moment().diff(moment(record.trigger_time * 1000))} />
+          </div>
+        );
       },
     },
     {

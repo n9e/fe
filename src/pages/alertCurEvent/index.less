@@ -87,3 +87,34 @@
 .green-left-border {
   border-left: 10px solid var(--fc-green-6-color);
 }
+
+.duration-bar-segment {
+  width: 4px;
+  height: 12px;
+  border-radius: 1px;
+  display: inline-block;
+  &.gold {
+    &.active {
+      background: radial-gradient(circle, #fff27a, #ffdb29);
+    }
+    &.inactive {
+      background: #fffab5;
+    }
+  }
+  &.orange {
+    &.active {
+      background: radial-gradient(circle, #ffcf87, #ff9b29);
+    }
+    &.inactive {
+      background: #ffe4b5;
+    }
+  }
+  &.red {
+    &.active {
+      background: radial-gradient(circle, #ffa39e, #ff4d4f);
+    }
+    &.inactive {
+      background: #ffd6d4;
+    }
+  }
+}
