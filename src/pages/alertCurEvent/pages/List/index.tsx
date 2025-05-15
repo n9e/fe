@@ -11,21 +11,17 @@ import { TimeRangePickerWithRefresh } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
 import { getProdOptions } from '@/pages/alertRules/Form/components/ProdSelect';
 import { getDefaultValue } from '@/components/TimeRangePicker';
-import { IS_ENT } from '@/utils/constant';
+import { IS_ENT, IS_PLUS } from '@/utils/constant';
 import { BusinessGroupSelectWithAll } from '@/components/BusinessGroup';
 
 import { NS, TIME_CACHE_KEY } from '../../constants';
 import getFilter from '../../utils/getFilter';
 import deleteAlertEventsModal from '../../utils/deleteAlertEventsModal';
+import { ackEvents } from '../../services';
 import DatasourceCheckbox from './DatasourceCheckbox';
 import AggrRuleDropdown from './AggrRuleDropdown';
 import AlertCard from './AlertCard';
 import AlertTable from './AlertTable';
-
-// @ts-ignore
-import BatchAckBtn from 'plus:/parcels/Event/Acknowledge/BatchAckBtn';
-// @ts-ignore
-import { ackEvents } from 'plus:/parcels/Event/Acknowledge/services';
 
 const AlertCurEvent: React.FC = () => {
   const { t } = useTranslation(NS);
@@ -246,28 +242,32 @@ const AlertCurEvent: React.FC = () => {
                       >
                         {t('common:btn.batch_delete')}
                       </Button>
-                      <Button
-                        className='ant-dropdown-menu-item'
-                        onClick={() => {
-                          ackEvents(selectedRowKeys).then(() => {
-                            setSelectedRowKeys([]);
-                            setRefreshFlag(_.uniqueId('refresh_'));
-                          });
-                        }}
-                      >
-                        {t('batch_claim')}
-                      </Button>
-                      <Button
-                        className='ant-dropdown-menu-item'
-                        onClick={() => {
-                          ackEvents(selectedRowKeys, 'unack').then(() => {
-                            setSelectedRowKeys([]);
-                            setRefreshFlag(_.uniqueId('refresh_'));
-                          });
-                        }}
-                      >
-                        {t('batch_unclaim')}
-                      </Button>
+                      {IS_PLUS && (
+                        <>
+                          <Button
+                            className='ant-dropdown-menu-item'
+                            onClick={() => {
+                              ackEvents(selectedRowKeys).then(() => {
+                                setSelectedRowKeys([]);
+                                setRefreshFlag(_.uniqueId('refresh_'));
+                              });
+                            }}
+                          >
+                            {t('batch_claim')}
+                          </Button>
+                          <Button
+                            className='ant-dropdown-menu-item'
+                            onClick={() => {
+                              ackEvents(selectedRowKeys, 'unack').then(() => {
+                                setSelectedRowKeys([]);
+                                setRefreshFlag(_.uniqueId('refresh_'));
+                              });
+                            }}
+                          >
+                            {t('batch_unclaim')}
+                          </Button>
+                        </>
+                      )}
                     </>
                   )}
                 </div>
