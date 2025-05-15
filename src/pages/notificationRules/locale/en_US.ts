@@ -55,6 +55,8 @@ const en_US = {
     name_placeholder: 'Please select event pipeline',
     name_required: 'Event pipeline is required',
     add_btn: 'Add a new event pipeline',
+    disable: 'Disable',
+    enable: 'Enable',
   },
 };
 export default en_US;
