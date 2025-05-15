@@ -16,9 +16,9 @@
  */
 import React, { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Tag, Button, Table, Tooltip, Dropdown, Menu } from 'antd';
-import { MoreOutlined } from '@ant-design/icons';
-import { useHistory, Link } from 'react-router-dom';
+import { Tag, Button, Table, Tooltip, Dropdown, Menu, Drawer } from 'antd';
+import { MoreOutlined, CloseOutlined } from '@ant-design/icons';
+import { useHistory } from 'react-router-dom';
 import moment from 'moment';
 import _ from 'lodash';
 import queryString from 'query-string';
@@ -30,6 +30,7 @@ import { parseRange } from '@/components/TimeRangePicker';
 import { getEvents } from './services';
 import { deleteAlertEventsModal } from './index';
 import { SeverityColor } from './index';
+import DetailNG from '../event/DetailNG';
 
 // @ts-ignore
 import AckBtn from 'plus:/parcels/Event/Acknowledge/AckBtn';
@@ -43,20 +44,41 @@ interface IProps {
   selectedRowKeys: number[];
   setSelectedRowKeys: (selectedRowKeys: number[]) => void;
 }
-function formatDuration(seconds: number) {
-  const duration = moment.duration(seconds, 'seconds');
-  const days = Math.floor(duration.asDays());
-  const hours = duration.hours();
-  const minutes = duration.minutes();
-  const secs = duration.seconds();
+function formatDuration(ms: number) {
+  const d = moment.duration(ms);
+  const days = Math.floor(d.asDays());
+  const hours = d.hours();
+  const minutes = d.minutes();
+  const seconds = d.seconds();
 
   let result: string[] = [];
   if (days) result.push(`${days} d`);
   if (hours) result.push(`${hours} h`);
   if (minutes) result.push(`${minutes} min`);
-  if (secs && result.length === 0) result.push(`${secs} s`); // 只在全为0时显示秒
+  if (seconds) result.push(`${seconds} s`);
 
   return result.join(' ');
+}
+
+function DurationBar({ duration }: { duration: number }) {
+  const maxGrids = 18;
+  const hours = duration / 3600000;
+  const highlight = hours >= 72 ? maxGrids : Math.floor(hours / 4);
+  const getColorClass = (idx: number) => {
+    if (idx < 6) return 'gold';
+    if (idx < 12) return 'orange';
+    return 'red';
+  };
+
+  return (
+    <div className='flex gap-[2px]'>
+      {Array.from({ length: maxGrids }).map((_, idx) => {
+        const colorClass = getColorClass(idx);
+        const isActive = idx < highlight;
+        return <div key={idx} className={`duration-bar-segment ${colorClass} ${isActive ? 'active' : 'inactive'}`} />;
+      })}
+    </div>
+  );
 }
 export default function AlertTable(props: IProps) {
   const { filterObj, filter, setFilter, selectedRowKeys, setSelectedRowKeys } = props;
@@ -64,6 +86,8 @@ export default function AlertTable(props: IProps) {
   const { t } = useTranslation('AlertCurEvents');
   const { groupedDatasourceList } = useContext(CommonStateContext);
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
+  const [openAlertDetailDrawer, setOpenAlertDetailDrawer] = useState<boolean>(false);
+  const [currentRecord, setCurrentRecord] = useState<any>(null);
   const columns = [
     {
       title: t('common:datasource.id'),
@@ -79,12 +103,18 @@ export default function AlertTable(props: IProps) {
     {
       title: t('rule_name'),
       dataIndex: 'rule_name',
-      render(title, { id, tags }) {
+      render(title, { id, tags, ...record }) {
         return (
           <>
-            <div className='mb1'>
-              <Link to={`/alert-cur-events/${id}`}>{title}</Link>
-            </div>
+            <a
+              onClick={() => {
+                setCurrentRecord(record);
+                setOpenAlertDetailDrawer(true);
+              }}
+              className='mb1'
+            >
+              {title}
+            </a>
             <div>
               {_.map(tags, (item) => {
                 return (
@@ -128,11 +158,16 @@ export default function AlertTable(props: IProps) {
       },
     },
     {
-      title: t('duration'), //持续时长
+      title: t('duration'),
       dataIndex: 'duration',
-      width: 120,
+      width: 160,
       render(_, record) {
-        return formatDuration(moment().diff(moment(record.trigger_time * 1000)));
+        return (
+          <div>
+            {formatDuration(moment().diff(moment(record.first_trigger_time * 1000)))}
+            <DurationBar duration={moment().diff(moment(record.first_trigger_time * 1000))} />
+          </div>
+        );
       },
     },
     {
@@ -255,26 +290,39 @@ export default function AlertTable(props: IProps) {
   });
 
   return (
-    <Table
-      className='mt8'
-      size='small'
-      tableLayout='fixed'
-      rowKey={(record) => record.id}
-      columns={columns}
-      {...tableProps}
-      rowClassName={(record: { severity: number; is_recovered: number }) => {
-        return SeverityColor[record.is_recovered ? 3 : record.severity - 1] + '-left-border';
-      }}
-      rowSelection={{
-        selectedRowKeys: selectedRowKeys,
-        onChange(selectedRowKeys: number[]) {
-          setSelectedRowKeys(selectedRowKeys);
-        },
-      }}
-      pagination={{
-        ...tableProps.pagination,
-        pageSizeOptions: ['30', '100', '200', '500'],
-      }}
-    />
+    <>
+      <Table
+        className='mt8'
+        size='small'
+        tableLayout='fixed'
+        rowKey={(record) => record.id}
+        columns={columns}
+        {...tableProps}
+        rowClassName={(record: { severity: number; is_recovered: number }) => {
+          return SeverityColor[record.is_recovered ? 3 : record.severity - 1] + '-left-border';
+        }}
+        rowSelection={{
+          selectedRowKeys: selectedRowKeys,
+          onChange(selectedRowKeys: number[]) {
+            setSelectedRowKeys(selectedRowKeys);
+          },
+        }}
+        pagination={{
+          ...tableProps.pagination,
+          pageSizeOptions: ['30', '100', '200', '500'],
+        }}
+      />
+      <Drawer
+        width={960}
+        closable={false}
+        title={t('title')}
+        destroyOnClose
+        extra={<CloseOutlined onClick={() => setOpenAlertDetailDrawer(false)} />}
+        onClose={() => setOpenAlertDetailDrawer(false)}
+        visible={openAlertDetailDrawer}
+      >
+        {currentRecord && <DetailNG data={currentRecord} />}
+      </Drawer>
+    </>
   );
 }
