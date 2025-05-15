@@ -51,6 +51,8 @@ const zh_CN = {
     name_placeholder: '请选择事件处理',
     name_required: '事件处理不能为空',
     add_btn: '添加事件处理',
+    disable: '禁用',
+    enable: '启用',
   },
 };
 export default zh_CN;
