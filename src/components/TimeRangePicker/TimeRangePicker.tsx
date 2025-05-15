@@ -377,9 +377,9 @@ export default function index(props: ITimeRangePickerProps) {
                 </Col>
               </Row>
             </div>
-            {showTimezone && (
+            {(showTimezone || extraFooter) && (
               <div className='flashcat-timeRangePicker-footer'>
-                <TimeZonePicker value={timezone} onChange={onTimezoneChange} />
+                {showTimezone ? <TimeZonePicker value={timezone} onChange={onTimezoneChange} /> : <span />}
                 {extraFooter && extraFooter(setVisible)}
               </div>
             )}
