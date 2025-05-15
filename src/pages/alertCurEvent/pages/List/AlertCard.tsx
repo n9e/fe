@@ -5,8 +5,7 @@ import { useDebounceFn } from 'ahooks';
 
 import { getAlertCards } from '@/services/warning';
 
-import { SeverityColor } from './index';
-import './index.less';
+import { SEVERITY_COLORS } from '../../constants';
 
 interface Props {
   filter: any;
@@ -51,7 +50,7 @@ const AlertCard = (props: Props) => {
       {cardList?.map((card, i) => (
         <div
           key={i}
-          className={`py-1 px-2 event-card-new cursor-pointer items-center mr-3 mb-2  inline-flex justify-between gap-2 border-radius-[2px] ${SeverityColor[card.severity - 1]}`}
+          className={`py-1 px-2 event-card-new cursor-pointer items-center mr-3 mb-2  inline-flex justify-between gap-2 border-radius-[2px] ${SEVERITY_COLORS[card.severity - 1]}`}
           onClick={() => {
             if (selectedCardId === card.title) {
               setSelectedCardId(undefined);
@@ -66,7 +65,7 @@ const AlertCard = (props: Props) => {
           <div className='truncate' style={{ color: 'inherit' }}>
             {card.title}
           </div>
-          <span className={`event-card-circle ${SeverityColor[card.severity - 1]} flex items-center justify-center w-[20px] h-[18px] rounded-lg `}>{card.total}</span>
+          <span className={`event-card-circle ${SEVERITY_COLORS[card.severity - 1]} flex items-center justify-center w-[20px] h-[18px] rounded-lg `}>{card.total}</span>
         </div>
       ))}
     </div>

@@ -1,19 +1,3 @@
-/*
- * Copyright 2022 Nightingale Team
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
 import React, { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Tag, Button, Table, Tooltip, Dropdown, Menu, Drawer } from 'antd';
@@ -26,15 +10,15 @@ import { useAntdTable } from 'ahooks';
 
 import { CommonStateContext } from '@/App';
 import { parseRange } from '@/components/TimeRangePicker';
+import { getCardDetail } from '@/services/warning';
+import DetailNG from '@/pages/event/DetailNG';
 
-import { getEvents } from './services';
-import { deleteAlertEventsModal } from './index';
-import { SeverityColor } from './index';
-import DetailNG from '../event/DetailNG';
+import { getEvents } from '../../services';
+import deleteAlertEventsModal from '../../utils/deleteAlertEventsModal';
+import { NS, SEVERITY_COLORS } from '../../constants';
 
 // @ts-ignore
 import AckBtn from 'plus:/parcels/Event/Acknowledge/AckBtn';
-import { getCardDetail } from '@/services/warning';
 
 interface IProps {
   filterObj: any;
@@ -83,7 +67,7 @@ function DurationBar({ duration }: { duration: number }) {
 export default function AlertTable(props: IProps) {
   const { filterObj, filter, setFilter, selectedRowKeys, setSelectedRowKeys } = props;
   const history = useHistory();
-  const { t } = useTranslation('AlertCurEvents');
+  const { t } = useTranslation(NS);
   const { groupedDatasourceList } = useContext(CommonStateContext);
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
   const [openAlertDetailDrawer, setOpenAlertDetailDrawer] = useState<boolean>(false);
@@ -299,7 +283,7 @@ export default function AlertTable(props: IProps) {
         columns={columns}
         {...tableProps}
         rowClassName={(record: { severity: number; is_recovered: number }) => {
-          return SeverityColor[record.is_recovered ? 3 : record.severity - 1] + '-left-border';
+          return SEVERITY_COLORS[record.is_recovered ? 3 : record.severity - 1] + '-left-border';
         }}
         rowSelection={{
           selectedRowKeys: selectedRowKeys,

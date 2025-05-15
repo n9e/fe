@@ -1,0 +1,114 @@
+@import "./variables.less";
+
+.@{namespace} {
+  .event-card-new {
+    &.yellow {
+      color: var(--fc-gold-6-color);
+      background-color: var(--fc-gold-1-color);
+      border: 1px solid var(--fc-gold-6-color);
+    }
+
+    &.orange {
+      color: var(--fc-orange-6-color);
+      background-color: var(--fc-orange-1-color);
+      border: 1px solid var(--fc-orange-6-color);
+    }
+
+    &.red {
+      color: var(--fc-red-6-color);
+      background-color: var(--fc-red-1-color);
+      border: 1px solid var(--fc-red-6-color);
+    }
+  }
+
+  .event-card-circle {
+    color: #fff;
+
+    &.yellow {
+      background-color: var(--fc-gold-6-color);
+    }
+
+    &.orange {
+      background-color: var(--fc-orange-6-color);
+    }
+
+    &.red {
+      background-color: var(--fc-red-6-color);
+    }
+  }
+
+  .duration-bar-segment {
+    width: 4px;
+    height: 12px;
+    border-radius: 1px;
+    display: inline-block;
+
+    &.gold {
+      &.active {
+        background: radial-gradient(circle, #fff27a, #ffdb29);
+      }
+
+      &.inactive {
+        background: #fffab5;
+      }
+    }
+
+    &.orange {
+      &.active {
+        background: radial-gradient(circle, #ffcf87, #ff9b29);
+      }
+
+      &.inactive {
+        background: #ffe4b5;
+      }
+    }
+
+    &.red {
+      &.active {
+        background: radial-gradient(circle, #ffa39e, #ff4d4f);
+      }
+
+      &.inactive {
+        background: #ffd6d4;
+      }
+    }
+  }
+
+  .ant-collapse {
+    background: transparent;
+
+    .ant-collapse-header {
+      background: var(--fc-fill-3);
+      border-radius: 2px;
+      padding: 4px 8px;
+    }
+
+    .ant-collapse-item {
+      border: none;
+    }
+  }
+
+  .ant-table table {
+    border-collapse: collapse !important;
+
+    thead {
+      border-left: 10px solid #f0f0f0 !important;
+    }
+  }
+
+  &.cur-events {
+    .dantd-data-table-header-loadbtn-left {
+      margin-right: 0px;
+    }
+  }
+}
+
+.theme-dark {
+  .event-container {
+    .ant-table table {
+      thead {
+        border-left: 10px solid #303340 !important;
+      }
+    }
+  }
+}

@@ -1,29 +1,12 @@
-/*
- * Copyright 2022 Nightingale Team
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
 import React, { useContext, useState, useMemo } from 'react';
-import { Input, message, Modal, Row, Col, Checkbox, Collapse, Segmented, Dropdown, Button } from 'antd';
-import { AlertOutlined, ExclamationCircleOutlined, SearchOutlined } from '@ant-design/icons';
+import { Input, Checkbox, Collapse, Segmented, Button, Space } from 'antd';
+import { AlertOutlined, SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import queryString from 'query-string';
 import { useLocation, useHistory } from 'react-router-dom';
 
 import PageLayout from '@/components/pageLayout';
-import { deleteAlertEvents } from '@/services/warning';
 import { TimeRangePickerWithRefresh } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
 import { getProdOptions } from '@/pages/alertRules/Form/components/ProdSelect';
@@ -31,60 +14,26 @@ import { getDefaultValue } from '@/components/TimeRangePicker';
 import { IS_ENT } from '@/utils/constant';
 import { BusinessGroupSelectWithAll } from '@/components/BusinessGroup';
 
+import { NS, TIME_CACHE_KEY } from '../../constants';
+import getFilter from '../../utils/getFilter';
+import deleteAlertEventsModal from '../../utils/deleteAlertEventsModal';
+import DatasourceCheckbox from './DatasourceCheckbox';
 import AggrRuleDropdown from './AggrRuleDropdown';
 import AlertCard from './AlertCard';
 import AlertTable from './AlertTable';
-import './locale';
-import './index.less';
 
 // @ts-ignore
-import DatasourceCheckbox from '@/pages/alertCurEvent/DatasourceCheckbox';
-import BatchAckBtn from '@/plus/parcels/Event/Acknowledge/BatchAckBtn';
-import { ackEvents } from '@/plus/parcels/Event/Acknowledge/services';
-
-const CACHE_KEY = 'alert_active_events_range';
-const getFilter = (query) => {
-  return {
-    range: getDefaultValue(CACHE_KEY, undefined),
-    datasource_ids: query.datasource_ids ? _.split(query.datasource_ids, ',').map(Number) : [],
-    bgid: query.bgid ? Number(query.bgid) : undefined,
-    severity: query.severity ? Number(query.severity) : undefined,
-    query: query.query ? query.query : undefined,
-    is_recovered: query.is_recovered ? Number(query.is_recovered) : undefined,
-    rule_prods: query.rule_prods ? _.split(query.rule_prods, ',') : [],
-    rule_id: query.rule_id ? Number(query.rule_id) : undefined,
-    event_ids: query.event_ids ? _.split(query.event_ids, ',') : [],
-    my_groups: query.my_groups ? query.my_groups : undefined,
-  };
-};
-
-const { confirm } = Modal;
-export const SeverityColor = ['red', 'orange', 'yellow', 'green'];
-export function deleteAlertEventsModal(ids: number[], onSuccess = () => {}, t) {
-  confirm({
-    title: t('delete_confirm.title'),
-    icon: <ExclamationCircleOutlined />,
-    content: t('delete_confirm.content'),
-    maskClosable: true,
-    okButtonProps: { danger: true },
-    zIndex: 1001,
-    onOk() {
-      return deleteAlertEvents(ids).then((res) => {
-        message.success(t('common:success.delete'));
-        onSuccess();
-      });
-    },
-    onCancel() {},
-  });
-}
+import BatchAckBtn from 'plus:/parcels/Event/Acknowledge/BatchAckBtn';
+// @ts-ignore
+import { ackEvents } from 'plus:/parcels/Event/Acknowledge/services';
 
 const AlertCurEvent: React.FC = () => {
-  const { t } = useTranslation('AlertCurEvents');
+  const { t } = useTranslation(NS);
   const { feats } = useContext(CommonStateContext);
   const location = useLocation();
   const history = useHistory();
   const query = queryString.parse(location.search);
-  const localRange = getDefaultValue(CACHE_KEY, undefined);
+  const localRange = getDefaultValue(TIME_CACHE_KEY, undefined);
   const filter = useMemo(() => getFilter(query), [JSON.stringify(query), localRange]);
 
   const setFilter = (newFilter) => {
@@ -101,6 +50,7 @@ const AlertCurEvent: React.FC = () => {
   const [cardNum, setCardNum] = useState<number>(0);
 
   let prodOptions = getProdOptions(feats);
+
   if (IS_ENT) {
     prodOptions = [
       ...prodOptions,
@@ -119,26 +69,24 @@ const AlertCurEvent: React.FC = () => {
 
   function renderHeader() {
     return (
-      <Row justify='space-between'>
-        <Row>
-          <div>
-            <Segmented
-              shape='round'
-              className='whitespace-nowrap  w-[190px]'
-              onChange={(value) => {
-                setFilter({
-                  ...filter,
-                  my_groups: value,
-                });
-              }}
-              block
-              options={[
-                { label: t('my_groups'), value: 'true' },
-                { label: t('all_groups'), value: 'false' },
-              ]}
-            />
-          </div>
-          <div className='ml-[16px]'>
+      <div className='flex justify-between items-center'>
+        <Space>
+          <Segmented
+            shape='round'
+            className='whitespace-nowrap w-[190px]'
+            onChange={(value) => {
+              setFilter({
+                ...filter,
+                my_groups: value,
+              });
+            }}
+            block
+            options={[
+              { label: t('my_groups'), value: 'true' },
+              { label: t('all_groups'), value: 'false' },
+            ]}
+          />
+          <div className='ml-[8px]'>
             <BusinessGroupSelectWithAll
               value={filter.bgid}
               onChange={(val: number) => {
@@ -150,8 +98,7 @@ const AlertCurEvent: React.FC = () => {
             />
           </div>
           <Input
-            className='search-input '
-            style={{ width: '280px' }}
+            style={{ width: '300px' }}
             prefix={<SearchOutlined />}
             placeholder={t('search_placeholder')}
             value={filter.query}
@@ -162,28 +109,20 @@ const AlertCurEvent: React.FC = () => {
               });
             }}
           />
-        </Row>
-        <Col
-          flex='100px'
-          style={{
-            display: 'flex',
-            justifyContent: 'flex-end',
+        </Space>
+        <TimeRangePickerWithRefresh
+          allowClear
+          localKey={TIME_CACHE_KEY}
+          value={filter.range}
+          onChange={(val) => {
+            setFilter({
+              ...filter,
+              range: val,
+            });
           }}
-        >
-          <TimeRangePickerWithRefresh
-            allowClear
-            localKey={CACHE_KEY}
-            value={filter.range}
-            onChange={(val) => {
-              setFilter({
-                ...filter,
-                range: val,
-              });
-            }}
-            dateFormat='YYYY-MM-DD HH:mm:ss'
-          />
-        </Col>
-      </Row>
+          dateFormat='YYYY-MM-DD HH:mm:ss'
+        />
+      </div>
     );
   }
 
@@ -201,10 +140,9 @@ const AlertCurEvent: React.FC = () => {
 
   return (
     <PageLayout icon={<AlertOutlined />} title={t('title')}>
-      <div className='event-container'>
-        <div className='table-area n9e-border-base'>
-          <div className=''>{renderHeader()}</div>
-
+      <div className={`n9e ${NS}`}>
+        <div className='n9e-fill-color-2 n9e-border-base p-4'>
+          <div>{renderHeader()}</div>
           <div className='flex py-2'>
             {/* 左侧筛选区 */}
             <div className='w-[190px] mr-[16px] overflow-y-auto h-full'>

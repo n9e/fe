@@ -4,7 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { SearchOutlined } from '@ant-design/icons';
 
 import { allCates } from '@/components/AdvancedWrap/utils';
-import { getAlertCurEventsDatasource } from './services';
+
+import { getAlertCurEventsDatasource } from '../../services';
+import { NS } from '../../constants';
 
 interface Props {
   filter: any;
@@ -19,7 +21,7 @@ interface Datasource {
 }
 
 const DatasourceCheckbox: React.FC<Props> = ({ filter, value = [], onChange }) => {
-  const { t } = useTranslation('AlertCurEvents');
+  const { t } = useTranslation(NS);
   const [search, setSearch] = useState('');
   const [datasourceList, setDatasourceList] = useState<Datasource[]>([]);
 
