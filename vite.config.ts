@@ -15,13 +15,13 @@
  *
  */
 import { defineConfig, loadEnv } from 'vite';
-import reactRefresh from '@vitejs/plugin-react-refresh';
 import { md } from './plugins/md';
 import plusResolve from './plugins/plusResolve';
 import prefixPlugin from './plugins/vite-plugin-prefix';
 import getFontFamily from './src/utils/getFontFamily';
-
-const reactSvgPlugin = require('./plugins/svg');
+import react from '@vitejs/plugin-react';
+import svgr from 'vite-plugin-svgr';
+import path from 'path';
 
 const chunk2 = [
   '@codemirror/autocomplete',
@@ -50,19 +50,28 @@ export default defineConfig(({ mode }) => {
     proxyURL = env.PROXY_ENT;
   }
 
+  proxyURL = 'http://10.99.1.106:9000/';
+
   const baseName = env.VITE_PREFIX || '';
 
   return {
     base: baseName + '/',
     plugins: [
+      react(),
+      svgr({
+        svgrOptions: {
+          svgoConfig: {
+            floatPrecision: 2,
+          },
+        },
+      }),
       md(),
-      reactRefresh(),
       plusResolve(),
-      reactSvgPlugin({ defaultExport: 'component' }),
-      //
       prefixPlugin(baseName),
     ],
-    define: {},
+    define: {
+      // 'process.env.NODE_ENV': JSON.stringify(mode), // 如确实需要兼容旧代码
+    },
     resolve: {
       alias: [
         {
@@ -73,6 +82,12 @@ export default defineConfig(({ mode }) => {
           find: '@',
           replacement: '/src',
         },
+
+        // 屏蔽postcss导致的浏览器控制台 node模块 警告
+        { find: 'url', replacement: path.resolve(__dirname, 'src/empty-module.js') },
+        { find: 'fs', replacement: path.resolve(__dirname, 'src/empty-module.js') },
+        { find: 'path', replacement: path.resolve(__dirname, 'src/empty-module.js') },
+        { find: 'source-map-js', replacement: path.resolve(__dirname, 'src/empty-module.js') },
       ],
     },
     server: {
