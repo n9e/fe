@@ -5,6 +5,7 @@ import { SearchOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
+import usePagination from '@/components/usePagination';
 
 import PageLayout from '@/components/pageLayout';
 
@@ -23,6 +24,9 @@ export default function List() {
     list: [],
     loading: false,
   });
+
+  const pagination = usePagination({ PAGESIZE_KEY: 'event-pipelines-pagesize' });
+
   const featchData = () => {
     setData((prev) => ({ ...prev, loading: true }));
     getList()
@@ -150,6 +154,7 @@ export default function List() {
             return true;
           })}
           loading={data.loading}
+          pagination={pagination}
         />
       </div>
     </PageLayout>

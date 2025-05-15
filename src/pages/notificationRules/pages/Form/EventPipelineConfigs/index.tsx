@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Card, Space, Switch, Row, Col, Button, Select } from 'antd';
+import { Form, Card, Space, Switch, Row, Col, Button, Select, Tooltip } from 'antd';
 import { PlusOutlined, MinusCircleOutlined, SettingOutlined, SyncOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -95,6 +95,7 @@ export default function index() {
                 {fields.map(({ key, name, ...restField }, index) => {
                   const selectedPipelineIds = _.compact(_.map(pipelineConfigs, 'pipeline_id'));
                   const pipelineId = form.getFieldValue(['pipeline_configs', name, 'pipeline_id']);
+                  const enable = form.getFieldValue(['pipeline_configs', name, 'enable']);
 
                   return (
                     <SortableItem key={key} index={index}>
@@ -109,7 +110,9 @@ export default function index() {
                                   label: (
                                     <Space>
                                       {item.name}
-                                      <Link to={`/${eventPipelineNS}/edit/${item.id}`}>{t('common:btn.view')}</Link>
+                                      <Link to={`/${eventPipelineNS}/edit/${item.id}`} target='_blank'>
+                                        {t('common:btn.view')}
+                                      </Link>
                                     </Space>
                                   ),
                                   value: item.id,
@@ -125,9 +128,11 @@ export default function index() {
                         </Col>
                         <Col flex='none'>
                           <Space size={SIZE}>
-                            <Form.Item {...restField} name={[name, 'enable']} valuePropName='checked'>
-                              <Switch size='small' />
-                            </Form.Item>
+                            <Tooltip title={enable ? t('pipeline_configuration.disable') : t('pipeline_configuration.enable')}>
+                              <Form.Item {...restField} name={[name, 'enable']} valuePropName='checked'>
+                                <Switch size='small' />
+                              </Form.Item>
+                            </Tooltip>
                             <Space size={0}>
                               <Form.Item>
                                 <Button
