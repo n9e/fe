@@ -19,3 +19,12 @@ export function getAlertCurEventsDatasource(params) {
     params,
   });
 }
+
+export function ackEvents(ids: number[], action = 'ack') {
+  return request(`/api/n9e-plus/alert-cur-events/${action}`, {
+    method: RequestMethod.Post,
+    data: {
+      ids,
+    },
+  }).then((res) => res.dat);
+}

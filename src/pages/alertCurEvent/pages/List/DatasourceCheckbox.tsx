@@ -44,7 +44,6 @@ const DatasourceCheckbox: React.FC<Props> = ({ filter, value = [], onChange }) =
       my_groups: filter.my_groups,
       query: filter.query,
       cate: filter.cate,
-      rid: filter.rule_id,
       severity: filter.severity,
       prods: filter.rule_prods,
     };
@@ -56,7 +55,7 @@ const DatasourceCheckbox: React.FC<Props> = ({ filter, value = [], onChange }) =
 
   useEffect(() => {
     fetchDatasource();
-  }, [filter.my_groups, filter.query, filter.cate, filter.rule_id, filter.severity, filter.rule_prods]);
+  }, [filter.my_groups, filter.query, filter.cate, filter.severity, filter.rule_prods]);
 
   return (
     <div>
