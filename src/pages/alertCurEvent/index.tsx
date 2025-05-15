@@ -15,7 +15,7 @@
  *
  */
 import React, { useContext, useState, useMemo } from 'react';
-import { Input, message, Modal, Space, Row, Col, Checkbox, Collapse, Radio } from 'antd';
+import { Input, message, Modal, Row, Col, Checkbox, Collapse, Segmented } from 'antd';
 import { AlertOutlined, ExclamationCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -24,10 +24,10 @@ import { useLocation, useHistory } from 'react-router-dom';
 
 import PageLayout from '@/components/pageLayout';
 import { deleteAlertEvents } from '@/services/warning';
-import { AutoRefresh } from '@/components/TimeRangePicker';
+import { TimeRangePickerWithRefresh } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
 import { getProdOptions } from '@/pages/alertRules/Form/components/ProdSelect';
-import TimeRangePicker, { getDefaultValue } from '@/components/TimeRangePicker';
+import { getDefaultValue } from '@/components/TimeRangePicker';
 import { IS_ENT } from '@/utils/constant';
 import { BusinessGroupSelectWithAll } from '@/components/BusinessGroup';
 
@@ -82,7 +82,9 @@ const AlertCurEvent: React.FC = () => {
   const location = useLocation();
   const history = useHistory();
   const query = queryString.parse(location.search);
-  const filter = useMemo(() => getFilter(query), [JSON.stringify(query)]);
+  const localRange = getDefaultValue(CACHE_KEY, undefined);
+  const filter = useMemo(() => getFilter(query), [JSON.stringify(query), localRange]);
+
   const setFilter = (newFilter) => {
     history.replace({
       pathname: location.pathname,
@@ -116,44 +118,38 @@ const AlertCurEvent: React.FC = () => {
   function renderHeader() {
     return (
       <Row justify='space-between'>
-        <Space>
-          <TimeRangePicker
-            allowClear
-            localKey={CACHE_KEY}
-            value={filter.range}
-            onChange={(val) => {
-              setFilter({
-                ...filter,
-                range: val,
-              });
-            }}
-            dateFormat='YYYY-MM-DD HH:mm:ss'
-          />
-
-          <Radio.Group
-            onChange={(e) => {
-              setFilter({
-                ...filter,
-                my_groups: e.target.value,
-              });
-            }}
-          >
-            <Radio.Button value={'true'}>{t('我的业务组')}</Radio.Button>
-            <Radio.Button value={'false'}>{t('全部业务组')}</Radio.Button>
-          </Radio.Group>
-
-          <BusinessGroupSelectWithAll
-            value={filter.bgid}
-            onChange={(val: number) => {
-              setFilter({
-                ...filter,
-                bgid: val,
-              });
-            }}
-          />
-
+        <Row>
+          <div>
+            <Segmented
+              shape='round'
+              className='whitespace-nowrap  w-[190px]'
+              onChange={(value) => {
+                setFilter({
+                  ...filter,
+                  my_groups: value,
+                });
+              }}
+              block
+              options={[
+                { label: t('my_groups'), value: 'true' },
+                { label: t('all_groups'), value: 'false' },
+              ]}
+            />
+          </div>
+          <div className='ml-[16px]'>
+            <BusinessGroupSelectWithAll
+              value={filter.bgid}
+              onChange={(val: number) => {
+                setFilter({
+                  ...filter,
+                  bgid: val,
+                });
+              }}
+            />
+          </div>
           <Input
-            className='search-input'
+            className='search-input '
+            style={{ width: '160px' }}
             prefix={<SearchOutlined />}
             placeholder={t('search_placeholder')}
             value={filter.query}
@@ -164,7 +160,7 @@ const AlertCurEvent: React.FC = () => {
               });
             }}
           />
-        </Space>
+        </Row>
         <Col
           flex='100px'
           style={{
@@ -172,44 +168,17 @@ const AlertCurEvent: React.FC = () => {
             justifyContent: 'flex-end',
           }}
         >
-          {/* <Dropdown
-            overlay={
-              <ul className='ant-dropdown-menu'>
-                <li
-                  className='ant-dropdown-menu-item'
-                  onClick={() =>
-                    deleteAlertEventsModal(
-                      selectedRowKeys,
-                      () => {
-                        setSelectedRowKeys([]);
-                        setRefreshFlag(_.uniqueId('refresh_'));
-                      },
-                      t,
-                    )
-                  }
-                >
-                  {t('common:btn.batch_delete')}
-                </li>
-                <BatchAckBtn
-                  selectedIds={selectedRowKeys}
-                  onOk={() => {
-                    setSelectedRowKeys([]);
-                    setRefreshFlag(_.uniqueId('refresh_'));
-                  }}
-                />
-              </ul>
-            }
-            trigger={['click']}
-          >
-            <Button style={{ marginRight: 8 }} disabled={selectedRowKeys.length === 0}>
-              {t('batch_btn')}
-            </Button>
-          </Dropdown> */}
-
-          <AutoRefresh
-            onRefresh={() => {
-              setRefreshFlag(_.uniqueId('refresh_'));
+          <TimeRangePickerWithRefresh
+            allowClear
+            localKey={CACHE_KEY}
+            value={filter.range}
+            onChange={(val) => {
+              setFilter({
+                ...filter,
+                range: val,
+              });
             }}
+            dateFormat='YYYY-MM-DD HH:mm:ss'
           />
         </Col>
       </Row>
@@ -236,11 +205,10 @@ const AlertCurEvent: React.FC = () => {
 
           <div className='flex py-2'>
             {/* 左侧筛选区 */}
-            <div className='w-[190px] pr-[16px] overflow-y-auto h-full'>
+            <div className='w-[190px] mr-[16px] overflow-y-auto h-full'>
               <Collapse bordered={false} defaultActiveKey={['prod', 'severity', 'datasource']} expandIconPosition='start'>
                 <Collapse.Panel header={t('prod')} key='prod'>
                   <Checkbox.Group
-                    style={{ width: '100%' }}
                     value={filter.rule_prods}
                     onChange={(val) => {
                       setFilter({
@@ -261,7 +229,6 @@ const AlertCurEvent: React.FC = () => {
                 </Collapse.Panel>
                 <Collapse.Panel header={t('severity')} key='severity'>
                   <Checkbox.Group
-                    style={{ width: '100%' }}
                     value={filter.severity ? [filter.severity] : []}
                     onChange={(val) => {
                       setFilter({
@@ -302,12 +269,11 @@ const AlertCurEvent: React.FC = () => {
               </Collapse>
             </div>
             {/* 右侧内容区 */}
-            <div className='n9e-border-base' style={{ flex: 1, minWidth: 0 }}>
+            <div className='n9e-border-base flex-1'>
               <div className='cur-events p-2'>
                 <AggrRuleDropdown cardNum={cardNum} onRefreshRule={(ruleId) => setFilter({ ...filter, rule_id: ruleId })} />
                 <AlertCard
                   filter={filter}
-                  refreshFlag={refreshFlag}
                   onUpdateCardNum={(cardNum: number) => {
                     setCardNum(cardNum);
                   }}

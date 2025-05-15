@@ -10,7 +10,6 @@ import './index.less';
 
 interface Props {
   filter: any;
-  refreshFlag: string;
   onUpdateAlertEventIds: (eventIds: number[]) => void;
   onUpdateCardNum: (cardNum: number) => void;
 }
@@ -23,13 +22,13 @@ export interface CardType {
 }
 
 const AlertCard = (props: Props) => {
-  const { filter, refreshFlag, onUpdateAlertEventIds, onUpdateCardNum } = props;
+  const { filter, onUpdateAlertEventIds, onUpdateCardNum } = props;
   const [cardList, setCardList] = useState<CardType[]>();
   const [selectedCardId, setSelectedCardId] = useState<string>();
 
   useEffect(() => {
     reloadCard();
-  }, [filter.rule_id, refreshFlag, filter.my_groups]);
+  }, [filter.rule_id, filter.my_groups]);
 
   const { run: reloadCard } = useDebounceFn(
     () => {

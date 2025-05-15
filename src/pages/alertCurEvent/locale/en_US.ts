@@ -42,7 +42,8 @@ const en_US = {
     content:
       'Usually, alert events are only deleted when it is determined that the monitoring data will never be reported again (such as when the monitoring data tags are adjusted or the machine is offline), because the related alert events can never be automatically restored. Are you sure you want to do this?',
   },
-
+  my_groups: 'My business groups',
+  all_groups: 'All business groups',
   detail: {
     title: 'Alert detail',
     card_title: 'Event detail',
