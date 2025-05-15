@@ -15,7 +15,7 @@
  *
  */
 import React, { useContext, useState, useMemo } from 'react';
-import { Input, message, Modal, Row, Col, Checkbox, Collapse, Segmented } from 'antd';
+import { Input, message, Modal, Row, Col, Checkbox, Collapse, Segmented, Dropdown, Button } from 'antd';
 import { AlertOutlined, ExclamationCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -39,6 +39,8 @@ import './index.less';
 
 // @ts-ignore
 import DatasourceCheckbox from '@/pages/alertCurEvent/DatasourceCheckbox';
+import BatchAckBtn from '@/plus/parcels/Event/Acknowledge/BatchAckBtn';
+import { ackEvents } from '@/plus/parcels/Event/Acknowledge/services';
 
 const CACHE_KEY = 'alert_active_events_range';
 const getFilter = (query) => {
@@ -149,7 +151,7 @@ const AlertCurEvent: React.FC = () => {
           </div>
           <Input
             className='search-input '
-            style={{ width: '160px' }}
+            style={{ width: '280px' }}
             prefix={<SearchOutlined />}
             placeholder={t('search_placeholder')}
             value={filter.query}
@@ -288,6 +290,50 @@ const AlertCurEvent: React.FC = () => {
 
               <div className='h-[1px] bg-[var(--fc-border-color)]' />
               <div className='p-2'>
+                <div className='flex gap-2 justify-end'>
+                  {selectedRowKeys.length > 0 && (
+                    <>
+                      <Button
+                        className='ant-dropdown-menu-item'
+                        onClick={() =>
+                          deleteAlertEventsModal(
+                            selectedRowKeys,
+                            () => {
+                              setSelectedRowKeys([]);
+                              setRefreshFlag(_.uniqueId('refresh_'));
+                            },
+                            t,
+                          )
+                        }
+                      >
+                        {t('common:btn.batch_delete')}
+                      </Button>
+                      <Button
+                        className='ant-dropdown-menu-item'
+                        onClick={() => {
+                          ackEvents(selectedRowKeys).then(() => {
+                            setSelectedRowKeys([]);
+                            setRefreshFlag(_.uniqueId('refresh_'));
+                          });
+                        }}
+                      >
+                        {t('batch_claim')}
+                      </Button>
+                      <Button
+                        className='ant-dropdown-menu-item'
+                        onClick={() => {
+                          ackEvents(selectedRowKeys, 'unack').then(() => {
+                            setSelectedRowKeys([]);
+                            setRefreshFlag(_.uniqueId('refresh_'));
+                          });
+                        }}
+                      >
+                        {t('batch_unclaim')}
+                      </Button>
+                    </>
+                  )}
+                </div>
+
                 <AlertTable
                   filter={filter}
                   filterObj={filterObj}
