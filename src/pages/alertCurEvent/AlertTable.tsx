@@ -155,8 +155,8 @@ export default function AlertTable(props: IProps) {
       render(_, record) {
         return (
           <div>
-            {formatDuration(moment().diff(moment(record.trigger_time * 1000)))}
-            <DurationBar duration={moment().diff(moment(record.trigger_time * 1000))} />
+            {formatDuration(moment().diff(moment(record.first_trigger_time * 1000)))}
+            <DurationBar duration={moment().diff(moment(record.first_trigger_time * 1000))} />
           </div>
         );
       },
