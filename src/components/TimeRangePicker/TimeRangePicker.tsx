@@ -15,7 +15,7 @@
  *
  */
 import React, { useState, useEffect } from 'react';
-import { Button, Popover, Row, Col, Input } from 'antd';
+import { Button, Popover, Row, Col, Input, Space } from 'antd';
 import { DownOutlined, UpOutlined, CalendarOutlined, SearchOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { PickerPanel } from 'rc-picker';
 import momentGenerateConfig from 'rc-picker/es/generate/moment';
@@ -24,14 +24,14 @@ import zh_TW from 'rc-picker/lib/locale/zh_TW';
 import en_US from 'rc-picker/lib/locale/en_US';
 import 'rc-picker/assets/index.css';
 import classNames from 'classnames';
-import moment from 'moment';
+import moment, { Moment } from 'moment';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { InternalTimeZones } from '@/utils/datetime/types';
 import { getTimeZoneInfo } from '@/utils/datetime/timezones';
 
-import { isValid, describeTimeRange, valueAsString, isMathString } from './utils';
+import { isValid, describeTimeRange, valueAsString, isMathString, parseRange } from './utils';
 import { IRawTimeRange, ITimeRangePickerProps } from './types';
 import { rangeOptions, momentLocaleZhCN } from './config';
 import TimeZonePicker from './TimeZonePicker';
@@ -53,7 +53,7 @@ const getAbsoluteHistoryCache = () => {
       const list = _.unionWith(JSON.parse(cache), _.isEqual);
       return list;
     } catch (e) {
-      console.warn(e);
+      console.log(e);
       return [];
     }
   }
@@ -74,6 +74,7 @@ const setAbsoluteHistoryCache = (range, dateFormat) => {
 };
 const AbsoluteTimePicker = ({
   type,
+  limitHour,
   range,
   setRange,
   rangeStatus,
@@ -81,6 +82,7 @@ const AbsoluteTimePicker = ({
   dateFormat,
 }: {
   type: 'start' | 'end';
+  limitHour?: number;
   range?: IRawTimeRange;
   setRange: any;
   rangeStatus: {
@@ -99,7 +101,7 @@ const AbsoluteTimePicker = ({
   const [visible, setVisible] = useState(false);
 
   return (
-    <div className='mb10'>
+    <div className='mb-2'>
       <span>{labelMap[type]}</span>
       <Input.Group compact style={{ marginTop: 4 }}>
         <Input
@@ -128,12 +130,7 @@ const AbsoluteTimePicker = ({
         />
         <Popover
           title={
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-              }}
-            >
+            <div className='flex justify-between'>
               <div>{labelMap[type]}</div>
               <a
                 onClick={() => {
@@ -156,6 +153,15 @@ const AbsoluteTimePicker = ({
               showTime={{
                 defaultValue: type === 'start' ? moment().startOf('day') : moment().endOf('day'),
                 showSecond: false,
+              }}
+              disabledDate={(current: Moment) => {
+                const exceedHourLimit = limitHour
+                  ? moment().hour(0).minute(0).second(0).diff(current, 'hour') > limitHour || current.diff(moment().hour(0).minute(0).second(0), 'hour') > limitHour
+                  : false;
+                if (exceedHourLimit) {
+                  return true;
+                }
+                return false;
               }}
               value={val.isValid() ? val : undefined}
               onChange={(value) => {
@@ -196,6 +202,7 @@ export default function index(props: ITimeRangePickerProps) {
     placeholder = t('placeholder'),
     allowClear = false,
     onClear = () => {},
+    limitHour,
     disabled,
     ajustTimeOptions,
     showTimezone = false,
@@ -221,6 +228,17 @@ export default function index(props: ITimeRangePickerProps) {
     }
   }, [JSON.stringify(value), visible, i18n.language]);
 
+  const exceedHourLimit = limitHour && range ? moment().diff(moment(parseRange(range).start), 'hour') > limitHour : false;
+
+  const startLargeThenEnd =
+    rangeStatus.start !== 'invalid' &&
+    rangeStatus.end !== 'invalid' &&
+    range &&
+    range.start &&
+    range.end &&
+    parseRange(range as IRawTimeRange).start &&
+    parseRange(range as IRawTimeRange).start!.isAfter(parseRange(range as IRawTimeRange).end);
+
   return (
     <>
       <Popover
@@ -231,20 +249,43 @@ export default function index(props: ITimeRangePickerProps) {
               <Row>
                 <Col span={15}>
                   <div className='flashcat-timeRangePicker-left'>
-                    <AbsoluteTimePicker type='start' range={range} setRange={setRange} rangeStatus={rangeStatus} setRangeStatus={setRangeStatus} dateFormat={dateFormat} />
-                    <AbsoluteTimePicker type='end' range={range} setRange={setRange} rangeStatus={rangeStatus} setRangeStatus={setRangeStatus} dateFormat={dateFormat} />
-                    <Button
-                      type='primary'
-                      onClick={() => {
-                        if (rangeStatus.start !== 'invalid' && rangeStatus.end !== 'invalid') {
-                          onChange(range as IRawTimeRange);
-                          setAbsoluteHistoryCache(range as IRawTimeRange, dateFormat);
-                          setVisible(false);
-                        }
-                      }}
-                    >
-                      {t('ok')}
-                    </Button>
+                    <AbsoluteTimePicker
+                      type='start'
+                      limitHour={limitHour}
+                      range={range}
+                      setRange={setRange}
+                      rangeStatus={rangeStatus}
+                      setRangeStatus={setRangeStatus}
+                      dateFormat={dateFormat}
+                    />
+                    <AbsoluteTimePicker
+                      type='end'
+                      limitHour={limitHour}
+                      range={range}
+                      setRange={setRange}
+                      rangeStatus={rangeStatus}
+                      setRangeStatus={setRangeStatus}
+                      dateFormat={dateFormat}
+                    />
+                    <div>
+                      <Space>
+                        <Button
+                          type='primary'
+                          onClick={() => {
+                            if (rangeStatus.start !== 'invalid' && rangeStatus.end !== 'invalid') {
+                              onChange(range as IRawTimeRange);
+                              setAbsoluteHistoryCache(range as IRawTimeRange, dateFormat);
+                              setVisible(false);
+                            }
+                          }}
+                          disabled={exceedHourLimit || !!startLargeThenEnd}
+                          title={exceedHourLimit ? t('exceed_hour_limit_tip', { hours: limitHour }) : startLargeThenEnd ? t('start_gt_end_tip') : undefined}
+                        >
+                          {t('ok')}
+                        </Button>
+                        {limitHour && <span>{t('exceed_hour_limit_tip', { hours: limitHour })} </span>}
+                      </Space>
+                    </div>
                     <div className='flashcat-timeRangePicker-absolute-history'>
                       <span>{t('history')}</span>
                       <ul style={{ marginTop: 4 }}>
@@ -253,14 +294,19 @@ export default function index(props: ITimeRangePickerProps) {
                             return item?.start && item?.end;
                           }),
                           (range, idx) => {
+                            const newValue = {
+                              start: isMathString(range.start) ? range.start : moment(range.start),
+                              end: isMathString(range.end) ? range.end : moment(range.end),
+                            };
+                            const exceedHourLimit = limitHour ? moment().diff(moment(parseRange(newValue).start), 'hour') > limitHour : false;
                             return (
                               <li
                                 key={range.start + range.end + idx}
+                                style={{ color: exceedHourLimit ? 'lightgray' : undefined, cursor: exceedHourLimit ? 'not-allowed' : undefined }}
                                 onClick={() => {
-                                  const newValue = {
-                                    start: isMathString(range.start) ? range.start : moment(range.start),
-                                    end: isMathString(range.end) ? range.end : moment(range.end),
-                                  };
+                                  if (exceedHourLimit) {
+                                    return;
+                                  }
                                   setRange(newValue);
                                   onChange(newValue);
                                   setVisible(false);
@@ -289,7 +335,18 @@ export default function index(props: ITimeRangePickerProps) {
                       {_.map(
                         _.filter(ajustTimeOptions ? ajustTimeOptions(rangeOptions) : rangeOptions, (item) => {
                           const display = t(`rangeOptions.${item.display}`);
-                          return display.indexOf(searchValue) > -1;
+                          const exceedHourLimit = limitHour
+                            ? moment().diff(
+                                moment(
+                                  parseRange({
+                                    start: item.start,
+                                    end: item.end,
+                                  }).start,
+                                ),
+                                'hour',
+                              ) > limitHour
+                            : false;
+                          return display.indexOf(searchValue) > -1 && !exceedHourLimit;
                         }),
                         (item) => {
                           return (

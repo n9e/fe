@@ -49,6 +49,8 @@ const ru_RU = {
   last: 'Последние',
   next: 'Следующие',
   close: 'Закрыть',
+  exceed_hour_limit_tip: 'Временной диапазон не может превышать {{hours}} часов',
+  start_gt_end_tip: 'Начало не может быть больше конца',
 };
 
 export default ru_RU;

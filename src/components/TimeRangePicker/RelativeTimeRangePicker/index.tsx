@@ -61,7 +61,17 @@ const setHistoryCache = (range, dateFormat) => {
 export default function index(props: ITimeRangePickerProps) {
   const { t, i18n } = useTranslation('timeRangePicker');
   const historyCache = getHistoryCache();
-  const { value, onChange = () => {}, dateFormat = 'YYYY-MM-DD HH:mm', placeholder = '请选择时间', allowClear = false, onClear = () => {}, disabled, ajustTimeOptions } = props;
+  const {
+    value,
+    onChange = () => {},
+    dateFormat = 'YYYY-MM-DD HH:mm',
+    placeholder = '请选择时间',
+    allowClear = false,
+    onClear = () => {},
+    disabled,
+    ajustTimeOptions,
+    noBorder,
+  } = props;
   const [visible, setVisible] = useState(false);
   const [range, setRange] = useState<IRawTimeRange>();
   const [label, setLabel] = useState<string>('');
@@ -132,7 +142,7 @@ export default function index(props: ITimeRangePickerProps) {
       setRange(value);
       setLabel(describeTimeRange(value, dateFormat));
     }
-  }, [JSON.stringify(value), visible]);
+  }, [JSON.stringify(value), visible, i18n.language]);
 
   return (
     <>
@@ -146,6 +156,19 @@ export default function index(props: ITimeRangePickerProps) {
                   <div className='flashcat-timeRangePicker-left'>
                     {renderSinglePicker('start')}
                     {renderSinglePicker('end')}
+                    <div>
+                      <Button
+                        type='primary'
+                        onClick={() => {
+                          if (rangeStatus.start !== 'invalid' && rangeStatus.end !== 'invalid') {
+                            onChange(range as IRawTimeRange);
+                            setVisible(false);
+                          }
+                        }}
+                      >
+                        {t('ok')}
+                      </Button>
+                    </div>
                     <div className='flashcat-timeRangePicker-absolute-history'>
                       <span>{t('history')}</span>
                       <ul style={{ marginTop: 8 }}>
@@ -216,19 +239,6 @@ export default function index(props: ITimeRangePickerProps) {
                 </Col>
               </Row>
             </div>
-            <div className='flashcat-timeRangePicker-footer'>
-              <Button
-                type='primary'
-                onClick={() => {
-                  if (rangeStatus.start !== 'invalid' && rangeStatus.end !== 'invalid') {
-                    onChange(range as IRawTimeRange);
-                    setVisible(false);
-                  }
-                }}
-              >
-                {t('ok')}
-              </Button>
-            </div>
           </>
         }
         trigger='click'
@@ -239,6 +249,8 @@ export default function index(props: ITimeRangePickerProps) {
         }}
       >
         <Button
+          type={noBorder ? 'text' : undefined}
+          size={props.size}
           style={props.style}
           className={classNames({
             'flashcat-timeRangePicker-target': true,
