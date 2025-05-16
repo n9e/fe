@@ -187,7 +187,7 @@ const AlertCurEvent: React.FC = () => {
                 </Collapse.Panel>
                 <Collapse.Panel header={t('detail.datasource_id')} key='datasource'>
                   <DatasourceCheckbox
-                    filter={filter}
+                    filterObj={filterObj}
                     value={filter.datasource_ids}
                     onChange={(val: number[]) => {
                       setFilter({
