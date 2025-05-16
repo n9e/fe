@@ -149,6 +149,7 @@ const ja_JP = {
   reload: 'リロード',
   public: '公開',
   private: '非公開',
+  advanced_settings: '詳細設定',
 
   tpl: '自己修復スクリプト',
   'tpl.create': '作成',

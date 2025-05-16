@@ -2,7 +2,8 @@ const zh_HK = {
   title: '通知媒介',
   basic_configuration: '基礎配置',
   ident: '媒介類型',
-  ident_tip: '通知媒介的分類，例如多個釘釘通知媒介，類型都可以設置為 dingtalk',
+  ident_tip: '通知媒介的分類，例如多個釘釘通知媒介，類型都可以設置為 dingtalk。如果想要新增，可以直接手動輸入',
+  ident_placeholder: '如果想要新增，可以直接手動輸入',
   note_tip: '可填寫對該通知媒介的補充說明或使用場景，方便後續維護或協作時查看',
   enable_tip: '是否啟用此通知媒介的配置。關閉後，該配置將暫時失效，不會再發送通知',
   variable_configuration: {
