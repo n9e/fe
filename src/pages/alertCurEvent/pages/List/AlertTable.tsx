@@ -239,33 +239,24 @@ export default function AlertTable(props: IProps) {
   }
 
   const fetchData = ({ current, pageSize }) => {
-    if (filterObj.event_ids) {
-      return getCardDetail(filterObj.event_ids.map((id) => Number(id))).then((res) => {
-        return {
-          total: res.dat.length,
-          list: res.dat,
-        };
-      });
-    } else {
-      const params: any = {
-        p: current,
-        limit: pageSize,
-        my_groups: filterObj.my_groups,
-        ..._.omit(filterObj, ['range', 'rule_id']),
-      };
+    const params: any = {
+      p: current,
+      limit: pageSize,
+      my_groups: String(filterObj.my_groups) === 'true',
+      ..._.omit(filterObj, ['range', 'aggr_card_id', 'my_groups']),
+    };
 
-      if (filterObj.range) {
-        const parsedRange = parseRange(filterObj.range);
-        params.stime = moment(parsedRange.start).unix();
-        params.etime = moment(parsedRange.end).unix();
-      }
-      return getEvents(params).then((res) => {
-        return {
-          total: res.dat.total,
-          list: res.dat.list,
-        };
-      });
+    if (filterObj.range) {
+      const parsedRange = parseRange(filterObj.range);
+      params.stime = moment(parsedRange.start).unix();
+      params.etime = moment(parsedRange.end).unix();
     }
+    return getEvents(params).then((res) => {
+      return {
+        total: res.dat.total,
+        list: res.dat.list,
+      };
+    });
   };
   const { tableProps } = useAntdTable(fetchData, {
     refreshDeps: [refreshFlag, JSON.stringify(filterObj), props.refreshFlag],

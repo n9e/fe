@@ -27,15 +27,15 @@ const AlertCard = (props: Props) => {
 
   useEffect(() => {
     reloadCard();
-  }, [filter.rule_id, filter.my_groups]);
+  }, [filter.aggr_card_id, filter.my_groups]);
 
   const { run: reloadCard } = useDebounceFn(
     () => {
-      if (!filter.rule_id) {
+      if (!filter.aggr_card_id) {
         setCardList([]);
         return;
       }
-      getAlertCards({ view_id: filter.rule_id, my_groups: String(filter.my_groups) === 'true' }).then((res) => {
+      getAlertCards({ view_id: filter.aggr_card_id, my_groups: String(filter.my_groups) === 'true' }).then((res) => {
         setCardList(res.dat);
         onUpdateCardNum(res.dat.length);
       });

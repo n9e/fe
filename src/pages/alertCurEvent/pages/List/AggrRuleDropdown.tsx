@@ -25,7 +25,7 @@ export interface CardAlertType {
 
 export default function AggrRuleDropdown(props: Props) {
   const { onRefreshRule, cardNum } = props;
-  const { t } = useTranslation('AlertCurEvents');
+  const { t } = useTranslation(NS);
   const [form] = Form.useForm();
   const [alertList, setAlertList] = useState<CardAlertType[]>();
   const [editForm, setEditForm] = useState<CardAlertType>();
