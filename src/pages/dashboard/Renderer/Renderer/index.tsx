@@ -196,7 +196,7 @@ function index(props: IProps) {
             <Tooltip
               title={error}
               placement='leftTop'
-              overlayInnerStyle={{
+              overlayStyle={{
                 maxWidth: 300,
               }}
               getPopupContainer={() => ref.current!}
@@ -218,7 +218,7 @@ function index(props: IProps) {
             {tipsVisible ? (
               <Tooltip
                 placement='top'
-                overlayInnerStyle={{
+                overlayStyle={{
                   maxWidth: 300,
                 }}
                 getPopupContainer={() => ref.current!}
