@@ -2,10 +2,9 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import moment from 'moment';
 import _ from 'lodash';
-import { Button, Card, message, Spin, Tag, Typography } from 'antd';
+import { Button, message, Spin, Tag, Typography } from 'antd';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import PageLayout from '@/components/pageLayout';
 import { priorityColor } from '@/utils/constant';
 import { CommonStateContext, basePrefix } from '@/App';
 import TDengineDetail from '@/plugins/TDengine/Event';
@@ -13,11 +12,11 @@ import { Event as ElasticsearchDetail } from '@/plugins/elasticsearch';
 import { getESIndexPatterns } from '@/pages/log/IndexPatterns/services';
 import { DatasourceCateEnum } from '@/utils/constant';
 
-import EventNotifyRecords from './EventNotifyRecords';
-import TaskTpls from './TaskTpls';
-import PrometheusDetail from './Detail/Prometheus';
-import Host from './Detail/Host';
-import LokiDetail from './Detail/Loki';
+import EventNotifyRecords from '../EventNotifyRecords';
+import TaskTpls from '../TaskTpls';
+import PrometheusDetail from '../Detail/Prometheus';
+import Host from '../Detail/Host';
+import LokiDetail from '../Detail/Loki';
 
 // @ts-ignore
 import plusEventDetail from 'plus:/parcels/Event/eventDetail';
@@ -26,19 +25,20 @@ import PlusPreview from 'plus:/parcels/Event/Preview';
 // @ts-ignore
 import PlusLogsDetail from 'plus:/parcels/Event/LogsDetail';
 
-import './detail.less';
+import '../detail.less';
 
 const { Paragraph } = Typography;
 
 interface Props {
   data: any;
+  showGraph?: boolean;
 }
 
 export default function DetailNG(props: Props) {
   const { t } = useTranslation('AlertCurEvents');
   const commonState = useContext(CommonStateContext);
   const { busiGroups, datasourceList } = commonState;
-  const { data: eventDetail } = props;
+  const { data: eventDetail, showGraph } = props;
   const handleNavToWarningList = (id) => {
     if (busiGroups.find((item) => item.id === id)) {
       window.open(`${basePrefix}/alert-rules?ids=${id}&isLeaf=true`);
@@ -288,12 +288,15 @@ export default function DetailNG(props: Props) {
     });
   }
 
+  console.log('eventDetail', eventDetail);
+
   return (
     <div className='event-detail-container'>
       <Spin spinning={!eventDetail}>
         <div className='desc-container'>
           {eventDetail && (
             <div>
+              {showGraph && <PlusPreview data={eventDetail} />}
               {descriptionInfo
                 .filter((item: any) => {
                   if (!item) return false;
