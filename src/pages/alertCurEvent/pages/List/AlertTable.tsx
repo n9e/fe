@@ -44,26 +44,6 @@ function formatDuration(ms: number) {
   return result.join(' ');
 }
 
-function DurationBar({ duration }: { duration: number }) {
-  const maxGrids = 18;
-  const hours = duration / 3600000;
-  const highlight = hours >= 72 ? maxGrids : Math.floor(hours / 4);
-  const getColorClass = (idx: number) => {
-    if (idx < 6) return 'gold';
-    if (idx < 12) return 'orange';
-    return 'red';
-  };
-
-  return (
-    <div className='flex gap-[2px]'>
-      {Array.from({ length: maxGrids }).map((_, idx) => {
-        const colorClass = getColorClass(idx);
-        const isActive = idx < highlight;
-        return <div key={idx} className={`duration-bar-segment ${colorClass} ${isActive ? 'active' : 'inactive'}`} />;
-      })}
-    </div>
-  );
-}
 export default function AlertTable(props: IProps) {
   const { filterObj, filter, setFilter, selectedRowKeys, setSelectedRowKeys } = props;
   const history = useHistory();
@@ -145,10 +125,25 @@ export default function AlertTable(props: IProps) {
       dataIndex: 'duration',
       width: 160,
       render(_, record) {
+        const duration = moment().diff(moment(record.first_trigger_time * 1000));
+        const maxGrids = 18;
+        const hours = duration / 3600000;
+        const highlight = hours >= 72 ? maxGrids : Math.floor(hours / 4);
+        const getColorClass = (idx: number) => {
+          if (idx < 6) return 'gold';
+          if (idx < 12) return 'orange';
+          return 'red';
+        };
         return (
           <div>
-            {formatDuration(moment().diff(moment(record.first_trigger_time * 1000)))}
-            <DurationBar duration={moment().diff(moment(record.first_trigger_time * 1000))} />
+            {formatDuration(duration)}
+            <div className='flex gap-[2px]'>
+              {Array.from({ length: maxGrids }).map((_, idx) => {
+                const colorClass = getColorClass(idx);
+                const isActive = idx < highlight;
+                return <div key={idx} className={`duration-bar-segment ${colorClass} ${isActive ? 'active' : 'inactive'}`} />;
+              })}
+            </div>
           </div>
         );
       },
