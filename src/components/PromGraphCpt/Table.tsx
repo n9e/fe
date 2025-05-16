@@ -15,6 +15,7 @@
  *
  */
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import moment from 'moment';
 import _ from 'lodash';
 import { Input, DatePicker, List, Space } from 'antd';
@@ -27,19 +28,21 @@ interface IProps {
   url: string;
   datasourceValue: number;
   promql?: string;
-  setQueryStats: (stats: QueryStats) => void;
+  setQueryStats?: (stats: QueryStats) => void;
   setErrorContent: (content: string) => void;
-  contentMaxHeight: number;
+  contentMaxHeight?: number;
   timestamp?: number;
   setTimestamp: (timestamp?: number) => void;
-  refreshFlag: string;
+  refreshFlag?: string;
   loading: boolean;
   setLoading: (loading: boolean) => void;
   defaultUnit?: string;
+  controlsPortalDomNode?: HTMLDivElement | null; // 用于渲染控件的容器节点
 }
 type ResultType = 'matrix' | 'vector' | 'scalar' | 'string' | 'streams';
 
 const LIMIT = 1000;
+
 function getListItemLabel(resultType, record) {
   const { metric } = record;
   if (resultType === 'scalar') return 'scalar';
@@ -104,7 +107,21 @@ function getListItemValue(resultType, record, unit) {
 }
 
 export default function Table(props: IProps) {
-  const { url, datasourceValue, promql, setQueryStats, setErrorContent, contentMaxHeight, timestamp, setTimestamp, refreshFlag, loading, setLoading, defaultUnit } = props;
+  const {
+    url,
+    datasourceValue,
+    promql,
+    setQueryStats,
+    setErrorContent,
+    contentMaxHeight,
+    timestamp,
+    setTimestamp,
+    refreshFlag,
+    loading,
+    setLoading,
+    defaultUnit,
+    controlsPortalDomNode,
+  } = props;
   const [data, setData] = useState<{
     resultType: ResultType;
     result: any[];
@@ -113,6 +130,35 @@ export default function Table(props: IProps) {
     result: [],
   });
   const [unit, setUnit] = useState(defaultUnit || 'sishort');
+  const controls = (
+    <div className='prom-graph-table-controls'>
+      <Space>
+        <Input.Group>
+          <span className='ant-input-group-addon'>Time</span>
+          <DatePicker
+            value={timestamp ? moment.unix(timestamp) : undefined}
+            onChange={(val) => {
+              setTimestamp(val ? val.unix() : undefined);
+            }}
+            showTime
+            placeholder='Evaluation time'
+            getPopupContainer={() => document.body}
+            disabledDate={(current) => current > moment()}
+          />
+        </Input.Group>
+        <Input.Group>
+          <span className='ant-input-group-addon'>Unit</span>
+          <UnitPicker
+            dropdownMatchSelectWidth={false}
+            value={unit}
+            onChange={(val) => {
+              setUnit(val);
+            }}
+          />
+        </Input.Group>
+      </Space>
+    </div>
+  );
 
   useEffect(() => {
     if (datasourceValue && promql) {
@@ -153,10 +199,11 @@ export default function Table(props: IProps) {
           } else {
             setData({ resultType, result });
           }
-          setQueryStats({
-            loadTime: Date.now() - queryStart,
-            resultSeries: result.length,
-          });
+          setQueryStats &&
+            setQueryStats({
+              loadTime: Date.now() - queryStart,
+              resultSeries: result.length,
+            });
         })
         .catch((err) => {
           const msg = _.get(err, 'message');
@@ -176,33 +223,7 @@ export default function Table(props: IProps) {
 
   return (
     <div className='prom-graph-table-container'>
-      <div className='prom-graph-table-controls'>
-        <Space>
-          <Input.Group>
-            <span className='ant-input-group-addon'>Time</span>
-            <DatePicker
-              value={timestamp ? moment.unix(timestamp) : undefined}
-              onChange={(val) => {
-                setTimestamp(val ? val.unix() : undefined);
-              }}
-              showTime
-              placeholder='Evaluation time'
-              getPopupContainer={() => document.body}
-              disabledDate={(current) => current > moment()}
-            />
-          </Input.Group>
-          <Input.Group>
-            <span className='ant-input-group-addon'>Unit</span>
-            <UnitPicker
-              dropdownMatchSelectWidth={false}
-              value={unit}
-              onChange={(val) => {
-                setUnit(val);
-              }}
-            />
-          </Input.Group>
-        </Space>
-      </div>
+      {controlsPortalDomNode ? createPortal(controls, controlsPortalDomNode) : controls}
       <List
         className='prom-graph-table-list'
         style={{
