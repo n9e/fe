@@ -98,7 +98,10 @@ const SideMenu = () => {
             }
             if (child.type === 'tabs' && child.children) {
               const filteredTabs = child.children.filter((tab) => perms?.includes(tab.key));
-              return { ...child, children: filteredTabs };
+              if (filteredTabs.length > 0) {
+                return { ...child, children: filteredTabs };
+              }
+              return null;
             }
             return perms?.includes(child.key) ? child : null;
           })
