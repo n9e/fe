@@ -10,3 +10,5 @@ export const DEFAULT_VALUES = {
     },
   ],
 };
+
+export const CALLBACK_KEYS = ['url', 'basic_auth_user', 'basic_auth_pass', 'header', 'timeout', 'insecure_skip_verify', 'proxy'];

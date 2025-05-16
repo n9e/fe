@@ -49,5 +49,21 @@ const zh_CN = {
       result: '事件预览',
     },
   },
+  callback: {
+    url: '回调地址',
+    url_placeholder: '请输入回调地址',
+    url_required: '回调地址不能为空',
+    advanced_settings: '高级设置',
+    basic_auth_user: '授权用户名',
+    basic_auth_user_placeholder: '请输入授权用户名',
+    basic_auth_pass: '授权密码',
+    basic_auth_pass_placeholder: '请输入授权密码',
+    headers: '请求头',
+    headerKey: 'Key',
+    headerValue: 'Value',
+    timeout: '超时时间',
+    insecure_skip_verify: '跳过证书校验',
+    proxy: '代理',
+  },
 };
 export default zh_CN;
