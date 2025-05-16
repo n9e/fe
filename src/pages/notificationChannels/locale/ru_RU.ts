@@ -25,7 +25,7 @@ const ru_RU = {
   request_configuration: {
     http: 'Настройка HTTP',
     smtp: 'Настройка SMTP',
-    script: 'Настройка скрипта',
+    script: 'Настройка Script',
     flashduty: 'Настройка FlashDuty',
   },
   request_type: 'Тип отправки',
@@ -71,7 +71,7 @@ const ru_RU = {
     batch_tip: 'Сколько писем отправлять за одно SMTP-соединение',
   },
   script_request_config: {
-    title: 'Скрипт',
+    title: 'Script',
     script: {
       option: 'Использовать скрипт',
       label: 'Содержание скрипта',

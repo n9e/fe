@@ -22,7 +22,7 @@ const zh_CN = {
   request_configuration: {
     http: 'HTTP 配置',
     smtp: 'SMTP 配置',
-    script: '脚本配置',
+    script: 'Script 配置',
     flashduty: 'FlashDuty 配置',
   },
   request_type: '发送类型',
@@ -66,7 +66,7 @@ const zh_CN = {
     batch_tip: '在单次 SMTP 连接中，发多少次邮件',
   },
   script_request_config: {
-    title: '脚本',
+    title: 'Script',
     script: {
       option: '使用脚本',
       label: '脚本内容',

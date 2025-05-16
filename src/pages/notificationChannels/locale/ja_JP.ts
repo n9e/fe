@@ -23,7 +23,7 @@ const ja_JP = {
   request_configuration: {
     http: 'HTTP 設定',
     smtp: 'SMTP 設定',
-    script: 'スクリプト設定',
+    script: 'Script 設定',
     flashduty: 'FlashDuty 設定',
   },
   request_type: '送信タイプ',
@@ -67,7 +67,7 @@ const ja_JP = {
     batch_tip: '単一の SMTP 接続で何回メールを送信するか',
   },
   script_request_config: {
-    title: 'スクリプト',
+    title: 'Script',
     script: {
       option: 'スクリプトを使用',
       label: 'スクリプト内容',
