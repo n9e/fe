@@ -19,6 +19,7 @@ import SideMenuHeader from './Header';
 import MenuList from './MenuList';
 import QuickMenu from './QuickMenu';
 import { MenuItem } from './types';
+import { filterMenus } from './utils/filterMenus';
 import './menu.less';
 import './locale';
 
@@ -27,7 +28,7 @@ import getPlusMenuList from 'plus:/parcels/SideMenu/menu';
 
 const SideMenu = () => {
   const { i18n } = useTranslation('sideMenu');
-  const { isPlus, darkMode, perms } = useContext(CommonStateContext);
+  const { isPlus, darkMode, perms, setFilteredMenus } = useContext(CommonStateContext);
   let { sideMenuBgMode } = useContext(CommonStateContext);
   if (darkMode) {
     sideMenuBgMode = 'dark';
@@ -89,30 +90,12 @@ const SideMenu = () => {
   const menuList = isPlus ? getPlusMenuList(embeddedProductMenu) : getMenuList(embeddedProductMenu);
 
   useEffect(() => {
-    const filteredMenus = menuList
-      .map((menu) => {
-        const filteredChildren = menu.children
-          .map((child) => {
-            if (child.key.startsWith(`${embeddedProductDetailPath}/`)) {
-              return child;
-            }
-            if (child.type === 'tabs' && child.children) {
-              const filteredTabs = child.children.filter((tab) => perms?.includes(tab.key));
-              return { ...child, children: filteredTabs };
-            }
-            return perms?.includes(child.key) ? child : null;
-          })
-          .filter(Boolean);
-
-        if (filteredChildren.length > 0) {
-          return { ...menu, children: filteredChildren };
-        }
-        return null;
-      })
-      .filter(Boolean) as MenuItem[];
-
-    setMenus(filteredMenus);
-  }, [i18n.language, embeddedProductMenu]);
+    if (perms) {
+      const filteredMenus = filterMenus(menuList, perms);
+      setFilteredMenus(filteredMenus);
+      setMenus(filteredMenus);
+    }
+  }, [i18n.language, embeddedProductMenu, perms]);
 
   const menuPaths = useMemo(
     () =>

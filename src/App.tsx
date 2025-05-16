@@ -24,6 +24,7 @@ import ruRU from 'antd/lib/locale/ru_RU';
 import 'antd/dist/antd.less';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
+
 import TaskOutput from '@/pages/taskOutput';
 import TaskHostOutput from '@/pages/taskOutput/host';
 import { getAuthorizedDatasourceCates, Cate } from '@/components/AdvancedWrap';
@@ -34,17 +35,16 @@ import { getVersions } from '@/components/pageLayout/Version/services';
 import { getCleanBusinessGroupIds, getDefaultBusiness, getVaildBusinessGroup } from '@/components/BusinessGroup';
 import Feedback from '@/components/Feedback';
 import { getN9eConfig } from '@/pages/siteSettings/services';
+import { getDarkMode, updateDarkMode } from '@/utils/darkMode';
+
 import HeaderMenu from './components/SideMenu';
 import Content from './routers';
-import { getDarkMode, updateDarkMode } from '@/utils/darkMode';
+import { MenuItem } from './components/SideMenu/types';
+import './App.less';
+import './global.variable.less';
 
 // @ts-ignore
 import useIsPlus from 'plus:/components/useIsPlus';
-// @ts-ignore
-import CustomerServiceFloatButton from 'plus:/components/CustomerServiceFloatButton';
-
-import './App.less';
-import './global.variable.less';
 
 interface IProfile {
   admin?: boolean;
@@ -119,6 +119,8 @@ export interface ICommonState {
   perms?: string[];
   screenTemplates?: string[];
   tablePaginationPosition?: string; // 表格分页位置
+  filteredMenus?: MenuItem[];
+  setFilteredMenus: (menus: MenuItem[]) => void;
 }
 
 export const basePrefix = import.meta.env.VITE_PREFIX || '';
@@ -205,6 +207,10 @@ function App() {
     esIndexMode: 'all',
     dashboardSaveMode: 'manual',
     screenTemplates: [],
+    filteredMenus: [],
+    setFilteredMenus: (menus: MenuItem[]) => {
+      setCommonState((state) => ({ ...state, filteredMenus: menus }));
+    },
   });
 
   useEffect(() => {

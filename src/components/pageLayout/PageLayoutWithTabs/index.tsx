@@ -70,16 +70,17 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
   const { t, i18n } = useTranslation('pageLayout');
   const history = useHistory();
   const location = useLocation();
+
   const query = querystring.parse(location.search);
-  const { profile, siteInfo, isPlus } = useContext(CommonStateContext);
+  const { profile, siteInfo, isPlus, perms, filteredMenus } = useContext(CommonStateContext);
   const embed = localStorage.getItem('embed') === '1' && window.self !== window.top;
   const [themeVisible, setThemeVisible] = useState(false);
   const [currentMenu, setCurrentMenu] = useState<MenuMatchResult | null>(null);
   const menuList = isPlus ? getPlusMenuList() : getMenuList();
 
   useEffect(() => {
-    const result = findMenuByPath(location.pathname, menuList);
-    if (result) {
+    if (perms && filteredMenus) {
+      const result = findMenuByPath(location.pathname, filteredMenus);
       setCurrentMenu(result);
     }
   }, [location.pathname]);
