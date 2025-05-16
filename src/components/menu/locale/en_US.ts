@@ -60,5 +60,7 @@ const en_US = {
   notification_rules: 'Rules',
   notification_channels: 'Media types',
   notification_templates: 'Message templates',
+  event_pipeline: 'Event pipelines',
+  label_mapping: 'Label mappings',
 };
 export default en_US;
