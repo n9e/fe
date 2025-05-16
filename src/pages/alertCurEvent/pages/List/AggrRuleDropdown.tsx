@@ -9,8 +9,8 @@ import { CommonStateContext } from '@/App';
 import { NS } from '../../constants';
 
 interface Props {
-  onRefreshRule: (rule: number | undefined) => void;
   cardNum: number;
+  onSelectAggrGroupId: (aggrGroupId: number | undefined) => void;
 }
 
 export interface CardAlertType {
@@ -24,7 +24,7 @@ export interface CardAlertType {
 }
 
 export default function AggrRuleDropdown(props: Props) {
-  const { onRefreshRule, cardNum } = props;
+  const { cardNum, onSelectAggrGroupId } = props;
   const { t } = useTranslation(NS);
   const [form] = Form.useForm();
   const [alertList, setAlertList] = useState<CardAlertType[]>();
@@ -43,7 +43,7 @@ export default function AggrRuleDropdown(props: Props) {
       }
       if (initAlert) {
         setSelectedAlert(initAlert);
-        onRefreshRule(initAlert.id);
+        onSelectAggrGroupId(initAlert.id);
         localStorage.setItem('selectedAlertRule', String(initAlert.id));
       }
     });
@@ -69,7 +69,7 @@ export default function AggrRuleDropdown(props: Props) {
     setVisibleAggrRuleModal(false);
     await getList();
     localStorage.setItem('selectedAlertRule', String(editForm ? editForm.id : cur.dat.id));
-    editForm && onRefreshRule(values.id);
+    editForm && onSelectAggrGroupId(values.id);
   };
 
   const handleCancel = () => {
@@ -91,7 +91,7 @@ export default function AggrRuleDropdown(props: Props) {
 
   const handleSelect = (alert: CardAlertType) => {
     setSelectedAlert(alert);
-    onRefreshRule(alert.id);
+    onSelectAggrGroupId(alert.id);
     localStorage.setItem('selectedAlertRule', String(alert.id));
     setVisibleDropdown(false);
   };
@@ -99,7 +99,7 @@ export default function AggrRuleDropdown(props: Props) {
   const handleClear = (e: React.MouseEvent) => {
     e.stopPropagation();
     setSelectedAlert(undefined);
-    onRefreshRule(undefined);
+    onSelectAggrGroupId(undefined);
     localStorage.removeItem('selectedAlertRule');
     setVisibleDropdown(false);
   };
@@ -121,7 +121,6 @@ export default function AggrRuleDropdown(props: Props) {
                       ...alert,
                       cate: alert.cate === 0,
                     });
-                    onRefreshRule(alert.id);
                   }}
                 />
                 <DeleteOutlined

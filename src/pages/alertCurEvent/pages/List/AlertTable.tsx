@@ -10,7 +10,6 @@ import { useAntdTable } from 'ahooks';
 
 import { CommonStateContext } from '@/App';
 import { parseRange } from '@/components/TimeRangePicker';
-import { getCardDetail } from '@/services/warning';
 import DetailNG from '@/pages/event/DetailNG';
 import getActions from '@/pages/event/DetailNG/Actions';
 
@@ -243,7 +242,7 @@ export default function AlertTable(props: IProps) {
       p: current,
       limit: pageSize,
       my_groups: String(filterObj.my_groups) === 'true',
-      ..._.omit(filterObj, ['range', 'aggr_card_id', 'my_groups']),
+      ..._.omit(filterObj, ['range', 'my_groups']),
     };
 
     if (filterObj.range) {

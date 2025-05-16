@@ -13,7 +13,6 @@ const getFilter = (query) => {
     query: query.query ? query.query : undefined,
     is_recovered: query.is_recovered ? Number(query.is_recovered) : undefined,
     rule_prods: query.rule_prods ? _.split(query.rule_prods, ',') : [],
-    aggr_card_id: query.aggr_card_id ? Number(query.aggr_card_id) : undefined,
     event_ids: query.event_ids ? _.split(query.event_ids, ',').map(Number) : [],
     my_groups: query.my_groups ? query.my_groups : 'true',
   };

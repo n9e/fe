@@ -45,7 +45,7 @@ const DatasourceCheckbox: React.FC<Props> = ({ filterObj, value = [], onChange }
   const fetchDatasource = () => {
     const params: any = {
       my_groups: String(filterObj.my_groups) === 'true',
-      ..._.omit(filterObj, ['range', 'aggr_card_id', 'my_groups']),
+      ..._.omit(filterObj, ['range', 'my_groups']),
     };
 
     if (filterObj.range) {

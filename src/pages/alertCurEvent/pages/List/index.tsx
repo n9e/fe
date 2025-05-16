@@ -31,7 +31,9 @@ const AlertCurEvent: React.FC = () => {
   const query = queryString.parse(location.search);
   const localRange = getDefaultValue(TIME_CACHE_KEY, undefined);
   const filter = useMemo(() => getFilter(query), [JSON.stringify(query), localRange]);
-
+  const [selectedAggrGroupId, setSelectedAggrGroupId] = useState<number | undefined>(() => {
+    return Number(localStorage.getItem('selectedAlertRule')) || undefined;
+  });
   const setFilter = (newFilter) => {
     history.replace({
       pathname: location.pathname,
@@ -70,7 +72,6 @@ const AlertCurEvent: React.FC = () => {
     filter.query ? { query: filter.query } : {},
     filter.bgid ? { bgid: filter.bgid } : {},
     filter.rule_prods.length ? { rule_prods: _.join(filter.rule_prods, ',') } : {},
-    filter.aggr_card_id ? { aggr_card_id: filter.aggr_card_id } : {},
     filter.event_ids.length ? { event_ids: filter.event_ids } : {},
     filter.my_groups ? { my_groups: filter.my_groups } : {},
   );
@@ -202,9 +203,16 @@ const AlertCurEvent: React.FC = () => {
             {/* 右侧内容区 */}
             <div className='n9e-border-base flex-1'>
               <div className='cur-events p-2'>
-                <AggrRuleDropdown cardNum={cardNum} onRefreshRule={(ruleId) => setFilter({ ...filter, aggr_card_id: ruleId })} />
+                <AggrRuleDropdown
+                  cardNum={cardNum}
+                  onSelectAggrGroupId={(id) => {
+                    setSelectedAggrGroupId(id);
+                    localStorage.setItem('selectedAlertRule', String(id));
+                  }}
+                />
                 <AlertCard
                   filter={filter}
+                  selectedAggrGroupId={selectedAggrGroupId}
                   onUpdateCardNum={(cardNum: number) => {
                     setCardNum(cardNum);
                   }}

@@ -9,6 +9,7 @@ import { SEVERITY_COLORS } from '../../constants';
 
 interface Props {
   filter: any;
+  selectedAggrGroupId: number | undefined;
   onUpdateAlertEventIds: (eventIds: number[]) => void;
   onUpdateCardNum: (cardNum: number) => void;
 }
@@ -21,21 +22,21 @@ export interface CardType {
 }
 
 const AlertCard = (props: Props) => {
-  const { filter, onUpdateAlertEventIds, onUpdateCardNum } = props;
+  const { filter, selectedAggrGroupId, onUpdateAlertEventIds, onUpdateCardNum } = props;
   const [cardList, setCardList] = useState<CardType[]>();
   const [selectedCardId, setSelectedCardId] = useState<string>();
 
   useEffect(() => {
     reloadCard();
-  }, [filter.aggr_card_id, filter.my_groups]);
+  }, [selectedAggrGroupId, filter.my_groups]);
 
   const { run: reloadCard } = useDebounceFn(
     () => {
-      if (!filter.aggr_card_id) {
+      if (!selectedAggrGroupId) {
         setCardList([]);
         return;
       }
-      getAlertCards({ view_id: filter.aggr_card_id, my_groups: String(filter.my_groups) === 'true' }).then((res) => {
+      getAlertCards({ view_id: selectedAggrGroupId, my_groups: String(filter.my_groups) === 'true' }).then((res) => {
         setCardList(res.dat);
         onUpdateCardNum(res.dat.length);
       });
