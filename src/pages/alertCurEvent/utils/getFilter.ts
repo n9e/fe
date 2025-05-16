@@ -13,9 +13,8 @@ const getFilter = (query) => {
     query: query.query ? query.query : undefined,
     is_recovered: query.is_recovered ? Number(query.is_recovered) : undefined,
     rule_prods: query.rule_prods ? _.split(query.rule_prods, ',') : [],
-    rule_id: query.rule_id ? Number(query.rule_id) : undefined,
-    event_ids: query.event_ids ? _.split(query.event_ids, ',') : [],
-    my_groups: query.my_groups ? query.my_groups : undefined,
+    event_ids: query.event_ids ? _.split(query.event_ids, ',').map(Number) : [],
+    my_groups: query.my_groups ? query.my_groups : 'true',
   };
 };
 

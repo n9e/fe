@@ -10,7 +10,6 @@ import { useAntdTable } from 'ahooks';
 
 import { CommonStateContext } from '@/App';
 import { parseRange } from '@/components/TimeRangePicker';
-import { getCardDetail } from '@/services/warning';
 import DetailNG from '@/pages/event/DetailNG';
 import getActions from '@/pages/event/DetailNG/Actions';
 
@@ -45,26 +44,6 @@ function formatDuration(ms: number) {
   return result.join(' ');
 }
 
-function DurationBar({ duration }: { duration: number }) {
-  const maxGrids = 18;
-  const hours = duration / 3600000;
-  const highlight = hours >= 72 ? maxGrids : Math.floor(hours / 4);
-  const getColorClass = (idx: number) => {
-    if (idx < 6) return 'gold';
-    if (idx < 12) return 'orange';
-    return 'red';
-  };
-
-  return (
-    <div className='flex gap-[2px]'>
-      {Array.from({ length: maxGrids }).map((_, idx) => {
-        const colorClass = getColorClass(idx);
-        const isActive = idx < highlight;
-        return <div key={idx} className={`duration-bar-segment ${colorClass} ${isActive ? 'active' : 'inactive'}`} />;
-      })}
-    </div>
-  );
-}
 export default function AlertTable(props: IProps) {
   const { filterObj, filter, setFilter, selectedRowKeys, setSelectedRowKeys } = props;
   const history = useHistory();
@@ -146,10 +125,25 @@ export default function AlertTable(props: IProps) {
       dataIndex: 'duration',
       width: 160,
       render(_, record) {
+        const duration = moment().diff(moment(record.first_trigger_time * 1000));
+        const maxGrids = 18;
+        const hours = duration / 3600000;
+        const highlight = hours >= 72 ? maxGrids : Math.floor(hours / 4);
+        const getColorClass = (idx: number) => {
+          if (idx < 6) return 'gold';
+          if (idx < 12) return 'orange';
+          return 'red';
+        };
         return (
           <div>
-            {formatDuration(moment().diff(moment(record.first_trigger_time * 1000)))}
-            <DurationBar duration={moment().diff(moment(record.first_trigger_time * 1000))} />
+            {formatDuration(duration)}
+            <div className='flex gap-[2px]'>
+              {Array.from({ length: maxGrids }).map((_, idx) => {
+                const colorClass = getColorClass(idx);
+                const isActive = idx < highlight;
+                return <div key={idx} className={`duration-bar-segment ${colorClass} ${isActive ? 'active' : 'inactive'}`} />;
+              })}
+            </div>
           </div>
         );
       },
@@ -239,33 +233,24 @@ export default function AlertTable(props: IProps) {
   }
 
   const fetchData = ({ current, pageSize }) => {
-    if (filterObj.event_ids) {
-      return getCardDetail(filterObj.event_ids.map((id) => Number(id))).then((res) => {
-        return {
-          total: res.dat.length,
-          list: res.dat,
-        };
-      });
-    } else {
-      const params: any = {
-        p: current,
-        limit: pageSize,
-        my_groups: filterObj.my_groups,
-        ..._.omit(filterObj, ['range', 'rule_id']),
-      };
+    const params: any = {
+      p: current,
+      limit: pageSize,
+      my_groups: String(filterObj.my_groups) === 'true',
+      ..._.omit(filterObj, ['range', 'my_groups']),
+    };
 
-      if (filterObj.range) {
-        const parsedRange = parseRange(filterObj.range);
-        params.stime = moment(parsedRange.start).unix();
-        params.etime = moment(parsedRange.end).unix();
-      }
-      return getEvents(params).then((res) => {
-        return {
-          total: res.dat.total,
-          list: res.dat.list,
-        };
-      });
+    if (filterObj.range) {
+      const parsedRange = parseRange(filterObj.range);
+      params.stime = moment(parsedRange.start).unix();
+      params.etime = moment(parsedRange.end).unix();
     }
+    return getEvents(params).then((res) => {
+      return {
+        total: res.dat.total,
+        list: res.dat.list,
+      };
+    });
   };
   const { tableProps } = useAntdTable(fetchData, {
     refreshDeps: [refreshFlag, JSON.stringify(filterObj), props.refreshFlag],

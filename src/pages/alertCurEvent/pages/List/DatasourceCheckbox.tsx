@@ -2,14 +2,17 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Checkbox, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SearchOutlined } from '@ant-design/icons';
+import _ from 'lodash';
+import moment from 'moment';
 
 import { allCates } from '@/components/AdvancedWrap/utils';
+import { parseRange } from '@/components/TimeRangePicker';
 
 import { getAlertCurEventsDatasource } from '../../services';
 import { NS } from '../../constants';
 
 interface Props {
-  filter: any;
+  filterObj: any;
   value?: number[];
   onChange: (val?: number[]) => void;
 }
@@ -20,7 +23,7 @@ interface Datasource {
   plugin_type: string;
 }
 
-const DatasourceCheckbox: React.FC<Props> = ({ filter, value = [], onChange }) => {
+const DatasourceCheckbox: React.FC<Props> = ({ filterObj, value = [], onChange }) => {
   const { t } = useTranslation(NS);
   const [search, setSearch] = useState('');
   const [datasourceList, setDatasourceList] = useState<Datasource[]>([]);
@@ -40,13 +43,16 @@ const DatasourceCheckbox: React.FC<Props> = ({ filter, value = [], onChange }) =
   };
 
   const fetchDatasource = () => {
-    const params = {
-      my_groups: filter.my_groups,
-      query: filter.query,
-      cate: filter.cate,
-      severity: filter.severity,
-      prods: filter.rule_prods,
+    const params: any = {
+      my_groups: String(filterObj.my_groups) === 'true',
+      ..._.omit(filterObj, ['range', 'my_groups']),
     };
+
+    if (filterObj.range) {
+      const parsedRange = parseRange(filterObj.range);
+      params.stime = moment(parsedRange.start).unix();
+      params.etime = moment(parsedRange.end).unix();
+    }
     return getAlertCurEventsDatasource(params).then((res) => {
       setDatasourceList(res.dat);
       return res.dat;
@@ -55,7 +61,7 @@ const DatasourceCheckbox: React.FC<Props> = ({ filter, value = [], onChange }) =
 
   useEffect(() => {
     fetchDatasource();
-  }, [filter.my_groups, filter.query, filter.cate, filter.severity, filter.rule_prods]);
+  }, [JSON.stringify(filterObj)]);
 
   return (
     <div>

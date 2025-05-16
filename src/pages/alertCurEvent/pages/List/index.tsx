@@ -31,7 +31,9 @@ const AlertCurEvent: React.FC = () => {
   const query = queryString.parse(location.search);
   const localRange = getDefaultValue(TIME_CACHE_KEY, undefined);
   const filter = useMemo(() => getFilter(query), [JSON.stringify(query), localRange]);
-
+  const [selectedAggrGroupId, setSelectedAggrGroupId] = useState<number | undefined>(() => {
+    return Number(localStorage.getItem('selectedAlertRule')) || undefined;
+  });
   const setFilter = (newFilter) => {
     history.replace({
       pathname: location.pathname,
@@ -63,82 +65,76 @@ const AlertCurEvent: React.FC = () => {
     ];
   }
 
-  function renderHeader() {
-    return (
-      <div className='flex justify-between items-center'>
-        <Space>
-          <Segmented
-            shape='round'
-            className='whitespace-nowrap w-[190px]'
-            onChange={(value) => {
-              setFilter({
-                ...filter,
-                my_groups: value,
-              });
-            }}
-            block
-            options={[
-              { label: t('my_groups'), value: 'true' },
-              { label: t('all_groups'), value: 'false' },
-            ]}
-          />
-          <div className='ml-[8px]'>
-            <BusinessGroupSelectWithAll
-              value={filter.bgid}
-              onChange={(val: number) => {
-                setFilter({
-                  ...filter,
-                  bgid: val,
-                });
-              }}
-            />
-          </div>
-          <Input
-            style={{ width: '300px' }}
-            prefix={<SearchOutlined />}
-            placeholder={t('search_placeholder')}
-            value={filter.query}
-            onChange={(e) => {
-              setFilter({
-                ...filter,
-                query: e.target.value,
-              });
-            }}
-          />
-        </Space>
-        <TimeRangePickerWithRefresh
-          allowClear
-          localKey={TIME_CACHE_KEY}
-          value={filter.range}
-          onChange={(val) => {
-            setFilter({
-              ...filter,
-              range: val,
-            });
-          }}
-          dateFormat='YYYY-MM-DD HH:mm:ss'
-        />
-      </div>
-    );
-  }
-
   const filterObj = Object.assign(
     { range: filter.range },
     filter.datasource_ids.length ? { datasource_ids: filter.datasource_ids } : {},
     filter.severity ? { severity: filter.severity } : {},
     filter.query ? { query: filter.query } : {},
-    { bgid: filter.bgid },
+    filter.bgid ? { bgid: filter.bgid } : {},
     filter.rule_prods.length ? { rule_prods: _.join(filter.rule_prods, ',') } : {},
-    filter.rule_id ? { rule_id: filter.rule_id } : {},
     filter.event_ids.length ? { event_ids: filter.event_ids } : {},
     filter.my_groups ? { my_groups: filter.my_groups } : {},
   );
-
   return (
     <PageLayout icon={<AlertOutlined />} title={t('title')}>
       <div className={`n9e ${NS}`}>
         <div className='n9e-fill-color-2 n9e-border-base p-4'>
-          <div>{renderHeader()}</div>
+          <div className='flex justify-between items-center'>
+            <Space>
+              <Segmented
+                shape='round'
+                className='whitespace-nowrap w-[190px]'
+                onChange={(value) => {
+                  setFilter({
+                    ...filter,
+                    my_groups: value,
+                  });
+                }}
+                value={filter.my_groups}
+                block
+                options={[
+                  { label: t('my_groups'), value: 'true' },
+                  { label: t('all_groups'), value: 'false' },
+                ]}
+              />
+              <div className='ml-[8px]'>
+                <BusinessGroupSelectWithAll
+                  value={filter.bgid}
+                  onChange={(val: number) => {
+                    setFilter({
+                      ...filter,
+                      bgid: val,
+                    });
+                  }}
+                />
+              </div>
+              <Input
+                style={{ width: '300px' }}
+                prefix={<SearchOutlined />}
+                placeholder={t('search_placeholder')}
+                value={filter.query}
+                onChange={(e) => {
+                  setFilter({
+                    ...filter,
+                    query: e.target.value,
+                  });
+                }}
+              />
+            </Space>
+            <TimeRangePickerWithRefresh
+              allowClear
+              localKey={TIME_CACHE_KEY}
+              value={filter.range}
+              onChange={(val) => {
+                setFilter({
+                  ...filter,
+                  range: val,
+                });
+              }}
+              dateFormat='YYYY-MM-DD HH:mm:ss'
+            />
+          </div>
+
           <div className='flex py-2'>
             {/* 左侧筛选区 */}
             <div className='w-[190px] mr-[16px] overflow-y-auto h-full'>
@@ -192,7 +188,7 @@ const AlertCurEvent: React.FC = () => {
                 </Collapse.Panel>
                 <Collapse.Panel header={t('detail.datasource_id')} key='datasource'>
                   <DatasourceCheckbox
-                    filter={filter}
+                    filterObj={filterObj}
                     value={filter.datasource_ids}
                     onChange={(val: number[]) => {
                       setFilter({
@@ -207,9 +203,16 @@ const AlertCurEvent: React.FC = () => {
             {/* 右侧内容区 */}
             <div className='n9e-border-base flex-1'>
               <div className='cur-events p-2'>
-                <AggrRuleDropdown cardNum={cardNum} onRefreshRule={(ruleId) => setFilter({ ...filter, rule_id: ruleId })} />
+                <AggrRuleDropdown
+                  cardNum={cardNum}
+                  onSelectAggrGroupId={(id) => {
+                    setSelectedAggrGroupId(id);
+                    localStorage.setItem('selectedAlertRule', String(id));
+                  }}
+                />
                 <AlertCard
                   filter={filter}
+                  selectedAggrGroupId={selectedAggrGroupId}
                   onUpdateCardNum={(cardNum: number) => {
                     setCardNum(cardNum);
                   }}
