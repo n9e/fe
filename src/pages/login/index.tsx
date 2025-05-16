@@ -15,30 +15,42 @@
  *
  */
 import React, { useState, useEffect, useRef, useContext } from 'react';
-import { Form, Input, Button, message } from 'antd';
-import { useHistory, useLocation } from 'react-router-dom';
+import { Form, Input, Button, message, Space, Dropdown, Menu } from 'antd';
+import { useLocation } from 'react-router-dom';
 import { PictureOutlined, UserOutlined, LockOutlined } from '@ant-design/icons';
-import { ifShowCaptcha, getCaptcha, getSsoConfig, getRedirectURL, getRedirectURLCAS, getRedirectURLOAuth, authLogin, getRSAConfig } from '@/services/login';
-import './login.less';
+import { useTranslation } from 'react-i18next';
+import _ from 'lodash';
+
+import { ifShowCaptcha, getCaptcha, getSsoConfig, getRedirectURL, getRedirectURLCAS, getRedirectURLOAuth, getRedirectURLCustom, authLogin, getRSAConfig } from '@/services/login';
+import { RsaEncry } from '@/utils/rsa';
+import { CommonStateContext } from '@/App';
+import { AccessTokenKey } from '@/utils/constant';
 
 // @ts-ignore
 import useSsoWay from 'plus:/parcels/SSOConfigs/useSsoWay';
 
-import { useTranslation } from 'react-i18next';
-import { RsaEncry } from '@/utils/rsa';
-import { CommonStateContext, basePrefix } from '@/App';
-import { AccessTokenKey } from '@/utils/constant';
+import { NAME_SPACE } from './constants';
+import './locale';
+import './login.less';
+
+const i18nMap = {
+  zh_CN: '简体',
+  zh_HK: '繁體',
+  en_US: 'En',
+  ja_JP: '日本語',
+  ru_RU: 'Русский',
+};
 
 export interface DisplayName {
   oidc: string;
   cas: string;
   oauth: string;
+  custom?: string;
 }
 
 export default function Login() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation(NAME_SPACE);
   const [form] = Form.useForm();
-  const history = useHistory();
   const location = useLocation();
   const { siteInfo } = useContext(CommonStateContext);
   const redirect = location.search && new URLSearchParams(location.search).get('redirect');
@@ -46,8 +58,10 @@ export default function Login() {
     oidc: 'OIDC',
     cas: 'CAS',
     oauth: 'OAuth',
+    custom: 'Custom',
   });
   const [showcaptcha, setShowcaptcha] = useState(false);
+  const [curLanguage, setCurLanguage] = useState(i18nMap[i18n.language] || '中文');
   const verifyimgRef = useRef<HTMLImageElement>(null);
   const captchaidRef = useRef<string>();
   const refreshCaptcha = () => {
@@ -69,6 +83,7 @@ export default function Login() {
           oidc: res.dat.oidcDisplayName,
           cas: res.dat.casDisplayName,
           oauth: res.dat.oauthDisplayName,
+          custom: res.dat.customDisplayName,
         });
       }
     });
@@ -120,8 +135,6 @@ export default function Login() {
 
   return (
     <div className='login-warp'>
-      {/* <img src={'/image/login-left-top-corner.png'} className='left-top-bg'></img> */}
-      {/* <img src={'/image/login-right-bottom-corner.png'} className='right-bottom-bg'></img> */}
       <div className='banner integration'>
         <img src={'/image/login-dashboard.svg'} style={{ margin: '0 60px', zIndex: 5, width: 632 }}></img>
       </div>
@@ -132,105 +145,153 @@ export default function Login() {
           </div>
           <Form form={form} layout='vertical' requiredMark={true}>
             <Form.Item
-              label='账户'
+              label={t('username')}
               name='username'
               rules={[
                 {
                   required: true,
-                  message: t('请输入用户名'),
+                  message: t('username_required'),
                 },
               ]}
             >
-              <Input placeholder={t('请输入用户名')} prefix={<UserOutlined className='site-form-item-icon' />} />
+              <Input placeholder={t('username_required')} prefix={<UserOutlined />} />
             </Form.Item>
             <Form.Item
-              label='密码'
+              label={t('password')}
               name='password'
               rules={[
                 {
                   required: true,
-                  message: t('请输入密码'),
+                  message: t('password_required'),
                 },
               ]}
             >
-              <Input type='password' placeholder={t('请输入密码')} onPressEnter={handleSubmit} prefix={<LockOutlined className='site-form-item-icon' />} />
+              <Input type='password' placeholder={t('password_required')} onPressEnter={handleSubmit} prefix={<LockOutlined />} />
             </Form.Item>
 
-            <div className='verifyimg-div'>
+            <div className='text-[14px]'>
               <Form.Item
-                label='验证码'
+                label={t('verifyvalue')}
                 name='verifyvalue'
                 rules={[
                   {
                     required: showcaptcha,
-                    message: t('请输入验证码'),
+                    message: t('verifyvalue_required'),
                   },
                 ]}
                 hidden={!showcaptcha}
               >
-                <Input placeholder={t('请输入验证码')} onPressEnter={handleSubmit} prefix={<PictureOutlined className='site-form-item-icon' />} />
+                <Input placeholder={t('verifyvalue_required')} onPressEnter={handleSubmit} prefix={<PictureOutlined />} />
               </Form.Item>
 
               <img
                 ref={verifyimgRef}
+                className='mb2'
                 style={{
                   display: showcaptcha ? 'inline-block' : 'none',
-                  marginBottom: 16,
                 }}
                 onClick={refreshCaptcha}
-                alt='点击获取验证码'
+                alt={t('click_get_verify')}
               />
             </div>
 
             <Form.Item>
               <Button type='primary' onClick={handleSubmit}>
-                {t('登录')}
+                {t('login')}
               </Button>
             </Form.Item>
-            <div className='login-other'>
-              <strong>其他登录方式：</strong>
-              <a
-                onClick={() => {
-                  getRedirectURL().then((res) => {
-                    if (res.dat) {
-                      window.location.href = res.dat;
-                    } else {
-                      message.warning('没有配置 OIDC 登录地址！');
-                    }
-                  });
-                }}
-              >
-                {displayName.oidc}
-              </a>
-              &nbsp;&nbsp;
-              <a
-                onClick={() => {
-                  getRedirectURLCAS().then((res) => {
-                    if (res.dat) {
-                      window.location.href = res.dat.redirect;
-                      localStorage.setItem('CAS_state', res.dat.state);
-                    } else {
-                      message.warning('没有配置 CAS 登录地址！');
-                    }
-                  });
-                }}
-              >
-                {displayName.cas}
-              </a>
-              &nbsp;&nbsp;
-              <a
-                onClick={() => {
-                  getRedirectURLOAuth().then((res) => {
-                    if (res.dat) {
-                      window.location.href = res.dat;
-                    } else {
-                      message.warning('没有配置 OAuth 登录地址！');
-                    }
-                  });
-                }}
-              >
-                {displayName.oauth}
-              </a>
+            {_.some(displayName, (value) => {
+              return !!value;
+            }) && (
+              <div className='mb1 text-[14px]'>
+                <Space align='baseline'>
+                  <div>{t('other_types')}:</div>
+                  {displayName.oidc && (
+                    <a
+                      onClick={() => {
+                        getRedirectURL().then((res) => {
+                          if (res.dat) {
+                            window.location.href = res.dat;
+                          } else {
+                            message.warning('没有配置 OIDC 登录地址！');
+                          }
+                        });
+                      }}
+                    >
+                      {displayName.oidc}
+                    </a>
+                  )}
+                  {displayName.cas && (
+                    <a
+                      onClick={() => {
+                        getRedirectURLCAS().then((res) => {
+                          if (res.dat) {
+                            window.location.href = res.dat.redirect;
+                            localStorage.setItem('CAS_state', res.dat.state);
+                          } else {
+                            message.warning('没有配置 CAS 登录地址！');
+                          }
+                        });
+                      }}
+                    >
+                      {displayName.cas}
+                    </a>
+                  )}
+                  {displayName.oauth && (
+                    <a
+                      onClick={() => {
+                        getRedirectURLOAuth().then((res) => {
+                          if (res.dat) {
+                            window.location.href = res.dat;
+                          } else {
+                            message.warning('没有配置 OAuth 登录地址！');
+                          }
+                        });
+                      }}
+                    >
+                      {displayName.oauth}
+                    </a>
+                  )}
+                  {displayName.custom && (
+                    <a
+                      onClick={() => {
+                        getRedirectURLCustom().then((res) => {
+                          if (res.dat) {
+                            window.location.href = res.dat;
+                          } else {
+                            message.warning('没有配置 custom 登录地址！');
+                          }
+                        });
+                      }}
+                    >
+                      {displayName.custom}
+                    </a>
+                  )}
+                </Space>
+              </div>
+            )}
+            <div className='text-[14px]'>
+              <Space>
+                <div>{t('language')}:</div>
+                <Dropdown
+                  overlay={
+                    <Menu
+                      onSelect={({ key }) => {
+                        i18n.changeLanguage(key);
+                        setCurLanguage(i18nMap[key]);
+                        localStorage.setItem('language', key);
+                      }}
+                      selectable
+                    >
+                      {Object.keys(i18nMap).map((el) => {
+                        return <Menu.Item key={el}>{i18nMap[el]}</Menu.Item>;
+                      })}
+                    </Menu>
+                  }
+                >
+                  <a onClick={(e) => e.preventDefault()}>{curLanguage}</a>
+                </Dropdown>
+              </Space>
             </div>
           </Form>
         </div>

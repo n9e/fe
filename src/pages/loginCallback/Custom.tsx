@@ -17,18 +17,17 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router';
 import queryString from 'query-string';
-import { authCallbackCAS } from '@/services/login';
+import { authCallbackCustom } from '@/services/login';
 import { AccessTokenKey } from '@/utils/constant';
 
-export default function index() {
+export default function Custom() {
   const location = useLocation();
   const query = queryString.parse(location.search);
   const [err, setErr] = useState();
 
   useEffect(() => {
-    authCallbackCAS({
+    authCallbackCustom({
       ticket: query.ticket,
-      state: localStorage.getItem('CAS_state'),
       redirect: query.redirect || '/',
     })
       .then((res) => {
@@ -37,7 +36,6 @@ export default function index() {
             localStorage.setItem(AccessTokenKey, res.dat.access_token);
             localStorage.setItem('refresh_token', res.dat.refresh_token);
             window.location.href = res.dat.redirect;
-            localStorage.removeItem('CAS_state');
           } else {
             console.log(res.dat);
           }
