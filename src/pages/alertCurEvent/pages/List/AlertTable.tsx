@@ -12,6 +12,7 @@ import { CommonStateContext } from '@/App';
 import { parseRange } from '@/components/TimeRangePicker';
 import { getCardDetail } from '@/services/warning';
 import DetailNG from '@/pages/event/DetailNG';
+import getActions from '@/pages/event/DetailNG/Actions';
 
 import { getEvents } from '../../services';
 import deleteAlertEventsModal from '../../utils/deleteAlertEventsModal';
@@ -87,7 +88,7 @@ export default function AlertTable(props: IProps) {
     {
       title: t('rule_name'),
       dataIndex: 'rule_name',
-      render(title, { id, tags, ...record }) {
+      render(title, record) {
         return (
           <>
             <a
@@ -100,11 +101,10 @@ export default function AlertTable(props: IProps) {
               {title}
             </a>
             <div>
-              {_.map(tags, (item) => {
+              {_.map(record.tags, (item) => {
                 return (
                   <Tooltip key={item} title={item}>
                     <Tag
-                      // color='purple'
                       style={{ maxWidth: '100%' }}
                       onClick={() => {
                         if (!filter.queryContent.includes(item)) {
@@ -297,15 +297,24 @@ export default function AlertTable(props: IProps) {
         }}
       />
       <Drawer
-        width={960}
+        width='80%'
         closable={false}
         title={t('title')}
         destroyOnClose
         extra={<CloseOutlined onClick={() => setOpenAlertDetailDrawer(false)} />}
         onClose={() => setOpenAlertDetailDrawer(false)}
         visible={openAlertDetailDrawer}
+        footer={getActions({
+          eventDetail: currentRecord,
+          showDeleteBtn: true,
+          onDeleteSuccess: () => {
+            setOpenAlertDetailDrawer(false);
+            setRefreshFlag(_.uniqueId('refresh_'));
+            setSelectedRowKeys([]);
+          },
+        })}
       >
-        {currentRecord && <DetailNG data={currentRecord} />}
+        {currentRecord && <DetailNG data={currentRecord} showGraph />}
       </Drawer>
     </>
   );
