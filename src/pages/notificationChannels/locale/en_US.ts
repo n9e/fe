@@ -2,7 +2,9 @@ const en_US = {
   title: 'Media types',
   basic_configuration: 'Basic configuration',
   ident: 'Media type',
-  ident_tip: 'The classification of the media type, for example, multiple DingTalk notification media types can be set to dingtalk',
+  ident_tip:
+    'The classification of the media type, for example, multiple DingTalk notification media types can be set to dingtalk. If you want to add a new one, you can enter it manually',
+  ident_placeholder: 'If you want to add a new one, you can enter it manually',
   note_tip: 'You can fill in supplementary explanations or usage scenarios for the media type to facilitate viewing during subsequent maintenance or collaboration',
   enable_tip: 'Whether to enable the configuration of this media type. After closing, the configuration will be temporarily invalid and notifications will not be sent',
   variable_configuration: {

@@ -2,7 +2,8 @@ const zh_HK = {
   title: '通知媒介',
   basic_configuration: '基礎配置',
   ident: '媒介類型',
-  ident_tip: '通知媒介的分類，例如多個釘釘通知媒介，類型都可以設置為 dingtalk',
+  ident_tip: '通知媒介的分類，例如多個釘釘通知媒介，類型都可以設置為 dingtalk。如果想要新增，可以直接手動輸入',
+  ident_placeholder: '如果想要新增，可以直接手動輸入',
   note_tip: '可填寫對該通知媒介的補充說明或使用場景，方便後續維護或協作時查看',
   enable_tip: '是否啟用此通知媒介的配置。關閉後，該配置將暫時失效，不會再發送通知',
   variable_configuration: {
@@ -21,7 +22,7 @@ const zh_HK = {
   request_configuration: {
     http: 'HTTP 配置',
     smtp: 'SMTP 配置',
-    script: '腳本配置',
+    script: 'Script 配置',
     flashduty: 'FlashDuty 配置',
   },
   request_type: '發送類型',
@@ -65,7 +66,7 @@ const zh_HK = {
     batch_tip: '在單次 SMTP 連接中，發多少次郵件',
   },
   script_request_config: {
-    title: '腳本',
+    title: 'Script',
     script: {
       option: '使用腳本',
       label: '腳本內容',

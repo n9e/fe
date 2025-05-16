@@ -149,6 +149,7 @@ const en_US = {
   reload: 'Reload',
   public: 'Public',
   private: 'Private',
+  advanced_settings: 'Advanced settings',
 
   tpl: 'Self-healing',
   'tpl.create': 'Create',
