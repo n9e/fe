@@ -1,6 +1,8 @@
 import _ from 'lodash';
 import moment from 'moment-timezone';
 
+import { dateTimeFormat } from '@/utils/datetime/formatter';
+
 import { uplotsMap } from '../index';
 
 let hoveringUplotID = '';
@@ -295,10 +297,11 @@ export default function tooltipPlugin(options: {
         const headerNode = overlay!.querySelector('.n9e-uplot-tooltip-header');
         if (headerNode) {
           headerNode.innerHTML = '';
+
           const headerText = timeData[idx]
-            ? timeZone
-              ? moment.unix(timeData[idx]).tz(timeZone).format('YYYY-MM-DD HH:mm:ss')
-              : moment.unix(timeData[idx]).format('YYYY-MM-DD HH:mm:ss')
+            ? dateTimeFormat(moment.unix(timeData[idx]), {
+                timeZone,
+              })
             : 'Invalid Time';
           const headerTextNode = document.createTextNode(headerText);
           headerNode.appendChild(headerTextNode);

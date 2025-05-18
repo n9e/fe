@@ -8,13 +8,13 @@ import { DeleteOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
 import { deleteAnnotations } from '@/services/dashboardV2';
+import { dateTimeFormat } from '@/utils/datetime/formatter';
 
 import EditButton from './EditButton';
 
 import './style.less';
 
 const DEFAULT_ANNOTATION_COLOR = 'rgba(0, 211, 255, 1)';
-const TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 
 interface MarkersProps {
   annotations: any[];
@@ -28,8 +28,12 @@ function Marker({ annotation, content, timeZone, onEdit, onDelete }) {
   const { t } = useTranslation('dashboard');
   const { time_start, time_end, description, tags } = annotation;
   const [popoverVisible, setPopoverVisible] = React.useState(false);
-  const startTimeFormat = timeZone ? moment.unix(time_start).tz(timeZone).format(TIME_FORMAT) : moment.unix(time_start).format(TIME_FORMAT);
-  const endTimeFormat = timeZone ? moment.unix(time_end).tz(timeZone).format(TIME_FORMAT) : moment.unix(time_end).format(TIME_FORMAT);
+  const startTimeFormat = dateTimeFormat(moment.unix(time_start), {
+    timeZone,
+  });
+  const endTimeFormat = dateTimeFormat(moment.unix(time_end), {
+    timeZone,
+  });
 
   return (
     <Popover
