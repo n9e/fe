@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import { Input } from 'antd';
 
+import { dateTimeFormat } from '@/utils/datetime/formatter';
+
 export interface Values {
   id: number;
   dashboard_id: number;
@@ -23,14 +25,16 @@ interface Props {
   initialValues: Values;
 }
 
-const format = 'YYYY-MM-DD HH:mm:ss';
-
 export default function FormModal(props: Props) {
   const { t } = useTranslation('dashboard');
   const { action, visible, timeZone, onOk, onCancel, initialValues } = props;
   const [form] = Form.useForm();
-  const startTimeFormat = timeZone ? moment.unix(initialValues.time_start).tz(timeZone).format(format) : moment.unix(initialValues.time_start).format(format);
-  const endTimeFormat = timeZone ? moment.unix(initialValues.time_end).tz(timeZone).format(format) : moment.unix(initialValues.time_end).format(format);
+  const startTimeFormat = dateTimeFormat(moment.unix(initialValues.time_start), {
+    timeZone,
+  });
+  const endTimeFormat = dateTimeFormat(moment.unix(initialValues.time_end), {
+    timeZone,
+  });
 
   useEffect(() => {
     if (visible) {

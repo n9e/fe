@@ -1,8 +1,10 @@
 import uPlot, { Axis } from 'uplot';
 import moment from 'moment-timezone';
 import _ from 'lodash';
+
 import getTextWidth from '@/pages/dashboard/Renderer/utils/getTextWidth';
 import { FONT_FAMILY, THEME } from '@/utils/constant';
+import { dateTimeFormat } from '@/utils/datetime/formatter';
 
 enum ScaleDistribution {
   Linear = 'linear',
@@ -32,7 +34,12 @@ function formatTime(self: uPlot, splits: number[], axisIdx: number, foundSpace: 
     if (d.getHours() === 0 && d.getMinutes() === 0 && d.getSeconds() === 0) {
       format = 'MM-DD';
     }
-    return v == null ? '' : timeZone ? moment.unix(v).tz(timeZone).format(format) : moment.unix(v).format(format);
+    return v == null
+      ? ''
+      : dateTimeFormat(moment.unix(v), {
+          timeZone,
+          format,
+        });
   });
 }
 
