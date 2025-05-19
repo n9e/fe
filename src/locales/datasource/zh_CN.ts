@@ -63,6 +63,7 @@ const zh_CN = {
     },
     syntaxOptions: '语法选项',
     queryFailed: '查询失败，请稍后重试',
+    offset_tip: '用于查询指定时间段之前的数据，类似 PromQL 中的 offset，单位为秒',
   },
 };
 export default zh_CN;
