@@ -59,12 +59,6 @@ const en_US = {
     basic_auth_user_placeholder: 'Please enter the authorization user name',
     basic_auth_pass: 'Authorization password',
     basic_auth_pass_placeholder: 'Please enter the authorization password',
-    headers: 'Headers',
-    headerKey: 'Key',
-    headerValue: 'Value',
-    timeout: 'Timeout',
-    insecure_skip_verify: 'Skip certificate verification',
-    proxy: 'Proxy',
   },
 };
 export default en_US;

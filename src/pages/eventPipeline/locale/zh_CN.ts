@@ -58,12 +58,6 @@ const zh_CN = {
     basic_auth_user_placeholder: '请输入授权用户名',
     basic_auth_pass: '授权密码',
     basic_auth_pass_placeholder: '请输入授权密码',
-    headers: '请求头',
-    headerKey: 'Key',
-    headerValue: 'Value',
-    timeout: '超时时间',
-    insecure_skip_verify: '跳过证书校验',
-    proxy: '代理',
   },
 };
 export default zh_CN;

@@ -11,17 +11,13 @@ import { NS } from '../../../constants';
 interface Props {
   field: FormListFieldData;
   namePath: (string | number)[];
-  prefixNamePath?: (string | number)[];
 }
 
 export default function Callback(props: Props) {
   const { t } = useTranslation(NS);
-  const { field, namePath = [], prefixNamePath = [] } = props;
+  const { field, namePath = [] } = props;
   const resetField = _.omit(field, ['name', 'key']);
   const [isAdvancedVisible, setIsAdvancedVisible] = useState(false);
-
-  // 拼接完整路径
-  console.log('namePath', namePath);
 
   return (
     <>
@@ -42,11 +38,11 @@ export default function Callback(props: Props) {
         >
           <div className='space-y-4'>
             <div className='flex gap-2 w-full'>
-              <Form.Item {...resetField} label={t('callback.basic_auth_user')} name={[...namePath, 'basic_auth_user']} className='mb-0 flex-1'>
-                <Input placeholder={t('callback.basic_auth_user_placeholder')} />
+              <Form.Item {...resetField} label='BasicAuth Username' name={[...namePath, 'basic_auth_user']} className='mb-0 flex-1'>
+                <Input placeholder='Enter username' />
               </Form.Item>
-              <Form.Item {...resetField} label={t('callback.basic_auth_pass')} name={[...namePath, 'basic_auth_pass']} className='mb-0 flex-1'>
-                <Input.Password placeholder={t('callback.basic_auth_pass_placeholder')} />
+              <Form.Item {...resetField} label='BasicAuth Password' name={[...namePath, 'basic_auth_pass']} className='mb-0 flex-1'>
+                <Input.Password placeholder='Enter password' />
               </Form.Item>
             </div>
 
@@ -55,16 +51,16 @@ export default function Callback(props: Props) {
                 <div className='mb-4'>
                   <div className='mb-3'>
                     <Space size={4}>
-                      {t('callback.headers')}
-                      <PlusCircleOutlined onClick={() => add()} />
+                      <span className='text-sm'>HTTP Headers</span>
+                      <PlusCircleOutlined onClick={() => add({ key: '', value: '' })} />
                     </Space>
                   </div>
                   {fields.length > 0 && (
                     <Row gutter={10} className='mb-3'>
                       <Col flex='auto'>
                         <Row gutter={10}>
-                          <Col span={12}>{t('callback.headerKey')}</Col>
-                          <Col span={12}>{t('callback.headerValue')}</Col>
+                          <Col span={12}>Header Key</Col>
+                          <Col span={12}>Header Value</Col>
                         </Row>
                       </Col>
                       <Col flex='none'>
@@ -99,26 +95,29 @@ export default function Callback(props: Props) {
               )}
             </Form.List>
 
-            <Form.Item
-              {...resetField}
-              label={t('callback.timeout')}
-              name={[...namePath, 'timeout']}
-              getValueFromEvent={(value) => Number(value)}
-              getValueProps={(value) => ({ value: Number(value) })}
-            >
-              <InputNumber min={0} style={{ width: '100%' }} />
-            </Form.Item>
-
-            <Space size={8} className='mb-0'>
-              <span>{t('callback.insecure_skip_verify')}</span>
-              <Form.Item {...resetField} name={[...namePath, 'insecure_skip_verify']} valuePropName='checked' noStyle>
-                <Switch size='small' />
-              </Form.Item>
-            </Space>
-
-            <Form.Item {...resetField} className='mb-0' label={t('callback.proxy')} name={[...namePath, 'proxy']}>
-              <Input />
-            </Form.Item>
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item {...resetField} className='mb-0' label='HTTP Proxy' name={[...namePath, 'proxy']}>
+                  <Input />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item
+                  {...resetField}
+                  label='Callback Timeout'
+                  name={[...namePath, 'timeout']}
+                  getValueFromEvent={(value) => Number(value)}
+                  getValueProps={(value) => ({ value: Number(value) })}
+                >
+                  <InputNumber min={0} style={{ width: '100%' }} addonAfter='ms' />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item {...resetField} label='TLS InsecureSkipVerify' name={[...namePath, 'insecure_skip_verify']} valuePropName='checked'>
+                  <Switch size='small' />
+                </Form.Item>
+              </Col>
+            </Row>
           </div>
         </div>
       </div>
