@@ -59,12 +59,6 @@ const ja_JP = {
     basic_auth_user_placeholder: 'ユーザー名を入力してください',
     basic_auth_pass: 'パスワード',
     basic_auth_pass_placeholder: 'パスワードを入力してください',
-    headers: 'ヘッダー',
-    headerKey: 'キー',
-    headerValue: '値',
-    timeout: 'タイムアウト',
-    insecure_skip_verify: '証明書の検証をスキップ',
-    proxy: 'プロキシ',
   },
 };
 

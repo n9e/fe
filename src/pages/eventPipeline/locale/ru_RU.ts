@@ -59,12 +59,6 @@ const ru_RU = {
     basic_auth_user_placeholder: 'Пожалуйста, введите имя пользователя авторизации',
     basic_auth_pass: 'Пароль авторизации',
     basic_auth_pass_placeholder: 'Пожалуйста, введите пароль авторизации',
-    headers: 'Заголовки запроса',
-    headerKey: 'Ключ',
-    headerValue: 'Значение',
-    timeout: 'Таймаут',
-    insecure_skip_verify: 'Пропустить проверку сертификата',
-    proxy: 'Прокси',
   },
 };
 

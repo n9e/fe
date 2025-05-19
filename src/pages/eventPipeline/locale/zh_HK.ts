@@ -58,12 +58,6 @@ const zh_HK = {
     basic_auth_user_placeholder: '請輸入授權用戶名',
     basic_auth_pass: '授權密碼',
     basic_auth_pass_placeholder: '請輸入授權密碼',
-    headers: '請求頭',
-    headerKey: 'Key',
-    headerValue: 'Value',
-    timeout: '超時時間',
-    insecure_skip_verify: '跳過證書校驗',
-    proxy: '代理',
   },
 };
 
