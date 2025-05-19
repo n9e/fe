@@ -30,18 +30,25 @@ interface IProps {
 }
 function formatDuration(ms: number) {
   const d = moment.duration(ms);
-  const days = Math.floor(d.asDays());
-  const hours = d.hours();
-  const minutes = d.minutes();
-  const seconds = d.seconds();
+  const totalDays = d.asDays();
+  const totalHours = d.asHours();
+  const totalMinutes = d.asMinutes();
 
-  let result: string[] = [];
-  if (days) result.push(`${days} d`);
-  if (hours) result.push(`${hours} h`);
-  if (minutes) result.push(`${minutes} min`);
-  if (seconds) result.push(`${seconds} s`);
+  if (totalDays >= 1) {
+    return `${totalDays.toFixed(1)} d`;
+  } else {
+    const hours = Math.floor(totalHours);
+    const minutes = totalMinutes % 60;
 
-  return result.join(' ');
+    let result: string[] = [];
+    if (hours > 0) {
+      result.push(`${hours} h`);
+    }
+    if (minutes > 0 || hours === 0) {
+      result.push(`${minutes.toFixed(1)} min`);
+    }
+    return result.join(' ');
+  }
 }
 
 export default function AlertTable(props: IProps) {
