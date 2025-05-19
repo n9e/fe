@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Input, Form, Modal, Switch, message, Dropdown, Button, Menu } from 'antd';
+import { Input, Form, Modal, Switch, message, Dropdown, Button, Menu, Space, Tag } from 'antd';
 import { EditOutlined, DeleteOutlined, CloseCircleOutlined } from '@ant-design/icons';
 
 import { getAggrAlerts, AddAggrAlerts, updateAggrAlerts, deleteAggrAlerts } from '@/services/warning';
@@ -110,27 +110,33 @@ export default function AggrRuleDropdown(props: Props) {
         <Menu.Item onClick={() => handleSelect(alert)} className='p-0 m-0' key={alert.id}>
           <div className={`px-2 py-2 flex items-center justify-between ${alert.id === selectedAlert?.id ? ' is-active' : ''}`}>
             <div>{alert.name}</div>
-            {(alert.cate === 1 || profile.admin) && (
-              <div className='flex gap-2'>
-                <EditOutlined
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setEditForm(alert);
-                    setVisibleAggrRuleModal(true);
-                    form.setFieldsValue({
-                      ...alert,
-                      cate: alert.cate === 0,
-                    });
-                  }}
-                />
-                <DeleteOutlined
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDelete(alert);
-                  }}
-                />
-              </div>
-            )}
+            <Space>
+              <Tag style={{ border: 'none', borderRadius: '4px' }} color='default'>
+                {alert.cate === 0 || profile.admin ? ' 公开' : ''}
+              </Tag>
+
+              {(alert.cate === 1 || profile.admin) && (
+                <div className='flex gap-2'>
+                  <EditOutlined
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setEditForm(alert);
+                      setVisibleAggrRuleModal(true);
+                      form.setFieldsValue({
+                        ...alert,
+                        cate: alert.cate === 0,
+                      });
+                    }}
+                  />
+                  <DeleteOutlined
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete(alert);
+                    }}
+                  />
+                </div>
+              )}
+            </Space>
           </div>
         </Menu.Item>
       ))}
@@ -155,7 +161,7 @@ export default function AggrRuleDropdown(props: Props) {
       <Dropdown overlay={dropdownMenu} trigger={['click']} visible={visibleDropdown} onVisibleChange={setVisibleDropdown}>
         <Input
           addonBefore={t('aggregate_rule')}
-          value={selectedAlert ? selectedAlert.name + (selectedAlert.cate === 0 || profile.admin ? ' 公开' : '') : ''}
+          value={selectedAlert ? selectedAlert.name : ''}
           placeholder={t('aggregate_rule_mgs')}
           readOnly
           onClick={() => setVisibleDropdown(true)}
