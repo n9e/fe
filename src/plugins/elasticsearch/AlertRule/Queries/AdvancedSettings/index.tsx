@@ -1,7 +1,7 @@
 import React from 'react';
-import { Form, Space, Row, Col, InputNumber } from 'antd';
+import { Form, Space, Row, Col, InputNumber, Tooltip } from 'antd';
 import { FormListFieldData } from 'antd/lib/form/FormList';
-import { DownOutlined, RightOutlined } from '@ant-design/icons';
+import { DownOutlined, QuestionCircleOutlined, RightOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
 import { SIZE } from '@/utils/constant';
@@ -45,7 +45,16 @@ export default function index(prosp: Props) {
             </InputGroupWithFormItem>
           </Col>
           <Col span={6}>
-            <InputGroupWithFormItem label='Offset (s)'>
+            <InputGroupWithFormItem
+              label={
+                <Space>
+                  <span>Offset</span>
+                  <Tooltip title={t('datasource:es.offset_tip')} placement='top' overlayClassName='ant-tooltip-auto-width'>
+                    <QuestionCircleOutlined />
+                  </Tooltip>
+                </Space>
+              }
+            >
               <Form.Item {...field} name={[field.name, 'offset']} noStyle>
                 <InputNumber controls={false} min={0} />
               </Form.Item>
