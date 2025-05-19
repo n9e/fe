@@ -121,7 +121,7 @@ export default function NotifyConfig(props: Props) {
         />
       </Form.Item>
       {processorType === 'relabel' && <Relabel field={field} namePath={[field.name, 'config']} prefixNamePath={['processors']} />}
-      {processorType === 'callback' && <Callback field={field} namePath={[field.name, 'config']} prefixNamePath={['processors']} />}
+      {processorType === 'callback' && <Callback field={field} namePath={[field.name, 'config']} />}
       {processorType === 'label_enrich' && <LabelEnrich field={field} namePath={[field.name, 'config']} prefixNamePath={['processors']} />}
 
       <TestModal type='processor' config={processorConfig} />
