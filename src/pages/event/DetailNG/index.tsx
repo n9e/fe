@@ -5,7 +5,7 @@ import _ from 'lodash';
 import { Button, message, Spin, Tag, Typography } from 'antd';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { priorityColor } from '@/utils/constant';
+import { SEVERITY_COLORS } from '@/pages/alertCurEvent/constants';
 import { CommonStateContext, basePrefix } from '@/App';
 import TDengineDetail from '@/plugins/TDengine/Event';
 import { Event as ElasticsearchDetail } from '@/plugins/elasticsearch';
@@ -130,7 +130,7 @@ export default function DetailNG(props: Props) {
           3: '（Info）',
         };
         return (
-          <Tag color={priorityColor[severity - 1]}>
+          <Tag className={`${SEVERITY_COLORS[severity - 1]}`}>
             S{severity} {severityMap[severity]}
           </Tag>
         );
