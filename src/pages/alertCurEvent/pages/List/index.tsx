@@ -122,7 +122,7 @@ const AlertCurEvent: React.FC = () => {
               />
             </Space>
             <TimeRangePickerWithRefresh
-              allowClear
+              allowClear={true}
               localKey={TIME_CACHE_KEY}
               value={filter.range}
               onChange={(val) => {
@@ -130,9 +130,9 @@ const AlertCurEvent: React.FC = () => {
                   ...filter,
                   range: val,
                 });
-                if (val.refreshFlag) {
-                  setRefreshFlag(val.refreshFlag);
-                }
+              }}
+              onRefresh={() => {
+                setRefreshFlag(_.uniqueId('refresh_'));
               }}
               dateFormat='YYYY-MM-DD HH:mm:ss'
             />
@@ -192,6 +192,7 @@ const AlertCurEvent: React.FC = () => {
                 <Collapse.Panel header={t('detail.datasource_id')} key='datasource'>
                   <DatasourceCheckbox
                     filterObj={filterObj}
+                    refreshFlag={refreshFlag}
                     value={filter.datasource_ids}
                     onChange={(val: number[]) => {
                       setFilter({
@@ -212,10 +213,14 @@ const AlertCurEvent: React.FC = () => {
                     setSelectedAggrGroupId(id);
                     localStorage.setItem('selectedAlertRule', String(id));
                   }}
+                  onClearCardNum={() => {
+                    setCardNum(0);
+                  }}
                 />
                 <AlertCard
                   filter={filter}
                   selectedAggrGroupId={selectedAggrGroupId}
+                  refreshFlag={refreshFlag}
                   onUpdateCardNum={(cardNum: number) => {
                     setCardNum(cardNum);
                   }}
