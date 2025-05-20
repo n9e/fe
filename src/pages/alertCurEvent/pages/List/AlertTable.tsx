@@ -244,7 +244,8 @@ export default function AlertTable(props: IProps) {
       p: current,
       limit: pageSize,
       my_groups: String(filterObj.my_groups) === 'true',
-      ..._.omit(filterObj, ['range', 'my_groups']),
+      event_ids: filterObj?.event_ids?.join(','),
+      ..._.omit(filterObj, ['range', 'my_groups', 'event_ids']),
     };
 
     if (filterObj.range) {

@@ -46,7 +46,8 @@ const DatasourceCheckbox: React.FC<Props> = ({ filterObj, refreshFlag, value = [
   const fetchDatasource = () => {
     const params: any = {
       my_groups: String(filterObj.my_groups) === 'true',
-      ..._.omit(filterObj, ['range', 'my_groups']),
+      event_ids: filterObj?.event_ids?.join(','),
+      ..._.omit(filterObj, ['range', 'my_groups', 'event_ids']),
     };
 
     if (filterObj.range) {
