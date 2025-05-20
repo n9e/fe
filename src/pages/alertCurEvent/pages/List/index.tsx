@@ -130,6 +130,9 @@ const AlertCurEvent: React.FC = () => {
                   ...filter,
                   range: val,
                 });
+                if (val.refreshFlag) {
+                  setRefreshFlag(val.refreshFlag);
+                }
               }}
               dateFormat='YYYY-MM-DD HH:mm:ss'
             />
