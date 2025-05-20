@@ -193,6 +193,9 @@ export default function AggrRuleDropdown(props: Props) {
           <Form.Item label={t('aggregate_rule')} name='rule' rules={[{ required: true }]}>
             <Input />
           </Form.Item>
+          <Form.Item label={t('aggregate_rule_title')} name='format'>
+            <Input />
+          </Form.Item>
           {profile.admin && (
             <Form.Item label={t('isPublic')} name='cate' rules={[{ required: true }]} valuePropName='checked'>
               <Switch />
