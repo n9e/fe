@@ -130,15 +130,15 @@ export default function AlertTable(props: IProps) {
     {
       title: t('duration'),
       dataIndex: 'duration',
-      width: 160,
+      width: 100,
       render(_, record) {
         const duration = moment().diff(moment(record.first_trigger_time * 1000));
-        const maxGrids = 18;
+        const maxGrids = 12;
         const hours = duration / 3600000;
-        const highlight = hours >= 72 ? maxGrids : Math.floor(hours / 4);
+        const highlight = hours >= 24 ? maxGrids : Math.floor(hours / 2);
         const getColorClass = (idx: number) => {
-          if (idx < 6) return 'gold';
-          if (idx < 12) return 'orange';
+          if (idx < 4) return 'gold';
+          if (idx < 8) return 'orange';
           return 'red';
         };
         return (
