@@ -13,6 +13,7 @@ import { NS } from '../../constants';
 
 interface Props {
   filterObj: any;
+  refreshFlag: string;
   value?: number[];
   onChange: (val?: number[]) => void;
 }
@@ -23,7 +24,7 @@ interface Datasource {
   plugin_type: string;
 }
 
-const DatasourceCheckbox: React.FC<Props> = ({ filterObj, value = [], onChange }) => {
+const DatasourceCheckbox: React.FC<Props> = ({ filterObj, refreshFlag, value = [], onChange }) => {
   const { t } = useTranslation(NS);
   const [search, setSearch] = useState('');
   const [datasourceList, setDatasourceList] = useState<Datasource[]>([]);
@@ -61,7 +62,7 @@ const DatasourceCheckbox: React.FC<Props> = ({ filterObj, value = [], onChange }
 
   useEffect(() => {
     fetchDatasource();
-  }, [JSON.stringify(filterObj)]);
+  }, [JSON.stringify(filterObj), refreshFlag]);
 
   return (
     <div>

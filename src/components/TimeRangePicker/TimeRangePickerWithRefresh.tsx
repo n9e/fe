@@ -23,7 +23,7 @@ import { ITimeRangePickerWithRefreshProps } from './types';
 import { valueAsString } from './utils';
 
 export default function TimeRangePickerWithRefresh(props: ITimeRangePickerWithRefreshProps) {
-  const { value, onChange, style, refreshTooltip, dateFormat = 'YYYY-MM-DD HH:mm', localKey } = props;
+  const { value, onChange, style, refreshTooltip, dateFormat = 'YYYY-MM-DD HH:mm', localKey, onRefresh } = props;
 
   return (
     <Space style={style}>
@@ -31,12 +31,14 @@ export default function TimeRangePickerWithRefresh(props: ITimeRangePickerWithRe
         localKey={localKey && `${localKey}_refresh`}
         tooltip={refreshTooltip}
         onRefresh={() => {
-          if (onChange) {
+          if (value && onChange) {
             onChange({
-              start: value?.start || '',
-              end: value?.end || '',
+              ...value,
               refreshFlag: _.uniqueId('refreshFlag_'),
             });
+          }
+          if (onRefresh) {
+            onRefresh();
           }
         }}
         intervalSeconds={props.intervalSeconds}
