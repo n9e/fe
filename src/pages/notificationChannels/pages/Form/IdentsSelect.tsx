@@ -22,7 +22,6 @@ export default function IdentsSelect() {
         options={_.map(idents, (item) => {
           return { value: item };
         })}
-        placeholder={t('ident_placeholder')}
       />
     </Form.Item>
   );

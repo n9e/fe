@@ -2,8 +2,7 @@ const zh_CN = {
   title: '通知媒介',
   basic_configuration: '基础配置',
   ident: '媒介类型',
-  ident_tip: '通知媒介的分类，例如多个钉钉通知媒介，类型都可以设置为 dingtalk。如果想要新增，可以直接手动输入',
-  ident_placeholder: '如果想要新增，可以直接手动输入',
+  ident_tip: '通知媒介的分类，例如多个钉钉通知媒介，类型都可以设置为 dingtalk。类型可以手写，并不局限在下拉列表中的选项，通知媒介和消息模板通过类型字段建立关联关系',
   note_tip: '可填写对该通知媒介的补充说明或使用场景，方便后续维护或协作时查看',
   enable_tip: '是否启用此通知媒介的配置。关闭后，该配置将暂时失效，不会再发送通知',
   variable_configuration: {
