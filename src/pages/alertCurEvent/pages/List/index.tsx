@@ -122,7 +122,7 @@ const AlertCurEvent: React.FC = () => {
               />
             </Space>
             <TimeRangePickerWithRefresh
-              allowClear
+              allowClear={true}
               localKey={TIME_CACHE_KEY}
               value={filter.range}
               onChange={(val) => {
@@ -130,7 +130,7 @@ const AlertCurEvent: React.FC = () => {
                   ...filter,
                   range: val,
                 });
-                if (val.refreshFlag) {
+                if (val?.refreshFlag) {
                   setRefreshFlag(val.refreshFlag);
                 }
               }}
