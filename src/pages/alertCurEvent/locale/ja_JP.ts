@@ -25,6 +25,7 @@ const ja_JP = {
   aggregate_rule_mgs: '集計ルールを選択してください',
   aggr_result: '集計結果',
   aggregate_rule_name: 'ルール名',
+  add_rule: 'ルールを追加',
   public: '公開',
   isPublic: '公開するかどうか',
   status: '認領状態',

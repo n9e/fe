@@ -114,7 +114,7 @@ export default function AggrRuleDropdown(props: Props) {
             <div>{alert.name}</div>
             <Space>
               <Tag style={{ border: 'none', borderRadius: '4px' }} color='default'>
-                {alert.cate === 0 || profile.admin ? ' 公开' : ''}
+                {alert.cate === 0 || profile.admin ? t('common:public') : t('common:private')}
               </Tag>
 
               {(alert.cate === 1 || profile.admin) && (
@@ -151,7 +151,7 @@ export default function AggrRuleDropdown(props: Props) {
               setVisibleAggrRuleModal(true);
             }}
           >
-            + 新增规则
+            + {t('add_rule')}
           </Button>
         </div>
       </Menu.Item>
