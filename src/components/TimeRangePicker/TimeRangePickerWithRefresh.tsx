@@ -31,10 +31,11 @@ export default function TimeRangePickerWithRefresh(props: ITimeRangePickerWithRe
         localKey={localKey && `${localKey}_refresh`}
         tooltip={refreshTooltip}
         onRefresh={() => {
-          if (value && onChange) {
+          if (onChange) {
             onChange({
-              ...value,
-              refreshFlag: _.uniqueId('refreshFlag_ '),
+              start: value?.start || '',
+              end: value?.end || '',
+              refreshFlag: _.uniqueId('refreshFlag_'),
             });
           }
         }}
