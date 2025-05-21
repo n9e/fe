@@ -3,11 +3,9 @@ import { Form, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
-import { Props } from '@/plus/parcels/Dashboard/VariableQuerybuilder';
-
 import { NAME_SPACE } from '../constants';
 
-export default function VariableQuerybuilder(props: Props) {
+export default function VariableQuerybuilder() {
   const { t } = useTranslation(NAME_SPACE);
 
   return (
