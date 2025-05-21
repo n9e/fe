@@ -92,7 +92,7 @@ export default function Querybuilder(props: Props) {
     );
   }
   if (datasourceCate === DatasourceCateEnum.ck) {
-    return <ClickHouse {...props} datasourceCate={datasourceCate} datasourceValue={currentdatasourceValue} />;
+    return <ClickHouse />;
   }
   return <VariableQuerybuilderPro {...props} datasourceCate={datasourceCate} datasourceValue={currentdatasourceValue} />;
 }
