@@ -52,7 +52,9 @@ const AlertCard = (props: Props) => {
       {cardList?.map((card, i) => (
         <div
           key={i}
-          className={`py-1 px-2 event-card-new cursor-pointer items-center mr-3 mb-2  inline-flex justify-between gap-2 border-radius-[2px] ${SEVERITY_COLORS[card.severity - 1]}`}
+          className={`py-1 px-2 event-card-new cursor-pointer items-center mr-3 mb-2 inline-flex justify-between gap-2 border-radius-[2px] ${SEVERITY_COLORS[card.severity - 1]} ${
+            selectedCardId === card.title ? 'selected' : ''
+          }`}
           onClick={() => {
             if (selectedCardId === card.title) {
               setSelectedCardId(undefined);
@@ -63,7 +65,7 @@ const AlertCard = (props: Props) => {
             }
           }}
         >
-          {selectedCardId === card.title && <CheckOutlined className='font-bold' />}
+          {selectedCardId === card.title && <CheckOutlined className='font-bold' style={{ stroke: 'currentColor', strokeWidth: '50' }} />}
           <div className='truncate' style={{ color: 'inherit' }}>
             {card.title}
           </div>
