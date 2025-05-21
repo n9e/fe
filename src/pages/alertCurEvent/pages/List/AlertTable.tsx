@@ -17,14 +17,15 @@ import usePagination from '@/components/usePagination';
 import { getEvents, getEventById } from '../../services';
 import deleteAlertEventsModal from '../../utils/deleteAlertEventsModal';
 import { NS, SEVERITY_COLORS } from '../../constants';
+import { FilterType } from '../../types';
 
 // @ts-ignore
 import AckBtn from 'plus:/parcels/Event/Acknowledge/AckBtn';
 
 interface IProps {
-  filterObj: any;
-  filter: any;
-  setFilter: (filter: any) => void;
+  filter: FilterType;
+  setFilter: (filter: FilterType) => void;
+  params: any;
   refreshFlag: string;
   selectedRowKeys: number[];
   setSelectedRowKeys: (selectedRowKeys: number[]) => void;
@@ -53,7 +54,7 @@ function formatDuration(ms: number) {
 }
 
 export default function AlertTable(props: IProps) {
-  const { filterObj, filter, setFilter, selectedRowKeys, setSelectedRowKeys } = props;
+  const { filter, setFilter, selectedRowKeys, setSelectedRowKeys, params } = props;
   const history = useHistory();
   const { t } = useTranslation(NS);
   const { groupedDatasourceList } = useContext(CommonStateContext);
@@ -96,10 +97,10 @@ export default function AlertTable(props: IProps) {
                     <Tag
                       style={{ maxWidth: '100%' }}
                       onClick={() => {
-                        if (!filter.queryContent.includes(item)) {
+                        if (!_.includes(filter.query, item)) {
                           setFilter({
                             ...filter,
-                            queryContent: filter.queryContent ? `${filter.queryContent.trim()} ${item}` : item,
+                            query: filter.query ? `${filter.query.trim()} ${item}` : item,
                           });
                         }
                       }}
@@ -243,19 +244,19 @@ export default function AlertTable(props: IProps) {
   }
 
   const fetchData = ({ current, pageSize }) => {
-    const params: any = {
+    const requestParams: any = {
       p: current,
       limit: pageSize,
-      my_groups: String(filterObj.my_groups) === 'true',
-      ..._.omit(filterObj, ['range', 'my_groups']),
+      my_groups: String(params.my_groups) === 'true',
+      ..._.omit(params, ['range', 'my_groups']),
     };
 
-    if (filterObj.range) {
-      const parsedRange = parseRange(filterObj.range);
-      params.stime = moment(parsedRange.start).unix();
-      params.etime = moment(parsedRange.end).unix();
+    if (params.range) {
+      const parsedRange = parseRange(params.range);
+      requestParams.stime = moment(parsedRange.start).unix();
+      requestParams.etime = moment(parsedRange.end).unix();
     }
-    return getEvents(params).then((res) => {
+    return getEvents(requestParams).then((res) => {
       return {
         total: res.dat.total,
         list: res.dat.list,
@@ -263,7 +264,7 @@ export default function AlertTable(props: IProps) {
     });
   };
   const { tableProps } = useAntdTable(fetchData, {
-    refreshDeps: [refreshFlag, JSON.stringify(filterObj), props.refreshFlag],
+    refreshDeps: [refreshFlag, JSON.stringify(params), props.refreshFlag],
     defaultPageSize: 30,
     debounceWait: 500,
   });

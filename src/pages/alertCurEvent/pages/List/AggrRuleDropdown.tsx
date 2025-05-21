@@ -1,183 +1,171 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Input, Form, Modal, Switch, message, Dropdown, Button, Menu, Space, Tag } from 'antd';
-import { EditOutlined, DeleteOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { Input, Form, Modal, Switch, message, Button, Space, Tag, Select, Divider } from 'antd';
+import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import _ from 'lodash';
 
-import { getAggrAlerts, AddAggrAlerts, updateAggrAlerts, deleteAggrAlerts } from '@/services/warning';
+import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
+import { getAggrAlerts as getAggrRules, AddAggrAlerts, updateAggrAlerts, deleteAggrAlerts } from '@/services/warning';
 import { CommonStateContext } from '@/App';
 
 import { NS } from '../../constants';
+import { AggrRuleType, CardType, FilterType } from '../../types';
 
 interface Props {
-  cardNum: number;
-  onSelectAggrGroupId: (aggrGroupId: number | undefined) => void;
-  onRefresh?: () => void;
-}
-
-export interface CardAlertType {
-  id: number;
-  name: string;
-  rule: string;
-  cate: number;
-  create_at: number;
-  create_by: number;
-  update_at: number;
+  cardList?: CardType[];
+  filter: FilterType;
+  setFilter: (filter: FilterType) => void;
+  reloadRuleCards: () => void;
 }
 
 export default function AggrRuleDropdown(props: Props) {
-  const { cardNum, onSelectAggrGroupId, onRefresh } = props;
   const { t } = useTranslation(NS);
-  const [form] = Form.useForm();
-  const [alertList, setAlertList] = useState<CardAlertType[]>();
-  const [editForm, setEditForm] = useState<CardAlertType>();
-  const localSelectId = Number(localStorage.getItem('selectedAlertRule'));
   const { profile } = useContext(CommonStateContext);
-  const [selectedAlert, setSelectedAlert] = useState<CardAlertType>();
-  const [visibleDropdown, setVisibleDropdown] = useState(false);
+  const { cardList, filter, setFilter, reloadRuleCards } = props;
+  const [form] = Form.useForm();
+  const [aggrRuleList, setAggrRuleList] = useState<AggrRuleType[]>();
+  const [editForm, setEditForm] = useState<AggrRuleType>();
   const [visibleAggrRuleModal, setVisibleAggrRuleModal] = useState(false);
+  const getList = () => {
+    return getAggrRules().then((res) => {
+      const sortedList = _.sortBy(res.dat, 'cate');
+      setAggrRuleList(sortedList);
+
+      // 如果当前选中的规则不在列表中，则默认选中第一个规则
+      if (sortedList.length > 0 && !_.find(sortedList, (item) => item.id === filter.aggr_rule_id)) {
+        setFilter({
+          ...filter,
+          aggr_rule_id: sortedList[0].id,
+          event_ids: undefined,
+        });
+      }
+    });
+  };
 
   useEffect(() => {
-    getList().then((res) => {
-      let initAlert: CardAlertType | undefined;
-      if (localSelectId && res.length > 0) {
-        initAlert = res.find((item) => item.id === localSelectId);
-      }
-      if (initAlert) {
-        setSelectedAlert(initAlert);
-        onSelectAggrGroupId(initAlert.id);
-        localStorage.setItem('selectedAlertRule', String(initAlert.id));
-      }
-    });
+    getList();
   }, []);
 
-  const getList = (selectTheFirst = false) => {
-    return getAggrAlerts().then((res) => {
-      const sortedList = res.dat.sort((a: CardAlertType, b: CardAlertType) => a.cate - b.cate);
-      setAlertList(sortedList);
-      selectTheFirst && sortedList.length > 0 && !sortedList.find((item) => item.id === localSelectId) && localStorage.setItem('selectedAlertRule', String(sortedList[0].id));
-      return sortedList;
-    });
-  };
-
-  const handleOk = async () => {
-    await form.validateFields();
-    const func = editForm ? updateAggrAlerts : AddAggrAlerts;
-    const values = form.getFieldsValue();
-    const cur = await func({
-      ...values,
-      cate: values.cate ? 0 : 1,
-    });
-    setVisibleAggrRuleModal(false);
-    await getList();
-    localStorage.setItem('selectedAlertRule', String(editForm ? editForm.id : cur.dat.id));
-    editForm && onSelectAggrGroupId(values.id);
-  };
-
-  const handleCancel = () => {
-    setVisibleAggrRuleModal(false);
-    setEditForm(undefined);
-  };
-
-  const handleDelete = (alert) => {
-    Modal.confirm({
-      title: t('common:confirm.delete'),
-      onOk: async () => {
-        await deleteAggrAlerts([alert.id]);
-        message.success(t('common:success.delete'));
-        getList(true);
-      },
-      onCancel: () => {},
-    });
-  };
-
-  const handleSelect = (alert: CardAlertType) => {
-    setSelectedAlert(alert);
-    onSelectAggrGroupId(alert.id);
-    localStorage.setItem('selectedAlertRule', String(alert.id));
-    setVisibleDropdown(false);
-    onRefresh?.();
-  };
-
-  const handleClear = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setSelectedAlert(undefined);
-    onSelectAggrGroupId(undefined);
-    localStorage.removeItem('selectedAlertRule');
-    setVisibleDropdown(false);
-    onRefresh?.();
-  };
-
-  const dropdownMenu = (
-    <Menu className='min-w-[220px] max-h-[300px] overflow-auto bg-var(--fc-fill-1)'>
-      {(alertList || []).map((alert) => (
-        <Menu.Item onClick={() => handleSelect(alert)} className='p-0 m-0' key={alert.id}>
-          <div className={`px-2 py-2 flex items-center justify-between ${alert.id === selectedAlert?.id ? ' is-active' : ''}`}>
-            <div>{alert.name}</div>
-            <Space>
-              <Tag style={{ border: 'none', borderRadius: '4px' }} color='default'>
-                {alert.cate === 0 || profile.admin ? t('common:public') : t('common:private')}
-              </Tag>
-
-              {(alert.cate === 1 || profile.admin) && (
-                <div className='flex gap-2'>
-                  <EditOutlined
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setEditForm(alert);
-                      setVisibleDropdown(false);
-                      setVisibleAggrRuleModal(true);
-                      form.setFieldsValue({
-                        ...alert,
-                        cate: alert.cate === 0,
-                      });
-                    }}
-                  />
-                  <DeleteOutlined
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDelete(alert);
-                    }}
-                  />
-                </div>
-              )}
-            </Space>
-          </div>
-        </Menu.Item>
-      ))}
-      <Menu.Item key='add-rule' className='p-0'>
-        <div className='text-right bg-transparent m-0 p-0' style={{ borderTop: '1px solid var(--fc-border-color)' }}>
-          <Button
-            type='link'
-            onClick={() => {
-              setVisibleDropdown(false);
-              setVisibleAggrRuleModal(true);
-            }}
-          >
-            + {t('add_rule')}
-          </Button>
-        </div>
-      </Menu.Item>
-    </Menu>
-  );
-
   return (
-    <div className='flex items-center gap-2'>
-      <Dropdown overlay={dropdownMenu} trigger={['click']} visible={visibleDropdown} onVisibleChange={setVisibleDropdown}>
-        <Input
-          addonBefore={t('aggregate_rule')}
-          value={selectedAlert ? selectedAlert.name : ''}
-          placeholder={t('aggregate_rule_mgs')}
-          readOnly
-          onClick={() => setVisibleDropdown(true)}
-          style={{ width: 340 }}
-          suffix={selectedAlert && <CloseCircleOutlined onClick={handleClear} style={{ cursor: 'pointer' }} />}
-        />
-      </Dropdown>
+    <>
+      <Space>
+        <InputGroupWithFormItem label={t('aggregate_rule')}>
+          <Select
+            allowClear
+            showSearch
+            style={{ width: 300 }}
+            placeholder={t('aggregate_rule_mgs')}
+            dropdownRender={(menu) => (
+              <>
+                {menu}
+                <Divider style={{ margin: 0 }} />
+                <div className='text-right bg-transparent m-0 p-0'>
+                  <Button
+                    type='link'
+                    onClick={() => {
+                      setVisibleAggrRuleModal(true);
+                    }}
+                  >
+                    + {t('add_rule')}
+                  </Button>
+                </div>
+              </>
+            )}
+            options={_.map(aggrRuleList, (item) => {
+              return {
+                label: (
+                  <div className={'flex items-center justify-between'}>
+                    <div>{item.name}</div>
+                    <Space>
+                      <Tag style={{ border: 'none', borderRadius: '4px' }} color='default'>
+                        {item.cate === 0 ? t('common:public') : t('common:private')}
+                      </Tag>
 
-      <div className=' text-[var(--fc-text-4)]'>
-        {cardNum} {t('aggr_result')}
-      </div>
-      <Modal title={editForm ? t('common:btn.edit') : t('common:btn.add')} visible={visibleAggrRuleModal} onOk={handleOk} onCancel={handleCancel} destroyOnClose>
+                      {(item.cate === 1 || profile.admin) && (
+                        <div className='flex gap-2'>
+                          <EditOutlined
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setEditForm(item);
+                              setVisibleAggrRuleModal(true);
+                              form.setFieldsValue({
+                                ...item,
+                                cate: item.cate === 0,
+                              });
+                            }}
+                          />
+                          <DeleteOutlined
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              Modal.confirm({
+                                title: t('common:confirm.delete'),
+                                onOk: async () => {
+                                  deleteAggrAlerts([item.id]).then(() => {
+                                    message.success(t('common:success.delete'));
+                                    getList();
+                                  });
+                                },
+                                onCancel: () => {},
+                              });
+                            }}
+                          />
+                        </div>
+                      )}
+                    </Space>
+                  </div>
+                ),
+                originLabel: item.name,
+                value: item.id,
+              };
+            })}
+            optionLabelProp='originLabel'
+            optionFilterProp='originLabel'
+            value={filter.aggr_rule_id}
+            onChange={(value) => {
+              setFilter({
+                ...filter,
+                aggr_rule_id: value,
+                event_ids: undefined,
+              });
+            }}
+          />
+        </InputGroupWithFormItem>
+        {filter.aggr_rule_id && (
+          <div className=' text-[var(--fc-text-4)]'>
+            {cardList?.length} {t('aggr_result')}
+          </div>
+        )}
+      </Space>
+      <Modal
+        title={editForm ? t('common:btn.edit') : t('common:btn.add')}
+        visible={visibleAggrRuleModal}
+        onOk={async () => {
+          form.validateFields().then((values) => {
+            const func = editForm ? updateAggrAlerts : AddAggrAlerts;
+            func({
+              ...values,
+              cate: values.cate ? 0 : 1,
+            }).then((addRes) => {
+              setVisibleAggrRuleModal(false);
+              setEditForm(undefined);
+              getList();
+              setFilter({
+                ...filter,
+                aggr_rule_id: editForm ? editForm.id : addRes.dat.id,
+                event_ids: editForm ? filter.event_ids : undefined,
+              });
+              if (editForm) {
+                reloadRuleCards();
+              }
+            });
+          });
+        }}
+        onCancel={() => {
+          setVisibleAggrRuleModal(false);
+          setEditForm(undefined);
+        }}
+        destroyOnClose
+      >
         <Form
           form={form}
           layout='vertical'
@@ -205,6 +193,6 @@ export default function AggrRuleDropdown(props: Props) {
           )}
         </Form>
       </Modal>
-    </div>
+    </>
   );
 }

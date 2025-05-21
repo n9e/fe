@@ -1,23 +1,29 @@
-import React, { useContext, useState, useMemo } from 'react';
+import React, { useContext, useState, useMemo, useEffect } from 'react';
 import { Input, Checkbox, Collapse, Segmented, Button, Space } from 'antd';
 import { AlertOutlined, SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import queryString from 'query-string';
 import { useLocation, useHistory } from 'react-router-dom';
+import { useDebounceFn } from 'ahooks';
+import moment from 'moment';
 
 import PageLayout from '@/components/pageLayout';
 import { TimeRangePickerWithRefresh } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
-import { getProdOptions } from '@/pages/alertRules/Form/components/ProdSelect';
 import { getDefaultValue } from '@/components/TimeRangePicker';
 import { IS_ENT, IS_PLUS } from '@/utils/constant';
 import { BusinessGroupSelectWithAll } from '@/components/BusinessGroup';
+import { getAlertCards } from '@/services/warning';
+import { parseRange } from '@/components/TimeRangePicker';
 
-import { NS, TIME_CACHE_KEY } from '../../constants';
-import getFilter from '../../utils/getFilter';
+import { NS, TIME_CACHE_KEY, AGGR_RULE_ID, AGGR_RULE_CARD_EVENT_IDS_CACHE_KEY } from '../../constants';
+import getFilterByURLQuery from '../../utils/getFilter';
 import deleteAlertEventsModal from '../../utils/deleteAlertEventsModal';
+import getProdOptions from '../../utils/getProdOptions';
+import getRequestParamsByFilter from '../../utils/getRequestParamsByFilter';
 import { ackEvents } from '../../services';
+import { CardType } from '../../types';
 import DatasourceCheckbox from './DatasourceCheckbox';
 import AggrRuleDropdown from './AggrRuleDropdown';
 import AlertCard from './AlertCard';
@@ -30,50 +36,64 @@ const AlertCurEvent: React.FC = () => {
   const history = useHistory();
   const query = queryString.parse(location.search);
   const localRange = getDefaultValue(TIME_CACHE_KEY, undefined);
-  const filter = useMemo(() => getFilter(query), [JSON.stringify(query), localRange]);
-  const [selectedAggrGroupId, setSelectedAggrGroupId] = useState<number | undefined>(() => {
-    return Number(localStorage.getItem('selectedAlertRule')) || undefined;
-  });
+  const localAggrRuleId = localStorage.getItem(AGGR_RULE_ID);
+  const localEventIds = localStorage.getItem(AGGR_RULE_CARD_EVENT_IDS_CACHE_KEY);
+  const filter = useMemo(() => getFilterByURLQuery(query), [JSON.stringify(query), localRange, localAggrRuleId, localEventIds]);
+  const [aggrRuleId, setAggrRuleId] = useState<number | undefined>(filter.aggr_rule_id);
+  const [eventIds, setEventIds] = useState<number[] | undefined>(filter.event_ids);
   const setFilter = (newFilter) => {
     history.replace({
       pathname: location.pathname,
-      search: queryString.stringify({
-        ...query,
-        ..._.omit(newFilter, 'range'), // range 仍然通过 loclalStorage 存储
-      }),
+      search: queryString.stringify(
+        {
+          ...query,
+          ..._.omit(newFilter, ['range', 'aggr_rule_id', 'event_ids']), // range 仍然通过 loclalStorage 存储
+        },
+        { arrayFormat: 'comma' },
+      ),
     });
+    // range 也是通过 localStorage 存储的, 他是在日期选择器组件内部处理
+    // 这里需要将 aggr_rule_id 和 event_ids 存储到 localStorage 中，避免放到 URL 中过长
+    newFilter.aggr_rule_id ? window.localStorage.setItem(AGGR_RULE_ID, String(newFilter.aggr_rule_id)) : window.localStorage.removeItem(AGGR_RULE_ID);
+    setAggrRuleId(newFilter.aggr_rule_id);
+    newFilter.event_ids
+      ? window.localStorage.setItem(AGGR_RULE_CARD_EVENT_IDS_CACHE_KEY, _.join(newFilter.event_ids, ','))
+      : window.localStorage.removeItem(AGGR_RULE_CARD_EVENT_IDS_CACHE_KEY);
+    setEventIds(newFilter.event_ids);
   };
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
-  const [cardNum, setCardNum] = useState<number>(0);
+  const [cardList, setCardList] = useState<CardType[]>();
+  const params = getRequestParamsByFilter(filter);
 
-  let prodOptions = getProdOptions(feats);
+  useEffect(() => {
+    reloadRuleCards();
+  }, [filter.aggr_rule_id, params.my_groups, JSON.stringify(params.range), refreshFlag]);
 
-  if (IS_ENT) {
-    prodOptions = [
-      ...prodOptions,
-      {
-        label: t('AlertHisEvents:rule_prod.firemap'),
-        value: 'firemap',
-        pro: false,
-      },
-      {
-        label: t('AlertHisEvents:rule_prod.northstar'),
-        value: 'northstar',
-        pro: false,
-      },
-    ];
-  }
+  const { run: reloadRuleCards } = useDebounceFn(
+    () => {
+      if (!filter.aggr_rule_id) {
+        setCardList([]);
+        return;
+      }
+      const requestParams: any = {
+        view_id: filter.aggr_rule_id,
+        my_groups: String(params.my_groups) === 'true',
+        ..._.omit(params, ['range', 'my_groups', 'severity', 'rule_prods']),
+      };
+      if (params.range) {
+        const parsedRange = parseRange(params.range);
+        requestParams.stime = moment(parsedRange.start).unix();
+        requestParams.etime = moment(parsedRange.end).unix();
+      }
 
-  const filterObj = Object.assign(
-    { range: filter.range },
-    filter.datasource_ids.length ? { datasource_ids: _.join(filter.datasource_ids, ',') } : {},
-    filter.severity ? { severity: _.join(filter.severity, ',') } : {},
-    filter.query ? { query: filter.query } : {},
-    filter.bgid ? { bgid: filter.bgid } : {},
-    filter.rule_prods.length ? { rule_prods: _.join(filter.rule_prods, ',') } : {},
-    filter.event_ids.length ? { event_ids: _.join(filter.event_ids, ',') } : {},
-    filter.my_groups ? { my_groups: filter.my_groups } : {},
+      getAlertCards(requestParams).then((res) => {
+        setCardList(res.dat);
+      });
+    },
+    {
+      wait: 500,
+    },
   );
 
   return (
@@ -154,7 +174,7 @@ const AlertCurEvent: React.FC = () => {
                       });
                     }}
                   >
-                    {prodOptions.map((item) => (
+                    {_.map(getProdOptions(feats), (item) => (
                       <div key={item.value}>
                         <Checkbox className='py-1' value={item.value}>
                           {item.label}
@@ -207,34 +227,8 @@ const AlertCurEvent: React.FC = () => {
             {/* 右侧内容区 */}
             <div className='n9e-border-base flex-1'>
               <div className='cur-events p-2'>
-                <AggrRuleDropdown
-                  cardNum={cardNum}
-                  onSelectAggrGroupId={(id) => {
-                    setSelectedAggrGroupId(id);
-                    localStorage.setItem('selectedAlertRule', String(id));
-                  }}
-                  onRefresh={() => {
-                    setCardNum(0);
-                    setFilter({
-                      ...filter,
-                      event_ids: [],
-                    });
-                  }}
-                />
-                <AlertCard
-                  filterObj={filterObj}
-                  selectedAggrGroupId={selectedAggrGroupId}
-                  refreshFlag={refreshFlag}
-                  onUpdateCardNum={(cardNum: number) => {
-                    setCardNum(cardNum);
-                  }}
-                  onUpdateAlertEventIds={(eventIds: number[]) => {
-                    setFilter({
-                      ...filter,
-                      event_ids: eventIds,
-                    });
-                  }}
-                />
+                <AggrRuleDropdown cardList={cardList} filter={filter} setFilter={setFilter} reloadRuleCards={reloadRuleCards} />
+                <AlertCard filter={filter} setFilter={setFilter} cardList={cardList} />
               </div>
 
               <div className='h-[1px] bg-[var(--fc-border-color)]' />
@@ -289,11 +283,11 @@ const AlertCurEvent: React.FC = () => {
 
                 <AlertTable
                   filter={filter}
-                  filterObj={filterObj}
                   setFilter={setFilter}
                   refreshFlag={refreshFlag}
                   selectedRowKeys={selectedRowKeys}
                   setSelectedRowKeys={setSelectedRowKeys}
+                  params={params}
                 />
               </div>
             </div>
