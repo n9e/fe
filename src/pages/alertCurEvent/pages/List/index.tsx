@@ -17,7 +17,7 @@ import { BusinessGroupSelectWithAll } from '@/components/BusinessGroup';
 import { getAlertCards } from '@/services/warning';
 import { parseRange } from '@/components/TimeRangePicker';
 
-import { NS, TIME_CACHE_KEY, AGGR_RULE_ID, AGGR_RULE_CARD_EVENT_IDS_CACHE_KEY } from '../../constants';
+import { NS, TIME_CACHE_KEY, AGGR_RULE_CARD_EVENT_IDS_CACHE_KEY } from '../../constants';
 import getFilterByURLQuery from '../../utils/getFilter';
 import deleteAlertEventsModal from '../../utils/deleteAlertEventsModal';
 import getProdOptions from '../../utils/getProdOptions';
@@ -36,30 +36,26 @@ const AlertCurEvent: React.FC = () => {
   const history = useHistory();
   const query = queryString.parse(location.search);
   const localRange = getDefaultValue(TIME_CACHE_KEY, undefined);
-  const localAggrRuleId = localStorage.getItem(AGGR_RULE_ID);
-  const localEventIds = localStorage.getItem(AGGR_RULE_CARD_EVENT_IDS_CACHE_KEY);
-  const filter = useMemo(() => getFilterByURLQuery(query), [JSON.stringify(query), localRange, localAggrRuleId, localEventIds]);
-  const [aggrRuleId, setAggrRuleId] = useState<number | undefined>(filter.aggr_rule_id);
-  const [eventIds, setEventIds] = useState<number[] | undefined>(filter.event_ids);
+  const localEventIds = localStorage.getItem(AGGR_RULE_CARD_EVENT_IDS_CACHE_KEY) ? _.split(localStorage.getItem(AGGR_RULE_CARD_EVENT_IDS_CACHE_KEY), ',').map(Number) : undefined;
+  const [aggrRuleCardEventIds, setAggrRuleCardEventIds] = useState<number[] | undefined>(localEventIds);
+  const filter = useMemo(() => getFilterByURLQuery(query, aggrRuleCardEventIds), [JSON.stringify(query), localRange, aggrRuleCardEventIds]);
   const setFilter = (newFilter) => {
     history.replace({
       pathname: location.pathname,
       search: queryString.stringify(
         {
           ...query,
-          ..._.omit(newFilter, ['range', 'aggr_rule_id', 'event_ids']), // range 仍然通过 loclalStorage 存储
+          ..._.omit(newFilter, ['range', 'event_ids']), // range 仍然通过 loclalStorage 存储
         },
         { arrayFormat: 'comma' },
       ),
     });
     // range 也是通过 localStorage 存储的, 他是在日期选择器组件内部处理
-    // 这里需要将 aggr_rule_id 和 event_ids 存储到 localStorage 中，避免放到 URL 中过长
-    newFilter.aggr_rule_id ? window.localStorage.setItem(AGGR_RULE_ID, String(newFilter.aggr_rule_id)) : window.localStorage.removeItem(AGGR_RULE_ID);
-    setAggrRuleId(newFilter.aggr_rule_id);
+    // 这里需要将 event_ids 存储到 localStorage 中，避免放到 URL 中过长
     newFilter.event_ids
       ? window.localStorage.setItem(AGGR_RULE_CARD_EVENT_IDS_CACHE_KEY, _.join(newFilter.event_ids, ','))
       : window.localStorage.removeItem(AGGR_RULE_CARD_EVENT_IDS_CACHE_KEY);
-    setEventIds(newFilter.event_ids);
+    setAggrRuleCardEventIds(newFilter.event_ids);
   };
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
@@ -288,6 +284,7 @@ const AlertCurEvent: React.FC = () => {
                   selectedRowKeys={selectedRowKeys}
                   setSelectedRowKeys={setSelectedRowKeys}
                   params={params}
+                  setRefreshFlag={setRefreshFlag}
                 />
               </div>
             </div>

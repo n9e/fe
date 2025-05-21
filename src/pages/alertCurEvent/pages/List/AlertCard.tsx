@@ -27,7 +27,7 @@ const AlertCard = (props: Props) => {
   return (
     <div className='w-full overflow-y-auto pt-2 max-h-[172px]'>
       <Space wrap>
-        {cardList?.map((card, i) => {
+        {_.map(cardList, (card, i) => {
           return (
             <div
               key={i}

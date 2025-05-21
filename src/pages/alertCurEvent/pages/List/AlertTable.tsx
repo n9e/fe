@@ -29,6 +29,7 @@ interface IProps {
   refreshFlag: string;
   selectedRowKeys: number[];
   setSelectedRowKeys: (selectedRowKeys: number[]) => void;
+  setRefreshFlag: (refreshFlag: string) => void;
 }
 function formatDuration(ms: number) {
   const d = moment.duration(ms);
@@ -54,11 +55,10 @@ function formatDuration(ms: number) {
 }
 
 export default function AlertTable(props: IProps) {
-  const { filter, setFilter, selectedRowKeys, setSelectedRowKeys, params } = props;
+  const { filter, setFilter, selectedRowKeys, setSelectedRowKeys, params, setRefreshFlag } = props;
   const history = useHistory();
   const { t } = useTranslation(NS);
   const { groupedDatasourceList } = useContext(CommonStateContext);
-  const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
   const [openAlertDetailDrawer, setOpenAlertDetailDrawer] = useState<boolean>(false);
   const [currentRecord, setCurrentRecord] = useState<any>(null);
   const columns = [
@@ -264,7 +264,7 @@ export default function AlertTable(props: IProps) {
     });
   };
   const { tableProps } = useAntdTable(fetchData, {
-    refreshDeps: [refreshFlag, JSON.stringify(params), props.refreshFlag],
+    refreshDeps: [JSON.stringify(params), props.refreshFlag],
     defaultPageSize: 30,
     debounceWait: 500,
   });
