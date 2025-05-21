@@ -2,13 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { CheckOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useDebounceFn } from 'ahooks';
+import moment from 'moment';
 
 import { getAlertCards } from '@/services/warning';
+import { parseRange } from '@/components/TimeRangePicker';
 
 import { SEVERITY_COLORS } from '../../constants';
 
 interface Props {
-  filter: any;
+  filterObj: any;
   selectedAggrGroupId: number | undefined;
   refreshFlag: string;
   onUpdateAlertEventIds: (eventIds: number[]) => void;
@@ -23,13 +25,13 @@ export interface CardType {
 }
 
 const AlertCard = (props: Props) => {
-  const { filter, selectedAggrGroupId, refreshFlag, onUpdateAlertEventIds, onUpdateCardNum } = props;
+  const { filterObj, selectedAggrGroupId, refreshFlag, onUpdateAlertEventIds, onUpdateCardNum } = props;
   const [cardList, setCardList] = useState<CardType[]>();
   const [selectedCardId, setSelectedCardId] = useState<string>();
 
   useEffect(() => {
     reloadCard();
-  }, [selectedAggrGroupId, filter.my_groups, refreshFlag]);
+  }, [selectedAggrGroupId, JSON.stringify(filterObj), refreshFlag]);
 
   const { run: reloadCard } = useDebounceFn(
     () => {
@@ -37,7 +39,19 @@ const AlertCard = (props: Props) => {
         setCardList([]);
         return;
       }
-      getAlertCards({ view_id: selectedAggrGroupId, my_groups: String(filter.my_groups) === 'true' }).then((res) => {
+      const params: any = {
+        view_id: selectedAggrGroupId,
+        my_groups: String(filterObj.my_groups) === 'true',
+        event_ids: filterObj?.event_ids?.join(','),
+        ..._.omit(filterObj, ['range', 'my_groups', 'event_ids']),
+      };
+      if (filterObj.range) {
+        const parsedRange = parseRange(filterObj.range);
+        params.stime = moment(parsedRange.start).unix();
+        params.etime = moment(parsedRange.end).unix();
+      }
+
+      getAlertCards(params).then((res) => {
         setCardList(res.dat);
         onUpdateCardNum(res.dat.length);
       });

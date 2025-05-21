@@ -222,7 +222,7 @@ const AlertCurEvent: React.FC = () => {
                   }}
                 />
                 <AlertCard
-                  filter={filter}
+                  filterObj={filterObj}
                   selectedAggrGroupId={selectedAggrGroupId}
                   refreshFlag={refreshFlag}
                   onUpdateCardNum={(cardNum: number) => {
