@@ -124,6 +124,7 @@ export default function AggrRuleDropdown(props: Props) {
                     onClick={(e) => {
                       e.stopPropagation();
                       setEditForm(alert);
+                      setVisibleDropdown(false);
                       setVisibleAggrRuleModal(true);
                       form.setFieldsValue({
                         ...alert,

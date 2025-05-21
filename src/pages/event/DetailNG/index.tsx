@@ -288,8 +288,6 @@ export default function DetailNG(props: Props) {
     });
   }
 
-  console.log('eventDetail', eventDetail);
-
   return (
     <div className='event-detail-container'>
       <Spin spinning={!eventDetail}>

@@ -9,7 +9,7 @@ const getFilter = (query) => {
     range: getDefaultValue(TIME_CACHE_KEY, undefined),
     datasource_ids: query.datasource_ids ? _.split(query.datasource_ids, ',').map(Number) : [],
     bgid: query.bgid ? Number(query.bgid) : undefined,
-    severity: query.severity ? Number(query.severity) : undefined,
+    severity: query.severity ? _.split(query.severity, ',').map(Number) : undefined,
     query: query.query ? query.query : undefined,
     is_recovered: query.is_recovered ? Number(query.is_recovered) : undefined,
     rule_prods: query.rule_prods ? _.split(query.rule_prods, ',') : [],

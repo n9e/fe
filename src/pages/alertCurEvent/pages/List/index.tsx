@@ -67,14 +67,15 @@ const AlertCurEvent: React.FC = () => {
 
   const filterObj = Object.assign(
     { range: filter.range },
-    filter.datasource_ids.length ? { datasource_ids: filter.datasource_ids } : {},
-    filter.severity ? { severity: filter.severity } : {},
+    filter.datasource_ids.length ? { datasource_ids: _.join(filter.datasource_ids, ',') } : {},
+    filter.severity ? { severity: _.join(filter.severity, ',') } : {},
     filter.query ? { query: filter.query } : {},
     filter.bgid ? { bgid: filter.bgid } : {},
     filter.rule_prods.length ? { rule_prods: _.join(filter.rule_prods, ',') } : {},
-    filter.event_ids.length ? { event_ids: filter.event_ids } : {},
+    filter.event_ids.length ? { event_ids: _.join(filter.event_ids, ',') } : {},
     filter.my_groups ? { my_groups: filter.my_groups } : {},
   );
+
   return (
     <PageLayout icon={<AlertOutlined />} title={t('title')}>
       <div className={`n9e ${NS}`}>
@@ -109,6 +110,7 @@ const AlertCurEvent: React.FC = () => {
                 />
               </div>
               <Input
+                allowClear
                 style={{ width: '300px' }}
                 prefix={<SearchOutlined />}
                 placeholder={t('search_placeholder')}
@@ -164,11 +166,11 @@ const AlertCurEvent: React.FC = () => {
                 </Collapse.Panel>
                 <Collapse.Panel header={t('severity')} key='severity'>
                   <Checkbox.Group
-                    value={filter.severity ? [filter.severity] : []}
+                    value={filter.severity}
                     onChange={(val) => {
                       setFilter({
                         ...filter,
-                        severity: val.length ? val[0] : undefined,
+                        severity: val,
                       });
                     }}
                   >
@@ -191,8 +193,6 @@ const AlertCurEvent: React.FC = () => {
                 </Collapse.Panel>
                 <Collapse.Panel header={t('detail.datasource_id')} key='datasource'>
                   <DatasourceCheckbox
-                    filterObj={filterObj}
-                    refreshFlag={refreshFlag}
                     value={filter.datasource_ids}
                     onChange={(val: number[]) => {
                       setFilter({

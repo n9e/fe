@@ -1,35 +1,30 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useContext } from 'react';
 import { Checkbox, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SearchOutlined } from '@ant-design/icons';
 import _ from 'lodash';
-import moment from 'moment';
 
+import { CommonStateContext } from '@/App';
 import { allCates } from '@/components/AdvancedWrap/utils';
-import { parseRange } from '@/components/TimeRangePicker';
 
-import { getAlertCurEventsDatasource } from '../../services';
 import { NS } from '../../constants';
 
 interface Props {
-  filterObj: any;
-  refreshFlag: string;
   value?: number[];
   onChange: (val?: number[]) => void;
 }
 
-interface Datasource {
-  id: number;
-  name: string;
-  plugin_type: string;
-}
-
-const DatasourceCheckbox: React.FC<Props> = ({ filterObj, refreshFlag, value = [], onChange }) => {
+const DatasourceCheckbox: React.FC<Props> = ({ value = [], onChange }) => {
   const { t } = useTranslation(NS);
+  const { datasourceList } = useContext(CommonStateContext);
   const [search, setSearch] = useState('');
-  const [datasourceList, setDatasourceList] = useState<Datasource[]>([]);
 
-  const filteredDatasource = useMemo(() => datasourceList.filter((ds) => ds.name.toLowerCase().includes(search.toLowerCase())), [datasourceList, search]);
+  const filteredDatasource = useMemo(() => {
+    return _.sortBy(
+      _.filter(datasourceList, (ds) => ds.name.toLowerCase().includes(search.toLowerCase())),
+      ['plugin_type', 'name'],
+    );
+  }, [datasourceList, search]);
 
   const filteredIds = filteredDatasource.map((ds) => ds.id);
   const allChecked = filteredIds.length > 0 && filteredIds.every((id) => value.includes(id));
@@ -43,33 +38,11 @@ const DatasourceCheckbox: React.FC<Props> = ({ filterObj, refreshFlag, value = [
     }
   };
 
-  const fetchDatasource = () => {
-    const params: any = {
-      my_groups: String(filterObj.my_groups) === 'true',
-      event_ids: filterObj?.event_ids?.join(','),
-      ..._.omit(filterObj, ['range', 'my_groups', 'event_ids']),
-    };
-
-    if (filterObj.range) {
-      const parsedRange = parseRange(filterObj.range);
-      params.stime = moment(parsedRange.start).unix();
-      params.etime = moment(parsedRange.end).unix();
-    }
-    return getAlertCurEventsDatasource(params).then((res) => {
-      setDatasourceList(res.dat);
-      return res.dat;
-    });
-  };
-
-  useEffect(() => {
-    fetchDatasource();
-  }, [JSON.stringify(filterObj), refreshFlag]);
-
   return (
     <div>
       <div className='mt-1 flex items-center'>
         <Checkbox checked={allChecked} indeterminate={indeterminate} onChange={(e) => handleCheckAll(e.target.checked)} />
-        <Input prefix={<SearchOutlined />} className='ml-2 px-2 py-[2px] flex-1' placeholder={t('search')} value={search} onChange={(e) => setSearch(e.target.value)} />
+        <Input prefix={<SearchOutlined />} allowClear className='ml-2 px-2 py-[2px] flex-1' placeholder={t('search')} value={search} onChange={(e) => setSearch(e.target.value)} />
       </div>
       <Checkbox.Group value={value} onChange={(vals) => onChange(vals.map(Number))}>
         {filteredDatasource.map((ds) => {

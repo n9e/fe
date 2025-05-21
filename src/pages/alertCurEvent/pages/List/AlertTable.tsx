@@ -14,7 +14,7 @@ import DetailNG from '@/pages/event/DetailNG';
 import getActions from '@/pages/event/DetailNG/Actions';
 import usePagination from '@/components/usePagination';
 
-import { getEvents } from '../../services';
+import { getEvents, getEventById } from '../../services';
 import deleteAlertEventsModal from '../../utils/deleteAlertEventsModal';
 import { NS, SEVERITY_COLORS } from '../../constants';
 
@@ -80,8 +80,10 @@ export default function AlertTable(props: IProps) {
           <>
             <a
               onClick={() => {
-                setCurrentRecord(record);
-                setOpenAlertDetailDrawer(true);
+                getEventById(record.id).then((res) => {
+                  setCurrentRecord(res.dat);
+                  setOpenAlertDetailDrawer(true);
+                });
               }}
               className='mb1'
             >
@@ -245,8 +247,7 @@ export default function AlertTable(props: IProps) {
       p: current,
       limit: pageSize,
       my_groups: String(filterObj.my_groups) === 'true',
-      event_ids: filterObj?.event_ids?.join(','),
-      ..._.omit(filterObj, ['range', 'my_groups', 'event_ids']),
+      ..._.omit(filterObj, ['range', 'my_groups']),
     };
 
     if (filterObj.range) {
@@ -288,8 +289,8 @@ export default function AlertTable(props: IProps) {
           },
         }}
         pagination={{
-          ...tableProps.pagination,
           ...pagination,
+          ...tableProps.pagination,
           pageSizeOptions: ['30', '100', '200', '500'],
         }}
       />
