@@ -213,8 +213,12 @@ const AlertCurEvent: React.FC = () => {
                     setSelectedAggrGroupId(id);
                     localStorage.setItem('selectedAlertRule', String(id));
                   }}
-                  onClearCardNum={() => {
+                  onRefresh={() => {
                     setCardNum(0);
+                    setFilter({
+                      ...filter,
+                      event_ids: [],
+                    });
                   }}
                 />
                 <AlertCard

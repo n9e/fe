@@ -11,7 +11,7 @@ import { NS } from '../../constants';
 interface Props {
   cardNum: number;
   onSelectAggrGroupId: (aggrGroupId: number | undefined) => void;
-  onClearCardNum?: () => void;
+  onRefresh?: () => void;
 }
 
 export interface CardAlertType {
@@ -25,7 +25,7 @@ export interface CardAlertType {
 }
 
 export default function AggrRuleDropdown(props: Props) {
-  const { cardNum, onSelectAggrGroupId, onClearCardNum } = props;
+  const { cardNum, onSelectAggrGroupId, onRefresh } = props;
   const { t } = useTranslation(NS);
   const [form] = Form.useForm();
   const [alertList, setAlertList] = useState<CardAlertType[]>();
@@ -95,6 +95,7 @@ export default function AggrRuleDropdown(props: Props) {
     onSelectAggrGroupId(alert.id);
     localStorage.setItem('selectedAlertRule', String(alert.id));
     setVisibleDropdown(false);
+    onRefresh?.();
   };
 
   const handleClear = (e: React.MouseEvent) => {
@@ -103,7 +104,7 @@ export default function AggrRuleDropdown(props: Props) {
     onSelectAggrGroupId(undefined);
     localStorage.removeItem('selectedAlertRule');
     setVisibleDropdown(false);
-    onClearCardNum?.();
+    onRefresh?.();
   };
 
   const dropdownMenu = (
