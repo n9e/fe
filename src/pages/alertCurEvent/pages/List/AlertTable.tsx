@@ -12,6 +12,7 @@ import { CommonStateContext } from '@/App';
 import { parseRange } from '@/components/TimeRangePicker';
 import DetailNG from '@/pages/event/DetailNG';
 import getActions from '@/pages/event/DetailNG/Actions';
+import usePagination from '@/components/usePagination';
 
 import { getEvents } from '../../services';
 import deleteAlertEventsModal from '../../utils/deleteAlertEventsModal';
@@ -266,6 +267,8 @@ export default function AlertTable(props: IProps) {
     debounceWait: 500,
   });
 
+  const pagination = usePagination({ PAGESIZE_KEY: 'active-alert-events-pagesize' });
+
   return (
     <>
       <Table
@@ -286,6 +289,7 @@ export default function AlertTable(props: IProps) {
         }}
         pagination={{
           ...tableProps.pagination,
+          ...pagination,
           pageSizeOptions: ['30', '100', '200', '500'],
         }}
       />
