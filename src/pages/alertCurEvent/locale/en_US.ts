@@ -23,6 +23,8 @@ const en_US = {
   aggregate_rule_mgs: 'Please select aggregate rule',
   aggr_result: 'aggregate results',
   aggregate_rule_name: 'Rule name',
+  aggregate_rule_title: 'Aggregate card title',
+  add_rule: 'Add rule',
   public: 'Public',
   isPublic: 'Is public',
   prod: 'Type',

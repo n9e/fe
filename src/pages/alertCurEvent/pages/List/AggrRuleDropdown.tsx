@@ -11,7 +11,7 @@ import { NS } from '../../constants';
 interface Props {
   cardNum: number;
   onSelectAggrGroupId: (aggrGroupId: number | undefined) => void;
-  onClearCardNum?: () => void;
+  onRefresh?: () => void;
 }
 
 export interface CardAlertType {
@@ -25,7 +25,7 @@ export interface CardAlertType {
 }
 
 export default function AggrRuleDropdown(props: Props) {
-  const { cardNum, onSelectAggrGroupId, onClearCardNum } = props;
+  const { cardNum, onSelectAggrGroupId, onRefresh } = props;
   const { t } = useTranslation(NS);
   const [form] = Form.useForm();
   const [alertList, setAlertList] = useState<CardAlertType[]>();
@@ -95,6 +95,7 @@ export default function AggrRuleDropdown(props: Props) {
     onSelectAggrGroupId(alert.id);
     localStorage.setItem('selectedAlertRule', String(alert.id));
     setVisibleDropdown(false);
+    onRefresh?.();
   };
 
   const handleClear = (e: React.MouseEvent) => {
@@ -103,7 +104,7 @@ export default function AggrRuleDropdown(props: Props) {
     onSelectAggrGroupId(undefined);
     localStorage.removeItem('selectedAlertRule');
     setVisibleDropdown(false);
-    onClearCardNum?.();
+    onRefresh?.();
   };
 
   const dropdownMenu = (
@@ -114,7 +115,7 @@ export default function AggrRuleDropdown(props: Props) {
             <div>{alert.name}</div>
             <Space>
               <Tag style={{ border: 'none', borderRadius: '4px' }} color='default'>
-                {alert.cate === 0 || profile.admin ? ' 公开' : ''}
+                {alert.cate === 0 || profile.admin ? t('common:public') : t('common:private')}
               </Tag>
 
               {(alert.cate === 1 || profile.admin) && (
@@ -123,6 +124,7 @@ export default function AggrRuleDropdown(props: Props) {
                     onClick={(e) => {
                       e.stopPropagation();
                       setEditForm(alert);
+                      setVisibleDropdown(false);
                       setVisibleAggrRuleModal(true);
                       form.setFieldsValue({
                         ...alert,
@@ -151,7 +153,7 @@ export default function AggrRuleDropdown(props: Props) {
               setVisibleAggrRuleModal(true);
             }}
           >
-            + 新增规则
+            + {t('add_rule')}
           </Button>
         </div>
       </Menu.Item>
@@ -191,6 +193,9 @@ export default function AggrRuleDropdown(props: Props) {
             <Input />
           </Form.Item>
           <Form.Item label={t('aggregate_rule')} name='rule' rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item label={t('aggregate_rule_title')} name='format'>
             <Input />
           </Form.Item>
           {profile.admin && (

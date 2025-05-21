@@ -25,6 +25,8 @@ const zh_HK = {
   aggregate_rule_mgs: '請選擇聚合規則',
   aggr_result: '個聚合結果',
   aggregate_rule_name: '規則名稱',
+  aggregate_rule_title: '聚合卡片標題',
+  add_rule: '新增規則',
   public: '公開',
   isPublic: '是否公開',
   status: '是否認領',

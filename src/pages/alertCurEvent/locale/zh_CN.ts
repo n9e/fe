@@ -25,6 +25,8 @@ const zh_CN = {
   aggregate_rule_mgs: '请选择聚合规则',
   aggr_result: '个聚合结果',
   aggregate_rule_name: '规则名称',
+  aggregate_rule_title: '聚合卡片标题',
+  add_rule: '新增规则',
   public: '公开',
   isPublic: '是否公开',
   status: '是否认领',

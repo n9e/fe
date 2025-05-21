@@ -12,8 +12,9 @@ import { CommonStateContext } from '@/App';
 import { parseRange } from '@/components/TimeRangePicker';
 import DetailNG from '@/pages/event/DetailNG';
 import getActions from '@/pages/event/DetailNG/Actions';
+import usePagination from '@/components/usePagination';
 
-import { getEvents } from '../../services';
+import { getEvents, getEventById } from '../../services';
 import deleteAlertEventsModal from '../../utils/deleteAlertEventsModal';
 import { NS, SEVERITY_COLORS } from '../../constants';
 
@@ -79,8 +80,10 @@ export default function AlertTable(props: IProps) {
           <>
             <a
               onClick={() => {
-                setCurrentRecord(record);
-                setOpenAlertDetailDrawer(true);
+                getEventById(record.id).then((res) => {
+                  setCurrentRecord(res.dat);
+                  setOpenAlertDetailDrawer(true);
+                });
               }}
               className='mb1'
             >
@@ -130,15 +133,15 @@ export default function AlertTable(props: IProps) {
     {
       title: t('duration'),
       dataIndex: 'duration',
-      width: 160,
+      width: 100,
       render(_, record) {
         const duration = moment().diff(moment(record.first_trigger_time * 1000));
-        const maxGrids = 18;
+        const maxGrids = 12;
         const hours = duration / 3600000;
-        const highlight = hours >= 72 ? maxGrids : Math.floor(hours / 4);
+        const highlight = hours >= 24 ? maxGrids : Math.floor(hours / 2);
         const getColorClass = (idx: number) => {
-          if (idx < 6) return 'gold';
-          if (idx < 12) return 'orange';
+          if (idx < 4) return 'gold';
+          if (idx < 8) return 'orange';
           return 'red';
         };
         return (
@@ -265,6 +268,8 @@ export default function AlertTable(props: IProps) {
     debounceWait: 500,
   });
 
+  const pagination = usePagination({ PAGESIZE_KEY: 'active-alert-events-pagesize' });
+
   return (
     <>
       <Table
@@ -284,6 +289,7 @@ export default function AlertTable(props: IProps) {
           },
         }}
         pagination={{
+          ...pagination,
           ...tableProps.pagination,
           pageSizeOptions: ['30', '100', '200', '500'],
         }}

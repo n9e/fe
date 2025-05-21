@@ -1,6 +1,8 @@
 import _ from 'lodash';
+
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
+import { IS_ENT } from '@/utils/constant';
 
 export function getEvents(params) {
   let url = '/api/n9e/alert-cur-events/list';
@@ -27,4 +29,14 @@ export function ackEvents(ids: number[], action = 'ack') {
       ids,
     },
   }).then((res) => res.dat);
+}
+
+export function getEventById(eventId) {
+  let url = '/api/n9e/alert-cur-event';
+  if (IS_ENT) {
+    url = '/api/n9e-plus/alert-cur-event';
+  }
+  return request(`${url}/${eventId}`, {
+    method: RequestMethod.Get,
+  });
 }

@@ -25,6 +25,8 @@ const ru_RU = {
   aggregate_rule_mgs: 'Выберите правило сбора',
   aggr_result: 'результатов сбора',
   aggregate_rule_name: 'Название правила',
+  aggregate_rule_title: 'Название карточки сбора',
+  add_rule: 'Добавить правило',
   public: 'Открытый',
   isPublic: 'Открытое',
   status: 'Признак принятия',
