@@ -23,6 +23,11 @@ const ja_JP = {
   duration: '持続時間',
   aggregate_rule: '集計ルール',
   aggregate_rule_mgs: '集計ルールを選択してください',
+  aggregate_rule_tip: `イベントの属性とタグに基づいてアラートを集計して分類し、表示を簡素化します。Go Templateを使用してイベントフィールドを参照します。例：
+  
+- ビジネスグループ+イベントレベルで集計：\`Group:{{.GroupName}} Severity:{{.Severity}}\`
+- アラートルールのタイトルで集計：\`{{.RuleName}}\`
+- イベントのインスタンスタグで集計：\`{{.TagsMap.instance}}\``,
   aggr_result: '集計結果',
   aggregate_rule_name: 'ルール名',
   aggregate_rule_title: '集計カードタイトル',
