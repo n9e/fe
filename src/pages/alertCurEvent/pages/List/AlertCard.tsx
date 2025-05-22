@@ -12,7 +12,7 @@ interface Props {
   setFilter: (filter: FilterType) => void;
 }
 
-function isEqualEventIds(arr1?: number[], arr2?: number[]) {
+export function isEqualEventIds(arr1?: number[], arr2?: number[]) {
   if (!arr1 || !arr2) {
     return false;
   }
@@ -27,7 +27,7 @@ const AlertCard = (props: Props) => {
   return (
     <div className='w-full overflow-y-auto pt-2 max-h-[172px]'>
       <Space wrap>
-        {cardList?.map((card, i) => {
+        {_.map(cardList, (card, i) => {
           return (
             <div
               key={i}

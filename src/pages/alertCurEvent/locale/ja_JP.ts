@@ -15,7 +15,7 @@ const ja_JP = {
   },
   severity: 'アラートレベル',
   eventType: 'イベントカテゴリ',
-  rule_name: 'ルールタイトル&イベントタグ',
+  event_name: 'イベント',
   first_trigger_time: '初回トリガ時間',
   trigger_time: 'トリガ時間',
   shield: 'シールド',

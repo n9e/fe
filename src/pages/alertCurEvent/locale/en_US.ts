@@ -15,7 +15,7 @@ const en_US = {
   },
   severity: 'Severity',
   eventType: 'Event type',
-  rule_name: 'Rule name & Event tags',
+  event_name: 'Event',
   first_trigger_time: 'First triggered',
   trigger_time: 'Triggered',
   shield: 'Blackout',
