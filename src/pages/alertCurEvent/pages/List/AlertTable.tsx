@@ -14,6 +14,7 @@ import DetailNG from '@/pages/event/DetailNG';
 import getActions from '@/pages/event/DetailNG/Actions';
 import usePagination from '@/components/usePagination';
 import { allCates } from '@/components/AdvancedWrap/utils';
+import { IS_PLUS } from '@/utils/constant';
 
 import { getEvents, getEventById } from '../../services';
 import deleteAlertEventsModal from '../../utils/deleteAlertEventsModal';
@@ -175,14 +176,16 @@ export default function AlertTable(props: IProps) {
           <Dropdown
             overlay={
               <Menu>
-                <Menu.Item>
-                  <AckBtn
-                    data={record}
-                    onOk={() => {
-                      setRefreshFlag(_.uniqueId('refresh_'));
-                    }}
-                  />
-                </Menu.Item>
+                {IS_PLUS && (
+                  <Menu.Item>
+                    <AckBtn
+                      data={record}
+                      onOk={() => {
+                        setRefreshFlag(_.uniqueId('refresh_'));
+                      }}
+                    />
+                  </Menu.Item>
+                )}
                 {!_.includes(['firemap', 'northstar'], record?.rule_prod) && (
                   <Menu.Item>
                     <Button
