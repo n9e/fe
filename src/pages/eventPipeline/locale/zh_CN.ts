@@ -50,9 +50,7 @@ const zh_CN = {
     },
   },
   callback: {
-    url: '回调地址',
-    url_placeholder: '请输入回调地址',
-    url_required: '回调地址不能为空',
+    url: 'URL',
     advanced_settings: '高级设置',
     basic_auth_user: '授权用户名',
     basic_auth_user_placeholder: '请输入授权用户名',

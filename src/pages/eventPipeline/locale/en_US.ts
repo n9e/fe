@@ -51,9 +51,7 @@ const en_US = {
     },
   },
   callback: {
-    url: 'Callback address',
-    url_placeholder: 'Please enter the callback address',
-    url_required: 'Callback address cannot be empty',
+    url: 'URL',
     advanced_settings: 'Advanced settings',
     basic_auth_user: 'Authorization user name',
     basic_auth_user_placeholder: 'Please enter the authorization user name',

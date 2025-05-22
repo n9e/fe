@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Modal, Button } from 'antd';
 import { useTranslation } from 'react-i18next';
+import _ from 'lodash';
 
 import DetailNG from '@/pages/event/DetailNG';
-import { normalizeFormValues } from '@/pages/eventPipeline/utils/normalizeValues';
 
 import { NS } from '../../../constants';
 import { eventProcessorTryrun, eventPipelineTryrun } from '../../../services';
@@ -66,7 +66,13 @@ export default function TestModal(props: Props) {
                   if (type === 'processor') {
                     eventProcessorTryrun({
                       event_id: eventID,
-                      processor_config: config,
+                      processor_config: {
+                        ...config,
+                        config: {
+                          ...config.config,
+                          header: _.fromPairs(_.map(config.config.header as any[], (headerItem) => [headerItem.key, headerItem.value])),
+                        },
+                      },
                     })
                       .then((res) => {
                         setData({
@@ -83,7 +89,15 @@ export default function TestModal(props: Props) {
                   } else if (type === 'pipeline') {
                     eventPipelineTryrun({
                       event_id: eventID,
-                      pipeline_config: normalizeFormValues(config),
+                      pipeline_config: _.map(config.processors, (item) => {
+                        return {
+                          ...item,
+                          config: {
+                            ...item.config,
+                            header: _.fromPairs(_.map(item.config.header as any[], (headerItem) => [headerItem.key, headerItem.value])),
+                          },
+                        };
+                      }),
                     })
                       .then((res) => {
                         setData({

@@ -50,9 +50,7 @@ const zh_HK = {
     },
   },
   callback: {
-    url: '回調地址',
-    url_placeholder: '請輸入回調地址',
-    url_required: '回調地址不能為空',
+    url: 'URL',
     advanced_settings: '高級設置',
     basic_auth_user: '授權用戶名',
     basic_auth_user_placeholder: '請輸入授權用戶名',

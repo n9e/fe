@@ -47,7 +47,7 @@ export const eventProcessorTryrun = function (data: { event_id: number; processo
   }).then((res) => res.dat);
 };
 
-export const eventPipelineTryrun = function (data: { event_id: number; pipeline_config: Item }) {
+export const eventPipelineTryrun = function (data: { event_id: number; pipeline_config: Item[] }) {
   return request('/api/n9e/event-pipeline-tryrun', {
     method: RequestMethod.Post,
     data,
