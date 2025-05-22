@@ -23,6 +23,11 @@ const zh_HK = {
   duration: '持續時長',
   aggregate_rule: '聚合規則',
   aggregate_rule_mgs: '請選擇聚合規則',
+  aggregate_rule_tip: `根據事件的屬性和標籤對告警做聚合歸類，方便查看，使用 Go Template 引用事件字段，舉例：
+  
+- 根據業務組+事件級別做聚合：\`Group:{{.GroupName}} Severity:{{.Severity}}\`
+- 根據告警規則的標題做聚合：\`{{.RuleName}}\`
+- 根據事件的 instance 標籤做聚合：\`{{.TagsMap.instance}}\``,
   aggr_result: '個聚合結果',
   aggregate_rule_name: '規則名稱',
   aggregate_rule_title: '聚合卡片標題',

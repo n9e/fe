@@ -21,6 +21,11 @@ const en_US = {
   shield: 'Blackout',
   aggregate_rule: 'Aggregate rule',
   aggregate_rule_mgs: 'Please select aggregate rule',
+  aggregate_rule_tip: `Aggregate and classify alerts based on the attributes and tags of the event for easy viewing. Use Go Template to reference event fields, for example:
+  
+- Aggregate by business group + event level: \`Group:{{.GroupName}} Severity:{{.Severity}}\`
+- Aggregate by alert rule title: \`{{.RuleName}}\`
+- Aggregate by instance tag of event: \`{{.TagsMap.instance}}\``,
   aggr_result: 'aggregate results',
   aggregate_rule_name: 'Rule name',
   aggregate_rule_title: 'Aggregate card title',
