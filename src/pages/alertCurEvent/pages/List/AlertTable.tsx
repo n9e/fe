@@ -73,7 +73,7 @@ export default function AlertTable(props: IProps) {
 
         return (
           <div className='max-w-[600px]'>
-            <div className='mb-2 text-[14px]' style={{ lineHeight: 1 }}>
+            <div className='mb-2 text-[14px]'>
               <Space>
                 {currentDatasourceCate && currentDatasource ? (
                   <Space>
@@ -102,29 +102,28 @@ export default function AlertTable(props: IProps) {
             <div>
               {_.map(record.tags, (item) => {
                 return (
-                  <Tooltip key={item} title={item}>
-                    <Tag
-                      style={{ maxWidth: '100%' }}
-                      onClick={() => {
-                        if (!_.includes(filter.query, item)) {
-                          setFilter({
-                            ...filter,
-                            query: filter.query ? `${filter.query.trim()} ${item}` : item,
-                          });
-                        }
+                  <Tag
+                    key={item}
+                    style={{ maxWidth: '100%' }}
+                    onClick={() => {
+                      if (!_.includes(filter.query, item)) {
+                        setFilter({
+                          ...filter,
+                          query: filter.query ? `${filter.query.trim()} ${item}` : item,
+                        });
+                      }
+                    }}
+                  >
+                    <div
+                      style={{
+                        maxWidth: 'max-content',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
                       }}
                     >
-                      <div
-                        style={{
-                          maxWidth: 'max-content',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                        }}
-                      >
-                        {item}
-                      </div>
-                    </Tag>
-                  </Tooltip>
+                      {item}
+                    </div>
+                  </Tag>
                 );
               })}
             </div>
