@@ -23,6 +23,7 @@ import { useAntdTable } from 'ahooks';
 import { Input, Tag, Button, Space, Table, Select, message } from 'antd';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
+
 import PageLayout, { HelpLink } from '@/components/pageLayout';
 import RefreshIcon from '@/components/RefreshIcon';
 import { CommonStateContext } from '@/App';
@@ -31,6 +32,8 @@ import DatasourceSelect from '@/components/DatasourceSelect/DatasourceSelect';
 import TimeRangePicker, { parseRange, getDefaultValue } from '@/components/TimeRangePicker';
 import { IS_ENT } from '@/utils/constant';
 import { BusinessGroupSelectWithAll } from '@/components/BusinessGroup';
+import { allCates } from '@/components/AdvancedWrap/utils';
+
 import exportEvents, { downloadFile } from './exportEvents';
 import { getEvents, getEventsByIds } from './services';
 import { SeverityColor } from '../event';
@@ -72,66 +75,67 @@ const Event: React.FC = () => {
   };
   const columns = [
     {
-      title: t('prod'),
-      dataIndex: 'rule_prod',
-      width: 100,
-      render: (value) => {
-        return t(`rule_prod.${value}`);
-      },
-    },
-    {
-      title: t('common:datasource.id'),
-      dataIndex: 'datasource_id',
-      width: 100,
-      render: (value, record) => {
-        return _.find(datasourceList, { id: value })?.name || '-';
-      },
-    },
-    {
-      title: t('rule_name'),
+      title: t('event_name'),
       dataIndex: 'rule_name',
-      render(title, { id, tags }) {
-        const content =
-          tags &&
-          tags.map((item) => (
-            <Tag
-              key={item}
-              onClick={(e) => {
-                if (!_.includes(filter.query, item)) {
-                  setFilter({
-                    ...filter,
-                    query: filter.query ? `${filter.query.trim()} ${item}` : item,
-                  });
-                }
-              }}
-            >
-              {item}
-            </Tag>
-          ));
+      render(title, record) {
+        const currentDatasourceCate = _.find(allCates, { value: record.cate });
+        const currentDatasource = _.find(datasourceList, { id: record.datasource_id });
+
         return (
-          <>
-            <div className='mb1'>
-              <Link
-                to={{
-                  pathname: `/alert-his-events/${id}`,
-                }}
-                target='_blank'
-              >
-                {title}
-              </Link>
+          <div className='max-w-[700px]'>
+            <div className='mb-2 text-[14px]'>
+              <Space>
+                {currentDatasourceCate && currentDatasource ? (
+                  <Space>
+                    <img src={currentDatasourceCate.logo} height={14} />
+                    {currentDatasource.name}
+                    <span>/</span>
+                  </Space>
+                ) : record.cate === 'host' ? (
+                  <Space>
+                    <img src='/image/logos/host.png' height={14} />
+                    <span>/</span>
+                  </Space>
+                ) : null}
+                <Link
+                  to={{
+                    pathname: `/alert-his-events/${record.id}`,
+                  }}
+                  target='_blank'
+                >
+                  {title}
+                </Link>
+              </Space>
             </div>
             <div>
-              <span
-                style={{
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  rowGap: 4,
-                }}
-              >
-                {content}
-              </span>
+              {_.map(record.tags, (item) => {
+                return (
+                  <Tag
+                    key={item}
+                    style={{ maxWidth: '100%' }}
+                    onClick={() => {
+                      if (!_.includes(filter.query, item)) {
+                        setFilter({
+                          ...filter,
+                          query: filter.query ? `${filter.query.trim()} ${item}` : item,
+                        });
+                      }
+                    }}
+                  >
+                    <div
+                      style={{
+                        maxWidth: 'max-content',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}
+                    >
+                      {item}
+                    </div>
+                  </Tag>
+                );
+              })}
             </div>
-          </>
+          </div>
         );
       },
     },
@@ -224,7 +228,7 @@ const Event: React.FC = () => {
         <div className='table-area n9e-border-base'>
           {!query.ids && (
             <div className='table-operate-box'>
-              <Space>
+              <Space wrap>
                 <RefreshIcon
                   onClick={() => {
                     setRefreshFlag(_.uniqueId('refresh_'));
@@ -356,6 +360,8 @@ const Event: React.FC = () => {
           <Table
             className='mt8'
             size='small'
+            tableLayout='auto'
+            scroll={!_.isEmpty(tableProps.dataSource) ? { x: 'max-content' } : undefined}
             columns={columns}
             {...tableProps}
             rowClassName={(record: { severity: number; is_recovered: number }) => {
