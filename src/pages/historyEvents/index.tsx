@@ -82,7 +82,7 @@ const Event: React.FC = () => {
         const currentDatasource = _.find(datasourceList, { id: record.datasource_id });
 
         return (
-          <div className='max-w-[700px]'>
+          <div className='max-w-[60vw]'>
             <div className='mb-2'>
               <Space>
                 {currentDatasourceCate && currentDatasource ? (

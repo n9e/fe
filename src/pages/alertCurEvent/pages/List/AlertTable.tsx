@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Tag, Button, Table, Tooltip, Dropdown, Menu, Drawer, Space } from 'antd';
+import { Tag, Button, Table, Dropdown, Menu, Drawer, Space } from 'antd';
 import { MoreOutlined, CloseOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
 import moment from 'moment';
@@ -72,7 +72,7 @@ export default function AlertTable(props: IProps) {
         const currentDatasource = _.find(datasourceList, { id: record.datasource_id });
 
         return (
-          <div className='max-w-[600px]'>
+          <div className='max-w-[60vw]'>
             <div className='mb-2'>
               <Space>
                 {currentDatasourceCate && currentDatasource ? (
@@ -134,6 +134,7 @@ export default function AlertTable(props: IProps) {
     {
       title: t('trigger_time'),
       dataIndex: 'trigger_time',
+      fixed: 'right' as const,
       render(value) {
         return moment(value * 1000).format('YYYY-MM-DD HH:mm:ss');
       },
@@ -141,6 +142,7 @@ export default function AlertTable(props: IProps) {
     {
       title: t('duration'),
       dataIndex: 'duration',
+      fixed: 'right' as const,
       render(_, record) {
         const duration = moment().diff(moment(record.first_trigger_time * 1000));
         const maxGrids = 12;
@@ -167,6 +169,7 @@ export default function AlertTable(props: IProps) {
     },
     {
       title: t('common:table.operations'),
+      fixed: 'right' as const,
       render(record) {
         return (
           <Dropdown
@@ -237,6 +240,7 @@ export default function AlertTable(props: IProps) {
     columns.splice(3, 0, {
       title: t('claimant'),
       dataIndex: 'claimant',
+      fixed: 'right',
       render: (value, record) => {
         if (record.status === 1) {
           return value;
