@@ -7,6 +7,7 @@ import _ from 'lodash';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { getAggrAlerts as getAggrRules, AddAggrAlerts, updateAggrAlerts, deleteAggrAlerts } from '@/services/warning';
 import { CommonStateContext } from '@/App';
+import Markdown from '@/components/Markdown';
 
 import { NS } from '../../constants';
 import { AggrRuleType, CardType, FilterType } from '../../types';
@@ -180,10 +181,15 @@ export default function AggrRuleDropdown(props: Props) {
           <Form.Item name='id' hidden>
             <Input />
           </Form.Item>
-          <Form.Item label={t('aggregate_rule')} name='rule' rules={[{ required: true }]}>
-            <Input />
-          </Form.Item>
-          <Form.Item label={t('aggregate_rule_title')} name='format'>
+          <Form.Item
+            label={t('aggregate_rule')}
+            name='rule'
+            tooltip={{
+              title: <Markdown content={t('aggregate_rule_tip', { interpolation: { skipOnVariables: true } })} darkMode />,
+              overlayClassName: 'ant-tooltip-auto-width',
+            }}
+            rules={[{ required: true }]}
+          >
             <Input />
           </Form.Item>
           {profile.admin && (
