@@ -83,7 +83,7 @@ const Event: React.FC = () => {
 
         return (
           <div className='max-w-[700px]'>
-            <div className='mb-2 text-[14px]'>
+            <div className='mb-2'>
               <Space>
                 {currentDatasourceCate && currentDatasource ? (
                   <Space>
