@@ -51,9 +51,7 @@ const ja_JP = {
     },
   },
   callback: {
-    url: '回調アドレス',
-    url_placeholder: '回調アドレスを入力してください',
-    url_required: '回調アドレスは必須です',
+    url: 'URL',
     advanced_settings: '詳細設定',
     basic_auth_user: 'ユーザー名',
     basic_auth_user_placeholder: 'ユーザー名を入力してください',

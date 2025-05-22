@@ -51,9 +51,7 @@ const ru_RU = {
     },
   },
   callback: {
-    url: 'URL обратного вызова',
-    url_placeholder: 'Пожалуйста, введите URL обратного вызова',
-    url_required: 'URL обратного вызова не может быть пустым',
+    url: 'URL',
     advanced_settings: 'Расширенные настройки',
     basic_auth_user: 'Имя пользователя авторизации',
     basic_auth_user_placeholder: 'Пожалуйста, введите имя пользователя авторизации',
