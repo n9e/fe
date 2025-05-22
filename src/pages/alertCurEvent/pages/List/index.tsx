@@ -17,7 +17,7 @@ import { BusinessGroupSelectWithAll } from '@/components/BusinessGroup';
 import { getAlertCards } from '@/services/warning';
 import { parseRange } from '@/components/TimeRangePicker';
 
-import { NS, AGGR_RULE_CARD_EVENT_IDS_CACHE_KEY } from '../../constants';
+import { NS } from '../../constants';
 import getFilterByURLQuery from '../../utils/getFilter';
 import deleteAlertEventsModal from '../../utils/deleteAlertEventsModal';
 import getProdOptions from '../../utils/getProdOptions';
@@ -36,8 +36,7 @@ const AlertCurEvent: React.FC = () => {
   const history = useHistory();
   const query = queryString.parse(location.search);
   const [range, setRange] = useState<IRawTimeRange>();
-  const localEventIds = localStorage.getItem(AGGR_RULE_CARD_EVENT_IDS_CACHE_KEY) ? _.split(localStorage.getItem(AGGR_RULE_CARD_EVENT_IDS_CACHE_KEY), ',').map(Number) : undefined;
-  const [aggrRuleCardEventIds, setAggrRuleCardEventIds] = useState<number[] | undefined>(localEventIds);
+  const [aggrRuleCardEventIds, setAggrRuleCardEventIds] = useState<number[] | undefined>();
   const filter = useMemo(() => getFilterByURLQuery(query, range, aggrRuleCardEventIds), [JSON.stringify(query), range, aggrRuleCardEventIds]);
   const setFilter = (newFilter) => {
     history.replace({
@@ -45,16 +44,11 @@ const AlertCurEvent: React.FC = () => {
       search: queryString.stringify(
         {
           ...query,
-          ..._.omit(newFilter, ['range', 'event_ids']), // range 仍然通过 loclalStorage 存储
+          ..._.omit(newFilter, ['range', 'event_ids']), // 这里不需要传递到 URL 中
         },
         { arrayFormat: 'comma' },
       ),
     });
-    // range 也是通过 localStorage 存储的, 他是在日期选择器组件内部处理
-    // 这里需要将 event_ids 存储到 localStorage 中，避免放到 URL 中过长
-    newFilter.event_ids
-      ? window.localStorage.setItem(AGGR_RULE_CARD_EVENT_IDS_CACHE_KEY, _.join(newFilter.event_ids, ','))
-      : window.localStorage.removeItem(AGGR_RULE_CARD_EVENT_IDS_CACHE_KEY);
     setAggrRuleCardEventIds(newFilter.event_ids);
     setRange(newFilter.range);
   };
@@ -101,12 +95,6 @@ const AlertCurEvent: React.FC = () => {
   useEffect(() => {
     reloadRuleCards();
   }, [filter.aggr_rule_id, JSON.stringify(params), refreshFlag]);
-
-  useEffect(() => {
-    return () => {
-      window.localStorage.removeItem(AGGR_RULE_CARD_EVENT_IDS_CACHE_KEY);
-    };
-  }, []);
 
   return (
     <PageLayout icon={<AlertOutlined />} title={t('title')}>
