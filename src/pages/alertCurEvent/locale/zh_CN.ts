@@ -15,7 +15,7 @@ const zh_CN = {
   },
   severity: '告警级别',
   eventType: '事件类别',
-  rule_name: '规则标题&事件标签',
+  event_name: '事件',
   first_trigger_time: '首次触发时间',
   trigger_time: '触发时间',
   shield: '屏蔽',

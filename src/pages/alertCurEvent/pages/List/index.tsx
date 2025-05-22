@@ -12,7 +12,7 @@ import PageLayout from '@/components/pageLayout';
 import { TimeRangePickerWithRefresh } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
 import { getDefaultValue } from '@/components/TimeRangePicker';
-import { IS_ENT, IS_PLUS } from '@/utils/constant';
+import { IS_PLUS } from '@/utils/constant';
 import { BusinessGroupSelectWithAll } from '@/components/BusinessGroup';
 import { getAlertCards } from '@/services/warning';
 import { parseRange } from '@/components/TimeRangePicker';
@@ -26,7 +26,7 @@ import { ackEvents } from '../../services';
 import { CardType } from '../../types';
 import DatasourceCheckbox from './DatasourceCheckbox';
 import AggrRuleDropdown from './AggrRuleDropdown';
-import AlertCard from './AlertCard';
+import AlertCard, { isEqualEventIds } from './AlertCard';
 import AlertTable from './AlertTable';
 
 const AlertCurEvent: React.FC = () => {
@@ -85,6 +85,15 @@ const AlertCurEvent: React.FC = () => {
 
       getAlertCards(requestParams).then((res) => {
         setCardList(res.dat);
+        const isValidFilterEventIds = _.every(res.dat, (item) => {
+          return !isEqualEventIds(item.event_ids, filter.event_ids);
+        });
+        if (isValidFilterEventIds) {
+          setFilter({
+            ...filter,
+            event_ids: undefined,
+          });
+        }
       });
     },
     {
@@ -158,7 +167,7 @@ const AlertCurEvent: React.FC = () => {
 
           <div className='flex py-2'>
             {/* 左侧筛选区 */}
-            <div className='w-[190px] mr-[16px] overflow-y-auto h-full'>
+            <div className='w-[190px] mr-[16px] overflow-y-auto h-full shrink-0'>
               <Collapse bordered={false} defaultActiveKey={['prod', 'severity', 'datasource']} expandIconPosition='start'>
                 <Collapse.Panel header={t('prod')} key='prod'>
                   <Checkbox.Group
@@ -221,7 +230,7 @@ const AlertCurEvent: React.FC = () => {
               </Collapse>
             </div>
             {/* 右侧内容区 */}
-            <div className='n9e-border-base flex-1'>
+            <div className='n9e-border-base flex-1 min-w-0'>
               <div className='cur-events p-2'>
                 <AggrRuleDropdown cardList={cardList} filter={filter} setFilter={setFilter} reloadRuleCards={reloadRuleCards} />
                 <AlertCard filter={filter} setFilter={setFilter} cardList={cardList} />

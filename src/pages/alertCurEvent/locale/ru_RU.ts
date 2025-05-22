@@ -15,7 +15,7 @@ const ru_RU = {
   },
   severity: 'Уровень события',
   eventType: 'Тип события',
-  rule_name: 'Заголовок правила и метка события',
+  event_name: 'Событие',
   first_trigger_time: 'Время первого срабатывания',
   trigger_time: 'Время срабатывания',
   shield: 'Заблокировать',

@@ -12,7 +12,7 @@ interface Props {
   setFilter: (filter: FilterType) => void;
 }
 
-function isEqualEventIds(arr1?: number[], arr2?: number[]) {
+export function isEqualEventIds(arr1?: number[], arr2?: number[]) {
   if (!arr1 || !arr2) {
     return false;
   }

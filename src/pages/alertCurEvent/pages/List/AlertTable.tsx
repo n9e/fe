@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Tag, Button, Table, Tooltip, Dropdown, Menu, Drawer } from 'antd';
+import { Tag, Button, Table, Tooltip, Dropdown, Menu, Drawer, Space } from 'antd';
 import { MoreOutlined, CloseOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
 import moment from 'moment';
@@ -13,10 +13,11 @@ import { parseRange } from '@/components/TimeRangePicker';
 import DetailNG from '@/pages/event/DetailNG';
 import getActions from '@/pages/event/DetailNG/Actions';
 import usePagination from '@/components/usePagination';
+import { allCates } from '@/components/AdvancedWrap/utils';
 
 import { getEvents, getEventById } from '../../services';
 import deleteAlertEventsModal from '../../utils/deleteAlertEventsModal';
-import { NS, SEVERITY_COLORS } from '../../constants';
+import { NS, SEVERITY_COLORS, EVENTS_TABLE_PAGESIZE_CACHE_KEY } from '../../constants';
 import { FilterType } from '../../types';
 
 // @ts-ignore
@@ -31,6 +32,7 @@ interface IProps {
   setSelectedRowKeys: (selectedRowKeys: number[]) => void;
   setRefreshFlag: (refreshFlag: string) => void;
 }
+
 function formatDuration(ms: number) {
   const d = moment.duration(ms);
   const totalDays = d.asDays();
@@ -58,38 +60,45 @@ export default function AlertTable(props: IProps) {
   const { filter, setFilter, selectedRowKeys, setSelectedRowKeys, params, setRefreshFlag } = props;
   const history = useHistory();
   const { t } = useTranslation(NS);
-  const { groupedDatasourceList } = useContext(CommonStateContext);
+  const { datasourceList } = useContext(CommonStateContext);
   const [openAlertDetailDrawer, setOpenAlertDetailDrawer] = useState<boolean>(false);
   const [currentRecord, setCurrentRecord] = useState<any>(null);
   const columns = [
     {
-      title: t('common:datasource.id'),
-      dataIndex: 'datasource_id',
-      width: 100,
-      render: (value, record) => {
-        if (value === 0) {
-          return '$all';
-        }
-        return _.find(groupedDatasourceList?.[record.cate], { id: value })?.name || '-';
-      },
-    },
-    {
-      title: t('rule_name'),
+      title: t('event_name'),
       dataIndex: 'rule_name',
       render(title, record) {
+        const currentDatasourceCate = _.find(allCates, { value: record.cate });
+        const currentDatasource = _.find(datasourceList, { id: record.datasource_id });
+
         return (
-          <>
-            <a
-              onClick={() => {
-                getEventById(record.id).then((res) => {
-                  setCurrentRecord(res.dat);
-                  setOpenAlertDetailDrawer(true);
-                });
-              }}
-              className='mb1'
-            >
-              {title}
-            </a>
+          <div className='max-w-[600px]'>
+            <div className='mb-2 text-[14px]' style={{ lineHeight: 1 }}>
+              <Space>
+                {currentDatasourceCate && currentDatasource ? (
+                  <Space>
+                    <img src={currentDatasourceCate.logo} height={14} />
+                    {currentDatasource.name}
+                    <span>/</span>
+                  </Space>
+                ) : record.cate === 'host' ? (
+                  <Space>
+                    <img src='/image/logos/host.png' height={14} />
+                    <span>/</span>
+                  </Space>
+                ) : null}
+                <a
+                  onClick={() => {
+                    getEventById(record.id).then((res) => {
+                      setCurrentRecord(res.dat);
+                      setOpenAlertDetailDrawer(true);
+                    });
+                  }}
+                >
+                  {title}
+                </a>
+              </Space>
+            </div>
             <div>
               {_.map(record.tags, (item) => {
                 return (
@@ -119,14 +128,13 @@ export default function AlertTable(props: IProps) {
                 );
               })}
             </div>
-          </>
+          </div>
         );
       },
     },
     {
       title: t('trigger_time'),
       dataIndex: 'trigger_time',
-      width: 120,
       render(value) {
         return moment(value * 1000).format('YYYY-MM-DD HH:mm:ss');
       },
@@ -134,7 +142,6 @@ export default function AlertTable(props: IProps) {
     {
       title: t('duration'),
       dataIndex: 'duration',
-      width: 100,
       render(_, record) {
         const duration = moment().diff(moment(record.first_trigger_time * 1000));
         const maxGrids = 12;
@@ -161,9 +168,7 @@ export default function AlertTable(props: IProps) {
     },
     {
       title: t('common:table.operations'),
-      dataIndex: 'operate',
-      width: 80,
-      render(value, record) {
+      render(record) {
         return (
           <Dropdown
             overlay={
@@ -230,10 +235,9 @@ export default function AlertTable(props: IProps) {
   ];
 
   if (import.meta.env.VITE_IS_PRO === 'true') {
-    columns.splice(4, 0, {
+    columns.splice(3, 0, {
       title: t('claimant'),
       dataIndex: 'claimant',
-      width: 100,
       render: (value, record) => {
         if (record.status === 1) {
           return value;
@@ -269,14 +273,15 @@ export default function AlertTable(props: IProps) {
     debounceWait: 500,
   });
 
-  const pagination = usePagination({ PAGESIZE_KEY: 'active-alert-events-pagesize' });
+  const pagination = usePagination({ PAGESIZE_KEY: EVENTS_TABLE_PAGESIZE_CACHE_KEY });
 
   return (
     <>
       <Table
         className='mt8'
         size='small'
-        tableLayout='fixed'
+        tableLayout='auto'
+        scroll={!_.isEmpty(tableProps.dataSource) ? { x: 'max-content' } : undefined} // TODO: 临时解决空数据时会出现滚动条问题
         rowKey={(record) => record.id}
         columns={columns}
         {...tableProps}
