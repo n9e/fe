@@ -11,13 +11,13 @@ import moment from 'moment';
 import PageLayout from '@/components/pageLayout';
 import { TimeRangePickerWithRefresh } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
-import { getDefaultValue } from '@/components/TimeRangePicker';
+import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { IS_PLUS } from '@/utils/constant';
 import { BusinessGroupSelectWithAll } from '@/components/BusinessGroup';
 import { getAlertCards } from '@/services/warning';
 import { parseRange } from '@/components/TimeRangePicker';
 
-import { NS, TIME_CACHE_KEY, AGGR_RULE_CARD_EVENT_IDS_CACHE_KEY } from '../../constants';
+import { NS, AGGR_RULE_CARD_EVENT_IDS_CACHE_KEY } from '../../constants';
 import getFilterByURLQuery from '../../utils/getFilter';
 import deleteAlertEventsModal from '../../utils/deleteAlertEventsModal';
 import getProdOptions from '../../utils/getProdOptions';
@@ -35,10 +35,10 @@ const AlertCurEvent: React.FC = () => {
   const location = useLocation();
   const history = useHistory();
   const query = queryString.parse(location.search);
-  const localRange = getDefaultValue(TIME_CACHE_KEY, undefined);
+  const [range, setRange] = useState<IRawTimeRange>();
   const localEventIds = localStorage.getItem(AGGR_RULE_CARD_EVENT_IDS_CACHE_KEY) ? _.split(localStorage.getItem(AGGR_RULE_CARD_EVENT_IDS_CACHE_KEY), ',').map(Number) : undefined;
   const [aggrRuleCardEventIds, setAggrRuleCardEventIds] = useState<number[] | undefined>(localEventIds);
-  const filter = useMemo(() => getFilterByURLQuery(query, aggrRuleCardEventIds), [JSON.stringify(query), localRange, aggrRuleCardEventIds]);
+  const filter = useMemo(() => getFilterByURLQuery(query, range, aggrRuleCardEventIds), [JSON.stringify(query), range, aggrRuleCardEventIds]);
   const setFilter = (newFilter) => {
     history.replace({
       pathname: location.pathname,
@@ -56,15 +56,12 @@ const AlertCurEvent: React.FC = () => {
       ? window.localStorage.setItem(AGGR_RULE_CARD_EVENT_IDS_CACHE_KEY, _.join(newFilter.event_ids, ','))
       : window.localStorage.removeItem(AGGR_RULE_CARD_EVENT_IDS_CACHE_KEY);
     setAggrRuleCardEventIds(newFilter.event_ids);
+    setRange(newFilter.range);
   };
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
   const [cardList, setCardList] = useState<CardType[]>();
   const params = getRequestParamsByFilter(filter);
-
-  useEffect(() => {
-    reloadRuleCards();
-  }, [filter.aggr_rule_id, params.my_groups, JSON.stringify(params.range), refreshFlag]);
 
   const { run: reloadRuleCards } = useDebounceFn(
     () => {
@@ -75,7 +72,7 @@ const AlertCurEvent: React.FC = () => {
       const requestParams: any = {
         view_id: filter.aggr_rule_id,
         my_groups: String(params.my_groups) === 'true',
-        ..._.omit(params, ['range', 'my_groups', 'severity', 'rule_prods']),
+        ..._.omit(params, ['range', 'my_groups']),
       };
       if (params.range) {
         const parsedRange = parseRange(params.range);
@@ -100,6 +97,16 @@ const AlertCurEvent: React.FC = () => {
       wait: 500,
     },
   );
+
+  useEffect(() => {
+    reloadRuleCards();
+  }, [filter.aggr_rule_id, JSON.stringify(params), refreshFlag]);
+
+  useEffect(() => {
+    return () => {
+      window.localStorage.removeItem(AGGR_RULE_CARD_EVENT_IDS_CACHE_KEY);
+    };
+  }, []);
 
   return (
     <PageLayout icon={<AlertOutlined />} title={t('title')}>
@@ -150,7 +157,6 @@ const AlertCurEvent: React.FC = () => {
             </Space>
             <TimeRangePickerWithRefresh
               allowClear={true}
-              localKey={TIME_CACHE_KEY}
               value={filter.range}
               onChange={(val) => {
                 setFilter({

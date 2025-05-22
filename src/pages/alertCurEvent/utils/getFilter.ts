@@ -1,13 +1,10 @@
 import _ from 'lodash';
 
-import { getDefaultValue } from '@/components/TimeRangePicker';
-
-import { TIME_CACHE_KEY } from '../constants';
 import { FilterType } from '../types';
 
-export default function getFilterByURLQuery(query, aggrRuleCardEventIds): FilterType {
+export default function getFilterByURLQuery(query, range, aggrRuleCardEventIds): FilterType {
   return {
-    range: getDefaultValue(TIME_CACHE_KEY, undefined),
+    range,
     aggr_rule_id: query.aggr_rule_id ? Number(query.aggr_rule_id) : undefined,
     event_ids: aggrRuleCardEventIds,
     datasource_ids: query.datasource_ids ? _.split(query.datasource_ids, ',').map(Number) : undefined,
