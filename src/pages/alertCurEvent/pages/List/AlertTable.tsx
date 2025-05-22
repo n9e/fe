@@ -73,7 +73,7 @@ export default function AlertTable(props: IProps) {
 
         return (
           <div className='max-w-[600px]'>
-            <div className='mb-2 text-[14px]' style={{ lineHeight: 1 }}>
+            <div className='mb-2 text-[14px]'>
               <Space>
                 {currentDatasourceCate && currentDatasource ? (
                   <Space>
