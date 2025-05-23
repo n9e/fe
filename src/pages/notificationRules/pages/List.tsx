@@ -9,13 +9,15 @@ import { Link } from 'react-router-dom';
 import PageLayout from '@/components/pageLayout';
 import { getSimplifiedItems as getNotificationChannels } from '@/pages/notificationChannels/services';
 import { getTeamInfoList } from '@/services/manage';
+import usePagination from '@/components/usePagination';
 
 import { getItems, putItem, deleteItems } from '../services';
-import { NS, CN } from '../constants';
+import { NS, CN, TABLE_PAGINATION_CACHE_KEY } from '../constants';
 import { RuleItem } from '../types';
 
 export default function List() {
   const { t } = useTranslation(NS);
+  const pagination = usePagination({ PAGESIZE_KEY: TABLE_PAGINATION_CACHE_KEY });
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState<{
     search: string;
@@ -221,6 +223,7 @@ export default function List() {
               },
             },
           ]}
+          pagination={pagination}
         />
       </div>
     </PageLayout>
