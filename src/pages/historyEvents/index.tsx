@@ -21,7 +21,7 @@ import moment from 'moment';
 import _ from 'lodash';
 import { useAntdTable } from 'ahooks';
 import { Input, Tag, Button, Space, Table, Select, message } from 'antd';
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 
 import PageLayout, { HelpLink } from '@/components/pageLayout';
@@ -33,6 +33,7 @@ import TimeRangePicker, { parseRange, getDefaultValue } from '@/components/TimeR
 import { IS_ENT } from '@/utils/constant';
 import { BusinessGroupSelectWithAll } from '@/components/BusinessGroup';
 import { allCates } from '@/components/AdvancedWrap/utils';
+import EventDetailDrawer from '@/pages/alertCurEvent/pages/List/EventDetailDrawer';
 
 import exportEvents, { downloadFile } from './exportEvents';
 import { getEvents, getEventsByIds } from './services';
@@ -73,6 +74,12 @@ const Event: React.FC = () => {
       }),
     });
   };
+  const [eventDetailDrawerData, setEventDetailDrawerData] = useState<{
+    visible: boolean;
+    data?: any;
+  }>({
+    visible: false,
+  });
   const columns = [
     {
       title: t('event_name'),
@@ -97,14 +104,18 @@ const Event: React.FC = () => {
                     <span>/</span>
                   </Space>
                 ) : null}
-                <Link
-                  to={{
-                    pathname: `/alert-his-events/${record.id}`,
+                <a
+                  onClick={() => {
+                    getEventsByIds(record.id).then((res) => {
+                      setEventDetailDrawerData({
+                        visible: true,
+                        data: res.dat?.[0],
+                      });
+                    });
                   }}
-                  target='_blank'
                 >
                   {title}
-                </Link>
+                </a>
               </Space>
             </div>
             <div>
@@ -374,6 +385,15 @@ const Event: React.FC = () => {
           />
         </div>
       </div>
+      <EventDetailDrawer
+        showDeleteBtn={false}
+        visible={eventDetailDrawerData.visible}
+        data={eventDetailDrawerData.data}
+        onClose={() => setEventDetailDrawerData({ visible: false })}
+        onDeleteSuccess={() => {
+          setRefreshFlag(_.uniqueId('refresh_'));
+        }}
+      />
     </PageLayout>
   );
 };

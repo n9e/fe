@@ -5,7 +5,6 @@ import _ from 'lodash';
 import { Button, message, Spin, Tag, Typography } from 'antd';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { SEVERITY_COLORS } from '@/pages/alertCurEvent/constants';
 import { CommonStateContext, basePrefix } from '@/App';
 import TDengineDetail from '@/plugins/TDengine/Event';
 import { Event as ElasticsearchDetail } from '@/plugins/elasticsearch';
@@ -125,13 +124,22 @@ export default function DetailNG(props: Props) {
       key: 'severity',
       render: (severity) => {
         const severityMap = {
-          1: '（Critical）',
-          2: '（Warning）',
-          3: '（Info）',
+          1: {
+            color: '#cc0204',
+            text: '（Critical）',
+          },
+          2: {
+            color: '#fd6e00',
+            text: '（Warning）',
+          },
+          3: {
+            color: '#f2d204',
+            text: '（Info）',
+          },
         };
         return (
-          <Tag className={`${SEVERITY_COLORS[severity - 1]}`}>
-            S{severity} {severityMap[severity]}
+          <Tag color={severityMap[severity].color}>
+            S{severity} {severityMap[severity].text}
           </Tag>
         );
       },

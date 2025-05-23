@@ -2,30 +2,37 @@
   .pr16 {
     padding-right: 16px;
   }
+
   .ant-spin-nested-loading {
     background: transparent !important;
   }
+
   .ant-spin-container {
     height: 100%;
   }
+
   .desc-container {
     display: flex;
     flex-direction: column;
     border-radius: 0;
     font-size: 12px;
     max-height: 100%;
+
     .ant-card-body {
       box-sizing: border-box;
       flex: auto;
       overflow: auto;
     }
+
     .desc-row {
       display: flex;
       min-height: 26px;
       margin-bottom: 8px;
+
       &:last-of-type {
         margin-bottom: 0;
       }
+
       .desc-label {
         display: flex;
         justify-content: flex-end;
@@ -34,41 +41,25 @@
         color: var(--fc-text-3);
         white-space: nowrap;
       }
+
       .desc-content {
         flex: 1;
         display: flex;
         flex-flow: row wrap;
         align-items: center;
         color: var(--fc-text-1);
+
         .ant-row {
           flex: 1;
         }
       }
+
       .rule-link-btn {
         padding: 0;
         border: 0;
       }
     }
-    .ant-tag {
-      margin: 2px 4px;
-      &.yellow {
-        color: var(--fc-gold-6-color);
-        background-color: var(--fc-gold-1-color);
-        border: 1px solid var(--fc-gold-6-color);
-      }
 
-      &.orange {
-        color: var(--fc-orange-6-color);
-        background-color: var(--fc-orange-1-color);
-        border: 1px solid var(--fc-orange-6-color);
-      }
-
-      &.red {
-        color: var(--fc-red-6-color);
-        background-color: var(--fc-red-1-color);
-        border: 1px solid var(--fc-red-6-color);
-      }
-    }
     .action-btns {
       display: flex;
       justify-content: flex-start;
