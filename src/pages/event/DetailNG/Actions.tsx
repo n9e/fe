@@ -3,7 +3,7 @@ import { Space, Button, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import queryString from 'query-string';
-import { useHistory, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import { deleteAlertEventsModal } from '../index';
 
@@ -16,7 +16,6 @@ interface Options {
 export default function getActions(options: Options) {
   const { t } = useTranslation('AlertCurEvents');
   const { eventDetail, showDeleteBtn, onDeleteSuccess } = options;
-  const history = useHistory();
 
   if (!eventDetail) {
     return [];
