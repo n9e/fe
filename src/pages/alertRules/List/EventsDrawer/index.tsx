@@ -1,12 +1,13 @@
 import React, { useState, useContext } from 'react';
-import { Drawer, Table, Tooltip, Tag, Dropdown, Menu, Button, Row, Col, Space, Select, Input } from 'antd';
+import { Drawer, Table, Tag, Dropdown, Menu, Button, Row, Col, Space, Select, Input } from 'antd';
 import { MoreOutlined, SearchOutlined } from '@ant-design/icons';
 import { useAntdTable } from 'ahooks';
 import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
-import { useHistory, Link } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import queryString from 'query-string';
+
 import TimeRangePicker, { parseRange } from '@/components/TimeRangePicker';
 import { getEvents } from '@/pages/event/services';
 import { CommonStateContext } from '@/App';
@@ -15,6 +16,11 @@ import { getProdOptions } from '@/pages/alertRules/Form/components/ProdSelect';
 import { IS_PLUS, IS_ENT } from '@/utils/constant';
 import DatasourceSelect from '@/components/DatasourceSelect/DatasourceSelect';
 import { BusinessGroupSelectWithAll } from '@/components/BusinessGroup';
+import { allCates } from '@/components/AdvancedWrap/utils';
+import { getEventById } from '@/pages/alertCurEvent/services';
+import { NS as alertCurEventNS } from '@/pages/alertCurEvent/constants';
+import EventDetailDrawer from '@/pages/alertCurEvent/pages/List/EventDetailDrawer';
+
 import './style.less';
 
 // @ts-ignore
@@ -52,12 +58,18 @@ const fetchData = (rid, filter, { current, pageSize }) => {
 
 export default function index(props: Props) {
   const { t } = useTranslation('AlertCurEvents');
-  const { groupedDatasourceList, feats } = useContext(CommonStateContext);
+  const { datasourceList, feats } = useContext(CommonStateContext);
   const history = useHistory();
   const { title, rid, visible, onClose } = props;
   const [filter, setFilter] = useState<any>({});
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
+  const [eventDetailDrawerData, setEventDetailDrawerData] = useState<{
+    visible: boolean;
+    data?: any;
+  }>({
+    visible: false,
+  });
   const { tableProps } = useAntdTable(
     (params) => {
       if (visible) {
@@ -76,70 +88,78 @@ export default function index(props: Props) {
   );
   const columns = [
     {
-      title: t('prod'),
-      dataIndex: 'rule_prod',
-      width: 100,
-      render: (value) => {
-        return t(`AlertHisEvents:rule_prod.${value}`);
-      },
-    },
-    {
-      title: t('common:datasource.id'),
-      dataIndex: 'datasource_id',
-      width: 100,
-      render: (value, record) => {
-        if (value === 0) {
-          return '$all';
-        }
-        return _.find(groupedDatasourceList?.[record.cate], { id: value })?.name || '-';
-      },
-    },
-    {
-      title: t('rule_name'),
+      title: t(`${alertCurEventNS}:event_name`),
       dataIndex: 'rule_name',
-      render(title, { id, tags }) {
+      render(title, record) {
+        const currentDatasourceCate = _.find(allCates, { value: record.cate });
+        const currentDatasource = _.find(datasourceList, { id: record.datasource_id });
+
         return (
-          <>
-            <div className='mb1'>
-              <Link to={`/alert-cur-events/${id}`}>{title}</Link>
+          <div className='max-w-[60vw]'>
+            <div className='mb-2'>
+              <Space>
+                {currentDatasourceCate && currentDatasource ? (
+                  <Space>
+                    <img src={currentDatasourceCate.logo} height={14} />
+                    {currentDatasource.name}
+                    <span>/</span>
+                  </Space>
+                ) : record.cate === 'host' ? (
+                  <Space>
+                    <img src='/image/logos/host.png' height={14} />
+                    <span>/</span>
+                  </Space>
+                ) : null}
+                <a
+                  onClick={() => {
+                    getEventById(record.id).then((res) => {
+                      setEventDetailDrawerData({
+                        visible: true,
+                        data: res.dat,
+                      });
+                    });
+                  }}
+                >
+                  {title}
+                </a>
+              </Space>
             </div>
             <div>
-              {_.map(tags, (item) => {
+              {_.map(record.tags, (item) => {
                 return (
-                  <Tooltip key={item} title={item}>
-                    <Tag
-                      style={{ maxWidth: '100%' }}
-                      onClick={() => {
-                        if (!filter.queryContent.includes(item)) {
-                          setFilter({
-                            ...filter,
-                            queryContent: filter.queryContent ? `${filter.queryContent.trim()} ${item}` : item,
-                          });
-                        }
+                  <Tag
+                    key={item}
+                    style={{ maxWidth: '100%' }}
+                    onClick={() => {
+                      if (!_.includes(filter.query, item)) {
+                        setFilter({
+                          ...filter,
+                          query: filter.query ? `${filter.query.trim()} ${item}` : item,
+                        });
+                      }
+                    }}
+                  >
+                    <div
+                      style={{
+                        maxWidth: 'max-content',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
                       }}
                     >
-                      <div
-                        style={{
-                          maxWidth: 'max-content',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                        }}
-                      >
-                        {item}
-                      </div>
-                    </Tag>
-                  </Tooltip>
+                      {item}
+                    </div>
+                  </Tag>
                 );
               })}
             </div>
-          </>
+          </div>
         );
       },
     },
     {
       title: t('first_trigger_time'),
       dataIndex: 'first_trigger_time',
-      width: 120,
+      fixed: 'right' as const,
       render(value) {
         return moment(value * 1000).format('YYYY-MM-DD HH:mm:ss');
       },
@@ -147,7 +167,7 @@ export default function index(props: Props) {
     {
       title: t('trigger_time'),
       dataIndex: 'trigger_time',
-      width: 120,
+      fixed: 'right' as const,
       render(value) {
         return moment(value * 1000).format('YYYY-MM-DD HH:mm:ss');
       },
@@ -155,7 +175,7 @@ export default function index(props: Props) {
     {
       title: t('common:table.operations'),
       dataIndex: 'operate',
-      width: 80,
+      fixed: 'right' as const,
       render(_value, record) {
         return (
           <Dropdown
@@ -222,10 +242,10 @@ export default function index(props: Props) {
     },
   ];
   if (IS_PLUS) {
-    columns.splice(5, 0, {
+    columns.splice(3, 0, {
       title: t('claimant'),
       dataIndex: 'claimant',
-      width: 100,
+      fixed: 'right' as const,
       render: (value, record) => {
         if (record.status === 1) {
           return value;
@@ -383,7 +403,8 @@ export default function index(props: Props) {
       <Table
         className='mt8 alert-rules-events-table'
         size='small'
-        tableLayout='fixed'
+        tableLayout='auto'
+        scroll={!_.isEmpty(tableProps.dataSource) ? { x: 'max-content' } : undefined} // TODO: 临时解决空数据时会出现滚动条问题
         rowKey={(record) => record.id}
         columns={columns}
         {...tableProps}
@@ -399,6 +420,15 @@ export default function index(props: Props) {
         pagination={{
           ...tableProps.pagination,
           pageSizeOptions: ['30', '100', '200', '500'],
+        }}
+      />
+      <EventDetailDrawer
+        visible={eventDetailDrawerData.visible}
+        data={eventDetailDrawerData.data}
+        onClose={() => setEventDetailDrawerData({ visible: false })}
+        onDeleteSuccess={() => {
+          setRefreshFlag(_.uniqueId('refresh_'));
+          setSelectedRowKeys([]);
         }}
       />
     </Drawer>

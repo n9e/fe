@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Tag, Button, Table, Dropdown, Menu, Drawer, Space } from 'antd';
-import { MoreOutlined, CloseOutlined } from '@ant-design/icons';
+import { Tag, Button, Table, Dropdown, Menu, Space } from 'antd';
+import { MoreOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
 import moment from 'moment';
 import _ from 'lodash';
@@ -10,8 +10,6 @@ import { useAntdTable } from 'ahooks';
 
 import { CommonStateContext } from '@/App';
 import { parseRange } from '@/components/TimeRangePicker';
-import DetailNG from '@/pages/event/DetailNG';
-import getActions from '@/pages/event/DetailNG/Actions';
 import usePagination from '@/components/usePagination';
 import { allCates } from '@/components/AdvancedWrap/utils';
 import { IS_PLUS } from '@/utils/constant';
@@ -20,6 +18,7 @@ import { getEvents, getEventById } from '../../services';
 import deleteAlertEventsModal from '../../utils/deleteAlertEventsModal';
 import { NS, SEVERITY_COLORS, EVENTS_TABLE_PAGESIZE_CACHE_KEY } from '../../constants';
 import { FilterType } from '../../types';
+import EventDetailDrawer from './EventDetailDrawer';
 
 // @ts-ignore
 import AckBtn from 'plus:/parcels/Event/Acknowledge/AckBtn';
@@ -62,8 +61,12 @@ export default function AlertTable(props: IProps) {
   const history = useHistory();
   const { t } = useTranslation(NS);
   const { datasourceList } = useContext(CommonStateContext);
-  const [openAlertDetailDrawer, setOpenAlertDetailDrawer] = useState<boolean>(false);
-  const [currentRecord, setCurrentRecord] = useState<any>(null);
+  const [eventDetailDrawerData, setEventDetailDrawerData] = useState<{
+    visible: boolean;
+    data?: any;
+  }>({
+    visible: false,
+  });
   const columns = [
     {
       title: t('event_name'),
@@ -91,8 +94,10 @@ export default function AlertTable(props: IProps) {
                 <a
                   onClick={() => {
                     getEventById(record.id).then((res) => {
-                      setCurrentRecord(res.dat);
-                      setOpenAlertDetailDrawer(true);
+                      setEventDetailDrawerData({
+                        visible: true,
+                        data: res.dat,
+                      });
                     });
                   }}
                 >
@@ -306,26 +311,15 @@ export default function AlertTable(props: IProps) {
           pageSizeOptions: ['30', '100', '200', '500'],
         }}
       />
-      <Drawer
-        width='80%'
-        closable={false}
-        title={t('title')}
-        destroyOnClose
-        extra={<CloseOutlined onClick={() => setOpenAlertDetailDrawer(false)} />}
-        onClose={() => setOpenAlertDetailDrawer(false)}
-        visible={openAlertDetailDrawer}
-        footer={getActions({
-          eventDetail: currentRecord,
-          showDeleteBtn: true,
-          onDeleteSuccess: () => {
-            setOpenAlertDetailDrawer(false);
-            setRefreshFlag(_.uniqueId('refresh_'));
-            setSelectedRowKeys([]);
-          },
-        })}
-      >
-        {currentRecord && <DetailNG data={currentRecord} showGraph />}
-      </Drawer>
+      <EventDetailDrawer
+        visible={eventDetailDrawerData.visible}
+        data={eventDetailDrawerData.data}
+        onClose={() => setEventDetailDrawerData({ visible: false })}
+        onDeleteSuccess={() => {
+          setRefreshFlag(_.uniqueId('refresh_'));
+          setSelectedRowKeys([]);
+        }}
+      />
     </>
   );
 }
