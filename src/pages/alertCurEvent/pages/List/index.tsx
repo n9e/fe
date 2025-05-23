@@ -17,7 +17,7 @@ import { BusinessGroupSelectWithAll } from '@/components/BusinessGroup';
 import { getAlertCards } from '@/services/warning';
 import { parseRange } from '@/components/TimeRangePicker';
 
-import { NS } from '../../constants';
+import { NS, MY_GRPUPS_CACHE_KEY } from '../../constants';
 import getFilterByURLQuery from '../../utils/getFilter';
 import deleteAlertEventsModal from '../../utils/deleteAlertEventsModal';
 import getProdOptions from '../../utils/getProdOptions';
@@ -105,11 +105,12 @@ const AlertCurEvent: React.FC = () => {
               <Segmented
                 shape='round'
                 className='whitespace-nowrap w-[190px]'
-                onChange={(value) => {
+                onChange={(value: string) => {
                   setFilter({
                     ...filter,
                     my_groups: value,
                   });
+                  localStorage.setItem(MY_GRPUPS_CACHE_KEY, value);
                 }}
                 value={filter.my_groups}
                 block
@@ -210,7 +211,7 @@ const AlertCurEvent: React.FC = () => {
                     <br />
                   </Checkbox.Group>
                 </Collapse.Panel>
-                <Collapse.Panel header={t('detail.datasource_id')} key='datasource'>
+                <Collapse.Panel header={t('datasources')} key='datasource'>
                   <DatasourceCheckbox
                     value={filter.datasource_ids}
                     onChange={(val: number[]) => {
