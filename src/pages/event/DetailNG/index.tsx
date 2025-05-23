@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import moment from 'moment';
 import _ from 'lodash';
-import { Button, message, Spin, Tag, Typography } from 'antd';
+import { Button, message, Space, Spin, Tag, Typography } from 'antd';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { CommonStateContext, basePrefix } from '@/App';
@@ -246,35 +246,60 @@ export default function DetailNG(props: Props) {
         return `${content} s`;
       },
     },
-    {
-      label: t('detail.notify_channels'),
-      key: 'notify_channels',
-      render(channels) {
-        return _.join(channels, ' ');
-      },
-    },
-    {
-      label: t('detail.notify_groups_obj'),
-      key: 'notify_groups_obj',
-      render(groups) {
-        return groups ? groups.map((group) => <Tag color='purple'>{group.name}</Tag>) : '';
-      },
-    },
-    {
-      label: t('detail.callbacks'),
-      key: 'callbacks',
-      render(callbacks) {
-        return callbacks
-          ? callbacks.map((callback) => (
-              <Tag>
-                <Paragraph copyable style={{ margin: 0 }}>
-                  {callback}
-                </Paragraph>
-              </Tag>
-            ))
-          : '';
-      },
-    },
+    ...(eventDetail?.notify_version === 0
+      ? [
+          {
+            label: t('detail.notify_channels'),
+            key: 'notify_channels',
+            render(channels) {
+              return _.join(channels, ' ');
+            },
+          },
+          {
+            label: t('detail.notify_groups_obj'),
+            key: 'notify_groups_obj',
+            render(groups) {
+              return groups ? groups.map((group) => <Tag color='purple'>{group.name}</Tag>) : '';
+            },
+          },
+          {
+            label: t('detail.callbacks'),
+            key: 'callbacks',
+            render(callbacks) {
+              return callbacks
+                ? callbacks.map((callback) => (
+                    <Tag>
+                      <Paragraph copyable style={{ margin: 0 }}>
+                        {callback}
+                      </Paragraph>
+                    </Tag>
+                  ))
+                : '';
+            },
+          },
+        ]
+      : []),
+    ...(eventDetail?.notify_version === 1
+      ? [
+          {
+            label: t('detail.notify_rules'),
+            key: 'notify_rules',
+            render(notifyRules) {
+              return (
+                <Space>
+                  {_.map(notifyRules, (item) => {
+                    return (
+                      <Link to={`/notification-rules/edit/${item.id}`} target='_blank' key={item.id}>
+                        {item.name}
+                      </Link>
+                    );
+                  })}
+                </Space>
+              );
+            },
+          },
+        ]
+      : []),
   ];
 
   if (eventDetail?.annotations) {
