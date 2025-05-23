@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import moment from 'moment';
 import _ from 'lodash';
-import { Button, message, Spin, Tag, Typography } from 'antd';
+import { Button, message, Space, Spin, Tag, Typography } from 'antd';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { CommonStateContext, basePrefix } from '@/App';
@@ -285,13 +285,17 @@ export default function DetailNG(props: Props) {
             label: t('detail.notify_rules'),
             key: 'notify_rules',
             render(notifyRules) {
-              return _.map(notifyRules, (item) => {
-                return (
-                  <Link to={`/notification-rules/edit/${item.id}`} target='_blank' key={item.id}>
-                    {item.name}
-                  </Link>
-                );
-              });
+              return (
+                <Space>
+                  {_.map(notifyRules, (item) => {
+                    return (
+                      <Link to={`/notification-rules/edit/${item.id}`} target='_blank' key={item.id}>
+                        {item.name}
+                      </Link>
+                    );
+                  })}
+                </Space>
+              );
             },
           },
         ]
