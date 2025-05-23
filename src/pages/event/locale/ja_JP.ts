@@ -66,6 +66,7 @@ const ja_JP = {
     notify_groups_obj: 'アラート受信グループ',
     callbacks: 'コールバックアドレス',
     runbook_url: 'ルンブックリンク',
+    notify_rules: '通知ルール',
     detail_url: '詳細リンク',
     host: {
       trigger: 'トリガ',
