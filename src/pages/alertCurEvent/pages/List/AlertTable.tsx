@@ -150,9 +150,9 @@ export default function AlertTable(props: IProps) {
         const hours = duration / 3600000;
         const highlight = hours >= 24 ? maxGrids : Math.floor(hours / 2);
         const getColorClass = (idx: number) => {
-          if (idx < 4) return 'gold';
-          if (idx < 8) return 'orange';
-          return 'red';
+          if (idx < 4) return 'segment-left';
+          if (idx < 8) return 'segment-middle';
+          return 'segment-right';
         };
         return (
           <div>

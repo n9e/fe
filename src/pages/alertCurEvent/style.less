@@ -37,15 +37,15 @@
     color: #fff;
 
     &.yellow {
-      background-color: var(--fc-gold-6-color);
+      background-color: #f2d204;
     }
 
     &.orange {
-      background-color: var(--fc-orange-6-color);
+      background-color: #fd6e00;
     }
 
     &.red {
-      background-color: var(--fc-red-6-color);
+      background-color: #cc0204;
     }
   }
 
@@ -55,33 +55,33 @@
     border-radius: 1px;
     display: inline-block;
 
-    &.gold {
+    &.segment-left {
       &.active {
-        background: radial-gradient(ellipse, #fff27a 10%, #ffdb29 45%);
+        background: #f2d204
       }
 
       &.inactive {
-        background: #fffab5;
+        background: rgba(255, 250, 181, 0.5);
       }
     }
 
-    &.orange {
+    &.segment-middle {
       &.active {
-        background: radial-gradient(ellipse, #ffcf87 10%, #ff9b29 45%);
+        background: #fd6e00;
       }
 
       &.inactive {
-        background: #ffe4b5;
+        background: rgba(255, 228, 181, 0.5);
       }
     }
 
-    &.red {
+    &.segment-right {
       &.active {
-        background: radial-gradient(ellipse, #ffa39e 10%, #ff4d4f 45%);
+        background: #cc0204
       }
 
       &.inactive {
-        background: #ffccc7;
+        background: rgba(255, 204, 199, 0.5);
       }
     }
   }
