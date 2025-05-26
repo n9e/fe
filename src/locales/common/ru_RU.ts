@@ -150,6 +150,7 @@ const ru_RU = {
   public: 'Публичное',
   private: 'Частное',
   advanced_settings: 'Расширенные настройки',
+  disabled: 'Отключено',
 
   tpl: 'Скрипт самовосстановления',
   'tpl.create': 'Создать',

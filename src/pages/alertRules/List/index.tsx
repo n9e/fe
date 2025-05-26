@@ -126,7 +126,6 @@ export default function List(props: ListProps) {
           {
             title: t('common:business_group'),
             dataIndex: 'group_id',
-            width: 100,
             render: (id) => {
               return _.find(busiGroups, { id })?.name;
             },
@@ -217,13 +216,7 @@ export default function List(props: ListProps) {
         dataIndex: 'append_tags',
         render(value) {
           return (
-            <div
-              style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: 4,
-              }}
-            >
+            <div className='flex flex-wrap gap-[4px] max-w-[400px]'>
               {_.map(value, (item) => {
                 return (
                   <Tooltip key={item} title={item}>
@@ -250,13 +243,7 @@ export default function List(props: ListProps) {
         dataIndex: 'notify_groups_obj',
         render: (data) => {
           return (
-            <div
-              style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: 4,
-              }}
-            >
+            <div className='flex flex-wrap gap-[4px] max-w-[400px]'>
               {_.map(data, (user) => {
                 const val = user.nickname || user.username || user.name;
                 return (
@@ -323,6 +310,7 @@ export default function List(props: ListProps) {
       },
       {
         title: t('common:table.operations'),
+        fixed: 'right',
         render: (record: any) => {
           const anomalyEnabled = _.get(record, ['rule_config', 'anomaly_trigger', 'enable']);
           return (
@@ -539,9 +527,13 @@ export default function List(props: ListProps) {
               {t('common:btn.import')}
             </Button>
           )}
-          {businessGroup.isLeaf && businessGroup.id && gids !== '-2' && (
-            <MoreOperations bgid={businessGroup.id} selectRowKeys={selectRowKeys} selectedRows={selectedRows} getAlertRules={fetchData} />
-          )}
+          <MoreOperations
+            bgid={businessGroup.id}
+            isLeaf={!!(businessGroup.isLeaf && businessGroup.id && gids !== '-2')}
+            selectRowKeys={selectRowKeys}
+            selectedRows={selectedRows}
+            getAlertRules={fetchData}
+          />
           <Button
             onClick={() => {
               OrganizeColumns({
@@ -558,9 +550,11 @@ export default function List(props: ListProps) {
         </Space>
       </div>
       <Table
-        className='mt8'
+        className='mt-2'
         size='small'
         rowKey='id'
+        tableLayout='auto'
+        scroll={{ x: 'max-content' }}
         showSorterTooltip={false}
         pagination={pagination}
         loading={loading}

@@ -150,6 +150,7 @@ const en_US = {
   public: 'Public',
   private: 'Private',
   advanced_settings: 'Advanced settings',
+  disabled: 'Disabled',
 
   tpl: 'Self-healing',
   'tpl.create': 'Create',
