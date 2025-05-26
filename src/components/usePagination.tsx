@@ -3,7 +3,9 @@ import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface PaginationProps {
-  PAGESIZE_KEY: string;
+  PAGESIZE_KEY?: string; // @deprecated Use pageSizeLocalstorageKey instead
+  pageSizeLocalstorageKey?: string;
+  defaultPageSize?: number;
   pageSizeOptions?: string[];
   showSizeChanger?: boolean;
 }
@@ -12,8 +14,10 @@ type TablePaginationPosition = 'topLeft' | 'topCenter' | 'topRight' | 'bottomLef
 
 export default function usePagination(props: PaginationProps) {
   const { tablePaginationPosition } = useContext(CommonStateContext);
-  const { PAGESIZE_KEY, pageSizeOptions = ['10', '20', '50', '100'], showSizeChanger = true } = props;
-  const [pageSize, setPageSize] = React.useState<number>(Number(localStorage.getItem(PAGESIZE_KEY)) || 10);
+  const { PAGESIZE_KEY, pageSizeLocalstorageKey, defaultPageSize = 10, pageSizeOptions = ['10', '20', '50', '100'], showSizeChanger = true } = props;
+  const curPageSizeLocalstorageKey = pageSizeLocalstorageKey || PAGESIZE_KEY;
+  const pageSizeLocalValue = curPageSizeLocalstorageKey ? localStorage.getItem(curPageSizeLocalstorageKey) : null;
+  const [pageSize, setPageSize] = React.useState<number>(pageSizeLocalValue ? Number(pageSizeLocalValue) : defaultPageSize);
   const { t } = useTranslation();
 
   return {
@@ -25,7 +29,7 @@ export default function usePagination(props: PaginationProps) {
     },
     onShowSizeChange: (_current, size) => {
       setPageSize(size);
-      localStorage.setItem(PAGESIZE_KEY, size.toString());
+      curPageSizeLocalstorageKey && localStorage.setItem(curPageSizeLocalstorageKey, size.toString());
     },
     position: tablePaginationPosition ? ([tablePaginationPosition] as TablePaginationPosition[]) : undefined,
   };

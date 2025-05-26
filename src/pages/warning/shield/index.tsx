@@ -22,6 +22,7 @@ import moment from 'moment';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useHistory, Link } from 'react-router-dom';
+
 import Tags from '@/components/Tags';
 import PageLayout from '@/components/pageLayout';
 import { getBusiGroupsAlertMutes, deleteShields, updateShields } from '@/services/shield';
@@ -30,7 +31,9 @@ import BusinessGroupSideBarWithAll, { getDefaultGids } from '@/components/Busine
 import RefreshIcon from '@/components/RefreshIcon';
 import { DatasourceSelect } from '@/components/DatasourceSelect';
 import { CommonStateContext } from '@/App';
-import { pageSizeOptionsDefault } from '../const';
+import usePagination from '@/components/usePagination';
+import { allCates } from '@/components/AdvancedWrap/utils';
+
 import './locale';
 import './index.less';
 
@@ -57,7 +60,6 @@ const Shield: React.FC = () => {
           {
             title: t('common:business_group'),
             dataIndex: 'group_id',
-            width: 100,
             render: (id) => {
               return _.find(busiGroups, { id })?.name;
             },
@@ -83,16 +85,20 @@ const Shield: React.FC = () => {
       {
         title: t('common:datasource.type'),
         dataIndex: 'cate',
-        width: 100,
         render: (value: string) => {
-          if (!value) return '-';
-          return value;
+          const currentDatasourceCate = _.find(allCates, { value });
+          if (!currentDatasourceCate) return '-';
+          return (
+            <Space>
+              <img src={currentDatasourceCate.logo} height={14} />
+              {currentDatasourceCate.label}
+            </Space>
+          );
         },
       },
       {
         title: t('common:datasource.id'),
         dataIndex: 'datasource_ids',
-        width: 100,
         render(value, record: any) {
           if (!value) return '-';
           return (
@@ -156,8 +162,7 @@ const Shield: React.FC = () => {
       {
         title: t('time'),
         dataIndex: 'btime',
-        width: 150,
-        render: (text: number, record: shieldItem) => {
+        render: (_val, record: shieldItem) => {
           if (record.mute_time_type === 0) {
             return (
               <div className='shield-time'>
@@ -195,9 +200,19 @@ const Shield: React.FC = () => {
         },
       },
       {
+        title: t('common:table.update_at'),
+        dataIndex: 'update_at',
+        render: (value) => {
+          return moment.unix(value).format('YYYY-MM-DD HH:mm:ss');
+        },
+      },
+      {
+        title: t('common:table.update_by'),
+        dataIndex: 'update_by',
+      },
+      {
         title: t('common:table.enabled'),
         dataIndex: 'disabled',
-        width: 80,
         render: (disabled, record) => (
           <Switch
             checked={disabled === strategyStatus.Enable}
@@ -222,8 +237,8 @@ const Shield: React.FC = () => {
       },
       {
         title: t('common:table.operations'),
-        width: '98px',
         dataIndex: 'operation',
+        fixed: 'right',
         render: (text: undefined, record: shieldItem) => {
           return (
             <>
@@ -277,6 +292,7 @@ const Shield: React.FC = () => {
       },
     ],
   );
+  const pagination = usePagination({ pageSizeLocalstorageKey: 'alert-mutes-table-pagesize', defaultPageSize: 30, pageSizeOptions: ['30', '50', '100', '300'] });
 
   useEffect(() => {
     getList();
@@ -376,20 +392,12 @@ const Shield: React.FC = () => {
             )}
           </div>
           <Table
-            className='mt8'
+            className='mt-2'
             size='small'
             rowKey='id'
-            tableLayout='fixed'
-            pagination={{
-              total: currentShieldData.length,
-              showQuickJumper: true,
-              showSizeChanger: true,
-              showTotal: (total) => {
-                return t('common:table.total', { total });
-              },
-              pageSizeOptions: pageSizeOptionsDefault,
-              defaultPageSize: 30,
-            }}
+            tableLayout='auto'
+            scroll={{ x: 'max-content' }}
+            pagination={pagination}
             loading={loading}
             dataSource={currentShieldData}
             columns={columns}
