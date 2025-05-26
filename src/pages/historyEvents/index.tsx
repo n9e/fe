@@ -34,6 +34,7 @@ import { IS_ENT } from '@/utils/constant';
 import { BusinessGroupSelectWithAll } from '@/components/BusinessGroup';
 import { allCates } from '@/components/AdvancedWrap/utils';
 import EventDetailDrawer from '@/pages/alertCurEvent/pages/List/EventDetailDrawer';
+import usePagination from '@/components/usePagination';
 
 import exportEvents, { downloadFile } from './exportEvents';
 import { getEvents, getEventsByIds } from './services';
@@ -177,6 +178,7 @@ const Event: React.FC = () => {
     { bgid: filter.bgid },
     filter.rule_prods.length ? { rule_prods: _.join(filter.rule_prods, ',') } : {},
   );
+  const pagination = usePagination({ PAGESIZE_KEY: 'alert_his_events_table_pagesize' });
 
   let prodOptions = getProdOptions(feats);
   if (IS_ENT) {
@@ -379,6 +381,7 @@ const Event: React.FC = () => {
               return SeverityColor[record.is_recovered ? 3 : record.severity - 1] + '-left-border';
             }}
             pagination={{
+              ...pagination,
               ...tableProps.pagination,
               pageSizeOptions: ['30', '100', '200', '500'],
             }}
