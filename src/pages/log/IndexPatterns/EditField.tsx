@@ -175,7 +175,7 @@ function EditField(props: Props & ModalWrapProps) {
         } catch (error) {
           console.error(error);
         }
-        getFullFields(res.datasource_id, res.name).then((res) => {
+        getFullFields(res.datasource_id, res.name, { crossClusterEnabled: res.cross_cluster_enabled === 1 }).then((res) => {
           setFields(res.allFields);
         });
       });
