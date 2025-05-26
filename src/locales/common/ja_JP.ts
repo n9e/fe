@@ -150,6 +150,7 @@ const ja_JP = {
   public: '公開',
   private: '非公開',
   advanced_settings: '詳細設定',
+  disabled: '無効',
 
   tpl: '自己修復スクリプト',
   'tpl.create': '作成',

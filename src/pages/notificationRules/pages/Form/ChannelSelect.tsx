@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Select, Space, Tooltip } from 'antd';
+import { Form, Select, Space, Tag, Tooltip } from 'antd';
 import { QuestionCircleOutlined, SettingOutlined, SyncOutlined } from '@ant-design/icons';
 import { FormListFieldData } from 'antd/lib/form/FormList';
 import { useTranslation } from 'react-i18next';
@@ -20,7 +20,7 @@ interface Props {
 export default function ChannelSelect(props: Props) {
   const { t } = useTranslation(NS);
   const { field, onChange } = props;
-  const [options, setOptions] = useState<{ label: string; value: number; item: ChannelItem }[]>([]);
+  const [options, setOptions] = useState<{ label: string; value: number; enable: Boolean; item: ChannelItem }[]>([]);
   const [loading, setLoading] = useState(false);
   const form = Form.useFormInstance();
   const channel_id = Form.useWatch(['notify_configs', field.name, 'channel_id']);
@@ -34,6 +34,7 @@ export default function ChannelSelect(props: Props) {
             return {
               label: item.name,
               value: item.id,
+              enable: item.enable,
               item,
             };
           }),
@@ -88,6 +89,7 @@ export default function ChannelSelect(props: Props) {
             label: (
               <Space>
                 {item.label}
+                {!item.enable && <Tag color='warning'>{t('common:disabled')}</Tag>}
                 {isAuthorized && (
                   <Link to={`/notification-channels/edit/${item.value}`} target='_blank'>
                     {t('common:btn.view')}
@@ -95,13 +97,19 @@ export default function ChannelSelect(props: Props) {
                 )}
               </Space>
             ),
-            optionLabel: item.label,
+            optionLabel: (
+              <Space>
+                {item.label}
+                {!item.enable && <Tag color='warning'>{t('common:disabled')}</Tag>}
+              </Space>
+            ),
+            originLabel: item.label,
             value: item.value,
           };
         })}
-        optionLabelProp='optionLabel'
         showSearch
-        optionFilterProp='optionLabel'
+        optionLabelProp='optionLabel'
+        optionFilterProp='originLabel'
         onChange={() => {
           // 修改 channel_id 时，清空 template_id
           form.setFieldsValue({

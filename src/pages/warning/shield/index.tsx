@@ -85,15 +85,12 @@ const Shield: React.FC = () => {
       {
         title: t('common:datasource.type'),
         dataIndex: 'cate',
-        render: (value: string) => {
-          const currentDatasourceCate = _.find(allCates, { value });
-          if (!currentDatasourceCate) return '-';
-          return (
-            <Space>
-              <img src={currentDatasourceCate.logo} height={14} />
-              {currentDatasourceCate.label}
-            </Space>
-          );
+        render: (val) => {
+          let logoSrc = _.find(allCates, { value: val })?.logo;
+          if (val === 'host') {
+            logoSrc = '/image/logos/host.png';
+          }
+          return <img alt={val} src={logoSrc} height={20} />;
         },
       },
       {
