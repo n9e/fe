@@ -527,9 +527,13 @@ export default function List(props: ListProps) {
               {t('common:btn.import')}
             </Button>
           )}
-          {businessGroup.isLeaf && businessGroup.id && gids !== '-2' && (
-            <MoreOperations bgid={businessGroup.id} selectRowKeys={selectRowKeys} selectedRows={selectedRows} getAlertRules={fetchData} />
-          )}
+          <MoreOperations
+            bgid={businessGroup.id}
+            isLeaf={!!(businessGroup.isLeaf && businessGroup.id && gids !== '-2')}
+            selectRowKeys={selectRowKeys}
+            selectedRows={selectedRows}
+            getAlertRules={fetchData}
+          />
           <Button
             onClick={() => {
               OrganizeColumns({
