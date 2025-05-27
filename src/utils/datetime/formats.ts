@@ -1,0 +1,2 @@
+export const DEFAULT_SYSTEM_DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss';
+export const DEFAULT_SYSTEM_DATE_MS_FORMAT = 'YYYY-MM-DD HH:mm:ss.SSS';

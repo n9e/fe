@@ -8,13 +8,14 @@ import FormModal, { Values } from './FormModal';
 
 interface Props {
   initialValues: Values;
+  timeZone?: string;
   onOk: () => void;
   onClick: () => void;
 }
 
 export default function EditButton(props: Props) {
   const { t } = useTranslation('dashboard');
-  const { initialValues, onOk, onClick } = props;
+  const { initialValues, timeZone, onOk, onClick } = props;
   const [visible, setVisible] = React.useState(false);
 
   return (
@@ -28,6 +29,7 @@ export default function EditButton(props: Props) {
       <FormModal
         visible={visible}
         action='add'
+        timeZone={timeZone}
         onOk={(values) => {
           putAnnotations(values.id, values).then(() => {
             onOk();

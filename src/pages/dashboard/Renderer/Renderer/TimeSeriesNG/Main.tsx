@@ -43,6 +43,7 @@ interface Props {
   colors?: string[];
   range?: IRawTimeRange;
   setRange?: (range: IRawTimeRange) => void;
+  timezone?: string;
   inDashboard?: boolean; // 是否在仪表盘中
   isPreview?: boolean; // 是否在编辑面板的预览模式
   hideResetBtn?: boolean;
@@ -68,6 +69,7 @@ export default function index(props: Props) {
     colors,
     range,
     setRange,
+    timezone,
     inDashboard,
     isPreview,
     hideResetBtn,
@@ -101,11 +103,14 @@ export default function index(props: Props) {
           sort: options.tooltip?.sort ?? (defaultOptionsValues.tooltip.sort as any),
           pinningEnabled: true,
           zIndex: isPreview ? 1999 : 999, // 预览模式下 z-index 需要超过编辑面板的 z-index(1000)
+          graphTooltip: dashboardMeta.graphTooltip as any,
+          timeZone: timezone,
           renderFooter: (domNode: HTMLDivElement, closeOverlay: () => void) => {
             ReactDOM.render(
               <AddAnnotationButton
                 dashboardID={dashboardID}
                 panelID={id}
+                timeZone={timezone}
                 closeOverlay={closeOverlay}
                 uplotRef={uplotRef}
                 setAnnotationSettingUp={setAnnotationSettingUp}
@@ -118,7 +123,6 @@ export default function index(props: Props) {
               domNode,
             );
           },
-          graphTooltip: dashboardMeta.graphTooltip as any,
           pointNameformatter: (val, point) => {
             let name = val;
             if (options?.standardOptions?.displayName) {
@@ -159,6 +163,7 @@ export default function index(props: Props) {
               <AddAnnotatsMarkers
                 annotations={annotations}
                 uplotRef={uplotRef}
+                timeZone={timezone}
                 onEdit={() => {
                   if (setAnnotationsRefreshFlag) {
                     setAnnotationsRefreshFlag(_.uniqueId('annotationsRefreshFlag_'));
@@ -197,6 +202,7 @@ export default function index(props: Props) {
         axisBuilder({
           isTime: true,
           theme: darkMode ? 'dark' : 'light',
+          timeZone: timezone,
         }),
         axisBuilder({
           scaleKey: 'y',
@@ -293,6 +299,7 @@ export default function index(props: Props) {
     annotationSettingUp,
     JSON.stringify(annotations),
     JSON.stringify(overrides),
+    timezone,
   ]);
   let data = frames;
 

@@ -21,12 +21,14 @@ import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import { Button, Space, Dropdown, Menu, notification, Input, message, Tooltip } from 'antd';
-import { RollbackOutlined, SettingOutlined, SaveOutlined, FullscreenOutlined, DownOutlined } from '@ant-design/icons';
+import { RollbackOutlined, SettingOutlined, FullscreenOutlined, DownOutlined } from '@ant-design/icons';
 import { useKeyPress } from 'ahooks';
+
 import { TimeRangePickerWithRefresh, IRawTimeRange } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
 import { IS_ENT } from '@/utils/constant';
 import { updateDashboard, updateDashboardConfigs, getBusiGroupsDashboards } from '@/services/dashboardV2';
+
 import DashboardLinks from '../DashboardLinks';
 import { AddPanelIcon } from '../config';
 import { visualizations } from '../Editor/config';
@@ -43,6 +45,8 @@ interface IProps {
   handleUpdateDashboardConfigs: (id: number, params: any) => void;
   range: IRawTimeRange;
   setRange: (range: IRawTimeRange) => void;
+  timezone: string;
+  setTimezone: (timezone: string) => void;
   intervalSeconds?: number;
   setIntervalSeconds: (intervalSeconds?: number) => void;
   onAddPanel: (type: string) => void;
@@ -67,6 +71,8 @@ export default function Title(props: IProps) {
     handleUpdateDashboardConfigs,
     range,
     setRange,
+    timezone,
+    setTimezone,
     intervalSeconds,
     setIntervalSeconds,
     onAddPanel,
@@ -296,6 +302,9 @@ export default function Title(props: IProps) {
                   });
                   setIntervalSeconds(value);
                 }}
+                showTimezone
+                timezone={timezone}
+                onTimezoneChange={setTimezone}
               />
 
               {(isAuthorized || dashboardSaveMode === 'manual') && (

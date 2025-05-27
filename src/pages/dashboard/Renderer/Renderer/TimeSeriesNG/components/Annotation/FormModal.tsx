@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import { Input } from 'antd';
 
+import { dateTimeFormat } from '@/utils/datetime/formatter';
+
 export interface Values {
   id: number;
   dashboard_id: number;
@@ -17,17 +19,22 @@ export interface Values {
 interface Props {
   action: 'add' | 'edit';
   visible: boolean;
+  timeZone?: string;
   onOk: (values: Values) => void;
   onCancel: () => void;
   initialValues: Values;
 }
 
-const format = 'YYYY-MM-DD HH:mm:ss';
-
 export default function FormModal(props: Props) {
   const { t } = useTranslation('dashboard');
-  const { action, visible, onOk, onCancel, initialValues } = props;
+  const { action, visible, timeZone, onOk, onCancel, initialValues } = props;
   const [form] = Form.useForm();
+  const startTimeFormat = dateTimeFormat(moment.unix(initialValues.time_start), {
+    timeZone,
+  });
+  const endTimeFormat = dateTimeFormat(moment.unix(initialValues.time_end), {
+    timeZone,
+  });
 
   useEffect(() => {
     if (visible) {
@@ -47,8 +54,8 @@ export default function FormModal(props: Props) {
         >
           {t(`annotation.${action}`)}
           <span>
-            {moment.unix(initialValues.time_start).format(format)}
-            {initialValues.time_start !== initialValues.time_end ? ` - ${moment.unix(initialValues.time_end).format(format)}` : ''}
+            {startTimeFormat}
+            {initialValues.time_start !== initialValues.time_end ? ` - ${endTimeFormat}` : ''}
           </span>
         </div>
       }

@@ -15,6 +15,7 @@
  *
  */
 import { Moment } from 'moment';
+import type { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 export type TDurationUnit =
   | 'year'
@@ -59,6 +60,8 @@ export interface IRawTimeRange {
 }
 
 export interface ITimeRangePickerProps {
+  noBorder?: boolean; // 用户 trigger button 的 type，noBorder 表示 type="text"
+  limitHour?: number; // 限制小时数，超过这个小时数的快捷选项不显示或者禁用
   style?: object;
   localKey?: string;
   value?: IRawTimeRange;
@@ -68,9 +71,13 @@ export interface ITimeRangePickerProps {
   allowClear?: boolean;
   onClear?: () => void;
   label?: React.ReactElement;
-  extraFooter?: (fn: Function) => React.ReactElement;
+  extraFooter?: (fn: Function) => React.ReactElement; // 底部右侧额外的内容
   disabled?: boolean;
+  size?: SizeType; // trigger button size
   ajustTimeOptions?: (options: ITimeOption[]) => ITimeOption[];
+  showTimezone?: boolean; // 是否显示时区选择
+  timezone?: string; // 时区值，默认值为当前时区
+  onTimezoneChange?: (value: string) => void;
 }
 
 export interface ITimeRangePickerWithRefreshProps extends ITimeRangePickerProps {
