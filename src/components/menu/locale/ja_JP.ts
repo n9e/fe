@@ -58,6 +58,8 @@ const ja_JP = {
   notification_rules: '通知ルール',
   notification_channels: '通知チャネル',
   notification_templates: '通知テンプレート',
+  event_pipeline: 'イベントパイプライン',
+  label_mapping: 'ラベルマッピング',
 };
 
 export default ja_JP;

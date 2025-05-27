@@ -29,7 +29,7 @@ export function exportDataStringify(data: any) {
       name: data.name,
       tags: data.tags,
       ident: data.ident,
-      uuid: moment().valueOf() * 1000,
+      uuid: data.uuid || moment().valueOf() * 1000,
       configs: JSONParse(data.configs),
     },
     null,

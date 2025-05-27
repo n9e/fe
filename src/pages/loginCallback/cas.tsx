@@ -28,7 +28,7 @@ export default function index() {
   useEffect(() => {
     authCallbackCAS({
       ticket: query.ticket,
-      state: localStorage.getItem("CAS_state"),
+      state: localStorage.getItem('CAS_state'),
       redirect: query.redirect || '/',
     })
       .then((res) => {
@@ -37,7 +37,7 @@ export default function index() {
             localStorage.setItem(AccessTokenKey, res.dat.access_token);
             localStorage.setItem('refresh_token', res.dat.refresh_token);
             window.location.href = res.dat.redirect;
-            localStorage.removeItem("CAS_state");
+            localStorage.removeItem('CAS_state');
           } else {
             console.log(res.dat);
           }

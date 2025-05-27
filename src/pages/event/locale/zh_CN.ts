@@ -68,6 +68,7 @@ const zh_CN = {
     notify_groups_obj: '告警接收组',
     callbacks: '回调地址',
     runbook_url: '预案链接',
+    notify_rules: '通知规则',
     detail_url: '详情链接',
     host: {
       trigger: '触发',

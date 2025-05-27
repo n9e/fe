@@ -109,6 +109,19 @@ export const authCallbackOAuth = function (params) {
   });
 };
 
+export const getRedirectURLCustom = function () {
+  return request('/api/n9e/auth/redirect/custom', {
+    method: RequestMethod.Get,
+  });
+};
+
+export const authCallbackCustom = function (params) {
+  return request('/api/n9e/auth/callback/custom', {
+    method: RequestMethod.Get,
+    params,
+  });
+};
+
 export const getSsoConfig = function () {
   return request('/api/n9e/auth/sso-config', {
     method: RequestMethod.Get,

@@ -1,4 +1,5 @@
 .markdown-wrapper {
+
   h1,
   h2,
   h3,
@@ -6,38 +7,48 @@
   h5 {
     margin: 0;
   }
+
   p {
     // margin-bottom: 0 !important;
     line-height: 1.4;
   }
+
   pre {
     box-sizing: border-box;
     width: 100%;
     margin-right: 0;
+
     code {
       line-height: 1.2;
     }
   }
+
   img {
     max-width: 100%;
   }
+
   table {
     margin-bottom: 1em;
   }
+
   table {
     width: 100%;
+
     thead {
       width: 100%;
       height: 36px;
+
       th {
         line-height: 1.2;
         padding: 0 0 0 16px;
         text-align: left;
       }
     }
+
     tbody {
       tr {
         height: 36px;
+
         td {
           line-height: 1.2;
           padding: 0 0 0 16px;
@@ -46,56 +57,68 @@
       }
     }
   }
-  p + h1,
-  p + h2,
-  p + h3 {
+
+  p+h1,
+  p+h2,
+  p+h3 {
     margin-top: 24px;
   }
-  table + h1,
-  table + h2,
-  table + h3 {
+
+  table+h1,
+  table+h2,
+  table+h3 {
     margin-top: 24px;
   }
-  pre + h1,
-  pre + h2,
-  pre + h3 {
+
+  pre+h1,
+  pre+h2,
+  pre+h3 {
     margin-top: 24px;
   }
-  p + p,
-  p + table,
-  table + p {
+
+  p+p,
+  p+table,
+  table+p {
     margin-top: 8px;
   }
-  h1 + p,
-  h2 + p,
-  h3 + p,
-  h4 + p {
+
+  h1+p,
+  h2+p,
+  h3+p,
+  h4+p {
     margin-top: 12px;
   }
-  h1 + table,
-  h2 + table,
-  h3 + table,
-  h4 + table {
+
+  h1+table,
+  h2+table,
+  h3+table,
+  h4+table {
     margin-top: 12px;
   }
-  h1 + pre,
-  h2 + pre,
-  h3 + pre,
-  h4 + pre {
+
+  h1+pre,
+  h2+pre,
+  h3+pre,
+  h4+pre {
     margin-top: 12px;
   }
+
   li {
     line-height: 1.2;
+    margin-bottom: 4px;
   }
+
   ul {
     padding-inline-start: 24px;
   }
+
   .base-code {
     padding: 12px;
     background: rgb(245, 242, 240);
     border-radius: 0.5em;
     color: var(--fc-text-1);
   }
+
   .base-code-inline {
     display: inline-block;
     padding: 2px 4px;
@@ -104,10 +127,13 @@
 }
 
 .markdown-wrapper {
-  table th,table td {
+
+  table th,
+  table td {
     padding: 6px 13px;
     border: 1px solid var(--fc-border-color);
   }
+
   // table tr:nth-child(2n) {
   //   background-color: var(--fc-fill-3);
   // }
@@ -124,9 +150,12 @@
     .base-code {
       background: rgb(22, 27, 34);
     }
-    table th,table td {
+
+    table th,
+    table td {
       border: 1px solid var(--fc-border-color);
     }
+
     // table tr:nth-child(2n) {
     //   background-color: var(--fc-fill-3);
     // }

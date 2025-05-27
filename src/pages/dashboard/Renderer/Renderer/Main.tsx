@@ -64,6 +64,7 @@ function index(
     dashboardId,
     dashboardID,
     id,
+    timezone,
     variableConfig,
     isPreview,
     isAuthorized,
@@ -93,8 +94,6 @@ function index(
   const tipsVisible = description || !_.isEmpty(values.links);
   const panelCustomTimeDescribe = getPanelCustomTimeDescribe(series);
 
-  if (_.isEmpty(values)) return null;
-
   // TODO: 如果 hexbin 的 colorRange 为 string 时转成成 array
   if (typeof _.get(values, 'custom.colorRange') === 'string') {
     _.set(values, 'custom.colorRange', _.split(_.get(values, 'custom.colorRange'), ','));
@@ -114,6 +113,7 @@ function index(
         setAnnotationsRefreshFlag={props.setAnnotationsRefreshFlag}
         themeMode={themeMode}
         time={range}
+        timezone={timezone}
         setRange={props.setRange}
         isPreview={isPreview}
       />

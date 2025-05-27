@@ -63,6 +63,7 @@ const zh_HK = {
     },
     syntaxOptions: '語法選項',
     queryFailed: '查詢失敗，請稍後重試',
+    offset_tip: '用於查詢指定時間段之前的資料，類似 PromQL 中的 offset，單位為秒',
   },
 };
 

@@ -40,6 +40,7 @@ export interface IProps {
   id: string;
   time: IRawTimeRange;
   setRange?: (range: IRawTimeRange) => void;
+  timezone?: string; // 时区
   values: IPanel;
   variableConfig?: IVariable[];
   isPreview?: boolean; // 是否是预览，预览中不显示编辑和分享

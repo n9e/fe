@@ -1,19 +1,9 @@
-/*
- * Copyright 2022 Nightingale Team
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
+// 要保证一下行为可以正常
+// 1. 设置20s时，拿手机算了算差不多20s刷新
+// 2. 20s切换到1m时，间隔会从20s 到1m
+// 3. off时不触发
+// 4. 从off切换到5s时可以正常触发
+// 5. 切换到其他页面时，会关闭（不会出发之前的轮询）
 import React, { useState, useEffect, useRef, useImperativeHandle } from 'react';
 import { Dropdown, Button, Menu, Tooltip } from 'antd';
 import { DownOutlined, UpOutlined, SyncOutlined } from '@ant-design/icons';
@@ -46,20 +36,26 @@ function Refresh(props: IProps, ref) {
   const [intervalSeconds, setIntervalSeconds] = useState(props.intervalSeconds || intervalSecondsCache);
   const [visible, setVisible] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout>();
+  const removeRef = useRef(false);
 
   useEffect(() => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
     }
     if (intervalSeconds) {
-      intervalRef.current = setInterval(() => {
-        props.onRefresh();
-      }, intervalSeconds * 1000);
+      (function loop() {
+        if (removeRef.current) return;
+        intervalRef.current = setTimeout(function () {
+          props.onRefresh();
+          loop();
+        }, intervalSeconds * 1000);
+      })();
     }
   }, [intervalSeconds, props.onRefresh]);
 
   useEffect(() => {
     return () => {
+      removeRef.current = true;
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
@@ -80,7 +76,7 @@ function Refresh(props: IProps, ref) {
   return (
     <div className='auto-refresh-container'>
       <Tooltip title={props.tooltip}>
-        <Button className='refresh-btn' icon={<SyncOutlined />} onClick={props.onRefresh} />
+        <Button icon={<SyncOutlined className={intervalSeconds ? 'rotate-icon' : ''} />} onClick={props.onRefresh} />
       </Tooltip>
       <Dropdown
         trigger={['click']}

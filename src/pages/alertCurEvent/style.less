@@ -1,0 +1,126 @@
+@import './variables.less';
+
+.@{namespace} {
+  .event-card-new {
+    &.yellow {
+      color: var(--fc-gold-6-color);
+      background-color: var(--fc-gold-1-color);
+      border: 2px solid var(--fc-gold-1-color);
+
+      &.selected {
+        border: 2px solid var(--fc-gold-6-color);
+      }
+    }
+
+    &.orange {
+      color: var(--fc-orange-6-color);
+      background-color: var(--fc-orange-1-color);
+      border: 2px solid var(--fc-orange-1-color);
+
+      &.selected {
+        border: 2px solid var(--fc-orange-6-color);
+      }
+    }
+
+    &.red {
+      color: var(--fc-red-6-color);
+      background-color: var(--fc-red-1-color);
+      border: 2px solid var(--fc-red-1-color);
+
+      &.selected {
+        border: 2px solid var(--fc-red-6-color);
+      }
+    }
+  }
+
+  .event-card-circle {
+    color: #fff;
+
+    &.yellow {
+      background-color: #f2d204;
+    }
+
+    &.orange {
+      background-color: #fd6e00;
+    }
+
+    &.red {
+      background-color: #cc0204;
+    }
+  }
+
+  .duration-bar-segment {
+    width: 4px;
+    height: 12px;
+    border-radius: 1px;
+    display: inline-block;
+
+    &.segment-left {
+      &.active {
+        background: #f2d204
+      }
+
+      &.inactive {
+        background: rgba(255, 250, 181, 0.5);
+      }
+    }
+
+    &.segment-middle {
+      &.active {
+        background: #fd6e00;
+      }
+
+      &.inactive {
+        background: rgba(255, 228, 181, 0.5);
+      }
+    }
+
+    &.segment-right {
+      &.active {
+        background: #cc0204
+      }
+
+      &.inactive {
+        background: rgba(255, 204, 199, 0.5);
+      }
+    }
+  }
+
+  .ant-collapse {
+    background: transparent !important;
+
+    .ant-collapse-header {
+      background: var(--fc-fill-3) !important;
+      border-radius: 2px !important;
+      padding: 4px 8px !important;
+    }
+
+    .ant-collapse-item {
+      border: none !important;
+    }
+
+    .ant-collapse-content-box {
+      padding: 0 8px !important;
+    }
+  }
+
+  .ant-segmented-item-label {
+    text-overflow: unset !important;
+  }
+
+  .ant-table table {
+    border-collapse: collapse !important;
+
+    thead {
+      border-left: 10px solid #f0f0f0 !important;
+    }
+  }
+}
+
+.theme-dark {
+  .ant-table table {
+    thead {
+      border-left: 10px solid #23252b !important;
+    }
+  }
+}

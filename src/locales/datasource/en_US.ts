@@ -63,6 +63,7 @@ const en_US = {
     },
     syntaxOptions: 'Syntax options',
     queryFailed: 'Query failed, please try again later',
+    offset_tip: 'Used to query data before a specified time period, similar to offset in PromQL, unit is seconds',
   },
 };
 export default en_US;

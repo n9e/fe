@@ -68,6 +68,7 @@ const en_US = {
     notify_groups_obj: 'Receiving groups',
     callbacks: 'Callbacks',
     runbook_url: 'Runbook URL',
+    notify_rules: 'Notification rules',
     detail_url: 'Detail URL',
     host: {
       trigger: 'Trigger',

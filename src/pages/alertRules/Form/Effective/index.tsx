@@ -18,8 +18,11 @@ import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, Form, Switch, Space, Select, TimePicker } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
+import _ from 'lodash';
+
 import { CommonStateContext } from '@/App';
 import { HelpLink } from '@/components/pageLayout';
+
 import { panelBaseProps, daysOfWeek } from '../../constants';
 
 // @ts-ignore
@@ -57,8 +60,12 @@ export default function index() {
                   <PlusCircleOutlined className='control-icon-normal' onClick={() => add()} />
                 </Space>
               </div>
-              <div style={{ width: 110 }}>{t('effective_time_start')}</div>
-              <div style={{ width: 110 }}>{t('effective_time_end')}</div>
+              {!_.isEmpty(fields) && (
+                <>
+                  <div style={{ width: 110 }}>{t('effective_time_start')}</div>
+                  <div style={{ width: 110 }}>{t('effective_time_end')}</div>
+                </>
+              )}
             </Space>
             {fields.map(({ key, name, ...restField }) => (
               <Space
