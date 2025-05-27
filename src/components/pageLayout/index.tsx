@@ -184,9 +184,13 @@ const PageLayoutOld: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, int
                         }}
                         selectable
                       >
-                        {Object.keys(i18nMap).map((el) => {
-                          return <Menu.Item key={el}>{i18nMap[el]}</Menu.Item>;
-                        })}
+                        {Object.keys(i18nMap)
+                          .filter((el) => {
+                            return IS_ENT ? el !== 'ru_RU' : true;
+                          })
+                          .map((el) => {
+                            return <Menu.Item key={el}>{i18nMap[el]}</Menu.Item>;
+                          })}
                       </Menu>
                     }
                   >
