@@ -1,6 +1,6 @@
 const zh_HK = {
   title: '歷史告警',
-  rule_name: '規則標題 & 事件標籤',
+  event_name: '事件',
   search_placeholder: '模糊搜尋規則和標籤 (多個關鍵詞請用空格分隔)',
   first_trigger_time: '首次觸發時間',
   trigger_time: '觸發時間',

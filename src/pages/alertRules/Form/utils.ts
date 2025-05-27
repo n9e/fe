@@ -162,9 +162,15 @@ export function processInitialValues(values) {
   } else {
     if (values?.rule_config?.queries) {
       values.rule_config.queries = _.map(values.rule_config.queries, (item) => {
-        _.set(item, 'keys.labelKey', item?.keys?.labelKey ? _.split(item.keys.labelKey, ' ') : []);
-        _.set(item, 'keys.valueKey', item?.keys?.valueKey ? _.split(item.keys.valueKey, ' ') : []);
-        _.set(item, 'keys.metricKey', item?.keys?.metricKey ? _.split(item.keys.metricKey, ' ') : []);
+        if (item?.keys?.labelKey) {
+          _.set(item, 'keys.labelKey', item?.keys?.labelKey ? _.split(item.keys.labelKey, ' ') : []);
+        }
+        if (item?.keys?.valueKey) {
+          _.set(item, 'keys.valueKey', item?.keys?.valueKey ? _.split(item.keys.valueKey, ' ') : []);
+        }
+        if (item?.keys?.metricKey) {
+          _.set(item, 'keys.metricKey', item?.keys?.metricKey ? _.split(item.keys.metricKey, ' ') : []);
+        }
         return {
           ...item,
           interval: parseTimeToValueAndUnit(item.interval).value,

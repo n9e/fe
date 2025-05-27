@@ -2,22 +2,20 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import moment from 'moment';
 import _ from 'lodash';
-import { Button, Card, message, Spin, Tag, Typography } from 'antd';
+import { Button, message, Space, Spin, Tag, Typography } from 'antd';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import PageLayout from '@/components/pageLayout';
-import { priorityColor } from '@/utils/constant';
 import { CommonStateContext, basePrefix } from '@/App';
 import TDengineDetail from '@/plugins/TDengine/Event';
 import { Event as ElasticsearchDetail } from '@/plugins/elasticsearch';
 import { getESIndexPatterns } from '@/pages/log/IndexPatterns/services';
 import { DatasourceCateEnum } from '@/utils/constant';
 
-import EventNotifyRecords from './EventNotifyRecords';
-import TaskTpls from './TaskTpls';
-import PrometheusDetail from './Detail/Prometheus';
-import Host from './Detail/Host';
-import LokiDetail from './Detail/Loki';
+import EventNotifyRecords from '../EventNotifyRecords';
+import TaskTpls from '../TaskTpls';
+import PrometheusDetail from '../Detail/Prometheus';
+import Host from '../Detail/Host';
+import LokiDetail from '../Detail/Loki';
 
 // @ts-ignore
 import plusEventDetail from 'plus:/parcels/Event/eventDetail';
@@ -26,19 +24,20 @@ import PlusPreview from 'plus:/parcels/Event/Preview';
 // @ts-ignore
 import PlusLogsDetail from 'plus:/parcels/Event/LogsDetail';
 
-import './detail.less';
+import '../detail.less';
 
 const { Paragraph } = Typography;
 
 interface Props {
   data: any;
+  showGraph?: boolean;
 }
 
 export default function DetailNG(props: Props) {
   const { t } = useTranslation('AlertCurEvents');
   const commonState = useContext(CommonStateContext);
   const { busiGroups, datasourceList } = commonState;
-  const { data: eventDetail } = props;
+  const { data: eventDetail, showGraph } = props;
   const handleNavToWarningList = (id) => {
     if (busiGroups.find((item) => item.id === id)) {
       window.open(`${basePrefix}/alert-rules?ids=${id}&isLeaf=true`);
@@ -125,13 +124,22 @@ export default function DetailNG(props: Props) {
       key: 'severity',
       render: (severity) => {
         const severityMap = {
-          1: '（Critical）',
-          2: '（Warning）',
-          3: '（Info）',
+          1: {
+            color: '#cc0204',
+            text: '（Critical）',
+          },
+          2: {
+            color: '#fd6e00',
+            text: '（Warning）',
+          },
+          3: {
+            color: '#f2d204',
+            text: '（Info）',
+          },
         };
         return (
-          <Tag color={priorityColor[severity - 1]}>
-            S{severity} {severityMap[severity]}
+          <Tag color={severityMap[severity].color}>
+            S{severity} {severityMap[severity].text}
           </Tag>
         );
       },
@@ -147,13 +155,13 @@ export default function DetailNG(props: Props) {
       label: t('detail.tags'),
       key: 'tags',
       render(tags) {
-        return tags
-          ? tags.map((tag) => (
-              <Tag color='purple' key={tag}>
-                {tag}
-              </Tag>
-            ))
-          : '';
+        return (
+          <Space wrap size={[0, 8]}>
+            {_.map(tags, (tag) => {
+              return <Tag key={tag}>{tag}</Tag>;
+            })}
+          </Space>
+        );
       },
     },
     ...(!_.includes(['firemap', 'northstar'], eventDetail?.rule_prod) ? [{ label: t('detail.target_note'), key: 'target_note' }] : [false]),
@@ -238,35 +246,60 @@ export default function DetailNG(props: Props) {
         return `${content} s`;
       },
     },
-    {
-      label: t('detail.notify_channels'),
-      key: 'notify_channels',
-      render(channels) {
-        return _.join(channels, ' ');
-      },
-    },
-    {
-      label: t('detail.notify_groups_obj'),
-      key: 'notify_groups_obj',
-      render(groups) {
-        return groups ? groups.map((group) => <Tag color='purple'>{group.name}</Tag>) : '';
-      },
-    },
-    {
-      label: t('detail.callbacks'),
-      key: 'callbacks',
-      render(callbacks) {
-        return callbacks
-          ? callbacks.map((callback) => (
-              <Tag>
-                <Paragraph copyable style={{ margin: 0 }}>
-                  {callback}
-                </Paragraph>
-              </Tag>
-            ))
-          : '';
-      },
-    },
+    ...(eventDetail?.notify_version === 0
+      ? [
+          {
+            label: t('detail.notify_channels'),
+            key: 'notify_channels',
+            render(channels) {
+              return _.join(channels, ' ');
+            },
+          },
+          {
+            label: t('detail.notify_groups_obj'),
+            key: 'notify_groups_obj',
+            render(groups) {
+              return groups ? groups.map((group) => <Tag color='purple'>{group.name}</Tag>) : '';
+            },
+          },
+          {
+            label: t('detail.callbacks'),
+            key: 'callbacks',
+            render(callbacks) {
+              return callbacks
+                ? callbacks.map((callback) => (
+                    <Tag>
+                      <Paragraph copyable style={{ margin: 0 }}>
+                        {callback}
+                      </Paragraph>
+                    </Tag>
+                  ))
+                : '';
+            },
+          },
+        ]
+      : []),
+    ...(eventDetail?.notify_version === 1
+      ? [
+          {
+            label: t('detail.notify_rules'),
+            key: 'notify_rules',
+            render(notifyRules) {
+              return (
+                <Space>
+                  {_.map(notifyRules, (item) => {
+                    return (
+                      <Link to={`/notification-rules/edit/${item.id}`} target='_blank' key={item.id}>
+                        {item.name}
+                      </Link>
+                    );
+                  })}
+                </Space>
+              );
+            },
+          },
+        ]
+      : []),
   ];
 
   if (eventDetail?.annotations) {
@@ -294,6 +327,7 @@ export default function DetailNG(props: Props) {
         <div className='desc-container'>
           {eventDetail && (
             <div>
+              {showGraph && <PlusPreview data={eventDetail} />}
               {descriptionInfo
                 .filter((item: any) => {
                   if (!item) return false;
