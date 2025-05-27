@@ -13,6 +13,7 @@ import { parseRange } from '@/components/TimeRangePicker';
 import usePagination from '@/components/usePagination';
 import { allCates } from '@/components/AdvancedWrap/utils';
 import { IS_PLUS } from '@/utils/constant';
+import getTextWidth from '@/utils/getTextWidth';
 
 import { getEvents, getEventById } from '../../services';
 import deleteAlertEventsModal from '../../utils/deleteAlertEventsModal';
@@ -142,7 +143,15 @@ export default function AlertTable(props: IProps) {
       dataIndex: 'trigger_time',
       fixed: 'right' as const,
       render(value) {
-        return moment(value * 1000).format('YYYY-MM-DD HH:mm:ss');
+        return (
+          <div
+            style={{
+              minWidth: getTextWidth(t('trigger_time')),
+            }}
+          >
+            {moment(value * 1000).format('YYYY-MM-DD HH:mm:ss')}
+          </div>
+        );
       },
     },
     {
@@ -160,7 +169,11 @@ export default function AlertTable(props: IProps) {
           return 'segment-right';
         };
         return (
-          <div>
+          <div
+            style={{
+              minWidth: getTextWidth(t('duration')),
+            }}
+          >
             {formatDuration(duration)}
             <div className='flex gap-[2px]'>
               {Array.from({ length: maxGrids }).map((_, idx) => {
@@ -178,67 +191,73 @@ export default function AlertTable(props: IProps) {
       fixed: 'right' as const,
       render(record) {
         return (
-          <Dropdown
-            overlay={
-              <Menu>
-                {IS_PLUS && (
-                  <Menu.Item>
-                    <AckBtn
-                      data={record}
-                      onOk={() => {
-                        setRefreshFlag(_.uniqueId('refresh_'));
-                      }}
-                    />
-                  </Menu.Item>
-                )}
-                {!_.includes(['firemap', 'northstar'], record?.rule_prod) && (
+          <div
+            style={{
+              minWidth: getTextWidth(t('common:table.operations')),
+            }}
+          >
+            <Dropdown
+              overlay={
+                <Menu>
+                  {IS_PLUS && (
+                    <Menu.Item>
+                      <AckBtn
+                        data={record}
+                        onOk={() => {
+                          setRefreshFlag(_.uniqueId('refresh_'));
+                        }}
+                      />
+                    </Menu.Item>
+                  )}
+                  {!_.includes(['firemap', 'northstar'], record?.rule_prod) && (
+                    <Menu.Item>
+                      <Button
+                        style={{ padding: 0 }}
+                        size='small'
+                        type='link'
+                        onClick={() => {
+                          history.push({
+                            pathname: '/alert-mutes/add',
+                            search: queryString.stringify({
+                              busiGroup: record.group_id,
+                              prod: record.rule_prod,
+                              cate: record.cate,
+                              datasource_ids: [record.datasource_id],
+                              tags: record.tags,
+                            }),
+                          });
+                        }}
+                      >
+                        {t('shield')}
+                      </Button>
+                    </Menu.Item>
+                  )}
                   <Menu.Item>
                     <Button
                       style={{ padding: 0 }}
                       size='small'
                       type='link'
-                      onClick={() => {
-                        history.push({
-                          pathname: '/alert-mutes/add',
-                          search: queryString.stringify({
-                            busiGroup: record.group_id,
-                            prod: record.rule_prod,
-                            cate: record.cate,
-                            datasource_ids: [record.datasource_id],
-                            tags: record.tags,
-                          }),
-                        });
-                      }}
+                      danger
+                      onClick={() =>
+                        deleteAlertEventsModal(
+                          [record.id],
+                          () => {
+                            setSelectedRowKeys(selectedRowKeys.filter((key) => key !== record.id));
+                            setRefreshFlag(_.uniqueId('refresh_'));
+                          },
+                          t,
+                        )
+                      }
                     >
-                      {t('shield')}
+                      {t('common:btn.delete')}
                     </Button>
                   </Menu.Item>
-                )}
-                <Menu.Item>
-                  <Button
-                    style={{ padding: 0 }}
-                    size='small'
-                    type='link'
-                    danger
-                    onClick={() =>
-                      deleteAlertEventsModal(
-                        [record.id],
-                        () => {
-                          setSelectedRowKeys(selectedRowKeys.filter((key) => key !== record.id));
-                          setRefreshFlag(_.uniqueId('refresh_'));
-                        },
-                        t,
-                      )
-                    }
-                  >
-                    {t('common:btn.delete')}
-                  </Button>
-                </Menu.Item>
-              </Menu>
-            }
-          >
-            <Button type='link' icon={<MoreOutlined />} />
-          </Dropdown>
+                </Menu>
+              }
+            >
+              <Button type='link' icon={<MoreOutlined />} />
+            </Dropdown>
+          </div>
         );
       },
     },
@@ -250,10 +269,15 @@ export default function AlertTable(props: IProps) {
       dataIndex: 'claimant',
       fixed: 'right',
       render: (value, record) => {
-        if (record.status === 1) {
-          return value;
-        }
-        return t('status_0');
+        return (
+          <div
+            style={{
+              minWidth: getTextWidth(t('claimant')),
+            }}
+          >
+            {record.status === 1 ? value : t('status_0')}
+          </div>
+        );
       },
     } as any);
   }
