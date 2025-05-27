@@ -19,16 +19,15 @@ import _ from 'lodash';
 import semver from 'semver';
 import { v4 as uuidv4 } from 'uuid';
 import { message, Modal } from 'antd';
-import { useLocation } from 'react-router-dom';
-import querystring from 'query-string';
 import RGL, { WidthProvider } from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
 import { useTranslation } from 'react-i18next';
+
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { updateDashboardConfigs as updateDashboardConfigsFunc } from '@/services/dashboardV2';
 import { Dashboard } from '@/store/dashboardInterface';
 import { CommonStateContext } from '@/App';
-import { IS_ENT } from '@/utils/constant';
+
 import {
   buildLayout,
   sortPanelsByGridLayout,
@@ -44,7 +43,7 @@ import {
 import Renderer from '../Renderer/Renderer/index';
 import Row from './Row';
 import EditorModal from './EditorModal';
-import { getDefaultThemeMode, ROW_HEIGHT } from '../Detail/utils';
+import { ROW_HEIGHT } from '../Detail/utils';
 import { IDashboardConfig } from '../types';
 import { useGlobalState } from '../globalState';
 import ajustInitialValues from '../Renderer/utils/ajustInitialValues';
@@ -59,6 +58,8 @@ interface IProps {
   setAllowedLeave: (flag: boolean) => void;
   range: IRawTimeRange;
   setRange: (range: IRawTimeRange) => void;
+  timezone: string;
+  setTimezone: (timezone: string) => void;
   variableConfig: any;
   panels: any[];
   isPreview: boolean;
@@ -75,7 +76,8 @@ function index(props: IProps) {
   const { t } = useTranslation('dashboard');
   const { profile, darkMode, dashboardSaveMode, perms, groupedDatasourceList } = useContext(CommonStateContext);
   const themeMode = darkMode ? 'dark' : 'light';
-  const { editable, dashboard, setDashboard, annotations, setAllowedLeave, range, variableConfig, panels, isPreview, setPanels, onShareClick, onUpdated } = props;
+  const { editable, dashboard, setDashboard, annotations, setAllowedLeave, range, timezone, setTimezone, variableConfig, panels, isPreview, setPanels, onShareClick, onUpdated } =
+    props;
   const roles = _.get(profile, 'roles', []);
   const isAuthorized = _.includes(perms, '/dashboards/put') && !isPreview;
   const layoutInitialized = useRef(false);
@@ -183,6 +185,7 @@ function index(props: IProps) {
                     id={item.id}
                     time={range}
                     setRange={props.setRange}
+                    timezone={timezone}
                     values={item}
                     variableConfig={variableConfig}
                     annotations={_.filter(annotations, (annotation) => annotation.panel_id === item.id)}
@@ -318,6 +321,8 @@ function index(props: IProps) {
         dashboardId={props.dashboardId}
         variableConfig={variableConfig}
         range={range}
+        timezone={timezone}
+        setTimezone={setTimezone}
         dashboard={dashboard}
         panels={panels}
         setPanels={setPanels}

@@ -49,5 +49,7 @@ const en_US = {
   last: 'Last',
   next: 'Next',
   close: 'Close',
+  exceed_hour_limit_tip: 'The time range cannot exceed {{hours}} hours',
+  start_gt_end_tip: 'Start time cannot be greater than end time',
 };
 export default en_US;
