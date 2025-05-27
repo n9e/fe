@@ -39,24 +39,26 @@ const DatasourceCheckbox: React.FC<Props> = ({ value = [], onChange }) => {
   };
 
   return (
-    <div>
-      <div className='mt-1 flex items-center'>
+    <div className='h-full min-h-0 flex flex-col'>
+      <div className='my-1 flex-shrink-0 flex items-center'>
         <Checkbox checked={allChecked} indeterminate={indeterminate} onChange={(e) => handleCheckAll(e.target.checked)} />
         <Input prefix={<SearchOutlined />} allowClear className='ml-2 px-2 py-[2px] flex-1' placeholder={t('search')} value={search} onChange={(e) => setSearch(e.target.value)} />
       </div>
-      <Checkbox.Group value={value} onChange={(vals) => onChange(vals.map(Number))}>
-        {filteredDatasource.map((ds) => {
-          const cate = allCates.find((c) => c.value === ds.plugin_type);
-          return (
-            <div key={ds.id}>
-              <Checkbox className='py-1 flex items-center overflow-hidden text-ellipsis whitespace-nowrap' value={ds.id}>
-                {cate?.logo && <img className='w-[14px] h-[14px] mr-2' src={cate.logo} alt={cate.label} />}
-                {ds.name}
-              </Checkbox>
-            </div>
-          );
-        })}
-      </Checkbox.Group>
+      <div className='overflow-auto h-full min-h-0'>
+        <Checkbox.Group value={value} onChange={(vals) => onChange(vals.map(Number))}>
+          {filteredDatasource.map((ds) => {
+            const cate = allCates.find((c) => c.value === ds.plugin_type);
+            return (
+              <div key={ds.id}>
+                <Checkbox className='py-1 flex items-center overflow-hidden text-ellipsis whitespace-nowrap' value={ds.id}>
+                  {cate?.logo && <img className='w-[14px] h-[14px] mr-2' src={cate.logo} alt={cate.label} />}
+                  {ds.name}
+                </Checkbox>
+              </div>
+            );
+          })}
+        </Checkbox.Group>
+      </div>
     </div>
   );
 };
