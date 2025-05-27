@@ -89,15 +89,18 @@ export default function TestModal(props: Props) {
                   } else if (type === 'pipeline') {
                     eventPipelineTryrun({
                       event_id: eventID,
-                      pipeline_config: _.map(config.processors, (item) => {
-                        return {
-                          ...item,
-                          config: {
-                            ...item.config,
-                            header: _.fromPairs(_.map(item.config.header as any[], (headerItem) => [headerItem.key, headerItem.value])),
-                          },
-                        };
-                      }),
+                      pipeline_config: {
+                        ...config,
+                        processors: _.map(config.processors, (item) => {
+                          return {
+                            ...item,
+                            config: {
+                              ...item.config,
+                              header: _.fromPairs(_.map(item.config.header as any[], (headerItem) => [headerItem.key, headerItem.value])),
+                            },
+                          };
+                        }),
+                      },
                     })
                       .then((res) => {
                         setData({
