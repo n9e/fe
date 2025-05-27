@@ -121,7 +121,7 @@ const ja_JP = {
     import_builtin: '内蔵アラートルールをインポート',
     import_prometheus: 'Prometheus アラートルールをインポート',
     export: {
-      title: 'アラートルールをエクスポート',
+      title: 'ルール JSON をエクスポート',
       copy: 'JSONコンテンツをクリップボードにコピー',
     },
     update: {
@@ -178,6 +178,17 @@ const ja_JP = {
         msg: '結果',
       },
     },
+    clone_to_bgids: {
+      title: '他のビジネスグループにクローン',
+      select_bgids: 'ビジネスグループを選択',
+      result: {
+        title: 'クローン結果',
+        rule: 'ルール',
+        msg: '結果',
+      },
+    },
+    export_to_csv: 'CSVにエクスポート',
+    export_failed: 'エクスポートに失敗しました',
   },
   brain_result_btn: 'トレーニング結果',
   testTip: '\n  ルールの有効性チェック、以下のチェック項目を含む：<br />\n  1. ユーザの連絡先の有効性チェック\n  ',

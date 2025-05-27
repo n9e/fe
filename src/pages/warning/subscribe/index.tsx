@@ -21,6 +21,7 @@ import { ColumnsType } from 'antd/lib/table';
 import { useHistory, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
+
 import PageLayout from '@/components/pageLayout';
 import { getBusiGroupsAlertSubscribes, deleteSubscribes, editSubscribe } from '@/services/subscribe';
 import { subscribeItem } from '@/store/warningInterface/subscribe';
@@ -32,8 +33,9 @@ import { DatasourceSelect } from '@/components/DatasourceSelect';
 import { strategyStatus } from '@/store/warningInterface';
 import Tags from '@/components/Tags';
 import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
+import usePagination from '@/components/usePagination';
+
 import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
-import { pageSizeOptionsDefault } from '../const';
 import './locale';
 import './index.less';
 
@@ -75,7 +77,6 @@ const Shield: React.FC = () => {
           {
             title: t('common:business_group'),
             dataIndex: 'group_id',
-            width: 100,
             render: (id) => {
               return _.find(busiGroups, { id })?.name;
             },
@@ -101,7 +102,6 @@ const Shield: React.FC = () => {
       {
         title: t('common:datasource.id'),
         dataIndex: 'datasource_ids',
-        width: 100,
         render(value) {
           if (!value) return '-';
           return (
@@ -190,7 +190,6 @@ const Shield: React.FC = () => {
       {
         title: t('user_groups'),
         dataIndex: 'user_groups',
-        width: 140,
         render: (data) => {
           return <Tags width={110} data={_.map(data, 'name')} />;
         },
@@ -217,7 +216,6 @@ const Shield: React.FC = () => {
       {
         title: t('common:table.enabled'),
         dataIndex: 'disabled',
-        width: 70,
         render: (disabled, record: any) => (
           <Switch
             checked={disabled === strategyStatus.Enable}
@@ -241,6 +239,7 @@ const Shield: React.FC = () => {
       {
         title: t('common:table.operations'),
         dataIndex: 'operation',
+        fixed: 'right',
         render: (text: string, record: subscribeItem) => {
           return (
             <Dropdown
@@ -302,6 +301,7 @@ const Shield: React.FC = () => {
       },
     ],
   );
+  const pagination = usePagination({ pageSizeLocalstorageKey: 'alert-subscribes-table-pagesize', defaultPageSize: 30, pageSizeOptions: ['30', '50', '100', '300'] });
 
   useEffect(() => {
     getList();
@@ -429,19 +429,12 @@ const Shield: React.FC = () => {
             </Space>
           </div>
           <Table
-            className='mt8'
+            className='mt-2'
             size='small'
             rowKey='id'
-            pagination={{
-              total: currentShieldData.length,
-              showQuickJumper: true,
-              showSizeChanger: true,
-              showTotal: (total) => {
-                return t('common:table.total', { total });
-              },
-              pageSizeOptions: pageSizeOptionsDefault,
-              defaultPageSize: 30,
-            }}
+            tableLayout='auto'
+            scroll={{ x: 'max-content' }}
+            pagination={pagination}
             loading={loading}
             dataSource={currentShieldData}
             columns={ajustColumns(columns, columnsConfigs)}
