@@ -155,13 +155,13 @@ export default function DetailNG(props: Props) {
       label: t('detail.tags'),
       key: 'tags',
       render(tags) {
-        return tags
-          ? tags.map((tag) => (
-              <Tag color='purple' key={tag}>
-                {tag}
-              </Tag>
-            ))
-          : '';
+        return (
+          <Space wrap size={[0, 8]}>
+            {_.map(tags, (tag) => {
+              return <Tag key={tag}>{tag}</Tag>;
+            })}
+          </Space>
+        );
       },
     },
     ...(!_.includes(['firemap', 'northstar'], eventDetail?.rule_prod) ? [{ label: t('detail.target_note'), key: 'target_note' }] : [false]),
