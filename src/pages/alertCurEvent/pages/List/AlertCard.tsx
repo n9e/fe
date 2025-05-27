@@ -52,7 +52,9 @@ const AlertCard = (props: Props) => {
               <div className='truncate' style={{ color: 'inherit' }}>
                 {card.title}
               </div>
-              <span className={`event-card-circle ${SEVERITY_COLORS[card.severity - 1]} flex items-center justify-center w-[20px] h-[18px] rounded-lg `}>{card.total}</span>
+              <span className={`event-card-circle ${SEVERITY_COLORS[card.severity - 1]} flex items-center justify-center min-w-[20px] h-[18px] px-1 rounded-lg `}>
+                {card.total}
+              </span>
             </div>
           );
         })}
