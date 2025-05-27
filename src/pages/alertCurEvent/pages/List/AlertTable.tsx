@@ -255,7 +255,7 @@ export default function AlertTable(props: IProps) {
         }
         return t('status_0');
       },
-    });
+    } as any);
   }
 
   const fetchData = ({ current, pageSize }) => {
@@ -287,12 +287,11 @@ export default function AlertTable(props: IProps) {
   const pagination = usePagination({ PAGESIZE_KEY: EVENTS_TABLE_PAGESIZE_CACHE_KEY });
 
   return (
-    <>
+    <div className='n9e-antd-table-height-full'>
       <Table
-        className='mt8'
         size='small'
         tableLayout='auto'
-        scroll={!_.isEmpty(tableProps.dataSource) ? { x: 'max-content' } : undefined} // TODO: 临时解决空数据时会出现滚动条问题
+        scroll={!_.isEmpty(tableProps.dataSource) ? { x: 'max-content', y: 'calc(100% - 37px)' } : undefined} // TODO: 临时解决空数据时会出现滚动条问题
         rowKey={(record) => record.id}
         columns={columns}
         {...tableProps}
@@ -320,6 +319,6 @@ export default function AlertTable(props: IProps) {
           setSelectedRowKeys([]);
         }}
       />
-    </>
+    </div>
   );
 }
