@@ -20,17 +20,16 @@
  * data_source_id: string
  */
 import React, { useRef, useContext } from 'react';
-import { Input, Form, Select, Row, Col } from 'antd';
+import { Form, Row, Col } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useHistory } from 'react-router-dom';
 
+import { DatasourceSelectV2 } from '@/components/DatasourceSelect';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
-import EmptyDatasourcePopover from '@/components/DatasourceSelect/EmptyDatasourcePopover';
 import { DatasourceCateEnum } from '@/utils/constant';
 import { getDefaultDatasourceValue, setDefaultDatasourceValue } from '@/utils';
 import { CommonStateContext } from '@/App';
-import { DatasourceCateSelect } from '@/components/DatasourceSelect';
 import { Explorer as TDengine } from '@/plugins/TDengine';
 import { Explorer as CK } from '@/plugins/clickHouse';
 
@@ -43,7 +42,7 @@ import './index.less';
 // @ts-ignore
 import PlusExplorer from 'plus:/parcels/Explorer';
 
-type Type = 'logging' | 'metric' | 'loki';
+type Type = 'logging' | 'metric';
 
 interface IProps {
   type: Type;
@@ -59,12 +58,12 @@ interface IProps {
 
 const Panel = ({ type, defaultCate, panelIdx, defaultFormValuesControl }: IProps) => {
   const { t } = useTranslation('explorer');
-  const { groupedDatasourceList } = useContext(CommonStateContext);
+  const { datasourceCateOptions, datasourceList, groupedDatasourceList } = useContext(CommonStateContext);
   const [form] = Form.useForm();
   const history = useHistory();
   const headerExtraRef = useRef<HTMLDivElement>(null);
   const params = new URLSearchParams(useLocation().search);
-  const defaultDatasourceCate = params.get('data_source_name') || localStorage.getItem(`explorer_datasource_cate_${type}`) || defaultCate;
+  const defaultDatasourceCate = params.get('data_source_name') || defaultCate;
   const defaultDatasourceValue = params.get('data_source_id') ? _.toNumber(params.get('data_source_id')) : getDefaultDatasourceValue(defaultDatasourceCate, groupedDatasourceList);
   const datasourceCate = Form.useWatch('datasourceCate', form);
   const explorerContainerRef = useRef<HTMLDivElement>(null);
@@ -80,111 +79,62 @@ const Panel = ({ type, defaultCate, panelIdx, defaultFormValuesControl }: IProps
       >
         <div className='explorer-content'>
           <Row gutter={8}>
-            <Col>
-              <InputGroupWithFormItem label={t('common:datasource.type')} addonAfterWithContainer={<Help datasourceCate={datasourceCate} />}>
-                <Form.Item name='datasourceCate' noStyle>
-                  <DatasourceCateSelect
-                    scene='graph'
-                    filterCates={(cates) => {
-                      return _.filter(cates, (item) => _.includes(item.type, type));
-                    }}
-                    dropdownMatchSelectWidth={false}
-                    style={{ minWidth: 70 }}
-                    onChange={(val) => {
-                      form.setFieldsValue({
-                        datasourceValue: getDefaultDatasourceValue(val, groupedDatasourceList),
-                        query: undefined,
-                      });
-                      form.setFieldsValue({
-                        query: {
-                          range: {
-                            start: 'now-1h',
-                            end: 'now',
-                          },
-                        },
-                      });
-                      if (panelIdx === 0) {
-                        history.replace({
-                          search: `?data_source_name=${val}&data_source_id=${getDefaultDatasourceValue(val, groupedDatasourceList)}`,
-                        });
-                      }
-                    }}
-                  />
+            <Col flex='none'>
+              <>
+                <Form.Item name='datasourceCate' hidden>
+                  <div />
                 </Form.Item>
-              </InputGroupWithFormItem>
-            </Col>
-            <Col>
-              {explorerContainerRef.current && (
-                <EmptyDatasourcePopover
-                  datasourceCate={datasourceCate}
-                  datasourceList={groupedDatasourceList[datasourceCate]}
-                  getPopupContainer={() => {
-                    if (explorerContainerRef.current) {
-                      return explorerContainerRef.current;
-                    }
-                    return document.body;
-                  }}
-                >
-                  <Input.Group compact>
-                    <span
-                      className='ant-input-group-addon'
-                      style={{
-                        width: 'max-content',
-                        height: 32,
-                        lineHeight: '32px',
-                      }}
-                    >
-                      {t('common:datasource.id')}
-                    </span>
-
-                    <Form.Item
-                      name='datasourceValue'
-                      rules={[
-                        {
-                          required: true,
-                          message: t('common:datasource.id_required'),
-                        },
-                      ]}
-                    >
-                      <Select
-                        style={{ minWidth: 70 }}
-                        dropdownMatchSelectWidth={false}
-                        onChange={(val: string) => {
-                          setDefaultDatasourceValue(datasourceCate, val);
-                          if (datasourceCate !== 'prometheus') {
-                            form.setFieldsValue({
-                              query: undefined,
-                            });
-                            form.setFieldsValue({
-                              query: {
-                                range: {
-                                  start: 'now-1h',
-                                  end: 'now',
-                                },
+                <InputGroupWithFormItem label={t('common:datasource.id')} addonAfterWithContainer={<Help datasourceCate={datasourceCate} />}>
+                  <Form.Item
+                    name='datasourceValue'
+                    rules={[
+                      {
+                        required: true,
+                        message: t('query.datasource_msg'),
+                      },
+                    ]}
+                  >
+                    <DatasourceSelectV2
+                      style={{ minWidth: 220 }}
+                      datasourceCateList={_.filter(datasourceCateOptions, (item) => {
+                        return _.includes(item.type, type);
+                      })}
+                      datasourceList={
+                        _.filter(datasourceList, (item) => {
+                          const cateData = _.find(datasourceCateOptions, { value: item.plugin_type });
+                          return cateData && _.includes(cateData.type, type);
+                        }) as any[]
+                      }
+                      onChange={(val, datasourceCate) => {
+                        setDefaultDatasourceValue(datasourceCate, val);
+                        if (datasourceCate !== 'prometheus') {
+                          // 先清空 query
+                          form.setFieldsValue({
+                            query: undefined,
+                          });
+                          form.setFieldsValue({
+                            datasourceCate,
+                            query: {
+                              range: {
+                                start: 'now-1h',
+                                end: 'now',
                               },
-                            });
-                          }
-                          if (panelIdx === 0) {
-                            history.replace({
-                              search: `?data_source_name=${datasourceCate}&data_source_id=${val}`,
-                            });
-                          }
-                        }}
-                        showSearch
-                        optionFilterProp='children'
-                      >
-                        {_.map(groupedDatasourceList[datasourceCate], (item) => (
-                          <Select.Option value={item.id} key={item.id}>
-                            {item.name}
-                          </Select.Option>
-                        ))}
-                      </Select>
-                    </Form.Item>
-                  </Input.Group>
-                </EmptyDatasourcePopover>
-              )}
+                            },
+                          });
+                        }
+                        if (panelIdx === 0) {
+                          history.replace({
+                            search: `?data_source_name=${datasourceCate}&data_source_id=${val}`,
+                          });
+                        }
+                      }}
+                    />
+                  </Form.Item>
+                </InputGroupWithFormItem>
+              </>
             </Col>
-            <Col flex={'1'}>
+
+            <Col flex='auto'>
               <div ref={headerExtraRef} />
             </Col>
           </Row>
