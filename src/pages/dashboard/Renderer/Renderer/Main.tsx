@@ -136,7 +136,6 @@ function index(
         'renderer-container': true,
         'renderer-container-no-title': !values.name,
       })}
-      ref={containerEleRef}
     >
       <div className='renderer-body-wrap' ref={bodyWrapRef}>
         <div className='renderer-header graph-header'>

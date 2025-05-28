@@ -102,7 +102,7 @@ function index(props: IProps) {
   if (_.isEmpty(values)) return null;
 
   return (
-    <>
+    <div className='h-full' ref={containerEleRef}>
       <Main
         {..._.omit(props)}
         controllersVisible
@@ -148,7 +148,7 @@ function index(props: IProps) {
           />,
           viewModalContainerRef.current,
         )}
-    </>
+    </div>
   );
 }
 
