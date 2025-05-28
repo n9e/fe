@@ -76,7 +76,7 @@ export default function index(props: Props) {
     onClick,
     onZoomWithoutDefult,
   } = props;
-  const id = isPreview ? `preview_${props.id}` : props.id;
+  const id = isPreview ? `${props.id}__view` : props.id;
   const { custom, options = {}, targets, overrides } = panel;
   const [dashboardMeta] = useGlobalState('dashboardMeta');
   const uplotRef = useRef<any>();
