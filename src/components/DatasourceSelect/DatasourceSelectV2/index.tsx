@@ -12,10 +12,11 @@ import { ProSvg } from '../DatasourceCateSelect';
 interface Props {
   datasourceCateList: Cate[];
   datasourceList: {
-    id: string | number;
+    id: number;
     name: string;
     plugin_type: string;
   }[];
+  onChange?: (value: string | number, datasourceCate: string) => void;
 }
 
 export default function index(props: SelectProps & Props) {
@@ -102,6 +103,15 @@ export default function index(props: SelectProps & Props) {
           };
         },
       )}
+      onChange={(value) => {
+        if (props.onChange) {
+          const curCate = _.find(datasourceList, { id: value })?.plugin_type;
+          if (!curCate) {
+            return;
+          }
+          props.onChange(value, curCate);
+        }
+      }}
     />
   );
 }
