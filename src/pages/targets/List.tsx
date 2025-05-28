@@ -660,6 +660,7 @@ export default function List(props: IProps) {
         size='small'
         {...tableProps}
         showSorterTooltip={false}
+        tableLayout='auto'
         rowSelection={{
           type: 'checkbox',
           selectedRowKeys: _.map(selectedRows, 'id'),
