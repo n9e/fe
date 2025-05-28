@@ -137,6 +137,7 @@ function index(props: IProps) {
         createPortal(
           <Main
             {..._.omit(props)}
+            isPreview
             controllersVisible={false}
             queryResult={queryResult}
             containerEleRef={containerEleRef}
