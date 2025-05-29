@@ -70,7 +70,7 @@ export default function TestModal(props: Props) {
                         ...config,
                         config: {
                           ...config.config,
-                          header: _.fromPairs(_.map(config.config.header as any[], (headerItem) => [headerItem.key, headerItem.value])),
+                          header: config.config.header ? _.fromPairs(_.map(config.config.header as any[], (headerItem) => [headerItem.key, headerItem.value])) : undefined,
                         },
                       },
                     })
@@ -96,7 +96,7 @@ export default function TestModal(props: Props) {
                             ...item,
                             config: {
                               ...item.config,
-                              header: _.fromPairs(_.map(item.config.header as any[], (headerItem) => [headerItem.key, headerItem.value])),
+                              header: item.config.header ? _.fromPairs(_.map(item.config.header as any[], (headerItem) => [headerItem.key, headerItem.value])) : undefined,
                             },
                           };
                         }),

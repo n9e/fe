@@ -16,6 +16,7 @@ import { NS, DEFAULT_PROCESSOR_CONFIG_MAP } from '../../../constants';
 import TestModal from '../TestModal';
 import Relabel from './Relabel';
 import Callback from './Callback';
+import EventDrop from './EventDrop';
 
 interface Props {
   disabled?: boolean;
@@ -113,6 +114,10 @@ export default function NotifyConfig(props: Props) {
                 label: 'Event Update',
                 value: 'event_update',
               },
+              {
+                label: 'Event Drop',
+                value: 'event_drop',
+              },
             ],
             IS_PLUS
               ? [
@@ -135,6 +140,7 @@ export default function NotifyConfig(props: Props) {
       {processorType === 'relabel' && <Relabel field={field} namePath={[field.name, 'config']} prefixNamePath={['processors']} />}
       {processorType === 'callback' && <Callback field={field} namePath={[field.name, 'config']} />}
       {processorType === 'event_update' && <Callback field={field} namePath={[field.name, 'config']} />}
+      {processorType === 'event_drop' && <EventDrop field={field} namePath={[field.name, 'config']} />}
       {processorType === 'label_enrich' && <LabelEnrich field={field} namePath={[field.name, 'config']} prefixNamePath={['processors']} />}
 
       <TestModal type='processor' config={processorConfig} />

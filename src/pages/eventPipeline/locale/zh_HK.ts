@@ -57,6 +57,10 @@ const zh_HK = {
     basic_auth_pass: '授權密碼',
     basic_auth_pass_placeholder: '請輸入授權密碼',
   },
+  event_drop: {
+    content: '判斷邏輯',
+    content_placeholder: '使用 go template 語法，如果最後顯示為 true，將會將 event 在此環節丟棄',
+  },
 };
 
 export default zh_HK;

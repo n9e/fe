@@ -58,6 +58,10 @@ const ru_RU = {
     basic_auth_pass: 'Пароль авторизации',
     basic_auth_pass_placeholder: 'Пожалуйста, введите пароль авторизации',
   },
+  event_drop: {
+    content: 'Логика суждения',
+    content_placeholder: 'Используйте go template синтаксис. Если в конце будет true, событие будет отброшено на этом этапе.',
+  },
 };
 
 export default ru_RU;
