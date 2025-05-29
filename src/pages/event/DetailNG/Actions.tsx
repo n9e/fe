@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Space, Button, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -6,8 +6,10 @@ import queryString from 'query-string';
 import { Link } from 'react-router-dom';
 
 import { deleteAlertEventsModal } from '../index';
+import SharingLinkModal from './SharingLinkModal';
 
 interface Options {
+  eventType: 'active' | 'history';
   eventDetail?: any;
   showDeleteBtn?: boolean;
   onDeleteSuccess?: () => void;
@@ -15,7 +17,8 @@ interface Options {
 
 export default function getActions(options: Options) {
   const { t } = useTranslation('AlertCurEvents');
-  const { eventDetail, showDeleteBtn, onDeleteSuccess } = options;
+  const { eventType, eventDetail, showDeleteBtn, onDeleteSuccess } = options;
+  const [sharingLinkModalVisible, setSharingLinkModalVisible] = useState(false);
 
   if (!eventDetail) {
     return [];
@@ -60,7 +63,24 @@ export default function getActions(options: Options) {
               {t('common:btn.delete')}
             </Button>
           )}
+          <Button
+            onClick={() => {
+              setSharingLinkModalVisible(true);
+            }}
+          >
+            {t('sharing_link.title')}
+          </Button>
         </Space>
+        {eventDetail && (
+          <SharingLinkModal
+            eventType={eventType}
+            eventId={eventDetail.id}
+            visible={sharingLinkModalVisible}
+            onClose={() => {
+              setSharingLinkModalVisible(false);
+            }}
+          />
+        )}
       </div>,
     ];
   }

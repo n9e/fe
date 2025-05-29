@@ -94,5 +94,11 @@ const zh_CN = {
       label: '自愈模板',
     },
   },
+
+  sharing_link: {
+    title: '生成分享链接',
+    allow_anonymous: '允许不登录匿名访问',
+    expire_at: '过期时间 :',
+  },
 };
 export default zh_CN;

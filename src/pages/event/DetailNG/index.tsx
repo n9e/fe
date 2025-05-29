@@ -38,13 +38,7 @@ export default function DetailNG(props: Props) {
   const commonState = useContext(CommonStateContext);
   const { busiGroups, datasourceList } = commonState;
   const { data: eventDetail, showGraph } = props;
-  const handleNavToWarningList = (id) => {
-    if (busiGroups.find((item) => item.id === id)) {
-      window.open(`${basePrefix}/alert-rules?ids=${id}&isLeaf=true`);
-    } else {
-      message.error(t('detail.buisness_not_exist'));
-    }
-  };
+
   const history = useHistory();
 
   if (eventDetail) eventDetail.cate = eventDetail.cate || 'prometheus'; // TODO: 兼容历史的告警事件
@@ -86,7 +80,18 @@ export default function DetailNG(props: Props) {
             key: 'group_name',
             render(content, { group_id }) {
               return (
-                <Button size='small' type='link' className='rule-link-btn' onClick={() => handleNavToWarningList(group_id)}>
+                <Button
+                  size='small'
+                  type='link'
+                  className='rule-link-btn'
+                  onClick={() => {
+                    if (busiGroups.find((item) => item.id === group_id)) {
+                      window.open(`${basePrefix}/alert-rules?ids=${group_id}&isLeaf=true`);
+                    } else {
+                      message.error(t('detail.buisness_not_exist'));
+                    }
+                  }}
+                >
                   {content}
                 </Button>
               );

@@ -92,6 +92,12 @@ const ja_JP = {
       label: '自動回復テンプレート',
     },
   },
+
+  sharing_link: {
+    title: '共有リンクを生成',
+    allow_anonymous: 'ログインなしで匿名アクセスを許可',
+    expire_at: '期限 :',
+  },
 };
 
 export default ja_JP;

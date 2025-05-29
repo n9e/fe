@@ -423,6 +423,7 @@ export default function index(props: Props) {
         }}
       />
       <EventDetailDrawer
+        eventType='active'
         visible={eventDetailDrawerData.visible}
         data={eventDetailDrawerData.data}
         onClose={() => setEventDetailDrawerData({ visible: false })}

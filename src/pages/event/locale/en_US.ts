@@ -94,5 +94,11 @@ const en_US = {
       label: 'Self-healing template',
     },
   },
+
+  sharing_link: {
+    title: 'Generate sharing link',
+    allow_anonymous: 'Allow anonymous access without login',
+    expire_at: 'Expiration time :',
+  },
 };
 export default en_US;
