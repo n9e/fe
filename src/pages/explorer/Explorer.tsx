@@ -27,7 +27,7 @@ import { useLocation, useHistory } from 'react-router-dom';
 
 import { DatasourceSelectV2 } from '@/components/DatasourceSelect';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
-import { DatasourceCateEnum } from '@/utils/constant';
+import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
 import { getDefaultDatasourceValue, setDefaultDatasourceValue } from '@/utils';
 import { CommonStateContext } from '@/App';
 import { Explorer as TDengine } from '@/plugins/TDengine';
@@ -97,12 +97,12 @@ const Panel = ({ type, defaultCate, panelIdx, defaultFormValuesControl }: IProps
                     <DatasourceSelectV2
                       style={{ minWidth: 220 }}
                       datasourceCateList={_.filter(datasourceCateOptions, (item) => {
-                        return _.includes(item.type, type);
+                        return _.includes(item.type, type) && (item.graphPro ? IS_PLUS : true);
                       })}
                       datasourceList={
                         _.filter(datasourceList, (item) => {
                           const cateData = _.find(datasourceCateOptions, { value: item.plugin_type });
-                          return cateData && _.includes(cateData.type, type);
+                          return cateData && _.includes(cateData.type, type) && (cateData.graphPro ? IS_PLUS : true);
                         }) as any[]
                       }
                       onChange={(val, datasourceCate) => {

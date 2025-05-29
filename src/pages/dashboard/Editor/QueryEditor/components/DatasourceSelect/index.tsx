@@ -7,6 +7,7 @@ import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { DatasourceSelectV2 } from '@/components/DatasourceSelect';
 import { CommonStateContext } from '@/App';
 import getDefaultTargets from '@/pages/dashboard/utils/getDefaultTargets';
+import { IS_PLUS } from '@/utils/constant';
 
 import DatasourceSelectExtra from './DatasourceSelectExtra';
 
@@ -36,7 +37,7 @@ export default function index({ dashboardId, chartForm, variableConfig }) {
             <DatasourceSelectV2
               style={{ minWidth: 220 }}
               datasourceCateList={_.filter(datasourceCateOptions, (item) => {
-                return item.dashboard === true;
+                return item.dashboard === true && (item.graphPro ? IS_PLUS : true);
               })}
               datasourceList={_.filter(
                 _.concat(
@@ -51,7 +52,7 @@ export default function index({ dashboardId, chartForm, variableConfig }) {
                 ),
                 (item) => {
                   const cateData = _.find(datasourceCateOptions, { value: item.plugin_type });
-                  return cateData?.dashboard === true;
+                  return cateData?.dashboard === true && (cateData.graphPro ? IS_PLUS : true);
                 },
               )}
               onChange={(val) => {
