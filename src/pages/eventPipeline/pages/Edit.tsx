@@ -9,6 +9,7 @@ import PageLayout from '@/components/pageLayout';
 import { NS } from '../constants';
 import { Item, getItem, putItem } from '../services';
 import Form from './Form';
+import { normalizeFormValues, normalizeInitialValues } from '../utils/normalizeValues';
 
 export default function Add() {
   const { t } = useTranslation(NS);
@@ -19,7 +20,7 @@ export default function Add() {
   useEffect(() => {
     if (id) {
       getItem(_.toNumber(id)).then((res) => {
-        setData(res);
+        setData(normalizeInitialValues(res));
       });
     }
   }, []);
@@ -31,7 +32,7 @@ export default function Add() {
           <Form
             initialValues={data}
             onOk={(values) => {
-              putItem(values).then(() => {
+              putItem(normalizeFormValues(values)).then(() => {
                 message.success(t('common:success.add'));
                 history.push({
                   pathname: `/${NS}`,

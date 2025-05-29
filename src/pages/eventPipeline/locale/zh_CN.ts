@@ -49,5 +49,13 @@ const zh_CN = {
       result: '事件预览',
     },
   },
+  callback: {
+    url: 'URL',
+    advanced_settings: '高级设置',
+    basic_auth_user: '授权用户名',
+    basic_auth_user_placeholder: '请输入授权用户名',
+    basic_auth_pass: '授权密码',
+    basic_auth_pass_placeholder: '请输入授权密码',
+  },
 };
 export default zh_CN;

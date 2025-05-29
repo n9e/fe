@@ -50,6 +50,14 @@ const ja_JP = {
       result: 'イベントプレビュー',
     },
   },
+  callback: {
+    url: 'URL',
+    advanced_settings: '詳細設定',
+    basic_auth_user: 'ユーザー名',
+    basic_auth_user_placeholder: 'ユーザー名を入力してください',
+    basic_auth_pass: 'パスワード',
+    basic_auth_pass_placeholder: 'パスワードを入力してください',
+  },
 };
 
 export default ja_JP;

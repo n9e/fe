@@ -49,6 +49,14 @@ const zh_HK = {
       result: '事件預覽',
     },
   },
+  callback: {
+    url: 'URL',
+    advanced_settings: '高級設置',
+    basic_auth_user: '授權用戶名',
+    basic_auth_user_placeholder: '請輸入授權用戶名',
+    basic_auth_pass: '授權密碼',
+    basic_auth_pass_placeholder: '請輸入授權密碼',
+  },
 };
 
 export default zh_HK;
