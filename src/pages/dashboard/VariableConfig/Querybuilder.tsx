@@ -6,6 +6,8 @@ import { useTranslation } from 'react-i18next';
 
 import { CommonStateContext } from '@/App';
 import DocumentDrawer from '@/components/DocumentDrawer';
+import { DatasourceCateEnum } from '@/utils/constant';
+import { VariableQuerybuilder as ClickHouse } from '@/plugins/clickHouse';
 
 import { IVariable } from './definition';
 import ElasticsearchSettings from './datasource/elasticsearch';
@@ -88,6 +90,9 @@ export default function Querybuilder(props: Props) {
         </Form.Item>
       </div>
     );
+  }
+  if (datasourceCate === DatasourceCateEnum.ck) {
+    return <ClickHouse />;
   }
   return <VariableQuerybuilderPro {...props} datasourceCate={datasourceCate} datasourceValue={currentdatasourceValue} />;
 }

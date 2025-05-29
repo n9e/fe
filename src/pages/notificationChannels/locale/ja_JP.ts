@@ -2,7 +2,8 @@ const ja_JP = {
   title: '通知渠道',
   basic_configuration: '基本設定',
   ident: '通知チャネル',
-  ident_tip: '通知チャネルの分類、たとえば複数の DingTalk 通知チャネルの場合、タイプはすべて dingtalk に設定できます',
+  ident_tip:
+    '通知チャネルの分類、たとえば複数の DingTalk 通知チャネルの場合、タイプはすべて dingtalk に設定できます。タイプは手動で入力でき、ドロップダウンリストのオプションに制限されません。通知チャネルとメッセージテンプレートは、タイプフィールドを介して関連付けられます',
   note_tip: '通知チャネルに関する補足説明や使用シナリオを記入して、後続のメンテナンスや協力時に表示しやすくします',
   enable_tip: 'この通知チャネルの設定を有効にするかどうか。無効にすると、この設定は一時的に無効になり、通知が送信されなくなります',
   variable_configuration: {
@@ -22,7 +23,7 @@ const ja_JP = {
   request_configuration: {
     http: 'HTTP 設定',
     smtp: 'SMTP 設定',
-    script: 'スクリプト設定',
+    script: 'Script 設定',
     flashduty: 'FlashDuty 設定',
   },
   request_type: '送信タイプ',
@@ -66,7 +67,7 @@ const ja_JP = {
     batch_tip: '単一の SMTP 接続で何回メールを送信するか',
   },
   script_request_config: {
-    title: 'スクリプト',
+    title: 'Script',
     script: {
       option: 'スクリプトを使用',
       label: 'スクリプト内容',

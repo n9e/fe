@@ -148,6 +148,8 @@ const zh_HK = {
   reload: '刷新',
   public: '公開',
   private: '私有',
+  advanced_settings: '高級設定',
+  disabled: '禁用',
 
   tpl: '自愈腳本',
   'tpl.create': '創建',

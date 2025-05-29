@@ -63,13 +63,13 @@ export default function NotifyConfig(props: Props) {
                     }}
                   />
                 )}
-                <MinusCircleOutlined
-                  onClick={() => {
-                    remove(field.name);
-                  }}
-                />
               </>
             )}
+            <MinusCircleOutlined
+              onClick={() => {
+                remove(field.name);
+              }}
+            />
           </Space>
         )
       }

@@ -1,98 +1,25 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Button, Popover, Spin, Empty, Space, Select, Form, InputNumber, message } from 'antd';
+import React, { useContext, useRef, useState } from 'react';
+import { Button, Popover, Space, Select, Form, Alert } from 'antd';
 import _ from 'lodash';
-import moment from 'moment';
 import { useTranslation } from 'react-i18next';
-import TimeRangePicker, { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
-import Timeseries from '@/pages/dashboard/Renderer/Renderer/Timeseries';
-import { getSerieName } from '@/pages/dashboard/Renderer/datasource/utils';
-import { fetchHistoryRangeBatch } from '@/services/dashboardV2';
-import { CommonStateContext } from '@/App';
-import { completeBreakpoints } from '@/pages/dashboard/Renderer/datasource/utils';
 
-const getDefaultStepByStartAndEnd = (start: number, end: number) => {
-  return Math.max(Math.floor((end - start) / 240), 1);
-};
+import { CommonStateContext } from '@/App';
+import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
+import PromTable from '@/components/PromGraphCpt/Table';
+import { N9E_PATHNAME } from '@/utils/constant';
 
 export default function GraphPreview({ form, fieldName, promqlFieldName = 'prom_ql' }) {
   const { groupedDatasourceList } = useContext(CommonStateContext);
   const { t } = useTranslation('alertRules');
   const divRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<any[]>([]);
   const [datasourceId, setDatasourceId] = useState<number>();
-  const [range, setRange] = useState<IRawTimeRange>({
-    start: 'now-24h',
-    end: 'now',
-  });
-  const [step, setStep] = useState<number | null>();
+  const [timestamp, setTimestamp] = useState<number>();
+  const [errorContent, setErrorContent] = useState<string>('');
+  const [loading, setLoading] = useState(false);
   const var_enabled = Form.useWatch(['rule_config', 'queries', fieldName, 'var_enabled']);
-
-  const fetchData = () => {
-    const query = form.getFieldValue(['rule_config', 'queries', fieldName]);
-    const parsedRange = parseRange(range);
-    const from = moment(parsedRange.start).unix();
-    const to = moment(parsedRange.end).unix();
-
-    if (datasourceId) {
-      setLoading(true);
-      const curStep = step || getDefaultStepByStartAndEnd(from, to);
-      fetchHistoryRangeBatch(
-        {
-          datasource_id: datasourceId,
-          queries: [
-            {
-              query: query[promqlFieldName],
-              start: from,
-              end: to,
-              step: curStep,
-            },
-          ],
-        },
-        'ID',
-      )
-        .then((res) => {
-          const series: any[] = [];
-          const dat = res.dat || [];
-          for (let i = 0; i < dat?.length; i++) {
-            var item = {
-              result: dat[i],
-              expr: res[i]?.query,
-              refId: res[i]?.refId,
-            };
-            _.forEach(item.result, (serie) => {
-              series.push({
-                id: _.uniqueId('series_'),
-                refId: item.refId,
-                name: getSerieName(serie.metric),
-                metric: serie.metric,
-                expr: item.expr,
-                data: completeBreakpoints(curStep, serie.values),
-              });
-            });
-          }
-          setData(series);
-        })
-        .catch((res) => {
-          try {
-            message.error(res.message);
-          } catch (e) {
-            console.log(e);
-          }
-          setData([]);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    }
-  };
-
-  useEffect(() => {
-    if (visible && datasourceId) {
-      fetchData();
-    }
-  }, [visible, datasourceId, range]);
+  const promql = Form.useWatch(['rule_config', 'queries', fieldName, promqlFieldName]);
+  const controlsPortalDomNodeRef = useRef<HTMLDivElement | null>(null);
 
   // 启用变量时无法预览，这里隐藏预览按钮
   if (!!var_enabled) return null;
@@ -105,96 +32,55 @@ export default function GraphPreview({ form, fieldName, promqlFieldName = 'prom_
         onVisibleChange={(visible) => {
           setVisible(visible);
           if (!visible) {
-            setData([]);
+            setErrorContent('');
           }
         }}
         title={
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-            }}
-          >
+          <div className='flex justify-between items-center'>
             <div>{t('preview')}</div>
             <Space>
-              <span>{t('common:datasource.name')}:</span>
-              <Select
-                value={datasourceId}
-                onChange={(value) => {
-                  setDatasourceId(value);
-                }}
-                style={{ width: 200 }}
-                options={_.map(groupedDatasourceList.prometheus, (item) => {
-                  return {
-                    label: item.name,
-                    value: item.id,
-                  };
-                })}
-              />
-              <TimeRangePicker value={range} onChange={setRange} dateFormat='YYYY-MM-DD HH:mm:ss' />
-              <InputNumber
-                placeholder='step'
-                value={step}
-                onChange={(val) => {
-                  setStep(val);
-                }}
-                onBlur={() => {
-                  fetchData();
-                }}
-                onPressEnter={() => {
-                  fetchData();
-                }}
-              />
+              <InputGroupWithFormItem label={t('common:datasource.name')}>
+                <Select
+                  value={datasourceId}
+                  onChange={(value) => {
+                    setDatasourceId(value);
+                  }}
+                  style={{ width: 200 }}
+                  options={_.map(groupedDatasourceList.prometheus, (item) => {
+                    return {
+                      label: item.name,
+                      value: item.id,
+                    };
+                  })}
+                />
+              </InputGroupWithFormItem>
+              <div ref={controlsPortalDomNodeRef} />
             </Space>
           </div>
         }
         content={
           <div
             style={{
-              width: 700,
+              width: 1280,
+              maxHeight: 450,
+              overflow: 'auto',
             }}
           >
-            <>
-              {!_.isEmpty(data) ? (
-                <Spin spinning={loading}>
-                  <div
-                    style={{
-                      height: 500,
-                    }}
-                  >
-                    <Timeseries
-                      time={range}
-                      series={data}
-                      values={
-                        {
-                          custom: {
-                            drawStyle: 'lines',
-                            lineInterpolation: 'smooth',
-                          },
-                          options: {
-                            legend: {
-                              displayMode: 'table',
-                            },
-                            tooltip: {
-                              mode: 'all',
-                            },
-                          },
-                        } as any
-                      }
-                    />
-                  </div>
-                </Spin>
-              ) : (
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={t('common:nodata')} />
-                </div>
-              )}
-            </>
+            {errorContent && <Alert className='mb-2' message={errorContent} type='error' />}
+            {visible && datasourceId && (
+              <PromTable
+                url={`/api/${N9E_PATHNAME}/proxy`}
+                datasourceValue={datasourceId}
+                promql={promql}
+                contentMaxHeight={400}
+                setErrorContent={setErrorContent}
+                timestamp={timestamp}
+                setTimestamp={setTimestamp}
+                loading={loading}
+                setLoading={setLoading}
+                controlsPortalDomNode={controlsPortalDomNodeRef.current}
+              />
+            )}
           </div>
         }
         trigger='click'

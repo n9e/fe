@@ -2,7 +2,7 @@ const zh_CN = {
   title: '通知媒介',
   basic_configuration: '基础配置',
   ident: '媒介类型',
-  ident_tip: '通知媒介的分类，例如多个钉钉通知媒介，类型都可以设置为 dingtalk',
+  ident_tip: '通知媒介的分类，例如多个钉钉通知媒介，类型都可以设置为 dingtalk。类型可以手写，并不局限在下拉列表中的选项，通知媒介和消息模板通过类型字段建立关联关系',
   note_tip: '可填写对该通知媒介的补充说明或使用场景，方便后续维护或协作时查看',
   enable_tip: '是否启用此通知媒介的配置。关闭后，该配置将暂时失效，不会再发送通知',
   variable_configuration: {
@@ -21,7 +21,7 @@ const zh_CN = {
   request_configuration: {
     http: 'HTTP 配置',
     smtp: 'SMTP 配置',
-    script: '脚本配置',
+    script: 'Script 配置',
     flashduty: 'FlashDuty 配置',
   },
   request_type: '发送类型',
@@ -65,7 +65,7 @@ const zh_CN = {
     batch_tip: '在单次 SMTP 连接中，发多少次邮件',
   },
   script_request_config: {
-    title: '脚本',
+    title: 'Script',
     script: {
       option: '使用脚本',
       label: '脚本内容',
