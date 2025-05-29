@@ -21,20 +21,27 @@ const DatasourceCheckbox: React.FC<Props> = ({ value = [], onChange }) => {
 
   const filteredDatasource = useMemo(() => {
     return _.sortBy(
-      _.filter(datasourceList, (ds) => ds.name.toLowerCase().includes(search.toLowerCase())),
+      _.filter(datasourceList, (ds) => {
+        const includesName = _.includes(_.lowerCase(ds.name), _.lowerCase(search));
+        const cate = _.find(allCates, (c) => c.value === ds.plugin_type);
+        if (cate) {
+          return includesName && cate.alertRule; // 只显示支持告警规则的数据源
+        }
+        return false;
+      }),
       ['plugin_type', 'name'],
     );
   }, [datasourceList, search]);
 
-  const filteredIds = filteredDatasource.map((ds) => ds.id);
-  const allChecked = filteredIds.length > 0 && filteredIds.every((id) => value.includes(id));
-  const indeterminate = filteredIds.some((id) => value.includes(id)) && !allChecked;
+  const filteredIds = _.map(filteredDatasource, (ds) => ds.id);
+  const allChecked = _.every(filteredIds, (id) => _.includes(value, id));
+  const indeterminate = _.some(filteredIds, (id) => _.includes(value, id)) && !allChecked;
 
   const handleCheckAll = (checked: boolean) => {
     if (checked) {
-      onChange(Array.from(new Set([...value, ...filteredIds])));
+      onChange(_.union(value, filteredIds));
     } else {
-      onChange(value.filter((id) => !filteredIds.includes(id)));
+      onChange(_.filter(value, (id) => !_.includes(filteredIds, id)));
     }
   };
 
@@ -45,9 +52,9 @@ const DatasourceCheckbox: React.FC<Props> = ({ value = [], onChange }) => {
         <Input prefix={<SearchOutlined />} allowClear className='ml-2 px-2 py-[2px] flex-1' placeholder={t('search')} value={search} onChange={(e) => setSearch(e.target.value)} />
       </div>
       <div className='overflow-auto h-full min-h-0'>
-        <Checkbox.Group value={value} onChange={(vals) => onChange(vals.map(Number))}>
+        <Checkbox.Group value={value} onChange={(vals) => onChange(_.map(vals, _.toNumber))}>
           {filteredDatasource.map((ds) => {
-            const cate = allCates.find((c) => c.value === ds.plugin_type);
+            const cate = _.find(allCates, (c) => c.value === ds.plugin_type);
             return (
               <div key={ds.id}>
                 <Checkbox className='py-1 flex items-center overflow-hidden text-ellipsis whitespace-nowrap' value={ds.id}>
