@@ -57,5 +57,9 @@ const zh_CN = {
     basic_auth_pass: '授权密码',
     basic_auth_pass_placeholder: '请输入授权密码',
   },
+  event_drop: {
+    content: '判断逻辑',
+    content_placeholder: '使用 go template 语法，如果最后显示为 true，将会将 event 在此环节丢弃',
+  },
 };
 export default zh_CN;
