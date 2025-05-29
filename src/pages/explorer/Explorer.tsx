@@ -110,16 +110,20 @@ const Panel = ({ type, defaultCate, panelIdx, defaultFormValuesControl }: IProps
                         if (datasourceCate !== 'prometheus') {
                           // 先清空 query
                           form.setFieldsValue({
+                            datasourceCate,
                             query: undefined,
                           });
                           form.setFieldsValue({
-                            datasourceCate,
                             query: {
                               range: {
                                 start: 'now-1h',
                                 end: 'now',
                               },
                             },
+                          });
+                        } else {
+                          form.setFieldsValue({
+                            datasourceCate,
                           });
                         }
                         if (panelIdx === 0) {
