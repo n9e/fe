@@ -1,0 +1,17 @@
+<!--
+  ~ Copyright 2022 Nightingale Team
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  ~
+-->
+<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg t="1638430671795" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2334" xmlns:xlink="http://www.w3.org/1999/xlink" width="1em" height="1em"><defs><style type="text/css"></style></defs><path d="M724 839c15.464 0 28 12.536 28 28s-12.536 28-28 28H300c-15.464 0-28-12.536-28-28s12.536-28 28-28h424z m116-709c66.274 0 120 53.726 120 120v402c0 66.274-53.726 120-120 120H184c-66.274 0-120-53.726-120-120V250c0-66.274 53.726-120 120-120h656z m0 56H184c-34.993 0-63.426 28.084-63.991 62.942L120 250v402c0 34.993 28.084 63.426 62.942 63.991L184 716h656c34.993 0 63.426-28.084 63.991-62.942L904 652V250c0-34.993-28.084-63.426-62.942-63.991L840 186zM298 512c17.673 0 32 14.327 32 32 0 17.673-14.327 32-32 32-17.673 0-32-14.327-32-32 0-17.673 14.327-32 32-32z m433 4c15.464 0 28 12.536 28 28s-12.536 28-28 28H387c-15.464 0-28-12.536-28-28s12.536-28 28-28h344zM298 327c17.673 0 32 14.327 32 32 0 17.673-14.327 32-32 32-17.673 0-32-14.327-32-32 0-17.673 14.327-32 32-32z m433 4c15.464 0 28 12.536 28 28s-12.536 28-28 28H387c-15.464 0-28-12.536-28-28s12.536-28 28-28h344z" p-id="2335" fill="currentColor"></path></svg>
