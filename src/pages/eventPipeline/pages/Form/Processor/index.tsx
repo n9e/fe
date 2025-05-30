@@ -17,7 +17,7 @@ import TestModal from '../TestModal';
 import Relabel from './Relabel';
 import Callback from './Callback';
 import EventDrop from './EventDrop';
-
+import Script from 'plus:/parcels/eventPipeline/Script';
 interface Props {
   disabled?: boolean;
   fields: FormListFieldData[];
@@ -125,6 +125,10 @@ export default function NotifyConfig(props: Props) {
                     label: 'Label Enrich',
                     value: 'label_enrich',
                   },
+                  {
+                    label: 'Script',
+                    value: 'script',
+                  },
                 ]
               : [],
           )}
@@ -142,6 +146,7 @@ export default function NotifyConfig(props: Props) {
       {processorType === 'event_update' && <Callback field={field} namePath={[field.name, 'config']} />}
       {processorType === 'event_drop' && <EventDrop field={field} namePath={[field.name, 'config']} />}
       {processorType === 'label_enrich' && <LabelEnrich field={field} namePath={[field.name, 'config']} prefixNamePath={['processors']} />}
+      {processorType === 'script' && <Script field={field} namePath={[field.name, 'config']} />}
 
       <TestModal type='processor' config={processorConfig} />
     </Card>
