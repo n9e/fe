@@ -99,6 +99,7 @@ const en_US = {
     title: 'Generate sharing link',
     allow_anonymous: 'Allow anonymous access without login',
     expire_at: 'Expiration time :',
+    no_token: 'Invalid link, no token data',
   },
 };
 export default en_US;

@@ -11,16 +11,10 @@ import { SIZE } from '@/utils/constant';
 import { copy2ClipBoard } from '@/utils';
 
 interface Props {
-  eventType: 'active' | 'history';
   eventId: number;
   visible: boolean;
   onClose: () => void;
 }
-
-const eventTypePathMap = {
-  active: '/alert-cur-events/',
-  history: '/alert-his-events/',
-};
 
 const expireUnitOptions = [
   { label: 'Day(s)', value: 'day' },
@@ -29,12 +23,12 @@ const expireUnitOptions = [
 
 export default function SharingLinkModal(props: Props) {
   const { t } = useTranslation('AlertCurEvents');
-  const { eventType, eventId, visible, onClose } = props;
+  const { eventId, visible, onClose } = props;
   const [allowAnonymous, setAllowAnonymous] = useState<boolean>(false);
   const [expireValue, setExpireValue] = useState<number>(7);
   const [expireUnit, setExpireUnit] = useState<string>('day'); // day, hour
   const [token, setToken] = useState<string>();
-  const linkURL = `${window.location.origin}${eventTypePathMap[eventType]}${eventId}${allowAnonymous && token ? `?__token=${token}` : ''}`;
+  const linkSrc = allowAnonymous ? `${window.location.origin}/share/alert-his-events/${eventId}?__token=${token}` : `${window.location.origin}/alert-his-events/${eventId}`;
 
   const { run: fetchToken } = useDebounceFn(
     () => {
@@ -94,14 +88,13 @@ export default function SharingLinkModal(props: Props) {
       </div>
       <Row gutter={SIZE}>
         <Col flex='auto'>
-          <Input readOnly value={linkURL} />
+          <Input readOnly value={linkSrc} />
         </Col>
         <Col flex='none'>
           <Button
             icon={<CopyOutlined />}
             onClick={() => {
-              copy2ClipBoard(linkURL);
-              onClose();
+              copy2ClipBoard(linkSrc);
             }}
           >
             {t('common:btn.copy')}

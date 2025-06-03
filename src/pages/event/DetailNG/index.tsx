@@ -31,13 +31,14 @@ const { Paragraph } = Typography;
 interface Props {
   data: any;
   showGraph?: boolean;
+  token?: string;
 }
 
 export default function DetailNG(props: Props) {
   const { t } = useTranslation('AlertCurEvents');
   const commonState = useContext(CommonStateContext);
   const { busiGroups, datasourceList } = commonState;
-  const { data: eventDetail, showGraph } = props;
+  const { data: eventDetail, showGraph, token } = props;
 
   const history = useHistory();
 
@@ -332,7 +333,7 @@ export default function DetailNG(props: Props) {
         <div className='desc-container'>
           {eventDetail && (
             <div>
-              {showGraph && <PlusPreview data={eventDetail} />}
+              {showGraph && <PlusPreview data={eventDetail} token={token} />}
               {descriptionInfo
                 .filter((item: any) => {
                   if (!item) return false;

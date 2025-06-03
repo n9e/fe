@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Space, Button, message } from 'antd';
+import { ShareAltOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import queryString from 'query-string';
@@ -9,15 +10,15 @@ import { deleteAlertEventsModal } from '../index';
 import SharingLinkModal from './SharingLinkModal';
 
 interface Options {
-  eventType: 'active' | 'history';
   eventDetail?: any;
   showDeleteBtn?: boolean;
+  showSharingLink?: boolean;
   onDeleteSuccess?: () => void;
 }
 
 export default function getActions(options: Options) {
   const { t } = useTranslation('AlertCurEvents');
-  const { eventType, eventDetail, showDeleteBtn, onDeleteSuccess } = options;
+  const { eventDetail, showDeleteBtn, showSharingLink = true, onDeleteSuccess } = options;
   const [sharingLinkModalVisible, setSharingLinkModalVisible] = useState(false);
 
   if (!eventDetail) {
@@ -51,7 +52,6 @@ export default function getActions(options: Options) {
                     [eventDetail.id],
                     () => {
                       onDeleteSuccess && onDeleteSuccess();
-                      // history.replace('/alert-cur-events');
                     },
                     t,
                   );
@@ -63,17 +63,19 @@ export default function getActions(options: Options) {
               {t('common:btn.delete')}
             </Button>
           )}
-          <Button
-            onClick={() => {
-              setSharingLinkModalVisible(true);
-            }}
-          >
-            {t('sharing_link.title')}
-          </Button>
+          {showSharingLink && (
+            <Button
+              icon={<ShareAltOutlined />}
+              onClick={() => {
+                setSharingLinkModalVisible(true);
+              }}
+            >
+              {t('sharing_link.title')}
+            </Button>
+          )}
         </Space>
-        {eventDetail && (
+        {eventDetail && showSharingLink && (
           <SharingLinkModal
-            eventType={eventType}
             eventId={eventDetail.id}
             visible={sharingLinkModalVisible}
             onClose={() => {

@@ -335,7 +335,6 @@ export default function AlertTable(props: IProps) {
         }}
       />
       <EventDetailDrawer
-        eventType='active'
         visible={eventDetailDrawerData.visible}
         data={eventDetailDrawerData.data}
         onClose={() => setEventDetailDrawerData({ visible: false })}

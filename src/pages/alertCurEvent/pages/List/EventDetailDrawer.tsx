@@ -9,7 +9,6 @@ import getActions from '@/pages/event/DetailNG/Actions';
 import { NS } from '../../constants';
 
 interface Props {
-  eventType: 'active' | 'history';
   showDeleteBtn?: boolean;
   visible: boolean;
   data: any;
@@ -19,7 +18,7 @@ interface Props {
 
 export default function EventDetailDrawer(props: Props) {
   const { t } = useTranslation(NS);
-  const { eventType, showDeleteBtn = true, visible, onClose, data, onDeleteSuccess } = props;
+  const { showDeleteBtn = true, visible, onClose, data, onDeleteSuccess } = props;
 
   return (
     <Drawer
@@ -31,7 +30,6 @@ export default function EventDetailDrawer(props: Props) {
       onClose={() => onClose()}
       visible={visible}
       footer={getActions({
-        eventType,
         eventDetail: data,
         showDeleteBtn,
         onDeleteSuccess: () => {

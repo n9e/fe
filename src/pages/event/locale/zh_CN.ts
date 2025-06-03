@@ -99,6 +99,7 @@ const zh_CN = {
     title: '生成分享链接',
     allow_anonymous: '允许不登录匿名访问',
     expire_at: '过期时间 :',
+    no_token: '无效的链接，没有 token 数据',
   },
 };
 export default zh_CN;

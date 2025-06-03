@@ -97,6 +97,7 @@ const zh_HK = {
     title: '生成分享連結',
     allow_anonymous: '允許不登入匿名訪問',
     expire_at: '過期時間 :',
+    no_token: '無效的連結，沒有 token 資訊',
   },
 };
 

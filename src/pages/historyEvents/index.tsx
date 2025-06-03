@@ -390,7 +390,6 @@ const Event: React.FC = () => {
         </div>
       </div>
       <EventDetailDrawer
-        eventType='history'
         showDeleteBtn={false}
         visible={eventDetailDrawerData.visible}
         data={eventDetailDrawerData.data}
