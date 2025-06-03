@@ -95,5 +95,6 @@ const en_US = {
   meta_collapse: 'Collapse',
   meta_no_data: 'No data',
   all_no_data: 'No collector deployed? Please refer to <a>Installation Manual</a> for installation and deployment',
+  categraf_doc: 'Categraf documentation',
 };
 export default en_US;

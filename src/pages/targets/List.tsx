@@ -10,15 +10,15 @@ import { useTranslation, Trans } from 'react-i18next';
 import { getMonObjectList } from '@/services/targets';
 import { timeFormatter } from '@/pages/dashboard/Renderer/utils/valueFormatter';
 import { CommonStateContext } from '@/App';
+import usePagination from '@/components/usePagination';
+import DocumentDrawer from '@/components/DocumentDrawer';
 
 import clipboard from './clipboard';
 import OrganizeColumns from './OrganizeColumns';
 import { getDefaultColumnsConfigs, setDefaultColumnsConfigs } from './utils';
 import TargetMetaDrawer from './TargetMetaDrawer';
-import categrafInstallationDrawer from './components/categrafInstallationDrawer';
 import Explorer from './components/Explorer';
 import EditBusinessGroups from './components/EditBusinessGroups';
-import usePagination from '@/components/usePagination';
 
 // @ts-ignore
 import CollectsDrawer from 'plus:/pages/collects/CollectsDrawer';
@@ -75,7 +75,7 @@ const Unknown = () => {
 };
 
 export default function List(props: IProps) {
-  const { t } = useTranslation('targets');
+  const { t, i18n } = useTranslation('targets');
   const pagination = usePagination({ PAGESIZE_KEY: 'targets' });
   const { darkMode } = useContext(CommonStateContext);
   const { editable = true, explorable = true, gids, selectedRows, setSelectedRows, refreshFlag, setRefreshFlag, setOperateType } = props;
@@ -688,7 +688,12 @@ export default function List(props: IProps) {
                   a: (
                     <a
                       onClick={() => {
-                        categrafInstallationDrawer({ darkMode });
+                        DocumentDrawer({
+                          language: i18n.language,
+                          darkMode,
+                          title: t('categraf_doc'),
+                          documentPath: '/docs/categraf',
+                        });
                       }}
                     />
                   ),

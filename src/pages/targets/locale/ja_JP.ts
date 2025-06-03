@@ -91,6 +91,7 @@ const ja_JP = {
   meta_collapse: '折りたたみ',
   meta_no_data: 'データがありません',
   all_no_data: 'コレクタをデプロイしていませんか？ <a>インストールマニュアル</a> を参照してインストールしてください',
+  categraf_doc: 'Categraf ドキュメント',
 };
 
 export default ja_JP;
