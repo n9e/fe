@@ -382,21 +382,24 @@ function EditItem(props: IProps) {
               }}
             </Form.Item>
           </Col>
-          <Col flex='auto'>
-            <Form.Item shouldUpdate noStyle>
-              {({ getFieldValue }) => {
-                const multi = getFieldValue('multi');
-                const allOption = getFieldValue('allOption');
-                if (multi && allOption) {
-                  return (
-                    <Form.Item label={t('var.allValue')} name='allValue'>
-                      <Input placeholder='.*' />
-                    </Form.Item>
-                  );
-                }
-              }}
-            </Form.Item>
-          </Col>
+          {varType !== 'hostIdent' && (
+            // r-17 hostIdent 变量不需要 allValue 说是跟全选冲突
+            <Col flex='auto'>
+              <Form.Item shouldUpdate noStyle>
+                {({ getFieldValue }) => {
+                  const multi = getFieldValue('multi');
+                  const allOption = getFieldValue('allOption');
+                  if (multi && allOption) {
+                    return (
+                      <Form.Item label={t('var.allValue')} name='allValue'>
+                        <Input placeholder='.*' />
+                      </Form.Item>
+                    );
+                  }
+                }}
+              </Form.Item>
+            </Col>
+          )}
         </Row>
       )}
       <Form.Item>

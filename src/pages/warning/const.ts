@@ -15,8 +15,6 @@
  *
  */
 
-export const pageSizeOptionsDefault = ['30', '50', '100', '300'];
-
 export const timeLensDefault = [
   {
     value: '1h',

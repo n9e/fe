@@ -32,9 +32,9 @@ export function ackEvents(ids: number[], action = 'ack') {
 }
 
 export function getEventById(eventId) {
-  let url = '/api/n9e/alert-cur-event';
+  let url = '/api/n9e/alert-his-event';
   if (IS_ENT) {
-    url = '/api/n9e-plus/alert-cur-event';
+    url = '/api/n9e-plus/alert-his-event';
   }
   return request(`${url}/${eventId}`, {
     method: RequestMethod.Get,

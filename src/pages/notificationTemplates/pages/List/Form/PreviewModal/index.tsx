@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { NS } from '../../../../constants';
 import { preview } from '../../../../services';
 import HTML from '../../Editor/HTML';
+import Text from '../../Editor/Text';
 import Markdown from '../../Editor/Markdown';
 import Events from './Events';
 
@@ -15,12 +16,12 @@ interface Props {
   content: {
     [index: string]: string;
   };
-  notify_channel_request_type?: string;
+  isEmailType: boolean;
 }
 
 export default function PreviewModal(props: Props) {
   const { t } = useTranslation(NS);
-  const { visible, setVisible, content, notify_channel_request_type } = props;
+  const { visible, setVisible, content, isEmailType } = props;
   const [resultModalVisible, setResultModalVisible] = useState(false);
   const [selectedEventIds, setSelectedEventIds] = useState<number[]>();
   const [previewData, setPreviewData] = useState<{ [index: string]: string }>();
@@ -67,7 +68,10 @@ export default function PreviewModal(props: Props) {
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {_.map(previewData, (v, k) => {
-            if (notify_channel_request_type === 'smtp') {
+            if (isEmailType) {
+              if (k === 'subject') {
+                return <Text key={k} label={k} previewResultStr={v} />;
+              }
               return <HTML key={k} label={k} previewResultStr={v} />;
             }
             return <Markdown key={k} label={k} previewResultStr={v} />;

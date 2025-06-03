@@ -82,6 +82,12 @@ mark {
   color: marktext !important;
 }
 
+.theme-dark .ant-table-tbody>tr.ant-table-row:hover>td,
+.theme-dark .ant-table-tbody>tr>td.ant-table-cell-row-hover {
+  // 原本 rgba(204, 204, 220, 0.08) 带透明度的颜色会导致启用 fixed column 时被遮挡的内容透出问题
+  background: #262626 !important;
+}
+
 /* antd */
 
 .theme-light-gold {

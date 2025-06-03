@@ -1,4 +1,4 @@
-export type ProcessorType = 'relabel' | 'label_enrich';
+export type ProcessorType = 'relabel' | 'label_enrich' | 'callback';
 
 export type BaseItem = {
   id: number;
@@ -28,6 +28,21 @@ export type RelabelItem = BaseItem & {
   }[];
 };
 
+export type CallbackItem = BaseItem & {
+  processors: {
+    type: 'callback';
+    config: {
+      url: string;
+      header?: Record<string, string>;
+      timeout?: string;
+      insecure_skip_verify?: boolean;
+      proxy?: string;
+      basic_auth_user?: string;
+      basic_auth_pass?: string;
+    };
+  }[];
+};
+
 export type LabelEnrichItem = BaseItem & {
   processors: {
     type: 'label_enrich';
@@ -47,4 +62,4 @@ export type LabelEnrichItem = BaseItem & {
   }[];
 };
 
-export type Item = RelabelItem | LabelEnrichItem;
+export type Item = RelabelItem | LabelEnrichItem | CallbackItem;

@@ -31,3 +31,10 @@ export const rulesClone = (gid, data) => {
     data,
   }).then((res) => res.dat);
 };
+
+export const rulesClones = (data) => {
+  return request('/api/n9e/busi-groups/alert-rules/clones', {
+    method: RequestMethod.Post,
+    data,
+  }).then((res) => res.dat);
+};

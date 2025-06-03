@@ -20,12 +20,7 @@ interface Props {
 export default forwardRef(function ItemDetail(props: Props, ref) {
   const { t } = useTranslation(NS);
   const { id, onChange, onDelete } = props;
-  const [data, setData] = useState<
-    Item & {
-      notify_channel_name: string;
-      notify_channel_request_type: string;
-    }
-  >();
+  const [data, setData] = useState<Item>();
   const [form] = Form.useForm();
   const contentRef = React.useRef<{ key: string; value?: string }[]>();
   const [formModalState, setFormModalState] = useState<{
@@ -39,22 +34,16 @@ export default forwardRef(function ItemDetail(props: Props, ref) {
   const fetchData = () => {
     if (id) {
       getItem(id).then((itemData) => {
-        getNotificationChannel(itemData.notify_channel_ident).then((channelData) => {
-          setData({
-            ...itemData,
-            notify_channel_name: channelData.name,
-            notify_channel_request_type: channelData.request_type,
-          });
-          // 将 content: {[key:string]: string} 转换为 content: {key: string, value: string}[]
-          const content = _.map(itemData.content, (value, key) => {
-            return {
-              key,
-              value,
-            };
-          });
-          contentRef.current = content;
-          form.setFieldsValue({ content });
+        setData(itemData);
+        // 将 content: {[key:string]: string} 转换为 content: {key: string, value: string}[]
+        const content = _.map(itemData.content, (value, key) => {
+          return {
+            key,
+            value,
+          };
         });
+        contentRef.current = content;
+        form.setFieldsValue({ content });
       });
     }
   };
@@ -121,7 +110,7 @@ export default forwardRef(function ItemDetail(props: Props, ref) {
               {t('common:table.ident')}：{data?.ident ?? '-'}
             </span>
             <span>
-              {t('notify_channel_ident')}：{data?.notify_channel_name ?? '-'}
+              {t('notify_channel_ident')}：{data?.notify_channel_ident ?? '-'}
             </span>
           </Space>
         </div>

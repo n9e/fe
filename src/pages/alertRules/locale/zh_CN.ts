@@ -120,7 +120,7 @@ const zh_CN = {
     import_builtin: '导入内置告警规则',
     import_prometheus: '导入 Prometheus 告警规则',
     export: {
-      title: '导出告警规则',
+      title: '导出规则 JSON',
       copy: '复制 JSON 内容到剪贴板',
     },
     update: {
@@ -173,6 +173,15 @@ const zh_CN = {
       result: {
         title: '克隆结果',
         host: '机器',
+        rule: '规则',
+        msg: '结果',
+      },
+    },
+    clone_to_bgids: {
+      title: '克隆到其他业务组',
+      select_bgids: '选择业务组',
+      result: {
+        title: '克隆结果',
         rule: '规则',
         msg: '结果',
       },

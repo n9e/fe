@@ -77,7 +77,7 @@ export const baseCates: Cate[] = [
     type: ['metric', 'logging'],
     alertRule: true,
     dashboard: true,
-    dashboardVariable: false,
+    dashboardVariable: true,
     graphPro: true,
     alertPro: false,
     logo: '/image/logos/ck.png',

@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { useDebounceFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
-import { Form, Select, Button } from 'antd';
+import { Form, Select, Button, Space } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 
 import TimeRangePicker from '@/components/TimeRangePicker';
@@ -150,13 +150,27 @@ export default function QueryBuilder(props: Props) {
               <Select
                 options={_.map(indexPatterns, (item) => {
                   return {
-                    label: item.name,
+                    label: (
+                      <Space>
+                        <span>{item.name}</span>
+                        <span
+                          style={{
+                            color: 'var(--fc-text-3)',
+                          }}
+                        >
+                          {item.note}
+                        </span>
+                      </Space>
+                    ),
+                    originLabel: item.name,
+                    searchIndex: `${item.name} ${item.note}`,
                     value: item.id,
                   };
                 })}
                 dropdownMatchSelectWidth={false}
                 showSearch
-                optionFilterProp='label'
+                optionFilterProp='searchIndex'
+                optionLabelProp='originLabel'
               />
             </Form.Item>
           </InputGroupWithFormItem>

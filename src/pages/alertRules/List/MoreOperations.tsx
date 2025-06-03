@@ -26,31 +26,48 @@ import { CommonStateContext } from '@/App';
 import Export from './Export';
 import EditModal from './EditModal';
 import CloneToHosts from './CloneToHosts';
+import CloneToBgids from './CloneToBgids';
 import { downloadFile } from './utils';
 
 interface MoreOperationsProps {
-  bgid: number;
+  bgid?: number; // 如果 isLeaf 为 true，则 bgid 必须存在
+  isLeaf: boolean;
   selectRowKeys: React.Key[];
   selectedRows: any[];
   getAlertRules: () => void;
 }
 
-const exportIgnoreAttrsObj = {
-  cluster: undefined,
-  create_by: undefined,
-  group_id: undefined,
-  id: undefined,
-  notify_groups_obj: undefined,
-  notify_groups: undefined,
-  notify_users: undefined,
-  create_at: undefined,
-  update_at: undefined,
-  update_by: undefined,
-};
+const ignoreFields = [
+  'id',
+  'group_id',
+  'datasource_ids',
+  'cluster',
+  'algorithm',
+  'algo_params',
+  'severity',
+  'severities',
+  'disabled',
+  'prom_ql',
+  'enable_stime',
+  'enable_stimes',
+  'enable_etime',
+  'enable_etimes',
+  'enable_days_of_week',
+  'enable_days_of_weeks',
+  'notify_channels',
+  'notify_groups_obj',
+  'notify_groups',
+  'runbook_url',
+  'extra_config',
+  'create_at',
+  'create_by',
+  'update_at',
+  'update_by',
+];
 
 export default function MoreOperations(props: MoreOperationsProps) {
   const { t } = useTranslation('alertRules');
-  const { bgid, selectRowKeys, selectedRows, getAlertRules } = props;
+  const { bgid, isLeaf, selectRowKeys, selectedRows, getAlertRules } = props;
   const [isModalVisible, setisModalVisible] = useState<boolean>(false);
   const { isPlus, busiGroups } = useContext(CommonStateContext);
 
@@ -64,7 +81,7 @@ export default function MoreOperations(props: MoreOperationsProps) {
               onClick={() => {
                 if (selectedRows.length) {
                   const exportData = selectedRows.map((item) => {
-                    return { ...item, ...exportIgnoreAttrsObj };
+                    return _.omit(item, ignoreFields);
                   });
                   Export({
                     data: JSON.stringify(exportData, null, 2),
@@ -76,39 +93,61 @@ export default function MoreOperations(props: MoreOperationsProps) {
             >
               <span>{t('batch.export.title')}</span>
             </li>
-            <li
-              className='ant-dropdown-menu-item'
-              onClick={() => {
-                if (selectRowKeys.length) {
-                  Modal.confirm({
-                    title: t('batch.delete_confirm'),
-                    onOk: () => {
-                      deleteStrategy(selectRowKeys as number[], bgid).then(() => {
-                        message.success(t('batch.delete_success'));
-                        getAlertRules();
-                      });
-                    },
+            {isLeaf && (
+              <li
+                className='ant-dropdown-menu-item'
+                onClick={() => {
+                  if (selectRowKeys.length) {
+                    Modal.confirm({
+                      title: t('batch.delete_confirm'),
+                      onOk: () => {
+                        deleteStrategy(selectRowKeys as number[], bgid!).then(() => {
+                          message.success(t('batch.delete_success'));
+                          getAlertRules();
+                        });
+                      },
+                    });
+                  } else {
+                    message.warning(t('batch.not_select'));
+                  }
+                }}
+              >
+                <span>{t('batch.delete')}</span>
+              </li>
+            )}
+            {isLeaf && (
+              <li
+                className='ant-dropdown-menu-item'
+                onClick={() => {
+                  if (selectRowKeys.length == 0) {
+                    message.warning(t('batch.not_select'));
+                    return;
+                  }
+                  setisModalVisible(true);
+                }}
+              >
+                <span>{t('batch.update.title')}</span>
+              </li>
+            )}
+            {isLeaf && (
+              <li
+                className='ant-dropdown-menu-item'
+                onClick={() => {
+                  if (selectRowKeys.length == 0) {
+                    message.warning(t('batch.not_select'));
+                    return;
+                  }
+                  CloneToBgids({
+                    ids: selectRowKeys,
+                    busiGroups,
+                    onOk: getAlertRules,
                   });
-                } else {
-                  message.warning(t('batch.not_select'));
-                }
-              }}
-            >
-              <span>{t('batch.delete')}</span>
-            </li>
-            <li
-              className='ant-dropdown-menu-item'
-              onClick={() => {
-                if (selectRowKeys.length == 0) {
-                  message.warning(t('batch.not_select'));
-                  return;
-                }
-                setisModalVisible(true);
-              }}
-            >
-              <span>{t('batch.update.title')}</span>
-            </li>
-            {isPlus && (
+                }}
+              >
+                <span>{t('batch.clone_to_bgids.title')}</span>
+              </li>
+            )}
+            {isPlus && isLeaf && (
               <li
                 className='ant-dropdown-menu-item'
                 onClick={() => {
@@ -117,7 +156,7 @@ export default function MoreOperations(props: MoreOperationsProps) {
                     return;
                   }
                   CloneToHosts({
-                    gid: bgid,
+                    gid: bgid!,
                     ids: selectRowKeys,
                     busiGroups,
                     onOk: getAlertRules,
@@ -161,7 +200,7 @@ export default function MoreOperations(props: MoreOperationsProps) {
       <EditModal
         isModalVisible={isModalVisible}
         editModalFinish={async (isOk, fieldsData) => {
-          if (isOk) {
+          if (isOk && bgid) {
             if (isPlus && fieldsData?.service_cal_ids) {
               const res = await updateServiceCal(
                 {

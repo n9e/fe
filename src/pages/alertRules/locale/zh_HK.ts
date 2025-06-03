@@ -120,7 +120,7 @@ const zh_HK = {
     import_builtin: '匯入內置告警規則',
     import_prometheus: '匯入 Prometheus 告警規則',
     export: {
-      title: '匯出告警規則',
+      title: '匯出規則 JSON',
       copy: '複製 JSON 內容到剪貼簿',
     },
     update: {
@@ -175,6 +175,15 @@ const zh_HK = {
         host: '機器',
         rule: '規則',
         msg: '消息',
+      },
+    },
+    clone_to_bgids: {
+      title: '克隆到其他業務組',
+      select_bgids: '選擇業務組',
+      result: {
+        title: '克隆結果',
+        rule: '規則',
+        msg: '結果',
       },
     },
     export_to_csv: '匯出（CSV）',

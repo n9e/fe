@@ -20,6 +20,7 @@ import './style.less';
 
 const DOCUMENT_WIDTH_KEY = 'notification_templates_document_width';
 const DEFAULT_DOCUMENT_WIDTH = 600;
+const MIN_DOCUMENT_WIDTH = 100;
 
 export default function ListCpt() {
   const { t } = useTranslation(NS);
@@ -154,8 +155,8 @@ export default function ListCpt() {
             }}
             onResizeStop={(e, direction, ref, d) => {
               let curWidth = width + d.width;
-              if (curWidth < DEFAULT_DOCUMENT_WIDTH) {
-                curWidth = DEFAULT_DOCUMENT_WIDTH;
+              if (curWidth < MIN_DOCUMENT_WIDTH) {
+                curWidth = MIN_DOCUMENT_WIDTH;
               }
               setWidth(curWidth);
               localStorage.setItem(DOCUMENT_WIDTH_KEY, curWidth.toString());

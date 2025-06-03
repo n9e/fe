@@ -148,6 +148,8 @@ const zh_CN = {
   reload: '刷新',
   public: '公开',
   private: '私有',
+  advanced_settings: '高级设置',
+  disabled: '禁用',
 
   // 临时把 task 的翻译放在这里
   tpl: '自愈脚本',
