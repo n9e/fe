@@ -4,6 +4,7 @@ import { NotificationFilled } from '@ant-design/icons';
 import IconFont from '@/components/IconFont';
 
 import { MenuItem } from './types';
+import './locale';
 
 export const getMenuList = (embeddedProductMenu: MenuItem[] = []) => {
   const menu: MenuItem[] = [
