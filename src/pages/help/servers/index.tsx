@@ -23,7 +23,7 @@ import { useTranslation } from 'react-i18next';
 import PageLayout, { HelpLink } from '@/components/pageLayout';
 import { getN9EServers } from '@/services/help';
 import { CommonStateContext } from '@/App';
-import SystemInfoSvg from '../../../../public/image/system-info.svg';
+import SystemInfoSvg from '@/assets/n9e/image/system-info.svg?react';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
 import './locale';
 
