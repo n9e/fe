@@ -91,6 +91,7 @@ const ru_RU = {
   meta_collapse: 'Свернуть',
   meta_no_data: 'Нет данных',
   all_no_data: 'Не установлены сборщики данных? См. <a>руководство по установке</a>',
+  categraf_doc: 'Документация Categraf',
 };
 
 export default ru_RU;
