@@ -18,5 +18,5 @@ fs.writeFileSync(
       return `VITE_IS_${feat}=true`;
     }),
     '\n',
-  ) + `\nNODE_ENV=production`,
+  ),
 );
