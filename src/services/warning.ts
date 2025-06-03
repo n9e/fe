@@ -282,13 +282,19 @@ export function getAlertEventsById(eventId) {
   });
 }
 
-export function getHistoryEventsById(eventId) {
+export function getHistoryEventsById(
+  eventId,
+  params?: {
+    __token: string;
+  },
+) {
   let url = '/api/n9e/alert-his-event';
   if (IS_ENT) {
     url = '/api/n9e-plus/alert-his-event';
   }
   return request(`${url}/${eventId}`, {
     method: RequestMethod.Get,
+    params,
   });
 }
 /**
@@ -504,15 +510,15 @@ export function getESVersion(datasourceValue: number) {
   });
 }
 
-export function getEventTSQuery(params) {
-  return request('/api/n9e-plus/event-ts-query', {
+export function getEventTSQuery(params, token?: string) {
+  return request(`/api/n9e-plus/event-ts-query${token ? `?__token=${token}` : ''}`, {
     method: RequestMethod.Post,
     data: params,
   });
 }
 
-export function getEventLogQuery(params) {
-  return request('/api/n9e-plus/event-log-query', {
+export function getEventLogQuery(params, token?: string) {
+  return request(`/api/n9e-plus/event-log-query${token ? `?__token=${token}` : ''}`, {
     method: RequestMethod.Post,
     data: params,
   });
