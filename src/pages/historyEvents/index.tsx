@@ -35,6 +35,7 @@ import { BusinessGroupSelectWithAll } from '@/components/BusinessGroup';
 import { allCates } from '@/components/AdvancedWrap/utils';
 import EventDetailDrawer from '@/pages/alertCurEvent/pages/List/EventDetailDrawer';
 import usePagination from '@/components/usePagination';
+import { getEventById } from '@/pages/alertCurEvent/services';
 
 import exportEvents, { downloadFile } from './exportEvents';
 import { getEvents, getEventsByIds } from './services';
@@ -107,10 +108,10 @@ const Event: React.FC = () => {
                 ) : null}
                 <a
                   onClick={() => {
-                    getEventsByIds(record.id).then((res) => {
+                    getEventById(record.id).then((res) => {
                       setEventDetailDrawerData({
                         visible: true,
-                        data: res.dat?.[0],
+                        data: res.dat,
                       });
                     });
                   }}

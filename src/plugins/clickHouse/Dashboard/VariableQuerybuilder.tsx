@@ -10,7 +10,7 @@ export default function VariableQuerybuilder() {
 
   return (
     <Form.Item
-      label={t('var.query')}
+      label={t('query.query')}
       name={['query', 'query']}
       rules={[
         {
