@@ -31,7 +31,7 @@ const DatasourceCheckbox: React.FC<Props> = ({ value = [], onChange }) => {
       }),
       ['plugin_type', 'name'],
     );
-  }, [datasourceList, search]);
+  }, [datasourceList, search]) as any[];
 
   const filteredIds = _.map(filteredDatasource, (ds) => ds.id);
   const allChecked = _.every(filteredIds, (id) => _.includes(value, id));
