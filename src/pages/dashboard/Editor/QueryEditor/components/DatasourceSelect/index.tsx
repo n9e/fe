@@ -30,7 +30,7 @@ export default function index({ dashboardId, chartForm, variableConfig }) {
             rules={[
               {
                 required: true,
-                message: t('query.datasource_msg'),
+                message: t('common:datasource.id_required'),
               },
             ]}
           >

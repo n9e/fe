@@ -24,7 +24,7 @@ export default function index(props: IProps) {
       rules={[
         {
           required: true,
-          message: t('query.datasource_msg'),
+          message: t('common:datasource.id_required'),
         },
       ]}
     >
