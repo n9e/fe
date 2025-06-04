@@ -90,7 +90,7 @@ const Panel = ({ type, defaultCate, panelIdx, defaultFormValuesControl }: IProps
                     rules={[
                       {
                         required: true,
-                        message: t('query.datasource_msg'),
+                        message: t('common:datasource.id_required'),
                       },
                     ]}
                   >
