@@ -31,7 +31,7 @@ const DatasourceCheckbox: React.FC<Props> = ({ value = [], onChange }) => {
       }),
       ['plugin_type', 'name'],
     );
-  }, [datasourceList, search]) as any[];
+  }, [datasourceList, search]) as typeof datasourceList; // 部分未知环境下这里会类型错误，使用类型断言确保类型正确
 
   const filteredIds = _.map(filteredDatasource, (ds) => ds.id);
   const allChecked = _.every(filteredIds, (id) => _.includes(value, id));
