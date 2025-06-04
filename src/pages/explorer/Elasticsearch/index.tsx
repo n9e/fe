@@ -209,9 +209,9 @@ export default function index(props: IProps) {
           query: values.query,
         });
       }
-      getLogsQuery(
-        values.datasourceValue,
-        dslBuilder({
+      let requestBody;
+      try {
+        requestBody = dslBuilder({
           index: values.query.index,
           ...timesRef.current,
           date_field: values.query.date_field,
@@ -231,9 +231,13 @@ export default function index(props: IProps) {
             : sorterRef.current,
           _source: true,
           shouldHighlight: true,
-        }),
-        requestId,
-      )
+        });
+      } catch (e: any) {
+        setErrorContent(_.get(e, 'message', t('datasource:es.queryFailed')));
+        setLoading(false);
+      }
+      if (!requestBody) return;
+      getLogsQuery(values.datasourceValue, requestBody, requestId)
         .then((res) => {
           const newData = _.map(res.list, (item) => {
             return {
@@ -245,6 +249,7 @@ export default function index(props: IProps) {
           });
           setData(newData);
           setTotal(res.total);
+          setErrorContent(undefined);
           const tableEleNodes = document.querySelectorAll(`.es-discover-logs-table .ant-table-body`)[0];
           tableEleNodes?.scrollTo(0, 0);
         })
@@ -258,7 +263,6 @@ export default function index(props: IProps) {
         })
         .finally(() => {
           setLoading(false);
-          setErrorContent(undefined);
         });
     });
   };
