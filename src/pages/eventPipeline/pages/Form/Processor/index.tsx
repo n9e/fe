@@ -11,13 +11,15 @@ import DocumentDrawer from '@/components/DocumentDrawer';
 
 // @ts-ignore
 import LabelEnrich from 'plus:/parcels/eventPipeline/LabelEnrich';
+// @ts-ignore
+import Script from 'plus:/parcels/eventPipeline/Script';
 
 import { NS, DEFAULT_PROCESSOR_CONFIG_MAP } from '../../../constants';
 import TestModal from '../TestModal';
 import Relabel from './Relabel';
 import Callback from './Callback';
 import EventDrop from './EventDrop';
-import Script from 'plus:/parcels/eventPipeline/Script';
+
 interface Props {
   disabled?: boolean;
   fields: FormListFieldData[];
