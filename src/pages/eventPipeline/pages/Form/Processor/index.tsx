@@ -17,7 +17,6 @@ import TestModal from '../TestModal';
 import Relabel from './Relabel';
 import Callback from './Callback';
 import EventDrop from './EventDrop';
-import { DOC_MAP } from '../../../constants';
 
 interface Props {
   disabled?: boolean;
@@ -27,6 +26,15 @@ interface Props {
   remove: (index: number | number[]) => void;
   move: (from: number, to: number) => void;
 }
+
+// TODO:待补充文案
+const documentPathMap = {
+  relabel: '/docs/alert-event-relabel',
+  callback: '/docs/alert-event-relabel',
+  event_update: '/docs/alert-event-relabel',
+  event_drop: '/docs/alert-event-relabel',
+  label_enrich: '/docs/alert-event-relabel',
+};
 
 export default function NotifyConfig(props: Props) {
   const { t, i18n } = useTranslation(NS);
@@ -88,8 +96,9 @@ export default function NotifyConfig(props: Props) {
                 DocumentDrawer({
                   language: i18n.language,
                   darkMode,
+                  type: 'iframe',
                   title: t('processor.help_btn'),
-                  documentPath: DOC_MAP[processorType] || '/docs/alert-event-relabel',
+                  documentPath: documentPathMap[processorType],
                 });
               }}
             >

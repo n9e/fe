@@ -19,10 +19,3 @@ export const DEFAULT_VALUES = {
     },
   ],
 };
-export const DOC_MAP = {
-  relabel: '/docs/alert-event-relabel',
-  callback: '/docs/alert-event-callback',
-  event_update: '/docs/alert-event-update',
-  event_drop: '/docs/alert-event-drop',
-  label_enrich: '/docs/alert-event-label-enrich',
-};
