@@ -56,6 +56,7 @@ export interface DataSourceType {
   created_at: number;
   updated_at: number;
   connectionStatus?: string;
+  cluster_name?: string;
 }
 
 export type ShardBaseType = Partial<MysqlshardBaseType>;

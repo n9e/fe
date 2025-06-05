@@ -55,7 +55,7 @@ export default function MysqlLike(props: Props) {
         <Row gutter={16}>
           <Col span={24}>{t('datasourceManage:form.cluster')}</Col>
           <Col span={24} className='second-color'>
-            {data.settings[`${type}.cluster_name`] || '-'}
+            {data?.cluster_name || '-'}
           </Col>
         </Row>
       </div>

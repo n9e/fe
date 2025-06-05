@@ -1,6 +1,9 @@
 import _ from 'lodash';
 import moment from 'moment';
-import { DatasourceCateEnum, BaseDatasourceCateEnum } from '@/utils/constant';
+
+import { mapOptionToRelativeTimeRange, mapRelativeTimeRangeToOption } from '@/components/TimeRangePicker';
+import { DatasourceCateEnum, BaseDatasourceCateEnum, IS_PLUS } from '@/utils/constant';
+
 import { defaultRuleConfig, datasourceDefaultValue, defaultValues } from './constants';
 import { DATASOURCE_ALL } from '../constants';
 // @ts-ignore
@@ -95,6 +98,10 @@ export function processFormValues(values) {
   } else {
     if (values?.rule_config?.queries) {
       values.rule_config.queries = _.map(values.rule_config.queries, (item) => {
+        let parsedRange;
+        if (item.range) {
+          parsedRange = mapOptionToRelativeTimeRange(item.range);
+        }
         if (_.isArray(item?.keys?.labelKey)) {
           item.keys.labelKey = _.join(item.keys.labelKey, ' ');
         }
@@ -107,6 +114,10 @@ export function processFormValues(values) {
         return {
           ..._.omit(item, 'interval_unit'),
           interval: normalizeTime(item.interval, item.interval_unit),
+          from: parsedRange?.start,
+          to: parsedRange?.end,
+          cumulative_window_from: parsedRange?.cumulative_window_from,
+          cumulative_window_to: parsedRange?.cumulative_window_to,
         };
       });
     }
@@ -131,9 +142,12 @@ export function processFormValues(values) {
   }
   const extra_config = values?.extra_config || {};
   const enrich_queries = _.map(extra_config?.enrich_queries, (item) => {
+    const parsedRange = mapOptionToRelativeTimeRange(item.range);
     return {
-      ..._.omit(item, 'interval_unit'),
+      ..._.omit(item, ['interval_unit', 'range']),
       interval: normalizeTime(item.interval, item.interval_unit),
+      from: parsedRange?.start,
+      to: parsedRange?.end,
     };
   });
   const data = {
@@ -172,9 +186,15 @@ export function processInitialValues(values) {
           _.set(item, 'keys.metricKey', item?.keys?.metricKey ? _.split(item.keys.metricKey, ' ') : []);
         }
         return {
-          ...item,
+          ..._.omit(item, ['from', 'to']),
           interval: parseTimeToValueAndUnit(item.interval).value,
           interval_unit: parseTimeToValueAndUnit(item.interval).unit,
+          range: mapRelativeTimeRangeToOption({
+            start: item.from,
+            end: item.to,
+            cumulative_window_from: item.cumulative_window_from,
+            cumulative_window_to: item.cumulative_window_to,
+          }),
         };
       });
     }
@@ -182,9 +202,15 @@ export function processInitialValues(values) {
   const extra_config = values?.extra_config || {};
   const enrich_queries = _.map(extra_config?.enrich_queries, (item) => {
     return {
-      ...item,
+      ..._.omit(item, ['from', 'to']),
       interval: parseTimeToValueAndUnit(item.interval).value,
       interval_unit: parseTimeToValueAndUnit(item.interval).unit,
+      range: mapRelativeTimeRangeToOption({
+        start: item.from,
+        end: item.to,
+        cumulative_window_from: item.cumulative_window_from,
+        cumulative_window_to: item.cumulative_window_to,
+      }),
     };
   });
   return {
@@ -310,7 +336,16 @@ export function getDefaultValuesByCate(prod, cate) {
       ...datasourceDefaultValue,
     };
   }
-  if (_.isFunction(alertUtils.getDefaultValuesByCate)) {
-    return alertUtils.getDefaultValuesByCate(prod, cate);
+  if (IS_PLUS) {
+    if (_.isFunction(alertUtils.getDefaultValuesByCate)) {
+      return alertUtils.getDefaultValuesByCate(prod, cate);
+    }
+  } else {
+    return {
+      prod,
+      cate,
+      rule_config: defaultRuleConfig,
+      ...datasourceDefaultValue,
+    };
   }
 }
