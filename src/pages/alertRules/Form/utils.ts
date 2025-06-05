@@ -2,7 +2,7 @@ import _ from 'lodash';
 import moment from 'moment';
 
 import { mapOptionToRelativeTimeRange, mapRelativeTimeRangeToOption } from '@/components/TimeRangePicker';
-import { DatasourceCateEnum, BaseDatasourceCateEnum, IS_PLUS } from '@/utils/constant';
+import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
 
 import { defaultRuleConfig, datasourceDefaultValue, defaultValues } from './constants';
 import { DATASOURCE_ALL } from '../constants';
@@ -93,52 +93,48 @@ export function processFormValues(values) {
       _.map(values.rule_config.queries, (item) => _.omit(item, 'prom_ql')),
     );
   }
-  if (_.isFunction(alertUtils.processFormValues) && !BaseDatasourceCateEnum[cate]) {
-    values = alertUtils.processFormValues(values);
-  } else {
-    if (values?.rule_config?.queries) {
-      values.rule_config.queries = _.map(values.rule_config.queries, (item) => {
-        let parsedRange;
-        if (item.range) {
-          parsedRange = mapOptionToRelativeTimeRange(item.range);
-        }
-        if (_.isArray(item?.keys?.labelKey)) {
-          item.keys.labelKey = _.join(item.keys.labelKey, ' ');
-        }
-        if (_.isArray(item?.keys?.valueKey)) {
-          item.keys.valueKey = _.join(item.keys.valueKey, ' ');
-        }
-        if (_.isArray(item?.keys?.metricKey)) {
-          item.keys.metricKey = _.join(item.keys.metricKey, ' ');
-        }
+  if (values?.rule_config?.queries) {
+    values.rule_config.queries = _.map(values.rule_config.queries, (item) => {
+      let parsedRange;
+      if (item.range) {
+        parsedRange = mapOptionToRelativeTimeRange(item.range);
+      }
+      if (_.isArray(item?.keys?.labelKey)) {
+        item.keys.labelKey = _.join(item.keys.labelKey, ' ');
+      }
+      if (_.isArray(item?.keys?.valueKey)) {
+        item.keys.valueKey = _.join(item.keys.valueKey, ' ');
+      }
+      if (_.isArray(item?.keys?.metricKey)) {
+        item.keys.metricKey = _.join(item.keys.metricKey, ' ');
+      }
+      return {
+        ..._.omit(item, 'interval_unit'),
+        interval: normalizeTime(item.interval, item.interval_unit),
+        from: parsedRange?.start,
+        to: parsedRange?.end,
+        cumulative_window_from: parsedRange?.cumulative_window_from,
+        cumulative_window_to: parsedRange?.cumulative_window_to,
+      };
+    });
+  }
+  if (values?.rule_config?.triggers) {
+    values.rule_config.triggers = _.map(values.rule_config.triggers, (trigger) => {
+      if (trigger.mode === 0) {
         return {
-          ..._.omit(item, 'interval_unit'),
-          interval: normalizeTime(item.interval, item.interval_unit),
-          from: parsedRange?.start,
-          to: parsedRange?.end,
-          cumulative_window_from: parsedRange?.cumulative_window_from,
-          cumulative_window_to: parsedRange?.cumulative_window_to,
+          ...trigger,
+          exp: stringifyExpressions(trigger.expressions),
         };
-      });
-    }
-    if (values?.rule_config?.triggers) {
-      values.rule_config.triggers = _.map(values.rule_config.triggers, (trigger) => {
-        if (trigger.mode === 0) {
-          return {
-            ...trigger,
-            exp: stringifyExpressions(trigger.expressions),
-          };
-        }
-        // 如果是表达式模式 mode=1 则清理掉 expressions 字段值
-        if (trigger.mode === 1) {
-          return {
-            ...trigger,
-            expressions: [{ ref: 'A', comparisonOperator: '>' }],
-          };
-        }
-        return trigger;
-      });
-    }
+      }
+      // 如果是表达式模式 mode=1 则清理掉 expressions 字段值
+      if (trigger.mode === 1) {
+        return {
+          ...trigger,
+          expressions: [{ ref: 'A', comparisonOperator: '>' }],
+        };
+      }
+      return trigger;
+    });
   }
   const extra_config = values?.extra_config || {};
   const enrich_queries = _.map(extra_config?.enrich_queries, (item) => {
@@ -170,34 +166,29 @@ export function processFormValues(values) {
 }
 
 export function processInitialValues(values) {
-  let cate = values.cate;
-  if (_.isFunction(alertUtils.processInitialValues) && !BaseDatasourceCateEnum[cate]) {
-    values = alertUtils.processInitialValues(values);
-  } else {
-    if (values?.rule_config?.queries) {
-      values.rule_config.queries = _.map(values.rule_config.queries, (item) => {
-        if (item?.keys?.labelKey) {
-          _.set(item, 'keys.labelKey', item?.keys?.labelKey ? _.split(item.keys.labelKey, ' ') : []);
-        }
-        if (item?.keys?.valueKey) {
-          _.set(item, 'keys.valueKey', item?.keys?.valueKey ? _.split(item.keys.valueKey, ' ') : []);
-        }
-        if (item?.keys?.metricKey) {
-          _.set(item, 'keys.metricKey', item?.keys?.metricKey ? _.split(item.keys.metricKey, ' ') : []);
-        }
-        return {
-          ..._.omit(item, ['from', 'to']),
-          interval: parseTimeToValueAndUnit(item.interval).value,
-          interval_unit: parseTimeToValueAndUnit(item.interval).unit,
-          range: mapRelativeTimeRangeToOption({
-            start: item.from,
-            end: item.to,
-            cumulative_window_from: item.cumulative_window_from,
-            cumulative_window_to: item.cumulative_window_to,
-          }),
-        };
-      });
-    }
+  if (values?.rule_config?.queries) {
+    values.rule_config.queries = _.map(values.rule_config.queries, (item) => {
+      if (item?.keys?.labelKey) {
+        _.set(item, 'keys.labelKey', item?.keys?.labelKey ? _.split(item.keys.labelKey, ' ') : []);
+      }
+      if (item?.keys?.valueKey) {
+        _.set(item, 'keys.valueKey', item?.keys?.valueKey ? _.split(item.keys.valueKey, ' ') : []);
+      }
+      if (item?.keys?.metricKey) {
+        _.set(item, 'keys.metricKey', item?.keys?.metricKey ? _.split(item.keys.metricKey, ' ') : []);
+      }
+      return {
+        ..._.omit(item, ['from', 'to']),
+        interval: parseTimeToValueAndUnit(item.interval).value,
+        interval_unit: parseTimeToValueAndUnit(item.interval).unit,
+        range: mapRelativeTimeRangeToOption({
+          start: item.from,
+          end: item.to,
+          cumulative_window_from: item.cumulative_window_from,
+          cumulative_window_to: item.cumulative_window_to,
+        }),
+      };
+    });
   }
   const extra_config = values?.extra_config || {};
   const enrich_queries = _.map(extra_config?.enrich_queries, (item) => {
