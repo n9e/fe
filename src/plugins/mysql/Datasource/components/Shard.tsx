@@ -59,6 +59,7 @@ export default function Shard(props: IProps) {
               min: 0,
             },
           ]}
+          initialValue={500}
         >
           <InputNumber
             style={{
