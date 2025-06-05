@@ -6,16 +6,12 @@ import { Button, message, Space, Spin, Tag, Typography } from 'antd';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { CommonStateContext, basePrefix } from '@/App';
-import TDengineDetail from '@/plugins/TDengine/Event';
-import { Event as ElasticsearchDetail } from '@/plugins/elasticsearch';
 import { getESIndexPatterns } from '@/pages/log/IndexPatterns/services';
 import { DatasourceCateEnum } from '@/utils/constant';
 
 import EventNotifyRecords from '../EventNotifyRecords';
 import TaskTpls from '../TaskTpls';
-import PrometheusDetail from '../Detail/Prometheus';
-import Host from '../Detail/Host';
-import LokiDetail from '../Detail/Loki';
+import eventDetailByCate from './eventDetailByCate';
 
 // @ts-ignore
 import plusEventDetail from 'plus:/parcels/Event/eventDetail';
@@ -216,21 +212,13 @@ export default function DetailNG(props: Props) {
           },
         ]
       : [false]),
-    ...(eventDetail?.cate === 'prometheus' && !_.includes(['firemap', 'northstar'], eventDetail?.rule_prod)
-      ? PrometheusDetail({
-          eventDetail,
-          history,
-        })
-      : [false]),
-    ...(eventDetail?.cate === 'loki'
-      ? LokiDetail({
-          eventDetail,
-          history,
-        })
-      : [false]),
-    ...(eventDetail?.cate === 'host' ? Host(t, commonState) : [false]),
-    ...(eventDetail?.cate === 'tdengine' ? TDengineDetail(t) : [false]),
-    ...(eventDetail?.cate === 'elasticsearch' ? ElasticsearchDetail({ indexPatterns }) : [false]),
+    ...(eventDetailByCate({
+      eventDetail,
+      t,
+      history,
+      commonState,
+      indexPatterns,
+    }) || []),
     ...(plusEventDetail(eventDetail?.cate, t) || []),
     {
       label: t('detail.prom_eval_interval'),

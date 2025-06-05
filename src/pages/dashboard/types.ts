@@ -288,3 +288,10 @@ export interface IDashboard {
   public?: number;
   group_id: number;
 }
+
+export interface VariableQuerybuilderProps<VariableType = any> {
+  dashboardId: string;
+  variables: VariableType[];
+  datasourceCate: string;
+  datasourceValue: number;
+}
