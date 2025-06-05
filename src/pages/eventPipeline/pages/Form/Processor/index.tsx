@@ -17,6 +17,7 @@ import TestModal from '../TestModal';
 import Relabel from './Relabel';
 import Callback from './Callback';
 import EventDrop from './EventDrop';
+import { DOC_MAP } from '../../../constants';
 
 interface Props {
   disabled?: boolean;
@@ -81,21 +82,19 @@ export default function NotifyConfig(props: Props) {
         label={
           <Space>
             {t('processor.typ')}
-            {processorType === 'relabel' && (
-              <a
-                onClick={(event) => {
-                  event.stopPropagation();
-                  DocumentDrawer({
-                    language: i18n.language,
-                    darkMode,
-                    title: t('processor.help_btn'),
-                    documentPath: '/docs/alert-event-relabel',
-                  });
-                }}
-              >
-                {t('processor.help_btn')}
-              </a>
-            )}
+            <a
+              onClick={(event) => {
+                event.stopPropagation();
+                DocumentDrawer({
+                  language: i18n.language,
+                  darkMode,
+                  title: t('processor.help_btn'),
+                  documentPath: DOC_MAP[processorType] || '/docs/alert-event-relabel',
+                });
+              }}
+            >
+              {t('processor.help_btn')}
+            </a>
           </Space>
         }
       >
