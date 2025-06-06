@@ -25,10 +25,10 @@ export default function PermissionConn(props: IProps) {
             <div className='page-title'>
               <Space>
                 {t('datasource.shards.title')}
-                <Tooltip placement='bottomLeft' title={t('datasource.shards.title_tip')}>
+                {/* <Tooltip placement='bottomLeft' title={t('datasource.shards.title_tip')}>
                   <InfoCircleOutlined />
                 </Tooltip>
-                <PlusCircleOutlined onClick={() => add(defaultShardValues(type))} />
+                <PlusCircleOutlined onClick={() => add(defaultShardValues(type))} /> */}
               </Space>
             </div>
             {fields.map((field) => {
