@@ -46,6 +46,9 @@ const zh_CN = {
       help: '说明：账号需对相应数据库有读权限才可继续后续操作，如修改为其它账号请尽量使用只读权限账号。',
     },
     max_query_rows: '单次请求允许检索的最大行数',
+    max_idle_conns: '最大空闲连接数',
+    max_open_conns: '最大打开连接数',
+    conn_max_lifetime: '连接最大生存时间',
   },
 };
 export default zh_CN;

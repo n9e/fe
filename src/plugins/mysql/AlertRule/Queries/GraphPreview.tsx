@@ -103,9 +103,6 @@ export default function GraphPreview({ cate, datasourceValue, query }) {
             >
               {t('datasource:es.alert.query.preview')}
             </div>
-            <div>
-              <TimeRangePicker value={range} onChange={setRange} />
-            </div>
           </div>
         }
         content={
@@ -120,6 +117,7 @@ export default function GraphPreview({ cate, datasourceValue, query }) {
                 loading={loading}
                 size='small'
                 rowKey='_ts'
+                tableLayout='auto'
                 dataSource={data}
                 columns={_.map(columns, (item) => {
                   return {

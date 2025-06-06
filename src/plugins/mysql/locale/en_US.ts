@@ -47,6 +47,9 @@ const en_US = {
       help: 'Note: The account needs to have read permission for the corresponding database to continue subsequent operations. If you change to another account, try to use a read-only account.',
     },
     max_query_rows: 'Maximum number of rows allowed to be retrieved in a single request',
+    max_idle_conns: 'Maximum idle connections',
+    max_open_conns: 'Maximum open connections',
+    conn_max_lifetime: 'Maximum connection lifetime',
   },
 };
 export default en_US;

@@ -46,6 +46,9 @@ const zh_HK = {
       help: '說明：帳號需對相應資料庫有讀取權限才可繼續後續操作，如修改為其他帳號請盡量使用唯讀權限帳號。',
     },
     max_query_rows: '單次請求允許檢索的最大行數',
+    max_idle_conns: '最大空閒連接數',
+    max_open_conns: '最大打開連接數',
+    conn_max_lifetime: '連接最大生存時間',
   },
 };
 

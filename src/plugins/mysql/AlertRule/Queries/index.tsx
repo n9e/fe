@@ -9,9 +9,9 @@ import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import QueryName, { generateQueryName } from '@/components/QueryName';
 import LogQL from '@/components/LogQL';
 import { DatasourceCateEnum } from '@/utils/constant';
+import DocumentDrawer from '@/components/DocumentDrawer';
 
 import AdvancedSettings from '../../components/AdvancedSettings';
-import DocumentDrawer from '../../components/DocumentDrawer';
 import { NAME_SPACE } from '../../constants';
 import GraphPreview from './GraphPreview';
 
@@ -25,7 +25,7 @@ interface IProps {
 }
 
 export default function index({ form, prefixField = {}, fullPrefixName = [], prefixName = [], disabled, datasourceValue }: IProps) {
-  const { t } = useTranslation(NAME_SPACE);
+  const { t, i18n } = useTranslation(NAME_SPACE);
   const { darkMode } = useContext(CommonStateContext);
   const datasourceID = _.isArray(datasourceValue) ? datasourceValue[0] : datasourceValue;
   const queries = Form.useWatch(['rule_config', 'queries']);
@@ -77,7 +77,11 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
                               <InfoCircleOutlined
                                 onClick={() => {
                                   DocumentDrawer({
+                                    language: i18n.language,
                                     darkMode,
+                                    title: t('common:page_help'),
+                                    type: 'iframe',
+                                    documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/alert/alert-rules/query-data/mysql/',
                                   });
                                 }}
                               />
