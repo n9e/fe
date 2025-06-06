@@ -24,6 +24,7 @@ import ruRU from 'antd/lib/locale/ru_RU';
 import 'antd/dist/antd.less';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
+
 import TaskOutput from '@/pages/taskOutput';
 import TaskHostOutput from '@/pages/taskOutput/host';
 import { getAuthorizedDatasourceCates, Cate } from '@/components/AdvancedWrap';
@@ -34,9 +35,11 @@ import { getVersions } from '@/components/pageLayout/Version/services';
 import { getCleanBusinessGroupIds, getDefaultBusiness, getVaildBusinessGroup } from '@/components/BusinessGroup';
 import Feedback from '@/components/Feedback';
 import { getN9eConfig } from '@/pages/siteSettings/services';
+import { getDarkMode, updateDarkMode } from '@/utils/darkMode';
+import SharedDetail from '@/pages/event/DetailNG/SharedDetail';
+
 import HeaderMenu from './components/SideMenu';
 import Content from './routers';
-import { getDarkMode, updateDarkMode } from '@/utils/darkMode';
 
 // @ts-ignore
 import useIsPlus from 'plus:/components/useIsPlus';
@@ -124,7 +127,7 @@ export interface ICommonState {
 export const basePrefix = import.meta.env.VITE_PREFIX || '';
 
 // 可以匿名访问的路由 TODO: job-task output 应该也可以匿名访问
-const anonymousRoutes = [`${basePrefix}/login`, `${basePrefix}/callback`, `${basePrefix}/chart`, `${basePrefix}/dashboards/share/`];
+const anonymousRoutes = [`${basePrefix}/login`, `${basePrefix}/callback`, `${basePrefix}/chart`, `${basePrefix}/dashboards/share/`, `${basePrefix}/share/alert-his-events/`];
 // 判断是否是匿名访问的路由
 const anonymous = _.some(anonymousRoutes, (route) => location.pathname.startsWith(route));
 // 初始化数据 context
@@ -322,6 +325,7 @@ function App() {
             <Switch>
               <Route exact path='/job-task/:busiId/output/:taskId/:outputType' component={TaskOutput} />
               <Route exact path='/job-task/:busiId/output/:taskId/:host/:outputType' component={TaskHostOutput} />
+              <Route exact path='/share/alert-his-events/:eventId' component={SharedDetail} />
               <>
                 {location.pathname !== `${basePrefix}/out-of-service` && <HeaderMenu />}
                 <Content />

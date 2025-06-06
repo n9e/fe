@@ -1,21 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Space, Button, message } from 'antd';
+import { ShareAltOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import queryString from 'query-string';
 import { Link } from 'react-router-dom';
 
 import { deleteAlertEventsModal } from '../index';
+import SharingLinkModal from './SharingLinkModal';
 
 interface Options {
   eventDetail?: any;
   showDeleteBtn?: boolean;
+  showSharingLink?: boolean;
   onDeleteSuccess?: () => void;
 }
 
 export default function getActions(options: Options) {
   const { t } = useTranslation('AlertCurEvents');
-  const { eventDetail, showDeleteBtn, onDeleteSuccess } = options;
+  const { eventDetail, showDeleteBtn, showSharingLink = true, onDeleteSuccess } = options;
+  const [sharingLinkModalVisible, setSharingLinkModalVisible] = useState(false);
 
   if (!eventDetail) {
     return [];
@@ -48,7 +52,6 @@ export default function getActions(options: Options) {
                     [eventDetail.id],
                     () => {
                       onDeleteSuccess && onDeleteSuccess();
-                      // history.replace('/alert-cur-events');
                     },
                     t,
                   );
@@ -60,7 +63,26 @@ export default function getActions(options: Options) {
               {t('common:btn.delete')}
             </Button>
           )}
+          {showSharingLink && (
+            <Button
+              icon={<ShareAltOutlined />}
+              onClick={() => {
+                setSharingLinkModalVisible(true);
+              }}
+            >
+              {t('sharing_link.title')}
+            </Button>
+          )}
         </Space>
+        {eventDetail && showSharingLink && (
+          <SharingLinkModal
+            eventId={eventDetail.id}
+            visible={sharingLinkModalVisible}
+            onClose={() => {
+              setSharingLinkModalVisible(false);
+            }}
+          />
+        )}
       </div>,
     ];
   }

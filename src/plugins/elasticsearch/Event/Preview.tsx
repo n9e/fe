@@ -13,18 +13,21 @@ const getSerieName = (metric: Object) => {
   return _.trim(name);
 };
 
-export default function ElasticsearchGraph({ eventId, range, triggerTime, onClick }) {
+export default function ElasticsearchGraph({ eventId, range, triggerTime, onClick, token }) {
   const [series, setSeries] = useState<any[]>([]);
 
   useEffect(() => {
     const parsedRange = parseRange(range);
     const start = moment(parsedRange.start).unix();
     const end = moment(parsedRange.end).unix();
-    getEventTSQuery({
-      event_id: eventId,
-      start,
-      end,
-    }).then((res) => {
+    getEventTSQuery(
+      {
+        event_id: eventId,
+        start,
+        end,
+      },
+      token,
+    ).then((res) => {
       const newSeries = _.map(res.dat, (item) => {
         return {
           id: _.uniqueId('series_'),
