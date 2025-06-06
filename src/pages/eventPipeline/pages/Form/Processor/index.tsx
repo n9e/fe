@@ -29,13 +29,12 @@ interface Props {
 
 // TODO:待补充文案
 const documentPathMap = {
-  relabel: '/docs/alert-event-relabel',
-  callback: '/docs/alert-event-relabel',
-  event_update: '/docs/alert-event-relabel',
-  event_drop: '/docs/alert-event-relabel',
-  label_enrich: '/docs/alert-event-relabel',
+  relabel: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/timing-indicators/instant-query/open-source/prometheus/?onlyContent=1',
+  callback: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/timing-indicators/instant-query/open-source/prometheus/?onlyContent=1',
+  event_update: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/timing-indicators/instant-query/open-source/prometheus/?onlyContent=1',
+  event_drop: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/timing-indicators/instant-query/open-source/prometheus/?onlyContent=1',
+  label_enrich: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/timing-indicators/instant-query/open-source/prometheus/?onlyContent=1',
 };
-
 export default function NotifyConfig(props: Props) {
   const { t, i18n } = useTranslation(NS);
   const { darkMode } = useContext(CommonStateContext);
