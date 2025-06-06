@@ -83,6 +83,7 @@ const zh_CN = {
     type: '数据源类型',
     id: '数据源',
     id_required: '请选择数据源',
+    preview: '数据源预览',
     empty_modal: {
       title: '暂无数据源配置，请联系管理员去添加数据源',
       btn1: '前往配置',

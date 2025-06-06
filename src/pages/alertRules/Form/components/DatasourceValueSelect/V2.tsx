@@ -276,7 +276,7 @@ export default function index(props: IProps) {
                     setPreviewModalVisible(true);
                   }}
                 >
-                  {t('common:datasource.queries.preview')}
+                  {t('common:datasource.preview')}
                 </Button>
                 {showExtra && <DatasourceSelectExtra />}
                 {!_.isEmpty(invalidDatasourceIds) && (
