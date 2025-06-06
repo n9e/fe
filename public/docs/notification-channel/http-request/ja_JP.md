@@ -9,7 +9,7 @@ HTTP 通知メディアを設定する際の主な設定項目は以下の通り
 3. **リクエストパラメータ（Query Parameters / Request Parameters）**
 4. **リクエストボディ（Request Body）**
 
-> すべての設定で `{{$event}}`、`{{$tpl}}`、`{{$params}}`、`{{$sendto}}` の4つの変数を使用できます。
+> すべての設定で `{{$event}}`、`{{$tpl}}`、`{{$params}}`、`{{$sendtos}}` の4つの変数を使用できます。
 
 変数の説明
 
