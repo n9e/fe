@@ -27,13 +27,11 @@ interface Props {
   move: (from: number, to: number) => void;
 }
 
-// TODO:待补充文案
 const documentPathMap = {
-  relabel: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/timing-indicators/instant-query/open-source/prometheus/?onlyContent=1',
-  callback: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/timing-indicators/instant-query/open-source/prometheus/?onlyContent=1',
-  event_update: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/timing-indicators/instant-query/open-source/prometheus/?onlyContent=1',
-  event_drop: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/timing-indicators/instant-query/open-source/prometheus/?onlyContent=1',
-  label_enrich: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/timing-indicators/instant-query/open-source/prometheus/?onlyContent=1',
+  relabel: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/notification/processor-event-relabel/',
+  event_drop: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/notification/processor-event-drop/',
+  event_update: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/notification/processor-event-update/',
+  callback: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/notification/processor-callback/',
 };
 export default function NotifyConfig(props: Props) {
   const { t, i18n } = useTranslation(NS);
@@ -89,20 +87,22 @@ export default function NotifyConfig(props: Props) {
         label={
           <Space>
             {t('processor.typ')}
-            <a
-              onClick={(event) => {
-                event.stopPropagation();
-                DocumentDrawer({
-                  language: i18n.language,
-                  darkMode,
-                  type: 'iframe',
-                  title: t('processor.help_btn'),
-                  documentPath: documentPathMap[processorType],
-                });
-              }}
-            >
-              {t('processor.help_btn')}
-            </a>
+            {documentPathMap[processorType] && (
+              <a
+                onClick={(event) => {
+                  event.stopPropagation();
+                  DocumentDrawer({
+                    language: i18n.language,
+                    darkMode,
+                    type: 'iframe',
+                    title: t('processor.help_btn'),
+                    documentPath: documentPathMap[processorType],
+                  });
+                }}
+              >
+                {t('processor.help_btn')}
+              </a>
+            )}
           </Space>
         }
       >
