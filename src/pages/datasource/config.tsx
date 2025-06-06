@@ -9,5 +9,5 @@ export const helpLinkMap = {
   [DatasourceCateEnum.tencentCLS]: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/data-source/business/tx-cls/',
   [DatasourceCateEnum.elasticsearch]: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/data-source/open-source/es/',
   [DatasourceCateEnum.aliyunSLS]: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/data-source/business/aliy-sls/',
-  [DatasourceCateEnum.mysql]: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/data-source/business/mysql/',
+  [DatasourceCateEnum.mysql]: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/datasource/mysql/',
 };

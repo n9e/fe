@@ -4,7 +4,8 @@ import { Form } from 'antd';
 import Queries from './Queries';
 import Triggers from '@/pages/alertRules/Form/components/Triggers';
 
-export default function index({ form, datasourceValue }) {
+export default function index({ datasourceValue }) {
+  const form = Form.useFormInstance();
   return (
     <>
       <div style={{ marginBottom: 10 }}>

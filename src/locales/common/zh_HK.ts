@@ -83,6 +83,7 @@ const zh_HK = {
     type: '數據源類型',
     id: '關聯數據源',
     id_required: '請選擇數據源',
+    preview: '數據源預覽',
     empty_modal: {
       title: '暫無數據源配置，請聯絡管理員去新增數據源',
       btn1: '前往配置',
@@ -96,7 +97,7 @@ const zh_HK = {
       match_type_2: '全部數據源',
       op_in: '包含',
       op_not_in: '不包含',
-      preview: '數據源預覽',
+      preview: '數據預覽',
     },
     managePageLink: '数据源管理',
   },

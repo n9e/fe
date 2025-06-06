@@ -84,6 +84,7 @@ const ja_JP = {
     type: 'データソースタイプ',
     id: 'データソース',
     id_required: 'データソースを選択してください',
+    preview: 'データソースプレビュー',
     empty_modal: {
       title: 'データソースの設定がありません。管理者に連絡してデータソースを追加してください',
       btn1: '設定に移動',
@@ -97,7 +98,7 @@ const ja_JP = {
       match_type_2: '全データソース',
       op_in: '含む',
       op_not_in: '含まない',
-      preview: 'データソースプレビュー',
+      preview: 'データプレビュー',
     },
     managePageLink: 'データソース管理',
   },

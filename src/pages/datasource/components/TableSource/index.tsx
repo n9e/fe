@@ -128,6 +128,11 @@ const TableSource = (props: IPropsType) => {
       },
     },
     {
+      title: t('form.cluster'),
+      dataIndex: 'cluster_name',
+      sorter: (a, b) => localeCompare(a.cluster_name, b.cluster_name),
+    },
+    {
       title: t('status.title'),
       width: 300,
       dataIndex: 'status',
