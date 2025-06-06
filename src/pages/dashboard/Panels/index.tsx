@@ -186,6 +186,7 @@ function index(props: IProps) {
                     time={range}
                     setRange={props.setRange}
                     timezone={timezone}
+                    setTimezone={setTimezone}
                     values={item}
                     variableConfig={variableConfig}
                     annotations={_.filter(annotations, (annotation) => annotation.panel_id === item.id)}
