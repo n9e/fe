@@ -97,7 +97,7 @@ const ja_JP = {
       match_type_2: '全データソース',
       op_in: '含む',
       op_not_in: '含まない',
-      preview: 'データソースプレビュー',
+      preview: 'データプレビュー',
     },
     managePageLink: 'データソース管理',
   },
