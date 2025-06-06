@@ -109,8 +109,8 @@ export function processFormValues(values) {
         item.keys.metricKey = _.join(item.keys.metricKey, ' ');
       }
       return {
-        ..._.omit(item, 'interval_unit'),
-        interval: normalizeTime(item.interval, item.interval_unit),
+        ..._.omit(item, ['interval_unit', 'range']),
+        interval: item.interval_unit ? normalizeTime(item.interval, item.interval_unit) : undefined,
         from: parsedRange?.start,
         to: parsedRange?.end,
         cumulative_window_from: parsedRange?.cumulative_window_from,
@@ -138,10 +138,13 @@ export function processFormValues(values) {
   }
   const extra_config = values?.extra_config || {};
   const enrich_queries = _.map(extra_config?.enrich_queries, (item) => {
-    const parsedRange = mapOptionToRelativeTimeRange(item.range);
+    let parsedRange;
+    if (item.range) {
+      parsedRange = mapOptionToRelativeTimeRange(item.range);
+    }
     return {
       ..._.omit(item, ['interval_unit', 'range']),
-      interval: normalizeTime(item.interval, item.interval_unit),
+      interval: item.interval_unit ? normalizeTime(item.interval, item.interval_unit) : undefined,
       from: parsedRange?.start,
       to: parsedRange?.end,
     };
@@ -179,14 +182,17 @@ export function processInitialValues(values) {
       }
       return {
         ..._.omit(item, ['from', 'to']),
-        interval: parseTimeToValueAndUnit(item.interval).value,
-        interval_unit: parseTimeToValueAndUnit(item.interval).unit,
-        range: mapRelativeTimeRangeToOption({
-          start: item.from,
-          end: item.to,
-          cumulative_window_from: item.cumulative_window_from,
-          cumulative_window_to: item.cumulative_window_to,
-        }),
+        interval: item.interval ? parseTimeToValueAndUnit(item.interval).value : undefined,
+        interval_unit: item.interval ? parseTimeToValueAndUnit(item.interval).unit : undefined,
+        range:
+          item.from && item.to
+            ? mapRelativeTimeRangeToOption({
+                start: item.from,
+                end: item.to,
+                cumulative_window_from: item.cumulative_window_from,
+                cumulative_window_to: item.cumulative_window_to,
+              })
+            : undefined,
       };
     });
   }
@@ -194,14 +200,17 @@ export function processInitialValues(values) {
   const enrich_queries = _.map(extra_config?.enrich_queries, (item) => {
     return {
       ..._.omit(item, ['from', 'to']),
-      interval: parseTimeToValueAndUnit(item.interval).value,
-      interval_unit: parseTimeToValueAndUnit(item.interval).unit,
-      range: mapRelativeTimeRangeToOption({
-        start: item.from,
-        end: item.to,
-        cumulative_window_from: item.cumulative_window_from,
-        cumulative_window_to: item.cumulative_window_to,
-      }),
+      interval: item.interval ? parseTimeToValueAndUnit(item.interval).value : undefined,
+      interval_unit: item.interval ? parseTimeToValueAndUnit(item.interval).unit : undefined,
+      range:
+        item.from && item.to
+          ? mapRelativeTimeRangeToOption({
+              start: item.from,
+              end: item.to,
+              cumulative_window_from: item.cumulative_window_from,
+              cumulative_window_to: item.cumulative_window_to,
+            })
+          : undefined,
     };
   });
   return {
