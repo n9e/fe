@@ -48,7 +48,8 @@ const zh_CN = {
     max_query_rows: '单次请求允许检索的最大行数',
     max_idle_conns: '最大空闲连接数',
     max_open_conns: '最大打开连接数',
-    conn_max_lifetime: '连接最大生存时间',
+    conn_max_lifetime: '连接最大生存时间（单位: 秒）',
+    timeout: '超时时间（单位: 秒）',
   },
 };
 export default zh_CN;
