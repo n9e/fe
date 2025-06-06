@@ -96,7 +96,7 @@ const zh_CN = {
       match_type_2: '全部数据源',
       op_in: '包含',
       op_not_in: '不包含',
-      preview: '数据源预览',
+      preview: '数据预览',
     },
     managePageLink: '数据源管理',
   },

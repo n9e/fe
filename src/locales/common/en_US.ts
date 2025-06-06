@@ -97,7 +97,7 @@ const en_US = {
       match_type_2: 'All datasources',
       op_in: 'In',
       op_not_in: 'Not in',
-      preview: 'Datasource preview',
+      preview: 'Preview',
     },
     managePageLink: 'Data source management',
   },

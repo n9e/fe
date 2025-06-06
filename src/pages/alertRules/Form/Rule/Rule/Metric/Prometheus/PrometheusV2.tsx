@@ -32,14 +32,14 @@ import GraphPreview from './GraphPreview';
 import AdvancedSettings from './components/AdvancedSettings';
 
 interface Props {
-  form: any;
   datasourceValue: number;
 }
 
 export default function PrometheusV2(props: Props) {
-  const { form, datasourceValue } = props;
+  const { datasourceValue } = props;
   const { t } = useTranslation('alertRules');
   const { disabled } = useContext(FormStateContext);
+  const form = Form.useFormInstance();
   const queries = Form.useWatch(['rule_config', 'queries']);
 
   return (

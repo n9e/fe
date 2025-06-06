@@ -116,12 +116,20 @@ export default function ListCpt() {
                     }
                   }}
                 >
-                  <div className='n9e-flex n9e-justify-between n9e-w-full'>
-                    <span>{item.name}</span>
+                  <div className='n9e-flex n9e-justify-between n9e-w-full gap-1'>
+                    <span
+                      style={{
+                        wordBreak: 'break-all',
+                        lineHeight: 1.2,
+                      }}
+                    >
+                      {item.name}
+                    </span>
                     {item.private === 0 && (
                       <span
                         style={{
                           color: 'var(--fc-text-5)',
+                          flexShrink: 0,
                         }}
                       >
                         {t('common:public')}

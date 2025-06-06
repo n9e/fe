@@ -96,7 +96,7 @@ const zh_HK = {
       match_type_2: '全部數據源',
       op_in: '包含',
       op_not_in: '不包含',
-      preview: '數據源預覽',
+      preview: '數據預覽',
     },
     managePageLink: '数据源管理',
   },
