@@ -49,7 +49,8 @@ const ja_JP = {
     max_query_rows: '単一リクエストで取得可能な最大行数',
     max_idle_conns: '最大アイドル接続数',
     max_open_conns: '最大オープン接続数',
-    conn_max_lifetime: '接続の最大寿命',
+    conn_max_lifetime: '接続の最大寿命 （単位：秒）',
+    timeout: 'タイムアウト時間 （単位：秒）',
   },
 };
 

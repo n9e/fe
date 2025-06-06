@@ -49,7 +49,8 @@ const en_US = {
     max_query_rows: 'Maximum number of rows allowed to be retrieved in a single request',
     max_idle_conns: 'Maximum idle connections',
     max_open_conns: 'Maximum open connections',
-    conn_max_lifetime: 'Maximum connection lifetime',
+    conn_max_lifetime: 'Maximum connection lifetime (unit: seconds)',
+    timeout: 'Timeout (unit: seconds)',
   },
 };
 export default en_US;

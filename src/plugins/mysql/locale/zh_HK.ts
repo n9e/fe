@@ -48,7 +48,8 @@ const zh_HK = {
     max_query_rows: '單次請求允許檢索的最大行數',
     max_idle_conns: '最大空閒連接數',
     max_open_conns: '最大打開連接數',
-    conn_max_lifetime: '連接最大生存時間',
+    conn_max_lifetime: '連接最大生存時間 （單位: 秒）',
+    timeout: '超時時間 （單位: 秒）',
   },
 };
 
