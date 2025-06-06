@@ -52,7 +52,7 @@ function index(
     };
     containerEleRef: React.RefObject<HTMLDivElement>;
     time: IRawTimeRange;
-    setTime: (time: IRawTimeRange) => void;
+    setTime?: (time: IRawTimeRange) => void;
     inspect: boolean;
     setInspect: (inspect: boolean) => void;
     setViewModalVisible: (visible: boolean) => void;
@@ -239,10 +239,11 @@ function index(
                         <Menu.Item
                           onClick={() => {
                             setVisible(true);
-                            setTime({
-                              ...time,
-                              refreshFlag: _.uniqueId('refreshFlag_ '),
-                            });
+                            setTime &&
+                              setTime({
+                                ...time,
+                                refreshFlag: _.uniqueId('refreshFlag_ '),
+                              });
                           }}
                           key='refresh_btn'
                         >
@@ -342,10 +343,11 @@ function index(
                         <Menu.Item
                           onClick={() => {
                             setVisible(false);
-                            setTime({
-                              ...time,
-                              refreshFlag: _.uniqueId('refreshFlag_ '),
-                            });
+                            setTime &&
+                              setTime({
+                                ...time,
+                                refreshFlag: _.uniqueId('refreshFlag_ '),
+                              });
                             setInspect(true);
                           }}
                           key='inspect_btn'
