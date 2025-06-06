@@ -27,6 +27,12 @@ interface Props {
   move: (from: number, to: number) => void;
 }
 
+const documentPathMap = {
+  relabel: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/notification/processor-event-relabel/',
+  event_drop: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/notification/processor-event-drop/',
+  event_update: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/notification/processor-event-update/',
+  callback: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/notification/processor-callback/',
+};
 export default function NotifyConfig(props: Props) {
   const { t, i18n } = useTranslation(NS);
   const { darkMode } = useContext(CommonStateContext);
@@ -81,15 +87,16 @@ export default function NotifyConfig(props: Props) {
         label={
           <Space>
             {t('processor.typ')}
-            {processorType === 'relabel' && (
+            {documentPathMap[processorType] && (
               <a
                 onClick={(event) => {
                   event.stopPropagation();
                   DocumentDrawer({
                     language: i18n.language,
                     darkMode,
+                    type: 'iframe',
                     title: t('processor.help_btn'),
-                    documentPath: '/docs/alert-event-relabel',
+                    documentPath: documentPathMap[processorType],
                   });
                 }}
               >
