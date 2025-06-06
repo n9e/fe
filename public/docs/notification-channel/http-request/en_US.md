@@ -9,7 +9,7 @@ When setting up HTTP notification channels, the main configuration items typical
 3. **Query Parameters / Request Parameters**
 4. **Request Body**
 
-> All four configurations support the use of variables: `{{$event}}`, `{{$tpl}}`, `{{$params}}`, `{{$sendto}}`, `{{$sendto}}`.
+> All four configurations support the use of variables: `{{$event}}`, `{{$tpl}}`, `{{$params}}`, `{{$sendtos}}`, `{{$sendto}}`.
 
 Variable Descriptions:
 

@@ -9,7 +9,7 @@
 3. **请求参数（Query Parameters / Request Parameters）**
 4. **请求体（Request Body）**
 
-> 四个配置都支持使用 `{{$event}}`、`{{$tpl}}`、`{{$params}}`、`{{$sendto}}`、`{{$sendto}}` 这几个变量。
+> 四个配置都支持使用 `{{$event}}`、`{{$tpl}}`、`{{$params}}`、`{{$sendtos}}`、`{{$sendto}}` 这几个变量。
 
 变量说明
 
