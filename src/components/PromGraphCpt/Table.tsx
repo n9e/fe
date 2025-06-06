@@ -37,6 +37,7 @@ interface IProps {
   loading: boolean;
   setLoading: (loading: boolean) => void;
   defaultUnit?: string;
+  showUnitPicker?: boolean; // 是否显示单位选择器
   controlsPortalDomNode?: HTMLDivElement | null; // 用于渲染控件的容器节点
 }
 type ResultType = 'matrix' | 'vector' | 'scalar' | 'string' | 'streams';
@@ -120,6 +121,7 @@ export default function Table(props: IProps) {
     loading,
     setLoading,
     defaultUnit,
+    showUnitPicker = true,
     controlsPortalDomNode,
   } = props;
   const [data, setData] = useState<{
@@ -146,16 +148,18 @@ export default function Table(props: IProps) {
             disabledDate={(current) => current > moment()}
           />
         </Input.Group>
-        <Input.Group>
-          <span className='ant-input-group-addon'>Unit</span>
-          <UnitPicker
-            dropdownMatchSelectWidth={false}
-            value={unit}
-            onChange={(val) => {
-              setUnit(val);
-            }}
-          />
-        </Input.Group>
+        {showUnitPicker && (
+          <Input.Group>
+            <span className='ant-input-group-addon'>Unit</span>
+            <UnitPicker
+              dropdownMatchSelectWidth={false}
+              value={unit}
+              onChange={(val) => {
+                setUnit(val);
+              }}
+            />
+          </Input.Group>
+        )}
       </Space>
     </div>
   );

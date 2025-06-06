@@ -58,10 +58,12 @@ export default function GraphPreview({ form, fieldName, promqlFieldName = 'prom_
             </Space>
           </div>
         }
+        overlayStyle={{
+          width: '80%',
+        }}
         content={
           <div
             style={{
-              width: 1280,
               maxHeight: 450,
               overflow: 'auto',
             }}
@@ -78,6 +80,7 @@ export default function GraphPreview({ form, fieldName, promqlFieldName = 'prom_
                 setTimestamp={setTimestamp}
                 loading={loading}
                 setLoading={setLoading}
+                showUnitPicker={false}
                 controlsPortalDomNode={controlsPortalDomNodeRef.current}
               />
             )}
