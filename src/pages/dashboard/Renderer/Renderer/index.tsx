@@ -19,9 +19,10 @@ import { createPortal } from 'react-dom';
 import _ from 'lodash';
 import { useInViewport } from 'ahooks';
 import { useTranslation } from 'react-i18next';
-import { Modal } from 'antd';
+import { Modal, Space, Button } from 'antd';
+import { CloseOutlined } from '@ant-design/icons';
 
-import { IRawTimeRange } from '@/components/TimeRangePicker';
+import TimeRangePicker, { IRawTimeRange } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
 import { replaceExpressionVars } from '@/pages/dashboard/VariableConfig/constant';
 
@@ -41,6 +42,7 @@ export interface IProps {
   time: IRawTimeRange;
   setRange?: (range: IRawTimeRange) => void;
   timezone?: string; // 时区
+  setTimezone?: (timezone: string) => void; // 设置时区
   values: IPanel;
   variableConfig?: IVariable[];
   isPreview?: boolean; // 是否是预览，预览中不显示编辑和分享
@@ -56,9 +58,8 @@ export interface IProps {
 
 function index(props: IProps) {
   const { t } = useTranslation('dashboard');
-  const { datasourceValue, dashboardId, id, variableConfig, isPreview } = props;
+  const { datasourceValue, dashboardId, id, time, setRange, timezone, setTimezone, variableConfig, isPreview } = props;
   const { datasourceList } = useContext(CommonStateContext);
-  const [time, setTime] = useState(props.time);
   const values = _.cloneDeep(props.values);
   const containerEleRef = useRef<HTMLDivElement>(null);
   const [inViewPort] = useInViewport(containerEleRef);
@@ -95,10 +96,6 @@ function index(props: IProps) {
     custom: values.custom,
   });
 
-  useEffect(() => {
-    setTime(props.time);
-  }, [JSON.stringify(props.time)]);
-
   if (_.isEmpty(values)) return null;
 
   return (
@@ -109,7 +106,8 @@ function index(props: IProps) {
         queryResult={queryResult}
         containerEleRef={containerEleRef}
         time={time}
-        setTime={setTime}
+        setTime={setRange}
+        timezone={timezone}
         inspect={inspect}
         setInspect={setInspect}
         setViewModalVisible={setViewModalVisible}
@@ -119,7 +117,22 @@ function index(props: IProps) {
         onCancel={() => {
           setViewModalVisible(false);
         }}
-        title={t('common:btn.view')}
+        title={
+          <div className='flex items-center justify-between'>
+            {t('common:btn.view')}
+            <Space>
+              <TimeRangePicker dateFormat='YYYY-MM-DD HH:mm:ss' value={time} onChange={setRange} showTimezone timezone={timezone} onTimezoneChange={setTimezone} />
+              <Button
+                type='text'
+                icon={<CloseOutlined />}
+                onClick={() => {
+                  setViewModalVisible(false);
+                }}
+              ></Button>
+            </Space>
+          </div>
+        }
+        closable={false}
         footer={null}
         forceRender
         destroyOnClose
@@ -127,7 +140,7 @@ function index(props: IProps) {
         className='n9e-dashboard-editor-modal'
         style={{ top: 0, padding: 0 }}
         bodyStyle={{
-          height: 'calc(100% - 64px)',
+          height: 'calc(100% - 65px)',
         }}
       >
         <div className='h-full' ref={viewModalContainerRef} />
@@ -142,7 +155,8 @@ function index(props: IProps) {
             queryResult={queryResult}
             containerEleRef={containerEleRef}
             time={time}
-            setTime={setTime}
+            setTime={setRange}
+            timezone={timezone}
             inspect={inspect}
             setInspect={setInspect}
             setViewModalVisible={setViewModalVisible}

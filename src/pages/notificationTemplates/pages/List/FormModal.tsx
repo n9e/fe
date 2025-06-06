@@ -4,6 +4,7 @@ import { SettingOutlined, SyncOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
 
 import { getTeamInfoList } from '@/services/manage';
 import { getSimplifiedItems as getNotificationChannels, getItemsIdents as getNotificationChannelsIdents, ChannelItem } from '@/pages/notificationChannels/services';
@@ -95,15 +96,7 @@ export default function FormModal(props: IProps) {
         >
           <Input />
         </Form.Item>
-        <Form.Item
-          label={t('common:table.ident')}
-          name='ident'
-          rules={[
-            {
-              required: true,
-            },
-          ]}
-        >
+        <Form.Item label={t('common:table.ident')} name='ident' hidden>
           <Input disabled={mode === 'edit'} />
         </Form.Item>
         <Form.Item
@@ -178,6 +171,7 @@ export default function FormModal(props: IProps) {
             onClick={() => {
               form.validateFields().then((values) => {
                 if (mode === 'add' || mode === 'clone') {
+                  values.ident = uuidv4(); // 2025-06-06 Generate a new unique identifier for the template
                   const channelRequestType = _.find(notifyChannels, { ident: values.notify_channel_ident })?.request_type;
                   if (channelRequestType === 'smtp') {
                     values.content = {
