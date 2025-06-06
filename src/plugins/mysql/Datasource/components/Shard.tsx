@@ -77,7 +77,6 @@ export default function Shard(props: IProps) {
               ]}
             >
               <Input.Password
-                visibilityToggle={false}
                 placeholder={t('datasource.shards.password')}
                 onChange={(e) => {
                   form.setFields([
