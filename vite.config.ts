@@ -89,6 +89,7 @@ export default defineConfig(({ mode }) => {
       ],
     },
     server: {
+      hmr: false,
       proxy: {
         '/api': {
           target: proxyURL,
