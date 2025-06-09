@@ -73,8 +73,7 @@ export default function ChangePassword() {
             message: t('password.newMsg'),
           },
           {
-            pattern:
-              /^(?:(?=.*[A-Z])(?=.*[a-z])|(?=.*[A-Z])(?=.*\d)|(?=.*[A-Z])(?=.*[!#?@$%^&*\-])|(?=.*[a-z])(?=.*\d)|(?=.*[a-z])(?=.*[!#?@$%^&*\-])|(?=.*\d)(?=.*[!#?@$%^&*\-])).{6,20}$/,
+            pattern: /^(?![a-z]+$)(?![A-Z]+$)(?![0-9]+$)(?![#?!@$%^&*-]+$).{6,20}$/,
             message: t('password.ruleMsg'),
           },
         ]}
