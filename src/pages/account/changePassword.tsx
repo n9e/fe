@@ -66,31 +66,48 @@ export default function ChangePassword() {
         required
         name='newpass'
         hasFeedback
+        validateTrigger='onChange'
         rules={[
           {
             required: true,
             message: t('password.newMsg'),
           },
+          {
+            pattern:
+              /^(?:(?=.*[A-Z])(?=.*[a-z])|(?=.*[A-Z])(?=.*\d)|(?=.*[A-Z])(?=.*[!#?@$%^&*\-])|(?=.*[a-z])(?=.*\d)|(?=.*[a-z])(?=.*[!#?@$%^&*\-])|(?=.*\d)(?=.*[!#?@$%^&*\-])).{6,20}$/,
+            message: t('password.ruleMsg'),
+          },
         ]}
       >
-        <Input placeholder={t('password.newMsg')} type='password' />
+        <Input
+          placeholder={t('password.newMsg')}
+          type='password'
+          onChange={() => {
+            form.validateFields(['newpassagain']);
+          }}
+        />
       </Form.Item>
       <Form.Item
         label={<span>{t('password.confirm')}: </span>}
         required
         name='newpassagain'
         hasFeedback
+        validateTrigger='onChange'
         rules={[
           {
             required: true,
             message: t('password.confirmMsg'),
+          },
+          {
+            pattern:
+              /^(?:(?=.*[A-Z])(?=.*[a-z])|(?=.*[A-Z])(?=.*\d)|(?=.*[A-Z])(?=.*[!#?@$%^&*\-])|(?=.*[a-z])(?=.*\d)|(?=.*[a-z])(?=.*[!#?@$%^&*\-])|(?=.*\d)(?=.*[!#?@$%^&*\-])).{6,20}$/,
+            message: t('password.ruleMsg'),
           },
           ({ getFieldValue }) => ({
             validator(_, value) {
               if (!value || getFieldValue('newpass') === value) {
                 return Promise.resolve();
               }
-
               return Promise.reject(new Error(t('password.notMatch')));
             },
           }),
