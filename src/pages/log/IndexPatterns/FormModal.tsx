@@ -210,6 +210,9 @@ function FormModal(props: Props & ModalWrapProps) {
             <Form.Item name='allow_hide_system_indices' label={t('allow_hide_system_indices')} valuePropName='checked'>
               <Switch />
             </Form.Item>
+            <Form.Item name='note' label={t('common:table.note')}>
+              <Input.TextArea />
+            </Form.Item>
 
             <Form.Item>
               <Button type='primary' htmlType='submit'>

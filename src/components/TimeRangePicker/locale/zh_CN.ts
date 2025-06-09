@@ -49,5 +49,7 @@ const zh_CN = {
   last: '最近',
   next: '接下来',
   close: '关闭',
+  exceed_hour_limit_tip: '时间范围不能超过 {{hours}} 小时',
+  start_gt_end_tip: '开始时间不能大于结束时间',
 };
 export default zh_CN;

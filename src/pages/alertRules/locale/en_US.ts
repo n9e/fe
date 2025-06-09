@@ -122,7 +122,7 @@ const en_US = {
     import_builtin: 'Import built-in alert rules',
     import_prometheus: 'Import Prometheus alert rules',
     export: {
-      title: 'Export alert rules',
+      title: 'Export rules JSON',
       copy: 'Copy JSON content to clipboard',
     },
     update: {
@@ -175,6 +175,15 @@ const en_US = {
       result: {
         title: 'Result',
         host: 'Host',
+        rule: 'Rule',
+        msg: 'Message',
+      },
+    },
+    clone_to_bgids: {
+      title: 'Clone to business groups',
+      select_bgids: 'Select business groups',
+      result: {
+        title: 'Clone result',
         rule: 'Rule',
         msg: 'Message',
       },

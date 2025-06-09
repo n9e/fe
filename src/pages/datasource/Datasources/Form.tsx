@@ -1,7 +1,13 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
+
 import { DatasourceCateEnum } from '@/utils/constant';
 import Clickhouse from '@/plugins/clickHouse/Datasource/Form';
+import Opensearch from '@/plugins/opensearch/Datasource/Form';
+import MySQL from '@/plugins/mysql/Datasource/Form';
+import PgSQL from '@/plugins/pgsql/Datasource/Form';
+import Doris from '@/plugins/doris/Datasource/Form';
+
 import Prometheus from './Prometheus/Form';
 import ElasticSearch from './ElasticSearch/Form';
 import Jaeger from './Jaeger/Form';
@@ -18,6 +24,9 @@ export default function Form(props) {
   if (params.type === DatasourceCateEnum.elasticsearch) {
     return <ElasticSearch {...props} />;
   }
+  if (params.type === DatasourceCateEnum.opensearch) {
+    return <Opensearch {...props} />;
+  }
   if (params.type === 'jaeger') {
     return <Jaeger {...props} />;
   }
@@ -29,6 +38,15 @@ export default function Form(props) {
   }
   if (params.type === DatasourceCateEnum.ck) {
     return <Clickhouse {...props} type='ck' />;
+  }
+  if (params.type === DatasourceCateEnum.mysql) {
+    return <MySQL {...props} />;
+  }
+  if (params.type === DatasourceCateEnum.pgsql) {
+    return <PgSQL {...props} />;
+  }
+  if (params.type === DatasourceCateEnum.doris) {
+    return <Doris {...props} />;
   }
   return <Plus type={params.type} {...props} />;
 }

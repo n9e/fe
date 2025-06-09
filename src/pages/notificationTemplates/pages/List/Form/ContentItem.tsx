@@ -13,17 +13,17 @@ import ContentItemKey from './ContentItemKey';
 interface Props {
   field: FormListFieldData;
   remove: (name: number) => void;
-  notify_channel_request_type?: string;
+  isEmailType: boolean;
 }
 
 export default function ContentItem(props: Props) {
   const { t } = useTranslation(NS);
-  const { field, remove, notify_channel_request_type } = props;
+  const { field, remove, isEmailType } = props;
   const fieldKey = Form.useWatch(['content', field.name, 'key']);
 
   return (
     <div className={`${CN}-main-content-item`}>
-      {notify_channel_request_type === 'smtp' ? (
+      {isEmailType ? (
         <>
           {fieldKey === 'content' && (
             <Form.Item {...field} name={[field.name, 'value']}>

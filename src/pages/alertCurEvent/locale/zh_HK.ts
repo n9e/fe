@@ -1,0 +1,57 @@
+const zh_HK = {
+  title: '活躍告警',
+  search_placeholder: '模糊搜尋規則和標籤 (多個關鍵詞請用空格分隔)',
+  hours: {
+    '6': '最近 6 小時',
+    '12': '最近 12 小時',
+    '24': '最近 1 天',
+    '48': '最近 2 天',
+    '72': '最近 3 天',
+    '168': '最近 7 天',
+    '336': '最近 14 天',
+    '720': '最近 30 天',
+    '1440': '最近 60 天',
+    '2160': '最近 90 天',
+  },
+  severity: '告警級別',
+  eventType: '事件類別',
+  event_name: '事件',
+  first_trigger_time: '首次觸發時間',
+  trigger_time: '觸發時間',
+  shield: '屏蔽',
+  prod: '監控類型',
+  duration: '持續時長',
+  aggregate_rule: '聚合規則',
+  aggregate_rule_mgs: '請選擇聚合規則',
+  aggregate_rule_tip: `根據事件的屬性和標籤對告警做聚合歸類，方便查看，使用 Go Template 引用事件字段，舉例：
+  
+- 根據業務組+事件級別做聚合：\`Group:{{.GroupName}} Severity:{{.Severity}}\`
+- 根據告警規則的標題做聚合：\`{{.RuleName}}\`
+- 根據事件的 instance 標籤做聚合：\`{{.TagsMap.instance}}\``,
+  aggr_result: '個聚合結果',
+  aggregate_rule_name: '規則名稱',
+  aggregate_rule_title: '聚合卡片標題',
+  add_rule: '新增規則',
+  public: '公開',
+  isPublic: '是否公開',
+  status: '是否認領',
+  status_1: '已認領',
+  status_0: '未認領',
+  batch_btn: '批量操作',
+  batch_claim: '批量認領',
+  batch_unclaim: '批量取消認領',
+  claim: '認領',
+  unclaim: '取消認領',
+  claimant: '認領人',
+  search: '搜索數據源',
+  delete_confirm: {
+    title: '刪除告警事件',
+    content: '通常只有在確定監控資料永遠不再上報的情況下（比如調整了監控資料標籤，或者機器下線）才刪除告警事件，因為相關告警事件永遠無法自動恢復了，你確定要這麼做嗎？',
+  },
+  my_groups: '我的業務組',
+  all_groups: '全部業務組',
+  datasources: '數據源',
+  detail_title: '告警詳情',
+};
+
+export default zh_HK;

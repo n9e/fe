@@ -32,10 +32,11 @@ import ChildVariablesConfigs from './VariablesConfig/ChildVariablesConfigs';
 import AdvancedSettings from './components/AdvancedSettings';
 import './style.less';
 
-export default function index(props: { form: any; datasourceCate: string; datasourceValue: number }) {
-  const { form, datasourceValue } = props;
+export default function index(props: { datasourceCate: string; datasourceValue: number }) {
+  const { datasourceValue } = props;
   const { t } = useTranslation('alertRules');
   const { disabled } = useContext(FormStateContext);
+  const form = Form.useFormInstance();
   const ruleConfigVersion = Form.useWatch(['rule_config', 'version']);
 
   return (

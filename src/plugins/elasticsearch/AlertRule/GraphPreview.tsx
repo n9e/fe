@@ -11,6 +11,7 @@ import { getDsQuery } from './services';
 
 interface IProps {
   datasourceValue: number;
+  data: any;
   disabled?: boolean;
 }
 
@@ -25,7 +26,7 @@ const getSerieName = (metric: Object) => {
 export default function GraphPreview(props: IProps) {
   const { t } = useTranslation('alertRules');
   const { groupedDatasourceList } = useContext(CommonStateContext);
-  const { disabled } = props;
+  const { data, disabled } = props;
   const divRef = useRef<HTMLDivElement>(null);
   const form = Form.useFormInstance();
   const datasource_values = form.getFieldValue('datasource_values');
@@ -35,14 +36,13 @@ export default function GraphPreview(props: IProps) {
   const [datasourceValue, setDatasourceValue] = useState<number>(props.datasourceValue);
 
   const fetchSeries = () => {
-    const queries = form.getFieldValue(['rule_config', 'queries']);
     const now = moment().unix();
 
     getDsQuery(
       {
         cate: form.getFieldValue('cate'),
         datasource_id: datasourceValue,
-        query: _.map(queries, (item) => {
+        query: _.map([data], (item) => {
           const interval = normalizeTime(item.interval, item.interval_unit) ?? 300; // 默认5分钟
           return {
             ref: item.ref,
@@ -175,7 +175,7 @@ export default function GraphPreview(props: IProps) {
           type='primary'
           ghost
           onClick={() => {
-            if (!visible) {
+            if (!visible && datasourceValue && data) {
               fetchSeries();
               setVisible(true);
             }

@@ -175,7 +175,6 @@ export default function Content() {
           <Route key='recording-rules-edit' exact path='/recording-rules/edit/:id' component={RecordingRuleEdit} />,
         ]}
 
-        <Route exact path='/alert-cur-events' component={Event} />
         <Route exact path='/alert-his-events' component={historyEvents} />
         <Route exact path='/alert-cur-events/:eventId' component={EventDetail} />
         <Route exact path='/alert-his-events/:eventId' component={EventDetail} />

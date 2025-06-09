@@ -5,11 +5,14 @@ import { useAntdTable } from 'ahooks';
 import { Table, Tag, Space, Select, Input } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+
 import { CommonStateContext } from '@/App';
+import { allCates } from '@/components/AdvancedWrap/utils';
 import TimeRangePicker, { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import DatasourceSelect from '@/components/DatasourceSelect/DatasourceSelect';
 import { BusinessGroupSelectWithAll } from '@/components/BusinessGroup';
 import { getEvents } from '@/pages/historyEvents/services';
+import { SEVERITY_COLORS } from '@/pages/alertCurEvent/constants';
 
 interface Props {
   onChange: (id: number) => void;
@@ -17,7 +20,7 @@ interface Props {
 
 export default function EventsTable(props: Props) {
   const { t } = useTranslation('AlertHisEvents');
-  const { groupedDatasourceList } = useContext(CommonStateContext);
+  const { datasourceList } = useContext(CommonStateContext);
   const { onChange } = props;
   const [filter, setFilter] = useState<{
     range: IRawTimeRange;
@@ -112,6 +115,7 @@ export default function EventsTable(props: Props) {
                 severity: val,
               });
             }}
+            dropdownMatchSelectWidth={false}
           >
             <Select.Option value={1}>S1（Critical）</Select.Option>
             <Select.Option value={2}>S2（Warning）</Select.Option>
@@ -128,12 +132,14 @@ export default function EventsTable(props: Props) {
                 eventType: val,
               });
             }}
+            dropdownMatchSelectWidth={false}
           >
             <Select.Option value={0}>Triggered</Select.Option>
             <Select.Option value={1}>Recovered</Select.Option>
           </Select>
           <Input
-            className='search-input'
+            allowClear
+            style={{ width: 400 }}
             prefix={<SearchOutlined />}
             placeholder={t('search_placeholder')}
             value={filter.queryContent}
@@ -143,51 +149,69 @@ export default function EventsTable(props: Props) {
                 queryContent: e.target.value,
               });
             }}
-            onPressEnter={(e) => {
-              // setRefreshFlag(_.uniqueId('refresh_'));
-            }}
           />
         </Space>
       </div>
       <Table
+        className='mt-2 n9e-antd-table-with-border-collapse'
         rowKey={(record) => record.id}
-        className='mt8'
         size='small'
         columns={[
           {
-            title: t('prod'),
-            dataIndex: 'rule_prod',
-            width: 100,
-            render: (value) => {
-              return t(`rule_prod.${value}`);
-            },
-          },
-          {
-            title: t('common:datasource.id'),
-            dataIndex: 'datasource_id',
-            width: 100,
-            render: (value, record: any) => {
-              return _.find(groupedDatasourceList?.[record.cate], { id: value })?.name || '-';
-            },
-          },
-          {
-            title: t('rule_name'),
+            title: t('event_name'),
             dataIndex: 'rule_name',
-            render(title, { id, tags }) {
-              const content =
-                tags &&
-                tags.map((item) => (
-                  <Tag color='purple' key={item}>
-                    {item}
-                  </Tag>
-                ));
+            render(title, record) {
+              const currentDatasourceCate = _.find(allCates, { value: record.cate });
+              const currentDatasource = _.find(datasourceList, { id: record.datasource_id });
+
               return (
-                <>
-                  <div>{title}</div>
-                  <div>
-                    <span className='event-tags'>{content}</span>
+                <div className='max-w-[60vw]'>
+                  <div className='mb-2'>
+                    <Space>
+                      {currentDatasourceCate && currentDatasource ? (
+                        <Space>
+                          <img src={currentDatasourceCate.logo} height={14} />
+                          {currentDatasource.name}
+                          <span>/</span>
+                        </Space>
+                      ) : record.cate === 'host' ? (
+                        <Space>
+                          <img src='/image/logos/host.png' height={14} />
+                          <span>/</span>
+                        </Space>
+                      ) : null}
+                      {title}
+                    </Space>
                   </div>
-                </>
+                  <div>
+                    {_.map(record.tags, (item) => {
+                      return (
+                        <Tag
+                          key={item}
+                          style={{ maxWidth: '100%' }}
+                          onClick={() => {
+                            if (!_.includes(filter.queryContent, item)) {
+                              setFilter({
+                                ...filter,
+                                queryContent: filter.queryContent ? `${filter.queryContent.trim()} ${item}` : item,
+                              });
+                            }
+                          }}
+                        >
+                          <div
+                            style={{
+                              maxWidth: 'max-content',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                            }}
+                          >
+                            {item}
+                          </div>
+                        </Tag>
+                      );
+                    })}
+                  </div>
+                </div>
               );
             },
           },
@@ -200,8 +224,8 @@ export default function EventsTable(props: Props) {
             },
           },
           {
-            title: t('trigger_time'),
-            dataIndex: 'trigger_time',
+            title: t('last_eval_time'),
+            dataIndex: 'last_eval_time',
             width: 120,
             render(value) {
               return moment((value ? value : 0) * 1000).format('YYYY-MM-DD HH:mm:ss');
@@ -219,6 +243,9 @@ export default function EventsTable(props: Props) {
           onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
             onChange(selectedRows[0]?.id);
           },
+        }}
+        rowClassName={(record: { severity: number; is_recovered: number }) => {
+          return SEVERITY_COLORS[record.is_recovered ? 3 : record.severity - 1] + '-left-border';
         }}
       />
     </>

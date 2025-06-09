@@ -14,8 +14,39 @@ interface Props {
   spanGaps?: boolean;
 }
 
+// TODO: 临时集中处理将 override 的属性转换为 uPlot 的 series 属性
+function normalizeOverrideSeriesOptions(override: any) {
+  const drawStyle = _.get(override, ['properties', 'drawStyle']);
+  const lineInterpolation = _.get(override, ['properties', 'lineInterpolation']);
+  const lineWidth = _.get(override, ['properties', 'lineWidth']);
+  const fillOpacity = _.get(override, ['properties', 'fillOpacity']);
+  const gradientMode = _.get(override, ['properties', 'gradientMode']);
+  const showPoints = _.get(override, ['properties', 'showPoints']);
+  const pointSize = _.get(override, ['properties', 'pointSize']);
+  const spanNulls = _.get(override, ['properties', 'spanNulls']);
+
+  let pathsType, points;
+
+  // TODO: none 是一个临时值，为了兼容 override 中的 drawStyle 不设置的状态
+  if (drawStyle && drawStyle !== 'none') {
+    pathsType = drawStyle === 'bars' ? 'bars' : lineInterpolation === 'smooth' ? 'spline' : 'linear';
+  }
+  if (showPoints) {
+    points = { show: showPoints === 'always', size: showPoints === 'always' ? pointSize : 6 };
+  }
+
+  return {
+    width: lineWidth,
+    pathsType,
+    fillOpacity,
+    gradientMode,
+    points,
+    spanGaps: spanNulls,
+  };
+}
+
 export default function seriesBuider(props: Props) {
-  const { baseSeries, colors, pathsType, width = 1, points, fillOpacity = 0.1, gradientMode = 'none', overrides, spanGaps } = props;
+  let { baseSeries, colors, pathsType, width = 1, points, fillOpacity = 0.1, gradientMode = 'none', overrides, spanGaps } = props;
   let paths;
   if (pathsType === 'spline') {
     paths = uPlot.paths.spline && uPlot.paths.spline();
@@ -29,10 +60,42 @@ export default function seriesBuider(props: Props) {
     [{}] as Series[],
     _.map(baseSeries, (item, idx) => {
       const refId = _.get(item, 'n9e_internal.refId');
+      const curOverride = _.find(overrides, (override) => {
+        if (override.matcher.id === 'byFrameRefID') {
+          return override.matcher.value === refId;
+        }
+        return false;
+      });
       let scaleKey = 'y';
       // refIds.length > 1 TODO: 暂时不支持单独设置右侧Y轴
       if (refIds.length > 1 && rightYAxisDisplay === 'noraml' && matchRefId === refId) {
         scaleKey = 'y2';
+      }
+      if (curOverride) {
+        const overrideOptions = normalizeOverrideSeriesOptions(curOverride);
+        if (_.isNumber(overrideOptions.width)) {
+          width = overrideOptions.width;
+        }
+        if (overrideOptions.pathsType) {
+          paths = undefined; // reset paths
+          if (overrideOptions.pathsType === 'spline') {
+            paths = uPlot.paths.spline && uPlot.paths.spline();
+          } else if (overrideOptions.pathsType === 'bars') {
+            paths = uPlot.paths.bars && uPlot.paths.bars();
+          }
+        }
+        if (overrideOptions.points) {
+          points = overrideOptions.points;
+        }
+        if (overrideOptions.spanGaps !== undefined) {
+          spanGaps = overrideOptions.spanGaps;
+        }
+        if (_.isNumber(overrideOptions.fillOpacity)) {
+          fillOpacity = overrideOptions.fillOpacity;
+        }
+        if (overrideOptions.gradientMode) {
+          gradientMode = overrideOptions.gradientMode;
+        }
       }
       return {
         ...item,

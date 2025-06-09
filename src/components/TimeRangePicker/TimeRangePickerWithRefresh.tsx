@@ -17,13 +17,17 @@
 import React from 'react';
 import { Space } from 'antd';
 import _ from 'lodash';
+
+import { useGlobalVar } from '@/utils/useHook';
+
 import AutoRefresh from './AutoRefresh';
 import TimeRangePicker from './TimeRangePicker';
 import { ITimeRangePickerWithRefreshProps } from './types';
 import { valueAsString } from './utils';
 
 export default function TimeRangePickerWithRefresh(props: ITimeRangePickerWithRefreshProps) {
-  const { value, onChange, style, refreshTooltip, dateFormat = 'YYYY-MM-DD HH:mm', localKey } = props;
+  const { value, onChange, style, refreshTooltip, dateFormat = 'YYYY-MM-DD HH:mm', localKey, onRefresh } = props;
+  const [globalVar] = useGlobalVar();
 
   return (
     <Space style={style}>
@@ -34,14 +38,18 @@ export default function TimeRangePickerWithRefresh(props: ITimeRangePickerWithRe
           if (value && onChange) {
             onChange({
               ...value,
-              refreshFlag: _.uniqueId('refreshFlag_ '),
+              refreshFlag: _.uniqueId('refreshFlag_'),
             });
+          }
+          if (onRefresh) {
+            onRefresh();
           }
         }}
         intervalSeconds={props.intervalSeconds}
         onIntervalSecondsChange={props.onIntervalSecondsChange}
       />
       <TimeRangePicker
+        limitHour={globalVar.RangePickerHour ? Number(globalVar.RangePickerHour) : undefined}
         {..._.omit(props, ['style'])}
         onChange={(val) => {
           if (localKey) {

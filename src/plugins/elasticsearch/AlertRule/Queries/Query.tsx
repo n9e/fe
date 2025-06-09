@@ -224,7 +224,7 @@ export default function Query(props: Props) {
       </div>
       <AdvancedSettings field={field} />
       {children}
-      <GraphPreview datasourceValue={datasourceValue} />
+      <GraphPreview datasourceValue={datasourceValue} data={queries?.[field.name]} />
     </div>
   );
 }

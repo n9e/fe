@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, Button } from 'antd';
 import { useTranslation } from 'react-i18next';
+import _ from 'lodash';
 
 import DetailNG from '@/pages/event/DetailNG';
 
@@ -65,7 +66,13 @@ export default function TestModal(props: Props) {
                   if (type === 'processor') {
                     eventProcessorTryrun({
                       event_id: eventID,
-                      processor_config: config,
+                      processor_config: {
+                        ...config,
+                        config: {
+                          ...config.config,
+                          header: config.config.header ? _.fromPairs(_.map(config.config.header as any[], (headerItem) => [headerItem.key, headerItem.value])) : undefined,
+                        },
+                      },
                     })
                       .then((res) => {
                         setData({
@@ -82,7 +89,18 @@ export default function TestModal(props: Props) {
                   } else if (type === 'pipeline') {
                     eventPipelineTryrun({
                       event_id: eventID,
-                      pipeline_config: config,
+                      pipeline_config: {
+                        ...config,
+                        processors: _.map(config.processors, (item) => {
+                          return {
+                            ...item,
+                            config: {
+                              ...item.config,
+                              header: item.config.header ? _.fromPairs(_.map(item.config.header as any[], (headerItem) => [headerItem.key, headerItem.value])) : undefined,
+                            },
+                          };
+                        }),
+                      },
                     })
                       .then((res) => {
                         setData({

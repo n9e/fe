@@ -48,7 +48,7 @@ const en_US = {
     no: 'No',
     headers: 'Custom HTTP headers',
     description: 'Description',
-    cluster: 'Cluster',
+    cluster: 'Alert Correlation Engine',
     cluster_tip:
       'In the architecture of multiple data centers, sometimes multiple alerting engine clusters are deployed. Corresponding to the data source of the edge data center, it is necessary to associate the alerting engine cluster of the corresponding data center. If there is only one cluster, keep the default',
     cluster_confirm:

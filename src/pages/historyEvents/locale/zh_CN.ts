@@ -1,6 +1,6 @@
 const zh_CN = {
   title: '历史告警',
-  rule_name: '规则标题&事件标签',
+  event_name: '事件',
   search_placeholder: '模糊搜索规则和标签(多个关键词请用空格分隔)',
   first_trigger_time: '首次触发时间',
   trigger_time: '触发时间',

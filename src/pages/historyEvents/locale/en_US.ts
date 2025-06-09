@@ -1,6 +1,6 @@
 const en_US = {
   title: 'Historical events',
-  rule_name: 'Rule name & Event tags',
+  event_name: 'Event',
   search_placeholder: 'multiple keywords separated by spaces',
   first_trigger_time: 'First triggered',
   trigger_time: 'Triggered',

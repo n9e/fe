@@ -7,7 +7,8 @@ import i18next from 'i18next';
 import { getDefaultDatasourceValue, setDefaultDatasourceValue } from '@/utils';
 import { IPanel } from '@/pages/dashboard/types';
 import { rangeOptions } from '@/components/TimeRangePicker/config';
-import { IRawTimeRange, getDefaultValue, isValid } from '@/components/TimeRangePicker';
+import { getDefaultValue, isValid } from '@/components/TimeRangePicker';
+import { InternalTimeZones } from '@/utils/datetime/types';
 
 export const getLocalDatasourceValue = (search: string, groupedDatasourceList) => {
   const locationQuery = queryString.parse(search);
@@ -82,6 +83,7 @@ export async function goBack(history) {
 }
 
 export const dashboardTimeCacheKey = 'dashboard-timeRangePicker-value';
+export const dashboardTimezoneCacheKey = 'dashboard-timezone-value';
 /**
  * 获取默认的时间范围
  * 1. 优先使用 URL 中的 __from 和 __to，如果不合法则使用默认值
@@ -127,4 +129,15 @@ export const getDefaultIntervalSeconds = (query) => {
     }
   }
   return undefined;
+};
+
+export const getDefaultTimezone = (id, query) => {
+  if (query.__timezone) {
+    return query.__timezone;
+  }
+  const timezone = window.localStorage.getItem(`${dashboardTimezoneCacheKey}_${id}`);
+  if (timezone) {
+    return timezone;
+  }
+  return InternalTimeZones.localBrowserTime;
 };

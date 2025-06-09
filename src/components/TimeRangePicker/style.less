@@ -1,100 +1,125 @@
 .flashcat-timeRangePicker-container {
   .ant-popover-inner-content {
-    padding: 0;
+    padding: 0 !important;
   }
+
   .ant-input-status-error {
     border-color: #ff4d4f;
   }
 }
+
 .flashcat-timeRangePicker {
   width: 500px;
-  height: 300px;
+  height: 330px !important;
   overflow: hidden;
+
   .mb10 {
     margin-bottom: 10px;
   }
+
   border-bottom: 1px solid var(--fc-border-color);
 }
+
 .flashcat-timeRangePicker-left {
   padding: 16px;
 }
+
 .flashcat-timeRangePicker-ranges {
   border-left: 1px solid var(--fc-border-color);
   padding: 16px;
+
   ul {
-    height: 230px;
-    margin: 10px 0 0 0;
+    height: 260px !important;
+    margin: 10px 0 0 0 !important;
     padding: 0;
     overflow-y: auto;
+
     li {
       list-style: none;
       height: 32px;
       line-height: 32px;
       padding-left: 10px;
       cursor: pointer;
+
       &:hover {
         background-color: var(--fc-fill-3);
       }
+
       &.active {
         background-color: var(--fc-fill-3);
       }
     }
   }
 }
+
 .flashcat-timeRangePicker-single-popover {
   .ant-popover-inner-content {
     padding: 0 !important;
   }
+
   .ant-picker-ok {
     display: none !important;
   }
+
   .ant-popover-title {
     min-height: unset !important;
   }
-  .ant-picker-header > button {
+
+  .ant-picker-header>button {
     font-size: 24px !important;
   }
 }
+
 .flashcat-timeRangePicker-single-status {
   height: 12px;
   color: #ff4d4f;
 }
+
 .flashcat-timeRangePicker-absolute-history {
   margin-top: 10px;
+
   ul,
   li {
     padding: 0;
     margin: 0;
   }
+
   li {
     height: 22px;
     line-height: 22px;
     list-style: none;
     padding-left: 5px;
     cursor: pointer;
+
     &:hover {
       background-color: var(--fc-fill-3);
     }
   }
 }
+
 .flashcat-timeRangePicker-footer {
   padding: 16px;
   display: flex;
   justify-content: space-between;
+  gap: 10px;
 }
+
 .flashcat-timeRangePicker-target {
   .flashcat-timeRangePicker-target-icon {
     margin-left: 5px;
   }
+
   .anticon-close-circle {
     display: none !important;
   }
 }
+
 .flashcat-timeRangePicker-target-allowClear {
   &:hover {
     .anticon-close-circle {
       display: inline-block !important;
     }
+
     .anticon-down,
     .anticon-up {
       display: none;

@@ -12,9 +12,7 @@ import PreviewModal from './PreviewModal';
 
 interface Props {
   form: FormInstance<any>;
-  item?: Item & {
-    notify_channel_request_type?: string;
-  };
+  item?: Item;
   contentRef: React.MutableRefObject<
     | {
         key: string;
@@ -29,6 +27,8 @@ export default function FormCpt(props: Props) {
   const { form, item, contentRef } = props;
   const [previewModalVisible, setPreviewModalVisible] = React.useState(false);
   const content = Form.useWatch(['content'], form);
+  // TODO: 如果 channel ident 是 email 则 content 的 key 只能是 subject 和 content，并且 content 以 HTML 编辑器展示
+  const isEmailType = item?.notify_channel_ident === 'email';
 
   return (
     <>
@@ -38,9 +38,9 @@ export default function FormCpt(props: Props) {
             {(fields, { add, remove }) => (
               <div className={`${CN}-main-content`}>
                 {fields.map((field) => {
-                  return <ContentItem key={field.key} field={field} remove={remove} notify_channel_request_type={item?.notify_channel_request_type} />;
+                  return <ContentItem key={field.key} field={field} remove={remove} isEmailType={isEmailType} />;
                 })}
-                {item?.notify_channel_request_type !== 'smtp' && (
+                {!isEmailType && (
                   <Button
                     className='mb2'
                     type='dashed'
@@ -71,7 +71,7 @@ export default function FormCpt(props: Props) {
               form.validateFields().then((values) => {
                 if (item) {
                   putItem({
-                    ..._.omit(item, ['notify_channel_request_type']),
+                    ...item,
                     content: _.fromPairs(_.map(values.content, (item) => [item.key, item.value])),
                   }).then(() => {
                     contentRef.current = values.content;
@@ -96,7 +96,7 @@ export default function FormCpt(props: Props) {
         visible={previewModalVisible}
         setVisible={setPreviewModalVisible}
         content={_.fromPairs(_.map(content, (item) => [item.key, item.value]))}
-        notify_channel_request_type={item?.notify_channel_request_type}
+        isEmailType={isEmailType}
       />
     </>
   );

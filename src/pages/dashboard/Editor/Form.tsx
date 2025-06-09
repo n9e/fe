@@ -32,6 +32,7 @@ interface IProps {
   initialValues: any;
   variableConfigWithOptions?: IVariable[];
   range: any;
+  timezone: string;
   id: string;
   dashboardId: string;
   dashboard: Dashboard;
@@ -41,7 +42,7 @@ function FormCpt(props: IProps, ref) {
   const { t } = useTranslation('dashboard');
   const { darkMode } = useContext(CommonStateContext);
   const [chartForm] = Form.useForm();
-  const { initialValues, range, id, dashboardId, dashboard } = props;
+  const { initialValues, range, timezone, id, dashboardId, dashboard } = props;
   const [variableConfigWithOptions, setVariableConfigWithOptions] = useState<IVariable[] | undefined>(props.variableConfigWithOptions);
   const type = Form.useWatch('type', chartForm);
   const values = Form.useWatch([], chartForm);
@@ -114,6 +115,7 @@ function FormCpt(props: IProps, ref) {
                     dashboardId={dashboardId}
                     dashboardID={dashboard.id}
                     time={range}
+                    timezone={timezone}
                     values={values}
                     variableConfig={variableConfigWithOptions}
                     isPreview

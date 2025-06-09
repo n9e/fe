@@ -46,41 +46,42 @@ export default function ContactKeysSelect(props: SelectProps) {
   }, []);
 
   return (
-    <Form.Item
-      name={['param_config', 'user_info', 'contact_key']}
-      label={
-        <Space size={4}>
-          {t('variable_configuration.contact_key')}
-          <Tooltip className='n9e-ant-from-item-tooltip' title={t('variable_configuration.contact_key_tip')}>
-            <QuestionCircleOutlined />
-          </Tooltip>
-          {profile.roles?.includes('Admin') && <SettingOutlined onClick={() => setContactDrawerVisible(true)} />}
-          <SyncOutlined
-            spin={loading}
-            onClick={(e) => {
-              fetchData();
-              e.preventDefault();
-            }}
-          />
-        </Space>
-      }
-    >
-      <Select
-        {...(props || {})}
-        options={_.map(data, (item) => {
-          return {
-            label: item.label,
-            value: item.key,
-          };
-        })}
-      />
-
+    <>
+      <Form.Item
+        name={['param_config', 'user_info', 'contact_key']}
+        label={
+          <Space size={4}>
+            {t('variable_configuration.contact_key')}
+            <Tooltip className='n9e-ant-from-item-tooltip' title={t('variable_configuration.contact_key_tip')}>
+              <QuestionCircleOutlined />
+            </Tooltip>
+            {profile.roles?.includes('Admin') && <SettingOutlined onClick={() => setContactDrawerVisible(true)} />}
+            <SyncOutlined
+              spin={loading}
+              onClick={(e) => {
+                fetchData();
+                e.preventDefault();
+              }}
+            />
+          </Space>
+        }
+      >
+        <Select
+          {...(props || {})}
+          options={_.map(data, (item) => {
+            return {
+              label: item.label,
+              value: item.key,
+            };
+          })}
+        />
+      </Form.Item>
       <ContactDrawer
         open={contactDrawerVisible}
         onCloseDrawer={() => {
           setContactDrawerVisible(false);
         }}
       />
-    </Form.Item>
+    </>
   );
 }

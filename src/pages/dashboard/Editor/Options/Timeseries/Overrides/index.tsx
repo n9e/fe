@@ -125,6 +125,15 @@ export default function index({ targets }) {
                   </Form.Item>
                 </Panel>
               )}
+              <Panel header={t('panel.custom.title')}>
+                <Form.Item label={t('panel.custom.timeseries.drawStyle')} name={[name, 'properties', 'drawStyle']}>
+                  <Radio.Group buttonStyle='solid'>
+                    <Radio.Button value='none'>None</Radio.Button>
+                    <Radio.Button value='lines'>Lines</Radio.Button>
+                    <Radio.Button value='bars'>Bars</Radio.Button>
+                  </Radio.Group>
+                </Form.Item>
+              </Panel>
               <StandardOptions preNamePrefix={namePrefix} namePrefix={[name, 'properties', 'standardOptions']} showMinMax={false} showDisplayName />
             </Panel>
           );

@@ -3,6 +3,7 @@ import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import uPlot from 'uplot';
 import moment from 'moment';
+import _ from 'lodash';
 
 import { postAnnotations } from '@/services/dashboardV2';
 
@@ -12,6 +13,7 @@ interface Props {
   uplotRef: React.MutableRefObject<uPlot>;
   dashboardID: number;
   panelID: string;
+  timeZone?: string;
   closeOverlay: () => void;
   setAnnotationSettingUp: (settingUp: boolean) => void;
   onOk: () => void;
@@ -19,7 +21,8 @@ interface Props {
 
 export default function AddButton(props: Props) {
   const { t } = useTranslation('dashboard');
-  const { uplotRef, dashboardID, panelID, closeOverlay, setAnnotationSettingUp, onOk } = props;
+  const { uplotRef, dashboardID, timeZone, closeOverlay, setAnnotationSettingUp, onOk } = props;
+  const panelID = _.replace(props.panelID, /(__view)+$/, ''); // __view 结尾是用于区分预览视图，这里需要去掉，以便于与后端交互时使用正确的 panelID
   const [visible, setVisible] = React.useState(false);
   const [initialValues, setInitialValues] = React.useState({} as Values);
   const handleAdd = () => {
@@ -93,6 +96,7 @@ export default function AddButton(props: Props) {
       <FormModal
         visible={visible}
         action='add'
+        timeZone={timeZone}
         onOk={(values) => {
           postAnnotations(values).then(() => {
             onOk();

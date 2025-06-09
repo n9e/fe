@@ -50,5 +50,17 @@ const en_US = {
       result: 'Event preview',
     },
   },
+  callback: {
+    url: 'URL',
+    advanced_settings: 'Advanced settings',
+    basic_auth_user: 'Authorization user name',
+    basic_auth_user_placeholder: 'Please enter the authorization user name',
+    basic_auth_pass: 'Authorization password',
+    basic_auth_pass_placeholder: 'Please enter the authorization password',
+  },
+  event_drop: {
+    content: 'Judgment logic',
+    content_placeholder: 'Use go template syntax. If the final result is true, the event will be dropped at this stage.',
+  },
 };
 export default en_US;

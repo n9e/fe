@@ -1,10 +1,12 @@
 import React, { useContext, useMemo, useRef, useState } from 'react';
 import _ from 'lodash';
 import { useSize } from 'ahooks';
+import moment from 'moment-timezone';
 
 import { CommonStateContext } from '@/App';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { hexPalette } from '@/pages/dashboard/config';
+import { InternalTimeZones } from '@/utils/datetime/types';
 
 import { IPanel } from '../../../types';
 
@@ -28,6 +30,7 @@ interface Props {
   colors?: string[];
   time?: IRawTimeRange;
   setRange?: (range: IRawTimeRange) => void;
+  timezone?: string;
   inDashboard?: boolean;
   isPreview?: boolean;
   chartHeight?: string;
@@ -58,6 +61,7 @@ export default function index(props: Props) {
     colors: props.colors ?? hexPalette,
     range: props.time,
     setRange: props.setRange,
+    timezone: props.timezone,
     inDashboard: props.inDashboard,
     isPreview: props.isPreview,
     hideResetBtn: props.hideResetBtn,

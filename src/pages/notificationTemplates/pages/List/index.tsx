@@ -20,6 +20,7 @@ import './style.less';
 
 const DOCUMENT_WIDTH_KEY = 'notification_templates_document_width';
 const DEFAULT_DOCUMENT_WIDTH = 600;
+const MIN_DOCUMENT_WIDTH = 100;
 
 export default function ListCpt() {
   const { t } = useTranslation(NS);
@@ -115,12 +116,20 @@ export default function ListCpt() {
                     }
                   }}
                 >
-                  <div className='n9e-flex n9e-justify-between n9e-w-full'>
-                    <span>{item.name}</span>
+                  <div className='n9e-flex n9e-justify-between n9e-w-full gap-1'>
+                    <span
+                      style={{
+                        wordBreak: 'break-all',
+                        lineHeight: 1.2,
+                      }}
+                    >
+                      {item.name}
+                    </span>
                     {item.private === 0 && (
                       <span
                         style={{
                           color: 'var(--fc-text-5)',
+                          flexShrink: 0,
                         }}
                       >
                         {t('common:public')}
@@ -154,8 +163,8 @@ export default function ListCpt() {
             }}
             onResizeStop={(e, direction, ref, d) => {
               let curWidth = width + d.width;
-              if (curWidth < DEFAULT_DOCUMENT_WIDTH) {
-                curWidth = DEFAULT_DOCUMENT_WIDTH;
+              if (curWidth < MIN_DOCUMENT_WIDTH) {
+                curWidth = MIN_DOCUMENT_WIDTH;
               }
               setWidth(curWidth);
               localStorage.setItem(DOCUMENT_WIDTH_KEY, curWidth.toString());

@@ -2,6 +2,9 @@
  * 各数据源的查询方法
  */
 
+import { DatasourceCateEnum } from '@/utils/constant';
+import clickHouse from '@/plugins/clickHouse/Dashboard/VariableDatasource';
+
 import { IVariable } from './definition';
 
 // @ts-ignore
@@ -16,5 +19,10 @@ export interface Props<QueryType = any> {
 }
 
 export default async function datasource(props: Props) {
+  const { datasourceCate } = props;
+  if (datasourceCate === DatasourceCateEnum.ck) {
+    return clickHouse(props);
+  }
+
   return await variableDatasourcePro(props);
 }

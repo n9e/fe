@@ -26,10 +26,9 @@ import { DatasourceCateSelectV2 } from '@/components/DatasourceSelect';
 import DatasourceValueSelectV2 from '@/pages/alertRules/Form/components/DatasourceValueSelect/V2';
 
 import { panelBaseProps } from '../../constants';
-import { Host, Metric, Log } from './Rule';
+import Host from './Rule/Host';
+import AlertRule from './Rule';
 import { getDefaultValuesByCate } from '../utils';
-// @ts-ignore
-import PlusAlertRule from 'plus:/parcels/AlertRule';
 
 export default function Rule({ form }) {
   const { t } = useTranslation('alertRules');
@@ -76,21 +75,8 @@ export default function Rule({ form }) {
       <Form.Item isListField={false} name={['rule_config', 'inhibit']} valuePropName='checked' noStyle hidden>
         <div />
       </Form.Item>
-      <Form.Item shouldUpdate={(prevValues, currentValues) => prevValues.prod !== currentValues.prod}>
-        {() => {
-          const prod = form.getFieldValue('prod');
-          if (prod === 'host') {
-            return <Host />;
-          }
-          if (prod === 'metric') {
-            return <Metric />;
-          }
-          if (prod === 'logging') {
-            return <Log />;
-          }
-          return <PlusAlertRule prod={prod} form={form} />;
-        }}
-      </Form.Item>
+      {prod === 'host' && <Host />}
+      {prod !== 'host' && <AlertRule />}
     </Card>
   );
 }

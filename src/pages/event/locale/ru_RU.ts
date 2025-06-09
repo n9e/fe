@@ -66,6 +66,7 @@ const ru_RU = {
     notify_groups_obj: 'Группы получателей уведомлений',
     callbacks: 'Адреса обратного вызова',
     runbook_url: 'Ссылка на план действий',
+    notify_rules: 'Правила уведомления',
     detail_url: 'Ссылка на подробности',
     host: {
       trigger: 'Срабатывание',

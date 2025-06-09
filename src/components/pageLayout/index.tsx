@@ -160,7 +160,7 @@ const PageLayoutOld: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, int
                     )}
                     {profile?.admin && (
                       <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
-                        <Link to='/audits'>{t('audits:title')}</Link>
+                        <Link to='/system/audits'>{t('audits:title')}</Link>
                       </AdvancedWrap>
                     )}
                   </Space>

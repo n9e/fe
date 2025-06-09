@@ -50,6 +50,18 @@ const ja_JP = {
       result: 'イベントプレビュー',
     },
   },
+  callback: {
+    url: 'URL',
+    advanced_settings: '詳細設定',
+    basic_auth_user: 'ユーザー名',
+    basic_auth_user_placeholder: 'ユーザー名を入力してください',
+    basic_auth_pass: 'パスワード',
+    basic_auth_pass_placeholder: 'パスワードを入力してください',
+  },
+  event_drop: {
+    content: '判定ロジック',
+    content_placeholder: '使用 go template 構文，如果最後表示為 true，將會將 event 在此環節丟棄',
+  },
 };
 
 export default ja_JP;

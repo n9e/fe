@@ -83,6 +83,7 @@ const zh_CN = {
     type: '数据源类型',
     id: '数据源',
     id_required: '请选择数据源',
+    preview: '数据源预览',
     empty_modal: {
       title: '暂无数据源配置，请联系管理员去添加数据源',
       btn1: '前往配置',
@@ -96,7 +97,7 @@ const zh_CN = {
       match_type_2: '全部数据源',
       op_in: '包含',
       op_not_in: '不包含',
-      preview: '数据源预览',
+      preview: '数据预览',
     },
     managePageLink: '数据源管理',
   },
@@ -148,6 +149,8 @@ const zh_CN = {
   reload: '刷新',
   public: '公开',
   private: '私有',
+  advanced_settings: '高级设置',
+  disabled: '禁用',
 
   // 临时把 task 的翻译放在这里
   tpl: '自愈脚本',

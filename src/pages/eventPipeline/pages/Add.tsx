@@ -8,7 +8,7 @@ import PageLayout from '@/components/pageLayout';
 import { NS } from '../constants';
 import { postItem } from '../services';
 import Form from './Form';
-
+import { normalizeFormValues } from '../utils/normalizeValues';
 export default function Add() {
   const { t } = useTranslation(NS);
   const history = useHistory();
@@ -18,7 +18,7 @@ export default function Add() {
       <div className='n9e'>
         <Form
           onOk={(values) => {
-            postItem(values).then(() => {
+            postItem(normalizeFormValues(values)).then(() => {
               message.success(t('common:success.add'));
               history.push({
                 pathname: `/${NS}`,

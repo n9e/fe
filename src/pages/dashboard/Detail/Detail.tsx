@@ -25,6 +25,7 @@ import { useParams, useHistory, useLocation } from 'react-router-dom';
 import { useBeforeunload } from 'react-beforeunload';
 import queryString from 'query-string';
 import { Alert, Modal, Button, Affix, message, Spin } from 'antd';
+
 import PageLayout from '@/components/pageLayout';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { Dashboard } from '@/store/dashboardInterface';
@@ -35,6 +36,7 @@ import { CommonStateContext, basePrefix } from '@/App';
 import MigrationModal from '@/pages/help/migrate/MigrationModal';
 import RouterPrompt from '@/components/RouterPrompt';
 import { adjustURL } from '@/pages/embeddedDashboards/utils';
+
 import VariableConfig, { IVariable } from '../VariableConfig';
 import { replaceExpressionVars, getOptionsList } from '../VariableConfig/constant';
 import { ILink, IDashboardConfig } from '../types';
@@ -44,10 +46,11 @@ import { JSONParse } from '../utils';
 import Editor from '../Editor';
 import { sortPanelsByGridLayout, panelsMergeToConfigs, updatePanelsInsertNewPanelToGlobal, ajustPanels } from '../Panels/utils';
 import { useGlobalState } from '../globalState';
-import { scrollToLastPanel, getDefaultTimeRange, getDefaultIntervalSeconds } from './utils';
+import { scrollToLastPanel, getDefaultTimeRange, getDefaultIntervalSeconds, getDefaultTimezone, dashboardTimezoneCacheKey } from './utils';
 import dashboardMigrator from './utils/dashboardMigrator';
 import ajustInitialValues from '../Renderer/utils/ajustInitialValues';
 import './style.less';
+
 interface URLParam {
   id: string;
 }
@@ -102,6 +105,7 @@ export default function DetailV2(props: IProps) {
   const [annotationsRefreshFlag, setAnnotationsRefreshFlag] = useState<string>(_.uniqueId('annotationsRefreshFlag_'));
   const [loading, setLoading] = useState(false);
   const [range, setRange] = useState<IRawTimeRange>(getDefaultTimeRange(id, query, dashboardDefaultRangeIndex));
+  const [timezone, setTimezone] = useState<string>(getDefaultTimezone(id, query));
   const [intervalSeconds, setIntervalSeconds] = useState<number | undefined>(getDefaultIntervalSeconds(query));
   const [editable, setEditable] = useState(true);
   const [editorData, setEditorData] = useState({
@@ -298,6 +302,11 @@ export default function DetailV2(props: IProps) {
                 setRange={(v) => {
                   setRange(v);
                 }}
+                timezone={timezone}
+                setTimezone={(newTimezone) => {
+                  setTimezone(newTimezone);
+                  window.localStorage.setItem(`${dashboardTimezoneCacheKey}_${id}`, newTimezone);
+                }}
                 intervalSeconds={intervalSeconds}
                 setIntervalSeconds={setIntervalSeconds}
                 onAddPanel={(type) => {
@@ -374,6 +383,11 @@ export default function DetailV2(props: IProps) {
                   setAllowedLeave={setAllowedLeave}
                   range={range}
                   setRange={setRange}
+                  timezone={timezone}
+                  setTimezone={(newTimezone) => {
+                    setTimezone(newTimezone);
+                    window.localStorage.setItem(`${dashboardTimezoneCacheKey}_${id}`, newTimezone);
+                  }}
                   variableConfig={variableConfigWithOptions}
                   onShareClick={(panel) => {
                     const curDatasourceValue = replaceExpressionVars({
@@ -449,6 +463,11 @@ export default function DetailV2(props: IProps) {
         id={editorData.id}
         dashboardId={id}
         time={range}
+        timezone={timezone}
+        setTimezone={(newTimezone) => {
+          setTimezone(newTimezone);
+          window.localStorage.setItem(`${dashboardTimezoneCacheKey}_${id}`, newTimezone);
+        }}
         initialValues={editorData.initialValues}
         onOK={(values, mode) => {
           const newPanels = updatePanelsInsertNewPanelToGlobal(panels, values, 'chart');

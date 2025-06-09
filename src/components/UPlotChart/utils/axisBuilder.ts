@@ -1,8 +1,10 @@
 import uPlot, { Axis } from 'uplot';
 import moment from 'moment-timezone';
 import _ from 'lodash';
+
 import getTextWidth from '@/pages/dashboard/Renderer/utils/getTextWidth';
 import { FONT_FAMILY, THEME } from '@/utils/constant';
+import { dateTimeFormat } from '@/utils/datetime/formatter';
 
 enum ScaleDistribution {
   Linear = 'linear',
@@ -32,7 +34,12 @@ function formatTime(self: uPlot, splits: number[], axisIdx: number, foundSpace: 
     if (d.getHours() === 0 && d.getMinutes() === 0 && d.getSeconds() === 0) {
       format = 'MM-DD';
     }
-    return v == null ? '' : timeZone ? moment.unix(v).tz(timeZone).format(format) : moment.unix(v).format(format);
+    return v == null
+      ? ''
+      : dateTimeFormat(moment.unix(v), {
+          timeZone,
+          format,
+        });
   });
 }
 
@@ -106,6 +113,7 @@ export interface AxisProps {
   color?: uPlot.Axis.Stroke;
   border?: uPlot.Axis.Border;
   distr?: ScaleDistribution;
+  timeZone?: string;
 }
 
 export default function axisBuilder(props: AxisProps) {
@@ -129,13 +137,16 @@ export default function axisBuilder(props: AxisProps) {
     size,
     color,
     border,
+    timeZone,
   } = props;
 
   const font = `${UPLOT_AXIS_FONT_SIZE}px ${FONT_FAMILY}`;
 
   const gridColor = theme === 'dark' ? 'rgba(240, 250, 255, 0.09)' : 'rgba(0, 10, 23, 0.09)';
 
-  let config: Axis = {
+  let config: Axis & {
+    timeZone?: string;
+  } = {
     show,
     stroke: color ?? THEME?.[theme]?.text?.primary,
     font,
@@ -170,6 +181,7 @@ export default function axisBuilder(props: AxisProps) {
       }),
     filter,
     incrs,
+    timeZone,
   };
 
   if (scaleKey) {

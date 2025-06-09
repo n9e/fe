@@ -1,0 +1,57 @@
+const en_US = {
+  title: 'Active alerts',
+  search_placeholder: 'Multiple keywords separated by spaces',
+  hours: {
+    6: 'Last 6 Hours',
+    12: 'Last 12 Hours',
+    24: 'Last 1 Day',
+    48: 'Last 2 Days',
+    72: 'Last 3 Days',
+    168: 'Last 7 Days',
+    336: 'Last 14 Days',
+    720: 'Last 30 Days',
+    1440: 'Last 60 Days',
+    2160: 'Last 90 Days',
+  },
+  severity: 'Severity',
+  eventType: 'Event type',
+  event_name: 'Event',
+  first_trigger_time: 'First triggered',
+  trigger_time: 'Triggered',
+  shield: 'Blackout',
+  aggregate_rule: 'Aggregate rule',
+  aggregate_rule_mgs: 'Please select aggregate rule',
+  aggregate_rule_tip: `Aggregate and classify alerts based on the attributes and tags of the event for easy viewing. Use Go Template to reference event fields, for example:
+  
+- Aggregate by business group + event level: \`Group:{{.GroupName}} Severity:{{.Severity}}\`
+- Aggregate by alert rule title: \`{{.RuleName}}\`
+- Aggregate by instance tag of event: \`{{.TagsMap.instance}}\``,
+  aggr_result: 'aggregate results',
+  aggregate_rule_name: 'Rule name',
+  aggregate_rule_title: 'Aggregate card title',
+  add_rule: 'Add rule',
+  public: 'Public',
+  isPublic: 'Is public',
+  prod: 'Type',
+  duration: 'Duration',
+  status: 'Status',
+  status_1: 'Claimed',
+  status_0: 'Unclaimed',
+  batch_btn: 'Batch operation',
+  batch_claim: 'Batch claim',
+  batch_unclaim: 'Batch unclaim',
+  claim: 'Claim',
+  unclaim: 'Unclaim',
+  claimant: 'Claimant by',
+  search: 'Search datasource',
+  delete_confirm: {
+    title: 'Delete alert event',
+    content:
+      'Usually, alert events are only deleted when it is determined that the monitoring data will never be reported again (such as when the monitoring data tags are adjusted or the machine is offline), because the related alert events can never be automatically restored. Are you sure you want to do this?',
+  },
+  my_groups: 'My business groups',
+  all_groups: 'All business groups',
+  datasources: 'Datasources',
+  detail_title: 'Event detail',
+};
+export default en_US;
