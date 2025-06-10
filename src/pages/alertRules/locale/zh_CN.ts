@@ -158,6 +158,7 @@ const zh_CN = {
         service_cal_ids: '服务日历',
         annotations: '附加信息',
         triggers: '告警条件',
+        cron_pattern: '执行频率',
       },
     },
     cloneToHosts: {
