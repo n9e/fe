@@ -98,9 +98,7 @@ export default function ChangePassword() {
             message: t('password.confirmMsg'),
           },
           {
-            pattern:
-              /^(?:(?=.*[A-Z])(?=.*[a-z])|(?=.*[A-Z])(?=.*\d)|(?=.*[A-Z])(?=.*[!#?@$%^&*\-])|(?=.*[a-z])(?=.*\d)|(?=.*[a-z])(?=.*[!#?@$%^&*\-])|(?=.*\d)(?=.*[!#?@$%^&*\-])).{6,20}$/,
-            message: t('password.ruleMsg'),
+            pattern: /^(?![a-z]+$)(?![A-Z]+$)(?![0-9]+$)(?![#?!@$%^&*-]+$).{6,20}$/,
           },
           ({ getFieldValue }) => ({
             validator(_, value) {
