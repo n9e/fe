@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Space, Modal, Select } from 'antd';
+import { Form, Space } from 'antd';
 import { PlusCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { getIndices } from '@/pages/explorer/Elasticsearch/services';
+import EnhancedModal from '@/pages/alertRules/Form/components/EnhancedModal';
 
 import Query from './Query';
 import GraphPreview from './GraphPreview';
@@ -22,11 +23,9 @@ export default function index(props: IProps) {
   const form = Form.useFormInstance();
   const [indexOptions, setIndexOptions] = useState<any[]>([]);
   const names = ['extra_config', 'enrich_queries'];
-  const [modalVisible, setModalVisible] = useState(false);
-  const [selectedRef, setSelectedRef] = useState<string | undefined>();
   const datasourceValue = Form.useWatch('datasource_value');
-  const namesValue = Form.useWatch(names, form) ?? [];
-  const queries = Form.useWatch(['rule_config', 'queries'], form) || [];
+  const namesValue = Form.useWatch(names) ?? [];
+  const queries = Form.useWatch(['rule_config', 'queries']) || [];
   const queryOptions = queries.map((item) => ({
     label: item?.ref,
     value: item?.ref,
@@ -49,7 +48,7 @@ export default function index(props: IProps) {
   return (
     <>
       <Form.List name={names}>
-        {(fields, { remove }) => (
+        {(fields, { add, remove }) => (
           <div>
             <div style={{ marginBottom: 8 }}>
               <Space>
@@ -57,8 +56,11 @@ export default function index(props: IProps) {
                 <PlusCircleOutlined
                   disabled={disabled}
                   onClick={() => {
-                    setModalVisible(true);
-                    setSelectedRef(undefined);
+                    EnhancedModal({
+                      queryOptions,
+                      queries,
+                      add,
+                    });
                   }}
                 />
               </Space>
@@ -83,46 +85,6 @@ export default function index(props: IProps) {
       <div className='mt1'>
         <EnrichQueryValuesMaxLen hidden={namesValue.length === 0} />
       </div>
-      <Modal
-        title={<span>{t('enrich.select_tip')}</span>}
-        visible={modalVisible}
-        onCancel={() => setModalVisible(false)}
-        onOk={() => {
-          if (form) {
-            const newEnrichQueries = _.cloneDeep(form.getFieldValue(['extra_config', 'enrich_queries']) || []);
-            if (!selectedRef) {
-              // 选择为空，新增一个空 enrich_query
-              newEnrichQueries.push({
-                interval_unit: 'min',
-                interval: 1,
-                date_field: '@timestamp',
-                value: { func: 'rawData' },
-              });
-            } else {
-              const selectedQuery = _.find(queries, ['ref', selectedRef]);
-              const existIndex = _.findIndex(newEnrichQueries, ['ref', selectedRef]);
-              if (selectedQuery) {
-                if (existIndex > -1) {
-                  // 只更新字段，保留原对象
-                  _.assign(newEnrichQueries[existIndex], selectedQuery);
-                } else {
-                  // 新增
-                  newEnrichQueries.push(selectedQuery);
-                }
-              }
-            }
-            form.setFieldsValue({
-              extra_config: {
-                ...form.getFieldValue('extra_config'),
-                enrich_queries: newEnrichQueries,
-              },
-            });
-          }
-          setModalVisible(false);
-        }}
-      >
-        <Select className='w-full' options={queryOptions} value={selectedRef} onChange={setSelectedRef} allowClear />
-      </Modal>
     </>
   );
 }
