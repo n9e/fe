@@ -5,7 +5,7 @@ import { BaseParams } from './types';
 import { QUERY_KEY } from './constants';
 
 export function getDatabases(data: BaseParams): Promise<string[]> {
-  return request('/api/n9e-plus/db-databases', {
+  return request('/api/n9e/db-databases', {
     method: RequestMethod.Post,
     data,
   }).then((res) => {
@@ -18,7 +18,7 @@ export function getTables(
     query: string[];
   },
 ): Promise<string[]> {
-  return request('/api/n9e-plus/db-tables', {
+  return request('/api/n9e/db-tables', {
     method: RequestMethod.Post,
     data,
   }).then((res) => {
@@ -40,7 +40,7 @@ export function getColumns(
     type2: string;
   }[]
 > {
-  return request('/api/n9e-plus/db-desc-table', {
+  return request('/api/n9e/db-desc-table', {
     method: RequestMethod.Post,
     data,
   }).then((res) => {
@@ -61,7 +61,7 @@ export function getDsQuery(
     }[];
   },
 ): Promise<any> {
-  return request('/api/n9e-plus/ds-query', {
+  return request('/api/n9e/ds-query', {
     method: RequestMethod.Post,
     data,
   }).then((res) => {
@@ -89,7 +89,7 @@ export function getLogsQuery(data: {
     data: { [index: string]: string | number }[];
   }[]
 > {
-  return request('/api/n9e-plus/log-query-batch', {
+  return request('/api/n9e/log-query-batch', {
     method: RequestMethod.Post,
     data,
     silence: true,
@@ -123,7 +123,7 @@ export const getDsQuery2 = function (data: {
     values: [number, number][];
   }[]
 > {
-  return request('/api/n9e-plus/query-batch', {
+  return request('/api/n9e/query-batch', {
     method: RequestMethod.Post,
     data,
     silence: true,
