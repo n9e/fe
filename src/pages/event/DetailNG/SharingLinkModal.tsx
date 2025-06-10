@@ -46,12 +46,10 @@ export default function SharingLinkModal(props: Props) {
   );
 
   useEffect(() => {
-    if (visible) {
-      if (expireValue) {
-        fetchToken();
-      }
+    if (visible && allowAnonymous && expireValue) {
+      fetchToken();
     }
-  }, [visible, expireValue, expireUnit]);
+  }, [visible, allowAnonymous, expireValue, expireUnit]);
 
   return (
     <Modal title={t('sharing_link.title')} visible={visible} footer={null} width={800} onCancel={onClose}>
