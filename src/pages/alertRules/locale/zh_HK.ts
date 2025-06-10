@@ -330,6 +330,9 @@ const zh_HK = {
     filter_tip: '變量篩選',
     add_subFilter: '添加子篩選',
   },
+  enrich: {
+    select_tip: '克隆查詢條件',
+  },
 };
 
 export default zh_HK;

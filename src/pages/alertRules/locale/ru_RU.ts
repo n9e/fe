@@ -333,6 +333,9 @@ const ru_RU = {
     filter_tip: 'Фильтр переменных',
     add_subFilter: 'Добавить вложенный фильтр',
   },
+  enrich: {
+    select_tip: 'Клонировать условия запроса',
+  },
 };
 
 export default ru_RU;

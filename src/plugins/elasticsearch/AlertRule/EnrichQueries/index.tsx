@@ -84,12 +84,12 @@ export default function index(props: IProps) {
         <EnrichQueryValuesMaxLen hidden={namesValue.length === 0} />
       </div>
       <Modal
-        title={<span>{t('db_aliyunSLS:enrich_queries.title')}</span>}
+        title={<span>{t('enrich.select_tip')}</span>}
         visible={modalVisible}
         onCancel={() => setModalVisible(false)}
         onOk={() => {
           if (form) {
-            const newEnrichQueries = (form.getFieldValue(['extra_config', 'enrich_queries']) || []).slice();
+            const newEnrichQueries = _.cloneDeep(form.getFieldValue(['extra_config', 'enrich_queries']) || []);
             if (!selectedRef) {
               // 选择为空，新增一个空 enrich_query
               newEnrichQueries.push({
@@ -99,24 +99,15 @@ export default function index(props: IProps) {
                 value: { func: 'rawData' },
               });
             } else {
-              const selectedQuery = queries.find((item) => item.ref === selectedRef);
-              const existIndex = newEnrichQueries.findIndex((item) => item.extra_query && item.extra_query.ref === selectedRef);
+              const selectedQuery = _.find(queries, ['ref', selectedRef]);
+              const existIndex = _.findIndex(newEnrichQueries, ['ref', selectedRef]);
               if (selectedQuery) {
-                const enrichData = {
-                  index: selectedQuery.index,
-                  filter: selectedQuery.filter,
-                  interval: selectedQuery.interval,
-                  interval_unit: selectedQuery.interval_unit,
-                  date_field: selectedQuery.date_field,
-                  value: selectedQuery.value,
-                  extra_query: selectedQuery,
-                };
                 if (existIndex > -1) {
                   // 只更新字段，保留原对象
-                  Object.assign(newEnrichQueries[existIndex], enrichData);
+                  _.assign(newEnrichQueries[existIndex], selectedQuery);
                 } else {
                   // 新增
-                  newEnrichQueries.push(enrichData);
+                  newEnrichQueries.push(selectedQuery);
                 }
               }
             }
