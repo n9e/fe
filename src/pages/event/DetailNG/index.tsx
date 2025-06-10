@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { CommonStateContext, basePrefix } from '@/App';
 import TDengineDetail from '@/plugins/TDengine/Event';
 import { Event as ElasticsearchDetail } from '@/plugins/elasticsearch';
-import { getESIndexPatterns } from '@/pages/log/IndexPatterns/services';
+import { getESIndexPatternsWithParmas } from '@/pages/log/IndexPatterns/services';
 import { DatasourceCateEnum } from '@/utils/constant';
 
 import EventNotifyRecords from '../EventNotifyRecords';
@@ -48,7 +48,14 @@ export default function DetailNG(props: Props) {
 
   useEffect(() => {
     if (eventDetail?.cate === DatasourceCateEnum.elasticsearch) {
-      getESIndexPatterns().then((res) => {
+      const params = token
+        ? {
+            __token: token,
+            source_type: 'event',
+            eid: eventDetail?.id,
+          }
+        : undefined;
+      getESIndexPatternsWithParmas(params).then((res) => {
         setIndexPatterns(res);
       });
     }
@@ -330,7 +337,7 @@ export default function DetailNG(props: Props) {
   return (
     <div className='event-detail-container'>
       <Spin spinning={!eventDetail}>
-        <div className='desc-container'>
+        <div className='desc-container min-h-[200px]'>
           {eventDetail && (
             <div>
               {showGraph && <PlusPreview data={eventDetail} token={token} />}
