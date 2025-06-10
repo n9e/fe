@@ -162,6 +162,7 @@ const ru_RU = {
         service_cal_ids: 'Календарь обслуживания',
         annotations: 'Дополнительная информация',
         triggers: 'Условия оповещения',
+        cron_pattern: 'Частота выполнения',
       },
     },
     cloneToHosts: {
