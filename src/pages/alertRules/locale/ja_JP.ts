@@ -159,6 +159,7 @@ const ja_JP = {
         service_cal_ids: 'サービスカレンダー',
         annotations: '追加情報',
         triggers: 'アラート条件',
+        cron_pattern: '実行頻度',
       },
     },
     cloneToHosts: {

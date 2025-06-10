@@ -160,6 +160,7 @@ const en_US = {
         service_cal_ids: 'Service calendar',
         annotations: 'Annotations',
         triggers: 'Triggers',
+        cron_pattern: 'Execution frequency',
       },
     },
     cloneToHosts: {

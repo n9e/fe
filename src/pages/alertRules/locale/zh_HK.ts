@@ -158,6 +158,7 @@ const zh_HK = {
         service_cal_ids: '服務日曆',
         annotations: '附加資訊',
         triggers: '告警條件',
+        cron_pattern: '執行頻率',
       },
     },
     cloneToHosts: {
