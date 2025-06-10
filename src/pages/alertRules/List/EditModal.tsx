@@ -20,12 +20,14 @@ import { debounce, join } from 'lodash';
 import { Form, Input, InputNumber, Radio, Select, Row, Col, TimePicker, Checkbox, Tag, AutoComplete, Space, Switch, Tooltip, Modal, Button } from 'antd';
 import { QuestionCircleFilled, MinusCircleOutlined, PlusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+
 import { getTeamInfoList, getNotifiesList } from '@/services/manage';
 import DatasourceValueSelectV2 from '@/pages/alertRules/Form/components/DatasourceValueSelect/V2';
 import { CommonStateContext } from '@/App';
 import Triggers from '@/pages/alertRules/Form/components/Triggers';
 import NotificationRuleSelect from '@/pages/alertRules/Form/Notify/NotificationRuleSelect';
 import { alphabet } from '@/utils/constant';
+
 import { defaultValues } from '../Form/constants';
 
 // @ts-ignore
@@ -45,7 +47,7 @@ const fields = [
     name: '级别',
   },
   {
-    field: 'prom_eval_interval',
+    field: 'cron_pattern',
     name: '执行频率',
   },
   {
@@ -300,7 +302,7 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
           preserve={false}
           className='strategy-form'
           initialValues={{
-            prom_eval_interval: 15,
+            cron_pattern: '@every 60s',
             disabled: 0, // 0:立即启用 1:禁用
             enable_status: true, // true:立即启用 false:禁用
             notify_recovered: 1, // 1:启用
@@ -467,21 +469,24 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
                     </Form.Item>
                   </>
                 );
-              case 'prom_eval_interval':
+              case 'cron_pattern':
                 return (
                   <>
                     <Form.Item label={changetoText}>
-                      <Space>
-                        <Form.Item style={{ marginBottom: 0 }} name='prom_eval_interval' initialValue={15} wrapperCol={{ span: 10 }}>
-                          <InputNumber
-                            min={1}
-                            onChange={(val) => {
-                              setRefresh(!refresh);
-                            }}
-                          />
-                        </Form.Item>
-                        {t('common:time.second')}
-                      </Space>
+                      <Form.Item name='cron_pattern' initialValue='@every 60s'>
+                        <AutoComplete
+                          options={[
+                            { label: '@every 15s', value: '@every 15s' },
+                            { label: '@every 30s', value: '@every 30s' },
+                            { label: '@every 45s', value: '@every 45s' },
+                            { label: '@every 60s', value: '@every 60s' },
+                            { label: '@every 120s', value: '@every 120s' },
+                            { label: '@every 150s', value: '@every 150s' },
+                            { label: '@every 180s', value: '@every 180s' },
+                            { label: '@every 300s', value: '@every 300s' },
+                          ]}
+                        />
+                      </Form.Item>
                     </Form.Item>
                   </>
                 );
