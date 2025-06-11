@@ -109,119 +109,122 @@ export default function Shard(props: IProps) {
               {t('common:advanced_settings')}
               {advancedVisible ? <DownOutlined /> : <RightOutlined />}
             </Space>
-            {advancedVisible && (
-              <div className='mt-2'>
-                <Row gutter={10}>
-                  <Col span={12}>
-                    <Form.Item
-                      label={t(`datasource.timeout`)}
-                      {...restField}
-                      name={[name, `${type}.timeout`]}
-                      rules={[
-                        {
-                          type: 'number',
-                          min: 0,
-                        },
-                      ]}
-                      initialValue={60}
-                    >
-                      <InputNumber
-                        style={{
-                          width: '100%',
-                        }}
-                        controls={false}
-                        placeholder='60'
-                      />
-                    </Form.Item>
-                  </Col>
-                  <Col span={12}>
-                    <Form.Item
-                      label={t(`datasource.max_query_rows`)}
-                      {...restField}
-                      name={[name, `${type}.max_query_rows`]}
-                      rules={[
-                        { required: true },
-                        {
-                          type: 'number',
-                          min: 0,
-                        },
-                      ]}
-                      initialValue={500}
-                    >
-                      <InputNumber
-                        style={{
-                          width: '100%',
-                        }}
-                        controls={false}
-                      />
-                    </Form.Item>
-                  </Col>
-                  <Col span={6}>
-                    <Form.Item
-                      label={t(`datasource.max_idle_conns`)}
-                      {...restField}
-                      name={[name, `${type}.max_idle_conns`]}
-                      rules={[
-                        {
-                          type: 'number',
-                          min: 0,
-                        },
-                      ]}
-                    >
-                      <InputNumber
-                        style={{
-                          width: '100%',
-                        }}
-                        controls={false}
-                        placeholder='10'
-                      />
-                    </Form.Item>
-                  </Col>
-                  <Col span={6}>
-                    <Form.Item
-                      label={t(`datasource.max_open_conns`)}
-                      {...restField}
-                      name={[name, `${type}.max_open_conns`]}
-                      rules={[
-                        {
-                          type: 'number',
-                          min: 0,
-                        },
-                      ]}
-                    >
-                      <InputNumber
-                        style={{
-                          width: '100%',
-                        }}
-                        controls={false}
-                        placeholder='100'
-                      />
-                    </Form.Item>
-                  </Col>
-                  <Col span={12}>
-                    <Form.Item
-                      label={t(`datasource.conn_max_lifetime`)}
-                      {...restField}
-                      name={[name, `${type}.conn_max_lifetime`]}
-                      rules={[
-                        {
-                          type: 'number',
-                          min: 0,
-                        },
-                      ]}
-                    >
-                      <InputNumber
-                        style={{
-                          width: '100%',
-                        }}
-                        controls={false}
-                        placeholder='14400'
-                      />
-                    </Form.Item>
-                  </Col>
-                </Row>
-              </div>
-            )}
+            <div
+              className='mt-2'
+              style={{
+                display: advancedVisible ? 'block' : 'none',
+              }}
+            >
+              <Row gutter={10}>
+                <Col span={12}>
+                  <Form.Item
+                    label={t(`datasource.timeout`)}
+                    {...restField}
+                    name={[name, `${type}.timeout`]}
+                    rules={[
+                      {
+                        type: 'number',
+                        min: 0,
+                      },
+                    ]}
+                    initialValue={60}
+                  >
+                    <InputNumber
+                      style={{
+                        width: '100%',
+                      }}
+                      controls={false}
+                      placeholder='60'
+                    />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item
+                    label={t(`datasource.max_query_rows`)}
+                    {...restField}
+                    name={[name, `${type}.max_query_rows`]}
+                    rules={[
+                      { required: true },
+                      {
+                        type: 'number',
+                        min: 0,
+                      },
+                    ]}
+                    initialValue={500}
+                  >
+                    <InputNumber
+                      style={{
+                        width: '100%',
+                      }}
+                      controls={false}
+                    />
+                  </Form.Item>
+                </Col>
+                <Col span={6}>
+                  <Form.Item
+                    label={t(`datasource.max_idle_conns`)}
+                    {...restField}
+                    name={[name, `${type}.max_idle_conns`]}
+                    rules={[
+                      {
+                        type: 'number',
+                        min: 0,
+                      },
+                    ]}
+                  >
+                    <InputNumber
+                      style={{
+                        width: '100%',
+                      }}
+                      controls={false}
+                      placeholder='10'
+                    />
+                  </Form.Item>
+                </Col>
+                <Col span={6}>
+                  <Form.Item
+                    label={t(`datasource.max_open_conns`)}
+                    {...restField}
+                    name={[name, `${type}.max_open_conns`]}
+                    rules={[
+                      {
+                        type: 'number',
+                        min: 0,
+                      },
+                    ]}
+                  >
+                    <InputNumber
+                      style={{
+                        width: '100%',
+                      }}
+                      controls={false}
+                      placeholder='100'
+                    />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item
+                    label={t(`datasource.conn_max_lifetime`)}
+                    {...restField}
+                    name={[name, `${type}.conn_max_lifetime`]}
+                    rules={[
+                      {
+                        type: 'number',
+                        min: 0,
+                      },
+                    ]}
+                  >
+                    <InputNumber
+                      style={{
+                        width: '100%',
+                      }}
+                      controls={false}
+                      placeholder='14400'
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+            </div>
           </div>
         </div>
       </div>

@@ -1,7 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
-import { Row, Col, Form, Input, FormInstance } from 'antd';
-import { CloseOutlined } from '@ant-design/icons';
+import { Row, Col, Form, Input, FormInstance, Space, InputNumber } from 'antd';
+import { CloseOutlined, DownOutlined, RightOutlined } from '@ant-design/icons';
 import { FormListFieldData } from 'antd/lib/form/FormList';
 import { useTranslation } from 'react-i18next';
 
@@ -23,6 +23,7 @@ export default function Shard(props: IProps) {
   const { form, field, fields, remove, type } = props;
   const namePrefix = ['settings', `${type}.shards`];
   const { key, name, ...restField } = field;
+  const [advancedVisible, setAdvancedVisible] = React.useState(false);
 
   return (
     <div key={key} className='n9e-datasource-form-shard'>
@@ -99,6 +100,137 @@ export default function Shard(props: IProps) {
         >
           {t(`${NAME_SPACE}:datasource.shards.help`)}
         </div>
+        {_.includes(['mysql', 'pgsql'], type) && (
+          <div>
+            <div>
+              <Space
+                className='n9e-cursor-pointer'
+                onClick={() => {
+                  setAdvancedVisible(!advancedVisible);
+                }}
+              >
+                {t('common:advanced_settings')}
+                {advancedVisible ? <DownOutlined /> : <RightOutlined />}
+              </Space>
+              <div
+                className='mt-2'
+                style={{
+                  display: advancedVisible ? 'block' : 'none',
+                }}
+              >
+                <Row gutter={10}>
+                  <Col span={12}>
+                    <Form.Item
+                      label={t(`${NAME_SPACE}:datasource.timeout`)}
+                      {...restField}
+                      name={[name, `${type}.timeout`]}
+                      rules={[
+                        {
+                          type: 'number',
+                          min: 0,
+                        },
+                      ]}
+                      initialValue={60}
+                    >
+                      <InputNumber
+                        style={{
+                          width: '100%',
+                        }}
+                        controls={false}
+                        placeholder='60'
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item
+                      label={t(`${NAME_SPACE}:datasource.max_query_rows`)}
+                      {...restField}
+                      name={[name, `${type}.max_query_rows`]}
+                      rules={[
+                        { required: true },
+                        {
+                          type: 'number',
+                          min: 0,
+                        },
+                      ]}
+                      initialValue={500}
+                    >
+                      <InputNumber
+                        style={{
+                          width: '100%',
+                        }}
+                        controls={false}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col span={6}>
+                    <Form.Item
+                      label={t(`${NAME_SPACE}:datasource.max_idle_conns`)}
+                      {...restField}
+                      name={[name, `${type}.max_idle_conns`]}
+                      rules={[
+                        {
+                          type: 'number',
+                          min: 0,
+                        },
+                      ]}
+                    >
+                      <InputNumber
+                        style={{
+                          width: '100%',
+                        }}
+                        controls={false}
+                        placeholder='10'
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col span={6}>
+                    <Form.Item
+                      label={t(`${NAME_SPACE}:datasource.max_open_conns`)}
+                      {...restField}
+                      name={[name, `${type}.max_open_conns`]}
+                      rules={[
+                        {
+                          type: 'number',
+                          min: 0,
+                        },
+                      ]}
+                    >
+                      <InputNumber
+                        style={{
+                          width: '100%',
+                        }}
+                        controls={false}
+                        placeholder='100'
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item
+                      label={t(`${NAME_SPACE}:datasource.conn_max_lifetime`)}
+                      {...restField}
+                      name={[name, `${type}.conn_max_lifetime`]}
+                      rules={[
+                        {
+                          type: 'number',
+                          min: 0,
+                        },
+                      ]}
+                    >
+                      <InputNumber
+                        style={{
+                          width: '100%',
+                        }}
+                        controls={false}
+                        placeholder='14400'
+                      />
+                    </Form.Item>
+                  </Col>
+                </Row>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
       {fields.length > 1 && (
         <div className='n9e-datasource-form-shard-close'>
