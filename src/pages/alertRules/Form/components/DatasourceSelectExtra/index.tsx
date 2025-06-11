@@ -3,6 +3,7 @@ import { Form } from 'antd';
 import _ from 'lodash';
 
 import { DatasourceCateEnum } from '@/utils/constant';
+import * as Meta from '@/components/Meta';
 import * as CKMeta from '@/plugins/clickHouse/components/Meta';
 import * as MySQLMeta from '@/plugins/mysql/components/Meta';
 
@@ -19,7 +20,8 @@ export default function index() {
   if (datasourceCate === DatasourceCateEnum.mysql && datasourceValue !== undefined) {
     return <MySQLMeta.MetaModal datasourceValue={datasourceValue} />;
   }
+  if (datasourceCate === DatasourceCateEnum.pgsql && datasourceValue !== undefined) {
+    return <Meta.MetaModal datasourceCate={datasourceCate} datasourceValue={datasourceValue} />;
+  }
   return <DatasourceSelectExtra datasourceCate={datasourceCate} datasourceValue={datasourceValue} />;
-
-  return null;
 }

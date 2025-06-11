@@ -8,7 +8,7 @@ export interface BaseParams {
 }
 
 export function getDatabases(data: BaseParams): Promise<string[]> {
-  return request('/api/n9e-plus/db-databases', {
+  return request('/api/n9e/db-databases', {
     method: RequestMethod.Post,
     data,
   }).then((res) => {
@@ -21,7 +21,7 @@ export function getTables(
     query: string[];
   },
 ): Promise<string[]> {
-  return request('/api/n9e-plus/db-tables', {
+  return request('/api/n9e/db-tables', {
     method: RequestMethod.Post,
     data,
   }).then((res) => {
@@ -43,7 +43,7 @@ export function getColumns(
     type2: string;
   }[]
 > {
-  return request('/api/n9e-plus/db-desc-table', {
+  return request('/api/n9e/db-desc-table', {
     method: RequestMethod.Post,
     data,
   }).then((res) => {
