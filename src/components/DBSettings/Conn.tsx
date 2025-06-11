@@ -26,10 +26,14 @@ export default function PermissionConn(props: IProps) {
             <div className='page-title'>
               <Space>
                 {t(`${NAME_SPACE}:datasource.shards.title`)}
-                <Tooltip placement='bottomLeft' title={t(`${NAME_SPACE}:datasource.shards.title_tip`)}>
-                  <InfoCircleOutlined />
-                </Tooltip>
-                <PlusCircleOutlined onClick={() => add(defaultShardValues(type))} />
+                {!_.includes(['mysql', 'pgsql'], type) && (
+                  <Space>
+                    <Tooltip placement='bottomLeft' title={t(`${NAME_SPACE}:datasource.shards.title_tip`)}>
+                      <InfoCircleOutlined />
+                    </Tooltip>
+                    <PlusCircleOutlined onClick={() => add(defaultShardValues(type))} />
+                  </Space>
+                )}
               </Space>
             </div>
             {fields.map((field) => {
