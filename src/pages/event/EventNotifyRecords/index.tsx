@@ -140,15 +140,17 @@ export default function index(props: Props) {
           setVisible(false);
         }}
         visible={visible}
-        width='80%'
+        width='90%'
         closable={false}
       >
         <Card className='mb2' size='small' title={<Space>{t('detail.event_notify_records.alert_rule_notify_records')}</Space>}>
-          <Table size='small' columns={columns} dataSource={data?.alertRulesRecords} />
+          <Table size='small' tableLayout='auto' scroll={{ x: 'max-content' }} columns={columns} dataSource={data?.alertRulesRecords} />
         </Card>
         <Card size='small' title={<Space>{t('detail.event_notify_records.subscription_rule_notify_records')}</Space>}>
           <Table
             size='small'
+            tableLayout='auto'
+            scroll={{ x: 'max-content' }}
             columns={_.concat(
               {
                 title: t('detail.event_notify_records.sub_id'),

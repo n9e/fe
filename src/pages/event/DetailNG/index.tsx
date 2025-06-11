@@ -167,7 +167,11 @@ export default function DetailNG(props: Props) {
         return (
           <Space wrap size={[0, 8]}>
             {_.map(tags, (tag) => {
-              return <Tag key={tag}>{tag}</Tag>;
+              return (
+                <Tag className='n9e-event-detail-tag' key={tag}>
+                  {tag}
+                </Tag>
+              );
             })}
           </Space>
         );
