@@ -59,3 +59,14 @@ export function getMenuPerm() {
     method: RequestMethod.Get,
   });
 }
+
+export function postSourceToken(data: {
+  source_type: string;
+  source_id: string;
+  expire_at: number; // 过期时间戳
+}) {
+  return request('/api/n9e/source-token', {
+    method: RequestMethod.Post,
+    data,
+  });
+}

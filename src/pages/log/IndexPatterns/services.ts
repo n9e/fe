@@ -28,6 +28,13 @@ export const getESIndexPatterns = function (datasource_id?: number) {
   }).then((res) => res.dat);
 };
 
+export const getESIndexPatternsWithParmas = function (params?: { datasource_id?: number; __token?: string; source_type?: string; eid?: number }) {
+  return request(`/api/${N9E_PATHNAME}/es-index-pattern-list`, {
+    method: RequestMethod.Get,
+    params,
+  }).then((res) => res.dat);
+};
+
 export const getESIndexPattern = function (id: number) {
   return request('/api/n9e/es-index-pattern', {
     method: RequestMethod.Get,

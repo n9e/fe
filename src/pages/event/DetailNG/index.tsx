@@ -6,7 +6,7 @@ import { Button, message, Space, Spin, Tag, Typography } from 'antd';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { CommonStateContext, basePrefix } from '@/App';
-import { getESIndexPatterns } from '@/pages/log/IndexPatterns/services';
+import { getESIndexPatternsWithParmas } from '@/pages/log/IndexPatterns/services';
 import { DatasourceCateEnum } from '@/utils/constant';
 
 import EventNotifyRecords from '../EventNotifyRecords';
@@ -27,20 +27,15 @@ const { Paragraph } = Typography;
 interface Props {
   data: any;
   showGraph?: boolean;
+  token?: string;
 }
 
 export default function DetailNG(props: Props) {
   const { t } = useTranslation('AlertCurEvents');
   const commonState = useContext(CommonStateContext);
   const { busiGroups, datasourceList } = commonState;
-  const { data: eventDetail, showGraph } = props;
-  const handleNavToWarningList = (id) => {
-    if (busiGroups.find((item) => item.id === id)) {
-      window.open(`${basePrefix}/alert-rules?ids=${id}&isLeaf=true`);
-    } else {
-      message.error(t('detail.buisness_not_exist'));
-    }
-  };
+  const { data: eventDetail, showGraph, token } = props;
+
   const history = useHistory();
 
   if (eventDetail) eventDetail.cate = eventDetail.cate || 'prometheus'; // TODO: 兼容历史的告警事件
@@ -49,7 +44,14 @@ export default function DetailNG(props: Props) {
 
   useEffect(() => {
     if (eventDetail?.cate === DatasourceCateEnum.elasticsearch) {
-      getESIndexPatterns().then((res) => {
+      const params = token
+        ? {
+            __token: token,
+            source_type: 'event',
+            eid: eventDetail?.id,
+          }
+        : undefined;
+      getESIndexPatternsWithParmas(params).then((res) => {
         setIndexPatterns(res);
       });
     }
@@ -82,7 +84,18 @@ export default function DetailNG(props: Props) {
             key: 'group_name',
             render(content, { group_id }) {
               return (
-                <Button size='small' type='link' className='rule-link-btn' onClick={() => handleNavToWarningList(group_id)}>
+                <Button
+                  size='small'
+                  type='link'
+                  className='rule-link-btn'
+                  onClick={() => {
+                    if (busiGroups.find((item) => item.id === group_id)) {
+                      window.open(`${basePrefix}/alert-rules?ids=${group_id}&isLeaf=true`);
+                    } else {
+                      message.error(t('detail.buisness_not_exist'));
+                    }
+                  }}
+                >
                   {content}
                 </Button>
               );
@@ -154,7 +167,11 @@ export default function DetailNG(props: Props) {
         return (
           <Space wrap size={[0, 8]}>
             {_.map(tags, (tag) => {
-              return <Tag key={tag}>{tag}</Tag>;
+              return (
+                <Tag className='n9e-event-detail-tag' key={tag}>
+                  {tag}
+                </Tag>
+              );
             })}
           </Space>
         );
@@ -312,10 +329,10 @@ export default function DetailNG(props: Props) {
   return (
     <div className='event-detail-container'>
       <Spin spinning={!eventDetail}>
-        <div className='desc-container'>
+        <div className='desc-container min-h-[200px]'>
           {eventDetail && (
             <div>
-              {showGraph && <PlusPreview data={eventDetail} />}
+              {showGraph && <PlusPreview data={eventDetail} token={token} />}
               {descriptionInfo
                 .filter((item: any) => {
                   if (!item) return false;
