@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { getHistoryEventsById } from '@/services/warning';
 
 import DetailNG from './index';
+import './style.less';
 
 const EventDetailPage = () => {
   const { t } = useTranslation('AlertCurEvents');
@@ -28,7 +29,7 @@ const EventDetailPage = () => {
   }, [eventId]);
 
   return (
-    <div className='w-screen h-screen overflow-y-auto'>
+    <div className='n9e-shared-event overflow-y-auto'>
       <div className='p-4'>
         <Card title={t('AlertCurEvents:detail.title')} size='small'>
           <DetailNG data={eventDetail} showGraph token={__token} />
