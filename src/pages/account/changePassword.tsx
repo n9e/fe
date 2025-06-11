@@ -97,9 +97,6 @@ export default function ChangePassword() {
             required: true,
             message: t('password.confirmMsg'),
           },
-          {
-            pattern: /^(?![a-z]+$)(?![A-Z]+$)(?![0-9]+$)(?![#?!@$%^&*-]+$).{6,20}$/,
-          },
           ({ getFieldValue }) => ({
             validator(_, value) {
               if (!value || getFieldValue('newpass') === value) {
