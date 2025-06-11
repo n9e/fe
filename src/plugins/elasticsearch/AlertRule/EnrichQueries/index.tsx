@@ -26,10 +26,6 @@ export default function index(props: IProps) {
   const datasourceValue = Form.useWatch('datasource_value');
   const namesValue = Form.useWatch(names) ?? [];
   const queries = Form.useWatch(['rule_config', 'queries']) || [];
-  const queryOptions = queries.map((item) => ({
-    label: item?.ref,
-    value: item?.ref,
-  }));
 
   useEffect(() => {
     if (datasourceValue !== undefined) {
@@ -57,7 +53,6 @@ export default function index(props: IProps) {
                   disabled={disabled}
                   onClick={() => {
                     EnhancedModal({
-                      queryOptions,
                       queries,
                       add,
                     });

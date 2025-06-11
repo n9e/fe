@@ -5,15 +5,18 @@ import _ from 'lodash';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 
 interface IProps {
-  queryOptions: { label: string; value: string }[];
   queries: any[];
   add: (query: any) => void;
 }
 
 function EnhancedModal(props: ModalWrapProps & IProps) {
   const { t } = useTranslation('alertRules');
-  const { visible, destroy, queryOptions, queries, add } = props;
+  const { visible, destroy, queries, add } = props;
   const [selectedRef, setSelectedRef] = useState<string | undefined>();
+  const queryOptions = _.map(queries, (item) => ({
+    label: item?.ref,
+    value: item?.ref,
+  }));
 
   const handleOk = () => {
     if (!selectedRef) {
