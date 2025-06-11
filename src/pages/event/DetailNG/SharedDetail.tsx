@@ -29,10 +29,18 @@ const EventDetailPage = () => {
   }, [eventId]);
 
   return (
-    <div className='n9e-shared-event overflow-y-auto'>
-      <div className='p-4'>
-        <Card title={t('AlertCurEvents:detail.title')} size='small'>
-          <DetailNG data={eventDetail} showGraph token={__token} />
+    <div className='n9e-shared-event h-screen'>
+      <div className='h-full p-2 lg:p-10'>
+        <Card
+          className='h-full'
+          title={t('AlertCurEvents:detail.title')}
+          bodyStyle={{
+            height: 'calc(100% - 55px)', // Adjust height to account for the title bar
+          }}
+        >
+          <div className='w-full h-full overflow-x-hidden overflow-y-auto'>
+            <DetailNG data={eventDetail} showGraph token={__token} />
+          </div>
         </Card>
       </div>
     </div>
