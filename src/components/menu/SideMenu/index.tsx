@@ -117,6 +117,10 @@ export const getMenuList = (t) => {
           label: t('notification_templates'),
         },
         {
+          key: '/event-pipelines',
+          label: t('event_pipeline'),
+        },
+        {
           key: '/help/notification-settings',
           label: t('通知设置'),
           deprecated: true,
@@ -194,6 +198,10 @@ export const getMenuList = (t) => {
         {
           key: '/built-in-components',
           label: t('built_in_components'),
+        },
+        {
+          key: '/label-mappings',
+          label: t('label-mapping'),
         },
       ],
     },

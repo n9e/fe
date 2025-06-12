@@ -61,7 +61,7 @@ const zh_HK = {
   notification_channels: '通知媒介',
   notification_templates: '消息模板',
   event_pipeline: '事件管道',
-  label_mapping: '標籤映射',
+  label_mapping: '詞表標籤',
 };
 
 export default zh_HK;

@@ -57,7 +57,7 @@ const ru_RU = {
   notification_channels: 'Каналы связи',
   notification_templates: 'Шаблоны сообщений',
   event_pipeline: 'Поток событий',
-  label_mapping: 'Сопоставление меток',
+  label_mapping: 'Отображение меток',
 };
 
 export default ru_RU;

@@ -57,6 +57,6 @@ const zh_CN = {
   notification_channels: '通知媒介',
   notification_templates: '消息模板',
   event_pipeline: '事件管道',
-  label_mapping: '标签映射',
+  label_mapping: '词表标签',
 };
 export default zh_CN;
