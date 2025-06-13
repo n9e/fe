@@ -89,25 +89,7 @@ export default function GraphPreview({ cate, datasourceValue, query }) {
         onVisibleChange={(visible) => {
           setVisible(visible);
         }}
-        title={
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-            }}
-          >
-            <div
-              style={{
-                lineHeight: '32px',
-              }}
-            >
-              {t('datasource:es.alert.query.preview')}
-            </div>
-            <div>
-              <TimeRangePicker value={range} onChange={setRange} />
-            </div>
-          </div>
-        }
+        title={t('datasource:es.alert.query.preview')}
         content={
           <div style={{ width: 700 }}>
             {errorContent && <Alert style={{ marginBottom: 16 }} message={errorContent} type='error' />}

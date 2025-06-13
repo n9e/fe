@@ -17,7 +17,7 @@
 import React, { useState, useEffect, useCallback, useContext } from 'react';
 import _ from 'lodash';
 import { debounce, join } from 'lodash';
-import { Form, Input, InputNumber, Radio, Select, Row, Col, TimePicker, Checkbox, Tag, AutoComplete, Space, Switch, Tooltip, Modal, Button } from 'antd';
+import { Form, Input, InputNumber, Radio, Select, Row, Col, TimePicker, Checkbox, AutoComplete, Space, Switch, Tooltip, Modal, Button } from 'antd';
 import { QuestionCircleFilled, MinusCircleOutlined, PlusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
@@ -27,6 +27,7 @@ import { CommonStateContext } from '@/App';
 import Triggers from '@/pages/alertRules/Form/components/Triggers';
 import NotificationRuleSelect from '@/pages/alertRules/Form/Notify/NotificationRuleSelect';
 import { alphabet } from '@/utils/constant';
+import KVTagSelect, { validatorOfKVTagSelect } from '@/components/KVTagSelect';
 
 import { defaultValues } from '../Form/constants';
 
@@ -114,15 +115,6 @@ const fields = [
   },
 ];
 
-// 校验单个标签格式是否正确
-function isTagValid(tag) {
-  const contentRegExp = /^[a-zA-Z_][\w]*={1}[^=]+$/;
-  return {
-    isCorrectFormat: contentRegExp.test(tag.toString()),
-    isLengthAllowed: tag.toString().length <= 64,
-  };
-}
-
 interface Props {
   isModalVisible: boolean;
   editModalFinish: Function;
@@ -146,39 +138,6 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
 
     return () => {};
   }, []);
-
-  // 渲染标签
-  function tagRender(content) {
-    const { isCorrectFormat, isLengthAllowed } = isTagValid(content.value);
-    return isCorrectFormat && isLengthAllowed ? (
-      <Tag closable={content.closable} onClose={content.onClose}>
-        {content.value}
-      </Tag>
-    ) : (
-      <Tooltip title={isCorrectFormat ? t('append_tags_msg1') : t('append_tags_msg2')}>
-        <Tag color='error' closable={content.closable} onClose={content.onClose} style={{ marginTop: '2px' }}>
-          {content.value}
-        </Tag>
-      </Tooltip>
-    );
-  }
-
-  // 校验所有标签格式
-  function isValidFormat() {
-    return {
-      validator(_, value) {
-        const isInvalid =
-          value &&
-          value.some((tag) => {
-            const { isCorrectFormat, isLengthAllowed } = isTagValid(tag);
-            if (!isCorrectFormat || !isLengthAllowed) {
-              return true;
-            }
-          });
-        return isInvalid ? Promise.reject(new Error(t('append_tags_msg'))) : Promise.resolve();
-      },
-    };
-  }
 
   const enableDaysOfWeekOptions = [0, 1, 2, 3, 4, 5, 6].map((item) => {
     return (
@@ -678,8 +637,8 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
               case 'append_tags':
                 return (
                   <>
-                    <Form.Item label={t('append_tags')} name='append_tags' rules={[isValidFormat]}>
-                      <Select mode='tags' tokenSeparators={[' ']} open={false} placeholder={t('append_tags_placeholder')} tagRender={tagRender} />
+                    <Form.Item label={t('append_tags')} name='append_tags' rules={[validatorOfKVTagSelect]}>
+                      <KVTagSelect />
                     </Form.Item>
                   </>
                 );

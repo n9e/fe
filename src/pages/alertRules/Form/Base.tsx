@@ -17,57 +17,20 @@
 
 import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Form, Input, Select, Card, Row, Col, Tag, Tooltip, Space } from 'antd';
+import { Form, Input, Card, Row, Col, Space } from 'antd';
 import _ from 'lodash';
+
 import { CommonStateContext } from '@/App';
 import { HelpLink } from '@/components/pageLayout';
-import { panelBaseProps } from '../constants';
+import KVTagSelect, { validatorOfKVTagSelect } from '@/components/KVTagSelect';
 
-// 校验单个标签格式是否正确
-function isTagValid(tag) {
-  const contentRegExp = /^[a-zA-Z_][\w]*={1}[^=]+$/;
-  return {
-    isCorrectFormat: contentRegExp.test(tag.toString()),
-    isLengthAllowed: tag.toString().length <= 64,
-  };
-}
+import { panelBaseProps } from '../constants';
 
 export default function Base() {
   const { t } = useTranslation('alertRules');
   const { busiGroups } = useContext(CommonStateContext);
   const group_id = Form.useWatch('group_id');
-  // 渲染标签
-  function tagRender(content) {
-    const { isCorrectFormat, isLengthAllowed } = isTagValid(content.value);
-    return isCorrectFormat && isLengthAllowed ? (
-      <Tag closable={content.closable} onClose={content.onClose}>
-        {content.value}
-      </Tag>
-    ) : (
-      <Tooltip title={isCorrectFormat ? t('append_tags_msg1') : t('append_tags_msg2')}>
-        <Tag color='error' closable={content.closable} onClose={content.onClose} style={{ marginTop: '2px' }}>
-          {content.value}
-        </Tag>
-      </Tooltip>
-    );
-  }
 
-  // 校验所有标签格式
-  function isValidFormat() {
-    return {
-      validator(_, value) {
-        const isInvalid =
-          value &&
-          value.some((tag) => {
-            const { isCorrectFormat, isLengthAllowed } = isTagValid(tag);
-            if (!isCorrectFormat || !isLengthAllowed) {
-              return true;
-            }
-          });
-        return isInvalid ? Promise.reject(new Error(t('append_tags_msg'))) : Promise.resolve();
-      },
-    };
-  }
   return (
     <Card
       {...panelBaseProps}
@@ -85,8 +48,8 @@ export default function Base() {
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item label={t('append_tags')} name='append_tags' rules={[isValidFormat]} tooltip={t('append_tags_note_tip')}>
-            <Select mode='tags' tokenSeparators={[' ']} open={false} placeholder={t('append_tags_placeholder')} tagRender={tagRender} />
+          <Form.Item label={t('append_tags')} name='append_tags' rules={[validatorOfKVTagSelect]} tooltip={t('append_tags_note_tip')}>
+            <KVTagSelect />
           </Form.Item>
         </Col>
         <Col span={8}>
