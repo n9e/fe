@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useContext } from 'react';
 import _ from 'lodash';
 import { useHistory, useParams } from 'react-router-dom';
-import { Form, Input, Select, Button, Modal, message, Space, Tooltip, Tag, notification } from 'antd';
+import { Form, Input, Button, Modal, message, Space, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { prometheusQuery } from '@/services/warning';
 import { addOrEditRecordingRule, editRecordingRule, deleteRecordingRule } from '@/services/recording';
@@ -9,21 +9,13 @@ import { PromQLInputWithBuilder } from '@/components/PromQLInput';
 import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
 import { CommonStateContext } from '@/App';
 import CronPattern from '@/components/CronPattern';
+import KVTagSelect, { validatorOfKVTagSelect } from '@/components/KVTagSelect';
 
 const DATASOURCE_ALL = 0;
 
 interface Props {
   detail?: any;
   type?: number; // 1:编辑 2:克隆
-}
-
-// 校验单个标签格式是否正确
-function isTagValid(tag) {
-  const contentRegExp = /^[a-zA-Z_][\w]*={1}[^=]+$/;
-  return {
-    isCorrectFormat: contentRegExp.test(tag.toString()),
-    isLengthAllowed: tag.toString().length <= 64,
-  };
 }
 
 function getFirstDatasourceId(datasourceIds = [], datasourceList: { id: number }[] = []) {
@@ -41,39 +33,6 @@ const operateForm: React.FC<Props> = ({ type, detail = {} }) => {
     return params.id;
   }, [params]);
   const curBusiId = detail.group_id || businessGroup.id!;
-
-  // 渲染标签
-  function tagRender(content) {
-    const { isCorrectFormat, isLengthAllowed } = isTagValid(content.value);
-    return isCorrectFormat && isLengthAllowed ? (
-      <Tag closable={content.closable} onClose={content.onClose}>
-        {content.value}
-      </Tag>
-    ) : (
-      <Tooltip title={isCorrectFormat ? t('append_tags_msg1') : t('append_tags_msg2')}>
-        <Tag color='error' closable={content.closable} onClose={content.onClose} style={{ marginTop: '2px' }}>
-          {content.value}
-        </Tag>
-      </Tooltip>
-    );
-  }
-
-  // 校验所有标签格式
-  function isValidFormat() {
-    return {
-      validator(_, value) {
-        const isInvalid =
-          value &&
-          value.some((tag) => {
-            const { isCorrectFormat, isLengthAllowed } = isTagValid(tag);
-            if (!isCorrectFormat || !isLengthAllowed) {
-              return true;
-            }
-          });
-        return isInvalid ? Promise.reject(new Error(t('append_tags_msg'))) : Promise.resolve();
-      },
-    };
-  }
 
   const addSubmit = () => {
     form.validateFields().then(async (values) => {
@@ -171,8 +130,8 @@ const operateForm: React.FC<Props> = ({ type, detail = {} }) => {
               }}
             </Form.Item>
             <CronPattern name='cron_pattern' />
-            <Form.Item label={t('append_tags')} name='append_tags' rules={[isValidFormat]}>
-              <Select mode='tags' tokenSeparators={[' ']} open={false} placeholder={t('append_tags_placeholder')} tagRender={tagRender} />
+            <Form.Item label={t('append_tags')} name='append_tags' rules={[validatorOfKVTagSelect]}>
+              <KVTagSelect />
             </Form.Item>
             <Form.Item>
               <Button type='primary' onClick={addSubmit} style={{ marginRight: '8px' }}>
