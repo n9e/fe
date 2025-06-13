@@ -56,6 +56,7 @@ const ja_JP = {
   preview_muted_title: '関連イベントのプレビュー',
   preview_muted_save_only: '保存のみ',
   preview_muted_save_and_delete: '保存して関連イベントを削除',
+  expired: '期限切れ',
 };
 
 export default ja_JP;

@@ -15,7 +15,7 @@
  *
  */
 import React, { useState, useEffect, useContext } from 'react';
-import { Button, Input, Table, Tooltip, message, Modal, Switch, Space } from 'antd';
+import { Button, Input, Table, Tooltip, message, Modal, Switch, Space, Tag } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { CloseCircleOutlined, ExclamationCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import moment from 'moment';
@@ -161,6 +161,11 @@ const Shield: React.FC = () => {
         dataIndex: 'btime',
         render: (_val, record: shieldItem) => {
           if (record.mute_time_type === 0) {
+            const now = moment().unix();
+            const isExpired = now > record.etime;
+            if (isExpired) {
+              return <Tag color='red'>{t('expired')}</Tag>;
+            }
             return (
               <div className='shield-time'>
                 <div>{moment.unix(record?.btime).format('YYYY-MM-DD HH:mm:ss')}</div>
