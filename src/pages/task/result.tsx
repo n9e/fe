@@ -175,6 +175,7 @@ const index = (props: any) => {
               onRefresh={() => {
                 getTableData();
               }}
+              intervalSeconds={data.done ? 0 : undefined}
             />
           }
         >
