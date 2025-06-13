@@ -30,6 +30,7 @@ import PageLayout, { HelpLink } from '@/components/pageLayout';
 import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
 import { CommonStateContext } from '@/App';
 import BusinessGroupSideBarWithAll, { getDefaultGids } from '@/components/BusinessGroup/BusinessGroupSideBarWithAll';
+import AutoRefresh from '@/components/TimeRangePicker/AutoRefresh';
 
 interface DataItem {
   id: number;
@@ -139,35 +140,38 @@ const index = (_props: any) => {
           <div className='n9e-border-base p2' style={{ flex: 1 }}>
             <Row>
               <Col span={16} className='mb10'>
-                <Input
-                  style={{ width: 200, marginRight: 10 }}
-                  prefix={<SearchOutlined />}
-                  defaultValue={query}
-                  onPressEnter={(e) => {
-                    setQuery(e.currentTarget.value);
-                  }}
-                />
-                <Select
-                  style={{ marginRight: 10 }}
-                  value={days}
-                  onChange={(val: number) => {
-                    setDays(val);
-                  }}
-                >
-                  <Select.Option value={7}>{t('last.7.days')}</Select.Option>
-                  <Select.Option value={15}>{t('last.15.days')}</Select.Option>
-                  <Select.Option value={30}>{t('last.30.days')}</Select.Option>
-                  <Select.Option value={60}>{t('last.60.days')}</Select.Option>
-                  <Select.Option value={90}>{t('last.90.days')}</Select.Option>
-                </Select>
-                <Checkbox
-                  checked={mine}
-                  onChange={(e) => {
-                    setMine(e.target.checked);
-                  }}
-                >
-                  {t('task.only.mine')}
-                </Checkbox>
+                <Space>
+                  <AutoRefresh onRefresh={tableProps.refresh} localKey='job-tasks-auto-refresh' />
+                  <Input
+                    style={{ width: 200, marginRight: 10 }}
+                    prefix={<SearchOutlined />}
+                    defaultValue={query}
+                    onPressEnter={(e) => {
+                      setQuery(e.currentTarget.value);
+                    }}
+                  />
+                  <Select
+                    style={{ marginRight: 10 }}
+                    value={days}
+                    onChange={(val: number) => {
+                      setDays(val);
+                    }}
+                  >
+                    <Select.Option value={7}>{t('last.7.days')}</Select.Option>
+                    <Select.Option value={15}>{t('last.15.days')}</Select.Option>
+                    <Select.Option value={30}>{t('last.30.days')}</Select.Option>
+                    <Select.Option value={60}>{t('last.60.days')}</Select.Option>
+                    <Select.Option value={90}>{t('last.90.days')}</Select.Option>
+                  </Select>
+                  <Checkbox
+                    checked={mine}
+                    onChange={(e) => {
+                      setMine(e.target.checked);
+                    }}
+                  >
+                    {t('task.only.mine')}
+                  </Checkbox>
+                </Space>
               </Col>
               {businessGroup.isLeaf && gids !== '-2' && (
                 <Col span={8} style={{ textAlign: 'right' }}>
