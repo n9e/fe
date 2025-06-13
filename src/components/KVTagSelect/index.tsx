@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 import { Select, Tag, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 import i18next from 'i18next';
+
 import KVTags from './KVTags';
 import './locale';
 
@@ -12,7 +13,6 @@ function isTagValid(tag) {
   const contentRegExp = /^[a-zA-Z_][\w]*={1}[^=]+$/;
   return {
     isCorrectFormat: contentRegExp.test(tag.toString()),
-    isLengthAllowed: tag.toString().length <= 64,
   };
 }
 
@@ -23,8 +23,8 @@ export function validatorOfKVTagSelect() {
       const isInvalid =
         value &&
         value.some((tag) => {
-          const { isCorrectFormat, isLengthAllowed } = isTagValid(tag);
-          if (!isCorrectFormat || !isLengthAllowed) {
+          const { isCorrectFormat } = isTagValid(tag);
+          if (!isCorrectFormat) {
             return true;
           }
         });
@@ -36,14 +36,14 @@ export function validatorOfKVTagSelect() {
 export default function KVTagSelect(props) {
   const { t } = useTranslation('KVTagSelect');
   const tagRender = useCallback((content) => {
-    const { isCorrectFormat, isLengthAllowed } = isTagValid(content.value);
-    return isCorrectFormat && isLengthAllowed ? (
-      <Tag closable={content.closable} onClose={content.onClose}>
+    const { isCorrectFormat } = isTagValid(content.value);
+    return isCorrectFormat ? (
+      <Tag className='whitespace-normal' closable={content.closable} onClose={content.onClose}>
         {content.value}
       </Tag>
     ) : (
-      <Tooltip title={isCorrectFormat ? t('append_tags_msg1') : t('append_tags_msg2')}>
-        <Tag color='error' closable={content.closable} onClose={content.onClose} style={{ marginTop: '2px' }}>
+      <Tooltip title={t('append_tags_msg2')}>
+        <Tag className='whitespace-normal' color='error' closable={content.closable} onClose={content.onClose} style={{ marginTop: '2px' }}>
           {content.value}
         </Tag>
       </Tooltip>
