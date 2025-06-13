@@ -19,7 +19,7 @@ import { Form, Input, Row, Col, Select, Switch, Button, Space, Alert } from 'ant
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
 
-import { DatasourceCateEnum } from '@/utils/constant';
+import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
 import { DatasourceSelectV2 } from '@/components/DatasourceSelect';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
@@ -160,7 +160,7 @@ function EditItem(props: IProps) {
           >
             <DatasourceSelectV2
               datasourceCateList={_.filter(datasourceCateOptions, (item) => {
-                return item.dashboardVariable === true;
+                return item.dashboard === true && item.dashboardVariable === true && (item.graphPro ? IS_PLUS : true);
               })}
               datasourceList={_.filter(
                 _.concat(
@@ -174,7 +174,8 @@ function EditItem(props: IProps) {
                   datasourceList as any,
                 ),
                 (item) => {
-                  return _.find(allCates, { value: item.plugin_type })?.dashboardVariable === true;
+                  const cateData = _.find(datasourceCateOptions, { value: item.plugin_type });
+                  return cateData?.dashboard === true && cateData.dashboardVariable === true && (cateData.graphPro ? IS_PLUS : true);
                 },
               )}
               onChange={(val) => {
