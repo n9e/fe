@@ -5,11 +5,11 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { getIndices } from '@/pages/explorer/Elasticsearch/services';
+import EnhancedModal from '@/pages/alertRules/Form/components/EnhancedModal';
 
 import Query from './Query';
 import GraphPreview from './GraphPreview';
 import './style.less';
-
 // @ts-ignore
 import EnrichQueryValuesMaxLen from '@/plus/parcels/AlertRule/NotifyExtra/EnrichQueryValuesMaxLen';
 
@@ -20,10 +20,12 @@ interface IProps {
 export default function index(props: IProps) {
   const { t } = useTranslation('alertRules');
   const { disabled } = props;
+  const form = Form.useFormInstance();
   const [indexOptions, setIndexOptions] = useState<any[]>([]);
   const names = ['extra_config', 'enrich_queries'];
   const datasourceValue = Form.useWatch('datasource_value');
   const namesValue = Form.useWatch(names) ?? [];
+  const queries = Form.useWatch(['rule_config', 'queries']) || [];
 
   useEffect(() => {
     if (datasourceValue !== undefined) {
@@ -49,16 +51,12 @@ export default function index(props: IProps) {
                 <span>{t('db_aliyunSLS:enrich_queries.title')}</span>
                 <PlusCircleOutlined
                   disabled={disabled}
-                  onClick={() =>
-                    add({
-                      interval_unit: 'min',
-                      interval: 1,
-                      date_field: '@timestamp',
-                      value: {
-                        func: 'rawData',
-                      },
-                    })
-                  }
+                  onClick={() => {
+                    EnhancedModal({
+                      queries,
+                      add,
+                    });
+                  }}
                 />
               </Space>
             </div>

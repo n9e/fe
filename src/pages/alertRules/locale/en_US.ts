@@ -335,5 +335,8 @@ const en_US = {
     filter_tip: 'Variable filter',
     add_subFilter: 'Add sub filter',
   },
+  enrich: {
+    select_tip: 'Clone query conditions',
+  },
 };
 export default en_US;
