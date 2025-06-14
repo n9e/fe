@@ -14,6 +14,7 @@ const en_US = {
     confirmMsg: 'Please enter new password again',
     changeSuccess: 'Password changed successfully',
     notMatch: 'Password not match',
+    ruleMsg: 'Password must contain two of the four characters: uppercase letters, lowercase letters, numbers, special characters, and be 6-20 characters long',
   },
   profile: {
     title: 'Profile',

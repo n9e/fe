@@ -14,6 +14,7 @@ const zh_CN = {
     confirmMsg: '请再次输入新密码',
     changeSuccess: '修改密码成功',
     notMatch: '密码不一致',
+    ruleMsg: '密码至少包含大写字母、小写字母、数字、特殊字符中的两种，长度为6~20字符',
   },
   profile: {
     title: '个人信息',
