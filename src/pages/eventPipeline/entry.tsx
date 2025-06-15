@@ -4,7 +4,7 @@ import { NS } from './constants';
 import List from './pages/List';
 import Add from './pages/Add';
 import Edit from './pages/Edit';
-
+import EditorTest from './pages/EditorTest';
 import './locale';
 
 export default {
@@ -22,6 +22,11 @@ export default {
     {
       path: `/${NS}/edit/:id`,
       component: Edit,
+      exact: true,
+    },
+    {
+      path: `/${NS}/editor-test`,
+      component: EditorTest,
       exact: true,
     },
   ],
