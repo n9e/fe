@@ -24,6 +24,7 @@ const refreshMap = {
 };
 
 interface IProps {
+  disabled?: boolean;
   tooltip?: string;
   onRefresh: () => void;
   localKey?: string;
@@ -76,9 +77,10 @@ function Refresh(props: IProps, ref) {
   return (
     <div className='auto-refresh-container'>
       <Tooltip title={props.tooltip}>
-        <Button icon={<SyncOutlined className={intervalSeconds ? 'rotate-icon' : ''} />} onClick={props.onRefresh} />
+        <Button disabled={props.disabled} icon={<SyncOutlined className={intervalSeconds ? 'rotate-icon' : ''} />} onClick={props.onRefresh} />
       </Tooltip>
       <Dropdown
+        disabled={props.disabled}
         trigger={['click']}
         visible={visible}
         onVisibleChange={(visible) => {
