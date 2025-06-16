@@ -28,7 +28,7 @@ export default function AISummary(props: Props) {
             {...resetField}
             label='URL'
             tooltip={{
-              title: <Markdown style={{ marginTop: 16 }} content={t('ai_summary.url_tip')} />,
+              title: <Markdown style={{ marginTop: 16, marginRight: 12 }} content={t('ai_summary.url_tip')} />,
               overlayClassName: 'ant-tooltip-max-width-600',
             }}
             name={[...namePath, 'url']}
@@ -42,7 +42,7 @@ export default function AISummary(props: Props) {
             {...resetField}
             label='API Key'
             tooltip={{
-              title: <Markdown style={{ marginTop: 16 }} content={t('ai_summary.api_key_tip')} />,
+              title: <Markdown style={{ marginTop: 16, marginRight: 12 }} content={t('ai_summary.api_key_tip')} />,
               overlayClassName: 'ant-tooltip-max-width-600',
             }}
             name={[...namePath, 'api_key']}
@@ -56,7 +56,7 @@ export default function AISummary(props: Props) {
             {...resetField}
             label={t('ai_summary.model_name')}
             tooltip={{
-              title: <Markdown style={{ marginTop: 16 }} content={t('ai_summary.model_name_tip')} />,
+              title: <Markdown style={{ marginTop: 16, marginRight: 12 }} content={t('ai_summary.model_name_tip')} />,
               overlayClassName: 'ant-tooltip-max-width-600',
             }}
             name={[...namePath, 'model_name']}
@@ -71,7 +71,7 @@ export default function AISummary(props: Props) {
         label={t('ai_summary.prompt_template')}
         tooltip={{
           title: <Markdown style={{ marginTop: 16 }} content={t('ai_summary.prompt_template_tip', { interpolation: { skipOnVariables: true } })} />,
-          overlayClassName: 'ant-tooltip-max-width-600',
+          overlayClassName: 'ant-tooltip-max-width-600 ant-tooltip-with-link',
         }}
         name={[...namePath, 'prompt_template']}
         rules={[{ required: true, message: t('ai_summary.prompt_template_required') }]}
@@ -108,7 +108,7 @@ export default function AISummary(props: Props) {
                         overlayClassName='ant-tooltip-max-width-600'
                         title={
                           <div style={{ maxWidth: 600 }}>
-                            <Markdown style={{ marginTop: 16 }} content={t('ai_summary.custom_params_tip')} />
+                            <Markdown style={{ margin: '16px 12px 0 12px' }} content={t('ai_summary.custom_params_tip')} />
                           </div>
                         }
                       >
