@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Button, Spin } from 'antd';
+import { Modal, Button, Spin, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
@@ -65,8 +65,8 @@ export default function TestModal(props: Props) {
                 disabled={!eventID}
                 onClick={async () => {
                   if (eventID) {
-                    setLoading(true);
                     if (type === 'processor') {
+                      setLoading(true);
                       eventProcessorTryrun({
                         event_id: eventID,
                         processor_config: {
@@ -79,20 +79,22 @@ export default function TestModal(props: Props) {
                         },
                       })
                         .then((res) => {
-                          setData({
-                            type: 'result',
-                            data: res,
-                          });
-                          setLoading(false);
+                          if (res.err) {
+                            message.error(res.err);
+                          } else if (res.dat?.result) {
+                            message.info(res.dat.result);
+                          } else if (res.dat?.event) {
+                            setData({
+                              type: 'result',
+                              data: res.dat.event,
+                            });
+                          }
                         })
-                        .catch((res) => {
-                          setData({
-                            type: 'result',
-                            errMsg: res?.message,
-                          });
+                        .finally(() => {
                           setLoading(false);
                         });
                     } else if (type === 'pipeline') {
+                      setLoading(true);
                       eventPipelineTryrun({
                         event_id: eventID,
                         pipeline_config: {
@@ -103,23 +105,25 @@ export default function TestModal(props: Props) {
                               config: {
                                 ...item.config,
                                 header: item.config.header ? _.fromPairs(_.map(item.config.header as any[], (headerItem) => [headerItem.key, headerItem.value])) : undefined,
+                                custom_params: item.config.custom_params ? _.fromPairs(_.map(item.config.custom_params as any[], (item) => [item.key, item.value])) : undefined,
                               },
                             };
                           }),
                         },
                       })
                         .then((res) => {
-                          setData({
-                            type: 'result',
-                            data: res,
-                          });
-                          setLoading(false);
+                          if (res.err) {
+                            message.error(res.err);
+                          } else if (res.dat?.result) {
+                            message.info(res.dat.result);
+                          } else if (res.dat?.event) {
+                            setData({
+                              type: 'result',
+                              data: res.dat.event,
+                            });
+                          }
                         })
-                        .catch((res) => {
-                          setData({
-                            type: 'result',
-                            errMsg: res?.message,
-                          });
+                        .finally(() => {
                           setLoading(false);
                         });
                     }
