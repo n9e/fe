@@ -1,5 +1,7 @@
 const en_US = {
   title: 'Event pieplines',
+  title_add: 'Add event pipeline',
+  title_edit: 'Edit event pipeline',
   teams: 'Authorized teams',
   teams_tip:
     'Limit which team members can view and modify this configuration. Multiple teams can be associated<br />For example: If the configuration is authorized to the infra-team, only members of the infra-team can access or adjust this configuration.',
