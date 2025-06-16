@@ -11,9 +11,10 @@ import { normalizeFormValues, normalizeInitialValues } from '../utils/normalizeV
 interface Props {
   id: number;
   onOk: () => void;
+  onCancel: () => void;
 }
 
-export default function Edit({ id, onOk }: Props) {
+export default function Edit({ id, onOk, onCancel }: Props) {
   const { t } = useTranslation(NS);
   const [data, setData] = useState<Item>();
 
@@ -36,6 +37,7 @@ export default function Edit({ id, onOk }: Props) {
               onOk();
             });
           }}
+          onCancel={onCancel}
         />
       ) : (
         <div>
