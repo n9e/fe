@@ -164,7 +164,18 @@ const Shield: React.FC = () => {
             const now = moment().unix();
             const isExpired = now > record.etime;
             if (isExpired) {
-              return <Tag color='red'>{t('expired')}</Tag>;
+              return (
+                <Tooltip
+                  title={
+                    <div className='shield-time'>
+                      <div>{moment.unix(record?.btime).format('YYYY-MM-DD HH:mm:ss')}</div>
+                      <div>{moment.unix(record?.etime).format('YYYY-MM-DD HH:mm:ss')}</div>
+                    </div>
+                  }
+                >
+                  <Tag color='red'>{t('expired')}</Tag>
+                </Tooltip>
+              );
             }
             return (
               <div className='shield-time'>
