@@ -71,6 +71,49 @@ const ru_RU = {
     content_placeholder: 'Введите содержимое скрипта',
     script_content: 'Содержимое скрипта',
   },
+  ai_summary: {
+    url_placeholder: 'Пожалуйста, введите адрес API сервиса',
+    url_required: 'Пожалуйста, введите URL',
+    api_key_placeholder: 'API ключ',
+    api_key_required: 'Пожалуйста, введите API Key',
+    model_name: 'Имя модели',
+    model_name_placeholder: 'например, deepseek-chat',
+    model_name_required: 'Пожалуйста, введите имя модели',
+    prompt_template: 'Шаблон запроса',
+    prompt_template_required: 'Пожалуйста, введите шаблон запроса',
+    advanced_config: 'Расширенные настройки',
+    custom_params: 'Настройка параметров AI-модели',
+    custom_params_key_label: 'Имя параметра (например: temperature)',
+    custom_params_value_label: 'Значение параметра (например: 0.7)',
+    proxy_placeholder: 'например: http://proxy.example.com:8080',
+    timeout_placeholder: 'Тайм-аут (секунды)',
+    timeout_required: 'Пожалуйста, введите тайм-аут',
+    url_tip: `#### URL\n- **Описание**: API-адрес конечной точки AI-сервиса\n- **Пример**: \`https://api.deepseek.com/v1/chat/completions\``,
+    api_key_tip: `#### API Key\n- **Описание**: API-ключ, предоставленный поставщиком AI-сервиса\n- **Как получить**:\n  - OpenAI: Получить на сайте OpenAI\n  - DeepSeek: Зарегистрироваться и получить на сайте DeepSeek`,
+    model_name_tip: `#### Model Name\n- **Описание**: Укажите имя используемой AI-модели\n- **Популярные модели**:\n  - \`gpt-3.5-turbo\` (OpenAI)\n  - \`gpt-4\` (OpenAI)\n  - \`deepseek-chat\` (DeepSeek)`,
+    prompt_template_tip: `### Шаблон запроса\nШаблон запроса — это основа AI-анализа. Вы можете использовать {{$event}} для ссылки на каждое поле события. Подробную структуру события смотрите в [таблице истории оповещений](https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v6/schema/alert_his_event/). Начните с предоставленного шаблона по умолчанию.`,
+    custom_params_tip: `### Custom Params - Настройка параметров AI-модели\n\nИспользуется для тонкой настройки поведения AI-модели:\n\n| Имя        | Описание           | Рекомендуется | Пример |\n| ---------- | ------------------ | ------------- | ------ |\n| temperature | Контролирует случайность | 0.3-0.7 | 0.7 |
+| max_tokens  | Максимум токенов   | 200-500       | 300   |
+| top_p       | Порог выборки      | 0.8-1.0       | 0.9   |
+\n**Как настроить**:\n1. Нажмите кнопку ➕ рядом с "Custom Params"\n2. Введите имя параметра (например: temperature)\n3. Введите значение параметра (например: 0.7)`,
+    prompt_template_placeholder: `Пожалуйста, проанализируйте следующую информацию о событии оповещения и предоставьте краткое резюме на китайском языке:
+Правило оповещения: {{$event.RuleName}}
+Уровень серьезности: {{$event.Severity}}
+Статус оповещения: {{if $event.IsRecovered}}Recovered{{else}}{{$event.Severity}} Triggered{{end}}
+Время срабатывания: {{$event.TriggerTime}}
+Имя хоста: {{$event.Host}}
+Значение триггера: {{$event.Value}}
+Описание правила: {{$event.RuleNote}}
+Теги: {{$event.Tags}}
+Аннотации: {{$event.Annotations}}
+
+Пожалуйста, предоставьте резюме на китайском языке не более 100 символов, с акцентом на:
+1. Какая система/сервис столкнулась с какой проблемой
+2. Степень серьезности проблемы
+3. Возможные последствия
+4. Краткое предложение по устранению
+Резюме должно быть кратким и помогать персоналу быстро понять ситуацию с оповещением.`,
+  },
 };
 
 export default ru_RU;

@@ -71,6 +71,46 @@ const ja_JP = {
     content_placeholder: 'スクリプトの内容を入力してください',
     script_content: 'スクリプトの内容',
   },
+  ai_summary: {
+    url_placeholder: 'APIサービスアドレスを入力してください',
+    url_required: 'URLを入力してください',
+    api_key_placeholder: 'APIキー',
+    api_key_required: 'API Keyを入力してください',
+    model_name: 'モデル名',
+    model_name_placeholder: '例: deepseek-chat',
+    model_name_required: 'モデル名を入力してください',
+    prompt_template: 'プロンプトテンプレート',
+    prompt_template_required: 'プロンプトテンプレートを入力してください',
+    advanced_config: '高度な設定',
+    custom_params: 'AIモデルパラメータ設定',
+    custom_params_key_label: 'パラメータ名 (例: temperature)',
+    custom_params_value_label: 'パラメータ値 (例: 0.7)',
+    proxy_placeholder: '例: http://proxy.example.com:8080',
+    timeout_placeholder: 'タイムアウト（秒）',
+    timeout_required: 'タイムアウトを入力してください',
+    url_tip: `#### URL\n- **説明**: AIサービスのAPIエンドポイントアドレス\n- **例**: \`https://api.deepseek.com/v1/chat/completions\``,
+    api_key_tip: `#### API Key\n- **説明**: AIサービスプロバイダーが提供するAPIキー\n- **取得方法**:\n  - OpenAI: OpenAI公式サイトで申請\n  - DeepSeek: DeepSeek公式サイトで登録して取得`,
+    model_name_tip: `#### Model Name\n- **説明**: 使用するAIモデル名を指定\n- **一般的なモデル**:\n  - \`gpt-3.5-turbo\` (OpenAI)\n  - \`gpt-4\` (OpenAI)\n  - \`deepseek-chat\` (DeepSeek)`,
+    prompt_template_tip: `### プロンプトテンプレート\nプロンプトテンプレートはAI分析のコアです。{{$event}}でイベントの各フィールドを参照できます。イベントの詳細な構造は[アラート履歴テーブル](https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v6/schema/alert_his_event/)を参照してください。まずはデフォルトテンプレートから始めてください。`,
+    custom_params_tip: `### Custom Params - AIモデルパラメータ設定\n\nAIモデルの動作を細かく調整するために使用します：\n\n| パラメータ名 | 説明 | 推奨値 | 例 |\n|--------|------|--------|------|\n| temperature | 応答のランダム性を制御 | 0.3-0.7 | 0.7 |\n| max_tokens | 最大出力トークン数 | 200-500 | 300 |\n| top_p | サンプリング閾値 | 0.8-1.0 | 0.9 |\n\n**設定方法**:\n1. "Custom Params"横の➕ボタンをクリック\n2. 「パラメータ名」欄にパラメータ名を入力（例: temperature）\n3. 「パラメータ値」欄に値を入力（例: 0.7）`,
+    prompt_template_placeholder: `以下のアラートイベント情報を分析し、簡潔な中国語要約を提供してください：
+アラートルール: {{$event.RuleName}}
+重大度: {{$event.Severity}}
+アラートステータス: {{if $event.IsRecovered}}Recovered{{else}}{{$event.Severity}} Triggered{{end}}
+発生時刻: {{$event.TriggerTime}}
+ホスト名: {{$event.Host}}
+トリガー値: {{$event.Value}}
+ルール説明: {{$event.RuleNote}}
+タグ情報: {{$event.Tags}}
+注釈情報: {{$event.Annotations}}
+
+100文字以内の中国語要約を提供してください。主なポイント：
+1. どのシステム/サービスでどんな問題が発生したか
+2. 問題の重大度
+3. 予想される影響
+4. 簡単な対応案
+要約は簡潔で、運用担当者がアラート状況を素早く把握できるようにしてください。`,
+  },
 };
 
 export default ja_JP;

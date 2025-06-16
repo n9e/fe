@@ -19,6 +19,7 @@ import TestModal from '../TestModal';
 import Relabel from './Relabel';
 import Callback from './Callback';
 import EventDrop from './EventDrop';
+import AISummary from './AISummary';
 
 interface Props {
   disabled?: boolean;
@@ -127,6 +128,10 @@ export default function NotifyConfig(props: Props) {
                 label: 'Event Drop',
                 value: 'event_drop',
               },
+              {
+                label: 'AI Summary',
+                value: 'ai_summary',
+              },
             ],
             IS_PLUS
               ? [
@@ -156,6 +161,7 @@ export default function NotifyConfig(props: Props) {
       {processorType === 'event_drop' && <EventDrop field={field} namePath={[field.name, 'config']} />}
       {processorType === 'label_enrich' && <LabelEnrich field={field} namePath={[field.name, 'config']} prefixNamePath={['processors']} />}
       {processorType === 'script' && <Script field={field} namePath={[field.name, 'config']} />}
+      {processorType === 'ai_summary' && <AISummary field={field} namePath={[field.name, 'config']} />}
 
       <TestModal type='processor' config={processorConfig} />
     </Card>
