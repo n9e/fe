@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Button } from 'antd';
+import { Modal, Button, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
@@ -26,6 +26,7 @@ export default function TestModal(props: Props) {
   }>({
     type: 'settings',
   });
+  const [testing, setTesting] = useState<boolean>(false);
 
   return (
     <>
@@ -61,9 +62,11 @@ export default function TestModal(props: Props) {
             <Button
               type='primary'
               disabled={!eventID}
+              loading={testing}
               onClick={() => {
                 if (eventID) {
                   if (type === 'processor') {
+                    setTesting(true);
                     eventProcessorTryrun({
                       event_id: eventID,
                       processor_config: {
@@ -75,18 +78,25 @@ export default function TestModal(props: Props) {
                       },
                     })
                       .then((res) => {
-                        setData({
-                          type: 'result',
-                          data: res,
-                        });
+                        if (res.err) {
+                          message.error(res.err);
+                        } else if (res.dat?.result) {
+                          message.info(res.dat.result);
+                        } else if (res.dat?.event) {
+                          setData({
+                            type: 'result',
+                            data: res.dat.event,
+                          });
+                        }
                       })
                       .catch((res) => {
-                        setData({
-                          type: 'result',
-                          errMsg: res?.message,
-                        });
+                        message.error(res?.message || t('test_modal.error'));
+                      })
+                      .finally(() => {
+                        setTesting(false);
                       });
                   } else if (type === 'pipeline') {
+                    setTesting(true);
                     eventPipelineTryrun({
                       event_id: eventID,
                       pipeline_config: {
@@ -103,16 +113,22 @@ export default function TestModal(props: Props) {
                       },
                     })
                       .then((res) => {
-                        setData({
-                          type: 'result',
-                          data: res,
-                        });
+                        if (res.err) {
+                          message.error(res.err);
+                        } else if (res.dat?.result) {
+                          message.info(res.dat.result);
+                        } else if (res.dat?.event) {
+                          setData({
+                            type: 'result',
+                            data: res.dat.event,
+                          });
+                        }
                       })
                       .catch((res) => {
-                        setData({
-                          type: 'result',
-                          errMsg: res?.message,
-                        });
+                        message.error(res?.message || t('test_modal.error'));
+                      })
+                      .finally(() => {
+                        setTesting(false);
                       });
                   }
                 }

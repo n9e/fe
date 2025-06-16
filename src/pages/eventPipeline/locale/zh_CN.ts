@@ -48,6 +48,7 @@ const zh_CN = {
       settings: '选择告警事件',
       result: '事件预览',
     },
+    error: '测试失败',
   },
   callback: {
     url: 'URL',

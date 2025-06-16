@@ -49,6 +49,7 @@ const en_US = {
       settings: 'Select event',
       result: 'Event preview',
     },
+    error: 'Test failed',
   },
   callback: {
     url: 'URL',

@@ -49,6 +49,7 @@ const ja_JP = {
       settings: 'アラームイベントを選択',
       result: 'イベントプレビュー',
     },
+    error: 'テストに失敗しました',
   },
   callback: {
     url: 'URL',

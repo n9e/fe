@@ -48,6 +48,7 @@ const zh_HK = {
       settings: '選擇告警事件',
       result: '事件預覽',
     },
+    error: '測試失敗',
   },
   callback: {
     url: 'URL',
