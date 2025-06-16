@@ -119,9 +119,13 @@ export default function AISummary(props: Props) {
         }
         name={[...namePath, 'prompt_template']}
         rules={[{ required: true, message: t('ai_summary.prompt_template_required') }]}
-        initialValue={t('ai_summary.prompt_template_placeholder')}
+        initialValue={t('ai_summary.prompt_template_placeholder', { interpolation: { skipOnVariables: true } })}
       >
-        <CodeMirror height='200px' options={{ lineNumbers: true, mode: 'text' }} placeholder={t('ai_summary.prompt_template_placeholder')} />
+        <CodeMirror
+          height='200px'
+          options={{ lineNumbers: true, mode: 'text' }}
+          placeholder={t('ai_summary.prompt_template_placeholder', { interpolation: { skipOnVariables: true } })}
+        />
       </Form.Item>
       <div className='mb-4'>
         <div className='flex items-center cursor-pointer mb-2' onClick={() => setIsAdvancedVisible(!isAdvancedVisible)}>
