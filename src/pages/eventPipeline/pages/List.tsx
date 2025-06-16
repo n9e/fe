@@ -46,6 +46,14 @@ export default function List() {
     action: 'add',
   });
 
+  const resetEventPipelineDrawerState = () => {
+    setEventPipelineDrawerState({
+      visible: false,
+      action: 'add',
+      id: undefined,
+    });
+  };
+
   useEffect(() => {
     featchData();
   }, []);
@@ -182,17 +190,18 @@ export default function List() {
       <Drawer
         title={t(`${NS}:title_${eventPipelineDrawerState.action}`)}
         visible={eventPipelineDrawerState.visible}
-        onClose={() => {
-          setEventPipelineDrawerState((prev) => ({ ...prev, visible: false, id: undefined }));
-        }}
+        onClose={resetEventPipelineDrawerState}
         width='80%'
         destroyOnClose
       >
         {eventPipelineDrawerState.action === 'add' && (
           <Add
             onOk={() => {
-              setEventPipelineDrawerState((prev) => ({ ...prev, visible: false, id: undefined }));
+              resetEventPipelineDrawerState();
               featchData();
+            }}
+            onCancel={() => {
+              resetEventPipelineDrawerState();
             }}
           />
         )}
@@ -200,8 +209,11 @@ export default function List() {
           <Edit
             id={eventPipelineDrawerState.id}
             onOk={() => {
-              setEventPipelineDrawerState((prev) => ({ ...prev, visible: false, id: undefined }));
+              resetEventPipelineDrawerState();
               featchData();
+            }}
+            onCancel={() => {
+              resetEventPipelineDrawerState();
             }}
           />
         )}

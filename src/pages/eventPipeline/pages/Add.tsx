@@ -9,9 +9,10 @@ import { normalizeFormValues } from '../utils/normalizeValues';
 
 interface Props {
   onOk: () => void;
+  onCancel: () => void;
 }
 
-export default function Add({ onOk }: Props) {
+export default function Add({ onOk, onCancel }: Props) {
   const { t } = useTranslation(NS);
 
   return (
@@ -23,6 +24,7 @@ export default function Add({ onOk }: Props) {
             onOk();
           });
         }}
+        onCancel={onCancel}
       />
     </>
   );
