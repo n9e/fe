@@ -45,6 +45,7 @@ const index = (props: any) => {
   const [data, setData] = useState({} as any);
   const [hosts, setHosts] = useState<HostItem[]>([]);
   const [loading, setLoading] = useState(false);
+  const AutoRefreshRef = React.useRef<any>(null);
   const getTableData = () => {
     setLoading(true);
     return request(`${api.task(curBusiId)}/${params.id}`)
@@ -59,9 +60,17 @@ const index = (props: any) => {
         setLoading(false);
       });
   };
+
   useEffect(() => {
     getTableData();
   }, []);
+
+  useEffect(() => {
+    if (data.done && AutoRefreshRef.current?.closeRefresh) {
+      AutoRefreshRef.current?.closeRefresh();
+    }
+  }, [data.done]);
+
   let filteredHosts = _.cloneDeep(hosts);
   if (activeStatus) {
     filteredHosts = _.filter(filteredHosts, (item: any) => {
@@ -141,6 +150,7 @@ const index = (props: any) => {
       },
     },
   ];
+
   if (!data.done) {
     columns.push({
       title: t('table.operations'),
@@ -172,10 +182,11 @@ const index = (props: any) => {
           title={data.title}
           extra={
             <AutoRefresh
+              ref={AutoRefreshRef}
+              disabled={data.done}
               onRefresh={() => {
                 getTableData();
               }}
-              intervalSeconds={data.done ? 0 : undefined}
             />
           }
         >

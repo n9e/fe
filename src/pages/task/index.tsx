@@ -30,7 +30,8 @@ import PageLayout, { HelpLink } from '@/components/pageLayout';
 import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
 import { CommonStateContext } from '@/App';
 import BusinessGroupSideBarWithAll, { getDefaultGids } from '@/components/BusinessGroup/BusinessGroupSideBarWithAll';
-import AutoRefresh from '@/components/TimeRangePicker/AutoRefresh';
+import RefreshIcon from '@/components/RefreshIcon';
+import usePagination from '@/components/usePagination';
 
 interface DataItem {
   id: number;
@@ -67,7 +68,12 @@ const index = (_props: any) => {
   const [days, setDays] = useState(7);
   const { businessGroup, busiGroups } = useContext(CommonStateContext);
   const [gids, setGids] = useState<string | undefined>(getDefaultGids(N9E_GIDS_LOCALKEY, businessGroup));
-  const { tableProps } = useAntdTable((options) => getTableData(options, gids, query, mine, days), { refreshDeps: [gids, query, mine, days] });
+  const [refreshFlag, setRefreshFlag] = useState(_.uniqueId('task-refresh-'));
+  const pagination = usePagination({ PAGESIZE_KEY: 'job-tasks-pagesize' });
+  const { tableProps } = useAntdTable((options) => getTableData(options, gids, query, mine, days), {
+    refreshDeps: [gids, query, mine, days, refreshFlag],
+    defaultPageSize: pagination.pageSize,
+  });
   const columns: ColumnProps<DataItem>[] = _.concat(
     businessGroup.isLeaf && gids !== '-2'
       ? []
@@ -141,7 +147,11 @@ const index = (_props: any) => {
             <Row>
               <Col span={16} className='mb10'>
                 <Space>
-                  <AutoRefresh onRefresh={tableProps.refresh} localKey='job-tasks-auto-refresh' />
+                  <RefreshIcon
+                    onClick={() => {
+                      setRefreshFlag(_.uniqueId('task-refresh-'));
+                    }}
+                  />
                   <Input
                     style={{ width: 200, marginRight: 10 }}
                     prefix={<SearchOutlined />}
@@ -192,16 +202,10 @@ const index = (_props: any) => {
               rowKey='id'
               columns={columns as any}
               {...(tableProps as any)}
-              pagination={
-                {
-                  ...tableProps.pagination,
-                  showSizeChanger: true,
-                  pageSizeOptions: ['10', '50', '100', '500', '1000'],
-                  showTotal: (total) => {
-                    return i18n.language == 'en' ? `Total ${total} items` : `共 ${total} 条`;
-                  },
-                } as any
-              }
+              pagination={{
+                ...pagination,
+                ...tableProps.pagination,
+              }}
             />
           </div>
         ) : (
