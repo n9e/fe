@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Row, Col, Form, Input, InputNumber, Switch, Space, Typography, Button, Tooltip } from 'antd';
-import { DownOutlined, RightOutlined, PlusCircleOutlined, MinusCircleOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { Row, Col, Form, Input, InputNumber, Switch, Space, Typography, Tooltip } from 'antd';
+import { DownOutlined, RightOutlined, PlusCircleOutlined, MinusCircleOutlined, InfoCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { FormListFieldData } from 'antd/lib/form/FormList';
 import classnames from 'classnames';
 import CodeMirror from '@/components/CodeMirror';
@@ -26,22 +26,11 @@ export default function AISummary(props: Props) {
         <Col span={10}>
           <Form.Item
             {...resetField}
-            label={
-              <span>
-                URL
-                <Tooltip
-                  placement='rightTop'
-                  overlayClassName='ant-tooltip-max-width-600'
-                  title={
-                    <div style={{ maxWidth: 600 }}>
-                      <Markdown content={t('ai_summary.url_tip')} />
-                    </div>
-                  }
-                >
-                  <InfoCircleOutlined style={{ marginLeft: 4, color: '#888' }} />
-                </Tooltip>
-              </span>
-            }
+            label='URL'
+            tooltip={{
+              title: <Markdown style={{ marginTop: 16 }} content={t('ai_summary.url_tip')} />,
+              overlayClassName: 'ant-tooltip-max-width-600',
+            }}
             name={[...namePath, 'url']}
             rules={[{ required: true, message: t('ai_summary.url_required') }]}
           >
@@ -51,22 +40,11 @@ export default function AISummary(props: Props) {
         <Col span={7}>
           <Form.Item
             {...resetField}
-            label={
-              <span>
-                API Key
-                <Tooltip
-                  placement='rightTop'
-                  overlayClassName='ant-tooltip-max-width-600'
-                  title={
-                    <div style={{ maxWidth: 600 }}>
-                      <Markdown content={t('ai_summary.api_key_tip')} />
-                    </div>
-                  }
-                >
-                  <InfoCircleOutlined style={{ marginLeft: 4, color: '#888' }} />
-                </Tooltip>
-              </span>
-            }
+            label='API Key'
+            tooltip={{
+              title: <Markdown style={{ marginTop: 16 }} content={t('ai_summary.api_key_tip')} />,
+              overlayClassName: 'ant-tooltip-max-width-600',
+            }}
             name={[...namePath, 'api_key']}
             rules={[{ required: true, message: t('ai_summary.api_key_required') }]}
           >
@@ -76,22 +54,11 @@ export default function AISummary(props: Props) {
         <Col span={7}>
           <Form.Item
             {...resetField}
-            label={
-              <span>
-                {t('ai_summary.model_name')}
-                <Tooltip
-                  placement='rightTop'
-                  overlayClassName='ant-tooltip-max-width-600'
-                  title={
-                    <div style={{ maxWidth: 600 }}>
-                      <Markdown content={t('ai_summary.model_name_tip')} />
-                    </div>
-                  }
-                >
-                  <InfoCircleOutlined style={{ marginLeft: 4, color: '#888' }} />
-                </Tooltip>
-              </span>
-            }
+            label={t('ai_summary.model_name')}
+            tooltip={{
+              title: <Markdown style={{ marginTop: 16 }} content={t('ai_summary.model_name_tip')} />,
+              overlayClassName: 'ant-tooltip-max-width-600',
+            }}
             name={[...namePath, 'model_name']}
             rules={[{ required: true, message: t('ai_summary.model_name_required') }]}
           >
@@ -101,22 +68,11 @@ export default function AISummary(props: Props) {
       </Row>
       <Form.Item
         {...resetField}
-        label={
-          <span>
-            {t('ai_summary.prompt_template')}
-            <Tooltip
-              placement='rightTop'
-              overlayClassName='ant-tooltip-max-width-600'
-              title={
-                <div style={{ maxWidth: 600 }}>
-                  <Markdown content={t('ai_summary.prompt_template_tip')} />
-                </div>
-              }
-            >
-              <InfoCircleOutlined style={{ marginLeft: 4, color: '#888' }} />
-            </Tooltip>
-          </span>
-        }
+        label={t('ai_summary.prompt_template')}
+        tooltip={{
+          title: <Markdown style={{ marginTop: 16 }} content={t('ai_summary.prompt_template_tip', { interpolation: { skipOnVariables: true } })} />,
+          overlayClassName: 'ant-tooltip-max-width-600',
+        }}
         name={[...namePath, 'prompt_template']}
         rules={[{ required: true, message: t('ai_summary.prompt_template_required') }]}
         initialValue={t('ai_summary.prompt_template_placeholder', { interpolation: { skipOnVariables: true } })}
@@ -145,20 +101,19 @@ export default function AISummary(props: Props) {
                 <div className='mb-4'>
                   <div className='mb-3'>
                     <Space size={4}>
-                      <span className='text-sm'>
-                        Custom Params <span style={{ color: '#888' }}>({t('ai_summary.custom_params')})</span>
-                        <Tooltip
-                          placement='rightTop'
-                          overlayClassName='ant-tooltip-max-width-600'
-                          title={
-                            <div style={{ maxWidth: 600 }}>
-                              <Markdown content={t('ai_summary.custom_params_tip')} />
-                            </div>
-                          }
-                        >
-                          <InfoCircleOutlined style={{ marginLeft: 4, color: '#888' }} />
-                        </Tooltip>
-                      </span>
+                      Custom Params
+                      <span style={{ color: '#888' }}>({t('ai_summary.custom_params')})</span>
+                      <Tooltip
+                        placement='rightTop'
+                        overlayClassName='ant-tooltip-max-width-600'
+                        title={
+                          <div style={{ maxWidth: 600 }}>
+                            <Markdown style={{ marginTop: 16 }} content={t('ai_summary.custom_params_tip')} />
+                          </div>
+                        }
+                      >
+                        <QuestionCircleOutlined style={{ color: '#888' }} />
+                      </Tooltip>
                       <PlusCircleOutlined onClick={() => add({ key: '', value: '' })} />
                     </Space>
                   </div>
@@ -263,7 +218,7 @@ export default function AISummary(props: Props) {
                       {...resetField}
                       label='Timeout'
                       name={[...namePath, 'timeout']}
-                      initialValue={30}
+                      initialValue={30000}
                       rules={[{ required: true, message: t('ai_summary.timeout_required') }]}
                     >
                       <InputNumber min={0} style={{ width: '100%' }} addonAfter='ms' placeholder={t('ai_summary.timeout_placeholder')} />

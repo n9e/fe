@@ -78,22 +78,18 @@ const zh_CN = {
     proxy_placeholder: '如: http://proxy.example.com:8080',
     timeout_placeholder: '超时时间（秒）',
     timeout_required: '请输入超时时间',
-    url_tip: `#### URL
-- **说明**: AI服务的API接口地址
+    url_tip: `- **说明**: AI服务的API接口地址
 - **示例**: \`https://api.deepseek.com/v1/chat/completions\``,
-    api_key_tip: `#### API Key
-- **说明**: AI服务提供商的API密钥
+    api_key_tip: `- **说明**: AI服务提供商的API密钥
 - **获取方式**:
   - OpenAI: 在OpenAI官网申请
   - DeepSeek: 在DeepSeek官网注册获取`,
-    model_name_tip: `#### Model Name
-- **说明**: 指定使用的AI模型名称
+    model_name_tip: `- **说明**: 指定使用的AI模型名称
 - **常用模型**:
   - \`gpt-3.5-turbo\` (OpenAI)
   - \`gpt-4\` (OpenAI)
   - \`deepseek-chat\` (DeepSeek)`,
-    prompt_template_tip: `### 提示词模板
-提示词模板是AI分析的核心，可以使用 {{$event}} 引用事件的各个字段，事件的详细结构参考[告警历史表](https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v6/schema/alert_his_event/)说明，刚开始使用提供的默认模板即可`,
+    prompt_template_tip: `提示词模板是AI分析的核心，可以使用 {{$event}} 引用事件的各个字段，事件的详细结构参考[告警历史表](https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v6/schema/alert_his_event/)说明，刚开始使用提供的默认模板即可`,
     prompt_template_placeholder: `请分析以下告警事件信息，并提供一个简洁明了的中文总结：
 告警规则: {{$event.RuleName}}
 严重程度: {{$event.Severity}}
@@ -111,9 +107,7 @@ const zh_CN = {
 3. 可能的影响
 4. 简单的处理建议
 总结内容要简洁明了，方便运维人员快速了解告警情况。`,
-    custom_params_tip: `### Custom Params - AI模型参数配置
-
-用于精细化调整AI模型的行为：
+    custom_params_tip: `用于精细化调整AI模型的行为：
 
 | 参数名 | 说明 | 推荐值 | 示例 |
 |--------|------|--------|------|

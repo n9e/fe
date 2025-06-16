@@ -79,11 +79,11 @@ const ja_JP = {
     proxy_placeholder: '例: http://proxy.example.com:8080',
     timeout_placeholder: 'タイムアウト（秒）',
     timeout_required: 'タイムアウトを入力してください',
-    url_tip: `#### URL\n- **説明**: AIサービスのAPIエンドポイントアドレス\n- **例**: \`https://api.deepseek.com/v1/chat/completions\``,
-    api_key_tip: `#### API Key\n- **説明**: AIサービスプロバイダーが提供するAPIキー\n- **取得方法**:\n  - OpenAI: OpenAI公式サイトで申請\n  - DeepSeek: DeepSeek公式サイトで登録して取得`,
-    model_name_tip: `#### Model Name\n- **説明**: 使用するAIモデル名を指定\n- **一般的なモデル**:\n  - \`gpt-3.5-turbo\` (OpenAI)\n  - \`gpt-4\` (OpenAI)\n  - \`deepseek-chat\` (DeepSeek)`,
-    prompt_template_tip: `### プロンプトテンプレート\nプロンプトテンプレートはAI分析のコアです。{{$event}}でイベントの各フィールドを参照できます。イベントの詳細な構造は[アラート履歴テーブル](https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v6/schema/alert_his_event/)を参照してください。まずはデフォルトテンプレートから始めてください。`,
-    custom_params_tip: `### Custom Params - AIモデルパラメータ設定\n\nAIモデルの動作を細かく調整するために使用します：\n\n| パラメータ名 | 説明 | 推奨値 | 例 |\n|--------|------|--------|------|\n| temperature | 応答のランダム性を制御 | 0.3-0.7 | 0.7 |\n| max_tokens | 最大出力トークン数 | 200-500 | 300 |\n| top_p | サンプリング閾値 | 0.8-1.0 | 0.9 |\n\n**設定方法**:\n1. "Custom Params"横の + ボタンをクリック\n2. 「パラメータ名」欄にパラメータ名を入力（例: temperature）\n3. 「パラメータ値」欄に値を入力（例: 0.7）`,
+    url_tip: `- **説明**: AIサービスのAPIエンドポイントアドレス\n- **例**: \`https://api.deepseek.com/v1/chat/completions\``,
+    api_key_tip: `- **説明**: AIサービスプロバイダーが提供するAPIキー\n- **取得方法**:\n  - OpenAI: OpenAI公式サイトで申請\n  - DeepSeek: DeepSeek公式サイトで登録して取得`,
+    model_name_tip: `- **説明**: 使用するAIモデル名を指定\n- **一般的なモデル**:\n  - \`gpt-3.5-turbo\` (OpenAI)\n  - \`gpt-4\` (OpenAI)\n  - \`deepseek-chat\` (DeepSeek)`,
+    prompt_template_tip: `プロンプトテンプレートはAI分析のコアです。{{$event}}でイベントの各フィールドを参照できます。イベントの詳細な構造は[アラート履歴テーブル](https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v6/schema/alert_his_event/)を参照してください。まずはデフォルトテンプレートから始めてください。`,
+    custom_params_tip: `- AIモデルパラメータ設定\n\nAIモデルの動作を細かく調整するために使用します：\n\n| パラメータ名 | 説明 | 推奨値 | 例 |\n|--------|------|--------|------|\n| temperature | 応答のランダム性を制御 | 0.3-0.7 | 0.7 |\n| max_tokens | 最大出力トークン数 | 200-500 | 300 |\n| top_p | サンプリング閾値 | 0.8-1.0 | 0.9 |\n\n**設定方法**:\n1. "Custom Params"横の + ボタンをクリック\n2. 「パラメータ名」欄にパラメータ名を入力（例: temperature）\n3. 「パラメータ値」欄に値を入力（例: 0.7）`,
     prompt_template_placeholder: `以下のアラートイベント情報を分析し、簡潔な中国語要約を提供してください：
 アラートルール: {{$event.RuleName}}
 重大度: {{$event.Severity}}
