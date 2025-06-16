@@ -199,10 +199,6 @@ export const getMenuList = (t) => {
           key: '/built-in-components',
           label: t('built_in_components'),
         },
-        {
-          key: '/label-mappings',
-          label: t('label-mapping'),
-        },
       ],
     },
     {
