@@ -94,18 +94,17 @@ const en_US = {
     model_name_tip: `- **Description**: Specify the AI model name to use\n- **Common models**:\n  - \`gpt-3.5-turbo\` (OpenAI)\n  - \`gpt-4\` (OpenAI)\n  - \`deepseek-chat\` (DeepSeek)`,
     prompt_template_tip: `The prompt template is the core of AI analysis. You can use {{$event}} to reference each field of the event. For detailed event structure, refer to the [alert history table](https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v6/schema/alert_his_event/). You can start with the provided default template.`,
     custom_params_tip: `- AI Model Parameter Configuration\n\nUsed to fine-tune the behavior of the AI model:\n\n| Name        | Description         | Recommended | Example |\n| ----------- | ------------------- | ----------- | ------- |\n| temperature | Controls randomness | 0.3-0.7     | 0.7     |\n| max_tokens  | Max output tokens   | 200-500     | 300     |\n| top_p       | Sampling threshold  | 0.8-1.0     | 0.9     |\n\n**How to configure**:\n1. Click the + button next to \"Custom Params\"\n2. Enter the parameter name (e.g. temperature)\n3. Enter the parameter value (e.g. 0.7)`,
-    prompt_template_placeholder: `Please analyze the following alert event information and provide a concise summary in Chinese:
+    prompt_template_placeholder: `Please analyze the following alert event information and provide a concise summary:
 Alert Rule: {{$event.RuleName}}
 Severity: {{$event.Severity}}
 Alert Status: {{if $event.IsRecovered}}Recovered{{else}}{{$event.Severity}} Triggered{{end}}
 Trigger Time: {{$event.TriggerTime}} 
-Host: {{$event.Host}}
-Trigger Value: {{$event.Value}}
+Trigger Value: {{$event.TriggerValue}}
 Rule Note: {{$event.RuleNote}}
 Tags: {{$event.Tags}}
 Annotations: {{$event.Annotations}}
 
-Please provide a summary within 100 Chinese characters, focusing on:
+Please provide a summary within 100 characters, focusing on:
 1. What system/service had what problem
 2. Severity of the problem
 3. Possible impact

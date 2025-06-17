@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Row, Col, Form, Input, InputNumber, Switch, Space, Typography, Tooltip } from 'antd';
-import { DownOutlined, RightOutlined, PlusCircleOutlined, MinusCircleOutlined, InfoCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { Row, Col, Form, Input, InputNumber, Switch, Space, Tooltip } from 'antd';
+import { DownOutlined, RightOutlined, PlusCircleOutlined, MinusCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { FormListFieldData } from 'antd/lib/form/FormList';
 import classnames from 'classnames';
+
 import CodeMirror from '@/components/CodeMirror';
-import { NS } from '../../../constants';
 import Markdown from '@/components/Markdown';
-const { Text } = Typography;
+
+import { NS } from '../../../constants';
 
 interface Props {
   field: FormListFieldData;

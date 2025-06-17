@@ -98,8 +98,7 @@ const zh_HK = {
 嚴重程度: {{$event.Severity}}
 告警狀態: {{if $event.IsRecovered}}Recovered{{else}}{{$event.Severity}} Triggered{{end}}
 觸發時間: {{$event.TriggerTime}}
-主機名: {{$event.Host}}
-觸發值: {{$event.Value}}
+觸發值: {{$event.TriggerValue}}
 規則說明: {{$event.RuleNote}}
 標籤信息: {{$event.Tags}}
 註釋信息: {{$event.Annotations}}
