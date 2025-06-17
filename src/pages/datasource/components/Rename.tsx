@@ -21,7 +21,7 @@ export default function Rename(props: IProps) {
     <div className='settings-data-source-list-name'>
       <Space>
         {children}
-        <Popover
+        {/* <Popover
           visible={visible}
           onVisibleChange={(visible) => {
             setVisible(visible);
@@ -60,7 +60,7 @@ export default function Rename(props: IProps) {
               setVisible(true);
             }}
           />
-        </Popover>
+        </Popover> */}
       </Space>
     </div>
   );
