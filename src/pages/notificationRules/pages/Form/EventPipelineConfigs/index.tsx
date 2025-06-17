@@ -12,6 +12,7 @@ import { useIsAuthorized } from '@/components/AuthorizationWrapper';
 import { NS as eventPipelineNS, PERM as eventPipelinePERM } from '@/pages/eventPipeline/constants';
 import { getList as getEventPipelineList, Item as EventPipeline } from '@/pages/eventPipeline/services';
 import EventPipelineList from '@/pages/eventPipeline/pages/List';
+import EventPipelineEdit from '@/pages/eventPipeline/pages/Edit';
 
 import { NS } from '../../../constants';
 import DragIcon from './DragIcon';
@@ -39,7 +40,14 @@ export default function index() {
   const pipelineConfigs = Form.useWatch('pipeline_configs');
   const [eventPipelineList, setEventPipelineList] = useState<EventPipeline[]>([]);
   const [loading, setLoading] = useState(false);
-  const [eventPipelineDrawerVisible, setEventPipelineDrawerVisible] = useState(false);
+  const [eventPipelineDrawerState, setEventPipelineDrawerState] = useState<{
+    type: 'list' | 'edit';
+    visible: boolean;
+    id?: number;
+  }>({
+    type: 'list',
+    visible: false,
+  });
 
   const fetchData = () => {
     setLoading(true);
@@ -69,7 +77,10 @@ export default function index() {
             {isAuthorized && (
               <a
                 onClick={() => {
-                  setEventPipelineDrawerVisible(true);
+                  setEventPipelineDrawerState({
+                    type: 'list',
+                    visible: true,
+                  });
                 }}
               >
                 <SettingOutlined />
@@ -117,9 +128,17 @@ export default function index() {
                                     label: (
                                       <Space>
                                         {item.name}
-                                        <Link to={`/${eventPipelineNS}/edit/${item.id}`} target='_blank'>
+                                        <a
+                                          onClick={() => {
+                                            setEventPipelineDrawerState({
+                                              type: 'edit',
+                                              id: item.id,
+                                              visible: true,
+                                            });
+                                          }}
+                                        >
                                           {t('common:btn.view')}
-                                        </Link>
+                                        </a>
                                       </Space>
                                     ),
                                     value: item.id,
@@ -177,15 +196,27 @@ export default function index() {
         </Form.List>
       </Card>
       <Drawer
-        title={t(`${eventPipelineNS}:title`)}
-        visible={eventPipelineDrawerVisible}
+        title={eventPipelineDrawerState.type === 'list' ? t(`${eventPipelineNS}:title`) : t(`${eventPipelineNS}:title_edit`)}
+        visible={eventPipelineDrawerState.visible}
         onClose={() => {
-          setEventPipelineDrawerVisible(false);
+          setEventPipelineDrawerState({ ...eventPipelineDrawerState, visible: false, id: undefined });
           fetchData();
         }}
         width='80%'
       >
-        <EventPipelineList />
+        {eventPipelineDrawerState.type === 'list' && <EventPipelineList />}
+        {eventPipelineDrawerState.type === 'edit' && eventPipelineDrawerState.id && (
+          <EventPipelineEdit
+            id={eventPipelineDrawerState.id}
+            onOk={() => {
+              setEventPipelineDrawerState({ ...eventPipelineDrawerState, visible: false, id: undefined });
+              fetchData();
+            }}
+            onCancel={() => {
+              setEventPipelineDrawerState({ ...eventPipelineDrawerState, visible: false, id: undefined });
+            }}
+          />
+        )}
       </Drawer>
     </>
   );
