@@ -94,8 +94,7 @@ const ru_RU = {
 Уровень серьезности: {{$event.Severity}}
 Статус оповещения: {{if $event.IsRecovered}}Recovered{{else}}{{$event.Severity}} Triggered{{end}}
 Время срабатывания: {{$event.TriggerTime}}
-Имя хоста: {{$event.Host}}
-Значение триггера: {{$event.Value}}
+Значение триггера: {{$event.TriggerValue}}
 Описание правила: {{$event.RuleNote}}
 Теги: {{$event.Tags}}
 Аннотации: {{$event.Annotations}}

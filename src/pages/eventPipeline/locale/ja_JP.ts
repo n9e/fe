@@ -91,8 +91,7 @@ const ja_JP = {
 重大度: {{$event.Severity}}
 アラートステータス: {{if $event.IsRecovered}}Recovered{{else}}{{$event.Severity}} Triggered{{end}}
 発生時刻: {{$event.TriggerTime}}
-ホスト名: {{$event.Host}}
-トリガー値: {{$event.Value}}
+トリガー値: {{$event.TriggerValue}}
 ルール説明: {{$event.RuleNote}}
 タグ情報: {{$event.Tags}}
 注釈情報: {{$event.Annotations}}
