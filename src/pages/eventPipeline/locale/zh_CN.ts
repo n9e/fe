@@ -97,8 +97,7 @@ const zh_CN = {
 严重程度: {{$event.Severity}}
 告警状态: {{if $event.IsRecovered}}Recovered{{else}}{{$event.Severity}} Triggered{{end}}       
 触发时间: {{$event.TriggerTime}}
-主机名: {{$event.Host}}
-触发值: {{$event.Value}}
+触发值: {{$event.TriggerValue}}
 规则说明: {{$event.RuleNote}}
 标签信息: {{$event.Tags}}
 注释信息: {{$event.Annotations}}
