@@ -96,6 +96,8 @@ const ru_RU = {
       enable_write: 'Разрешить запись',
     },
   },
+  test_and_save_btn: 'Сохранить и протестировать',
+  test_btn: 'Проверить соединение',
 };
 
 export default ru_RU;

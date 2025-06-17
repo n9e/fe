@@ -70,11 +70,9 @@ export default function FormCpt() {
     })
       .then(() => {
         message.success(action === 'add' ? t('common:success.add') : t('common:success.modify'));
-        setTimeout(() => {
-          history.push({
-            pathname: '/datasources',
-          });
-        }, 2000);
+        history.push({
+          pathname: '/datasources',
+        });
       })
       .finally(() => {
         setSubmitLoading(false);

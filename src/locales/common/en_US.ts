@@ -45,7 +45,7 @@ const en_US = {
     edit: 'Edit',
     submit: 'Submit',
     operations: 'Operations',
-    testAndSave: 'Save & Test',
+    testAndSave: 'Save & test',
     batch_operations: 'Batch operations',
     batch_delete: 'Batch delete',
     batch_clone: 'Batch clone',

@@ -95,5 +95,7 @@ const en_US = {
       enable_write: 'Enable write',
     },
   },
+  test_and_save_btn: 'Save & test',
+  test_btn: 'Save',
 };
 export default en_US;
