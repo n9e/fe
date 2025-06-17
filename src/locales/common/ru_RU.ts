@@ -152,6 +152,7 @@ const ru_RU = {
   private: 'Частное',
   advanced_settings: 'Расширенные настройки',
   disabled: 'Отключено',
+  select_event: 'Выбрать событие оповещения',
 
   tpl: 'Скрипт самовосстановления',
   'tpl.create': 'Создать',

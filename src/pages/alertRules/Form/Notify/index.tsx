@@ -24,7 +24,10 @@ import { getTeamInfoList, getNotifiesList } from '@/services/manage';
 import { getAlertRulesCallbacks } from '@/services/warning';
 import { getWebhooks } from '@/pages/help/NotificationSettings/services';
 import AuthorizationWrapper from '@/components/AuthorizationWrapper';
+import AlertEventRuleTesterWithButton from '@/components/AlertEventRuleTesterWithButton';
 import { panelBaseProps } from '../../constants';
+import { alertRulesNotifyTryrun } from '../../services';
+import { processFormValues } from '../utils';
 import TaskTpls from './TaskTpls';
 import VersionSwitch from './VersionSwitch';
 import NotificationRuleSelect from './NotificationRuleSelect';
@@ -40,6 +43,7 @@ export default function index({ disabled }) {
   const [globalFlashdutyPushConfigured, setGlobalFlashdutyPushConfigured] = useState(false);
   const [notifyTargetCollapsed, setNotifyTargetCollapsed] = useState<boolean>(false);
   const [callbacks, setCallbacks] = useState<string[]>([]);
+  const form = Form.useFormInstance();
   const notify_version = Form.useWatch('notify_version');
   const notify_channels = Form.useWatch('notify_channels');
   const callbacksValue = Form.useWatch('callbacks');
@@ -309,6 +313,21 @@ export default function index({ disabled }) {
             </div>
           )}
         </Form.List>
+        <div className='mt-2'>
+          <AlertEventRuleTesterWithButton
+            onClick={() => {
+              return form.validateFields();
+            }}
+            onTest={(eventID) => {
+              return form.validateFields().then((values: any) => {
+                return alertRulesNotifyTryrun({
+                  event_id: eventID,
+                  config: processFormValues(values),
+                });
+              });
+            }}
+          />
+        </div>
       </Card>
       <NotifyExtra contactList={contactList} notifyGroups={notifyGroups} />
     </>

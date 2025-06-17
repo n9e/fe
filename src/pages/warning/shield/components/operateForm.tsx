@@ -21,13 +21,14 @@ import { useHistory } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import moment from 'moment';
-import { addShield, editShield } from '@/services/shield';
+import { addShield, editShield, alertMuteTryrun } from '@/services/shield';
 import { shieldItem } from '@/store/warningInterface';
 import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
 import { CommonStateContext } from '@/App';
 import { daysOfWeek } from '@/pages/alertRules/constants';
 import { DatasourceCateSelect } from '@/components/DatasourceSelect';
 import { scrollToFirstError } from '@/utils';
+import AlertEventRuleTesterWithButton from '@/components/AlertEventRuleTesterWithButton';
 import TagItem from './tagItem';
 import { timeLensDefault } from '../../const';
 import { processFormValues } from './utils';
@@ -457,6 +458,19 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
               onOk={() => {
                 form.validateFields().then((values: any) => {
                   onFinish(values);
+                });
+              }}
+            />
+            <AlertEventRuleTesterWithButton
+              onClick={() => {
+                return form.validateFields();
+              }}
+              onTest={(eventID) => {
+                return form.validateFields().then((values: any) => {
+                  return alertMuteTryrun({
+                    event_id: eventID,
+                    config: processFormValues(values),
+                  });
                 });
               }}
             />

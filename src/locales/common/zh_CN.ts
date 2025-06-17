@@ -151,6 +151,7 @@ const zh_CN = {
   private: '私有',
   advanced_settings: '高级设置',
   disabled: '禁用',
+  select_event: '选择告警事件',
 
   // 临时把 task 的翻译放在这里
   tpl: '自愈脚本',

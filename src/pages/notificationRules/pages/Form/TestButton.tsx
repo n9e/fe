@@ -5,7 +5,7 @@ import { QuestionCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
-import Events from '@/pages/notificationTemplates/pages/List/Form/PreviewModal/Events';
+import EventsTable from '@/pages/eventPipeline/pages/Form/TestModal/EventsTable';
 
 import { NS } from '../../constants';
 import { notifyRuleTest } from '../../services';
@@ -66,7 +66,7 @@ export default function TestButton(props: Props) {
           }
         }}
       >
-        <Events selectedEventIds={selectedEventIds} setSelectedEventIds={setSelectedEventIds} />
+        <EventsTable selectedEventIds={selectedEventIds} onChange={setSelectedEventIds} />
       </Modal>
     </>
   );
