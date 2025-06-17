@@ -100,7 +100,7 @@ const ja_JP = {
       op_not_in: '含まない',
       preview: 'データプレビュー',
     },
-    managePageLink: 'データソース管理',
+    managePageLink: 'データソース管理に移動',
   },
   confirm: {
     delete: '削除しますか？',
