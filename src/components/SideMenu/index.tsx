@@ -4,6 +4,7 @@ import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import querystring from 'query-string';
 import { useTranslation } from 'react-i18next';
+import moment from 'moment';
 
 import { ScrollArea } from '@/components/ScrollArea';
 import { CommonStateContext } from '@/App';
@@ -19,11 +20,14 @@ import SideMenuHeader from './Header';
 import MenuList from './MenuList';
 import QuickMenu from './QuickMenu';
 import { MenuItem } from './types';
+import { getInstallDate } from './services';
 import './menu.less';
 import './locale';
 
 // @ts-ignore
 import getPlusMenuList from 'plus:/parcels/SideMenu/menu';
+
+const V8_BETA_14_TS = moment('2025-06-20').unix(); // v8 beta 14 的发布时间，当安装时间晚于这个版本时间则隐藏一些弃用的菜单
 
 const SideMenu = () => {
   const { i18n } = useTranslation('sideMenu');
@@ -40,6 +44,7 @@ const SideMenu = () => {
   const quickMenuRef = useRef<{ open: () => void }>({ open: () => {} });
   const isCustomBg = sideMenuBgMode !== 'light';
   const [embeddedProductMenu, setEmbeddedProductMenu] = useState<MenuItem[]>([]);
+  const [installTs, setInstallTs] = useState<number>(0);
   const [menus, setMenus] = useState<MenuItem[]>([]);
 
   const hideSideMenu = useMemo(() => {
@@ -85,8 +90,6 @@ const SideMenu = () => {
       eventBus.off(EVENT_KEYS.EMBEDDED_PRODUCT_UPDATED, fetchEmbeddedProducts);
     };
   }, [hideSideMenu]);
-
-  const menuList = isPlus ? getPlusMenuList(embeddedProductMenu) : getMenuList(embeddedProductMenu);
 
   useEffect(() => {
     const filteredMenus = menuList
@@ -162,6 +165,14 @@ const SideMenu = () => {
     }
   }, [menuPaths, location.pathname, selectedKeys]);
 
+  useEffect(() => {
+    getInstallDate().then((ts) => {
+      setInstallTs(ts);
+    });
+  }, []);
+
+  const hideDeprecatedMenus = installTs > V8_BETA_14_TS;
+  const menuList = isPlus ? getPlusMenuList(embeddedProductMenu, hideDeprecatedMenus) : getMenuList(embeddedProductMenu, hideDeprecatedMenus);
   const uncollapsedWidth = i18n.language === 'en_US' || i18n.language === 'ru_RU' ? 'w-[250px]' : 'w-[172px]';
 
   return (
