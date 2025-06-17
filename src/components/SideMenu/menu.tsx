@@ -6,7 +6,7 @@ import IconFont from '@/components/IconFont';
 import { MenuItem } from './types';
 import './locale';
 
-export const getMenuList = (embeddedProductMenu: MenuItem[] = [], hideDeprecatedMenus: boolean) => {
+export const getMenuList = (embeddedProductMenu: MenuItem[] = [], hideDeprecatedMenus: boolean = false) => {
   const menu: MenuItem[] = [
     {
       key: 'infrastructure',
