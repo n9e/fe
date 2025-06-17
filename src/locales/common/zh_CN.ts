@@ -99,7 +99,7 @@ const zh_CN = {
       op_not_in: '不包含',
       preview: '数据预览',
     },
-    managePageLink: '数据源管理',
+    managePageLink: '点击前往数据源管理',
   },
   confirm: {
     delete: '确认删除吗？',
