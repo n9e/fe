@@ -151,6 +151,7 @@ const zh_HK = {
   private: '私有',
   advanced_settings: '高級設定',
   disabled: '禁用',
+  select_event: '選擇告警事件',
 
   tpl: '自愈腳本',
   'tpl.create': '創建',

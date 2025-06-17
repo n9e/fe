@@ -55,8 +55,8 @@ export default function TestModal(props: Props) {
             <>
               {visible && (
                 <EventsTable
-                  onChange={(eventID) => {
-                    setEventID(eventID);
+                  onChange={(ids) => {
+                    setEventID(ids[0]);
                   }}
                 />
               )}

@@ -15,13 +15,15 @@ import { getEvents } from '@/pages/historyEvents/services';
 import { SEVERITY_COLORS } from '@/pages/alertCurEvent/constants';
 
 interface Props {
-  onChange: (id: number) => void;
+  rowSelectionType?: 'checkbox' | 'radio';
+  selectedEventIds?: number[];
+  onChange?: (ids: number[]) => void;
 }
 
 export default function EventsTable(props: Props) {
   const { t } = useTranslation('AlertHisEvents');
   const { datasourceList } = useContext(CommonStateContext);
-  const { onChange } = props;
+  const { rowSelectionType = 'checkbox', selectedEventIds, onChange } = props;
   const [filter, setFilter] = useState<{
     range: IRawTimeRange;
     datasourceIds: number[];
@@ -239,9 +241,10 @@ export default function EventsTable(props: Props) {
         }}
         scroll={{ x: 'max-content', y: 400 }}
         rowSelection={{
-          type: 'radio',
-          onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
-            onChange(selectedRows[0]?.id);
+          type: rowSelectionType,
+          selectedRowKeys: selectedEventIds,
+          onChange: (selectedRowKeys: number[], selectedRows: any[]) => {
+            onChange && onChange(selectedRowKeys);
           },
         }}
         rowClassName={(record: { severity: number; is_recovered: number }) => {

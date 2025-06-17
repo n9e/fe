@@ -152,6 +152,7 @@ const en_US = {
   private: 'Private',
   advanced_settings: 'Advanced settings',
   disabled: 'Disabled',
+  select_event: 'Select an alert event',
 
   tpl: 'Self-healing',
   'tpl.create': 'Create',
