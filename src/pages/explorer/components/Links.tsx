@@ -78,8 +78,9 @@ const handleNav = (link: string, rawValue: object, query: { start: number; end: 
   const valueWithExtract = _.cloneDeep(rawValue);
   regExtractArr?.forEach((i) => {
     const { field, newField, reg } = i;
+    const fieldValueWholeWord = valueWithExtract[field];
     const fieldValue = _.get(rawValue, field.split('.'));
-    const arr = new RegExp(reg).exec(fieldValue);
+    const arr = new RegExp(reg).exec(fieldValueWholeWord || fieldValue);
     if (arr && arr.length > 1) {
       valueWithExtract[newField] = arr[1];
     }
