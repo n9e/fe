@@ -22,6 +22,7 @@ interface IProps {
 }
 
 function AdvancedSettings(props: IProps) {
+  // @ts-ignore
   const { t } = useTranslation(NAME_SPACE);
   const { span = 6, prefixField = {}, prefixName = [], disabled, mode, expandTriggerVisible = true, onChange, options = [], showUnit } = props;
   const [open, setOpen] = useState(!!props.expanded);
@@ -36,6 +37,7 @@ function AdvancedSettings(props: IProps) {
             }}
             style={{ cursor: 'pointer' }}
           >
+            {/* @ts-ignore */}
             {open ? <DownOutlined /> : <RightOutlined />} {t('query.advancedSettings.title')}
           </span>
         </div>

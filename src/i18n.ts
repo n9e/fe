@@ -21,9 +21,24 @@ import resources from './locales/resources';
 
 const languages = ['zh_CN', 'en_US', 'zh_HK', 'ru_RU', 'ja_JP'];
 const localStorageLanguage = localStorage.getItem('language');
+const systemLanguage = (() => {
+  // navigator.language return format 'en-US' or 'ru'
+  const lang = navigator.language.replace('-', '_');
+  if (_.includes(languages, lang)) {
+    return lang;
+  }
+
+  const langPrefix = lang.split('_')[0] + '_';
+  const matchedLang = languages.find(l => l.startsWith(langPrefix));
+  return matchedLang || 'zh_CN';
+})();
+
 let language = 'zh_CN';
 if (localStorageLanguage && _.includes(languages, localStorageLanguage)) {
   language = localStorageLanguage;
+}
+else if (_.includes(languages, systemLanguage)) {
+  language = systemLanguage;
 }
 
 i18n.use(initReactI18next).init({
