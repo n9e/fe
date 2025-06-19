@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory, useParams } from 'react-router-dom';
 import { Spin, message } from 'antd';
 import _ from 'lodash';
-
-import PageLayout from '@/components/pageLayout';
 
 import { NS } from '../constants';
 import { Item, getItem, putItem } from '../services';
 import Form from './Form';
 import { normalizeFormValues, normalizeInitialValues } from '../utils/normalizeValues';
 
-export default function Add() {
+interface Props {
+  id: number;
+  onOk: () => void;
+  onCancel: () => void;
+}
+
+export default function Edit({ id, onOk, onCancel }: Props) {
   const { t } = useTranslation(NS);
-  const { id } = useParams<{ id: string }>();
-  const history = useHistory();
   const [data, setData] = useState<Item>();
 
   useEffect(() => {
@@ -26,26 +27,23 @@ export default function Add() {
   }, []);
 
   return (
-    <PageLayout title={t('title')} showBack backPath={`/${NS}`}>
-      <div className='n9e'>
-        {data ? (
-          <Form
-            initialValues={data}
-            onOk={(values) => {
-              putItem(normalizeFormValues(values)).then(() => {
-                message.success(t('common:success.add'));
-                history.push({
-                  pathname: `/${NS}`,
-                });
-              });
-            }}
-          />
-        ) : (
-          <div>
-            <Spin spinning />
-          </div>
-        )}
-      </div>
-    </PageLayout>
+    <>
+      {data ? (
+        <Form
+          initialValues={data}
+          onOk={(values) => {
+            putItem(normalizeFormValues(values)).then(() => {
+              message.success(t('common:success.add'));
+              onOk();
+            });
+          }}
+          onCancel={onCancel}
+        />
+      ) : (
+        <div>
+          <Spin spinning />
+        </div>
+      )}
+    </>
   );
 }

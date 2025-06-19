@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Button } from 'antd';
+import { Modal, Button, Spin, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
@@ -26,6 +26,7 @@ export default function TestModal(props: Props) {
   }>({
     type: 'settings',
   });
+  const [loading, setLoading] = useState<boolean>(false);
 
   return (
     <>
@@ -49,80 +50,92 @@ export default function TestModal(props: Props) {
         width='80%'
         destroyOnClose
       >
-        {data.type === 'settings' && (
-          <>
-            {visible && (
-              <EventsTable
-                onChange={(eventID) => {
-                  setEventID(eventID);
-                }}
-              />
-            )}
-            <Button
-              type='primary'
-              disabled={!eventID}
-              onClick={() => {
-                if (eventID) {
-                  if (type === 'processor') {
-                    eventProcessorTryrun({
-                      event_id: eventID,
-                      processor_config: {
-                        ...config,
-                        config: {
-                          ...config.config,
-                          header: config.config.header ? _.fromPairs(_.map(config.config.header as any[], (headerItem) => [headerItem.key, headerItem.value])) : undefined,
+        <Spin spinning={loading}>
+          {data.type === 'settings' && (
+            <>
+              {visible && (
+                <EventsTable
+                  onChange={(eventID) => {
+                    setEventID(eventID);
+                  }}
+                />
+              )}
+              <Button
+                type='primary'
+                disabled={!eventID}
+                onClick={async () => {
+                  if (eventID) {
+                    if (type === 'processor') {
+                      setLoading(true);
+                      eventProcessorTryrun({
+                        event_id: eventID,
+                        processor_config: {
+                          ...config,
+                          config: {
+                            ...config.config,
+                            header: config.config.header ? _.fromPairs(_.map(config.config.header as any[], (headerItem) => [headerItem.key, headerItem.value])) : undefined,
+                            custom_params: config.config.custom_params ? _.fromPairs(_.map(config.config.custom_params as any[], (item) => [item.key, item.value])) : undefined,
+                          },
                         },
-                      },
-                    })
-                      .then((res) => {
-                        setData({
-                          type: 'result',
-                          data: res,
-                        });
                       })
-                      .catch((res) => {
-                        setData({
-                          type: 'result',
-                          errMsg: res?.message,
+                        .then((res) => {
+                          if (res.err) {
+                            message.error(res.err);
+                          } else if (res.dat?.result) {
+                            message.info(res.dat.result);
+                          } else if (res.dat?.event) {
+                            setData({
+                              type: 'result',
+                              data: res.dat.event,
+                            });
+                          }
+                        })
+                        .finally(() => {
+                          setLoading(false);
                         });
-                      });
-                  } else if (type === 'pipeline') {
-                    eventPipelineTryrun({
-                      event_id: eventID,
-                      pipeline_config: {
-                        ...config,
-                        processors: _.map(config.processors, (item) => {
-                          return {
-                            ...item,
-                            config: {
-                              ...item.config,
-                              header: item.config.header ? _.fromPairs(_.map(item.config.header as any[], (headerItem) => [headerItem.key, headerItem.value])) : undefined,
-                            },
-                          };
-                        }),
-                      },
-                    })
-                      .then((res) => {
-                        setData({
-                          type: 'result',
-                          data: res,
-                        });
+                    } else if (type === 'pipeline') {
+                      setLoading(true);
+                      eventPipelineTryrun({
+                        event_id: eventID,
+                        pipeline_config: {
+                          ...config,
+                          processors: _.map(config.processors, (item) => {
+                            return {
+                              ...item,
+                              config: {
+                                ...item.config,
+                                header: item.config.header ? _.fromPairs(_.map(item.config.header as any[], (headerItem) => [headerItem.key, headerItem.value])) : undefined,
+                                custom_params: item.config.custom_params ? _.fromPairs(_.map(item.config.custom_params as any[], (item) => [item.key, item.value])) : undefined,
+                              },
+                            };
+                          }),
+                        },
                       })
-                      .catch((res) => {
-                        setData({
-                          type: 'result',
-                          errMsg: res?.message,
+                        .then((res) => {
+                          if (res.err) {
+                            message.error(res.err);
+                          } else if (res.dat?.result) {
+                            message.info(res.dat.result);
+                          } else if (res.dat?.event) {
+                            setData({
+                              type: 'result',
+                              data: res.dat.event,
+                            });
+                          }
+                        })
+                        .finally(() => {
+                          setLoading(false);
                         });
-                      });
+                    }
                   }
-                }
-              }}
-            >
-              {t('common:btn.test')}
-            </Button>
-          </>
-        )}
-        {data.type === 'result' && <DetailNG data={data.data} />}
+                }}
+              >
+                {t('common:btn.test')}
+              </Button>
+            </>
+          )}
+          {data.type === 'result' && <DetailNG data={data.data} />}
+        </Spin>
       </Modal>
     </>
   );
