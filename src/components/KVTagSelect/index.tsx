@@ -38,12 +38,12 @@ export default function KVTagSelect(props) {
   const tagRender = useCallback((content) => {
     const { isCorrectFormat } = isTagValid(content.value);
     return isCorrectFormat ? (
-      <Tag className='whitespace-normal' closable={content.closable} onClose={content.onClose}>
+      <Tag className='whitespace-normal break-all' closable={content.closable} onClose={content.onClose}>
         {content.value}
       </Tag>
     ) : (
       <Tooltip title={t('append_tags_msg2')}>
-        <Tag className='whitespace-normal' color='error' closable={content.closable} onClose={content.onClose} style={{ marginTop: '2px' }}>
+        <Tag className='whitespace-normal break-all' color='error' closable={content.closable} onClose={content.onClose} style={{ marginTop: '2px' }}>
           {content.value}
         </Tag>
       </Tooltip>
