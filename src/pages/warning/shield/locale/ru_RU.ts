@@ -57,6 +57,7 @@ const ru_RU = {
   preview_muted_title: 'Предварительный просмотр соответствующих событий',
   preview_muted_save_only: 'Только сохранить',
   preview_muted_save_and_delete: 'Сохранить и удалить соответствующие события',
+  expired: 'Истекший',
 };
 
 export default ru_RU;
