@@ -11,6 +11,8 @@ import DocumentDrawer from '@/components/DocumentDrawer';
 
 // @ts-ignore
 import LabelEnrich from 'plus:/parcels/eventPipeline/LabelEnrich';
+// @ts-ignore
+import Script from 'plus:/parcels/eventPipeline/Script';
 
 import { NS, DEFAULT_PROCESSOR_CONFIG_MAP } from '../../../constants';
 import TestModal from '../TestModal';
@@ -137,6 +139,10 @@ export default function NotifyConfig(props: Props) {
                     label: 'Label Enrich',
                     value: 'label_enrich',
                   },
+                  {
+                    label: 'Script',
+                    value: 'script',
+                  },
                 ]
               : [],
           )}
@@ -155,6 +161,7 @@ export default function NotifyConfig(props: Props) {
       {processorType === 'event_drop' && <EventDrop field={field} namePath={[field.name, 'config']} />}
       {processorType === 'label_enrich' && <LabelEnrich field={field} namePath={[field.name, 'config']} prefixNamePath={['processors']} />}
       {processorType === 'ai_summary' && <AISummary field={field} namePath={[field.name, 'config']} />}
+      {processorType === 'script' && <Script field={field} namePath={[field.name, 'config']} />}
 
       <TestModal type='processor' config={processorConfig} />
     </Card>

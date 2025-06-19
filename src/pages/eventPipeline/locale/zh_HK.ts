@@ -102,6 +102,14 @@ const zh_HK = {
 4. 簡單的處理建議
 總結內容要簡潔明了，方便運維人員快速了解告警情況。`,
   },
+  script: {
+    timeout: '超時時間（單位毫秒）',
+    timeout_tooltip: '腳本執行的最大超時時間，超過此時間腳本將被終止',
+    timeout_placeholder: '請輸入超時時間',
+    content: '腳本內容',
+    content_tooltip: '編寫用於處理事件的腳本代碼，告警事件會以 stdin 方式傳入腳本，腳本需要將 event 作為 json 對象輸出到 stdout',
+    content_placeholder: '請輸入腳本內容',
+  },
 };
 
 export default zh_HK;

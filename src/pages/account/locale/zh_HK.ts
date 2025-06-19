@@ -14,6 +14,7 @@ const zh_HK = {
     confirmMsg: '請再次輸入新密碼',
     changeSuccess: '修改密碼成功',
     notMatch: '密碼不一致',
+    ruleMsg: '密碼至少包含大寫字母、小寫字母、數字、特殊字符中的兩種，長度為6~20字符',
   },
   profile: {
     title: '個人資訊',

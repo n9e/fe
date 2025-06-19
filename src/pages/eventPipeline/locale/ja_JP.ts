@@ -103,6 +103,15 @@ const ja_JP = {
 4. 簡単な対応案
 要約は簡潔で、運用担当者がアラート状況を素早く把握できるようにしてください。`,
   },
+  script: {
+    timeout: 'タイムアウト時間（ミリ秒）',
+    timeout_tooltip: 'スクリプトの最大実行時間。この時間を超えるとスクリプトは終了します',
+    timeout_placeholder: 'タイムアウト時間を入力してください',
+    content: 'スクリプトの内容',
+    content_tooltip: 'イベントを JSON オブジェクトとして標準出力に出力するようにスクリプトを記述します',
+    content_placeholder: 'スクリプトの内容を入力してください',
+    script_content: 'スクリプトの内容',
+  },
 };
 
 export default ja_JP;
