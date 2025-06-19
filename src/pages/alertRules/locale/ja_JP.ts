@@ -330,7 +330,7 @@ const ja_JP = {
     add_subFilter: 'サブフィルタを追加',
   },
   enrich: {
-    select_tip: 'クエリ条件をコピー',
+    select_tip: 'クエリ条件をコピー（空の場合は直接作成、コピーしません）',
   },
 };
 

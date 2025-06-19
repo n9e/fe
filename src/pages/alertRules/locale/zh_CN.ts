@@ -331,7 +331,7 @@ const zh_CN = {
     add_subFilter: '添加子筛选',
   },
   enrich: {
-    select_tip: '克隆查询条件',
+    select_tip: '克隆查询条件（留空表示直接创建，不克隆）',
   },
 };
 export default zh_CN;

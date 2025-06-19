@@ -335,7 +335,7 @@ const en_US = {
     add_subFilter: 'Add sub filter',
   },
   enrich: {
-    select_tip: 'Clone query conditions',
+    select_tip: 'Clone query conditions (leave blank to create directly without cloning)',
   },
 };
 export default en_US;

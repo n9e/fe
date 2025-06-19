@@ -331,7 +331,7 @@ const zh_HK = {
     add_subFilter: '添加子篩選',
   },
   enrich: {
-    select_tip: '克隆查詢條件',
+    select_tip: '克隆查詢條件（留空表示直接創建，不克隆）',
   },
 };
 
