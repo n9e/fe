@@ -115,7 +115,7 @@ export default function ChannelSelect(props: Props) {
           form.setFieldsValue({
             notify_configs: _.map(form.getFieldValue('notify_configs'), (item, index: number) => {
               if (index === field.name) {
-                return _.omit(item, 'template_id');
+                return _.omit(item, ['template_id', 'params']);
               }
               return item;
             }),
