@@ -63,17 +63,6 @@ const zh_HK = {
     content: '判斷邏輯',
     content_placeholder: '使用 go template 語法，如果最後顯示為 true，將會將 event 在此環節丟棄',
   },
-<<<<<<< HEAD
-  script: {
-    timeout: '超時時間（單位毫秒）',
-    timeout_tooltip: '腳本執行的最大超時時間，超過此時間腳本將被終止',
-    timeout_placeholder: '請輸入超時時間',
-    content: '腳本內容',
-    content_tooltip: '編寫用於處理事件的腳本代碼，告警事件會以 stdin 方式傳入腳本，腳本需要將 event 作為 json 對象輸出到 stdout',
-    content_placeholder: '請輸入腳本內容',
-  },
-=======
->>>>>>> main
   ai_summary: {
     url_placeholder: '請輸入 API 服務地址',
     url_required: '請輸入 URL',

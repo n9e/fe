@@ -64,17 +64,6 @@ const en_US = {
     content: 'Judgment logic',
     content_placeholder: 'Use go template syntax. If the final result is true, the event will be dropped at this stage.',
   },
-<<<<<<< HEAD
-  script: {
-    timeout: 'Timeout (ms)',
-    timeout_tooltip: 'The maximum execution time of the script, exceeding which will terminate the script',
-    timeout_placeholder: 'Please enter the timeout',
-    content: 'Script content',
-    content_tooltip: 'Write a script to process events, events will be passed to the script as a JSON object, the script must output a JSON object to stdout',
-    content_placeholder: 'Please enter the script content',
-  },
-=======
->>>>>>> main
   ai_summary: {
     url_placeholder: 'Please enter the API service address',
     url_required: 'Please enter the URL',
