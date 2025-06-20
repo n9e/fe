@@ -2,6 +2,8 @@ import React from 'react';
 import { Row, Col } from 'antd';
 import { useTranslation } from 'react-i18next';
 
+import { NAME_SPACE as mysqlNS } from '@/plugins/mysql/constants';
+
 import { NAME_SPACE } from '../constants';
 import { DataSourceType } from './types';
 
@@ -42,23 +44,23 @@ export default function MysqlLike(props: Props) {
               <Col span={12} className='second-color'>
                 {item[`${type}.user`]}
               </Col>
-              <Col span={24}>{t('datasource.timeout')}</Col>
+              <Col span={24}>{t(`${mysqlNS}:datasource.timeout`)}</Col>
               <Col span={24} className='second-color'>
                 {item[`${type}.timeout`] || '-'}
               </Col>
-              <Col span={24}>{t('datasource.max_query_rows')}</Col>
+              <Col span={24}>{t(`${mysqlNS}:datasource.max_query_rows`)}</Col>
               <Col span={24} className='second-color'>
                 {item[`${type}.max_query_rows`] || '-'}
               </Col>
-              <Col span={24}>{t('datasource.max_idle_conns')}</Col>
+              <Col span={24}>{t(`${mysqlNS}:datasource.max_idle_conns`)}</Col>
               <Col span={24} className='second-color'>
                 {item[`${type}.max_idle_conns`] || '-'}
               </Col>
-              <Col span={24}>{t('datasource.max_open_conns')}</Col>
+              <Col span={24}>{t(`${mysqlNS}:datasource.max_open_conns`)}</Col>
               <Col span={24} className='second-color'>
                 {item[`${type}.max_open_conns`] || '-'}
               </Col>
-              <Col span={24}>{t('datasource.conn_max_lifetime')}</Col>
+              <Col span={24}>{t(`${mysqlNS}:datasource.conn_max_lifetime`)}</Col>
               <Col span={24} className='second-color'>
                 {item[`${type}.conn_max_lifetime`] || '-'}
               </Col>
