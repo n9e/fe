@@ -38,15 +38,16 @@ export default function Footer(props: IProps) {
               setSaveMode('saveAndTest');
             }}
           >
-            {t('common:btn.testAndSave')}
+            {t('test_and_save_btn')}
           </Button>
           <Button
             htmlType='submit'
+            loading={submitLoading}
             onClick={() => {
               setSaveMode('save');
             }}
           >
-            {t('common:btn.save')}
+            {t('save_btn')}
           </Button>
         </Space>
       </Card>

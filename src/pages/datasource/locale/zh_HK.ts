@@ -90,6 +90,8 @@ const zh_HK = {
       enable_write: '允許寫入',
     },
   },
+  test_and_save_btn: '測試連通性並保存',
+  test_btn: '測試連通性',
 };
 
 export default zh_HK;

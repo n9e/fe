@@ -45,7 +45,7 @@ const en_US = {
     edit: 'Edit',
     submit: 'Submit',
     operations: 'Operations',
-    testAndSave: 'Save & Test',
+    testAndSave: 'Save & test',
     batch_operations: 'Batch operations',
     batch_delete: 'Batch delete',
     batch_clone: 'Batch clone',
@@ -100,7 +100,7 @@ const en_US = {
       op_not_in: 'Not in',
       preview: 'Preview',
     },
-    managePageLink: 'Data source management',
+    managePageLink: 'Click to manage datasources',
   },
   confirm: {
     delete: 'Are you sure to delete?',
@@ -152,6 +152,7 @@ const en_US = {
   private: 'Private',
   advanced_settings: 'Advanced settings',
   disabled: 'Disabled',
+  select_event: 'Select an alert event',
 
   tpl: 'Self-healing',
   'tpl.create': 'Create',

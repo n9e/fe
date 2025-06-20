@@ -99,7 +99,7 @@ const zh_CN = {
       op_not_in: '不包含',
       preview: '数据预览',
     },
-    managePageLink: '数据源管理',
+    managePageLink: '点击前往数据源管理',
   },
   confirm: {
     delete: '确认删除吗？',
@@ -151,6 +151,7 @@ const zh_CN = {
   private: '私有',
   advanced_settings: '高级设置',
   disabled: '禁用',
+  select_event: '选择告警事件',
 
   // 临时把 task 的翻译放在这里
   tpl: '自愈脚本',

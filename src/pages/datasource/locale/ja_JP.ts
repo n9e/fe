@@ -96,6 +96,8 @@ const ja_JP = {
       enable_write: '書き込みを許可',
     },
   },
+  test_and_save_btn: '接続テストと保存',
+  test_btn: '接続テスト',
 };
 
 export default ja_JP;

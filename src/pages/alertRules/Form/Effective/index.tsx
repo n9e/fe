@@ -22,8 +22,11 @@ import _ from 'lodash';
 
 import { CommonStateContext } from '@/App';
 import { HelpLink } from '@/components/pageLayout';
+import AlertEventRuleTesterWithButton from '@/components/AlertEventRuleTesterWithButton';
 
 import { panelBaseProps, daysOfWeek } from '../../constants';
+import { alertRulesEnableTryrun } from '../../services';
+import { processFormValues } from '../utils';
 
 // @ts-ignore
 import ServiceCalendarSelect from 'plus:/pages/ServiceCalendar/ServiceCalendarSelect';
@@ -31,6 +34,7 @@ import ServiceCalendarSelect from 'plus:/pages/ServiceCalendar/ServiceCalendarSe
 export default function index() {
   const { t } = useTranslation('alertRules');
   const { isPlus } = useContext(CommonStateContext);
+  const form = Form.useFormInstance();
 
   return (
     <Card
@@ -146,6 +150,21 @@ export default function index() {
           }
         }}
       </Form.Item>
+      <div className='mt-2'>
+        <AlertEventRuleTesterWithButton
+          onClick={() => {
+            return form.validateFields();
+          }}
+          onTest={(eventID) => {
+            return form.validateFields().then((values: any) => {
+              return alertRulesEnableTryrun({
+                event_id: eventID,
+                config: processFormValues(values),
+              });
+            });
+          }}
+        />
+      </div>
     </Card>
   );
 }

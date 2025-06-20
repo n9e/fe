@@ -3,12 +3,13 @@ import { Modal } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
+import EventsTable from '@/pages/eventPipeline/pages/Form/TestModal/EventsTable';
+
 import { NS } from '../../../../constants';
 import { preview } from '../../../../services';
 import HTML from '../../Editor/HTML';
 import Text from '../../Editor/Text';
 import Markdown from '../../Editor/Markdown';
-import Events from './Events';
 
 interface Props {
   visible: boolean;
@@ -54,7 +55,7 @@ export default function PreviewModal(props: Props) {
           setResultModalVisible(true);
         }}
       >
-        <Events selectedEventIds={selectedEventIds} setSelectedEventIds={setSelectedEventIds} />
+        <EventsTable selectedEventIds={selectedEventIds} onChange={setSelectedEventIds} />
       </Modal>
       <Modal
         visible={resultModalVisible}

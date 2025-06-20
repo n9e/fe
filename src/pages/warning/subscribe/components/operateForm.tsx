@@ -21,7 +21,7 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router';
 import { Link } from 'react-router-dom';
-import { addSubscribe, editSubscribe, deleteSubscribes } from '@/services/subscribe';
+import { addSubscribe, editSubscribe, deleteSubscribes, alertSubscribesTryrun } from '@/services/subscribe';
 import { getNotifiesList, getTeamInfoList } from '@/services/manage';
 import { subscribeItem } from '@/store/warningInterface/subscribe';
 import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
@@ -31,6 +31,7 @@ import { CommonStateContext } from '@/App';
 import { DatasourceCateSelect } from '@/components/DatasourceSelect';
 import { panelBaseProps } from '@/pages/alertRules/constants';
 import { scrollToFirstError } from '@/utils';
+import AlertEventRuleTesterWithButton from '@/components/AlertEventRuleTesterWithButton';
 import RuleModal from './ruleModal';
 import TagItem from './tagItem';
 import BusiGroupsTagItem from './BusiGroupsTagItem';
@@ -42,6 +43,34 @@ import NotifyExtra from 'plus:/parcels/AlertSubscribes/Extra';
 import NotifyChannelsTpl from 'plus:/parcels/AlertRule/NotifyChannelsTpl';
 
 const { Option } = Select;
+function processFormValues(values, selectedRules) {
+  const tags = values?.tags?.map((item) => {
+    return {
+      ...item,
+      value: Array.isArray(item.value) ? item.value.join(' ') : item.value,
+    };
+  });
+  const busi_groups = values?.busi_groups?.map((item) => {
+    return {
+      ...item,
+      value: Array.isArray(item.value) ? item.value.join(' ') : item.value,
+    };
+  });
+
+  return {
+    ...values,
+    tags,
+    busi_groups,
+    redefine_severity: values.redefine_severity ? 1 : 0,
+    redefine_channels: values.redefine_channels ? 1 : 0,
+    redefine_webhooks: values.redefine_webhooks ? 1 : 0,
+    rule_ids: _.map(selectedRules, 'id'),
+    user_group_ids: values.user_group_ids ? values.user_group_ids.join(' ') : '',
+    new_channels: values.new_channels ? values.new_channels.join(' ') : '',
+    cluster: '0',
+  };
+}
+
 interface Props {
   detail?: subscribeItem;
   type?: number; // 1:编辑; 2:克隆
@@ -97,31 +126,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
   const debounceFetcher = useCallback(_.debounce(getGroups, 800), []);
 
   const onFinish = (values) => {
-    const tags = values?.tags?.map((item) => {
-      return {
-        ...item,
-        value: Array.isArray(item.value) ? item.value.join(' ') : item.value,
-      };
-    });
-    const busi_groups = values?.busi_groups?.map((item) => {
-      return {
-        ...item,
-        value: Array.isArray(item.value) ? item.value.join(' ') : item.value,
-      };
-    });
-
-    const params = {
-      ...values,
-      tags,
-      busi_groups,
-      redefine_severity: values.redefine_severity ? 1 : 0,
-      redefine_channels: values.redefine_channels ? 1 : 0,
-      redefine_webhooks: values.redefine_webhooks ? 1 : 0,
-      rule_ids: _.map(selectedRules, 'id'),
-      user_group_ids: values.user_group_ids ? values.user_group_ids.join(' ') : '',
-      new_channels: values.new_channels ? values.new_channels.join(' ') : '',
-      cluster: '0',
-    };
+    const params = processFormValues(values, selectedRules);
     if (type === 1) {
       editSubscribe([{ ...params, id: detail.id }], curBusiId).then((_) => {
         message.success(t('common:success.edit'));
@@ -504,6 +509,19 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
                   {t('common:btn.delete')}
                 </Button>
               )}
+              <AlertEventRuleTesterWithButton
+                onClick={() => {
+                  return form.validateFields();
+                }}
+                onTest={(eventID) => {
+                  return form.validateFields().then((values: any) => {
+                    return alertSubscribesTryrun({
+                      event_id: eventID,
+                      config: processFormValues(values, selectedRules),
+                    });
+                  });
+                }}
+              />
               <Button onClick={() => window.history.back()}>{t('common:btn.cancel')}</Button>
             </Space>
           </Card>

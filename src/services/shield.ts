@@ -64,3 +64,10 @@ export const previewMutedEvents = function (data: any, busiId: number) {
     data: data,
   });
 };
+
+export const alertMuteTryrun = (data: { event_id: number; config: any }) => {
+  return request('/api/n9e/alert-mute-tryrun', {
+    method: RequestMethod.Post,
+    data,
+  });
+};

@@ -53,6 +53,7 @@ export default function GraphPreview(props: IProps) {
             value: item.value,
             group_by: item.group_by,
             date_field: item.date_field,
+            offset: item.offset,
             interval,
             start: now - interval,
             end: now,

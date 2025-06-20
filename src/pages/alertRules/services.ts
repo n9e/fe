@@ -38,3 +38,17 @@ export const rulesClones = (data) => {
     data,
   }).then((res) => res.dat);
 };
+
+export const alertRulesNotifyTryrun = (data) => {
+  return request('/api/n9e/busi-group/alert-rules/notify-tryrun', {
+    method: RequestMethod.Post,
+    data,
+  });
+};
+
+export const alertRulesEnableTryrun = (data) => {
+  return request('/api/n9e/busi-group/alert-rules/enable-tryrun', {
+    method: RequestMethod.Post,
+    data,
+  });
+};

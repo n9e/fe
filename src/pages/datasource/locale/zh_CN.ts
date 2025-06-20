@@ -92,5 +92,7 @@ const zh_CN = {
       enable_write: '允许写入',
     },
   },
+  test_and_save_btn: '测试连通性并保存',
+  save_btn: '不测试连通性直接保存',
 };
 export default zh_CN;
