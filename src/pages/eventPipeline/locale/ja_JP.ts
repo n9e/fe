@@ -64,6 +64,7 @@ const ja_JP = {
     content: '判定ロジック',
     content_placeholder: '使用 go template 構文，如果最後表示為 true，將會將 event 在此環節丟棄',
   },
+<<<<<<< HEAD
   script: {
     timeout: 'タイムアウト時間（ミリ秒）',
     timeout_tooltip: 'スクリプトの最大実行時間。この時間を超えるとスクリプトは終了します',
@@ -73,6 +74,8 @@ const ja_JP = {
     content_placeholder: 'スクリプトの内容を入力してください',
     script_content: 'スクリプトの内容',
   },
+=======
+>>>>>>> main
   ai_summary: {
     url_placeholder: 'APIサービスアドレスを入力してください',
     url_required: 'URLを入力してください',
@@ -111,6 +114,15 @@ const ja_JP = {
 3. 予想される影響
 4. 簡単な対応案
 要約は簡潔で、運用担当者がアラート状況を素早く把握できるようにしてください。`,
+  },
+  script: {
+    timeout: 'タイムアウト時間（ミリ秒）',
+    timeout_tooltip: 'スクリプトの最大実行時間。この時間を超えるとスクリプトは終了します',
+    timeout_placeholder: 'タイムアウト時間を入力してください',
+    content: 'スクリプトの内容',
+    content_tooltip: 'イベントを JSON オブジェクトとして標準出力に出力するようにスクリプトを記述します',
+    content_placeholder: 'スクリプトの内容を入力してください',
+    script_content: 'スクリプトの内容',
   },
 };
 

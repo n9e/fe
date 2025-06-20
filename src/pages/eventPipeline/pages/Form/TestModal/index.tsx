@@ -55,6 +55,7 @@ export default function TestModal(props: Props) {
             <>
               {visible && (
                 <EventsTable
+                  rowSelectionType='radio'
                   onChange={(ids) => {
                     setEventID(ids[0]);
                   }}

@@ -63,6 +63,7 @@ const zh_CN = {
     content: '判断逻辑',
     content_placeholder: '使用 go template 语法，如果最后显示为 true，将会将 event 在此环节丢弃',
   },
+<<<<<<< HEAD
   script: {
     timeout: '超时时间（单位毫秒）',
     timeout_tooltip: '脚本执行的最大超时时间，超过此时间脚本将被终止',
@@ -71,6 +72,8 @@ const zh_CN = {
     content_tooltip: '编写用于处理事件的脚本代码，告警事件会以 stdin 方式传入脚本，脚本需要将 event 作为 json 对象输出到 stdout',
     content_placeholder: '请输入脚本内容',
   },
+=======
+>>>>>>> main
   ai_summary: {
     url_placeholder: '请输入 API 服务地址',
     url_required: '请输入 URL',
@@ -128,6 +131,14 @@ const zh_CN = {
 1. 点击 "Custom Params" 旁的 + 按钮
 2. 在"参数名"栏输入参数名（如：temperature）
 3. 在"参数值"栏输入对应值（如：0.7）`,
+  },
+  script: {
+    timeout: '超时时间（单位毫秒）',
+    timeout_tooltip: '脚本执行的最大超时时间，超过此时间脚本将被终止',
+    timeout_placeholder: '请输入超时时间',
+    content: '脚本内容',
+    content_tooltip: '编写用于处理事件的脚本代码，告警事件会以 stdin 方式传入脚本，脚本需要将 event 作为 json 对象输出到 stdout',
+    content_placeholder: '请输入脚本内容',
   },
 };
 export default zh_CN;
