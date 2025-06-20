@@ -150,7 +150,7 @@ export default function index() {
           }
         }}
       </Form.Item>
-      <div className='mt-2'>
+      {/* <div className='mt-2'>
         <AlertEventRuleTesterWithButton
           onClick={() => {
             return form.validateFields();
@@ -164,7 +164,7 @@ export default function index() {
             });
           }}
         />
-      </div>
+      </div> */}
     </Card>
   );
 }

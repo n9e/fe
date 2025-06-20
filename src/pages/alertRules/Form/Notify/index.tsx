@@ -313,7 +313,7 @@ export default function index({ disabled }) {
             </div>
           )}
         </Form.List>
-        <div className='mt-2'>
+        {/* <div className='mt-2'>
           <AlertEventRuleTesterWithButton
             onClick={() => {
               return form.validateFields();
@@ -327,7 +327,7 @@ export default function index({ disabled }) {
               });
             }}
           />
-        </div>
+        </div> */}
       </Card>
       <NotifyExtra contactList={contactList} notifyGroups={notifyGroups} />
     </>
