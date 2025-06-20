@@ -330,6 +330,9 @@ const ja_JP = {
     filter_tip: '変数フィルタ',
     add_subFilter: 'サブフィルタを追加',
   },
+  enrich: {
+    select_tip: 'クエリ条件をコピー（空の場合は直接作成、コピーしません）',
+  },
 };
 
 export default ja_JP;

@@ -15,7 +15,7 @@
  *
  */
 import React, { useEffect, useState, useCallback, useContext } from 'react';
-import { Modal, Tag, Form, Input, Alert, Select, Tooltip, Table } from 'antd';
+import { Modal, Form, Input, Alert, Select, Table } from 'antd';
 import { DatabaseOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _, { debounce } from 'lodash';
@@ -27,6 +27,7 @@ import { CommonStateContext } from '@/App';
 import List, { ITargetProps } from './List';
 import BusinessGroup from './BusinessGroup';
 import BusinessGroup2, { getCleanBusinessGroupIds } from '@/components/BusinessGroup';
+import KVTagSelect, { validatorOfKVTagSelect } from '@/components/KVTagSelect';
 import './locale';
 import './index.less';
 
@@ -62,67 +63,14 @@ const OperationModal: React.FC<OperateionModalProps> = ({ operateType, setOperat
 
   // 绑定标签弹窗内容
   const bindTagDetail = () => {
-    // 校验单个标签格式是否正确
-    function isTagValid(tag) {
-      const contentRegExp = /^[a-zA-Z_][\w]*={1}[^=]+$/;
-      return {
-        isCorrectFormat: contentRegExp.test(tag.toString()),
-        isLengthAllowed: tag.toString().length <= 64,
-      };
-    }
-
-    // 渲染标签
-    function tagRender(content) {
-      const { isCorrectFormat, isLengthAllowed } = isTagValid(content.value);
-      return isCorrectFormat && isLengthAllowed ? (
-        <Tag closable={content.closable} onClose={content.onClose}>
-          {content.value}
-        </Tag>
-      ) : (
-        <Tooltip title={isCorrectFormat ? t('bind_tag.render_tip1') : t('bind_tag.render_tip2')}>
-          <Tag color='error' closable={content.closable} onClose={content.onClose} style={{ marginTop: '2px' }}>
-            {content.value}
-          </Tag>
-        </Tooltip>
-      );
-    }
-
-    // 校验所有标签格式
-    function isValidFormat() {
-      return {
-        validator(_, value) {
-          const isInvalid = value.some((tag) => {
-            const { isCorrectFormat, isLengthAllowed } = isTagValid(tag);
-            if (!isCorrectFormat || !isLengthAllowed) {
-              return true;
-            }
-          });
-          const tagkeys = value.map((tag) => {
-            const tagkey = tag.split('=')[0];
-            return tagkey;
-          });
-          const isDuplicateKey = tagkeys.some((tagkey, index) => {
-            return tagkeys.indexOf(tagkey) !== index;
-          });
-          if (isInvalid) {
-            return Promise.reject(new Error(t('bind_tag.msg2')));
-          }
-          if (isDuplicateKey) {
-            return Promise.reject(new Error(t('bind_tag.msg3')));
-          }
-          return Promise.resolve();
-        },
-      };
-    }
-
     return {
       operateTitle: t('bind_tag.title'),
       requestFunc: bindTags,
       isFormItem: true,
       render() {
         return (
-          <Form.Item label={t('common:table.tag')} name='tags' rules={[{ required: true, message: t('bind_tag.msg1') }, isValidFormat]}>
-            <Select mode='tags' tokenSeparators={[' ']} open={false} placeholder={t('bind_tag.placeholder')} tagRender={tagRender} />
+          <Form.Item label={t('common:table.tag')} name='tags' rules={[{ required: true, message: t('bind_tag.msg1') }, validatorOfKVTagSelect]}>
+            <KVTagSelect />
           </Form.Item>
         );
       },

@@ -102,6 +102,10 @@ const UserForm = React.forwardRef<ReactNode, UserAndPasswordFormProps>((props, r
               {
                 required: true,
               },
+              {
+                pattern: /^(?![a-z]+$)(?![A-Z]+$)(?![0-9]+$)(?![#?!@$%^&*-]+$).{6,20}$/,
+                message: t('account:password.ruleMsg'),
+              },
             ]}
             hasFeedback
           >

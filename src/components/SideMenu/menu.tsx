@@ -101,10 +101,6 @@ export const getMenuList = (embeddedProductMenu: MenuItem[] = [], hideDeprecated
           key: '/notification-templates',
           label: 'menu.notification_templates',
         },
-        {
-          key: '/event-pipelines',
-          label: 'menu.event_pipeline',
-        },
         ...(hideDeprecatedMenus
           ? []
           : [
