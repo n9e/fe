@@ -29,7 +29,7 @@ export default function kvMapModal(props: Props) {
       visible={visible}
       width={800}
       onOk={() => {
-        form.validateFields().then(async (values) => {
+        form.validateFields(['regExtractArr']).then(async (values) => {
           onClose();
         });
       }}
@@ -50,68 +50,66 @@ export default function kvMapModal(props: Props) {
             </div>
           </div>
         </div>
-        <Form form={form}>
-          <Form.List name='regExtractArr' initialValue={[{}]}>
-            {(fields, { add, remove }, { errors }) => (
-              <>
-                <Row gutter={10} style={{ marginBottom: 4 }}>
-                  <Col flex='160px'>{t('字段')}</Col>
-                  <Col flex='1'>{t('正则提取')}</Col>
-                  <Col flex='160px'>{t('新字段')}</Col>
-                  <Col flex='30px'></Col>
-                </Row>
-                {fields.map((field, idx) => (
-                  <div className='feature-block' key={idx} style={{ marginBottom: 0 }}>
-                    <Row
-                      gutter={10}
-                      style={{
-                        position: 'relative',
-                      }}
-                    >
-                      <Col flex='160px'>
-                        <Form.Item
-                          name={[field.name, 'field']}
-                          rules={[
-                            {
-                              required: true,
-                              message: t('请选择'),
-                            },
-                          ]}
-                        >
-                          <Select showSearch placeholder={t('请选择')}>
-                            {selectOption.map((item) => (
-                              <Select.Option key={item.value} value={item.value}>
-                                {item.label}
-                              </Select.Option>
-                            ))}
-                          </Select>
-                        </Form.Item>
-                      </Col>
-                      <Col flex='1'>
-                        <Form.Item name={[field.name, 'reg']} initialValue={'(.*)$'}>
-                          <InputEnlarge placeholder='eg.: :(d+)$' />
-                        </Form.Item>
-                      </Col>
-                      <Col flex='160px'>
-                        <Form.Item name={[field.name, 'newField']} rules={[{ required: true, message: t('请输入') }]}>
-                          <Input />
-                        </Form.Item>
-                      </Col>
-                      <Col flex='30px'>
-                        <Space size={'small'}>
-                          <Button type='text' onClick={() => remove(field.name)} style={{ padding: 0 }}>
-                            <MinusCircleOutlined />
-                          </Button>
-                        </Space>
-                      </Col>
-                    </Row>
-                  </div>
-                ))}
-                <PlusCircleOutlined onClick={() => add()} />
-              </>
-            )}
-          </Form.List>
-        </Form>
+        <Form.List name='regExtractArr' initialValue={[{}]}>
+          {(fields, { add, remove }, { errors }) => (
+            <>
+              <Row gutter={10} style={{ marginBottom: 4 }}>
+                <Col flex='160px'>{t('字段')}</Col>
+                <Col flex='1'>{t('正则提取')}</Col>
+                <Col flex='160px'>{t('新字段')}</Col>
+                <Col flex='30px'></Col>
+              </Row>
+              {fields.map((field, idx) => (
+                <div className='feature-block' key={idx} style={{ marginBottom: 0 }}>
+                  <Row
+                    gutter={10}
+                    style={{
+                      position: 'relative',
+                    }}
+                  >
+                    <Col flex='160px'>
+                      <Form.Item
+                        name={[field.name, 'field']}
+                        rules={[
+                          {
+                            required: true,
+                            message: t('请选择'),
+                          },
+                        ]}
+                      >
+                        <Select showSearch placeholder={t('请选择')}>
+                          {selectOption.map((item) => (
+                            <Select.Option key={item.value} value={item.value}>
+                              {item.label}
+                            </Select.Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+                    </Col>
+                    <Col flex='1'>
+                      <Form.Item name={[field.name, 'reg']} initialValue={'(.*)$'}>
+                        <InputEnlarge placeholder='eg.: :(d+)$' />
+                      </Form.Item>
+                    </Col>
+                    <Col flex='160px'>
+                      <Form.Item name={[field.name, 'newField']} rules={[{ required: true, message: t('请输入') }]}>
+                        <Input />
+                      </Form.Item>
+                    </Col>
+                    <Col flex='30px'>
+                      <Space size={'small'}>
+                        <Button type='text' onClick={() => remove(field.name)} style={{ padding: 0 }}>
+                          <MinusCircleOutlined />
+                        </Button>
+                      </Space>
+                    </Col>
+                  </Row>
+                </div>
+              ))}
+              <PlusCircleOutlined onClick={() => add()} />
+            </>
+          )}
+        </Form.List>
       </div>
     </Modal>
   );

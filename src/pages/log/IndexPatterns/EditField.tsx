@@ -30,7 +30,7 @@ import RegExtractModal from './regExtractModal';
 
 interface IField {
   name: string;
-  type: string;
+  type?: string;
 }
 
 interface Props {
@@ -259,13 +259,15 @@ function EditField(props: Props & ModalWrapProps) {
               </div>
             </div>
           </div>
-          <Link {...{ form: linkForm, fieldsAll, t }} />
-          <RegExtractModal
-            visible={regExtractModalVisible}
-            form={linkForm}
-            onClose={() => setRegExtractModalVisible(false)}
-            selectOption={fieldsAll.map((item) => ({ label: item.name, value: item.name }))}
-          />
+          <Form form={linkForm}>
+            <Link {...{ form: linkForm, fieldsAll }} />
+            <RegExtractModal
+              visible={regExtractModalVisible}
+              form={linkForm}
+              onClose={() => setRegExtractModalVisible(false)}
+              selectOption={fieldsAll.map((item) => ({ label: item.name, value: item.name }))}
+            />
+          </Form>
         </Tabs.TabPane>
         <Tabs.TabPane tab={t('displayStyle')} key='displayStyle'>
           <div style={{ display: 'flex', marginBottom: 20, background: 'var(--fc-fill-3)', padding: '8px 12px', borderRadius: 6 }} className='tip-collapse'>
@@ -289,7 +291,8 @@ function EditField(props: Props & ModalWrapProps) {
 
 export default ModalHOC<Props>(EditField);
 
-function Link({ form, fieldsAll, t }) {
+export function Link({ form, fieldsAll }: { form: FormInstance; fieldsAll: IField[] }) {
+  const { t } = useTranslation('es-index-patterns');
   const handleAppend = () => {
     const list = form.getFieldValue(['linkArr']);
     if (list) {
@@ -303,7 +306,7 @@ function Link({ form, fieldsAll, t }) {
     }
   };
   return (
-    <Form layout='vertical' form={form}>
+    <>
       <Form.List
         name='linkArr'
         initialValue={[]}
@@ -355,7 +358,7 @@ function Link({ form, fieldsAll, t }) {
               </Row>
             )}
             {fields.map(({ key, name }) => (
-              <LinkFieldRow key={key} name={name} remove={remove} form={form} add={add} fields={fieldsAll} />
+              <LinkFieldRow key={name} name={name} remove={remove} form={form} add={add} fields={fieldsAll} />
             ))}
             <Form.ErrorList errors={errors} />
           </>
@@ -364,7 +367,7 @@ function Link({ form, fieldsAll, t }) {
       <Button icon={<PlusOutlined />} onClick={handleAppend}>
         {t('跳转链接')}
       </Button>
-    </Form>
+    </>
   );
 }
 

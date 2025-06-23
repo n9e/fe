@@ -6,6 +6,8 @@ import { Field } from './utils';
 import { getColumnsFromFields } from './utils/getColumnsFromFields';
 import LogView from './LogView';
 import useFieldConfig from '../components/RenderValue/useFieldConfig';
+import { DatasourceCateEnum } from '@/utils/constant';
+
 interface Props {
   data: any[];
   onChange: (pagination, filters, sorter, extra) => void;
@@ -17,7 +19,13 @@ function Table(props: Props) {
   const { data, onChange, getFields, selectedFields } = props;
   const form = Form.useFormInstance();
   const indexPatternId = Form.useWatch(['query', 'indexPattern']);
-  const fieldConfig = useFieldConfig('elasticsearch', indexPatternId);
+  const indexValue = Form.useWatch(['query', 'index']);
+  const fieldConfig = useFieldConfig({
+    cate: DatasourceCateEnum.elasticsearch,
+    indexPatternId,
+    datasource_id: form.getFieldValue('datasourceValue'),
+    resource: { es_resource: { index: indexValue } },
+  });
   const columns = useMemo(() => {
     return getColumnsFromFields(selectedFields, form.getFieldValue(['query']), fieldConfig);
   }, [selectedFields, fieldConfig]);

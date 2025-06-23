@@ -24,9 +24,10 @@ import QueryBuilder from './QueryBuilder';
 import QueryBuilderWithIndexPatterns from './QueryBuilderWithIndexPatterns';
 import Table from './Table';
 import Share from '../components/Share';
-
 import './style.less';
 
+// @ts-ignore
+import DrilldownBtn from 'plus:/pages/LogExploreLinkSetting/components/DrilldownBtn';
 // @ts-ignore
 import DownloadModal from 'plus:/datasource/elasticsearch/components/LogDownload/DownloadModal';
 // @ts-ignore
@@ -98,6 +99,7 @@ const HeaderExtra = ({ mode, setMode, allowHideSystemIndices, setAllowHideSystem
         )}
       </Space>
       <Space>
+        {isPlus && <DrilldownBtn />}
         {isPlus && <ExportModal datasourceValue={datasourceValue} />}
         <Share />
       </Space>
