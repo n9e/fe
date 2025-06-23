@@ -4,21 +4,21 @@ import { DorisDBParams, DorisDBTableParams, DorisDBTableDescParams, IStatCalcMet
 import moment from 'moment';
 
 export const getDorisDatabases = (data: DorisDBParams): Promise<string[]> => {
-  return request('/api/n9e-plus/doris-databases', {
+  return request('/api/n9e-plus/db-databases', {
     method: RequestMethod.Post,
     data,
   }).then((res) => res.dat);
 };
 
 export const getDorisTables = (data: DorisDBTableParams): Promise<string[]> => {
-  return request('/api/n9e-plus/doris-tables', {
+  return request('/api/n9e-plus/db-tables', {
     method: RequestMethod.Post,
     data,
   }).then((res) => res.dat);
 };
 
 export const getDorisTableDesc = (data: DorisDBTableDescParams): Promise<{ field: string; type: string; type2: string }[]> => {
-  return request('/api/n9e-plus/doris-desc-table', {
+  return request('/api/n9e-plus/db-desc-table', {
     method: RequestMethod.Post,
     data,
   }).then((res) => res.dat);
