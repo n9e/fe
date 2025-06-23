@@ -68,6 +68,7 @@ export const LinkTip = (t, collapse: boolean) => {
           {t('本系统的域名')}：$local_domain
           {t('，如 flashcat.cloud')}
         </li>
+        <li>{t('参数映射表')}：$__mapping_para__</li>
       </ul>
       <div>{t('样例')}：</div>
       <ul style={{ paddingInlineStart: 24 }}>

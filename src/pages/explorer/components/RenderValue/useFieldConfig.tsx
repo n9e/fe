@@ -30,7 +30,7 @@ export default function useFieldConfig(search: IFieldSearch): FieldConfigVersion
                 arr: [],
                 version: 2,
                 linkArr: configs.linkArr,
-                // mapping_params_arr: configs.mapping_params_arr,
+                mappingParamsArr: configs.mappingParamsArr,
                 regExtractArr: configs.regExtractArr,
               });
             } catch (error) {
@@ -40,6 +40,6 @@ export default function useFieldConfig(search: IFieldSearch): FieldConfigVersion
         });
       }
     }
-  }, [search]);
+  }, [JSON.stringify(search)]);
   return fieldConfig;
 }
