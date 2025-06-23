@@ -3,15 +3,20 @@ import { MinusCircleTwoTone, PlusCircleTwoTone, SearchOutlined } from '@ant-desi
 import { Button, Space, Table, message } from 'antd';
 import '../../style.less';
 import _ from 'lodash';
+import { FieldConfigVersion2 } from '@/pages/log/IndexPatterns/types';
+import RenderValue from '@/pages/explorer/components/RenderValue';
+import { IRawTimeRange } from '@/components/TimeRangePicker';
 interface IProps {
+  fieldConfig: FieldConfigVersion2;
   showTags: boolean;
   tags: object;
   log: string;
   addQueryLabel: (key: string, value: string, operator: string) => void;
+  range: IRawTimeRange;
 }
 const keys = ['traceID', 'traceId', 'TraceId', 'TraceID', 'traceid', 'trace_id'];
 export function ValueTagsCont(props: IProps) {
-  const { showTags, tags, addQueryLabel, log } = props;
+  const { showTags, tags, addQueryLabel, log, fieldConfig, range } = props;
   useEffect(() => {
     try {
       const parsedJson = JSON.parse(log);
@@ -70,7 +75,7 @@ export function ValueTagsCont(props: IProps) {
                 if (_.includes(keys, record.key)) {
                   return (
                     <Space>
-                      <div>{text}</div>
+                      <RenderValue fieldKey={record.key} fieldValue={text} fieldConfig={fieldConfig} rawValue={tags} range={range} />
                       <Button
                         size='small'
                         type='primary'
@@ -84,7 +89,7 @@ export function ValueTagsCont(props: IProps) {
                     </Space>
                   );
                 }
-                return <div>{text}</div>;
+                return <RenderValue fieldKey={record.key} fieldValue={text} fieldConfig={fieldConfig} rawValue={tags} range={range} />;
               },
             },
           ]}
