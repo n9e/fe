@@ -37,7 +37,9 @@ export default function RenderValue(props: IProps) {
   const value = adjustFieldValue ? adjustFieldValue(displayValue) : displayValue;
 
   if (rawValue && fieldLinks && fieldLinks.length > 0) {
-    return <Links rawValue={rawValue} range={range} text={value} paramsArr={fieldLinks} regExtractArr={fieldConfig?.regExtractArr} />;
+    return (
+      <Links rawValue={rawValue} range={range} text={value} paramsArr={fieldLinks} regExtractArr={fieldConfig?.regExtractArr} mappingParamsArr={fieldConfig?.mappingParamsArr} />
+    );
   }
   return <span>{value}</span>;
 }

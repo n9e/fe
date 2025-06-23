@@ -4,10 +4,10 @@ import IconFont from '@/components/IconFont';
 import { Popover } from 'antd';
 import moment from 'moment';
 import { basePrefix } from '@/App';
-import { ILogExtract, ILogURL } from '@/pages/log/IndexPatterns/types';
+import { ILogExtract, ILogURL, ILogMappingParams } from '@/pages/log/IndexPatterns/types';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 
-const handleNav = (link: string, rawValue: object, query: { start: number; end: number }, regExtractArr?: ILogExtract[]) => {
+const handleNav = (link: string, rawValue: object, query: { start: number; end: number }, regExtractArr?: ILogExtract[], mappingParamsArr?: ILogMappingParams[]) => {
   const param = new URLSearchParams(link);
   // 为了兼容旧逻辑，所以${} 中的也需要替换
   const startMargin = param.get('${__start_time_margin__}');
@@ -74,6 +74,26 @@ const handleNav = (link: string, rawValue: object, query: { start: number; end: 
   if (timeFormat) {
     reallink = reallink.replace('&$__time_format__' + '=' + timeFormat, '');
   }
+  if (mappingParamsArr && mappingParamsArr.length > 0 && reallink.includes('$__mapping_para__')) {
+    try {
+      let match = false;
+      for (let i = 0; i < mappingParamsArr.length; i++) {
+        if (match) continue;
+        const { op, v, str, field } = mappingParamsArr[i];
+        const fieldStr = _.get(rawValue, field.split('.'));
+        if (op === '=~' && new RegExp(v).test(fieldStr)) {
+          reallink = reallink.replace('$__mapping_para__', str);
+          match = true;
+        }
+        if (op === '!~' && !new RegExp(v).test(fieldStr)) {
+          reallink = reallink.replace('$__mapping_para__', str);
+          match = true;
+        }
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
   const unReplaceKeyReg = /\$\{(.+?)\}/g;
   const valueWithExtract = _.cloneDeep(rawValue);
   regExtractArr?.forEach((i) => {
@@ -103,9 +123,10 @@ interface IProps {
   text: React.ReactNode;
   paramsArr: ILogURL[];
   regExtractArr?: ILogExtract[];
+  mappingParamsArr?: ILogMappingParams[];
 }
 
-export default function Links({ rawValue, range, text, paramsArr, regExtractArr }: IProps) {
+export default function Links({ rawValue, range, text, paramsArr, regExtractArr, mappingParamsArr }: IProps) {
   const isGold = localStorage.getItem('n9e-dark-mode') === '2';
   const parsedRange = range ? parseRange(range) : null;
   let start = parsedRange ? moment(parsedRange.start).unix() : 0;
@@ -116,7 +137,7 @@ export default function Links({ rawValue, range, text, paramsArr, regExtractArr 
       overlayClassName='popover-json'
       content={paramsArr.map((item, i) => (
         <div key={i} style={{ lineHeight: '24px' }}>
-          <a onClick={() => handleNav(item.urlTemplate, rawValue, { start, end }, regExtractArr)}>{item.name}</a>
+          <a onClick={() => handleNav(item.urlTemplate, rawValue, { start, end }, regExtractArr, mappingParamsArr)}>{item.name}</a>
         </div>
       ))}
     >
@@ -136,7 +157,7 @@ export default function Links({ rawValue, range, text, paramsArr, regExtractArr 
         }}
         onClick={() => {
           if (paramsArr.length > 0) {
-            handleNav(paramsArr[0].urlTemplate, rawValue, { start, end }, regExtractArr);
+            handleNav(paramsArr[0].urlTemplate, rawValue, { start, end }, regExtractArr, mappingParamsArr);
           }
         }}
       >
