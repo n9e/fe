@@ -4,7 +4,6 @@ import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import querystring from 'query-string';
 import { useTranslation } from 'react-i18next';
-import moment from 'moment';
 
 import { ScrollArea } from '@/components/ScrollArea';
 import { CommonStateContext } from '@/App';
@@ -14,24 +13,22 @@ import { getMenuList } from '@/components/SideMenu/menu';
 import { getEmbeddedProducts } from '@/pages/embeddedProduct/services';
 import { eventBus, EVENT_KEYS } from '@/pages/embeddedProduct/eventBus';
 import { DETAIL_PATH as embeddedProductDetailPath } from '@/pages/embeddedProduct/constants';
+import { V8_BETA_14_TS } from '@/utils/constant';
 
 import { cn } from './utils';
 import SideMenuHeader from './Header';
 import MenuList from './MenuList';
 import QuickMenu from './QuickMenu';
 import { MenuItem } from './types';
-import { getInstallDate } from './services';
 import './menu.less';
 import './locale';
 
 // @ts-ignore
 import getPlusMenuList from 'plus:/parcels/SideMenu/menu';
 
-const V8_BETA_14_TS = moment('2025-06-20').unix(); // v8 beta 14 的发布时间，当安装时间晚于这个版本时间则隐藏一些弃用的菜单
-
 const SideMenu = () => {
   const { i18n } = useTranslation('sideMenu');
-  const { isPlus, darkMode, perms } = useContext(CommonStateContext);
+  const { isPlus, darkMode, perms, installTs } = useContext(CommonStateContext);
   let { sideMenuBgMode } = useContext(CommonStateContext);
   if (darkMode) {
     sideMenuBgMode = 'dark';
@@ -44,7 +41,6 @@ const SideMenu = () => {
   const quickMenuRef = useRef<{ open: () => void }>({ open: () => {} });
   const isCustomBg = sideMenuBgMode !== 'light';
   const [embeddedProductMenu, setEmbeddedProductMenu] = useState<MenuItem[]>([]);
-  const [installTs, setInstallTs] = useState<number>(0);
   const [menus, setMenus] = useState<MenuItem[]>([]);
 
   const hideSideMenu = useMemo(() => {
@@ -164,12 +160,6 @@ const SideMenu = () => {
       setSelectedKeys(finalPath);
     }
   }, [menuPaths, location.pathname, selectedKeys]);
-
-  useEffect(() => {
-    getInstallDate().then((ts) => {
-      setInstallTs(ts);
-    });
-  }, []);
 
   const hideDeprecatedMenus = installTs > V8_BETA_14_TS;
   const menuList = isPlus ? getPlusMenuList(embeddedProductMenu, hideDeprecatedMenus) : getMenuList(embeddedProductMenu, hideDeprecatedMenus);
