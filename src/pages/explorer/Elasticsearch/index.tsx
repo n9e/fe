@@ -28,6 +28,8 @@ import LogsView from './LogsView';
 import './style.less';
 
 // @ts-ignore
+import DrilldownBtn from 'plus:/pages/LogExploreLinkSetting/components/DrilldownBtn';
+// @ts-ignore
 import DownloadModal from 'plus:/datasource/elasticsearch/components/LogDownload/DownloadModal';
 // @ts-ignore
 import ExportModal from 'plus:/datasource/elasticsearch/components/LogDownload/ExportModal';
@@ -97,6 +99,7 @@ const HeaderExtra = ({ mode, setMode, allowHideSystemIndices, setAllowHideSystem
         )}
       </Space>
       <Space>
+        {isPlus && mode === IMode.indices && <DrilldownBtn />}
         {isPlus && <ExportModal datasourceValue={datasourceValue} />}
         <Share />
       </Space>
