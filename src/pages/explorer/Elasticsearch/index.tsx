@@ -99,7 +99,7 @@ const HeaderExtra = ({ mode, setMode, allowHideSystemIndices, setAllowHideSystem
         )}
       </Space>
       <Space>
-        {isPlus && <DrilldownBtn />}
+        {isPlus && mode === IMode.indices && <DrilldownBtn />}
         {isPlus && <ExportModal datasourceValue={datasourceValue} />}
         <Share />
       </Space>
