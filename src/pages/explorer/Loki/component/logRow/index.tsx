@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
+import { Form } from 'antd';
 import { Operator, Row, getRowSytleColor } from '../../util';
 import ShowTagSelectIcon from './showTagIcon';
 import { ValueTagsCont } from './valueTagsCont';
@@ -9,16 +10,20 @@ import HighlightText from './highlight';
 import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import LogContext from '../context';
+import { FieldConfigVersion2 } from '@/pages/log/IndexPatterns/types';
+
 interface IProps {
+  fieldConfig?: FieldConfigVersion2;
   datasourceValue: number;
   row: Row;
   operator: Operator;
   keywords: string[];
   addQueryLabel: (key: string, value: string, operator: string) => void;
+  range: IRawTimeRange;
 }
 export default function LogRow(props: IProps) {
   const { t } = useTranslation('explorer');
-  const { datasourceValue, row, operator, keywords, addQueryLabel } = props;
+  const { datasourceValue, row, operator, keywords, addQueryLabel, fieldConfig, range } = props;
   const [showTags, setShowTags] = useState<boolean>(false);
   const [showContext, setShowContext] = useState<boolean>(false);
   useEffect(() => {
@@ -27,13 +32,7 @@ export default function LogRow(props: IProps) {
 
   return (
     <div>
-      <span
-        className='logRowStyled'
-        style={{ borderLeftColor: getRowSytleColor(row.tags?.level ?? 'unknow') }}
-        onClick={() => {
-          setShowTags(!showTags);
-        }}
-      >
+      <span className='logRowStyled' style={{ borderLeftColor: getRowSytleColor(row.tags?.level ?? 'unknow') }}>
         <span
           className='log-ts-row'
           onMouseEnter={() => {
@@ -41,6 +40,9 @@ export default function LogRow(props: IProps) {
           }}
           onMouseLeave={() => {
             setShowContext(false);
+          }}
+          onClick={() => {
+            setShowTags(!showTags);
           }}
         >
           <span style={{ paddingRight: '5px' }}>
@@ -68,7 +70,7 @@ export default function LogRow(props: IProps) {
             </Button>
           )}
         </span>
-        <ValueTagsCont tags={row.tags} showTags={showTags} addQueryLabel={addQueryLabel} log={row.log} />
+        <ValueTagsCont tags={row.tags} showTags={showTags} addQueryLabel={addQueryLabel} log={row.log} fieldConfig={fieldConfig} range={range} />
       </span>
     </div>
   );

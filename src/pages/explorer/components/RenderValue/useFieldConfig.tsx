@@ -38,6 +38,23 @@ export default function useFieldConfig(search: IFieldSearch): FieldConfigVersion
             }
           }
         });
+      } else if (search.cate === 'loki' && search.query) {
+        searchDrilldown(search).then((res) => {
+          if (res.length > 0) {
+            try {
+              let configs = JSON.parse(res[0].configs);
+              setFieldConfig({
+                arr: [],
+                version: 2,
+                linkArr: configs.linkArr,
+                mappingParamsArr: configs.mappingParamsArr,
+                regExtractArr: configs.regExtractArr,
+              });
+            } catch (error) {
+              console.error(error);
+            }
+          }
+        });
       }
     }
   }, [JSON.stringify(search)]);
