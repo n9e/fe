@@ -16,11 +16,12 @@
  */
 import React, { useState, useEffect, useContext } from 'react';
 import { Form, Input, Card, Select, Col, Button, Row, message, DatePicker, Tooltip, Space, Radio, TimePicker, Checkbox, Alert, Affix } from 'antd';
-import { QuestionCircleOutlined, PlusCircleOutlined, CaretDownOutlined, MinusCircleOutlined, InfoCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import { useHistory } from 'react-router';
+import { PlusCircleOutlined, CaretDownOutlined, MinusCircleOutlined, InfoCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import moment from 'moment';
+
 import { addShield, editShield, alertMuteTryrun } from '@/services/shield';
 import { shieldItem } from '@/store/warningInterface';
 import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
@@ -29,7 +30,10 @@ import { daysOfWeek } from '@/pages/alertRules/constants';
 import { DatasourceCateSelect } from '@/components/DatasourceSelect';
 import { scrollToFirstError } from '@/utils';
 import AlertEventRuleTesterWithButton from '@/components/AlertEventRuleTesterWithButton';
-import TagItem from './tagItem';
+import { KVTags } from '@/components/KVTagSelect';
+import Markdown from '@/components/Markdown';
+import AffixWrapper from '@/components/AffixWrapper';
+
 import { timeLensDefault } from '../../const';
 import { processFormValues } from './utils';
 import PreviewMutedEvents from './PreviewMutedEvents';
@@ -119,15 +123,6 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
       }}
       initialValues={{
         ...detail,
-        tags: detail?.tags?.map((item) => {
-          if (['not in', 'in'].includes(item.func)) {
-            return {
-              ...item,
-              value: item.value.split(' '),
-            };
-          }
-          return item;
-        }),
         prod: detail.prod || 'metric',
         severities: detail.severities || [1, 2, 3],
         btime: detail?.btime ? moment(detail.btime * 1000) : moment(btimeDefault),
@@ -151,6 +146,20 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
       }}
     >
       <Card className='mb2' title={t('basic_configs')}>
+        <Alert type='info' message={t('alert_content')} className='mb-2' />
+        <Form.Item label={t('common:business_group')} name='group_id' required>
+          <Select
+            disabled={type == 1}
+            options={_.map(busiGroups, (item) => {
+              return {
+                label: item.name,
+                value: item.id,
+              };
+            })}
+            showSearch
+            optionFilterProp='label'
+          />
+        </Form.Item>
         <Form.Item
           label={t('note')}
           name='note'
@@ -177,20 +186,6 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
           </Space>
         }
       >
-        <Alert type='info' message={t('alert_content')} style={{ marginBottom: 16 }} />
-        <Form.Item label={t('common:business_group')} name='group_id' required>
-          <Select
-            disabled={type == 1}
-            options={_.map(busiGroups, (item) => {
-              return {
-                label: item.name,
-                value: item.id,
-              };
-            })}
-            showSearch
-            optionFilterProp='label'
-          />
-        </Form.Item>
         <Row gutter={10}>
           <Col span={12}>
             <Form.Item label={t('common:datasource.type')} name='cate' initialValue='prometheus'>
@@ -236,100 +231,16 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
             ]}
           />
         </Form.Item>
-        <Form.List name='tags'>
-          {(fields, { add, remove }) => (
-            <>
-              <Row gutter={[10, 10]} style={{ marginBottom: '8px' }}>
-                <Col span={5}>
-                  <Space align='baseline'>
-                    {t('tag.key.label')}
-                    <Tooltip title={t(`tag.key.tip`)}>
-                      <QuestionCircleOutlined />
-                    </Tooltip>
-                  </Space>
-                </Col>
-                <Col span={3}>{t('tag.func.label')}</Col>
-                <Col span={16}>{t('tag.value.label')}</Col>
-              </Row>
-              {fields.map((field, index) => (
-                <TagItem count={fields.length} field={field} key={index} remove={remove} form={form} />
-              ))}
-              <Row>
-                <Col span={23}>
-                  <Button type='dashed' style={{ width: '100%' }} onClick={() => add()}>
-                    <PlusOutlined />
-                    {t('tag.add')}
-                  </Button>
-                </Col>
-              </Row>
-            </>
-          )}
-        </Form.List>
-        <div className='mt2'>
-          <Space>
-            <span>{t('quick_template.title')}</span>
-            {/* <a
-              onClick={() => {
-                form.setFieldsValue({
-                  tags: [
-                    {
-                      key: 'rulename',
-                      func: '=~',
-                      value: '.*',
-                    },
-                  ],
-                });
-              }}
-            >
-              {t('quick_template.all')}
-            </a> */}
-            <a
-              onClick={() => {
-                form.setFieldsValue({
-                  tags: [
-                    {
-                      key: '__name__',
-                      func: '==',
-                      value: 'target_miss',
-                    },
-                  ],
-                });
-              }}
-            >
-              {t('quick_template.target_miss')}
-            </a>
-            <a
-              onClick={() => {
-                form.setFieldsValue({
-                  tags: [
-                    {
-                      key: '__name__',
-                      func: '==',
-                      value: '',
-                    },
-                  ],
-                });
-              }}
-            >
-              {t('quick_template.__name__')}
-            </a>
-            <a
-              onClick={() => {
-                form.setFieldsValue({
-                  tags: [
-                    {
-                      key: 'ident',
-                      func: '==',
-                      value: '',
-                    },
-                  ],
-                });
-              }}
-            >
-              {t('quick_template.ident')}
-            </a>
-          </Space>
-        </div>
+        <KVTags
+          name={['tags']}
+          keyLabel={t('tag.key.label')}
+          keyLabelTootip={
+            <div className='pt-2 px-1'>
+              <Markdown content={t('tag.key.tip')} darkMode />
+            </div>
+          }
+          keyLabelTootipPlacement='right'
+        />
       </Card>
       <Card title={t('mute_configs')}>
         <Form.Item label={t('mute_type.label')} name='mute_time_type'>
@@ -450,7 +361,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
           }}
         </Form.Item>
       </Card>
-      <Affix offsetBottom={0}>
+      <AffixWrapper>
         <Card size='small' className='affix-bottom-shadow'>
           <Space>
             <PreviewMutedEvents
@@ -477,7 +388,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
             <Button onClick={() => window.history.back()}>{t('common:btn.cancel')}</Button>
           </Space>
         </Card>
-      </Affix>
+      </AffixWrapper>
     </Form>
   );
   return (

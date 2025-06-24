@@ -1,11 +1,11 @@
 const zh_HK = {
   title: '屏蔽規則',
-  search_placeholder: '搜索規則說明、標籤、屏蔽原因',
+  search_placeholder: '搜索規標題、標籤、屏蔽原因',
   datasource_type: '數據源類型',
   datasource_id: '數據源',
   cause: '屏蔽原因',
   time: '屏蔽時間',
-  note: '規則說明',
+  note: '規則標題',
   btime: '屏蔽開始時間',
   duration: '屏蔽時長',
   etime: '屏蔽結束時間',
@@ -24,28 +24,16 @@ const zh_HK = {
   },
   tag: {
     key: {
-      label: '事件標籤 Key',
-      tip: '這裏的標籤是指告警事件的標籤，通過如下標籤匹配規則過濾告警事件',
-      msg: 'key 不能為空',
+      label: '事件標籤',
+      tip: `這裡的標籤是指告警事件的標籤，通過如下標籤匹配規則過濾告警事件。支持多種匹配運算符，說明如下：
+
+- \`==\` 匹配某個具體的標籤值，只能填寫一個，如果想同時匹配多個，應該使用 \`in\` 操作符
+- \`=~\` 填寫正則表達式，靈活匹配標籤值
+- \`in\` 匹配多個標籤值，類似 SQL 裡的 \`in\` 操作
+- \`not in\` 不匹配的標籤值，可填寫多個，類似 SQL 裡的 \`not in\` 操作，用於排除多個標籤值
+- \`!=\` 不等於，用於排除特定的某個標籤值
+- \`!~\` 正則不匹配，填寫正則，匹配這個正則的標籤值都將被排除，類似 PromQL 中的 \`!~\``,
     },
-    func: {
-      label: '運算子',
-      msg: '運算子不能為空',
-    },
-    value: {
-      label: '標籤 Value',
-      placeholder1: '可以輸入多個值，用回車分割',
-      placeholder2: '請輸入正規表示式匹配標籤 value',
-      msg: 'value 不能為空',
-    },
-    add: '新增標籤過濾條件',
-  },
-  quick_template: {
-    title: '快捷標籤過濾模板',
-    all: '本組全部告警屏蔽',
-    target_miss: '機器失聯屏蔽',
-    __name__: '屏蔽某個指標',
-    ident: '屏蔽某個機器',
   },
   basic_configs: '基本信息',
   filter_configs: '篩選條件',
