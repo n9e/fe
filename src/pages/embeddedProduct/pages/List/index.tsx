@@ -11,7 +11,7 @@ import { getTeamInfoList } from '@/services/manage';
 import PageLayout from '@/components/pageLayout';
 import { eventBus, EVENT_KEYS } from '@/pages/embeddedProduct/eventBus';
 
-import { NS, PATH } from '../../constants';
+import { NS, DETAIL_PATH } from '../../constants';
 import { EmbeddedProductParams, EmbeddedProductResponse } from '../../types';
 import { deleteEmbeddedProducts, getEmbeddedProducts, addEmbeddedProducts, updateEmbeddedProducts } from '../../services';
 import EmbeddedProductModal from '../../components/EmbeddedProductModal';
@@ -28,7 +28,7 @@ export default function Index() {
       title: t('common:table.name'),
       dataIndex: 'name',
       render: (name, record) => {
-        return <Link to={`${PATH}/${record.id}`}>{name}</Link>;
+        return <Link to={`${DETAIL_PATH}/${record.id}`}>{name}</Link>;
       },
     },
     {
