@@ -3,7 +3,8 @@ import _ from 'lodash';
 import { FieldConfigVersion2 } from '@/pages/log/IndexPatterns/types';
 import { getESIndexPattern, standardizeFieldConfig } from '@/pages/log/IndexPatterns/services';
 import { IFieldSearch } from './types';
-import { searchDrilldown } from '@/plus/pages/LogExploreLinkSetting/services';
+// @ts-ignore
+import { searchDrilldown } from 'plus:/pages/LogExploreLinkSetting/services';
 import { CommonStateContext } from '@/App';
 
 export default function useFieldConfig(search: IFieldSearch): FieldConfigVersion2 | undefined {
