@@ -43,12 +43,18 @@ export function JSONParse(str) {
   return {};
 }
 
-export function getStepByTimeAndStep(time: IRawTimeRange, step: number | null) {
-  if (step) return step;
+export function getDefaultStepByTime(
+  time: IRawTimeRange,
+  options: {
+    panelWidth?: number;
+    maxDataPoints?: number;
+  },
+) {
+  let maxDataPoints = options.maxDataPoints ?? options.panelWidth ?? 240;
   const parsedRange = parseRange(time);
   let start = moment(parsedRange.start).unix();
   let end = moment(parsedRange.end).unix();
-  return Math.max(Math.floor((end - start) / 240), 1);
+  return Math.max(Math.floor((end - start) / maxDataPoints), 1);
 }
 
 const grafanaBuiltinColors = [

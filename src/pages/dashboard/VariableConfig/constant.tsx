@@ -18,8 +18,11 @@ import React from 'react';
 import moment from 'moment';
 import _ from 'lodash';
 import queryString from 'query-string';
+
 import { getLabelNames, getMetricSeries, getMetricSeriesV2, getLabelValues, getMetric, getQueryResult, getESVariableResult } from '@/services/dashboardV2';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
+
+import { getDefaultStepByTime } from '../utils';
 import { IVariable } from './definition';
 import { normalizeESQueryRequestBody, ajustVarSingleValue, escapeJsonString, escapePromQLString } from './utils';
 
@@ -82,7 +85,13 @@ export const convertExpressionToQuery = (expression: string, range: IRawTimeRang
       );
     } else if (expression.startsWith('query_result(')) {
       let promql = expression.substring('query_result('.length, expression.length - 1);
-      promql = replaceFieldWithVariable(promql, dashboardId, getOptionsList({}, range));
+      promql = replaceFieldWithVariable(
+        promql,
+        dashboardId,
+        getOptionsList({
+          time: range,
+        }),
+      );
       return getQueryResult({ query: promql, start, end }, datasourceValue).then((res) =>
         _.map(res?.data?.result, ({ metric, value }) => {
           const metricName = metric['__name__'];
@@ -416,10 +425,6 @@ export function stringToRegex(str: string): RegExp | false {
   }
 }
 
-export const getDefaultStepByStartAndEnd = (start: number, end: number) => {
-  return Math.max(Math.floor((end - start) / 240), 1);
-};
-
 export function replaceFieldWithVariable(value: string, dashboardId?: string, variableConfig?: IVariable[]) {
   if (!dashboardId || !variableConfig) {
     return value;
@@ -432,14 +437,8 @@ export function replaceFieldWithVariable(value: string, dashboardId?: string, va
   });
 }
 
-export const getOptionsList = (
-  dashboardMeta: {
-    dashboardId?: string;
-    variableConfigWithOptions?: any;
-  },
-  time: IRawTimeRange,
-  step?: number,
-) => {
+export const getOptionsList = (options: { variableConfigWithOptions?: any; time: IRawTimeRange; step?: number; panelWidth?: number; maxDataPoints?: number }) => {
+  const { variableConfigWithOptions, time, step } = options;
   const rangeTime = parseRange(time);
   const from = moment(rangeTime.start).valueOf();
   const fromDateSeconds = moment(rangeTime.start).unix();
@@ -447,9 +446,14 @@ export const getOptionsList = (
   const to = moment(rangeTime.end).valueOf();
   const toDateSeconds = moment(rangeTime.end).unix();
   const toDateISO = moment(rangeTime.end).toISOString();
-  const interval = step ? step : getDefaultStepByStartAndEnd(fromDateSeconds, toDateSeconds);
+  const interval = step
+    ? step
+    : getDefaultStepByTime(time, {
+        panelWidth: options.panelWidth,
+        maxDataPoints: options.maxDataPoints,
+      });
   return [
-    ...(dashboardMeta.variableConfigWithOptions ? dashboardMeta.variableConfigWithOptions : []),
+    ...(variableConfigWithOptions ? variableConfigWithOptions : []),
     { name: '__from', value: from },
     { name: '__from_date_seconds', value: fromDateSeconds },
     { name: '__from_date_iso', value: fromDateISO },
