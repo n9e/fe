@@ -32,6 +32,7 @@ import { scrollToFirstError } from '@/utils';
 import AlertEventRuleTesterWithButton from '@/components/AlertEventRuleTesterWithButton';
 import { KVTags } from '@/components/KVTagSelect';
 import Markdown from '@/components/Markdown';
+import AffixWrapper from '@/components/AffixWrapper';
 
 import { timeLensDefault } from '../../const';
 import { processFormValues } from './utils';
@@ -360,7 +361,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
           }}
         </Form.Item>
       </Card>
-      <Affix offsetBottom={0}>
+      <AffixWrapper>
         <Card size='small' className='affix-bottom-shadow'>
           <Space>
             <PreviewMutedEvents
@@ -387,7 +388,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
             <Button onClick={() => window.history.back()}>{t('common:btn.cancel')}</Button>
           </Space>
         </Card>
-      </Affix>
+      </AffixWrapper>
     </Form>
   );
   return (

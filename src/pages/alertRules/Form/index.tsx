@@ -22,6 +22,7 @@ import _ from 'lodash';
 import { CommonStateContext } from '@/App';
 import { addStrategy, EditStrategy } from '@/services/warning';
 import { scrollToFirstError } from '@/utils';
+import AffixWrapper from '@/components/AffixWrapper';
 import Base from './Base';
 import Rule from './Rule';
 import Effective from './Effective';
@@ -146,7 +147,7 @@ export default function index(props: IProps) {
               <Effective />
               <Notify disabled={disabled} />
             </div>
-            <Affix offsetBottom={0}>
+            <AffixWrapper>
               <Card size='small' className='affix-bottom-shadow'>
                 {!disabled && (
                   <Space>
@@ -182,7 +183,7 @@ export default function index(props: IProps) {
                   </Space>
                 )}
               </Card>
-            </Affix>
+            </AffixWrapper>
           </div>
         </Form>
       </div>
