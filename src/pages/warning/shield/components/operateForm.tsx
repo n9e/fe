@@ -18,7 +18,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Form, Input, Card, Select, Col, Button, Row, message, DatePicker, Tooltip, Space, Radio, TimePicker, Checkbox, Alert, Affix } from 'antd';
 import { PlusCircleOutlined, CaretDownOutlined, MinusCircleOutlined, InfoCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
-import { useTranslation, Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import moment from 'moment';
 
@@ -122,15 +122,6 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
       }}
       initialValues={{
         ...detail,
-        tags: detail?.tags?.map((item) => {
-          if (['not in', 'in'].includes(item.func)) {
-            return {
-              ...item,
-              value: item.value.split(' '),
-            };
-          }
-          return item;
-        }),
         prod: detail.prod || 'metric',
         severities: detail.severities || [1, 2, 3],
         btime: detail?.btime ? moment(detail.btime * 1000) : moment(btimeDefault),

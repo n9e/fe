@@ -65,6 +65,9 @@ const TagItem = (props: Props) => {
               }}
               getValueProps={(value) => {
                 if (_.isString(value)) {
+                  if (value === '') {
+                    return { value: [] };
+                  }
                   return { value: _.split(value, ' ') };
                 }
                 return { value };
