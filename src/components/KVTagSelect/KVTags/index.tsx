@@ -10,6 +10,7 @@ interface Props {
   disabled?: boolean;
   keyLabel?: React.ReactNode;
   keyLabelTootip?: React.ReactNode;
+  keyLabelTootipPlacement?: 'top' | 'left' | 'right' | 'bottom';
   keyType?: 'input' | 'select';
   keyOptions?: {
     label: string;
@@ -32,6 +33,7 @@ export default function index(props: Props) {
     disabled,
     keyLabel = t('tag.key.label'),
     keyLabelTootip,
+    keyLabelTootipPlacement,
     keyType = 'input',
     keyOptions,
     funcLabel = t('tag.func.label'),
@@ -54,7 +56,7 @@ export default function index(props: Props) {
               <Space align='baseline' size={4}>
                 {keyLabel}
                 {keyLabelTootip && (
-                  <Tooltip className='n9e-ant-from-item-tooltip' title={keyLabelTootip} overlayClassName='ant-tooltip-auto-width'>
+                  <Tooltip className='n9e-ant-from-item-tooltip' title={keyLabelTootip} overlayClassName='ant-tooltip-auto-width' placement={keyLabelTootipPlacement}>
                     <QuestionCircleOutlined />
                   </Tooltip>
                 )}
