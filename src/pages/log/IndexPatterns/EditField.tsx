@@ -430,7 +430,8 @@ function StyleConfig({ form, fieldsAll, t }) {
 function LinkFieldRow({ key, name, form, remove, add, fields }: { key: number; name: number; form: FormInstance; remove: (v) => void; add: () => void; fields: IField[] }) {
   const { t } = useTranslation('es-index-patterns');
   const formatType = Form.useWatch(['arr', name, 'formatMap', 'type'], form);
-
+  const regExtractArr = Form.useWatch(['regExtractArr'], form);
+  const mappingParamsArr = Form.useWatch(['mappingParamsArr'], form);
   return (
     <Row gutter={16} key={key}>
       <Col span={4}>
@@ -452,7 +453,10 @@ function LinkFieldRow({ key, name, form, remove, add, fields }: { key: number; n
 
       <Col span={16}>
         <Form.Item name={[name, 'urlTemplate']} rules={[{ required: true, message: t('should_not_empty') }]}>
-          <InputEnlarge placeholder={t('field.format.params.url.urlTemplatePlaceholder1', { skipInterpolation: true })} />
+          <InputEnlarge
+            placeholder={t('field.format.params.url.urlTemplatePlaceholder1', { skipInterpolation: true })}
+            linkBuilder={{ variables: fields.map((item) => item.name), extracts: regExtractArr?.map((item) => item.newField), mappingParams: mappingParamsArr?.length > 0 }}
+          />
         </Form.Item>
       </Col>
       <Col span={3}>
