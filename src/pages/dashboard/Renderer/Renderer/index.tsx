@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, { useState, useRef, useContext } from 'react';
 import { createPortal } from 'react-dom';
 import _ from 'lodash';
 import { useInViewport } from 'ahooks';
@@ -34,6 +34,7 @@ import Main from './Main';
 import './style.less';
 
 export interface IProps {
+  panelWidth?: number; // 面板宽度
   datasourceValue?: number; // 全局数据源，如 values.datasourceValue 未设置则用全局数据源
   themeMode?: 'dark';
   dashboardId: string; // 仪表盘 ID 或者 ident
@@ -58,7 +59,7 @@ export interface IProps {
 
 function index(props: IProps) {
   const { t } = useTranslation('dashboard');
-  const { datasourceValue, dashboardId, id, time, setRange, timezone, setTimezone, variableConfig, isPreview } = props;
+  const { panelWidth, datasourceValue, dashboardId, id, time, setRange, timezone, setTimezone, variableConfig, isPreview } = props;
   const { datasourceList } = useContext(CommonStateContext);
   const values = _.cloneDeep(props.values);
   const containerEleRef = useRef<HTMLDivElement>(null);
@@ -81,6 +82,7 @@ function index(props: IProps) {
     : currentDatasourceValue;
 
   const queryResult = useQuery({
+    panelWidth,
     id,
     dashboardId,
     time,

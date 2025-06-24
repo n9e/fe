@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useRef, useContext, useEffect } from 'react';
+import React, { useRef, useContext } from 'react';
 import _ from 'lodash';
 import semver from 'semver';
 import { v4 as uuidv4 } from 'uuid';
@@ -38,7 +38,6 @@ import {
   panelsMergeToConfigs,
   getRowCollapsedPanels,
   getRowUnCollapsedPanels,
-  processRepeats,
 } from './utils';
 import Renderer from '../Renderer/Renderer/index';
 import Row from './Row';
@@ -47,6 +46,7 @@ import { ROW_HEIGHT } from '../Detail/utils';
 import { IDashboardConfig } from '../types';
 import { useGlobalState } from '../globalState';
 import ajustInitialValues from '../Renderer/utils/ajustInitialValues';
+import Panel from './Panel';
 import './style.less';
 
 interface IProps {
@@ -117,16 +117,6 @@ function index(props: IProps) {
   const editorRef = useRef<any>(null);
   const [panelClipboard, setPanelClipboard] = useGlobalState('panelClipboard');
 
-  useEffect(() => {
-    setPanels(processRepeats(panels, variableConfig));
-  }, [
-    JSON.stringify(
-      _.map(variableConfig, (item) => {
-        return item.value;
-      }),
-    ),
-  ]);
-
   return (
     <div className='dashboards-panels'>
       <ReactGridLayout
@@ -176,71 +166,73 @@ function index(props: IProps) {
             <div key={item.layout.i} data-id={item.layout.i}>
               {item.type !== 'row' ? (
                 semver.valid(item.version) ? (
-                  <Renderer
-                    isPreview={isPreview}
-                    isAuthorized={isAuthorized}
-                    themeMode={themeMode as 'dark'}
-                    dashboardId={_.toString(props.dashboardId)}
-                    dashboardID={dashboard.id}
-                    id={item.id}
-                    time={range}
-                    setRange={props.setRange}
-                    timezone={timezone}
-                    setTimezone={setTimezone}
-                    values={item}
-                    variableConfig={variableConfig}
-                    annotations={_.filter(annotations, (annotation) => annotation.panel_id === item.id)}
-                    onCloneClick={() => {
-                      setPanels((panels) => {
-                        return updatePanelsInsertNewPanel(panels, {
-                          ...item,
-                          id: uuidv4(),
-                          layout: {
-                            ...item.layout,
-                            i: uuidv4(),
+                  <Panel>
+                    <Renderer
+                      isPreview={isPreview}
+                      isAuthorized={isAuthorized}
+                      themeMode={themeMode as 'dark'}
+                      dashboardId={_.toString(props.dashboardId)}
+                      dashboardID={dashboard.id}
+                      id={item.id}
+                      time={range}
+                      setRange={props.setRange}
+                      timezone={timezone}
+                      setTimezone={setTimezone}
+                      values={item}
+                      variableConfig={variableConfig}
+                      annotations={_.filter(annotations, (annotation) => annotation.panel_id === item.id)}
+                      onCloneClick={() => {
+                        setPanels((panels) => {
+                          return updatePanelsInsertNewPanel(panels, {
+                            ...item,
+                            id: uuidv4(),
+                            layout: {
+                              ...item.layout,
+                              i: uuidv4(),
+                            },
+                          });
+                        });
+
+                        // 克隆面板必然会触发 layoutChange，更新 dashboard 放到 onLayoutChange 里面处理
+                        allowUpdateDashboardConfigs.current = true;
+                      }}
+                      onShareClick={() => {
+                        onShareClick(item);
+                      }}
+                      onEditClick={() => {
+                        editorRef.current?.setEditorData({
+                          mode: 'edit',
+                          visible: true,
+                          id: item.id,
+                          initialValues: {
+                            ...item,
+                            id: item.id,
                           },
                         });
-                      });
-
-                      // 克隆面板必然会触发 layoutChange，更新 dashboard 放到 onLayoutChange 里面处理
-                      allowUpdateDashboardConfigs.current = true;
-                    }}
-                    onShareClick={() => {
-                      onShareClick(item);
-                    }}
-                    onEditClick={() => {
-                      editorRef.current?.setEditorData({
-                        mode: 'edit',
-                        visible: true,
-                        id: item.id,
-                        initialValues: {
-                          ...item,
-                          id: item.id,
-                        },
-                      });
-                    }}
-                    onDeleteClick={() => {
-                      Modal.confirm({
-                        title: `是否删除图表：${item.name}`,
-                        onOk: async () => {
-                          setPanels((panels) => {
-                            const newPanels = _.filter(panels, (panel) => panel.id !== item.id);
-                            allowUpdateDashboardConfigs.current = true;
-                            updateDashboardConfigs(dashboard.id, {
-                              configs: panelsMergeToConfigs(dashboard.configs, newPanels),
-                            }).then((res) => {
-                              onUpdated(res);
+                      }}
+                      onDeleteClick={() => {
+                        Modal.confirm({
+                          title: `是否删除图表：${item.name}`,
+                          onOk: async () => {
+                            setPanels((panels) => {
+                              const newPanels = _.filter(panels, (panel) => panel.id !== item.id);
+                              allowUpdateDashboardConfigs.current = true;
+                              updateDashboardConfigs(dashboard.id, {
+                                configs: panelsMergeToConfigs(dashboard.configs, newPanels),
+                              }).then((res) => {
+                                onUpdated(res);
+                              });
+                              return newPanels;
                             });
-                            return newPanels;
-                          });
-                        },
-                      });
-                    }}
-                    onCopyClick={() => {
-                      setPanelClipboard(item);
-                    }}
-                    setAnnotationsRefreshFlag={props.setAnnotationsRefreshFlag}
-                  />
+                          },
+                        });
+                      }}
+                      onCopyClick={() => {
+                        setPanelClipboard(item);
+                      }}
+                      setAnnotationsRefreshFlag={props.setAnnotationsRefreshFlag}
+                    />
+                  </Panel>
                 ) : (
                   <div className='dashboards-panels-item-invalid'>
                     <div>
