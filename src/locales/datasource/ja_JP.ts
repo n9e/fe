@@ -57,6 +57,20 @@ const ja_JP = {
     queryFailed: 'クエリに失敗しました。後で再試行してください',
     offset_tip: '指定した時間範囲の前のデータをクエリするために使用されます。PromQLのoffsetに似ており、単位は秒です。',
   },
+  datasource: {
+    max_query_rows: '単一リクエストで取得可能な最大行数',
+    max_idle_conns: '最大アイドル接続数',
+    max_open_conns: '最大オープン接続数',
+    conn_max_lifetime: '接続の最大寿命 （単位：秒）',
+    timeout: 'タイムアウト時間 （単位：秒）',
+    timeout_ms: 'タイムアウト時間 （単位：ミリ秒）',
+  },
+  query: {
+    title: 'クエリ統計',
+    execute: 'クエリ',
+    query: 'クエリ条件',
+    query_required: 'クエリ条件は空にできません',
+  },
 };
 
 export default ja_JP;

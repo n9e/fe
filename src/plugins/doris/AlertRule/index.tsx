@@ -40,7 +40,7 @@ function getFirstDatasourceId(datasourceIds: number[] = [], datasourceList: { id
 
 export default function index(props: { datasourceCate: string; datasourceValue: number[]; disabled: boolean }) {
   const { datasourceCate, datasourceValue, disabled } = props;
-  const { t } = useTranslation('alertRules');
+  const { t } = useTranslation('db_doris');
   const { groupedDatasourceList } = useContext(CommonStateContext);
   const curDatasourceList = groupedDatasourceList[datasourceCate] || [];
   const datasourceId = getFirstDatasourceId(datasourceValue, curDatasourceList);
@@ -62,7 +62,7 @@ export default function index(props: { datasourceCate: string; datasourceValue: 
             <Card
               title={
                 <Space>
-                  <span>{t('查询统计')}</span>
+                  <span>{t('datasource:query.title')}</span>
                   <PlusCircleOutlined
                     onClick={() =>
                       add({
@@ -103,7 +103,7 @@ export default function index(props: { datasourceCate: string; datasourceValue: 
                         </InputGroupWithFormItem>
                       </Col>
                       <Col flex='none'>
-                        <InputGroupWithFormItem label={t('数据库')}>
+                        <InputGroupWithFormItem label={t('query.database')}>
                           <Form.Item {...field} name={[field.name, 'database']}>
                             <Select style={{ width: 200 }}>
                               {dbList.map((db) => (

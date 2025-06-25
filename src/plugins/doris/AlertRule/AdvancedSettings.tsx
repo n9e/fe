@@ -15,7 +15,7 @@ interface IProps {
 }
 
 function AdvancedSettings(props: IProps) {
-  const { t } = useTranslation('db_aliyunSLS');
+  const { t } = useTranslation('db_doris');
   const { span = 8, prefixField = {}, prefixName = [], disabled, showUnit } = props;
   const [open, setOpen] = useState(true);
 
@@ -43,7 +43,6 @@ function AdvancedSettings(props: IProps) {
                   </Tooltip>
                 </span>
               }
-              labelWidth={100}
             >
               <Form.Item
                 {...prefixField}
@@ -70,7 +69,6 @@ function AdvancedSettings(props: IProps) {
                   </Tooltip>
                 </span>
               }
-              labelWidth={100}
             >
               <Form.Item {...prefixField} name={[...prefixName, 'keys', 'labelKey']} style={{ width: '100%' }}>
                 <Input disabled={disabled} />

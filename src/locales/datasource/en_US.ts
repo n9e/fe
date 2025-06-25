@@ -65,5 +65,19 @@ const en_US = {
     queryFailed: 'Query failed, please try again later',
     offset_tip: 'Used to query data before a specified time period, similar to offset in PromQL, unit is seconds',
   },
+  datasource: {
+    max_query_rows: 'Maximum number of rows allowed to be retrieved in a single request',
+    max_idle_conns: 'Maximum idle connections',
+    max_open_conns: 'Maximum open connections',
+    conn_max_lifetime: 'Maximum connection lifetime (unit: seconds)',
+    timeout: 'Timeout (unit: seconds)',
+    timeout_ms: 'Timeout (unit: milliseconds)',
+  },
+  query: {
+    title: 'Queries',
+    execute: 'Execute',
+    query: 'Query',
+    query_required: 'Query is required',
+  },
 };
 export default en_US;

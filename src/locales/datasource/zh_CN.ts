@@ -65,5 +65,19 @@ const zh_CN = {
     queryFailed: '查询失败，请稍后重试',
     offset_tip: '用于查询指定时间段之前的数据，类似 PromQL 中的 offset，单位为秒',
   },
+  datasource: {
+    max_query_rows: '单次请求允许检索的最大行数',
+    max_idle_conns: '最大空闲连接数',
+    max_open_conns: '最大打开连接数',
+    conn_max_lifetime: '连接最大生存时间（单位: 秒）',
+    timeout: '超时时间（单位: 秒）',
+    timeout_ms: '超时时间（单位: 毫秒）',
+  },
+  query: {
+    title: '查询统计',
+    execute: '查询',
+    query: '查询条件',
+    query_required: '查询条件不能为空',
+  },
 };
 export default zh_CN;

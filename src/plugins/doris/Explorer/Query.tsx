@@ -57,15 +57,12 @@ function DorisRawQuery({ t, disabled, submitBtn, setSubMode, form, treeSelect })
                 form.setFields([{ name: ['query', 'sql'], value: sql.replaceAll('\n', ' ') }]);
               }}
             >
-              {dorisT('快捷查询')}
-              <Tooltip
-                title={dorisT('快捷查询 根据固定的SQL模板，快速生成查询语句，比如字段A大于0，只需要输入 A > 0，通过点击该按钮可以快速切换到自定义模式，支持查看并修改SQL语句')}
-              >
+              {dorisT('quick_query')}
+              <Tooltip title={dorisT('quick_query_tip')}>
                 <QuestionCircleOutlined />
               </Tooltip>
             </Button>
           }
-          labelWidth={104}
           noStyle
         >
           <Form.Item name={['query', 'condition']}>
@@ -79,14 +76,7 @@ function DorisRawQuery({ t, disabled, submitBtn, setSubMode, form, treeSelect })
             display: 'flex',
           }}
         >
-          <InputGroupWithFormItem
-            label={
-              <Space>
-                <span>{t('query.time_field')}</span>
-              </Space>
-            }
-            labelWidth={95}
-          >
+          <InputGroupWithFormItem label={t('query.time_field')}>
             <Form.Item
               name={['query', 'time_field']}
               rules={[
@@ -136,13 +126,12 @@ function DorisSQlQuery({ t, disabled, submitBtn, setSubMode, form }) {
                 setSubMode('condition');
               }}
             >
-              {dorisT('自定义查询')}
-              <Tooltip title={t('自定义查询 支持用户根据SQL语法自由输入查询语句')}>
+              {dorisT('custom_query')}
+              <Tooltip title={t('custom_query_tip')}>
                 <QuestionCircleOutlined />
               </Tooltip>
             </Button>
           }
-          labelWidth={114}
           noStyle
         >
           <Form.Item
@@ -158,7 +147,7 @@ function DorisSQlQuery({ t, disabled, submitBtn, setSubMode, form }) {
           </Form.Item>
         </InputGroupWithFormItem>
       </Col>
-      <Col flex='54px'>{submitBtn}</Col>
+      <Col flex='none'>{submitBtn}</Col>
     </Row>
   );
 }
@@ -169,7 +158,7 @@ function DorisMetricQuery({ t, disabled, submitBtn }) {
     <>
       <Row gutter={8} wrap={false}>
         <Col flex='auto'>
-          <InputGroupWithFormItem label={'自定义查询'} labelWidth={84}>
+          <InputGroupWithFormItem label={t('custom_query')}>
             <Form.Item
               name={['query', 'sql']}
               rules={[
@@ -183,9 +172,7 @@ function DorisMetricQuery({ t, disabled, submitBtn }) {
             </Form.Item>
           </InputGroupWithFormItem>
         </Col>
-        <Col flex='60px' style={{ flexShrink: 0 }}>
-          {submitBtn}
-        </Col>
+        <Col flex='none'>{submitBtn}</Col>
       </Row>
       <div
         style={{
@@ -224,7 +211,6 @@ function DorisMetricQuery({ t, disabled, submitBtn }) {
                     </Tooltip>
                   </span>
                 }
-                labelWidth={100}
               >
                 <Form.Item
                   name={['query', 'keys', 'valueKey']}
@@ -252,7 +238,6 @@ function DorisMetricQuery({ t, disabled, submitBtn }) {
                     </Tooltip>
                   </span>
                 }
-                labelWidth={100}
               >
                 <Form.Item
                   name={['query', 'keys', 'labelKey']}
@@ -271,7 +256,6 @@ function DorisMetricQuery({ t, disabled, submitBtn }) {
                     <span>{t('query.time_field')}</span>
                   </Space>
                 }
-                labelWidth={95}
               >
                 <Form.Item
                   name={['query', 'keys', 'timeKey']}

@@ -3,11 +3,13 @@ import { Button, Popover, Table } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
+import getTextWidth from '@/utils/getTextWidth';
+
 import { logQuery } from '../services';
 import { getFields } from '../utils';
 
 export default function GraphPreview({ cate, datasourceValue, sql, keys, database }) {
-  const { t } = useTranslation('db_aliyunSLS');
+  const { t } = useTranslation('db_doris');
   const divRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
   const [data, setData] = useState<any[]>([]);
@@ -17,7 +19,7 @@ export default function GraphPreview({ cate, datasourceValue, sql, keys, databas
       logQuery({
         cate,
         datasource_id: datasourceValue,
-        query: [{ sql, database, keys }],
+        query: [{ sql, database }],
       }).then((res) => {
         setData(res.list || []);
         setColumnsKeys(getFields(res?.list, sql));
@@ -33,20 +35,30 @@ export default function GraphPreview({ cate, datasourceValue, sql, keys, databas
         onVisibleChange={(visible) => {
           setVisible(visible);
         }}
-        title={t('preview')}
+        title={t('common:btn.data_preview')}
         content={
-          <div style={{ width: 700 }}>
+          <div style={{ width: 980 }}>
             <Table
               size='small'
               tableLayout='auto'
-              scroll={{ x: 700, y: 300 }}
+              scroll={{ x: 'max-content', y: 500 }}
               dataSource={data}
               columns={_.map(columnsKeys, (key) => {
                 return {
                   title: key,
                   dataIndex: key,
                   key: key,
-                  className: 'alert-rule-sls-preview-table-column',
+                  render(value) {
+                    return (
+                      <div
+                        style={{
+                          minWidth: getTextWidth(key) + 20,
+                        }}
+                      >
+                        {value}
+                      </div>
+                    );
+                  },
                 };
               })}
             />
@@ -66,7 +78,7 @@ export default function GraphPreview({ cate, datasourceValue, sql, keys, databas
             }
           }}
         >
-          {t('preview')}
+          {t('common:btn.data_preview')}
         </Button>
       </Popover>
     </div>

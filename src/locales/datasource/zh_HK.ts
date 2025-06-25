@@ -65,6 +65,20 @@ const zh_HK = {
     queryFailed: '查詢失敗，請稍後重試',
     offset_tip: '用於查詢指定時間段之前的資料，類似 PromQL 中的 offset，單位為秒',
   },
+  datasource: {
+    max_query_rows: '單次請求允許檢索的最大行數',
+    max_idle_conns: '最大空閒連接數',
+    max_open_conns: '最大打開連接數',
+    conn_max_lifetime: '連接最大生存時間 （單位: 秒）',
+    timeout: '超時時間 （單位: 秒）',
+    timeout_ms: '超時時間 （單位: 毫秒）',
+  },
+  query: {
+    title: '查詢統計',
+    execute: '查詢',
+    query: '查詢條件',
+    query_required: '查詢條件不能為空',
+  },
 };
 
 export default zh_HK;
