@@ -58,6 +58,7 @@ const zh_HK = {
     config: '設定',
     copy2: '複製',
     reload: '刷新',
+    data_preview: '數據預覽',
   },
   table: {
     name: '名稱',
