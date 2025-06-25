@@ -1,6 +1,7 @@
 import React from 'react';
 import { Form, Input, Space, Tag } from 'antd';
 import { useTranslation, Trans } from 'react-i18next';
+import Vars from './Vars';
 
 export default function Custom({ vars }: { vars: string[] }) {
   const { t } = useTranslation('inputEnlarge');
@@ -27,16 +28,7 @@ export default function Custom({ vars }: { vars: string[] }) {
       >
         <Input />
       </Form.Item>
-      <div>
-        <div className='input-enlarge-vars-title'>{t('可选变量')}</div>
-        <Space wrap size={[0, 8]}>
-          {vars.map((item) => (
-            <Tag key={item} style={{ cursor: 'pointer' }} onClick={() => handleClickVar(item)}>
-              ${item}
-            </Tag>
-          ))}
-        </Space>
-      </div>
+      <Vars vars={vars} handleClickVar={handleClickVar} />
     </div>
   );
 }

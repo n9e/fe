@@ -4,13 +4,13 @@ import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import queryString from 'query-string';
-import { PlusOutlined, InfoCircleOutlined, EditOutlined, CheckOutlined, DownOutlined, UpOutlined } from '@ant-design/icons';
-
+import { IS_ENT } from '@/utils/constant';
 import './index.less';
 import { copy2ClipBoard } from '@/utils';
 import Custom from './components/Custom';
 import './locale';
 import Dashboard from './components/Dashboard';
+import LogExplore from './components/LogExplore';
 
 enum Type {
   Custom,
@@ -52,8 +52,8 @@ export default function LinkBuilder({ visible, onClose, onChange, vars }) {
           <Select style={{ width: '100%' }}>
             <Select.Option value={Type.Custom}>{t('自定义链接')}</Select.Option>
             <Select.Option value={Type.Dashboard}>{t('仪表盘')}</Select.Option>
-            <Select.Option value={Type.LogExplore}>{t('日志探索')}</Select.Option>
-            <Select.Option value={Type.Trace}>Trace</Select.Option>
+            {IS_ENT && <Select.Option value={Type.LogExplore}>{t('日志探索')}</Select.Option>}
+            {IS_ENT && <Select.Option value={Type.Trace}>Trace</Select.Option>}
           </Select>
         </Form.Item>
         <Form.Item shouldUpdate={(cur, prev) => cur.target_type !== prev.target_type} noStyle>
@@ -64,6 +64,9 @@ export default function LinkBuilder({ visible, onClose, onChange, vars }) {
             }
             if (type === Type.Dashboard) {
               return <Dashboard vars={vars} />;
+            }
+            if (type === Type.LogExplore) {
+              return <LogExplore vars={vars} />;
             }
             return null;
           }}
