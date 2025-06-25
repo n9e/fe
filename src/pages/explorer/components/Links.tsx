@@ -7,6 +7,67 @@ import { basePrefix } from '@/App';
 import { ILogExtract, ILogURL, ILogMappingParams } from '@/pages/log/IndexPatterns/types';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 
+export function replaceVarAndGenerateLink(link: string, rawValue: object, regExtractArr?: ILogExtract[], mappingParamsArr?: ILogMappingParams[]) {
+  const param = new URLSearchParams(link);
+  let reallink = link;
+  const timeFormat = param.get('$__time_format__');
+  const startMarginNew = param.get('${__start_time_margin__}');
+  const endMarginNew = param.get('${__end_time_margin__}');
+
+  reallink = reallink.replace('$local_protocol', location.protocol).replace('$local_domain', location.host).replace('$local_url', location.origin);
+
+  if (startMarginNew) {
+    reallink = reallink.replace('&$__start_time_margin__' + '=' + startMarginNew, '');
+  }
+  if (endMarginNew) {
+    reallink = reallink.replace('&$__end_time_margin__' + '=' + endMarginNew, '');
+  }
+  if (timeFormat) {
+    reallink = reallink.replace('&$__time_format__' + '=' + timeFormat, '');
+  }
+  if (mappingParamsArr && mappingParamsArr.length > 0 && reallink.includes('$__mapping_para__')) {
+    try {
+      let match = false;
+      for (let i = 0; i < mappingParamsArr.length; i++) {
+        if (match) continue;
+        const { op, v, str, field } = mappingParamsArr[i];
+        const fieldStr = _.get(rawValue, field.split('.'));
+        if (op === '=~' && new RegExp(v).test(fieldStr)) {
+          reallink = reallink.replace('$__mapping_para__', str);
+          match = true;
+        }
+        if (op === '!~' && !new RegExp(v).test(fieldStr)) {
+          reallink = reallink.replace('$__mapping_para__', str);
+          match = true;
+        }
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
+  const unReplaceKeyReg = /\$\{(.+?)\}/g;
+  const valueWithExtract = _.cloneDeep(rawValue);
+  regExtractArr?.forEach((i) => {
+    const { field, newField, reg } = i;
+    const fieldValueWholeWord = valueWithExtract[field];
+    const fieldValue = _.get(rawValue, field.split('.'));
+    const arr = new RegExp(reg).exec(fieldValueWholeWord || fieldValue);
+    if (arr && arr.length > 1) {
+      valueWithExtract[newField] = arr[1];
+    }
+  });
+  reallink = reallink.replace(unReplaceKeyReg, function (a, b) {
+    const wholeWord = valueWithExtract[b];
+    return wholeWord || _.get(valueWithExtract, b.split('.'));
+  });
+  const unReplaceKeyRegNew = /\$(.+?)(?=&|$)/gm;
+  reallink = reallink.replace(unReplaceKeyRegNew, function (a, b) {
+    const wholeWord = valueWithExtract[b];
+    return wholeWord || _.get(valueWithExtract, b.split('.'));
+  });
+  return reallink;
+}
+
 const handleNav = (link: string, rawValue: object, query: { start: number; end: number }, regExtractArr?: ILogExtract[], mappingParamsArr?: ILogMappingParams[]) => {
   const param = new URLSearchParams(link);
   // 为了兼容旧逻辑，所以${} 中的也需要替换

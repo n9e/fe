@@ -292,7 +292,7 @@ function EditField(props: Props & ModalWrapProps) {
 
 export default ModalHOC<Props>(EditField);
 
-export function Link({ form, fieldsAll }: { form: FormInstance; fieldsAll: IField[] }) {
+export function Link({ form, fieldsAll, rawData }: { form: FormInstance; fieldsAll: IField[]; rawData?: object }) {
   const { t } = useTranslation('es-index-patterns');
   const handleAppend = () => {
     const list = form.getFieldValue(['linkArr']);
@@ -359,7 +359,7 @@ export function Link({ form, fieldsAll }: { form: FormInstance; fieldsAll: IFiel
               </Row>
             )}
             {fields.map(({ key, name }) => (
-              <LinkFieldRow key={name} name={name} remove={remove} form={form} add={add} fields={fieldsAll} />
+              <LinkFieldRow key={name} name={name} remove={remove} form={form} add={add} fields={fieldsAll} rawData={rawData} />
             ))}
             <Form.ErrorList errors={errors} />
           </>
@@ -427,7 +427,23 @@ function StyleConfig({ form, fieldsAll, t }) {
   );
 }
 
-function LinkFieldRow({ key, name, form, remove, add, fields }: { key: number; name: number; form: FormInstance; remove: (v) => void; add: () => void; fields: IField[] }) {
+function LinkFieldRow({
+  key,
+  name,
+  form,
+  remove,
+  add,
+  fields,
+  rawData,
+}: {
+  key: number;
+  name: number;
+  form: FormInstance;
+  remove: (v) => void;
+  add: () => void;
+  fields: IField[];
+  rawData?: object;
+}) {
   const { t } = useTranslation('es-index-patterns');
   const formatType = Form.useWatch(['arr', name, 'formatMap', 'type'], form);
   const regExtractArr = Form.useWatch(['regExtractArr'], form);
@@ -455,7 +471,12 @@ function LinkFieldRow({ key, name, form, remove, add, fields }: { key: number; n
         <Form.Item name={[name, 'urlTemplate']} rules={[{ required: true, message: t('should_not_empty') }]}>
           <InputEnlarge
             placeholder={t('field.format.params.url.urlTemplatePlaceholder1', { skipInterpolation: true })}
-            linkBuilder={{ variables: fields.map((item) => item.name), extracts: regExtractArr?.map((item) => item.newField), mappingParams: mappingParamsArr?.length > 0 }}
+            linkBuilder={{
+              variables: fields.map((item) => item.name),
+              extracts: regExtractArr,
+              mappingParamsArr: mappingParamsArr,
+              rawData: rawData,
+            }}
           />
         </Form.Item>
       </Col>

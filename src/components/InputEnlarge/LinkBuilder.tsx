@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef, useImperativeHandle } from 'react';
-import { Form, Select, Button, Space, Row, Col, Alert, Tooltip, Modal, Input } from 'antd';
-import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
+import { Form, Select, Modal } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import queryString from 'query-string';
@@ -11,6 +10,8 @@ import Custom from './components/Custom';
 import './locale';
 import Dashboard from './components/Dashboard';
 import LogExplore from './components/LogExplore';
+import { formatLogExploreLink } from './components/LogRow';
+import { ILogMappingParams, ILogExtract } from '@/pages/log/IndexPatterns/types';
 
 enum Type {
   Custom,
@@ -21,10 +22,25 @@ enum Type {
 
 const builtInVariables = ['__from', '__to', '__time_format__', '__local_url'];
 
-export default function LinkBuilder({ visible, onClose, onChange, vars }) {
+export default function LinkBuilder({
+  visible,
+  onClose,
+  onChange,
+  vars,
+  rawData,
+  extracts,
+  mappingParamsArr,
+}: {
+  visible: boolean;
+  onClose: () => void;
+  onChange: any;
+  vars: string[];
+  rawData: object;
+  extracts?: ILogExtract[];
+  mappingParamsArr?: ILogMappingParams[];
+}) {
   const [form] = Form.useForm();
   const { t } = useTranslation();
-  const traceRef = useRef<any>();
 
   const handleClose = () => {
     onClose();
@@ -40,6 +56,10 @@ export default function LinkBuilder({ visible, onClose, onChange, vars }) {
         values.dashboard.variables && Object.keys(values.dashboard.variables).length > 0 ? '&' + queryString.stringify(values.dashboard.variables, { encode: false }) : '';
       const fixedStr = queryStr.length > 0 ? '&__variable_value_fixed=' + values.dashboard.variable_value_fixed : '';
       const url = '$local_url' + rangeStr + queryStr + fixedStr;
+      onChange(url);
+    } else if (values.target_type === Type.LogExplore) {
+      const range = values.logExplore.range === 'from-to' ? { start: '$__from', end: '$__to' } : { start: values.logExplore.range, end: 'now' };
+      const url = formatLogExploreLink(values.logExplore, range as unknown as { start: number; end: number });
       onChange(url);
     }
     onClose();
@@ -66,7 +86,7 @@ export default function LinkBuilder({ visible, onClose, onChange, vars }) {
               return <Dashboard vars={vars} />;
             }
             if (type === Type.LogExplore) {
-              return <LogExplore vars={vars} />;
+              return <LogExplore vars={vars} rawData={rawData} extracts={extracts} mappingParamsArr={mappingParamsArr} />;
             }
             return null;
           }}

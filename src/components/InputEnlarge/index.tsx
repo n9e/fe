@@ -4,6 +4,7 @@ import { FullscreenOutlined, ToolOutlined } from '@ant-design/icons';
 import useOnClickOutside from '../useOnClickOutside';
 import { CommonStateContext } from '@/App';
 import LinkBuilder from './LinkBuilder';
+import { ILogMappingParams, ILogExtract } from '@/pages/log/IndexPatterns/types';
 
 export default function InputEnlarge({
   disabled,
@@ -11,11 +12,15 @@ export default function InputEnlarge({
   onChange,
   linkBuilder,
   ...props
-}: InputProps & { linkBuilder?: { variables?: string[]; extracts?: string[]; mappingParams?: boolean } }) {
+}: InputProps & { linkBuilder?: { variables?: string[]; extracts?: ILogExtract[]; mappingParamsArr?: ILogMappingParams[]; rawData?: object } }) {
   const { darkMode } = useContext(CommonStateContext);
   const [visible, setVisible] = useState(false);
   const [linkBuilderVisible, setLinkBuilderVisible] = useState(false);
-  const vars = [...(linkBuilder?.variables || []), ...(linkBuilder?.extracts || []), ...(linkBuilder?.mappingParams ? ['__mapping_para__'] : [])];
+  const vars = [
+    ...(linkBuilder?.variables || []),
+    ...(linkBuilder?.extracts?.map((i) => i.newField) || []),
+    ...(linkBuilder?.mappingParamsArr?.length ? ['__mapping_para__'] : []),
+  ];
 
   const eleRef = useRef<any>(null);
 
@@ -41,12 +46,15 @@ export default function InputEnlarge({
         </Input.Group>
       </Tooltip>
       <LinkBuilder
+        rawData={linkBuilder?.rawData || {}}
         vars={vars}
         visible={linkBuilderVisible}
-        onClose={(v) => {
+        onClose={() => {
           setLinkBuilderVisible(false);
         }}
         onChange={onChange}
+        extracts={linkBuilder?.extracts}
+        mappingParamsArr={linkBuilder?.mappingParamsArr}
       />
     </div>
   );
