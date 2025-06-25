@@ -98,6 +98,8 @@ const ja_JP = {
   },
   test_and_save_btn: '接続テストと保存',
   test_btn: '接続テスト',
+  auth_enable: '認証を有効にする',
+  skip_tls_verify: 'TLS検証をスキップ',
 };
 
 export default ja_JP;

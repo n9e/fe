@@ -97,5 +97,7 @@ const en_US = {
   },
   test_and_save_btn: 'Save & test',
   test_btn: 'Save',
+  auth_enable: 'Enable Auth',
+  skip_tls_verify: 'Skip TLS verification',
 };
 export default en_US;

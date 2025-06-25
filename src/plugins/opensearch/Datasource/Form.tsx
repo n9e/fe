@@ -3,13 +3,15 @@ import { Form, Card, Select, InputNumber, Tooltip, Switch } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
+
 import { scrollToFirstError } from '@/utils';
 import Name from '@/pages/datasource/components/items/Name';
-import BasicAuth from '@/pages/datasource/components/items/BasicAuth';
-import Headers from '@/pages/datasource/components/items/Headers';
+import BasicAuth from '@/pages/datasource/components/itemsNG/BasicAuth';
+import Headers from '@/pages/datasource/components/itemsNG/Headers';
 import Description from '@/pages/datasource/components/items/Description';
 import Footer from '@/pages/datasource/components/items/Footer';
-import Cluster from '@/pages/datasource/components/items/Cluster';
+import Cluster from '@/pages/datasource/components/itemsNG/Cluster';
+
 import HTTPList from './HTTPList';
 
 export default function FormCpt({ action, data, onFinish, submitLoading }: any) {
@@ -23,6 +25,7 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
       value: '2.0+',
     },
   ];
+  const cate = 'os';
 
   return (
     <Form
@@ -40,8 +43,8 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
       <Card title={t(`${action}_title`)}>
         <Name />
         <HTTPList />
-        <BasicAuth />
-        <Headers />
+        <BasicAuth cate={cate} showAuthEnable showTls />
+        <Headers cate={cate} />
         <div
           style={{
             marginBottom: '24px',
@@ -102,7 +105,7 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
             />
           </Form.Item>
         </div>
-        <div>
+        {/* <div>
           <div className='page-title'>{t('form.os.enable_write_title')}</div>
           <>
             <span className='mr16'>{t('form.os.enable_write')}</span>
@@ -110,8 +113,8 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
               <Switch />
             </Form.Item>
           </>
-        </div>
-        <Cluster form={form} clusterRef={clusterRef} />
+        </div> */}
+        <Cluster cate={cate} clusterRef={clusterRef} />
         <Description />
       </Card>
       <Footer id={data?.id} submitLoading={submitLoading} />

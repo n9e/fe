@@ -94,5 +94,7 @@ const zh_CN = {
   },
   test_and_save_btn: '测试连通性并保存',
   save_btn: '不测试连通性直接保存',
+  auth_enable: '开启授权',
+  skip_tls_verify: '跳过 TLS 检查',
 };
 export default zh_CN;
