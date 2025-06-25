@@ -96,5 +96,10 @@ const en_US = {
   meta_no_data: 'No data',
   all_no_data: 'No collector deployed? Please refer to <a>Installation Manual</a> for installation and deployment',
   categraf_doc: 'Categraf documentation',
+  hosts_select: {
+    placeholder: 'Host IP',
+    modal_title: 'Fill in host IP',
+    modal_placeholder: 'Each line is one host IP',
+  },
 };
 export default en_US;
