@@ -89,15 +89,21 @@ export default function index(props: { datasourceCate: string; datasourceValue: 
                       <Col flex='auto'>
                         <InputGroupWithFormItem
                           label={
-                            <span>
-                              SQL{' '}
-                              <Tooltip title={t('SQL样例：查询最近5分钟的日志行数 SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)')}>
+                            <Space>
+                              {t('datasource:query.query')}
+                              <Tooltip title={t('query.query_tip')}>
                                 <QuestionCircleOutlined />
                               </Tooltip>
-                            </span>
+                            </Space>
                           }
                         >
-                          <Form.Item {...field} name={[field.name, 'sql']} validateTrigger={['onBlur']} trigger='onChange' rules={[{ required: true, message: t('请输入') }]}>
+                          <Form.Item
+                            {...field}
+                            name={[field.name, 'sql']}
+                            validateTrigger={['onBlur']}
+                            trigger='onChange'
+                            rules={[{ required: true, message: t('datasource:query.query_required') }]}
+                          >
                             <Input placeholder='' disabled={disabled}></Input>
                           </Form.Item>
                         </InputGroupWithFormItem>

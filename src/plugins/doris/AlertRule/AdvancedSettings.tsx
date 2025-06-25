@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Row, Col, Form, Input, Tooltip, Select } from 'antd';
+import { Row, Col, Form, Input, Tooltip, Space } from 'antd';
 import { DownOutlined, RightOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -28,7 +28,7 @@ function AdvancedSettings(props: IProps) {
           }}
           style={{ cursor: 'pointer' }}
         >
-          {open ? <DownOutlined /> : <RightOutlined />} {t('query.advancedSettings.title')}
+          {open ? <DownOutlined /> : <RightOutlined />} {t('datasource:query.advancedSettings.title')}
         </span>
       </div>
       <div style={{ display: open ? 'block' : 'none' }}>
@@ -36,12 +36,12 @@ function AdvancedSettings(props: IProps) {
           <Col span={span}>
             <InputGroupWithFormItem
               label={
-                <span>
-                  ValueKey{' '}
-                  <Tooltip title={t('query.advancedSettings.valueKey_tip')}>
+                <Space>
+                  {t('datasource:query.advancedSettings.valueKey')}
+                  <Tooltip title={t('datasource:query.advancedSettings.valueKey_tip')}>
                     <QuestionCircleOutlined />
                   </Tooltip>
-                </span>
+                </Space>
               }
             >
               <Form.Item
@@ -51,7 +51,7 @@ function AdvancedSettings(props: IProps) {
                 rules={[
                   {
                     required: true,
-                    message: t('请输入'),
+                    message: t('datasource:query.advancedSettings.valueKey_required'),
                   },
                 ]}
               >
@@ -62,12 +62,12 @@ function AdvancedSettings(props: IProps) {
           <Col span={span}>
             <InputGroupWithFormItem
               label={
-                <span>
-                  LabelKey{' '}
-                  <Tooltip title={t('query.advancedSettings.labelKey_tip')}>
+                <Space>
+                  {t('datasource:query.advancedSettings.labelKey')}
+                  <Tooltip title={t('datasource:query.advancedSettings.labelKey_tip')}>
                     <QuestionCircleOutlined />
                   </Tooltip>
-                </span>
+                </Space>
               }
             >
               <Form.Item {...prefixField} name={[...prefixName, 'keys', 'labelKey']} style={{ width: '100%' }}>

@@ -78,6 +78,17 @@ const en_US = {
     execute: 'Execute',
     query: 'Query',
     query_required: 'Query is required',
+    query_placeholder: 'Enter SQL to query, Press Shift+Enter to wrap',
+    query_placeholder2: 'Press Shift+Enter to wrap',
+    advancedSettings: {
+      title: 'Auxiliary Configuration',
+      tags_placeholder: 'Enter multiple tags by pressing Enter',
+      valueKey: 'Value Field',
+      valueKey_tip: 'SQL query results usually contain multiple columns, you can specify which columns are used as curves to display on the chart',
+      valueKey_required: 'Value Field is required',
+      labelKey: 'Label Field',
+      labelKey_tip: 'SQL query results usually contain multiple columns, you can specify which columns are used as label metadata for curves',
+    },
   },
 };
 export default en_US;

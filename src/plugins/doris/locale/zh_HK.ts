@@ -13,17 +13,9 @@ const zh_HK = {
     },
     time_field: '時間字段',
     time_field_msg: '請輸入時間字段',
-    sql_msg: '請輸入SQL語句',
+    query_tip: 'SQL樣例：查詢最近5分鐘的日志行數 SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)',
     execute: '查詢',
     database: '數據庫',
-    advancedSettings: {
-      title: '輔助配置',
-      valueKey: '值字段',
-      valueKey_tip: 'SQL 查詢結果通常包含多個列，您可以指定哪些列的值作為曲線展示在圖表上',
-      valueKey_required: '值字段不能為空',
-      labelKey: '標籤字段',
-      labelKey_tip: 'SQL 查詢結果通常包含多個列，您可以指定哪些列作為曲線的標籤元信息',
-    },
   },
 };
 
