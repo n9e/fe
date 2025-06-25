@@ -11,6 +11,7 @@ interface Props {
 export default function BasicAuth(props: Props) {
   const { t } = useTranslation('datasourceManage');
   const { cate, showAuthEnable, showTls } = props;
+  const authEnable = Form.useWatch(['settings', `${cate}.basic`, `${cate}.auth.enable`]);
 
   return (
     <>
@@ -28,12 +29,12 @@ export default function BasicAuth(props: Props) {
       </Form.Item>
       <Row gutter={16}>
         <Col span={12}>
-          <Form.Item label={t('form.username')} name={['settings', `${cate}.basic`, `${cate}.user`]}>
+          <Form.Item label={t('form.username')} name={['settings', `${cate}.basic`, `${cate}.user`]} rules={[{ required: authEnable }]}>
             <Input autoComplete='off' />
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item label={t('form.password')} name={['settings', `${cate}.basic`, `${cate}.password`]}>
+          <Form.Item label={t('form.password')} name={['settings', `${cate}.basic`, `${cate}.password`]} rules={[{ required: authEnable }]}>
             <Input.Password autoComplete='new-password' />
           </Form.Item>
         </Col>
