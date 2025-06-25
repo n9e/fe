@@ -92,6 +92,11 @@ const ru_RU = {
   meta_no_data: 'Нет данных',
   all_no_data: 'Не установлены сборщики данных? См. <a>руководство по установке</a>',
   categraf_doc: 'Документация Categraf',
+  hosts_select: {
+    placeholder: 'Пожалуйста, выберите хосты для мониторинга',
+    modal_title: 'Введите IP-адреса хостов',
+    modal_placeholder: 'Каждый IP-адрес на новой строке',
+  },
 };
 
 export default ru_RU;
