@@ -139,7 +139,7 @@ function DorisSQlQuery({ t, disabled, submitBtn, setSubMode, form }) {
             rules={[
               {
                 required: true,
-                message: t('query.sql_msg'),
+                message: t('datasource:query.query_required'),
               },
             ]}
           >
@@ -164,7 +164,7 @@ function DorisMetricQuery({ t, disabled, submitBtn }) {
               rules={[
                 {
                   required: true,
-                  message: t('query.sql_msg'),
+                  message: t('datasource:query.query_required'),
                 },
               ]}
             >

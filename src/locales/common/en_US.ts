@@ -59,7 +59,7 @@ const en_US = {
     config: 'Config',
     copy2: 'Copy',
     reload: 'Reload',
-    data_preview: 'Data preview',
+    data_preview: 'Preview',
   },
   table: {
     name: 'Name',

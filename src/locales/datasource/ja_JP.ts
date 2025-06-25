@@ -70,6 +70,17 @@ const ja_JP = {
     execute: 'クエリ',
     query: 'クエリ条件',
     query_required: 'クエリ条件は空にできません',
+    query_placeholder: 'SQLを入力してクエリを実行します。Shift+Enterで改行します',
+    query_placeholder2: 'Shift+Enterで改行します',
+    advancedSettings: {
+      title: '高度な設定',
+      tags_placeholder: '複数入力可能',
+      valueKey: '値フィールド',
+      valueKey_tip: 'SQLクエリの結果には通常複数の列が含まれています。これらの列のうち、どの列の値をグラフに表示するかを指定できます',
+      valueKey_required: '値フィールドは空にできません',
+      labelKey: 'ラベルフィールド',
+      labelKey_tip: 'SQLクエリの結果には通常複数の列が含まれています。これらの列のうち、どの列をグラフのラベル情報として使用するかを指定できます',
+    },
   },
 };
 

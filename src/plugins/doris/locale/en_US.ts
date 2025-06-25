@@ -14,17 +14,10 @@ const en_US = {
     },
     time_field: 'Time field',
     time_field_msg: 'Please enter the time field',
-    sql_msg: 'Please enter the SQL statement',
+    query_tip:
+      'SQL example: To query the number of log entries in the last 5 minutes, use SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)',
     execute: 'Execute',
     database: 'Database',
-    advancedSettings: {
-      title: 'Advanced settings',
-      valueKey: 'Value field',
-      valueKey_tip: "SQL query results usually contain multiple columns. You can specify which columns' values are displayed as curves on the chart",
-      valueKey_required: 'Value field cannot be empty',
-      labelKey: 'Label field',
-      labelKey_tip: 'SQL query results usually contain multiple columns. You can specify which columns are used as label metadata for curves',
-    },
   },
 };
 export default en_US;
