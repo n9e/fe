@@ -14,8 +14,10 @@ const zh_HK = {
     time_field: '時間字段',
     time_field_msg: '請輸入時間字段',
     query_tip: 'SQL樣例：查詢最近5分鐘的日志行數 SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)',
+    query_placeholder: 'SELECT count(*) as count FROM db_name.table_name WHERE ts >= now() - 5m',
     execute: '查詢',
     database: '數據庫',
+    database_placeholder: '默認可以留空',
   },
 };
 

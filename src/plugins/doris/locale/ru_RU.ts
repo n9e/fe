@@ -16,8 +16,10 @@ const ru_RU = {
     time_field_msg: 'Пожалуйста, введите поле времени',
     query_tip:
       'Пример SQL: Чтобы запросить количество записей журнала за последние 5 минут, используйте SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)',
+    query_placeholder: 'SELECT count(*) as count FROM db_name.table_name WHERE ts >= now() - 5m',
     execute: 'Запрос',
     database: 'База данных',
+    database_placeholder: 'По умолчанию можно оставить пустым',
   },
 };
 export default ru_RU;
