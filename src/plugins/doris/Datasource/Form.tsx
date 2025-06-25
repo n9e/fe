@@ -26,7 +26,7 @@ export default function Doris(props: Props) {
   const [advancedVisible, setAdvancedVisible] = React.useState(false);
 
   return (
-    <Form form={form} layout='vertical' onFinish={onFinish} className='settings-source-form'>
+    <Form form={form} layout='vertical' onFinish={onFinish} initialValues={data} className='settings-source-form'>
       <Card title={t(`datasourceManage:${action}_title`)}>
         <Name />
         <div className='page-title'>FE node</div>
