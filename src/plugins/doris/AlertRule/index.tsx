@@ -86,6 +86,19 @@ export default function index(props: { datasourceCate: string; datasourceValue: 
                           <QueryName existingNames={_.map(queries, 'ref')} />
                         </Form.Item>
                       </Col>
+                      <Col flex='none'>
+                        <InputGroupWithFormItem label={t('query.database')}>
+                          <Form.Item {...field} name={[field.name, 'database']}>
+                            <Select style={{ width: 200 }} placeholder={t('query.database_placeholder')} disabled={disabled}>
+                              {dbList.map((db) => (
+                                <Select.Option key={db} value={db}>
+                                  {db}
+                                </Select.Option>
+                              ))}
+                            </Select>
+                          </Form.Item>
+                        </InputGroupWithFormItem>
+                      </Col>
                       <Col flex='auto'>
                         <InputGroupWithFormItem
                           label={
@@ -104,20 +117,7 @@ export default function index(props: { datasourceCate: string; datasourceValue: 
                             trigger='onChange'
                             rules={[{ required: true, message: t('datasource:query.query_required') }]}
                           >
-                            <Input placeholder='' disabled={disabled}></Input>
-                          </Form.Item>
-                        </InputGroupWithFormItem>
-                      </Col>
-                      <Col flex='none'>
-                        <InputGroupWithFormItem label={t('query.database')}>
-                          <Form.Item {...field} name={[field.name, 'database']}>
-                            <Select style={{ width: 200 }}>
-                              {dbList.map((db) => (
-                                <Select.Option key={db} value={db}>
-                                  {db}
-                                </Select.Option>
-                              ))}
-                            </Select>
+                            <Input placeholder={t('query.query_placeholder')} disabled={disabled}></Input>
                           </Form.Item>
                         </InputGroupWithFormItem>
                       </Col>

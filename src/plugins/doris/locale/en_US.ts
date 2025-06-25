@@ -16,8 +16,10 @@ const en_US = {
     time_field_msg: 'Please enter the time field',
     query_tip:
       'SQL example: To query the number of log entries in the last 5 minutes, use SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)',
+    query_placeholder: 'SELECT count(*) as count FROM db_name.table_name WHERE ts >= now() - 5m',
     execute: 'Execute',
     database: 'Database',
+    database_placeholder: 'Default can be left empty',
   },
 };
 export default en_US;

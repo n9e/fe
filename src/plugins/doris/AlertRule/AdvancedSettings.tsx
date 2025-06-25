@@ -55,7 +55,7 @@ function AdvancedSettings(props: IProps) {
                   },
                 ]}
               >
-                <Input disabled={disabled} />
+                <Input disabled={disabled} placeholder='count' />
               </Form.Item>
             </InputGroupWithFormItem>
           </Col>
