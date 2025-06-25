@@ -83,6 +83,7 @@ export default function HTTPList() {
             min: 0,
           },
         ]}
+        initialValue={100000}
       >
         <InputNumber
           style={{

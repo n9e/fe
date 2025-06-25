@@ -92,6 +92,8 @@ const zh_HK = {
   },
   test_and_save_btn: '測試連通性並保存',
   test_btn: '測試連通性',
+  auth_enable: '啟用授權',
+  skip_tls_verify: '跳過 TLS 驗證',
 };
 
 export default zh_HK;
