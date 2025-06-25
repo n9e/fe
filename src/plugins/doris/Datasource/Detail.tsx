@@ -36,7 +36,7 @@ export default function Index(props: Props) {
       </div>
       <div className='page-title'>{t('common:advanced_settings')}</div>
       <div className='flash-cat-block'>
-        <Col span={24}>{t('datasource:datasource.timeout')}</Col>
+        <Col span={24}>{t('datasource:datasource.timeout_ms')}</Col>
         <Col span={24} className='second-color'>
           {data.settings[`${type}.timeout`] || '-'}
         </Col>
