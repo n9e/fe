@@ -5,8 +5,9 @@ import { rangeOptions } from '@/components/TimeRangePicker/config';
 import { getDashboards, getDashboard } from '@/services/dashboardV2';
 import { getBusiGroups } from '@/services/common';
 import { IVariable } from '@/pages/dashboard/VariableConfig/definition';
-import { CommonStateContext } from '@/App';
 import { stringToRegex } from '@/pages/dashboard/VariableConfig/constant';
+import { getDatasourceBriefList } from '@/services/common';
+import _ from 'lodash';
 
 interface IItem {
   id: number | string;
@@ -15,11 +16,17 @@ interface IItem {
 
 export default function Dashboard({ vars }: { vars: string[] }) {
   const { t } = useTranslation('inputEnlarge');
-  const { groupedDatasourceList, datasourceList } = useContext(CommonStateContext);
+  const [groupedDatasourceList, setGroupedDatasourceList] = useState<Record<string, any[]>>({});
   const [businessList, setBusinessList] = useState<IItem[]>([]);
   const [boardList, setBoardList] = useState<IItem[]>([]);
   const [variables, setVariables] = useState<IVariable[]>([]);
   const formVariable = Form.useWatch(['dashboard', 'variables']);
+
+  useEffect(() => {
+    getDatasourceBriefList().then((res) => {
+      setGroupedDatasourceList(_.groupBy(res, 'plugin_type'));
+    });
+  }, []);
 
   useEffect(() => {
     if (formVariable) {
