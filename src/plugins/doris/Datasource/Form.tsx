@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { Form, Input, InputNumber, Row, Col, Card, Space } from 'antd';
 import { DownOutlined, RightOutlined } from '@ant-design/icons';
 import _ from 'lodash';
@@ -16,25 +16,6 @@ interface Props {
   submitLoading: boolean;
 }
 
-export const formatInitVal = (val: any, type: string) => {
-  const tempVal = _.cloneDeep(val);
-
-  if (!_.isEmpty(tempVal.settings[`${type}.headers`])) {
-    let tempHeaders = _.keys(tempVal.settings[`${type}.headers`]).map((el) => {
-      return {
-        key: el,
-        value: tempVal.settings[`${type}.headers`][el + ''],
-      };
-    });
-
-    tempVal.settings[`${type}.headers`] = tempHeaders;
-  } else {
-    tempVal.settings[`${type}.headers`] = [];
-  }
-
-  return tempVal;
-};
-
 export default function Doris(props: Props) {
   const { t } = useTranslation('datasourceManage');
   const { action, data, onFinish, submitLoading } = props;
@@ -44,17 +25,8 @@ export default function Doris(props: Props) {
   const prefixName = ['settings'];
   const [advancedVisible, setAdvancedVisible] = React.useState(false);
 
-  useEffect(() => {
-    data?.settings && form.setFieldsValue(formatInitVal(data, type));
-  }, [data]);
-
   return (
-    <Form
-      form={form}
-      layout='vertical'
-      onFinish={onFinish} // data={_.merge({}, formatInitVal(props.data))}
-      className='settings-source-form'
-    >
+    <Form form={form} layout='vertical' onFinish={onFinish} className='settings-source-form'>
       <Card title={t(`datasourceManage:${action}_title`)}>
         <Name />
         <div className='page-title'>FE node</div>

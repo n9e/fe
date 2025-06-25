@@ -6,7 +6,7 @@ interface Props {
   data: any;
 }
 export default function Index(props: Props) {
-  const { t } = useTranslation();
+  const { t } = useTranslation('datasourceManage');
   const { data } = props;
   return (
     <div>
@@ -19,11 +19,11 @@ export default function Index(props: Props) {
           </Col>
         </Row>
       </div>
-      <div className='page-title'>{t('授权')}</div>
+      <div className='page-title'>{t('form.auth')}</div>
       <div className='flash-cat-block'>
         <Row gutter={16}>
-          <Col span={12}>{t('用户名：')}</Col>
-          <Col span={12}>{t('密码：')}</Col>
+          <Col span={12}>{t('form.username')}：</Col>
+          <Col span={12}>{t('form.password')}：</Col>
           <Col span={12} className='second-color'>
             {data.settings ? data.settings['doris.user'] : '-'}
           </Col>
@@ -32,7 +32,7 @@ export default function Index(props: Props) {
           </Col>
         </Row>
       </div>
-      <div className='page-title'>{t('其他')}</div>
+      <div className='page-title'>{t('form.other')}</div>
       <div className='flash-cat-block'>
         <Row gutter={16}>
           <Col span={24}>{t('datasourceManage:form.cluster')}：</Col>
