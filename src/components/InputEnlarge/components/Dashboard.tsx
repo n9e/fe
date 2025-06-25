@@ -126,7 +126,7 @@ export default function Dashboard({ vars }: { vars: string[] }) {
       </Form.Item>
       {variables.length > 0 && (
         <div>
-          <div className='input-enlarge-vars-title'>{t('可选变量')}</div>
+          <div className='input-enlarge-vars-title'>{t('设置仪表盘变量')}</div>
           <Form.Item name={['dashboard', 'variables']} hidden>
             <Input />
           </Form.Item>
