@@ -87,6 +87,8 @@ export default function ImportBuiltinContent({ busiId, onOk, groupedDatasourceLi
               cate: content.cate === 'host' ? 'host' : vals.datasource_cate,
               datasource_queries: vals?.datasource_queries,
               disabled: vals.enabled ? 0 : 1,
+              notify_version: 1, // 导入内置规则时强制使用通知规则的版本
+              notify_rule_ids: [], // 同时清空内置规则里的通知规则设置
             };
           }),
         ).then((res) => {
