@@ -20,10 +20,15 @@ export default function GraphPreview({ cate, datasourceValue, sql, keys, databas
         cate,
         datasource_id: datasourceValue,
         query: [{ sql, database }],
-      }).then((res) => {
-        setData(res.list || []);
-        setColumnsKeys(getFields(res?.list, sql));
-      });
+      })
+        .then((res) => {
+          setData(res.list || []);
+          setColumnsKeys(getFields(res?.list, sql));
+        })
+        .catch(() => {
+          setData([]);
+          setColumnsKeys([]);
+        });
     }
   };
 

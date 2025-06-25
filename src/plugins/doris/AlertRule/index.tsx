@@ -90,7 +90,7 @@ export default function index(props: { datasourceCate: string; datasourceValue: 
                         <InputGroupWithFormItem
                           label={
                             <Space>
-                              {t('datasource:query.query')}
+                              SQL
                               <Tooltip title={t('query.query_tip')}>
                                 <QuestionCircleOutlined />
                               </Tooltip>
