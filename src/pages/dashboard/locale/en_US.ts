@@ -178,6 +178,10 @@ const en_US = {
       name_tip: 'The table type panel must set the title',
       link: {
         label: 'Links',
+        label_tip: `
+          Variables usage<br />
+          \${variable_name}: dashboard variable value
+        `,
         btn: 'Add',
         name: 'Name',
         name_msg: 'Link name is required',
