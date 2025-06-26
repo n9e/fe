@@ -15,6 +15,7 @@ const ja_JP = {
     create: 'テンプレートを作成',
   },
   logo_picker_title: 'ロゴを選択',
+  logo_picker_title_placeholder: 'base64またはURLをサポート',
   name: '名前',
   payload_name: 'テンプレート名',
   tags: 'タグ',
