@@ -190,7 +190,7 @@ export default function index(props: Props) {
                 <Link
                   to={{
                     pathname: `${pathname}/alert/detail`,
-                    search: `?id=${record.id}`,
+                    search: `?uuid=${record.uuid}`,
                   }}
                   target='_blank'
                 >
