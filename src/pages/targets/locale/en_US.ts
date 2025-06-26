@@ -97,9 +97,9 @@ const en_US = {
   all_no_data: 'No collector deployed? Please refer to <a>Installation Manual</a> for installation and deployment',
   categraf_doc: 'Categraf documentation',
   hosts_select: {
-    placeholder: 'Host IP',
-    modal_title: 'Fill in host IP',
-    modal_placeholder: 'Each line is one host IP',
+    placeholder: 'Host ident or IP',
+    modal_title: 'Fill in host ident or IP',
+    modal_placeholder: 'One host ident or IP per line',
   },
 };
 export default en_US;

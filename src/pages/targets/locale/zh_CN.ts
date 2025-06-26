@@ -97,9 +97,9 @@ const zh_CN = {
   all_no_data: '没有部署采集器？可参考 <a>安装手册</a> 安装部署',
   categraf_doc: 'categraf 文档',
   hosts_select: {
-    placeholder: '机器 IP',
-    modal_title: '填写机器 IP',
-    modal_placeholder: '每行一个机器 IP',
+    placeholder: '机器标识或者 IP',
+    modal_title: '填写机器标识或者 IP',
+    modal_placeholder: '每行一个机器标识或者 IP',
   },
 };
 export default zh_CN;

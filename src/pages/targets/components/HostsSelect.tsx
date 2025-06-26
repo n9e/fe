@@ -17,7 +17,8 @@ export default function HostsSelect(props: Props) {
   return (
     <>
       <Select
-        style={{ minWidth: 100, maxWidth: 200 }}
+        style={{ minWidth: 120, maxWidth: 200 }}
+        allowClear
         mode='multiple'
         maxTagCount='responsive'
         open={false}
