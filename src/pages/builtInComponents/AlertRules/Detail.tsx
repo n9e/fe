@@ -24,7 +24,7 @@ import queryString from 'query-string';
 import _ from 'lodash';
 import PageLayout from '@/components/pageLayout';
 import Form from '@/pages/alertRules/Form';
-import { getPayload } from '../services';
+import { getPayloadByUUID } from '../services';
 
 export default function Edit() {
   const { t } = useTranslation('alertRules');
@@ -34,9 +34,9 @@ export default function Edit() {
   const [initialValues, setInitialValues] = useState<any>(null);
 
   useEffect(() => {
-    if (typeof query.id === 'string') {
-      const id = _.toNumber(query.id);
-      getPayload(id)
+    if (typeof query.uuid === 'string') {
+      const uuid = _.toNumber(query.uuid);
+      getPayloadByUUID(uuid)
         .then((res) => {
           let { content } = res;
           try {

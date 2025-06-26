@@ -194,7 +194,7 @@ export default function ImportBuiltinContent({ busiId, onOk, groupedDatasourceLi
                     <Link
                       to={{
                         pathname: '/components/alert/detail',
-                        search: `?id=${record.id}`,
+                        search: `?uuid=${record.uuid}`,
                       }}
                       target='_blank'
                     >
