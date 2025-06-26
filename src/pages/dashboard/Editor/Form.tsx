@@ -138,7 +138,12 @@ function FormCpt(props: IProps, ref) {
                   <Form.Item
                     label={t('panel.base.name')}
                     name='name'
-                    tooltip={t('panel.base.name_tip')}
+                    tooltip={
+                      <div>
+                        <div>{t('panel.base.name_tip')}</div>
+                        <Trans ns='dashboard' i18nKey='dashboard:panel.base.link.label_tip' components={{ br: <br /> }} />
+                      </div>
+                    }
                     rules={[
                       {
                         required: type === 'table',
@@ -236,7 +241,11 @@ function FormCpt(props: IProps, ref) {
                         </>
                       )}
                     </Form.List>
-                    <Form.Item label={t('panel.base.description')} name='description'>
+                    <Form.Item
+                      label={t('panel.base.description')}
+                      name='description'
+                      tooltip={<Trans ns='dashboard' i18nKey='dashboard:panel.base.link.label_tip' components={{ br: <br /> }} />}
+                    >
                       <Mentions prefix='$' split='' rows={3}>
                         {_.map(variableConfigWithOptions, (item) => {
                           return (
