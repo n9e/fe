@@ -54,7 +54,7 @@ export default function LogExplore({
           setUrl(`/login?accessToken=${localStorage.getItem('access_token')}&refreshToken=${localStorage.getItem('refresh_token')}&redirect=${encodeURIComponent(realUrl)}`);
         }}
       >
-        {t('测试')}
+        {t('预览结果')}
       </Button>
       <Vars vars={vars} handleClickVar={handleClickVar} />
 
