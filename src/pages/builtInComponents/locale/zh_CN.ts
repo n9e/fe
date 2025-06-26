@@ -15,6 +15,7 @@ const zh_CN = {
     create: '创建模板',
   },
   logo_picker_title: '选择图标',
+  logo_picker_title_placeholder: '支持 base64 或 URL',
   name: '名称',
   payload_name: '模板名称',
   tags: '标签',
