@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Col, Form, Input, Row, Select, Space, Button, Modal, message, FormInstance } from 'antd';
 import { InfoCircleOutlined, MinusCircleOutlined, PlusCircleOutlined, ArrowDownOutlined, ArrowUpOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
@@ -9,6 +9,7 @@ interface Props {
   visible: boolean;
   onClose: () => void;
   form: FormInstance;
+  rawData?: object;
   selectOption: { label: string; value: string }[];
 }
 
@@ -19,7 +20,7 @@ export interface IRegExtractConfig {
 }
 
 export default function kvMapModal(props: Props) {
-  const { visible, onClose, selectOption, form } = props;
+  const { visible, onClose, selectOption, form, rawData } = props;
   const { t } = useTranslation('es-index-patterns');
   const isMcDonalds = localStorage.getItem('n9e-dark-mode') === '2';
 
@@ -68,28 +69,10 @@ export default function kvMapModal(props: Props) {
                     }}
                   >
                     <Col flex='160px'>
-                      <Form.Item
-                        name={[field.name, 'field']}
-                        rules={[
-                          {
-                            required: true,
-                            message: t('请选择'),
-                          },
-                        ]}
-                      >
-                        <Select showSearch placeholder={t('请选择')}>
-                          {selectOption.map((item) => (
-                            <Select.Option key={item.value} value={item.value}>
-                              {item.label}
-                            </Select.Option>
-                          ))}
-                        </Select>
-                      </Form.Item>
+                      <Field field={field} selectOption={selectOption} rawData={rawData} />
                     </Col>
                     <Col flex='1'>
-                      <Form.Item name={[field.name, 'reg']} initialValue={'(.*)$'}>
-                        <InputEnlarge placeholder='eg.: :(d+)$' />
-                      </Form.Item>
+                      <RegExpression field={field} rawData={rawData} />
                     </Col>
                     <Col flex='160px'>
                       <Form.Item name={[field.name, 'newField']} rules={[{ required: true, message: t('请输入') }]}>
@@ -112,5 +95,57 @@ export default function kvMapModal(props: Props) {
         </Form.List>
       </div>
     </Modal>
+  );
+}
+
+function RegExpression({ field, rawData }: { field: any; rawData?: object }) {
+  const [result, setResult] = useState<string>('');
+  const form = Form.useFormInstance();
+  const handleChange = (e: any) => {
+    if (!rawData) return;
+    const reg = e.target.value;
+    const fieldName = form.getFieldValue(['regExtractArr', field.name, 'field']);
+    if (!fieldName) return;
+    const fieldValueWholeWord = rawData[fieldName];
+    const fieldValue = _.get(rawData, fieldName.split('.'));
+    const arr = new RegExp(reg).exec(fieldValueWholeWord || fieldValue);
+    setResult(arr ? arr[1] : '');
+  };
+  return (
+    <Form.Item name={[field.name, 'reg']} initialValue={'(.*)$'} extra={result}>
+      <InputEnlarge placeholder='eg.: :(d+)$' onChange={handleChange} />
+    </Form.Item>
+  );
+}
+
+function Field({ field, selectOption, rawData }: { field: any; selectOption: { label: string; value: string }[]; rawData?: object }) {
+  const { t } = useTranslation('es-index-patterns');
+  const [result, setResult] = useState<string>('');
+  const handleChange = (e: any) => {
+    if (!rawData) return;
+    const fieldName = e;
+    const fieldValueWholeWord = rawData[fieldName];
+    const fieldValue = _.get(rawData, fieldName.split('.'));
+    setResult(fieldValueWholeWord || fieldValue);
+  };
+  return (
+    <Form.Item
+      name={[field.name, 'field']}
+      rules={[
+        {
+          required: true,
+          message: t('请选择'),
+        },
+      ]}
+      extra={result}
+    >
+      <Select showSearch placeholder={t('请选择')} onChange={handleChange}>
+        {selectOption.map((item) => (
+          <Select.Option key={item.value} value={item.value}>
+            {item.label}
+          </Select.Option>
+        ))}
+      </Select>
+    </Form.Item>
   );
 }
