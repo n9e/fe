@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Row, Col, Form, Input, Tooltip, Space } from 'antd';
+import { Row, Col, Form, Input, Tooltip, Space, Select } from 'antd';
 import { DownOutlined, RightOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -55,7 +55,7 @@ function AdvancedSettings(props: IProps) {
                   },
                 ]}
               >
-                <Input disabled={disabled} placeholder='count' />
+                <Select mode='tags' disabled={disabled} placeholder={t('count')} open={false} />
               </Form.Item>
             </InputGroupWithFormItem>
           </Col>
@@ -71,7 +71,7 @@ function AdvancedSettings(props: IProps) {
               }
             >
               <Form.Item {...prefixField} name={[...prefixName, 'keys', 'labelKey']} style={{ width: '100%' }}>
-                <Input disabled={disabled} />
+                <Select mode='tags' disabled={disabled} placeholder={t('datasource:query.advancedSettings.tags_placeholder')} open={false} />
               </Form.Item>
             </InputGroupWithFormItem>
           </Col>
