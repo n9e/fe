@@ -18,7 +18,7 @@ import React, { useEffect, useState, useImperativeHandle, forwardRef, useContext
 import { Form, Row, Col, Button, Space, Switch, Tooltip, Mentions, Collapse as AntdCollapse, Select } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import _ from 'lodash';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import { CommonStateContext } from '@/App';
 import { Dashboard } from '@/store/dashboardInterface';
 import { defaultValues, defaultCustomValuesMap } from './config';
@@ -155,7 +155,11 @@ function FormCpt(props: IProps, ref) {
                       })}
                     </Mentions>
                   </Form.Item>
-                  <Form.Item label={t('panel.base.link.label')} style={{ marginBottom: 0 }}>
+                  <Form.Item
+                    label={t('panel.base.link.label')}
+                    tooltip={<Trans ns='dashboard' i18nKey='dashboard:panel.base.link.label_tip' components={{ br: <br /> }} />}
+                    style={{ marginBottom: 0 }}
+                  >
                     <Form.List name={'links'}>
                       {(fields, { add, remove }) => (
                         <>
