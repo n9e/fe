@@ -83,11 +83,14 @@ export default function index(props: IProps) {
     }
   }, [JSON.stringify(range), datasourceValue, limit]);
 
-  const fieldConfig = useFieldConfig({
-    cate: DatasourceCateEnum.loki,
-    datasource_id: form.getFieldValue('datasourceValue'),
-    query: queryValue,
-  });
+  const fieldConfig = useFieldConfig(
+    {
+      cate: DatasourceCateEnum.loki,
+      datasource_id: form.getFieldValue('datasourceValue'),
+      query: queryValue,
+    },
+    loading,
+  );
 
   // 每次输入LogQL 发送请求后变更匹配的关键字
   useEffect(() => {
