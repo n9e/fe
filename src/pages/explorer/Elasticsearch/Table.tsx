@@ -20,12 +20,15 @@ function Table(props: Props) {
   const form = Form.useFormInstance();
   const indexPatternId = Form.useWatch(['query', 'indexPattern']);
   const indexValue = Form.useWatch(['query', 'index']);
-  const fieldConfig = useFieldConfig({
-    cate: DatasourceCateEnum.elasticsearch,
-    indexPatternId,
-    datasource_id: form.getFieldValue('datasourceValue'),
-    resource: { es_resource: { index: indexValue } },
-  });
+  const fieldConfig = useFieldConfig(
+    {
+      cate: DatasourceCateEnum.elasticsearch,
+      indexPatternId,
+      datasource_id: form.getFieldValue('datasourceValue'),
+      resource: { es_resource: { index: indexValue } },
+    },
+    indexPatternId + indexValue,
+  );
   const columns = useMemo(() => {
     return getColumnsFromFields(selectedFields, form.getFieldValue(['query']), fieldConfig);
   }, [selectedFields, fieldConfig]);

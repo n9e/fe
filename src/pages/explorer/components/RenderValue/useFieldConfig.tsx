@@ -7,7 +7,7 @@ import { IFieldSearch } from './types';
 import { searchDrilldown } from 'plus:/pages/LogExploreLinkSetting/services';
 import { CommonStateContext } from '@/App';
 
-export default function useFieldConfig(search: IFieldSearch): FieldConfigVersion2 | undefined {
+export default function useFieldConfig(search: IFieldSearch, dep: any): FieldConfigVersion2 | undefined {
   const [fieldConfig, setFieldConfig] = useState<FieldConfigVersion2>();
   const { isPlus } = useContext(CommonStateContext);
   useEffect(() => {
@@ -58,6 +58,6 @@ export default function useFieldConfig(search: IFieldSearch): FieldConfigVersion
         });
       }
     }
-  }, [JSON.stringify(search)]);
+  }, [dep]);
   return fieldConfig;
 }
