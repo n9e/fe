@@ -40,7 +40,7 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
           <Card
             title={
               <Space>
-                {t('query.title')}
+                {t('datasource:query.title')}
                 <PlusCircleOutlined
                   style={{ cursor: 'pointer' }}
                   onClick={() => {

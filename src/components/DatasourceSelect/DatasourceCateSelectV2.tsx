@@ -27,7 +27,9 @@ export default function DatasourceCateSelectV2(props: IProps) {
               'n9e-db-cate-grid-item-selected': value === item.value,
             })}
             onClick={() => {
-              onChange && onChange(item.value, item);
+              if (item.value !== value) {
+                onChange && onChange(item.value, item);
+              }
             }}
           >
             <img src={item.logo} style={{ height: 42 }} />

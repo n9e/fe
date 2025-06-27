@@ -59,6 +59,7 @@ const ru_RU = {
     config: 'Настройка',
     copy2: 'Копировать',
     reload: 'Обновить',
+    data_preview: 'Предпросмотр данных',
   },
   table: {
     name: 'Имя',

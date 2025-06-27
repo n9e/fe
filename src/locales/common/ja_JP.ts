@@ -59,6 +59,7 @@ const ja_JP = {
     config: '設定',
     copy2: 'コピー',
     reload: 'リロード',
+    data_preview: 'データプレビュー',
   },
   table: {
     name: '名前',

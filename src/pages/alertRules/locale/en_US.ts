@@ -211,7 +211,7 @@ const en_US = {
       title: 'Query',
     },
   },
-  preview: 'Data preview',
+  preview: 'Preview',
   table: {
     group_id: 'Business group',
     cate: 'Type',

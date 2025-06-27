@@ -58,6 +58,7 @@ const zh_CN = {
     config: '配置',
     copy2: '复制',
     reload: '刷新',
+    data_preview: '数据预览',
   },
   table: {
     name: '名称',

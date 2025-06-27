@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Row, Col, Form, Input, Tooltip, Select } from 'antd';
+import { Row, Col, Form, Input, Tooltip, Space, Select } from 'antd';
 import { DownOutlined, RightOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -15,7 +15,7 @@ interface IProps {
 }
 
 function AdvancedSettings(props: IProps) {
-  const { t } = useTranslation('db_aliyunSLS');
+  const { t } = useTranslation('db_doris');
   const { span = 8, prefixField = {}, prefixName = [], disabled, showUnit } = props;
   const [open, setOpen] = useState(true);
 
@@ -28,7 +28,7 @@ function AdvancedSettings(props: IProps) {
           }}
           style={{ cursor: 'pointer' }}
         >
-          {open ? <DownOutlined /> : <RightOutlined />} {t('query.advancedSettings.title')}
+          {open ? <DownOutlined /> : <RightOutlined />} {t('datasource:query.advancedSettings.title')}
         </span>
       </div>
       <div style={{ display: open ? 'block' : 'none' }}>
@@ -36,14 +36,13 @@ function AdvancedSettings(props: IProps) {
           <Col span={span}>
             <InputGroupWithFormItem
               label={
-                <span>
-                  ValueKey{' '}
-                  <Tooltip title={t('query.advancedSettings.valueKey_tip')}>
+                <Space>
+                  {t('datasource:query.advancedSettings.valueKey')}
+                  <Tooltip title={t('datasource:query.advancedSettings.valueKey_tip')}>
                     <QuestionCircleOutlined />
                   </Tooltip>
-                </span>
+                </Space>
               }
-              labelWidth={100}
             >
               <Form.Item
                 {...prefixField}
@@ -52,28 +51,27 @@ function AdvancedSettings(props: IProps) {
                 rules={[
                   {
                     required: true,
-                    message: t('请输入'),
+                    message: t('datasource:query.advancedSettings.valueKey_required'),
                   },
                 ]}
               >
-                <Input disabled={disabled} />
+                <Select mode='tags' disabled={disabled} placeholder={t('count')} open={false} />
               </Form.Item>
             </InputGroupWithFormItem>
           </Col>
           <Col span={span}>
             <InputGroupWithFormItem
               label={
-                <span>
-                  LabelKey{' '}
-                  <Tooltip title={t('query.advancedSettings.labelKey_tip')}>
+                <Space>
+                  {t('datasource:query.advancedSettings.labelKey')}
+                  <Tooltip title={t('datasource:query.advancedSettings.labelKey_tip')}>
                     <QuestionCircleOutlined />
                   </Tooltip>
-                </span>
+                </Space>
               }
-              labelWidth={100}
             >
               <Form.Item {...prefixField} name={[...prefixName, 'keys', 'labelKey']} style={{ width: '100%' }}>
-                <Input disabled={disabled} />
+                <Select mode='tags' disabled={disabled} placeholder={t('datasource:query.advancedSettings.tags_placeholder')} open={false} />
               </Form.Item>
             </InputGroupWithFormItem>
           </Col>

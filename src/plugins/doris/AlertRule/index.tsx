@@ -40,7 +40,7 @@ function getFirstDatasourceId(datasourceIds: number[] = [], datasourceList: { id
 
 export default function index(props: { datasourceCate: string; datasourceValue: number[]; disabled: boolean }) {
   const { datasourceCate, datasourceValue, disabled } = props;
-  const { t } = useTranslation('alertRules');
+  const { t } = useTranslation('db_doris');
   const { groupedDatasourceList } = useContext(CommonStateContext);
   const curDatasourceList = groupedDatasourceList[datasourceCate] || [];
   const datasourceId = getFirstDatasourceId(datasourceValue, curDatasourceList);
@@ -62,7 +62,7 @@ export default function index(props: { datasourceCate: string; datasourceValue: 
             <Card
               title={
                 <Space>
-                  <span>{t('查询统计')}</span>
+                  <span>{t('datasource:query.title')}</span>
                   <PlusCircleOutlined
                     onClick={() =>
                       add({
@@ -86,32 +86,38 @@ export default function index(props: { datasourceCate: string; datasourceValue: 
                           <QueryName existingNames={_.map(queries, 'ref')} />
                         </Form.Item>
                       </Col>
-                      <Col flex='auto'>
-                        <InputGroupWithFormItem
-                          label={
-                            <span>
-                              SQL{' '}
-                              <Tooltip title={t('SQL样例：查询最近5分钟的日志行数 SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)')}>
-                                <QuestionCircleOutlined />
-                              </Tooltip>
-                            </span>
-                          }
-                        >
-                          <Form.Item {...field} name={[field.name, 'sql']} validateTrigger={['onBlur']} trigger='onChange' rules={[{ required: true, message: t('请输入') }]}>
-                            <Input placeholder='' disabled={disabled}></Input>
-                          </Form.Item>
-                        </InputGroupWithFormItem>
-                      </Col>
                       <Col flex='none'>
-                        <InputGroupWithFormItem label={t('数据库')}>
+                        <InputGroupWithFormItem label={t('query.database')}>
                           <Form.Item {...field} name={[field.name, 'database']}>
-                            <Select style={{ width: 200 }}>
+                            <Select style={{ width: 200 }} placeholder={t('query.database_placeholder')} disabled={disabled}>
                               {dbList.map((db) => (
                                 <Select.Option key={db} value={db}>
                                   {db}
                                 </Select.Option>
                               ))}
                             </Select>
+                          </Form.Item>
+                        </InputGroupWithFormItem>
+                      </Col>
+                      <Col flex='auto'>
+                        <InputGroupWithFormItem
+                          label={
+                            <Space>
+                              SQL
+                              <Tooltip title={t('query.query_tip')}>
+                                <QuestionCircleOutlined />
+                              </Tooltip>
+                            </Space>
+                          }
+                        >
+                          <Form.Item
+                            {...field}
+                            name={[field.name, 'sql']}
+                            validateTrigger={['onBlur']}
+                            trigger='onChange'
+                            rules={[{ required: true, message: t('datasource:query.query_required') }]}
+                          >
+                            <Input placeholder={t('query.query_placeholder')} disabled={disabled}></Input>
                           </Form.Item>
                         </InputGroupWithFormItem>
                       </Col>

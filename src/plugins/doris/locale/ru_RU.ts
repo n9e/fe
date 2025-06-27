@@ -1,0 +1,25 @@
+const ru_RU = {
+  quick_query: 'Быстрый запрос',
+  quick_query_tip:
+    'Быстрый запрос позволяет быстро сгенерировать запрос на основе фиксированного шаблона SQL. Например, если поле A больше 0, достаточно ввести A > 0. Нажав эту кнопку, вы можете быстро переключиться в режим пользовательского запроса, чтобы просмотреть и изменить SQL-запрос.',
+  custom_query: 'Пользовательский запрос',
+  custom_query_tip: 'Пользовательский запрос позволяет пользователям свободно вводить запросы на основе синтаксиса SQL',
+  current_database: 'Текущая база данных',
+  table: 'Таблица',
+  database_table_required: 'Пожалуйста, выберите базу данных и таблицу',
+  query: {
+    mode: {
+      raw: 'Сырые данные',
+      metric: 'Статистический график',
+    },
+    time_field: 'Поле времени',
+    time_field_msg: 'Пожалуйста, введите поле времени',
+    query_tip:
+      'Пример SQL: Чтобы запросить количество записей журнала за последние 5 минут, используйте SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)',
+    query_placeholder: 'SELECT count(*) as count FROM db_name.table_name WHERE ts >= now() - 5m',
+    execute: 'Запрос',
+    database: 'База данных',
+    database_placeholder: 'По умолчанию можно оставить пустым',
+  },
+};
+export default ru_RU;
