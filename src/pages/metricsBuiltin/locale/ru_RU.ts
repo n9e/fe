@@ -14,6 +14,7 @@ const ru_RU = {
   explorer: 'Запрос',
   closePanelsBelow: 'Закрыть панели ниже',
   addPanel: 'Добавить панель',
+  translation: 'Описание метрики',
   batch: {
     not_select: 'Пожалуйста, сначала выберите метрики',
     export: {
