@@ -210,9 +210,17 @@ function App() {
     screenTemplates: [],
   });
 
+  const removePreloader = () => {
+    const preloader = document.querySelector('.preloader');
+    if (preloader) {
+      preloader.remove();
+    }
+  };
+
   useEffect(() => {
     if (location.pathname === '/out-of-service') {
       initialized.current = true;
+      removePreloader();
       setCommonState({ ...commonState }); // 为了触发重新渲染
       return;
     }
@@ -251,6 +259,7 @@ function App() {
           window.localStorage.setItem('curBusiId', String(defaultBusiId));
           /* 兼容旧的业务组组件 */
           initialized.current = true;
+          removePreloader();
 
           setCommonState((state) => {
             return {
@@ -276,6 +285,7 @@ function App() {
           });
         } else {
           const datasourceList = !_.some([`${basePrefix}/login`, `${basePrefix}/callback`], (route) => location.pathname.startsWith(route)) ? await getDatasourceBriefList() : [];
+          removePreloader();
           initialized.current = true;
           setCommonState((state) => {
             return {
@@ -304,11 +314,7 @@ function App() {
 
   // 初始化中不渲染任何内容
   if (!initialized.current) {
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-        <Spin size='large' />
-      </div>
-    );
+    return null;
   }
 
   return (
