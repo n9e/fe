@@ -51,7 +51,7 @@ export interface IProps {
   annotations: any[];
   onCloneClick?: () => void;
   onShareClick?: () => void;
-  onEditClick?: () => void;
+  onEditClick?: (panelWidth?: number) => void;
   onDeleteClick?: () => void;
   onCopyClick?: () => void;
   setAnnotationsRefreshFlag?: (flag: string) => void;

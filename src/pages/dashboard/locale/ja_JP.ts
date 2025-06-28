@@ -455,10 +455,10 @@ const ja_JP = {
     time_tip: '時間範囲を指定できます。デフォルトはダッシュボード全体の時間範囲です',
     prometheus: {
       maxDataPoints: {
-        tip: '各曲線の最大データポイント数、計算式: step = (end - start) / maxDataPoints、デフォルト値は240で、最近1時間内のstepは15sです',
+        tip: '最大データポイント数、計算式: step = max((end - start) / maxDataPoints, minStep, safeStep)、safeStep = (end - start) / 11000',
       },
       minStep: {
-        tip: '最小のstep、計算式: step = max(step, minStep, safeStep)、safeStep = (end - start) / 11000',
+        tip: '最小ステップ、計算式: step = max((end - start) / maxDataPoints, minStep, safeStep)、safeStep = (end - start) / 11000',
       },
       step: {
         tag_tip: '計算式: step = max((end - start) / maxDataPoints, minStep, safeStep)、safeStep = (end - start) / 11000',
