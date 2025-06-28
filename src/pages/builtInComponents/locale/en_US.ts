@@ -15,6 +15,7 @@ const en_US = {
     create: 'Create template',
   },
   logo_picker_title: 'Select Logo',
+  logo_picker_title_placeholder: 'Supports base64 or URL',
   name: 'Name',
   payload_name: 'Templete name',
   tags: 'Tags',

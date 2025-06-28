@@ -14,6 +14,7 @@ const zh_CN = {
   explorer: '查询',
   closePanelsBelow: '关闭下方面板',
   addPanel: '添加面板',
+  translation: '指标说明',
   batch: {
     not_select: '请先选择指标',
     export: {

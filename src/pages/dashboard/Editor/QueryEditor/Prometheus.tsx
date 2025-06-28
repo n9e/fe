@@ -57,11 +57,9 @@ export default function Prometheus({ variableConfig, time, datasourceValue }) {
                     key={field.key}
                     extra={
                       <Space>
-                        {IS_PLUS && (
-                          <Form.Item noStyle {...field} name={[field.name, 'hide']}>
-                            <HideButton />
-                          </Form.Item>
-                        )}
+                        <Form.Item noStyle {...field} name={[field.name, 'hide']}>
+                          <HideButton />
+                        </Form.Item>
                         {fields.length > 1 ? (
                           <DeleteOutlined
                             onClick={() => {

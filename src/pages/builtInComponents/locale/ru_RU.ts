@@ -15,6 +15,7 @@ const ru_RU = {
     create: 'Создать шаблон',
   },
   logo_picker_title: 'Выбрать иконку',
+  logo_picker_title_placeholder: 'Поддерживает base64 или URL',
   name: 'Название',
   payload_name: 'Название шаблона',
   tags: 'Теги',

@@ -15,6 +15,7 @@ const zh_HK = {
     create: '創建模板',
   },
   logo_picker_title: '選擇圖標',
+  logo_picker_title_placeholder: '支持 base64 或 URL',
   name: '名稱',
   payload_name: '模板名稱',
   tags: '標籤',

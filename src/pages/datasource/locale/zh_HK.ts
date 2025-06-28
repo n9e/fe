@@ -53,6 +53,7 @@ const zh_HK = {
     cluster_confirm: '發現你的數據源沒有關聯告警引擎叢集，將無法用來做告警，是否去關聯下告警引擎叢集？',
     cluster_confirm_ok: '不做關聯',
     cluster_confirm_cancel: '去做關聯',
+    cluster_not_found: '關聯告警引擎已停用，當前數據源的告警不再生效。請檢查告警引擎配置或重新修改數據源關聯的告警引擎',
     url_no_spaces_msg: '請勿輸入空格',
     prom: {
       write_addr_tip: '記錄規則產生的資料的回寫地址，常見時序資料庫配置示例',

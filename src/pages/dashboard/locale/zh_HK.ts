@@ -178,6 +178,10 @@ const zh_HK = {
       name_tip: '表格類型的圖表必須設定標題，否則面板編輯會跟表格表頭衝突',
       link: {
         label: '連結',
+        label_tip: `
+          變數使用說明<br />
+          \${variable_name}: 儀表盤變數值
+        `,
         btn: '新增',
         name: '連結名稱',
         name_msg: '請輸入連結名稱',

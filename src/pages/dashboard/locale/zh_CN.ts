@@ -179,6 +179,10 @@ const zh_CN = {
       name_tip: '表格类型的图表必须设置标题，否则面板编辑会跟表格表头冲突',
       link: {
         label: '链接',
+        label_tip: `
+          变量使用说明<br />
+          \${variable_name}: 仪表盘变量值
+        `,
         btn: '添加',
         name: '链接名称',
         name_msg: '请输入链接名称',

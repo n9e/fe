@@ -1,15 +1,16 @@
-import React, { useContext, useEffect, useState, useRef } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { message, Table, Modal, Button, Space, Popconfirm, Input, Tooltip } from 'antd';
+import { message, Table, Modal, Button, Space, Popconfirm, Tooltip } from 'antd';
 import { ColumnProps } from 'antd/es/table';
-import { CheckCircleFilled, MinusCircleFilled } from '@ant-design/icons';
+import { CheckCircleFilled, MinusCircleFilled, WarningOutlined } from '@ant-design/icons';
 import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
 import { allCates } from '@/components/AdvancedWrap/utils';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
+
 import Rename from '../Rename';
-import { deleteDataSourceById, getDataSourceList, updateDataSourceStatus } from '../../services';
+import { deleteDataSourceById, getDataSourceList, updateDataSourceStatus, getServerClusters } from '../../services';
 // @ts-ignore
 import { autoDatasourcetype, AuthList, AutoDatasourcetypeValue } from 'plus:/components/DataSourceAuth/auth';
 // @ts-ignore
@@ -44,12 +45,16 @@ const TableSource = (props: IPropsType) => {
   const [loading, setLoading] = useState<boolean>(false);
   const pagination = usePagination({ PAGESIZE_KEY: 'datasource' });
   const [searchVal, setSearchVal] = useState<string | undefined>(debouncedSearchValue);
+  const [clusterList, setClusterList] = useState<string[]>([]);
 
   useEffect(() => {
     setSearchVal(debouncedSearchValue);
   }, [debouncedSearchValue]);
 
   useEffect(() => {
+    getServerClusters().then((res) => {
+      setClusterList(res);
+    });
     init();
   }, [refresh]);
 
@@ -131,6 +136,20 @@ const TableSource = (props: IPropsType) => {
       title: t('form.cluster'),
       dataIndex: 'cluster_name',
       sorter: (a, b) => localeCompare(a.cluster_name, b.cluster_name),
+      render: (text) => {
+        if (text) {
+          const invalidCluster = !_.find(clusterList, (item) => item === text) && text !== 'no_assigned_engine';
+          return (
+            <Tooltip title={invalidCluster ? t('form.cluster_not_found') : ''}>
+              <Space>
+                {text}
+                {invalidCluster && <WarningOutlined style={{ color: '#f06' }} />}
+              </Space>
+            </Tooltip>
+          );
+        }
+        return null;
+      },
     },
     {
       title: t('status.title'),

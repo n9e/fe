@@ -18,7 +18,7 @@ import React, { useEffect, useState, useImperativeHandle, forwardRef, useContext
 import { Form, Row, Col, Button, Space, Switch, Tooltip, Mentions, Collapse as AntdCollapse, Select } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import _ from 'lodash';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import { CommonStateContext } from '@/App';
 import { Dashboard } from '@/store/dashboardInterface';
 import { defaultValues, defaultCustomValuesMap } from './config';
@@ -138,7 +138,12 @@ function FormCpt(props: IProps, ref) {
                   <Form.Item
                     label={t('panel.base.name')}
                     name='name'
-                    tooltip={t('panel.base.name_tip')}
+                    tooltip={
+                      <div>
+                        <div>{t('panel.base.name_tip')}</div>
+                        <Trans ns='dashboard' i18nKey='dashboard:panel.base.link.label_tip' components={{ br: <br /> }} />
+                      </div>
+                    }
                     rules={[
                       {
                         required: type === 'table',
@@ -155,7 +160,11 @@ function FormCpt(props: IProps, ref) {
                       })}
                     </Mentions>
                   </Form.Item>
-                  <Form.Item label={t('panel.base.link.label')} style={{ marginBottom: 0 }}>
+                  <Form.Item
+                    label={t('panel.base.link.label')}
+                    tooltip={<Trans ns='dashboard' i18nKey='dashboard:panel.base.link.label_tip' components={{ br: <br /> }} />}
+                    style={{ marginBottom: 0 }}
+                  >
                     <Form.List name={'links'}>
                       {(fields, { add, remove }) => (
                         <>
@@ -232,7 +241,11 @@ function FormCpt(props: IProps, ref) {
                         </>
                       )}
                     </Form.List>
-                    <Form.Item label={t('panel.base.description')} name='description'>
+                    <Form.Item
+                      label={t('panel.base.description')}
+                      name='description'
+                      tooltip={<Trans ns='dashboard' i18nKey='dashboard:panel.base.link.label_tip' components={{ br: <br /> }} />}
+                    >
                       <Mentions prefix='$' split='' rows={3}>
                         {_.map(variableConfigWithOptions, (item) => {
                           return (

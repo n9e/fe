@@ -14,6 +14,7 @@ const zh_HK = {
   explorer: '查詢',
   closePanelsBelow: '關閉下方面板',
   addPanel: '添加面板',
+  translation: '指標說明',
   batch: {
     not_select: '請先選擇指標',
     export: {
