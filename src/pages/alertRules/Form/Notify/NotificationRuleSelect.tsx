@@ -97,7 +97,7 @@ export default function NotificationRuleSelect(props: Props) {
             };
           })}
           showSearch
-          optionFilterProp='label'
+          optionFilterProp='originalLabel'
           optionLabelProp='originalLabel'
           mode='multiple'
         />

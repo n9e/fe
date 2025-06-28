@@ -14,6 +14,7 @@ const en_US = {
   explorer: 'Explorer',
   closePanelsBelow: 'Close panels below',
   addPanel: 'Add panel',
+  translation: 'Metric description',
   batch: {
     not_select: 'Please select the metric first',
     export: {
