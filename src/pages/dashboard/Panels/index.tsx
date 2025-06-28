@@ -199,7 +199,7 @@ function index(props: IProps) {
                       onShareClick={() => {
                         onShareClick(item);
                       }}
-                      onEditClick={() => {
+                      onEditClick={(panelWidth) => {
                         editorRef.current?.setEditorData({
                           mode: 'edit',
                           visible: true,
@@ -208,6 +208,7 @@ function index(props: IProps) {
                             ...item,
                             id: item.id,
                           },
+                          panelWidth,
                         });
                       }}
                       onDeleteClick={() => {

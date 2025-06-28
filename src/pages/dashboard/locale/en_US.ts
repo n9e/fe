@@ -485,10 +485,10 @@ const en_US = {
     time_tip: 'Default is the global time range of the dashboard',
     prometheus: {
       maxDataPoints: {
-        tip: 'Maximum number of points per series, Calculation step = (end - start) / maxDataPoints, default value is 240 step = 15s in the last 1 hour',
+        tip: 'The maximum number of points per series, default is panel width (default 240), calculate step = (end - start) / maxDataPoints',
       },
       minStep: {
-        tip: 'An additional lower limit for the step parameter of the Prometheus query, Calculate step = max(step, minStep, safeStep), safeStep = (end - start) / 11000',
+        tip: 'Minimum step, default is 15, calculate step = max(step, minStep, safeStep), safeStep = (end - start) / 11000',
       },
       step: {
         tag_tip: 'Calculate step = max((end - start) / maxDataPoints, minStep, safeStep), safeStep = (end - start) / 11000',
