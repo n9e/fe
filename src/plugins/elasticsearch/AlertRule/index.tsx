@@ -4,12 +4,12 @@ import { Form } from 'antd';
 import Queries from './Queries';
 import Triggers from '@/pages/alertRules/Form/components/Triggers';
 
-export default function index({ datasourceValue, disabled }) {
+export default function index({ hideIndexPattern, datasourceValue, disabled }: { hideIndexPattern?: boolean; datasourceValue: number; disabled?: boolean }) {
   const form = Form.useFormInstance();
   return (
     <>
       <div style={{ marginBottom: 10 }}>
-        <Queries datasourceValue={datasourceValue} form={form} disabled={disabled} />
+        <Queries hideIndexPattern={hideIndexPattern} datasourceValue={datasourceValue} form={form} disabled={disabled} />
       </div>
       <Form.Item shouldUpdate noStyle>
         {({ getFieldValue }) => {

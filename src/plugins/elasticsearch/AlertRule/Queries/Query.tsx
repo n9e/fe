@@ -22,6 +22,7 @@ import AdvancedSettings from './AdvancedSettings';
 import IndexPatternSelect from './IndexPatternSelect';
 
 interface Props {
+  hideIndexPattern?: boolean;
   field: any;
   datasourceValue: number;
   indexOptions: any[];
@@ -33,7 +34,7 @@ export default function Query(props: Props) {
   const { t, i18n } = useTranslation('alertRules');
   const { darkMode } = useContext(CommonStateContext);
   const { field } = props;
-  const { datasourceValue, indexOptions, disabled, children } = props;
+  const { hideIndexPattern, datasourceValue, indexOptions, disabled, children } = props;
   const indexPatternsAuthorized = useIsAuthorized(['/log/index-patterns']);
   const [indexSearch, setIndexSearch] = useState('');
   const [indexPatternsRefreshFlag, setIndexPatternsRefreshFlag] = useState(_.uniqueId('indexPatternsRefreshFlag_'));
@@ -75,7 +76,7 @@ export default function Query(props: Props) {
   }, [indexValue]);
 
   useEffect(() => {
-    if (datasourceValue) {
+    if (datasourceValue && !hideIndexPattern) {
       getESIndexPatterns(datasourceValue).then((res) => {
         setIndexPatterns(res);
       });
@@ -99,17 +100,17 @@ export default function Query(props: Props) {
                     <Form.Item {...field} name={[field.name, 'index_type']} noStyle initialValue='index'>
                       <Select
                         bordered={false}
-                        options={[
-                          {
-                            label: t('datasource:es.index'),
-                            value: 'index',
-                          },
-                          {
-                            label: t('datasource:es.indexPatterns'),
-                            value: 'index_pattern',
-                          },
-                        ]}
+                        options={_.concat(
+                          [
+                            {
+                              label: t('datasource:es.index'),
+                              value: 'index',
+                            },
+                          ],
+                          hideIndexPattern ? [] : [{ label: t('datasource:es.indexPatterns'), value: 'index_pattern' }],
+                        )}
                         dropdownMatchSelectWidth={false}
+                        showArrow={hideIndexPattern ? false : true}
                       />
                     </Form.Item>
                     <Tooltip title={<Trans ns='datasource' i18nKey='datasource:es.index_tip' components={{ 1: <br /> }} />}>

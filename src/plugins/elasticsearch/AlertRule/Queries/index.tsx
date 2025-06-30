@@ -8,6 +8,7 @@ import { generateQueryName } from '@/components/QueryName';
 import Query from './Query';
 
 interface IProps {
+  hideIndexPattern?: boolean;
   datasourceValue: number;
   form: any;
   disabled?: boolean;
@@ -15,7 +16,7 @@ interface IProps {
 
 export default function index(props: IProps) {
   const { t } = useTranslation('alertRules');
-  const { datasourceValue, form, disabled } = props;
+  const { hideIndexPattern, datasourceValue, form, disabled } = props;
   const [indexOptions, setIndexOptions] = useState<any[]>([]);
   const names = ['rule_config', 'queries'];
   const queries = Form.useWatch(names);
@@ -69,7 +70,7 @@ export default function index(props: IProps) {
           {fields.map((field) => {
             return (
               <>
-                <Query key={field.key} field={field} datasourceValue={datasourceValue} indexOptions={indexOptions} disabled={disabled}>
+                <Query key={field.key} field={field} hideIndexPattern={hideIndexPattern} datasourceValue={datasourceValue} indexOptions={indexOptions} disabled={disabled}>
                   {fields.length > 1 && (
                     <CloseCircleOutlined
                       style={{ position: 'absolute', right: -4, top: -4 }}

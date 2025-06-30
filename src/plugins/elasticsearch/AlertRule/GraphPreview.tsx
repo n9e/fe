@@ -28,8 +28,8 @@ export default function GraphPreview(props: IProps) {
   const { groupedDatasourceList } = useContext(CommonStateContext);
   const { data, disabled } = props;
   const divRef = useRef<HTMLDivElement>(null);
-  const form = Form.useFormInstance();
-  const datasource_values = form.getFieldValue('datasource_values');
+  const cate = Form.useWatch('cate');
+  const datasource_values = Form.useWatch('datasource_values');
   const [visible, setVisible] = useState(false);
   const [series, setSeries] = useState<any[]>([]);
   const [columnKeys, setColumnKeys] = useState<string[]>([]);
@@ -40,7 +40,7 @@ export default function GraphPreview(props: IProps) {
 
     getDsQuery(
       {
-        cate: form.getFieldValue('cate'),
+        cate,
         datasource_id: datasourceValue,
         query: _.map([data], (item) => {
           const interval = normalizeTime(item.interval, item.interval_unit) ?? 300; // 默认5分钟
@@ -123,7 +123,7 @@ export default function GraphPreview(props: IProps) {
                 }}
                 style={{ width: 200 }}
                 options={_.map(
-                  _.filter(groupedDatasourceList.elasticsearch, (item) => {
+                  _.filter(groupedDatasourceList[cate], (item) => {
                     return _.includes(datasource_values, item.id);
                   }),
                   (item) => {

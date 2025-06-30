@@ -303,6 +303,27 @@ export function getDefaultValuesByCate(prod, cate) {
       ...datasourceDefaultValue,
     };
   }
+  if (cate === DatasourceCateEnum.opensearch) {
+    return {
+      prod,
+      cate,
+      rule_config: {
+        ...defaultRuleConfig,
+        queries: [
+          {
+            ref: 'A',
+            interval_unit: 'min',
+            interval: 5,
+            date_field: '@timestamp',
+            value: {
+              func: 'count',
+            },
+          },
+        ],
+      },
+      ...datasourceDefaultValue,
+    };
+  }
   if (cate === DatasourceCateEnum.tdengine) {
     return {
       prod,
