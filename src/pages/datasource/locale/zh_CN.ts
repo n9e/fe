@@ -55,6 +55,7 @@ const zh_CN = {
     cluster_confirm_cancel: '去做关联',
     cluster_not_found: '关联告警引擎已停用，当前数据源的告警不再生效。请检查告警引擎配置或重新修改数据源关联的告警引擎',
     url_no_spaces_msg: 'URL不能包含空格',
+    url_required_msg: 'URL不能为空',
     prom: {
       write_addr_tip: '记录规则产生的数据的回写地址，常见时序数据库配置示例',
       read_addr: '时序库内网地址',

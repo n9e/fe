@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, Form, InputNumber, Row, Col } from 'antd';
+import { Input, Form, InputNumber, Row, Col, Space } from 'antd';
 import { MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
@@ -11,40 +11,22 @@ export default function HTTPList() {
       <Form.List name={['settings', 'os.nodes']} initialValue={['']}>
         {(fields, { add, remove }, { errors }) => (
           <>
-            <div
-              className='page-title'
-              style={{
-                marginTop: '8px',
-              }}
-            >
-              HTTP
-              <PlusCircleOutlined
-                style={{
-                  marginLeft: '16px',
-                  cursor: 'pointer',
-                  fontSize: '14px',
-                }}
-                onClick={() => add()}
-              />
+            <div className='page-title mt-2'>HTTP</div>
+            <div className='mb-2'>
+              <Space>
+                URL
+                <PlusCircleOutlined className='cursor-pointer' onClick={() => add()} />
+              </Space>
             </div>
-            {fields.map((field, index) => {
+            {fields.map((field) => {
               return (
-                <Form.Item
-                  key={field.key}
-                  label={
-                    index === 0 ? (
-                      <>
-                        <span>URL</span>
-                      </>
-                    ) : null
-                  }
-                >
-                  <Row gutter={16} align='middle'>
+                <Form.Item key={field.key}>
+                  <Row align='middle'>
                     <Col flex={1}>
                       <Form.Item
                         name={[field.name]}
                         rules={[
-                          { required: true },
+                          { required: true, message: t('form.url_required_msg') },
                           {
                             validator: (_, value) => (!value.includes(' ') ? Promise.resolve() : Promise.reject(new Error(t('form.url_no_spaces_msg')))),
                           },
