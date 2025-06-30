@@ -36,7 +36,7 @@ export default function LogExplore({
         <Select>
           <Select.Option value='from-to'>{t('继承当前查询时间')}</Select.Option>
           {rangeOptions.map((item) => (
-            <Select.Option key={item.start} value={item.start}>
+            <Select.Option key={item.display} value={item.start + '|' + item.end}>
               {t(`timeRangePicker:rangeOptions.${item.display}`)}
             </Select.Option>
           ))}

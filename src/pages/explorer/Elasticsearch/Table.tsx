@@ -20,6 +20,7 @@ function Table(props: Props) {
   const form = Form.useFormInstance();
   const indexPatternId = Form.useWatch(['query', 'indexPattern']);
   const indexValue = Form.useWatch(['query', 'index']);
+  const range = Form.useWatch(['query', 'range']);
   const fieldConfig = useFieldConfig(
     {
       cate: DatasourceCateEnum.elasticsearch,
@@ -31,7 +32,7 @@ function Table(props: Props) {
   );
   const columns = useMemo(() => {
     return getColumnsFromFields(selectedFields, form.getFieldValue(['query']), fieldConfig);
-  }, [selectedFields, fieldConfig]);
+  }, [selectedFields, fieldConfig, range]);
 
   return (
     <AntdTable

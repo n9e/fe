@@ -18,7 +18,7 @@ export default function InputEnlarge({
   const [linkBuilderVisible, setLinkBuilderVisible] = useState(false);
   const vars = [
     ...(linkBuilder?.variables || []),
-    ...(linkBuilder?.extracts?.map((i) => i.newField) || []),
+    ...(linkBuilder?.extracts?.filter((i) => !!i).map((i) => i.newField) || []),
     ...(linkBuilder?.mappingParamsArr?.length ? ['__mapping_para__'] : []),
   ];
 
