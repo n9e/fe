@@ -30,7 +30,14 @@ export default function kvMapModal(props: Props) {
       visible={visible}
       width={800}
       onOk={() => {
-        form.validateFields(['regExtractArr']).then(async (values) => {
+        const fields = form.getFieldValue('regExtractArr');
+        const validateNamePaths = _.flatMap(fields, (item, index) => {
+          return [
+            ['regExtractArr', index, 'field'],
+            ['regExtractArr', index, 'newField'],
+          ];
+        });
+        form.validateFields(validateNamePaths).then(async (values) => {
           onClose();
         });
       }}
