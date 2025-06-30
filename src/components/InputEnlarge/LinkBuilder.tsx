@@ -51,14 +51,17 @@ export default function LinkBuilder({
     if (values.target_type === Type.Custom) {
       onChange(values.custom.url);
     } else if (values.target_type === Type.Dashboard) {
-      const rangeStr = values.dashboard.range === 'from-to' ? `?__from=$__from&__to=$__to` : `?__from=${values.dashboard.range}&__to=now`;
+      const [start, end] = values.dashboard.range.split('|');
+      const rangeStr = values.dashboard.range === 'from-to' ? `?__from=$__from&__to=$__to` : `?__from=${start}&__to=${end}`;
       const queryStr =
         values.dashboard.variables && Object.keys(values.dashboard.variables).length > 0 ? '&' + queryString.stringify(values.dashboard.variables, { encode: false }) : '';
       const fixedStr = queryStr.length > 0 ? '&__variable_value_fixed=' + values.dashboard.variable_value_fixed : '';
-      const url = '$local_url' + rangeStr + queryStr + fixedStr;
+      const id = values.dashboard.ident || values.dashboard.boardId;
+      const url = '$local_url/dashboards/' + id + rangeStr + queryStr + fixedStr;
       onChange(url);
     } else if (values.target_type === Type.LogExplore) {
-      const range = values.logExplore.range === 'from-to' ? { start: '$__from', end: '$__to' } : { start: values.logExplore.range, end: 'now' };
+      const [start, end] = values.logExplore.range.split('|');
+      const range = values.logExplore.range === 'from-to' ? { start: '$__from', end: '$__to' } : { start: start, end: end };
       const url = formatLogExploreLink(values.logExplore, range as unknown as { start: number; end: number });
       onChange(url);
     }

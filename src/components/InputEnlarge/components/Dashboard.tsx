@@ -58,7 +58,7 @@ export default function Dashboard({ vars }: { vars: string[] }) {
         <Select>
           <Select.Option value='from-to'>{t('继承当前查询时间')}</Select.Option>
           {rangeOptions.map((item) => (
-            <Select.Option key={item.start} value={item.start}>
+            <Select.Option key={item.display} value={item.start + '|' + item.end}>
               {t(`timeRangePicker:rangeOptions.${item.display}`)}
             </Select.Option>
           ))}
@@ -108,6 +108,12 @@ export default function Dashboard({ vars }: { vars: string[] }) {
           }}
           onChange={(val) => {
             getDashboard(val as number).then((res) => {
+              form.setFields([
+                {
+                  name: ['dashboard', 'ident'],
+                  value: res.ident,
+                },
+              ]);
               let config;
               try {
                 config = JSON.parse(res.configs);
@@ -119,6 +125,12 @@ export default function Dashboard({ vars }: { vars: string[] }) {
                 setVariables(variables);
               }
             });
+            form.setFields([
+              {
+                name: ['dashboard', 'variables'],
+                value: {},
+              },
+            ]);
           }}
         >
           {boardList.length > 0 &&
@@ -130,6 +142,9 @@ export default function Dashboard({ vars }: { vars: string[] }) {
               );
             })}
         </Select>
+      </Form.Item>
+      <Form.Item name={['dashboard', 'ident']} hidden>
+        <Input />
       </Form.Item>
       {variables.length > 0 && (
         <div>
