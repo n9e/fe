@@ -20,23 +20,27 @@ import { useHistory, Link } from 'react-router-dom';
 import _ from 'lodash';
 import { useDebounceFn } from 'ahooks';
 import moment from 'moment';
-import { Table, Tag, Switch, Modal, Space, Button, Row, Col, message, Select, Tooltip, Input } from 'antd';
+import { Table, Tag, Switch, Modal, Space, Button, message, Select, Tooltip, Input } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import { EyeOutlined, InfoCircleOutlined, SearchOutlined, WarningFilled, CheckCircleFilled } from '@ant-design/icons';
+
+import { CommonStateContext } from '@/App';
+import { priorityColor } from '@/utils/constant';
+import { getBusiGroupsAlertRules, updateAlertRules, deleteStrategy } from '@/services/warning';
+import { allCates } from '@/components/AdvancedWrap/utils';
 import RefreshIcon from '@/components/RefreshIcon';
 import usePagination from '@/components/usePagination';
-import { getBusiGroupsAlertRules, updateAlertRules, deleteStrategy } from '@/services/warning';
-import { CommonStateContext } from '@/App';
 import Tags from '@/components/Tags';
-import { DatasourceSelect, ProdSelect } from '@/components/DatasourceSelect';
+import { DatasourceSelect } from '@/components/DatasourceSelect';
+import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
+import { getItems as getNotificationRules, RuleItem as NotificationRuleItem } from '@/pages/notificationRules/services';
+import { NS as notificationRulesNS } from '@/pages/notificationRules/constants';
+
 import { AlertRuleType, AlertRuleStatus } from '../types';
 import MoreOperations from './MoreOperations';
 import Import from './Import';
-import { allCates } from '@/components/AdvancedWrap/utils';
-import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
 import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
-import { priorityColor } from '@/utils/constant';
 import EventsDrawer, { Props as EventsDrawerProps } from './EventsDrawer';
 
 interface ListProps {
@@ -73,6 +77,7 @@ export default function List(props: ListProps) {
   const [selectedRows, setSelectedRows] = useState<AlertRuleType<any>[]>([]);
   const [data, setData] = useState<AlertRuleType<any>[]>([]);
   const [loading, setLoading] = useState(false);
+  const [notificationRules, setNotificationRules] = useState<NotificationRuleItem[]>();
   const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
   const [eventsDrawerProps, setEventsDrawerProps] = useState<EventsDrawerProps>({
     visible: false,
@@ -248,7 +253,7 @@ export default function List(props: ListProps) {
                 const val = user.nickname || user.username || user.name;
                 return (
                   <Tooltip key={val} title={val}>
-                    <Tag color='purple' style={{ maxWidth: '100%', marginRight: 0 }}>
+                    <Tag style={{ maxWidth: '100%', marginRight: 0 }}>
                       <div
                         style={{
                           maxWidth: 'max-content',
@@ -260,6 +265,36 @@ export default function List(props: ListProps) {
                       </div>
                     </Tag>
                   </Tooltip>
+                );
+              })}
+            </div>
+          );
+        },
+      },
+      {
+        title: t('table.notify_rule_ids'),
+        dataIndex: 'notify_rule_ids',
+        render: (data) => {
+          return (
+            <div className='flex flex-wrap gap-[4px] max-w-[400px]'>
+              {_.map(data, (id) => {
+                const val = _.find(notificationRules, { id })?.name || id;
+                return (
+                  <Link to={`/${notificationRulesNS}/edit/${id}`} key={val} target='_blank'>
+                    <Tooltip title={val}>
+                      <Tag style={{ maxWidth: '100%', marginRight: 0 }}>
+                        <div
+                          style={{
+                            maxWidth: 'max-content',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                          }}
+                        >
+                          {val}
+                        </div>
+                      </Tag>
+                    </Tooltip>
+                  </Link>
                 );
               })}
             </div>
@@ -406,6 +441,9 @@ export default function List(props: ListProps) {
 
   useEffect(() => {
     fetchData();
+    getNotificationRules().then((res) => {
+      setNotificationRules(res);
+    });
   }, [gids]);
 
   const { run: searchChange } = useDebounceFn(

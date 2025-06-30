@@ -55,6 +55,11 @@ export const defaultColumnsConfigs = [
     visible: false,
   },
   {
+    name: 'notify_rule_ids',
+    i18nKey: 'table.notify_rule_ids',
+    visible: false,
+  },
+  {
     name: 'update_at',
     i18nKey: 'table.update_at',
     visible: true,
