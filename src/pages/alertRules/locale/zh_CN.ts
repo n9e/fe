@@ -217,6 +217,7 @@ const zh_CN = {
     name: '名称',
     append_tags: '附加标签',
     notify_groups_obj: '告警接收组',
+    notify_rule_ids: '通知规则',
     update_at: '更新时间',
     update_by: '更新人',
     disabled: '启用',

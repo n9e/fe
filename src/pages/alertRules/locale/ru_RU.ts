@@ -218,6 +218,7 @@ const ru_RU = {
     name: 'Название',
     append_tags: 'Теги',
     notify_groups_obj: 'Группы получателей оповещений',
+    notify_rule_ids: 'Правила уведомлений',
     update_at: 'Время обновления',
     update_by: 'Обновлено',
     disabled: 'Активно',

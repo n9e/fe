@@ -219,6 +219,7 @@ const en_US = {
     name: 'Name',
     append_tags: 'Tags',
     notify_groups_obj: 'Notify groups',
+    notify_rule_ids: 'Notification rule',
     update_at: 'Updated',
     update_by: 'Updated by',
     disabled: 'Enable',
