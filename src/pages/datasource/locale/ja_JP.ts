@@ -56,6 +56,7 @@ const ja_JP = {
     cluster_confirm_ok: '関連付けしない',
     cluster_confirm_cancel: '関連付けを行う',
     url_no_spaces_msg: 'URLには空白を含めることはできません',
+    url_required_msg: 'URLは空にできません',
     prom: {
       write_addr_tip: '記録ルールが生成するデータの書き込みアドレスの例（時系列データベースの設定例）',
       read_addr: '時系列データベースの内網アドレス',

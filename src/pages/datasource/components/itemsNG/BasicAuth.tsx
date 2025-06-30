@@ -40,7 +40,7 @@ export default function BasicAuth(props: Props) {
         </Col>
       </Row>
       {showTls && (
-        <div className='mb-2'>
+        <div className='mb-4'>
           <span className='mr-2'>{t('skip_tls_verify')}</span>
           <Form.Item name={['settings', `${cate}.tls`, `${cate}.tls.skip_tls_verify`]} valuePropName='checked' noStyle>
             <Switch size='small' />
