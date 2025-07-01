@@ -347,9 +347,9 @@ export function Link({ form, fieldsAll, rawData }: { form: FormInstance; fieldsA
                       width: 500,
                     }}
                   >
-                    <span className='ant-form-item-label' style={{ padding: 0 }}>
+                    <span style={{ padding: 0 }}>
                       <label>
-                        <QuestionCircleOutlined className='ant-form-item-tooltip' />
+                        <QuestionCircleOutlined className='ant-form-item-tooltip' style={{ marginLeft: 4 }} />
                       </label>
                     </span>
                   </Tooltip>

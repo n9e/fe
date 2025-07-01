@@ -26,12 +26,15 @@ export default function kvMapModal(props: Props) {
 
   const validateAndClose = () => {
     const fields = form.getFieldValue('regExtractArr');
-    const validateNamePaths = _.flatMap(fields, (item, index) => {
-      return [
-        ['regExtractArr', index, 'field'],
-        ['regExtractArr', index, 'newField'],
-      ];
-    });
+    const validateNamePaths = _.flatMap(
+      fields.filter((item) => item.field),
+      (item, index) => {
+        return [
+          ['regExtractArr', index, 'reg'],
+          ['regExtractArr', index, 'newField'],
+        ];
+      },
+    );
     form.validateFields(validateNamePaths).then(async (values) => {
       onClose();
     });
