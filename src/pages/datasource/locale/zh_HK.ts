@@ -54,6 +54,7 @@ const zh_HK = {
     cluster_confirm_ok: '不做關聯',
     cluster_confirm_cancel: '去做關聯',
     url_no_spaces_msg: '請勿輸入空格',
+    url_required_msg: 'URL 不能為空',
     prom: {
       write_addr_tip: '記錄規則產生的資料的回寫地址，常見時序資料庫配置示例',
       read_addr: '時序庫內網地址',
@@ -91,7 +92,9 @@ const zh_HK = {
     },
   },
   test_and_save_btn: '測試連通性並保存',
-  test_btn: '測試連通性',
+  save_btn: '測試連通性',
+  auth_enable: '啟用授權',
+  skip_tls_verify: '跳過 TLS 驗證',
 };
 
 export default zh_HK;

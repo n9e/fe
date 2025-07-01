@@ -55,6 +55,7 @@ const ru_RU = {
     cluster_confirm_ok: 'Не связывать',
     cluster_confirm_cancel: 'Связать',
     url_no_spaces_msg: 'URL не может содержать пробелы',
+    url_required_msg: 'URL не может быть пустым',
     prom: {
       write_addr_tip: 'Адрес для записи данных, генерируемых правилами записи. Примеры конфигурации для распространенных баз данных временных рядов',
       read_addr: 'Внутренний адрес базы данных временных рядов',
@@ -97,7 +98,9 @@ const ru_RU = {
     },
   },
   test_and_save_btn: 'Сохранить и протестировать',
-  test_btn: 'Проверить соединение',
+  save_btn: 'Проверить соединение',
+  auth_enable: 'Включить авторизацию',
+  skip_tls_verify: 'Пропустить проверку TLS',
 };
 
 export default ru_RU;

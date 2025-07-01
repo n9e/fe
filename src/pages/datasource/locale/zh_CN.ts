@@ -54,6 +54,7 @@ const zh_CN = {
     cluster_confirm_ok: '不做关联',
     cluster_confirm_cancel: '去做关联',
     url_no_spaces_msg: 'URL不能包含空格',
+    url_required_msg: 'URL不能为空',
     prom: {
       write_addr_tip: '记录规则产生的数据的回写地址，常见时序数据库配置示例',
       read_addr: '时序库内网地址',
@@ -94,5 +95,7 @@ const zh_CN = {
   },
   test_and_save_btn: '测试连通性并保存',
   save_btn: '不测试连通性直接保存',
+  auth_enable: '开启授权',
+  skip_tls_verify: '跳过 TLS 检查',
 };
 export default zh_CN;
