@@ -215,6 +215,7 @@ const ja_JP = {
     name: '名前',
     append_tags: '追加タグ',
     notify_groups_obj: 'アラート受信グループ',
+    notify_rule_ids: '通知ルール',
     update_at: '更新時間',
     update_by: '更新者',
     disabled: '有効',

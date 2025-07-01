@@ -45,7 +45,7 @@ const Resource: React.FC = () => {
   const [memberId, setMemberId] = useState<string>('');
   const [query, setQuery] = useState<string>('');
   const [range, setRange] = useState<IRawTimeRange>();
-  const { profile } = useContext(CommonStateContext);
+  const { profile, perms } = useContext(CommonStateContext);
   const pagination = usePagination({ PAGESIZE_KEY: 'users' });
   const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
   const userColumn: ColumnsType<User> = [
@@ -139,34 +139,40 @@ const Resource: React.FC = () => {
           <Dropdown
             overlay={
               <Menu>
-                <Menu.Item onClick={() => handleClick(ActionType.EditUser, record.id)}>
-                  <Button className='p0 height-auto' type='link'>
-                    {t('common:btn.edit')}
-                  </Button>
-                </Menu.Item>
-                <Menu.Item onClick={() => handleClick(ActionType.Reset, record.id)}>
-                  <Button className='p0 height-auto' type='link'>
-                    {t('account:password.reset')}
-                  </Button>
-                </Menu.Item>
-                <Menu.Item
-                  onClick={() => {
-                    confirm({
-                      title: t('common:confirm.delete'),
-                      onOk: () => {
-                        deleteUser(record.id).then((_) => {
-                          message.success(t('common:success.delete'));
-                          handleClose();
-                        });
-                      },
-                      onCancel: () => {},
-                    });
-                  }}
-                >
-                  <Button danger type='link' className='p0 height-auto'>
-                    {t('common:btn.delete')}
-                  </Button>
-                </Menu.Item>
+                {_.includes(perms, '/users/put') && (
+                  <Menu.Item onClick={() => handleClick(ActionType.EditUser, record.id)}>
+                    <Button className='p0 height-auto' type='link'>
+                      {t('common:btn.edit')}
+                    </Button>
+                  </Menu.Item>
+                )}
+                {_.includes(perms, '/users/put') && (
+                  <Menu.Item onClick={() => handleClick(ActionType.Reset, record.id)}>
+                    <Button className='p0 height-auto' type='link'>
+                      {t('account:password.reset')}
+                    </Button>
+                  </Menu.Item>
+                )}
+                {_.includes(perms, '/users/del') && (
+                  <Menu.Item
+                    onClick={() => {
+                      confirm({
+                        title: t('common:confirm.delete'),
+                        onOk: () => {
+                          deleteUser(record.id).then((_) => {
+                            message.success(t('common:success.delete'));
+                            handleClose();
+                          });
+                        },
+                        onCancel: () => {},
+                      });
+                    }}
+                  >
+                    <Button danger type='link' className='p0 height-auto'>
+                      {t('common:btn.delete')}
+                    </Button>
+                  </Menu.Item>
+                )}
               </Menu>
             }
           >
@@ -177,8 +183,9 @@ const Resource: React.FC = () => {
     },
   ];
 
-  if (!profile.roles?.includes('Admin')) {
-    userColumns.pop(); //普通用户不展示操作列
+  // 根据权限动态调整表格列
+  if (!_.includes(perms, '/users/put') && !_.includes(perms, '/users/del')) {
+    userColumns.pop();
   }
 
   const handleClick = (type: ActionType, id?: string, memberId?: string) => {
@@ -269,7 +276,7 @@ const Resource: React.FC = () => {
             </div>
             <div className='event-table-search-right'>
               <Space>
-                {profile.roles?.includes('Admin') && (
+                {_.includes(perms, '/users/add') && (
                   <div className='user-manage-operate'>
                     <Button type='primary' onClick={() => handleClick(ActionType.CreateUser)}>
                       {t('common:btn.add')}
