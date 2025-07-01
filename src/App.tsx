@@ -37,7 +37,7 @@ import Feedback from '@/components/Feedback';
 import { getN9eConfig } from '@/pages/siteSettings/services';
 import { getDarkMode, updateDarkMode } from '@/utils/darkMode';
 import SharedDetail from '@/pages/event/DetailNG/SharedDetail';
-
+import HocRenderer from './components/HocRenderer';
 import HeaderMenu from './components/SideMenu';
 import Content from './routers';
 
@@ -333,6 +333,7 @@ function App() {
               <>
                 {location.pathname !== `${basePrefix}/out-of-service` && <HeaderMenu />}
                 <Content />
+                <HocRenderer></HocRenderer>
               </>
             </Switch>
             <Feedback />
