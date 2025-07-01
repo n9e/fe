@@ -141,12 +141,13 @@ const handleNav = (link: string, rawValue: object, query: { start: number; end: 
       for (let i = 0; i < mappingParamsArr.length; i++) {
         if (match) continue;
         const { op, v, str, field } = mappingParamsArr[i];
+        const fieldStrWholeWord = rawValue[field];
         const fieldStr = _.get(rawValue, field.split('.'));
-        if (op === '=~' && new RegExp(v).test(fieldStr)) {
+        if (op === '=~' && new RegExp(v).test(fieldStrWholeWord || fieldStr)) {
           reallink = reallink.replace('$__mapping_para__', str);
           match = true;
         }
-        if (op === '!~' && !new RegExp(v).test(fieldStr)) {
+        if (op === '!~' && !new RegExp(v).test(fieldStrWholeWord || fieldStr)) {
           reallink = reallink.replace('$__mapping_para__', str);
           match = true;
         }
@@ -222,7 +223,7 @@ export default function Links({ rawValue, range, text, paramsArr, regExtractArr,
           }
         }}
       >
-        {text};
+        {text}
         <span style={{ background: '#fff', marginLeft: 6, display: 'inline-flex', padding: 3, borderRadius: 2 }}>
           <IconFont type='icon-ic_arrow_right' style={{ color: 'var(--fc-fill-primary)', height: 12 }} />
         </span>
