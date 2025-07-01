@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, Form, InputNumber, Row, Col, Space } from 'antd';
+import { Input, Form, InputNumber, Row, Col, Space, Button } from 'antd';
 import { MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
@@ -9,7 +9,7 @@ export default function HTTPList() {
   return (
     <div>
       <Form.List name={['settings', 'os.nodes']} initialValue={['']}>
-        {(fields, { add, remove }, { errors }) => (
+        {(fields, { add, remove }) => (
           <>
             <div className='page-title mt-2'>HTTP</div>
             <div className='mb-2'>
@@ -21,7 +21,7 @@ export default function HTTPList() {
             {fields.map((field) => {
               return (
                 <Form.Item key={field.key}>
-                  <Row align='middle'>
+                  <Row align='middle' gutter={8}>
                     <Col flex={1}>
                       <Form.Item
                         name={[field.name]}
@@ -37,15 +37,8 @@ export default function HTTPList() {
                       </Form.Item>
                     </Col>
                     {fields.length > 1 ? (
-                      <Col>
-                        <MinusCircleOutlined
-                          style={{
-                            cursor: 'pointer',
-                            fontSize: '14px',
-                            margin: '8px 16px 0 0',
-                          }}
-                          onClick={() => remove(field.name)}
-                        />
+                      <Col flex='none'>
+                        <Button className='p-0' icon={<MinusCircleOutlined />} type='text' onClick={() => remove(field.name)} />
                       </Col>
                     ) : null}
                   </Row>
