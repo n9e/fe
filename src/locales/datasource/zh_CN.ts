@@ -65,5 +65,30 @@ const zh_CN = {
     queryFailed: '查询失败，请稍后重试',
     offset_tip: '用于查询指定时间段之前的数据，类似 PromQL 中的 offset，单位为秒',
   },
+  datasource: {
+    max_query_rows: '单次请求允许检索的最大行数',
+    max_idle_conns: '最大空闲连接数',
+    max_open_conns: '最大打开连接数',
+    conn_max_lifetime: '连接最大生存时间（单位: 秒）',
+    timeout: '超时时间（单位: 秒）',
+    timeout_ms: '超时时间（单位: 毫秒）',
+  },
+  query: {
+    title: '查询统计',
+    execute: '查询',
+    query: '查询条件',
+    query_required: '查询条件不能为空',
+    query_placeholder: '输入 SQL 进行查询，按 Shift+Enter 换行',
+    query_placeholder2: '按 Shift+Enter 换行',
+    advancedSettings: {
+      title: '辅助配置',
+      tags_placeholder: '回车输入多个',
+      valueKey: '值字段',
+      valueKey_tip: 'SQL 查询结果通常包含多个列，您可以指定哪些列的值作为曲线展示在图表上',
+      valueKey_required: '值字段不能为空',
+      labelKey: '标签字段',
+      labelKey_tip: 'SQL 查询结果通常包含多个列，您可以指定哪些列作为曲线的标签元信息',
+    },
+  },
 };
 export default zh_CN;
