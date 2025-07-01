@@ -24,27 +24,21 @@ export default function kvMapModal(props: Props) {
   const { t } = useTranslation('es-index-patterns');
   const isMcDonalds = localStorage.getItem('n9e-dark-mode') === '2';
 
+  const validateAndClose = () => {
+    const fields = form.getFieldValue('regExtractArr');
+    const validateNamePaths = _.flatMap(fields, (item, index) => {
+      return [
+        ['regExtractArr', index, 'field'],
+        ['regExtractArr', index, 'newField'],
+      ];
+    });
+    form.validateFields(validateNamePaths).then(async (values) => {
+      onClose();
+    });
+  };
+
   return (
-    <Modal
-      title={t('字段提取')}
-      visible={visible}
-      width={800}
-      onOk={() => {
-        const fields = form.getFieldValue('regExtractArr');
-        const validateNamePaths = _.flatMap(fields, (item, index) => {
-          return [
-            ['regExtractArr', index, 'field'],
-            ['regExtractArr', index, 'newField'],
-          ];
-        });
-        form.validateFields(validateNamePaths).then(async (values) => {
-          onClose();
-        });
-      }}
-      onCancel={() => {
-        onClose();
-      }}
-    >
+    <Modal title={t('字段提取')} visible={visible} width={800} onOk={validateAndClose} onCancel={validateAndClose}>
       <div>
         <div style={{ background: isMcDonalds ? '#fff2cb' : '#6C53B114', marginBottom: 16, padding: 16 }}>
           <InfoCircleOutlined style={{ color: 'var(--fc-primary-color)', marginBottom: 8 }} /> {t('字段提取设置')}
