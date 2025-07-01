@@ -101,7 +101,7 @@ request.interceptors.response.use(
           ) {
             return data;
           } else if (
-            _.some(['/api/v1', '/api/v2', '/api/n9e/datasource'], (item) => {
+            _.some(['/api/v1', '/api/v2', '/api/fc-model', '/api/n9e/datasource'], (item) => {
               return url.includes(item);
             })
           ) {
