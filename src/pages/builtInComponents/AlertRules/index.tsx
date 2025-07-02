@@ -277,28 +277,30 @@ export default function index(props: Props) {
                           {t('common:btn.export')}
                         </a>
                       </Menu.Item>
-                      <AuthorizationWrapper allowedPerms={['/components/put']}>
-                        <Menu.Item>
-                          <a
-                            onClick={() => {
-                              PayloadFormModal({
-                                darkMode,
-                                action: 'edit',
-                                cateList,
-                                contentMode: 'json',
-                                showCate: true,
-                                initialValues: record,
-                                onOk: () => {
-                                  fetchData();
-                                  fetchCates();
-                                },
-                              });
-                            }}
-                          >
-                            {t('common:btn.edit')}
-                          </a>
-                        </Menu.Item>
-                      </AuthorizationWrapper>
+                      {record.created_by !== 'system' && (
+                        <AuthorizationWrapper allowedPerms={['/components/put']}>
+                          <Menu.Item>
+                            <a
+                              onClick={() => {
+                                PayloadFormModal({
+                                  darkMode,
+                                  action: 'edit',
+                                  cateList,
+                                  contentMode: 'json',
+                                  showCate: true,
+                                  initialValues: record,
+                                  onOk: () => {
+                                    fetchData();
+                                    fetchCates();
+                                  },
+                                });
+                              }}
+                            >
+                              {t('common:btn.edit')}
+                            </a>
+                          </Menu.Item>
+                        </AuthorizationWrapper>
+                      )}
                       {record.created_by !== 'system' && (
                         <AuthorizationWrapper allowedPerms={['/components/del']}>
                           <Menu.Item>

@@ -163,7 +163,7 @@ export default function index(props: Props) {
                     </FormModal>
                   </Menu.Item>
                 )}
-                {actionAuth.edit && (
+                {actionAuth.edit && record.created_by !== 'system' && (
                   <Menu.Item>
                     <FormModal
                       component={component}
