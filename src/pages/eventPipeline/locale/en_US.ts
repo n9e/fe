@@ -17,6 +17,7 @@ const en_US = {
   attribute_filters_options: {
     group_name: 'Business group',
     cluster: 'Data source',
+    is_recovered: 'Is recovery?',
   },
   processor: {
     title: 'Processor',
