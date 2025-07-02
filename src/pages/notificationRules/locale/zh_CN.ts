@@ -31,7 +31,7 @@ const zh_CN = {
     attributes_options: {
       group_name: '业务组',
       cluster: '数据源',
-      is_recovered: '是恢复事件',
+      is_recovered: '是恢复事件？',
     },
     run_test_btn: '通知测试',
     run_test_btn_tip: '可以选择几个已经产生的事件，测试一下此通知配置是否正确，如果正确，应该会收到相关的通知消息',

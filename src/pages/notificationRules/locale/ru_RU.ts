@@ -34,7 +34,7 @@ const ru_RU = {
     attributes_options: {
       group_name: 'Бизнес-группа',
       cluster: 'Источник данных',
-      is_recovered: 'Событие восстановления',
+      is_recovered: 'Событие восстановления?',
     },
     run_test_btn: 'Тестирование уведомления',
     run_test_btn_tip:
