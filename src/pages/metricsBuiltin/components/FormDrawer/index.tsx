@@ -254,7 +254,7 @@ export default function index(props: Props) {
                     <Form.Item {...restField} name={[name, 'name']} label={t('name')} rules={[{ required: true }]}>
                       <Input />
                     </Form.Item>
-                    <Form.Item {...restField} name={[name, 'note']} label={t('note')} rules={[{ required: true }]}>
+                    <Form.Item {...restField} name={[name, 'note']} label={t('note')}>
                       <Input.TextArea
                         autoSize={{
                           minRows: 6,

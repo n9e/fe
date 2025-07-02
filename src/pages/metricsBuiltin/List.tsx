@@ -198,9 +198,9 @@ export default function index() {
       },
     },
     {
-      title: t('common:table.create_by'),
-      dataIndex: 'created_by',
-      key: 'created_by',
+      title: t('common:table.update_by'),
+      dataIndex: 'updated_by',
+      key: 'updated_by',
       render: (value) => {
         if (!value) return '-';
         if (value === 'system') {
@@ -233,7 +233,7 @@ export default function index() {
                     </a>
                   </Menu.Item>
                 )}
-                {actionAuth.edit && (
+                {actionAuth.edit && record.updated_by !== 'system' && (
                   <Menu.Item>
                     <a
                       onClick={() => {
@@ -249,7 +249,7 @@ export default function index() {
                     </a>
                   </Menu.Item>
                 )}
-                {actionAuth.delete && record.created_by !== 'system' && (
+                {actionAuth.delete && record.updated_by !== 'system' && (
                   <Menu.Item>
                     <Button
                       danger
