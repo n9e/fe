@@ -34,6 +34,7 @@ const en_US = {
     attributes_options: {
       group_name: 'Business group',
       cluster: 'Cluster',
+      is_recovered: 'Is recovery',
     },
     run_test_btn: 'Run test',
     run_test_btn_tip:
