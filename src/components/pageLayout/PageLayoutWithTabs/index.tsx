@@ -24,7 +24,7 @@ import { DownOutlined, RollbackOutlined } from '@ant-design/icons';
 import { Logout } from '@/services/login';
 import AdvancedWrap, { License } from '@/components/AdvancedWrap';
 import { CommonStateContext } from '@/App';
-import { AccessTokenKey, IS_ENT } from '@/utils/constant';
+import { AccessTokenKey, IS_ENT, IS_PLUS } from '@/utils/constant';
 import DarkModeSelect from '@/components/DarkModeSelect';
 import { getMenuList } from '@/components/SideMenu/menu';
 
@@ -167,7 +167,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                   </AdvancedWrap>
                   <Space>
                     {/* 整合版本关闭文档链接 */}
-                    {!IS_ENT && (
+                    {!IS_ENT && IS_PLUS && (
                       <Button
                         target='_blank'
                         href={siteInfo?.document_url || 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/introduction/'}
