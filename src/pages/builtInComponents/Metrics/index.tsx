@@ -128,9 +128,9 @@ export default function index(props: Props) {
       dataIndex: 'note',
     },
     {
-      title: t('common:table.create_by'),
-      dataIndex: 'created_by',
-      key: 'created_by',
+      title: t('common:table.update_by'),
+      dataIndex: 'updated_by',
+      key: 'updated_by',
       render: (value) => {
         if (!value) return '-';
         if (value === 'system') {
@@ -163,7 +163,7 @@ export default function index(props: Props) {
                     </FormModal>
                   </Menu.Item>
                 )}
-                {actionAuth.edit && record.created_by !== 'system' && (
+                {actionAuth.edit && record.updated_by !== 'system' && (
                   <Menu.Item>
                     <FormModal
                       component={component}
@@ -179,7 +179,7 @@ export default function index(props: Props) {
                     </FormModal>
                   </Menu.Item>
                 )}
-                {actionAuth.delete && record.created_by !== 'system' && (
+                {actionAuth.delete && record.updated_by !== 'system' && (
                   <Menu.Item>
                     <Button
                       danger
