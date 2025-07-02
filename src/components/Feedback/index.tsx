@@ -18,7 +18,7 @@ const setCacheBottom = (bottom: number) => {
 };
 
 export default function Index() {
-  const { t } = useTranslation('Feedback');
+  const { t, i18n } = useTranslation('Feedback');
   const location = useLocation();
   const query = queryString.parse(location.search);
 
@@ -92,7 +92,7 @@ export default function Index() {
                 </div>
               </div>
             </a>
-            <a target='_blank' rel='noopener noreferrer' href='https://n9e.github.io/zh/'>
+            <a target='_blank' rel='noopener noreferrer' href={i18n.language === 'zh_CN' ? 'https://n9e.github.io/zh/' : 'https://n9e.github.io/'}>
               <div
                 className='px-8 py-4 mb-2 rounded-[8px] text-[14px] hover:bg-[var(--fc-fill-3)]'
                 style={{
