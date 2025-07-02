@@ -31,7 +31,7 @@ const zh_HK = {
     attributes_options: {
       group_name: '業務組',
       cluster: '數據源',
-      is_recovered: '是恢復事件',
+      is_recovered: '是恢復事件？',
     },
     run_test_btn: '通知測試',
     run_test_btn_tip: '可以選擇幾個已經產生的事件，測試一下此通知配置是否正確，如果正確，應該會收到相關的通知消息',
