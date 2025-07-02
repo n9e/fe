@@ -187,9 +187,9 @@ export default function index(props: Props) {
             },
           },
           {
-            title: t('common:table.create_by'),
-            dataIndex: 'created_by',
-            key: 'created_by',
+            title: t('common:table.update_by'),
+            dataIndex: 'updated_by',
+            key: 'updated_by',
             render: (value) => {
               if (!value) return '-';
               if (value === 'system') {
@@ -229,7 +229,7 @@ export default function index(props: Props) {
                           {t('common:btn.export')}
                         </a>
                       </Menu.Item>
-                      {record.created_by !== 'system' && (
+                      {record.updated_by !== 'system' && (
                         <AuthorizationWrapper allowedPerms={['/components/put']}>
                           <Menu.Item>
                             <a
@@ -251,7 +251,7 @@ export default function index(props: Props) {
                           </Menu.Item>
                         </AuthorizationWrapper>
                       )}
-                      {record.created_by !== 'system' && (
+                      {record.updated_by !== 'system' && (
                         <AuthorizationWrapper allowedPerms={['/components/del']}>
                           <Menu.Item>
                             <Button
