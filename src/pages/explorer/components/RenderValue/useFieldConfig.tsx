@@ -22,24 +22,10 @@ export default function useFieldConfig(search: IFieldSearch, dep: any): FieldCon
         setFieldConfig(fieldConfig);
       });
     } else if (isPlus) {
-      if (search.cate === 'elasticsearch' && search.resource) {
-        searchDrilldown(search).then((res) => {
-          if (res.length > 0) {
-            try {
-              let configs = JSON.parse(res[0].configs);
-              setFieldConfig({
-                arr: [],
-                version: 2,
-                linkArr: configs.linkArr,
-                mappingParamsArr: configs.mappingParamsArr,
-                regExtractArr: configs.regExtractArr,
-              });
-            } catch (error) {
-              console.error(error);
-            }
-          }
-        });
-      } else if (search.cate === 'loki' && search.query) {
+      const isESAvailable = search.cate === 'elasticsearch' && search.resource;
+      const isLokiAvailable = search.cate === 'loki' && search.query;
+      const isSLSAvailable = search.cate === 'aliyun-sls' && search.resource;
+      if (isESAvailable || isLokiAvailable || isSLSAvailable) {
         searchDrilldown(search).then((res) => {
           if (res.length > 0) {
             try {

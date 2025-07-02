@@ -7,7 +7,7 @@ import { basePrefix } from '@/App';
 import { ILogExtract, ILogURL, ILogMappingParams } from '@/pages/log/IndexPatterns/types';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 
-export function replaceVarAndGenerateLink(link: string, rawValue: object, regExtractArr?: ILogExtract[], mappingParamsArr?: ILogMappingParams[]) {
+export function replaceVarAndGenerateLink(link: string, rawValue: object, regExtractArr?: ILogExtract[], mappingParamsArr?: ILogMappingParams[]): string {
   const param = new URLSearchParams(link);
   let reallink = link;
   const timeFormat = param.get('$__time_format__');
@@ -68,7 +68,7 @@ export function replaceVarAndGenerateLink(link: string, rawValue: object, regExt
   return reallink;
 }
 
-const handleNav = (link: string, rawValue: object, query: { start: number; end: number }, regExtractArr?: ILogExtract[], mappingParamsArr?: ILogMappingParams[]) => {
+export const handleNav = (link: string, rawValue: object, query: { start: number; end: number }, regExtractArr?: ILogExtract[], mappingParamsArr?: ILogMappingParams[]) => {
   const param = new URLSearchParams(link);
   // 为了兼容旧逻辑，所以${} 中的也需要替换
   const startMargin = param.get('${__start_time_margin__}');
@@ -203,31 +203,41 @@ export default function Links({ rawValue, range, text, paramsArr, regExtractArr,
         </div>
       ))}
     >
-      <span
-        style={{
-          display: 'inline-flex',
-          textDecoration: 'underline',
-          fontWeight: 'bold',
-          borderRadius: 4,
-          padding: '2px 2px 2px 6px',
-          background: 'var(--fc-fill-primary)',
-          color: isGold ? 'var(--fc-gold-text)' : '#fff',
-          marginBottom: 2,
-          cursor: 'pointer',
-          lineHeight: '22px',
-          alignItems: 'center',
-        }}
+      <Link
         onClick={() => {
           if (paramsArr.length > 0) {
             handleNav(paramsArr[0].urlTemplate, rawValue, { start, end }, regExtractArr, mappingParamsArr);
           }
         }}
-      >
-        {text}
-        <span style={{ background: '#fff', marginLeft: 6, display: 'inline-flex', padding: 3, borderRadius: 2 }}>
-          <IconFont type='icon-ic_arrow_right' style={{ color: 'var(--fc-fill-primary)', height: 12 }} />
-        </span>
-      </span>
+        text={text}
+      />
     </Popover>
+  );
+}
+
+export function Link({ onClick, text }: { onClick?: () => void; text: React.ReactNode }) {
+  const isGold = localStorage.getItem('n9e-dark-mode') === '2';
+  return (
+    <span
+      style={{
+        display: 'inline-flex',
+        textDecoration: 'underline',
+        fontWeight: 'bold',
+        borderRadius: 4,
+        padding: '2px 2px 2px 6px',
+        background: 'var(--fc-fill-primary)',
+        color: isGold ? 'var(--fc-gold-text)' : '#fff',
+        marginBottom: 2,
+        cursor: 'pointer',
+        lineHeight: '22px',
+        alignItems: 'center',
+      }}
+      onClick={onClick}
+    >
+      {text}
+      <span style={{ background: '#fff', marginLeft: 6, display: 'inline-flex', padding: 3, borderRadius: 2 }}>
+        <IconFont type='icon-ic_arrow_right' style={{ color: 'var(--fc-fill-primary)', height: 12 }} />
+      </span>
+    </span>
   );
 }
