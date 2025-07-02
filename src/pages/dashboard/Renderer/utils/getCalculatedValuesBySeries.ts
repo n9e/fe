@@ -29,6 +29,7 @@ export const getSerieTextObj = (
   valueMappings?: IValueMapping[],
   thresholds?: IThresholds,
   valueRange?: [number, number],
+  callValueFormatter = true,
 ) => {
   const { decimals, dateFormat } = standardOptions || {};
   const unit = standardOptions?.unit || standardOptions?.util; // TODO: 兼容之前写错的 util
@@ -93,7 +94,14 @@ export const getSerieTextObj = (
 
   // 2024-09-23 不配置单位或是小数位数时，用默认的单位和小数位数处理
   // TODO: 之前不清楚为什么关闭了默认处理
-  const valueObj = valueFormatter({ unit, decimals, dateFormat }, value);
+  const valueObj = callValueFormatter
+    ? valueFormatter({ unit, decimals, dateFormat }, value)
+    : {
+        value: value,
+        unit: unit || '',
+        text: value,
+        stat: value,
+      };
   const newValue = matchedValueMapping?.result?.text ? matchedValueMapping?.result?.text : valueObj.value;
   return {
     value: newValue,

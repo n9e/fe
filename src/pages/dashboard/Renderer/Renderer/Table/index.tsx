@@ -17,7 +17,7 @@
 import React, { useRef, useEffect, useState, useMemo, forwardRef, useImperativeHandle } from 'react';
 import _ from 'lodash';
 import { Table, Input, Space, Button } from 'antd';
-import { SearchOutlined, FilterOutlined, ConsoleSqlOutlined } from '@ant-design/icons';
+import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
 import type { ColumnType } from 'antd/es/table';
 import type { FilterConfirmProps } from 'antd/es/table/interface';
 import { useSize } from 'ahooks';
@@ -290,7 +290,7 @@ function TableCpt(props: IProps, ref: any) {
             let textObj = getMappedTextObj(text, options?.valueMappings);
             const overrideProps = getOverridePropertiesByName(overrides, 'byName', key);
             if (!_.isEmpty(overrideProps)) {
-              textObj = getSerieTextObj(textObj.text, overrideProps?.standardOptions, overrideProps?.valueMappings);
+              textObj = getSerieTextObj(textObj.text, overrideProps?.standardOptions, overrideProps?.valueMappings, undefined, undefined, false);
             }
             return <Cell {...textObj} panel={values} time={time} record={record} />;
           },
