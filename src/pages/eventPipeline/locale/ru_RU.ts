@@ -17,6 +17,7 @@ const ru_RU = {
   attribute_filters_options: {
     group_name: 'Бизнес-группа',
     cluster: 'Источник данных',
+    is_recovered: 'Это событие восстановления?',
   },
   processor: {
     title: 'Процессор',
