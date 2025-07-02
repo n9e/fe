@@ -35,6 +35,7 @@ const ja_JP = {
     attributes_options: {
       group_name: 'ビジネスグループ',
       cluster: 'クラスタ',
+      is_recovered: '回復イベントかどうか？',
     },
     run_test_btn: 'テストを実行',
     run_test_btn_tip: 'すでに発生したイベントをいくつか選択して、この通知設定が正しいかどうかをテストできます。正しい場合、関連する通知メッセージを受信するはずです',
