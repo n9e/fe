@@ -16,6 +16,7 @@ const zh_CN = {
   attribute_filters_options: {
     group_name: '业务组',
     cluster: '数据源',
+    is_recovered: '是恢复事件？',
   },
   processor: {
     title: '处理器',

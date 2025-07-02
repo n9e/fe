@@ -41,6 +41,11 @@ const TagItem = (props: Props) => {
         value: item.name,
       };
     });
+  } else if (key === 'is_recovered') {
+    selectOptions = [
+      { label: 'true', value: 'true' },
+      { label: 'false', value: 'false' },
+    ];
   }
 
   return (
@@ -58,9 +63,14 @@ const TagItem = (props: Props) => {
                   label: t(`${NS}:attribute_filters_options.cluster`),
                   value: 'cluster',
                 },
+                {
+                  label: t(`${NS}:attribute_filters_options.is_recovered`),
+                  value: 'is_recovered',
+                },
               ]}
               onChange={() => {
                 const newValues = _.cloneDeep(form.getFieldsValue());
+                _.set(newValues, [...fullName, field.name, 'func'], '==');
                 _.set(newValues, [...fullName, field.name, 'value'], undefined);
                 form.setFieldsValue(newValues);
               }}
@@ -69,14 +79,20 @@ const TagItem = (props: Props) => {
         </Col>
         <Col span={3}>
           <Form.Item name={[field.name, 'func']}>
-            <Select>
-              <Select.Option value='=='>==</Select.Option>
-              <Select.Option value='=~'>=~</Select.Option>
-              <Select.Option value='in'>in</Select.Option>
-              <Select.Option value='not in'>not in</Select.Option>
-              <Select.Option value='!='>!=</Select.Option>
-              <Select.Option value='!~'>!~</Select.Option>
-            </Select>
+            <Select
+              options={_.concat(
+                [{ label: '==', value: '==' }],
+                key !== 'is_recovered'
+                  ? [
+                      { label: '=~', value: '=~' },
+                      { label: 'in', value: 'in' },
+                      { label: 'not in', value: 'not in' },
+                      { label: '!=', value: '!=' },
+                      { label: '!~', value: '!~' },
+                    ]
+                  : [],
+              )}
+            />
           </Form.Item>
         </Col>
         <Col span={15}>

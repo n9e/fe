@@ -31,7 +31,7 @@ export default function Index(props: Props) {
           <Col span={12}>{t('form.username')}：</Col>
           <Col span={12}>{t('form.password')}：</Col>
           <Col span={12} className='second-color'>
-            {_.get(data, ['settings', 'os.basic', 'os.user']) ?? '-'}
+            {_.get(data, ['settings', 'os.basic', 'os.user']) || '-'}
           </Col>
           <Col span={12} className='second-color'>
             {_.get(data, ['settings', 'os.basic', 'os.password']) ? '******' : '-'}
