@@ -8,20 +8,25 @@
   display: flex;
   justify-content: space-between;
   padding: 10px 10px 20px 10px;
+
   &-left {
     display: flex;
     align-items: center;
+
     .back_icon {
       font-size: 14px;
+
       &:hover {
         color: @primary-color;
       }
     }
+
     .title {
       font-size: 14px;
       color: black;
       font-weight: bold;
     }
+
     .edit {
       font-size: @baseFontSizeMiddle;
       width: 20px;
@@ -29,10 +34,12 @@
       margin-left: 15px;
     }
   }
+
   &-right {
     display: flex;
     height: 32px;
-    & > button {
+
+    &>button {
       margin-right: 10px;
     }
   }
@@ -64,6 +71,7 @@
   .variable-area {
     display: flex;
     width: 100%;
+
     .date-picker-area {
       display: flex;
       width: 400px;
@@ -83,6 +91,7 @@
       box-shadow: 0 4px 4px rgba(0, 0, 0, .12);
     }
   }
+
   .dashboard-detail-content-header-container {
     .ant-alert {
       padding: 4px 8px;
@@ -95,6 +104,7 @@
     justify-content: space-between;
     background-color: unset !important;
   }
+
   .dashboards-panels {
     flex: 1;
     background-color: unset !important;
@@ -102,29 +112,35 @@
     .ant-tooltip-inner {
       a {
         color: #fff;
-        text-decoration:underline
+        text-decoration: underline
       }
     }
   }
 
   .charts {
     padding: 0px 20px 15px;
+
     .ant-collapse {
       margin-bottom: 15px;
     }
+
     .ant-collapse-header {
       font-size: @baseFontSizeTiny;
       height: 40px;
     }
+
     .ant-collapse-extra {
       margin-top: -3px;
+
       button {
         font-size: @baseFontSizeTiny;
       }
     }
+
     .ant-collapse-content-box {
       display: flex;
       padding: 2px;
+
       .empty-group-holder {
         flex: 1;
         text-align: center;
@@ -132,7 +148,7 @@
     }
   }
 
-  .react-grid-item > .react-resizable-handle::after{
+  .react-grid-item>.react-resizable-handle::after {
     border-right: 2px solid #E3E4E6;
     border-bottom: 2px solid #E3E4E6;
   }
@@ -143,14 +159,18 @@
         height: 4px;
         width: 4px;
       }
+
       .ant-table-body::-webkit-scrollbar-corner {
         background-color: transparent;
       }
+
       .ant-table-body::-webkit-scrollbar-thumb {
         border-radius: 10px;
         box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-        background: rgba(0,0,0,0.5);;
+        background: rgba(0, 0, 0, 0.5);
+        ;
       }
+
       .ant-table-body::-webkit-scrollbar-track {
         box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
         border-radius: 10px;
@@ -158,17 +178,21 @@
       }
     }
   }
+
   .scroll-container::-webkit-scrollbar {
     height: 4px;
     width: 4px;
   }
+
   .scroll-container::-webkit-scrollbar-corner {
     background-color: transparent;
   }
+
   .scroll-container::-webkit-scrollbar-thumb {
     border-radius: 10px;
     background: #ccc;
   }
+
   .scroll-container::-webkit-scrollbar-track {
     border-radius: 10px;
     background: unset;

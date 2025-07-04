@@ -16,7 +16,7 @@ export default function index(props: IProps) {
   const { values, time } = props;
   const { custom } = values;
   const { src } = custom as IIframeStyles;
-  const content = replaceFieldWithVariable(src, dashboardMeta.dashboardId, getOptionsList(dashboardMeta, time));
+  const content = replaceFieldWithVariable(src, dashboardMeta.dashboardId, getOptionsList({ ...dashboardMeta, time }));
 
   return (
     <iframe
