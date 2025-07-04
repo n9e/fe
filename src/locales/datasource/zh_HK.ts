@@ -13,6 +13,7 @@ const zh_HK = {
       <1/>
       `,
     index_msg: '索引不能為空',
+    indexPattern: '索引模式',
     indexPatterns: '索引模式',
     indexPattern_msg: '索引模式不能為空',
     indexPatterns_manage: '管理索引模式',
