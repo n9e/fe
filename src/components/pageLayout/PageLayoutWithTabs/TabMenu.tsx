@@ -3,8 +3,8 @@ import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import { getStorageKey } from '@/components/SideMenu/utils';
+import { MenuMatchResult } from '@/components/SideMenu/types';
 
-import { MenuMatchResult } from './types';
 import './TabMenu.less';
 
 interface TabMenuProps {
