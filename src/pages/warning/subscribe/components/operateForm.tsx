@@ -487,7 +487,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
           <Card size='small' className='affix-bottom-shadow'>
             <Space>
               <Button type='primary' htmlType='submit'>
-                {type === 1 ? t('common:btn.edit') : type === 2 ? t('common:btn.clone') : t('common:btn.create')}
+                {type === 1 ? t('common:btn.save') : type === 2 ? t('common:btn.clone') : t('common:btn.create')}
               </Button>
               {type === 1 && (
                 <Button
