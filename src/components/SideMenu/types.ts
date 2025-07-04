@@ -25,3 +25,10 @@ export interface MenuItem extends BaseMenuItem {
   icon?: ReactNode;
   children: Array<BaseMenuItem>;
 }
+
+export interface MenuMatchResult {
+  currentItem: BaseMenuItem;
+  parentItem?: BaseMenuItem;
+  showTabs: boolean;
+  icon?: ReactNode;
+}

@@ -2,39 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import { MenuItem } from '@/components/SideMenu/types';
+import { getStorageKey } from '@/components/SideMenu/utils';
+import { MenuMatchResult } from '@/components/SideMenu/types';
 
-import { MenuMatchResult } from './types';
 import './TabMenu.less';
 
 interface TabMenuProps {
   currentMenu: MenuMatchResult | null;
   onTabChange?: (key: string) => void;
 }
-
-export const findMenuByPath = (path: string, menuList: MenuItem[]): MenuMatchResult | null => {
-  for (const parent of menuList) {
-    if (!parent.children) continue;
-
-    for (const child of parent.children) {
-      if (child.children) {
-        for (const grandChild of child.children) {
-          if (grandChild.key === path) {
-            return {
-              currentItem: grandChild,
-              parentItem: child,
-              showTabs: child.type === 'tabs',
-              icon: parent?.icon,
-            };
-          }
-        }
-      }
-    }
-  }
-  return null;
-};
-
-const getStorageKey = (parentKey: string) => `tab_selection_${parentKey}`;
 
 export const TabMenu: React.FC<TabMenuProps> = ({ currentMenu, onTabChange }) => {
   const history = useHistory();
@@ -43,18 +19,7 @@ export const TabMenu: React.FC<TabMenuProps> = ({ currentMenu, onTabChange }) =>
 
   useEffect(() => {
     if (currentMenu?.currentItem && currentMenu?.parentItem) {
-      const storageKey = getStorageKey(currentMenu.parentItem.key);
-      const savedTab = localStorage.getItem(storageKey);
-      const isValidTab = currentMenu.parentItem.children?.some((child) => child.key === savedTab);
-
-      if (savedTab && isValidTab) {
-        setActiveTab(savedTab);
-        if (savedTab !== currentMenu.currentItem.key) {
-          history.push(savedTab);
-        }
-      } else {
-        setActiveTab(currentMenu.currentItem.key);
-      }
+      setActiveTab(currentMenu.currentItem.key);
     }
   }, [currentMenu]);
 

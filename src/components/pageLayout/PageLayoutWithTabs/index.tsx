@@ -26,10 +26,10 @@ import AdvancedWrap, { License } from '@/components/AdvancedWrap';
 import { CommonStateContext } from '@/App';
 import { AccessTokenKey, IS_ENT, IS_PLUS } from '@/utils/constant';
 import DarkModeSelect from '@/components/DarkModeSelect';
-import { getMenuList } from '@/components/SideMenu/menu';
+import { findMenuByPath, getCurrentMenuList } from '@/components/SideMenu/utils';
+import { MenuMatchResult } from '@/components/SideMenu/types';
 
-import { findMenuByPath, TabMenu } from './TabMenu';
-import { MenuMatchResult } from './types';
+import { TabMenu } from './TabMenu';
 import LanguageIcon from '../icons/LanguageIcon';
 import DocIcon from '../icons/DocIcon';
 import Version from '../Version';
@@ -38,8 +38,6 @@ import HelpLink from '../HelpLink';
 import '../index.less';
 import '../locale';
 
-// @ts-ignore
-import getPlusMenuList from 'plus:/parcels/SideMenu/menu';
 // @ts-ignore
 import FeatureNotification from 'plus:/pages/FeatureNotification';
 
@@ -71,11 +69,11 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
   const history = useHistory();
   const location = useLocation();
   const query = querystring.parse(location.search);
-  const { profile, siteInfo, isPlus } = useContext(CommonStateContext);
+  const { profile, siteInfo } = useContext(CommonStateContext);
   const embed = localStorage.getItem('embed') === '1' && window.self !== window.top;
   const [themeVisible, setThemeVisible] = useState(false);
   const [currentMenu, setCurrentMenu] = useState<MenuMatchResult | null>(null);
-  const menuList = isPlus ? getPlusMenuList() : getMenuList();
+  const menuList = getCurrentMenuList();
 
   useEffect(() => {
     const result = findMenuByPath(location.pathname, menuList);
