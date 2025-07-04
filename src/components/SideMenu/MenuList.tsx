@@ -7,7 +7,7 @@ import { RightIcon } from '@/components/BusinessGroup/components/Tree/constant';
 import IconFont from '@/components/IconFont';
 
 import { IMenuItem } from './types';
-import { cn } from './utils';
+import { cn, getSavedPath } from './utils';
 import DeprecatedIcon from './DeprecatedIcon';
 
 interface IMenuProps {
@@ -87,10 +87,11 @@ function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: boolean
   const { item, isSub = false, isCustomBg, collapsed, selectedKeys, isBgBlack } = props;
   const isActive = item.type === 'tabs' ? selectedKeys?.some((k) => item.children?.some((c) => c.key === k)) : selectedKeys?.includes(item.key);
   const path = item.type === 'tabs' ? item.children?.[0]?.key || item.key : item.key;
+  const savedPath = getSavedPath(path);
 
   return (
     <Link
-      to={path}
+      to={savedPath || path}
       className={cn(
         'group flex h-9 cursor-pointer items-center relative rounded px-3.5 transition-colors transition-spacing duration-75',
         isActive ? (isCustomBg ? '' : 'bg-fc-200') : '',
