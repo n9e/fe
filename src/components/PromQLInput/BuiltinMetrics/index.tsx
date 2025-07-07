@@ -8,6 +8,7 @@ import Content from './Content';
 import './style.less';
 
 interface Props {
+  addonClassName?: string;
   mode: 'dropdown' | 'modal';
   onSelect: (expression: string, metric: Record) => void;
 }
@@ -27,7 +28,7 @@ export default function index(props: Props) {
           setOpen(visible);
         }}
       >
-        <div className='ant-input-group-addon'>
+        <div className={`ant-input-group-addon ${props.addonClassName || ''}`}>
           <Space style={{ cursor: 'pointer' }}>
             <span>{t('builtinMetrics.btn')}</span>
             {open ? <DownOutlined /> : <RightOutlined />}

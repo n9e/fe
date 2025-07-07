@@ -27,6 +27,7 @@ import { DASHBOARD_VERSION } from '@/pages/dashboard/config';
 import { CommonStateContext, basePrefix } from '@/App';
 import { getPromData, setTmpChartData } from './services';
 import { QueryStats } from './components/QueryStatsView';
+import { interpolateString } from './utils';
 
 interface IProps {
   url: string;
@@ -139,7 +140,11 @@ export default function Graph(props: IProps) {
       const queryStart = Date.now();
       setLoading(true);
       getPromData(`${url}/${datasourceValue}/api/v1/query_range`, {
-        query: promql,
+        query: interpolateString({
+          query: promql,
+          range,
+          step,
+        }),
         start: moment(parsedRange.start).unix(),
         end: moment(parsedRange.end).unix(),
         step: realStep,
@@ -186,7 +191,11 @@ export default function Graph(props: IProps) {
               }
             }}
             onBlur={(e) => {
-              setStep(_.toNumber(e.target.value));
+              if (e.target.value) {
+                setStep(_.toNumber(e.target.value));
+              } else {
+                setStep(undefined);
+              }
             }}
             onStep={(value) => {
               setStep(value);
