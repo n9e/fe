@@ -1,7 +1,10 @@
 import moment from 'moment';
 
-import { getDefaultStepByStartAndEnd } from '@/pages/dashboard/VariableConfig/constant';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
+
+export const getDefaultStepByStartAndEnd = (start: number, end: number) => {
+  return Math.max(Math.floor((end - start) / 240), 1);
+};
 
 export function interpolateString(options: { query: string; range?: IRawTimeRange; step?: number }) {
   const { query, range, step } = options;
