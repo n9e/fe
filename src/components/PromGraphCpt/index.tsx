@@ -17,21 +17,19 @@
 /**
  * 类似 prometheus graph 的组件
  */
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { createPortal } from 'react-dom';
-import { Input, Tabs, Button, Alert, Checkbox } from 'antd';
-import { GlobalOutlined } from '@ant-design/icons';
+import { Tabs, Button, Alert, Checkbox, Row, Col } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
-import PromQueryBuilderModal from '@/components/PromQueryBuilder/PromQueryBuilderModal';
-import BuiltinMetrics from '@/components/PromQLInput/BuiltinMetrics';
-import { N9E_PATHNAME } from '@/utils/constant';
-import PromQLInput from '../PromQLInput';
+import { N9E_PATHNAME, SIZE } from '@/utils/constant';
+import PromQLInputNG from '@/components/PromQLInputNG';
+
 import Table from './Table';
 import Graph from './Graph';
 import QueryStatsView, { QueryStats } from './components/QueryStatsView';
-import MetricsExplorer from './components/MetricsExplorer';
+import { interpolateString } from './utils';
 import './locale';
 import './style.less';
 
@@ -104,9 +102,7 @@ export default function index(props: IProps) {
   const [refreshFlag, setRefreshFlag] = useState(_.uniqueId('refreshFlag_')); // for table
   const [range, setRange] = useState<IRawTimeRange>({ start: 'now-1h', end: 'now' }); // for graph
   const [step, setStep] = useState<number>(); // for graph
-  const [metricsExplorerVisible, setMetricsExplorerVisible] = useState(false);
   const [completeEnabled, setCompleteEnabled] = useState(true);
-  const promQLInputRef = useRef<any>(null);
   const [loading, setLoading] = useState(false);
   const [defaultUnit, setDefaultUnit] = useState<string | undefined>(props.defaultUnit);
 
@@ -168,107 +164,59 @@ export default function index(props: IProps) {
         </div>
       )}
 
-      <div className='prom-graph-expression-input'>
-        <Input.Group>
-          {showBuiltinMetrics && (
-            <BuiltinMetrics
-              mode='dropdown'
-              onSelect={(newValue, metric) => {
-                setValue(newValue);
-                setPromql(newValue);
-                setDefaultUnit(metric.unit);
+      <div className='prom-graph-expression-input-ng'>
+        <div className='flex gap-[8px]'>
+          <div className='flex-shrink-1 min-w-0 w-full overflow-hidden'>
+            <PromQLInputNG
+              enableAutocomplete={completeEnabled}
+              datasourceValue={datasourceValue}
+              showBuiltinMetrics={showBuiltinMetrics}
+              interpolateString={(query) => {
+                return interpolateString({
+                  query,
+                  range,
+                  step,
+                });
               }}
-            />
-          )}
-          <span className='ant-input-affix-wrapper'>
-            <PromQLInput
-              ref={promQLInputRef}
-              url={url}
+              onMetricUnitChange={(newUnit) => {
+                setDefaultUnit(newUnit);
+              }}
+              showGlobalMetrics={showGlobalMetrics}
               value={value}
               onChange={(newVal) => {
                 setValue(newVal);
                 onChange && onChange(newVal);
               }}
-              executeQuery={(val) => {
+              onShiftEnter={(val) => {
                 setPromql(val);
                 executeQuery && executeQuery(val);
               }}
-              completeEnabled={completeEnabled}
-              datasourceValue={datasourceValue}
-              tooltip={promQLInputTooltip}
+              // tooltip={promQLInputTooltip}
             />
-            {showGlobalMetrics && (
-              <span className='ant-input-suffix'>
-                <GlobalOutlined
-                  className='prom-graph-metrics-target'
-                  onClick={() => {
-                    setMetricsExplorerVisible(true);
-                  }}
-                />
-              </span>
-            )}
-          </span>
-          {showBuilder && (
-            <span
-              className='ant-input-group-addon'
-              style={{
-                border: 0,
-                padding: '0 0 0 10px',
-                background: 'none',
-              }}
-            >
-              <Button
-                onClick={() => {
-                  PromQueryBuilderModal({
-                    range,
-                    datasourceValue,
-                    value,
-                    onChange: setValue,
-                  });
-                }}
-              >
-                {t('builder_btn')}
-              </Button>
-            </span>
-          )}
+          </div>
           {extra && (
-            <span
-              className='ant-input-group-addon'
-              style={{
-                border: 0,
-                padding: '0 0 0 10px',
-                background: 'none',
-              }}
-            >
+            <div className='flex-shrink-0'>
               {React.cloneElement(extra as React.ReactElement, {
                 onChange: (newValue?: string) => {
                   setValue(newValue);
                   setPromql(newValue);
                 },
               })}
-            </span>
+            </div>
           )}
-          <span
-            className='ant-input-group-addon'
-            style={{
-              border: 0,
-              padding: '0 0 0 10px',
-              background: 'none',
+          <Button
+            className='flex-shrink-0'
+            type='primary'
+            loading={loading}
+            onClick={() => {
+              setRefreshFlag(_.uniqueId('refreshFlag_'));
+              setPromql(value);
+              executeQuery && executeQuery(value);
             }}
           >
-            <Button
-              type='primary'
-              loading={loading}
-              onClick={() => {
-                setRefreshFlag(_.uniqueId('refreshFlag_'));
-                setPromql(value);
-                executeQuery && executeQuery(value);
-              }}
-            >
-              {t('query_btn')}
-            </Button>
-          </span>
-        </Input.Group>
+            {t('query_btn')}
+          </Button>
+        </div>
       </div>
       {errorContent && <Alert style={{ marginBottom: 16 }} message={errorContent} type='error' />}
       <div style={{ minHeight: 0, height: '100%' }}>
@@ -328,22 +276,6 @@ export default function index(props: IProps) {
           </TabPane>
         </Tabs>
       </div>
-      <MetricsExplorer
-        url={url}
-        datasourceValue={datasourceValue}
-        show={metricsExplorerVisible}
-        updateShow={setMetricsExplorerVisible}
-        insertAtCursor={(val) => {
-          if (promQLInputRef.current !== null) {
-            const { from, to } = promQLInputRef.current.state.selection.ranges[0];
-            promQLInputRef.current.dispatch(
-              promQLInputRef.current.state.update({
-                changes: { from, to, insert: val },
-              }),
-            );
-          }
-        }}
-      />
     </div>
   );
 }
