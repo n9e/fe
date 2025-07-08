@@ -4,18 +4,19 @@ import { PromQLMonacoEditor } from '@fc-components/monaco-editor';
 import type * as monacoTypes from 'monaco-editor/esm/vs/editor/editor.api';
 import _ from 'lodash';
 import { useGetState } from 'ahooks';
+import { useTranslation } from 'react-i18next';
 
 import { CommonStateContext } from '@/App';
 import { N9E_PATHNAME } from '@/utils/constant';
 import BuiltinMetrics from '@/components/PromQLInput/BuiltinMetrics';
 import MetricsExplorer from '@/components/PromGraphCpt/components/MetricsExplorer';
 
-import { interpolateString } from './utils';
+import { interpolateString, instantInterpolateString, includesVariables, getRealStep } from './utils';
 
 import './style.less';
 
 export type { monacoTypes };
-export { interpolateString };
+export { interpolateString, instantInterpolateString, includesVariables, getRealStep };
 
 interface MonacoEditorPromQLProps {
   readOnly?: boolean;
@@ -40,6 +41,7 @@ interface MonacoEditorPromQLProps {
 const URL_PREFIX = `/api/${N9E_PATHNAME}/proxy`;
 
 export default function index(props: MonacoEditorPromQLProps) {
+  const { t } = useTranslation();
   const { darkMode } = useContext(CommonStateContext);
   const {
     readOnly,
@@ -93,7 +95,7 @@ export default function index(props: MonacoEditorPromQLProps) {
             size={size}
             theme={darkMode ? 'dark' : 'light'}
             value={value}
-            placeholder={placeholder || '请输入 PromQL 查询语句'}
+            placeholder={placeholder || t('promQLInput:placeholder')}
             variablesNames={variablesNames}
             apiPrefix={`${URL_PREFIX}/${datasourceValue}/api/v1`}
             request={(resource, options) => {
@@ -154,7 +156,6 @@ export default function index(props: MonacoEditorPromQLProps) {
         show={metricsExplorerVisible}
         updateShow={setMetricsExplorerVisible}
         insertAtCursor={(val) => {
-          console.log('editorRef.current', editorRef.current);
           if (editorRef.current) {
             const editor = editorRef.current;
             editor.trigger('keyboard', 'type', { text: val });

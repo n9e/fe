@@ -486,6 +486,7 @@ const en_US = {
     prometheus: {
       maxDataPoints: {
         tip: 'The maximum number of points per series, default is panel width (default 240), calculate step = (end - start) / maxDataPoints',
+        tip_2: 'The maximum number of points per series, default is panel width, calculate step = (end - start) / maxDataPoints',
       },
       minStep: {
         tip: 'Minimum step, default is 15, calculate step = max(step, minStep, safeStep), safeStep = (end - start) / 11000',

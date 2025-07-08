@@ -460,6 +460,7 @@ const ja_JP = {
     prometheus: {
       maxDataPoints: {
         tip: '最大データポイント数、計算式: step = max((end - start) / maxDataPoints, minStep, safeStep)、safeStep = (end - start) / 11000',
+        tip_2: '最大データポイント数、計算式: step = (end - start) / maxDataPoints',
       },
       minStep: {
         tip: '最小ステップ、計算式: step = max((end - start) / maxDataPoints, minStep, safeStep)、safeStep = (end - start) / 11000',

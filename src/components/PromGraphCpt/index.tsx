@@ -24,11 +24,12 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { N9E_PATHNAME } from '@/utils/constant';
-import PromQLInputNG, { interpolateString } from '@/components/PromQLInputNG';
+import PromQLInputNG, { interpolateString, instantInterpolateString, includesVariables } from '@/components/PromQLInputNG';
 
 import Table from './Table';
 import Graph from './Graph';
 import QueryStatsView, { QueryStats } from './components/QueryStatsView';
+import Panel from './components/Panel';
 import './locale';
 import './style.less';
 
@@ -93,14 +94,14 @@ export default function index(props: IProps) {
     defaultRange,
   } = props;
   const [value, setValue] = useState<string | undefined>(promQL); // for promQLInput
-  const [promql, setPromql] = useState<string | undefined>(promQL);
   const [queryStats, setQueryStats] = useState<QueryStats | null>(null);
   const [errorContent, setErrorContent] = useState('');
   const [tabActiveKey, setTabActiveKey] = useState(type || defaultType || 'table');
   const [timestamp, setTimestamp] = useState<number>(); // for table
   const [refreshFlag, setRefreshFlag] = useState(_.uniqueId('refreshFlag_')); // for table
   const [range, setRange] = useState<IRawTimeRange>({ start: 'now-1h', end: 'now' }); // for graph
-  const [step, setStep] = useState<number>(); // for graph
+  const [minStep, setMinStep] = useState<number>(); // for graph
+  const [maxDataPoints, setMaxDataPoints] = useState<number>(); // for graph
   const [completeEnabled, setCompleteEnabled] = useState(true);
   const [loading, setLoading] = useState(false);
   const [defaultUnit, setDefaultUnit] = useState<string | undefined>(props.defaultUnit);
@@ -128,11 +129,6 @@ export default function index(props: IProps) {
       setTabActiveKey(type);
     }
   }, [type]);
-
-  useEffect(() => {
-    setValue(promql);
-    setPromql(promql);
-  }, [promql]);
 
   return (
     <div className='prom-graph-container'>
@@ -174,21 +170,18 @@ export default function index(props: IProps) {
                 return interpolateString({
                   query,
                   range,
-                  step,
+                  minStep,
                 });
               }}
               onMetricUnitChange={(newUnit) => {
                 setDefaultUnit(newUnit);
               }}
               showGlobalMetrics={showGlobalMetrics}
+              onChangeTrigger={['onBlur', 'onShiftEnter']}
               value={value}
               onChange={(newVal) => {
                 setValue(newVal);
                 onChange && onChange(newVal);
-              }}
-              onShiftEnter={(val) => {
-                setPromql(val);
-                executeQuery && executeQuery(val);
               }}
               // tooltip={promQLInputTooltip}
             />
@@ -198,7 +191,6 @@ export default function index(props: IProps) {
               {React.cloneElement(extra as React.ReactElement, {
                 onChange: (newValue?: string) => {
                   setValue(newValue);
-                  setPromql(newValue);
                 },
               })}
             </div>
@@ -209,7 +201,6 @@ export default function index(props: IProps) {
             loading={loading}
             onClick={() => {
               setRefreshFlag(_.uniqueId('refreshFlag_'));
-              setPromql(value);
               executeQuery && executeQuery(value);
             }}
           >
@@ -217,6 +208,17 @@ export default function index(props: IProps) {
           </Button>
         </div>
       </div>
+      {tabActiveKey === 'table' && value && includesVariables(value) && (
+        <Alert
+          style={{ marginBottom: 16 }}
+          message={t('table_promql_interpolate_string', {
+            query: instantInterpolateString({
+              query: value,
+            }),
+          })}
+          type='info'
+        />
+      )}
       {errorContent && <Alert style={{ marginBottom: 16 }} message={errorContent} type='error' />}
       <div style={{ minHeight: 0, height: '100%' }}>
         <Tabs
@@ -237,7 +239,7 @@ export default function index(props: IProps) {
               url={url}
               contentMaxHeight={contentMaxHeight}
               datasourceValue={datasourceValue}
-              promql={promql}
+              promql={value}
               setQueryStats={setQueryStats}
               setErrorContent={setErrorContent}
               timestamp={timestamp}
@@ -251,27 +253,31 @@ export default function index(props: IProps) {
             />
           </TabPane>
           <TabPane tab='Graph' key='graph'>
-            <Graph
-              url={url}
-              contentMaxHeight={contentMaxHeight}
-              datasourceValue={datasourceValue}
-              promql={promql}
-              setQueryStats={setQueryStats}
-              setErrorContent={setErrorContent}
-              range={range}
-              setRange={(newRange) => {
-                setRange(newRange);
-                onTimeChange && onTimeChange(newRange);
-              }}
-              step={step}
-              setStep={setStep}
-              graphOperates={graphOperates}
-              refreshFlag={refreshFlag}
-              loading={loading}
-              setLoading={setLoading}
-              graphStandardOptionsType={graphStandardOptionsType}
-              defaultUnit={defaultUnit}
-            />
+            <Panel>
+              <Graph
+                url={url}
+                contentMaxHeight={contentMaxHeight}
+                datasourceValue={datasourceValue}
+                promql={value}
+                setQueryStats={setQueryStats}
+                setErrorContent={setErrorContent}
+                range={range}
+                setRange={(newRange) => {
+                  setRange(newRange);
+                  onTimeChange && onTimeChange(newRange);
+                }}
+                minStep={minStep}
+                setMinStep={setMinStep}
+                maxDataPoints={maxDataPoints}
+                setMaxDataPoints={setMaxDataPoints}
+                graphOperates={graphOperates}
+                refreshFlag={refreshFlag}
+                loading={loading}
+                setLoading={setLoading}
+                graphStandardOptionsType={graphStandardOptionsType}
+                defaultUnit={defaultUnit}
+              />
+            </Panel>
           </TabPane>
         </Tabs>
       </div>

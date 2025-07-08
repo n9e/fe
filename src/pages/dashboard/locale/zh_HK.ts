@@ -494,6 +494,7 @@ const zh_HK = {
     prometheus: {
       maxDataPoints: {
         tip: '每條曲線最多的點數，默認為面板寬度（新增時默認為 240），計算 step = (end - start) / maxDataPoints',
+        tip_2: '每條曲線最多的點數，默認為面板寬度，計算 step = (end - start) / maxDataPoints',
       },
       minStep: {
         tip: '最小的 step，默認為 15，計算 step = max(step, minStep, safeStep)，safeStep = (end - start) / 11000',
