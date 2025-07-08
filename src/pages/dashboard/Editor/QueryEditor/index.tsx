@@ -11,7 +11,7 @@ import OrganizeFields from '../TransformationsEditor/OrganizeFields';
 import DatasourceSelect from './components/DatasourceSelect';
 import QueryBuilder from './QueryBuilder';
 
-export default function index({ chartForm, type, variableConfig, dashboardId, time }) {
+export default function index({ panelWidth, chartForm, type, variableConfig, dashboardId, time }) {
   const { t } = useTranslation('dashboard');
   const [mode, setMode] = useState('query');
   const { datasourceList } = useContext(CommonStateContext);
@@ -49,7 +49,7 @@ export default function index({ chartForm, type, variableConfig, dashboardId, ti
           display: mode === 'query' ? 'block' : 'none',
         }}
       >
-        <QueryBuilder cate={cate} datasourceValue={datasourceValue} variables={variableConfig} dashboardId={dashboardId} time={time} />
+        <QueryBuilder panelWidth={panelWidth} cate={cate} datasourceValue={datasourceValue} variables={variableConfig} dashboardId={dashboardId} time={time} />
       </div>
       <div
         style={{

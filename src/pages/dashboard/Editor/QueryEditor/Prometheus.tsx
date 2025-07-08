@@ -14,7 +14,7 @@ import Collapse, { Panel } from '../Components/Collapse';
 import ExpressionPanel from '../Components/ExpressionPanel';
 import AddQueryButtons from '../Components/AddQueryButtons';
 
-export default function Prometheus({ variableConfig, time, datasourceValue }) {
+export default function Prometheus({ panelWidth, variableConfig, time, datasourceValue }) {
   const { t } = useTranslation('dashboard');
   const varNams = _.map(variableConfig, (item) => {
     return `$${item.name}`;
@@ -155,13 +155,13 @@ export default function Prometheus({ variableConfig, time, datasourceValue }) {
                         </Form.Item>
                       </Col>
                       <Col flex='120px'>
-                        <Form.Item label='Max data points' tooltip={t('query.prometheus.maxDataPoints.tip')} {...field} name={[field.name, 'maxDataPoints']} initialValue={240}>
-                          <InputNumber style={{ width: '100%' }} placeholder='240' min={1} />
+                        <Form.Item label='Max data points' tooltip={t('query.prometheus.maxDataPoints.tip')} {...field} name={[field.name, 'maxDataPoints']}>
+                          <InputNumber style={{ width: '100%' }} placeholder={panelWidth ?? 240} min={1} />
                         </Form.Item>
                       </Col>
                       <Col flex='72px'>
                         <Form.Item label='Min step' tooltip={t('query.prometheus.minStep.tip')} {...field} name={[field.name, 'step']}>
-                          <Resolution />
+                          <Resolution placeholder='15' />
                         </Form.Item>
                       </Col>
                       <Col flex='72px'>

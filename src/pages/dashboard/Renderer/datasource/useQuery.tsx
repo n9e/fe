@@ -32,6 +32,7 @@ import elasticsearchQuery from './elasticsearch';
 import plusDatasource from 'plus:/parcels/Dashboard/datasource';
 
 interface IProps {
+  panelWidth?: number;
   id?: string;
   dashboardId: string;
   datasourceCate: string;
