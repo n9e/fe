@@ -500,6 +500,7 @@ const zh_CN = {
     prometheus: {
       maxDataPoints: {
         tip: '每条曲线最多的点数，默认为面板宽度（新增时默认为 240），计算 step = (end - start) / maxDataPoints',
+        tip_2: '每条曲线最多的点数，默认为面板宽度，计算 step = (end - start) / maxDataPoints',
       },
       minStep: {
         tip: '最小的 step，默认为 15，计算 step = max(step, minStep, safeStep)，safeStep = (end - start) / 11000',

@@ -2,12 +2,24 @@ import moment from 'moment';
 
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 
-export const getDefaultStepByStartAndEnd = (start: number, end: number) => {
-  return Math.max(Math.floor((end - start) / 240), 1);
-};
+function adjustStep(step: number, minStep: number, range: number) {
+  // Prometheus 限制最大点数是 11000
+  let safeStep = range / 11000;
+  if (safeStep > 1) {
+    safeStep = Math.ceil(safeStep);
+  }
+  return Math.max(step, minStep, safeStep);
+}
 
-export function interpolateString(options: { query: string; range?: IRawTimeRange; step?: number }) {
-  const { query, range, step } = options;
+export function getRealStep(options: { minStep?: number; maxDataPoints?: number; fromUnix: number; toUnix: number }) {
+  const { maxDataPoints = 240, minStep = 15, fromUnix, toUnix } = options;
+  const range = toUnix - fromUnix;
+  const step = Math.max(Math.floor(range / maxDataPoints), 1);
+  return adjustStep(step, minStep, range);
+}
+
+export function interpolateString(options: { query: string; range?: IRawTimeRange; minStep?: number; maxDataPoints?: number }) {
+  const { query, range, minStep = 15, maxDataPoints } = options;
   if (range) {
     const parsedRange = parseRange(range);
     const from = moment(parsedRange.start);
@@ -18,7 +30,12 @@ export function interpolateString(options: { query: string; range?: IRawTimeRang
     const toMs = to.valueOf();
     const toUnix = moment(to).unix();
     const toDateISO = to.toISOString();
-    const interval = step ? step : getDefaultStepByStartAndEnd(fromUnix, toUnix);
+    const interval = getRealStep({
+      minStep,
+      maxDataPoints,
+      fromUnix,
+      toUnix,
+    });
 
     return query
       .replace(/\$__from/g, `${fromMs}`)
@@ -36,10 +53,8 @@ export function interpolateString(options: { query: string; range?: IRawTimeRang
       .replace(/\$__range_s/g, `${toUnix - fromUnix}s`)
       .replace(/\$__range_ms/g, `${(toUnix - fromUnix) * 1000}ms`);
   }
-  if (step) {
-    return query.replace(/\$__interval/g, `${step}s`).replace(/\$__rate_interval/g, `${step * 4}s`);
-  }
-  return query;
+
+  return query.replace(/\$__interval/g, `${minStep}s`).replace(/\$__rate_interval/g, `${minStep * 4}s`);
 }
 
 export function instantInterpolateString(options: { query: string; time?: moment.Moment }) {

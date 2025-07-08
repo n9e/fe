@@ -101,7 +101,7 @@ export default function Prometheus({ panelWidth, variableConfig, time, datasourc
                             return interpolateString({
                               query,
                               range: time,
-                              step: targets?.[field.name]?.step,
+                              minStep: targets?.[field.name]?.step,
                             });
                           }}
                         />

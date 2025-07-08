@@ -11,12 +11,12 @@ import { N9E_PATHNAME } from '@/utils/constant';
 import BuiltinMetrics from '@/components/PromQLInput/BuiltinMetrics';
 import MetricsExplorer from '@/components/PromGraphCpt/components/MetricsExplorer';
 
-import { interpolateString, instantInterpolateString, includesVariables } from './utils';
+import { interpolateString, instantInterpolateString, includesVariables, getRealStep } from './utils';
 
 import './style.less';
 
 export type { monacoTypes };
-export { interpolateString, instantInterpolateString, includesVariables };
+export { interpolateString, instantInterpolateString, includesVariables, getRealStep };
 
 interface MonacoEditorPromQLProps {
   readOnly?: boolean;
