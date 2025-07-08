@@ -24,7 +24,7 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { N9E_PATHNAME } from '@/utils/constant';
-import PromQLInputNG, { interpolateString } from '@/components/PromQLInputNG';
+import PromQLInputNG, { interpolateString, instantInterpolateString, includesVariables } from '@/components/PromQLInputNG';
 
 import Table from './Table';
 import Graph from './Graph';
@@ -217,6 +217,17 @@ export default function index(props: IProps) {
           </Button>
         </div>
       </div>
+      {tabActiveKey === 'table' && promql && includesVariables(promql) && (
+        <Alert
+          style={{ marginBottom: 16 }}
+          message={t('table_promql_interpolate_string', {
+            query: instantInterpolateString({
+              query: promql,
+            }),
+          })}
+          type='info'
+        />
+      )}
       {errorContent && <Alert style={{ marginBottom: 16 }} message={errorContent} type='error' />}
       <div style={{ minHeight: 0, height: '100%' }}>
         <Tabs

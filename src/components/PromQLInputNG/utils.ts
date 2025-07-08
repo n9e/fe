@@ -41,3 +41,35 @@ export function interpolateString(options: { query: string; range?: IRawTimeRang
   }
   return query;
 }
+
+export function instantInterpolateString(options: { query: string; time?: moment.Moment }) {
+  const { query, time } = options;
+  const currentTime = time || moment();
+  const currentTimeMs = currentTime.valueOf();
+  const currentTimeUnix = currentTime.unix();
+  const currentTimeDateISO = currentTime.toISOString();
+
+  return query
+    .replace(/\$__from/g, `${currentTimeMs}`)
+    .replace(/\$__from_date_seconds/g, `${currentTimeUnix}`)
+    .replace(/\$__from_date_iso/g, currentTimeDateISO)
+    .replace(/\$__from_date/g, `${currentTimeDateISO}`)
+    .replace(/\$__to/g, `${currentTimeMs}`)
+    .replace(/\$__to_date_seconds/g, `${currentTimeUnix}`)
+    .replace(/\$__to_date_iso/g, currentTimeDateISO)
+    .replace(/\$__to_date/g, `${currentTimeDateISO}`)
+    .replace(/\$__interval/g, '5m')
+    .replace(/\$__interval_ms/g, '5m')
+    .replace(/\$__rate_interval/g, '5m');
+}
+
+export function includesVariables(query: string) {
+  const variablesNames = ['__interval', '__rate_interval', '__range'];
+  if (!query || !variablesNames || variablesNames.length === 0) {
+    return false;
+  }
+  return variablesNames.some((name) => {
+    const variablePattern = new RegExp(`\\$${name}\\b`);
+    return variablePattern.test(query);
+  });
+}
