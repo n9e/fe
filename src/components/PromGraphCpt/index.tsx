@@ -17,19 +17,18 @@
 /**
  * 类似 prometheus graph 的组件
  */
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Tabs, Button, Alert, Checkbox, Row, Col } from 'antd';
+import { Tabs, Button, Alert, Checkbox } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
-import { N9E_PATHNAME, SIZE } from '@/utils/constant';
-import PromQLInputNG from '@/components/PromQLInputNG';
+import { N9E_PATHNAME } from '@/utils/constant';
+import PromQLInputNG, { interpolateString } from '@/components/PromQLInputNG';
 
 import Table from './Table';
 import Graph from './Graph';
 import QueryStatsView, { QueryStats } from './components/QueryStatsView';
-import { interpolateString } from './utils';
 import './locale';
 import './style.less';
 

@@ -17,17 +17,19 @@
 import React, { useState, useEffect, useContext } from 'react';
 import moment from 'moment';
 import _ from 'lodash';
-import { Space, InputNumber, Radio, Button, Popover, Spin } from 'antd';
+import { Space, InputNumber, Radio, Button, Popover } from 'antd';
 import { LineChartOutlined, AreaChartOutlined, SettingOutlined, ShareAltOutlined } from '@ant-design/icons';
+
+import { CommonStateContext, basePrefix } from '@/App';
 import TimeRangePicker, { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
-import LineGraphStandardOptions from './components/GraphStandardOptions';
 import Timeseries from '@/pages/dashboard/Renderer/Renderer/Timeseries';
+import { interpolateString } from '@/components/PromQLInputNG';
 import { completeBreakpoints } from '@/pages/dashboard/Renderer/datasource/utils';
 import { DASHBOARD_VERSION } from '@/pages/dashboard/config';
-import { CommonStateContext, basePrefix } from '@/App';
+
 import { getPromData, setTmpChartData } from './services';
 import { QueryStats } from './components/QueryStatsView';
-import { interpolateString } from './utils';
+import LineGraphStandardOptions from './components/GraphStandardOptions';
 
 interface IProps {
   url: string;
