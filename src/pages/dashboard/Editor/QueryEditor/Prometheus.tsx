@@ -6,10 +6,10 @@ import moment from 'moment';
 import { useTranslation, Trans } from 'react-i18next';
 import TimeRangePicker, { isMathString } from '@/components/TimeRangePicker';
 import Resolution from '@/components/Resolution';
-import { PromQLInputWithBuilder } from '@/components/PromQLInput';
+import PromQLInputNG, { interpolateString } from '@/components/PromQLInputNG';
 import { getRealStep } from '@/pages/dashboard/Renderer/datasource/prometheus';
 import HideButton from '@/pages/dashboard/Components/HideButton';
-import { IS_PLUS, alphabet } from '@/utils/constant';
+import { alphabet } from '@/utils/constant';
 import Collapse, { Panel } from '../Components/Collapse';
 import ExpressionPanel from '../Components/ExpressionPanel';
 import AddQueryButtons from '../Components/AddQueryButtons';
@@ -91,13 +91,19 @@ export default function Prometheus({ panelWidth, variableConfig, time, datasourc
                         ]}
                         style={{ flex: 1 }}
                       >
-                        <PromQLInputWithBuilder
-                          validateTrigger={['onBlur']}
+                        <PromQLInputNG
+                          onChangeTrigger={['onBlur', 'onShiftEnter']}
                           datasourceValue={datasourceValue}
-                          extraLabelValues={varNams}
-                          rangeVectorCompletion
+                          variablesNames={varNams}
+                          durationVariablesCompletion
                           showBuiltinMetrics
-                          showBuilder={false}
+                          interpolateString={(query) => {
+                            return interpolateString({
+                              query,
+                              range: time,
+                              step: targets?.[field.name]?.step,
+                            });
+                          }}
                         />
                       </Form.Item>
                     </div>
