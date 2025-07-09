@@ -75,7 +75,7 @@ export default function LinkBuilder({
           <Select style={{ width: '100%' }}>
             <Select.Option value={Type.Custom}>{t('自定义链接')}</Select.Option>
             <Select.Option value={Type.Dashboard}>{t('仪表盘')}</Select.Option>
-            {IS_ENT && <Select.Option value={Type.LogExplore}>{t('日志探索')}</Select.Option>}
+            {IS_ENT && <Select.Option value={Type.LogExplore}>{t('日志检索')}</Select.Option>}
             {IS_ENT && <Select.Option value={Type.Trace}>Trace</Select.Option>}
           </Select>
         </Form.Item>
