@@ -29,6 +29,7 @@ import PromQLInputNG, { interpolateString, instantInterpolateString, includesVar
 import Table from './Table';
 import Graph from './Graph';
 import QueryStatsView, { QueryStats } from './components/QueryStatsView';
+import PromQLInputNGWithTooltipWrapper from './components/PromQLInputNGWithTooltipWrapper';
 import Panel from './components/Panel';
 import './locale';
 import './style.less';
@@ -162,29 +163,30 @@ export default function index(props: IProps) {
       <div className='prom-graph-expression-input-ng'>
         <div className='flex gap-[8px]'>
           <div className='flex-shrink-1 min-w-0 w-full overflow-hidden'>
-            <PromQLInputNG
-              enableAutocomplete={completeEnabled}
-              datasourceValue={datasourceValue}
-              showBuiltinMetrics={showBuiltinMetrics}
-              interpolateString={(query) => {
-                return interpolateString({
-                  query,
-                  range,
-                  minStep,
-                });
-              }}
-              onMetricUnitChange={(newUnit) => {
-                setDefaultUnit(newUnit);
-              }}
-              showGlobalMetrics={showGlobalMetrics}
-              onChangeTrigger={['onBlur', 'onShiftEnter']}
-              value={value}
-              onChange={(newVal) => {
-                setValue(newVal);
-                onChange && onChange(newVal);
-              }}
-              // tooltip={promQLInputTooltip}
-            />
+            <PromQLInputNGWithTooltipWrapper tooltip={promQLInputTooltip}>
+              <PromQLInputNG
+                enableAutocomplete={completeEnabled}
+                datasourceValue={datasourceValue}
+                showBuiltinMetrics={showBuiltinMetrics}
+                interpolateString={(query) => {
+                  return interpolateString({
+                    query,
+                    range,
+                    minStep,
+                  });
+                }}
+                onMetricUnitChange={(newUnit) => {
+                  setDefaultUnit(newUnit);
+                }}
+                showGlobalMetrics={showGlobalMetrics}
+                onChangeTrigger={['onBlur', 'onShiftEnter']}
+                value={value}
+                onChange={(newVal) => {
+                  setValue(newVal);
+                  onChange && onChange(newVal);
+                }}
+              />
+            </PromQLInputNGWithTooltipWrapper>
           </div>
           {extra && (
             <div className='flex-shrink-0'>
