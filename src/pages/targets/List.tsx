@@ -19,6 +19,7 @@ import { getDefaultColumnsConfigs, setDefaultColumnsConfigs } from './utils';
 import TargetMetaDrawer from './TargetMetaDrawer';
 import Explorer from './components/Explorer';
 import EditBusinessGroups from './components/EditBusinessGroups';
+import HostsSelect from './components/HostsSelect';
 
 // @ts-ignore
 import CollectsDrawer from 'plus:/pages/collects/CollectsDrawer';
@@ -88,6 +89,7 @@ export default function List(props: IProps) {
   const [collectsDrawerIdent, setCollectsDrawerIdent] = useState('');
   const [downtime, setDowntime] = useState();
   const [agentVersions, setAgentVersions] = useState<string>();
+  const [hosts, setHosts] = useState<string>();
   const sorterRef = useRef<any>();
   const LOST_COLOR = darkMode ? LOST_COLOR_DARK : LOST_COLOR_LIGHT;
   const columns: ColumnsType<any> = [
@@ -500,6 +502,7 @@ export default function List(props: IProps) {
       p: current,
       downtime,
       agent_versions: _.isEmpty(agentVersions) ? undefined : JSON.stringify(agentVersions),
+      hosts,
       order: sorter?.field,
       desc: sorter?.field ? sorter?.order === 'descend' : undefined,
     };
@@ -522,7 +525,7 @@ export default function List(props: IProps) {
       pageSize: tableProps.pagination.pageSize,
       sorter: sorterRef.current,
     });
-  }, [tableQueryContent, gids, downtime, agentVersions]);
+  }, [tableQueryContent, gids, downtime, agentVersions, hosts]);
 
   useEffect(() => {
     run({
@@ -558,6 +561,12 @@ export default function List(props: IProps) {
             }}
             onBlur={() => {
               setTableQueryContent(searchVal);
+            }}
+          />
+          <HostsSelect
+            value={hosts}
+            onChange={(newHosts) => {
+              setHosts(newHosts);
             }}
           />
           <Select

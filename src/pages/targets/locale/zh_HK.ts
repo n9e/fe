@@ -96,6 +96,11 @@ const zh_HK = {
   meta_no_data: '暫無數據',
   all_no_data: '沒有部署採集器？可參考 <a>安裝手冊</a> 安裝部署',
   categraf_doc: 'categraf 文檔',
+  hosts_select: {
+    placeholder: '機器識別或 IP',
+    modal_title: '填寫機器識別或 IP',
+    modal_placeholder: '每行一個機器識別或 IP',
+  },
 };
 
 export default zh_HK;

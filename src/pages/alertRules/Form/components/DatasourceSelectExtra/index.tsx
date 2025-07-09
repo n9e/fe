@@ -23,5 +23,8 @@ export default function index() {
   if (datasourceCate === DatasourceCateEnum.pgsql && datasourceValue !== undefined) {
     return <Meta.MetaModal datasourceCate={datasourceCate} datasourceValue={datasourceValue} />;
   }
+  if (datasourceCate === DatasourceCateEnum.doris && datasourceValue !== undefined) {
+    return <Meta.MetaModal datasourceCate={datasourceCate} datasourceValue={datasourceValue} />;
+  }
   return <DatasourceSelectExtra datasourceCate={datasourceCate} datasourceValue={datasourceValue} />;
 }

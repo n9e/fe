@@ -217,6 +217,7 @@ const zh_HK = {
     name: '名稱',
     append_tags: '附加標籤',
     notify_groups_obj: '告警接收組',
+    notify_rule_ids: '通知規則',
     update_at: '更新時間',
     update_by: '更新者',
     disabled: '啟用',

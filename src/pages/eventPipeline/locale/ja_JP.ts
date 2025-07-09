@@ -17,6 +17,7 @@ const ja_JP = {
   attribute_filters_options: {
     group_name: 'ビジネスグループ',
     cluster: 'データソース',
+    is_recovered: '回復イベントですか？',
   },
   processor: {
     title: 'プロセッサー',

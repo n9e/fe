@@ -1,6 +1,7 @@
 import moment from 'moment';
 
 export const defaultRuleConfig = {
+  queries: [{}],
   triggers: [
     {
       mode: 0,

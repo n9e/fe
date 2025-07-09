@@ -92,6 +92,11 @@ const ja_JP = {
   meta_no_data: 'データがありません',
   all_no_data: 'コレクタをデプロイしていませんか？ <a>インストールマニュアル</a> を参照してインストールしてください',
   categraf_doc: 'Categraf ドキュメント',
+  hosts_select: {
+    placeholder: 'マシンのIPを入力してください',
+    modal_title: 'マシンのIPを入力',
+    modal_placeholder: '各行に一つのマシンIPを入力してください',
+  },
 };
 
 export default ja_JP;

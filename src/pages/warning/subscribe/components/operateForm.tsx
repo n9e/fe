@@ -32,6 +32,7 @@ import { DatasourceCateSelect } from '@/components/DatasourceSelect';
 import { panelBaseProps } from '@/pages/alertRules/constants';
 import { scrollToFirstError } from '@/utils';
 import AlertEventRuleTesterWithButton from '@/components/AlertEventRuleTesterWithButton';
+import AffixWrapper from '@/components/AffixWrapper';
 import RuleModal from './ruleModal';
 import TagItem from './tagItem';
 import BusiGroupsTagItem from './BusiGroupsTagItem';
@@ -482,11 +483,11 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
           </div>
         </Card>
         <NotifyExtra />
-        <Affix offsetBottom={0}>
+        <AffixWrapper>
           <Card size='small' className='affix-bottom-shadow'>
             <Space>
               <Button type='primary' htmlType='submit'>
-                {type === 1 ? t('common:btn.edit') : type === 2 ? t('common:btn.clone') : t('common:btn.create')}
+                {type === 1 ? t('common:btn.save') : type === 2 ? t('common:btn.clone') : t('common:btn.create')}
               </Button>
               {type === 1 && (
                 <Button
@@ -525,7 +526,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
               <Button onClick={() => window.history.back()}>{t('common:btn.cancel')}</Button>
             </Space>
           </Card>
-        </Affix>
+        </AffixWrapper>
       </Form>
       <RuleModal
         visible={ruleModalShow}

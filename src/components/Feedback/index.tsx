@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { SmileOutlined } from '@ant-design/icons';
+import { Popover, Space } from 'antd';
+import { QuestionCircleOutlined, ArrowRightOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import queryString from 'query-string';
@@ -17,7 +18,7 @@ const setCacheBottom = (bottom: number) => {
 };
 
 export default function Index() {
-  const { t } = useTranslation('Feedback');
+  const { t, i18n } = useTranslation('Feedback');
   const location = useLocation();
   const query = queryString.parse(location.search);
 
@@ -57,22 +58,108 @@ export default function Index() {
 
   if (import.meta.env.VITE_IS_ENT !== 'true' && import.meta.env.VITE_IS_PRO !== 'true' && query?.viewMode !== 'fullscreen') {
     return (
-      <div
-        draggable={false}
-        className='n9e-feedback-container'
-        style={{ right: position.right, bottom: position.bottom }}
-        onMouseDown={handleMouseDown}
-        onClick={() => {
-          if (!isMoving) {
-            window.open('https://c9xudyniiq.feishu.cn/share/base/form/shrcnpCTOJ1CCmNhfCx4aEsP8Vf');
-          } else {
-            setIsMoving(false);
-          }
-        }}
+      <Popover
+        content={
+          <div className='w-[500px]'>
+            <div className='text-[16px] mb-4 text-center'>{t('title')}</div>
+            <a target='_blank' rel='noopener noreferrer' href='https://deepwiki.com/ccfos/nightingale'>
+              <div
+                className='px-8 py-4 mb-2 rounded-[8px] text-[14px] hover:bg-[var(--fc-fill-3)]'
+                style={{
+                  border: '1px solid var(--fc-border-color)',
+                }}
+              >
+                <div
+                  className='font-bold mb-2'
+                  style={{
+                    color: 'var(--fc-text-1)',
+                  }}
+                >
+                  {t('ai.title')}
+                </div>
+                <div className='flex justify-between items-center'>
+                  <div className='second-color'>{t('ai.description')}</div>
+                  <div
+                    style={{
+                      color: 'var(--fc-geekblue-6-color)',
+                    }}
+                  >
+                    <Space>
+                      {t('ai.link_btn')}
+                      <ArrowRightOutlined />
+                    </Space>
+                  </div>
+                </div>
+              </div>
+            </a>
+            <a target='_blank' rel='noopener noreferrer' href={i18n.language === 'zh_CN' ? 'https://n9e.github.io/zh/' : 'https://n9e.github.io/'}>
+              <div
+                className='px-8 py-4 mb-2 rounded-[8px] text-[14px] hover:bg-[var(--fc-fill-3)]'
+                style={{
+                  border: '1px solid var(--fc-border-color)',
+                }}
+              >
+                <div
+                  className='font-bold mb-2'
+                  style={{
+                    color: 'var(--fc-text-1)',
+                  }}
+                >
+                  {t('docs.title')}
+                </div>
+                <div className='flex justify-between items-center'>
+                  <div className='second-color'>{t('docs.description')}</div>
+                  <div
+                    style={{
+                      color: 'var(--fc-text-1)',
+                    }}
+                  >
+                    <Space>
+                      {t('docs.link_btn')}
+                      <ArrowRightOutlined />
+                    </Space>
+                  </div>
+                </div>
+              </div>
+            </a>
+            <a target='_blank' rel='noopener noreferrer' href='https://github.com/ccfos/nightingale/issues'>
+              <div
+                className='px-8 py-4 rounded-[8px] text-[14px] hover:bg-[var(--fc-fill-3)]'
+                style={{
+                  border: '1px solid var(--fc-border-color)',
+                }}
+              >
+                <div
+                  className='font-bold mb-2'
+                  style={{
+                    color: 'var(--fc-text-1)',
+                  }}
+                >
+                  {t('issues.title')}
+                </div>
+                <div className='flex justify-between items-center'>
+                  <div className='second-color'>{t('issues.description')}</div>
+                  <div
+                    style={{
+                      color: 'var(--fc-orange-6-color)',
+                    }}
+                  >
+                    <Space>
+                      {t('issues.link_btn')}
+                      <ArrowRightOutlined />
+                    </Space>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+        }
+        placement='leftBottom'
       >
-        <SmileOutlined />
-        <div className='n9e-feedback-text'>{t('feedback')}</div>
-      </div>
+        <div draggable={false} className='n9e-feedback-container' style={{ right: position.right, bottom: position.bottom }} onMouseDown={handleMouseDown}>
+          <QuestionCircleOutlined />
+        </div>
+      </Popover>
     );
   }
   return null;
