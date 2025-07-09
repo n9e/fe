@@ -340,6 +340,7 @@ export function Link({ form, fieldsAll, rawData }: { form: FormInstance; fieldsA
               <Row gutter={16} style={{ marginBottom: 8 }}>
                 <Col span={4}>{t('keyword')}</Col>
                 <Col span={16}>
+                  <span style={{ color: 'var(--fc-fill-error)', marginRight: 4 }}>*</span>
                   {t('链接地址')}
                   <Tooltip
                     title={LinkTip(t, false)}
@@ -354,7 +355,11 @@ export function Link({ form, fieldsAll, rawData }: { form: FormInstance; fieldsA
                     </span>
                   </Tooltip>
                 </Col>
-                <Col span={3}>{t('field.alias1')}</Col>
+                <Col span={3}>
+                  {' '}
+                  <span style={{ color: 'var(--fc-fill-error)', marginRight: 4 }}>*</span>
+                  {t('field.alias1')}
+                </Col>
                 <Col span={1}></Col>
               </Row>
             )}
