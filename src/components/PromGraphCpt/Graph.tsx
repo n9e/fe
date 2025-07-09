@@ -19,6 +19,7 @@ import moment from 'moment';
 import _ from 'lodash';
 import { Space, InputNumber, Radio, Button, Popover, Tooltip } from 'antd';
 import { LineChartOutlined, AreaChartOutlined, SettingOutlined, ShareAltOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { TooltipPlacement } from 'antd/lib/tooltip';
 import { useTranslation } from 'react-i18next';
 
 import { CommonStateContext, basePrefix } from '@/App';
@@ -53,6 +54,7 @@ interface IProps {
   loading: boolean;
   setLoading: (loading: boolean) => void;
   graphStandardOptionsType?: 'vertical' | 'horizontal';
+  graphStandardOptionsPlacement?: TooltipPlacement;
   defaultUnit?: string;
   panelWidth?: number; // 用于 Graph 组件的宽度计算
 }
@@ -95,6 +97,7 @@ export default function Graph(props: IProps) {
     loading,
     setLoading,
     graphStandardOptionsType,
+    graphStandardOptionsPlacement = 'left',
     defaultUnit,
     panelWidth,
   } = props;
@@ -195,7 +198,7 @@ export default function Graph(props: IProps) {
   return (
     <div className='prom-graph-graph-container'>
       <div className='prom-graph-graph-controls'>
-        <Space>
+        <Space wrap>
           <TimeRangePicker value={range} onChange={setRange} dateFormat='YYYY-MM-DD HH:mm:ss' />
           <InputGroupWithFormItem
             label={
@@ -319,7 +322,7 @@ export default function Graph(props: IProps) {
                 <LineGraphStandardOptions highLevelConfig={highLevelConfig} setHighLevelConfig={setHighLevelConfig} type={graphStandardOptionsType} />
               ) : (
                 <Popover
-                  placement='left'
+                  placement={graphStandardOptionsPlacement}
                   content={<LineGraphStandardOptions highLevelConfig={highLevelConfig} setHighLevelConfig={setHighLevelConfig} />}
                   trigger='click'
                   autoAdjustOverflow={false}

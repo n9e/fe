@@ -20,6 +20,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Tabs, Button, Alert, Checkbox } from 'antd';
+import { TooltipPlacement } from 'antd/lib/tooltip';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
@@ -55,6 +56,7 @@ interface IProps {
   executeQuery?: (promQL?: string) => void;
   showBuiltinMetrics?: boolean;
   graphStandardOptionsType?: 'vertical' | 'horizontal';
+  graphStandardOptionsPlacement?: TooltipPlacement;
   defaultUnit?: string;
   showGlobalMetrics?: boolean;
   showBuilder?: boolean;
@@ -87,6 +89,7 @@ export default function index(props: IProps) {
     executeQuery,
     showBuiltinMetrics,
     graphStandardOptionsType,
+    graphStandardOptionsPlacement,
     showGlobalMetrics = true,
     showBuilder = true,
     onChange,
@@ -277,6 +280,7 @@ export default function index(props: IProps) {
                 loading={loading}
                 setLoading={setLoading}
                 graphStandardOptionsType={graphStandardOptionsType}
+                graphStandardOptionsPlacement={graphStandardOptionsPlacement}
                 defaultUnit={defaultUnit}
               />
             </Panel>
