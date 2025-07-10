@@ -165,7 +165,7 @@ const Shield: React.FC = () => {
             <>
               {text
                 ? text.map((tag, index) => {
-                    return tag ? <div key={index}>{`${tag.key} ${tag.func} ${tag.func === 'in' ? tag.value.split(' ').join(', ') : tag.value}`}</div> : null;
+                    return tag ? <div key={index}>{`${tag.func} ${_.includes(['in', 'not in'], tag.func) ? tag.value.split(' ').join(', ') : tag.value}`}</div> : null;
                   })
                 : ''}
             </>
@@ -180,7 +180,7 @@ const Shield: React.FC = () => {
             <>
               {text
                 ? text.map((tag, index) => {
-                    return tag ? <div key={index}>{`${tag.key} ${tag.func} ${tag.func === 'in' ? tag.value.split(' ').join(', ') : tag.value}`}</div> : null;
+                    return tag ? <div key={index}>{`${tag.key} ${tag.func} ${_.includes(['in', 'not in'], tag.func) ? tag.value.split(' ').join(', ') : tag.value}`}</div> : null;
                   })
                 : ''}
             </>

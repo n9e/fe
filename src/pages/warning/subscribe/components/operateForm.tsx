@@ -87,6 +87,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
   const [selectedRules, setSelectedRules] = useState<any[]>([]); // 选中的规则
   const [contactList, setInitContactList] = useState([]);
   const [notifyGroups, setNotifyGroups] = useState<any[]>([]);
+  const cate = Form.useWatch('cate', form);
   const redefineSeverity = Form.useWatch(['redefine_severity'], form);
   const redefineChannels = Form.useWatch(['redefine_channels'], form);
   const redefineWebhooks = Form.useWatch(['redefine_webhooks'], form);
@@ -184,14 +185,24 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
         </Card>
         <Card {...panelBaseProps} title={t('filter_configs')} className='mb2'>
           <Row gutter={10}>
-            <Col span={12}>
-              <Form.Item label={t('common:datasource.type')} name='cate' initialValue='prometheus'>
+            <Col span={!cate || cate === 'host' ? 24 : 12}>
+              <Form.Item label={t('common:datasource.type')} name='cate'>
                 <DatasourceCateSelect
+                  allowClear
                   scene='alert'
                   filterCates={(cates) => {
-                    return _.filter(cates, (item) => {
-                      return !!item.alertRule && (item.alertPro ? isPlus : true);
-                    });
+                    return _.concat(
+                      [
+                        {
+                          label: 'Host',
+                          value: 'host',
+                          logo: '/image/logos/host.png',
+                        } as any,
+                      ],
+                      _.filter(cates, (item) => {
+                        return !!item.alertRule && (item.alertPro ? isPlus : true);
+                      }),
+                    );
                   }}
                   onChange={() => {
                     form.setFieldsValue({
@@ -201,14 +212,18 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
                 />
               </Form.Item>
             </Col>
-            <Col span={12}>
-              <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.cate !== curValues.cate} noStyle>
-                {({ getFieldValue, setFieldsValue }) => {
-                  const cate = getFieldValue('cate');
-                  return <DatasourceValueSelect required={false} mode='multiple' setFieldsValue={setFieldsValue} cate={cate} datasourceList={groupedDatasourceList[cate] || []} />;
-                }}
-              </Form.Item>
-            </Col>
+            {cate && cate !== 'host' && (
+              <Col span={12}>
+                <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.cate !== curValues.cate} noStyle>
+                  {({ getFieldValue, setFieldsValue }) => {
+                    const cate = getFieldValue('cate');
+                    return (
+                      <DatasourceValueSelect required={false} mode='multiple' setFieldsValue={setFieldsValue} cate={cate} datasourceList={groupedDatasourceList[cate] || []} />
+                    );
+                  }}
+                </Form.Item>
+              </Col>
+            )}
           </Row>
           <div className='filter-settings-row'>
             <div className='filter-settings-row-connector'>
