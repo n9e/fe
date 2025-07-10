@@ -1,6 +1,6 @@
 import React, { useState, useContext, useRef } from 'react';
 import { Input, Tooltip, InputProps, Button } from 'antd';
-import { FullscreenOutlined, ToolOutlined } from '@ant-design/icons';
+import { FullscreenOutlined, ToolFilled } from '@ant-design/icons';
 import useOnClickOutside from '../useOnClickOutside';
 import { CommonStateContext } from '@/App';
 import LinkBuilder from './LinkBuilder';
@@ -42,7 +42,7 @@ export default function InputEnlarge({
         <Input.Group compact>
           <Input style={{ width: linkBuilder ? 'calc(100% - 64px)' : 'calc(100% - 32px)' }} disabled={disabled} value={value} onChange={onChange} {...props} />
           <Button icon={<FullscreenOutlined onClick={() => setVisible(true)} />} />
-          {linkBuilder && <Button icon={<ToolOutlined />} onClick={() => setLinkBuilderVisible(true)} />}
+          {linkBuilder && <Button icon={<ToolFilled />} onClick={() => setLinkBuilderVisible(true)} />}
         </Input.Group>
       </Tooltip>
       <LinkBuilder
