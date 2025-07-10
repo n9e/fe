@@ -5,7 +5,7 @@ import moment from 'moment';
 import queryString from 'query-string';
 import { useTranslation } from 'react-i18next';
 import { useGetState } from 'ahooks';
-import { Empty, Spin, InputNumber, Select, Radio, Space, Checkbox, Tag, Form, Alert, Pagination } from 'antd';
+import { Empty, Spin, InputNumber, Select, Radio, Space, Checkbox, Tag, Form, Alert } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
 import { RightOutlined, LeftOutlined } from '@ant-design/icons';
 import { useLocation } from 'react-router-dom';
@@ -14,7 +14,6 @@ import { parseRange } from '@/components/TimeRangePicker';
 import Timeseries from '@/pages/dashboard/Renderer/Renderer/Timeseries';
 import { CommonStateContext } from '@/App';
 import { PRIMARY_COLOR } from '@/utils/constant';
-import FullscreenButton from '@/pages/explorer/components/FullscreenButton';
 
 import { getLogsQuery } from './services';
 import metricQuery from './metricQuery';
@@ -23,11 +22,13 @@ import calcInterval from './utils/calcInterval';
 import FieldsSidebar from './FieldsSidebar';
 import QueryBuilder from './QueryBuilder';
 import QueryBuilderWithIndexPatterns from './QueryBuilderWithIndexPatterns';
-import Table from './Table';
 import Share from '../components/Share';
+import LogsView from './LogsView';
 
 import './style.less';
 
+// @ts-ignore
+import DrilldownBtn from 'plus:/pages/LogExploreLinkSetting/components/DrilldownBtn';
 // @ts-ignore
 import DownloadModal from 'plus:/datasource/elasticsearch/components/LogDownload/DownloadModal';
 // @ts-ignore
@@ -57,7 +58,6 @@ enum IMode {
 
 const LOGS_LIMIT = 500; // TODO: 日志查询已经启用分页器，这里的 limit 只用于字段统计信息里的查询，未来可能会废弃
 const TIME_FORMAT = 'YYYY.MM.DD HH:mm:ss';
-const MAX_RESULT_WINDOW = 10000; // ES 默认最大返回 10000 条数据，超过需要设置 index.max_result_window
 
 const HeaderExtra = ({ mode, setMode, allowHideSystemIndices, setAllowHideSystemIndices, datasourceValue }) => {
   const { t } = useTranslation('explorer');
@@ -99,6 +99,7 @@ const HeaderExtra = ({ mode, setMode, allowHideSystemIndices, setAllowHideSystem
         )}
       </Space>
       <Space>
+        {isPlus && mode === IMode.indices && <DrilldownBtn />}
         {isPlus && <ExportModal datasourceValue={datasourceValue} />}
         <Share />
       </Space>
@@ -438,7 +439,7 @@ export default function index(props: IProps) {
               }}
             >
               <div
-                className='es-discover-chart'
+                className='es-discover-chart mb-2'
                 style={{
                   height: chartVisible && date_field ? 190 : 40,
                   borderBottom: '1px solid var(--fc-border-color)',
@@ -448,7 +449,7 @@ export default function index(props: IProps) {
                   <Space size={4} className='ml-2'>
                     <strong>{total}</strong>
                     hits
-                    <div style={{ width: 40, height: 32, lineHeight: '32px' }}>
+                    <div style={{ width: 32, height: 32, lineHeight: '32px' }}>
                       <Spin spinning={timeseriesLoading} size='small' className='ml1' />
                     </div>
                   </Space>
@@ -564,45 +565,17 @@ export default function index(props: IProps) {
                   </div>
                 )}
               </div>
-              <FullscreenButton.Provider>
-                <div className='p1 n9e-flex n9e-justify-between n9e-items-center'>
-                  <div>
-                    <Space>
-                      <FullscreenButton />
-                      <Spin spinning={loading} size='small' />
-                    </Space>
-                  </div>
-                  <Pagination
-                    size='small'
-                    {...paginationOptions}
-                    total={total > MAX_RESULT_WINDOW ? MAX_RESULT_WINDOW : total}
-                    onChange={(current, pageSize) => {
-                      setPaginationOptions({
-                        ...paginationOptions,
-                        current,
-                        pageSize,
-                      });
-                    }}
-                    showTotal={(total) => {
-                      return t('common:table.total', { total });
-                    }}
-                  />
-                </div>
-                <Table
-                  data={data}
-                  onChange={(pagination, filters, sorter: any, extra) => {
-                    sorterRef.current = _.map(_.isArray(sorter) ? sorter : [sorter], (item) => {
-                      return {
-                        field: item.columnKey,
-                        order: item.order === 'ascend' ? 'asc' : 'desc',
-                      };
-                    });
-                    resetThenRefresh();
-                  }}
-                  getFields={getFields}
-                  selectedFields={selectedFields}
-                />
-              </FullscreenButton.Provider>
+              <LogsView
+                loading={loading}
+                total={total}
+                data={data}
+                sorterRef={sorterRef}
+                paginationOptions={paginationOptions}
+                setPaginationOptions={setPaginationOptions}
+                resetThenRefresh={resetThenRefresh}
+                getFields={getFields}
+                selectedFields={selectedFields}
+              />
               <div
                 className='es-discover-collapse'
                 onClick={() => {
