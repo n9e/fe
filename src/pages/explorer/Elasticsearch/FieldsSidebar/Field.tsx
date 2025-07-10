@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import _ from 'lodash';
-import semver from 'semver';
 import { useTranslation } from 'react-i18next';
-import { Popover, Progress, Space, Spin, Tooltip } from 'antd';
+import { Popover, Progress, Space, Spin, Tooltip, Form } from 'antd';
 import Icon, { PlusCircleOutlined, CloseCircleOutlined, CalendarOutlined, QuestionOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import type { CustomIconComponentProps } from '@ant-design/icons/lib/components/Icon';
 import { getFieldLabel, dslBuilder, ajustFieldParamValue } from '../../Elasticsearch/utils';
@@ -52,11 +51,12 @@ export const typeIconMap = {
 export default function Field(props: Props) {
   const { t } = useTranslation('explorer');
   const { item, record, type, fieldConfig, params, onSelect, onRemove, filters, onValueFilter } = props;
-  const { form, timesRef, datasourceValue, limit } = params;
+  const { from, timesRef, datasourceValue, limit } = params;
   const [top5Visible, setTop5Visible] = useState<boolean>(false);
   const [top5Data, setTop5Data] = useState<any[]>([]);
   const [top5Loading, setTop5Loading] = useState<boolean>(false);
   const fieldLabel = getFieldLabel(item, fieldConfig);
+  const form = Form.useFormInstance();
 
   return (
     <Popover
@@ -140,6 +140,7 @@ export default function Field(props: Props) {
                   syntax: values.query.syntax,
                   query_string: values.query.filter,
                   kuery: values.query.filter,
+                  from,
                   limit,
                   fields: [ajustFieldParamValue(record, version)],
                 }),

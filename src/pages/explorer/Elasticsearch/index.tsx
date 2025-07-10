@@ -57,7 +57,6 @@ enum IMode {
   indices = 'indices',
 }
 
-const LOGS_LIMIT = 500; // TODO: 日志查询已经启用分页器，这里的 limit 只用于字段统计信息里的查询，未来可能会废弃
 const TIME_FORMAT = 'YYYY.MM.DD HH:mm:ss';
 const MAX_RESULT_WINDOW = 10000; // ES 默认最大返回 10000 条数据，超过需要设置 index.max_result_window
 
@@ -411,7 +410,7 @@ export default function index(props: IProps) {
                 setFields={setFields}
                 value={selectedFields}
                 onChange={setSelectedFields}
-                params={{ form, timesRef, datasourceValue, limit: LOGS_LIMIT }}
+                params={{ from: (paginationOptions.current - 1) * paginationOptions.pageSize, timesRef, datasourceValue, limit: paginationOptions.pageSize }}
                 filters={filters}
                 onValueFilter={({ key, value, operator }) => {
                   // key + value 作为唯一标识，存在则更新，不存在则新增
