@@ -71,6 +71,8 @@ Tags and Annotations
 | TagsMap         | map[string]string | Tag key-value mapping | {{$event.TagsMap}}          |
 | AnnotationsJSON | map[string]string | Annotation key-value mapping | {{$event.AnnotationsJSON}} |
 
+If you want to reference the `instance` tag, you can use `{{$event.TagsMap.instance}}`, and if you want to reference the `summary` annotation, you can use `{{$event.AnnotationsJSON.summary}}`.
+
 Machine-related Field Information
 
 | Field Name   | Type   | Description      | Template Reference Method    |   
