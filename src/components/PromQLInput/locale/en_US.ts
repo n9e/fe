@@ -5,5 +5,6 @@ const en_US = {
     query_placeholder: 'Please enter the metric name',
   },
   required: 'Please enter a PromQL query',
+  placeholder: 'Please enter a PromQL query',
 };
 export default en_US;

@@ -126,6 +126,7 @@ export default function Chart() {
                     isPreview
                     themeMode={darkMode ? 'dark' : undefined}
                     annotations={[]}
+                    variableConfig={[]} // TODO 变量必须有值才会进行表达式模板替换
                   />
                 </div>
               );

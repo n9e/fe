@@ -29,6 +29,7 @@ import Renderer from '../Renderer/Renderer';
 import QueryEditor from './QueryEditor';
 
 interface IProps {
+  panelWidth?: number; // 面板宽度
   initialValues: any;
   variableConfigWithOptions?: IVariable[];
   range: any;
@@ -42,7 +43,7 @@ function FormCpt(props: IProps, ref) {
   const { t } = useTranslation('dashboard');
   const { darkMode } = useContext(CommonStateContext);
   const [chartForm] = Form.useForm();
-  const { initialValues, range, timezone, id, dashboardId, dashboard } = props;
+  const { panelWidth, initialValues, range, timezone, id, dashboardId, dashboard } = props;
   const [variableConfigWithOptions, setVariableConfigWithOptions] = useState<IVariable[] | undefined>(props.variableConfigWithOptions);
   const type = Form.useWatch('type', chartForm);
   const values = Form.useWatch([], chartForm);
@@ -126,7 +127,7 @@ function FormCpt(props: IProps, ref) {
               </div>
               {!_.includes(['text', 'iframe'], type) && (
                 <div className='n9e-dashboard-editor-modal-left-query-wrapper'>
-                  <QueryEditor chartForm={chartForm} type={type} variableConfig={variableConfigWithOptions} dashboardId={dashboardId} time={range} />
+                  <QueryEditor panelWidth={panelWidth} chartForm={chartForm} type={type} variableConfig={variableConfigWithOptions} dashboardId={dashboardId} time={range} />
                 </div>
               )}
             </div>

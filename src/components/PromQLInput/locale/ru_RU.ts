@@ -5,6 +5,7 @@ const ru_RU = {
     query_placeholder: 'Пожалуйста, введите название метрики',
   },
   required: 'Пожалуйста, введите запрос PromQL',
+  placeholder: 'Пожалуйста, введите запрос PromQL',
 };
 
 export default ru_RU;

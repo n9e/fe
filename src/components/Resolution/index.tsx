@@ -21,6 +21,7 @@ import './index.less';
 interface Props {
   value?: number | null;
   onChange?: (num: number | null) => void;
+  placeholder?: string;
 }
 
 const options = [10, 15, 30, 60, 120, 300].map((num) => ({
@@ -29,7 +30,7 @@ const options = [10, 15, 30, 60, 120, 300].map((num) => ({
 }));
 
 export default function Resolution(props: Props) {
-  const { onChange, value } = props;
+  const { onChange, value, placeholder } = props;
   const [inputContent, setInputContent] = useState<string>(String(value || ''));
   const [setp, setStep] = useState<number | null>(value || null);
 
@@ -77,7 +78,7 @@ export default function Resolution(props: Props) {
         onSelect={handelSelect}
         onKeyDown={handleEnter}
         onBlur={handleResult}
-        placeholder='Res. (s)'
+        placeholder={placeholder ?? 'Res. (s)'}
       ></AutoComplete>
     </div>
   );

@@ -59,5 +59,5 @@ export const getDetailUrl = (
   // 指标数据
   const formatUrl = data ? replaceExpressionDetail(detailUrl, data) : detailUrl;
   // 渲染下钻链接, 变量
-  return replaceFieldWithVariable(formatUrl, dashboardMeta.dashboardId, getOptionsList(dashboardMeta, time));
+  return replaceFieldWithVariable(formatUrl, dashboardMeta.dashboardId, getOptionsList({ ...dashboardMeta, time }));
 };
