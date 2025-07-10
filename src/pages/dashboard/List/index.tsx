@@ -232,7 +232,7 @@ export default function index() {
                                     <Link
                                       target='_blank'
                                       to={{
-                                        pathname: `/dashboards/share/${record.id}`,
+                                        pathname: `/dashboards/share/${record.ident || record.id}`,
                                         search: 'themeMode=dark',
                                       }}
                                     >
@@ -243,7 +243,7 @@ export default function index() {
                                     <Link
                                       target='_blank'
                                       to={{
-                                        pathname: `/dashboards/share/${record.id}`,
+                                        pathname: `/dashboards/share/${record.ident || record.id}`,
                                         search: 'themeMode=light',
                                       }}
                                     >
@@ -256,7 +256,7 @@ export default function index() {
                               <Link
                                 target='_blank'
                                 to={{
-                                  pathname: `/dashboards/share/${record.id}`,
+                                  pathname: `/dashboards/share/${record.ident || record.id}`,
                                 }}
                               >
                                 <ShareAltOutlined /> {t(`public.cate.${record.public_cate}`)}
