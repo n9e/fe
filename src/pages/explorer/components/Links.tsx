@@ -215,10 +215,12 @@ export default function Links({ rawValue, range, text, paramsArr, regExtractArr,
   );
 }
 
-export function Link({ onClick, text }: { onClick?: () => void; text: React.ReactNode }) {
+export function Link({ onClick, text, onMouseEnter, onMouseLeave }: { onClick?: () => void; text: React.ReactNode; onMouseEnter?: () => void; onMouseLeave?: () => void }) {
   const isGold = localStorage.getItem('n9e-dark-mode') === '2';
   return (
     <span
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       style={{
         display: 'inline-flex',
         textDecoration: 'underline',
