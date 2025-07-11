@@ -69,7 +69,7 @@ export default function ExploreSelect(props: Props) {
       setTreeData(res.map((i) => ({ title: i, key: i, level: 'db' })));
       setLoading(false);
     });
-  }, []);
+  }, [datasourceValue]);
 
   const onSelect: TreeProps['onSelect'] = (selectedKeys, info) => {
     // tree上必须选一个，不能取消，所以selected为false直接忽略
