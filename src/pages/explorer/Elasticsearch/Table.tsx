@@ -2,21 +2,24 @@ import React, { useMemo } from 'react';
 import _ from 'lodash';
 import { Table as AntdTable, Form } from 'antd';
 import { DownOutlined, RightOutlined } from '@ant-design/icons';
+
+import { DatasourceCateEnum } from '@/utils/constant';
+
 import { Field } from './utils';
 import { getColumnsFromFields } from './utils/getColumnsFromFields';
 import LogView from './LogView';
 import useFieldConfig from '../components/RenderValue/useFieldConfig';
-import { DatasourceCateEnum } from '@/utils/constant';
 
 interface Props {
   data: any[];
   onChange: (pagination, filters, sorter, extra) => void;
   getFields: () => Field[];
   selectedFields: Field[];
+  onActionClick?: (params: { key: string; value?: string; operator: string }) => void;
 }
 
 function Table(props: Props) {
-  const { data, onChange, getFields, selectedFields } = props;
+  const { data, onChange, getFields, selectedFields, onActionClick } = props;
   const form = Form.useFormInstance();
   const indexPatternId = Form.useWatch(['query', 'indexPattern']);
   const indexValue = Form.useWatch(['query', 'index']);
@@ -31,7 +34,7 @@ function Table(props: Props) {
     indexPatternId + indexValue,
   );
   const columns = useMemo(() => {
-    return getColumnsFromFields(selectedFields, form.getFieldValue(['query']), fieldConfig);
+    return getColumnsFromFields(selectedFields, form.getFieldValue(['query']), fieldConfig, onActionClick);
   }, [selectedFields, fieldConfig, range]);
 
   return (
@@ -44,7 +47,16 @@ function Table(props: Props) {
       dataSource={data}
       expandable={{
         expandedRowRender: (record) => {
-          return <LogView value={record.json} fieldConfig={fieldConfig} fields={getFields()} highlight={record.highlight} range={form.getFieldValue(['query', 'range'])} />;
+          return (
+            <LogView
+              value={record.json}
+              fieldConfig={fieldConfig}
+              fields={getFields()}
+              highlight={record.highlight}
+              range={form.getFieldValue(['query', 'range'])}
+              onActionClick={onActionClick}
+            />
+          );
         },
         expandIcon: ({ expanded, onExpand, record }) => (expanded ? <DownOutlined onClick={(e) => onExpand(record, e)} /> : <RightOutlined onClick={(e) => onExpand(record, e)} />),
       }}
