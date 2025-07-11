@@ -143,7 +143,7 @@ export default function index(props: IProps) {
   const intervalFixedRef = useRef<boolean>(false);
   const [chartVisible, setChartVisible] = useState(true);
   const [collapsed, setCollapsed] = useState(true);
-  const [filters, setFilters] = useState<Filter[]>();
+  const [filters, setFilters, getFilters] = useGetState<Filter[]>();
   const [errorContent, setErrorContent] = useState();
   const fieldConfig = Form.useWatch('fieldConfig', form);
   const date_field = Form.useWatch(['query', 'date_field'], form);
@@ -379,6 +379,20 @@ export default function index(props: IProps) {
         {!_.isEmpty(filters) && (
           <div className='es-discover-filters'>
             {_.map(filters, (filter) => {
+              if (filter.operator === 'exists') {
+                return (
+                  <Tag
+                    key={JSON.stringify(filter)}
+                    closable
+                    onClose={(e) => {
+                      e.preventDefault();
+                      setFilters(_.filter(filters, (item) => item.key !== filter.key));
+                    }}
+                  >
+                    {getFieldLabel(filter.key, fieldConfig)}: exists
+                  </Tag>
+                );
+              }
               return (
                 <Tag
                   key={JSON.stringify(filter)}
@@ -394,7 +408,8 @@ export default function index(props: IProps) {
                     );
                   }}
                 >
-                  {getFieldLabel(filter.key, fieldConfig)} {filter.operator === 'is not' ? '!=' : '='} {filter.value}
+                  {filter.operator === 'is not' ? 'NOT ' : ''}
+                  {getFieldLabel(filter.key, fieldConfig)}: {filter.value}
                 </Tag>
               );
             })}
@@ -603,6 +618,35 @@ export default function index(props: IProps) {
                   }}
                   getFields={getFields}
                   selectedFields={selectedFields}
+                  onActionClick={({ key, value, operator }) => {
+                    const currentFilters = getFilters();
+                    if (operator === 'exists') {
+                      // 如果是 exists 操作，则不需要 value
+                      if (!_.find(currentFilters, { key, operator })) {
+                        setFilters([...(currentFilters || []), { key, operator, value: '' }]);
+                      }
+                    } else {
+                      if (value) {
+                        // key + value 作为唯一标识，存在则更新，不存在则新增
+                        if (!_.find(currentFilters, { key, value })) {
+                          setFilters([...(currentFilters || []), { key, value, operator }]);
+                        } else {
+                          setFilters(
+                            _.map(currentFilters, (item) => {
+                              if (item.key === key && item.value === value) {
+                                return {
+                                  ...item,
+                                  value,
+                                  operator,
+                                };
+                              }
+                              return item;
+                            }),
+                          );
+                        }
+                      }
+                    }
+                  }}
                 />
               </FullscreenButton.Provider>
               <div

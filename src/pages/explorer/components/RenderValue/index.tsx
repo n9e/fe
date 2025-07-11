@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
 import _ from 'lodash';
-import { FieldConfigVersion2 } from '@/pages/log/IndexPatterns/types';
-import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
-import { LeftOutlined, RightOutlined } from '@ant-design/icons';
-import Links from '@/pages/explorer/components/Links';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
+import { Space } from 'antd';
+import { LeftOutlined, RightOutlined } from '@ant-design/icons';
+
+import { FieldConfigVersion2 } from '@/pages/log/IndexPatterns/types';
+import { IRawTimeRange } from '@/components/TimeRangePicker';
+
+import Token from './Token';
+import ExistsIcon from './ExistsIcon';
+
 interface IProps {
   fieldKey: string;
   fieldValue: string;
@@ -13,35 +18,70 @@ interface IProps {
   rawValue: object; // 待提取的日志原文数据
   range: IRawTimeRange;
   adjustFieldValue?: (formatedValue: string) => React.ReactNode;
+  onActionClick?: (params: { key: string; value?: string; operator: string }) => void;
 }
 
 const splitRegex = /\r\n|\n|\r|\\r\\n|\\n|\\r/g;
 
 export default function RenderValue(props: IProps) {
-  const { fieldKey, fieldValue, fieldConfig, rawValue, range, adjustFieldValue } = props;
+  const { t } = useTranslation('explorer');
+  const { fieldKey, fieldValue, fieldConfig, rawValue, range, adjustFieldValue, onActionClick } = props;
 
   if (splitRegex.test(fieldValue)) {
     return renderMultipleLineValue(fieldValue);
   }
 
-  const fieldAttr = fieldConfig?.arr?.find((i) => i.field === fieldKey);
-  const fieldLinks = fieldConfig?.linkArr?.filter((i) => i.field === fieldKey);
   let displayValue = fieldValue;
+  const fieldAttr = fieldConfig?.arr?.find((i) => i.field === fieldKey);
   if (fieldAttr?.formatMap?.type === 'date' && fieldAttr?.formatMap?.params?.pattern) {
     displayValue = moment(fieldValue).format(fieldAttr?.formatMap?.params?.pattern);
   }
   if (fieldAttr?.formatMap?.type === 'url' && fieldAttr?.formatMap?.params?.urlTemplate) {
     displayValue = fieldAttr?.formatMap?.params?.labelTemplate.replace('{{value}}', fieldValue);
   }
-
   const value = adjustFieldValue ? adjustFieldValue(displayValue) : displayValue;
 
-  if (rawValue && fieldLinks && fieldLinks.length > 0) {
-    return (
-      <Links rawValue={rawValue} range={range} text={value} paramsArr={fieldLinks} regExtractArr={fieldConfig?.regExtractArr} mappingParamsArr={fieldConfig?.mappingParamsArr} />
-    );
-  }
-  return <span>{value}</span>;
+  return (
+    <Token
+      name={fieldKey}
+      value={fieldValue}
+      valueNode={value}
+      onTokenClick={({ key, value, operator }) => {
+        if (onActionClick) {
+          onActionClick({
+            key,
+            value,
+            operator,
+          });
+        }
+      }}
+      fieldConfig={fieldConfig}
+      rawValue={rawValue}
+      range={range}
+      actionsValueMap={{
+        and: 'is',
+        not: 'is not',
+      }}
+      extraActions={
+        <li
+          className='ant-dropdown-menu-item ant-dropdown-menu-item-only-child'
+          onClick={() => {
+            if (onActionClick) {
+              onActionClick({
+                key: fieldKey,
+                operator: 'exists',
+              });
+            }
+          }}
+        >
+          <Space>
+            <ExistsIcon />
+            {t('log.field_actions.exists')}
+          </Space>
+        </li>
+      }
+    />
+  );
 }
 
 function renderMultipleLineValue(value: string) {

@@ -146,7 +146,7 @@ export const flattenHits = (hits: any[]): { docs: Array<Record<string, any>>; pr
 export interface Filter {
   key: string;
   value: string;
-  operator: 'is' | 'is not';
+  operator: string;
 }
 
 export function dslBuilder(params: {
@@ -261,6 +261,12 @@ export function dslBuilder(params: {
         body.query.bool.must_not.push({
           match_phrase: {
             [item.key]: item.value,
+          },
+        });
+      } else if (item.operator === 'exists') {
+        body.query.bool.filter.push({
+          exists: {
+            field: item.key,
           },
         });
       }
