@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
@@ -22,7 +22,11 @@ import { PrettifyJson } from './component/operator/PrettifyJson';
 import { ShowTime } from './component/operator/ShowTime';
 import { WrapLines } from './component/operator/WrapLines';
 import Share from '../components/Share';
-
+import useFieldConfig from '@/pages/explorer/components/RenderValue/useFieldConfig';
+import { DatasourceCateEnum } from '@/utils/constant';
+// @ts-ignore
+import DrilldownBtn from 'plus:/pages/LogExploreLinkSetting/components/DrilldownBtn';
+import { CommonStateContext } from '@/App';
 interface IProps {
   datasourceValue: number;
   headerExtra: HTMLDivElement | null;
@@ -43,6 +47,7 @@ const GRAPH_VISIBLE_CACHE_KEY = 'loki_graph_visible_cachekey';
 export default function index(props: IProps) {
   const { t } = useTranslation('explorer');
   const { datasourceValue, form, headerExtra, defaultFormValuesControl } = props;
+  const { isPlus } = useContext(CommonStateContext);
   const { search } = useLocation();
   const params = queryString.parse(search);
   const [loading, setLoading] = useState(false);
@@ -77,6 +82,15 @@ export default function index(props: IProps) {
       fetchData();
     }
   }, [JSON.stringify(range), datasourceValue, limit]);
+
+  const fieldConfig = useFieldConfig(
+    {
+      cate: DatasourceCateEnum.loki,
+      datasource_id: form.getFieldValue('datasourceValue'),
+      query: queryValue,
+    },
+    loading,
+  );
 
   // 每次输入LogQL 发送请求后变更匹配的关键字
   useEffect(() => {
@@ -204,6 +218,7 @@ export default function index(props: IProps) {
               </Form.Item>
             </Space>
             <Space>
+              {isPlus && <DrilldownBtn />}
               <Share />
             </Space>
           </div>,
@@ -315,6 +330,7 @@ export default function index(props: IProps) {
                   {data.map((item: Row) => {
                     return (
                       <LogRow
+                        fieldConfig={fieldConfig}
                         datasourceValue={datasourceValue}
                         row={item}
                         keywords={keywords}
@@ -322,6 +338,7 @@ export default function index(props: IProps) {
                           showTime: showTime,
                           prettifyJson: prettifyJson,
                         }}
+                        range={range}
                         addQueryLabel={(k, v, operator) => {
                           const label = `${k}${operator}"${v}"`;
                           const regex = /{([^}]+)}/g;

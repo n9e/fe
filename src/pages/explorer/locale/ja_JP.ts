@@ -59,6 +59,11 @@ const ja_JP = {
       del_btn: '削除',
       emptyText: 'エクスポートレコードが見つかりません。ログクエリを実行し、ダウンロードをクリックしてください。',
     },
+    field_actions: {
+      and: 'この検索に追加',
+      not: 'この検索から除外',
+      exists: 'フィールドが存在するドキュメントをフィルタリング',
+    },
   },
   historicalRecords: {
     button: '歴史レコード',

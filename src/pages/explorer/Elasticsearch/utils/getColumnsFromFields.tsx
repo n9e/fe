@@ -24,7 +24,12 @@ function localeCompareFunc(a, b) {
   return a.localeCompare(b);
 }
 
-export function getColumnsFromFields(selectedFields: { name: string; type: string }[], queryValue: any, fieldConfig?: any, dataSource?: any) {
+export function getColumnsFromFields(
+  selectedFields: { name: string; type: string }[],
+  queryValue: any,
+  fieldConfig?: any,
+  onActionClick?: (params: { key: string; value?: string; operator: string }) => void,
+) {
   const { date_field: dateField, range } = queryValue;
   let columns: any[] = [];
   if (_.isEmpty(selectedFields)) {
@@ -67,6 +72,7 @@ export function getColumnsFromFields(selectedFields: { name: string; type: strin
                           }
                           return formatedValue;
                         }}
+                        onActionClick={onActionClick}
                       />
                     </dd>
                   </React.Fragment>

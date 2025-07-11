@@ -59,6 +59,11 @@ const en_US = {
       del_btn: 'Delete',
       emptyText: 'No export records yet, please click to query logs and then click download',
     },
+    field_actions: {
+      and: 'Filter for value',
+      not: 'Filter out value',
+      exists: 'Filter for field persent',
+    },
   },
   historicalRecords: {
     button: 'Historical records',

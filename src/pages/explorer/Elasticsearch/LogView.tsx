@@ -1,33 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Space, Table, Tabs } from 'antd';
 import { QuestionOutlined, CopyOutlined } from '@ant-design/icons';
-import { EditorView } from '@codemirror/view';
-import { json } from '@codemirror/lang-json';
-import { defaultHighlightStyle } from '@codemirror/highlight';
 import purify from 'dompurify';
+import moment from 'moment';
+
 import { copyToClipBoard } from '@/utils';
+import RenderValue from '@/pages/explorer/components/RenderValue';
+import { FieldConfigVersion2 } from '@/pages/log/IndexPatterns/types';
+import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
+
 import HighLightJSON from './HighLightJSON';
 import { Field, getFieldLabel } from './utils';
 import { getHighlightHtml } from './utils/highlight';
-import RenderValue from '@/pages/explorer/components/RenderValue';
 import { typeIconMap } from './FieldsSidebar/Field';
 import { typeMap } from '../Elasticsearch/services';
-import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
-import { FieldConfigVersion2, ILogExtract } from '@/pages/log/IndexPatterns/types';
-import moment from 'moment';
+
 interface Props {
   value: Record<string, any>;
   fieldConfig?: FieldConfigVersion2;
   fields: Field[];
   highlight: any;
   range: IRawTimeRange;
+  onActionClick?: (params: { key: string; value?: string; operator: string }) => void;
 }
 
 export default function LogView(props: Props) {
   const { t } = useTranslation('explorer');
-  const { value, fieldConfig, fields, highlight, range } = props;
+  const { value, fieldConfig, fields, highlight, range, onActionClick } = props;
 
   const [type, setType] = useState<string>('table');
   const parsedRange = range ? parseRange(range) : null;
@@ -111,6 +112,7 @@ export default function LogView(props: Props) {
                       }
                       return formatedValue;
                     }}
+                    onActionClick={onActionClick}
                   />
                 );
               },

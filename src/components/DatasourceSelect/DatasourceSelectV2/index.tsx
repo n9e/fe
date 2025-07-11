@@ -17,6 +17,7 @@ interface Props {
     plugin_type: string;
   }[];
   onChange?: (value: string | number, datasourceCate: string) => void;
+  onClear?: () => void;
 }
 
 export default function index(props: SelectProps & Props) {
@@ -112,6 +113,8 @@ export default function index(props: SelectProps & Props) {
           props.onChange(value, curCate);
         }
       }}
+      onClear={props.onClear}
+      allowClear={!!props.onClear}
     />
   );
 }

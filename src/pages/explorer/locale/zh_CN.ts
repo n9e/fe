@@ -59,6 +59,11 @@ const zh_CN = {
       del_btn: '删除',
       emptyText: '暂无导出记录，请点击查询日志，然后点击下载',
     },
+    field_actions: {
+      and: '添加到本次检索',
+      not: '从本次检索中排除',
+      exists: '过滤存在该字段的文档',
+    },
   },
   historicalRecords: {
     button: '历史记录',
