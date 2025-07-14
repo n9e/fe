@@ -73,6 +73,15 @@ export default function QueryBuilder(props: Props) {
     });
   };
 
+  // 设置历史记录方法
+  const setHistory = () => {
+    const queryValues = form.getFieldValue(['query']);
+    console.log('queryValues', queryValues);
+    if (queryValues.index && queryValues.date_field) {
+      setLocalQueryHistory(`${CACHE_KEY}-${datasourceValue}`, _.omit(queryValues, 'range'));
+    }
+  };
+
   useEffect(() => {
     if (datasourceValue) {
       fetchESIndexPatterns((res) => {
@@ -228,7 +237,7 @@ export default function QueryBuilder(props: Props) {
                   fields={allFields}
                   ref={refInputFilter}
                   onExecute={() => {
-                    setLocalQueryHistory(`${CACHE_KEY}-${datasourceValue}`, _.omit(form.getFieldValue(['query']), 'range'));
+                    setHistory();
                     onExecute();
                   }}
                 />
@@ -243,7 +252,7 @@ export default function QueryBuilder(props: Props) {
                   }}
                   historicalRecords={[]}
                   onEnter={() => {
-                    setLocalQueryHistory(`${CACHE_KEY}-${datasourceValue}`, _.omit(form.getFieldValue(['query']), 'range'));
+                    setHistory();
                     onExecute();
                   }}
                 />
@@ -258,7 +267,7 @@ export default function QueryBuilder(props: Props) {
                 if (refInputFilter.current) {
                   refInputFilter.current.onCallback();
                 }
-                setLocalQueryHistory(`${CACHE_KEY}-${datasourceValue}`, _.omit(form.getFieldValue(['query']), 'range'));
+                setHistory();
                 onExecute();
               }}
               ajustTimeOptions={(options) => {
@@ -316,7 +325,7 @@ export default function QueryBuilder(props: Props) {
                 if (refInputFilter.current) {
                   refInputFilter.current.onCallback();
                 }
-                setLocalQueryHistory(`${CACHE_KEY}-${datasourceValue}`, _.omit(form.getFieldValue(['query']), 'range'));
+                setHistory();
                 onExecute();
               }}
             >
