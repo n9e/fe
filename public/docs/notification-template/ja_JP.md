@@ -70,6 +70,9 @@ DingTalk通知チャネルでは、参照方法は `{{$tpl.title}}` と `{{$tpl.
 | TagsMap         | map[string]string | タグキーバリューマッピング | {{$event.TagsMap}}         |
 | AnnotationsJSON | map[string]string | 注釈キーバリューマッピング | {{$event.AnnotationsJSON}} |
 
+例：もし `instance` タグを参照したい場合は、`{{$event.TagsMap.instance}}` を使用し、`summary` 注釈を参照したい場合は、`{{$event.AnnotationsJSON.summary}}` を使用します。
+
+
 マシン関連フィールド情報
 
 | フィールド名   | 型     | 説明         | テンプレート参照方法        |   

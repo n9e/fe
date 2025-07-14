@@ -72,6 +72,13 @@ export default function QueryBuilder(props: Props) {
       wait: 500,
     },
   );
+  // 设置历史记录方法
+  const setHistory = () => {
+    const queryValues = form.getFieldValue(['query']);
+    if (queryValues.index && queryValues.date_field) {
+      setLocalQueryHistory(`${CACHE_KEY}-${datasourceValue}`, _.omit(queryValues, 'range'));
+    }
+  };
 
   useEffect(() => {
     if (datasourceValue) {
@@ -190,7 +197,14 @@ export default function QueryBuilder(props: Props) {
         >
           {syntax === 'lucene' ? (
             <Form.Item name={['query', 'filter']}>
-              <InputFilter fields={allFields} ref={refInputFilter} onExecute={onExecute} />
+              <InputFilter
+                fields={allFields}
+                ref={refInputFilter}
+                onExecute={() => {
+                  setHistory();
+                  onExecute();
+                }}
+              />
             </Form.Item>
           ) : (
             <Form.Item name={['query', 'filter']}>
@@ -201,7 +215,10 @@ export default function QueryBuilder(props: Props) {
                   date_field: date_field,
                 }}
                 historicalRecords={[]}
-                onEnter={onExecute}
+                onEnter={() => {
+                  setHistory();
+                  onExecute();
+                }}
               />
             </Form.Item>
           )}
@@ -239,7 +256,8 @@ export default function QueryBuilder(props: Props) {
               if (refInputFilter.current) {
                 refInputFilter.current.onCallback();
               }
-              setLocalQueryHistory(CACHE_KEY, _.omit(form.getFieldValue(['query']), 'range'));
+              setHistory();
+
               onExecute();
             }}
             ajustTimeOptions={(options) => {
@@ -262,7 +280,7 @@ export default function QueryBuilder(props: Props) {
           renderItem={(item) => {
             return (
               <div
-                className='flex flex-wrap items-center gap-x-2 gap-y-1 cursor-pointer hover:bg-[var(--fc-fill-3)] p-1 rounded leading-[1.1] mb-1'
+                className='flex flex-wrap items-center gap-y-1 cursor-pointer hover:bg-[var(--fc-fill-3)] p-1 rounded leading-[1.1] mb-1'
                 key={JSON.stringify(item)}
                 onClick={() => {
                   form.setFieldsValue({ query: item });
@@ -274,7 +292,7 @@ export default function QueryBuilder(props: Props) {
                   return (
                     <span key={key}>
                       <span className='bg-[var(--fc-fill-1)] inline-block p-1 mr-1'>{t(`datasource:es.${key}`)}:</span>
-                      <span className=''>{value}</span>
+                      <span className='pr-1'>{value}</span>
                     </span>
                   );
                 })}
@@ -292,7 +310,7 @@ export default function QueryBuilder(props: Props) {
               if (refInputFilter.current) {
                 refInputFilter.current.onCallback();
               }
-              setLocalQueryHistory(`${CACHE_KEY}-${datasourceValue}`, _.omit(form.getFieldValue(['query']), 'range'));
+              setHistory();
               onExecute();
             }}
           >
