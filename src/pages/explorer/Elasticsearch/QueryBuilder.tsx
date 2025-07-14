@@ -190,7 +190,14 @@ export default function QueryBuilder(props: Props) {
         >
           {syntax === 'lucene' ? (
             <Form.Item name={['query', 'filter']}>
-              <InputFilter fields={allFields} ref={refInputFilter} onExecute={onExecute} />
+              <InputFilter
+                fields={allFields}
+                ref={refInputFilter}
+                onExecute={() => {
+                  setLocalQueryHistory(`${CACHE_KEY}-${datasourceValue}`, _.omit(form.getFieldValue(['query']), 'range'));
+                  onExecute();
+                }}
+              />
             </Form.Item>
           ) : (
             <Form.Item name={['query', 'filter']}>
@@ -201,7 +208,10 @@ export default function QueryBuilder(props: Props) {
                   date_field: date_field,
                 }}
                 historicalRecords={[]}
-                onEnter={onExecute}
+                onEnter={() => {
+                  setLocalQueryHistory(`${CACHE_KEY}-${datasourceValue}`, _.omit(form.getFieldValue(['query']), 'range'));
+                  onExecute();
+                }}
               />
             </Form.Item>
           )}
@@ -239,7 +249,7 @@ export default function QueryBuilder(props: Props) {
               if (refInputFilter.current) {
                 refInputFilter.current.onCallback();
               }
-              setLocalQueryHistory(CACHE_KEY, _.omit(form.getFieldValue(['query']), 'range'));
+              setLocalQueryHistory(`${CACHE_KEY}-${datasourceValue}`, _.omit(form.getFieldValue(['query']), 'range'));
               onExecute();
             }}
             ajustTimeOptions={(options) => {
