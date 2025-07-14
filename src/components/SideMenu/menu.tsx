@@ -6,7 +6,7 @@ import IconFont from '@/components/IconFont';
 import { MenuItem } from './types';
 import './locale';
 
-export const getMenuList = (embeddedProductMenu: MenuItem[] = []) => {
+export const getMenuList = (embeddedProductMenu: MenuItem[] = [], hideDeprecatedMenus: boolean = false) => {
   const menu: MenuItem[] = [
     {
       key: 'infrastructure',
@@ -101,20 +101,20 @@ export const getMenuList = (embeddedProductMenu: MenuItem[] = []) => {
           key: '/notification-templates',
           label: 'menu.notification_templates',
         },
-        {
-          key: '/event-pipelines',
-          label: 'menu.event_pipeline',
-        },
-        {
-          key: '/help/notification-settings',
-          label: 'menu.notification_settings',
-          deprecated: true,
-        },
-        {
-          key: '/help/notification-tpls',
-          label: 'menu.notification_tpls',
-          deprecated: true,
-        },
+        ...(hideDeprecatedMenus
+          ? []
+          : [
+              {
+                key: '/help/notification-settings',
+                label: 'menu.notification_settings',
+                deprecated: true,
+              },
+              {
+                key: '/help/notification-tpls',
+                label: 'menu.notification_tpls',
+                deprecated: true,
+              },
+            ]),
       ],
     },
     {

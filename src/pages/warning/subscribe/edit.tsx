@@ -51,13 +51,11 @@ const EditSubscribe: React.FC = () => {
         value: item.func === 'in' ? item.value.split(' ') : item.value,
       };
     });
-    setCurSubscribeData(
-      {
-        ...dat,
-        datasource_ids: dat.datasource_ids || undefined, // 兼容 null 值
-        tags,
-      } || {},
-    );
+    setCurSubscribeData({
+      ...dat,
+      datasource_ids: dat.datasource_ids || undefined, // 兼容 null 值
+      tags,
+    });
   };
 
   return (

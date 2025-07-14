@@ -70,3 +70,13 @@ export function postSourceToken(data: {
     data,
   });
 }
+
+export const getInstallDate = (): Promise<number> => {
+  return request('/api/n9e/install-date', {
+    method: RequestMethod.Get,
+  })
+    .then((res) => res.dat)
+    .catch(() => {
+      return 0; // 如果请求失败，返回0作为默认值
+    });
+};

@@ -56,3 +56,10 @@ export const deleteSubscribes = function (data: { ids: number[] }, busiId: numbe
     data,
   });
 };
+
+export const alertSubscribesTryrun = function (data: any) {
+  return request('/api/n9e/alert-subscribe/alert-subscribes-tryrun', {
+    method: RequestMethod.Post,
+    data,
+  });
+};

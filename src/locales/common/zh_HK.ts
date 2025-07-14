@@ -58,6 +58,7 @@ const zh_HK = {
     config: '設定',
     copy2: '複製',
     reload: '刷新',
+    data_preview: '數據預覽',
   },
   table: {
     name: '名稱',
@@ -99,7 +100,7 @@ const zh_HK = {
       op_not_in: '不包含',
       preview: '數據預覽',
     },
-    managePageLink: '数据源管理',
+    managePageLink: '点击前往數據源管理',
   },
   confirm: {
     delete: '確認刪除嗎？',
@@ -151,6 +152,7 @@ const zh_HK = {
   private: '私有',
   advanced_settings: '高級設定',
   disabled: '禁用',
+  select_event: '選擇告警事件',
 
   tpl: '自愈腳本',
   'tpl.create': '創建',

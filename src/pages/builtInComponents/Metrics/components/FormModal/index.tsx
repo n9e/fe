@@ -17,10 +17,13 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
-import { Modal, Form, Input, Space, Button, AutoComplete, message } from 'antd';
-import Markdown from '@/components/Markdown';
+import { Modal, Form, Input, Space, Button, AutoComplete, Card, message } from 'antd';
+import { CloseOutlined } from '@ant-design/icons';
+
+import { LANGUAGE_MAP, SIZE } from '@/utils/constant';
 import UnitPicker from '@/pages/dashboard/Components/UnitPicker';
 import { postMetrics, putMetric } from '@/pages/metricsBuiltin/services';
+import LangSelectPopver from '@/pages/metricsBuiltin/components/FormDrawer/LangSelectPopver';
 
 interface Props {
   component: string;
@@ -33,11 +36,14 @@ interface Props {
 }
 
 export default function index(props: Props) {
-  const { t } = useTranslation('metricsBuiltin');
+  const { t, i18n } = useTranslation('metricsBuiltin');
   const { component, mode, title, children, collectorsList, initialValues, onOk } = props;
   const [open, setOpen] = useState(false);
   const [form] = Form.useForm();
-  const note = Form.useWatch('note', form);
+  const translation = Form.useWatch('translation', form);
+  const otherLangs = _.filter(Object.keys(LANGUAGE_MAP), (lang) => {
+    return !_.find(translation, (item) => item.lang === lang);
+  });
 
   return (
     <>
@@ -116,17 +122,6 @@ export default function index(props: Props) {
               <div />
             </Form.Item>
             <Form.Item
-              label={t('name')}
-              name='name'
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
               label={t('typ')}
               name='typ'
               rules={[
@@ -174,18 +169,72 @@ export default function index(props: Props) {
             <Form.Item label={t('unit')} name='unit' tooltip={t('unit_tip')}>
               <UnitPicker allowClear showSearch />
             </Form.Item>
-            <Form.Item label={t('note')} name='note'>
-              <Input.TextArea
-                autoSize={{
-                  minRows: 6,
-                }}
-              />
-            </Form.Item>
-            {note ? (
-              <Form.Item label={t('note_preview')}>
-                <Markdown content={note}></Markdown>
-              </Form.Item>
-            ) : null}
+            <Form.List
+              name='translation'
+              initialValue={[
+                {
+                  lang: i18n.language,
+                  name: '',
+                  note: '',
+                },
+              ]}
+            >
+              {(fields, { add, remove }, { errors }) => (
+                <Space direction='vertical' size={SIZE * 2} className='w-full'>
+                  <div>
+                    <Space size={0}>
+                      {t('translation')}
+                      <LangSelectPopver
+                        otherLangs={otherLangs}
+                        onOk={(lang) => {
+                          add({
+                            lang,
+                            name: '',
+                            note: '',
+                          });
+                        }}
+                      />
+                    </Space>
+                  </div>
+                  {fields.map(({ key, name, ...restField }) => {
+                    const lang = form.getFieldValue(['translation', name, 'lang']);
+                    return (
+                      <Card
+                        key={key}
+                        size='small'
+                        title={LANGUAGE_MAP[lang] || lang}
+                        extra={
+                          fields.length > 1 && (
+                            <CloseOutlined
+                              onClick={() => {
+                                if (fields.length > 1) {
+                                  remove(name);
+                                }
+                              }}
+                            />
+                          )
+                        }
+                      >
+                        <Form.Item {...restField} name={[name, 'lang']} hidden>
+                          <div />
+                        </Form.Item>
+                        <Form.Item {...restField} name={[name, 'name']} label={t('name')} rules={[{ required: true }]}>
+                          <Input />
+                        </Form.Item>
+                        <Form.Item {...restField} name={[name, 'note']} label={t('note')}>
+                          <Input.TextArea
+                            autoSize={{
+                              minRows: 6,
+                            }}
+                          />
+                        </Form.Item>
+                      </Card>
+                    );
+                  })}
+                  <Form.ErrorList errors={errors} />
+                </Space>
+              )}
+            </Form.List>
           </Form>
         </Modal>
       )}

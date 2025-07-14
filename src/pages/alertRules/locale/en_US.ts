@@ -211,7 +211,7 @@ const en_US = {
       title: 'Query',
     },
   },
-  preview: 'Data preview',
+  preview: 'Preview',
   table: {
     group_id: 'Business group',
     cate: 'Type',
@@ -219,6 +219,7 @@ const en_US = {
     name: 'Name',
     append_tags: 'Tags',
     notify_groups_obj: 'Notify groups',
+    notify_rule_ids: 'Notification rule',
     update_at: 'Updated',
     update_by: 'Updated by',
     disabled: 'Enable',
@@ -334,6 +335,9 @@ const en_US = {
     filter: 'Variable filter',
     filter_tip: 'Variable filter',
     add_subFilter: 'Add sub filter',
+  },
+  enrich: {
+    select_tip: 'Clone query conditions (leave blank to create directly without cloning)',
   },
 };
 export default en_US;

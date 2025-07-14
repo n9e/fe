@@ -55,7 +55,10 @@ const ja_JP = {
       'データソースがアラートエンジンクラスターに関連付けされていないことを発見しました。これにより、アラートに使用できません。アラートエンジンクラスターに関連付けを行いますか？',
     cluster_confirm_ok: '関連付けしない',
     cluster_confirm_cancel: '関連付けを行う',
+    cluster_not_found:
+      '関連付けられたアラートエンジンが無効になっており、現在のデータソースのアラートはもはや有効ではありません。アラートエンジンの設定を確認するか、データソースの関連付けを再度修正してください。',
     url_no_spaces_msg: 'URLには空白を含めることはできません',
+    url_required_msg: 'URLは空にできません',
     prom: {
       write_addr_tip: '記録ルールが生成するデータの書き込みアドレスの例（時系列データベースの設定例）',
       read_addr: '時系列データベースの内網アドレス',
@@ -96,6 +99,10 @@ const ja_JP = {
       enable_write: '書き込みを許可',
     },
   },
+  test_and_save_btn: '接続テストと保存',
+  save_btn: '接続テスト',
+  auth_enable: '認証を有効にする',
+  skip_tls_verify: 'TLS検証をスキップ',
 };
 
 export default ja_JP;

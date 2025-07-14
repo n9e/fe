@@ -21,7 +21,7 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router';
 import { Link } from 'react-router-dom';
-import { addSubscribe, editSubscribe, deleteSubscribes } from '@/services/subscribe';
+import { addSubscribe, editSubscribe, deleteSubscribes, alertSubscribesTryrun } from '@/services/subscribe';
 import { getNotifiesList, getTeamInfoList } from '@/services/manage';
 import { subscribeItem } from '@/store/warningInterface/subscribe';
 import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
@@ -31,6 +31,8 @@ import { CommonStateContext } from '@/App';
 import { DatasourceCateSelect } from '@/components/DatasourceSelect';
 import { panelBaseProps } from '@/pages/alertRules/constants';
 import { scrollToFirstError } from '@/utils';
+import AlertEventRuleTesterWithButton from '@/components/AlertEventRuleTesterWithButton';
+import AffixWrapper from '@/components/AffixWrapper';
 import RuleModal from './ruleModal';
 import TagItem from './tagItem';
 import BusiGroupsTagItem from './BusiGroupsTagItem';
@@ -42,6 +44,34 @@ import NotifyExtra from 'plus:/parcels/AlertSubscribes/Extra';
 import NotifyChannelsTpl from 'plus:/parcels/AlertRule/NotifyChannelsTpl';
 
 const { Option } = Select;
+function processFormValues(values, selectedRules) {
+  const tags = values?.tags?.map((item) => {
+    return {
+      ...item,
+      value: Array.isArray(item.value) ? item.value.join(' ') : item.value,
+    };
+  });
+  const busi_groups = values?.busi_groups?.map((item) => {
+    return {
+      ...item,
+      value: Array.isArray(item.value) ? item.value.join(' ') : item.value,
+    };
+  });
+
+  return {
+    ...values,
+    tags,
+    busi_groups,
+    redefine_severity: values.redefine_severity ? 1 : 0,
+    redefine_channels: values.redefine_channels ? 1 : 0,
+    redefine_webhooks: values.redefine_webhooks ? 1 : 0,
+    rule_ids: _.map(selectedRules, 'id'),
+    user_group_ids: values.user_group_ids ? values.user_group_ids.join(' ') : '',
+    new_channels: values.new_channels ? values.new_channels.join(' ') : '',
+    cluster: '0',
+  };
+}
+
 interface Props {
   detail?: subscribeItem;
   type?: number; // 1:编辑; 2:克隆
@@ -57,6 +87,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
   const [selectedRules, setSelectedRules] = useState<any[]>([]); // 选中的规则
   const [contactList, setInitContactList] = useState([]);
   const [notifyGroups, setNotifyGroups] = useState<any[]>([]);
+  const cate = Form.useWatch('cate', form);
   const redefineSeverity = Form.useWatch(['redefine_severity'], form);
   const redefineChannels = Form.useWatch(['redefine_channels'], form);
   const redefineWebhooks = Form.useWatch(['redefine_webhooks'], form);
@@ -97,31 +128,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
   const debounceFetcher = useCallback(_.debounce(getGroups, 800), []);
 
   const onFinish = (values) => {
-    const tags = values?.tags?.map((item) => {
-      return {
-        ...item,
-        value: Array.isArray(item.value) ? item.value.join(' ') : item.value,
-      };
-    });
-    const busi_groups = values?.busi_groups?.map((item) => {
-      return {
-        ...item,
-        value: Array.isArray(item.value) ? item.value.join(' ') : item.value,
-      };
-    });
-
-    const params = {
-      ...values,
-      tags,
-      busi_groups,
-      redefine_severity: values.redefine_severity ? 1 : 0,
-      redefine_channels: values.redefine_channels ? 1 : 0,
-      redefine_webhooks: values.redefine_webhooks ? 1 : 0,
-      rule_ids: _.map(selectedRules, 'id'),
-      user_group_ids: values.user_group_ids ? values.user_group_ids.join(' ') : '',
-      new_channels: values.new_channels ? values.new_channels.join(' ') : '',
-      cluster: '0',
-    };
+    const params = processFormValues(values, selectedRules);
     if (type === 1) {
       editSubscribe([{ ...params, id: detail.id }], curBusiId).then((_) => {
         message.success(t('common:success.edit'));
@@ -178,14 +185,24 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
         </Card>
         <Card {...panelBaseProps} title={t('filter_configs')} className='mb2'>
           <Row gutter={10}>
-            <Col span={12}>
-              <Form.Item label={t('common:datasource.type')} name='cate' initialValue='prometheus'>
+            <Col span={!cate || cate === 'host' ? 24 : 12}>
+              <Form.Item label={t('common:datasource.type')} name='cate'>
                 <DatasourceCateSelect
+                  allowClear
                   scene='alert'
                   filterCates={(cates) => {
-                    return _.filter(cates, (item) => {
-                      return !!item.alertRule && (item.alertPro ? isPlus : true);
-                    });
+                    return _.concat(
+                      [
+                        {
+                          label: 'Host',
+                          value: 'host',
+                          logo: '/image/logos/host.png',
+                        } as any,
+                      ],
+                      _.filter(cates, (item) => {
+                        return !!item.alertRule && (item.alertPro ? isPlus : true);
+                      }),
+                    );
                   }}
                   onChange={() => {
                     form.setFieldsValue({
@@ -195,14 +212,18 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
                 />
               </Form.Item>
             </Col>
-            <Col span={12}>
-              <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.cate !== curValues.cate} noStyle>
-                {({ getFieldValue, setFieldsValue }) => {
-                  const cate = getFieldValue('cate');
-                  return <DatasourceValueSelect required={false} mode='multiple' setFieldsValue={setFieldsValue} cate={cate} datasourceList={groupedDatasourceList[cate] || []} />;
-                }}
-              </Form.Item>
-            </Col>
+            {cate && cate !== 'host' && (
+              <Col span={12}>
+                <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.cate !== curValues.cate} noStyle>
+                  {({ getFieldValue, setFieldsValue }) => {
+                    const cate = getFieldValue('cate');
+                    return (
+                      <DatasourceValueSelect required={false} mode='multiple' setFieldsValue={setFieldsValue} cate={cate} datasourceList={groupedDatasourceList[cate] || []} />
+                    );
+                  }}
+                </Form.Item>
+              </Col>
+            )}
           </Row>
           <div className='filter-settings-row'>
             <div className='filter-settings-row-connector'>
@@ -477,11 +498,11 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
           </div>
         </Card>
         <NotifyExtra />
-        <Affix offsetBottom={0}>
+        <AffixWrapper>
           <Card size='small' className='affix-bottom-shadow'>
             <Space>
               <Button type='primary' htmlType='submit'>
-                {type === 1 ? t('common:btn.edit') : type === 2 ? t('common:btn.clone') : t('common:btn.create')}
+                {type === 1 ? t('common:btn.save') : type === 2 ? t('common:btn.clone') : t('common:btn.create')}
               </Button>
               {type === 1 && (
                 <Button
@@ -504,10 +525,23 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
                   {t('common:btn.delete')}
                 </Button>
               )}
+              <AlertEventRuleTesterWithButton
+                onClick={() => {
+                  return form.validateFields();
+                }}
+                onTest={(eventID) => {
+                  return form.validateFields().then((values: any) => {
+                    return alertSubscribesTryrun({
+                      event_id: eventID,
+                      config: processFormValues(values, selectedRules),
+                    });
+                  });
+                }}
+              />
               <Button onClick={() => window.history.back()}>{t('common:btn.cancel')}</Button>
             </Space>
           </Card>
-        </Affix>
+        </AffixWrapper>
       </Form>
       <RuleModal
         visible={ruleModalShow}

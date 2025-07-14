@@ -16,7 +16,7 @@
  */
 import React, { useEffect, useState } from 'react';
 import { Form, Select, Space, Row, Col, Button, Tooltip, Modal, Table } from 'antd';
-import { WarningOutlined, PlusCircleOutlined, MinusCircleOutlined, InfoCircleOutlined, ReloadOutlined } from '@ant-design/icons';
+import { WarningOutlined, PlusCircleOutlined, MinusCircleOutlined, InfoCircleOutlined, ReloadOutlined, SettingOutlined } from '@ant-design/icons';
 import { Trans, useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
@@ -223,13 +223,7 @@ export default function index(props: IProps) {
       >
         {(fields, { add, remove }) => (
           <div>
-            <div
-              className='mb1'
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-              }}
-            >
+            <div className='mb-2'>
               <Space>
                 {t('common:datasource.queries.label')}
                 <PlusCircleOutlined
@@ -241,11 +235,11 @@ export default function index(props: IProps) {
                     })
                   }
                 />
-              </Space>
-              <Space>
-                <Link to={IS_ENT ? '/settings/source/timeseries' : '/datasources'} target='_blank'>
-                  {t('common:datasource.managePageLink')}
-                </Link>
+                <Tooltip title={t('common:datasource.managePageLink')}>
+                  <Link to={IS_ENT ? '/settings/source/timeseries' : '/datasources'} target='_blank'>
+                    <SettingOutlined />
+                  </Link>
+                </Tooltip>
                 <ReloadOutlined
                   onClick={() => {
                     reloadGroupedDatasourceList();

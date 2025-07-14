@@ -25,16 +25,16 @@ export default function Index(props: Props) {
           ))}
         </Row>
       </div>
-      <div className='page-title'>{t('授权')}</div>
+      <div className='page-title'>{t('form.auth')}</div>
       <div className='flash-cat-block'>
         <Row gutter={16}>
-          <Col span={12}>{t('用户名：')}</Col>
-          <Col span={12}>{t('密码：')}</Col>
+          <Col span={12}>{t('form.username')}：</Col>
+          <Col span={12}>{t('form.password')}：</Col>
           <Col span={12} className='second-color'>
-            {_.get(data, ['auth', 'basic_auth_user'], '-')}
+            {_.get(data, ['settings', 'os.basic', 'os.user']) || '-'}
           </Col>
           <Col span={12} className='second-color'>
-            {_.get(data, ['auth', 'basic_auth_password']) ? '******' : '-'}
+            {_.get(data, ['settings', 'os.basic', 'os.password']) ? '******' : '-'}
           </Col>
         </Row>
       </div>
@@ -54,7 +54,7 @@ export default function Index(props: Props) {
           </div>
         </>
       )}
-      <div className='page-title'>{t('form.other')}</div>
+      <div className='page-title'>{t('form.os.title')}</div>
       <div className='flash-cat-block'>
         <Row gutter={16}>
           <Col span={8}>{t('form.es.version')}：</Col>
@@ -70,10 +70,13 @@ export default function Index(props: Props) {
             {data.settings?.['os.min_interval'] || '-'}
           </Col>
         </Row>
+      </div>
+      <div className='page-title'>{t('form.other')}</div>
+      <div className='flash-cat-block'>
         <Row gutter={16}>
           <Col span={24}>{t('form.cluster')}：</Col>
           <Col span={24} className='second-color'>
-            {data?.cluster_name || '-'}
+            {data?.settings?.['os.cluster_name'] || '-'}
           </Col>
         </Row>
       </div>

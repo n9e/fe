@@ -14,6 +14,8 @@
  * limitations under the License.
  *
  */
+import moment from 'moment';
+
 import getFontFamily from './getFontFamily';
 // @ts-ignore
 import { AdvancedDatasourceCateEnum } from 'plus:/types';
@@ -101,4 +103,12 @@ export const daysOfWeek = [0, 1, 2, 3, 4, 5, 6];
 export const SIZE_CONFIG = {
   gap: 8,
   formItemHeight: 32,
+};
+export const V8_BETA_14_TS = moment('2025-06-20 00:00:00').unix(); // v8 beta 14 的发布时间，当安装时间晚于这个版本时间则隐藏一些弃用的菜单
+export const LANGUAGE_MAP = {
+  zh_CN: '简体',
+  zh_HK: '繁體',
+  en_US: 'En',
+  ja_JP: '日本語',
+  ru_RU: 'Русский',
 };

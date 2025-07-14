@@ -1,4 +1,4 @@
-export type ProcessorType = 'relabel' | 'label_enrich' | 'callback';
+export type ProcessorType = 'relabel' | 'label_enrich' | 'callback' | 'ai_summary';
 
 export type BaseItem = {
   id: number;
@@ -62,4 +62,22 @@ export type LabelEnrichItem = BaseItem & {
   }[];
 };
 
-export type Item = RelabelItem | LabelEnrichItem | CallbackItem;
+export type AISummaryItem = BaseItem & {
+  processors: {
+    type: 'ai_summary';
+    config: {
+      url: string;
+      api_key: string;
+      model_name: string;
+      prompt_template: string;
+      custom_params?: Record<string, string>;
+      timeout?: number;
+      skip_ssl_verify?: boolean;
+      header?: { key: string; value: string }[];
+      proxy?: string;
+      annotations?: Record<string, string>;
+    };
+  }[];
+};
+
+export type Item = RelabelItem | LabelEnrichItem | CallbackItem | AISummaryItem;

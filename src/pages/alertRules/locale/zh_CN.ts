@@ -217,6 +217,7 @@ const zh_CN = {
     name: '名称',
     append_tags: '附加标签',
     notify_groups_obj: '告警接收组',
+    notify_rule_ids: '通知规则',
     update_at: '更新时间',
     update_by: '更新人',
     disabled: '启用',
@@ -330,6 +331,9 @@ const zh_CN = {
     filter: '变量筛选',
     filter_tip: '变量筛选',
     add_subFilter: '添加子筛选',
+  },
+  enrich: {
+    select_tip: '克隆查询条件（留空表示直接创建，不克隆）',
   },
 };
 export default zh_CN;

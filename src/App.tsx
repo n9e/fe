@@ -29,7 +29,7 @@ import TaskOutput from '@/pages/taskOutput';
 import TaskHostOutput from '@/pages/taskOutput/host';
 import { getAuthorizedDatasourceCates, Cate } from '@/components/AdvancedWrap';
 import { GetProfile } from '@/services/account';
-import { getBusiGroups, getDatasourceBriefList, getMenuPerm } from '@/services/common';
+import { getBusiGroups, getDatasourceBriefList, getMenuPerm, getInstallDate } from '@/services/common';
 import { getLicense } from '@/components/AdvancedWrap';
 import { getVersions } from '@/components/pageLayout/Version/services';
 import { getCleanBusinessGroupIds, getDefaultBusiness, getVaildBusinessGroup } from '@/components/BusinessGroup';
@@ -37,7 +37,7 @@ import Feedback from '@/components/Feedback';
 import { getN9eConfig } from '@/pages/siteSettings/services';
 import { getDarkMode, updateDarkMode } from '@/utils/darkMode';
 import SharedDetail from '@/pages/event/DetailNG/SharedDetail';
-
+import HocRenderer from './components/HocRenderer';
 import HeaderMenu from './components/SideMenu';
 import Content from './routers';
 
@@ -122,6 +122,7 @@ export interface ICommonState {
   perms?: string[];
   screenTemplates?: string[];
   tablePaginationPosition?: string; // 表格分页位置
+  installTs: number; // 安装时间戳
 }
 
 export const basePrefix = import.meta.env.VITE_PREFIX || '';
@@ -208,6 +209,7 @@ function App() {
     esIndexMode: 'all',
     dashboardSaveMode: 'manual',
     screenTemplates: [],
+    installTs: 0,
   });
 
   const removePreloader = () => {
@@ -245,6 +247,7 @@ function App() {
         }
         // 非匿名访问，需要初始化一些公共数据
         if (!anonymous) {
+          const installTs = await getInstallDate();
           const { dat: profile } = await GetProfile();
           const { dat: busiGroups } = await getBusiGroups();
           const { dat: perms } = await getMenuPerm();
@@ -264,6 +267,7 @@ function App() {
           setCommonState((state) => {
             return {
               ...state,
+              installTs,
               profile,
               busiGroups,
               businessGroup: getDefaultBusiness(busiGroups),
@@ -335,6 +339,7 @@ function App() {
               <>
                 {location.pathname !== `${basePrefix}/out-of-service` && <HeaderMenu />}
                 <Content />
+                <HocRenderer></HocRenderer>
               </>
             </Switch>
             <Feedback />

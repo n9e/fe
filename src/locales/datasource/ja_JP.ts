@@ -5,6 +5,7 @@ const ja_JP = {
     index_tip:
       '\n      複数の設定方法をサポート\n      <1 />\n      1. 単一のインデックス gb を指定すると、すべてのドキュメントを gb インデックスで検索します\n      <1 />\n      2. 複数のインデックス gb,us を指定すると、すべてのドキュメントを gb および us インデックスで検索します\n      <1 />\n      3. インデックス接頭辞 g*,u* を指定すると、g または u で始まるすべてのインデックスでドキュメントを検索します\n      <1 />\n      ',
     index_msg: 'インデックスは空にできません',
+    indexPattern: 'インデックスパターン',
     indexPatterns: 'インデックスパターン',
     indexPattern_msg: 'インデックスパターンは空にできません',
     indexPatterns_manage: 'インデックスパターンの管理',
@@ -56,6 +57,31 @@ const ja_JP = {
     syntaxOptions: '構文オプション',
     queryFailed: 'クエリに失敗しました。後で再試行してください',
     offset_tip: '指定した時間範囲の前のデータをクエリするために使用されます。PromQLのoffsetに似ており、単位は秒です。',
+  },
+  datasource: {
+    max_query_rows: '単一リクエストで取得可能な最大行数',
+    max_idle_conns: '最大アイドル接続数',
+    max_open_conns: '最大オープン接続数',
+    conn_max_lifetime: '接続の最大寿命 （単位：秒）',
+    timeout: 'タイムアウト時間 （単位：秒）',
+    timeout_ms: 'タイムアウト時間 （単位：ミリ秒）',
+  },
+  query: {
+    title: 'クエリ統計',
+    execute: 'クエリ',
+    query: 'クエリ条件',
+    query_required: 'クエリ条件は空にできません',
+    query_placeholder: 'SQLを入力してクエリを実行します。Shift+Enterで改行します',
+    query_placeholder2: 'Shift+Enterで改行します',
+    advancedSettings: {
+      title: '高度な設定',
+      tags_placeholder: '複数入力可能',
+      valueKey: '値フィールド',
+      valueKey_tip: 'SQLクエリの結果には通常複数の列が含まれています。これらの列のうち、どの列の値をグラフに表示するかを指定できます',
+      valueKey_required: '値フィールドは空にできません',
+      labelKey: 'ラベルフィールド',
+      labelKey_tip: 'SQLクエリの結果には通常複数の列が含まれています。これらの列のうち、どの列をグラフのラベル情報として使用するかを指定できます',
+    },
   },
 };
 

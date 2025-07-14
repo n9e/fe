@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Form } from 'antd';
 import { useTranslation } from 'react-i18next';
+
+import { CommonStateContext } from '@/App';
+import { V8_BETA_14_TS } from '@/utils/constant';
 
 interface ContentProps {
   value?: number;
@@ -9,7 +12,12 @@ interface ContentProps {
 
 function Content(props: ContentProps) {
   const { t } = useTranslation('alertRules');
+  const { installTs } = useContext(CommonStateContext);
   const { value, onChange } = props;
+
+  if (installTs > V8_BETA_14_TS) {
+    return null; // Hide the switch if installed after the specified timestamp
+  }
 
   return (
     <a

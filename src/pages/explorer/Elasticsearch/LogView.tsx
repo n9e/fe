@@ -75,6 +75,7 @@ export default function LogView(props: Props) {
     >
       <Tabs.TabPane tab='Table' key='table'>
         <Table
+          className='n9e-es-explorer-log-view-table'
           dataSource={dataSource}
           columns={[
             {
@@ -95,6 +96,7 @@ export default function LogView(props: Props) {
               title: 'Value',
               dataIndex: 'value',
               key: 'value',
+              className: 'n9e-es-explorer-log-view-table-value',
               render: (val: any, record: { field: string }) => {
                 const field = record.field;
                 return (

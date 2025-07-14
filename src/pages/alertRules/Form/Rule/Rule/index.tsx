@@ -30,13 +30,16 @@ export default function index() {
       <Form.Item name='datasource_value' hidden>
         <div />
       </Form.Item>
+      <Form.Item name='datasource_values' hidden>
+        <div />
+      </Form.Item>
       <div style={{ marginBottom: 10 }}>
         {cate === DatasourceCateEnum.prometheus && <Prometheus datasourceCate={cate} datasourceValue={datasourceValue} />}
         {cate === DatasourceCateEnum.tdengine && <TDengine datasourceValue={datasourceValue} />}
         {cate === DatasourceCateEnum.ck && <ClickHouse datasourceValue={datasourceValue} />}
         {cate === DatasourceCateEnum.loki && <Loki datasourceCate={cate} datasourceValue={datasourceValue} />}
         {cate === DatasourceCateEnum.elasticsearch && <ElasticsearchSettings disabled={false} datasourceValue={datasourceValue} />}
-        {cate === DatasourceCateEnum.opensearch && <ElasticsearchSettings disabled={false} datasourceValue={datasourceValue} />}
+        {cate === DatasourceCateEnum.opensearch && <ElasticsearchSettings hideIndexPattern disabled={false} datasourceValue={datasourceValue} />}
         {cate === DatasourceCateEnum.mysql && <MySQL datasourceValue={datasourceValue} />}
         {cate === DatasourceCateEnum.pgsql && <PgSQL datasourceValue={datasourceValue} />}
         {cate === DatasourceCateEnum.doris && <Doris disabled={false} datasourceCate={cate} datasourceValue={[datasourceValue]} />}

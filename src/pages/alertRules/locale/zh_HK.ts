@@ -217,6 +217,7 @@ const zh_HK = {
     name: '名稱',
     append_tags: '附加標籤',
     notify_groups_obj: '告警接收組',
+    notify_rule_ids: '通知規則',
     update_at: '更新時間',
     update_by: '更新者',
     disabled: '啟用',
@@ -330,6 +331,9 @@ const zh_HK = {
     filter: '變量篩選',
     filter_tip: '變量篩選',
     add_subFilter: '添加子篩選',
+  },
+  enrich: {
+    select_tip: '克隆查詢條件（留空表示直接創建，不克隆）',
   },
 };
 

@@ -59,6 +59,7 @@ const ru_RU = {
     config: 'Настройка',
     copy2: 'Копировать',
     reload: 'Обновить',
+    data_preview: 'Предпросмотр данных',
   },
   table: {
     name: 'Имя',
@@ -100,7 +101,7 @@ const ru_RU = {
       op_not_in: 'Не включает',
       preview: 'Предпросмотр данных',
     },
-    managePageLink: 'Управление источниками данных',
+    managePageLink: 'Перейти к управлению источниками данных',
   },
   confirm: {
     delete: 'Вы уверены, что хотите удалить?',
@@ -152,6 +153,7 @@ const ru_RU = {
   private: 'Частное',
   advanced_settings: 'Расширенные настройки',
   disabled: 'Отключено',
+  select_event: 'Выбрать событие оповещения',
 
   tpl: 'Скрипт самовосстановления',
   'tpl.create': 'Создать',

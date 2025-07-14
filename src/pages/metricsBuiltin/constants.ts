@@ -42,8 +42,8 @@ export const defaultColumnsConfigs = [
     visible: false,
   },
   {
-    name: 'created_by',
-    i18nKey: 'common:table.create_by',
+    name: 'updated_by',
+    i18nKey: 'common:table.update_by',
     visible: false,
   },
 ];

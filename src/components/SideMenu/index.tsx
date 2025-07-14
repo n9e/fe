@@ -13,6 +13,7 @@ import { getMenuList } from '@/components/SideMenu/menu';
 import { getEmbeddedProducts } from '@/pages/embeddedProduct/services';
 import { eventBus, EVENT_KEYS } from '@/pages/embeddedProduct/eventBus';
 import { DETAIL_PATH as embeddedProductDetailPath } from '@/pages/embeddedProduct/constants';
+import { V8_BETA_14_TS } from '@/utils/constant';
 
 import { cn } from './utils';
 import SideMenuHeader from './Header';
@@ -27,7 +28,7 @@ import getPlusMenuList from 'plus:/parcels/SideMenu/menu';
 
 const SideMenu = () => {
   const { i18n } = useTranslation('sideMenu');
-  const { isPlus, darkMode, perms } = useContext(CommonStateContext);
+  const { isPlus, darkMode, perms, installTs } = useContext(CommonStateContext);
   let { sideMenuBgMode } = useContext(CommonStateContext);
   if (darkMode) {
     sideMenuBgMode = 'dark';
@@ -48,7 +49,7 @@ const SideMenu = () => {
       location.pathname.startsWith('/chart/') ||
       location.pathname.startsWith('/events/screen/') ||
       location.pathname.startsWith('/dashboards/share/') ||
-      location.pathname === '/callback' ||
+      location.pathname.startsWith('/callback') || // match /callback or /callback/${type}
       location.pathname.indexOf('/polaris/screen') === 0 ||
       location.pathname.indexOf('/template/screens/detail') === 0
     ) {
@@ -85,8 +86,6 @@ const SideMenu = () => {
       eventBus.off(EVENT_KEYS.EMBEDDED_PRODUCT_UPDATED, fetchEmbeddedProducts);
     };
   }, [hideSideMenu]);
-
-  const menuList = isPlus ? getPlusMenuList(embeddedProductMenu) : getMenuList(embeddedProductMenu);
 
   useEffect(() => {
     const filteredMenus = menuList
@@ -162,6 +161,8 @@ const SideMenu = () => {
     }
   }, [menuPaths, location.pathname, selectedKeys]);
 
+  const hideDeprecatedMenus = installTs > V8_BETA_14_TS;
+  const menuList = isPlus ? getPlusMenuList(embeddedProductMenu, hideDeprecatedMenus) : getMenuList(embeddedProductMenu, hideDeprecatedMenus);
   const uncollapsedWidth = i18n.language === 'en_US' || i18n.language === 'ru_RU' ? 'w-[250px]' : 'w-[172px]';
 
   return (
