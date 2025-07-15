@@ -11,10 +11,11 @@ import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import KQLInput from '@/components/KQLInput';
 import DocumentDrawer from '@/components/DocumentDrawer';
 import { CommonStateContext } from '@/App';
-import ConditionHistoricalRecords, { setLocalQueryHistory } from '@/components/HistoricalRecords/ConditionHistoricalRecords';
+import ConditionHistoricalRecords from '@/components/HistoricalRecords/ConditionHistoricalRecords';
 
 import { getIndices, getFullFields, Field } from './services';
 import InputFilter from './InputFilter';
+import { CACHE_KEY_MAP, SYNTAX_OPTIONS } from './index';
 
 interface Props {
   onExecute: () => void;
@@ -23,24 +24,14 @@ interface Props {
   allowHideSystemIndices?: boolean;
   form: FormInstance;
   loading: boolean;
+  setHistory: () => void;
+  resetFilters: () => void;
 }
-
-const CACHE_KEY = 'es-indices-query-history-records';
-const SYNTAX_OPTIONS = [
-  {
-    label: 'Lucene',
-    value: 'lucene',
-  },
-  {
-    label: 'KQL',
-    value: 'kuery',
-  },
-];
 
 export default function QueryBuilder(props: Props) {
   const { t, i18n } = useTranslation('explorer');
   const { darkMode } = useContext(CommonStateContext);
-  const { onExecute, datasourceValue, setFields, allowHideSystemIndices = false, form, loading } = props;
+  const { onExecute, datasourceValue, setFields, allowHideSystemIndices = false, form, loading, setHistory, resetFilters } = props;
   const params = new URLSearchParams(useLocation().search);
   const [indexOptions, setIndexOptions] = useState<any[]>([]);
   const [indexSearch, setIndexSearch] = useState('');
@@ -82,13 +73,6 @@ export default function QueryBuilder(props: Props) {
       wait: 500,
     },
   );
-  // 设置历史记录方法
-  const setHistory = () => {
-    const queryValues = form.getFieldValue(['query']);
-    if (queryValues.index && queryValues.date_field) {
-      setLocalQueryHistory(`${CACHE_KEY}-${datasourceValue}`, _.omit(queryValues, 'range'));
-    }
-  };
 
   useEffect(() => {
     if (datasourceValue) {
@@ -276,7 +260,7 @@ export default function QueryBuilder(props: Props) {
       </Col>
       <Col flex='none'>
         <ConditionHistoricalRecords
-          localKey={CACHE_KEY}
+          localKey={CACHE_KEY_MAP['indices']}
           datasourceValue={datasourceValue!}
           renderItem={(item) => {
             return (
@@ -285,6 +269,7 @@ export default function QueryBuilder(props: Props) {
                 key={JSON.stringify(item)}
                 onClick={() => {
                   form.setFieldsValue({ query: item });
+                  resetFilters();
                   onExecute();
                 }}
               >
