@@ -10,6 +10,7 @@ import { IRawTimeRange } from '@/components/TimeRangePicker';
 
 import Token from './Token';
 import ExistsIcon from './ExistsIcon';
+import './style.less';
 
 interface IProps {
   fieldKey: string;
