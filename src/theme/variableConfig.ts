@@ -46,3 +46,21 @@ export const bubbleIcon = {
     },
   },
 };
+
+/**
+ * 灭火图首页自定义图标状态颜色
+ */
+export const firemapLevel1Icon = {
+  red: {
+    light: '#E33639',
+    dark: '#F65B5D',
+  },
+  green: {
+    light: '#51C061',
+    dark: '#6EDB7D',
+  },
+  nodata: {
+    light: '#9793A9',
+    dark: '#B0ACC2',
+  },
+};

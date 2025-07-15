@@ -10,6 +10,7 @@ const ja_JP = {
     indexPattern_msg: 'インデックスパターンは空にできません',
     indexPatterns_manage: 'インデックスパターンの管理',
     filter: 'フィルタ条件',
+    syntax: '構文',
     time_label: '時間の粒度',
     date_field: '日付フィールド',
     date_field_msg: '日付フィールドは空にできません',
