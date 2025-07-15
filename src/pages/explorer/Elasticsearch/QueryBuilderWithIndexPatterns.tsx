@@ -12,10 +12,11 @@ import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { useIsAuthorized } from '@/components/AuthorizationWrapper';
 import KQLInput from '@/components/KQLInput';
 import IndexPatternSettingsBtn from '@/pages/explorer/Elasticsearch/components/IndexPatternSettingsBtn';
-import ConditionHistoricalRecords, { setLocalQueryHistory } from '@/components/HistoricalRecords/ConditionHistoricalRecords';
+import ConditionHistoricalRecords from '@/components/HistoricalRecords/ConditionHistoricalRecords';
 
 import { getFullFields, Field } from './services';
 import InputFilter from './InputFilter';
+import { CACHE_KEY_MAP, SYNTAX_OPTIONS } from './index';
 
 interface Props {
   onExecute: () => void;
@@ -24,24 +25,14 @@ interface Props {
   setFields: (fields: Field[]) => void;
   onIndexChange: () => void;
   loading: boolean;
+  setHistory: () => void;
+  resetFilters: () => void;
 }
-
-const CACHE_KEY = 'es-index-patterns-query-history-records';
-const SYNTAX_OPTIONS = [
-  {
-    label: 'Lucene',
-    value: 'lucene',
-  },
-  {
-    label: 'KQL',
-    value: 'kuery',
-  },
-];
 
 export default function QueryBuilder(props: Props) {
   const { t } = useTranslation('explorer');
   const params = new URLSearchParams(useLocation().search);
-  const { onExecute, datasourceValue, form, setFields, onIndexChange, loading } = props;
+  const { onExecute, datasourceValue, form, setFields, onIndexChange, loading, setHistory, resetFilters } = props;
   const [indexPatterns, setIndexPatterns] = useState<any[]>([]);
   const indexPattern = Form.useWatch(['query', 'indexPattern']);
   const indexPatternObj = _.find(indexPatterns, (item) => item.id === indexPattern);
@@ -81,14 +72,6 @@ export default function QueryBuilder(props: Props) {
       setIndexPatterns(res);
       callback && callback(res);
     });
-  };
-
-  // 设置历史记录方法
-  const setHistory = () => {
-    const queryValues = form.getFieldValue(['query']);
-    if (queryValues.index && queryValues.date_field) {
-      setLocalQueryHistory(`${CACHE_KEY}-${datasourceValue}`, _.omit(queryValues, 'range'));
-    }
   };
 
   useEffect(() => {
@@ -285,7 +268,7 @@ export default function QueryBuilder(props: Props) {
         </Col>
         <Col flex='none'>
           <ConditionHistoricalRecords
-            localKey={CACHE_KEY}
+            localKey={CACHE_KEY_MAP['index-patterns']}
             datasourceValue={datasourceValue!}
             renderItem={(item) => {
               return (
@@ -299,6 +282,7 @@ export default function QueryBuilder(props: Props) {
                         indexPattern: _.toNumber(item.indexPattern),
                       },
                     });
+                    resetFilters();
                     onExecute();
                   }}
                 >
