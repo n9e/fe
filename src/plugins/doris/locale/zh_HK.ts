@@ -18,6 +18,17 @@ const zh_HK = {
     execute: '查詢',
     database: '數據庫',
     database_placeholder: '默認可以留空',
+    query: '查詢條件',
+    query_required: '查詢條件不能為空',
+    advancedSettings: {
+      title: '輔助配置',
+      tags_placeholder: '回車輸入多個',
+      valueKey: '值字段',
+      valueKey_tip: 'SQL 查詢結果通常包含多個列，您可以指定哪些列的值作為曲線展示在圖表上',
+      valueKey_required: '值字段不能為空',
+      labelKey: '標籤字段',
+      labelKey_tip: 'SQL 查詢結果通常包含多個列，您可以指定哪些列作為曲線的標籤元信息',
+    },
   },
 };
 

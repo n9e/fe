@@ -60,6 +60,7 @@ const getESFilterByQuery = (query: { [index: string]: string | null }) => {
 export const getFormValuesBySearchParams = (params: { [index: string]: string | null }) => {
   const data_source_name = _.get(params, 'data_source_name');
   const data_source_id = _.get(params, 'data_source_id');
+  const query = _.get(params, 'query');
   if (data_source_name && data_source_id) {
     const formValues: {
       datasourceCate: string;
@@ -125,7 +126,15 @@ export const getFormValuesBySearchParams = (params: { [index: string]: string | 
       return {
         ...formValues,
         query: {
-          query: queryString,
+          query,
+          range,
+        },
+      };
+    } else if (data_source_name === DatasourceCateEnum.doris) {
+      return {
+        ...formValues,
+        query: {
+          query,
           range,
         },
       };
@@ -164,6 +173,9 @@ export const getLocationSearchByFormValues = (formValues: FormValue) => {
     query.limit = formValues.query?.limit;
     return queryString.stringify(query);
   } else if (data_source_name === DatasourceCateEnum.ck) {
+    query.query = formValues.query?.query;
+    return queryString.stringify(query);
+  } else if (data_source_name === DatasourceCateEnum.doris) {
     query.query = formValues.query?.query;
     return queryString.stringify(query);
   } else {

@@ -19,6 +19,17 @@ const ja_JP = {
     execute: 'クエリ',
     database: 'データベース',
     database_placeholder: 'デフォルトでは空のままにできます',
+    query: 'クエリ',
+    query_required: 'クエリは必須です',
+    advancedSettings: {
+      title: '高度な設定',
+      valueKey_tip:
+        'このフィールドを使用して、返された結果から値を抽出します。例えば、クエリ条件が `select count() AS cnt, event_time from system.query_log ` 結果が cnt:11 の場合、ValueKey に cnt を書いた場合、cnt:11 から 11 を抽出し、クエリ結果とアラート判定の値として使用します',
+      valuekey_msg: 'valueKeyを入力してください',
+      labelKey_tip:
+        'このフィールドとその対応する値を、タグとして監視データのラベルに追加します。例えば、クエリ条件が `select count() cnt, event_time, type from system.query_log GROUP BY type, event_time` 結果が `[{cnt:11 type:QueryFinish},{cnt:10 type:QueryStart}]`, LabelKey に type を書いた場合、返されたデータの中で type が時系列データのラベルとして使用されます',
+      labelKey_placeholder: '複数入力可能',
+    },
   },
 };
 
