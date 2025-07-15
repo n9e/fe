@@ -130,14 +130,6 @@ export const getFormValuesBySearchParams = (params: { [index: string]: string | 
           range,
         },
       };
-    } else if (data_source_name === DatasourceCateEnum.doris) {
-      return {
-        ...formValues,
-        query: {
-          query,
-          range,
-        },
-      };
     } else {
       return getPlusFormValuesByParams(params);
     }
@@ -173,9 +165,6 @@ export const getLocationSearchByFormValues = (formValues: FormValue) => {
     query.limit = formValues.query?.limit;
     return queryString.stringify(query);
   } else if (data_source_name === DatasourceCateEnum.ck) {
-    query.query = formValues.query?.query;
-    return queryString.stringify(query);
-  } else if (data_source_name === DatasourceCateEnum.doris) {
     query.query = formValues.query?.query;
     return queryString.stringify(query);
   } else {
