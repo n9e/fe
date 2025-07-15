@@ -12,10 +12,11 @@ import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { useIsAuthorized } from '@/components/AuthorizationWrapper';
 import KQLInput from '@/components/KQLInput';
 import IndexPatternSettingsBtn from '@/pages/explorer/Elasticsearch/components/IndexPatternSettingsBtn';
-import ConditionHistoricalRecords, { setLocalQueryHistory } from '@/components/HistoricalRecords/ConditionHistoricalRecords';
+import ConditionHistoricalRecords from '@/components/HistoricalRecords/ConditionHistoricalRecords';
 
 import { getFullFields, Field } from './services';
 import InputFilter from './InputFilter';
+import { CACHE_KEY_MAP, SYNTAX_OPTIONS } from './index';
 
 interface Props {
   onExecute: () => void;
@@ -24,14 +25,14 @@ interface Props {
   setFields: (fields: Field[]) => void;
   onIndexChange: () => void;
   loading: boolean;
+  setHistory: () => void;
+  resetFilters: () => void;
 }
-
-const CACHE_KEY = 'es-index-patterns-query-history-records';
 
 export default function QueryBuilder(props: Props) {
   const { t } = useTranslation('explorer');
   const params = new URLSearchParams(useLocation().search);
-  const { onExecute, datasourceValue, form, setFields, onIndexChange, loading } = props;
+  const { onExecute, datasourceValue, form, setFields, onIndexChange, loading, setHistory, resetFilters } = props;
   const [indexPatterns, setIndexPatterns] = useState<any[]>([]);
   const indexPattern = Form.useWatch(['query', 'indexPattern']);
   const indexPatternObj = _.find(indexPatterns, (item) => item.id === indexPattern);
@@ -200,16 +201,7 @@ export default function QueryBuilder(props: Props) {
               <Form.Item name={['query', 'syntax']} noStyle initialValue='lucene'>
                 <Select
                   bordered={false}
-                  options={[
-                    {
-                      label: 'Lucene',
-                      value: 'lucene',
-                    },
-                    {
-                      label: 'KQL',
-                      value: 'kuery',
-                    },
-                  ]}
+                  options={SYNTAX_OPTIONS}
                   dropdownMatchSelectWidth={false}
                   onChange={() => {
                     form.setFieldsValue({
@@ -224,7 +216,14 @@ export default function QueryBuilder(props: Props) {
           >
             {syntax === 'lucene' ? (
               <Form.Item name={['query', 'filter']}>
-                <InputFilter fields={allFields} ref={refInputFilter} onExecute={onExecute} />
+                <InputFilter
+                  fields={allFields}
+                  ref={refInputFilter}
+                  onExecute={() => {
+                    setHistory();
+                    onExecute();
+                  }}
+                />
               </Form.Item>
             ) : (
               <Form.Item name={['query', 'filter']}>
@@ -235,7 +234,10 @@ export default function QueryBuilder(props: Props) {
                     date_field: date_field,
                   }}
                   historicalRecords={[]}
-                  onEnter={onExecute}
+                  onEnter={() => {
+                    setHistory();
+                    onExecute();
+                  }}
                 />
               </Form.Item>
             )}
@@ -248,7 +250,7 @@ export default function QueryBuilder(props: Props) {
                 if (refInputFilter.current) {
                   refInputFilter.current.onCallback();
                 }
-                setLocalQueryHistory(CACHE_KEY, _.omit(form.getFieldValue(['query']), 'range'));
+                setHistory();
                 onExecute();
               }}
               ajustTimeOptions={(options) => {
@@ -266,12 +268,12 @@ export default function QueryBuilder(props: Props) {
         </Col>
         <Col flex='none'>
           <ConditionHistoricalRecords
-            localKey={CACHE_KEY}
+            localKey={CACHE_KEY_MAP['index-patterns']}
             datasourceValue={datasourceValue!}
             renderItem={(item) => {
               return (
                 <div
-                  className='flex flex-wrap items-center gap-x-2 gap-y-1 cursor-pointer hover:bg-[var(--fc-fill-3)] p-1 rounded leading-[1.1] mb-1'
+                  className='flex flex-wrap items-center gap-y-1 cursor-pointer hover:bg-[var(--fc-fill-3)] p-1 rounded leading-[1.1] mb-1'
                   key={JSON.stringify(item)}
                   onClick={() => {
                     form.setFieldsValue({
@@ -280,15 +282,22 @@ export default function QueryBuilder(props: Props) {
                         indexPattern: _.toNumber(item.indexPattern),
                       },
                     });
+                    resetFilters();
                     onExecute();
                   }}
                 >
-                  {_.map(_.pick(item, ['indexPattern', 'filter']), (value, key) => {
+                  {_.map(_.pick(item, ['indexPattern', 'filter', 'syntax']), (value, key) => {
                     if (!value) return <span key={key} />;
                     return (
                       <span key={key}>
                         <span className='bg-[var(--fc-fill-1)] inline-block p-1 mr-1'>{t(`datasource:es.${key}`)}:</span>
-                        <span>{key === 'indexPattern' ? _.find(indexPatterns, { id: _.toNumber(value) })?.name ?? value : value}</span>
+                        <span className='pr-1'>
+                          {key === 'indexPattern'
+                            ? _.find(indexPatterns, { id: _.toNumber(value) })?.name ?? value
+                            : key === 'syntax'
+                            ? _.find(SYNTAX_OPTIONS, { value })?.label ?? value
+                            : value}
+                        </span>
                       </span>
                     );
                   })}
@@ -306,7 +315,7 @@ export default function QueryBuilder(props: Props) {
                 if (refInputFilter.current) {
                   refInputFilter.current.onCallback();
                 }
-                setLocalQueryHistory(`${CACHE_KEY}-${datasourceValue}`, _.omit(form.getFieldValue(['query']), 'range'));
+                setHistory();
                 onExecute();
               }}
             >

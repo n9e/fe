@@ -18,6 +18,7 @@ const en_US = {
     indexPattern_msg: 'Index pattern is required',
     indexPatterns_manage: 'Manage index patterns',
     filter: 'Filter',
+    syntax: 'Syntax',
     time_label: 'Time',
     date_field: 'Date field',
     date_field_msg: 'Date field is required',
