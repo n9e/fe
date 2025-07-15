@@ -26,6 +26,16 @@ interface Props {
 }
 
 const CACHE_KEY = 'es-indices-query-history-records';
+const SYNTAX_OPTIONS = [
+  {
+    label: 'Lucene',
+    value: 'lucene',
+  },
+  {
+    label: 'KQL',
+    value: 'kuery',
+  },
+];
 
 export default function QueryBuilder(props: Props) {
   const { t, i18n } = useTranslation('explorer');
@@ -173,16 +183,7 @@ export default function QueryBuilder(props: Props) {
             <Form.Item name={['query', 'syntax']} noStyle initialValue='lucene'>
               <Select
                 bordered={false}
-                options={[
-                  {
-                    label: 'Lucene',
-                    value: 'lucene',
-                  },
-                  {
-                    label: 'KQL',
-                    value: 'kuery',
-                  },
-                ]}
+                options={SYNTAX_OPTIONS}
                 dropdownMatchSelectWidth={false}
                 onChange={() => {
                   form.setFieldsValue({
@@ -287,12 +288,12 @@ export default function QueryBuilder(props: Props) {
                   onExecute();
                 }}
               >
-                {_.map(_.pick(item, ['index', 'filter', 'date_field']), (value, key) => {
+                {_.map(_.pick(item, ['index', 'filter', 'syntax', 'date_field']), (value, key) => {
                   if (!value) return <span key={key} />;
                   return (
                     <span key={key}>
                       <span className='bg-[var(--fc-fill-1)] inline-block p-1 mr-1'>{t(`datasource:es.${key}`)}:</span>
-                      <span className='pr-1'>{value}</span>
+                      <span className='pr-1'>{key === 'syntax' ? _.find(SYNTAX_OPTIONS, { value })?.label ?? value : value}</span>
                     </span>
                   );
                 })}

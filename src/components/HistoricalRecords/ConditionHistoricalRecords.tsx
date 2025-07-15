@@ -14,6 +14,7 @@ export const setLocalQueryHistory = (localKey: string, query: { [index: string]:
   if (!query) return;
   const queryClone = _.cloneDeep(query);
   _.forEach(_.sortBy(_.keys(queryClone)), (key) => {
+    if (!queryClone[key]) return;
     queryClone[key] = _.trim(queryClone[key]);
   });
   const queryStr = JSON.stringify(queryClone);
