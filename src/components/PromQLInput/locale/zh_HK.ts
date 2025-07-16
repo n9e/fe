@@ -5,6 +5,7 @@ const zh_HK = {
     query_placeholder: '請輸入指標名稱',
   },
   required: '請輸入 PromQL 查詢語句',
+  placeholder: '請輸入 PromQL 查詢語句',
 };
 
 export default zh_HK;

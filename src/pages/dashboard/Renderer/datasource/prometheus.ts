@@ -1,18 +1,21 @@
 import _ from 'lodash';
 import moment from 'moment';
+import i18next from 'i18next';
+
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { fetchHistoryRangeBatch, fetchHistoryInstantBatch, fetchHistoryRangeBatch2 } from '@/services/dashboardV2';
-import i18next from 'i18next';
-import { alphabet } from '@/utils/constant';
+import { alphabet, N9E_PATHNAME, IS_PLUS } from '@/utils/constant';
+
 import { ITarget } from '../../types';
+import { getDefaultStepByTime } from '../../utils';
 import { IVariable } from '../../VariableConfig/definition';
-import replaceExpressionBracket from '../utils/replaceExpressionBracket';
-import { completeBreakpoints, getSerieName } from './utils';
-import replaceFieldWithVariable from '../utils/replaceFieldWithVariable';
 import { getOptionsList } from '../../VariableConfig/constant';
-import { N9E_PATHNAME, IS_PLUS } from '@/utils/constant';
+import replaceExpressionBracket from '../utils/replaceExpressionBracket';
+import replaceFieldWithVariable from '../utils/replaceFieldWithVariable';
+import { completeBreakpoints, getSerieName } from './utils';
 
 interface IOptions {
+  panelWidth?: number; // 面板宽度
   id?: string; // panelId
   dashboardId: string;
   datasourceValue: number;
@@ -25,11 +28,6 @@ interface IOptions {
   type?: string;
 }
 
-const getDefaultStepByStartAndEnd = (start: number, end: number, maxDataPoints?: number) => {
-  maxDataPoints = maxDataPoints ?? 240;
-  return Math.max(Math.floor((end - start) / maxDataPoints), 1);
-};
-
 const adjustStep = (step: number, minStep: number, range: number) => {
   // Prometheus 限制最大点数是 11000
   let safeStep = range / 11000;
@@ -39,20 +37,21 @@ const adjustStep = (step: number, minStep: number, range: number) => {
   return Math.max(step, minStep, safeStep);
 };
 
-export const getRealStep = (time: IRawTimeRange, target: ITarget) => {
+export const getRealStep = (time: IRawTimeRange, target: ITarget, panelWidth?: number) => {
   const parsedRange = parseRange(time);
   let start = moment(parsedRange.start).unix();
   let end = moment(parsedRange.end).unix();
-  let step: any = getDefaultStepByStartAndEnd(start, end, target?.maxDataPoints);
+  let step: any = getDefaultStepByTime(time, {
+    maxDataPoints: target?.maxDataPoints,
+    panelWidth,
+  });
   if (target.time) {
-    const parsedRange = parseRange(target.time);
-    const start = moment(parsedRange.start).unix();
-    const end = moment(parsedRange.end).unix();
-    step = getDefaultStepByStartAndEnd(start, end, target.maxDataPoints);
+    step = getDefaultStepByTime(time, {
+      maxDataPoints: target?.maxDataPoints,
+      panelWidth,
+    });
   }
-  if (target.step) {
-    step = adjustStep(step, target.step, end - start);
-  }
+  step = adjustStep(step, target.step ?? 15, end - start); // target.step 默认值为 15
   return step;
 };
 
@@ -62,7 +61,7 @@ interface Result {
 }
 
 export default async function prometheusQuery(options: IOptions): Promise<Result> {
-  const { dashboardId, id, time, targets, variableConfig, spanNulls, scopedVars, type, datasourceValue } = options;
+  const { panelWidth, dashboardId, id, time, targets, variableConfig, spanNulls, scopedVars, type, datasourceValue } = options;
   if (!time.start) return Promise.resolve({ series: [] });
   const parsedRange = parseRange(time);
   const series: any[] = [];
@@ -86,7 +85,7 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
         start = moment(parsedRange.start).unix();
         end = moment(parsedRange.end).unix();
       }
-      const _step = getRealStep(time, target);
+      const _step = getRealStep(time, target, panelWidth);
 
       // TODO: 消除毛刺？
       // start = start - (start % _step!);
@@ -102,14 +101,12 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
           ? replaceFieldWithVariable(
               dashboardId,
               target.expr,
-              getOptionsList(
-                {
-                  dashboardId,
-                  variableConfigWithOptions: variableConfig,
-                },
-                target.time ? target.time : time,
-                _step,
-              ),
+              getOptionsList({
+                variableConfigWithOptions: variableConfig,
+                time: target.time ? target.time : time,
+                step: _step,
+                panelWidth,
+              }),
               scopedVars,
             )
           : target.expr;
@@ -166,7 +163,7 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
               let _step = 15;
               if (!spanNulls) {
                 if (target) {
-                  _step = getRealStep(time, target);
+                  _step = getRealStep(time, target, panelWidth);
                 }
               }
               series.push({
@@ -190,7 +187,7 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
               let _step = 15;
               if (!spanNulls) {
                 if (target) {
-                  _step = getRealStep(time, target);
+                  _step = getRealStep(time, target, panelWidth);
                 }
               }
               const isExp = _.find(exps, (exp) => exp.ref === serie.ref);

@@ -46,7 +46,7 @@ export default function Prometheus(props: IProps) {
     showBuilder,
     onChange,
     promQLInputTooltip,
-    graphStandardOptionsType = 'horizontal',
+    graphStandardOptionsType = 'vertical',
     defaultType,
     onDefaultTypeChange,
     defaultTime,
@@ -105,6 +105,7 @@ export default function Prometheus(props: IProps) {
       }}
       showBuiltinMetrics={showBuiltinMetrics}
       graphStandardOptionsType={graphStandardOptionsType}
+      graphStandardOptionsPlacement='bottomRight'
       defaultUnit={defaultUnit}
       showGlobalMetrics={showGlobalMetrics}
       showBuilder={showBuilder}

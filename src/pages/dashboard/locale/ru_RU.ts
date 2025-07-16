@@ -463,10 +463,11 @@ const ru_RU = {
     time_tip: 'Вы можете указать временной диапазон, по умолчанию используется глобальный временной диапазон панели',
     prometheus: {
       maxDataPoints: {
-        tip: 'Максимальное количество точек для каждой кривой, расчет step = (end - start) / maxDataPoints, значение по умолчанию 240, для последнего 1 часа step = 15s',
+        tip: 'Максимальное количество точек на кривую, по умолчанию — ширина панели (по умолчанию — 240 при добавлении новой), рассчитывается как шаг = (конец — начало) / maxDataPoints',
+        tip_2: 'Максимальное количество точек на кривую, по умолчанию — ширина панели, рассчитывается как шаг = (конец — начало) / maxDataPoints',
       },
       minStep: {
-        tip: 'Минимальный шаг, расчет step = max(step, minStep, safeStep), safeStep = (end - start) / 11000',
+        tip: 'Минимальный шаг, по умолчанию 15, вычислить шаг = max(step, minStep, safeStep), safeStep = (end - start) / 11000',
       },
       step: {
         tag_tip: 'Расчет step = max((end - start) / maxDataPoints, minStep, safeStep), safeStep = (end - start) / 11000',

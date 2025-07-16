@@ -60,6 +60,7 @@ function index(
 ) {
   const { t } = useTranslation('dashboard');
   const {
+    panelWidth,
     themeMode,
     dashboardId,
     dashboardID,
@@ -256,7 +257,7 @@ function index(
                           <Menu.Item
                             onClick={() => {
                               setVisible(false);
-                              if (onEditClick) onEditClick();
+                              if (onEditClick) onEditClick(panelWidth);
                             }}
                             key='edit_btn'
                           >
