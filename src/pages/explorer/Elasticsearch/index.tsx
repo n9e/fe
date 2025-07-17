@@ -15,6 +15,7 @@ import Timeseries from '@/pages/dashboard/Renderer/Renderer/Timeseries';
 import { CommonStateContext } from '@/App';
 import { PRIMARY_COLOR } from '@/utils/constant';
 import FullscreenButton from '@/pages/explorer/components/FullscreenButton';
+import { setLocalQueryHistory } from '@/components/HistoricalRecords/ConditionHistoricalRecords';
 
 import { getLogsQuery } from './services';
 import metricQuery from './metricQuery';
@@ -59,6 +60,20 @@ enum IMode {
 
 const TIME_FORMAT = 'YYYY.MM.DD HH:mm:ss';
 const MAX_RESULT_WINDOW = 10000; // ES 默认最大返回 10000 条数据，超过需要设置 index.max_result_window
+export const CACHE_KEY_MAP = {
+  indices: 'es-indices-query-history-records',
+  'index-patterns': 'es-index-patterns-query-history-records',
+};
+export const SYNTAX_OPTIONS = [
+  {
+    label: 'Lucene',
+    value: 'lucene',
+  },
+  {
+    label: 'KQL',
+    value: 'kuery',
+  },
+];
 
 const HeaderExtra = ({ mode, setMode, allowHideSystemIndices, setAllowHideSystemIndices, datasourceValue }) => {
   const { t } = useTranslation('explorer');
@@ -282,6 +297,14 @@ export default function index(props: IProps) {
     }
   };
 
+  // 设置历史记录方法
+  const setHistory = () => {
+    const queryValues = form.getFieldValue(['query']);
+    if (queryValues.index && queryValues.date_field) {
+      setLocalQueryHistory(`${CACHE_KEY_MAP[queryValues.mode]}-${datasourceValue}`, _.omit(queryValues, 'range'));
+    }
+  };
+
   useEffect(() => {
     if (_.isArray(filters)) {
       // 如果有过滤条件，则清空当前页码，重新查询
@@ -359,6 +382,10 @@ export default function index(props: IProps) {
           setFields={setFields}
           allowHideSystemIndices={allowHideSystemIndices}
           form={form}
+          setHistory={setHistory}
+          resetFilters={() => {
+            setFilters([]);
+          }}
         />
       )}
       {mode === IMode.indexPatterns && (
@@ -372,6 +399,10 @@ export default function index(props: IProps) {
           onIndexChange={() => {
             setSelectedFields([]);
             resetThenRefresh();
+          }}
+          setHistory={setHistory}
+          resetFilters={() => {
+            setFilters([]);
           }}
         />
       )}
