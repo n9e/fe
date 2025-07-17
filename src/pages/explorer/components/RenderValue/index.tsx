@@ -20,13 +20,14 @@ interface IProps {
   range: IRawTimeRange;
   adjustFieldValue?: (formatedValue: string) => React.ReactNode;
   onActionClick?: (params: { key: string; value?: string; operator: string }) => void;
+  tokenHide?: boolean;
 }
 
 const splitRegex = /\r\n|\n|\r|\\r\\n|\\n|\\r/g;
 
 export default function RenderValue(props: IProps) {
   const { t } = useTranslation('explorer');
-  const { fieldKey, fieldValue, fieldConfig, rawValue, range, adjustFieldValue, onActionClick } = props;
+  const { fieldKey, fieldValue, fieldConfig, rawValue, range, adjustFieldValue, onActionClick, tokenHide } = props;
 
   if (splitRegex.test(fieldValue)) {
     return renderMultipleLineValue(fieldValue);
@@ -44,6 +45,7 @@ export default function RenderValue(props: IProps) {
 
   return (
     <Token
+      tokenHide={tokenHide}
       name={fieldKey}
       value={fieldValue}
       valueNode={value}
