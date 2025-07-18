@@ -50,6 +50,7 @@ import { scrollToLastPanel, getDefaultTimeRange, getDefaultIntervalSeconds, getD
 import dashboardMigrator from './utils/dashboardMigrator';
 import ajustInitialValues from '../Renderer/utils/ajustInitialValues';
 import './style.less';
+import { useParamsAiAction } from '@/utils/useHook';
 
 interface URLParam {
   id: string;
@@ -90,6 +91,7 @@ export default function DetailV2(props: IProps) {
   const isAuthorized = _.includes(perms, '/dashboards/put') && !isPreview;
   const [dashboardMeta, setDashboardMeta] = useGlobalState('dashboardMeta');
   const [panelClipboard, setPanelClipboard] = useGlobalState('panelClipboard');
+  const [paramsAiAction, setParamsAiAction] = useParamsAiAction();
   let { id } = useParams<URLParam>();
   const query = queryString.parse(location.search);
   if (isBuiltin) {
@@ -268,6 +270,25 @@ export default function DetailV2(props: IProps) {
       });
     }
   }, [dashboard.id, JSON.stringify(range), annotationsRefreshFlag]);
+
+  useEffect(() => {
+    // 更新全局状态
+    const obj = {};
+    _.forEach(variableConfigWithOptions, (item) => {
+      obj[item.name] = _.isArray(item.value) ? item.value : [item.value];
+    });
+    const parsedRange = parseRange(range);
+    // console.log('obj', obj);
+    setParamsAiAction({
+      page: 'dashboards',
+      dashboard: {
+        id,
+        start: moment(parsedRange.start).unix(),
+        end: moment(parsedRange.end).unix(),
+        var: obj,
+      },
+    });
+  }, [JSON.stringify(variableConfigWithOptions), JSON.stringify(range)]);
 
   return (
     <PageLayout customArea={<div />}>
