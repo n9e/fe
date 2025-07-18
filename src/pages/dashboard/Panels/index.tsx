@@ -61,6 +61,7 @@ interface IProps {
   timezone: string;
   setTimezone: (timezone: string) => void;
   variableConfig: any;
+  variableConfigWithOptions: any;
   panels: any[];
   isPreview: boolean;
   setPanels: React.Dispatch<React.SetStateAction<any[]>>;
@@ -76,8 +77,23 @@ function index(props: IProps) {
   const { t } = useTranslation('dashboard');
   const { profile, darkMode, dashboardSaveMode, perms, groupedDatasourceList } = useContext(CommonStateContext);
   const themeMode = darkMode ? 'dark' : 'light';
-  const { editable, dashboard, setDashboard, annotations, setAllowedLeave, range, timezone, setTimezone, variableConfig, panels, isPreview, setPanels, onShareClick, onUpdated } =
-    props;
+  const {
+    editable,
+    dashboard,
+    setDashboard,
+    annotations,
+    setAllowedLeave,
+    range,
+    timezone,
+    setTimezone,
+    variableConfig,
+    variableConfigWithOptions,
+    panels,
+    isPreview,
+    setPanels,
+    onShareClick,
+    onUpdated,
+  } = props;
   const roles = _.get(profile, 'roles', []);
   const isAuthorized = _.includes(perms, '/dashboards/put') && !isPreview;
   const layoutInitialized = useRef(false);
@@ -118,10 +134,10 @@ function index(props: IProps) {
   const [panelClipboard, setPanelClipboard] = useGlobalState('panelClipboard');
 
   useEffect(() => {
-    setPanels(processRepeats(panels, variableConfig));
+    setPanels(processRepeats(panels, variableConfigWithOptions));
   }, [
     JSON.stringify(
-      _.map(variableConfig, (item) => {
+      _.map(variableConfigWithOptions, (item) => {
         return item.value;
       }),
     ),
@@ -188,7 +204,7 @@ function index(props: IProps) {
                     timezone={timezone}
                     setTimezone={setTimezone}
                     values={item}
-                    variableConfig={variableConfig}
+                    variableConfig={variableConfigWithOptions}
                     annotations={_.filter(annotations, (annotation) => annotation.panel_id === item.id)}
                     onCloneClick={() => {
                       setPanels((panels) => {
@@ -281,7 +297,7 @@ function index(props: IProps) {
                       mode: 'add',
                       visible: true,
                       id: item.id,
-                      initialValues: ajustInitialValues('timeseries', groupedDatasourceList, panels, variableConfig)?.initialValues,
+                      initialValues: ajustInitialValues('timeseries', groupedDatasourceList, panels, variableConfigWithOptions)?.initialValues,
                     });
                   }}
                   onEditClick={(newPanel) => {
