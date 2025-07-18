@@ -98,5 +98,8 @@ const zh_CN = {
   save_btn: '不测试连通性直接保存',
   auth_enable: '开启授权',
   skip_tls_verify: '跳过 TLS 检查',
+  label_mapping: {
+    title: '标签丰富',
+  },
 };
 export default zh_CN;

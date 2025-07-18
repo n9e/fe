@@ -64,3 +64,17 @@ export const getServerClusters = () => {
     method: RequestMethod.Get,
   }).then((res) => res.dat);
 };
+
+export const getDatasourceLabelMapping = (ds_id) => {
+  return request('/api/n9e-plus/datasource-label-mapping', {
+    method: RequestMethod.Get,
+    params: { ds_id },
+  }).then((res) => res.dat);
+};
+
+export const postDatasourceLabelMapping = (data) => {
+  return request('/api/n9e-plus/datasource-label-mapping', {
+    method: RequestMethod.Post,
+    data,
+  }).then((res) => res.dat);
+};
