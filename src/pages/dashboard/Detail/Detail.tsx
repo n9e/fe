@@ -287,7 +287,7 @@ export default function DetailV2(props: IProps) {
         var: obj,
       },
     });
-  }, [JSON.stringify(variableConfigWithOptions), JSON.stringify(range)]);
+  }, [JSON.stringify(_.map(variableConfigWithOptions, _.pick(['name', 'value']))), JSON.stringify(range)]);
 
   return (
     <PageLayout customArea={<div />}>
