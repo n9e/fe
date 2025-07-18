@@ -39,7 +39,7 @@ interface IProps {
   visible: boolean;
   setVisible: (visible: boolean) => void;
   initialValues: IPanel;
-  variableConfigWithOptions?: IVariable[];
+  variableConfig?: IVariable[];
   id: string; // panel id
   dashboardId: string;
   time: IRawTimeRange;
@@ -54,7 +54,7 @@ function index(props: IProps) {
   const { t } = useTranslation('dashboard');
   const { groupedDatasourceList } = useContext(CommonStateContext);
   const formRef = useRef<any>();
-  const { mode, visible, setVisible, variableConfigWithOptions, id, dashboardId, time, dashboard, timezone, setTimezone } = props;
+  const { mode, visible, setVisible, variableConfig, id, dashboardId, time, dashboard, timezone, setTimezone } = props;
   const [initialValues, setInitialValues] = useState<IPanel>(_.cloneDeep(props.initialValues));
   const [range, setRange] = useState<IRawTimeRange>(time);
   const handleAddChart = async () => {
@@ -189,7 +189,7 @@ function index(props: IProps) {
         <FormCpt
           ref={formRef}
           initialValues={normalizeInitialValues(initialValues)}
-          variableConfigWithOptions={variableConfigWithOptions}
+          variableConfig={variableConfig}
           range={range}
           timezone={timezone}
           id={id}
