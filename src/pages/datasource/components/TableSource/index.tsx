@@ -15,6 +15,9 @@ import { deleteDataSourceById, getDataSourceList, updateDataSourceStatus, getSer
 import { autoDatasourcetype, AuthList, AutoDatasourcetypeValue } from 'plus:/components/DataSourceAuth/auth';
 // @ts-ignore
 import useIsPlus from 'plus:/components/useIsPlus';
+// @ts-ignore
+import LabelMappingCloudwatchButton from 'plus:/parcels/Datasource/LabelMapping/Cloudwatch';
+
 export interface IDefaultES {
   default_id: number;
   system_id: number;
@@ -233,6 +236,7 @@ const TableSource = (props: IPropsType) => {
       },
     },
   ];
+
   if (isPlus) {
     defaultColumns.splice(3, 0, {
       title: t('auth.name'),
@@ -252,6 +256,14 @@ const TableSource = (props: IPropsType) => {
         ) : (
           t('auth.not-support')
         );
+      },
+    });
+    defaultColumns.splice(4, 0, {
+      title: t('label_mapping.title'),
+      dataIndex: 'label_mapping',
+      width: 150,
+      render: (_text, record) => {
+        return record.plugin_type === 'cloudwatch' ? <LabelMappingCloudwatchButton ds_id={record.id} ds_cate='cloudwatch' /> : t('auth.not-support');
       },
     });
   }
