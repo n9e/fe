@@ -18,6 +18,17 @@ const zh_CN = {
     execute: '查询',
     database: '数据库',
     database_placeholder: '默认可以留空',
+    query: '查询条件',
+    query_required: '查询条件不能为空',
+    advancedSettings: {
+      title: '辅助配置',
+      tags_placeholder: '回车输入多个',
+      valueKey: '值字段',
+      valueKey_tip: 'SQL 查询结果通常包含多个列，您可以指定哪些列的值作为曲线展示在图表上',
+      valueKey_required: '值字段不能为空',
+      labelKey: '标签字段',
+      labelKey_tip: 'SQL 查询结果通常包含多个列，您可以指定哪些列作为曲线的标签元信息',
+    },
   },
 };
 export default zh_CN;
