@@ -87,7 +87,7 @@ function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: boolean
   const { item, isSub = false, isCustomBg, collapsed, selectedKeys, isBgBlack } = props;
   const isActive = item.type === 'tabs' ? selectedKeys?.some((k) => item.children?.some((c) => c.key === k)) : selectedKeys?.includes(item.key);
   const path = item.type === 'tabs' ? item.children?.[0]?.key || item.key : item.key;
-  const savedPath = getSavedPath(path);
+  const savedPath = item.children ? getSavedPath(path) : item.key;
 
   return (
     <Link
