@@ -53,7 +53,7 @@ function EditorModal(props: Props, ref) {
           visible,
         });
       }}
-      variableConfigWithOptions={variableConfig}
+      variableConfig={variableConfig}
       id={editorData.id}
       dashboardId={_.toString(dashboardId)}
       time={range}

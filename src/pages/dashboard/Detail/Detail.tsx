@@ -380,9 +380,8 @@ export default function DetailV2(props: IProps) {
                         value={variableConfig}
                         range={range}
                         id={id}
-                        onOpenFire={stopAutoRefresh}
-                        variableConfigRefreshFlag={variableConfigRefreshFlag}
                         dashboard={dashboard}
+                        onOpenFire={stopAutoRefresh}
                       />
                     )}
                   </div>
@@ -409,7 +408,8 @@ export default function DetailV2(props: IProps) {
                   setTimezone(newTimezone);
                   window.localStorage.setItem(`${dashboardTimezoneCacheKey}_${id}`, newTimezone);
                 }}
-                variableConfig={variableConfigWithOptions}
+                variableConfig={variableConfig}
+                variableConfigWithOptions={variableConfigWithOptions}
                 onShareClick={(panel) => {
                   if (!variableConfigWithOptions) return;
                   const curDatasourceValue = replaceExpressionVars({
@@ -477,7 +477,7 @@ export default function DetailV2(props: IProps) {
             visible,
           });
         }}
-        variableConfigWithOptions={variableConfigWithOptions}
+        variableConfig={variableConfig}
         id={editorData.id}
         dashboardId={id}
         time={range}

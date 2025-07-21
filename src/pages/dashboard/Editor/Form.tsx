@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useEffect, useState, useImperativeHandle, forwardRef, useContext } from 'react';
+import React, { useState, useImperativeHandle, forwardRef, useContext } from 'react';
 import { Form, Row, Col, Button, Space, Switch, Tooltip, Mentions, Collapse as AntdCollapse, Select } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import _ from 'lodash';
@@ -31,7 +31,7 @@ import QueryEditor from './QueryEditor';
 interface IProps {
   panelWidth?: number; // 面板宽度
   initialValues: any;
-  variableConfigWithOptions?: IVariable[];
+  variableConfig?: IVariable[];
   range: any;
   timezone: string;
   id: string;
@@ -43,8 +43,8 @@ function FormCpt(props: IProps, ref) {
   const { t } = useTranslation('dashboard');
   const { darkMode } = useContext(CommonStateContext);
   const [chartForm] = Form.useForm();
-  const { panelWidth, initialValues, range, timezone, id, dashboardId, dashboard } = props;
-  const [variableConfigWithOptions, setVariableConfigWithOptions] = useState<IVariable[] | undefined>(props.variableConfigWithOptions);
+  const { panelWidth, initialValues, variableConfig, range, timezone, id, dashboardId, dashboard } = props;
+  const [variableConfigWithOptions, setVariableConfigWithOptions] = useState<IVariable[] | undefined>();
   const type = Form.useWatch('type', chartForm);
   const values = Form.useWatch([], chartForm);
 
@@ -61,10 +61,6 @@ function FormCpt(props: IProps, ref) {
       return chartForm;
     },
   }));
-
-  useEffect(() => {
-    setVariableConfigWithOptions(props.variableConfigWithOptions);
-  }, [JSON.stringify(props.variableConfigWithOptions)]);
 
   return (
     <Form layout='vertical' preserve={true} form={chartForm} initialValues={_.merge({}, defaultValues, initialValues)}>
@@ -94,15 +90,16 @@ function FormCpt(props: IProps, ref) {
         >
           <Col flex={1} style={{ minWidth: 100 }}>
             <div className='n9e-dashboard-editor-modal-left-wrapper n9e-gap-2'>
-              {variableConfigWithOptions && variableConfigWithOptions.length > 0 && (
+              {variableConfig && variableConfig.length > 0 && (
                 <div className='n9e-dashboard-editor-modal-left-vars-wrapper n9e-gap-2'>
                   <span>{t('var.vars')}</span>
                   <VariableConfig
+                    isPreview
+                    editable={false}
                     onChange={(value, bool, withOptions) => {
                       setVariableConfigWithOptions(withOptions || []);
                     }}
-                    value={variableConfigWithOptions}
-                    editable={false}
+                    value={variableConfig}
                     range={range}
                     id={dashboardId}
                     dashboard={dashboard}
