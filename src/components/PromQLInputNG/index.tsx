@@ -118,7 +118,7 @@ export default function index(props: MonacoEditorPromQLProps) {
                 onChange?.(newValue);
               }
             }}
-            onShiftEnter={() => {
+            onEnter={() => {
               const currentValue = getValue();
               // 如果 onChangeTrigger 包含 'onShiftEnter'，则触发 onChange
               if (_.includes(onChangeTrigger, 'onShiftEnter')) {
