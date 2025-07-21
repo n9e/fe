@@ -133,7 +133,7 @@ const SideMenu = () => {
             })
             .map((c) => {
               if (c.type === 'tabs' && c.children && c.children.length) {
-                return c.children.filter((tabChild) => _.includes(perms, tabChild.key)).map((g) => `${item.key}|${g.key}`);
+                return c.children.map((g) => `${item.key}|${g.key}`);
               }
               return `${item.key}|${c.key}`;
             });
