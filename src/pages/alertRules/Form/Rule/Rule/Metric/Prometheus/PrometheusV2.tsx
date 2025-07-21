@@ -23,11 +23,13 @@ import { Form, Row, Col, Card, Space } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
-import { PromQLInputWithBuilder } from '@/components/PromQLInput';
+
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import Triggers from '@/pages/alertRules/Form/components/Triggers';
 import { FormStateContext } from '@/pages/alertRules/Form';
 import QueryName, { generateQueryName } from '@/components/QueryName';
+import PromQLInputNG from '@/components/PromQLInputNG';
+
 import GraphPreview from './GraphPreview';
 import AdvancedSettings from './components/AdvancedSettings';
 
@@ -65,13 +67,13 @@ export default function PrometheusV2(props: Props) {
             <div className='alert-rule-triggers-container'>
               {fields.map((field) => (
                 <div key={field.key} className='alert-rule-trigger-container'>
-                  <Row gutter={8}>
-                    <Col flex='32px'>
+                  <div className='flex gap-[8px]'>
+                    <div className='flex-shrink-0'>
                       <Form.Item {...field} name={[field.name, 'ref']}>
                         <QueryName existingNames={_.map(queries, 'ref')} />
                       </Form.Item>
-                    </Col>
-                    <Col flex='auto'>
+                    </div>
+                    <div className='flex-1 min-w-0'>
                       <InputGroupWithFormItem label='PromQL'>
                         <Form.Item
                           {...field}
@@ -80,11 +82,11 @@ export default function PrometheusV2(props: Props) {
                           trigger='onChange'
                           rules={[{ required: true, message: t('promQLInput:required') }]}
                         >
-                          <PromQLInputWithBuilder readonly={disabled} datasourceValue={datasourceValue} />
+                          <PromQLInputNG readOnly={disabled} datasourceValue={datasourceValue} durationVariablesCompletion={false} />
                         </Form.Item>
                       </InputGroupWithFormItem>
-                    </Col>
-                  </Row>
+                    </div>
+                  </div>
                   <AdvancedSettings field={field} />
                   <div className='mt2'>
                     <GraphPreview form={form} fieldName={field.name} promqlFieldName='query' />

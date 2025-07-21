@@ -5,5 +5,6 @@ const zh_CN = {
     query_placeholder: '请输入指标名称',
   },
   required: '请输入 PromQL 查询语句',
+  placeholder: '请输入 PromQL 查询语句',
 };
 export default zh_CN;
