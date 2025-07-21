@@ -20,7 +20,7 @@ import { Form, Card, Space, Tooltip, Radio } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { Trans, useTranslation } from 'react-i18next';
 import _ from 'lodash';
-import { PromQLInputWithBuilder } from '@/components/PromQLInput';
+import PromQLInputNG from '@/components/PromQLInputNG';
 import Severity from '@/pages/alertRules/Form/components/Severity';
 import Inhibit from '@/pages/alertRules/Form/components/Inhibit';
 import { FormStateContext } from '@/pages/alertRules/Form';
@@ -136,7 +136,7 @@ export default function index(props: { datasourceCate: string; datasourceValue: 
                       trigger='onChange'
                       rules={[{ required: true, message: t('promQLInput:required') }]}
                     >
-                      <PromQLInputWithBuilder readonly={disabled} datasourceValue={datasourceValue} showBuiltinMetrics />
+                      <PromQLInputNG readOnly={disabled} datasourceValue={datasourceValue} showBuiltinMetrics durationVariablesCompletion={false} />
                     </Form.Item>
                     <ChildVariablesConfigs
                       topPrefixName={['rule_config', 'queries']}
