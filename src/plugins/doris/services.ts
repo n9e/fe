@@ -97,3 +97,58 @@ export const dsQuery = function (data: any) {
     data,
   }).then((res) => res.dat);
 };
+
+export interface BaseParams {
+  cate: string;
+  datasource_id: number;
+}
+
+export function getDsQuery(
+  data: BaseParams & {
+    query: {
+      sql: string;
+      from: number;
+      to: number;
+      keys: {
+        valueKey: string;
+        labelKey: string;
+      };
+    }[];
+  },
+): Promise<any> {
+  return request('/api/n9e/ds-query', {
+    method: RequestMethod.Post,
+    data,
+  }).then((res) => {
+    return res.dat || [];
+  });
+}
+
+export function getLogsQuery(data: {
+  queries: {
+    ds_cate: string;
+    ds_id: number;
+    ref: string;
+    query: {
+      ref: string;
+      from: number;
+      to: number;
+      sql: string;
+    };
+  }[];
+}): Promise<
+  {
+    ds_cate: string;
+    ds_id: number;
+    ref: string;
+    data: { [index: string]: string | number }[];
+  }[]
+> {
+  return request('/api/n9e/log-query-batch', {
+    method: RequestMethod.Post,
+    data,
+    silence: true,
+  }).then((res) => {
+    return res?.dat?.list || [];
+  });
+}

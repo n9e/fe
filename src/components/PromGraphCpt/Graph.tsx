@@ -17,16 +17,22 @@
 import React, { useState, useEffect, useContext } from 'react';
 import moment from 'moment';
 import _ from 'lodash';
-import { Space, InputNumber, Radio, Button, Popover, Spin } from 'antd';
-import { LineChartOutlined, AreaChartOutlined, SettingOutlined, ShareAltOutlined } from '@ant-design/icons';
+import { Space, InputNumber, Radio, Button, Popover, Tooltip } from 'antd';
+import { LineChartOutlined, AreaChartOutlined, SettingOutlined, ShareAltOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { TooltipPlacement } from 'antd/lib/tooltip';
+import { useTranslation } from 'react-i18next';
+
+import { CommonStateContext, basePrefix } from '@/App';
 import TimeRangePicker, { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
-import LineGraphStandardOptions from './components/GraphStandardOptions';
+import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import Timeseries from '@/pages/dashboard/Renderer/Renderer/Timeseries';
+import { interpolateString, getRealStep } from '@/components/PromQLInputNG';
 import { completeBreakpoints } from '@/pages/dashboard/Renderer/datasource/utils';
 import { DASHBOARD_VERSION } from '@/pages/dashboard/config';
-import { CommonStateContext, basePrefix } from '@/App';
+
 import { getPromData, setTmpChartData } from './services';
 import { QueryStats } from './components/QueryStatsView';
+import LineGraphStandardOptions from './components/GraphStandardOptions';
 
 interface IProps {
   url: string;
@@ -37,8 +43,10 @@ interface IProps {
   contentMaxHeight: number;
   range: IRawTimeRange;
   setRange: (range: IRawTimeRange) => void;
-  step?: number;
-  setStep: (step?: number) => void;
+  minStep?: number;
+  setMinStep: (step?: number) => void;
+  maxDataPoints?: number;
+  setMaxDataPoints: (maxDataPoints?: number) => void;
   graphOperates: {
     enabled: boolean;
   };
@@ -46,7 +54,9 @@ interface IProps {
   loading: boolean;
   setLoading: (loading: boolean) => void;
   graphStandardOptionsType?: 'vertical' | 'horizontal';
+  graphStandardOptionsPlacement?: TooltipPlacement;
   defaultUnit?: string;
+  panelWidth?: number; // 用于 Graph 组件的宽度计算
 }
 
 enum ChartType {
@@ -66,6 +76,7 @@ const getSerieName = (metric: any) => {
 };
 
 export default function Graph(props: IProps) {
+  const { t } = useTranslation();
   const { datasourceList, darkMode: appDarkMode, siteInfo } = useContext(CommonStateContext);
   const darkMode = appDarkMode || localStorage.getItem('darkMode') === 'true' || document.body.classList.contains('theme-dark');
   const {
@@ -77,14 +88,18 @@ export default function Graph(props: IProps) {
     contentMaxHeight,
     range,
     setRange,
-    step,
-    setStep,
+    minStep,
+    setMinStep,
+    maxDataPoints,
+    setMaxDataPoints,
     graphOperates,
     refreshFlag,
     loading,
     setLoading,
     graphStandardOptionsType,
+    graphStandardOptionsPlacement = 'left',
     defaultUnit,
+    panelWidth,
   } = props;
   const [data, setData] = useState<any[]>([]);
   const [highLevelConfig, setHighLevelConfig] = useState({
@@ -134,12 +149,20 @@ export default function Graph(props: IProps) {
       const parsedRange = parseRange(range);
       const start = moment(parsedRange.start).unix();
       const end = moment(parsedRange.end).unix();
-      let realStep = step;
-      if (!step) realStep = Math.max(Math.floor((end - start) / 240), 1);
+      const realStep = getRealStep({
+        minStep,
+        maxDataPoints: maxDataPoints || panelWidth,
+        fromUnix: start,
+        toUnix: end,
+      });
       const queryStart = Date.now();
       setLoading(true);
       getPromData(`${url}/${datasourceValue}/api/v1/query_range`, {
-        query: promql,
+        query: interpolateString({
+          query: promql,
+          range,
+          minStep,
+        }),
         start: moment(parsedRange.start).unix(),
         end: moment(parsedRange.end).unix(),
         step: realStep,
@@ -155,7 +178,7 @@ export default function Graph(props: IProps) {
           });
           setQueryStats({
             loadTime: Date.now() - queryStart,
-            resolution: step,
+            resolution: realStep,
             resultSeries: series.length,
           });
 
@@ -170,28 +193,82 @@ export default function Graph(props: IProps) {
           setLoading(false);
         });
     }
-  }, [JSON.stringify(range), step, datasourceValue, promql, refreshFlag]);
+  }, [JSON.stringify(range), minStep, maxDataPoints, datasourceValue, promql, refreshFlag]);
 
   return (
     <div className='prom-graph-graph-container'>
       <div className='prom-graph-graph-controls'>
-        <Space>
+        <Space wrap>
           <TimeRangePicker value={range} onChange={setRange} dateFormat='YYYY-MM-DD HH:mm:ss' />
-          <InputNumber
-            placeholder='Res. (s)'
-            value={step}
-            onKeyDown={(e: any) => {
-              if (e.code === 'Enter') {
-                setStep(_.toNumber(e.target.value));
-              }
-            }}
-            onBlur={(e) => {
-              setStep(_.toNumber(e.target.value));
-            }}
-            onStep={(value) => {
-              setStep(value);
-            }}
-          />
+          <InputGroupWithFormItem
+            label={
+              <Space>
+                Max data points
+                <Tooltip title={t('dashboard:query.prometheus.maxDataPoints.tip_2')}>
+                  <QuestionCircleOutlined />
+                </Tooltip>
+              </Space>
+            }
+          >
+            <InputNumber
+              style={{ width: 70 }}
+              placeholder={_.toString(panelWidth ?? 240)}
+              min={1}
+              value={maxDataPoints}
+              onKeyDown={(e: any) => {
+                if (e.code === 'Enter') {
+                  if (e.target.value) {
+                    setMaxDataPoints(_.toNumber(e.target.value));
+                  } else {
+                    setMaxDataPoints(undefined);
+                  }
+                }
+              }}
+              onBlur={(e) => {
+                if (e.target.value) {
+                  setMaxDataPoints(_.toNumber(e.target.value));
+                } else {
+                  setMaxDataPoints(undefined);
+                }
+              }}
+              controls={false}
+            />
+          </InputGroupWithFormItem>
+          <InputGroupWithFormItem
+            label={
+              <Space>
+                Min step
+                <Tooltip title={t('dashboard:query.prometheus.minStep.tip')}>
+                  <QuestionCircleOutlined />
+                </Tooltip>
+              </Space>
+            }
+          >
+            <InputNumber
+              placeholder='15'
+              style={{ width: 60 }}
+              value={minStep}
+              onKeyDown={(e: any) => {
+                if (e.code === 'Enter') {
+                  if (e.target.value) {
+                    setMinStep(_.toNumber(e.target.value));
+                  } else {
+                    setMinStep(undefined);
+                  }
+                }
+              }}
+              onBlur={(e) => {
+                if (e.target.value) {
+                  setMinStep(_.toNumber(e.target.value));
+                } else {
+                  setMinStep(undefined);
+                }
+              }}
+              onStep={(value) => {
+                setMinStep(value);
+              }}
+            />
+          </InputGroupWithFormItem>
           <Radio.Group
             options={[
               { label: <LineChartOutlined />, value: ChartType.Line },
@@ -215,7 +292,7 @@ export default function Graph(props: IProps) {
                         type: 'timeseries',
                         version: DASHBOARD_VERSION,
                         name: promql,
-                        step,
+                        step: minStep,
                         range,
                         ...lineGraphProps,
                         targets: [
@@ -245,7 +322,7 @@ export default function Graph(props: IProps) {
                 <LineGraphStandardOptions highLevelConfig={highLevelConfig} setHighLevelConfig={setHighLevelConfig} type={graphStandardOptionsType} />
               ) : (
                 <Popover
-                  placement='left'
+                  placement={graphStandardOptionsPlacement}
                   content={<LineGraphStandardOptions highLevelConfig={highLevelConfig} setHighLevelConfig={setHighLevelConfig} />}
                   trigger='click'
                   autoAdjustOverflow={false}

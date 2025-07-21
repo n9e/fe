@@ -21,11 +21,18 @@ interface Props {
 
 function EditorModal(props: Props, ref) {
   const { dashboardId, variableConfig, range, timezone, setTimezone, dashboard, panels, setPanels, updateDashboardConfigs, onUpdated } = props;
-  const [editorData, setEditorData] = useState({
+  const [editorData, setEditorData] = useState<{
+    mode: string;
+    visible: boolean;
+    id: string;
+    initialValues: any;
+    panelWidth?: number;
+  }>({
     mode: 'add',
     visible: false,
     id: '',
     initialValues: {} as any,
+    panelWidth: undefined,
   });
 
   useImperativeHandle(
@@ -46,13 +53,14 @@ function EditorModal(props: Props, ref) {
           visible,
         });
       }}
-      variableConfigWithOptions={variableConfig}
+      variableConfig={variableConfig}
       id={editorData.id}
       dashboardId={_.toString(dashboardId)}
       time={range}
       timezone={timezone}
       setTimezone={setTimezone}
       initialValues={editorData.initialValues}
+      panelWidth={editorData.panelWidth}
       onOK={(values, mode) => {
         props.setVariableConfigRefreshFlag(_.uniqueId('refreshFlag_')); // TODO 2024-01-30 临时解决编辑状态下变量值修改后没有同步预览视图的问题，后续需要重构变量值方案，抛弃不能状态驱动的 localStorage 方案
         const newPanels = mode === 'edit' ? updatePanelsWithNewPanel(panels, values) : updatePanelsInsertNewPanelToRow(panels, editorData.id, values);
