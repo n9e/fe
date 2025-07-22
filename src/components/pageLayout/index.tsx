@@ -114,7 +114,7 @@ const PageLayoutOld: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, int
           ) : (
             <div className={'page-top-header'}>
               <div
-                className={`page-header-content ${!IS_ENT ? 'n9e-page-header-content' : ''}`}
+                className={`page-header-content n9e-page-header-content`}
                 style={{
                   // 2024-07-10 用途集成仪表盘全屏模式，未来其他页面的全屏模式皆是 viewMode=fullscreen
                   display: query.viewMode === 'fullscreen' ? 'none' : 'flex',
