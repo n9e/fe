@@ -84,7 +84,7 @@ function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
 
 function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: boolean } & IMenuProps) {
   const { t } = useTranslation('sideMenu');
-  const { item, isSub = false, isCustomBg, collapsed, selectedKeys, isBgBlack } = props;
+  const { item, isSub = false, isCustomBg, collapsed, selectedKeys, isBgBlack, onClick } = props;
   const isActive = item.type === 'tabs' ? selectedKeys?.some((k) => item.children?.some((c) => c.key === k)) : selectedKeys?.includes(item.key);
   const path = item.type === 'tabs' ? item.children?.[0]?.key || item.key : item.key;
   const savedPath = item.children ? getSavedPath(path) : item.key;
@@ -99,6 +99,7 @@ function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: boolean
         'hover:bg-[rgba(204,204,220,0.12)]',
       )}
       style={{ background: isActive && isCustomBg ? 'rgba(204, 204, 220, 0.08)' : undefined }}
+      onClick={() => onClick?.(item.key)}
     >
       {!isSub ? (
         <div
@@ -138,10 +139,11 @@ function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: boolean
 export default function MenuList(
   props: {
     list: IMenuItem[];
+    topExtra?: React.ReactNode;
   } & IMenuProps,
 ) {
   const { t } = useTranslation('sideMenu');
-  const { list, ...otherProps } = props;
+  const { list, topExtra, ...otherProps } = props;
 
   return (
     <>
@@ -156,6 +158,7 @@ export default function MenuList(
           <div className={cn('h-4.5 children-icon2:h-4.5 children-icon2:w-4.5 mr-4', props.isCustomBg ? '' : 'text-primary-80')}>{<IconFont type='icon-Menu_Search' />}</div>
           <div className={`overflow-hidden truncate text-l1 tracking-wide`}>{t('quickJump')} </div>
         </div>
+        {topExtra}
         <div className={cn('my-2 h-px w-full', props.isCustomBg ? 'bg-white/10' : 'bg-fc-200')}></div>
         <div className='space-y-1'>
           {list

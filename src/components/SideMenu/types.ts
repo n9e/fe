@@ -32,3 +32,10 @@ export interface MenuMatchResult {
   showTabs: boolean;
   icon?: ReactNode;
 }
+
+export interface DefaultLogos {
+  light_menu_big_logo_url: string;
+  light_menu_small_logo_url: string;
+  menu_big_logo_url: string;
+  menu_small_logo_url: string;
+}
