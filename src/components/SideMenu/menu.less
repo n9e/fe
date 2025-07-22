@@ -8,18 +8,44 @@
     border-width: 0;
     border-style: solid; // tailwindcss reset
   }
+
   .ant-modal-content {
     border-radius: 8px;
   }
+
   .ant-modal-close-x {
     width: 40px;
     height: 40px;
     line-height: 40px;
   }
+
   .ant-modal-footer {
     padding: 0;
   }
+
   .bg-fc-200 {
     background-color: var(--fc-fill-3) !important;
+  }
+}
+
+.space-tooltip {
+  .ant-tooltip-inner {
+    padding: 0px;
+    border-radius: 20px;
+    background: none;
+    border: 0 solid #6c53b1;
+    box-shadow: 0 0 8px 0 rgba(108, 83, 177, 0.32);
+    margin-left: -4px;
+    background: rgba(249, 249, 249, 0.88);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    text-align: center;
+    color: #333;
+    min-width: 112px;
+    max-width: 200px;
+  }
+
+  .ant-tooltip-arrow {
+    display: none;
   }
 }

@@ -243,8 +243,4 @@ const PageLayoutOld: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, int
 
 let PageLayout = PageLayoutWithTabs;
 
-if (IS_ENT) {
-  PageLayout = PageLayoutOld;
-}
-
 export default PageLayout;

@@ -22,8 +22,13 @@ import { MenuItem, DefaultLogos } from './types';
 import './menu.less';
 import './locale';
 
+const calcUrlPath = (url: string) => {
+  const urlPath = url.split('?')[0];
+  return urlPath;
+};
+
 interface SideMenuProps {
-  topExtra?: React.ReactNode;
+  topExtra?: React.ReactElement;
   defaultLogos?: DefaultLogos;
   getMenuList?: (embeddedProductMenu?: MenuItem[], hideDeprecatedMenus?: boolean) => MenuItem[];
   onMenuClick?: (key: string) => void;
@@ -116,8 +121,10 @@ const SideMenu = (props: SideMenuProps) => {
             if (child.key.startsWith(`${embeddedProductDetailPath}/`)) {
               return child;
             }
-            if (child.pathType === 'absolute') {
-              return child;
+            if (menu.key === '/flashduty') {
+              if (perms?.includes('/flashduty')) {
+                return child;
+              }
             }
             if (child.type === 'tabs' && child.children) {
               const filteredTabs = child.children.filter((tab) => perms?.includes(tab.key));
@@ -126,7 +133,7 @@ const SideMenu = (props: SideMenuProps) => {
               }
               return null;
             }
-            return perms?.includes(child.key) ? child : null;
+            return perms?.includes(calcUrlPath(child.key)) ? child : null;
           })
           .filter(Boolean);
 
@@ -151,15 +158,15 @@ const SideMenu = (props: SideMenuProps) => {
                 return child;
               }
               if (child.type === 'tabs' && child.children && child.children.length > 0) {
-                return child.children.some((tabChild) => _.includes(perms, tabChild.key));
+                return child.children.some((tabChild) => _.includes(perms, calcUrlPath(tabChild.key)));
               }
               return child && _.includes(perms, child.key);
             })
             .map((c) => {
               if (c.type === 'tabs' && c.children && c.children.length) {
-                return c.children.map((g) => `${item.key}|${g.key}`);
+                return c.children.map((g) => `${calcUrlPath(item.key)}|${calcUrlPath(g.key)}`);
               }
-              return `${item.key}|${c.key}`;
+              return `${calcUrlPath(item.key)}|${calcUrlPath(c.key)}`;
             });
         })
         .filter(Boolean)
