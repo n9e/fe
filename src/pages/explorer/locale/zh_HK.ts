@@ -59,6 +59,11 @@ const zh_HK = {
       del_btn: '刪除',
       emptyText: '暫無導出記錄，請點擊查詢日誌，然後點擊下載',
     },
+    field_actions: {
+      and: '添加到本次檢索',
+      not: '從本次檢索中排除',
+      exists: '過濾存在該欄位的文檔',
+    },
   },
   historicalRecords: {
     button: '歷史記錄',

@@ -72,6 +72,8 @@
 | TagsMap         | map[string]string | 標籤鍵值對映射 | {{$event.TagsMap}}         |
 | AnnotationsJSON | map[string]string | 註釋鍵值對映射 | {{$event.AnnotationsJSON}} |
 
+例如：如果想引用 `instance` 標籤，可以使用 `{{$event.TagsMap.instance}}` 來獲取，如果想引用 `summary` 註釋，可以使用 `{{$event.AnnotationsJSON.summary}}` 來獲取。
+
 機器相關字段信息
 
 | 字段名      | 類型   | 描述         | 模板引用方式        |   

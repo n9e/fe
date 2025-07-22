@@ -14,6 +14,8 @@ import { parseRange } from '@/components/TimeRangePicker';
 import Timeseries from '@/pages/dashboard/Renderer/Renderer/Timeseries';
 import { CommonStateContext } from '@/App';
 import { PRIMARY_COLOR } from '@/utils/constant';
+import FullscreenButton from '@/pages/explorer/components/FullscreenButton';
+import { setLocalQueryHistory } from '@/components/HistoricalRecords/ConditionHistoricalRecords';
 
 import { getLogsQuery } from './services';
 import metricQuery from './metricQuery';
@@ -27,6 +29,8 @@ import Share from '../components/Share';
 
 import './style.less';
 
+// @ts-ignore
+import DrilldownBtn from 'plus:/pages/LogExploreLinkSetting/components/DrilldownBtn';
 // @ts-ignore
 import DownloadModal from 'plus:/datasource/elasticsearch/components/LogDownload/DownloadModal';
 // @ts-ignore
@@ -54,9 +58,22 @@ enum IMode {
   indices = 'indices',
 }
 
-const LOGS_LIMIT = 500; // TODO: 日志查询已经启用分页器，这里的 limit 只用于字段统计信息里的查询，未来可能会废弃
 const TIME_FORMAT = 'YYYY.MM.DD HH:mm:ss';
 const MAX_RESULT_WINDOW = 10000; // ES 默认最大返回 10000 条数据，超过需要设置 index.max_result_window
+export const CACHE_KEY_MAP = {
+  indices: 'es-indices-query-history-records',
+  'index-patterns': 'es-index-patterns-query-history-records',
+};
+export const SYNTAX_OPTIONS = [
+  {
+    label: 'Lucene',
+    value: 'lucene',
+  },
+  {
+    label: 'KQL',
+    value: 'kuery',
+  },
+];
 
 const HeaderExtra = ({ mode, setMode, allowHideSystemIndices, setAllowHideSystemIndices, datasourceValue }) => {
   const { t } = useTranslation('explorer');
@@ -98,6 +115,7 @@ const HeaderExtra = ({ mode, setMode, allowHideSystemIndices, setAllowHideSystem
         )}
       </Space>
       <Space>
+        {isPlus && mode === IMode.indices && <DrilldownBtn />}
         {isPlus && <ExportModal datasourceValue={datasourceValue} />}
         <Share />
       </Space>
@@ -140,7 +158,7 @@ export default function index(props: IProps) {
   const intervalFixedRef = useRef<boolean>(false);
   const [chartVisible, setChartVisible] = useState(true);
   const [collapsed, setCollapsed] = useState(true);
-  const [filters, setFilters] = useState<Filter[]>();
+  const [filters, setFilters, getFilters] = useGetState<Filter[]>();
   const [errorContent, setErrorContent] = useState();
   const fieldConfig = Form.useWatch('fieldConfig', form);
   const date_field = Form.useWatch(['query', 'date_field'], form);
@@ -279,6 +297,14 @@ export default function index(props: IProps) {
     }
   };
 
+  // 设置历史记录方法
+  const setHistory = () => {
+    const queryValues = form.getFieldValue(['query']);
+    if (queryValues.index && queryValues.date_field) {
+      setLocalQueryHistory(`${CACHE_KEY_MAP[queryValues.mode]}-${datasourceValue}`, _.omit(queryValues, 'range'));
+    }
+  };
+
   useEffect(() => {
     if (_.isArray(filters)) {
       // 如果有过滤条件，则清空当前页码，重新查询
@@ -356,6 +382,10 @@ export default function index(props: IProps) {
           setFields={setFields}
           allowHideSystemIndices={allowHideSystemIndices}
           form={form}
+          setHistory={setHistory}
+          resetFilters={() => {
+            setFilters([]);
+          }}
         />
       )}
       {mode === IMode.indexPatterns && (
@@ -370,12 +400,30 @@ export default function index(props: IProps) {
             setSelectedFields([]);
             resetThenRefresh();
           }}
+          setHistory={setHistory}
+          resetFilters={() => {
+            setFilters([]);
+          }}
         />
       )}
       <div style={{ height: 'calc(100% - 50px)', display: 'flex', flexDirection: 'column' }}>
         {!_.isEmpty(filters) && (
           <div className='es-discover-filters'>
             {_.map(filters, (filter) => {
+              if (filter.operator === 'exists') {
+                return (
+                  <Tag
+                    key={JSON.stringify(filter)}
+                    closable
+                    onClose={(e) => {
+                      e.preventDefault();
+                      setFilters(_.filter(filters, (item) => item.key !== filter.key));
+                    }}
+                  >
+                    {getFieldLabel(filter.key, fieldConfig)}: exists
+                  </Tag>
+                );
+              }
               return (
                 <Tag
                   key={JSON.stringify(filter)}
@@ -391,7 +439,8 @@ export default function index(props: IProps) {
                     );
                   }}
                 >
-                  {getFieldLabel(filter.key, fieldConfig)} {filter.operator === 'is not' ? '!=' : '='} {filter.value}
+                  {filter.operator === 'is not' ? 'NOT ' : ''}
+                  {getFieldLabel(filter.key, fieldConfig)}: {filter.value}
                 </Tag>
               );
             })}
@@ -407,7 +456,7 @@ export default function index(props: IProps) {
                 setFields={setFields}
                 value={selectedFields}
                 onChange={setSelectedFields}
-                params={{ form, timesRef, datasourceValue, limit: LOGS_LIMIT }}
+                params={{ from: (paginationOptions.current - 1) * paginationOptions.pageSize, timesRef, datasourceValue, limit: paginationOptions.pageSize }}
                 filters={filters}
                 onValueFilter={({ key, value, operator }) => {
                   // key + value 作为唯一标识，存在则更新，不存在则新增
@@ -440,15 +489,16 @@ export default function index(props: IProps) {
                 className='es-discover-chart'
                 style={{
                   height: chartVisible && date_field ? 190 : 40,
+                  borderBottom: '1px solid var(--fc-border-color)',
                 }}
               >
                 <div className='es-discover-chart-title'>
-                  <div style={{ width: 40, height: 32, lineHeight: '32px' }}>
-                    <Spin spinning={timeseriesLoading} size='small' className='ml1' />
-                  </div>
-                  <Space size={4}>
+                  <Space size={4} className='ml-2'>
                     <strong>{total}</strong>
                     hits
+                    <div style={{ width: 40, height: 32, lineHeight: '32px' }}>
+                      <Spin spinning={timeseriesLoading} size='small' className='ml1' />
+                    </div>
                   </Space>
                   {!_.isEmpty(series) && (
                     <>
@@ -562,45 +612,74 @@ export default function index(props: IProps) {
                   </div>
                 )}
               </div>
-              <div
-                className='p1 n9e-flex n9e-justify-between n9e-items-center'
-                style={{
-                  borderTop: '1px solid var(--fc-border-color)',
-                }}
-              >
-                <div>
-                  <Spin spinning={loading} size='small' />
+              <FullscreenButton.Provider>
+                <div className='p1 n9e-flex n9e-justify-between n9e-items-center'>
+                  <div>
+                    <Space>
+                      <FullscreenButton />
+                      <Spin spinning={loading} size='small' />
+                    </Space>
+                  </div>
+                  <Pagination
+                    size='small'
+                    {...paginationOptions}
+                    total={total > MAX_RESULT_WINDOW ? MAX_RESULT_WINDOW : total}
+                    onChange={(current, pageSize) => {
+                      setPaginationOptions({
+                        ...paginationOptions,
+                        current,
+                        pageSize,
+                      });
+                    }}
+                    showTotal={(total) => {
+                      return t('common:table.total', { total });
+                    }}
+                  />
                 </div>
-                <Pagination
-                  size='small'
-                  {...paginationOptions}
-                  total={total > MAX_RESULT_WINDOW ? MAX_RESULT_WINDOW : total}
-                  onChange={(current, pageSize) => {
-                    setPaginationOptions({
-                      ...paginationOptions,
-                      current,
-                      pageSize,
+                <Table
+                  data={data}
+                  onChange={(pagination, filters, sorter: any, extra) => {
+                    sorterRef.current = _.map(_.isArray(sorter) ? sorter : [sorter], (item) => {
+                      return {
+                        field: item.columnKey,
+                        order: item.order === 'ascend' ? 'asc' : 'desc',
+                      };
                     });
+                    resetThenRefresh();
                   }}
-                  showTotal={(total) => {
-                    return t('common:table.total', { total });
+                  getFields={getFields}
+                  selectedFields={selectedFields}
+                  onActionClick={({ key, value, operator }) => {
+                    const currentFilters = getFilters();
+                    if (operator === 'exists') {
+                      // 如果是 exists 操作，则不需要 value
+                      if (!_.find(currentFilters, { key, operator })) {
+                        setFilters([...(currentFilters || []), { key, operator, value: '' }]);
+                      }
+                    } else {
+                      if (value) {
+                        // key + value 作为唯一标识，存在则更新，不存在则新增
+                        if (!_.find(currentFilters, { key, value })) {
+                          setFilters([...(currentFilters || []), { key, value, operator }]);
+                        } else {
+                          setFilters(
+                            _.map(currentFilters, (item) => {
+                              if (item.key === key && item.value === value) {
+                                return {
+                                  ...item,
+                                  value,
+                                  operator,
+                                };
+                              }
+                              return item;
+                            }),
+                          );
+                        }
+                      }
+                    }
                   }}
                 />
-              </div>
-              <Table
-                data={data}
-                onChange={(pagination, filters, sorter: any, extra) => {
-                  sorterRef.current = _.map(_.isArray(sorter) ? sorter : [sorter], (item) => {
-                    return {
-                      field: item.columnKey,
-                      order: item.order === 'ascend' ? 'asc' : 'desc',
-                    };
-                  });
-                  resetThenRefresh();
-                }}
-                getFields={getFields}
-                selectedFields={selectedFields}
-              />
+              </FullscreenButton.Provider>
               <div
                 className='es-discover-collapse'
                 onClick={() => {

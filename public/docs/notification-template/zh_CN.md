@@ -63,13 +63,15 @@
 | LastEvalTime     | int64  | 最近评估时间 | {{$event.LastEvalTime}}          |
 | LastSentTime     | int64  | 最近发送时间 | {{$event.LastSentTime}}          |
 
-标签和注释
+标签和注解（即告警规则里配置的附加信息）
 
 | 字段名          | 类型              | 描述           | 模板引用方式        |
 | --------------- | ----------------- | -------------- | ------------------- |
 | TagsJSON        | []string          | 标签数组       | {{$event.TagsJSON}}        |
 | TagsMap         | map[string]string | 标签键值对映射 | {{$event.TagsMap}}         |
 | AnnotationsJSON | map[string]string | 注释键值对映射 | {{$event.AnnotationsJSON}} |
+
+举例：如果想引用 `instance` 标签，可以使用 `{{$event.TagsMap.instance}}` 来获取，如果想引用 `summary` 注解，可以使用 `{{$event.AnnotationsJSON.summary}}` 来获取。
 
 机器相关字段信息
 

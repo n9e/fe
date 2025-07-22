@@ -13,10 +13,12 @@ const zh_HK = {
       <1/>
       `,
     index_msg: '索引不能為空',
+    indexPattern: '索引模式',
     indexPatterns: '索引模式',
     indexPattern_msg: '索引模式不能為空',
     indexPatterns_manage: '管理索引模式',
     filter: '過濾條件',
+    syntax: '語法',
     time_label: '時間顆粒度',
     date_field: '日期字段',
     date_field_msg: '日期字段不能為空',

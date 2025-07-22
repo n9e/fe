@@ -21,6 +21,8 @@ import _ from 'lodash';
 import { Input, DatePicker, List, Space } from 'antd';
 import UnitPicker from '@/pages/dashboard/Components/UnitPicker';
 import valueFormatter from '@/pages/dashboard/Renderer/utils/valueFormatter';
+import { instantInterpolateString } from '@/components/PromQLInputNG';
+
 import { getPromData } from './services';
 import { QueryStats } from './components/QueryStatsView';
 
@@ -170,7 +172,10 @@ export default function Table(props: IProps) {
       setLoading(true);
       getPromData(`${url}/${datasourceValue}/api/v1/query`, {
         time: timestamp || moment().unix(),
-        query: promql,
+        query: instantInterpolateString({
+          query: promql,
+          time: timestamp ? moment.unix(timestamp) : undefined,
+        }),
       })
         .then((res) => {
           const { resultType } = res;

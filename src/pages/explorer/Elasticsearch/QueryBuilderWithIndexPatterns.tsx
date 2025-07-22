@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { useDebounceFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
-import { Form, Select, Button, Space } from 'antd';
+import { Form, Select, Button, Space, Row, Col } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 
 import TimeRangePicker from '@/components/TimeRangePicker';
@@ -11,11 +11,12 @@ import { getESIndexPatterns, standardizeFieldConfig } from '@/pages/log/IndexPat
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { useIsAuthorized } from '@/components/AuthorizationWrapper';
 import KQLInput from '@/components/KQLInput';
-import { getLocalQueryHistory, setLocalQueryHistory } from '@/components/KQLInput/utils';
 import IndexPatternSettingsBtn from '@/pages/explorer/Elasticsearch/components/IndexPatternSettingsBtn';
+import ConditionHistoricalRecords from '@/components/HistoricalRecords/ConditionHistoricalRecords';
 
 import { getFullFields, Field } from './services';
 import InputFilter from './InputFilter';
+import { CACHE_KEY_MAP, SYNTAX_OPTIONS } from './index';
 
 interface Props {
   onExecute: () => void;
@@ -24,12 +25,14 @@ interface Props {
   setFields: (fields: Field[]) => void;
   onIndexChange: () => void;
   loading: boolean;
+  setHistory: () => void;
+  resetFilters: () => void;
 }
 
 export default function QueryBuilder(props: Props) {
   const { t } = useTranslation('explorer');
   const params = new URLSearchParams(useLocation().search);
-  const { onExecute, datasourceValue, form, setFields, onIndexChange, loading } = props;
+  const { onExecute, datasourceValue, form, setFields, onIndexChange, loading, setHistory, resetFilters } = props;
   const [indexPatterns, setIndexPatterns] = useState<any[]>([]);
   const indexPattern = Form.useWatch(['query', 'indexPattern']);
   const indexPatternObj = _.find(indexPatterns, (item) => item.id === indexPattern);
@@ -123,155 +126,204 @@ export default function QueryBuilder(props: Props) {
       <Form.Item name={['fieldConfig']} hidden>
         <div />
       </Form.Item>
-      <div style={{ display: 'flex', gap: 8 }}>
-        <div style={{ width: 290, flexShrink: 0 }}>
-          <InputGroupWithFormItem
-            label={t('datasource:es.indexPatterns')}
-            addonAfter={
-              indexPatternsAuthorized && (
-                <IndexPatternSettingsBtn
-                  onReload={() => {
-                    fetchESIndexPatterns();
-                  }}
-                />
-              )
-            }
-          >
-            <Form.Item
-              name={['query', 'indexPattern']}
-              rules={[
-                {
-                  required: true,
-                  message: t('datasource:es.indexPattern_msg'),
-                },
-              ]}
-              validateTrigger='onBlur'
+      <Row gutter={8}>
+        <Col flex='none'>
+          <div style={{ width: 290 }}>
+            <InputGroupWithFormItem
+              label={t('datasource:es.indexPatterns')}
+              addonAfter={
+                indexPatternsAuthorized && (
+                  <IndexPatternSettingsBtn
+                    onReload={() => {
+                      fetchESIndexPatterns();
+                    }}
+                  />
+                )
+              }
             >
-              <Select
-                options={_.map(indexPatterns, (item) => {
-                  return {
-                    label: (
-                      <Space>
-                        <span>{item.name}</span>
-                        <span
-                          style={{
-                            color: 'var(--fc-text-3)',
-                          }}
-                        >
-                          {item.note}
-                        </span>
-                      </Space>
-                    ),
-                    originLabel: item.name,
-                    searchIndex: `${item.name} ${item.note}`,
-                    value: item.id,
-                  };
-                })}
-                dropdownMatchSelectWidth={false}
-                showSearch
-                optionFilterProp='searchIndex'
-                optionLabelProp='originLabel'
-              />
-            </Form.Item>
-          </InputGroupWithFormItem>
-        </div>
-        <InputGroupWithFormItem
-          label={
-            <>
-              {t('datasource:es.filter')}{' '}
-              <a
-                href={
-                  syntax === 'Lucene'
-                    ? 'https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax'
-                    : 'https://www.elastic.co/guide/en/kibana/current/kuery-query.html'
-                }
-                target='_blank'
-              >
-                <QuestionCircleOutlined />
-              </a>
-            </>
-          }
-          addonAfter={
-            <Form.Item name={['query', 'syntax']} noStyle initialValue='lucene'>
-              <Select
-                bordered={false}
-                options={[
+              <Form.Item
+                name={['query', 'indexPattern']}
+                rules={[
                   {
-                    label: 'Lucene',
-                    value: 'lucene',
-                  },
-                  {
-                    label: 'KQL',
-                    value: 'kuery',
+                    required: true,
+                    message: t('datasource:es.indexPattern_msg'),
                   },
                 ]}
-                dropdownMatchSelectWidth={false}
-                onChange={() => {
-                  form.setFieldsValue({
-                    query: {
-                      filter: '',
-                    },
-                  });
-                }}
-              />
-            </Form.Item>
-          }
-        >
-          {syntax === 'lucene' ? (
-            <Form.Item name={['query', 'filter']}>
-              <InputFilter fields={allFields} ref={refInputFilter} onExecute={onExecute} />
-            </Form.Item>
-          ) : (
-            <Form.Item name={['query', 'filter']}>
-              <KQLInput
-                datasourceValue={datasourceValue}
-                query={{
-                  index: indexPatternObj?.name,
-                  date_field: date_field,
-                }}
-                historicalRecords={getLocalQueryHistory(datasourceValue)}
-                onEnter={onExecute}
-              />
-            </Form.Item>
-          )}
-        </InputGroupWithFormItem>
-        <Form.Item name={['query', 'range']} initialValue={{ start: 'now-1h', end: 'now' }} hidden={!date_field}>
-          <TimeRangePicker
-            onChange={() => {
-              if (refInputFilter.current) {
-                refInputFilter.current.onCallback();
-              }
-              setLocalQueryHistory(datasourceValue, form.getFieldValue(['query', 'filter']));
-              onExecute();
-            }}
-            ajustTimeOptions={(options) => {
-              return _.concat(
-                [
-                  { start: 'now-5s', end: 'now', display: 'Last 5 seconds' },
-                  { start: 'now-15s', end: 'now', display: 'Last 15 seconds' },
-                  { start: 'now-30s', end: 'now', display: 'Last 30 seconds' },
-                ],
-                options,
+                validateTrigger='onBlur'
+              >
+                <Select
+                  options={_.map(indexPatterns, (item) => {
+                    return {
+                      label: (
+                        <Space>
+                          <span>{item.name}</span>
+                          <span
+                            style={{
+                              color: 'var(--fc-text-3)',
+                            }}
+                          >
+                            {item.note}
+                          </span>
+                        </Space>
+                      ),
+                      originLabel: item.name,
+                      searchIndex: `${item.name} ${item.note}`,
+                      value: item.id,
+                    };
+                  })}
+                  dropdownMatchSelectWidth={false}
+                  showSearch
+                  optionFilterProp='searchIndex'
+                  optionLabelProp='originLabel'
+                />
+              </Form.Item>
+            </InputGroupWithFormItem>
+          </div>
+        </Col>
+        <Col flex='auto'>
+          <InputGroupWithFormItem
+            label={
+              <>
+                {t('datasource:es.filter')}{' '}
+                <a
+                  href={
+                    syntax === 'Lucene'
+                      ? 'https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax'
+                      : 'https://www.elastic.co/guide/en/kibana/current/kuery-query.html'
+                  }
+                  target='_blank'
+                >
+                  <QuestionCircleOutlined />
+                </a>
+              </>
+            }
+            addonAfter={
+              <Form.Item name={['query', 'syntax']} noStyle initialValue='lucene'>
+                <Select
+                  bordered={false}
+                  options={SYNTAX_OPTIONS}
+                  dropdownMatchSelectWidth={false}
+                  onChange={() => {
+                    form.setFieldsValue({
+                      query: {
+                        filter: '',
+                      },
+                    });
+                  }}
+                />
+              </Form.Item>
+            }
+          >
+            {syntax === 'lucene' ? (
+              <Form.Item name={['query', 'filter']}>
+                <InputFilter
+                  fields={allFields}
+                  ref={refInputFilter}
+                  onExecute={() => {
+                    setHistory();
+                    onExecute();
+                  }}
+                />
+              </Form.Item>
+            ) : (
+              <Form.Item name={['query', 'filter']}>
+                <KQLInput
+                  datasourceValue={datasourceValue}
+                  query={{
+                    index: indexPatternObj?.name,
+                    date_field: date_field,
+                  }}
+                  historicalRecords={[]}
+                  onEnter={() => {
+                    setHistory();
+                    onExecute();
+                  }}
+                />
+              </Form.Item>
+            )}
+          </InputGroupWithFormItem>
+        </Col>
+        <Col flex='none'>
+          <Form.Item name={['query', 'range']} initialValue={{ start: 'now-1h', end: 'now' }} hidden={!date_field}>
+            <TimeRangePicker
+              onChange={() => {
+                if (refInputFilter.current) {
+                  refInputFilter.current.onCallback();
+                }
+                setHistory();
+                onExecute();
+              }}
+              ajustTimeOptions={(options) => {
+                return _.concat(
+                  [
+                    { start: 'now-5s', end: 'now', display: 'Last 5 seconds' },
+                    { start: 'now-15s', end: 'now', display: 'Last 15 seconds' },
+                    { start: 'now-30s', end: 'now', display: 'Last 30 seconds' },
+                  ],
+                  options,
+                );
+              }}
+            />
+          </Form.Item>
+        </Col>
+        <Col flex='none'>
+          <ConditionHistoricalRecords
+            localKey={CACHE_KEY_MAP['index-patterns']}
+            datasourceValue={datasourceValue!}
+            renderItem={(item) => {
+              return (
+                <div
+                  className='flex flex-wrap items-center gap-y-1 cursor-pointer hover:bg-[var(--fc-fill-3)] p-1 rounded leading-[1.1] mb-1'
+                  key={JSON.stringify(item)}
+                  onClick={() => {
+                    form.setFieldsValue({
+                      query: {
+                        ...item,
+                        indexPattern: _.toNumber(item.indexPattern),
+                      },
+                    });
+                    resetFilters();
+                    onExecute();
+                  }}
+                >
+                  {_.map(_.pick(item, ['indexPattern', 'filter', 'syntax']), (value, key) => {
+                    if (!value) return <span key={key} />;
+                    return (
+                      <span key={key}>
+                        <span className='bg-[var(--fc-fill-1)] inline-block p-1 mr-1'>{t(`datasource:es.${key}`)}:</span>
+                        <span className='pr-1'>
+                          {key === 'indexPattern'
+                            ? _.find(indexPatterns, { id: _.toNumber(value) })?.name ?? value
+                            : key === 'syntax'
+                            ? _.find(SYNTAX_OPTIONS, { value })?.label ?? value
+                            : value}
+                        </span>
+                      </span>
+                    );
+                  })}
+                </div>
               );
             }}
           />
-        </Form.Item>
-        <Form.Item>
-          <Button
-            loading={loading}
-            type='primary'
-            onClick={() => {
-              if (refInputFilter.current) {
-                refInputFilter.current.onCallback();
-              }
-              setLocalQueryHistory(datasourceValue, form.getFieldValue(['query', 'filter']));
-              onExecute();
-            }}
-          >
-            {t('query_btn')}
-          </Button>
-        </Form.Item>
-      </div>
+        </Col>
+        <Col flex='none'>
+          <Form.Item>
+            <Button
+              loading={loading}
+              type='primary'
+              onClick={() => {
+                if (refInputFilter.current) {
+                  refInputFilter.current.onCallback();
+                }
+                setHistory();
+                onExecute();
+              }}
+            >
+              {t('query_btn')}
+            </Button>
+          </Form.Item>
+        </Col>
+      </Row>
     </>
   );
 }

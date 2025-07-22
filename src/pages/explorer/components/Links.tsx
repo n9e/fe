@@ -4,10 +4,71 @@ import IconFont from '@/components/IconFont';
 import { Popover } from 'antd';
 import moment from 'moment';
 import { basePrefix } from '@/App';
-import { ILogExtract, ILogURL } from '@/pages/log/IndexPatterns/types';
+import { ILogExtract, ILogURL, ILogMappingParams } from '@/pages/log/IndexPatterns/types';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 
-const handleNav = (link: string, rawValue: object, query: { start: number; end: number }, regExtractArr?: ILogExtract[]) => {
+export function replaceVarAndGenerateLink(link: string, rawValue: object, regExtractArr?: ILogExtract[], mappingParamsArr?: ILogMappingParams[]): string {
+  const param = new URLSearchParams(link);
+  let reallink = link;
+  const timeFormat = param.get('$__time_format__');
+  const startMarginNew = param.get('${__start_time_margin__}');
+  const endMarginNew = param.get('${__end_time_margin__}');
+
+  reallink = reallink.replace('$local_protocol', location.protocol).replace('$local_domain', location.host).replace('$local_url', location.origin);
+
+  if (startMarginNew) {
+    reallink = reallink.replace('&$__start_time_margin__' + '=' + startMarginNew, '');
+  }
+  if (endMarginNew) {
+    reallink = reallink.replace('&$__end_time_margin__' + '=' + endMarginNew, '');
+  }
+  if (timeFormat) {
+    reallink = reallink.replace('&$__time_format__' + '=' + timeFormat, '');
+  }
+  if (mappingParamsArr && mappingParamsArr.length > 0 && reallink.includes('$__mapping_para__')) {
+    try {
+      let match = false;
+      for (let i = 0; i < mappingParamsArr.length; i++) {
+        if (match) continue;
+        const { op, v, str, field } = mappingParamsArr[i];
+        const fieldStr = _.get(rawValue, field.split('.'));
+        if (op === '=~' && new RegExp(v).test(fieldStr)) {
+          reallink = reallink.replace('$__mapping_para__', str);
+          match = true;
+        }
+        if (op === '!~' && !new RegExp(v).test(fieldStr)) {
+          reallink = reallink.replace('$__mapping_para__', str);
+          match = true;
+        }
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
+  const unReplaceKeyReg = /\$\{(.+?)\}/g;
+  const valueWithExtract = _.cloneDeep(rawValue);
+  regExtractArr?.forEach((i) => {
+    const { field, newField, reg } = i;
+    const fieldValueWholeWord = valueWithExtract[field];
+    const fieldValue = _.get(rawValue, field.split('.'));
+    const arr = new RegExp(reg).exec(fieldValueWholeWord || fieldValue);
+    if (arr && arr.length > 1) {
+      valueWithExtract[newField] = arr[1];
+    }
+  });
+  reallink = reallink.replace(unReplaceKeyReg, function (a, b) {
+    const wholeWord = valueWithExtract[b];
+    return wholeWord || _.get(valueWithExtract, b.split('.'));
+  });
+  const unReplaceKeyRegNew = /\$(.+?)(?=&|$)/gm;
+  reallink = reallink.replace(unReplaceKeyRegNew, function (a, b) {
+    const wholeWord = valueWithExtract[b];
+    return wholeWord || _.get(valueWithExtract, b.split('.'));
+  });
+  return reallink;
+}
+
+export const handleNav = (link: string, rawValue: object, query: { start: number; end: number }, regExtractArr?: ILogExtract[], mappingParamsArr?: ILogMappingParams[]) => {
   const param = new URLSearchParams(link);
   // 为了兼容旧逻辑，所以${} 中的也需要替换
   const startMargin = param.get('${__start_time_margin__}');
@@ -74,6 +135,27 @@ const handleNav = (link: string, rawValue: object, query: { start: number; end: 
   if (timeFormat) {
     reallink = reallink.replace('&$__time_format__' + '=' + timeFormat, '');
   }
+  if (mappingParamsArr && mappingParamsArr.length > 0 && reallink.includes('$__mapping_para__')) {
+    try {
+      let match = false;
+      for (let i = 0; i < mappingParamsArr.length; i++) {
+        if (match) continue;
+        const { op, v, str, field } = mappingParamsArr[i];
+        const fieldStrWholeWord = rawValue[field];
+        const fieldStr = _.get(rawValue, field.split('.'));
+        if (op === '=~' && new RegExp(v).test(fieldStrWholeWord || fieldStr)) {
+          reallink = reallink.replace('$__mapping_para__', str);
+          match = true;
+        }
+        if (op === '!~' && !new RegExp(v).test(fieldStrWholeWord || fieldStr)) {
+          reallink = reallink.replace('$__mapping_para__', str);
+          match = true;
+        }
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
   const unReplaceKeyReg = /\$\{(.+?)\}/g;
   const valueWithExtract = _.cloneDeep(rawValue);
   regExtractArr?.forEach((i) => {
@@ -103,9 +185,10 @@ interface IProps {
   text: React.ReactNode;
   paramsArr: ILogURL[];
   regExtractArr?: ILogExtract[];
+  mappingParamsArr?: ILogMappingParams[];
 }
 
-export default function Links({ rawValue, range, text, paramsArr, regExtractArr }: IProps) {
+export default function Links({ rawValue, range, text, paramsArr, regExtractArr, mappingParamsArr }: IProps) {
   const isGold = localStorage.getItem('n9e-dark-mode') === '2';
   const parsedRange = range ? parseRange(range) : null;
   let start = parsedRange ? moment(parsedRange.start).unix() : 0;
@@ -116,35 +199,47 @@ export default function Links({ rawValue, range, text, paramsArr, regExtractArr 
       overlayClassName='popover-json'
       content={paramsArr.map((item, i) => (
         <div key={i} style={{ lineHeight: '24px' }}>
-          <a onClick={() => handleNav(item.urlTemplate, rawValue, { start, end }, regExtractArr)}>{item.name}</a>
+          <a onClick={() => handleNav(item.urlTemplate, rawValue, { start, end }, regExtractArr, mappingParamsArr)}>{item.name}</a>
         </div>
       ))}
     >
-      <span
-        style={{
-          display: 'inline-flex',
-          textDecoration: 'underline',
-          fontWeight: 'bold',
-          borderRadius: 4,
-          padding: '2px 2px 2px 6px',
-          background: 'var(--fc-fill-primary)',
-          color: isGold ? 'var(--fc-gold-text)' : '#fff',
-          marginBottom: 2,
-          cursor: 'pointer',
-          lineHeight: '22px',
-          alignItems: 'center',
-        }}
+      <Link
         onClick={() => {
           if (paramsArr.length > 0) {
-            handleNav(paramsArr[0].urlTemplate, rawValue, { start, end }, regExtractArr);
+            handleNav(paramsArr[0].urlTemplate, rawValue, { start, end }, regExtractArr, mappingParamsArr);
           }
         }}
-      >
-        {text};
-        <span style={{ background: '#fff', marginLeft: 6, display: 'inline-flex', padding: 3, borderRadius: 2 }}>
-          <IconFont type='icon-ic_arrow_right' style={{ color: 'var(--fc-fill-primary)', height: 12 }} />
-        </span>
-      </span>
+        text={text}
+      />
     </Popover>
+  );
+}
+
+export function Link({ onClick, text, onMouseEnter, onMouseLeave }: { onClick?: () => void; text: React.ReactNode; onMouseEnter?: () => void; onMouseLeave?: () => void }) {
+  const isGold = localStorage.getItem('n9e-dark-mode') === '2';
+  return (
+    <span
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      style={{
+        display: 'inline-flex',
+        textDecoration: 'underline',
+        fontWeight: 'bold',
+        borderRadius: 4,
+        padding: '2px 2px 2px 6px',
+        background: 'var(--fc-fill-primary)',
+        color: isGold ? 'var(--fc-gold-text)' : '#fff',
+        marginBottom: 2,
+        cursor: 'pointer',
+        lineHeight: '22px',
+        alignItems: 'center',
+      }}
+      onClick={onClick}
+    >
+      {text}
+      <span style={{ background: '#fff', marginLeft: 6, display: 'inline-flex', padding: 3, borderRadius: 2 }}>
+        <IconFont type='icon-ic_arrow_right' style={{ color: 'var(--fc-fill-primary)', height: 12 }} />
+      </span>
+    </span>
   );
 }

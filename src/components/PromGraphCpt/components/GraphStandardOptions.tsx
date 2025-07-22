@@ -102,7 +102,7 @@ export default function GraphStandardOptions(props: IProps) {
   }
 
   return (
-    <div>
+    <div style={{ minWidth: 300 }}>
       <Checkbox
         checked={highLevelConfig.shared}
         onChange={(e) => {

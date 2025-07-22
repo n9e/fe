@@ -13,10 +13,12 @@ const zh_CN = {
       <1 />
       `,
     index_msg: '索引不能为空',
+    indexPattern: '索引模式',
     indexPatterns: '索引模式',
     indexPattern_msg: '索引模式不能为空',
     indexPatterns_manage: '管理索引模式',
     filter: '过滤条件',
+    syntax: '语法',
     time_label: '时间颗粒度',
     date_field: '日期字段',
     date_field_msg: '日期字段不能为空',

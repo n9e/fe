@@ -65,7 +65,7 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish }) => {
         if (data[key] === undefined) {
           data[key] = '';
         }
-        if (Array.isArray(data[key])) {
+        if (key !== 'datasource_ids' && Array.isArray(data[key])) {
           data[key] = data[key].join(' ');
         }
       });

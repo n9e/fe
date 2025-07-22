@@ -38,6 +38,13 @@ export interface ILogExtract {
   newField: string;
 }
 
+export interface ILogMappingParams {
+  op: string;
+  v: string;
+  str: string;
+  field: string;
+}
+
 export interface FieldConfigVersion2 {
   arr: {
     attrs: {
@@ -56,6 +63,7 @@ export interface FieldConfigVersion2 {
   }[];
   linkArr: ILogURL[];
   regExtractArr?: ILogExtract[];
+  mappingParamsArr?: ILogMappingParams[];
   version: number;
 }
 

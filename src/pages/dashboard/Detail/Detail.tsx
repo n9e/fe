@@ -44,7 +44,7 @@ import Panels from '../Panels';
 import Title from './Title';
 import { JSONParse } from '../utils';
 import Editor from '../Editor';
-import { sortPanelsByGridLayout, panelsMergeToConfigs, updatePanelsInsertNewPanelToGlobal, ajustPanels } from '../Panels/utils';
+import { sortPanelsByGridLayout, panelsMergeToConfigs, updatePanelsInsertNewPanelToGlobal, ajustPanels, processRepeats } from '../Panels/utils';
 import { useGlobalState } from '../globalState';
 import { scrollToLastPanel, getDefaultTimeRange, getDefaultIntervalSeconds, getDefaultTimezone, dashboardTimezoneCacheKey } from './utils';
 import dashboardMigrator from './utils/dashboardMigrator';
@@ -153,6 +153,7 @@ export default function DetailV2(props: IProps) {
         setDashboard(newDashboard);
 
         if (configs) {
+          setPanels(sortPanelsByGridLayout(ajustPanels(configs.panels)));
           // TODO: configs 中可能没有 var 属性会导致 VariableConfig 报错
           const variableConfig = configs.var
             ? configs
@@ -166,7 +167,6 @@ export default function DetailV2(props: IProps) {
             }) as IVariable[],
           );
           setDashboardLinks(configs.links);
-          setPanels(sortPanelsByGridLayout(ajustPanels(configs.panels)));
           if (cbk) {
             cbk();
           }
@@ -223,6 +223,7 @@ export default function DetailV2(props: IProps) {
     // 更新变量配置状态
     if (valueWithOptions) {
       setVariableConfigWithOptions(valueWithOptions);
+      setPanels(processRepeats(panels, valueWithOptions));
       setDashboardMeta({
         ...(dashboardMeta || {}),
         dashboardId: _.toString(id),
@@ -358,9 +359,8 @@ export default function DetailV2(props: IProps) {
                         value={variableConfig}
                         range={range}
                         id={id}
-                        onOpenFire={stopAutoRefresh}
-                        variableConfigRefreshFlag={variableConfigRefreshFlag}
                         dashboard={dashboard}
+                        onOpenFire={stopAutoRefresh}
                       />
                     )}
                   </div>
@@ -370,80 +370,77 @@ export default function DetailV2(props: IProps) {
           </Affix>
           {dashboard.configs?.mode !== 'iframe' ? (
             <>
-              {variableConfigWithOptions && (
-                <Panels
-                  dashboardId={id}
-                  isPreview={isPreview}
-                  editable={editable}
-                  panels={panels}
-                  setPanels={setPanels}
-                  dashboard={dashboard}
-                  setDashboard={setDashboard}
-                  annotations={annotations}
-                  setAllowedLeave={setAllowedLeave}
-                  range={range}
-                  setRange={setRange}
-                  timezone={timezone}
-                  setTimezone={(newTimezone) => {
-                    setTimezone(newTimezone);
-                    window.localStorage.setItem(`${dashboardTimezoneCacheKey}_${id}`, newTimezone);
-                  }}
-                  variableConfig={variableConfigWithOptions}
-                  onShareClick={(panel) => {
-                    const curDatasourceValue = replaceExpressionVars({
-                      text: panel.datasourceValue,
-                      variables: variableConfigWithOptions,
-                      limit: variableConfigWithOptions.length,
-                      dashboardId: id,
-                      datasourceList,
-                    });
-                    const serielData = {
-                      dataProps: {
-                        ...panel,
-                        datasourceValue: curDatasourceValue,
-                        // @ts-ignore
-                        datasourceName: _.find(datasourceList, { id: curDatasourceValue })?.name,
-                        targets: _.map(panel.targets, (target) => {
-                          const fullVars = getOptionsList(
-                            {
-                              dashboardId: _.toString(dashboard.id),
-                              variableConfigWithOptions: variableConfigWithOptions,
-                            },
-                            range,
-                          );
-                          const realExpr = variableConfigWithOptions
-                            ? replaceExpressionVars({
-                                text: target.expr,
-                                variables: fullVars,
-                                limit: fullVars.length,
-                                dashboardId: id,
-                              })
-                            : target.expr;
-                          return {
-                            ...target,
-                            expr: realExpr,
-                          };
-                        }),
-                        range,
-                      },
-                    };
-                    SetTmpChartData([
-                      {
-                        configs: JSON.stringify(serielData),
-                      },
-                    ]).then((res) => {
-                      const ids = res.dat;
-                      window.open(basePrefix + '/chart/' + ids);
-                    });
-                  }}
-                  onUpdated={(res) => {
-                    updateAtRef.current = res.update_at;
-                    refresh();
-                  }}
-                  setVariableConfigRefreshFlag={setVariableConfigRefreshFlag}
-                  setAnnotationsRefreshFlag={setAnnotationsRefreshFlag}
-                />
-              )}
+              <Panels
+                dashboardId={id}
+                isPreview={isPreview}
+                editable={editable}
+                panels={panels}
+                setPanels={setPanels}
+                dashboard={dashboard}
+                setDashboard={setDashboard}
+                annotations={annotations}
+                setAllowedLeave={setAllowedLeave}
+                range={range}
+                setRange={setRange}
+                timezone={timezone}
+                setTimezone={(newTimezone) => {
+                  setTimezone(newTimezone);
+                  window.localStorage.setItem(`${dashboardTimezoneCacheKey}_${id}`, newTimezone);
+                }}
+                variableConfig={variableConfig}
+                variableConfigWithOptions={variableConfigWithOptions}
+                onShareClick={(panel) => {
+                  if (!variableConfigWithOptions) return;
+                  const curDatasourceValue = replaceExpressionVars({
+                    text: panel.datasourceValue,
+                    variables: variableConfigWithOptions,
+                    limit: variableConfigWithOptions.length,
+                    dashboardId: id,
+                    datasourceList,
+                  });
+                  const serielData = {
+                    dataProps: {
+                      ...panel,
+                      datasourceValue: curDatasourceValue,
+                      // @ts-ignore
+                      datasourceName: _.find(datasourceList, { id: curDatasourceValue })?.name,
+                      targets: _.map(panel.targets, (target) => {
+                        const fullVars = getOptionsList({
+                          variableConfigWithOptions: variableConfigWithOptions,
+                          time: range,
+                        });
+                        const realExpr = variableConfigWithOptions
+                          ? replaceExpressionVars({
+                              text: target.expr,
+                              variables: fullVars,
+                              limit: fullVars.length,
+                              dashboardId: id,
+                            })
+                          : target.expr;
+                        return {
+                          ...target,
+                          expr: realExpr,
+                        };
+                      }),
+                      range,
+                    },
+                  };
+                  SetTmpChartData([
+                    {
+                      configs: JSON.stringify(serielData),
+                    },
+                  ]).then((res) => {
+                    const ids = res.dat;
+                    window.open(basePrefix + '/chart/' + ids);
+                  });
+                }}
+                onUpdated={(res) => {
+                  updateAtRef.current = res.update_at;
+                  refresh();
+                }}
+                setVariableConfigRefreshFlag={setVariableConfigRefreshFlag}
+                setAnnotationsRefreshFlag={setAnnotationsRefreshFlag}
+              />
             </>
           ) : (
             <iframe className='embedded-dashboards-iframe' src={adjustURL(dashboard.configs?.iframe_url!, darkMode)} width='100%' height='100%' />
@@ -459,7 +456,7 @@ export default function DetailV2(props: IProps) {
             visible,
           });
         }}
-        variableConfigWithOptions={variableConfigWithOptions}
+        variableConfig={variableConfig}
         id={editorData.id}
         dashboardId={id}
         time={range}

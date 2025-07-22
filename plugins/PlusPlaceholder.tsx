@@ -50,6 +50,7 @@ const extraColumns = () => {};
 const getNetworkDevices = () => {};
 const getNetworkDevicesList = () => {};
 const getNetworkDevicesTags = () => {};
+const searchDrilldown = () => {};
 const proDocumentPathMap = {};
 export {
   AlertRule,
@@ -73,4 +74,5 @@ export {
   getNetworkDevicesList,
   getNetworkDevicesTags,
   proDocumentPathMap,
+  searchDrilldown,
 };

@@ -118,7 +118,8 @@ export default function Content() {
     if (
       profile?.roles?.length > 0 &&
       !_.includes(['/', '/account/profile/info', '/account/profile/pwd', '/account/profile/token'], location.pathname) &&
-      !location.pathname.includes('/docs/')
+      !location.pathname.includes('/docs/') &&
+      !location.pathname.includes('/settings/datasource/edit/')
     ) {
       if (profile?.roles.indexOf('Admin') === -1) {
         // 如果没有权限则重定向到 403 页面
