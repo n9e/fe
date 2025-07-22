@@ -96,6 +96,8 @@ function Import(props: IProps & ModalWrapProps) {
                   ...item.rule_config,
                   datasource_queries: vals?.datasource_queries,
                 },
+                notify_version: 1, // 导入内置规则时强制使用通知规则的版本
+                notify_rule_ids: [], // 同时清空内置规则里的通知规则设置
               };
             });
           } catch (e) {
