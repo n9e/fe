@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { message, Table, Modal, Button, Space, Popconfirm, Tooltip } from 'antd';
+import { message, Table, Modal, Button, Space, Popconfirm, Tooltip, Dropdown, Menu } from 'antd';
 import { ColumnProps } from 'antd/es/table';
-import { CheckCircleFilled, MinusCircleFilled, WarningOutlined } from '@ant-design/icons';
+import { CheckCircleFilled, MinusCircleFilled, WarningOutlined, MoreOutlined } from '@ant-design/icons';
 import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
 import { allCates } from '@/components/AdvancedWrap/utils';
@@ -231,6 +231,20 @@ const TableSource = (props: IPropsType) => {
                 {t('common:btn.delete')}
               </Button>
             )}
+
+            {record.plugin_type === 'cloudwatch' && (
+              <Dropdown
+                overlay={
+                  <Menu>
+                    <Menu.Item>
+                      <LabelMappingCloudwatchButton ds_id={record.id} ds_cate='cloudwatch' />
+                    </Menu.Item>
+                  </Menu>
+                }
+              >
+                <Button type='link' icon={<MoreOutlined />} />
+              </Dropdown>
+            )}
           </Space>
         );
       },
@@ -256,14 +270,6 @@ const TableSource = (props: IPropsType) => {
         ) : (
           t('auth.not-support')
         );
-      },
-    });
-    defaultColumns.splice(4, 0, {
-      title: t('label_mapping.title'),
-      dataIndex: 'label_mapping',
-      width: 150,
-      render: (_text, record) => {
-        return record.plugin_type === 'cloudwatch' ? <LabelMappingCloudwatchButton ds_id={record.id} ds_cate='cloudwatch' /> : t('auth.not-support');
       },
     });
   }
