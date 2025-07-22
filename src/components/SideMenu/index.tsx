@@ -116,6 +116,9 @@ const SideMenu = (props: SideMenuProps) => {
             if (child.key.startsWith(`${embeddedProductDetailPath}/`)) {
               return child;
             }
+            if (child.pathType === 'absolute') {
+              return child;
+            }
             if (child.type === 'tabs' && child.children) {
               const filteredTabs = child.children.filter((tab) => perms?.includes(tab.key));
               if (filteredTabs.length > 0) {

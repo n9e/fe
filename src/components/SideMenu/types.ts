@@ -7,7 +7,9 @@ export interface IMenuItem {
   path?: string;
   role?: string[];
   children?: IMenuItem[];
-  type?: string;
+  type?: string; // 'tabs'
+  pathType?: string; // 'absolute'
+  target?: string; // '_blank'
   beta?: boolean;
   deprecated?: boolean;
 }
@@ -15,7 +17,10 @@ export interface IMenuItem {
 export interface BaseMenuItem {
   key: string;
   label: string;
-  type?: string;
+  type?: string; // 'tabs'
+  pathType?: string; // 'absolute'
+  path?: string; // URL for absolute paths
+  target?: string; // '_blank'
   role?: string[];
   deprecated?: boolean;
   children?: Array<BaseMenuItem>;
