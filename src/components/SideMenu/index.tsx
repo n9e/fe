@@ -32,6 +32,7 @@ interface SideMenuProps {
   defaultLogos?: DefaultLogos;
   getMenuList?: (embeddedProductMenu?: MenuItem[], hideDeprecatedMenus?: boolean) => MenuItem[];
   onMenuClick?: (key: string) => void;
+  isGoldTheme?: boolean;
 }
 
 const SideMenu = (props: SideMenuProps) => {
@@ -51,8 +52,9 @@ const SideMenu = (props: SideMenuProps) => {
     },
     getMenuList = getCurrentMenuList,
     onMenuClick,
+    isGoldTheme,
   } = props;
-  const sideMenuBgColor = getSideMenuBgColor(sideMenuBgMode as any);
+  const sideMenuBgColor = getSideMenuBgColor(isGoldTheme ? 'dark' : (sideMenuBgMode as any));
   const location = useLocation();
   const query = querystring.parse(location.search);
   const [selectedKeys, setSelectedKeys] = useState<string[]>();
