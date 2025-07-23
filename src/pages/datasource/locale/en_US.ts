@@ -102,5 +102,8 @@ const en_US = {
   save_btn: 'Save',
   auth_enable: 'Enable Auth',
   skip_tls_verify: 'Skip TLS verification',
+  label_mapping: {
+    title: 'Label Enrichment',
+  },
 };
 export default en_US;

@@ -82,9 +82,10 @@ export default function ImportBuiltinContent({ busiId, onOk, groupedDatasourceLi
           busiId,
           _.map(vals.selectedRules, (item) => {
             const content = JSON.parse(item.content);
+            const record = _.omit(content, ['id', 'group_id', 'create_at', 'create_by', 'update_at', 'update_by']) as any;
             return {
-              ...content,
-              cate: content.cate === 'host' ? 'host' : vals.datasource_cate,
+              ...record,
+              cate: record.cate === 'host' ? 'host' : vals.datasource_cate,
               datasource_queries: vals?.datasource_queries,
               disabled: vals.enabled ? 0 : 1,
               notify_version: 1, // 导入内置规则时强制使用通知规则的版本

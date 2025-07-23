@@ -96,6 +96,9 @@ const zh_HK = {
   save_btn: '測試連通性',
   auth_enable: '啟用授權',
   skip_tls_verify: '跳過 TLS 驗證',
+  label_mapping: {
+    title: '標籤豐富',
+  },
 };
 
 export default zh_HK;
