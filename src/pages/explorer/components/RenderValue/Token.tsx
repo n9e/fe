@@ -125,7 +125,7 @@ export default function Token(props: Props) {
                   handleNav(i.urlTemplate, valueObjected, { start, end }, fieldConfig?.regExtractArr, fieldConfig?.mappingParamsArr);
                 }}
               >
-                {toString(valueNode)}
+                {i.name}
               </li>
             );
           })}
