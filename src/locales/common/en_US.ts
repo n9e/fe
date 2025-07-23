@@ -126,10 +126,15 @@ const en_US = {
   },
   time: {
     millisecond: 'Millisecond',
+    ms: 'Millisecond',
     second: 'Second',
+    s: 'Second',
     minute: 'Minute',
+    m: 'Minute',
     hour: 'Hour',
+    h: 'Hour',
     day: 'Day',
+    d: 'Day',
     weekdays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
   },
   severity: {

@@ -55,6 +55,16 @@ const zh_HK = {
     disable: '禁用',
     enable: '啟用',
   },
+  escalations: {
+    title: '升級配置',
+    item_title: '通知升級',
+    item_add_btn: '添加通知升級',
+    interval: '檢測周期',
+    interval_required: '檢測周期不能為空',
+    duration_required: '持續時間不能為空',
+    duration_1: '異常事件已超過',
+    duration_2: '，仍處於未恢復/未認領狀態時，使用本配置發送通知。',
+  },
 };
 
 export default zh_HK;

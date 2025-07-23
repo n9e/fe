@@ -10,16 +10,17 @@ import TagItem from './TagItem';
 interface Props {
   disabled?: boolean;
   field?: any;
-  fullName?: string[];
+  fullName?: (string | number)[];
+  name?: string | (string | number)[];
 }
 
 export default function index(props: Props) {
   const { t } = useTranslation('KVTagSelect');
-  const { disabled, field = {}, fullName = [] } = props;
-  const name = [field.name, 'attributes'];
+  const { disabled, field = {}, fullName = [], name = [field.name, 'attributes'] } = props;
+  const restField = _.omit(field, ['key', 'name']);
 
   return (
-    <Form.List {...field} name={name}>
+    <Form.List {...restField} name={name}>
       {(fields, { add, remove }) => (
         <>
           <Row gutter={[10, 10]} className='mb1'>
@@ -45,7 +46,7 @@ export default function index(props: Props) {
             {fields.length ? <Col span={16}>{t(`${NS}:notification_configuration.attributes_value`)}</Col> : null}
           </Row>
           {fields.map((field) => (
-            <TagItem key={field.key} disabled={disabled} fullName={_.concat(fullName, name)} field={field} remove={remove} />
+            <TagItem key={field.key} disabled={disabled} fullName={[...fullName, ...name]} field={field} remove={remove} />
           ))}
         </>
       )}

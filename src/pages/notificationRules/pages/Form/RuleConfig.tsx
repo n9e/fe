@@ -77,6 +77,7 @@ export default function NotifyConfig(props: Props) {
       <Row gutter={SIZE}>
         <Col span={channelItem?.request_type !== 'flashduty' ? 12 : 24}>
           <ChannelSelect
+            prefixNamePath={['notify_configs']}
             field={field}
             onChange={(_val, item) => {
               setChannelItem(item);
@@ -85,7 +86,7 @@ export default function NotifyConfig(props: Props) {
         </Col>
         {channelItem?.request_type !== 'flashduty' && (
           <Col span={12}>
-            <TemplateSelect field={field} />
+            <TemplateSelect prefixNamePath={['notify_configs']} field={field} />
           </Col>
         )}
       </Row>

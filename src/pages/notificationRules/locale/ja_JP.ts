@@ -59,6 +59,16 @@ const ja_JP = {
     disable: '無効化',
     enable: '有効化',
   },
+  escalations: {
+    title: 'エスカレーション設定',
+    item_title: '通知エスカレーション',
+    item_add_btn: '通知エスカレーションを追加',
+    interval: '検出間隔',
+    interval_required: '検出間隔は必須です',
+    duration_required: '継続時間は必須です',
+    duration_1: '異常イベントが',
+    duration_2: 'を超えた場合、未回復/未承認の状態が続く場合、この設定を使用して通知を送信します。',
+  },
 };
 
 export default ja_JP;
