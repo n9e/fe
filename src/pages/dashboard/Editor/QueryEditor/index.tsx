@@ -8,6 +8,7 @@ import { CommonStateContext } from '@/App';
 import { replaceExpressionVars } from '@/pages/dashboard/VariableConfig/constant';
 
 import OrganizeFields from '../TransformationsEditor/OrganizeFields';
+import TransformationsEditorNG from '../TransformationsEditorNG';
 import DatasourceSelect from './components/DatasourceSelect';
 import QueryBuilder from './QueryBuilder';
 
@@ -30,7 +31,7 @@ export default function index({ panelWidth, chartForm, type, variableConfig, das
   return (
     <div>
       <Space align='start'>
-        {type === 'table' && (
+        {_.includes(['table', 'tableNG'], type) && (
           <Radio.Group
             value={mode}
             onChange={(e) => {
@@ -39,7 +40,8 @@ export default function index({ panelWidth, chartForm, type, variableConfig, das
             buttonStyle='solid'
           >
             <Radio.Button value='query'>{t('query.title')}</Radio.Button>
-            <Radio.Button value='transform'>{t('query.transform')} (beta)</Radio.Button>
+            {type === 'table' && <Radio.Button value='transform'>{t('query.transform')} (beta)</Radio.Button>}
+            {type === 'tableNG' && <Radio.Button value='transformNG'>{t('query.transform')} (beta)</Radio.Button>}
           </Radio.Group>
         )}
         <DatasourceSelect dashboardId={dashboardId} chartForm={chartForm} variableConfig={variableConfig} />
@@ -51,13 +53,8 @@ export default function index({ panelWidth, chartForm, type, variableConfig, das
       >
         <QueryBuilder panelWidth={panelWidth} cate={cate} datasourceValue={datasourceValue} variables={variableConfig} dashboardId={dashboardId} time={time} />
       </div>
-      <div
-        style={{
-          display: mode === 'transform' ? 'block' : 'none',
-        }}
-      >
-        <OrganizeFields chartForm={chartForm} />
-      </div>
+      {mode === 'transform' && <OrganizeFields />}
+      {mode === 'transformNG' && <TransformationsEditorNG />}
     </div>
   );
 }
