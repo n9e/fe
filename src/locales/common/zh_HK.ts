@@ -125,10 +125,15 @@ const zh_HK = {
   },
   time: {
     millisecond: '毫秒',
+    ms: '毫秒',
     second: '秒',
+    s: '秒',
     minute: '分鐘',
+    m: '分鐘',
     hour: '小時',
+    h: '小時',
     day: '天',
+    d: '天',
     weekdays: ['週日', '週一', '週二', '週三', '週四', '週五', '週六'],
   },
   severity: {

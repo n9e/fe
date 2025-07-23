@@ -9,6 +9,9 @@ import { getTeamInfoList } from '@/services/manage';
 import { SIZE } from '@/utils/constant';
 import { scrollToFirstError } from '@/utils';
 
+// @ts-ignore
+import ExtraConfig from 'plus:/parcels/notificationRules/ExtraConfig';
+
 import { NS, DEFAULT_VALUES } from '../../constants';
 import { RuleItem } from '../../types';
 import { normalizeFormValues } from '../../utils/normalizeValues';
@@ -91,6 +94,7 @@ export default function FormCpt(props: Props) {
           </>
         )}
       </Form.List>
+      <ExtraConfig />
       {!disabled && (
         <Affix offsetBottom={0}>
           <Card size='small' className='affix-bottom-shadow'>

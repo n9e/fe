@@ -13,17 +13,19 @@ import { PERM } from '@/pages/notificationTemplates/constants';
 import { NS } from '../../constants';
 
 interface Props {
+  prefixNamePath?: (string | number)[];
   field: FormListFieldData;
 }
 
 export default function TemplateSelect(props: Props) {
   const { t } = useTranslation(NS);
-  const { field } = props;
+  const { prefixNamePath = [], field } = props;
+  const restField = _.omit(field, ['key', 'name']);
   const [options, setOptions] = useState<{ label: string; value: number }[]>([]);
   const [loading, setLoading] = useState(false);
   const form = Form.useFormInstance();
-  const channel_id = Form.useWatch(['notify_configs', field.name, 'channel_id']);
-  const template_id = Form.useWatch(['notify_configs', field.name, 'template_id']);
+  const channel_id = Form.useWatch([...prefixNamePath, field.name, 'channel_id']);
+  const template_id = Form.useWatch([...prefixNamePath, field.name, 'template_id']);
   const isAuthorized = useIsAuthorized([PERM]);
   const fetchData = (channel_id) => {
     if (channel_id) {
@@ -41,7 +43,7 @@ export default function TemplateSelect(props: Props) {
           // 如果 template_id 不存在，且返回的模板列表不为空，则设置第一个模板为默认值
           if (res.length > 0 && template_id === undefined) {
             const formValues = _.cloneDeep(form.getFieldsValue());
-            _.set(formValues, ['notify_configs', field.name, 'template_id'], res[0].id);
+            _.set(formValues, [...prefixNamePath, field.name, 'template_id'], res[0].id);
             form.setFieldsValue(formValues);
           }
         })
@@ -62,7 +64,7 @@ export default function TemplateSelect(props: Props) {
 
   return (
     <Form.Item
-      {...field}
+      {...restField}
       label={
         <Space size={4}>
           {t('notification_configuration.template')}

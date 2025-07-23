@@ -22,7 +22,7 @@ interface Props {
   funcName?: string;
   valueName?: string;
   field?: any;
-  fullName?: string[];
+  fullName?: (string | number)[];
   name: string | (string | number)[];
   addWapper?: (add: (defaultValue?: any, insertIndex?: number) => void) => void;
 }
@@ -46,9 +46,10 @@ export default function index(props: Props) {
     name,
     addWapper,
   } = props;
+  const restField = _.omit(field, ['key', 'name']);
 
   return (
-    <Form.List {...field} name={name}>
+    <Form.List {...restField} name={name}>
       {(fields, { add, remove }) => (
         <>
           <Row gutter={[10, 10]} className='mb1'>

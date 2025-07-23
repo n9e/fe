@@ -59,5 +59,15 @@ const en_US = {
     disable: 'Disable',
     enable: 'Enable',
   },
+  escalations: {
+    title: 'Escalation configuration',
+    item_title: 'Notification escalation',
+    item_add_btn: 'Add notification escalation',
+    interval: 'Detection interval',
+    interval_required: 'Detection interval is required',
+    duration_required: 'Duration is required',
+    duration_1: 'Abnormal event has exceeded',
+    duration_2: 'If it is still in the unrecovered/unclaimed state, use this configuration to send notifications.',
+  },
 };
 export default en_US;

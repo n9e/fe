@@ -31,4 +31,13 @@ export interface RuleItem {
   enable: boolean;
   user_group_ids: string[];
   notify_configs: RuleConfig[];
+  extra_config?: {
+    escalations: EscalationItem[];
+  };
+}
+
+export interface EscalationItem extends RuleConfig {
+  interval: number;
+  duration: number;
+  duration_unit: string;
 }

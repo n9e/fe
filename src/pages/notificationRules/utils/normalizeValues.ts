@@ -18,6 +18,21 @@ export function normalizeFormValues(values: RuleItem): any {
         }),
       };
     }),
+    extra_config: {
+      ...(values.extra_config || {}),
+      escalations: _.map(values.extra_config?.escalations, (item) => {
+        return {
+          ...item,
+          time_ranges: _.map(item.time_ranges, (timeRange) => {
+            return {
+              ...timeRange,
+              start: timeRange.start.format('HH:mm'),
+              end: timeRange.end.format('HH:mm'),
+            };
+          }),
+        };
+      }),
+    },
   };
 }
 
@@ -36,5 +51,20 @@ export function normalizeInitialValues(values: any): RuleItem {
         }),
       };
     }),
+    extra_config: {
+      ...(values.extra_config || {}),
+      escalations: _.map(values.extra_config?.escalations, (item) => {
+        return {
+          ...item,
+          time_ranges: _.map(item.time_ranges, (timeRange) => {
+            return {
+              ...timeRange,
+              start: moment(timeRange.start, 'HH:mm'),
+              end: moment(timeRange.end, 'HH:mm'),
+            };
+          }),
+        };
+      }),
+    },
   };
 }
