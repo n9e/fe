@@ -9,32 +9,54 @@ import { ScrollArea } from '@/components/ScrollArea';
 import { CommonStateContext } from '@/App';
 import { getSideMenuBgColor } from '@/components/pageLayout/SideMenuColorSetting';
 import { IS_ENT } from '@/utils/constant';
-import { getMenuList } from '@/components/SideMenu/menu';
 import { getEmbeddedProducts } from '@/pages/embeddedProduct/services';
 import { eventBus, EVENT_KEYS } from '@/pages/embeddedProduct/eventBus';
 import { DETAIL_PATH as embeddedProductDetailPath } from '@/pages/embeddedProduct/constants';
 import { V8_BETA_14_TS } from '@/utils/constant';
 
-import { cn } from './utils';
+import { cn, getCurrentMenuList } from './utils';
 import SideMenuHeader from './Header';
 import MenuList from './MenuList';
 import QuickMenu from './QuickMenu';
-import { MenuItem } from './types';
+import { MenuItem, DefaultLogos } from './types';
 import './menu.less';
 import './locale';
 
-// @ts-ignore
-import getPlusMenuList from 'plus:/parcels/SideMenu/menu';
+const calcUrlPath = (url: string) => {
+  const urlPath = url.split('?')[0];
+  return urlPath;
+};
 
-const SideMenu = () => {
+interface SideMenuProps {
+  topExtra?: React.ReactElement;
+  defaultLogos?: DefaultLogos;
+  getMenuList?: (embeddedProductMenu?: MenuItem[], hideDeprecatedMenus?: boolean) => MenuItem[];
+  onMenuClick?: (key: string) => void;
+  isGoldTheme?: boolean;
+}
+
+const SideMenu = (props: SideMenuProps) => {
   const { i18n } = useTranslation('sideMenu');
-  const { isPlus, darkMode, perms, installTs } = useContext(CommonStateContext);
+  const { darkMode, perms, installTs } = useContext(CommonStateContext);
   let { sideMenuBgMode } = useContext(CommonStateContext);
   if (darkMode) {
     sideMenuBgMode = 'dark';
   }
-  const sideMenuBgColor = getSideMenuBgColor(sideMenuBgMode as any);
+  const {
+    topExtra,
+    defaultLogos = {
+      light_menu_big_logo_url: '/image/logo-light-l.png',
+      light_menu_small_logo_url: '/image/logo-light.png',
+      menu_big_logo_url: '/image/logo-l.png',
+      menu_small_logo_url: '/image/logo.png',
+    },
+    getMenuList = getCurrentMenuList,
+    onMenuClick,
+    isGoldTheme,
+  } = props;
+  const sideMenuBgColor = getSideMenuBgColor(isGoldTheme ? 'dark' : (sideMenuBgMode as any));
   const location = useLocation();
+  const query = querystring.parse(location.search);
   const [selectedKeys, setSelectedKeys] = useState<string[]>();
   const [collapsed, setCollapsed] = useState<boolean>(Number(localStorage.getItem('menuCollapsed')) === 1);
   const [collapsedHover, setCollapsedHover] = useState<boolean>(false);
@@ -45,12 +67,18 @@ const SideMenu = () => {
 
   const hideSideMenu = useMemo(() => {
     if (
+      sessionStorage.getItem('menuHide') === '1' ||
+      query?.menu === 'hide' ||
       location.pathname === '/login' ||
       location.pathname.startsWith('/chart/') ||
       location.pathname.startsWith('/events/screen/') ||
       location.pathname.startsWith('/dashboards/share/') ||
       location.pathname.startsWith('/callback') || // match /callback or /callback/${type}
       location.pathname.indexOf('/polaris/screen') === 0 ||
+      location.pathname.indexOf('/firemap/screen/') === 0 ||
+      location.pathname.indexOf('/firemap/screen-detail') === 0 ||
+      location.pathname.indexOf('/topology-v2/detail') === 0 ||
+      location.pathname.indexOf('/jiesuan/detail') === 0 ||
       location.pathname.indexOf('/template/screens/detail') === 0
     ) {
       return true;
@@ -95,6 +123,11 @@ const SideMenu = () => {
             if (child.key.startsWith(`${embeddedProductDetailPath}/`)) {
               return child;
             }
+            if (menu.key === '/flashduty') {
+              if (perms?.includes('/flashduty')) {
+                return child;
+              }
+            }
             if (child.type === 'tabs' && child.children) {
               const filteredTabs = child.children.filter((tab) => perms?.includes(tab.key));
               if (filteredTabs.length > 0) {
@@ -102,7 +135,7 @@ const SideMenu = () => {
               }
               return null;
             }
-            return perms?.includes(child.key) ? child : null;
+            return perms?.includes(calcUrlPath(child.key)) ? child : null;
           })
           .filter(Boolean);
 
@@ -127,15 +160,15 @@ const SideMenu = () => {
                 return child;
               }
               if (child.type === 'tabs' && child.children && child.children.length > 0) {
-                return child.children.some((tabChild) => _.includes(perms, tabChild.key));
+                return child.children.some((tabChild) => _.includes(perms, calcUrlPath(tabChild.key)));
               }
               return child && _.includes(perms, child.key);
             })
             .map((c) => {
               if (c.type === 'tabs' && c.children && c.children.length) {
-                return c.children.map((g) => `${item.key}|${g.key}`);
+                return c.children.map((g) => `${calcUrlPath(item.key)}|${calcUrlPath(g.key)}`);
               }
-              return `${item.key}|${c.key}`;
+              return `${calcUrlPath(item.key)}|${calcUrlPath(c.key)}`;
             });
         })
         .filter(Boolean)
@@ -162,7 +195,7 @@ const SideMenu = () => {
   }, [menuPaths, location.pathname, selectedKeys]);
 
   const hideDeprecatedMenus = installTs > V8_BETA_14_TS;
-  const menuList = isPlus ? getPlusMenuList(embeddedProductMenu, hideDeprecatedMenus) : getMenuList(embeddedProductMenu, hideDeprecatedMenus);
+  const menuList = getMenuList(embeddedProductMenu, hideDeprecatedMenus);
   const uncollapsedWidth = i18n.language === 'en_US' || i18n.language === 'ru_RU' ? 'w-[250px]' : 'w-[172px]';
 
   return (
@@ -189,7 +222,7 @@ const SideMenu = () => {
           style={{ background: sideMenuBgColor, borderColor: 'var(--fc-border-color)' }}
         >
           <div className='flex flex-1 flex-col justify-between gap-8 overflow-hidden'>
-            <SideMenuHeader collapsed={collapsed} collapsedHover={collapsedHover} sideMenuBgMode={sideMenuBgMode} />
+            <SideMenuHeader collapsed={collapsed} collapsedHover={collapsedHover} sideMenuBgMode={sideMenuBgMode} defaultLogos={defaultLogos} />
             <ScrollArea className='-mr-2 flex-1'>
               <MenuList
                 list={menus}
@@ -198,6 +231,9 @@ const SideMenu = () => {
                 sideMenuBgColor={sideMenuBgColor}
                 isCustomBg={isCustomBg}
                 quickMenuRef={quickMenuRef}
+                topExtra={topExtra}
+                onClick={onMenuClick}
+                isGoldTheme={isGoldTheme}
               />
             </ScrollArea>
           </div>

@@ -140,7 +140,7 @@ export default function Title(props: IProps) {
 
   return (
     <div
-      className={`dashboard-detail-header ${!IS_ENT ? 'n9e-page-header-content' : ''}`}
+      className={`dashboard-detail-header n9e-page-header-content`}
       style={{
         display: query.viewMode === 'fullscreen' ? 'none' : 'flex',
       }}

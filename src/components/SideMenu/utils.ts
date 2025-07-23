@@ -14,8 +14,8 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const getCurrentMenuList = (): MenuItem[] => {
-  return IS_PLUS ? getPlusMenuList() : getMenuList();
+export const getCurrentMenuList = (embeddedProductMenu: MenuItem[] = [], hideDeprecatedMenus: boolean = false): MenuItem[] => {
+  return IS_PLUS ? getPlusMenuList(embeddedProductMenu, hideDeprecatedMenus) : getMenuList(embeddedProductMenu, hideDeprecatedMenus);
 };
 
 export const findMenuByPath = (path: string, menuList: MenuItem[]): MenuMatchResult | null => {
