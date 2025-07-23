@@ -103,6 +103,9 @@ const ja_JP = {
   save_btn: '接続テスト',
   auth_enable: '認証を有効にする',
   skip_tls_verify: 'TLS検証をスキップ',
+  label_mapping: {
+    title: 'ラベルの強化',
+  },
 };
 
 export default ja_JP;

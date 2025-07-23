@@ -103,6 +103,9 @@ const ru_RU = {
   save_btn: 'Проверить соединение',
   auth_enable: 'Включить авторизацию',
   skip_tls_verify: 'Пропустить проверку TLS',
+  label_mapping: {
+    title: 'Обогащение меток',
+  },
 };
 
 export default ru_RU;
