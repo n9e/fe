@@ -233,6 +233,7 @@ const SideMenu = (props: SideMenuProps) => {
                 quickMenuRef={quickMenuRef}
                 topExtra={topExtra}
                 onClick={onMenuClick}
+                isGoldTheme={isGoldTheme}
               />
             </ScrollArea>
           </div>
