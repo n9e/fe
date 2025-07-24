@@ -12,11 +12,20 @@ interface Props {
   field?: any;
   fullName?: (string | number)[];
   name?: string | (string | number)[];
+  keyLabelTootip?: React.ReactNode;
+  keyLabelTootipPlacement?: 'top' | 'left' | 'right' | 'bottom';
 }
 
 export default function index(props: Props) {
   const { t } = useTranslation('KVTagSelect');
-  const { disabled, field = {}, fullName = [], name = [field.name, 'attributes'] } = props;
+  const {
+    disabled,
+    field = {},
+    fullName = [],
+    name = [field.name, 'attributes'],
+    keyLabelTootip = t(`${NS}:notification_configuration.attributes_tip`),
+    keyLabelTootipPlacement,
+  } = props;
   const restField = _.omit(field, ['key', 'name']);
 
   return (
@@ -27,9 +36,11 @@ export default function index(props: Props) {
             <Col span={5}>
               <Space align='baseline' size={4}>
                 {t(`${NS}:notification_configuration.attributes`)}
-                <Tooltip className='n9e-ant-from-item-tooltip' title={t(`${NS}:notification_configuration.attributes_tip`)}>
-                  <QuestionCircleOutlined />
-                </Tooltip>
+                {keyLabelTootip && (
+                  <Tooltip className='n9e-ant-from-item-tooltip' title={keyLabelTootip} overlayClassName='ant-tooltip-auto-width' placement={keyLabelTootipPlacement}>
+                    <QuestionCircleOutlined />
+                  </Tooltip>
+                )}
                 {!disabled && (
                   <PlusCircleOutlined
                     onClick={() => {
