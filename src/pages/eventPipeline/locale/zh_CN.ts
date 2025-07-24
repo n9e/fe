@@ -130,5 +130,17 @@ const zh_CN = {
     content_tooltip: '编写用于处理事件的脚本代码，告警事件会以 stdin 方式传入脚本，脚本需要将 event 作为 json 对象输出到 stdout',
     content_placeholder: '请输入脚本内容',
   },
+  inhibit: {
+    tip1: '当前告警满足以下条件',
+    tip2: '且在过去',
+    tip3: '秒内有满足以下条件的活跃告警',
+    tip4: '且两天告警在以下字段完全一致',
+    tip5: '满足以上全部条件时，当前告警将被抑制，且不再进行通知',
+    duration_required: '抑制时长不能为空',
+    match_label_keys: '标签',
+    match_label_keys_required: '标签不能为空',
+    match_attribute_keys: '属性',
+    match_attribute_keys_required: '属性不能为空',
+  },
 };
 export default zh_CN;
