@@ -118,7 +118,7 @@ export default function HTTP() {
           <InputNumber min={0} />
         </Form.Item>
       </Space>
-      <Form.Item label={t('http_request_config.insecure_skip_verify')} name={[...names, 'insecure_skip_verify']} valuePropName='checked'>
+      <Form.Item label={t('http_request_config.insecure_skip_verify')} name={[...names, 'tls', 'skip_verify']} valuePropName='checked'>
         <Switch />
       </Form.Item>
       <Form.Item label={t('http_request_config.proxy')} tooltip={t('http_request_config.proxy_tip')} name={[...names, 'proxy']}>
