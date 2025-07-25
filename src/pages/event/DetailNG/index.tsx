@@ -121,10 +121,7 @@ export default function DetailNG(props: Props) {
       ? [
           {
             label: t('detail.datasource_id'),
-            key: 'datasource_id',
-            render(content) {
-              return _.find(datasourceList, (item) => item.id === content)?.name;
-            },
+            key: 'cluster',
           },
         ]
       : [false]),

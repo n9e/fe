@@ -288,7 +288,9 @@ function App() {
             };
           });
         } else {
-          const datasourceList = !_.some([`${basePrefix}/login`, `${basePrefix}/callback`], (route) => location.pathname.startsWith(route)) ? await getDatasourceBriefList() : [];
+          const datasourceList = !_.some([`${basePrefix}/login`, `${basePrefix}/callback`, `${basePrefix}/share/alert-his-events/`], (route) => location.pathname.startsWith(route))
+            ? await getDatasourceBriefList()
+            : [];
           removePreloader();
           initialized.current = true;
           setCommonState((state) => {
