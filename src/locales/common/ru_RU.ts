@@ -123,6 +123,7 @@ const ru_RU = {
   error: {
     clone: 'Ошибка клонирования',
     import: 'Ошибка импорта',
+    create: 'Ошибка создания',
   },
   time: {
     millisecond: 'Миллисекунды',

@@ -122,6 +122,7 @@ const zh_CN = {
   error: {
     clone: '克隆失败',
     import: '导入失败',
+    create: '创建失败',
   },
   time: {
     millisecond: '毫秒',

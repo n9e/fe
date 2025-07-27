@@ -39,7 +39,7 @@ const ja_JP = {
     },
     run_test_btn: 'テストを実行',
     run_test_btn_tip: 'すでに発生したイベントをいくつか選択して、この通知設定が正しいかどうかをテストできます。正しい場合、関連する通知メッセージを受信するはずです',
-    run_test_request_success: 'テストの提出に成功しました',
+    run_test_request_result: 'テスト結果を送信',
     user_info: {
       user_ids: '受信者',
       user_group_ids: '受信チーム',
