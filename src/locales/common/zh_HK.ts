@@ -122,6 +122,7 @@ const zh_HK = {
   error: {
     clone: '克隆失敗',
     import: '匯入失敗',
+    create: '創建失敗',
   },
   time: {
     millisecond: '毫秒',
