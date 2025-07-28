@@ -16,7 +16,9 @@ export const DEFAULT_VALUES = {
       concurrency: 3,
       retry_times: 3,
       retry_interval: 3000,
-      insecure_skip_verify: true,
+      tls: {
+        skip_verify: true,
+      },
     },
     smtp_request_config: {
       insecure_skip_verify: true,
