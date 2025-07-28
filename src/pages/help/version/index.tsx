@@ -56,6 +56,29 @@ export default function version() {
             {t('backend')}：{backendVersion}
           </li>
         </ul>
+        <div className='n9e-border-base' style={{ padding: '20px' }}>
+          <div className='metric-page-title mb-2'>{t('productUpgradeGuide')}</div>
+          <ul style={{ padding: '0 20px' }}>
+            <li>
+              <a href='https://c9xudyniiq.feishu.cn/wiki/UJOxw5bxBiP0gQkywSlcQ4K8n7f'>{t('version') + '(V5.8.13)' + t('upgradeGuide') + '-2025-01'}</a>
+            </li>
+            <li>
+              <a href='https://c9xudyniiq.feishu.cn/wiki/FWklwtELOidixskFoekcHGSHnWg'>{t('version') + '(V5.8.14)' + t('upgradeGuide') + '-2025-02'}</a>
+            </li>
+            <li>
+              <a href='https://c9xudyniiq.feishu.cn/wiki/MrxBwSQiviCDnhkAaJkcg1sRn3e'>{t('version') + '(V5.8.15)' + t('upgradeGuide') + '-2025-03'}</a>
+            </li>
+            <li>
+              <a href='https://c9xudyniiq.feishu.cn/wiki/XN0rwSSvWiyesokCb47cXRKSnxb'>{t('version') + '(V5.8.16)' + t('upgradeGuide') + '-2025-04'}</a>
+            </li>
+            <li>
+              <a href='https://c9xudyniiq.feishu.cn/wiki/CKY4wLt9kiQHmRkQxMwcPPwcnQF'>{t('version') + '(V5.8.17)' + t('upgradeGuide') + '-2025-05'}</a>
+            </li>
+            <li>
+              <a href='https://c9xudyniiq.feishu.cn/wiki/NVwDwveNviAPUkk7QbacdPZpnAb'>{t('version') + '(V5.8.18)' + t('upgradeGuide') + '-2025-07'}</a>
+            </li>
+          </ul>
+        </div>
         <LicenseInfo />
         <DataSourceInfo />
       </div>
