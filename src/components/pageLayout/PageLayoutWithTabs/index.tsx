@@ -83,16 +83,18 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
   }, [location.pathname]);
 
   useLayoutEffect(() => {
-    // 如果 Headway 不存在，则每隔 1 秒尝试初始化一次
-    const timer = setInterval(() => {
-      if ((window as any).Headway) {
-        clearInterval(timer);
-        (window as any).Headway?.init({
-          selector: '.product-changelog',
-          account: i18n.language === 'en_US' ? 'yB4rM7' : '7XMr1J',
-        });
-      }
-    }, 1000);
+    if (!IS_ENT && !IS_PLUS) {
+      // 如果 Headway 不存在，则每隔 1 秒尝试初始化一次
+      const timer = setInterval(() => {
+        if ((window as any).Headway) {
+          clearInterval(timer);
+          (window as any).Headway?.init({
+            selector: '.product-changelog',
+            account: i18n.language === 'en_US' ? 'yB4rM7' : '7XMr1J',
+          });
+        }
+      }, 1000);
+    }
   }, [i18n.language]);
 
   const menu = (
