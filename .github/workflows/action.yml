@@ -32,4 +32,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: package-output
-          path: ./dist  # dist 替换为你的实际产物目录
+          path: ./pub
