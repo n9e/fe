@@ -14,12 +14,12 @@
  * limitations under the License.
  *
  */
-import React, { ReactNode, useContext, useState, useEffect } from 'react';
+import React, { ReactNode, useContext, useState, useEffect, useLayoutEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import querystring from 'query-string';
 import { useTranslation } from 'react-i18next';
 import { Menu, Dropdown, Space, Drawer, Button, Tooltip } from 'antd';
-import { DownOutlined, RollbackOutlined } from '@ant-design/icons';
+import { DownOutlined, RollbackOutlined, HistoryOutlined } from '@ant-design/icons';
 
 import { Logout } from '@/services/login';
 import AdvancedWrap, { License } from '@/components/AdvancedWrap';
@@ -81,6 +81,19 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
       setCurrentMenu(result);
     }
   }, [location.pathname]);
+
+  useLayoutEffect(() => {
+    // 如果 Headway 不存在，则每隔 1 秒尝试初始化一次
+    const timer = setInterval(() => {
+      if ((window as any).Headway) {
+        clearInterval(timer);
+        (window as any).Headway?.init({
+          selector: '.product-changelog',
+          account: i18n.language === 'en_US' ? 'yB4rM7' : '7XMr1J',
+        });
+      }
+    }, 1000);
+  }, [i18n.language]);
 
   const menu = (
     <Menu>
@@ -182,6 +195,12 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                     <FeatureNotification />
                   </AdvancedWrap>
 
+                  {!IS_ENT && !IS_PLUS && (
+                    <Button size='small' type='text' icon={<HistoryOutlined />} className='relative'>
+                      <div className='product-changelog absolute bottom-[2px] left-[7px]'></div>
+                    </Button>
+                  )}
+
                   <Dropdown
                     overlay={
                       <Menu
@@ -205,7 +224,6 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                   <div style={{ marginRight: 12 }}>
                     <DarkModeSelect />
                   </div>
-
                   <Dropdown overlay={menu} trigger={['click']}>
                     <span className='avator' style={{ cursor: 'pointer' }}>
                       <img src={profile.portrait || '/image/avatar1.png'} />
