@@ -100,6 +100,7 @@
     "umi-request": "^1.3.5",
     "uplot": "^1.6.31",
     "use-antd-resizable-header": "^2.9.5",
+    "ansi-to-react": "^6.1.6",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
