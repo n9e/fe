@@ -90,7 +90,7 @@ export default function NotifyConfig(props: Props) {
           </Col>
         )}
       </Row>
-      <ChannelParams field={field} channelItem={channelItem} />
+      <ChannelParams prefixNamePath={['notify_configs']} field={field} channelItem={channelItem} />
       <Form.Item {...field} label={t('notification_configuration.severities')} tooltip={t('notification_configuration.severities_tip')} name={[field.name, 'severities']}>
         <Checkbox.Group disabled={disabled}>
           <Checkbox value={1}>{t('common:severity.1')}</Checkbox>

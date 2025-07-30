@@ -9,12 +9,13 @@ import Flashduty from './Flashduty';
 import Custom from './Custom';
 
 interface Props {
+  prefixNamePath?: (string | number)[];
   field: FormListFieldData;
   channelItem?: ChannelItem;
 }
 
 export default function index(props: Props) {
-  const { field, channelItem } = props;
+  const { prefixNamePath, field, channelItem } = props;
   const request_type = channelItem?.request_type;
   const contactKey = channelItem?.param_config?.user_info?.contact_key;
   const customParams = channelItem?.param_config?.custom?.params ?? [];
@@ -25,8 +26,8 @@ export default function index(props: Props) {
 
   return (
     <>
-      {contactKey && <UserInfo field={field} />}
-      <Custom field={field} customParams={customParams} />
+      {contactKey && <UserInfo prefixNamePath={prefixNamePath} field={field} />}
+      <Custom prefixNamePath={prefixNamePath} field={field} customParams={customParams} />
     </>
   );
 }
