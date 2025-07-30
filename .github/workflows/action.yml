@@ -1,6 +1,7 @@
 name: Build With Vite
 
 on:
+  workflow_dispatch:
   push:
     branches: [master, v5.1]
   pull_request:
