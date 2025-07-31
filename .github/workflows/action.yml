@@ -33,10 +33,10 @@ jobs:
         run: echo "version=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
 
       - name: Package files to tar.gz
-        run: tar -czvf n9e-fe-.${{ steps.pkg_version.outputs.version }}.tar.gz ./pub
+        run: tar -czvf n9e-fe-${{ steps.pkg_version.outputs.version }}.tar.gz ./pub
 
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
-          name: package-output
-          path: n9e-fe-.${{ steps.pkg_version.outputs.version }}.tar.gz
+          name: package-output-tar-gz
+          path: n9e-fe-${{ steps.pkg_version.outputs.version }}.tar.gz
