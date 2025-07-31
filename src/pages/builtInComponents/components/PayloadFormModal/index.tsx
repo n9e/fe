@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import _ from 'lodash';
-import { Modal, Form, Space, message, AutoComplete, Input } from 'antd';
+import { Modal, Form, Space, message, AutoComplete, Input, Table } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import CodeMirror from '@uiw/react-codemirror';
@@ -8,8 +8,11 @@ import { StreamLanguage } from '@codemirror/stream-parser';
 import { toml } from '@codemirror/legacy-modes/mode/toml';
 import { json } from '@codemirror/legacy-modes/mode/javascript';
 import { EditorView } from '@codemirror/view';
+
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
+
 import { postPayloads, putPayload } from '../../services';
+import ResultModal from './ResultModal';
 
 interface Props {
   darkMode: boolean;
@@ -20,7 +23,7 @@ interface Props {
   showName?: boolean;
   showCate?: boolean;
   cateI18nKey?: string;
-  onOk: (values: any) => void;
+  onOk: () => void;
 }
 
 function index(props: Props & ModalWrapProps) {
@@ -55,20 +58,17 @@ function index(props: Props & ModalWrapProps) {
               putPayload(values).then(() => {
                 message.success(t('common:success.modify'));
                 destroy();
-                onOk(values);
+                onOk();
               });
             } else if (action === 'create') {
               postPayloads([values]).then((res) => {
                 if (_.isEmpty(res)) {
                   message.success(t('common:success.create'));
                   destroy();
-                  onOk(values);
                 } else {
-                  let msg = '';
-                  _.forEach(res, (v, k) => {
-                    msg += `${k}: ${v}; `;
+                  ResultModal({
+                    data: res,
                   });
-                  message.error(msg);
                 }
               });
             }
@@ -79,6 +79,7 @@ function index(props: Props & ModalWrapProps) {
       }}
       onCancel={() => {
         destroy();
+        onOk();
       }}
     >
       <Form form={form} initialValues={initialValues} layout='vertical'>

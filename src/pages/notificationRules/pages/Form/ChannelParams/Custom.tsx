@@ -50,7 +50,7 @@ export default function Custom(props: Props) {
       {_.map(customParams, (item) => {
         return (
           <div key={item.key}>
-            <Form.Item {...field} label={item.cname} name={[field.name, 'params', item.key]} rules={[{ required: true }]}>
+            <Form.Item {...field} label={item.cname} name={[field.name, 'params', item.key]}>
               <AutoComplete
                 options={_.map(paramsData, (paramsDataItem: { __id__: string; data: { name: string; cname: string; value: string }[] }) => {
                   return {

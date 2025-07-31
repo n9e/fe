@@ -14,13 +14,16 @@
  * limitations under the License.
  *
  */
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import _ from 'lodash';
 import { useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import { useTranslation } from 'react-i18next';
+
 import PageLayout from '@/components/pageLayout';
 import { CommonStateContext } from '@/App';
+import { getHistoryEventsById } from '@/services/warning';
+
 import OperateForm from './components/operateForm';
 import './index.less';
 
@@ -29,45 +32,73 @@ const AddShield: React.FC = () => {
   const { search } = useLocation();
   const { businessGroup } = useContext(CommonStateContext);
   const curBusiId = businessGroup.id!;
-  const query: any = queryString.parse(search);
+  const [eventDetail, setEventDetail] = React.useState<any>();
 
-  if (query.busiGroup) {
-    query.group_id = _.toNumber(query.busiGroup);
-  } else {
-    query.group_id = curBusiId;
-  }
-  if (query.datasource_ids) {
-    if (_.isString(query.datasource_ids)) {
-      query.datasource_ids = [_.toNumber(query.datasource_ids)];
-    } else if (_.isArray(query.datasource_ids)) {
-      query.datasource_ids = query.datasource_ids.map((id: string) => _.toNumber(id));
-    } else {
-      query.datasource_ids = [];
-    }
-  }
-  if (query.tags) {
-    try {
-      if (_.isString(query.tags)) {
-        query.tags = [query.tags];
-      }
-      query.tags = query.tags.map((tag) => {
-        const [key, value] = tag.split('=');
-        return {
-          func: '==',
-          key,
-          value,
-        };
+  useEffect(() => {
+    const query: any = queryString.parse(search);
+    if (query.__event_id) {
+      getHistoryEventsById(_.toNumber(query.__event_id)).then((res) => {
+        const dat = res.dat;
+        let tags: any[] = [];
+        if (dat.tags) {
+          try {
+            tags = _.map(dat.tags, (tag) => {
+              const [key, value] = tag.split('=');
+              return {
+                func: '==',
+                key,
+                value,
+              };
+            });
+          } catch (e) {}
+        }
+        setEventDetail({
+          busiGroup: _.toString(dat.group_id),
+          prod: dat.rule_prod,
+          cate: dat.cate,
+          datasource_ids: [dat.datasource_id],
+          tags,
+        });
       });
-    } catch (e) {
-      query.tags = [];
+    } else {
+      if (query.busiGroup) {
+        query.group_id = _.toNumber(query.busiGroup);
+      } else {
+        query.group_id = curBusiId;
+      }
+      if (query.datasource_ids) {
+        if (_.isString(query.datasource_ids)) {
+          query.datasource_ids = [_.toNumber(query.datasource_ids)];
+        } else if (_.isArray(query.datasource_ids)) {
+          query.datasource_ids = query.datasource_ids.map((id: string) => _.toNumber(id));
+        } else {
+          query.datasource_ids = [];
+        }
+      }
+      if (query.tags) {
+        try {
+          if (_.isString(query.tags)) {
+            query.tags = [query.tags];
+          }
+          query.tags = query.tags.map((tag) => {
+            const [key, value] = tag.split('=');
+            return {
+              func: '==',
+              key,
+              value,
+            };
+          });
+        } catch (e) {
+          query.tags = [];
+        }
+      }
+      setEventDetail(query);
     }
-  }
+  }, [search]);
 
   return (
     <PageLayout title={t('title')} showBack>
-      <div className='shield-add'>
-        <OperateForm detail={query} />
-      </div>
+      <div className='shield-add'>{eventDetail && <OperateForm detail={eventDetail} />}</div>
     </PageLayout>
   );
 };

@@ -39,7 +39,7 @@ const en_US = {
     run_test_btn: 'Run test',
     run_test_btn_tip:
       'You can select a few events that have already occurred to test whether this notification configuration is correct. If it is correct, you should receive relevant notification messages',
-    run_test_request_success: 'Submit test success',
+    run_test_request_result: 'Test result',
     user_info: {
       user_ids: 'Users',
       user_group_ids: 'Teams',
