@@ -44,6 +44,7 @@ const zh_HK = {
   preview_muted_save_only: '僅保存',
   preview_muted_save_and_delete: '保存並刪除相關事件',
   expired: '已過期',
+  quick_mute: '快速屏蔽',
 };
 
 export default zh_HK;
