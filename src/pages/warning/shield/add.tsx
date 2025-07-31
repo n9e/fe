@@ -53,7 +53,7 @@ const AddShield: React.FC = () => {
           } catch (e) {}
         }
         setEventDetail({
-          busiGroup: _.toString(dat.group_id),
+          group_id: dat.group_id,
           prod: dat.rule_prod,
           cate: dat.cate,
           datasource_ids: [dat.datasource_id],
