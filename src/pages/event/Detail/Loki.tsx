@@ -37,11 +37,11 @@ export default function LokiDetail(props: IProps) {
                       history.push({
                         pathname: '/log/explorer',
                         search: queryString.stringify({
-                          prom_ql,
+                          query: prom_ql,
                           data_source_name: 'loki',
                           data_source_id: eventDetail.datasource_id,
-                          start: moment.unix(eventDetail.trigger_time).subtract(30, 'minutes').unix(),
-                          end: moment.unix(eventDetail.trigger_time).add(30, 'minutes').unix(),
+                          start: moment.unix(eventDetail.trigger_time).subtract(30, 'minutes').valueOf(),
+                          end: moment.unix(eventDetail.trigger_time).add(30, 'minutes').valueOf(),
                         }),
                       });
                     }}
