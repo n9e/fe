@@ -35,7 +35,7 @@ const zh_HK = {
     },
     run_test_btn: '通知測試',
     run_test_btn_tip: '可以選擇幾個已經產生的事件，測試一下此通知配置是否正確，如果正確，應該會收到相關的通知消息',
-    run_test_request_result: '通知測試結果',
+    run_test_request_result: '測試通知已發送，通知目標返回響應如下：',
     user_info: {
       user_ids: '接收人',
       user_group_ids: '接收團隊',
