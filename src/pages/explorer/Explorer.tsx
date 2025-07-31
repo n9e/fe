@@ -32,6 +32,7 @@ import { getDefaultDatasourceValue, setDefaultDatasourceValue } from '@/utils';
 import { CommonStateContext } from '@/App';
 import { Explorer as TDengine } from '@/plugins/TDengine';
 import { Explorer as CK } from '@/plugins/clickHouse';
+import { allCates } from '@/components/AdvancedWrap/utils';
 
 import Prometheus from './Prometheus';
 import Elasticsearch from './Elasticsearch';
@@ -56,6 +57,23 @@ interface IProps {
   };
 }
 
+function getDefaultDatasourceCate(datasourceList, defaultCate) {
+  // 如果 defaultCate 存在于 datasourceList 中，直接返回
+  if (_.find(datasourceList, { plugin_type: defaultCate })) {
+    return defaultCate;
+  }
+  const findResult = _.find(datasourceList, (item) => {
+    const cateObj = _.find(allCates, { value: item.plugin_type });
+    if (cateObj && _.includes(cateObj.type, 'logging')) {
+      return true;
+    }
+  });
+  if (findResult) {
+    return findResult.plugin_type;
+  }
+  return defaultCate;
+}
+
 const Panel = ({ type, defaultCate, panelIdx, defaultFormValuesControl }: IProps) => {
   const { t } = useTranslation('explorer');
   const { datasourceCateOptions, datasourceList, groupedDatasourceList } = useContext(CommonStateContext);
@@ -63,7 +81,7 @@ const Panel = ({ type, defaultCate, panelIdx, defaultFormValuesControl }: IProps
   const history = useHistory();
   const headerExtraRef = useRef<HTMLDivElement>(null);
   const params = new URLSearchParams(useLocation().search);
-  const defaultDatasourceCate = params.get('data_source_name') || defaultCate;
+  const defaultDatasourceCate = params.get('data_source_name') || getDefaultDatasourceCate(datasourceList, defaultCate);
   const defaultDatasourceValue = params.get('data_source_id') ? _.toNumber(params.get('data_source_id')) : getDefaultDatasourceValue(defaultDatasourceCate, groupedDatasourceList);
   const datasourceCate = Form.useWatch('datasourceCate', form);
   const explorerContainerRef = useRef<HTMLDivElement>(null);

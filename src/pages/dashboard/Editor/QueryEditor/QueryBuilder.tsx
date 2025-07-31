@@ -13,6 +13,7 @@ import Prometheus from './Prometheus';
 import Elasticsearch from './Elasticsearch';
 
 interface Props {
+  panelWidth?: number;
   cate: string;
   datasourceValue: number;
   variables: IVariable[];
@@ -21,10 +22,10 @@ interface Props {
 }
 
 export default function QueryBuilder(props: Props) {
-  const { cate, datasourceValue, variables, dashboardId, time } = props;
+  const { panelWidth, cate, datasourceValue, variables, dashboardId, time } = props;
 
   if (cate === DatasourceCateEnum.prometheus) {
-    return <Prometheus variableConfig={variables} time={time} datasourceValue={datasourceValue} />;
+    return <Prometheus panelWidth={panelWidth} variableConfig={variables} time={time} datasourceValue={datasourceValue} />;
   }
   if (cate === DatasourceCateEnum.elasticsearch) {
     return <Elasticsearch datasourceValue={datasourceValue} />;

@@ -35,11 +35,12 @@ import { normalizeInitialValues } from './util';
 import './style.less';
 
 interface IProps {
+  panelWidth?: number; // 面板宽度
   mode: string;
   visible: boolean;
   setVisible: (visible: boolean) => void;
   initialValues: IPanel;
-  variableConfigWithOptions?: IVariable[];
+  variableConfig?: IVariable[];
   id: string; // panel id
   dashboardId: string;
   time: IRawTimeRange;
@@ -54,7 +55,7 @@ function index(props: IProps) {
   const { t } = useTranslation('dashboard');
   const { groupedDatasourceList } = useContext(CommonStateContext);
   const formRef = useRef<any>();
-  const { mode, visible, setVisible, variableConfigWithOptions, id, dashboardId, time, dashboard, timezone, setTimezone } = props;
+  const { panelWidth, mode, visible, setVisible, variableConfig, id, dashboardId, time, dashboard, timezone, setTimezone } = props;
   const [initialValues, setInitialValues] = useState<IPanel>(_.cloneDeep(props.initialValues));
   const [range, setRange] = useState<IRawTimeRange>(time);
   const handleAddChart = async () => {
@@ -189,13 +190,14 @@ function index(props: IProps) {
         <FormCpt
           ref={formRef}
           initialValues={normalizeInitialValues(initialValues)}
-          variableConfigWithOptions={variableConfigWithOptions}
+          variableConfig={variableConfig}
           range={range}
           timezone={timezone}
           id={id}
           dashboardId={dashboardId}
           key={initialValues.type} // 每次切换图表类型，都重新渲染
           dashboard={dashboard}
+          panelWidth={panelWidth}
         />
       )}
     </Modal>

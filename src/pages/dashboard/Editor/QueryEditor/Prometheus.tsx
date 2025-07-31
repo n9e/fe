@@ -6,15 +6,15 @@ import moment from 'moment';
 import { useTranslation, Trans } from 'react-i18next';
 import TimeRangePicker, { isMathString } from '@/components/TimeRangePicker';
 import Resolution from '@/components/Resolution';
-import { PromQLInputWithBuilder } from '@/components/PromQLInput';
+import PromQLInputNG, { interpolateString } from '@/components/PromQLInputNG';
 import { getRealStep } from '@/pages/dashboard/Renderer/datasource/prometheus';
 import HideButton from '@/pages/dashboard/Components/HideButton';
-import { IS_PLUS, alphabet } from '@/utils/constant';
+import { alphabet } from '@/utils/constant';
 import Collapse, { Panel } from '../Components/Collapse';
 import ExpressionPanel from '../Components/ExpressionPanel';
 import AddQueryButtons from '../Components/AddQueryButtons';
 
-export default function Prometheus({ variableConfig, time, datasourceValue }) {
+export default function Prometheus({ panelWidth, variableConfig, time, datasourceValue }) {
   const { t } = useTranslation('dashboard');
   const varNams = _.map(variableConfig, (item) => {
     return `$${item.name}`;
@@ -91,13 +91,19 @@ export default function Prometheus({ variableConfig, time, datasourceValue }) {
                         ]}
                         style={{ flex: 1 }}
                       >
-                        <PromQLInputWithBuilder
-                          validateTrigger={['onBlur']}
+                        <PromQLInputNG
+                          onChangeTrigger={['onBlur', 'onShiftEnter']}
                           datasourceValue={datasourceValue}
-                          extraLabelValues={varNams}
-                          rangeVectorCompletion
+                          variablesNames={varNams}
+                          durationVariablesCompletion
                           showBuiltinMetrics
-                          showBuilder={false}
+                          interpolateString={(query) => {
+                            return interpolateString({
+                              query,
+                              range: time,
+                              minStep: targets?.[field.name]?.step,
+                            });
+                          }}
                         />
                       </Form.Item>
                     </div>
@@ -149,13 +155,13 @@ export default function Prometheus({ variableConfig, time, datasourceValue }) {
                         </Form.Item>
                       </Col>
                       <Col flex='120px'>
-                        <Form.Item label='Max data points' tooltip={t('query.prometheus.maxDataPoints.tip')} {...field} name={[field.name, 'maxDataPoints']} initialValue={240}>
-                          <InputNumber style={{ width: '100%' }} placeholder='240' min={1} />
+                        <Form.Item label='Max data points' tooltip={t('query.prometheus.maxDataPoints.tip')} {...field} name={[field.name, 'maxDataPoints']}>
+                          <InputNumber style={{ width: '100%' }} placeholder={panelWidth ?? 240} min={1} />
                         </Form.Item>
                       </Col>
                       <Col flex='72px'>
                         <Form.Item label='Min step' tooltip={t('query.prometheus.minStep.tip')} {...field} name={[field.name, 'step']}>
-                          <Resolution />
+                          <Resolution placeholder='15' />
                         </Form.Item>
                       </Col>
                       <Col flex='72px'>

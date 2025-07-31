@@ -8,12 +8,13 @@ import { useGlobalState } from '../../Form';
 interface IProps {
   id?: number | string;
   submitLoading: boolean;
+  extra?: React.ReactNode;
 }
 
 export default function Footer(props: IProps) {
   const { t } = useTranslation('datasourceManage');
   const history = useHistory();
-  const { id, submitLoading } = props;
+  const { id, submitLoading, extra } = props;
   const [saveMode, setSaveMode] = useGlobalState('saveMode');
 
   return (
@@ -49,6 +50,7 @@ export default function Footer(props: IProps) {
           >
             {t('save_btn')}
           </Button>
+          {extra}
         </Space>
       </Card>
     </Affix>

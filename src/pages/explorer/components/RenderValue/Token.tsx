@@ -25,6 +25,7 @@ interface Props {
     not: string;
   }; // 操作符值
   extraActions?: React.ReactNode; // 额外的操作项
+  tokenHide?: boolean; // 是否隐藏 token和extraActions,目前仅用在srm 联合查询
 }
 
 export default function Token(props: Props) {
@@ -44,6 +45,7 @@ export default function Token(props: Props) {
       not: 'NOT',
     },
     extraActions,
+    tokenHide,
   } = props;
 
   const [popoverVisible, setPopoverVisible] = useState(false);
@@ -63,40 +65,44 @@ export default function Token(props: Props) {
       overlayClassName='n9e-log-field-val-popover'
       content={
         <ul className='ant-dropdown-menu ant-dropdown-menu-root ant-dropdown-menu-vertical ant-dropdown-menu-light'>
-          <li
-            className='ant-dropdown-menu-item ant-dropdown-menu-item-only-child'
-            onClick={() => {
-              setPopoverVisible(false);
-              onTokenClick({
-                key: name,
-                value,
-                operator: actionsValueMap.and,
-              });
-            }}
-          >
-            <Space>
-              <PlusCircleOutlined />
-              {t('log.field_actions.and')}
-            </Space>
-          </li>
-          <li
-            className='ant-dropdown-menu-item ant-dropdown-menu-item-only-child'
-            onClick={() => {
-              setPopoverVisible(false);
-              onTokenClick({
-                key: name,
-                value,
-                operator: actionsValueMap.not,
-              });
-            }}
-          >
-            <Space>
-              <MinusCircleOutlined />
-              {t('log.field_actions.not')}
-            </Space>
-          </li>
-          {extraActions}
-          {relatedLinks && relatedLinks.length > 0 && <li className='ant-dropdown-menu-item-divider'></li>}
+          {!tokenHide && (
+            <>
+              <li
+                className='ant-dropdown-menu-item ant-dropdown-menu-item-only-child'
+                onClick={() => {
+                  setPopoverVisible(false);
+                  onTokenClick({
+                    key: name,
+                    value,
+                    operator: actionsValueMap.and,
+                  });
+                }}
+              >
+                <Space>
+                  <PlusCircleOutlined />
+                  {t('log.field_actions.and')}
+                </Space>
+              </li>
+              <li
+                className='ant-dropdown-menu-item ant-dropdown-menu-item-only-child'
+                onClick={() => {
+                  setPopoverVisible(false);
+                  onTokenClick({
+                    key: name,
+                    value,
+                    operator: actionsValueMap.not,
+                  });
+                }}
+              >
+                <Space>
+                  <MinusCircleOutlined />
+                  {t('log.field_actions.not')}
+                </Space>
+              </li>
+            </>
+          )}
+          {!tokenHide && extraActions}
+          {!tokenHide && relatedLinks && relatedLinks.length > 0 && <li className='ant-dropdown-menu-item-divider'></li>}
           {relatedLinks?.map((i) => {
             return (
               <li
@@ -119,7 +125,7 @@ export default function Token(props: Props) {
                   handleNav(i.urlTemplate, valueObjected, { start, end }, fieldConfig?.regExtractArr, fieldConfig?.mappingParamsArr);
                 }}
               >
-                {toString(valueNode)}
+                {i.name}
               </li>
             );
           })}

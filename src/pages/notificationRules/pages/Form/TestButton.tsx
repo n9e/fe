@@ -59,8 +59,16 @@ export default function TestButton(props: Props) {
                   };
                 }),
               },
-            }).then(() => {
-              message.success(t('notification_configuration.run_test_request_success'));
+            }).then((res) => {
+              let msg = res.dat;
+              try {
+                msg = JSON.stringify(JSON.parse(res), null, 2);
+              } catch (e) {}
+
+              Modal.info({
+                title: t('notification_configuration.run_test_request_result'),
+                content: <div>{msg}</div>,
+              });
               setVisible(false);
             });
           }
