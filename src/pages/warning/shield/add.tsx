@@ -53,6 +53,7 @@ const AddShield: React.FC = () => {
           } catch (e) {}
         }
         setEventDetail({
+          note: t('quick_mute'),
           group_id: dat.group_id,
           prod: dat.rule_prod,
           cate: dat.cate,

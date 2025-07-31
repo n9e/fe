@@ -47,6 +47,7 @@ const ru_RU = {
   preview_muted_save_only: 'Только сохранить',
   preview_muted_save_and_delete: 'Сохранить и удалить соответствующие события',
   expired: 'Истекший',
+  quick_mute: 'Быстрая блокировка',
 };
 
 export default ru_RU;
