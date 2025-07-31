@@ -81,7 +81,7 @@ export default function index(props: IProps) {
     if (queryValue != '') {
       fetchData();
     }
-  }, [JSON.stringify(range), datasourceValue, limit]);
+  }, [JSON.stringify(range), datasourceValue, limit, queryValue]);
 
   const fieldConfig = useFieldConfig(
     {
