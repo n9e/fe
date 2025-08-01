@@ -25,6 +25,7 @@ export default function Custom({ vars }: { vars: string[] }) {
           title: <Trans ns='inputEnlarge' i18nKey={'customTip'} components={{ 1: <br />, 2: <span style={{ width: '20px', display: 'inline-block' }} /> }} />,
           overlayStyle: { minWidth: 400 },
         }}
+        rules={[{ required: true, message: t('请输入') }]}
       >
         <Input />
       </Form.Item>
