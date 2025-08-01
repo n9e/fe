@@ -74,20 +74,29 @@ export interface ThresholdsStyle {
   mode: 'off' | 'line' | 'dashed' | 'line+area' | 'dashed+area';
 }
 
+export interface LinksItem {
+  title: string;
+  url: string;
+  targetBlank: boolean;
+}
+
+export interface IStandardOptions {
+  util?: string; // 错别字
+  unit?: string; // 纠正的单位
+  min?: number;
+  max?: number;
+  decimals?: number;
+  dateFormat?: string;
+  displayName?: string;
+}
+
 // 一些通用的配置，不同类型的图表可选择性使用配置
 export interface IOptions {
   valueMappings?: IValueMapping[];
   thresholds?: IThresholds;
   thresholdsStyle?: ThresholdsStyle;
   xThresholds?: IThresholds;
-  standardOptions?: {
-    util?: string;
-    min?: number;
-    max?: number;
-    decimals?: number;
-    dateFormat?: string;
-    displayName?: string;
-  };
+  standardOptions?: IStandardOptions;
   legend?: {
     // TODO: 目前不支持这么复杂的自定义
     calcs: string[];
@@ -108,6 +117,7 @@ export interface IOptions {
   colors?: {
     scheme: string;
   };
+  links?: LinksItem[];
 }
 
 export interface IOverride {
@@ -248,6 +258,7 @@ export interface IPanel {
   collapsed?: boolean; // 用于 row 展开收起控制是否显示
   panels?: IPanel[]; // 用于 row 收起时保存子面板
   transformations?: ITransformation[];
+  transformationsNG?: ITransformation[]; // NG 版本的变换
   repeat?: string;
   maxPerRow?: number;
   repeatPanelId?: string;
@@ -294,4 +305,25 @@ export interface VariableQuerybuilderProps<VariableType = any> {
   variables: VariableType[];
   datasourceCate: string;
   datasourceValue: number;
+}
+
+/**
+ * cellOptions interface
+ * type: 'color-text' | 'color-background' | 'gauge'
+ * 当 type = color-background 时
+ * {
+ *   type: 'color-background';
+ *   mode: 'basic' | 'gradient';
+ * }
+ * 当 type = gauge 时
+ * {
+ *   type: 'gauge';
+ *   mode: 'basic' | 'lcd';
+ *   valueDisplayMode: 'value' | 'color' | 'hidden';
+ * }
+ */
+export interface CellOptions {
+  type: 'color-text' | 'color-background' | 'gauge';
+  mode: 'basic' | 'gradient' | 'lcd'; // 当 type = color-background 时，mode 可选
+  valueDisplayMode: 'text' | 'color' | 'hidden'; // 当 type = gauge 时，valueDisplayMode 可选
 }

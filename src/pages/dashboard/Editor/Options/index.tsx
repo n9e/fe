@@ -19,6 +19,7 @@ import _ from 'lodash';
 import Timeseries from './Timeseries';
 import Stat from './Stat';
 import Table from './Table';
+import TableNG from './TableNG';
 import Pie from './Pie';
 import Hexbin from './Hexbin';
 import BarGauge from './BarGauge';
@@ -33,6 +34,7 @@ export default function index({ type, targets, chartForm, variableConfigWithOpti
     timeseries: <Timeseries targets={targets} />,
     stat: <Stat targets={targets} />,
     table: <Table targets={targets} chartForm={chartForm} variableConfigWithOptions={variableConfigWithOptions} />,
+    tableNG: <TableNG targets={targets} chartForm={chartForm} variableConfigWithOptions={variableConfigWithOptions} />,
     pie: <Pie />,
     hexbin: <Hexbin />,
     barGauge: <BarGauge />,
