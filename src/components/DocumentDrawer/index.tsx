@@ -35,6 +35,10 @@ function index(props: Props & ModalWrapProps) {
     if (documentPath && type === 'md') {
       fetch(`${documentPath}/${language}.md`)
         .then((res) => {
+          // 如果获取文档失败，使用 en_US 作为默认语言
+          if (res.status === 404) {
+            return fetch(`${documentPath}/en_US.md`).then((res) => res.text());
+          }
           return res.text();
         })
         .then((res) => {
