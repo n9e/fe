@@ -58,9 +58,9 @@ export default function Prometheus(props: IProps) {
   const history = useHistory();
   const { search } = useLocation();
   const query = queryString.parse(search, queryStringOptions);
-  const defaultPromQL = promQL ? promQL : _.isString(query.prom_ql) ? query.prom_ql : '';
+  const defaultPromQL = promQL ? promQL : typeof query.prom_ql === 'string' ? query.prom_ql : '';
   const [defaultTimeState, setDefaultTimeState] = useState<undefined | IRawTimeRange>();
-  const [promql, setPromql] = useState<string>(defaultPromQL as string);
+  const [promql, setPromql] = useState<string>(defaultPromQL);
 
   useEffect(() => {
     if (query.__event_id) {
