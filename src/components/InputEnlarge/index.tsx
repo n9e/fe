@@ -5,6 +5,7 @@ import useOnClickOutside from '../useOnClickOutside';
 import { CommonStateContext } from '@/App';
 import LinkBuilder from './LinkBuilder';
 import { ILogMappingParams, ILogExtract } from '@/pages/log/IndexPatterns/types';
+import { useTranslation } from 'react-i18next';
 
 export default function InputEnlarge({
   disabled,
@@ -21,7 +22,7 @@ export default function InputEnlarge({
     ...(linkBuilder?.extracts?.filter((i) => !!i).map((i) => i.newField) || []),
     ...(linkBuilder?.mappingParamsArr?.length ? ['__mapping_para__'] : []),
   ];
-
+  const { t } = useTranslation('inputEnlarge');
   const eleRef = useRef<any>(null);
 
   useOnClickOutside(eleRef, () => {
@@ -42,7 +43,11 @@ export default function InputEnlarge({
         <Input.Group compact>
           <Input style={{ width: linkBuilder ? 'calc(100% - 64px)' : 'calc(100% - 32px)' }} disabled={disabled} value={value} onChange={onChange} {...props} />
           <Button icon={<FullscreenOutlined onClick={() => setVisible(true)} />} />
-          {linkBuilder && <Button icon={<ToolFilled />} onClick={() => setLinkBuilderVisible(true)} />}
+          {linkBuilder && (
+            <Tooltip title={t('linkBuilderTip')}>
+              <Button icon={<ToolFilled />} onClick={() => setLinkBuilderVisible(true)} />
+            </Tooltip>
+          )}
         </Input.Group>
       </Tooltip>
       <LinkBuilder
