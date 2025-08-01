@@ -64,7 +64,7 @@ export default function Dashboard({ vars }: { vars: string[] }) {
           ))}
         </Select>
       </Form.Item>
-      <Form.Item name={['dashboard', 'businessId']} label={t('业务组')}>
+      <Form.Item name={['dashboard', 'businessId']} label={t('业务组')} rules={[{ required: true, message: t('请选择') }]}>
         <Select
           dropdownMatchSelectWidth={false}
           placeholder={t('请选择业务组')}
