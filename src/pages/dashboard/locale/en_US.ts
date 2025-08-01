@@ -574,11 +574,20 @@ const en_US = {
   },
   transformations: {
     organize: {
-      title: 'Organize fields',
+      title: 'Organize fields by name',
+      desc: 'Re-order, hide, or rename fields.',
     },
     merge: {
-      title: 'Merge',
+      title: 'Merge tables',
+      desc: 'Merge multiple tables into one table by matching the values of the specified fields.',
+    },
+    joinByField: {
+      title: 'Join by field',
+      desc: 'Join multiple tables by matching the values of the specified fields.',
+      mode: 'Mode',
+      byField: 'Field',
     },
   },
+  add_transformation: 'Add transformation',
 };
 export default en_US;

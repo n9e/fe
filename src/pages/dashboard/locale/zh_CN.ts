@@ -277,6 +277,16 @@ const zh_CN = {
         scheme: '颜色方案',
         reverse: '反转颜色',
       },
+      links: {
+        label: '链接',
+        add_btn: '添加链接',
+        edit_btn: '编辑链接',
+        title: '链接标题',
+        title_required: '链接标题不能为空',
+        url: '链接地址',
+        url_required: '链接地址不能为空',
+        target_blank: '新窗口打开',
+      },
     },
     standardOptions: {
       title: '高级设置',
@@ -390,6 +400,47 @@ const zh_CN = {
         organizeFields: '字段整理',
         colorMode_tip: '颜色模式是针对 "值字段" 的颜色设置。值模式下颜色作用于值文字；背景模式下颜色作用于字段所在单元格背景色。',
         pageLimit: '每页显示行数',
+      },
+      tableNG: {
+        enablePagination: '启用分页器',
+        cellOptions: {
+          type: {
+            label: '单元格类型',
+            options: {
+              none: '默认',
+              'color-text': '颜色文本',
+              'color-background': '颜色背景',
+              gauge: '量表 (Gauge)',
+            },
+          },
+          'color-background': {
+            mode: {
+              label: '颜色模式',
+              options: {
+                basic: '基础',
+                gradient: '渐变',
+              },
+            },
+          },
+          gauge: {
+            mode: {
+              label: '模式',
+              options: {
+                basic: '基础',
+                gradient: '渐变',
+                lcd: 'LCD',
+              },
+            },
+            valueDisplayMode: {
+              label: '数值显示',
+              options: {
+                color: '颜色',
+                text: '文本',
+                hidden: '隐藏',
+              },
+            },
+          },
+        },
       },
       text: {
         textColor: '文字颜色',
@@ -588,11 +639,20 @@ const zh_CN = {
   },
   transformations: {
     organize: {
-      title: '字段整理',
+      title: 'Organize fields by name',
+      desc: '重新排序、隐藏或重命名字段',
     },
     merge: {
-      title: '合并',
+      title: 'Merge tables',
+      desc: '将多个表合并为一个表',
+    },
+    joinByField: {
+      title: 'Join by field',
+      desc: '根据相关字段合并多个表的行',
+      mode: '模式',
+      byField: '字段',
     },
   },
+  add_transformation: '添加数据转换',
 };
 export default zh_CN;

@@ -1,4 +1,8 @@
 import { DataPoint, TimeSeries, TableData, Transformation } from './types';
+import MergeTransformation from './MergeTransformation';
+import OrganizeFieldsTransformation from './OrganizeFieldsTransformation';
+import JoinByFieldTransformation from './JoinByFieldTransformation';
+
 export type { DataPoint, TimeSeries, TableData, Transformation };
 
 // 转换链
@@ -9,7 +13,7 @@ export class TransformationPipeline {
     this.transformations.push(transformation);
   }
 
-  apply(input: TimeSeries[] | TableData): TimeSeries[] | TableData {
+  apply<T>(input: T): T {
     let result = input;
     for (const transformation of this.transformations) {
       // @ts-ignore
@@ -18,3 +22,9 @@ export class TransformationPipeline {
     return result;
   }
 }
+
+export const transformationsMap = {
+  merge: MergeTransformation,
+  organize: OrganizeFieldsTransformation,
+  joinByField: JoinByFieldTransformation,
+};

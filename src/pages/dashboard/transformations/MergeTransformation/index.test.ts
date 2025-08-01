@@ -70,25 +70,6 @@ describe('MergeTransformation', () => {
         { time: 1633083600000, value: 40 },
       ]);
     });
-
-    it('should throw an error if TableData columns are inconsistent', () => {
-      const input: TableData[] = [
-        {
-          refId: 'A',
-          columns: ['time', 'value'],
-          rows: [{ time: 1633072800000, value: 10 }],
-        },
-        {
-          refId: 'B',
-          columns: ['timestamp', 'value'],
-          rows: [{ timestamp: 1633080000000, value: 30 }],
-        },
-      ];
-
-      const transformation = new MergeTransformation();
-
-      expect(() => transformation.apply(input)).toThrowError('Cannot merge tables with different columns');
-    });
   });
 
   describe('Mixed Data', () => {

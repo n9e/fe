@@ -25,7 +25,7 @@ export default function Merge(props: IProps) {
         extra={
           <Space size={2}>
             <Button icon={<InfoCircleOutlined />} type='text' size='small' />
-            <Button icon={<BugOutlined />} type='text' size='small' />
+            {/* <Button icon={<BugOutlined />} type='text' size='small' /> */}
             <Form.Item {...resetField} name={[name, 'disabled']} noStyle>
               <EyeSwitch />
             </Form.Item>

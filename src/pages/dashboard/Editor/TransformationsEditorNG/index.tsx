@@ -2,16 +2,19 @@ import React, { useState } from 'react';
 import { Form, Button, Drawer, Row, Col } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 
 import { SIZE } from '@/utils/constant';
 
 import { transformationsOptions } from './constant';
-import OrganizeFields from './OrganizeFields';
+import Organize from './Organize';
 import Merge from './Merge';
+import JoinByField from './JoinByField';
 
 export default function index() {
-  const [addTransformationDrawerVisible, setAddTransformationDrawerVisible] = useState(false);
+  const { t } = useTranslation('dashboard');
   const form = Form.useFormInstance();
+  const [addTransformationDrawerVisible, setAddTransformationDrawerVisible] = useState(false);
 
   return (
     <div
@@ -21,19 +24,19 @@ export default function index() {
         backgroundColor: 'var(--fc-fill-2)',
       }}
     >
-      <Form.List name='transformations'>
+      <Form.List name='transformationsNG'>
         {(fields, { add, remove }) => {
           return (
             <>
               {_.map(fields, (field) => {
                 const { name, key, ...resetField } = field;
-                const id = form.getFieldValue(['transformations', name, 'id']);
+                const id = form.getFieldValue(['transformationsNG', name, 'id']);
                 return (
                   <div key={key}>
                     <Form.Item {...resetField} name={[name, 'id']} hidden />
                     {id === 'organize' && (
                       <Form.Item {...resetField} name={[name, 'options']}>
-                        <OrganizeFields
+                        <Organize
                           field={field}
                           onClose={() => {
                             remove(field.name);
@@ -51,6 +54,16 @@ export default function index() {
                         />
                       </Form.Item>
                     )}
+                    {id === 'joinByField' && (
+                      <Form.Item {...resetField} name={[name, 'options']}>
+                        <JoinByField
+                          field={field}
+                          onClose={() => {
+                            remove(field.name);
+                          }}
+                        />
+                      </Form.Item>
+                    )}
                   </div>
                 );
               })}
@@ -61,9 +74,15 @@ export default function index() {
                   setAddTransformationDrawerVisible(true);
                 }}
               >
-                Add transformation
+                {t('add_transformation')}
               </Button>
-              <Drawer title='Add transformation' placement='right' width='50%' visible={addTransformationDrawerVisible} onClose={() => setAddTransformationDrawerVisible(false)}>
+              <Drawer
+                title={t('add_transformation')}
+                placement='right'
+                width='50%'
+                visible={addTransformationDrawerVisible}
+                onClose={() => setAddTransformationDrawerVisible(false)}
+              >
                 <Row gutter={SIZE}>
                   {_.map(transformationsOptions, (item) => {
                     return (
@@ -71,20 +90,33 @@ export default function index() {
                         span={8}
                         key={item}
                         onClick={() => {
-                          add({ id: item, options: {} });
+                          let options = {};
+                          if (item === 'organize') {
+                            options = {};
+                          }
+                          if (item === 'joinByField') {
+                            options = { mode: 'outer' };
+                          }
+                          add({ id: item, options });
                           setAddTransformationDrawerVisible(false);
                         }}
                       >
-                        {item === 'merge' && (
+                        {item === 'joinByField' && (
                           <div className='n9e-dashboard-editor-transformationNG-item'>
-                            <h3>Merge</h3>
-                            <p>Merge multiple series. Values will be combined into one row.</p>
+                            <h3>{t('transformations.joinByField.title')}</h3>
+                            <p>{t('transformations.joinByField.desc')}</p>
                           </div>
                         )}
                         {item === 'organize' && (
                           <div className='n9e-dashboard-editor-transformationNG-item'>
-                            <h3>Organize fields by name</h3>
-                            <p>Re-order, hide, or rename fields.</p>
+                            <h3>{t('transformations.organize.title')}</h3>
+                            <p>{t('transformations.organize.desc')}</p>
+                          </div>
+                        )}
+                        {item === 'merge' && (
+                          <div className='n9e-dashboard-editor-transformationNG-item'>
+                            <h3>{t('transformations.merge.title')}</h3>
+                            <p>{t('transformations.merge.desc')}</p>
                           </div>
                         )}
                       </Col>
