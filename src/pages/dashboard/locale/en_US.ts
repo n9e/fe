@@ -540,7 +540,8 @@ const en_US = {
     timeseries: 'Time Series',
     barchart: 'Bar Chart',
     stat: 'Stat',
-    table: 'Table',
+    table: 'Table(old)',
+    tableNG: 'Table',
     pie: 'Pie Chart',
     hexbin: 'Hexmap',
     barGauge: 'Bar Gauge',
@@ -571,5 +572,22 @@ const en_US = {
     updated: 'Annotation updated',
     deleted: 'Annotation deleted',
   },
+  transformations: {
+    organize: {
+      title: 'Organize fields by name',
+      desc: 'Re-order, hide, or rename fields.',
+    },
+    merge: {
+      title: 'Merge tables',
+      desc: 'Merge multiple tables into one table by matching the values of the specified fields.',
+    },
+    joinByField: {
+      title: 'Join by field',
+      desc: 'Join multiple tables by matching the values of the specified fields.',
+      mode: 'Mode',
+      byField: 'Field',
+    },
+  },
+  add_transformation: 'Add transformation',
 };
 export default en_US;

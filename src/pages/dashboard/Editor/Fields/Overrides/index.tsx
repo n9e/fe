@@ -24,6 +24,8 @@ import Thresholds from '../Thresholds';
 import ValueMappings from '../ValueMappings';
 import StandardOptions from '../StandardOptions';
 import { useGlobalState } from '../../../globalState';
+import CellOptions from '../../Options/TableNG/CellOptions';
+import { defaultThreshold } from '../../config';
 
 interface Props {
   targets: any;
@@ -92,7 +94,7 @@ export default function index({ targets, matcherNames = ['byFrameRefID', 'byName
                   </Form.Item>
                 </Col>
                 <Col span={12}>
-                  <Form.Item shouldUpdate>
+                  <Form.Item shouldUpdate noStyle>
                     {({ getFieldValue }) => {
                       const matcherID = getFieldValue([...namePrefix, name, 'matcher', 'id']);
                       if (matcherID === 'byFrameRefID') {
@@ -129,17 +131,18 @@ export default function index({ targets, matcherNames = ['byFrameRefID', 'byName
                   </Form.Item>
                 </Col>
               </Row>
+              {_.includes(overrideOptions, 'custom.cellOptions') && (
+                <Panel header={t('panel.custom.title')}>
+                  <CellOptions prefixNamePath={namePrefix} namePath={[name, 'properties', 'cellOptions']} />
+                </Panel>
+              )}
               {_.includes(overrideOptions, 'thresholds') && (
                 <Thresholds
                   preNamePrefix={namePrefix}
                   namePrefix={[name, 'properties', 'thresholds']}
-                  initialValue={[
-                    {
-                      color: '#6C53B1',
-                      value: null,
-                      type: 'base',
-                    },
-                  ]}
+                  showMode={_.includes(overrideOptions, 'thresholds_showMode')}
+                  showStyle={_.includes(overrideOptions, 'thresholds_showStyle')}
+                  initialValue={[defaultThreshold]}
                 />
               )}
               <ValueMappings preNamePrefix={namePrefix} namePrefix={[name, 'properties', 'valueMappings']} />

@@ -183,6 +183,7 @@ function index(props: IProps) {
       }}
       bodyStyle={{
         padding: SIZE * 2,
+        backgroundColor: 'var(--fc-fill-1)',
       }}
     >
       {/* 除了 text 和 iframe 类型其他的类型比如存在 initialValues?.datasourceCate */}
