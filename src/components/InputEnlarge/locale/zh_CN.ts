@@ -4,6 +4,7 @@ const zh_CN = {
 <1 /><2 />起止时间：$__from和$__to, 默认单位为毫秒
 <1 /><2 />如需格式化可带入$__time_format__,格式包括 unix YYYY-MM-DD HH:mm:ss等
 <1 /><2 />本系统地址：$local_url，包含了协议和域名`,
+  linkBuilderTip: '跳转链接生成器',
 };
 
 export default zh_CN;

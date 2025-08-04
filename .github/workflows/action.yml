@@ -1,6 +1,7 @@
 name: Build With Vite
 
 on:
+  workflow_dispatch:
   push:
     branches: [master, v5.1]
   pull_request:
@@ -12,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [12.x]
+        node-version: [16.15.0]
 
     steps:
       - uses: actions/checkout@v2
@@ -26,3 +27,16 @@ jobs:
         run: |
           npm install
           npm run build
+
+      - name: Get version from package.json
+        id: pkg_version
+        run: echo "version=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
+
+      - name: Package files to tar.gz
+        run: tar -czvf n9e-fe-${{ steps.pkg_version.outputs.version }}.tar.gz ./pub
+
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-output-tar-gz
+          path: n9e-fe-${{ steps.pkg_version.outputs.version }}.tar.gz

@@ -90,7 +90,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
           clearInterval(timer);
           (window as any).Headway?.init({
             selector: '.product-changelog',
-            account: i18n.language === 'en_US' ? 'yB4rM7' : '7XMr1J',
+            account: i18n.language !== 'zh_CN' ? 'yB4rM7' : '7XMr1J',
           });
         }
       }, 1000);

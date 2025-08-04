@@ -44,5 +44,6 @@ const en_US = {
   preview_muted_save_only: 'Save only',
   preview_muted_save_and_delete: 'Save and delete related events',
   expired: 'Expired',
+  quick_mute: 'Quick Mute',
 };
 export default en_US;

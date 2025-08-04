@@ -4,8 +4,11 @@ import queryString from 'query-string';
 import moment from 'moment';
 import _ from 'lodash';
 import { FormInstance } from 'antd/lib/form/Form';
+
 import PromGraph from '@/components/PromGraphCpt';
 import { IRawTimeRange, timeRangeUnix, isMathString } from '@/components/TimeRangePicker';
+import { getHistoryEventsById } from '@/services/warning';
+
 import { queryStringOptions } from '../constants';
 import HistoricalRecords, { setLocalQueryHistory } from './HistoricalRecords';
 
@@ -55,8 +58,25 @@ export default function Prometheus(props: IProps) {
   const history = useHistory();
   const { search } = useLocation();
   const query = queryString.parse(search, queryStringOptions);
-  const defaultPromQL = promQL ? promQL : _.isString(query.prom_ql) ? query.prom_ql : '';
+  const defaultPromQL = promQL ? promQL : typeof query.prom_ql === 'string' ? query.prom_ql : '';
   const [defaultTimeState, setDefaultTimeState] = useState<undefined | IRawTimeRange>();
+  const [promql, setPromql] = useState<string>(defaultPromQL);
+
+  useEffect(() => {
+    if (query.__event_id) {
+      getHistoryEventsById(_.toNumber(query.__event_id)).then((res) => {
+        const dat = res.dat;
+        if (dat.cate === 'prometheus') {
+          form.setFieldsValue({
+            datasourceValue: dat.datasource_id,
+          });
+          setPromql(dat.prom_ql);
+        }
+      });
+    } else {
+      setPromql(defaultPromQL);
+    }
+  }, [query.__event_id, defaultPromQL]);
 
   useEffect(() => {
     if (!defaultTime) {
@@ -73,6 +93,7 @@ export default function Prometheus(props: IProps) {
 
   return (
     <PromGraph
+      key={promql} // 当存在 query.__event_id 时需要异步获取 datasourceValue 和 prom_ql，这时需要强制重新渲染
       type={query.mode as IMode}
       defaultType={defaultType}
       defaultTime={defaultTimeState}
@@ -92,7 +113,7 @@ export default function Prometheus(props: IProps) {
           onDefaultTimeChange(newRange);
         }
       }}
-      promQL={defaultPromQL as any}
+      promQL={promql}
       datasourceValue={datasourceValue}
       graphOperates={{ enabled: true }}
       globalOperates={{ enabled: true }}

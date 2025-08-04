@@ -42,7 +42,9 @@ const URL_PREFIX = `/api/${N9E_PATHNAME}/proxy`;
 
 export default function index(props: MonacoEditorPromQLProps) {
   const { t } = useTranslation();
-  const { darkMode } = useContext(CommonStateContext);
+  const { darkMode: appDarkMode } = useContext(CommonStateContext);
+  // hoc打开的组件获取不到 App 中 useContext, 这里用localStorage兜底；无痕第一次登录时 兜不住，再拿body上的classname来兜底一下
+  const darkMode = appDarkMode || localStorage.getItem('darkMode') === 'true' || document.body.classList.contains('theme-dark');
   const {
     readOnly,
     datasourceValue,

@@ -123,6 +123,7 @@ const ja_JP = {
   error: {
     clone: 'クローン失敗',
     import: 'インポート失敗',
+    create: '作成失敗',
   },
   time: {
     millisecond: 'ミリ秒',

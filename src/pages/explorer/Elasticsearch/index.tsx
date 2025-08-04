@@ -84,6 +84,7 @@ const HeaderExtra = ({ mode, setMode, allowHideSystemIndices, setAllowHideSystem
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <div />
         <Space>
+          {isPlus && <ExportModal datasourceValue={datasourceValue} />}
           <Share />
         </Space>
       </div>

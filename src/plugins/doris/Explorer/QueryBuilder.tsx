@@ -1,16 +1,17 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Form, Space } from 'antd';
-
+import { InfoCircleOutlined } from '@ant-design/icons';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import TimeRangePicker from '@/components/TimeRangePicker';
 import LogQL from '@/components/LogQL';
 import { DatasourceCateEnum } from '@/utils/constant';
 import HistoricalRecords from '@/components/HistoricalRecords';
-
+import DocumentDrawer from '../../clickHouse/components/DocumentDrawer';
 import { CACHE_KEY, NAME_SPACE } from '../constants';
 import { useGlobalState } from '../globalState';
+import { CommonStateContext } from '@/App';
 
 interface Props {
   extra?: React.ReactNode;
@@ -24,11 +25,24 @@ export default function QueryBuilder(props: Props) {
   const [mySQLTableFields, setMySQLTableFields] = useGlobalState('mySQLTableFields');
   const form = Form.useFormInstance();
   const { extra, executeQuery, datasourceValue, getMode } = props;
-
+  const { darkMode } = useContext(CommonStateContext);
   return (
     <div style={{ width: '100%' }}>
       <div className='explorer-query'>
-        <InputGroupWithFormItem label={<Space>{t('query.query')}</Space>}>
+        <InputGroupWithFormItem
+          label={
+            <Space>
+              {t('query.query')}
+              <InfoCircleOutlined
+                onClick={() => {
+                  DocumentDrawer({
+                    darkMode,
+                  });
+                }}
+              />
+            </Space>
+          }
+        >
           <Form.Item
             name={['query', 'query']}
             rules={[

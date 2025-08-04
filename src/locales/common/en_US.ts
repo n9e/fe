@@ -123,6 +123,7 @@ const en_US = {
   error: {
     clone: 'Cloning failed',
     import: 'Import failed',
+    create: 'Failed to create',
   },
   time: {
     millisecond: 'Millisecond',
