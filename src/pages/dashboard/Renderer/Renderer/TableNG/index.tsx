@@ -46,7 +46,7 @@ export default function index(props: Props) {
       rowData,
       formattedData,
     };
-  }, [JSON.stringify(series), JSON.stringify(transformations)]);
+  }, [JSON.stringify(series), JSON.stringify(values)]); // TODO : 依赖项可能需要更精确的控制，不然会导致不必要的重新渲染
 
   const theme = useMemo(() => {
     if (themeMode === 'dark') {
@@ -78,6 +78,7 @@ export default function index(props: Props) {
               padding: 0,
             },
             cellRenderer: (params) => {
+              if (params.value === undefined) return null;
               const rowIndex = params.node?.rowIndex;
               const formattedValue = formattedData[rowIndex]?.[item];
               if (rowIndex === undefined || formattedValue === undefined) return params.value;
