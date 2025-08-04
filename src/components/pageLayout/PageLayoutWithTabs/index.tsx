@@ -219,7 +219,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                     }
                   >
                     <Button size='small' type='text'>
-                      <LanguageIcon className='text-[12px]' />
+                      <LanguageIcon className='text-[12px]' style={{ marginLeft: 12 }} />
                     </Button>
                   </Dropdown>
 
