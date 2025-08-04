@@ -227,7 +227,9 @@ const zh_CN = {
   'task.tip.content': '如果你的角色是管理员，则可以在任意机器执行脚本；否则，只能对有管理权限的业务组下的机器执行脚本',
   'task.allOptionLabel': '全部任务',
 
+  'last.1.days': '最近 1 天',
   'last.7.days': '最近 7 天',
+  'last.14.days': '最近 14 天',
   'last.15.days': '最近 15 天',
   'last.30.days': '最近 30 天',
   'last.60.days': '最近 60 天',

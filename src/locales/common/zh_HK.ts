@@ -226,7 +226,9 @@ const zh_HK = {
   'task.tip.content': '如果你的角色是管理員，則可以在任意機器執行腳本；否則，只能對有管理權限的業務組下的機器執行腳本',
   'task.allOptionLabel': '全部任務',
 
+  'last.1.days': '最近 1 天',
   'last.7.days': '最近 7 天',
+  'last.14.days': '最近 14 天',
   'last.15.days': '最近 15 天',
   'last.30.days': '最近 30 天',
   'last.60.days': '最近 60 天',
