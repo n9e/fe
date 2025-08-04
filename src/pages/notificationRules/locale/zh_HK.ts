@@ -65,6 +65,16 @@ const zh_HK = {
     duration_1: '異常事件已超過',
     duration_2: '，仍處於未恢復/未認領狀態時，使用本配置發送通知。',
   },
+  statistics: {
+    total_notify_events: '最近 {{days}} 天通知事件總數',
+    reduced_notify_events: '最近 {{days}} 天減少通知事件數',
+    noise_reduction_ratio: '最近 {{days}} 天降噪比',
+  },
+  tabs: {
+    events: '事件列表',
+    rules: '告警規則',
+    sub_rules: '訂閱規則',
+  },
 };
 
 export default zh_HK;

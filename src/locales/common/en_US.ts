@@ -227,7 +227,9 @@ const en_US = {
     'If your role is an administrator, you can execute the script on any machine; otherwise, you can only execute the script on the machines under the business group with administrative rights',
   'task.allOptionLabel': 'All tasks',
 
+  'last.1.days': 'Last 1 day',
   'last.7.days': 'Last 7 days',
+  'last.14.days': 'Last 14 days',
   'last.15.days': 'Last 15 days',
   'last.30.days': 'Last 30 days',
   'last.60.days': 'Last 60 days',

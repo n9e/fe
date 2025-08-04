@@ -226,7 +226,9 @@ const ja_JP = {
   'task.tip.content': 'もしロールが管理者なら、どのマシンでもスクリプトを実行できます。それ以外は、管理権限のあるビジネスグループのマシンでのみスクリプトを実行できます',
   'task.allOptionLabel': '全スクリプト',
 
+  'last.1.days': '最近 1 日',
   'last.7.days': '最近 7 日',
+  'last.14.days': '最近 14 日',
   'last.15.days': '最近 15 日',
   'last.30.days': '最近 30 日',
   'last.60.days': '最近 60 日',

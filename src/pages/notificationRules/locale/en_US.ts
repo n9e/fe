@@ -69,5 +69,15 @@ const en_US = {
     duration_1: 'Abnormal event has exceeded',
     duration_2: 'If it is still in the unrecovered/unclaimed state, use this configuration to send notifications.',
   },
+  statistics: {
+    total_notify_events: 'Total notification events in the last {{days}} days',
+    reduced_notify_events: 'Reduced notification events in the last {{days}} days',
+    noise_reduction_ratio: 'Noise reduction ratio in the last {{days}} days',
+  },
+  tabs: {
+    events: 'Event list',
+    rules: 'Alarm rules',
+    sub_rules: 'Subscription rules',
+  },
 };
 export default en_US;

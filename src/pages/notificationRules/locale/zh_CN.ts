@@ -83,5 +83,16 @@ const zh_CN = {
     default_title: '默认维度',
     default_tip: '未满足上述筛选条件，按照以下维度聚合到一组进行通知',
   },
+  statistics: {
+    total_notify_events: '最近 {{days}} 天通知事件总数',
+    reduced_notify_events: '最近 {{days}} 天减少通知事件数',
+    noise_reduction_ratio: '最近 {{days}} 天降噪比',
+  },
+  tabs: {
+    events: '事件列表',
+    rules: '告警规则',
+    sub_rules: '订阅规则',
+  },
 };
+
 export default zh_CN;

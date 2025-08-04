@@ -69,6 +69,16 @@ const ja_JP = {
     duration_1: '異常イベントが',
     duration_2: 'を超えた場合、未回復/未承認の状態が続く場合、この設定を使用して通知を送信します。',
   },
+  statistics: {
+    total_notify_events: '過去 {{days}} 日間の通知イベントの総数',
+    reduced_notify_events: '過去 {{days}} 日間の削減された通知イベント数',
+    noise_reduction_ratio: '過去 {{days}} 日間のノイズ削減率',
+  },
+  tabs: {
+    events: 'イベントリスト',
+    rules: 'アラームルール',
+    sub_rules: 'サブスクリプションルール',
+  },
 };
 
 export default ja_JP;
