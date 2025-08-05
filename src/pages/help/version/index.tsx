@@ -48,14 +48,6 @@ export default function version() {
       }
     >
       <div>
-        <ul className='n9e-border-base' style={{ padding: '20px 30px' }}>
-          <li>
-            {t('frontend')}：{pkgJson.version}
-          </li>
-          <li>
-            {t('backend')}：{backendVersion}
-          </li>
-        </ul>
         <LicenseInfo />
         <DataSourceInfo />
       </div>
