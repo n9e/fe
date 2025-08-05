@@ -30,7 +30,7 @@ const zh_CN = {
       label: '根据指定 field 分组',
       more: '高级设置',
       size: '匹配个数',
-      min_value: '文档最小值',
+      min_doc_count: '文档最小值',
     },
     raw: {
       limit: '日志条数',
@@ -55,7 +55,7 @@ const zh_CN = {
       delay: '延迟执行',
     },
     event: {
-      groupBy: `根据 {{field}} 分组，匹配个数 {{size}}, 文档最小值 {{min_value}}`,
+      groupBy: `根据 {{field}} 分组，匹配个数 {{size}}, 文档最小值 {{min_doc_count}}`,
       logs: {
         title: '日志详情',
         size: '结果数',

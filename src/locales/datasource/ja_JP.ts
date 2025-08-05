@@ -22,7 +22,7 @@ const ja_JP = {
       label: '指定フィールドによるグループ化',
       more: '高度な設定',
       size: '一致数',
-      min_value: 'ドキュメントの最小値',
+      min_doc_count: 'ドキュメントの最小値',
     },
     raw: {
       limit: 'ログ数',
@@ -47,7 +47,7 @@ const ja_JP = {
       delay: '遅延実行',
     },
     event: {
-      groupBy: '{{field}}によるグループ化、一致数 {{size}}, ドキュメントの最小値 {{min_value}}',
+      groupBy: '{{field}}によるグループ化、一致数 {{size}}, ドキュメントの最小値 {{min_doc_count}}',
       logs: {
         title: 'ログの詳細',
         size: '結果数',

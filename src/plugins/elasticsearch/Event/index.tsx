@@ -64,7 +64,7 @@ export default function ElasticsearchDetail(
                           {i18next.t('datasource:es.event.groupBy', {
                             field: item.field,
                             size: item.size,
-                            min_value: item.min_value,
+                            min_doc_count: item.min_doc_count,
                           })}
                         </Tag>
                       );

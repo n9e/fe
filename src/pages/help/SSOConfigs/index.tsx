@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Tabs, Button, Card, message } from 'antd';
+import { Tabs, Button, Card, message, Space } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { EditorView } from '@codemirror/view';
@@ -51,23 +51,6 @@ export default function index() {
             onChange={(activeKey) => {
               setActiveKey(activeKey);
             }}
-            tabBarExtraContent={
-              activeKey &&
-              documentMap[activeKey] && (
-                <a
-                  onClick={() => {
-                    DocumentDrawer({
-                      language: i18n.language,
-                      title: t('common:document_link'),
-                      type: 'iframe',
-                      documentPath: documentMap[activeKey],
-                    });
-                  }}
-                >
-                  {t('common:document_link')}
-                </a>
-              )
-            }
           >
             {data.map((item) => {
               return (
@@ -98,20 +81,36 @@ export default function index() {
                         }),
                       ]}
                     />
-                    <Button
-                      type='primary'
-                      style={{ marginTop: 16 }}
-                      onClick={() => {
-                        const curItem = _.find(data, (i) => i.id === item.id);
-                        if (curItem) {
-                          putSSOConfig(curItem).then(() => {
-                            message.success(t('common:success.save'));
-                          });
-                        }
-                      }}
-                    >
-                      {t('common:btn.save')}
-                    </Button>
+                    <Space className='mt-4'>
+                      <Button
+                        type='primary'
+                        onClick={() => {
+                          const curItem = _.find(data, (i) => i.id === item.id);
+                          if (curItem) {
+                            putSSOConfig(curItem).then(() => {
+                              message.success(t('common:success.save'));
+                            });
+                          }
+                        }}
+                      >
+                        {t('common:btn.save')}
+                      </Button>
+                      {activeKey && documentMap[activeKey] && (
+                        <Button
+                          type='link'
+                          onClick={() => {
+                            DocumentDrawer({
+                              language: i18n.language,
+                              title: t('common:document_link'),
+                              type: 'iframe',
+                              documentPath: documentMap[activeKey],
+                            });
+                          }}
+                        >
+                          {t('common:document_link')}
+                        </Button>
+                      )}
+                    </Space>
                   </div>
                 </Tabs.TabPane>
               );

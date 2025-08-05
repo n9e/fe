@@ -294,6 +294,7 @@ const ja_JP = {
       join_type_placeholder: '集合操作を選択',
       on: 'ラベル名',
     },
+    threshold_tip: 'すべての変数にデータがあり、それらのラベルが一致していることを確認してください。そうしないと、閾値判断を行うことができません。',
   },
   nodata_trigger: {
     title: 'データなしトリガー',

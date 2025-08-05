@@ -53,8 +53,8 @@ export default function Terms({ prefixField, fieldsOptions, values }) {
                 </InputGroupWithFormItem>
               </Col>
               <Col span={6}>
-                <InputGroupWithFormItem label={t('datasource:es.terms.min_value')}>
-                  <Form.Item {...prefixField} name={[prefixField.name, 'min_value']} noStyle>
+                <InputGroupWithFormItem label={t('datasource:es.terms.min_doc_count')}>
+                  <Form.Item {...prefixField} name={[prefixField.name, 'min_doc_count']} noStyle>
                     <InputNumber style={{ width: '100%' }} />
                   </Form.Item>
                 </InputGroupWithFormItem>
@@ -71,7 +71,7 @@ export default function Terms({ prefixField, fieldsOptions, values }) {
               </Col>
               <Col span={6}>
                 <InputGroupWithFormItem label='OrderBy'>
-                  <Form.Item {...prefixField} name={[prefixField.name, 'orderBy']}>
+                  <Form.Item {...prefixField} name={[prefixField.name, 'order_by']}>
                     <Select>
                       <Select.Option value='_key'>Term value</Select.Option>
                       <Select.Option value='_count'>Count</Select.Option>

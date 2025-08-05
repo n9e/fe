@@ -30,7 +30,7 @@ const zh_HK = {
       label: '根據指定 field 分組',
       more: '高階設定',
       size: '匹配個數',
-      min_value: '文件最小值',
+      min_doc_count: '文件最小值',
     },
     raw: {
       limit: '日誌條數',
@@ -55,7 +55,7 @@ const zh_HK = {
       delay: '延遲執行',
     },
     event: {
-      groupBy: `根據 {{field}} 分組，匹配個數 {{size}}, 文檔最小值 {{min_value}}`,
+      groupBy: `根據 {{field}} 分組，匹配個數 {{size}}, 文檔最小值 {{min_doc_count}}`,
       logs: {
         title: '日誌詳情',
         size: '結果數',
