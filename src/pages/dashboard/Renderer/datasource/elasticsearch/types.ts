@@ -11,10 +11,10 @@ export interface ElasticsearchQuery {
   group_by: {
     cate: string;
     field?: string;
-    min_value?: number;
+    min_doc_count?: number;
     size?: number;
     order?: string;
-    orderBy?: string;
+    order_by?: string;
   }[];
   start: number;
   end: number;

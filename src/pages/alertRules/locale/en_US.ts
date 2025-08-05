@@ -299,6 +299,7 @@ const en_US = {
       join_type_placeholder: 'Select join operation',
       on: 'Label key',
     },
+    threshold_tip: 'Please ensure that all variables have data and their labels are consistent, otherwise threshold judgment cannot be performed.',
   },
   nodata_trigger: {
     title: 'No data',
