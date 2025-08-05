@@ -36,12 +36,13 @@ interface Props {
   data: subscribeItem[];
   loading: boolean;
   setRefreshFlag: (flag: string) => void;
+  linkTarget?: string;
 }
 
 const Subscribe = (props: Props) => {
   const { t } = useTranslation('alertSubscribes');
   const { datasourceList, busiGroups } = useContext(CommonStateContext);
-  const { hideBusinessGroupColumn, readonly, headerExtra, data, loading, setRefreshFlag } = props;
+  const { hideBusinessGroupColumn, readonly, headerExtra, data, loading, setRefreshFlag, linkTarget } = props;
   const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
   const [query, setQuery] = useState<string>(localStorage.getItem(QUERY_LOCAL_STORAGE_KEY) || '');
   const cacheDefaultDatasourceIds = localStorage.getItem(DATASOURCE_IDS_LOCAL_STORAGE_KEY);
@@ -80,6 +81,7 @@ const Subscribe = (props: Props) => {
                 pathname: `/alert-subscribes/edit/${record.id}`,
                 state: record,
               }}
+              target={linkTarget}
             >
               {data}
             </Link>
