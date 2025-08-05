@@ -50,12 +50,13 @@ interface Props {
   data: AlertRuleType<any>[];
   loading: boolean;
   setRefreshFlag?: (flag: string) => void;
+  linkTarget?: string;
 }
 
 export default function AlertRules(props: Props) {
   const { t } = useTranslation('alertRules');
   const { busiGroups, datasourceList } = useContext(CommonStateContext);
-  const { hideBusinessGroupColumn, showRowSelection, readonly, headerExtra, data, loading, setRefreshFlag } = props;
+  const { hideBusinessGroupColumn, showRowSelection, readonly, headerExtra, data, loading, setRefreshFlag, linkTarget } = props;
   const [filter, setFilter] = useState<Filter>({} as Filter);
   const [queryValue, setQueryValue] = useState<string | undefined>();
   const [selectRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
@@ -165,6 +166,7 @@ export default function AlertRules(props: Props) {
               to={{
                 pathname: `/alert-rules/edit/${record.id}`,
               }}
+              target={linkTarget}
             >
               {data}
             </Link>

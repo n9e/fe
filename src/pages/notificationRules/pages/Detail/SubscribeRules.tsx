@@ -29,5 +29,5 @@ export default function SubscribeRules(props: Props) {
     fetchData();
   }, [id, refreshFlag]);
 
-  return <ListNG hideBusinessGroupColumn readonly data={data} loading={loading} setRefreshFlag={setRefreshFlag} />;
+  return <ListNG hideBusinessGroupColumn readonly data={data} loading={loading} setRefreshFlag={setRefreshFlag} linkTarget='_blank' />;
 }
