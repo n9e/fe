@@ -295,6 +295,7 @@ const zh_CN = {
       join_type_placeholder: '请选择集合操作',
       on: '标签名',
     },
+    threshold_tip: '请确保所有变量均有数据，且它们的标签一致，否则无法进行阈值判断。',
   },
   nodata_trigger: {
     title: '数据缺失',

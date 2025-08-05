@@ -295,6 +295,7 @@ const zh_HK = {
       join_type_placeholder: '選擇集合操作',
       on: '標籤名',
     },
+    threshold_tip: '請確保所有變量均有數據，且它們的標籤一致，否則無法進行閾值判斷。',
   },
   nodata_trigger: {
     title: '無數據告警',
