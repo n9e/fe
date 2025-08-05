@@ -38,7 +38,7 @@ export default function Terms({ prefixField }) {
               <Col span={6}>
                 <Input.Group>
                   <span className='ant-input-group-addon'>文档最小值</span>
-                  <Form.Item {...prefixField} name={[prefixField.name, 'min_value']} noStyle>
+                  <Form.Item {...prefixField} name={[prefixField.name, 'min_doc_count']} noStyle>
                     <InputNumber style={{ width: '100%' }} />
                   </Form.Item>
                 </Input.Group>

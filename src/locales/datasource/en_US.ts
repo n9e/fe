@@ -30,7 +30,7 @@ const en_US = {
       label: 'Group by field',
       more: 'More',
       size: 'Size',
-      min_value: 'Min doc count',
+      min_doc_count: 'Min doc count',
     },
     raw: {
       limit: 'Limit',
@@ -55,7 +55,7 @@ const en_US = {
       delay: 'Delay',
     },
     event: {
-      groupBy: `Group by {{field}}, number of matches {{size}}, document minimum value {{min_value}}`,
+      groupBy: `Group by {{field}}, number of matches {{size}}, document minimum value {{min_doc_count}}`,
       logs: {
         title: 'Logs detail',
         size: 'Size',
