@@ -117,11 +117,16 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
       )}
       <Menu.Item
         onClick={() => {
-          Logout().then(() => {
+          Logout().then((res) => {
             localStorage.removeItem(AccessTokenKey);
             localStorage.removeItem('refresh_token');
             localStorage.removeItem('curBusiId');
-            history.push('/login');
+            // 如果 res.dat 是一个字符串，表示重定向 URL，则直接跳转到该 URL
+            if (res.dat && typeof res.dat === 'string') {
+              window.location.href = res.dat;
+            } else {
+              history.push('/login');
+            }
           });
         }}
       >
