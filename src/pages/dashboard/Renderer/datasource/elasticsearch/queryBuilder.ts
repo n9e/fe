@@ -122,9 +122,9 @@ export function getSeriesQuery(target: ElasticsearchQuery, intervalkey: string) 
           field: aggDef.field,
           size: aggDef.size || 10,
           order: {
-            [aggDef.orderBy || '_key']: aggDef.order || 'desc',
+            [aggDef.order_by || '_key']: aggDef.order || 'desc',
           },
-          min_doc_count: aggDef.min_value || 1,
+          min_doc_count: aggDef.min_doc_count || 1,
         };
         break;
       }
