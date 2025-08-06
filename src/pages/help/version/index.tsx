@@ -21,6 +21,7 @@ import PageLayout from '@/components/pageLayout';
 import SystemInfoSvg from '@/assets/n9e/image/system-info.svg?react';
 import pkgJson from '../../../../package.json';
 import './locale';
+import { IS_ENT } from '@/utils/constant';
 // @ts-ignore
 import LicenseInfo from 'plus:/parcels/LicenseInfo';
 // @ts-ignore
@@ -48,6 +49,16 @@ export default function version() {
       }
     >
       <div>
+        {!IS_ENT && (
+          <ul className='n9e-border-base' style={{ padding: '20px 30px' }}>
+            <li>
+              {t('frontend')}：{pkgJson.version}
+            </li>
+            <li>
+              {t('backend')}：{backendVersion}
+            </li>
+          </ul>
+        )}
         <LicenseInfo />
         <DataSourceInfo />
       </div>
