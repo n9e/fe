@@ -25,14 +25,15 @@ import ColorPicker from '../../../Components/ColorPicker';
 interface IProps {
   preNamePrefix?: (string | number)[];
   namePrefix?: (string | number)[];
+  isActive?: boolean;
 }
 
 export default function index(props: IProps) {
   const { t } = useTranslation('dashboard');
-  const { preNamePrefix = [], namePrefix = ['options', 'valueMappings'] } = props;
+  const { preNamePrefix = [], namePrefix = ['options', 'valueMappings'], isActive = true } = props;
 
   return (
-    <Panel header={t('panel.options.valueMappings.title')}>
+    <Panel header={t('panel.options.valueMappings.title')} isActive={isActive}>
       <Form.List name={namePrefix}>
         {(fields, { add, remove }) => (
           <>

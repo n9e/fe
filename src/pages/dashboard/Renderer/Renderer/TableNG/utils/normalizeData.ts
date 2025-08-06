@@ -62,9 +62,11 @@ export default function normalizeData(
     });
   }
 
-  if (transformations && transformations.length > 0) {
+  const enabledTransformations = _.filter(transformations, (transformation) => transformation.disabled !== true);
+
+  if (enabledTransformations && enabledTransformations.length > 0) {
     const pipeline = new TransformationPipeline();
-    _.forEach(transformations, (transformationConfig) => {
+    _.forEach(enabledTransformations, (transformationConfig) => {
       const transformationClass = transformationsMap[transformationConfig.id];
       if (transformationClass) {
         const transformation = new transformationClass(transformationConfig.options);

@@ -31,10 +31,11 @@ interface Props {
   targets: any;
   matcherNames?: string[];
   overrideOptions?: string[];
+  activeOptions?: string[];
   showMinMax?: boolean;
 }
 
-export default function index({ targets, matcherNames = ['byFrameRefID', 'byName'], overrideOptions, showMinMax }: Props) {
+export default function index({ targets, matcherNames = ['byFrameRefID', 'byName'], overrideOptions, activeOptions, showMinMax }: Props) {
   const { t } = useTranslation('dashboard');
   const [tableFields] = useGlobalState('tableFields');
   const namePrefix = ['overrides'];
@@ -48,7 +49,7 @@ export default function index({ targets, matcherNames = ['byFrameRefID', 'byName
               isActive={false}
               key={key}
               isInner
-              header='Override'
+              header={fields.length > 1 ? `Override ${name + 1}` : 'Override'}
               extra={
                 <Space>
                   <PlusCircleOutlined
@@ -132,21 +133,27 @@ export default function index({ targets, matcherNames = ['byFrameRefID', 'byName
                 </Col>
               </Row>
               {_.includes(overrideOptions, 'custom.cellOptions') && (
-                <Panel header={t('panel.custom.title')}>
+                <Panel header={t('panel.custom.title')} isActive={_.includes(activeOptions, 'custom.cellOptions')}>
                   <CellOptions prefixNamePath={namePrefix} namePath={[name, 'properties', 'cellOptions']} />
                 </Panel>
               )}
               {_.includes(overrideOptions, 'thresholds') && (
                 <Thresholds
                   preNamePrefix={namePrefix}
-                  namePrefix={[name, 'properties', 'thresholds']}
+                  namePrefix={[name, 'properties']}
                   showMode={_.includes(overrideOptions, 'thresholds_showMode')}
                   showStyle={_.includes(overrideOptions, 'thresholds_showStyle')}
                   initialValue={[defaultThreshold]}
+                  isActive={_.includes(activeOptions, 'thresholds')}
                 />
               )}
-              <ValueMappings preNamePrefix={namePrefix} namePrefix={[name, 'properties', 'valueMappings']} />
-              <StandardOptions preNamePrefix={namePrefix} namePrefix={[name, 'properties', 'standardOptions']} showMinMax={showMinMax} />
+              <ValueMappings preNamePrefix={namePrefix} namePrefix={[name, 'properties', 'valueMappings']} isActive={_.includes(activeOptions, 'valueMappings')} />
+              <StandardOptions
+                preNamePrefix={namePrefix}
+                namePrefix={[name, 'properties', 'standardOptions']}
+                showMinMax={showMinMax}
+                isActive={_.includes(activeOptions, 'standardOptions')}
+              />
             </Panel>
           );
         })
