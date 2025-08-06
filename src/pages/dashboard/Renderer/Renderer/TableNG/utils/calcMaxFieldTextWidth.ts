@@ -6,5 +6,5 @@ import { TextObject } from '../CellRenderer/types';
 
 export default function calcMaxFieldTextWidth(field: string, formattedData: { [key: string]: TextObject }[]) {
   const textWidths = _.map(formattedData, (row) => getTextWidth(row[field].text));
-  return Math.max(...textWidths) + 10;
+  return Math.max(...textWidths) + 8; // 预留 8px 的 padding
 }

@@ -239,6 +239,7 @@ export interface ITransformation {
   options: {
     [key: string]: any;
   };
+  disabled?: boolean;
 }
 
 export interface IPanel {

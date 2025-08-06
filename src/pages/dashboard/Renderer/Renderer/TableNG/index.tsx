@@ -4,6 +4,7 @@ import { AgGridReact } from 'ag-grid-react';
 import _ from 'lodash';
 import { Select } from 'antd';
 
+import { FONT_FAMILY } from '@/utils/constant';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { useGlobalState } from '@/pages/dashboard/globalState';
 
@@ -89,6 +90,9 @@ export default function index(props: Props) {
         defaultColDef={{
           flex: 1,
           resizable: false,
+          cellStyle: {
+            fontFamily: FONT_FAMILY,
+          },
         }}
       />
       {_.isArray(_.compact(_.map(data, 'id'))) && _.compact(_.map(data, 'id')).length > 1 && (
