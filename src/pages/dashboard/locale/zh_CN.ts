@@ -413,6 +413,8 @@ const zh_CN = {
               gauge: '量表 (Gauge)',
             },
           },
+          wrapText: '文本换行',
+          wrapText_tip: '开启后，单元格文本会自动换行，并且行高会根据文本行数自动调整，如果行数据量较大会影响性能',
           'color-background': {
             mode: {
               label: '颜色模式',

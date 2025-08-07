@@ -1,6 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
-import { Form, Select, Row, Col } from 'antd';
+import { Form, Select, Row, Col, Switch } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 const cellTypes = ['none', 'color-text', 'color-background', 'gauge'];
@@ -47,6 +47,16 @@ export default function CellOptions(props: CellOptionsProps) {
           </Form.Item>
         </Col>
       )} */}
+      {(type === 'none' || type === 'color-text') && (
+        <Form.Item
+          label={t('panel.custom.tableNG.cellOptions.wrapText')}
+          tooltip={t('panel.custom.tableNG.cellOptions.wrapText_tip')}
+          name={[...namePath, 'wrapText']}
+          valuePropName='checked'
+        >
+          <Switch />
+        </Form.Item>
+      )}
       {type === 'gauge' && (
         <>
           <Col span={12}>

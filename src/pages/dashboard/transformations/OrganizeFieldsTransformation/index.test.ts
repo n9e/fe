@@ -6,10 +6,25 @@ describe('OrganizeFieldsTransformation', () => {
     it('should organize fields in TableData', () => {
       const input: TableData = {
         refId: 'A',
-        columns: ['id', 'name', 'value'],
-        rows: [
-          { id: 1, name: 'Alice', value: 10 },
-          { id: 2, name: 'Bob', value: 20 },
+        fields: [
+          {
+            name: 'id',
+            type: 'number',
+            values: [1, 2],
+            state: {},
+          },
+          {
+            name: 'name',
+            type: 'string',
+            values: ['Alice', 'Bob'],
+            state: {},
+          },
+          {
+            name: 'value',
+            type: 'number',
+            values: [10, 20],
+            state: {},
+          },
         ],
       };
 
@@ -20,20 +35,29 @@ describe('OrganizeFieldsTransformation', () => {
       const result = transformation.apply([input]) as TableData[];
 
       expect(result.length).toBe(1);
-      expect(result[0].columns).toEqual(['id', 'value']);
-      expect(result[0].rows).toEqual([
-        { id: 1, value: 10 },
-        { id: 2, value: 20 },
-      ]);
+      expect(result[0].fields.length).toBe(2);
+      expect(result[0].fields[0].name).toBe('id');
+      expect(result[0].fields[1].name).toBe('value');
+      expect(result[0].fields[0].values).toEqual([1, 2]);
+      expect(result[0].fields[1].values).toEqual([10, 20]);
     });
 
     it('should rename fields in TableData', () => {
       const input: TableData = {
         refId: 'A',
-        columns: ['id', 'name', 'value'],
-        rows: [
-          { id: 1, name: 'Alice', value: 10 },
-          { id: 2, name: 'Bob', value: 20 },
+        fields: [
+          {
+            name: 'id',
+            type: 'number',
+            values: [1, 2],
+            state: {},
+          },
+          {
+            name: 'value',
+            type: 'number',
+            values: [10, 20],
+            state: {},
+          },
         ],
       };
 
@@ -45,20 +69,41 @@ describe('OrganizeFieldsTransformation', () => {
       const result = transformation.apply([input]) as TableData[];
 
       expect(result.length).toBe(1);
-      expect(result[0].columns).toEqual(['userId', 'score']);
-      expect(result[0].rows).toEqual([
-        { userId: 1, score: 10 },
-        { userId: 2, score: 20 },
-      ]);
+      expect(result[0].fields.length).toBe(2);
+      expect(result[0].fields[0].name).toBe('userId');
+      expect(result[0].fields[1].name).toBe('score');
+      expect(result[0].fields[0].state.displayName).toBe('userId');
+      expect(result[0].fields[1].state.displayName).toBe('score');
     });
 
     it('should exclude fields using excludeByName in TableData', () => {
       const input: TableData = {
         refId: 'A',
-        columns: ['id', 'name', 'value', 'extra'],
-        rows: [
-          { id: 1, name: 'Alice', value: 10, extra: 'data1' },
-          { id: 2, name: 'Bob', value: 20, extra: 'data2' },
+        fields: [
+          {
+            name: 'id',
+            type: 'number',
+            values: [1, 2],
+            state: {},
+          },
+          {
+            name: 'name',
+            type: 'string',
+            values: ['Alice', 'Bob'],
+            state: {},
+          },
+          {
+            name: 'value',
+            type: 'number',
+            values: [10, 20],
+            state: {},
+          },
+          {
+            name: 'extra',
+            type: 'string',
+            values: ['data1', 'data2'],
+            state: {},
+          },
         ],
       };
 
@@ -70,20 +115,32 @@ describe('OrganizeFieldsTransformation', () => {
       const result = transformation.apply([input]) as TableData[];
 
       expect(result.length).toBe(1);
-      expect(result[0].columns).toEqual(['id', 'name', 'value']);
-      expect(result[0].rows).toEqual([
-        { id: 1, name: 'Alice', value: 10 },
-        { id: 2, name: 'Bob', value: 20 },
-      ]);
+      expect(result[0].fields.length).toBe(3);
+      expect(result[0].fields.map((f) => f.name)).toEqual(['id', 'name', 'value']);
     });
 
     it('should order fields using indexByName in TableData', () => {
       const input: TableData = {
         refId: 'A',
-        columns: ['id', 'name', 'value'],
-        rows: [
-          { id: 1, name: 'Alice', value: 10 },
-          { id: 2, name: 'Bob', value: 20 },
+        fields: [
+          {
+            name: 'id',
+            type: 'number',
+            values: [1, 2],
+            state: {},
+          },
+          {
+            name: 'name',
+            type: 'string',
+            values: ['Alice', 'Bob'],
+            state: {},
+          },
+          {
+            name: 'value',
+            type: 'number',
+            values: [10, 20],
+            state: {},
+          },
         ],
       };
 
@@ -95,20 +152,43 @@ describe('OrganizeFieldsTransformation', () => {
       const result = transformation.apply([input]) as TableData[];
 
       expect(result.length).toBe(1);
-      expect(result[0].columns).toEqual(['value', 'name', 'id']); // 按照 indexByName 排序
-      expect(result[0].rows).toEqual([
-        { value: 10, name: 'Alice', id: 1 },
-        { value: 20, name: 'Bob', id: 2 },
-      ]);
+      expect(result[0].fields.map((f) => f.name)).toEqual(['value', 'name', 'id']); // 按照 indexByName 排序
     });
 
     it('should combine excludeByName, indexByName and renameByName in TableData', () => {
       const input: TableData = {
         refId: 'A',
-        columns: ['id', 'name', 'value', 'extra', 'status'],
-        rows: [
-          { id: 1, name: 'Alice', value: 10, extra: 'data1', status: 'active' },
-          { id: 2, name: 'Bob', value: 20, extra: 'data2', status: 'inactive' },
+        fields: [
+          {
+            name: 'id',
+            type: 'number',
+            values: [1, 2],
+            state: {},
+          },
+          {
+            name: 'name',
+            type: 'string',
+            values: ['Alice', 'Bob'],
+            state: {},
+          },
+          {
+            name: 'value',
+            type: 'number',
+            values: [10, 20],
+            state: {},
+          },
+          {
+            name: 'extra',
+            type: 'string',
+            values: ['data1', 'data2'],
+            state: {},
+          },
+          {
+            name: 'status',
+            type: 'string',
+            values: ['active', 'inactive'],
+            state: {},
+          },
         ],
       };
 
@@ -122,11 +202,9 @@ describe('OrganizeFieldsTransformation', () => {
       const result = transformation.apply([input]) as TableData[];
 
       expect(result.length).toBe(1);
-      expect(result[0].columns).toEqual(['userStatus', 'value', 'name', 'userId']);
-      expect(result[0].rows).toEqual([
-        { userStatus: 'active', value: 10, name: 'Alice', userId: 1 },
-        { userStatus: 'inactive', value: 20, name: 'Bob', userId: 2 },
-      ]);
+      expect(result[0].fields.map((f) => f.name)).toEqual(['userStatus', 'value', 'name', 'userId']);
+      expect(result[0].fields[0].state.displayName).toBe('userStatus');
+      expect(result[0].fields[3].state.displayName).toBe('userId');
     });
   });
 
@@ -258,47 +336,127 @@ describe('OrganizeFieldsTransformation', () => {
     });
   });
 
-  // describe('Mixed Data', () => {
-  //   it('should handle mixed TimeSeries and TableData inputs', () => {
-  //     const input: QueryResult[] = [
-  //       {
-  //         refId: 'A',
-  //         name: 'series1',
-  //         labels: {},
-  //         data: [
-  //           { timestamp: 1633072800000, value: 10, extra: 'foo' },
-  //           { timestamp: 1633076400000, value: 20, extra: 'bar' },
-  //         ],
-  //       },
-  //       {
-  //         refId: 'B',
-  //         columns: ['id', 'name', 'value'],
-  //         rows: [
-  //           { id: 1, name: 'Alice', value: 10 },
-  //           { id: 2, name: 'Bob', value: 20 },
-  //         ],
-  //       },
-  //     ];
+  describe('Empty and edge cases', () => {
+    it('should handle empty fields list for TableData', () => {
+      const input: TableData = {
+        refId: 'A',
+        fields: [
+          {
+            name: 'cpu',
+            type: 'number',
+            values: [10, 20, 30],
+            state: {},
+          },
+        ],
+      };
 
-  //     const transformation = new OrganizeFieldsTransformation({
-  //       fields: ['timestamp', 'value', 'id'], // 混合字段
-  //       indexByName: { value: 0, timestamp: 1, id: 2 },
-  //     });
+      const transformation = new OrganizeFieldsTransformation({
+        fields: [], // 空字段列表
+      });
 
-  //     const result = transformation.apply(input);
+      const result = transformation.apply([input]) as TableData[];
 
-  //     // TimeSeries 结果
-  //     expect((result[0] as TimeSeries).data).toEqual([
-  //       { value: 10, timestamp: 1633072800000 },
-  //       { value: 20, timestamp: 1633076400000 },
-  //     ]);
+      expect(result.length).toBe(1);
+      expect(result[0]).toEqual(input); // 应该返回原始数据
+    });
 
-  //     // TableData 结果
-  //     expect((result[1] as TableData).columns).toEqual(['value', 'id']);
-  //     expect((result[1] as TableData).rows).toEqual([
-  //       { value: 10, id: 1 },
-  //       { value: 20, id: 2 },
-  //     ]);
-  //   });
-  // });
+    it('should handle missing fields in TableData', () => {
+      const input: TableData = {
+        refId: 'A',
+        fields: [
+          {
+            name: 'cpu',
+            type: 'number',
+            values: [10, 20, 30],
+            state: {},
+          },
+        ],
+      };
+
+      const transformation = new OrganizeFieldsTransformation({
+        fields: ['cpu', 'memory'], // memory 字段不存在
+      });
+
+      const result = transformation.apply([input]) as TableData[];
+
+      expect(result.length).toBe(1);
+      expect(result[0].fields.length).toBe(1);
+      expect(result[0].fields[0].name).toBe('cpu');
+    });
+
+    it('should handle empty fields list for TimeSeries', () => {
+      const input: TimeSeries = {
+        refId: 'A',
+        name: 'test-series',
+        labels: { instance: 'localhost' },
+        data: [{ timestamp: 1234567890, value: 10, cpu: 50 }],
+      };
+
+      const transformation = new OrganizeFieldsTransformation({
+        fields: [], // 空字段列表
+      });
+
+      const result = transformation.apply([input]) as TimeSeries[];
+
+      expect(result.length).toBe(1);
+      expect(result[0]).toEqual(input); // 应该返回原始数据
+    });
+  });
+
+  describe('Mixed Data', () => {
+    it('should handle mixed TimeSeries and TableData inputs', () => {
+      const timeSeriesInput: TimeSeries = {
+        refId: 'A',
+        name: 'series1',
+        labels: {},
+        data: [
+          { timestamp: 1633072800000, value: 10, extra: 'foo' },
+          { timestamp: 1633076400000, value: 20, extra: 'bar' },
+        ],
+      };
+
+      const tableDataInput: TableData = {
+        refId: 'B',
+        fields: [
+          {
+            name: 'id',
+            type: 'number',
+            values: [1, 2],
+            state: {},
+          },
+          {
+            name: 'name',
+            type: 'string',
+            values: ['Alice', 'Bob'],
+            state: {},
+          },
+          {
+            name: 'value',
+            type: 'number',
+            values: [10, 20],
+            state: {},
+          },
+        ],
+      };
+
+      const transformation = new OrganizeFieldsTransformation({
+        fields: ['timestamp', 'value', 'id'], // 混合字段
+        indexByName: { value: 0, timestamp: 1, id: 2 },
+      });
+
+      const result = transformation.apply([timeSeriesInput, tableDataInput]);
+
+      // TimeSeries 结果
+      expect((result[0] as TimeSeries).data).toEqual([
+        { value: 10, timestamp: 1633072800000 },
+        { value: 20, timestamp: 1633076400000 },
+      ]);
+
+      // TableData 结果
+      const tableResult = result[1] as TableData;
+      expect(tableResult.fields.map((f) => f.name)).toEqual(['value', 'id']);
+      expect(tableResult.fields[0].values).toEqual([10, 20]);
+      expect(tableResult.fields[1].values).toEqual([1, 2]);
+    });
+  });
 });

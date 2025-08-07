@@ -43,18 +43,36 @@ describe('MergeTransformation', () => {
       const input: TableData[] = [
         {
           refId: 'A',
-          columns: ['time', 'value'],
-          rows: [
-            { time: 1633072800000, value: 10 },
-            { time: 1633076400000, value: 20 },
+          fields: [
+            {
+              name: 'time',
+              type: 'time',
+              values: [1633072800000, 1633076400000],
+              state: {},
+            },
+            {
+              name: 'value',
+              type: 'number',
+              values: [10, 20],
+              state: {},
+            },
           ],
         },
         {
           refId: 'B',
-          columns: ['time', 'value'],
-          rows: [
-            { time: 1633080000000, value: 30 },
-            { time: 1633083600000, value: 40 },
+          fields: [
+            {
+              name: 'time',
+              type: 'time',
+              values: [1633080000000, 1633083600000],
+              state: {},
+            },
+            {
+              name: 'value',
+              type: 'number',
+              values: [30, 40],
+              state: {},
+            },
           ],
         },
       ];
@@ -63,12 +81,13 @@ describe('MergeTransformation', () => {
       const result = transformation.apply(input) as TableData[];
 
       expect(result.length).toBe(1);
-      expect(result[0].rows).toEqual([
-        { time: 1633072800000, value: 10 },
-        { time: 1633076400000, value: 20 },
-        { time: 1633080000000, value: 30 },
-        { time: 1633083600000, value: 40 },
-      ]);
+      expect(result[0].fields.length).toBe(2);
+
+      const timeField = result[0].fields.find((f) => f.name === 'time');
+      const valueField = result[0].fields.find((f) => f.name === 'value');
+
+      expect(timeField?.values).toEqual([1633072800000, 1633076400000, 1633080000000, 1633083600000]);
+      expect(valueField?.values).toEqual([10, 20, 30, 40]);
     });
   });
 
@@ -86,10 +105,19 @@ describe('MergeTransformation', () => {
         },
         {
           refId: 'B',
-          columns: ['time', 'value'],
-          rows: [
-            { time: 1633080000000, value: 30 },
-            { time: 1633083600000, value: 40 },
+          fields: [
+            {
+              name: 'time',
+              type: 'time',
+              values: [1633080000000, 1633083600000],
+              state: {},
+            },
+            {
+              name: 'value',
+              type: 'number',
+              values: [30, 40],
+              state: {},
+            },
           ],
         },
       ];

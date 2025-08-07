@@ -39,8 +39,9 @@ export default function index(props: Props) {
     const columns = _.uniq(_.flatMap(data, 'columns'));
     setTableFields(columns);
 
-    const rowData = data[activeIndex]?.rows || [];
-    const formattedData = getFormattedRowData(rowData, { cellOptions, options, overrides });
+    const activeData = data[activeIndex];
+    const rowData = activeData?.rows || [];
+    const formattedData = getFormattedRowData(activeData, { cellOptions, options, overrides });
 
     return {
       data,
@@ -68,6 +69,7 @@ export default function index(props: Props) {
         headerHeight={showHeader ? 27 : 0}
         enableCellTextSelection
         suppressMovableColumns
+        suppressColumnVirtualisation
         animateRows={false}
         theme={theme}
         rowData={rowData}
@@ -92,7 +94,12 @@ export default function index(props: Props) {
           resizable: false,
           cellStyle: {
             fontFamily: FONT_FAMILY,
+            // 开启换行后，设置单元格文本的行高
+            ...(cellOptions.wrapText ? { display: 'flex', alignItems: 'center', whiteSpace: 'normal', lineHeight: '1.5' } : {}),
           },
+          wrapText: cellOptions.wrapText, // 用于单元格换行
+          suppressSizeToFit: cellOptions.wrapText, // 用于单元格换行
+          autoHeight: cellOptions.wrapText, // 用于单元格换行
         }}
       />
       {_.isArray(_.compact(_.map(data, 'id'))) && _.compact(_.map(data, 'id')).length > 1 && (

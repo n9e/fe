@@ -77,23 +77,26 @@ export default class OrganizeFieldsTransformation implements Transformation {
     });
 
     // 过滤并重命名字段
-    const newColumns = sortedFields.map((field) => renameByName?.[field] || field);
+    const newFields = sortedFields
+      .map((fieldName) => {
+        // 找到对应的字段
+        const field = table.fields.find((f) => f.name === fieldName);
+        if (!field) return null;
 
-    const newRows = table.rows.map((row) => {
-      const newRow: Record<string, any> = {};
-      sortedFields.forEach((field) => {
-        if (row.hasOwnProperty(field)) {
-          const newFieldName = renameByName?.[field] || field;
-          newRow[newFieldName] = row[field];
-        }
-      });
-      return newRow;
-    });
+        return {
+          ...field,
+          name: renameByName?.[field.name] || field.name,
+          state: {
+            ...field.state,
+            displayName: renameByName?.[field.name] || field.state?.displayName || field.name,
+          },
+        };
+      })
+      .filter((field) => field !== null);
 
     return {
       ...table,
-      columns: newColumns,
-      rows: newRows,
+      fields: newFields,
     };
   }
 }
