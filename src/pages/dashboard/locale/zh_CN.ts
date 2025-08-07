@@ -654,6 +654,22 @@ const zh_CN = {
       mode: '模式',
       byField: '字段',
     },
+    timeSeriesTable: {
+      title: 'Time Series to Table',
+      desc: '将时序数据的每个时间点的值合并计算为一个值',
+      fieldName: '字段',
+      functions: '方法',
+      functions_map: {
+        min: '最小值',
+        max: '最大值',
+        avg: '平均值',
+        sum: '总和',
+        last: '最后一个值',
+        variance: '方差',
+        stdDev: '标准差',
+        count: '计数',
+      },
+    },
   },
   add_transformation: '添加数据转换',
 };
