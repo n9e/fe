@@ -13,8 +13,25 @@ export interface TimeSeries {
 
 export interface TableData {
   refId: string;
-  columns: string[];
-  rows: Record<string, any>[];
+  fields: {
+    name: string;
+    type: string; // 'string' | 'number' | 'time'
+    values: (string | number | null)[];
+    state: {
+      hide?: boolean; // 是否隐藏该字段
+      displayName?: string; // 显示名称
+      calcs?: {
+        min: number | null;
+        max: number | null;
+        avg: number | null;
+        sum: number | null;
+        last: number | null;
+        variance: number | null;
+        stdDev: number | null;
+        count: number | null;
+      };
+    };
+  }[];
 }
 
 export type QueryResult = TimeSeries | TableData;

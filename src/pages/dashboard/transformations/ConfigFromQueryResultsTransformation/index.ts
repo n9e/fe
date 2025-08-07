@@ -29,8 +29,11 @@ export default class ConfigFromQueryResultsTransformation implements Transformat
     if (isTableData(result)) {
       // 从 TableData 中提取配置值
       const { configField } = this.options;
-      const configRow = result.rows.find((row) => row[configField] !== undefined);
-      return configRow ? configRow[configField] : null;
+      const fieldIndex = result.fields.findIndex((f) => (f.state?.displayName || f.name) === configField);
+      if (fieldIndex !== -1 && result.fields[fieldIndex].values.length > 0) {
+        return result.fields[fieldIndex].values[0];
+      }
+      return null;
     } else if (isTimeSeries(result)) {
       // 从 TimeSeries 中提取配置值
       const { configField } = this.options;
@@ -44,14 +47,24 @@ export default class ConfigFromQueryResultsTransformation implements Transformat
     if (isTableData(result)) {
       // 将配置值应用到 TableData
       const { targetField } = this.options;
-      const newRows = result.rows.map((row) => ({
-        ...row,
-        [targetField]: configValue,
-      }));
+
+      // 创建新字段的值数组，长度与现有字段相同
+      const valueCount = result.fields[0]?.values.length || 0;
+      const newFieldValues = Array(valueCount).fill(configValue);
+
+      const newFields = [
+        ...result.fields,
+        {
+          name: targetField,
+          type: typeof configValue === 'number' ? 'number' : 'string',
+          values: newFieldValues,
+          state: {},
+        },
+      ];
+
       return {
         ...result,
-        columns: [...result.columns, targetField],
-        rows: newRows,
+        fields: newFields,
       };
     } else if (isTimeSeries(result)) {
       // 将配置值应用到 TimeSeries

@@ -6,10 +6,25 @@ describe('ConcatenateFieldsTransformation', () => {
     it('should concatenate fields in TableData', () => {
       const input: TableData = {
         refId: 'A',
-        columns: ['id', 'firstName', 'lastName'],
-        rows: [
-          { id: 1, firstName: 'John', lastName: 'Doe' },
-          { id: 2, firstName: 'Jane', lastName: 'Smith' },
+        fields: [
+          {
+            name: 'id',
+            type: 'number',
+            values: [1, 2],
+            state: {},
+          },
+          {
+            name: 'firstName',
+            type: 'string',
+            values: ['John', 'Jane'],
+            state: {},
+          },
+          {
+            name: 'lastName',
+            type: 'string',
+            values: ['Doe', 'Smith'],
+            state: {},
+          },
         ],
       };
 
@@ -22,20 +37,37 @@ describe('ConcatenateFieldsTransformation', () => {
       const result = transformation.apply([input]) as TableData[];
 
       expect(result.length).toBe(1);
-      expect(result[0].columns).toEqual(['id', 'firstName', 'lastName', 'fullName']);
-      expect(result[0].rows).toEqual([
-        { id: 1, firstName: 'John', lastName: 'Doe', fullName: 'John Doe' },
-        { id: 2, firstName: 'Jane', lastName: 'Smith', fullName: 'Jane Smith' },
-      ]);
+      expect(result[0].fields).toHaveLength(4);
+      expect(result[0].fields[3]).toEqual({
+        name: 'fullName',
+        type: 'string',
+        values: ['John Doe', 'Jane Smith'],
+        state: {},
+      });
     });
 
     it('should concatenate fields without a separator', () => {
       const input: TableData = {
         refId: 'A',
-        columns: ['id', 'firstName', 'lastName'],
-        rows: [
-          { id: 1, firstName: 'John', lastName: 'Doe' },
-          { id: 2, firstName: 'Jane', lastName: 'Smith' },
+        fields: [
+          {
+            name: 'id',
+            type: 'number',
+            values: [1, 2],
+            state: {},
+          },
+          {
+            name: 'firstName',
+            type: 'string',
+            values: ['John', 'Jane'],
+            state: {},
+          },
+          {
+            name: 'lastName',
+            type: 'string',
+            values: ['Doe', 'Smith'],
+            state: {},
+          },
         ],
       };
 
@@ -47,10 +79,12 @@ describe('ConcatenateFieldsTransformation', () => {
       const result = transformation.apply([input]) as TableData[];
 
       expect(result.length).toBe(1);
-      expect(result[0].rows).toEqual([
-        { id: 1, firstName: 'John', lastName: 'Doe', fullName: 'JohnDoe' },
-        { id: 2, firstName: 'Jane', lastName: 'Smith', fullName: 'JaneSmith' },
-      ]);
+      expect(result[0].fields[3]).toEqual({
+        name: 'fullName',
+        type: 'string',
+        values: ['JohnDoe', 'JaneSmith'],
+        state: {},
+      });
     });
   });
 

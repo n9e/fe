@@ -37,16 +37,26 @@ export default class FilterTransformation implements Transformation {
     const { fieldName, pattern, include } = this.options;
     const regex = typeof pattern === 'string' ? new RegExp(pattern) : pattern;
 
-    return data.map((table) => {
-      const filteredRows = table.rows.filter((row) => {
-        if (fieldName && row[fieldName] !== undefined) {
-          const isMatch = regex.test(row[fieldName]);
-          return include ? isMatch : !isMatch;
-        }
-        return false; // 如果字段不存在，默认排除
-      });
+    return data
+      .map((table) => {
+        if (fieldName) {
+          // 根据字段名过滤字段
+          const filteredFields = table.fields.filter((field) => {
+            const nameToCheck = field.state?.displayName || field.name;
+            const isMatch = regex.test(nameToCheck);
+            return include ? isMatch : !isMatch;
+          });
 
-      return { ...table, rows: filteredRows };
-    });
+          return {
+            ...table,
+            fields: filteredFields,
+          };
+        } else {
+          // 根据 refId 过滤表格
+          const isMatch = regex.test(table.refId);
+          return include && isMatch ? table : null;
+        }
+      })
+      .filter((table) => table !== null) as TableData[];
   }
 }

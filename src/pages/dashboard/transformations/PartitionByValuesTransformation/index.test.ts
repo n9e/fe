@@ -6,11 +6,10 @@ describe('PartitionByValuesTransformation', () => {
     it('should partition TableData by field values', () => {
       const input: TableData = {
         refId: 'A',
-        columns: ['id', 'category', 'value'],
-        rows: [
-          { id: 1, category: 'A', value: 10 },
-          { id: 2, category: 'B', value: 20 },
-          { id: 3, category: 'A', value: 30 },
+        fields: [
+          { name: 'id', type: 'number', values: [1, 2, 3], state: {} },
+          { name: 'category', type: 'string', values: ['A', 'B', 'A'], state: {} },
+          { name: 'value', type: 'number', values: [10, 20, 30], state: {} },
         ],
       };
 
@@ -21,18 +20,26 @@ describe('PartitionByValuesTransformation', () => {
       const result = transformation.apply([input]) as TableData[];
 
       expect(result.length).toBe(2);
-      expect(result[0].rows).toEqual([
-        { id: 1, category: 'A', value: 10 },
-        { id: 3, category: 'A', value: 30 },
+      expect(result[0].fields).toEqual([
+        { name: 'id', type: 'number', values: [1, 3], state: {} },
+        { name: 'category', type: 'string', values: ['A', 'A'], state: {} },
+        { name: 'value', type: 'number', values: [10, 30], state: {} },
       ]);
-      expect(result[1].rows).toEqual([{ id: 2, category: 'B', value: 20 }]);
+      expect(result[1].fields).toEqual([
+        { name: 'id', type: 'number', values: [2], state: {} },
+        { name: 'category', type: 'string', values: ['B'], state: {} },
+        { name: 'value', type: 'number', values: [20], state: {} },
+      ]);
     });
 
     it('should handle empty TableData', () => {
       const input: TableData = {
         refId: 'A',
-        columns: ['id', 'category', 'value'],
-        rows: [],
+        fields: [
+          { name: 'id', type: 'number', values: [], state: {} },
+          { name: 'category', type: 'string', values: [], state: {} },
+          { name: 'value', type: 'number', values: [], state: {} },
+        ],
       };
 
       const transformation = new PartitionByValuesTransformation({
@@ -95,11 +102,10 @@ describe('PartitionByValuesTransformation', () => {
       const input: QueryResult[] = [
         {
           refId: 'A',
-          columns: ['id', 'category', 'value'],
-          rows: [
-            { id: 1, category: 'A', value: 10 },
-            { id: 2, category: 'B', value: 20 },
-            { id: 3, category: 'A', value: 30 },
+          fields: [
+            { name: 'id', type: 'number', values: [1, 2, 3], state: {} },
+            { name: 'category', type: 'string', values: ['A', 'B', 'A'], state: {} },
+            { name: 'value', type: 'number', values: [10, 20, 30], state: {} },
           ],
         },
         {
@@ -121,11 +127,16 @@ describe('PartitionByValuesTransformation', () => {
       const result = transformation.apply(input);
 
       expect(result.length).toBe(4); // 2 个 TableData 分区 + 2 个 TimeSeries 分区
-      expect((result[0] as TableData).rows).toEqual([
-        { id: 1, category: 'A', value: 10 },
-        { id: 3, category: 'A', value: 30 },
+      expect((result[0] as TableData).fields).toEqual([
+        { name: 'id', type: 'number', values: [1, 3], state: {} },
+        { name: 'category', type: 'string', values: ['A', 'A'], state: {} },
+        { name: 'value', type: 'number', values: [10, 30], state: {} },
       ]);
-      expect((result[1] as TableData).rows).toEqual([{ id: 2, category: 'B', value: 20 }]);
+      expect((result[1] as TableData).fields).toEqual([
+        { name: 'id', type: 'number', values: [2], state: {} },
+        { name: 'category', type: 'string', values: ['B'], state: {} },
+        { name: 'value', type: 'number', values: [20], state: {} },
+      ]);
       expect((result[2] as TimeSeries).data).toEqual([
         { timestamp: 1633072800000, value: 10, category: 'A' },
         { timestamp: 1633080000000, value: 30, category: 'A' },

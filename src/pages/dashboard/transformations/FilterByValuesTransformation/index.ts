@@ -40,14 +40,37 @@ export default class FilterByValuesTransformation implements Transformation {
     const { fieldName, condition } = this.options;
 
     return data.map((table) => {
-      const filteredRows = table.rows.filter((row) => {
-        if (fieldName && row[fieldName] !== undefined) {
-          return condition(row[fieldName]);
+      if (!fieldName) {
+        return table; // 如果没有指定字段名，返回原表格
+      }
+
+      // 找到指定字段
+      const fieldIndex = table.fields.findIndex((f) => (f.state?.displayName || f.name) === fieldName);
+      if (fieldIndex === -1) {
+        return table; // 如果字段不存在，返回原表格
+      }
+
+      const fieldObj = table.fields[fieldIndex];
+      const values = fieldObj.values;
+
+      // 创建过滤后的索引数组
+      const filteredIndices: number[] = [];
+      values.forEach((value, index) => {
+        if (value !== null && value !== undefined && condition(value)) {
+          filteredIndices.push(index);
         }
-        return false; // 如果字段不存在，默认排除
       });
 
-      return { ...table, rows: filteredRows };
+      // 根据过滤后的索引重新构建所有字段的值
+      const newFields = table.fields.map((field) => ({
+        ...field,
+        values: filteredIndices.map((index) => field.values[index]),
+      }));
+
+      return {
+        ...table,
+        fields: newFields,
+      };
     });
   }
 }

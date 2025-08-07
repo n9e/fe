@@ -6,10 +6,25 @@ describe('RenameByRegexTransformation', () => {
     it('should rename columns in TableData using regex', () => {
       const input: TableData = {
         refId: 'A',
-        columns: ['user_id', 'user_name', 'user_email'],
-        rows: [
-          { user_id: 1, user_name: 'Alice', user_email: 'alice@example.com' },
-          { user_id: 2, user_name: 'Bob', user_email: 'bob@example.com' },
+        fields: [
+          {
+            name: 'user_id',
+            type: 'number',
+            values: [1, 2],
+            state: {},
+          },
+          {
+            name: 'user_name',
+            type: 'string',
+            values: ['Alice', 'Bob'],
+            state: {},
+          },
+          {
+            name: 'user_email',
+            type: 'string',
+            values: ['alice@example.com', 'bob@example.com'],
+            state: {},
+          },
         ],
       };
 
@@ -21,18 +36,19 @@ describe('RenameByRegexTransformation', () => {
       const result = transformation.apply([input]) as TableData[];
 
       expect(result.length).toBe(1);
-      expect(result[0].columns).toEqual(['id', 'name', 'email']);
-      expect(result[0].rows).toEqual([
-        { id: 1, name: 'Alice', email: 'alice@example.com' },
-        { id: 2, name: 'Bob', email: 'bob@example.com' },
-      ]);
+      expect(result[0].fields).toHaveLength(3);
+      expect(result[0].fields[0].name).toBe('id');
+      expect(result[0].fields[1].name).toBe('name');
+      expect(result[0].fields[2].name).toBe('email');
+      expect(result[0].fields[0].state.displayName).toBe('id');
+      expect(result[0].fields[1].state.displayName).toBe('name');
+      expect(result[0].fields[2].state.displayName).toBe('email');
     });
 
     it('should handle empty TableData', () => {
       const input: TableData = {
         refId: 'A',
-        columns: [],
-        rows: [],
+        fields: [],
       };
 
       const transformation = new RenameByRegexTransformation({
@@ -43,8 +59,7 @@ describe('RenameByRegexTransformation', () => {
       const result = transformation.apply([input]) as TableData[];
 
       expect(result.length).toBe(1);
-      expect(result[0].columns).toEqual([]);
-      expect(result[0].rows).toEqual([]);
+      expect(result[0].fields).toEqual([]);
     });
   });
 
@@ -101,10 +116,19 @@ describe('RenameByRegexTransformation', () => {
       const input: QueryResult[] = [
         {
           refId: 'A',
-          columns: ['user_id', 'user_name'],
-          rows: [
-            { user_id: 1, user_name: 'Alice' },
-            { user_id: 2, user_name: 'Bob' },
+          fields: [
+            {
+              name: 'user_id',
+              type: 'number',
+              values: [1, 2],
+              state: {},
+            },
+            {
+              name: 'user_name',
+              type: 'string',
+              values: ['Alice', 'Bob'],
+              state: {},
+            },
           ],
         },
         {
@@ -127,11 +151,8 @@ describe('RenameByRegexTransformation', () => {
 
       const result = transformation.apply(input);
 
-      expect((result[0] as TableData).columns).toEqual(['id', 'name']);
-      expect((result[0] as TableData).rows).toEqual([
-        { id: 1, name: 'Alice' },
-        { id: 2, name: 'Bob' },
-      ]);
+      expect((result[0] as TableData).fields[0].name).toBe('id');
+      expect((result[0] as TableData).fields[1].name).toBe('name');
       expect((result[1] as TimeSeries).data).toEqual([
         { timestamp: 1633072800000, value: 10, name: 'cpu' },
         { timestamp: 1633076400000, value: 20, name: 'memory' },

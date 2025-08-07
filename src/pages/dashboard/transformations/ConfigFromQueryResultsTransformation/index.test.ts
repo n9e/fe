@@ -6,16 +6,31 @@ describe('ConfigFromQueryResultsTransformation', () => {
     it('should extract config from TableData and apply to another TableData', () => {
       const configInput: TableData = {
         refId: 'A',
-        columns: ['threshold'],
-        rows: [{ threshold: 100 }],
+        fields: [
+          {
+            name: 'threshold',
+            type: 'number',
+            values: [100],
+            state: {},
+          },
+        ],
       };
 
       const targetInput: TableData = {
         refId: 'B',
-        columns: ['id', 'value'],
-        rows: [
-          { id: 1, value: 50 },
-          { id: 2, value: 150 },
+        fields: [
+          {
+            name: 'id',
+            type: 'number',
+            values: [1, 2],
+            state: {},
+          },
+          {
+            name: 'value',
+            type: 'number',
+            values: [50, 150],
+            state: {},
+          },
         ],
       };
 
@@ -27,11 +42,13 @@ describe('ConfigFromQueryResultsTransformation', () => {
       const result = transformation.apply([configInput, targetInput]) as TableData[];
 
       expect(result.length).toBe(1);
-      expect(result[0].columns).toEqual(['id', 'value', 'threshold']);
-      expect(result[0].rows).toEqual([
-        { id: 1, value: 50, threshold: 100 },
-        { id: 2, value: 150, threshold: 100 },
-      ]);
+      expect(result[0].fields).toHaveLength(3);
+      expect(result[0].fields[2]).toEqual({
+        name: 'threshold',
+        type: 'number',
+        values: [100, 100],
+        state: {},
+      });
     });
   });
 
@@ -39,8 +56,14 @@ describe('ConfigFromQueryResultsTransformation', () => {
     it('should extract config from TableData and apply to TimeSeries', () => {
       const configInput: TableData = {
         refId: 'A',
-        columns: ['threshold'],
-        rows: [{ threshold: 200 }],
+        fields: [
+          {
+            name: 'threshold',
+            type: 'number',
+            values: [200],
+            state: {},
+          },
+        ],
       };
 
       const targetInput: TimeSeries = {
@@ -72,16 +95,31 @@ describe('ConfigFromQueryResultsTransformation', () => {
     it('should handle mixed TableData and TimeSeries inputs', () => {
       const configInput: TableData = {
         refId: 'A',
-        columns: ['threshold'],
-        rows: [{ threshold: 300 }],
+        fields: [
+          {
+            name: 'threshold',
+            type: 'number',
+            values: [300],
+            state: {},
+          },
+        ],
       };
 
       const targetInput1: TableData = {
         refId: 'B',
-        columns: ['id', 'value'],
-        rows: [
-          { id: 1, value: 200 },
-          { id: 2, value: 400 },
+        fields: [
+          {
+            name: 'id',
+            type: 'number',
+            values: [1, 2],
+            state: {},
+          },
+          {
+            name: 'value',
+            type: 'number',
+            values: [200, 400],
+            state: {},
+          },
         ],
       };
 
@@ -102,10 +140,17 @@ describe('ConfigFromQueryResultsTransformation', () => {
 
       const result = transformation.apply([configInput, targetInput1, targetInput2]);
 
-      expect((result[0] as TableData).rows).toEqual([
-        { id: 1, value: 200, threshold: 300 },
-        { id: 2, value: 400, threshold: 300 },
-      ]);
+      // 检查 TableData 结果
+      const tableResult = result[0] as TableData;
+      expect(tableResult.fields).toHaveLength(3);
+      expect(tableResult.fields[2]).toEqual({
+        name: 'threshold',
+        type: 'number',
+        values: [300, 300],
+        state: {},
+      });
+
+      // 检查 TimeSeries 结果
       expect((result[1] as TimeSeries).data).toEqual([
         { timestamp: 1633072800000, value: 250, threshold: 300 },
         { timestamp: 1633076400000, value: 350, threshold: 300 },

@@ -33,11 +33,16 @@ export default class LimitTransformation implements Transformation {
 
   private limitTableData(table: TableData): TableData {
     const { limit } = this.options;
-    const newRows = table.rows.slice(0, limit);
+
+    // 限制每个字段的值数组长度
+    const newFields = table.fields.map((field) => ({
+      ...field,
+      values: field.values.slice(0, limit),
+    }));
 
     return {
       ...table,
-      rows: newRows,
+      fields: newFields,
     };
   }
 }

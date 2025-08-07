@@ -6,10 +6,25 @@ describe('ExtractFieldsTransformation', () => {
     it('should extract specified fields from TableData', () => {
       const input: TableData = {
         refId: 'A',
-        columns: ['id', 'name', 'value'],
-        rows: [
-          { id: 1, name: 'Alice', value: 10 },
-          { id: 2, name: 'Bob', value: 20 },
+        fields: [
+          {
+            name: 'id',
+            type: 'number',
+            values: [1, 2],
+            state: {},
+          },
+          {
+            name: 'name',
+            type: 'string',
+            values: ['Alice', 'Bob'],
+            state: {},
+          },
+          {
+            name: 'value',
+            type: 'number',
+            values: [10, 20],
+            state: {},
+          },
         ],
       };
 
@@ -20,20 +35,27 @@ describe('ExtractFieldsTransformation', () => {
       const result = transformation.apply([input]) as TableData[];
 
       expect(result.length).toBe(1);
-      expect(result[0].columns).toEqual(['id', 'value']);
-      expect(result[0].rows).toEqual([
-        { id: 1, value: 10 },
-        { id: 2, value: 20 },
-      ]);
+      expect(result[0].fields).toHaveLength(2);
+      expect(result[0].fields[0].name).toBe('id');
+      expect(result[0].fields[1].name).toBe('value');
     });
 
     it('should ignore non-existent fields in TableData', () => {
       const input: TableData = {
         refId: 'A',
-        columns: ['id', 'name'],
-        rows: [
-          { id: 1, name: 'Alice' },
-          { id: 2, name: 'Bob' },
+        fields: [
+          {
+            name: 'id',
+            type: 'number',
+            values: [1, 2],
+            state: {},
+          },
+          {
+            name: 'name',
+            type: 'string',
+            values: ['Alice', 'Bob'],
+            state: {},
+          },
         ],
       };
 
@@ -44,8 +66,8 @@ describe('ExtractFieldsTransformation', () => {
       const result = transformation.apply([input]) as TableData[];
 
       expect(result.length).toBe(1);
-      expect(result[0].columns).toEqual(['id']);
-      expect(result[0].rows).toEqual([{ id: 1 }, { id: 2 }]);
+      expect(result[0].fields).toHaveLength(1);
+      expect(result[0].fields[0].name).toBe('id');
     });
   });
 

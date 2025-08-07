@@ -73,18 +73,36 @@ describe('JoinByFieldTransformation', () => {
       const input: TableData[] = [
         {
           refId: 'A',
-          columns: ['id', 'value'],
-          rows: [
-            { id: 1, value: 10 },
-            { id: 2, value: 20 },
+          fields: [
+            {
+              name: 'id',
+              type: 'number',
+              values: [1, 2],
+              state: {},
+            },
+            {
+              name: 'value',
+              type: 'number',
+              values: [10, 20],
+              state: {},
+            },
           ],
         },
         {
           refId: 'B',
-          columns: ['id', 'value'],
-          rows: [
-            { id: 2, value: 30 },
-            { id: 3, value: 40 },
+          fields: [
+            {
+              name: 'id',
+              type: 'number',
+              values: [2, 3],
+              state: {},
+            },
+            {
+              name: 'value',
+              type: 'number',
+              values: [30, 40],
+              state: {},
+            },
           ],
         },
       ];
@@ -93,27 +111,49 @@ describe('JoinByFieldTransformation', () => {
       const result = transformation.apply(input) as TableData[];
 
       expect(result.length).toBe(1);
-      expect(result[0].rows).toEqual([
-        { id: 2, value_0: 20, value_1: 30 }, // 字段名 'value' 重复，加索引后缀
-      ]);
+      const idField = result[0].fields.find((f) => f.name === 'id');
+      const value0Field = result[0].fields.find((f) => f.name === 'value_0');
+      const value1Field = result[0].fields.find((f) => f.name === 'value_1');
+
+      expect(idField?.values).toEqual([2]);
+      expect(value0Field?.values).toEqual([20]);
+      expect(value1Field?.values).toEqual([30]);
     });
 
     it('should join TableData by field (outer join)', () => {
       const input: TableData[] = [
         {
           refId: 'A',
-          columns: ['id', 'value'],
-          rows: [
-            { id: 1, value: 10 },
-            { id: 2, value: 20 },
+          fields: [
+            {
+              name: 'id',
+              type: 'number',
+              values: [1, 2],
+              state: {},
+            },
+            {
+              name: 'value',
+              type: 'number',
+              values: [10, 20],
+              state: {},
+            },
           ],
         },
         {
           refId: 'B',
-          columns: ['id', 'value'],
-          rows: [
-            { id: 2, value: 30 },
-            { id: 3, value: 40 },
+          fields: [
+            {
+              name: 'id',
+              type: 'number',
+              values: [2, 3],
+              state: {},
+            },
+            {
+              name: 'value',
+              type: 'number',
+              values: [30, 40],
+              state: {},
+            },
           ],
         },
       ];
@@ -122,27 +162,50 @@ describe('JoinByFieldTransformation', () => {
       const result = transformation.apply(input) as TableData[];
 
       expect(result.length).toBe(1);
-      expect(result[0].rows).toHaveLength(3);
-      expect(result[0].rows).toEqual(
-        expect.arrayContaining([
-          { id: 1, value_0: 10, value_1: null }, // 字段名 'value' 重复，加索引后缀
-          { id: 2, value_0: 20, value_1: 30 }, // 字段名 'value' 重复，加索引后缀
-          { id: 3, value_0: null, value_1: 40 }, // 字段名 'value' 重复，加索引后缀
-        ]),
-      );
+      const idField = result[0].fields.find((f) => f.name === 'id');
+      const value0Field = result[0].fields.find((f) => f.name === 'value_0');
+      const value1Field = result[0].fields.find((f) => f.name === 'value_1');
+
+      expect(idField?.values).toEqual(expect.arrayContaining([1, 2, 3]));
+      expect(value0Field?.values).toEqual(expect.arrayContaining([10, 20, null]));
+      expect(value1Field?.values).toEqual(expect.arrayContaining([null, 30, 40]));
     });
 
     it('should warn and return original data if field is missing in TableData', () => {
       const input: TableData[] = [
         {
           refId: 'A',
-          columns: ['id', 'value'],
-          rows: [{ id: 1, value: 10 }],
+          fields: [
+            {
+              name: 'id',
+              type: 'number',
+              values: [1],
+              state: {},
+            },
+            {
+              name: 'value',
+              type: 'number',
+              values: [10],
+              state: {},
+            },
+          ],
         },
         {
           refId: 'B',
-          columns: ['time', 'value'],
-          rows: [{ time: 1633072800000, value: 30 }],
+          fields: [
+            {
+              name: 'time',
+              type: 'time',
+              values: [1633072800000],
+              state: {},
+            },
+            {
+              name: 'value',
+              type: 'number',
+              values: [30],
+              state: {},
+            },
+          ],
         },
       ];
 
@@ -161,18 +224,36 @@ describe('JoinByFieldTransformation', () => {
       const input: TableData[] = [
         {
           refId: 'A',
-          columns: ['id', 'name'],
-          rows: [
-            { id: 1, name: 'Alice' },
-            { id: 2, name: 'Bob' },
+          fields: [
+            {
+              name: 'id',
+              type: 'number',
+              values: [1, 2],
+              state: {},
+            },
+            {
+              name: 'name',
+              type: 'string',
+              values: ['Alice', 'Bob'],
+              state: {},
+            },
           ],
         },
         {
           refId: 'B',
-          columns: ['id', 'age'],
-          rows: [
-            { id: 2, age: 25 },
-            { id: 3, age: 30 },
+          fields: [
+            {
+              name: 'id',
+              type: 'number',
+              values: [2, 3],
+              state: {},
+            },
+            {
+              name: 'age',
+              type: 'number',
+              values: [25, 30],
+              state: {},
+            },
           ],
         },
       ];
@@ -181,27 +262,49 @@ describe('JoinByFieldTransformation', () => {
       const result = transformation.apply(input) as TableData[];
 
       expect(result.length).toBe(1);
-      expect(result[0].rows).toEqual([
-        { id: 2, name: 'Bob', age: 25 }, // 字段名不重复，不加后缀
-      ]);
+      const idField = result[0].fields.find((f) => f.name === 'id');
+      const nameField = result[0].fields.find((f) => f.name === 'name');
+      const ageField = result[0].fields.find((f) => f.name === 'age');
+
+      expect(idField?.values).toEqual([2]);
+      expect(nameField?.values).toEqual(['Bob']);
+      expect(ageField?.values).toEqual([25]);
     });
 
     it('should join TableData without adding index suffix when field names are different (outer join)', () => {
       const input: TableData[] = [
         {
           refId: 'A',
-          columns: ['id', 'name'],
-          rows: [
-            { id: 1, name: 'Alice' },
-            { id: 2, name: 'Bob' },
+          fields: [
+            {
+              name: 'id',
+              type: 'number',
+              values: [1, 2],
+              state: {},
+            },
+            {
+              name: 'name',
+              type: 'string',
+              values: ['Alice', 'Bob'],
+              state: {},
+            },
           ],
         },
         {
           refId: 'B',
-          columns: ['id', 'age'],
-          rows: [
-            { id: 2, age: 25 },
-            { id: 3, age: 30 },
+          fields: [
+            {
+              name: 'id',
+              type: 'number',
+              values: [2, 3],
+              state: {},
+            },
+            {
+              name: 'age',
+              type: 'number',
+              values: [25, 30],
+              state: {},
+            },
           ],
         },
       ];
@@ -210,14 +313,13 @@ describe('JoinByFieldTransformation', () => {
       const result = transformation.apply(input) as TableData[];
 
       expect(result.length).toBe(1);
-      expect(result[0].rows).toHaveLength(3);
-      expect(result[0].rows).toEqual(
-        expect.arrayContaining([
-          { id: 1, name: 'Alice', age: null }, // 字段名不重复，不加后缀
-          { id: 2, name: 'Bob', age: 25 },
-          { id: 3, name: null, age: 30 },
-        ]),
-      );
+      const idField = result[0].fields.find((f) => f.name === 'id');
+      const nameField = result[0].fields.find((f) => f.name === 'name');
+      const ageField = result[0].fields.find((f) => f.name === 'age');
+
+      expect(idField?.values).toEqual(expect.arrayContaining([1, 2, 3]));
+      expect(nameField?.values).toEqual(expect.arrayContaining(['Alice', 'Bob', null]));
+      expect(ageField?.values).toEqual(expect.arrayContaining([null, 25, 30]));
     });
   });
 
@@ -235,10 +337,19 @@ describe('JoinByFieldTransformation', () => {
         },
         {
           refId: 'B',
-          columns: ['id', 'value'],
-          rows: [
-            { id: 1, value: 10 },
-            { id: 2, value: 20 },
+          fields: [
+            {
+              name: 'id',
+              type: 'number',
+              values: [1, 2],
+              state: {},
+            },
+            {
+              name: 'value',
+              type: 'number',
+              values: [10, 20],
+              state: {},
+            },
           ],
         },
       ];

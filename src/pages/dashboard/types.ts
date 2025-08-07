@@ -327,4 +327,5 @@ export interface CellOptions {
   type: 'color-text' | 'color-background' | 'gauge';
   mode: 'basic' | 'gradient' | 'lcd'; // 当 type = color-background 时，mode 可选
   valueDisplayMode: 'text' | 'color' | 'hidden'; // 当 type = gauge 时，valueDisplayMode 可选
+  wrapText: boolean; // 是否开启单元格文本换行
 }

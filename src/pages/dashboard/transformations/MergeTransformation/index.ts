@@ -42,28 +42,48 @@ export default class MergeTransformation implements Transformation {
 
   private mergeTableData(tables: TableData[]): TableData[] {
     if (tables.length === 0) {
-      return [{ refId: 'merged', columns: [], rows: [] }];
+      return [{ refId: 'merged', fields: [] }];
     }
 
-    // 收集所有表格的所有列，保持顺序
-    const allColumnsSet = new Set<string>();
+    // 收集所有表格的字段名，保持顺序
+    const allFieldNamesSet = new Set<string>();
     tables.forEach((table) => {
-      table.columns.forEach((col) => allColumnsSet.add(col));
+      table.fields.forEach((field) => allFieldNamesSet.add(field.name));
     });
-    const allColumns = Array.from(allColumnsSet);
+    const allFieldNames = Array.from(allFieldNamesSet);
 
-    // 合并所有行
-    let mergedRows: any[] = [];
+    // 为每个字段创建合并后的字段定义
+    const mergedFields = allFieldNames.map((fieldName) => {
+      // 找到第一个包含此字段的表格，用其类型和状态作为基础
+      const sourceField = tables.flatMap((table) => table.fields).find((field) => field.name === fieldName);
 
-    tables.forEach((table) => {
-      mergedRows = mergedRows.concat(table.rows);
+      // 合并所有表格中此字段的值
+      const mergedValues: (string | number | null)[] = [];
+      tables.forEach((table) => {
+        const field = table.fields.find((f) => f.name === fieldName);
+        if (field) {
+          mergedValues.push(...field.values);
+        } else {
+          // 如果某个表格没有此字段，用 null 填充
+          const maxLength = Math.max(...table.fields.map((f) => f.values.length));
+          for (let i = 0; i < maxLength; i++) {
+            mergedValues.push(null);
+          }
+        }
+      });
+
+      return {
+        name: fieldName,
+        type: sourceField?.type || 'string',
+        values: mergedValues,
+        state: sourceField?.state || {},
+      };
     });
 
     return [
       {
         refId: 'merged',
-        columns: allColumns,
-        rows: mergedRows,
+        fields: mergedFields,
       },
     ];
   }

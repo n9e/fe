@@ -41,9 +41,9 @@ export default function index(props: Props) {
       <Gauge formattedData={formattedData} field={field} valueDomain={formattedValue.valueDomain} data={formattedValue} cellOptions={currentCellOptions} options={currentOptions} />
     );
   } else if (currentCellOptions.type === 'color-text') {
-    return <ColorText data={formattedValue} />;
+    return <ColorText data={formattedValue} cellOptions={currentCellOptions} />;
   } else if (currentCellOptions.type === 'color-background') {
     return <ColorBackground data={formattedValue} />;
   }
-  return <Normal data={formattedValue} />;
+  return <Normal data={formattedValue} cellOptions={currentCellOptions} />;
 }

@@ -81,85 +81,133 @@ export default class JoinByFieldTransformation implements Transformation {
 
     if (!byField) {
       console.warn('byField must be specified for table data join');
-      return tables; // 如果没有指定连接字段，返回第一个表格数据
+      return tables; // 如果没有指定连接字段，返回原始数据
     }
 
     // 确保所有表格都包含连接字段
-    const isFieldConsistent = tables.every((table) => table.columns.includes(byField));
+    const isFieldConsistent = tables.every((table) => table.fields.some((field) => field.name === byField));
     if (!isFieldConsistent) {
       console.warn(`Field "${byField}" is missing in one or more tables`);
-      return tables; // 如果连接字段不一致，返回第一个表格数据
+      return tables; // 如果连接字段不一致，返回原始数据
     }
 
-    // 创建一个映射表，用于存储连接后的行
-    const fieldMap = new Map<any, Record<string, any>>();
+    // 创建连接键到行索引的映射
+    const keyToRowIndexMaps = tables.map((table) => {
+      const joinField = table.fields.find((field) => field.name === byField)!;
+      const keyToRowIndex = new Map<any, number[]>();
 
-    // 收集所有非连接字段，检查是否有重名
-    const allColumns = tables.flatMap((table) => table.columns.filter((col) => col !== byField));
-    const columnCounts = new Map<string, number>();
-    allColumns.forEach((col) => {
-      columnCounts.set(col, (columnCounts.get(col) || 0) + 1);
+      joinField.values.forEach((value, index) => {
+        if (!keyToRowIndex.has(value)) {
+          keyToRowIndex.set(value, []);
+        }
+        keyToRowIndex.get(value)!.push(index);
+      });
+
+      return keyToRowIndex;
     });
 
+    // 获取所有可能的连接键
+    const allKeys = new Set<any>();
+    keyToRowIndexMaps.forEach((keyMap) => {
+      Array.from(keyMap.keys()).forEach((key) => allKeys.add(key));
+    });
+
+    // 收集所有非连接字段名，检查是否有重名
+    const allFieldNames = tables.flatMap((table) => table.fields.filter((field) => field.name !== byField).map((field) => field.name));
+    const fieldCounts = new Map<string, number>();
+    allFieldNames.forEach((fieldName) => {
+      fieldCounts.set(fieldName, (fieldCounts.get(fieldName) || 0) + 1);
+    });
+
+    // 构建结果字段
+    const resultFields: Array<{
+      name: string;
+      type: string;
+      values: (string | number | null)[];
+      state: any;
+    }> = [];
+
+    // 添加连接字段
+    const joinFieldFromFirstTable = tables[0].fields.find((field) => field.name === byField)!;
+    resultFields.push({
+      name: byField,
+      type: joinFieldFromFirstTable.type,
+      values: [],
+      state: joinFieldFromFirstTable.state,
+    });
+
+    // 添加其他字段
     tables.forEach((table, tableIndex) => {
-      table.rows.forEach((row) => {
-        const key = row[byField];
-        if (!fieldMap.has(key)) {
-          fieldMap.set(key, {});
+      table.fields.forEach((field) => {
+        if (field.name !== byField) {
+          const fieldName = (fieldCounts.get(field.name) || 0) > 1 ? `${field.name}_${tableIndex}` : field.name;
+
+          resultFields.push({
+            name: fieldName,
+            type: field.type,
+            values: [],
+            state: field.state,
+          });
         }
-        Object.entries(row).forEach(([col, value]) => {
-          if (col === byField) {
-            // 连接字段只保存一次，不加后缀
-            fieldMap.get(key)![col] = value;
-          } else {
-            // 只有当字段名重复时才加上表索引后缀
-            const fieldName = (columnCounts.get(col) || 0) > 1 ? `${col}_${tableIndex}` : col;
-            fieldMap.get(key)![fieldName] = value;
-          }
-        });
       });
     });
 
-    // 根据连接类型过滤数据
-    const joinedRows: Record<string, any>[] = [];
-    fieldMap.forEach((values, key) => {
-      if (mode === 'inner') {
-        // 内连接：只保留所有数据集都有的键
-        // 计算期望的字段数量：连接字段(1) + 所有非重复的其他列数
-        const expectedFieldCount = 1 + allColumns.length;
-        if (Object.keys(values).length !== expectedFieldCount) {
-          return;
-        }
+    // 处理每个连接键
+    allKeys.forEach((key) => {
+      // 检查这个键在所有表中是否存在
+      const existsInAllTables = keyToRowIndexMaps.every((keyMap) => keyMap.has(key));
+
+      if (mode === 'inner' && !existsInAllTables) {
+        return; // 内连接：跳过不在所有表中的键
       }
 
-      // 对于 outer 连接，需要确保所有表的所有列都有值，缺失的用 null 填充
-      if (mode === 'outer') {
+      // 获取每个表中对应的行索引
+      const rowIndices = keyToRowIndexMaps.map((keyMap) => keyMap.get(key) || []);
+
+      // 计算笛卡尔积的组合数
+      const combinations = rowIndices.reduce((acc, indices) => (indices.length === 0 ? acc : acc * indices.length), 1);
+
+      if (combinations === 0 && mode === 'outer') {
+        // 对于外连接，如果某个表没有这个键，创建一行 null 值
+        resultFields[0].values.push(key); // 连接字段值
+
+        let fieldIndex = 1;
         tables.forEach((table, tableIndex) => {
-          table.columns.forEach((col) => {
-            if (col !== byField) {
-              const fieldName = (columnCounts.get(col) || 0) > 1 ? `${col}_${tableIndex}` : col;
-              if (!values.hasOwnProperty(fieldName)) {
-                values[fieldName] = null; // 缺失值用 null 填充
-              }
+          table.fields.forEach((field) => {
+            if (field.name !== byField) {
+              resultFields[fieldIndex].values.push(null);
+              fieldIndex++;
             }
           });
         });
+      } else {
+        // 生成所有可能的组合
+        const maxCombinations = Math.max(1, ...rowIndices.map((indices) => indices.length));
+
+        for (let combIndex = 0; combIndex < maxCombinations; combIndex++) {
+          resultFields[0].values.push(key); // 连接字段值
+
+          let fieldIndex = 1;
+          tables.forEach((table, tableIndex) => {
+            const tableRowIndices = rowIndices[tableIndex];
+            const rowIndex = tableRowIndices.length > 0 ? tableRowIndices[combIndex % tableRowIndices.length] : -1;
+
+            table.fields.forEach((field) => {
+              if (field.name !== byField) {
+                const value = rowIndex >= 0 ? field.values[rowIndex] : null;
+                resultFields[fieldIndex].values.push(value);
+                fieldIndex++;
+              }
+            });
+          });
+        }
       }
-
-      joinedRows.push({ [byField]: key, ...values });
     });
-
-    // 生成合并后的列
-    const joinedColumns = [
-      byField,
-      ...tables.flatMap((table, tableIndex) => table.columns.filter((col) => col !== byField).map((col) => ((columnCounts.get(col) || 0) > 1 ? `${col}_${tableIndex}` : col))),
-    ];
 
     return [
       {
         refId: 'joined',
-        columns: joinedColumns,
-        rows: joinedRows,
+        fields: resultFields,
       },
     ];
   }
