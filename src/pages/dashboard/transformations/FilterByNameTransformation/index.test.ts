@@ -21,11 +21,25 @@ describe('FilterTransformation', () => {
   const tableData: TableData[] = [
     {
       refId: 'C',
-      columns: ['id', 'name', 'value'],
-      rows: [
-        { id: 1, name: 'A', value: 10 },
-        { id: 2, name: 'B', value: 20 },
-        { id: 3, name: 'C', value: 30 },
+      fields: [
+        {
+          name: 'id',
+          type: 'number',
+          values: [1, 2, 3],
+          state: {},
+        },
+        {
+          name: 'name',
+          type: 'string',
+          values: ['A', 'B', 'C'],
+          state: {},
+        },
+        {
+          name: 'value',
+          type: 'number',
+          values: [10, 20, 30],
+          state: {},
+        },
       ],
     },
   ];
@@ -63,21 +77,22 @@ describe('FilterTransformation', () => {
   });
 
   it('should filter table data by field name (include mode)', () => {
-    const filter = new FilterTransformation({ fieldName: 'name', pattern: 'A', include: true });
+    const filter = new FilterTransformation({ fieldName: 'name', pattern: 'name', include: true });
     const result = filter.apply(tableData);
 
     expect(result).toHaveLength(1);
-    expect((result[0] as TableData).rows).toHaveLength(1);
-    expect((result[0] as TableData).rows[0].name).toBe('A');
+    expect((result[0] as TableData).fields).toHaveLength(1);
+    expect((result[0] as TableData).fields[0].name).toBe('name');
   });
 
   it('should filter table data by field name (exclude mode)', () => {
-    const filter = new FilterTransformation({ fieldName: 'name', pattern: 'A', include: false });
+    const filter = new FilterTransformation({ fieldName: 'name', pattern: 'name', include: false });
     const result = filter.apply(tableData);
 
     expect(result).toHaveLength(1);
-    expect((result[0] as TableData).rows).toHaveLength(2);
-    expect((result[0] as TableData).rows[0].name).toBe('B');
+    expect((result[0] as TableData).fields).toHaveLength(2);
+    expect((result[0] as TableData).fields[0].name).toBe('id');
+    expect((result[0] as TableData).fields[1].name).toBe('value');
   });
 
   it('should return empty array if no data matches the filter', () => {

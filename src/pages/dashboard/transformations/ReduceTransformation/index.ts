@@ -46,9 +46,49 @@ export default class ReduceTransformation implements Transformation {
   }
 
   private reduceTableData(table: TableData): TableData {
-    // 这里可以根据需要对表格数据进行聚合操作
-    // 例如，对某一列进行求和、平均值等操作
-    // 由于表格数据的结构较为复杂，这里仅返回原始数据
-    return table;
+    // 对数值类型的字段进行聚合操作
+    const newFields = table.fields.map((field) => {
+      if (field.type === 'number' && field.values.length > 0) {
+        const numericValues = field.values.filter((value) => value !== null && value !== undefined && !isNaN(Number(value))).map((value) => Number(value));
+
+        if (numericValues.length === 0) {
+          return field;
+        }
+
+        let reducedValue: number;
+        switch (this.options.operation) {
+          case 'sum':
+            reducedValue = numericValues.reduce((acc, val) => acc + val, 0);
+            break;
+          case 'avg':
+            reducedValue = numericValues.reduce((acc, val) => acc + val, 0) / numericValues.length;
+            break;
+          case 'max':
+            reducedValue = Math.max(...numericValues);
+            break;
+          case 'min':
+            reducedValue = Math.min(...numericValues);
+            break;
+          default:
+            reducedValue = numericValues[0];
+        }
+
+        return {
+          ...field,
+          values: [reducedValue],
+        };
+      }
+
+      // 对于非数值字段，只保留第一个值
+      return {
+        ...field,
+        values: field.values.length > 0 ? [field.values[0]] : [],
+      };
+    });
+
+    return {
+      ...table,
+      fields: newFields,
+    };
   }
 }

@@ -42,15 +42,28 @@ export default class ConvertFieldTypeTransformation implements Transformation {
   private convertTableDataField(table: TableData): TableData {
     const { fieldName, targetType } = this.options;
 
-    const newRows = table.rows.map((row) => {
-      const value = row[fieldName];
-      const convertedValue = this.convertValue(value, targetType);
-      return { ...row, [fieldName]: convertedValue };
+    // 找到指定字段
+    const fieldIndex = table.fields.findIndex((f) => (f.state?.displayName || f.name) === fieldName);
+    if (fieldIndex === -1) {
+      return table; // 如果字段不存在，返回原表格
+    }
+
+    const newFields = table.fields.map((field, index) => {
+      if (index === fieldIndex) {
+        // 转换字段的类型和值
+        const convertedValues = field.values.map((value) => this.convertValue(value, targetType));
+        return {
+          ...field,
+          type: targetType,
+          values: convertedValues,
+        };
+      }
+      return field;
     });
 
     return {
       ...table,
-      rows: newRows,
+      fields: newFields,
     };
   }
 

@@ -21,11 +21,25 @@ describe('FilterByValuesTransformation', () => {
   const tableData: TableData[] = [
     {
       refId: 'C',
-      columns: ['id', 'name', 'value'],
-      rows: [
-        { id: 1, name: 'A', value: 10 },
-        { id: 2, name: 'B', value: 20 },
-        { id: 3, name: 'C', value: 30 },
+      fields: [
+        {
+          name: 'id',
+          type: 'number',
+          values: [1, 2, 3],
+          state: {},
+        },
+        {
+          name: 'name',
+          type: 'string',
+          values: ['A', 'B', 'C'],
+          state: {},
+        },
+        {
+          name: 'value',
+          type: 'number',
+          values: [10, 20, 30],
+          state: {},
+        },
       ],
     },
   ];
@@ -59,9 +73,12 @@ describe('FilterByValuesTransformation', () => {
     const result = filter.apply(tableData);
 
     expect(result).toHaveLength(1);
-    expect((result[0] as TableData).rows).toHaveLength(2);
-    expect((result[0] as TableData).rows[0].value).toBe(20);
-    expect((result[0] as TableData).rows[1].value).toBe(30);
+    // 应该只保留 value > 15 的行（索引 1 和 2）
+    const valueField = (result[0] as TableData).fields.find((f) => f.name === 'value');
+    expect(valueField?.values).toEqual([20, 30]);
+    // 其他字段也应该被相应过滤
+    const idField = (result[0] as TableData).fields.find((f) => f.name === 'id');
+    expect(idField?.values).toEqual([2, 3]);
   });
 
   it('should return empty array if no data matches the condition', () => {

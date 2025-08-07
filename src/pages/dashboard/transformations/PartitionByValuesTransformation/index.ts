@@ -45,21 +45,35 @@ export default class PartitionByValuesTransformation implements Transformation {
   private partitionTableData(table: TableData): TableData[] {
     const { field } = this.options;
 
+    // 找到分区字段
+    const fieldIndex = table.fields.findIndex((f) => (f.state?.displayName || f.name) === field);
+    if (fieldIndex === -1) {
+      return [table]; // 如果字段不存在，返回原表格
+    }
+
+    const fieldValues = table.fields[fieldIndex].values;
+
     // 按字段值分组
-    const groups = new Map<any, Record<string, any>[]>();
-    table.rows.forEach((row) => {
-      const key = row[field];
-      if (!groups.has(key)) {
-        groups.set(key, []);
+    const groups = new Map<any, number[]>();
+    fieldValues.forEach((value, index) => {
+      if (!groups.has(value)) {
+        groups.set(value, []);
       }
-      groups.get(key)!.push(row);
+      groups.get(value)!.push(index);
     });
 
     // 为每个分组创建一个新的 TableData
-    return Array.from(groups.entries()).map(([key, rows]) => ({
-      ...table,
-      refId: `${table.refId}-${key}`, // 可以根据需要调整 refId
-      rows,
-    }));
+    return Array.from(groups.entries()).map(([key, indices]) => {
+      const newFields = table.fields.map((field) => ({
+        ...field,
+        values: indices.map((index) => field.values[index]),
+      }));
+
+      return {
+        ...table,
+        refId: `${table.refId}-${key}`, // 可以根据需要调整 refId
+        fields: newFields,
+      };
+    });
   }
 }

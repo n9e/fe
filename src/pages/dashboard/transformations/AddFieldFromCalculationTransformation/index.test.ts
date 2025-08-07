@@ -6,10 +6,19 @@ describe('AddFieldFromCalculationTransformation', () => {
     it('should add a new field to TableData based on calculation', () => {
       const input: TableData = {
         refId: 'A',
-        columns: ['id', 'value'],
-        rows: [
-          { id: 1, value: 10 },
-          { id: 2, value: 20 },
+        fields: [
+          {
+            name: 'id',
+            type: 'number',
+            values: [1, 2],
+            state: {},
+          },
+          {
+            name: 'value',
+            type: 'number',
+            values: [10, 20],
+            state: {},
+          },
         ],
       };
 
@@ -21,11 +30,25 @@ describe('AddFieldFromCalculationTransformation', () => {
       const result = transformation.apply([input]) as TableData[];
 
       expect(result.length).toBe(1);
-      expect(result[0].columns).toEqual(['id', 'value', 'valueSquared']);
-      expect(result[0].rows).toEqual([
-        { id: 1, value: 10, valueSquared: 100 },
-        { id: 2, value: 20, valueSquared: 400 },
-      ]);
+      expect(result[0].fields).toHaveLength(3);
+      expect(result[0].fields[0]).toEqual({
+        name: 'id',
+        type: 'number',
+        values: [1, 2],
+        state: {},
+      });
+      expect(result[0].fields[1]).toEqual({
+        name: 'value',
+        type: 'number',
+        values: [10, 20],
+        state: {},
+      });
+      expect(result[0].fields[2]).toEqual({
+        name: 'valueSquared',
+        type: 'number',
+        values: [100, 400],
+        state: {},
+      });
     });
   });
 
@@ -90,10 +113,19 @@ describe('AddFieldFromCalculationTransformation', () => {
         },
         {
           refId: 'B',
-          columns: ['id', 'value'],
-          rows: [
-            { id: 1, value: 10 },
-            { id: 2, value: 20 },
+          fields: [
+            {
+              name: 'id',
+              type: 'number',
+              values: [1, 2],
+              state: {},
+            },
+            {
+              name: 'value',
+              type: 'number',
+              values: [10, 20],
+              state: {},
+            },
           ],
         },
       ];
@@ -110,10 +142,15 @@ describe('AddFieldFromCalculationTransformation', () => {
         { timestamp: 1633072800000, value: 10, newField: 20 },
         { timestamp: 1633076400000, value: 20, newField: 40 },
       ]);
-      expect((result[1] as TableData).rows).toEqual([
-        { id: 1, value: 10, newField: 20 },
-        { id: 2, value: 20, newField: 40 },
-      ]);
+
+      const tableResult = result[1] as TableData;
+      expect(tableResult.fields).toHaveLength(3);
+      expect(tableResult.fields[2]).toEqual({
+        name: 'newField',
+        type: 'number',
+        values: [20, 40],
+        state: {},
+      });
     });
   });
 });

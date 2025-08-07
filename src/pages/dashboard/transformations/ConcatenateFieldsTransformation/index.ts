@@ -40,15 +40,41 @@ export default class ConcatenateFieldsTransformation implements Transformation {
   private concatenateTableDataFields(table: TableData): TableData {
     const { fieldNames, newFieldName, separator = '' } = this.options;
 
-    const newRows = table.rows.map((row) => {
-      const concatenatedValue = fieldNames.map((field) => row[field]).join(separator);
-      return { ...row, [newFieldName]: concatenatedValue };
-    });
+    // 找到指定字段的索引
+    const fieldIndices = fieldNames.map((fieldName) => table.fields.findIndex((f) => (f.state?.displayName || f.name) === fieldName)).filter((index) => index !== -1);
+
+    if (fieldIndices.length === 0) {
+      return table; // 如果没有找到任何字段，返回原表格
+    }
+
+    // 创建新字段的值数组
+    const newFieldValues: string[] = [];
+    const valueCount = table.fields[0]?.values.length || 0;
+
+    for (let i = 0; i < valueCount; i++) {
+      const concatenatedValue = fieldIndices
+        .map((fieldIndex) => {
+          const value = table.fields[fieldIndex].values[i];
+          return value !== null && value !== undefined ? String(value) : '';
+        })
+        .join(separator);
+      newFieldValues.push(concatenatedValue);
+    }
+
+    // 添加新字段到字段数组
+    const newFields = [
+      ...table.fields,
+      {
+        name: newFieldName,
+        type: 'string',
+        values: newFieldValues,
+        state: {},
+      },
+    ];
 
     return {
       ...table,
-      columns: [...table.columns, newFieldName],
-      rows: newRows,
+      fields: newFields,
     };
   }
 }

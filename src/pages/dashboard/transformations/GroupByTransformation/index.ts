@@ -70,47 +70,98 @@ export default class GroupByTransformation implements Transformation {
   private groupTableData(table: TableData): TableData {
     const { field, aggregation } = this.options;
 
+    // 找到分组字段
+    const fieldIndex = table.fields.findIndex((f) => (f.state?.displayName || f.name) === field);
+    if (fieldIndex === -1) {
+      return table; // 如果字段不存在，返回原表格
+    }
+
+    const fieldValues = table.fields[fieldIndex].values;
+
     // 按字段值分组
-    const groups = new Map<any, Record<string, any>[]>();
-    table.rows.forEach((row) => {
-      const key = row[field];
-      if (!groups.has(key)) {
-        groups.set(key, []);
+    const groups = new Map<any, number[]>();
+    fieldValues.forEach((value, index) => {
+      if (!groups.has(value)) {
+        groups.set(value, []);
       }
-      groups.get(key)!.push(row);
+      groups.get(value)!.push(index);
     });
 
-    // 对分组后的数据进行聚合
-    const newRows: Record<string, any>[] = [];
-    groups.forEach((groupRows, key) => {
-      const aggregatedRow: Record<string, any> = { [field]: key };
-      if (aggregation) {
-        const values = groupRows.map((row) => row.value); // 假设聚合的字段是 'value'
-        switch (aggregation) {
-          case 'sum':
-            aggregatedRow.value = values.reduce((acc, val) => acc + val, 0);
-            break;
-          case 'avg':
-            aggregatedRow.value = values.reduce((acc, val) => acc + val, 0) / values.length;
-            break;
-          case 'count':
-            aggregatedRow.value = values.length;
-            break;
-          case 'max':
-            aggregatedRow.value = Math.max(...values);
-            break;
-          case 'min':
-            aggregatedRow.value = Math.min(...values);
-            break;
-        }
-      }
-      newRows.push(aggregatedRow);
+    // 创建新的字段数组
+    const newFields: Array<{
+      name: string;
+      type: string;
+      values: (string | number | null)[];
+      state: any;
+    }> = [];
+
+    // 添加分组字段
+    const groupKeys = Array.from(groups.keys());
+    newFields.push({
+      name: field,
+      type: table.fields[fieldIndex].type,
+      values: groupKeys,
+      state: table.fields[fieldIndex].state,
     });
+
+    // 如果有聚合操作，添加聚合字段
+    if (aggregation) {
+      // 找一个数值字段进行聚合（优先选择名为'value'的字段）
+      const valueFieldIndex =
+        table.fields.findIndex((f) => f.type === 'number' && ((f.state?.displayName || f.name) === 'value' || (f.state?.displayName || f.name).includes('value'))) ||
+        table.fields.findIndex((f) => f.type === 'number');
+
+      if (valueFieldIndex !== -1) {
+        const valueField = table.fields[valueFieldIndex];
+        const aggregatedValues: (string | number | null)[] = [];
+
+        groupKeys.forEach((key) => {
+          const indices = groups.get(key)!;
+          const values = indices
+            .map((index) => valueField.values[index])
+            .filter((value) => value !== null && value !== undefined && !isNaN(Number(value)))
+            .map((value) => Number(value));
+
+          if (values.length === 0) {
+            aggregatedValues.push(null);
+            return;
+          }
+
+          let aggregatedValue: number;
+          switch (aggregation) {
+            case 'sum':
+              aggregatedValue = values.reduce((acc, val) => acc + val, 0);
+              break;
+            case 'avg':
+              aggregatedValue = values.reduce((acc, val) => acc + val, 0) / values.length;
+              break;
+            case 'count':
+              aggregatedValue = values.length;
+              break;
+            case 'max':
+              aggregatedValue = Math.max(...values);
+              break;
+            case 'min':
+              aggregatedValue = Math.min(...values);
+              break;
+            default:
+              aggregatedValue = values[0];
+          }
+          aggregatedValues.push(aggregatedValue);
+        });
+
+        newFields.push({
+          name: valueField.name,
+          type: 'number',
+          values: aggregatedValues,
+          state: {},
+        });
+      }
+    }
 
     return {
       ...table,
-      columns: [field, ...(aggregation ? ['value'] : [])],
-      rows: newRows,
+      fields: newFields,
     };
   }
 }
