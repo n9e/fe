@@ -37,8 +37,17 @@ export default class SeriesToRowsTransformation implements Transformation {
 
     return {
       refId: 'transformed',
-      columns,
-      rows,
+      fields: [
+        { name: 'timestamp', type: 'time', values: rows.map((r) => r.timestamp), state: {} },
+        { name: 'value', type: 'number', values: rows.map((r) => r.value), state: {} },
+        { name: 'name', type: 'string', values: rows.map((r) => r.name), state: {} },
+        ...this.getLabelKeys(seriesList).map((key) => ({
+          name: key,
+          type: 'string',
+          values: rows.map((r) => r[key]),
+          state: {},
+        })),
+      ],
     };
   }
 
