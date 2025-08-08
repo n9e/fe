@@ -95,8 +95,8 @@ export default class OrganizeFieldsTransformation implements Transformation {
       .filter((field) => field !== null);
 
     return {
-      ...table,
+      refId: 'transformed',
       fields: newFields,
-    };
+    } as TableData;
   }
 }
