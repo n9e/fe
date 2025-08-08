@@ -51,7 +51,7 @@ export default function getFormattedRowData(
 
       if (!_.isNaN(_.toNumber(currentValue))) {
         currentValue = _.toNumber(currentValue);
-        textObject = getSerieTextObj(value, currentOptions.standardOptions, currentOptions.valueMappings, currentOptions.thresholds, valueDomain);
+        textObject = getSerieTextObj(currentValue, currentOptions.standardOptions, currentOptions.valueMappings, currentOptions.thresholds, valueDomain);
       } else {
         textObject = getSerieTextObj(value, currentOptions.standardOptions, currentOptions.valueMappings, currentOptions.thresholds, valueDomain, false);
       }
