@@ -49,7 +49,7 @@ export default function OrganizeFields(props: IProps) {
   const { columns, error } = useColumns({ fieldName: field.name });
 
   useEffect(() => {
-    if (value) {
+    if (value && _.isEmpty(value?.fields)) {
       onChange && onChange({ ...value, fields: columns });
     }
   }, [JSON.stringify(columns)]);
@@ -95,11 +95,12 @@ export default function OrganizeFields(props: IProps) {
             useDragHandle
             helperClass='n9e-dashboard-editor-transformationNG-organizeFields-row-dragging'
             onSortEnd={({ oldIndex, newIndex }) => {
-              if (columns) {
-                const newFields = arrayMoveImmutable(columns, oldIndex, newIndex);
+              if (value?.fields) {
+                const newFields = arrayMoveImmutable(value?.fields, oldIndex, newIndex);
                 onChange &&
                   onChange({
                     ...(value || {}),
+                    fields: newFields,
                     indexByName: _.reduce(
                       newFields,
                       (result, value, index) => {
@@ -112,10 +113,10 @@ export default function OrganizeFields(props: IProps) {
               }
             }}
           >
-            {_.isEmpty(columns) ? (
+            {_.isEmpty(value?.fields) ? (
               <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
             ) : (
-              _.map(columns, (field, index) => {
+              _.map(value?.fields, (field, index) => {
                 const exclude = _.find(value?.excludeByName, (val, key) => {
                   return key === field;
                 });
