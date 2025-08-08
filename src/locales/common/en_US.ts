@@ -157,7 +157,10 @@ const en_US = {
   public: 'Public',
   private: 'Private',
   advanced_settings: 'Advanced settings',
+  enabled: 'Enabled',
+  enabling: 'Enabling',
   disabled: 'Disabled',
+  disabling: 'Disabling',
   select_event: 'Select an alert event',
 
   tpl: 'Self-healing',

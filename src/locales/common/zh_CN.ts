@@ -156,7 +156,10 @@ const zh_CN = {
   public: '公开',
   private: '私有',
   advanced_settings: '高级设置',
+  enabled: '启用',
+  enabling: '启用中',
   disabled: '禁用',
+  disabling: '禁用中',
   select_event: '选择告警事件',
 
   // 临时把 task 的翻译放在这里

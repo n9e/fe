@@ -157,7 +157,10 @@ const ru_RU = {
   public: 'Публичное',
   private: 'Частное',
   advanced_settings: 'Расширенные настройки',
+  enabled: 'Включено',
+  enabling: 'Включение',
   disabled: 'Отключено',
+  disabling: 'Отключение',
   select_event: 'Выбрать событие оповещения',
 
   tpl: 'Скрипт самовосстановления',

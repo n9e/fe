@@ -156,7 +156,10 @@ const zh_HK = {
   public: '公開',
   private: '私有',
   advanced_settings: '高級設定',
+  enabled: '啟用',
+  enabling: '啟用中',
   disabled: '禁用',
+  disabling: '禁用中',
   select_event: '選擇告警事件',
 
   tpl: '自愈腳本',

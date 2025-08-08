@@ -157,7 +157,10 @@ const ja_JP = {
   public: '公開',
   private: '非公開',
   advanced_settings: '詳細設定',
+  enabled: '有効',
+  enabling: '有効化中',
   disabled: '無効',
+  disabling: '無効化中',
   select_event: 'アラートイベントを選択',
 
   tpl: '自己修復スクリプト',
