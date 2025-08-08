@@ -10,6 +10,7 @@ import { transformationsOptions } from './constant';
 import Organize from './Organize';
 import Merge from './Merge';
 import JoinByField from './JoinByField';
+import GroupedAggregateTable from './GroupedAggregateTable';
 
 export default function index() {
   const { t } = useTranslation('dashboard');
@@ -64,6 +65,16 @@ export default function index() {
                         />
                       </Form.Item>
                     )}
+                    {id === 'groupedAggregateTable' && (
+                      <Form.Item {...resetField} name={[name, 'options']}>
+                        <GroupedAggregateTable
+                          field={field}
+                          onClose={() => {
+                            remove(field.name);
+                          }}
+                        />
+                      </Form.Item>
+                    )}
                   </div>
                 );
               })}
@@ -83,7 +94,7 @@ export default function index() {
                 visible={addTransformationDrawerVisible}
                 onClose={() => setAddTransformationDrawerVisible(false)}
               >
-                <Row gutter={SIZE}>
+                <Row gutter={[SIZE, SIZE]}>
                   {_.map(transformationsOptions, (item) => {
                     return (
                       <Col
@@ -117,6 +128,12 @@ export default function index() {
                           <div className='n9e-dashboard-editor-transformationNG-item'>
                             <h3>{t('transformations.merge.title')}</h3>
                             <p>{t('transformations.merge.desc')}</p>
+                          </div>
+                        )}
+                        {item === 'groupedAggregateTable' && (
+                          <div className='n9e-dashboard-editor-transformationNG-item'>
+                            <h3>{t('transformations.groupedAggregateTable.title')}</h3>
+                            <p>{t('transformations.groupedAggregateTable.desc')}</p>
                           </div>
                         )}
                       </Col>

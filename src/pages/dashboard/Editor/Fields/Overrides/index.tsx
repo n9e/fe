@@ -30,12 +30,13 @@ import { defaultThreshold } from '../../config';
 interface Props {
   targets: any;
   matcherNames?: string[];
+  defaultMatcherId?: string;
   overrideOptions?: string[];
   activeOptions?: string[];
   showMinMax?: boolean;
 }
 
-export default function index({ targets, matcherNames = ['byFrameRefID', 'byName'], overrideOptions, activeOptions, showMinMax }: Props) {
+export default function index({ targets, matcherNames = ['byFrameRefID', 'byName'], defaultMatcherId = 'byFrameRefID', overrideOptions, activeOptions, showMinMax }: Props) {
   const { t } = useTranslation('dashboard');
   const [tableFields] = useGlobalState('tableFields');
   const namePrefix = ['overrides'];
@@ -56,7 +57,7 @@ export default function index({ targets, matcherNames = ['byFrameRefID', 'byName
                     onClick={() => {
                       add({
                         matcher: {
-                          id: 'byFrameRefID',
+                          id: defaultMatcherId,
                         },
                       });
                     }}
@@ -73,7 +74,7 @@ export default function index({ targets, matcherNames = ['byFrameRefID', 'byName
             >
               <Row gutter={10}>
                 <Col span={12}>
-                  <Form.Item label={t('panel.overrides.matcher.id')} {...restField} name={[name, 'matcher', 'id']} initialValue='byFrameRefID'>
+                  <Form.Item label={t('panel.overrides.matcher.id')} {...restField} name={[name, 'matcher', 'id']} initialValue={defaultMatcherId}>
                     <Select
                       allowClear
                       options={_.filter(
