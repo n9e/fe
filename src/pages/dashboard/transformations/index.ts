@@ -3,6 +3,7 @@ import MergeTransformation from './MergeTransformation';
 import OrganizeFieldsTransformation from './OrganizeFieldsTransformation';
 import JoinByFieldTransformation from './JoinByFieldTransformation';
 import TimeSeriesTableTransformation from './TimeSeriesTableTransformation';
+import GroupedAggregateTableTransformation from './GroupedAggregateTableTransformation';
 
 export type { DataPoint, TimeSeries, TableData, Transformation };
 
@@ -29,4 +30,5 @@ export const transformationsMap = {
   organize: OrganizeFieldsTransformation,
   joinByField: JoinByFieldTransformation,
   timeSeriesTable: TimeSeriesTableTransformation,
+  groupedAggregateTable: GroupedAggregateTableTransformation,
 };

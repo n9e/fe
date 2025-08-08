@@ -10,7 +10,7 @@ import { transformationsOptions } from './constant';
 import Organize from './Organize';
 import Merge from './Merge';
 import JoinByField from './JoinByField';
-import TimeSeriesTable from './TimeSeriesTable';
+import GroupedAggregateTable from './GroupedAggregateTable';
 
 export default function index() {
   const { t } = useTranslation('dashboard');
@@ -65,9 +65,9 @@ export default function index() {
                         />
                       </Form.Item>
                     )}
-                    {id === 'timeSeriesTable' && (
+                    {id === 'groupedAggregateTable' && (
                       <Form.Item {...resetField} name={[name, 'options']}>
-                        <TimeSeriesTable
+                        <GroupedAggregateTable
                           field={field}
                           onClose={() => {
                             remove(field.name);
@@ -130,10 +130,10 @@ export default function index() {
                             <p>{t('transformations.merge.desc')}</p>
                           </div>
                         )}
-                        {item === 'timeSeriesTable' && (
+                        {item === 'groupedAggregateTable' && (
                           <div className='n9e-dashboard-editor-transformationNG-item'>
-                            <h3>{t('transformations.timeSeriesTable.title')}</h3>
-                            <p>{t('transformations.timeSeriesTable.desc')}</p>
+                            <h3>{t('transformations.groupedAggregateTable.title')}</h3>
+                            <p>{t('transformations.groupedAggregateTable.desc')}</p>
                           </div>
                         )}
                       </Col>

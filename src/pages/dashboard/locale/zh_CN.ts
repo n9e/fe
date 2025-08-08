@@ -630,6 +630,8 @@ const zh_CN = {
     sum: '总和',
     count: '数量',
     origin: '原始值',
+    variance: '方差',
+    stdDev: '标准差',
   },
   annotation: {
     add: '添加注释',
@@ -655,19 +657,17 @@ const zh_CN = {
       byField: '字段',
     },
     timeSeriesTable: {
-      title: 'Time Series to Table',
+      title: 'Time series to table',
       desc: '将时序数据的每个时间点的值合并计算为一个值',
       fieldName: '字段',
       functions: '方法',
-      functions_map: {
-        min: '最小值',
-        max: '最大值',
-        avg: '平均值',
-        sum: '总和',
-        last: '最后一个值',
-        variance: '方差',
-        stdDev: '标准差',
-        count: '计数',
+    },
+    groupedAggregateTable: {
+      title: 'Grouped aggregate table',
+      desc: '将表按一个或多个字段分组，并对其他字段进行聚合计算',
+      operation_map: {
+        aggregate: '计算',
+        groupby: '分组',
       },
     },
   },

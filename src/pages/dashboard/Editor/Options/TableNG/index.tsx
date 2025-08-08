@@ -19,7 +19,7 @@ export default function Table({ targets, chartForm, variableConfigWithOptions })
       {cellOptionsType !== 'none' && <Thresholds showMode />}
       <ValueMappings isActive={false} />
       <StandardOptions isActive={false} />
-      <Overrides targets={targets} matcherNames={['byName']} overrideOptions={['custom.cellOptions', 'thresholds', 'thresholds_showMode']} />
+      <Overrides targets={targets} matcherNames={['byName']} defaultMatcherId='byName' overrideOptions={['custom.cellOptions', 'thresholds', 'thresholds_showMode']} />
     </>
   );
 }
