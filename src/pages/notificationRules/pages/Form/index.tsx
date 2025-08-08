@@ -80,20 +80,22 @@ export default function FormCpt(props: Props) {
         </Form.Item>
       </Card>
       <EventPipelineConfigs />
-      <Form.List name='notify_configs'>
-        {(fields, { add, remove, move }) => (
-          <>
-            {fields.map((field) => (
-              <RuleConfig disabled={disabled} fields={fields} field={field} activeIndex={activeIndex} setActiveIndex={setActiveIndex} add={add} remove={remove} move={move} />
-            ))}
-            {!disabled && (
-              <Button className='n9e-w-full mb2' type='dashed' onClick={() => add(DEFAULT_VALUES.notify_configs[0])} icon={<PlusOutlined />}>
-                {t('notification_configuration.add_btn')}
-              </Button>
-            )}
-          </>
-        )}
-      </Form.List>
+      <Card className='mb-4' title={<Space>{t('notification_configuration.title')}</Space>}>
+        <Form.List name='notify_configs'>
+          {(fields, { add, remove, move }) => (
+            <>
+              {fields.map((field) => (
+                <RuleConfig disabled={disabled} fields={fields} field={field} activeIndex={activeIndex} setActiveIndex={setActiveIndex} add={add} remove={remove} move={move} />
+              ))}
+              {!disabled && (
+                <Button className='w-full' type='dashed' onClick={() => add(DEFAULT_VALUES.notify_configs[0])} icon={<PlusOutlined />}>
+                  {t('notification_configuration.add_btn')}
+                </Button>
+              )}
+            </>
+          )}
+        </Form.List>
+      </Card>
       <ExtraConfig />
       {!disabled && (
         <Affix offsetBottom={0}>

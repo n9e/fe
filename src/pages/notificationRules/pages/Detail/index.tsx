@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
-import { Row, Col, Select, Card } from 'antd';
+import { useParams, Link } from 'react-router-dom';
+import { Row, Col, Select, Card, Space, Tag, Tooltip, Button } from 'antd';
+import { TeamOutlined } from '@ant-design/icons';
 
 import PageLayout from '@/components/pageLayout';
+import { getTeamInfoList } from '@/services/manage';
 
 import { NS, CN } from '../../constants';
-import { getNotifyStatistics, NotifyStatistics } from '../../services';
+import { getNotifyStatistics, NotifyStatistics, getItem, RuleItem } from '../../services';
 import { UpIcon, DownIcon } from '../../components/Icon';
 import Events from './Events';
 import AlertRules from './AlertRules';
@@ -19,13 +21,24 @@ export default function Detail() {
   const [days, setDays] = useState(7);
   const [notifyStatistics, setNotifyStatistics] = useState<NotifyStatistics>();
   const [activeTabKey, setActiveTabKey] = useState('events');
+  const [itemData, setData] = useState<RuleItem>();
+  const [userGroups, setUserGroups] = useState<{ id: number; name: string }[]>([]);
 
   useEffect(() => {
     if (!id) return;
+    getItem(_.toNumber(id)).then((res) => {
+      setData(res);
+    });
     getNotifyStatistics(_.toNumber(id), days).then((res) => {
       setNotifyStatistics(res);
     });
   }, [id, days]);
+
+  useEffect(() => {
+    getTeamInfoList().then((res) => {
+      setUserGroups(res.dat ?? []);
+    });
+  }, []);
 
   const contentList: Record<string, React.ReactNode> = {
     events: <Events id={_.toNumber(id)} days={days} />,
@@ -36,31 +49,65 @@ export default function Detail() {
   return (
     <PageLayout title={t('title')} showBack backPath={`/${NS}`}>
       <div className={`n9e ${CN}`}>
-        <div className='mb-2 flex justify-end'>
-          <Select
-            value={days}
-            options={[
-              {
-                label: t('common:last.1.days'),
-                value: 1,
-              },
-              {
-                label: t('common:last.7.days'),
-                value: 7,
-              },
-              {
-                label: t('common:last.14.days'),
-                value: 14,
-              },
-              {
-                label: t('common:last.30.days'),
-                value: 30,
-              },
-            ]}
-            onChange={setDays}
-            dropdownMatchSelectWidth={false}
-            className='w-32'
-          />
+        <div className='mb-2 flex justify-between'>
+          <Space>
+            <Tag className='mr-0'>
+              <Space>
+                <span>{t('common:table.name')}:</span>
+                {itemData?.name}
+              </Space>
+            </Tag>
+            <Tag className='mr-0' color={itemData?.enable ? 'success' : 'error'}>
+              {itemData?.enable ? t('common:enabling') : t('common:disabling')}
+            </Tag>
+            {_.map(itemData?.user_group_ids, (item) => {
+              const name = _.find(userGroups, { id: item })?.name;
+              return (
+                <Tooltip key={item} title={!name ? t('user_group_id_invalid_tip') : undefined}>
+                  <Tag className='mr-0' key={item}>
+                    <Space size={2}>
+                      <TeamOutlined />
+                      {name || item}
+                    </Space>
+                  </Tag>
+                </Tooltip>
+              );
+            })}
+          </Space>
+          <Space>
+            <Link
+              to={{
+                pathname: `/${NS}/edit/${itemData?.id}`,
+              }}
+              target='_blank'
+            >
+              <Button type='primary'>{t('common:btn.edit')}</Button>
+            </Link>
+            <Select
+              value={days}
+              options={[
+                {
+                  label: t('common:last.1.days'),
+                  value: 1,
+                },
+                {
+                  label: t('common:last.7.days'),
+                  value: 7,
+                },
+                {
+                  label: t('common:last.14.days'),
+                  value: 14,
+                },
+                {
+                  label: t('common:last.30.days'),
+                  value: 30,
+                },
+              ]}
+              onChange={setDays}
+              dropdownMatchSelectWidth={false}
+              className='w-32'
+            />
+          </Space>
         </div>
         <Row gutter={16}>
           <Col span={8}>

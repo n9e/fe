@@ -29,7 +29,7 @@ export interface RuleItem {
   name: string;
   description: string;
   enable: boolean;
-  user_group_ids: string[];
+  user_group_ids: number[];
   notify_configs: RuleConfig[];
   extra_config?: {
     escalations: EscalationItem[];

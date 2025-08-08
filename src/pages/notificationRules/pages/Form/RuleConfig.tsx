@@ -35,12 +35,9 @@ export default function NotifyConfig(props: Props) {
   const ruleConfig = Form.useWatch(['notify_configs', field.name]);
 
   return (
-    <Card
-      key={field.key}
-      className={`mb2 ${activeIndex === field.name ? 'rule-config-border-animate' : ''}`}
-      title={<Space>{t('notification_configuration.title')}</Space>}
-      extra={
-        !disabled && (
+    <div key={field.key} className='p-4 mb-2 n9e-fill-color-3 relative'>
+      {!disabled && (
+        <div className='absolute right-[8px] top-[8px] z-1'>
           <Space>
             <CopyOutlined
               onClick={() => {
@@ -71,9 +68,8 @@ export default function NotifyConfig(props: Props) {
               }}
             />
           </Space>
-        )
-      }
-    >
+        </div>
+      )}
       <Row gutter={SIZE}>
         <Col span={channelItem?.request_type !== 'flashduty' ? 12 : 24}>
           <ChannelSelect
@@ -186,6 +182,6 @@ export default function NotifyConfig(props: Props) {
       />
       <Attributes disabled={disabled} field={field} fullName={['notify_configs']} />
       {!disabled && <TestButton field={field} />}
-    </Card>
+    </div>
   );
 }
