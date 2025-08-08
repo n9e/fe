@@ -56,6 +56,7 @@ const ru_RU = {
   filter_configs: 'Настройки фильтрации',
   notify_configs: 'Настройки уведомлений',
   and: 'и',
+  btn_add_rule: 'Добавить правило',
 };
 
 export default ru_RU;
