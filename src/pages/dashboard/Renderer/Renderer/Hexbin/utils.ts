@@ -15,6 +15,7 @@
  *
  */
 import _ from 'lodash';
+import { FONT_FAMILY } from '@/utils/constant';
 
 export function bestFitElemCountPerRow(bucketLen, width, height) {
   let countPerRow = bucketLen;
@@ -63,7 +64,7 @@ export function getTextSizeForWidthAndHeight(text: string, width: number, height
 export const defaultFont = {
   fontWeight: 'normal',
   fontSize: '12px',
-  fontFamily: '"Microsoft Yahei", Verdana, Helvetica Neue, sans-serif, PingFangSC-Regular, simsun, "sans-serif"',
+  fontFamily: FONT_FAMILY,
 };
 
 export const getFontStr = (font = defaultFont) => {
