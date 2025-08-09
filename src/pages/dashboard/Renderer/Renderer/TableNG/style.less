@@ -14,4 +14,25 @@
   .ag-cell-wrapper {
     width: 100%;
   }
+
+  .n9e-dashboard-panel-table-ng-cell-link {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .n9e-dashboard-panel-table-ng-cell-links {
+    text-decoration: underline;
+    cursor: context-menu;
+  }
+}
+
+.n9e-dashboard-panel-table-ng-links-popover {
+  position: fixed !important;
+  display: none;
+
+  .n9e-dashboard-panel-table-ng-links-item {
+    &:hover {
+      background-color: var(--fc-fill-4);
+    }
+  }
 }
