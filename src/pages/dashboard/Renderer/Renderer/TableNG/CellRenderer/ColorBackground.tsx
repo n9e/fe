@@ -13,9 +13,8 @@ export default function ColorBackground(props: Props) {
     <div
       style={{
         backgroundColor: data.color,
-        color: '#FFFFFF',
       }}
-      className='px-2'
+      className='px-2 text-white n9e-dashboard-panel-table-ng-cell-background'
     >
       {data.text}
     </div>
