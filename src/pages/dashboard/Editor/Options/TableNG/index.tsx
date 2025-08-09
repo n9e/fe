@@ -15,7 +15,7 @@ export default function Table({ targets, chartForm, variableConfigWithOptions })
   return (
     <>
       <GraphStyles chartForm={chartForm} variableConfigWithOptions={variableConfigWithOptions} />
-      {/* <DataLinks /> */}
+      <DataLinks />
       {cellOptionsType !== 'none' && <Thresholds showMode />}
       <ValueMappings isActive={false} />
       <StandardOptions isActive={false} />
