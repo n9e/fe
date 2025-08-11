@@ -32,7 +32,7 @@ interface MonacoEditorPromQLProps {
   onChangeTrigger?: string[]; // 触发 onChange 的事件
   interpolateString?: (query: string) => string;
   onChange?: (value?: string) => void;
-  onShiftEnter?: (value?: string) => void;
+  onEnter?: (value?: string) => void;
   onBlur?: (value?: string) => void;
   onEditorDidMount?: (editor: monacoTypes.editor.IStandaloneCodeEditor) => void;
   onMetricUnitChange?: (unit: string) => void; // 用于内置指标启用时选择指标获取对应的 unit
@@ -58,7 +58,7 @@ export default function index(props: MonacoEditorPromQLProps) {
     onChangeTrigger,
     interpolateString,
     onChange,
-    onShiftEnter,
+    onEnter,
     onBlur,
     onEditorDidMount,
     onMetricUnitChange,
@@ -122,11 +122,11 @@ export default function index(props: MonacoEditorPromQLProps) {
             }}
             onEnter={() => {
               const currentValue = getValue();
-              // 如果 onChangeTrigger 包含 'onShiftEnter'，则触发 onChange
-              if (_.includes(onChangeTrigger, 'onShiftEnter')) {
+              // 如果 onChangeTrigger 包含 'onEnter'，则触发 onChange
+              if (_.includes(onChangeTrigger, 'onEnter')) {
                 onChange?.(currentValue);
               }
-              onShiftEnter?.(currentValue);
+              onEnter?.(currentValue);
             }}
             onBlur={() => {
               const currentValue = getValue();

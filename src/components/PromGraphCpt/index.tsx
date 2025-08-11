@@ -182,7 +182,7 @@ export default function index(props: IProps) {
                   setDefaultUnit(newUnit);
                 }}
                 showGlobalMetrics={showGlobalMetrics}
-                onChangeTrigger={['onBlur', 'onShiftEnter']}
+                onChangeTrigger={['onBlur', 'onEnter']}
                 value={value}
                 onChange={(newVal) => {
                   setValue(newVal);

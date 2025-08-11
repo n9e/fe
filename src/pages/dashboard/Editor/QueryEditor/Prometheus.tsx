@@ -92,7 +92,7 @@ export default function Prometheus({ panelWidth, variableConfig, time, datasourc
                         style={{ flex: 1 }}
                       >
                         <PromQLInputNG
-                          onChangeTrigger={['onBlur', 'onShiftEnter']}
+                          onChangeTrigger={['onBlur', 'onEnter']}
                           datasourceValue={datasourceValue}
                           variablesNames={varNams}
                           durationVariablesCompletion
