@@ -185,7 +185,7 @@ export function processInitialValues(values) {
         interval: item.interval ? parseTimeToValueAndUnit(item.interval).value : undefined,
         interval_unit: item.interval ? parseTimeToValueAndUnit(item.interval).unit : undefined,
         range:
-          item.from && item.to
+          item.from !== undefined && item.to !== undefined
             ? mapRelativeTimeRangeToOption({
                 start: item.from,
                 end: item.to,
@@ -203,7 +203,7 @@ export function processInitialValues(values) {
       interval: item.interval ? parseTimeToValueAndUnit(item.interval).value : undefined,
       interval_unit: item.interval ? parseTimeToValueAndUnit(item.interval).unit : undefined,
       range:
-        item.from && item.to
+        item.from !== undefined && item.to !== undefined
           ? mapRelativeTimeRangeToOption({
               start: item.from,
               end: item.to,
