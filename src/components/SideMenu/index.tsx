@@ -196,7 +196,7 @@ const SideMenu = (props: SideMenuProps) => {
 
   const hideDeprecatedMenus = installTs > V8_BETA_14_TS;
   const menuList = getMenuList(embeddedProductMenu, hideDeprecatedMenus);
-  const uncollapsedWidth = i18n.language === 'en_US' || i18n.language === 'ru_RU' ? 'w-[250px]' : 'w-[172px]';
+  const uncollapsedWidth = i18n.language === 'en_US' || i18n.language === 'ru_RU' ? (IS_ENT ? 'w-[200px]' : 'w-[250px]') : 'w-[172px]';
 
   return (
     <div
