@@ -118,11 +118,8 @@ export default function Prometheus(props: IProps) {
       graphOperates={{ enabled: true }}
       globalOperates={{ enabled: true }}
       headerExtra={headerExtra}
-      executeQuery={(newPromQL) => {
+      executeQuery={() => {
         form.validateFields();
-        if (newPromQL) {
-          setLocalQueryHistory(`${LOCAL_KEY}-${datasourceValue}`, newPromQL);
-        }
       }}
       showBuiltinMetrics={showBuiltinMetrics}
       graphStandardOptionsType={graphStandardOptionsType}
@@ -130,7 +127,12 @@ export default function Prometheus(props: IProps) {
       defaultUnit={defaultUnit}
       showGlobalMetrics={showGlobalMetrics}
       showBuilder={showBuilder}
-      onChange={onChange}
+      onChange={(newPromQL) => {
+        if (newPromQL) {
+          setLocalQueryHistory(`${LOCAL_KEY}-${datasourceValue}`, newPromQL);
+        }
+        onChange && onChange(newPromQL);
+      }}
       promQLInputTooltip={promQLInputTooltip}
       onTypeChange={(newType) => {
         if (onDefaultTypeChange) {
