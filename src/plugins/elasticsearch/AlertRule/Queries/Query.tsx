@@ -58,6 +58,7 @@ export default function Query(props: Props) {
         getFullFields(datasourceValue, val, {
           type: 'date',
         }).then((res) => {
+          if (_.isEmpty(res.fields)) return;
           const defaultDateField = _.find(res.fields, { name: '@timestamp' })?.name || res.fields[0]?.name;
           const newValues = _.set(_.cloneDeep(form.getFieldsValue()), [...names, field.key, 'date_field'], defaultDateField);
           form.setFieldsValue(newValues);

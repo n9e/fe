@@ -273,12 +273,16 @@ export function dslBuilder(params: {
     });
   }
   if (syntax === 'lucene') {
-    body.query.bool.filter.push({
-      query_string: {
-        analyze_wildcard: true,
-        query: params.query_string || '*',
-      },
-    });
+    body.query.bool.filter.push(
+      params.query_string
+        ? {
+            query_string: {
+              analyze_wildcard: true,
+              query: params.query_string,
+            },
+          }
+        : { match_all: {} },
+    );
   }
   if (syntax === 'kuery' && params.kuery) {
     const query = buildESQueryFromKuery(params.kuery);
