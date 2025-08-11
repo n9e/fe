@@ -95,11 +95,24 @@ export default function index(props: Props) {
               'n9e-dashboard-panel-table-ng-cell-links': () => (options.links ? options.links.length > 1 : false),
             },
             cellRenderer: (params) => {
-              if (params.value === undefined) return null;
+              const field = params.colDef?.field;
+              const fieldValue = params.data?.[field];
+              if (fieldValue === undefined) return '';
               const rowIndex = params.node?.rowIndex;
               const formattedValue = formattedData[rowIndex]?.[item];
-              if (rowIndex === undefined || formattedValue === undefined) return params.value;
-              return <CellRenderer formattedData={formattedData} formattedValue={formattedValue} field={item} params={params} panelParams={{ cellOptions, options, overrides }} />;
+              if (rowIndex === undefined || formattedValue === undefined) return fieldValue;
+              return (
+                <CellRenderer
+                  formattedData={formattedData}
+                  formattedValue={formattedValue}
+                  field={item}
+                  params={{
+                    ...params,
+                    value: fieldValue,
+                  }}
+                  panelParams={{ cellOptions, options, overrides }}
+                />
+              );
             },
           };
         })}
