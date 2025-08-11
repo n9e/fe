@@ -11,7 +11,7 @@ const en_US = {
     title: 'Variable configuration',
     contact_key: 'Contact',
     contact_key_tip:
-      'Select the target type for notification sending, such as "Phone" means sending via phone, SMS, etc., you can add new contact methods on the contact method management page',
+      'Corresponding to the contact information in "Organization - Users", used to select the method of sending notifications, such as "Phone" indicating that the user\'s phone information is passed to the callback request/script. If there are new contact types, they can be added on the "Organization - Contacts" page',
     params: {
       title: 'Parameter configuration',
       title_tip:
