@@ -53,7 +53,7 @@ export default function Login() {
   const [form] = Form.useForm();
   const location = useLocation();
   const { siteInfo } = useContext(CommonStateContext);
-  const redirect = location.search && new URLSearchParams(location.search).get('redirect');
+  const redirect = (location.search && new URLSearchParams(location.search).get('redirect')) || '';
   const [displayName, setDis] = useState<DisplayName>({
     oidc: 'OIDC',
     cas: 'CAS',
@@ -74,7 +74,7 @@ export default function Login() {
       }
     });
   };
-  useSsoWay();
+  useSsoWay(redirect);
 
   useEffect(() => {
     getSsoConfig().then((res) => {
@@ -209,7 +209,7 @@ export default function Login() {
                   {displayName.oidc && (
                     <a
                       onClick={() => {
-                        getRedirectURL().then((res) => {
+                        getRedirectURL(redirect).then((res) => {
                           if (res.dat) {
                             window.location.href = res.dat;
                           } else {
@@ -224,7 +224,7 @@ export default function Login() {
                   {displayName.cas && (
                     <a
                       onClick={() => {
-                        getRedirectURLCAS().then((res) => {
+                        getRedirectURLCAS(redirect).then((res) => {
                           if (res.dat) {
                             window.location.href = res.dat.redirect;
                             localStorage.setItem('CAS_state', res.dat.state);
@@ -240,7 +240,7 @@ export default function Login() {
                   {displayName.oauth && (
                     <a
                       onClick={() => {
-                        getRedirectURLOAuth().then((res) => {
+                        getRedirectURLOAuth(redirect).then((res) => {
                           if (res.dat) {
                             window.location.href = res.dat;
                           } else {
@@ -255,7 +255,7 @@ export default function Login() {
                   {displayName.custom && (
                     <a
                       onClick={() => {
-                        getRedirectURLCustom().then((res) => {
+                        getRedirectURLCustom(redirect).then((res) => {
                           if (res.dat) {
                             window.location.href = res.dat;
                           } else {
