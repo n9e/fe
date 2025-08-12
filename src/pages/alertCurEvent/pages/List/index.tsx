@@ -107,7 +107,7 @@ const AlertCurEvent: React.FC = () => {
     // console.log('filter', filter);
     setParamsAiAction({
       page: 'alert_cur_event',
-      alert_cur_event: {
+      active_alert: {
         start: parsedRange ? moment(parsedRange.start).unix() : undefined,
         end: parsedRange ? moment(parsedRange.end).unix() : undefined,
         var: filter,
