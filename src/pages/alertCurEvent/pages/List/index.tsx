@@ -28,6 +28,7 @@ import DatasourceCheckbox from './DatasourceCheckbox';
 import AggrRuleDropdown from './AggrRuleDropdown';
 import AlertCard, { isEqualEventIds } from './AlertCard';
 import AlertTable from './AlertTable';
+import { useParamsAiAction } from '@/utils/useHook';
 
 const AlertCurEvent: React.FC = () => {
   const { t } = useTranslation(NS);
@@ -35,6 +36,8 @@ const AlertCurEvent: React.FC = () => {
   const location = useLocation();
   const history = useHistory();
   const query = queryString.parse(location.search);
+  const [paramsAiAction, setParamsAiAction] = useParamsAiAction();
+
   const [range, setRange] = useState<IRawTimeRange>();
   const [aggrRuleCardEventIds, setAggrRuleCardEventIds] = useState<number[] | undefined>();
   const filter = useMemo(() => getFilterByURLQuery(query, range, aggrRuleCardEventIds), [JSON.stringify(query), range, aggrRuleCardEventIds]);
@@ -95,6 +98,26 @@ const AlertCurEvent: React.FC = () => {
   useEffect(() => {
     reloadRuleCards();
   }, [filter.aggr_rule_id, JSON.stringify(params), refreshFlag]);
+
+  useEffect(() => {
+    let parsedRange;
+    if (filter.range) {
+      parsedRange = parseRange(filter.range);
+    }
+    // console.log('filter', filter);
+    setParamsAiAction({
+      page: 'alert_cur_event',
+      alert_cur_event: {
+        start: parsedRange ? moment(parsedRange.start).unix() : undefined,
+        end: parsedRange ? moment(parsedRange.end).unix() : undefined,
+        var: filter,
+        my_groups: filter.my_groups,
+        rule_prods: filter.rule_prods,
+        severity: filter.severity,
+        datasource_ids: filter.datasource_ids,
+      },
+    });
+  }, [JSON.stringify(filter)]);
 
   return (
     <PageLayout icon={<AlertOutlined />} title={t('title')}>
