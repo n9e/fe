@@ -403,6 +403,8 @@ const zh_CN = {
       },
       tableNG: {
         enablePagination: '启用分页器',
+        showHeader: '显示表头',
+        filterable: '启用列过滤器',
         cellOptions: {
           type: {
             label: '单元格类型',

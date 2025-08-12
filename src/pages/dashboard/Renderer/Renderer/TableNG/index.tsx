@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { AllCommunityModule, ModuleRegistry, themeBalham } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
+import { AG_GRID_LOCALE_CN, AG_GRID_LOCALE_HK, AG_GRID_LOCALE_EN, AG_GRID_LOCALE_JP } from '@ag-grid-community/locale';
 import _ from 'lodash';
 import { Select, Space } from 'antd';
 import { LinkOutlined } from '@ant-design/icons';
@@ -16,8 +17,17 @@ import { DARK_PARAMS, LIGHT_PARAMS } from './constants';
 import getFormattedRowData from './utils/getFormattedRowData';
 import normalizeData from './utils/normalizeData';
 import CellRenderer from './CellRenderer';
+import CustomColumnFilter, { doesFilterPass } from './CustomColumnFilter';
 
 import './style.less';
+
+const i18nAgGrid = {
+  zh_CN: AG_GRID_LOCALE_CN,
+  zh_HK: AG_GRID_LOCALE_HK,
+  en_US: AG_GRID_LOCALE_EN,
+  ja_JP: AG_GRID_LOCALE_JP,
+  ru_RU: AG_GRID_LOCALE_EN,
+};
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -30,10 +40,10 @@ interface Props {
 }
 
 export default function index(props: Props) {
-  const { t } = useTranslation('dashboard');
+  const { t, i18n } = useTranslation('dashboard');
   const { themeMode, time, isPreview, values, series } = props;
   const { transformationsNG: transformations, custom, options, overrides } = values;
-  const { showHeader = true, cellOptions } = custom || {};
+  const { showHeader = true, cellOptions, filterable } = custom || {};
   const linksPopverRef = React.useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const [, setSeries] = useGlobalState('series');
@@ -44,8 +54,14 @@ export default function index(props: Props) {
     setTableFields(columns);
 
     const activeData = data[activeIndex];
-    const rowData = activeData?.rows || [];
     const formattedData = getFormattedRowData(activeData, { cellOptions, options, overrides });
+    const rowData = _.map(formattedData, (item) => {
+      const row: { [key: string]: string | null } = {};
+      _.forEach(columns, (col) => {
+        row[col] = item[col].text || null;
+      });
+      return row;
+    });
 
     return {
       data,
@@ -82,6 +98,8 @@ export default function index(props: Props) {
         suppressColumnVirtualisation
         animateRows={false}
         theme={theme}
+        enableFilterHandlers={true}
+        localeText={i18nAgGrid[i18n.language] || AG_GRID_LOCALE_EN}
         rowData={rowData}
         columnDefs={_.map(data[activeIndex]?.columns, (item) => {
           return {
@@ -119,11 +137,19 @@ export default function index(props: Props) {
         defaultColDef={{
           flex: 1,
           resizable: false,
+          minWidth: 100,
           cellStyle: {
             fontFamily: FONT_FAMILY,
             // 开启换行后，设置单元格文本的行高
             ...(cellOptions.wrapText ? { display: 'flex', alignItems: 'center', whiteSpace: 'normal', lineHeight: '1.5' } : {}),
           },
+          filter: filterable
+            ? {
+                component: CustomColumnFilter,
+                doesFilterPass,
+              }
+            : false,
+          filterParams: filterable ? {} : undefined,
           wrapText: cellOptions.wrapText, // 用于单元格换行
           suppressSizeToFit: cellOptions.wrapText, // 用于单元格换行
           autoHeight: cellOptions.wrapText, // 用于单元格换行

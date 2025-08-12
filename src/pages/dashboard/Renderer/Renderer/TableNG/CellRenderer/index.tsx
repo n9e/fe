@@ -36,6 +36,8 @@ export default function index(props: Props) {
         thresholds: overrideProps.thresholds || options.thresholds,
       };
 
+  if (formattedValue.value === null) return null;
+
   if (currentCellOptions.type === 'gauge') {
     return (
       <Gauge formattedData={formattedData} field={field} valueDomain={formattedValue.valueDomain} data={formattedValue} cellOptions={currentCellOptions} options={currentOptions} />

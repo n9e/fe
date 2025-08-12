@@ -354,6 +354,52 @@ const ja_JP = {
           '色モードは"値フィールド"の色設定に影響します。値モードでは、色が値のテキストに適用されます。背景モードでは、色がフィールドが含まれるセルの背景色に適用されます。',
         pageLimit: 'ページ制限',
       },
+      tableNG: {
+        enablePagination: 'ページネーションを有効にする',
+        showHeader: 'ヘッダーを表示',
+        filterable: '列フィルターを有効にする',
+        cellOptions: {
+          type: {
+            label: 'セルタイプ',
+            options: {
+              none: 'デフォルト',
+              'color-text': 'カラー テキスト',
+              'color-background': 'カラー 背景',
+              gauge: 'ゲージ (Gauge)',
+            },
+          },
+          wrapText: 'テキストの折り返し',
+          wrapText_tip:
+            '有効にすると、セル内のテキストが自動的に折り返され、行の高さがテキストの行数に応じて調整されます。行データの量が多い場合は、パフォーマンスに影響を与える可能性があります。',
+          'color-background': {
+            mode: {
+              label: '色のモード',
+              options: {
+                basic: '基本',
+                gradient: 'グラデーション',
+              },
+            },
+          },
+          gauge: {
+            mode: {
+              label: 'ゲージモード',
+              options: {
+                basic: '基本',
+                gradient: 'グラデーション',
+                lcd: 'LCD',
+              },
+            },
+            valueDisplayMode: {
+              label: '数値表示',
+              options: {
+                color: '色',
+                text: 'テキスト',
+                hidden: '非表示',
+              },
+            },
+          },
+        },
+      },
       text: {
         textColor: 'テキストの色',
         textDarkColor: 'ダークテキストの色',

@@ -385,6 +385,51 @@ const zh_HK = {
         colorMode_tip: '顏色模式是針對 "值欄位" 的顏色設定。值模式下顏色作用於值文字；背景模式下顏色作用於欄位所在儲存格背景色。',
         pageLimit: '每頁顯示行數',
       },
+      tableNG: {
+        enablePagination: '啟用分頁',
+        showHeader: '顯示表頭',
+        filterable: '可篩選',
+        cellOptions: {
+          type: {
+            label: '單元格類型',
+            options: {
+              none: '無',
+              'color-text': '顏色文字',
+              'color-background': '顏色背景',
+              gauge: '量表 (Gauge)',
+            },
+          },
+          wrapText: '文本換行',
+          wrapText_tip: '開啟後，單元格文本會自動換行，並且行高會根據文本行數自動調整，如果行數據量較大會影響性能',
+          'color-background': {
+            mode: {
+              label: '顏色模式',
+              options: {
+                basic: '基礎',
+                gradient: '漸變',
+              },
+            },
+          },
+          gauge: {
+            mode: {
+              label: '模式',
+              options: {
+                basic: '基礎',
+                gradient: '漸變',
+                lcd: 'LCD',
+              },
+            },
+            valueDisplayMode: {
+              label: '數值顯示',
+              options: {
+                color: '顏色',
+                text: '文本',
+                hidden: '隱藏',
+              },
+            },
+          },
+        },
+      },
       text: {
         textColor: '文字顏色',
         textDarkColor: '暗黑文字顏色',
