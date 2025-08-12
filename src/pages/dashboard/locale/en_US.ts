@@ -381,6 +381,52 @@ const en_US = {
           'Color mode is the color setting for the "value field". In value mode, the color is applied to the value text; in background mode, the color is applied to the background color of the cell where the field is located.',
         pageLimit: 'Page limit',
       },
+      tableNG: {
+        enablePagination: 'Enable pagination',
+        showHeader: 'Show header',
+        filterable: 'Enable column filter',
+        cellOptions: {
+          type: {
+            label: 'Cell type',
+            options: {
+              none: 'Default',
+              'color-text': 'Color text',
+              'color-background': 'Color background',
+              gauge: 'Gauge',
+            },
+          },
+          wrapText: 'Wrap text',
+          wrapText_tip:
+            'Enabling this will automatically wrap text in the cell and adjust the row height based on the number of text lines. If the row data volume is large, it may affect performance.',
+          'color-background': {
+            mode: {
+              label: 'Color mode',
+              options: {
+                basic: 'Basic',
+                gradient: 'Gradient',
+              },
+            },
+          },
+          gauge: {
+            mode: {
+              label: 'Mode',
+              options: {
+                basic: 'Basic',
+                gradient: 'Gradient',
+                lcd: 'LCD',
+              },
+            },
+            valueDisplayMode: {
+              label: 'Value display',
+              options: {
+                color: 'Color',
+                text: 'Text',
+                hidden: 'Hidden',
+              },
+            },
+          },
+        },
+      },
       text: {
         textColor: 'TextColor',
         textDarkColor: 'TextDarkColor',

@@ -17,7 +17,7 @@ export default function ColorText(props: Props) {
       style={{
         color: data.color,
       }}
-      className={`px-2 ${cellOptions.wrapText} ? 'py-1' : ''`}
+      className={`px-2 ${cellOptions.wrapText ? 'py-1' : ''}`}
     >
       {data.text}
     </div>

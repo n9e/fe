@@ -1,6 +1,5 @@
 export const DARK_PARAMS = {
   accentColor: '#FFFFFF',
-  backgroundColor: '#FFFFFF00',
   borderColor: '#CCCCDC1F',
   borderRadius: 0,
   browserColorScheme: 'dark',
@@ -27,7 +26,6 @@ export const DARK_PARAMS = {
 
 export const LIGHT_PARAMS = {
   accentColor: '#333333',
-  backgroundColor: '#FFFFFF00',
   borderColor: '#24292e1f',
   borderRadius: 0,
   browserColorScheme: 'light',

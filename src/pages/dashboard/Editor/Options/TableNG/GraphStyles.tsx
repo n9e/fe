@@ -14,8 +14,13 @@ export default function GraphStyles({ chartForm, variableConfigWithOptions }) {
     <Panel header={t('panel.custom.title')}>
       <>
         <Row gutter={10}>
-          <Col span={24}>
-            <Form.Item label={t('panel.custom.table.showHeader')} name={[...namePrefix, 'showHeader']} valuePropName='checked' initialValue={true}>
+          <Col span={12}>
+            <Form.Item label={t('panel.custom.tableNG.showHeader')} name={[...namePrefix, 'showHeader']} valuePropName='checked' initialValue={true}>
+              <Switch />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item label={t('panel.custom.tableNG.filterable')} name={[...namePrefix, 'filterable']} valuePropName='checked' initialValue={false}>
               <Switch />
             </Form.Item>
           </Col>

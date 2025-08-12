@@ -12,5 +12,5 @@ interface Props {
 export default function Normal(props: Props) {
   const { data, cellOptions } = props;
 
-  return <div className={`px-2 ${cellOptions.wrapText} ? 'py-1' : ''`}>{data.text}</div>;
+  return <div className={`px-2 ${cellOptions.wrapText ? 'py-1' : ''}`}>{data.text}</div>;
 }

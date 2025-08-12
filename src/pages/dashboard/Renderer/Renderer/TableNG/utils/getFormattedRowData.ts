@@ -49,7 +49,7 @@ export default function getFormattedRowData(
         }
       }
 
-      if (!_.isNaN(_.toNumber(currentValue))) {
+      if (currentValue !== null && !_.isNaN(_.toNumber(currentValue))) {
         currentValue = _.toNumber(currentValue);
         textObject = getSerieTextObj(currentValue, currentOptions.standardOptions, currentOptions.valueMappings, currentOptions.thresholds, valueDomain);
       } else {
