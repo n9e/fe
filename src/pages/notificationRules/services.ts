@@ -113,8 +113,8 @@ export function getNotifySubAlertRules(id: number) {
   });
 }
 
-export function getEventTags(id: number) {
-  return request(`/api/n9e-plus/notify/${id}/event-tags`, {
+export function getEventTags() {
+  return request('/api/n9e-plus/event-tagkeys', {
     method: RequestMethod.Get,
   }).then((res) => {
     return res.dat;

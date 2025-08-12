@@ -111,7 +111,7 @@ export default function Detail() {
         </div>
         <Row gutter={16}>
           <Col span={8}>
-            <div className='w-full rounded n9e-border-base n9e-fill-color-2 px-4 py-2'>
+            <div className='w-full h-[88px] rounded n9e-border-base n9e-fill-color-2 px-4 py-2'>
               <div className='flex items-center gap-1'>{t('statistics.total_notify_events', { days })}</div>
               <div className='my-2 flex flex-wrap items-end'>
                 <div className='mr-2 text-l4 text-title'>{notifyStatistics?.total_notify_events}</div>
@@ -130,7 +130,7 @@ export default function Detail() {
             </div>
           </Col>
           <Col span={8}>
-            <div className='w-full rounded n9e-border-base n9e-fill-color-2 px-4 py-2'>
+            <div className='w-full h-[88px] rounded n9e-border-base n9e-fill-color-2 px-4 py-2'>
               <div className='flex items-center gap-1'>{t('statistics.reduced_notify_events', { days })}</div>
               <div className='my-2 flex flex-wrap items-end'>
                 <div className='mr-2 text-l4 text-title'>{notifyStatistics?.reduced_notify_events}</div>
@@ -149,7 +149,7 @@ export default function Detail() {
             </div>
           </Col>
           <Col span={8}>
-            <div className='w-full rounded n9e-border-base n9e-fill-color-2 px-4 py-2'>
+            <div className='w-full h-[88px] rounded n9e-border-base n9e-fill-color-2 px-4 py-2'>
               <div className='flex items-center gap-1'>{t('statistics.noise_reduction_ratio', { days })}</div>
               <div className='my-2 flex flex-wrap items-end'>
                 <div className='mr-2 text-l4 text-title'>{notifyStatistics?.noise_reduction_ratio} %</div>
