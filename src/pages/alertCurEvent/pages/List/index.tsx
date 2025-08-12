@@ -105,16 +105,16 @@ const AlertCurEvent: React.FC = () => {
       parsedRange = parseRange(filter.range);
     }
     // console.log('filter', filter);
+
     setParamsAiAction({
       page: 'alert_cur_event',
       active_alert: {
         start: parsedRange ? moment(parsedRange.start).unix() : undefined,
         end: parsedRange ? moment(parsedRange.end).unix() : undefined,
-        var: filter,
-        my_groups: filter.my_groups,
+        my_groups: filter.my_groups === 'true',
         rule_prods: filter.rule_prods,
-        severity: filter.severity,
-        datasource_ids: filter.datasource_ids,
+        severity: filter.severity?.map(String),
+        datasource_ids: filter.datasource_ids?.map(String),
       },
     });
   }, [JSON.stringify(filter)]);
