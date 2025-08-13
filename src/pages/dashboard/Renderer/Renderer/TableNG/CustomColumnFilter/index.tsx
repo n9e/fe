@@ -80,7 +80,7 @@ export function doesFilterPass(params) {
   const { model, handlerParams } = params;
   if (!model) return true; // 没有过滤器时显示所有数据
 
-  const value = handlerParams.getValue(params.node);
+  const value = handlerParams.getValue(params.node)?.value; // cell value 是一个对象，cellValue.value 获取实际值
   if (!value) return false;
 
   // 分词搜索，确保每个词都匹配

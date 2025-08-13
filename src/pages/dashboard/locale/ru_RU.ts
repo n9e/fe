@@ -362,6 +362,8 @@ const ru_RU = {
         enablePagination: 'Включить постраничный просмотр',
         showHeader: 'Показать заголовок таблицы',
         filterable: 'Включить фильтр по столбцам',
+        sortColumn: 'Сортировать по столбцу',
+        sortOrder: 'Сортировка по умолчанию',
         cellOptions: {
           type: {
             label: 'Тип ячейки',

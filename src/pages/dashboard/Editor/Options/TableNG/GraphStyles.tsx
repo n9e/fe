@@ -1,14 +1,16 @@
 import React from 'react';
-import { Form, Row, Col, Switch } from 'antd';
+import { Form, Row, Col, Switch, Select } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
+import { useGlobalState } from '../../../globalState';
 import { Panel } from '../../Components/Collapse';
 import CellOptions from './CellOptions';
 
 export default function GraphStyles({ chartForm, variableConfigWithOptions }) {
   const { t } = useTranslation('dashboard');
   const namePrefix = ['custom'];
+  const [tableFields] = useGlobalState('tableFields');
 
   return (
     <Panel header={t('panel.custom.title')}>
@@ -22,6 +24,24 @@ export default function GraphStyles({ chartForm, variableConfigWithOptions }) {
           <Col span={12}>
             <Form.Item label={t('panel.custom.tableNG.filterable')} name={[...namePrefix, 'filterable']} valuePropName='checked' initialValue={false}>
               <Switch />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item label={t('panel.custom.tableNG.sortColumn')} name={[...namePrefix, 'sortColumn']}>
+              <Select
+                allowClear
+                options={_.map(tableFields, (item) => {
+                  return { label: item, value: item };
+                })}
+              />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item label={t('panel.custom.tableNG.sortOrder')} name={[...namePrefix, 'sortOrder']}>
+              <Select allowClear>
+                <Select.Option value='ascend'>Asc</Select.Option>
+                <Select.Option value='descend'>Desc</Select.Option>
+              </Select>
             </Form.Item>
           </Col>
           {/* <Col span={12}>

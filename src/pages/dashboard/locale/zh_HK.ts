@@ -389,6 +389,8 @@ const zh_HK = {
         enablePagination: '啟用分頁',
         showHeader: '顯示表頭',
         filterable: '可篩選',
+        sortColumn: '預設排序列',
+        sortOrder: '預設排序',
         cellOptions: {
           type: {
             label: '單元格類型',
