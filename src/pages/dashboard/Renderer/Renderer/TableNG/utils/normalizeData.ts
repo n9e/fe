@@ -11,7 +11,7 @@ export default function normalizeData(
     refId: string;
     metric: { [key: string]: string };
     data: [number, number][];
-    isRawData?: boolean;
+    mode: 'timeSeries' | 'raw';
   }[],
   transformations?: ITransformation[],
 ): (TableData & {
@@ -22,7 +22,7 @@ export default function normalizeData(
   let data: (TableData & {
     id: string;
   })[] = [];
-  const isRawData = _.every(series, (item) => item.isRawData);
+  const isRawData = _.every(series, (item) => item.mode === 'raw');
   if (isRawData) {
     const rows = _.map(series, (item) => {
       return item.metric;
