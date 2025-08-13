@@ -15,7 +15,6 @@ import { replaceExpressionVars } from '../../../VariableConfig/constant';
 import { getSeriesQuery, getLogsQuery } from './queryBuilder';
 import { processResponseToSeries } from './processResponse';
 import { normalizeInterval } from './utils';
-import { isRawData } from '../../Renderer/Table/utils';
 
 interface IOptions {
   dashboardId: string;
@@ -178,6 +177,7 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
           return {
             id: _.uniqueId('series_'),
             ...item,
+            mode: 'timeSeries',
           };
         });
       } else {
@@ -196,6 +196,7 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
                 isExp,
                 metric: serie.metric,
                 data: serie.values,
+                mode: 'timeSeries',
               });
             }
           });
@@ -238,8 +239,8 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
             id: doc._id,
             name: doc._index,
             metric: doc.fields,
-            isRawData: true,
             data: [],
+            mode: 'raw',
           });
         });
       });
