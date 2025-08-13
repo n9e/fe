@@ -35,9 +35,6 @@ export default function getFormattedRowData(
             thresholds: overrideProps.thresholds || options.thresholds,
           };
 
-      let currentValue = value;
-      let textObject = {} as Omit<TextObject, 'valueDomain'>;
-
       let valueDomain: [number, number] = [0, 100];
 
       if (_.isNumber(currentOptions.standardOptions.min) && _.isNumber(currentOptions.standardOptions.max)) {
@@ -49,12 +46,16 @@ export default function getFormattedRowData(
         }
       }
 
+      let currentValue = value;
+      let textObject = {} as Omit<TextObject, 'valueDomain'>;
+
       if (currentValue !== null && !_.isNaN(_.toNumber(currentValue))) {
         currentValue = _.toNumber(currentValue);
         textObject = getSerieTextObj(currentValue, currentOptions.standardOptions, currentOptions.valueMappings, currentOptions.thresholds, valueDomain);
       } else {
         textObject = getSerieTextObj(value, currentOptions.standardOptions, currentOptions.valueMappings, currentOptions.thresholds, valueDomain, false);
       }
+
       newRow[field] = {
         ...textObject,
         valueDomain,

@@ -385,6 +385,8 @@ const en_US = {
         enablePagination: 'Enable pagination',
         showHeader: 'Show header',
         filterable: 'Enable column filter',
+        sortColumn: 'Sort column',
+        sortOrder: 'Sort order',
         cellOptions: {
           type: {
             label: 'Cell type',

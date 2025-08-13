@@ -11,6 +11,7 @@ import { FONT_FAMILY } from '@/utils/constant';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import useOnClickOutside from '@/components/useOnClickOutside';
 import { useGlobalState } from '@/pages/dashboard/globalState';
+import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
 
 import { IPanel } from '../../../types';
 import { DARK_PARAMS, LIGHT_PARAMS } from './constants';
@@ -43,7 +44,7 @@ export default function index(props: Props) {
   const { t, i18n } = useTranslation('dashboard');
   const { themeMode, time, isPreview, values, series } = props;
   const { transformationsNG: transformations, custom, options, overrides } = values;
-  const { showHeader = true, cellOptions, filterable } = custom || {};
+  const { showHeader = true, cellOptions, filterable, sortColumn, sortOrder } = custom || {};
   const linksPopverRef = React.useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const [, setSeries] = useGlobalState('series');
@@ -55,20 +56,13 @@ export default function index(props: Props) {
 
     const activeData = data[activeIndex];
     const formattedData = getFormattedRowData(activeData, { cellOptions, options, overrides });
-    const rowData = _.map(formattedData, (item) => {
-      const row: { [key: string]: string | null } = {};
-      _.forEach(columns, (col) => {
-        row[col] = item[col].text || null;
-      });
-      return row;
-    });
 
     return {
       data,
-      rowData,
+      rowData: formattedData,
       formattedData,
     };
-  }, [JSON.stringify(series), JSON.stringify(values)]); // TODO : 依赖项可能需要更精确的控制，不然会导致不必要的重新渲染
+  }, [activeIndex, JSON.stringify(series), JSON.stringify(transformations), JSON.stringify(cellOptions), JSON.stringify(options), JSON.stringify(overrides)]); // TODO : 依赖项可能需要更精确的控制，不然会导致不必要的重新渲染
 
   const theme = useMemo(() => {
     if (themeMode === 'dark') {
@@ -112,17 +106,34 @@ export default function index(props: Props) {
               'n9e-dashboard-panel-table-ng-cell-link': () => (options.links ? options.links.length === 1 : false),
               'n9e-dashboard-panel-table-ng-cell-links': () => (options.links ? options.links.length > 1 : false),
             },
+            comparator: (value1, value2) => {
+              const date1Number = value1.value;
+              const date2Number = value2.value;
+              if (date1Number === null && date2Number === null) {
+                return 0;
+              }
+              if (date1Number === null) {
+                return -1;
+              }
+              if (date2Number === null) {
+                return 1;
+              }
+              if (_.isNumber(date1Number) && _.isNumber(date2Number)) {
+                return date1Number - date2Number;
+              }
+              return localeCompare(date1Number, date2Number);
+            },
+            sort: sortColumn === item ? (sortOrder === 'ascend' ? 'asc' : 'desc') : undefined,
             cellRenderer: (params) => {
               const field = params.colDef?.field;
               const fieldValue = params.data?.[field];
+
               if (fieldValue === undefined) return '';
-              const rowIndex = params.node?.rowIndex;
-              const formattedValue = formattedData[rowIndex]?.[item];
-              if (rowIndex === undefined || formattedValue === undefined) return fieldValue;
+
               return (
                 <CellRenderer
                   formattedData={formattedData}
-                  formattedValue={formattedValue}
+                  formattedValue={fieldValue}
                   field={item}
                   params={{
                     ...params,

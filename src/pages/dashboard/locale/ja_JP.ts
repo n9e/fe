@@ -358,6 +358,8 @@ const ja_JP = {
         enablePagination: 'ページネーションを有効にする',
         showHeader: 'ヘッダーを表示',
         filterable: '列フィルターを有効にする',
+        sortColumn: 'ソート列',
+        sortOrder: 'ソート順',
         cellOptions: {
           type: {
             label: 'セルタイプ',

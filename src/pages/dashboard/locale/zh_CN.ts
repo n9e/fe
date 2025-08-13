@@ -405,6 +405,8 @@ const zh_CN = {
         enablePagination: '启用分页器',
         showHeader: '显示表头',
         filterable: '启用列过滤器',
+        sortColumn: '默认排序列',
+        sortOrder: '默认排序',
         cellOptions: {
           type: {
             label: '单元格类型',
