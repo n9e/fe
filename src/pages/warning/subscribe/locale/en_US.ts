@@ -56,5 +56,6 @@ const en_US = {
   filter_configs: 'Filter settings',
   notify_configs: 'Notification settings',
   and: 'And',
+  btn_add_rule: 'Add rule',
 };
 export default en_US;

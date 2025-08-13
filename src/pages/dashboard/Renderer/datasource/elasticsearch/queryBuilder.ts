@@ -35,12 +35,17 @@ export function getLogsQuery(target: ElasticsearchQuery) {
   };
   if (target.filter && target.filter !== '') {
     if (target.syntax === 'lucene') {
-      queryObj.query.bool.filter = _.concat(queryObj.query.bool.filter, {
-        query_string: {
-          analyze_wildcard: true,
-          query: target.filter || '*',
-        },
-      });
+      queryObj.query.bool.filter = _.concat(
+        queryObj.query.bool.filter,
+        target.filter
+          ? {
+              query_string: {
+                analyze_wildcard: true,
+                query: target.filter,
+              },
+            }
+          : { match_all: {} },
+      );
     }
     if (target.syntax === 'kuery' && target.filter) {
       const query = buildESQueryFromKuery(target.filter);
@@ -81,12 +86,17 @@ export function getSeriesQuery(target: ElasticsearchQuery, intervalkey: string) 
 
   if (target.filter && target.filter !== '') {
     if (target.syntax === 'lucene') {
-      queryObj.query.bool.filter = _.concat(queryObj.query.bool.filter, {
-        query_string: {
-          analyze_wildcard: true,
-          query: target.filter || '*',
-        },
-      });
+      queryObj.query.bool.filter = _.concat(
+        queryObj.query.bool.filter,
+        target.filter
+          ? {
+              query_string: {
+                analyze_wildcard: true,
+                query: target.filter,
+              },
+            }
+          : { match_all: {} },
+      );
     }
     if (target.syntax === 'kuery' && target.filter) {
       const query = buildESQueryFromKuery(target.filter);

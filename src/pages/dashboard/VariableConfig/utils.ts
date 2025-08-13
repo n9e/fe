@@ -51,12 +51,14 @@ export function normalizeESQueryRequestBody(
   if (params.query && params.query !== '') {
     body.query.bool.filter = [
       ...body.query.bool.filter,
-      {
-        query_string: {
-          analyze_wildcard: true,
-          query: params?.query,
-        },
-      },
+      params?.query
+        ? {
+            query_string: {
+              analyze_wildcard: true,
+              query: params?.query,
+            },
+          }
+        : { match_all: {} },
     ];
   }
 

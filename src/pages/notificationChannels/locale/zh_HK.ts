@@ -8,7 +8,8 @@ const zh_HK = {
   variable_configuration: {
     title: '變量配置',
     contact_key: '聯繫方式',
-    contact_key_tip: '選擇通知發送的目標類型，如“Phone”表示通過電話、短信等方式進行發送，可以到聯繫方式管理頁面添加新的聯繫方式',
+    contact_key_tip:
+      '對應 "人員組織-用戶管理" 中的聯繫方式，用於選擇發送通知的方式，如 "Phone" 表示將用戶的電話信息傳遞給回調請求/回調腳本。如有新的聯繫方式類型，可以到 "人員組織-聯繫方式" 頁面添加',
     params: {
       title: '參數配置',
       title_tip: '設置該通知媒介所需的自定義參數（如釘釘機器人 Token、API Key 等）。在通知規則中設置媒介時，可以同時設置相關自定義參數的值',

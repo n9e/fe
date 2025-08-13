@@ -8,7 +8,8 @@ const zh_CN = {
   variable_configuration: {
     title: '变量配置',
     contact_key: '联系方式',
-    contact_key_tip: '选择通知发送的目标类型，如“Phone”表示通过电话、短信等方式进行发送，可以到联系方式管理页面添加新的联系方式',
+    contact_key_tip:
+      '对应 "人员组织-用户管理" 中的联系方式，用于选择发送通知的方式，如 "Phone" 表示将用户的电话信息传递给回调请求/回调脚本。如有新的联系方式类型，可以到 "人员组织-联系方式" 页面添加',
     params: {
       title: '参数配置',
       title_tip: '设置该通知媒介所需的自定义参数（如钉钉机器人 Token、API Key 等）。在通知规则中设置媒介时，可以同时设置相关自定义参数的值',

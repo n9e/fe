@@ -49,9 +49,9 @@ const zh_CN = {
   channel_invalid_tip: '通知媒介不存在',
   pipeline_configuration: {
     title: '事件处理',
-    name_placeholder: '请选择事件处理',
-    name_required: '事件处理不能为空',
-    add_btn: '添加事件处理',
+    name_placeholder: '请选择事件处理管道',
+    name_required: '事件处理管道不能为空',
+    add_btn: '添加事件处理管道',
     disable: '禁用',
     enable: '启用',
   },
