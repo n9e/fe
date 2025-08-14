@@ -4,6 +4,8 @@ import { PlusCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
+import Markdown from '@/components/Markdown';
+
 import TagItem from './TagItem';
 
 interface Props {
@@ -16,11 +18,14 @@ interface Props {
     label: string;
     value: string | number;
   }[];
+  keyPlaceholder?: string;
   funcLabel?: React.ReactNode;
+  funcLabelTootip?: React.ReactNode;
   valueLabel?: React.ReactNode;
   keyName?: string;
   funcName?: string;
   valueName?: string;
+  valuePlaceholder?: string;
   field?: any;
   fullName?: (string | number)[];
   name: string | (string | number)[];
@@ -36,11 +41,14 @@ export default function index(props: Props) {
     keyLabelTootipPlacement,
     keyType = 'input',
     keyOptions,
+    keyPlaceholder,
     funcLabel = t('tag.func.label'),
+    funcLabelTootip,
     valueLabel = t('tag.value.label'),
     keyName = 'key',
     funcName = 'func',
     valueName = 'value',
+    valuePlaceholder,
     field = {},
     fullName = [],
     name,
@@ -57,7 +65,7 @@ export default function index(props: Props) {
               <Space align='baseline' size={4}>
                 {keyLabel}
                 {keyLabelTootip && (
-                  <Tooltip className='n9e-ant-from-item-tooltip' title={keyLabelTootip} overlayClassName='ant-tooltip-auto-width' placement={keyLabelTootipPlacement}>
+                  <Tooltip className='n9e-ant-from-item-tooltip' title={keyLabelTootip} overlayClassName='ant-tooltip-max-width-400' placement={keyLabelTootipPlacement}>
                     <QuestionCircleOutlined />
                   </Tooltip>
                 )}
@@ -74,7 +82,30 @@ export default function index(props: Props) {
                 )}
               </Space>
             </Col>
-            {fields.length ? <Col span={4}>{funcLabel}</Col> : null}
+            {fields.length ? (
+              <Col span={4}>
+                <Space align='baseline' size={4}>
+                  {funcLabel}
+                  {funcLabelTootip ? (
+                    <Tooltip className='n9e-ant-from-item-tooltip' title={funcLabelTootip} overlayClassName='ant-tooltip-max-width-400'>
+                      <QuestionCircleOutlined />
+                    </Tooltip>
+                  ) : (
+                    <Tooltip
+                      className='n9e-ant-from-item-tooltip'
+                      title={
+                        <div className='pt-2 px-1'>
+                          <Markdown content={t('tag.func.label_tip')} darkMode />
+                        </div>
+                      }
+                      overlayClassName='ant-tooltip-max-width-400'
+                    >
+                      <QuestionCircleOutlined />
+                    </Tooltip>
+                  )}
+                </Space>
+              </Col>
+            ) : null}
             {fields.length ? <Col span={12}>{valueLabel}</Col> : null}
           </Row>
           {fields.map((field) => (
@@ -85,8 +116,10 @@ export default function index(props: Props) {
               keyName={keyName}
               keyType={keyType}
               keyOptions={keyOptions}
+              keyPlaceholder={keyPlaceholder}
               funcName={funcName}
               valueName={valueName}
+              valuePlaceholder={valuePlaceholder}
               field={field}
               remove={remove}
             />

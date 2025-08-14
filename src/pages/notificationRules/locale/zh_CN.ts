@@ -57,6 +57,7 @@ const zh_CN = {
   },
   escalations: {
     title: '升级配置',
+    title_tip: '当告警超过设定时长且未恢复时，系统将按下方条件把通知升级到指定渠道，避免长期无人跟进，详细配置参考 <a>说明文档</a>',
     item_title: '通知升级',
     item_add_btn: '添加通知升级',
     interval: '检测周期',
@@ -64,12 +65,23 @@ const zh_CN = {
     duration_required: '持续时间不能为空',
     duration_1: '异常事件已超过',
     duration_2: '，仍处于未恢复/未认领状态时，使用本配置发送通知。',
+    time_ranges: {
+      label_tip: '可以限制仅在勾选的星期与时间段内触发升级，不配置表示不做限制',
+    },
+    labels_filter: {
+      label_tip: '仅对满足这些标签条件的告警事件执行{升级通知 or 聚合通知}。用于缩小影响范围，不配置表示不做限制。支持下拉选择已有标签键（推荐），也可手动输入',
+      label_placeholder: '输入或者选择用于匹配的标签键，如 app / cluster / alertname',
+      value_placeholder: '输入要匹配的值，如 payment / prod',
+    },
+    attributes_filter: {
+      label_tip: '仅对同时匹配这些属性的告警启用升级；不配置表示不做限制。多个条件为且关系',
+    },
   },
   notify_aggr_configs: {
     title: '聚合配置',
     enable: '开启聚合',
     group_enable: '细粒度聚合',
-    group_title: '筛选条件',
+    group_title: '细粒度聚合',
     group_add_btn: '添加细粒度聚合',
     group_tip1: '满足以下条件',
     group_tip2: '按照以下维度聚合到一组进行通知',
@@ -92,6 +104,17 @@ const zh_CN = {
       severity: '告警等级',
     },
     enable_tip: '开启后，符合规则的告警会按维度合并为一条通知',
+    attributes_filter: {
+      label_tip: '只让匹配这些属性的告警参与聚合；未匹配的告警不受本规则影响。不配置表示不做限制。多个条件为且关系',
+    },
+    label_keys: {
+      tip: '如果配置的是 ident，将会把 ident 相同的事件合并到一组，发送一条通知消息，常用于短信/IM 降噪',
+      placeholder: '例如：ident、app，支持下拉选择已有标签键（推荐），也可手动输入',
+    },
+    attribute_keys: {
+      tip: '如果配置的是 业务组，将会把 业务组 相同的事件合并到一组，发送一条通知消息',
+      placeholder: '例如：业务组',
+    },
   },
   statistics: {
     total_notify_events: '最近 {{days}} 天通知事件总数',
