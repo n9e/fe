@@ -35,6 +35,8 @@ const ru_RU = {
       group_name: 'Бизнес-группа',
       cluster: 'Источник данных',
       is_recovered: 'Событие восстановления?',
+      rule_id: 'Правило тревоги',
+      severity: 'Уровень тревоги',
     },
     run_test_btn: 'Тестирование уведомления',
     run_test_btn_tip:

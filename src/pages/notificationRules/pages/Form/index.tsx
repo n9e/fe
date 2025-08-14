@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import { getTeamInfoList } from '@/services/manage';
+import { getBusiGroupsAlertRules } from '@/services/warning';
 import { SIZE } from '@/utils/constant';
 import { scrollToFirstError } from '@/utils';
 
@@ -18,6 +19,7 @@ import { normalizeFormValues } from '../../utils/normalizeValues';
 import { getEventTags } from '../../services';
 import RuleConfig from './RuleConfig';
 import EventPipelineConfigs from './EventPipelineConfigs';
+import { useGlobalState } from './Attributes/globalState';
 
 interface Props {
   disabled?: boolean;
@@ -33,6 +35,7 @@ export default function FormCpt(props: Props) {
   const [userGroups, setUserGroups] = useState<{ id: number; name: string }[]>([]);
   const [activeIndex, setActiveIndex] = useState<number>();
   const [eventKeys, setEventKeys] = useState<string[]>([]);
+  const [, setAlertRules] = useGlobalState('alertRules');
 
   useEffect(() => {
     getTeamInfoList().then((res) => {
@@ -40,6 +43,9 @@ export default function FormCpt(props: Props) {
     });
     getEventTags().then((res) => {
       setEventKeys(res ?? []);
+    });
+    getBusiGroupsAlertRules().then((res) => {
+      setAlertRules(_.map(res.dat, (item) => ({ id: item.id, name: item.name })));
     });
   }, []);
 

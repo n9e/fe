@@ -7,6 +7,7 @@ import _ from 'lodash';
 import { CommonStateContext } from '@/App';
 
 import { NS } from '../../../constants';
+import { useGlobalState } from './globalState';
 
 interface Props {
   disabled?: boolean;
@@ -18,13 +19,14 @@ interface Props {
 const TagItem = (props: Props) => {
   const { t } = useTranslation('KVTagSelect');
   const { busiGroups, datasourceList } = useContext(CommonStateContext);
+  const [alertRules] = useGlobalState('alertRules');
   const { disabled, fullName = [], field, remove } = props;
   const form = Form.useFormInstance();
   const key = Form.useWatch([...fullName, field.name, 'key']);
   const func = Form.useWatch([...fullName, field.name, 'func']);
   let selectOptions: {
     label: string;
-    value: string;
+    value: string | number;
   }[] = [];
 
   if (key === 'group_name') {
@@ -45,6 +47,19 @@ const TagItem = (props: Props) => {
     selectOptions = [
       { label: 'true', value: 'true' },
       { label: 'false', value: 'false' },
+    ];
+  } else if (key === 'rule_id') {
+    selectOptions = _.map(alertRules, (item) => {
+      return {
+        label: item.name,
+        value: item.id,
+      };
+    });
+  } else if (key === 'severity') {
+    selectOptions = [
+      { label: t('common:severity.1'), value: 1 },
+      { label: t('common:severity.2'), value: 2 },
+      { label: t('common:severity.3'), value: 3 },
     ];
   }
 
@@ -70,6 +85,14 @@ const TagItem = (props: Props) => {
                       {
                         label: t(`${NS}:notification_configuration.attributes_options.is_recovered`),
                         value: 'is_recovered',
+                      },
+                      {
+                        label: t(`${NS}:notification_configuration.attributes_options.rule_id`),
+                        value: 'rule_id',
+                      },
+                      {
+                        label: t(`${NS}:notification_configuration.attributes_options.severity`),
+                        value: 'severity',
                       },
                     ]}
                     onChange={() => {
@@ -107,14 +130,21 @@ const TagItem = (props: Props) => {
                 name={[field.name, 'value']}
                 rules={[{ required: true, message: t('tag.value.msg') }]}
                 getValueFromEvent={(value) => {
-                  if (_.isArray(value)) {
-                    return _.join(value, ' ');
+                  if (_.includes(['group_name', 'cluster', 'is_recovered'], key)) {
+                    if (_.isArray(value)) {
+                      return _.join(value, ' ');
+                    }
                   }
                   return value;
                 }}
                 getValueProps={(value) => {
-                  if (_.isString(value)) {
-                    return { value: _.split(value, ' ') };
+                  if (_.includes(['group_name', 'cluster', 'is_recovered'], key)) {
+                    if (_.isString(value)) {
+                      if (value === '') {
+                        return { value: [] };
+                      }
+                      return { value: _.split(value, ' ') };
+                    }
                   }
                   return { value };
                 }}

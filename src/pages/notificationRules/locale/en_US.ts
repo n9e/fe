@@ -35,6 +35,8 @@ const en_US = {
       group_name: 'Business group',
       cluster: 'Cluster',
       is_recovered: 'Is recovered?',
+      rule_id: 'Alarm rule',
+      severity: 'Severity',
     },
     run_test_btn: 'Run test',
     run_test_btn_tip:
