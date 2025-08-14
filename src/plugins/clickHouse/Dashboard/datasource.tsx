@@ -114,6 +114,7 @@ export default async function mysqlQuery(options: IOptions): Promise<Result> {
             isExp,
             metric: serie.metric,
             data: serie.values,
+            mode: 'timeSeries',
           });
         }
       });
@@ -127,6 +128,7 @@ export default async function mysqlQuery(options: IOptions): Promise<Result> {
             target: currentTarget,
             metric: subItem,
             data: [],
+            mode: 'raw',
           };
         });
       }),

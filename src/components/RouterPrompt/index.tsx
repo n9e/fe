@@ -81,6 +81,7 @@ export default forwardRef(function RouterPrompt(props: Props, ref) {
       return {
         redirect: redirect,
         hidePrompt: () => setShowPrompt(false),
+        showPrompt: () => setShowPrompt(true),
       };
     },
     [currentPath],

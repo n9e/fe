@@ -7,6 +7,7 @@ const ja_JP = {
   business_group: 'ビジネスグループ',
   business_groups: 'ビジネスグループ',
   search_placeholder: '検索キーワードを入力してください',
+  search_placeholder2: '検索内容を入力してください',
   my_business_group: '私のビジネスグループ',
   all_business_group: 'すべてのビジネスグループ',
   not_grouped: 'グループ化されていません',
@@ -60,6 +61,8 @@ const ja_JP = {
     copy2: 'コピー',
     reload: 'リロード',
     data_preview: 'データプレビュー',
+    search: '検索',
+    reset: 'リセット',
   },
   table: {
     name: '名前',

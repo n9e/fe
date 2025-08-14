@@ -3,7 +3,7 @@ import { Form } from 'antd';
 import _ from 'lodash';
 import OrganizeFields from './OrganizeFields';
 
-export default function index({ chartForm }) {
+export default function index() {
   return (
     <Form.List
       name='transformations'
@@ -17,11 +17,11 @@ export default function index({ chartForm }) {
       {(fields) => {
         return (
           <>
-            {_.map(fields, (field) => {
+            {_.map(fields, ({ name, key, ...resetField }) => {
               return (
-                <div key={field.key}>
-                  <Form.Item {...field} name={[field.name, 'id']} hidden />
-                  <Form.Item {...field} name={[field.name, 'options']}>
+                <div key={key}>
+                  <Form.Item {...resetField} name={[name, 'id']} hidden />
+                  <Form.Item {...resetField} name={[name, 'options']}>
                     <OrganizeFields />
                   </Form.Item>
                 </div>

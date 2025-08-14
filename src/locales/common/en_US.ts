@@ -7,6 +7,7 @@ const en_US = {
   business_group: 'Business group',
   business_groups: 'Business groups',
   search_placeholder: 'Please enter search keywords',
+  search_placeholder2: 'Please enter search content',
   my_business_group: 'My business group',
   all_business_group: 'All business group',
   not_grouped: 'Not grouped',
@@ -60,6 +61,8 @@ const en_US = {
     copy2: 'Copy',
     reload: 'Reload',
     data_preview: 'Preview',
+    search: 'Search',
+    reset: 'Reset',
   },
   table: {
     name: 'Name',

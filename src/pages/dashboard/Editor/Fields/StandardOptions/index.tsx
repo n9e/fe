@@ -29,14 +29,15 @@ interface IProps {
   showDisplayName?: boolean;
   defaultMin?: number;
   defaultMax?: number;
+  isActive?: boolean;
 }
 
 export default function index(props: IProps) {
   const { t } = useTranslation('dashboard');
-  const { preNamePrefix = [], namePrefix = ['options', 'standardOptions'], showMinMax = true, showDisplayName, defaultMin, defaultMax } = props;
+  const { preNamePrefix = [], namePrefix = ['options', 'standardOptions'], showMinMax = true, showDisplayName, defaultMin, defaultMax, isActive = true } = props;
 
   return (
-    <Panel header={t('panel.standardOptions.title')}>
+    <Panel header={t('panel.standardOptions.title')} isActive={isActive}>
       <>
         <Form.Item shouldUpdate noStyle>
           {({ getFieldValue }) => {

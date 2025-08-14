@@ -381,6 +381,54 @@ const en_US = {
           'Color mode is the color setting for the "value field". In value mode, the color is applied to the value text; in background mode, the color is applied to the background color of the cell where the field is located.',
         pageLimit: 'Page limit',
       },
+      tableNG: {
+        enablePagination: 'Enable pagination',
+        showHeader: 'Show header',
+        filterable: 'Enable column filter',
+        sortColumn: 'Sort column',
+        sortOrder: 'Sort order',
+        cellOptions: {
+          type: {
+            label: 'Cell type',
+            options: {
+              none: 'Default',
+              'color-text': 'Color text',
+              'color-background': 'Color background',
+              gauge: 'Gauge',
+            },
+          },
+          wrapText: 'Wrap text',
+          wrapText_tip:
+            'Enabling this will automatically wrap text in the cell and adjust the row height based on the number of text lines. If the row data volume is large, it may affect performance.',
+          'color-background': {
+            mode: {
+              label: 'Color mode',
+              options: {
+                basic: 'Basic',
+                gradient: 'Gradient',
+              },
+            },
+          },
+          gauge: {
+            mode: {
+              label: 'Mode',
+              options: {
+                basic: 'Basic',
+                gradient: 'Gradient',
+                lcd: 'LCD',
+              },
+            },
+            valueDisplayMode: {
+              label: 'Value display',
+              options: {
+                color: 'Color',
+                text: 'Text',
+                hidden: 'Hidden',
+              },
+            },
+          },
+        },
+      },
       text: {
         textColor: 'TextColor',
         textDarkColor: 'TextDarkColor',
@@ -540,7 +588,8 @@ const en_US = {
     timeseries: 'Time Series',
     barchart: 'Bar Chart',
     stat: 'Stat',
-    table: 'Table',
+    table: 'Table(old)',
+    tableNG: 'Table',
     pie: 'Pie Chart',
     hexbin: 'Hexmap',
     barGauge: 'Bar Gauge',
@@ -571,5 +620,22 @@ const en_US = {
     updated: 'Annotation updated',
     deleted: 'Annotation deleted',
   },
+  transformations: {
+    organize: {
+      title: 'Organize fields by name',
+      desc: 'Re-order, hide, or rename fields.',
+    },
+    merge: {
+      title: 'Merge tables',
+      desc: 'Merge multiple tables into one table by matching the values of the specified fields.',
+    },
+    joinByField: {
+      title: 'Join by field',
+      desc: 'Join multiple tables by matching the values of the specified fields.',
+      mode: 'Mode',
+      byField: 'Field',
+    },
+  },
+  add_transformation: 'Add transformation',
 };
 export default en_US;

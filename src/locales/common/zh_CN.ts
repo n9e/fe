@@ -7,6 +7,7 @@ const zh_CN = {
   business_group: '业务组',
   business_groups: '业务组',
   search_placeholder: '请输入搜索关键字',
+  search_placeholder2: '请输入搜索内容',
   my_business_group: '我的业务组',
   all_business_group: '全部业务组',
   not_grouped: '未归组',
@@ -59,6 +60,8 @@ const zh_CN = {
     copy2: '复制',
     reload: '刷新',
     data_preview: '数据预览',
+    search: '搜索',
+    reset: '重置',
   },
   table: {
     name: '名称',

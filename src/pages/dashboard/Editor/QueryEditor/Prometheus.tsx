@@ -21,6 +21,7 @@ export default function Prometheus({ panelWidth, variableConfig, time, datasourc
   });
   const chartForm = Form.useFormInstance();
   const targets = Form.useWatch('targets');
+  const chartType = Form.useWatch('type');
 
   return (
     <Form.List name='targets'>
@@ -108,21 +109,23 @@ export default function Prometheus({ panelWidth, variableConfig, time, datasourc
                       </Form.Item>
                     </div>
                     <Row gutter={10}>
-                      <Col flex='auto'>
-                        <Form.Item
-                          label='Legend'
-                          {...field}
-                          name={[field.name, 'legend']}
-                          tooltip={{
-                            getPopupContainer: () => document.body,
-                            title: t('query.legendTip', {
-                              interpolation: { skipOnVariables: true },
-                            }),
-                          }}
-                        >
-                          <Input />
-                        </Form.Item>
-                      </Col>
+                      {chartType !== 'tableNG' && (
+                        <Col flex='auto'>
+                          <Form.Item
+                            label='Legend'
+                            {...field}
+                            name={[field.name, 'legend']}
+                            tooltip={{
+                              getPopupContainer: () => document.body,
+                              title: t('query.legendTip', {
+                                interpolation: { skipOnVariables: true },
+                              }),
+                            }}
+                          >
+                            <Input />
+                          </Form.Item>
+                        </Col>
+                      )}
                       <Col flex='116px'>
                         <Form.Item
                           label={t('query.time')}

@@ -7,6 +7,7 @@ const ru_RU = {
   business_group: 'Бизнес-группа',
   business_groups: 'Бизнес-группа',
   search_placeholder: 'Пожалуйста, введите ключевое слово для поиска',
+  search_placeholder2: 'Пожалуйста, введите содержимое для поиска',
   my_business_group: 'Моя бизнес-группа',
   all_business_group: 'Все бизнес-группы',
   not_grouped: 'Не сгруппировано',
@@ -60,6 +61,8 @@ const ru_RU = {
     copy2: 'Копировать',
     reload: 'Обновить',
     data_preview: 'Предпросмотр данных',
+    search: 'Поиск',
+    reset: 'Сброс',
   },
   table: {
     name: 'Имя',
