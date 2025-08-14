@@ -82,15 +82,16 @@ const zh_CN = {
     group_duration_2: '秒内收到的同组告警，一起聚合发送',
     group_duration_required: '聚合持续时间不能为空',
     default_title: '默认维度',
-    default_tip: '为满足上述筛选条件，按照以下维度聚合到一组进行通知',
+    default_tip: '未满足上述筛选条件，按照以下维度聚合到一组进行通知',
     default_duration_tip: '请注意，聚合时间间隔太大会导致告警延迟发送',
+    default_duration_tip2: '聚合最大间隔不能超过 3600 秒',
     attribute_keys_map: {
       datasource_id: '数据源',
       group_id: '业务组',
       rule_id: '告警规则',
       severity: '告警等级',
     },
-    enable_tip: '开启后，符合规则的告警会按维护合并为一条通知',
+    enable_tip: '开启后，符合规则的告警会按维度合并为一条通知',
   },
   statistics: {
     total_notify_events: '最近 {{days}} 天通知事件总数',

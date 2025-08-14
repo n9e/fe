@@ -15,6 +15,7 @@ import ExtraConfig from 'plus:/parcels/notificationRules/ExtraConfig';
 import { NS, DEFAULT_VALUES } from '../../constants';
 import { RuleItem } from '../../types';
 import { normalizeFormValues } from '../../utils/normalizeValues';
+import { getEventTags } from '../../services';
 import RuleConfig from './RuleConfig';
 import EventPipelineConfigs from './EventPipelineConfigs';
 
@@ -31,10 +32,14 @@ export default function FormCpt(props: Props) {
   const [form] = Form.useForm();
   const [userGroups, setUserGroups] = useState<{ id: number; name: string }[]>([]);
   const [activeIndex, setActiveIndex] = useState<number>();
+  const [eventKeys, setEventKeys] = useState<string[]>([]);
 
   useEffect(() => {
     getTeamInfoList().then((res) => {
       setUserGroups(res.dat ?? []);
+    });
+    getEventTags().then((res) => {
+      setEventKeys(res ?? []);
     });
   }, []);
 
@@ -85,7 +90,17 @@ export default function FormCpt(props: Props) {
           {(fields, { add, remove, move }) => (
             <>
               {fields.map((field) => (
-                <RuleConfig disabled={disabled} fields={fields} field={field} activeIndex={activeIndex} setActiveIndex={setActiveIndex} add={add} remove={remove} move={move} />
+                <RuleConfig
+                  disabled={disabled}
+                  fields={fields}
+                  field={field}
+                  activeIndex={activeIndex}
+                  setActiveIndex={setActiveIndex}
+                  add={add}
+                  remove={remove}
+                  move={move}
+                  eventKeys={eventKeys}
+                />
               ))}
               {!disabled && (
                 <Button className='w-full' type='dashed' onClick={() => add(DEFAULT_VALUES.notify_configs[0])} icon={<PlusOutlined />}>
@@ -96,7 +111,7 @@ export default function FormCpt(props: Props) {
           )}
         </Form.List>
       </Card>
-      <ExtraConfig />
+      <ExtraConfig eventKeys={eventKeys} />
       {!disabled && (
         <Affix offsetBottom={0}>
           <Card size='small' className='affix-bottom-shadow'>
