@@ -145,6 +145,13 @@ const zh_CN = {
     keys_at_least_one_required: '至少需要一个标签或属性',
     preview:
       '规则预览：当「新告警：{{newAlertLabelsAttrs}}」且在过去「{{duration}} 秒」内存在「活跃告警：{{activeAlertLabelsAttrs}}」，并且两者在「{{matchLabelsAttrs}}」相同时，抑制新告警的通知。',
+    labels_filter: {
+      label_tip: '仅对满足这些标签匹配条件的告警事件进行抑制，用于缩小影响范围，不配置表示不做限制。支持下拉选择已有标签键（推荐），也可手动输入',
+      label_placeholder: '输入或者选择用于匹配的标签键，如 app / cluster / alertname',
+    },
+    attributes_filter: {
+      label_tip: '按事件属性限定抑制范围：只有同时匹配这些属性的告警会被抑制；留空则对所有告警生效',
+    },
   },
 };
 export default zh_CN;

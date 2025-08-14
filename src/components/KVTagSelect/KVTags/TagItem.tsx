@@ -13,15 +13,17 @@ interface Props {
     label: string;
     value: string | number;
   }[];
+  keyPlaceholder?: string;
   funcName: string;
   valueName: string;
+  valuePlaceholder?: string;
   field: any;
   remove: Function;
 }
 
 const TagItem = (props: Props) => {
   const { t } = useTranslation('KVTagSelect');
-  const { disabled, fullName = [], keyName, keyType, keyOptions, funcName, valueName, field, remove } = props;
+  const { disabled, fullName = [], keyName, keyType, keyOptions, keyPlaceholder, funcName, valueName, valuePlaceholder, field, remove } = props;
   const func = Form.useWatch([...fullName, field.name, funcName]);
   const isSelect = _.includes(['not in', 'in'], func);
 
@@ -35,17 +37,17 @@ const TagItem = (props: Props) => {
               <div className='w-full min-w-0'>
                 {keyType === 'input' && (
                   <Form.Item name={[field.name, keyName]} rules={[{ required: true, message: t('tag.key.msg') }]}>
-                    <Input />
+                    <Input placeholder={keyPlaceholder} />
                   </Form.Item>
                 )}
                 {keyType === 'select' && (
                   <Form.Item name={[field.name, keyName]} rules={[{ required: true, message: t('tag.key.msg') }]}>
-                    <Select showSearch options={keyOptions} />
+                    <Select showSearch options={keyOptions} placeholder={keyPlaceholder} />
                   </Form.Item>
                 )}
                 {keyType === 'autoComplete' && (
                   <Form.Item name={[field.name, keyName]} rules={[{ required: true, message: t('tag.key.msg') }]}>
-                    <AutoComplete showSearch options={keyOptions} />
+                    <AutoComplete showSearch options={keyOptions} placeholder={keyPlaceholder} />
                   </Form.Item>
                 )}
               </div>
@@ -84,11 +86,11 @@ const TagItem = (props: Props) => {
                   return { value };
                 }}
               >
-                <Select mode='tags' open={false} style={{ width: '100%' }} placeholder={t('tag.value.placeholder1')} tokenSeparators={[' ']}></Select>
+                <Select mode='tags' open={false} style={{ width: '100%' }} placeholder={valuePlaceholder} tokenSeparators={[' ']}></Select>
               </Form.Item>
             ) : (
               <Form.Item style={{ marginBottom: 0 }} name={[field.name, 'value']} rules={[{ required: true, message: t('tag.value.msg') }]}>
-                <Input placeholder={_.includes(['=~', '!~'], func) ? t('tag.value.placeholder2') : undefined} />
+                <Input placeholder={valuePlaceholder} />
               </Form.Item>
             )}
           </Col>

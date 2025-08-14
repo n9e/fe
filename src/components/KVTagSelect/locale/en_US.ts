@@ -10,6 +10,13 @@ const en_US = {
     },
     func: {
       label: 'Operator',
+      label_tip: `Supports multiple matching operators, described as follows:
+- \`==\` Match a specific tag value, only one value can be entered. If you want to match multiple values simultaneously, use the \`in\` operator
+- \`=~\` Enter a regular expression to flexibly match tag values
+- \`in\` Match multiple tag values, similar to the \`in\` operation in SQL
+- \`not in\` Exclude tag values, multiple values can be entered, similar to the \`not in\` operation in SQL, used to exclude multiple tag values
+- \`!=\` Not equal to, used to exclude a specific tag value
+- \`!~\` Regular expression not match, enter a regular expression, tag values matching this regex will be excluded, similar to \`!~\` in PromQL`,
       msg: 'Operator is required',
     },
     value: {
