@@ -121,6 +121,11 @@ const TagItem = (props: Props) => {
                       ]
                     : [],
                 )}
+                onChange={() => {
+                  const newValues = _.cloneDeep(form.getFieldsValue());
+                  _.set(newValues, [...fullName, field.name, 'value'], undefined);
+                  form.setFieldsValue(newValues);
+                }}
               />
             </Form.Item>
           </Col>
