@@ -32,8 +32,8 @@ export default function index(props: Props) {
     <Form.List {...restField} name={name}>
       {(fields, { add, remove }) => (
         <>
-          <Row gutter={[10, 10]} className='mb1'>
-            <Col span={5}>
+          <Row gutter={10} className={fields.length ? 'mb-2' : ''}>
+            <Col span={8}>
               <Space align='baseline' size={4}>
                 {t(`${NS}:notification_configuration.attributes`)}
                 {keyLabelTootip && (
@@ -53,8 +53,8 @@ export default function index(props: Props) {
                 )}
               </Space>
             </Col>
-            {fields.length ? <Col span={3}>{t('tag.func.label')}</Col> : null}
-            {fields.length ? <Col span={16}>{t(`${NS}:notification_configuration.attributes_value`)}</Col> : null}
+            {fields.length ? <Col span={4}>{t('tag.func.label')}</Col> : null}
+            {fields.length ? <Col span={12}>{t(`${NS}:notification_configuration.attributes_value`)}</Col> : null}
           </Row>
           {fields.map((field) => (
             <TagItem key={field.key} disabled={disabled} fullName={[...fullName, ...name]} field={field} remove={remove} />

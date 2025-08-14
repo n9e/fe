@@ -11,7 +11,7 @@ interface Props {
   keyLabel?: React.ReactNode;
   keyLabelTootip?: React.ReactNode;
   keyLabelTootipPlacement?: 'top' | 'left' | 'right' | 'bottom';
-  keyType?: 'input' | 'select';
+  keyType?: 'input' | 'select' | 'autoComplete';
   keyOptions?: {
     label: string;
     value: string | number;
@@ -52,8 +52,8 @@ export default function index(props: Props) {
     <Form.List {...restField} name={name}>
       {(fields, { add, remove }) => (
         <>
-          <Row gutter={[10, 10]} className='mb1'>
-            <Col span={5}>
+          <Row gutter={10} className={fields.length ? 'mb-2' : ''}>
+            <Col span={8}>
               <Space align='baseline' size={4}>
                 {keyLabel}
                 {keyLabelTootip && (
@@ -74,8 +74,8 @@ export default function index(props: Props) {
                 )}
               </Space>
             </Col>
-            {fields.length ? <Col span={3}>{funcLabel}</Col> : null}
-            {fields.length ? <Col span={16}>{valueLabel}</Col> : null}
+            {fields.length ? <Col span={4}>{funcLabel}</Col> : null}
+            {fields.length ? <Col span={12}>{valueLabel}</Col> : null}
           </Row>
           {fields.map((field) => (
             <TagItem

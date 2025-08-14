@@ -8,6 +8,7 @@
   /* 填充色 */
   --fc-fill-1: rgb(248 250 252);
   --fc-fill-2: rgb(255 255 255);
+  --fc-fill-2-5: rgb(250 250 250);
   --fc-fill-3: rgb(243 244 246);
   --fc-fill-4: rgb(229 231 235);
   --fc-fill-5: rgb(209 213 219);
@@ -107,6 +108,7 @@
   color-scheme: dark;
   --fc-fill-1: rgb(17 18 23);
   --fc-fill-2: rgb(24 27 31);
+  --fc-fill-2-5: rgb(28 30 34);
   --fc-fill-3: rgb(34 37 43);
   --fc-fill-4: rgb(39 40 47);
   --fc-fill-5: rgb(47 48 55);
