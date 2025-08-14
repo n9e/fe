@@ -32,6 +32,8 @@ const zh_CN = {
       group_name: '业务组',
       cluster: '数据源',
       is_recovered: '是恢复事件？',
+      rule_id: '告警规则',
+      severity: '告警等级',
     },
     run_test_btn: '通知测试',
     run_test_btn_tip: '可以选择几个已经产生的事件，测试一下此通知配置是否正确，如果正确，应该会收到相关的通知消息',
@@ -64,7 +66,12 @@ const zh_CN = {
     interval_required: '检测周期不能为空',
     duration_required: '持续时间不能为空',
     duration_1: '异常事件已超过',
-    duration_2: '，仍处于未恢复/未认领状态时，使用本配置发送通知。',
+    duration_2: '，仍处于',
+    duration_3: '状态时，使用本配置发送通知。',
+    event_status_options: {
+      0: '未恢复',
+      1: '未恢复且未认领',
+    },
     time_ranges: {
       label_tip: '可以限制仅在勾选的星期与时间段内触发升级，不配置表示不做限制',
     },
