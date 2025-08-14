@@ -54,7 +54,7 @@ const TagItem = (props: Props) => {
         <Row gutter={10}>
           <Col span={8}>
             <div className='flex gap-[10px]'>
-              <div className='w-[32px] h-[32px] leading-[32px] text-center n9e-fill-color-2 n9e-border-base-antd rounded-sm flex-shrink-0'>{t('common:and')}</div>
+              <div className='w-[32px] h-[32px] leading-[32px] text-center n9e-fill-color-2 n9e-border-antd rounded-sm flex-shrink-0'>{t('common:and')}</div>
               <div className='w-full min-w-0'>
                 <Form.Item name={[field.name, 'key']} rules={[{ required: true, message: t('tag.key.msg') }]}>
                   <Select
