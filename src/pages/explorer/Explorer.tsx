@@ -25,7 +25,7 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useHistory } from 'react-router-dom';
 
-import { DatasourceSelectV2 } from '@/components/DatasourceSelect';
+import { DatasourceSelectV3 } from '@/components/DatasourceSelect';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
 import { getDefaultDatasourceValue, setDefaultDatasourceValue } from '@/utils';
@@ -112,17 +112,18 @@ const Panel = ({ type, defaultCate, panelIdx, defaultFormValuesControl }: IProps
                       },
                     ]}
                   >
-                    <DatasourceSelectV2
+                    <DatasourceSelectV3
                       style={{ minWidth: 220 }}
-                      datasourceCateList={_.filter(datasourceCateOptions, (item) => {
-                        return _.includes(item.type, type) && (item.graphPro ? IS_PLUS : true);
-                      })}
-                      datasourceList={
-                        _.filter(datasourceList, (item) => {
+                      datasourceCateList={datasourceCateOptions}
+                      ajustDatasourceList={(list) => {
+                        return _.filter(list, (item) => {
                           const cateData = _.find(datasourceCateOptions, { value: item.plugin_type });
-                          return cateData && _.includes(cateData.type, type) && (cateData.graphPro ? IS_PLUS : true);
-                        }) as any[]
-                      }
+                          if (cateData && _.includes(cateData.type, type)) {
+                            return cateData.graphPro ? IS_PLUS : true;
+                          }
+                          return false;
+                        });
+                      }}
                       onChange={(val, datasourceCate) => {
                         setDefaultDatasourceValue(datasourceCate, val);
                         if (datasourceCate !== 'prometheus') {
