@@ -18,11 +18,20 @@ import _ from 'lodash';
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 
+export interface DatasourceItem {
+  name: string;
+  id: number;
+  plugin_type: string;
+  is_default: boolean;
+  plugin_type_name: string;
+}
+
 // 匿名获取数据源列表
-export function getDatasourceBriefList(): Promise<{ name: string; id: number; plugin_type: string; is_default: boolean; plugin_type_name: string }[]> {
+export function getDatasourceBriefList(query?: string): Promise<DatasourceItem[]> {
   const url = '/api/n9e/datasource/brief';
   return request(url, {
     method: RequestMethod.Get,
+    params: query ? { query } : {},
   })
     .then((res) => {
       return res.dat || [];
