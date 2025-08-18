@@ -3,6 +3,10 @@
 .db_doris-explorer-container {
   height: 100%;
 
+  .ant-table .ant-table-tbody .ant-table-expanded-row .ant-table {
+    margin: 0 0 10px !important;
+  }
+
   .explorer-meta-container {
     flex-shrink: 0;
     border: 1px solid @border-color;
@@ -12,65 +16,23 @@
     }
   }
 
+  .explorer-content {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    height: 100%;
+  }
+
   .explorer-main {
     height: 100%;
     display: flex;
     flex-direction: column;
   }
 
-  .explorer-main-table {
-    height: 100%;
-
-    .ant-spin-nested-loading,
-    .ant-spin-container,
-    .ant-table,
-    .ant-table-container {
-      height: 100%;
-    }
-  }
-
   .explorer-query-container {
     display: flex;
     gap: 10px;
     height: 100%;
-
-    .ant-tabs {
-      min-height: 0;
-      height: 100%
-    }
-
-    .ant-tabs-nav-wrap {
-      border-left: 1px solid @border-color;
-    }
-
-    .ant-tabs-card>.ant-tabs-nav .ant-tabs-tab {
-      border: 1px solid @border-color;
-      border-left: 0 none;
-      color: #c1c1c1;
-    }
-
-    .ant-tabs-card.ant-tabs-top>.ant-tabs-nav .ant-tabs-tab-active {
-      border-bottom-color: var(--fc-fill-2);
-      border-top: 2px solid @primary-color;
-    }
-
-    .ant-tabs-top>.ant-tabs-nav {
-      margin-bottom: 0;
-    }
-
-    .ant-tabs-content {
-      height: 100%;
-    }
-
-    .ant-tabs-content-holder {
-      border: 1px solid @border-color;
-      border-top: 0 none;
-      padding: 16px;
-    }
-
-    .ant-tabs-top>.ant-tabs-nav::before {
-      border-bottom: 1px solid @border-color;
-    }
   }
 
   .explorer-query {
@@ -92,5 +54,105 @@
       display: flex !important;
       flex-direction: column;
     }
+  }
+
+  .explorer-origin-inline-cell {
+    display: inline-block;
+    vertical-align: top;
+    word-wrap: break-word;
+    line-height: 16px;
+    margin-right: 5px;
+    word-break: break-all;
+  }
+
+  .explorer-origin-break-cell {
+    word-wrap: break-word;
+    display: block;
+    line-height: 16px;
+    margin-right: 5px;
+    word-break: break-all;
+  }
+
+  .explorer-origin-cell-content {
+
+    .ͼ2 .cm-gutters,
+    .ͼo .cm-gutters {
+      background-color: unset;
+      border-right: 0 none;
+    }
+  }
+
+  .explorer-origin-field-key {
+    background-color: var(--fc-fill-4);
+    border-radius: 2px;
+    color: var(--fc-text-1);
+    display: inline-flex;
+    font-size: 12px;
+    margin: 2px 0;
+    padding: 1px 3px !important;
+  }
+
+  .explorer-origin-field-val {
+    display: inline;
+    color: var(--fc-text-3);
+    margin: 0;
+    padding: 0;
+  }
+
+  .explorer-origin-ul {
+    border: 0;
+    list-style: none !important;
+    background-color: rgba(255, 255, 255, 0);
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .explorer-origin-li {
+    position: relative;
+    margin-left: 0px;
+    padding-left: 0px;
+
+    ul {
+      list-style: none;
+      padding-left: 30px;
+    }
+  }
+
+  .explorer-field-subjson {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .explorer-field-subjson-key {
+    cursor: pointer;
+
+    .anticon {
+      color: #6C53B1;
+    }
+  }
+
+  .explorer-field-json-symbol {
+    color: #6C53B1;
+  }
+
+  .explorer-metric-table {
+    height: 100%;
+
+    .ant-table {
+      margin-top: 0 !important;
+    }
+
+    .ant-table-wrapper,
+    .ant-table,
+    .ant-table-container {
+      min-height: 0;
+      height: 100%;
+    }
+  }
+
+  .explorer-raw-table-content {
+    background-color: var(--fc-fill-2);
+    padding: 16px 16px 16px 55px;
   }
 }
