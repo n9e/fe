@@ -185,7 +185,7 @@ function Raw(props: IProps) {
                     onValueFilter={handleValueFilter}
                   />
                 )}
-                {options.logMode === 'table' && <RawTable data={logs} options={options} scroll={{ x: 'max-content', y: 'calc(100% - 34px)' }} onValueFilter={handleValueFilter} />}
+                {options.logMode === 'table' && <RawTable data={logs} options={options} scroll={{ x: 'max-content', y: 'calc(100% - 40px)' }} onValueFilter={handleValueFilter} />}
               </div>
             </FullscreenButton.Provider>
           </div>
