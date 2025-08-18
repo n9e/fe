@@ -11,6 +11,7 @@ const zh_CN = {
       raw: '日志原文',
       metric: '统计图表',
     },
+
     time_field: '时间字段',
     time_field_msg: '请输入时间字段',
     query_tip: 'SQL样例：查询最近5分钟的日志行数 SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)',
@@ -29,6 +30,53 @@ const zh_CN = {
       labelKey: '标签字段',
       labelKey_tip: 'SQL 查询结果通常包含多个列，您可以指定哪些列作为曲线的标签元信息',
     },
+  },
+  logs: {
+    title: '日志数据',
+    count: '结果数',
+    filter_fields: '筛选字段',
+    settings: {
+      mode: {
+        origin: '原始',
+        table: '表格',
+      },
+      submode: {
+        table: '表格图',
+        timeSeries: '时序图',
+      },
+      breakLine: '换行',
+      reverse: '时间',
+      lines: '行号',
+      time: '日志时间',
+      organizeFields: {
+        title: '字段列设置',
+        allFields: '可用字段',
+        showFields: '显示字段',
+        showFields_empty: '日志默认显示全部字段',
+      },
+      jsonSettings: {
+        title: 'JSON 设置',
+        displayMode: '默认展示类型',
+        displayMode_tree: '树形展示',
+        displayMode_string: '字符串展示',
+        expandLevel: '默认展开层级',
+      },
+    },
+    tagsDetail: 'Tag 详情',
+    expand: '展开',
+    collapse: '收起',
+    fieldValues_topnNoData: '无数据',
+    stats: {
+      numberOfUniqueValues: '唯一值个数',
+      min: '最小值',
+      max: '最大值',
+      sum: '求和',
+      avg: '平均值',
+    },
+    fieldLabelTip: '字段未开启统计，无法进行统计分析',
+    filterAnd: '添加到本次检索',
+    filterNot: '从本次检索中排除',
+    total: '日志条数',
   },
 };
 export default zh_CN;
