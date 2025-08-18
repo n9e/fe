@@ -310,12 +310,7 @@ export default function RawList(props: Props) {
         },
         expandIcon: ({ expanded, onExpand, record }) => (expanded ? <DownOutlined onClick={(e) => onExpand(record, e)} /> : <RightOutlined onClick={(e) => onExpand(record, e)} />),
       }}
-      scroll={{ y: 'calc(100% - 34px)' }}
-      onChange={(pagination, filters, sorter: any, extra) => {
-        if (sorter.columnKey === 'time') {
-          onReverseChange(sorter.order === 'ascend' ? 'false' : 'true');
-        }
-      }}
+      scroll={{ y: 'calc(100% - 40px)' }}
       dataSource={data}
       columns={columns}
     />
