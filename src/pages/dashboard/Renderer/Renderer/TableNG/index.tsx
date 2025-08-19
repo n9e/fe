@@ -106,9 +106,12 @@ export default function index(props: Props) {
               'n9e-dashboard-panel-table-ng-cell-link': () => (options.links ? options.links.length === 1 : false),
               'n9e-dashboard-panel-table-ng-cell-links': () => (options.links ? options.links.length > 1 : false),
             },
-            comparator: (value1, value2) => {
-              const date1Number = value1.value;
-              const date2Number = value2.value;
+            comparator: (value1, value2, node1, node2) => {
+              // 手动获取字段值，解决字段名包含"点"时无法正确获取的问题
+              const fieldValue1 = node1.data?.[item];
+              const fieldValue2 = node2.data?.[item];
+              const date1Number = fieldValue1?.value ?? null;
+              const date2Number = fieldValue2?.value ?? null;
               if (date1Number === null && date2Number === null) {
                 return 0;
               }
@@ -123,7 +126,6 @@ export default function index(props: Props) {
               }
               return localeCompare(date1Number, date2Number);
             },
-            sort: sortColumn === item ? (sortOrder === 'ascend' ? 'asc' : 'desc') : undefined,
             cellRenderer: (params) => {
               const field = params.colDef?.field;
               const fieldValue = params.data?.[field];
@@ -149,6 +151,7 @@ export default function index(props: Props) {
           flex: 1,
           resizable: false,
           minWidth: 100,
+          sortable: true, // 启用排序功能
           cellStyle: {
             fontFamily: FONT_FAMILY,
             // 开启换行后，设置单元格文本的行高
@@ -164,6 +167,19 @@ export default function index(props: Props) {
           wrapText: cellOptions.wrapText, // 用于单元格换行
           suppressSizeToFit: cellOptions.wrapText, // 用于单元格换行
           autoHeight: cellOptions.wrapText, // 用于单元格换行
+        }}
+        onGridReady={(params) => {
+          // 列的默认排序
+          if (sortColumn && sortOrder) {
+            params.api.applyColumnState({
+              state: [
+                {
+                  colId: sortColumn,
+                  sort: sortOrder === 'ascend' ? 'asc' : 'desc',
+                },
+              ],
+            });
+          }
         }}
         onCellClicked={(cellEvent) => {
           if (_.isEmpty(options.links)) return;

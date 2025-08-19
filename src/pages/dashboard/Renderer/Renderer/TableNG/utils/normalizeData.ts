@@ -136,7 +136,7 @@ export default function normalizeData(
           return field.state.displayName || field.name;
         },
       ),
-      rows: _.map(item.fields[0].values, (_value, index) => {
+      rows: _.map(item.fields[0]?.values, (_value, index) => {
         const row: { [key: string]: string | number | null } = {};
         _.forEach(item.fields, (field) => {
           const name = field.state.displayName || field.name;

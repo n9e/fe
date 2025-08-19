@@ -1,5 +1,6 @@
 export const DARK_PARAMS = {
   accentColor: '#FFFFFF',
+  backgroundColor: '#FFFFFF00',
   borderColor: '#CCCCDC1F',
   borderRadius: 0,
   browserColorScheme: 'dark',
