@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import { Form, Modal, Input, Switch } from 'antd';
 import _ from 'lodash';
 
@@ -50,7 +50,15 @@ export default function FormModal(props: Props) {
         <Form.Item label={t('panel.options.links.title')} name='title' rules={[{ required: true }]}>
           <Input />
         </Form.Item>
-        <Form.Item label={t('panel.options.links.url')} name='url' rules={[{ required: true }]}>
+        <Form.Item
+          label={t('panel.options.links.url')}
+          name='url'
+          rules={[{ required: true }]}
+          tooltip={{
+            overlayInnerStyle: { width: 330 },
+            title: <Trans ns='dashboard' i18nKey='dashboard:var.help_tip_table_ng' components={{ br: <br /> }} />,
+          }}
+        >
           <Input />
         </Form.Item>
         <Form.Item label={t('panel.options.links.target_blank')} name='targetBlank' valuePropName='checked'>

@@ -156,6 +156,31 @@ const zh_CN = {
       <1 />
       上面语法适用于 \${__to}
     `,
+    help_tip_table_ng: `
+      变量使用说明
+      <br />
+      \${variable_name}: 仪表盘变量值
+      <br />
+      \${__row.column_name}: 行数据的某一列值
+      <br />
+      \${__interval}: 时间间隔（秒）, 例如 15s
+      <br />
+      \${__interval_ms}: 时间间隔（毫秒）, 例如 15000ms
+      <br />
+      \${__range}: 时间范围（秒）, 例如 3600s
+      <br />
+      \${__range_ms}: 时间范围（毫秒）, 例如 3600000ms
+      <br />
+      \${__rate_interval}: 时间间隔（秒）, __interval * 4
+      <br />
+      \${__from}: 起始时间（毫秒）
+      <br />
+      \${__from_date_seconds}: 起始时间（秒）
+      <br />
+      \${__from_date_iso}: 起始时间, ISO 8601/RFC 3339
+      <br />
+      上面语法适用于 \${__to}
+    `,
   },
   row: {
     edit_title: '编辑分组',
