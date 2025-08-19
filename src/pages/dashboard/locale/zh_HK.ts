@@ -155,6 +155,31 @@ const zh_HK = {
       <1 />
       上面語法適用於 \${__to}
     `,
+    help_tip_table_ng: `
+      變數使用說明
+      <br />
+      \${variable_name}: 儀表盤變數值
+      <br />
+      \${__row.column_name}: 行數據的某一列值
+      <br />
+      \${__interval}: 時間間隔（秒）, 例如 15s
+      <br />
+      \${__interval_ms}: 時間間隔（毫秒）, 例如 15000ms
+      <br />
+      \${__range}: 時間範圍（秒）, 例如 3600s
+      <br />
+      \${__range_ms}: 時間範圍（毫秒）, 例如 3600000ms
+      <br />
+      \${__rate_interval}: 時間間隔（秒）, __interval * 4
+      <br />
+       \${__from}: 起始時間（毫秒）
+      <br />
+      \${__from_date_seconds}: 起始時間（秒）
+      <br />
+      \${__from_date_iso}: 起始時間, ISO 8601/RFC 3339
+      <br />
+      上面語法適用於 \${__to}
+    `,
   },
   row: {
     edit_title: '編輯分組',

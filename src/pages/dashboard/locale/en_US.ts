@@ -155,6 +155,31 @@ const en_US = {
       <1 />
       The syntax above also works with \${__to}
     `,
+    help_tip_table_ng: `
+      Variables usage
+      <br />
+      \${variable_name}: dashboard variable value
+      <br />
+      \${__row.column_name}: row data column value
+      <br />
+      \${__interval}: Time interval (seconds)
+      <br />
+      \${__interval_ms}: Time interval (milliseconds)
+      <br />
+      \${__range}: Time range (seconds)
+      <br />
+      \${__range_ms}: Time range (milliseconds)
+      <br />
+      \${__rate_interval}: Time interval (seconds), __interval * 4
+      <br />
+      \${__from}: Unix millisecond
+      <br />
+      \${__from_date_seconds}: Unix seconds epoch
+      <br />
+      \${__from_date_iso}: ISO 8601/RFC 3339
+      <br />
+      The syntax above also works with \${__to}
+    `,
   },
   row: {
     edit_title: 'Edit row',
