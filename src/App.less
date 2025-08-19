@@ -5,7 +5,6 @@ body {
 #root,
 .App {
   height: 100%;
-
 }
 
 html {
@@ -227,7 +226,7 @@ input::placeholder {
 .title-color {
   color: @text-color;
 
-  &>* {
+  & > * {
     color: @text-color;
   }
 }
@@ -239,7 +238,7 @@ input::placeholder {
 .second-color {
   color: @secondColor;
 
-  &>* {
+  & > * {
     color: @secondColor;
   }
 }
@@ -293,7 +292,6 @@ input::placeholder {
 // 当 tooltip 内容为 markdown 时，h1~h6 的颜色覆盖默认的颜色为白色
 .ant-tooltip-inner {
   .markdown-wrapper {
-
     h1,
     h2,
     h3,
@@ -403,7 +401,6 @@ input::placeholder {
 
 // antd表格排序icon特殊处理
 .ant-table-column-has-sorters .ant-table-column-sorter-inner {
-
   .ant-table-column-sorter-up,
   .ant-table-column-sorter-down {
     transition: all 0.2s;
@@ -439,7 +436,7 @@ input::placeholder {
           width: calc(100% - 2px);
           height: 2px;
           background-color: var(--fc-fill-gold) !important;
-          content: "";
+          content: '';
         }
       }
     }
@@ -464,7 +461,6 @@ input::placeholder {
     border-color: var(--fc-fill-gold) !important;
 
     &::after {
-
       background: #fff !important;
     }
   }
@@ -481,16 +477,16 @@ input::placeholder {
 
   .ant-pagination-item-active a {
     background-color: #ffbc0d;
-    color: var(--fc-gold-text)
+    color: var(--fc-gold-text);
   }
 
-  .ant-table-tbody>tr:last-child>td {
+  .ant-table-tbody > tr:last-child > td {
     border-bottom: 1px solid var(--fc-primary-color);
   }
 
   .ant-pagination-item-active a {
     background-color: var(--fc-primary-color);
-    color: var(--fc-gold-text)
+    color: var(--fc-gold-text);
   }
 
   .n9e-metric-views-list-content-item.active {
@@ -498,7 +494,7 @@ input::placeholder {
   }
 
   //金色背景下 黑色文字
-  .ant-steps-item-process>.ant-steps-item-container>.ant-steps-item-icon .ant-steps-icon,
+  .ant-steps-item-process > .ant-steps-item-container > .ant-steps-item-icon .ant-steps-icon,
   .selected-num,
   .ant-switch-inner,
   .ant-picker-cell-in-view.ant-picker-cell-selected .ant-picker-cell-inner,
@@ -510,7 +506,7 @@ input::placeholder {
   }
 
   ::selection {
-    color: #5E3A00;
+    color: #5e3a00;
     background: rgba(255, 188, 13, 0.1);
   }
 
@@ -569,7 +565,6 @@ input::placeholder {
   .ant-btn:focus {
     color: var(--fc-gold-text);
   }
-
 }
 
 .theme-light-gold .ant-radio-group-solid .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
