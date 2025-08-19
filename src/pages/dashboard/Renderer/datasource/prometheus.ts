@@ -219,14 +219,16 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
           };
           const target = _.find(targets, (t) => t.refId === item.refId);
           _.forEach(item.result, (serie) => {
-            series.push({
-              id: _.uniqueId('series_'),
-              refId: item.refId,
-              name: target?.legend ? replaceExpressionBracket(target?.legend, serie.metric) : getSerieName(serie.metric),
-              metric: serie.metric,
-              expr: item.expr,
-              data: serie.values ? serie.values : [serie.value],
-            });
+            if (!target?.hide) {
+              series.push({
+                id: _.uniqueId('series_'),
+                refId: item.refId,
+                name: target?.legend ? replaceExpressionBracket(target?.legend, serie.metric) : getSerieName(serie.metric),
+                metric: serie.metric,
+                expr: item.expr,
+                data: serie.values ? serie.values : [serie.value],
+              });
+            }
           });
         }
       }

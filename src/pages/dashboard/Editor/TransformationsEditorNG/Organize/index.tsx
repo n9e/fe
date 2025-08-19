@@ -49,7 +49,7 @@ export default function OrganizeFields(props: IProps) {
   const { columns, error } = useColumns({ fieldName: field.name });
 
   useEffect(() => {
-    if (value && _.isEmpty(value?.fields)) {
+    if (value) {
       onChange && onChange({ ...value, fields: columns });
     }
   }, [JSON.stringify(columns)]);
