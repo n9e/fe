@@ -3,13 +3,11 @@ import { AllCommunityModule, ModuleRegistry, themeBalham } from 'ag-grid-communi
 import { AgGridReact } from 'ag-grid-react';
 import { AG_GRID_LOCALE_CN, AG_GRID_LOCALE_HK, AG_GRID_LOCALE_EN, AG_GRID_LOCALE_JP } from '@ag-grid-community/locale';
 import _ from 'lodash';
-import { Select, Space } from 'antd';
-import { LinkOutlined } from '@ant-design/icons';
+import { Select } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import { FONT_FAMILY } from '@/utils/constant';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
-import useOnClickOutside from '@/components/useOnClickOutside';
 import { useGlobalState } from '@/pages/dashboard/globalState';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
 
@@ -19,6 +17,7 @@ import getFormattedRowData from './utils/getFormattedRowData';
 import normalizeData from './utils/normalizeData';
 import CellRenderer from './CellRenderer';
 import CustomColumnFilter, { doesFilterPass } from './CustomColumnFilter';
+import Links, { onCellClicked } from './Links';
 
 import './style.less';
 
@@ -45,8 +44,9 @@ export default function index(props: Props) {
   const { themeMode, time, isPreview, values, series } = props;
   const { transformationsNG: transformations, custom, options, overrides } = values;
   const { showHeader = true, cellOptions, filterable, sortColumn, sortOrder } = custom || {};
-  const linksPopverRef = React.useRef<HTMLDivElement>(null);
+  const linksRef = React.useRef<any>(null);
   const [activeIndex, setActiveIndex] = useState<number>(0);
+  const [dashboardMeta] = useGlobalState('dashboardMeta');
   const [, setSeries] = useGlobalState('series');
   const [, setTableFields] = useGlobalState('tableFields');
   const { data, rowData, formattedData } = useMemo(() => {
@@ -76,12 +76,6 @@ export default function index(props: Props) {
       setSeries(series);
     }
   }, [JSON.stringify(series)]);
-
-  useOnClickOutside(linksPopverRef, () => {
-    if (linksPopverRef.current) {
-      linksPopverRef.current.style.display = 'none';
-    }
-  });
 
   return (
     <div className={`n9e-dashboard-panel-table-ng ${showHeader ? '' : 'n9e-dashboard-panel-table-ng-hide-header'} p-2 w-full h-full flex flex-col gap-2`}>
@@ -182,27 +176,7 @@ export default function index(props: Props) {
           }
         }}
         onCellClicked={(cellEvent) => {
-          if (_.isEmpty(options.links)) return;
-          if (options.links?.length === 1) {
-            const link = options.links[0];
-            window.open(link.url, link.targetBlank ? '_blank' : '_self');
-          } else {
-            const event = cellEvent.event as any;
-            const { x: left, y: top } = event || {};
-            if (linksPopverRef.current && left !== undefined && top !== undefined) {
-              linksPopverRef.current.style.display = 'block';
-              (window as any).placement(
-                linksPopverRef.current,
-                {
-                  left,
-                  top,
-                },
-                'right',
-                'start',
-                { bound: document.body },
-              );
-            }
-          }
+          onCellClicked(cellEvent, { links: options.links, linksRef, dashboardMeta, time });
         }}
       />
       {_.isArray(_.compact(_.map(data, 'id'))) && _.compact(_.map(data, 'id')).length > 1 && (
@@ -221,23 +195,7 @@ export default function index(props: Props) {
           }}
         />
       )}
-      <div className='n9e-dashboard-panel-table-ng-links-popover n9e-fill-color-3 pb-2 min-w-[120px] max-w-[400px] rounded n9e-base-shadow' ref={linksPopverRef}>
-        <div className='p-2'>{t('panel.options.links.label')}</div>
-        <div>
-          {_.map(options.links, (link, index) => {
-            return (
-              <div key={index} className='py-1.5 px-2 n9e-dashboard-panel-table-ng-links-item'>
-                <a href={link.url} target={link.targetBlank ? '_blank' : '_self'} rel='noopener noreferrer'>
-                  <Space>
-                    <LinkOutlined />
-                    {link.title}
-                  </Space>
-                </a>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+      <Links ref={linksRef} links={options.links} time={time} />
     </div>
   );
 }
