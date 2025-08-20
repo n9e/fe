@@ -15,7 +15,7 @@
  *
  */
 import React, { useState, useEffect, useCallback, useContext } from 'react';
-import { Input, Table, Switch, Tag, Select, Modal, Space } from 'antd';
+import { Input, Table, Switch, Tag, Select, Modal, Space, Button } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -68,8 +68,10 @@ const ruleModal: React.FC<props> = (props) => {
   }, [query, currentStrategyDataAll]);
 
   useEffect(() => {
-    setSelectedRules(props.selectedRules);
-  }, [props.selectedRules]);
+    if (visible) {
+      setSelectedRules(props.selectedRules);
+    }
+  }, [props.selectedRules, visible]);
 
   // 获取业务组列表
   const getTeamList = (query: string) => {
@@ -244,6 +246,22 @@ const ruleModal: React.FC<props> = (props) => {
         />
       ),
     },
+    {
+      title: t('common:table.operations'),
+      fixed: 'right',
+      render: (record) => {
+        return (
+          <Button
+            type='link'
+            onClick={() => {
+              setSelectedRules(_.unionBy([...selectedRules, record], 'id'));
+            }}
+          >
+            {t('btn_add_rule')}
+          </Button>
+        );
+      },
+    },
   ];
 
   const handleSubscribe = (record) => {
@@ -271,27 +289,25 @@ const ruleModal: React.FC<props> = (props) => {
           setSelectedRules([]);
         }}
       >
-        {!_.isEmpty(selectedRules) && (
-          <div className='mb16'>
-            <Space wrap>
-              <span>{t('sub_rule_selected')}: </span>
-              {_.map(selectedRules, (item) => (
-                <Tag
-                  color='purple'
-                  key={item.id}
-                  closable
-                  onClose={() => {
-                    setSelectedRules(selectedRules.filter((row) => row.id !== item.id));
-                  }}
-                >
-                  <Link to={`/alert-rules/edit/${item.id}`} target='_blank'>
-                    {item.name}
-                  </Link>
-                </Tag>
-              ))}
-            </Space>
-          </div>
-        )}
+        <div className='mb16 p-2 n9e-border-antd rounded-sm n9e-fill-color-1'>
+          <Space wrap>
+            <span>{t('sub_rule_selected')}: </span>
+            {_.map(selectedRules, (item) => (
+              <Tag
+                color='purple'
+                key={item.id}
+                closable
+                onClose={() => {
+                  setSelectedRules(selectedRules.filter((row) => row.id !== item.id));
+                }}
+              >
+                <Link to={`/alert-rules/edit/${item.id}`} target='_blank'>
+                  {item.name}
+                </Link>
+              </Tag>
+            ))}
+          </Space>
+        </div>
         <div>
           <Select
             style={{ width: '280px' }}
@@ -312,20 +328,7 @@ const ruleModal: React.FC<props> = (props) => {
           <Input style={{ marginLeft: 10, width: '280px' }} onPressEnter={onSearchQuery} prefix={<SearchOutlined />} placeholder={t('alertRules:search_placeholder')} />
         </div>
         <div className='rule_modal_table mt16'>
-          <Table
-            size='small'
-            rowKey='id'
-            pagination={pagination}
-            dataSource={currentStrategyData}
-            columns={columns}
-            rowSelection={{
-              type: 'checkbox',
-              selectedRowKeys: selectedRules.map((row) => row.id),
-              onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
-                setSelectedRules(_.unionBy(selectedRows, 'id'));
-              },
-            }}
-          />
+          <Table size='small' rowKey='id' pagination={pagination} dataSource={currentStrategyData} columns={columns} />
         </div>
       </Modal>
     </>
