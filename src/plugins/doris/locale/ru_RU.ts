@@ -33,5 +33,52 @@ const ru_RU = {
       labelKey_tip: 'Результаты запроса SQL обычно содержат несколько столбцов. Вы можете указать, какие столбцы использовать в качестве метаданных меток кривых.',
     },
   },
+  logs: {
+    title: 'Детали журнала',
+    count: 'Количество результатов',
+    filter_fields: 'Фильтровать поля',
+    settings: {
+      mode: {
+        origin: 'Исходный',
+        table: 'Таблица',
+      },
+      submode: {
+        table: 'Таблица',
+        timeSeries: 'Временной ряд',
+      },
+      breakLine: 'Перенос строки',
+      reverse: 'Время',
+      lines: 'Номер строки',
+      time: 'Время журнала',
+      organizeFields: {
+        title: 'Настройки столбцов',
+        allFields: 'Доступные поля',
+        showFields: 'Показать поля',
+        showFields_empty: 'По умолчанию показывать все поля журнала',
+      },
+      jsonSettings: {
+        title: 'Настройки JSON',
+        displayMode: 'Режим отображения по умолчанию',
+        displayMode_tree: 'Дерево',
+        displayMode_string: 'Строка',
+        expandLevel: 'Уровень раскрытия по умолчанию',
+      },
+    },
+    tagsDetail: 'Детали тегов',
+    expand: 'Развернуть',
+    collapse: 'Свернуть',
+    fieldValues_topnNoData: 'Нет данных',
+    stats: {
+      numberOfUniqueValues: 'Количество уникальных значений',
+      min: 'Минимальное значение',
+      max: 'Максимальное значение',
+      sum: 'Сумма',
+      avg: 'Среднее значение',
+    },
+    fieldLabelTip: 'Поле не включено в статистику, статистический анализ невозможен',
+    filterAnd: 'Добавить к этому поиску',
+    filterNot: 'Исключить из этого поиска',
+    total: 'Общее количество записей',
+  },
 };
 export default ru_RU;
