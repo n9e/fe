@@ -32,9 +32,12 @@ export default function DateField(props: IProps) {
           }),
         );
         const formValuesClone = _.cloneDeep(form.getFieldsValue());
-        const defaultDateField = _.includes(res.fields, '@timestamp') ? '@timestamp' : res.fields[0];
-        _.set(formValuesClone, [...preName, field.name, ...midName, 'date_field'], defaultDateField);
-        form.setFieldsValue(formValuesClone);
+        const currentDateField = _.get(formValuesClone, [...preName, field.name, ...midName, 'date_field']);
+        if (!currentDateField) {
+          const defaultDateField = _.includes(res.fields, '@timestamp') ? '@timestamp' : res.fields[0];
+          _.set(formValuesClone, [...preName, field.name, ...midName, 'date_field'], defaultDateField);
+          form.setFieldsValue(formValuesClone);
+        }
       });
     },
     {

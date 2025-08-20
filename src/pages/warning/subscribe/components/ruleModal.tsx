@@ -68,8 +68,10 @@ const ruleModal: React.FC<props> = (props) => {
   }, [query, currentStrategyDataAll]);
 
   useEffect(() => {
-    setSelectedRules(props.selectedRules);
-  }, [props.selectedRules]);
+    if (visible) {
+      setSelectedRules(props.selectedRules);
+    }
+  }, [props.selectedRules, visible]);
 
   // 获取业务组列表
   const getTeamList = (query: string) => {
