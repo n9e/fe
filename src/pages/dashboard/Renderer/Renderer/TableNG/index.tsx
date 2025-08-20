@@ -39,7 +39,7 @@ interface Props {
   series: any[];
 }
 
-export default function index(props: Props) {
+function index(props: Props) {
   const { t, i18n } = useTranslation('dashboard');
   const { themeMode, time, isPreview, values, series } = props;
   const { transformationsNG: transformations, custom, options, overrides } = values;
@@ -62,7 +62,7 @@ export default function index(props: Props) {
       rowData: formattedData,
       formattedData,
     };
-  }, [activeIndex, JSON.stringify(series), JSON.stringify(transformations), JSON.stringify(cellOptions), JSON.stringify(options), JSON.stringify(overrides)]); // TODO : 依赖项可能需要更精确的控制，不然会导致不必要的重新渲染
+  }, [activeIndex, JSON.stringify(_.map(series, 'id')), JSON.stringify(transformations), JSON.stringify(cellOptions), JSON.stringify(options), JSON.stringify(overrides)]); // TODO : 依赖项可能需要更精确的控制，不然会导致不必要的重新渲染
 
   const theme = useMemo(() => {
     if (themeMode === 'dark') {
@@ -75,7 +75,7 @@ export default function index(props: Props) {
     if (isPreview) {
       setSeries(series);
     }
-  }, [JSON.stringify(series)]);
+  }, [JSON.stringify(_.map(series, 'id'))]);
 
   return (
     <div className={`n9e-dashboard-panel-table-ng ${showHeader ? '' : 'n9e-dashboard-panel-table-ng-hide-header'} p-2 w-full h-full flex flex-col gap-2`}>
@@ -126,18 +126,7 @@ export default function index(props: Props) {
 
               if (fieldValue === undefined) return '';
 
-              return (
-                <CellRenderer
-                  formattedData={formattedData}
-                  formattedValue={fieldValue}
-                  field={item}
-                  params={{
-                    ...params,
-                    value: fieldValue,
-                  }}
-                  panelParams={{ cellOptions, options, overrides }}
-                />
-              );
+              return <CellRenderer formattedData={formattedData} formattedValue={fieldValue} field={item} panelParams={{ cellOptions, options, overrides }} />;
             },
           };
         })}
@@ -199,3 +188,10 @@ export default function index(props: Props) {
     </div>
   );
 }
+
+export default React.memo(index, (prevProps, nextProps) => {
+  const omitKeys = ['series'];
+  const otherPropsEqual = _.isEqual(_.omit(prevProps, omitKeys), _.omit(nextProps, omitKeys));
+  const seriesPropEqual = _.isEqual(_.map(prevProps.series, 'id'), _.map(nextProps.series, 'id'));
+  return otherPropsEqual && seriesPropEqual;
+});
