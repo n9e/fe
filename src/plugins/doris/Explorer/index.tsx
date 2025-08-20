@@ -121,7 +121,6 @@ export default function Prometheus(props: IProps) {
             mode={mode}
             setMode={(newMode) => {
               setMode(newMode);
-              form.setFieldsValue({ query: { query: '' } });
             }}
             submode={submode}
             setSubmode={setSubmode}
