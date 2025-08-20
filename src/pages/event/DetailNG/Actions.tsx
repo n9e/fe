@@ -100,5 +100,19 @@ export default function getActions(options: Options) {
       </div>,
     ];
   }
+  if (eventDetail?.rule_prod === 'northstar') {
+    return [
+      <div className='action-btns'>
+        <Button
+          type='primary'
+          onClick={() => {
+            window.open(eventDetail.rule_config.detail_url.replace('identifier', 'muteMetric') + '&mute=1&muteName=' + '屏蔽-' + eventDetail.rule_name, '_blank');
+          }}
+        >
+          {t('shield')}
+        </Button>
+      </div>,
+    ];
+  }
   return [];
 }
