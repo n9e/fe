@@ -211,47 +211,6 @@ export default function RawList(props: Props) {
           >
             {_.map(fields, (key) => {
               const val = item[key];
-              if (key === 'content') {
-                return (
-                  <div
-                    key={key}
-                    className={classNames({
-                      'explorer-origin-inline-cell': options.lineBreak !== 'true',
-                      'explorer-origin-break-cell': options.lineBreak === 'true',
-                      'explorer-origin-cell-content': true,
-                    })}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'baseline',
-                      gap: 8,
-                    }}
-                  >
-                    <div
-                      className='explorer-origin-field-key'
-                      style={{
-                        color: 'var(--fc-fill-alert)',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      {key}:
-                    </div>
-                    <div
-                      style={{
-                        position: 'relative',
-                        top: -4,
-                      }}
-                    >
-                      <CodeMirror
-                        value={val}
-                        height='auto'
-                        basicSetup={false}
-                        editable={false}
-                        extensions={[defaultHighlightStyle.fallback, json(), foldGutter(), EditorView.lineWrapping]}
-                      />
-                    </div>
-                  </div>
-                );
-              }
               const valToObj = val;
               const subJSON = _.isArray(valToObj) ? valToObj : [valToObj];
               return (

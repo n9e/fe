@@ -176,7 +176,7 @@ export default function index(props: IProps) {
           />
           {siteInfo?.businessGroupDisplayMode == 'list' ? (
             <div className='radio-list'>
-              {_.map(busiGroups, (item) => {
+              {_.map(filterData(searchValue, busiGroups), (item) => {
                 const itemKey = _.toString(item.id);
                 return (
                   <div
