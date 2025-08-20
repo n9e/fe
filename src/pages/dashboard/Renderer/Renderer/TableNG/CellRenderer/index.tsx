@@ -1,5 +1,4 @@
 import React from 'react';
-import { ValueFormatterParams } from 'ag-grid-community';
 import _ from 'lodash';
 
 import { IOptions, IOverride, CellOptions } from '@/pages/dashboard/types';
@@ -15,7 +14,6 @@ interface Props {
   formattedData: { [key: string]: TextObject }[];
   formattedValue: TextObject;
   field: string;
-  params: ValueFormatterParams<string | number>;
   panelParams: {
     cellOptions: CellOptions;
     options: IOptions;
@@ -24,7 +22,7 @@ interface Props {
 }
 
 export default function index(props: Props) {
-  const { formattedData, formattedValue, field, params, panelParams } = props;
+  const { formattedData, formattedValue, field, panelParams } = props;
   const { cellOptions, options, overrides } = panelParams;
   const overrideProps = getOverridePropertiesByName(overrides, 'byName', field);
   const currentCellOptions = _.isEmpty(overrideProps) || !overrideProps.cellOptions?.type ? cellOptions : overrideProps.cellOptions;
