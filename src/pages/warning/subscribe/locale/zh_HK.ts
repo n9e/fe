@@ -56,6 +56,7 @@ const zh_HK = {
   filter_configs: '篩選配置',
   notify_configs: '通知配置',
   and: '且',
+  btn_add_rule: '添加規則',
 };
 
 export default zh_HK;

@@ -56,5 +56,6 @@ const zh_CN = {
   filter_configs: '筛选配置',
   notify_configs: '通知配置',
   and: '且',
+  btn_add_rule: '添加规则',
 };
 export default zh_CN;

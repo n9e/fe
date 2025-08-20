@@ -3,14 +3,12 @@ import { useTranslation, Trans } from 'react-i18next';
 import { Row, Col, Form, Tooltip, AutoComplete, Input, InputNumber, Select, Space } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
-import { useDebounceFn } from 'ahooks';
 
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import GroupBy from '@/pages/dashboard/Editor/QueryEditor/Elasticsearch/GroupBy';
 import QueryName from '@/components/QueryName';
 import DocumentDrawer from '@/components/DocumentDrawer';
 import { CommonStateContext } from '@/App';
-import { getFullFields } from '@/pages/explorer/Elasticsearch/services';
 import { useIsAuthorized } from '@/components/AuthorizationWrapper';
 import IndexPatternSettingsBtn from '@/pages/explorer/Elasticsearch/components/IndexPatternSettingsBtn';
 import { getESIndexPatterns } from '@/pages/log/IndexPatterns/services';
@@ -40,7 +38,6 @@ export default function Query(props: Props) {
   const [indexPatternsRefreshFlag, setIndexPatternsRefreshFlag] = useState(_.uniqueId('indexPatternsRefreshFlag_'));
   const [indexPatterns, setIndexPatterns] = useState<any[]>([]);
   const names = ['rule_config', 'queries'];
-  const form = Form.useFormInstance();
   const queries = Form.useWatch(names);
   const indexType = Form.useWatch([...names, field.name, 'index_type']);
   const indexValue = Form.useWatch([...names, field.name, 'index']);
@@ -51,29 +48,6 @@ export default function Query(props: Props) {
     }
     return _.find(indexPatterns, { id: indexPatternId })?.name;
   }, [indexType, indexValue, indexPatternId, JSON.stringify(indexPatterns)]);
-
-  const { run: onIndexChange } = useDebounceFn(
-    (val) => {
-      if (datasourceValue && val) {
-        getFullFields(datasourceValue, val, {
-          type: 'date',
-        }).then((res) => {
-          const defaultDateField = _.find(res.fields, { name: '@timestamp' })?.name || res.fields[0]?.name;
-          const newValues = _.set(_.cloneDeep(form.getFieldsValue()), [...names, field.key, 'date_field'], defaultDateField);
-          form.setFieldsValue(newValues);
-        });
-      }
-    },
-    {
-      wait: 500,
-    },
-  );
-
-  useEffect(() => {
-    if (indexValue) {
-      onIndexChange(indexValue);
-    }
-  }, [indexValue]);
 
   useEffect(() => {
     if (datasourceValue && !hideIndexPattern) {

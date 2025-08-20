@@ -70,9 +70,10 @@ export const Logout = function () {
   });
 };
 
-export const getRedirectURL = function () {
+export const getRedirectURL = function (redirect: string) {
   return request('/api/n9e/auth/redirect', {
     method: RequestMethod.Get,
+    params: { redirect },
   });
 };
 
@@ -83,9 +84,10 @@ export const authCallback = function (params) {
   });
 };
 
-export const getRedirectURLCAS = function () {
+export const getRedirectURLCAS = function (redirect: string) {
   return request('/api/n9e/auth/redirect/cas', {
     method: RequestMethod.Get,
+    params: { redirect },
   });
 };
 
@@ -96,9 +98,10 @@ export const authCallbackCAS = function (params) {
   });
 };
 
-export const getRedirectURLOAuth = function () {
+export const getRedirectURLOAuth = function (redirect: string) {
   return request('/api/n9e/auth/redirect/oauth', {
     method: RequestMethod.Get,
+    params: { redirect },
   });
 };
 
@@ -109,9 +112,10 @@ export const authCallbackOAuth = function (params) {
   });
 };
 
-export const getRedirectURLCustom = function () {
+export const getRedirectURLCustom = function (redirect: string) {
   return request('/api/n9e/auth/redirect/custom', {
     method: RequestMethod.Get,
+    params: { redirect },
   });
 };
 
