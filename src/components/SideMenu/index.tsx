@@ -74,7 +74,8 @@ const SideMenu = (props: SideMenuProps) => {
       location.pathname.startsWith('/events/screen/') ||
       location.pathname.startsWith('/dashboards/share/') ||
       location.pathname.startsWith('/callback') || // match /callback or /callback/${type}
-      location.pathname.indexOf('/polaris/screen') === 0 ||
+      location.pathname.indexOf('/polaris/screen-v2/detail') === 0 ||
+      location.pathname.indexOf('/polaris/screen/detail') === 0 ||
       location.pathname.indexOf('/firemap/screen/') === 0 ||
       location.pathname.indexOf('/firemap/screen-detail') === 0 ||
       location.pathname.indexOf('/topology-v2/detail') === 0 ||
