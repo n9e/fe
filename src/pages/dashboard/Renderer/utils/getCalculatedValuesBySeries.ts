@@ -107,7 +107,8 @@ export const getSerieTextObj = (
     value: newValue,
     unit: valueObj.unit,
     color: matchedValueMapping?.result?.color || matchedThresholdsColor,
-    text: newValue + valueObj.unit,
+    text: newValue + ' ' + (valueObj.unit === 'none' ? '' : valueObj.unit),
+    stat: valueObj.stat,
   };
 };
 

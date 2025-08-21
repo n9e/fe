@@ -21,6 +21,7 @@ import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
 import { CommonStateContext } from '@/App';
 import { Dashboard } from '@/store/dashboardInterface';
+import { SIZE } from '@/utils/constant';
 import { defaultValues, defaultCustomValuesMap } from './config';
 import Options from './Options';
 import Collapse, { Panel } from './Components/Collapse';
@@ -82,7 +83,7 @@ function FormCpt(props: IProps, ref) {
         }}
       >
         <Row
-          gutter={20}
+          gutter={SIZE * 2}
           style={{
             flexWrap: 'nowrap',
             height: '100%',
@@ -167,7 +168,8 @@ function FormCpt(props: IProps, ref) {
                       {(fields, { add, remove }) => (
                         <>
                           <Button
-                            style={{ width: '100%', marginBottom: 10 }}
+                            className='mb1'
+                            style={{ width: '100%' }}
                             onClick={() => {
                               add({});
                             }}

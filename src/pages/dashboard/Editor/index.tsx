@@ -118,6 +118,8 @@ function index(props: IProps) {
                   _.set(valuesCopy, 'targets', valuesCopy.targets || [{ refId: 'A' }]);
                   _.set(valuesCopy, 'datasourceCate', valuesCopy.datasourceCate || 'prometheus');
                   _.set(valuesCopy, 'datasourceValue', valuesCopy.datasourceValue || groupedDatasourceList['prometheus'][0]?.id);
+                  // 清空 overrides
+                  _.set(valuesCopy, 'overrides', []);
                   setInitialValues(valuesCopy);
                 }
               }}
@@ -183,6 +185,7 @@ function index(props: IProps) {
       }}
       bodyStyle={{
         padding: SIZE * 2,
+        backgroundColor: 'var(--fc-fill-1)',
       }}
     >
       {/* 除了 text 和 iframe 类型其他的类型比如存在 initialValues?.datasourceCate */}

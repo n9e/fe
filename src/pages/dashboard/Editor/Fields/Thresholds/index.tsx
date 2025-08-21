@@ -30,19 +30,25 @@ interface Props {
   initialValue?: any;
   showMode?: boolean;
   showStyle?: boolean;
+  isActive?: boolean;
 }
 
 export default function index(props: Props) {
   const { hideBase } = props;
   const { t } = useTranslation('dashboard');
-  const { preNamePrefix = [], namePrefix = ['options', 'thresholds'], initialValue, showMode = false, showStyle = false } = props;
+  const { preNamePrefix = [], namePrefix = ['options'], initialValue, showMode = false, showStyle = false, isActive = true } = props;
 
   return (
-    <Panel header={t('panel.options.thresholds.title')}>
+    <Panel header={t('panel.options.thresholds.title')} isActive={isActive}>
       <Row gutter={SIZE}>
         <Col span={12}>
           {showMode && (
-            <Form.Item name={[...namePrefix, 'mode']} label={t('panel.options.thresholds.mode.label')} tooltip={t('panel.options.thresholds.mode.tip')}>
+            <Form.Item
+              name={[...namePrefix, 'thresholds', 'mode']}
+              label={t('panel.options.thresholds.mode.label')}
+              tooltip={t('panel.options.thresholds.mode.tip')}
+              initialValue='absolute'
+            >
               <Select
                 options={[
                   {
@@ -60,7 +66,7 @@ export default function index(props: Props) {
         </Col>
         <Col span={12}>
           {showStyle && (
-            <Form.Item name={['options', 'thresholdsStyle', 'mode']} label={t('panel.options.thresholdsStyle.label')}>
+            <Form.Item name={[...namePrefix, 'thresholdsStyle', 'mode']} label={t('panel.options.thresholdsStyle.label')}>
               <Select
                 options={[
                   {
@@ -89,7 +95,7 @@ export default function index(props: Props) {
           )}
         </Col>
       </Row>
-      <Form.List name={[...namePrefix, 'steps']} initialValue={initialValue}>
+      <Form.List name={[...namePrefix, 'thresholds', 'steps']} initialValue={initialValue}>
         {(fields, { add, remove }) => (
           <>
             <Button
@@ -112,7 +118,7 @@ export default function index(props: Props) {
               return (
                 <Form.Item key={key} shouldUpdate noStyle>
                   {({ getFieldValue }) => {
-                    const type = getFieldValue([...preNamePrefix, ...namePrefix, 'steps', name, 'type']);
+                    const type = getFieldValue([...preNamePrefix, ...namePrefix, 'thresholds', 'steps', name, 'type']);
                     const width = type === 'base' ? 'calc(100% - 32px)' : 'calc(100% - 82px)';
 
                     return (
