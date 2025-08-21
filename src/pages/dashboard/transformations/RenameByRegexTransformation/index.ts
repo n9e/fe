@@ -46,23 +46,19 @@ export default class RenameByRegexTransformation implements Transformation {
     const { pattern, replacement } = this.options;
     const regex = new RegExp(pattern);
 
-    // 重命名列名
-    const newColumns = table.columns.map((column) => column.replace(regex, replacement));
-
-    // 重命名行中的字段
-    const newRows = table.rows.map((row) => {
-      const newRow: Record<string, any> = {};
-      Object.entries(row).forEach(([key, value]) => {
-        const newKey = key.replace(regex, replacement);
-        newRow[newKey] = value;
-      });
-      return newRow;
-    });
+    // 重命名字段名和显示名
+    const newFields = table.fields.map((field) => ({
+      ...field,
+      name: field.name.replace(regex, replacement),
+      state: {
+        ...field.state,
+        displayName: (field.state?.displayName || field.name).replace(regex, replacement),
+      },
+    }));
 
     return {
       ...table,
-      columns: newColumns,
-      rows: newRows,
+      fields: newFields,
     };
   }
 }

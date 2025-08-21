@@ -118,6 +118,8 @@ function index(props: IProps) {
                   _.set(valuesCopy, 'targets', valuesCopy.targets || [{ refId: 'A' }]);
                   _.set(valuesCopy, 'datasourceCate', valuesCopy.datasourceCate || 'prometheus');
                   _.set(valuesCopy, 'datasourceValue', valuesCopy.datasourceValue || groupedDatasourceList['prometheus'][0]?.id);
+                  // 清空 overrides
+                  _.set(valuesCopy, 'overrides', []);
                   setInitialValues(valuesCopy);
                 }
               }}

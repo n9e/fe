@@ -58,6 +58,7 @@ interface IProps {
   updateAtRef: React.MutableRefObject<number | undefined>;
   allowedLeave: boolean;
   setAllowedLeave: (allowed: boolean) => void;
+  routerPromptRef: any;
 }
 
 const cachePageTitle = document.title || 'Nightingale';
@@ -83,6 +84,7 @@ export default function Title(props: IProps) {
     updateAtRef,
     allowedLeave,
     setAllowedLeave,
+    routerPromptRef,
   } = props;
   const history = useHistory();
   const location = useLocation();
@@ -152,9 +154,13 @@ export default function Title(props: IProps) {
               <RollbackOutlined
                 className='back_icon'
                 onClick={() => {
-                  goBack(history).catch(() => {
-                    history.push(props.gobackPath || '/dashboards');
-                  });
+                  if (allowedLeave) {
+                    goBack(history).catch(() => {
+                      history.push(props.gobackPath || '/dashboards');
+                    });
+                  } else {
+                    routerPromptRef.current.showPrompt();
+                  }
                 }}
               />
             </Tooltip>

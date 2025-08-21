@@ -6,11 +6,9 @@ describe('SortByTransformation', () => {
     it('should sort TableData rows in ascending order', () => {
       const input: TableData = {
         refId: 'A',
-        columns: ['id', 'value'],
-        rows: [
-          { id: 2, value: 20 },
-          { id: 1, value: 10 },
-          { id: 3, value: 30 },
+        fields: [
+          { name: 'id', type: 'number', values: [2, 1, 3], state: {} },
+          { name: 'value', type: 'number', values: [20, 10, 30], state: {} },
         ],
       };
 
@@ -22,21 +20,18 @@ describe('SortByTransformation', () => {
       const result = transformation.apply([input]) as TableData[];
 
       expect(result.length).toBe(1);
-      expect(result[0].rows).toEqual([
-        { id: 1, value: 10 },
-        { id: 2, value: 20 },
-        { id: 3, value: 30 },
+      expect(result[0].fields).toEqual([
+        { name: 'id', type: 'number', values: [1, 2, 3], state: {} },
+        { name: 'value', type: 'number', values: [10, 20, 30], state: {} },
       ]);
     });
 
     it('should sort TableData rows in descending order', () => {
       const input: TableData = {
         refId: 'A',
-        columns: ['id', 'value'],
-        rows: [
-          { id: 2, value: 20 },
-          { id: 1, value: 10 },
-          { id: 3, value: 30 },
+        fields: [
+          { name: 'id', type: 'number', values: [2, 1, 3], state: {} },
+          { name: 'value', type: 'number', values: [20, 10, 30], state: {} },
         ],
       };
 
@@ -48,18 +43,19 @@ describe('SortByTransformation', () => {
       const result = transformation.apply([input]) as TableData[];
 
       expect(result.length).toBe(1);
-      expect(result[0].rows).toEqual([
-        { id: 3, value: 30 },
-        { id: 2, value: 20 },
-        { id: 1, value: 10 },
+      expect(result[0].fields).toEqual([
+        { name: 'id', type: 'number', values: [3, 2, 1], state: {} },
+        { name: 'value', type: 'number', values: [30, 20, 10], state: {} },
       ]);
     });
 
     it('should handle empty TableData', () => {
       const input: TableData = {
         refId: 'A',
-        columns: ['id', 'value'],
-        rows: [],
+        fields: [
+          { name: 'id', type: 'number', values: [], state: {} },
+          { name: 'value', type: 'number', values: [], state: {} },
+        ],
       };
 
       const transformation = new SortByTransformation({
@@ -70,7 +66,10 @@ describe('SortByTransformation', () => {
       const result = transformation.apply([input]) as TableData[];
 
       expect(result.length).toBe(1);
-      expect(result[0].rows).toEqual([]);
+      expect(result[0].fields).toEqual([
+        { name: 'id', type: 'number', values: [], state: {} },
+        { name: 'value', type: 'number', values: [], state: {} },
+      ]);
     });
   });
 
@@ -154,11 +153,9 @@ describe('SortByTransformation', () => {
       const input: QueryResult[] = [
         {
           refId: 'A',
-          columns: ['id', 'value'],
-          rows: [
-            { id: 2, value: 20 },
-            { id: 1, value: 10 },
-            { id: 3, value: 30 },
+          fields: [
+            { name: 'id', type: 'number', values: [2, 1, 3], state: {} },
+            { name: 'value', type: 'number', values: [20, 10, 30], state: {} },
           ],
         },
         {
@@ -180,10 +177,9 @@ describe('SortByTransformation', () => {
 
       const result = transformation.apply(input);
 
-      expect((result[0] as TableData).rows).toEqual([
-        { id: 1, value: 10 },
-        { id: 2, value: 20 },
-        { id: 3, value: 30 },
+      expect((result[0] as TableData).fields).toEqual([
+        { name: 'id', type: 'number', values: [1, 2, 3], state: {} },
+        { name: 'value', type: 'number', values: [10, 20, 30], state: {} },
       ]);
       expect((result[1] as TimeSeries).data).toEqual([
         { timestamp: 1633072800000, value: 10 },

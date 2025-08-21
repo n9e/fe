@@ -3,7 +3,9 @@ import { isTimeSeries, isTableData } from '../utils';
 
 export interface OrganizeFieldsOptions {
   fields: string[]; // 需要保留的字段列表
-  renameMap?: Record<string, string>; // 字段重命名映射
+  renameByName?: Record<string, string>; // 字段重命名映射
+  excludeByName?: Record<string, boolean>; // 排除的字段
+  indexByName?: Record<string, number>; // 字段索引映射
 }
 
 export default class OrganizeFieldsTransformation implements Transformation {
@@ -23,13 +25,28 @@ export default class OrganizeFieldsTransformation implements Transformation {
   }
 
   private organizeTimeSeriesFields(series: TimeSeries): TimeSeries {
-    const { fields, renameMap } = this.options;
+    const { fields, renameByName, excludeByName, indexByName } = this.options;
+
+    if (!fields || fields.length === 0) {
+      return series; // 如果没有指定字段，则返回原始时间序列数据
+    }
 
     const newData = series.data.map((dataPoint) => {
       const newDataPoint: Record<string, any> = {};
-      fields.forEach((field) => {
+
+      // 获取所有字段并排除被标记为排除的字段
+      const availableFields = fields.filter((field) => !excludeByName?.[field]);
+
+      // 根据indexByName排序字段
+      const sortedFields = availableFields.sort((a, b) => {
+        const indexA = indexByName?.[a] ?? Number.MAX_SAFE_INTEGER;
+        const indexB = indexByName?.[b] ?? Number.MAX_SAFE_INTEGER;
+        return indexA - indexB;
+      });
+
+      sortedFields.forEach((field) => {
         if (dataPoint.hasOwnProperty(field)) {
-          const newFieldName = renameMap?.[field] || field;
+          const newFieldName = renameByName?.[field] || field;
           newDataPoint[newFieldName] = dataPoint[field as keyof DataPoint];
         }
       });
@@ -43,26 +60,43 @@ export default class OrganizeFieldsTransformation implements Transformation {
   }
 
   private organizeTableDataFields(table: TableData): TableData {
-    const { fields, renameMap } = this.options;
+    const { fields, renameByName, excludeByName, indexByName } = this.options;
 
-    // 过滤并重命名字段
-    const newColumns = fields.map((field) => renameMap?.[field] || field);
+    if (!fields || fields.length === 0) {
+      return table; // 如果没有指定字段，则返回原始表格数据
+    }
 
-    const newRows = table.rows.map((row) => {
-      const newRow: Record<string, any> = {};
-      fields.forEach((field) => {
-        if (row.hasOwnProperty(field)) {
-          const newFieldName = renameMap?.[field] || field;
-          newRow[newFieldName] = row[field];
-        }
-      });
-      return newRow;
+    // 获取所有字段并排除被标记为排除的字段
+    const availableFields = fields.filter((field) => !excludeByName?.[field]);
+
+    // 根据indexByName排序字段
+    const sortedFields = availableFields.sort((a, b) => {
+      const indexA = indexByName?.[a] ?? Number.MAX_SAFE_INTEGER;
+      const indexB = indexByName?.[b] ?? Number.MAX_SAFE_INTEGER;
+      return indexA - indexB;
     });
 
+    // 过滤并重命名字段
+    const newFields = sortedFields
+      .map((fieldName) => {
+        // 找到对应的字段
+        const field = table.fields.find((f) => f.name === fieldName);
+        if (!field) return null;
+
+        return {
+          ...field,
+          name: renameByName?.[field.name] || field.name,
+          state: {
+            ...field.state,
+            displayName: renameByName?.[field.name] || field.state?.displayName || field.name,
+          },
+        };
+      })
+      .filter((field) => field !== null);
+
     return {
-      ...table,
-      columns: newColumns,
-      rows: newRows,
-    };
+      refId: 'transformed',
+      fields: newFields,
+    } as TableData;
   }
 }

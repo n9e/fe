@@ -156,6 +156,31 @@ const zh_CN = {
       <1 />
       上面语法适用于 \${__to}
     `,
+    help_tip_table_ng: `
+      变量使用说明
+      <br />
+      \${variable_name}: 仪表盘变量值
+      <br />
+      \${__row.column_name}: 行数据的某一列值
+      <br />
+      \${__interval}: 时间间隔（秒）, 例如 15s
+      <br />
+      \${__interval_ms}: 时间间隔（毫秒）, 例如 15000ms
+      <br />
+      \${__range}: 时间范围（秒）, 例如 3600s
+      <br />
+      \${__range_ms}: 时间范围（毫秒）, 例如 3600000ms
+      <br />
+      \${__rate_interval}: 时间间隔（秒）, __interval * 4
+      <br />
+      \${__from}: 起始时间（毫秒）
+      <br />
+      \${__from_date_seconds}: 起始时间（秒）
+      <br />
+      \${__from_date_iso}: 起始时间, ISO 8601/RFC 3339
+      <br />
+      上面语法适用于 \${__to}
+    `,
   },
   row: {
     edit_title: '编辑分组',
@@ -277,6 +302,16 @@ const zh_CN = {
         scheme: '颜色方案',
         reverse: '反转颜色',
       },
+      links: {
+        label: '链接',
+        add_btn: '添加链接',
+        edit_btn: '编辑链接',
+        title: '链接标题',
+        title_required: '链接标题不能为空',
+        url: '链接地址',
+        url_required: '链接地址不能为空',
+        target_blank: '新窗口打开',
+      },
     },
     standardOptions: {
       title: '高级设置',
@@ -390,6 +425,53 @@ const zh_CN = {
         organizeFields: '字段整理',
         colorMode_tip: '颜色模式是针对 "值字段" 的颜色设置。值模式下颜色作用于值文字；背景模式下颜色作用于字段所在单元格背景色。',
         pageLimit: '每页显示行数',
+      },
+      tableNG: {
+        enablePagination: '启用分页器',
+        showHeader: '显示表头',
+        filterable: '启用列过滤器',
+        sortColumn: '默认排序列',
+        sortOrder: '默认排序',
+        cellOptions: {
+          type: {
+            label: '单元格类型',
+            options: {
+              none: '默认',
+              'color-text': '颜色文本',
+              'color-background': '颜色背景',
+              gauge: '量表 (Gauge)',
+            },
+          },
+          wrapText: '文本换行',
+          wrapText_tip: '开启后，单元格文本会自动换行，并且行高会根据文本行数自动调整，如果行数据量较大会影响性能',
+          'color-background': {
+            mode: {
+              label: '颜色模式',
+              options: {
+                basic: '基础',
+                gradient: '渐变',
+              },
+            },
+          },
+          gauge: {
+            mode: {
+              label: '模式',
+              options: {
+                basic: '基础',
+                gradient: '渐变',
+                lcd: 'LCD',
+              },
+            },
+            valueDisplayMode: {
+              label: '数值显示',
+              options: {
+                color: '颜色',
+                text: '文本',
+                hidden: '隐藏',
+              },
+            },
+          },
+        },
       },
       text: {
         textColor: '文字颜色',
@@ -554,15 +636,15 @@ const zh_CN = {
     timeseries: '时序图',
     barchart: '柱状图',
     stat: '指标值',
-    table: '表格(旧)',
-    tableNG: '表格',
+    table: '表格',
+    tableNG: '表格 NG (Beta)',
     pie: '饼图',
     hexbin: '蜂窝图',
     barGauge: '排行榜',
     text: '文本卡片',
     gauge: '仪表图',
     heatmap: '色块图',
-    iframe: '内嵌文档(iframe)',
+    iframe: '内嵌文档 (iframe)',
     row: '分组',
     pastePanel: '粘贴图表',
   },
@@ -577,6 +659,8 @@ const zh_CN = {
     sum: '总和',
     count: '数量',
     origin: '原始值',
+    variance: '方差',
+    stdDev: '标准差',
   },
   annotation: {
     add: '添加注释',
@@ -588,11 +672,34 @@ const zh_CN = {
   },
   transformations: {
     organize: {
-      title: '字段整理',
+      title: 'Organize fields by name',
+      desc: '重新排序、隐藏或重命名字段',
     },
     merge: {
-      title: '合并',
+      title: 'Merge tables',
+      desc: '将多个表合并为一个表',
+    },
+    joinByField: {
+      title: 'Join by field',
+      desc: '根据相关字段合并多个表的行',
+      mode: '模式',
+      byField: '字段',
+    },
+    timeSeriesTable: {
+      title: 'Time series to table',
+      desc: '将时序数据的每个时间点的值合并计算为一个值',
+      fieldName: '字段',
+      functions: '方法',
+    },
+    groupedAggregateTable: {
+      title: 'Grouped aggregate table',
+      desc: '将表按一个或多个字段分组，并对其他字段进行聚合计算',
+      operation_map: {
+        aggregate: '计算',
+        groupby: '分组',
+      },
     },
   },
+  add_transformation: '添加数据转换',
 };
 export default zh_CN;

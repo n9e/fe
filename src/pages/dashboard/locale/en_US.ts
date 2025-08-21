@@ -155,6 +155,31 @@ const en_US = {
       <1 />
       The syntax above also works with \${__to}
     `,
+    help_tip_table_ng: `
+      Variables usage
+      <br />
+      \${variable_name}: dashboard variable value
+      <br />
+      \${__row.column_name}: row data column value
+      <br />
+      \${__interval}: Time interval (seconds)
+      <br />
+      \${__interval_ms}: Time interval (milliseconds)
+      <br />
+      \${__range}: Time range (seconds)
+      <br />
+      \${__range_ms}: Time range (milliseconds)
+      <br />
+      \${__rate_interval}: Time interval (seconds), __interval * 4
+      <br />
+      \${__from}: Unix millisecond
+      <br />
+      \${__from_date_seconds}: Unix seconds epoch
+      <br />
+      \${__from_date_iso}: ISO 8601/RFC 3339
+      <br />
+      The syntax above also works with \${__to}
+    `,
   },
   row: {
     edit_title: 'Edit row',
@@ -381,6 +406,54 @@ const en_US = {
           'Color mode is the color setting for the "value field". In value mode, the color is applied to the value text; in background mode, the color is applied to the background color of the cell where the field is located.',
         pageLimit: 'Page limit',
       },
+      tableNG: {
+        enablePagination: 'Enable pagination',
+        showHeader: 'Show header',
+        filterable: 'Enable column filter',
+        sortColumn: 'Sort column',
+        sortOrder: 'Sort order',
+        cellOptions: {
+          type: {
+            label: 'Cell type',
+            options: {
+              none: 'Default',
+              'color-text': 'Color text',
+              'color-background': 'Color background',
+              gauge: 'Gauge',
+            },
+          },
+          wrapText: 'Wrap text',
+          wrapText_tip:
+            'Enabling this will automatically wrap text in the cell and adjust the row height based on the number of text lines. If the row data volume is large, it may affect performance.',
+          'color-background': {
+            mode: {
+              label: 'Color mode',
+              options: {
+                basic: 'Basic',
+                gradient: 'Gradient',
+              },
+            },
+          },
+          gauge: {
+            mode: {
+              label: 'Mode',
+              options: {
+                basic: 'Basic',
+                gradient: 'Gradient',
+                lcd: 'LCD',
+              },
+            },
+            valueDisplayMode: {
+              label: 'Value display',
+              options: {
+                color: 'Color',
+                text: 'Text',
+                hidden: 'Hidden',
+              },
+            },
+          },
+        },
+      },
       text: {
         textColor: 'TextColor',
         textDarkColor: 'TextDarkColor',
@@ -540,8 +613,8 @@ const en_US = {
     timeseries: 'Time Series',
     barchart: 'Bar Chart',
     stat: 'Stat',
-    table: 'Table(old)',
-    tableNG: 'Table',
+    table: 'Table',
+    tableNG: 'Table NG (Beta)',
     pie: 'Pie Chart',
     hexbin: 'Hexmap',
     barGauge: 'Bar Gauge',
@@ -574,11 +647,20 @@ const en_US = {
   },
   transformations: {
     organize: {
-      title: 'Organize fields',
+      title: 'Organize fields by name',
+      desc: 'Re-order, hide, or rename fields.',
     },
     merge: {
-      title: 'Merge',
+      title: 'Merge tables',
+      desc: 'Merge multiple tables into one table by matching the values of the specified fields.',
+    },
+    joinByField: {
+      title: 'Join by field',
+      desc: 'Join multiple tables by matching the values of the specified fields.',
+      mode: 'Mode',
+      byField: 'Field',
     },
   },
+  add_transformation: 'Add transformation',
 };
 export default en_US;

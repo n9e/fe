@@ -54,7 +54,13 @@ export default function index({ panelWidth, chartForm, type, variableConfig, das
         <QueryBuilder panelWidth={panelWidth} cate={cate} datasourceValue={datasourceValue} variables={variableConfig} dashboardId={dashboardId} time={time} />
       </div>
       {mode === 'transform' && <OrganizeFields />}
-      {mode === 'transformNG' && <TransformationsEditorNG />}
+      <div
+        style={{
+          display: mode === 'transformNG' ? 'block' : 'none',
+        }}
+      >
+        <TransformationsEditorNG />
+      </div>
     </div>
   );
 }

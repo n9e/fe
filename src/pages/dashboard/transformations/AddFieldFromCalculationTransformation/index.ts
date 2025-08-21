@@ -44,15 +44,37 @@ export default class AddFieldFromCalculationTransformation implements Transforma
   private addFieldToTableData(table: TableData): TableData {
     const { fieldName, expression } = this.options;
 
-    const newRows = table.rows.map((row) => {
+    // 构建行数据，以便传递给表达式函数
+    const valueCount = table.fields[0]?.values.length || 0;
+    const newFieldValues: any[] = [];
+
+    for (let i = 0; i < valueCount; i++) {
+      // 构建当前行数据对象
+      const row: Record<string, any> = {};
+      table.fields.forEach((field) => {
+        const fieldName = field.state?.displayName || field.name;
+        row[fieldName] = field.values[i];
+      });
+
+      // 计算新字段的值
       const newValue = expression(row);
-      return { ...row, [fieldName]: newValue };
-    });
+      newFieldValues.push(newValue);
+    }
+
+    // 添加新字段到字段数组
+    const newFields = [
+      ...table.fields,
+      {
+        name: fieldName,
+        type: typeof newFieldValues[0] === 'number' ? 'number' : 'string',
+        values: newFieldValues,
+        state: {},
+      },
+    ];
 
     return {
       ...table,
-      columns: [...table.columns, fieldName],
-      rows: newRows,
+      fields: newFields,
     };
   }
 }

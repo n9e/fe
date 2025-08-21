@@ -6,11 +6,9 @@ describe('GroupByTransformation', () => {
     it('should group TableData by field and sum values', () => {
       const input: TableData = {
         refId: 'A',
-        columns: ['category', 'value'],
-        rows: [
-          { category: 'A', value: 10 },
-          { category: 'B', value: 20 },
-          { category: 'A', value: 30 },
+        fields: [
+          { name: 'category', type: 'string', values: ['A', 'B', 'A'], state: {} },
+          { name: 'value', type: 'number', values: [10, 20, 30], state: {} },
         ],
       };
 
@@ -22,21 +20,18 @@ describe('GroupByTransformation', () => {
       const result = transformation.apply([input]) as TableData[];
 
       expect(result.length).toBe(1);
-      expect(result[0].columns).toEqual(['category', 'value']);
-      expect(result[0].rows).toEqual([
-        { category: 'A', value: 40 },
-        { category: 'B', value: 20 },
+      expect(result[0].fields).toEqual([
+        { name: 'category', type: 'string', values: ['A', 'B'], state: {} },
+        { name: 'value', type: 'number', values: [40, 20], state: {} },
       ]);
     });
 
     it('should group TableData by field without aggregation', () => {
       const input: TableData = {
         refId: 'A',
-        columns: ['category', 'value'],
-        rows: [
-          { category: 'A', value: 10 },
-          { category: 'B', value: 20 },
-          { category: 'A', value: 30 },
+        fields: [
+          { name: 'category', type: 'string', values: ['A', 'B', 'A'], state: {} },
+          { name: 'value', type: 'number', values: [10, 20, 30], state: {} },
         ],
       };
 
@@ -47,8 +42,7 @@ describe('GroupByTransformation', () => {
       const result = transformation.apply([input]) as TableData[];
 
       expect(result.length).toBe(1);
-      expect(result[0].columns).toEqual(['category']);
-      expect(result[0].rows).toEqual([{ category: 'A' }, { category: 'B' }]);
+      expect(result[0].fields).toEqual([{ name: 'category', type: 'string', values: ['A', 'B'], state: {} }]);
     });
   });
 

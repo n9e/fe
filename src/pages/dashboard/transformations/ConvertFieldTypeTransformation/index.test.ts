@@ -6,10 +6,19 @@ describe('ConvertFieldTypeTransformation', () => {
     it('should convert a field to string type in TableData', () => {
       const input: TableData = {
         refId: 'A',
-        columns: ['id', 'value'],
-        rows: [
-          { id: 1, value: 10 },
-          { id: 2, value: 20 },
+        fields: [
+          {
+            name: 'id',
+            type: 'number',
+            values: [1, 2],
+            state: {},
+          },
+          {
+            name: 'value',
+            type: 'number',
+            values: [10, 20],
+            state: {},
+          },
         ],
       };
 
@@ -21,19 +30,30 @@ describe('ConvertFieldTypeTransformation', () => {
       const result = transformation.apply([input]) as TableData[];
 
       expect(result.length).toBe(1);
-      expect(result[0].rows).toEqual([
-        { id: 1, value: '10' },
-        { id: 2, value: '20' },
-      ]);
+      expect(result[0].fields[1]).toEqual({
+        name: 'value',
+        type: 'string',
+        values: ['10', '20'],
+        state: {},
+      });
     });
 
     it('should convert a field to number type in TableData', () => {
       const input: TableData = {
         refId: 'A',
-        columns: ['id', 'value'],
-        rows: [
-          { id: 1, value: '10' },
-          { id: 2, value: '20' },
+        fields: [
+          {
+            name: 'id',
+            type: 'number',
+            values: [1, 2],
+            state: {},
+          },
+          {
+            name: 'value',
+            type: 'string',
+            values: ['10', '20'],
+            state: {},
+          },
         ],
       };
 
@@ -45,19 +65,30 @@ describe('ConvertFieldTypeTransformation', () => {
       const result = transformation.apply([input]) as TableData[];
 
       expect(result.length).toBe(1);
-      expect(result[0].rows).toEqual([
-        { id: 1, value: 10 },
-        { id: 2, value: 20 },
-      ]);
+      expect(result[0].fields[1]).toEqual({
+        name: 'value',
+        type: 'number',
+        values: [10, 20],
+        state: {},
+      });
     });
 
     it('should convert a field to boolean type in TableData', () => {
       const input: TableData = {
         refId: 'A',
-        columns: ['id', 'isActive'],
-        rows: [
-          { id: 1, isActive: 1 },
-          { id: 2, isActive: 0 },
+        fields: [
+          {
+            name: 'id',
+            type: 'number',
+            values: [1, 2],
+            state: {},
+          },
+          {
+            name: 'isActive',
+            type: 'number',
+            values: [1, 0],
+            state: {},
+          },
         ],
       };
 
@@ -69,10 +100,12 @@ describe('ConvertFieldTypeTransformation', () => {
       const result = transformation.apply([input]) as TableData[];
 
       expect(result.length).toBe(1);
-      expect(result[0].rows).toEqual([
-        { id: 1, isActive: true },
-        { id: 2, isActive: false },
-      ]);
+      expect(result[0].fields[1]).toEqual({
+        name: 'isActive',
+        type: 'boolean',
+        values: [true, false],
+        state: {},
+      });
     });
   });
 
@@ -160,10 +193,19 @@ describe('ConvertFieldTypeTransformation', () => {
       const input: QueryResult[] = [
         {
           refId: 'A',
-          columns: ['id', 'value'],
-          rows: [
-            { id: 1, value: '10' },
-            { id: 2, value: '20' },
+          fields: [
+            {
+              name: 'id',
+              type: 'number',
+              values: [1, 2],
+              state: {},
+            },
+            {
+              name: 'value',
+              type: 'string',
+              values: ['10', '20'],
+              state: {},
+            },
           ],
         },
         {
@@ -186,10 +228,12 @@ describe('ConvertFieldTypeTransformation', () => {
 
       const result = transformation.apply(input);
 
-      expect((result[0] as TableData).rows).toEqual([
-        { id: 1, value: 10 },
-        { id: 2, value: 20 },
-      ]);
+      expect((result[0] as TableData).fields[1]).toEqual({
+        name: 'value',
+        type: 'number',
+        values: [10, 20],
+        state: {},
+      });
       expect((result[1] as TimeSeries).data).toEqual([
         { timestamp: 1633072800000, value: 30 },
         { timestamp: 1633076400000, value: 40 },

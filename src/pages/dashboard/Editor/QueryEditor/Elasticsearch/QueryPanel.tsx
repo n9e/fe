@@ -105,7 +105,7 @@ export default function QueryPanel({ fields, field, index, remove, datasourceVal
               {t('datasource:es.filter')}
               <a
                 href={
-                  syntax === 'Lucene'
+                  syntax === 'lucene'
                     ? 'https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax'
                     : 'https://www.elastic.co/guide/en/kibana/current/kuery-query.html'
                 }

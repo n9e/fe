@@ -6,11 +6,19 @@ describe('LimitTransformation', () => {
     it('should limit the number of rows in TableData', () => {
       const input: TableData = {
         refId: 'A',
-        columns: ['id', 'value'],
-        rows: [
-          { id: 1, value: 10 },
-          { id: 2, value: 20 },
-          { id: 3, value: 30 },
+        fields: [
+          {
+            name: 'id',
+            type: 'number',
+            values: [1, 2, 3],
+            state: {},
+          },
+          {
+            name: 'value',
+            type: 'number',
+            values: [10, 20, 30],
+            state: {},
+          },
         ],
       };
 
@@ -18,24 +26,35 @@ describe('LimitTransformation', () => {
       const result = transformation.apply([input]) as TableData[];
 
       expect(result.length).toBe(1);
-      expect(result[0].rows).toEqual([
-        { id: 1, value: 10 },
-        { id: 2, value: 20 },
-      ]);
+      expect(result[0].fields[0].values).toEqual([1, 2]);
+      expect(result[0].fields[1].values).toEqual([10, 20]);
     });
 
     it('should handle empty TableData', () => {
       const input: TableData = {
         refId: 'A',
-        columns: ['id', 'value'],
-        rows: [],
+        fields: [
+          {
+            name: 'id',
+            type: 'number',
+            values: [],
+            state: {},
+          },
+          {
+            name: 'value',
+            type: 'number',
+            values: [],
+            state: {},
+          },
+        ],
       };
 
       const transformation = new LimitTransformation({ limit: 2 });
       const result = transformation.apply([input]) as TableData[];
 
       expect(result.length).toBe(1);
-      expect(result[0].rows).toEqual([]);
+      expect(result[0].fields[0].values).toEqual([]);
+      expect(result[0].fields[1].values).toEqual([]);
     });
   });
 
@@ -83,11 +102,9 @@ describe('LimitTransformation', () => {
       const input: QueryResult[] = [
         {
           refId: 'A',
-          columns: ['id', 'value'],
-          rows: [
-            { id: 1, value: 10 },
-            { id: 2, value: 20 },
-            { id: 3, value: 30 },
+          fields: [
+            { name: 'id', type: 'number', values: [1, 2, 3], state: {} },
+            { name: 'value', type: 'number', values: [10, 20, 30], state: {} },
           ],
         },
         {
@@ -105,9 +122,9 @@ describe('LimitTransformation', () => {
       const transformation = new LimitTransformation({ limit: 2 });
       const result = transformation.apply(input);
 
-      expect((result[0] as TableData).rows).toEqual([
-        { id: 1, value: 10 },
-        { id: 2, value: 20 },
+      expect((result[0] as TableData).fields).toEqual([
+        { name: 'id', type: 'number', values: [1, 2], state: {} },
+        { name: 'value', type: 'number', values: [10, 20], state: {} },
       ]);
       expect((result[1] as TimeSeries).data).toEqual([
         { timestamp: 1633072800000, value: 10 },

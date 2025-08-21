@@ -125,6 +125,62 @@ const ja_JP = {
       invalid: 'マシンの識別には承認されたアクセスが必要であり、ダッシュボードは匿名アクセス モードでアクセス失敗を引き起こします。',
       invalid2: 'ダッシュボードはマシン識別変数を使用して構成されており、匿名でアクセスすることはできません。',
     },
+    help_tip: `
+      変数の使用方法
+      <1 />
+      \${variable_name}: ダッシュボード変数値
+      <1 />
+      \${__field.name}: シーケンスの名前
+      <1 />
+      \${__field.value}: シーケンスの値
+      <1 />
+      \${__field.labels.X}: 指定したラベル値
+      <1 />
+      \${__field.labels.__name__}: 指標名
+      <1 />
+      \${__interval}: 時間間隔（秒）, 例えば 15s
+      <1 />
+      \${__interval_ms}: 時間間隔（ミリ秒）, 例えば 15000ms
+      <1 />
+      \${__range}: 時間範囲（秒）, 例えば 3600s
+      <1 />
+      \${__range_ms}: 時間範囲（ミリ秒）, 例えば 3600000ms
+      <1 />
+      \${__rate_interval}: 時間間隔（秒）, \${__interval} * 4
+      <1 />
+      \${__from}: 開始時間（ミリ秒）
+      <1 />
+      \${__from_date_seconds}: 開始時間（秒）
+      <1 />
+      \${__from_date_iso}: 開始時間, ISO 8601/RFC 3339
+      <1 />
+      上記の構文は \${__to} に適用されます
+    `,
+    help_tip_table_ng: `
+      変数の使用方法
+      <br />
+      \${variable_name}: ダッシュボード変数値
+      <br />
+      \${__row.column_name}: 行の指定列の値
+      <br />
+      \${__interval}: 時間間隔（秒）, 例えば 15s
+      <br />
+      \${__interval_ms}: 時間間隔（ミリ秒）, 例えば 15000ms
+      <br />
+      \${__range}: 時間範囲（秒）, 例えば 3600s
+      <br />
+      \${__range_ms}: 時間範囲（ミリ秒）, 例えば 3600000ms
+      <br />
+      \${__rate_interval}: 時間間隔（秒）, \${__interval} * 4
+      <br />
+      \${__from}: 開始時間（ミリ秒）
+      <br />
+      \${__from_date_seconds}: 開始時間（秒）
+      <br />
+      \${__from_date_iso}: 開始時間, ISO 8601/RFC 3339
+      <br />
+      上記の構文は \${__to} に適用されます
+    `,
   },
   row: {
     edit_title: 'グループを編集',
@@ -354,6 +410,54 @@ const ja_JP = {
           '色モードは"値フィールド"の色設定に影響します。値モードでは、色が値のテキストに適用されます。背景モードでは、色がフィールドが含まれるセルの背景色に適用されます。',
         pageLimit: 'ページ制限',
       },
+      tableNG: {
+        enablePagination: 'ページネーションを有効にする',
+        showHeader: 'ヘッダーを表示',
+        filterable: '列フィルターを有効にする',
+        sortColumn: 'ソート列',
+        sortOrder: 'ソート順',
+        cellOptions: {
+          type: {
+            label: 'セルタイプ',
+            options: {
+              none: 'デフォルト',
+              'color-text': 'カラー テキスト',
+              'color-background': 'カラー 背景',
+              gauge: 'ゲージ (Gauge)',
+            },
+          },
+          wrapText: 'テキストの折り返し',
+          wrapText_tip:
+            '有効にすると、セル内のテキストが自動的に折り返され、行の高さがテキストの行数に応じて調整されます。行データの量が多い場合は、パフォーマンスに影響を与える可能性があります。',
+          'color-background': {
+            mode: {
+              label: '色のモード',
+              options: {
+                basic: '基本',
+                gradient: 'グラデーション',
+              },
+            },
+          },
+          gauge: {
+            mode: {
+              label: 'ゲージモード',
+              options: {
+                basic: '基本',
+                gradient: 'グラデーション',
+                lcd: 'LCD',
+              },
+            },
+            valueDisplayMode: {
+              label: '数値表示',
+              options: {
+                color: '色',
+                text: 'テキスト',
+                hidden: '非表示',
+              },
+            },
+          },
+        },
+      },
       text: {
         textColor: 'テキストの色',
         textDarkColor: 'ダークテキストの色',
@@ -514,15 +618,15 @@ const ja_JP = {
     timeseries: '時系列グラフ',
     barchart: '棒グラフ',
     stat: '指標値',
-    table: 'テーブル(旧)',
-    tableNG: 'テーブル',
+    table: 'テーブル',
+    tableNG: 'テーブル NG (Beta)',
     pie: '円グラフ',
     hexbin: '六角ビン',
     barGauge: 'ランキング',
     text: 'テキストカード',
     gauge: 'ゲージ',
     heatmap: 'ヒートマップ',
-    iframe: '内蔵文書(iframe)',
+    iframe: '内蔵文書 (iframe)',
     row: 'グループ',
     pastePanel: 'グラフを貼り付け',
   },

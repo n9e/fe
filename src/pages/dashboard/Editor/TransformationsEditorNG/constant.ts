@@ -1,1 +1,1 @@
-export const transformationsOptions = ['merge', 'organize'];
+export const transformationsOptions = ['joinByField', 'organize', 'merge', 'groupedAggregateTable'];

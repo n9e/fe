@@ -43,21 +43,12 @@ export default class ExtractFieldsTransformation implements Transformation {
   private extractTableDataFields(table: TableData): TableData {
     const { fields } = this.options;
 
-    const newColumns = fields.filter((field) => table.columns.includes(field));
-    const newRows = table.rows.map((row) => {
-      const extractedRow: Record<string, any> = {};
-      fields.forEach((field) => {
-        if (row.hasOwnProperty(field)) {
-          extractedRow[field] = row[field];
-        }
-      });
-      return extractedRow;
-    });
+    // 找到指定字段
+    const extractedFields = table.fields.filter((field) => fields.includes(field.state?.displayName || field.name));
 
     return {
       ...table,
-      columns: newColumns,
-      rows: newRows,
+      fields: extractedFields,
     };
   }
 }
