@@ -30,6 +30,9 @@ export const visualizations = [
     type: 'stat',
   },
   {
+    type: 'tableNG',
+  },
+  {
     type: 'table',
   },
   {

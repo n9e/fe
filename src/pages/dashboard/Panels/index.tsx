@@ -147,9 +147,13 @@ function index(props: IProps) {
                 allowUpdateDashboardConfigs.current = false;
                 updateDashboardConfigs(dashboard.id, {
                   configs: panelsMergeToConfigs(dashboard.configs, newPanels),
-                }).then((res) => {
-                  onUpdated(res);
-                });
+                })
+                  .then((res) => {
+                    onUpdated(res);
+                  })
+                  .catch(() => {
+                    // 手动保存模式或权限不足时的静默处理
+                  });
               }
             }
           }
@@ -160,9 +164,13 @@ function index(props: IProps) {
           if (!_.isEqual(panels, newPanels)) {
             updateDashboardConfigs(dashboard.id, {
               configs: panelsMergeToConfigs(dashboard.configs, newPanels),
-            }).then((res) => {
-              onUpdated(res);
-            });
+            })
+              .then((res) => {
+                onUpdated(res);
+              })
+              .catch(() => {
+                // 手动保存模式或权限不足时的静默处理
+              });
           }
         }}
         onResizeStop={(layout) => {
@@ -170,9 +178,13 @@ function index(props: IProps) {
           if (!_.isEqual(panels, newPanels)) {
             updateDashboardConfigs(dashboard.id, {
               configs: panelsMergeToConfigs(dashboard.configs, newPanels),
-            }).then((res) => {
-              onUpdated(res);
-            });
+            })
+              .then((res) => {
+                onUpdated(res);
+              })
+              .catch(() => {
+                // 手动保存模式或权限不足时的静默处理
+              });
           }
         }}
         {...reactGridLayoutDefaultProps}
@@ -236,9 +248,13 @@ function index(props: IProps) {
                               allowUpdateDashboardConfigs.current = true;
                               updateDashboardConfigs(dashboard.id, {
                                 configs: panelsMergeToConfigs(dashboard.configs, newPanels),
-                              }).then((res) => {
-                                onUpdated(res);
-                              });
+                              })
+                                .then((res) => {
+                                  onUpdated(res);
+                                })
+                                .catch(() => {
+                                  // 手动保存模式或权限不足时的静默处理
+                                });
                               return newPanels;
                             });
                           },
@@ -261,9 +277,13 @@ function index(props: IProps) {
                           setPanels(newPanels);
                           updateDashboardConfigs(dashboard.id, {
                             configs: panelsMergeToConfigs(dashboard.configs, newPanels),
-                          }).then((res) => {
-                            onUpdated(res);
-                          });
+                          })
+                            .then((res) => {
+                              onUpdated(res);
+                            })
+                            .catch(() => {
+                              // 手动保存模式或权限不足时的静默处理
+                            });
                         }}
                       >
                         删除
@@ -281,9 +301,13 @@ function index(props: IProps) {
                     setPanels(newPanels);
                     updateDashboardConfigs(dashboard.id, {
                       configs: panelsMergeToConfigs(dashboard.configs, newPanels),
-                    }).then((res) => {
-                      onUpdated(res);
-                    });
+                    })
+                      .then((res) => {
+                        onUpdated(res);
+                      })
+                      .catch(() => {
+                        // 手动保存模式或权限不足时的静默处理
+                      });
                   }}
                   onAddClick={() => {
                     editorRef.current?.setEditorData({
@@ -298,9 +322,13 @@ function index(props: IProps) {
                     setPanels(newPanels);
                     updateDashboardConfigs(dashboard.id, {
                       configs: panelsMergeToConfigs(dashboard.configs, newPanels),
-                    }).then((res) => {
-                      onUpdated(res);
-                    });
+                    })
+                      .then((res) => {
+                        onUpdated(res);
+                      })
+                      .catch(() => {
+                        // 手动保存模式或权限不足时的静默处理
+                      });
                   }}
                   onDeleteClick={(mode: 'self' | 'withPanels') => {
                     let newPanels: any[] = _.cloneDeep(panels);
@@ -315,9 +343,13 @@ function index(props: IProps) {
                     setPanels(newPanels);
                     updateDashboardConfigs(dashboard.id, {
                       configs: panelsMergeToConfigs(dashboard.configs, newPanels),
-                    }).then((res) => {
-                      onUpdated(res);
-                    });
+                    })
+                      .then((res) => {
+                        onUpdated(res);
+                      })
+                      .catch(() => {
+                        // 手动保存模式或权限不足时的静默处理
+                      });
                   }}
                 />
               )}

@@ -13,6 +13,7 @@ export const { useGlobalState } = createGlobalState<{
   displayedTableFields: string[];
   tableRefIds: string[]; // labelValuesToRows 模式下，tableRefIds 用于记录当前表格的 refId
   panelClipboard?: IPanel;
+  series?: any[];
 }>({
   statFields: [],
   tableFields: [],
@@ -25,4 +26,5 @@ export const { useGlobalState } = createGlobalState<{
   },
   tableRefIds: [],
   panelClipboard: undefined,
+  series: undefined,
 });

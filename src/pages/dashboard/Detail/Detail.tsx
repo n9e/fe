@@ -364,6 +364,7 @@ export default function DetailV2(props: IProps) {
                     setEditorData(ajustInitialValues(type, groupedDatasourceList, panels, variableConfig));
                   }
                 }}
+                routerPromptRef={routerPromptRef}
               />
               {!editable && (
                 <div style={{ padding: '0px 10px', marginBottom: 8 }}>

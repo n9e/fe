@@ -1,0 +1,80 @@
+.renderer-table-ng-bar-gauge {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+
+  .renderer-table-ng-bar-gauge-item {
+    width: 100%;
+    height: 23px;
+    line-height: 23px;
+    display: flex;
+    gap: 10px;
+  }
+
+  .renderer-table-ng-bar-gauge-item-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    align-items: center;
+    align-self: center;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .renderer-table-ng-bar-gauge-item-value {
+    position: relative;
+    width: calc(100% - 1px);
+  }
+
+  .renderer-table-ng-bar-gauge-item-value-bg {
+    position: absolute;
+    height: 23px;
+    width: 100%;
+  }
+
+  .renderer-table-ng-bar-gauge-item-value-color-bg {
+    position: absolute;
+    height: 23px;
+    line-height: 23px;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .renderer-table-ng-bar-gauge-item-value-text {
+    padding-right: 8px;
+    position: relative;
+    flex-shrink: 0;
+    text-align: right;
+  }
+}
+
+.renderer-table-ng-bar-gauge-lcd {
+  height: 100%;
+
+  .renderer-table-ng-bar-gauge-lcd-item {
+    height: 27px;
+    display: flex;
+    gap: 10px;
+  }
+
+  .renderer-table-ng-bar-gauge-lcd-item-cells-wrapper {
+    min-width: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  .renderer-table-ng-bar-gauge-lcd-item-cells {
+    border-radius: 2px;
+  }
+
+  .renderer-table-ng-bar-gauge-lcd-item-value {
+    width: 150px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+}
