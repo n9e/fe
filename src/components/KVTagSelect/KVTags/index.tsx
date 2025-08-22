@@ -25,6 +25,7 @@ interface Props {
   keyName?: string;
   funcName?: string;
   valueName?: string;
+  ajustOptions?: (key: string) => Promise<{ label: any; value: any }[]>;
   valuePlaceholder?: string;
   field?: any;
   fullName?: (string | number)[];
@@ -34,6 +35,7 @@ interface Props {
 
 export default function index(props: Props) {
   const { t } = useTranslation('KVTagSelect');
+  const form = Form.useFormInstance();
   const {
     disabled,
     keyLabel = t('tag.key.label'),
@@ -48,6 +50,7 @@ export default function index(props: Props) {
     keyName = 'key',
     funcName = 'func',
     valueName = 'value',
+    ajustOptions,
     valuePlaceholder,
     field = {},
     fullName = [],
@@ -56,57 +59,92 @@ export default function index(props: Props) {
   } = props;
   const restField = _.omit(field, ['key', 'name']);
 
+  // 监听当前Form.List的值变化
+  const currentFullName = _.concat(fullName, name);
+  const currentValues = Form.useWatch(currentFullName);
+
+  // 校验规则：不允许出现重复的key
+  const validateUniqueKeys = {
+    validator: async (_, values) => {
+      if (!values || !Array.isArray(values)) return;
+
+      const keys = values.map((item) => item?.[keyName]).filter(Boolean);
+      const uniqueKeys = new Set(keys);
+
+      if (keys.length !== uniqueKeys.size) {
+        throw new Error(t('tag.key.duplicate_error'));
+      }
+    },
+  };
+
+  // 当值变化时自动触发校验
+  React.useEffect(() => {
+    if (currentValues && Array.isArray(currentValues) && currentValues.length > 0) {
+      // 延迟执行校验，确保表单值已更新
+      const timer = setTimeout(() => {
+        form.validateFields([currentFullName]);
+      }, 100);
+
+      return () => clearTimeout(timer);
+    }
+  }, [currentValues, currentFullName]);
+
   return (
-    <Form.List {...restField} name={name}>
-      {(fields, { add, remove }) => (
+    <Form.List {...restField} name={name} rules={[validateUniqueKeys]}>
+      {(fields, { add, remove }, { errors }) => (
         <>
-          <Row gutter={10} className={fields.length ? 'mb-2' : ''}>
-            <Col span={8}>
-              <Space align='baseline' size={4}>
-                {keyLabel}
-                {keyLabelTootip && (
-                  <Tooltip className='n9e-ant-from-item-tooltip' title={keyLabelTootip} overlayClassName='ant-tooltip-max-width-400' placement={keyLabelTootipPlacement}>
-                    <QuestionCircleOutlined />
-                  </Tooltip>
-                )}
-                {!disabled && (
-                  <PlusCircleOutlined
-                    onClick={() => {
-                      addWapper
-                        ? addWapper(add)
-                        : add({
-                            [funcName]: '==',
-                          });
-                    }}
-                  />
-                )}
-              </Space>
+          <Row gutter={10}>
+            <Col flex='auto'>
+              <Row gutter={10} className={fields.length ? 'mb-2' : ''}>
+                <Col span={8}>
+                  <Space align='baseline' size={4}>
+                    {keyLabel}
+                    {keyLabelTootip && (
+                      <Tooltip className='n9e-ant-from-item-tooltip' title={keyLabelTootip} overlayClassName='ant-tooltip-max-width-400' placement={keyLabelTootipPlacement}>
+                        <QuestionCircleOutlined />
+                      </Tooltip>
+                    )}
+                    {!disabled && (
+                      <PlusCircleOutlined
+                        onClick={() => {
+                          addWapper
+                            ? addWapper(add)
+                            : add({
+                                [funcName]: '==',
+                              });
+                        }}
+                      />
+                    )}
+                  </Space>
+                </Col>
+                {fields.length ? (
+                  <Col span={4}>
+                    <Space align='baseline' size={4}>
+                      {funcLabel}
+                      {funcLabelTootip ? (
+                        <Tooltip className='n9e-ant-from-item-tooltip' title={funcLabelTootip} overlayClassName='ant-tooltip-max-width-400'>
+                          <QuestionCircleOutlined />
+                        </Tooltip>
+                      ) : (
+                        <Tooltip
+                          className='n9e-ant-from-item-tooltip'
+                          title={
+                            <div className='pt-2 px-1'>
+                              <Markdown content={t('tag.func.label_tip')} darkMode />
+                            </div>
+                          }
+                          overlayClassName='ant-tooltip-max-width-400'
+                        >
+                          <QuestionCircleOutlined />
+                        </Tooltip>
+                      )}
+                    </Space>
+                  </Col>
+                ) : null}
+                {fields.length ? <Col span={12}>{valueLabel}</Col> : null}
+              </Row>
             </Col>
-            {fields.length ? (
-              <Col span={4}>
-                <Space align='baseline' size={4}>
-                  {funcLabel}
-                  {funcLabelTootip ? (
-                    <Tooltip className='n9e-ant-from-item-tooltip' title={funcLabelTootip} overlayClassName='ant-tooltip-max-width-400'>
-                      <QuestionCircleOutlined />
-                    </Tooltip>
-                  ) : (
-                    <Tooltip
-                      className='n9e-ant-from-item-tooltip'
-                      title={
-                        <div className='pt-2 px-1'>
-                          <Markdown content={t('tag.func.label_tip')} darkMode />
-                        </div>
-                      }
-                      overlayClassName='ant-tooltip-max-width-400'
-                    >
-                      <QuestionCircleOutlined />
-                    </Tooltip>
-                  )}
-                </Space>
-              </Col>
-            ) : null}
-            {fields.length ? <Col span={12}>{valueLabel}</Col> : null}
+            <Col flex='none'>{!disabled && <div className='w-[12px]' />}</Col>
           </Row>
           {fields.map((field) => (
             <TagItem
@@ -119,11 +157,13 @@ export default function index(props: Props) {
               keyPlaceholder={keyPlaceholder}
               funcName={funcName}
               valueName={valueName}
+              ajustOptions={ajustOptions}
               valuePlaceholder={valuePlaceholder}
               field={field}
               remove={remove}
             />
           ))}
+          <Form.ErrorList errors={errors} />
         </>
       )}
     </Form.List>

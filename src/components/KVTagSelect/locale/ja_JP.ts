@@ -7,6 +7,7 @@ const ja_JP = {
     key: {
       label: 'タグキー',
       msg: 'タグキーは必須です',
+      duplicate_error: 'タグキーは一意である必要があります',
     },
     func: {
       label: '演算子',
@@ -26,6 +27,13 @@ const ja_JP = {
       msg: 'タグ値は必須です',
     },
     add: 'タグを追加',
+  },
+  attr: {
+    key: {
+      label: '属性名',
+      msg: '属性名は必須です',
+      duplicate_error: '属性名は一意である必要があります',
+    },
   },
 };
 
