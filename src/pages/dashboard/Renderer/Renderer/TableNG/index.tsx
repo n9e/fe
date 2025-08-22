@@ -37,13 +37,15 @@ interface Props {
   isPreview?: boolean;
   values: IPanel;
   series: any[];
+  rangeMode?: 'lcro' | 'lcrc';
 }
 
 function index(props: Props) {
   const { t, i18n } = useTranslation('dashboard');
-  const { themeMode, time, isPreview, values, series } = props;
+  const { themeMode, time, isPreview, values, series, rangeMode } = props;
+
   const { transformationsNG: transformations, custom, options, overrides } = values;
-  const { showHeader = true, cellOptions, filterable, sortColumn, sortOrder } = custom || {};
+  const { showHeader = true, cellOptions = {}, filterable, sortColumn, sortOrder } = custom || {};
   const linksRef = React.useRef<any>(null);
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const [dashboardMeta] = useGlobalState('dashboardMeta');
@@ -55,7 +57,7 @@ function index(props: Props) {
     setTableFields(columns);
 
     const activeData = data[activeIndex];
-    const formattedData = getFormattedRowData(activeData, { cellOptions, options, overrides });
+    const formattedData = getFormattedRowData(activeData, { cellOptions, options, overrides, rangeMode });
 
     return {
       data,
@@ -78,7 +80,7 @@ function index(props: Props) {
   }, [JSON.stringify(_.map(series, 'id'))]);
 
   return (
-    <div className={`n9e-dashboard-panel-table-ng ${showHeader ? '' : 'n9e-dashboard-panel-table-ng-hide-header'} p-2 w-full h-full flex flex-col gap-2`}>
+    <div className={`n9e-dashboard-panel-table-ng ${showHeader ? '' : 'n9e-dashboard-panel-table-ng-hide-header'} p-2 w-full flex flex-col gap-2`}>
       <AgGridReact
         headerHeight={showHeader ? 27 : 0}
         enableCellTextSelection
@@ -87,7 +89,11 @@ function index(props: Props) {
         animateRows={false}
         theme={theme}
         enableFilterHandlers={true}
-        localeText={i18nAgGrid[i18n.language] || AG_GRID_LOCALE_EN}
+        domLayout='autoHeight'
+        localeText={{
+          ...(i18nAgGrid[i18n.language] || AG_GRID_LOCALE_EN || {}),
+          noRowsToShow: t('common:nodata'),
+        }}
         rowData={rowData}
         columnDefs={_.map(data[activeIndex]?.columns, (item) => {
           return {
@@ -126,7 +132,9 @@ function index(props: Props) {
 
               if (fieldValue === undefined) return '';
 
-              return <CellRenderer formattedData={formattedData} formattedValue={fieldValue} field={item} panelParams={{ cellOptions, options, overrides }} />;
+              return (
+                <CellRenderer formattedData={formattedData} formattedValue={fieldValue} field={item} panelParams={{ cellOptions, options, overrides }} rangeMode={rangeMode} />
+              );
             },
           };
         })}
