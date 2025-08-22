@@ -307,7 +307,19 @@ export default function AlertRules(props: Props) {
       },
     ],
     readonly
-      ? []
+      ? [
+          {
+            title: t('table.disabled'),
+            dataIndex: 'disabled',
+            render: (status) => {
+              return (
+                <Tag className='mr-0' color={status === AlertRuleStatus.Enable ? 'success' : 'error'}>
+                  {status === AlertRuleStatus.Enable ? t('common:enabling') : t('common:disabling')}
+                </Tag>
+              );
+            },
+          },
+        ]
       : ([
           {
             title: t('table.disabled'),
