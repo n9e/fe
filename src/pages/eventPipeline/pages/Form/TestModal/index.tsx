@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Button, Spin, message } from 'antd';
+import { Modal, Button, Spin, Form, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
@@ -27,12 +27,15 @@ export default function TestModal(props: Props) {
     type: 'settings',
   });
   const [loading, setLoading] = useState<boolean>(false);
+  const form = Form.useFormInstance();
 
   return (
     <>
       <Button
         onClick={() => {
-          setVisible(true);
+          form.validateFields().then(() => {
+            setVisible(true);
+          });
         }}
       >
         {t('common:btn.test')}

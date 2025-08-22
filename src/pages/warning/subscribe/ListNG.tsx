@@ -204,7 +204,19 @@ const Subscribe = (props: Props) => {
       },
     ],
     readonly
-      ? []
+      ? [
+          {
+            title: t('common:table.enabled'),
+            dataIndex: 'disabled',
+            render: (status) => {
+              return (
+                <Tag className='mr-0' color={status === strategyStatus.Enable ? 'success' : 'error'}>
+                  {status === strategyStatus.Enable ? t('common:enabling') : t('common:disabling')}
+                </Tag>
+              );
+            },
+          },
+        ]
       : [
           {
             title: t('common:table.enabled'),

@@ -5,8 +5,9 @@ const zh_HK = {
   append_tags_placeholder: '標籤格式為 key=value ，使用回車或空格分隔',
   tag: {
     key: {
-      label: '標籤鍵',
-      msg: '標籤鍵不能為空',
+      label: '標籤名',
+      msg: '標籤名不能為空',
+      duplicate_error: '標籤名不能重複',
     },
     func: {
       label: '運算符',
@@ -26,6 +27,13 @@ const zh_HK = {
       msg: '標籤值不能為空',
     },
     add: '新增標籤',
+  },
+  attr: {
+    key: {
+      label: '屬性名',
+      msg: '屬性名不能為空',
+      duplicate_error: '屬性名不能重複',
+    },
   },
 };
 

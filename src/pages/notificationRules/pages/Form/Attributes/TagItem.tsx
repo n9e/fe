@@ -28,6 +28,17 @@ const TagItem = (props: Props) => {
     label: string;
     value: string | number;
   }[] = [];
+  let funcOptions: {
+    label: string;
+    value: string;
+  }[] = [
+    { label: '==', value: '==' },
+    { label: '=~', value: '=~' },
+    { label: 'in', value: 'in' },
+    { label: 'not in', value: 'not in' },
+    { label: '!=', value: '!=' },
+    { label: '!~', value: '!~' },
+  ];
 
   if (key === 'group_name') {
     selectOptions = _.map(busiGroups, (item) => {
@@ -48,6 +59,7 @@ const TagItem = (props: Props) => {
       { label: 'true', value: 'true' },
       { label: 'false', value: 'false' },
     ];
+    funcOptions = [{ label: '==', value: '==' }];
   } else if (key === 'rule_id') {
     selectOptions = _.map(alertRules, (item) => {
       return {
@@ -55,21 +67,38 @@ const TagItem = (props: Props) => {
         value: item.id,
       };
     });
+    funcOptions = [
+      { label: '==', value: '==' },
+      { label: 'in', value: 'in' },
+      { label: 'not in', value: 'not in' },
+      { label: '!=', value: '!=' },
+    ];
   } else if (key === 'severity') {
     selectOptions = [
       { label: t('common:severity.1'), value: 1 },
       { label: t('common:severity.2'), value: 2 },
       { label: t('common:severity.3'), value: 3 },
     ];
+    funcOptions = [
+      { label: '==', value: '==' },
+      { label: 'in', value: 'in' },
+      { label: 'not in', value: 'not in' },
+      { label: '!=', value: '!=' },
+    ];
   }
 
   return (
     <Row gutter={10}>
-      <Col flex='auto'>
+      <Col
+        flex='auto'
+        style={{
+          width: 'calc(100% - 22px)',
+        }}
+      >
         <Row gutter={10}>
           <Col span={8}>
             <div className='flex gap-[10px]'>
-              <div className='w-[32px] h-[32px] leading-[32px] text-center n9e-fill-color-2 n9e-border-antd rounded-sm flex-shrink-0'>{t('common:and')}</div>
+              {field.name !== 0 && <div className='w-[32px] h-[32px] leading-[32px] text-center n9e-fill-color-2 n9e-border-antd rounded-sm flex-shrink-0'>{t('common:and')}</div>}
               <div className='w-full min-w-0'>
                 <Form.Item name={[field.name, 'key']} rules={[{ required: true, message: t('tag.key.msg') }]}>
                   <Select
@@ -109,18 +138,7 @@ const TagItem = (props: Props) => {
           <Col span={4}>
             <Form.Item name={[field.name, 'func']}>
               <Select
-                options={_.concat(
-                  [{ label: '==', value: '==' }],
-                  key !== 'is_recovered'
-                    ? [
-                        { label: '=~', value: '=~' },
-                        { label: 'in', value: 'in' },
-                        { label: 'not in', value: 'not in' },
-                        { label: '!=', value: '!=' },
-                        { label: '!~', value: '!~' },
-                      ]
-                    : [],
-                )}
+                options={funcOptions}
                 onChange={() => {
                   const newValues = _.cloneDeep(form.getFieldsValue());
                   _.set(newValues, [...fullName, field.name, 'value'], undefined);

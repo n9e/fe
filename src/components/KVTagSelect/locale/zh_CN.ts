@@ -5,8 +5,9 @@ const zh_CN = {
   append_tags_placeholder: '标签格式为 key=value ，使用回车或空格分隔',
   tag: {
     key: {
-      label: '标签键',
-      msg: '标签键不能为空',
+      label: '标签名',
+      msg: '标签名不能为空',
+      duplicate_error: '标签名不能重复',
     },
     func: {
       label: '运算符',
@@ -26,6 +27,13 @@ const zh_CN = {
       msg: '标签值不能为空',
     },
     add: '新增标签',
+  },
+  attr: {
+    key: {
+      label: '属性名',
+      msg: '属性名不能为空',
+      duplicate_error: '属性名不能重复',
+    },
   },
 };
 export default zh_CN;

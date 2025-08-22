@@ -7,6 +7,7 @@ const en_US = {
     key: {
       label: 'Tag Key',
       msg: 'Tag key is required',
+      duplicate_error: 'Tag keys must be unique',
     },
     func: {
       label: 'Operator',
@@ -26,6 +27,13 @@ const en_US = {
       msg: 'Tag value is required',
     },
     add: 'Add Tag',
+  },
+  attr: {
+    key: {
+      label: 'Attribute Name',
+      msg: 'Attribute name is required',
+      duplicate_error: 'Attribute names must be unique',
+    },
   },
 };
 export default en_US;
