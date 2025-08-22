@@ -19,6 +19,7 @@ interface Props {
   data: TextObject;
   cellOptions: CellOptions;
   options: IOptions;
+  rangeMode?: 'lcro' | 'lcrc';
 }
 
 export default function Gauge(props: Props) {
@@ -36,7 +37,7 @@ export default function Gauge(props: Props) {
 
 function Main(props: { width: number; maxFieldTextWidth: number } & Props) {
   const { darkMode } = useContext(CommonStateContext);
-  const { width, maxFieldTextWidth, valueDomain, data, cellOptions, options } = props;
+  const { width, maxFieldTextWidth, valueDomain, data, cellOptions, options, rangeMode } = props;
   const { mode, valueDisplayMode } = cellOptions;
 
   if (mode === 'basic') {
@@ -60,6 +61,7 @@ function Main(props: { width: number; maxFieldTextWidth: number } & Props) {
         options={options}
         minValue={valueDomain[0]}
         maxValue={valueDomain[1]}
+        rangeMode={rangeMode}
       />
     );
   }

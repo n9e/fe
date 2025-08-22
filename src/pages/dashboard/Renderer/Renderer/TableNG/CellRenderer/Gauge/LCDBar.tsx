@@ -15,6 +15,7 @@ interface Props {
   minValue: number;
   maxValue: number;
   maxBarWidth: number;
+  rangeMode?: 'lcro' | 'lcrc';
 }
 
 const CELL_WIDTH = 10;
@@ -22,7 +23,7 @@ const CELL_HEIGHT = 23;
 const CELL_SPACING = 2;
 
 export default function LCDBar(props: Props) {
-  const { maxFieldTextWidth, item, valueMode, options, minValue, maxValue, maxBarWidth } = props;
+  const { maxFieldTextWidth, item, valueMode, options, minValue, maxValue, maxBarWidth, rangeMode } = props;
   const valueRange = maxValue - minValue;
   const cellCount = Math.floor(maxBarWidth / (CELL_WIDTH + CELL_SPACING));
   const cells: JSX.Element[] = [];
@@ -39,6 +40,8 @@ export default function LCDBar(props: Props) {
       options?.valueMappings,
       options?.thresholds,
       [minValue, maxValue],
+      true,
+      rangeMode,
     );
     const cellStyles: any = {};
     cellStyles.width = `${CELL_WIDTH}px`;
@@ -48,7 +51,13 @@ export default function LCDBar(props: Props) {
     if (currentValue <= item.stat) {
       cellStyles.backgroundColor = textObj.color;
     } else {
-      cellStyles.backgroundColor = Color(textObj.color).alpha(0.3).string();
+      let backgroundColor = 'unset';
+      try {
+        backgroundColor = Color(textObj.color).alpha(0.3).string();
+      } catch (e) {
+        console.warn('Invalid color:', textObj.color);
+      }
+      cellStyles.backgroundColor = backgroundColor;
     }
     cells.push(<div key={i.toString()} style={cellStyles} className='renderer-table-ng-bar-gauge-lcd-item-cells' />);
   }

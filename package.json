@@ -63,6 +63,7 @@
     "file-saver": "^2.0.5",
     "i18next": "20.3.2",
     "js-encrypt": "^2.3.4",
+    "js-yaml": "^4.1.0",
     "jsencrypt": "^3.3.2",
     "json-2-csv": "^3.18.0",
     "lezer": "^0.13.5",

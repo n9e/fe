@@ -37,7 +37,7 @@ export default function normalizeData(
           return {
             name: column,
             type: 'string',
-            values: _.map(rows, (row) => row[column] || null),
+            values: _.map(rows, (row) => row[column] ?? null),
             state: {},
           };
         }),
@@ -140,7 +140,7 @@ export default function normalizeData(
         const row: { [key: string]: string | number | null } = {};
         _.forEach(item.fields, (field) => {
           const name = field.state.displayName || field.name;
-          row[name] = field.values[index] || null;
+          row[name] = field.values[index] ?? null;
         });
         return row;
       }),

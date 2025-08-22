@@ -19,10 +19,11 @@ interface Props {
     options: IOptions;
     overrides: IOverride[];
   };
+  rangeMode?: 'lcro' | 'lcrc';
 }
 
 export default function index(props: Props) {
-  const { formattedData, formattedValue, field, panelParams } = props;
+  const { formattedData, formattedValue, field, panelParams, rangeMode } = props;
   const { cellOptions, options, overrides } = panelParams;
   const overrideProps = getOverridePropertiesByName(overrides, 'byName', field);
   const currentCellOptions = _.isEmpty(overrideProps) || !overrideProps.cellOptions?.type ? cellOptions : overrideProps.cellOptions;
@@ -38,7 +39,15 @@ export default function index(props: Props) {
 
   if (currentCellOptions.type === 'gauge') {
     return (
-      <Gauge formattedData={formattedData} field={field} valueDomain={formattedValue.valueDomain} data={formattedValue} cellOptions={currentCellOptions} options={currentOptions} />
+      <Gauge
+        formattedData={formattedData}
+        field={field}
+        valueDomain={formattedValue.valueDomain}
+        data={formattedValue}
+        cellOptions={currentCellOptions}
+        options={currentOptions}
+        rangeMode={rangeMode}
+      />
     );
   } else if (currentCellOptions.type === 'color-text') {
     return <ColorText data={formattedValue} cellOptions={currentCellOptions} />;
