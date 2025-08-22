@@ -37,7 +37,7 @@ export default function normalizeData(
           return {
             name: column,
             type: 'string',
-            values: _.map(rows, (row) => row[column] || null),
+            values: _.map(rows, (row) => row[column] ?? null),
             state: {},
           };
         }),
@@ -57,7 +57,7 @@ export default function normalizeData(
             } else if (column === `__value_#${item.refId}`) {
               row[column] = dataPoint[1] !== null ? _.toNumber(dataPoint[1]) : null;
             } else {
-              row[column] = item.metric[column] || null; // 默认值为 null
+              row[column] = item.metric[column] ?? null; // 默认值为 null
             }
           });
           rows.push(row);
@@ -67,7 +67,7 @@ export default function normalizeData(
         id: `#${refId}`,
         refId,
         fields: _.map(columns, (column) => {
-          const values = _.map(rows, (row) => row[column] || null);
+          const values = _.map(rows, (row) => row[column] ?? null);
           let min: number | null = null;
           let max: number | null = null;
           let sum: number | null = null;
@@ -140,7 +140,7 @@ export default function normalizeData(
         const row: { [key: string]: string | number | null } = {};
         _.forEach(item.fields, (field) => {
           const name = field.state.displayName || field.name;
-          row[name] = field.values[index] || null;
+          row[name] = field.values[index] ?? null;
         });
         return row;
       }),
