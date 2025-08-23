@@ -144,6 +144,6 @@ function index(props: Props) {
 }
 
 export default React.memo(index, (prevProps, nextProps) => {
-  const omitKeys = ['onSelect', 'onExpand'];
+  const omitKeys = [];
   return _.isEqual(_.omit(prevProps, omitKeys), _.omit(nextProps, omitKeys));
 });
