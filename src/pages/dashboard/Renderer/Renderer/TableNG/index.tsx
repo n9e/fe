@@ -39,11 +39,31 @@ interface Props {
   series: any[];
   rangeMode?: 'lcro' | 'lcrc';
   ajustColumns?: (columns: string[]) => string[];
+  themes?: {
+    dark: { [key: string]: string | number | boolean | object };
+    light: { [key: string]: string | number | boolean | object };
+  };
+  headerHeight?: number;
+  rowHeight?: number;
 }
 
 function index(props: Props) {
   const { t, i18n } = useTranslation('dashboard');
-  const { themeMode, time, isPreview, values, series, rangeMode, ajustColumns } = props;
+  const {
+    themeMode,
+    time,
+    isPreview,
+    values,
+    series,
+    rangeMode,
+    ajustColumns,
+    themes = {
+      dark: {},
+      light: {},
+    },
+    headerHeight = 27,
+    rowHeight = 27,
+  } = props;
 
   const { transformationsNG: transformations, custom, options, overrides } = values;
   const { showHeader = true, cellOptions = {}, filterable, sortColumn, sortOrder } = custom || {};
@@ -70,10 +90,16 @@ function index(props: Props) {
 
   const theme = useMemo(() => {
     if (themeMode === 'dark') {
-      return themeBalham.withParams(DARK_PARAMS);
+      return themeBalham.withParams({
+        ...DARK_PARAMS,
+        ...themes.dark,
+      });
     }
-    return themeBalham.withParams(LIGHT_PARAMS);
-  }, [themeMode]);
+    return themeBalham.withParams({
+      ...LIGHT_PARAMS,
+      ...themes.light,
+    });
+  }, [themeMode, JSON.stringify(themes)]);
 
   useEffect(() => {
     if (isPreview) {
@@ -84,7 +110,7 @@ function index(props: Props) {
   return (
     <div className={`n9e-dashboard-panel-table-ng ${showHeader ? '' : 'n9e-dashboard-panel-table-ng-hide-header'} p-2 w-full flex flex-col gap-2`}>
       <AgGridReact
-        headerHeight={showHeader ? 27 : 0}
+        headerHeight={showHeader ? headerHeight : 0}
         enableCellTextSelection
         suppressMovableColumns
         suppressColumnVirtualisation
@@ -135,7 +161,14 @@ function index(props: Props) {
               if (fieldValue === undefined) return '';
 
               return (
-                <CellRenderer formattedData={formattedData} formattedValue={fieldValue} field={item} panelParams={{ cellOptions, options, overrides }} rangeMode={rangeMode} />
+                <CellRenderer
+                  formattedData={formattedData}
+                  formattedValue={fieldValue}
+                  field={item}
+                  panelParams={{ cellOptions, options, overrides }}
+                  rangeMode={rangeMode}
+                  rowHeight={rowHeight}
+                />
               );
             },
           };
