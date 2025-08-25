@@ -20,16 +20,22 @@ interface Props {
   cellOptions: CellOptions;
   options: IOptions;
   rangeMode?: 'lcro' | 'lcrc';
+  rowHeight?: number;
 }
 
 export default function Gauge(props: Props) {
-  const { formattedData, field } = props;
+  const { formattedData, field, rowHeight } = props;
   const containerRef = useRef(null);
   const containerSize = useSize(containerRef);
   const maxFieldTextWidth = calcMaxFieldTextWidth(field, formattedData);
 
   return (
-    <div ref={containerRef} className='h-[27px]'>
+    <div
+      ref={containerRef}
+      style={{
+        height: rowHeight,
+      }}
+    >
       {containerSize?.width ? <Main width={containerSize.width} maxFieldTextWidth={maxFieldTextWidth} {...props} /> : null}
     </div>
   );

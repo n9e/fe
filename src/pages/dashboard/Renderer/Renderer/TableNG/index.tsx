@@ -38,11 +38,32 @@ interface Props {
   values: IPanel;
   series: any[];
   rangeMode?: 'lcro' | 'lcrc';
+  ajustColumns?: (columns: string[]) => string[];
+  themes?: {
+    dark: { [key: string]: string | number | boolean | object };
+    light: { [key: string]: string | number | boolean | object };
+  };
+  headerHeight?: number;
+  rowHeight?: number;
 }
 
 function index(props: Props) {
   const { t, i18n } = useTranslation('dashboard');
-  const { themeMode, time, isPreview, values, series, rangeMode } = props;
+  const {
+    themeMode,
+    time,
+    isPreview,
+    values,
+    series,
+    rangeMode,
+    ajustColumns,
+    themes = {
+      dark: {},
+      light: {},
+    },
+    headerHeight = 27,
+    rowHeight = 27,
+  } = props;
 
   const { transformationsNG: transformations, custom, options, overrides } = values;
   const { showHeader = true, cellOptions = {}, filterable, sortColumn, sortOrder } = custom || {};
@@ -51,7 +72,7 @@ function index(props: Props) {
   const [dashboardMeta] = useGlobalState('dashboardMeta');
   const [, setSeries] = useGlobalState('series');
   const [, setTableFields] = useGlobalState('tableFields');
-  const { data, rowData, formattedData } = useMemo(() => {
+  const { data, rowData, columns, formattedData } = useMemo(() => {
     const data = normalizeData(series, transformations);
     const columns = _.uniq(_.flatMap(data, 'columns'));
     setTableFields(columns);
@@ -62,16 +83,23 @@ function index(props: Props) {
     return {
       data,
       rowData: formattedData,
+      columns: activeData?.columns || [],
       formattedData,
     };
   }, [activeIndex, JSON.stringify(_.map(series, 'id')), JSON.stringify(transformations), JSON.stringify(cellOptions), JSON.stringify(options), JSON.stringify(overrides)]); // TODO : 依赖项可能需要更精确的控制，不然会导致不必要的重新渲染
 
   const theme = useMemo(() => {
     if (themeMode === 'dark') {
-      return themeBalham.withParams(DARK_PARAMS);
+      return themeBalham.withParams({
+        ...DARK_PARAMS,
+        ...themes.dark,
+      });
     }
-    return themeBalham.withParams(LIGHT_PARAMS);
-  }, [themeMode]);
+    return themeBalham.withParams({
+      ...LIGHT_PARAMS,
+      ...themes.light,
+    });
+  }, [themeMode, JSON.stringify(themes)]);
 
   useEffect(() => {
     if (isPreview) {
@@ -82,7 +110,7 @@ function index(props: Props) {
   return (
     <div className={`n9e-dashboard-panel-table-ng ${showHeader ? '' : 'n9e-dashboard-panel-table-ng-hide-header'} p-2 w-full flex flex-col gap-2`}>
       <AgGridReact
-        headerHeight={showHeader ? 27 : 0}
+        headerHeight={showHeader ? headerHeight : 0}
         enableCellTextSelection
         suppressMovableColumns
         suppressColumnVirtualisation
@@ -95,7 +123,7 @@ function index(props: Props) {
           noRowsToShow: t('common:nodata'),
         }}
         rowData={rowData}
-        columnDefs={_.map(data[activeIndex]?.columns, (item) => {
+        columnDefs={_.map(ajustColumns ? ajustColumns(columns) : columns, (item) => {
           return {
             field: item,
             headerName: item,
@@ -133,7 +161,14 @@ function index(props: Props) {
               if (fieldValue === undefined) return '';
 
               return (
-                <CellRenderer formattedData={formattedData} formattedValue={fieldValue} field={item} panelParams={{ cellOptions, options, overrides }} rangeMode={rangeMode} />
+                <CellRenderer
+                  formattedData={formattedData}
+                  formattedValue={fieldValue}
+                  field={item}
+                  panelParams={{ cellOptions, options, overrides }}
+                  rangeMode={rangeMode}
+                  rowHeight={rowHeight}
+                />
               );
             },
           };

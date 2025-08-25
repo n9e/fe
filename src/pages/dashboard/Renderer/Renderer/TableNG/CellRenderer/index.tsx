@@ -20,10 +20,11 @@ interface Props {
     overrides: IOverride[];
   };
   rangeMode?: 'lcro' | 'lcrc';
+  rowHeight?: number;
 }
 
 export default function index(props: Props) {
-  const { formattedData, formattedValue, field, panelParams, rangeMode } = props;
+  const { formattedData, formattedValue, field, panelParams, rangeMode, rowHeight } = props;
   const { cellOptions, options, overrides } = panelParams;
   const overrideProps = getOverridePropertiesByName(overrides, 'byName', field);
   const currentCellOptions = _.isEmpty(overrideProps) || !overrideProps.cellOptions?.type ? cellOptions : overrideProps.cellOptions;
@@ -47,6 +48,7 @@ export default function index(props: Props) {
         cellOptions={currentCellOptions}
         options={currentOptions}
         rangeMode={rangeMode}
+        rowHeight={rowHeight}
       />
     );
   } else if (currentCellOptions.type === 'color-text') {
