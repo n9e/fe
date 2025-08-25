@@ -38,11 +38,12 @@ interface Props {
   values: IPanel;
   series: any[];
   rangeMode?: 'lcro' | 'lcrc';
+  ajustColumns?: (columns: string[]) => string[];
 }
 
 function index(props: Props) {
   const { t, i18n } = useTranslation('dashboard');
-  const { themeMode, time, isPreview, values, series, rangeMode } = props;
+  const { themeMode, time, isPreview, values, series, rangeMode, ajustColumns } = props;
 
   const { transformationsNG: transformations, custom, options, overrides } = values;
   const { showHeader = true, cellOptions = {}, filterable, sortColumn, sortOrder } = custom || {};
@@ -51,7 +52,7 @@ function index(props: Props) {
   const [dashboardMeta] = useGlobalState('dashboardMeta');
   const [, setSeries] = useGlobalState('series');
   const [, setTableFields] = useGlobalState('tableFields');
-  const { data, rowData, formattedData } = useMemo(() => {
+  const { data, rowData, columns, formattedData } = useMemo(() => {
     const data = normalizeData(series, transformations);
     const columns = _.uniq(_.flatMap(data, 'columns'));
     setTableFields(columns);
@@ -62,6 +63,7 @@ function index(props: Props) {
     return {
       data,
       rowData: formattedData,
+      columns: activeData?.columns || [],
       formattedData,
     };
   }, [activeIndex, JSON.stringify(_.map(series, 'id')), JSON.stringify(transformations), JSON.stringify(cellOptions), JSON.stringify(options), JSON.stringify(overrides)]); // TODO : 依赖项可能需要更精确的控制，不然会导致不必要的重新渲染
@@ -95,7 +97,7 @@ function index(props: Props) {
           noRowsToShow: t('common:nodata'),
         }}
         rowData={rowData}
-        columnDefs={_.map(data[activeIndex]?.columns, (item) => {
+        columnDefs={_.map(ajustColumns ? ajustColumns(columns) : columns, (item) => {
           return {
             field: item,
             headerName: item,

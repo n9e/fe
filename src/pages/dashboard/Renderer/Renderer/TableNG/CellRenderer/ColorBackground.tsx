@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 
 import { TextObject } from './types';
 
@@ -14,7 +15,9 @@ export default function ColorBackground(props: Props) {
       style={{
         backgroundColor: data.color,
       }}
-      className='px-2 text-white n9e-dashboard-panel-table-ng-cell-background'
+      className={classNames('px-2 n9e-dashboard-panel-table-ng-cell-background', {
+        'text-white': data.color,
+      })}
     >
       {data.text}
     </div>
