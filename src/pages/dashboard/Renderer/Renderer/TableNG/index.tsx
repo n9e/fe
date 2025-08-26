@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { AllCommunityModule, ModuleRegistry, themeBalham } from 'ag-grid-community';
+import { AllCommunityModule, ModuleRegistry, themeBalham, CellClickedEvent } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 import { AG_GRID_LOCALE_CN, AG_GRID_LOCALE_HK, AG_GRID_LOCALE_EN, AG_GRID_LOCALE_JP } from '@ag-grid-community/locale';
 import _ from 'lodash';
@@ -16,8 +16,9 @@ import { DARK_PARAMS, LIGHT_PARAMS } from './constants';
 import getFormattedRowData from './utils/getFormattedRowData';
 import normalizeData from './utils/normalizeData';
 import CellRenderer from './CellRenderer';
+import { TextObject } from './CellRenderer/types';
 import CustomColumnFilter, { doesFilterPass } from './CustomColumnFilter';
-import Links, { onCellClicked } from './Links';
+import Links, { cellClickCallback } from './Links';
 
 import './style.less';
 
@@ -45,6 +46,16 @@ interface Props {
   };
   headerHeight?: number;
   rowHeight?: number;
+  showUnderline?: boolean;
+  onCellClick?: (
+    cellEvent: CellClickedEvent<
+      {
+        [key: string]: TextObject;
+      },
+      any,
+      any
+    >,
+  ) => void;
 }
 
 function index(props: Props) {
@@ -63,6 +74,8 @@ function index(props: Props) {
     },
     headerHeight = 27,
     rowHeight = 27,
+    showUnderline = false,
+    onCellClick,
   } = props;
 
   const { transformationsNG: transformations, custom, options, overrides } = values;
@@ -108,7 +121,7 @@ function index(props: Props) {
   }, [JSON.stringify(_.map(series, 'id'))]);
 
   return (
-    <div className={`n9e-dashboard-panel-table-ng ${showHeader ? '' : 'n9e-dashboard-panel-table-ng-hide-header'} p-2 w-full flex flex-col gap-2`}>
+    <div className={`n9e-dashboard-panel-table-ng ${showHeader ? '' : 'n9e-dashboard-panel-table-ng-hide-header'} p-2 h-full w-full flex flex-col gap-2`}>
       <AgGridReact
         headerHeight={showHeader ? headerHeight : 0}
         enableCellTextSelection
@@ -117,7 +130,6 @@ function index(props: Props) {
         animateRows={false}
         theme={theme}
         enableFilterHandlers={true}
-        domLayout='autoHeight'
         localeText={{
           ...(i18nAgGrid[i18n.language] || AG_GRID_LOCALE_EN || {}),
           noRowsToShow: t('common:nodata'),
@@ -131,7 +143,7 @@ function index(props: Props) {
               padding: 0,
             },
             cellClassRules: {
-              'n9e-dashboard-panel-table-ng-cell-link': () => (options.links ? options.links.length === 1 : false),
+              'n9e-dashboard-panel-table-ng-cell-link': () => (options.links ? options.links.length === 1 : showUnderline),
               'n9e-dashboard-panel-table-ng-cell-links': () => (options.links ? options.links.length > 1 : false),
             },
             comparator: (value1, value2, node1, node2) => {
@@ -208,7 +220,11 @@ function index(props: Props) {
           }
         }}
         onCellClicked={(cellEvent) => {
-          onCellClicked(cellEvent, { links: options.links, linksRef, dashboardMeta, time });
+          if (onCellClick) {
+            onCellClick(cellEvent);
+          } else {
+            cellClickCallback(cellEvent, { links: options.links, linksRef, dashboardMeta, time });
+          }
         }}
       />
       {_.isArray(_.compact(_.map(data, 'id'))) && _.compact(_.map(data, 'id')).length > 1 && (
