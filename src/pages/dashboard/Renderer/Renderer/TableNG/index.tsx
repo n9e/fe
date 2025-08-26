@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { AllCommunityModule, ModuleRegistry, themeBalham, CellClickedEvent } from 'ag-grid-community';
+import { AllCommunityModule, ModuleRegistry, themeBalham, CellClickedEvent, DomLayoutType } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 import { AG_GRID_LOCALE_CN, AG_GRID_LOCALE_HK, AG_GRID_LOCALE_EN, AG_GRID_LOCALE_JP } from '@ag-grid-community/locale';
 import _ from 'lodash';
@@ -56,6 +56,7 @@ interface Props {
       any
     >,
   ) => void;
+  domLayout?: DomLayoutType;
 }
 
 function index(props: Props) {
@@ -76,6 +77,7 @@ function index(props: Props) {
     rowHeight = 27,
     showUnderline = false,
     onCellClick,
+    domLayout,
   } = props;
 
   const { transformationsNG: transformations, custom, options, overrides } = values;
@@ -130,6 +132,7 @@ function index(props: Props) {
         animateRows={false}
         theme={theme}
         enableFilterHandlers={true}
+        domLayout={domLayout}
         localeText={{
           ...(i18nAgGrid[i18n.language] || AG_GRID_LOCALE_EN || {}),
           noRowsToShow: t('common:nodata'),
