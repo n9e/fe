@@ -20,11 +20,10 @@ import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
 
 import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
-import { DatasourceSelectV2 } from '@/components/DatasourceSelect';
+import { DatasourceSelectV3 } from '@/components/DatasourceSelect';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
 import { Dashboard } from '@/store/dashboardInterface';
-import { allCates } from '@/components/AdvancedWrap/utils';
 
 import { IVariable } from './definition';
 import { stringToRegex } from './constant';
@@ -158,26 +157,26 @@ function EditItem(props: IProps) {
               },
             ]}
           >
-            <DatasourceSelectV2
-              datasourceCateList={_.filter(datasourceCateOptions, (item) => {
-                return item.dashboard === true && item.dashboardVariable === true && (item.graphPro ? IS_PLUS : true);
-              })}
-              datasourceList={_.filter(
-                _.concat(
-                  _.map(datasourceVars, (item) => {
-                    return {
-                      id: `\${${item.name}}`,
-                      name: `\${${item.name}}`,
-                      plugin_type: item.definition,
-                    };
-                  }),
-                  datasourceList as any,
-                ),
-                (item) => {
-                  const cateData = _.find(datasourceCateOptions, { value: item.plugin_type });
-                  return cateData?.dashboard === true && cateData.dashboardVariable === true && (cateData.graphPro ? IS_PLUS : true);
-                },
-              )}
+            <DatasourceSelectV3
+              datasourceCateList={datasourceCateOptions}
+              ajustDatasourceList={(list) => {
+                return _.filter(
+                  _.concat(
+                    _.map(datasourceVars, (item) => {
+                      return {
+                        id: `\${${item.name}}`,
+                        name: `\${${item.name}}`,
+                        plugin_type: item.definition,
+                      };
+                    }),
+                    list as any,
+                  ),
+                  (item) => {
+                    const cateData = _.find(datasourceCateOptions, { value: item.plugin_type });
+                    return cateData?.dashboard === true && cateData.dashboardVariable === true && (cateData.graphPro ? IS_PLUS : true);
+                  },
+                );
+              }}
               onChange={(val) => {
                 const cate = _.find(
                   _.concat(
