@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Input, Space, Tooltip } from 'antd';
+import { Form, Input, Space, Tooltip, InputNumber } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
@@ -33,6 +33,12 @@ export default function Flashduty() {
       </Form.Item>
       <Form.Item label={t('flashduty_request_config.proxy')} tooltip={t('flashduty_request_config.proxy_tip')} name={[...names, 'proxy']}>
         <Input />
+      </Form.Item>
+      <Form.Item label={t('flashduty_request_config.timeout')} name={[...names, 'timeout']}>
+        <InputNumber min={0} className='w-full' />
+      </Form.Item>
+      <Form.Item label={t('flashduty_request_config.retry_times')} name={[...names, 'retry_times']}>
+        <InputNumber min={0} className='w-full' />
       </Form.Item>
     </div>
   );

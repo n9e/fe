@@ -84,7 +84,7 @@ export default function TemplateSelect(props: Props) {
         </Space>
       }
       name={[field.name, 'template_id']}
-      rules={[{ required: true, message: t('notification_configuration.template_msg') }]}
+      // rules={[{ required: true, message: t('notification_configuration.template_msg') }]}
     >
       <Select
         options={_.map(options, (item) => {
