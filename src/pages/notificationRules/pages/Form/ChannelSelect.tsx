@@ -113,9 +113,10 @@ export default function ChannelSelect(props: Props) {
         optionLabelProp='optionLabel'
         optionFilterProp='originLabel'
         onChange={() => {
-          // 修改 channel_id 时，清空 template_id
+          // 修改 channel_id 时，清空 template_id 和 params
           const valuesClone = _.cloneDeep(form.getFieldsValue());
           _.set(valuesClone, [...prefixNamePath, field.name, 'template_id'], undefined);
+          _.set(valuesClone, [...prefixNamePath, field.name, 'params'], undefined);
           form.setFieldsValue(valuesClone);
         }}
       />
