@@ -20,9 +20,13 @@ export default function index(props: SelectProps & Props) {
   const { datasourceCateList, ajustDatasourceList, onChange, onClear } = props;
   const [fetching, setFetching] = useState(false);
   const [datasourceList, setDatasourceList] = useState<DatasourceItem[]>([]);
+  const allDatasourceListRef = React.useRef<DatasourceItem[]>([]);
   const fetcher = (query?: string) => {
     return getDatasourceBriefList(query, 'datasource_select_signal_key')
       .then((list) => {
+        if (!query) {
+          allDatasourceListRef.current = list;
+        }
         setDatasourceList(list);
       })
       .catch(() => {
@@ -101,7 +105,7 @@ export default function index(props: SelectProps & Props) {
       onDropdownVisibleChange={(visible) => {
         if (!visible) {
           // 关闭下拉时重置数据源列表
-          setDatasourceList(datasourceList);
+          setDatasourceList(allDatasourceListRef.current);
         }
       }}
     />
