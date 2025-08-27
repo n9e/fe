@@ -5,6 +5,7 @@ const en_US = {
   tab_collectTpls: 'Collect templates',
   tab_metrics: 'Metrics',
   tab_dashboards: 'Dashboards',
+  tab_firemap: 'Firemap',
   ident: 'Name',
   logo: 'Logo',
   enable: 'Enable',
@@ -30,11 +31,13 @@ const en_US = {
       alert: 'Edit alert rule',
       dashboard: 'Edit dashboard',
       collect: 'Edit collect template',
+      firemap: 'Edit firemap rule',
     },
     create: {
       alert: 'Create alert rule',
       dashboard: 'Create dashboard',
       collect: 'Create collect template',
+      firemap: 'Create firemap rule',
     },
     no_select: {
       alert: 'Please select alert rules',
@@ -43,6 +46,7 @@ const en_US = {
     help: {
       alert: 'Create and edit alert rules under your own business group, export the alert rule JSON after completion, and fill in the following',
       dashboard: 'Create and edit dashboards under your own business group, export the dashboard JSON after completion, and fill in the following',
+      firemap: 'Create and edit firemaps under your own business group, export the firemap JSON after completion, and fill in the following',
     },
   },
   payloads: 'Templates',
