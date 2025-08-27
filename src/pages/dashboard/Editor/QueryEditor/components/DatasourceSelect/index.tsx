@@ -4,7 +4,7 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
-import { DatasourceSelectV2 } from '@/components/DatasourceSelect';
+import { DatasourceSelectV3 } from '@/components/DatasourceSelect';
 import { CommonStateContext } from '@/App';
 import getDefaultTargets from '@/pages/dashboard/utils/getDefaultTargets';
 import { IS_PLUS } from '@/utils/constant';
@@ -34,27 +34,28 @@ export default function index({ dashboardId, chartForm, variableConfig }) {
               },
             ]}
           >
-            <DatasourceSelectV2
+            <DatasourceSelectV3
               style={{ minWidth: 220 }}
-              datasourceCateList={_.filter(datasourceCateOptions, (item) => {
-                return item.dashboard === true && (item.graphPro ? IS_PLUS : true);
-              })}
-              datasourceList={_.filter(
-                _.concat(
-                  _.map(datasourceVars, (item) => {
-                    return {
-                      id: `\${${item.name}}`,
-                      name: `\${${item.name}}`,
-                      plugin_type: item.definition,
-                    };
-                  }),
-                  datasourceList as any,
-                ),
-                (item) => {
-                  const cateData = _.find(datasourceCateOptions, { value: item.plugin_type });
-                  return cateData?.dashboard === true && (cateData.graphPro ? IS_PLUS : true);
-                },
-              )}
+              datasourceCateList={datasourceCateOptions}
+              ajustDatasourceList={(list) => {
+                const data = _.filter(
+                  _.concat(
+                    _.map(datasourceVars, (item) => {
+                      return {
+                        id: `\${${item.name}}`,
+                        name: `\${${item.name}}`,
+                        plugin_type: item.definition,
+                      };
+                    }),
+                    list as any,
+                  ),
+                  (item) => {
+                    const cateData = _.find(datasourceCateOptions, { value: item.plugin_type });
+                    return cateData?.dashboard === true && (cateData.graphPro ? IS_PLUS : true);
+                  },
+                );
+                return data;
+              }}
               onChange={(val) => {
                 const preCate = chartForm.getFieldValue('datasourceCate');
                 const curCate = _.find(
