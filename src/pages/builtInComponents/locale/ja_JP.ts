@@ -5,6 +5,7 @@ const ja_JP = {
   tab_collectTpls: '収集テンプレート',
   tab_metrics: '指標説明',
   tab_dashboards: 'ダッシュボード',
+  tab_firemap: '滅火図',
   ident: 'テンプレート名',
   logo: 'ロゴ',
   enable: '有効',
@@ -30,11 +31,13 @@ const ja_JP = {
       alert: 'アラートルールを編集',
       dashboard: 'ダッシュボードを編集',
       collect: '収集テンプレートを編集',
+      firemap: '滅火図ルールを編集',
     },
     create: {
       alert: 'アラートルールを作成',
       dashboard: 'ダッシュボードを作成',
       collect: '収集テンプレートを作成',
+      firemap: '滅火図ルールを作成',
     },
     no_select: {
       alert: 'アラートルールを選択してください',
@@ -43,6 +46,7 @@ const ja_JP = {
     help: {
       alert: '自分のビジネスグループでアラートルールを作成し、完善後、アラートルールのJSONをエクスポートし、下に入力してください',
       dashboard: '自分のビジネスグループでダッシュボードを作成し、完善後、ダッシュボードのJSONをエクスポートし、下に入力してください',
+      firemap: '自分のビジネスグループで滅火図ルールを作成し、完善後、滅火図ルールのJSONをエクスポートし、下に入力してください',
     },
   },
   payloads: 'テンプレート',

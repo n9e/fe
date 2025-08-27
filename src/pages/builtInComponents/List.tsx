@@ -15,6 +15,8 @@ import Metrics from './Metrics';
 import Dashboards from './Dashboards';
 import { getComponents, Component, deleteComponents, putComponent } from './services';
 import ComponentFormModal from './components/ComponentFormModal';
+import Firemap from './Firemap';
+import { IS_ENT } from '@/utils/constant';
 
 const LIST_SEARCH_VALUE = 'builtin-list-search-value';
 const BUILT_IN_ACTIVE_TAB_KEY = 'builtin-drawer-active-tab';
@@ -273,6 +275,11 @@ export default function index() {
             <Tabs.TabPane tab={t('tab_alertRules')} key='tab_alertRules'>
               <AlertRules component_id={activeComponent.id} />
             </Tabs.TabPane>
+            {IS_ENT && (
+              <Tabs.TabPane tab={t('tab_firemap')} key='tab_firemap'>
+                <Firemap component_id={activeComponent.id} />
+              </Tabs.TabPane>
+            )}
           </Tabs>
         )}
       </Drawer>
