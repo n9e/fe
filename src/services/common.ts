@@ -26,18 +26,34 @@ export interface DatasourceItem {
   plugin_type_name: string;
 }
 
+const signals = {};
+
 // 匿名获取数据源列表
-export function getDatasourceBriefList(query?: string): Promise<DatasourceItem[]> {
+export function getDatasourceBriefList(query?: string, signalKey?: string): Promise<DatasourceItem[]> {
+  const controller = new AbortController();
+  const { signal } = controller;
+  if (signalKey && signals[signalKey] && signals[signalKey].abort) {
+    signals[signalKey].abort();
+  }
+  if (signalKey) {
+    signals[signalKey] = controller;
+  }
   const url = '/api/n9e/datasource/brief';
   return request(url, {
     method: RequestMethod.Get,
     params: query ? { query } : {},
+    signal,
   })
     .then((res) => {
       return res.dat || [];
     })
     .catch(() => {
       return [];
+    })
+    .finally(() => {
+      if (signalKey) {
+        delete signals[signalKey];
+      }
     });
 }
 

@@ -7,6 +7,8 @@ import { useDebounceFn } from 'ahooks';
 import { getDatasourceBriefList, DatasourceItem } from '@/services/common';
 import { Cate } from '@/components/AdvancedWrap/utils';
 
+import './style.less';
+
 interface Props {
   datasourceCateList: Cate[];
   ajustDatasourceList?: (list: DatasourceItem[]) => DatasourceItem[];
@@ -17,19 +19,11 @@ interface Props {
 export default function index(props: SelectProps & Props) {
   const { datasourceCateList, ajustDatasourceList, onChange, onClear } = props;
   const [fetching, setFetching] = useState(false);
-  const allDatasourceListRef = React.useRef<DatasourceItem[]>([]);
   const [datasourceList, setDatasourceList] = useState<DatasourceItem[]>([]);
   const fetcher = (query?: string) => {
-    return getDatasourceBriefList(query)
+    return getDatasourceBriefList(query, 'datasource_select_signal_key')
       .then((list) => {
-        let newList = list;
-        if (ajustDatasourceList) {
-          newList = ajustDatasourceList(list);
-        }
-        if (!query) {
-          allDatasourceListRef.current = newList;
-        }
-        setDatasourceList(newList);
+        setDatasourceList(list);
       })
       .catch(() => {
         setDatasourceList([]);
@@ -43,15 +37,18 @@ export default function index(props: SelectProps & Props) {
         setFetching(false);
       });
     },
-    { wait: 500 },
+    { wait: 200 },
   );
 
   useEffect(() => {
     fetcher();
   }, []);
 
+  const currentDatasourceList = ajustDatasourceList ? ajustDatasourceList(datasourceList) : datasourceList;
+
   return (
     <Select
+      className='n9e-datasource-select-v3'
       dropdownMatchSelectWidth={false}
       {..._.omit(props, ['datasourceCateList', 'ajustDatasourceList'])}
       showSearch
@@ -59,7 +56,7 @@ export default function index(props: SelectProps & Props) {
       onSearch={debounceFetcher}
       notFoundContent={fetching ? <Spin size='small' /> : null}
       optionLabelProp='optionLabel'
-      options={_.map(_.orderBy(datasourceList, ['is_default', 'plugin_type'], ['desc', 'asc']), (item) => {
+      options={_.map(_.orderBy(currentDatasourceList, ['is_default', 'plugin_type'], ['desc', 'asc']), (item) => {
         const datasourceCate = _.find(datasourceCateList, { value: item.plugin_type });
         return {
           originLabel: item.name,
@@ -104,7 +101,7 @@ export default function index(props: SelectProps & Props) {
       onDropdownVisibleChange={(visible) => {
         if (!visible) {
           // 关闭下拉时重置数据源列表
-          setDatasourceList(allDatasourceListRef.current);
+          setDatasourceList(datasourceList);
         }
       }}
     />
