@@ -7,7 +7,8 @@ const en_US = {
     key: {
       label: 'Tag Key',
       msg: 'Tag key is required',
-      duplicate_error: 'Tag keys must be unique',
+      duplicate_error: 'Duplicate keys are not allowed, which may cause events to not be matched',
+      placeholder: 'Enter or select a tag key for matching, such as app / cluster / alertname',
     },
     func: {
       label: 'Operator',
@@ -22,8 +23,7 @@ const en_US = {
     },
     value: {
       label: 'Tag Value',
-      placeholder1: 'You can enter multiple values, separated by carriage return',
-      placeholder2: 'Please enter a regular expression',
+      placeholder: 'Enter or select a tag value for matching',
       msg: 'Tag value is required',
     },
     add: 'Add Tag',

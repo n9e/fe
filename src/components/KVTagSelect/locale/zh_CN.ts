@@ -7,7 +7,8 @@ const zh_CN = {
     key: {
       label: '标签名',
       msg: '标签名不能为空',
-      duplicate_error: '标签名不能重复',
+      duplicate_error: '不允许填写相同的 key，会导致匹配不到事件',
+      placeholder: '输入或者选择用于匹配的标签键，如 app / cluster / alertname',
     },
     func: {
       label: '运算符',
@@ -22,8 +23,7 @@ const zh_CN = {
     },
     value: {
       label: '标签值',
-      placeholder1: '可以输入多个值，用回车分割',
-      placeholder2: '请输入正则表达式',
+      placeholder: '手动输入或者从下拉列表选择用于匹配的标签值',
       msg: '标签值不能为空',
     },
     add: '新增标签',

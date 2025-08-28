@@ -7,7 +7,8 @@ const zh_HK = {
     key: {
       label: '標籤名',
       msg: '標籤名不能為空',
-      duplicate_error: '標籤名不能重複',
+      duplicate_error: '不允許填寫相同的 key，會導致匹配不到事件',
+      placeholder: '輸入或者選擇用於匹配的標籤鍵，如 app / cluster / alertname',
     },
     func: {
       label: '運算符',
@@ -22,8 +23,7 @@ const zh_HK = {
     },
     value: {
       label: '標籤值',
-      placeholder1: '可以輸入多個值，用回車分割',
-      placeholder2: '請輸入正則表達式',
+      placeholder: '手動輸入或者從下拉列表選擇用於匹配的標籤值',
       msg: '標籤值不能為空',
     },
     add: '新增標籤',

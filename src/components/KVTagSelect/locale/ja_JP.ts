@@ -7,7 +7,8 @@ const ja_JP = {
     key: {
       label: 'タグキー',
       msg: 'タグキーは必須です',
-      duplicate_error: 'タグキーは一意である必要があります',
+      duplicate_error: '不允许填写相同的 key，会导致匹配不到事件',
+      placeholder: '入力または選択して、マッチングに使用するタグキーを指定してください（例：app / cluster / alertname）',
     },
     func: {
       label: '演算子',
@@ -22,8 +23,7 @@ const ja_JP = {
     },
     value: {
       label: 'タグ値',
-      placeholder1: '複数の値を入力できます。改行で区切ります',
-      placeholder2: '正規表現を入力してください',
+      placeholder: '手動入力またはドロップダウンリストから選択して、マッチングに使用するタグ値を指定してください',
       msg: 'タグ値は必須です',
     },
     add: 'タグを追加',
