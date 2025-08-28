@@ -18,7 +18,7 @@ import ComponentFormModal from './components/ComponentFormModal';
 import { IS_ENT } from '@/utils/constant';
 
 // @ts-ignore
-import Firemap from 'plus:/pages/builtInComponents/Firemap';
+import Firemap from 'plus:/parcels/builtInComponents/Firemap';
 
 const LIST_SEARCH_VALUE = 'builtin-list-search-value';
 const BUILT_IN_ACTIVE_TAB_KEY = 'builtin-drawer-active-tab';
