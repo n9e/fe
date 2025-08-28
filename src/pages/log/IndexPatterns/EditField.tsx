@@ -222,7 +222,7 @@ function EditField(props: Props & ModalWrapProps) {
         </Space>
       }
     >
-      <div style={{ padding: '8px 12px', border: '1px solid #DDD', borderRadius: 4 }}>
+      <div style={{ padding: '8px 12px', background: 'var(--fc-fill-3)', borderRadius: 4 }}>
         <div>
           <strong>{name}</strong>
         </div>
@@ -240,7 +240,7 @@ function EditField(props: Props & ModalWrapProps) {
         destroyInactiveTabPane={false}
       >
         <Tabs.TabPane tab={t('link')} key='link'>
-          <div style={{ marginBottom: 20, background: 'var(--fc-fill-3)', padding: '8px 12px', borderRadius: 6 }}>
+          <div style={{ marginBottom: 20, background: 'var(--fc-fill-3)', padding: '8px 12px', borderRadius: 4 }}>
             <div style={{ display: 'flex' }} className='tip-collapse'>
               <InfoCircleOutlined style={{ margin: '2px 4px' }} className='text-primary' />
               <div style={{ flex: 1 }}>

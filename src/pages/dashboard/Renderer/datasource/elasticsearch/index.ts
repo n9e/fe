@@ -177,6 +177,7 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
           return {
             id: _.uniqueId('series_'),
             ...item,
+            mode: 'timeSeries',
           };
         });
       } else {
@@ -195,6 +196,7 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
                 isExp,
                 metric: serie.metric,
                 data: serie.values,
+                mode: 'timeSeries',
               });
             }
           });
@@ -238,6 +240,7 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
             name: doc._index,
             metric: doc.fields,
             data: [],
+            mode: 'raw',
           });
         });
       });

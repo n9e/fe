@@ -155,6 +155,31 @@ const zh_HK = {
       <1 />
       上面語法適用於 \${__to}
     `,
+    help_tip_table_ng: `
+      變數使用說明
+      <br />
+      \${variable_name}: 儀表盤變數值
+      <br />
+      \${__row.column_name}: 行數據的某一列值
+      <br />
+      \${__interval}: 時間間隔（秒）, 例如 15s
+      <br />
+      \${__interval_ms}: 時間間隔（毫秒）, 例如 15000ms
+      <br />
+      \${__range}: 時間範圍（秒）, 例如 3600s
+      <br />
+      \${__range_ms}: 時間範圍（毫秒）, 例如 3600000ms
+      <br />
+      \${__rate_interval}: 時間間隔（秒）, __interval * 4
+      <br />
+       \${__from}: 起始時間（毫秒）
+      <br />
+      \${__from_date_seconds}: 起始時間（秒）
+      <br />
+      \${__from_date_iso}: 起始時間, ISO 8601/RFC 3339
+      <br />
+      上面語法適用於 \${__to}
+    `,
   },
   row: {
     edit_title: '編輯分組',
@@ -385,6 +410,53 @@ const zh_HK = {
         colorMode_tip: '顏色模式是針對 "值欄位" 的顏色設定。值模式下顏色作用於值文字；背景模式下顏色作用於欄位所在儲存格背景色。',
         pageLimit: '每頁顯示行數',
       },
+      tableNG: {
+        enablePagination: '啟用分頁',
+        showHeader: '顯示表頭',
+        filterable: '可篩選',
+        sortColumn: '預設排序列',
+        sortOrder: '預設排序',
+        cellOptions: {
+          type: {
+            label: '單元格類型',
+            options: {
+              none: '無',
+              'color-text': '顏色文字',
+              'color-background': '顏色背景',
+              gauge: '量表 (Gauge)',
+            },
+          },
+          wrapText: '文本換行',
+          wrapText_tip: '開啟後，單元格文本會自動換行，並且行高會根據文本行數自動調整，如果行數據量較大會影響性能',
+          'color-background': {
+            mode: {
+              label: '顏色模式',
+              options: {
+                basic: '基礎',
+                gradient: '漸變',
+              },
+            },
+          },
+          gauge: {
+            mode: {
+              label: '模式',
+              options: {
+                basic: '基礎',
+                gradient: '漸變',
+                lcd: 'LCD',
+              },
+            },
+            valueDisplayMode: {
+              label: '數值顯示',
+              options: {
+                color: '顏色',
+                text: '文本',
+                hidden: '隱藏',
+              },
+            },
+          },
+        },
+      },
       text: {
         textColor: '文字顏色',
         textDarkColor: '暗黑文字顏色',
@@ -549,13 +621,14 @@ const zh_HK = {
     barchart: '棒形圖',
     stat: '指標圖',
     table: '表格',
+    tableNG: '表格 NG (Beta)',
     pie: '餅圖',
     hexbin: '蜂窩圖',
     barGauge: '排行榜',
     text: '文本卡片',
     gauge: '儀表圖',
     heatmap: '色塊圖',
-    iframe: '內嵌文檔(iframe)',
+    iframe: '內嵌文檔 (iframe)',
     row: '分組',
     pastePanel: '粘貼圖表',
   },
@@ -578,6 +651,14 @@ const zh_HK = {
     tags: '標籤',
     updated: '注釋已更新',
     deleted: '注釋已刪除',
+  },
+  transformations: {
+    organize: {
+      title: '整理字段',
+    },
+    merge: {
+      title: '合併',
+    },
   },
 };
 
