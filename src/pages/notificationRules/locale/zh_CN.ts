@@ -101,7 +101,7 @@ const zh_CN = {
     group_duration_2: '秒内收到的同组告警，一起聚合发送',
     group_duration_required: '聚合持续时间不能为空',
     default_title: '默认维度',
-    default_tip: '未满足上述筛选条件，按照以下维度聚合到一组进行通知',
+    default_tip: '未满足上述筛选条件，<b>按照以下维度聚合到一组进行通知</b>',
     default_duration_tip: '请注意，聚合时间间隔太大会导致告警延迟发送',
     default_duration_tip2: '聚合最大间隔不能超过 3600 秒',
     attribute_keys_map: {
@@ -112,7 +112,7 @@ const zh_CN = {
     },
     enable_tip: '开启后，符合规则的告警会按维度合并为一条通知',
     attributes_filter: {
-      label_tip: '只让匹配这些属性的告警参与聚合；未匹配的告警不受本规则影响。不配置表示不做限制。多个条件为且关系',
+      label_tip: '只让匹配这些标签筛选条件的告警参与聚合，未匹配的告警不受本规则影响<br />多个条件为且关系，和下面的适用属性筛选条件也是且关系',
     },
     label_keys: {
       tip: '如果配置的是 ident，将会把 ident 相同的事件合并到一组，发送一条通知消息，常用于短信/IM 降噪',
