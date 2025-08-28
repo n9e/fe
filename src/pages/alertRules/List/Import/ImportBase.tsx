@@ -75,6 +75,8 @@ export default function ImportBase({ busiId, onOk, groupedDatasourceList, reload
                 cate: item.cate === 'host' ? 'host' : vals.datasource_cate,
                 datasource_queries: vals?.datasource_queries,
                 disabled: vals.enabled ? 0 : 1,
+                notify_version: 1, // 导入规则时强制使用通知规则的版本
+                notify_rule_ids: [], // 同时清空规则里的通知规则设置
               };
             });
             const { dat } = await importStrategy(importData, busiId);
