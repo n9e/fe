@@ -194,7 +194,6 @@ export default function List() {
                       to={{
                         pathname: `/${NS}/edit/${record.id}`,
                       }}
-                      target='_blank'
                     >
                       {t('common:btn.edit')}
                     </Link>

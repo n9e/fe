@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Form, Row, Col, Space, Tooltip } from 'antd';
 import { PlusCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
@@ -6,31 +6,24 @@ import _ from 'lodash';
 
 import Markdown from '@/components/Markdown';
 
+import { getEventTagKeys } from '../services';
 import TagItem from './TagItem';
 
 interface Props {
   disabled?: boolean;
   keyLabel?: React.ReactNode;
   keyLabelTootip?: React.ReactNode;
-  keyLabelTootipPlacement?: 'top' | 'left' | 'right' | 'bottom';
-  keyType?: 'input' | 'select' | 'autoComplete';
-  keyOptions?: {
-    label: string;
-    value: string | number;
-  }[];
-  keyPlaceholder?: string;
   funcLabel?: React.ReactNode;
   funcLabelTootip?: React.ReactNode;
   valueLabel?: React.ReactNode;
   keyName?: string;
   funcName?: string;
   valueName?: string;
-  ajustOptions?: (key: string) => Promise<{ label: any; value: any }[]>;
-  valuePlaceholder?: string;
   field?: any;
   fullName?: (string | number)[];
   name: string | (string | number)[];
   addWapper?: (add: (defaultValue?: any, insertIndex?: number) => void) => void;
+  initialValue?: any;
 }
 
 export default function index(props: Props) {
@@ -40,24 +33,25 @@ export default function index(props: Props) {
     disabled,
     keyLabel = t('tag.key.label'),
     keyLabelTootip,
-    keyLabelTootipPlacement,
-    keyType = 'input',
-    keyOptions,
-    keyPlaceholder,
     funcLabel = t('tag.func.label'),
     funcLabelTootip,
     valueLabel = t('tag.value.label'),
     keyName = 'key',
     funcName = 'func',
     valueName = 'value',
-    ajustOptions,
-    valuePlaceholder,
     field = {},
     fullName = [],
     name,
     addWapper,
+    initialValue,
   } = props;
   const restField = _.omit(field, ['key', 'name']);
+  const [keyOptions, setKeyOptions] = React.useState<
+    {
+      label: string;
+      value: string | number;
+    }[]
+  >([]);
 
   // 监听当前Form.List的值变化
   const currentFullName = _.concat(fullName, name);
@@ -78,7 +72,7 @@ export default function index(props: Props) {
   };
 
   // 当值变化时自动触发校验
-  React.useEffect(() => {
+  useEffect(() => {
     if (currentValues && Array.isArray(currentValues) && currentValues.length > 0) {
       // 延迟执行校验，确保表单值已更新
       const timer = setTimeout(() => {
@@ -89,8 +83,18 @@ export default function index(props: Props) {
     }
   }, [currentValues, currentFullName]);
 
+  useEffect(() => {
+    getEventTagKeys()
+      .then((res) => {
+        setKeyOptions(_.map(res, (item) => ({ label: item, value: item })));
+      })
+      .catch(() => {
+        setKeyOptions([]);
+      });
+  }, []);
+
   return (
-    <Form.List {...restField} name={name} rules={[validateUniqueKeys]}>
+    <Form.List {...restField} name={name} rules={[validateUniqueKeys]} initialValue={initialValue}>
       {(fields, { add, remove }, { errors }) => (
         <>
           <Row gutter={10}>
@@ -100,7 +104,7 @@ export default function index(props: Props) {
                   <Space align='baseline' size={4}>
                     {keyLabel}
                     {keyLabelTootip && (
-                      <Tooltip className='n9e-ant-from-item-tooltip' title={keyLabelTootip} overlayClassName='ant-tooltip-max-width-400' placement={keyLabelTootipPlacement}>
+                      <Tooltip className='n9e-ant-from-item-tooltip' title={keyLabelTootip} overlayClassName='ant-tooltip-max-width-400'>
                         <QuestionCircleOutlined />
                       </Tooltip>
                     )}
@@ -152,13 +156,9 @@ export default function index(props: Props) {
               disabled={disabled}
               fullName={_.concat(fullName, name)}
               keyName={keyName}
-              keyType={keyType}
               keyOptions={keyOptions}
-              keyPlaceholder={keyPlaceholder}
               funcName={funcName}
               valueName={valueName}
-              ajustOptions={ajustOptions}
-              valuePlaceholder={valuePlaceholder}
               field={field}
               remove={remove}
             />

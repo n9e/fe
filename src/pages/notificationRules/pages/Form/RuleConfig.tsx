@@ -188,10 +188,6 @@ export default function NotifyConfig(props: Props) {
             keyLabel={t('notification_configuration.label_keys')}
             keyLabelTootip={t('notification_configuration.label_keys_tip')}
             funcName='op'
-            keyType='autoComplete'
-            keyOptions={_.map(eventKeys, (item) => {
-              return { label: item, value: item };
-            })}
           />
         </div>
         <div className='p2 rounded n9e-fill-color-2-5'>
