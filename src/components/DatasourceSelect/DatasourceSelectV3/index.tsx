@@ -1,13 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { Select, Space, Tag, Spin } from 'antd';
+import React, { useContext } from 'react';
+import { Select, Space, Tag } from 'antd';
 import { SelectProps } from 'antd/lib/select';
 import _ from 'lodash';
-import { useDebounceFn } from 'ahooks';
 
-import { getDatasourceBriefList, DatasourceItem } from '@/services/common';
+import { CommonStateContext } from '@/App';
 import { Cate } from '@/components/AdvancedWrap/utils';
 
 import './style.less';
+
+interface DatasourceItem {
+  id: number;
+  name: string;
+  plugin_type: string;
+  is_default: boolean;
+  identifier?: string;
+}
 
 interface Props {
   datasourceCateList: Cate[];
@@ -18,36 +25,7 @@ interface Props {
 
 export default function index(props: SelectProps & Props) {
   const { datasourceCateList, ajustDatasourceList, onChange, onClear } = props;
-  const [fetching, setFetching] = useState(false);
-  const [datasourceList, setDatasourceList] = useState<DatasourceItem[]>([]);
-  const allDatasourceListRef = React.useRef<DatasourceItem[]>([]);
-  const fetcher = (query?: string) => {
-    return getDatasourceBriefList(query, 'datasource_select_signal_key')
-      .then((list) => {
-        if (!query) {
-          allDatasourceListRef.current = list;
-        }
-        setDatasourceList(list);
-      })
-      .catch(() => {
-        setDatasourceList([]);
-      });
-  };
-
-  const { run: debounceFetcher } = useDebounceFn(
-    (value: string) => {
-      setFetching(true);
-      fetcher(value).finally(() => {
-        setFetching(false);
-      });
-    },
-    { wait: 200 },
-  );
-
-  useEffect(() => {
-    fetcher();
-  }, []);
-
+  const { datasourceList } = useContext(CommonStateContext);
   const currentDatasourceList = ajustDatasourceList ? ajustDatasourceList(datasourceList) : datasourceList;
 
   return (
@@ -56,13 +34,16 @@ export default function index(props: SelectProps & Props) {
       dropdownMatchSelectWidth={false}
       {..._.omit(props, ['datasourceCateList', 'ajustDatasourceList'])}
       showSearch
-      filterOption={false}
-      onSearch={debounceFetcher}
-      notFoundContent={fetching ? <Spin size='small' /> : null}
       optionLabelProp='optionLabel'
+      filterOption={(inputValue, option) => {
+        // 根据空格分词进行过滤，取交集
+        const keywords = _.filter(_.split(inputValue, ' '), (kw) => kw);
+        return _.every(keywords, (kw) => _.includes(option?.filter, kw));
+      }}
       options={_.map(_.orderBy(currentDatasourceList, ['is_default', 'plugin_type'], ['desc', 'asc']), (item) => {
         const datasourceCate = _.find(datasourceCateList, { value: item.plugin_type });
         return {
+          filter: item.plugin_type + item.name,
           originLabel: item.name,
           optionLabel: (
             <div>
@@ -102,12 +83,6 @@ export default function index(props: SelectProps & Props) {
       }}
       onClear={onClear}
       allowClear={!!onClear}
-      onDropdownVisibleChange={(visible) => {
-        if (!visible) {
-          // 关闭下拉时重置数据源列表
-          setDatasourceList(allDatasourceListRef.current);
-        }
-      }}
     />
   );
 }
