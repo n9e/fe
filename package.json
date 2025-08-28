@@ -128,6 +128,7 @@
     "vite-plugin-svgr": "^4.3.0"
   },
   "overrides": {
-    "@types/react": "^17.0.14"
+    "@types/react": "^17.0.14",
+    "@types/d3-dispatch": "3.0.6"
   }
 }
