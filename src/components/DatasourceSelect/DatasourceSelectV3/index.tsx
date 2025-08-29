@@ -74,7 +74,7 @@ export default function index(props: SelectProps & Props) {
       })}
       onChange={(value) => {
         if (onChange) {
-          const curCate = _.find(datasourceList, { id: value })?.plugin_type;
+          const curCate = _.find(currentDatasourceList, { id: value })?.plugin_type;
           if (!curCate) {
             return;
           }
