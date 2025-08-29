@@ -18,15 +18,15 @@ import EventDetailDrawer from '@/pages/alertCurEvent/pages/List/EventDetailDrawe
 import usePagination from '@/components/usePagination';
 import { getEventById } from '@/pages/alertCurEvent/services';
 
-import exportEvents, { downloadFile } from './exportEvents';
-import { SeverityColor } from '../event';
-import '../event/index.less';
-import './locale';
+import exportEvents, { downloadFile } from '../exportEvents';
+import { SeverityColor } from '../../event';
 
 export const CACHE_KEY = 'alert_events_range';
 
 interface Props {
-  showHeader?: boolean;
+  hideHeader?: boolean;
+  hideTimeRangePicker?: boolean;
+  hideExportButton?: boolean;
   filter: any;
   setFilter: (newFilter: any) => void;
   fetchData: (
@@ -36,12 +36,15 @@ interface Props {
     total: any;
     list: any;
   }>;
+  filterAreaRight?: React.ReactNode;
+  refreshFlag?: string;
+  rowSelection?: any;
 }
 
 const Event = (props: Props) => {
   const { t } = useTranslation('AlertHisEvents');
   const { feats, datasourceList } = useContext(CommonStateContext);
-  const { showHeader = true, filter, setFilter, fetchData } = props;
+  const { hideHeader = false, hideTimeRangePicker = false, hideExportButton = false, filter, setFilter, fetchData, filterAreaRight, rowSelection } = props;
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
   const [eventDetailDrawerData, setEventDetailDrawerData] = useState<{
     visible: boolean;
@@ -158,12 +161,12 @@ const Event = (props: Props) => {
 
   const filterObj = Object.assign(
     { range: filter.range },
-    filter.datasource_ids.length ? { datasource_ids: _.join(filter.datasource_ids, ',') } : {},
+    filter.datasource_ids?.length ? { datasource_ids: _.join(filter.datasource_ids, ',') } : {},
     filter.severity !== undefined ? { severity: filter.severity } : {},
     filter.query ? { query: filter.query } : {},
     filter.is_recovered !== undefined ? { is_recovered: filter.is_recovered } : {},
     { bgid: filter.bgid },
-    filter.rule_prods.length ? { rule_prods: _.join(filter.rule_prods, ',') } : {},
+    filter.rule_prods?.length ? { rule_prods: _.join(filter.rule_prods, ',') } : {},
   );
 
   const { tableProps } = useAntdTable(
@@ -171,7 +174,7 @@ const Event = (props: Props) => {
       return fetchData(params, filterObj);
     },
     {
-      refreshDeps: [refreshFlag, JSON.stringify(filterObj)],
+      refreshDeps: [refreshFlag, JSON.stringify(filterObj), props.refreshFlag],
       defaultPageSize: 30,
       debounceWait: 500,
     },
@@ -179,25 +182,29 @@ const Event = (props: Props) => {
 
   return (
     <>
-      {showHeader && (
-        <div className='table-operate-box'>
+      {!hideHeader && (
+        <div className='flex justify-between items-center'>
           <Space wrap>
-            <RefreshIcon
-              onClick={() => {
-                setRefreshFlag(_.uniqueId('refresh_'));
-              }}
-            />
-            <TimeRangePicker
-              localKey={CACHE_KEY}
-              value={filter.range}
-              onChange={(val) => {
-                setFilter({
-                  ...filter,
-                  range: val,
-                });
-              }}
-              dateFormat='YYYY-MM-DD HH:mm:ss'
-            />
+            {!hideTimeRangePicker && (
+              <>
+                <RefreshIcon
+                  onClick={() => {
+                    setRefreshFlag(_.uniqueId('refresh_'));
+                  }}
+                />
+                <TimeRangePicker
+                  localKey={CACHE_KEY}
+                  value={filter.range}
+                  onChange={(val) => {
+                    setFilter({
+                      ...filter,
+                      range: val,
+                    });
+                  }}
+                  dateFormat='YYYY-MM-DD HH:mm:ss'
+                />
+              </>
+            )}
             <Select
               allowClear
               placeholder={t('prod')}
@@ -273,7 +280,7 @@ const Event = (props: Props) => {
               <Select.Option value={1}>Recovered</Select.Option>
             </Select>
             <Input
-              className='search-input'
+              className='min-w-[300px]'
               prefix={<SearchOutlined />}
               placeholder={t('search_placeholder')}
               value={filter.query}
@@ -287,27 +294,30 @@ const Event = (props: Props) => {
                 setRefreshFlag(_.uniqueId('refresh_'));
               }}
             />
-            <Button
-              loading={exportBtnLoadding}
-              onClick={() => {
-                setExportBtnLoadding(true);
-                const parsedRange = parseRange(filterObj.range);
-                exportEvents(
-                  { ..._.omit(filterObj, 'range'), stime: moment(parsedRange.start).unix(), etime: moment(parsedRange.end).unix(), limit: 1000000, p: 1 },
-                  (err, csv) => {
-                    if (err) {
-                      message.error(t('export_failed'));
-                    } else {
-                      downloadFile(csv, `events_${moment().format('YYYY-MM-DD_HH-mm-ss')}.csv`);
-                    }
-                    setExportBtnLoadding(false);
-                  },
-                );
-              }}
-            >
-              {t('export')}
-            </Button>
+            {!hideExportButton && (
+              <Button
+                loading={exportBtnLoadding}
+                onClick={() => {
+                  setExportBtnLoadding(true);
+                  const parsedRange = parseRange(filterObj.range);
+                  exportEvents(
+                    { ..._.omit(filterObj, 'range'), stime: moment(parsedRange.start).unix(), etime: moment(parsedRange.end).unix(), limit: 1000000, p: 1 },
+                    (err, csv) => {
+                      if (err) {
+                        message.error(t('export_failed'));
+                      } else {
+                        downloadFile(csv, `events_${moment().format('YYYY-MM-DD_HH-mm-ss')}.csv`);
+                      }
+                      setExportBtnLoadding(false);
+                    },
+                  );
+                }}
+              >
+                {t('export')}
+              </Button>
+            )}
           </Space>
+          {filterAreaRight}
         </div>
       )}
       <Table
@@ -316,6 +326,7 @@ const Event = (props: Props) => {
         tableLayout='auto'
         scroll={!_.isEmpty(tableProps.dataSource) ? { x: 'max-content' } : undefined}
         columns={columns}
+        rowKey='id'
         {...tableProps}
         rowClassName={(record: { severity: number; is_recovered: number }) => {
           return SeverityColor[record.is_recovered ? 3 : record.severity - 1] + '-left-border';
@@ -325,6 +336,7 @@ const Event = (props: Props) => {
           ...tableProps.pagination,
           pageSizeOptions: ['30', '100', '200', '500'],
         }}
+        rowSelection={rowSelection}
       />
       <EventDetailDrawer
         showDeleteBtn={false}
