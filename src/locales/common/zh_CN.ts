@@ -109,6 +109,7 @@ const zh_CN = {
     delete: '确认删除吗？',
     clone: '确认克隆吗？',
     save: '确认保存吗？',
+    close_without_saving: '设置未保存，是否确认关闭？',
   },
   success: {
     submit: '提交成功',

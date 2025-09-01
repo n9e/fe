@@ -26,6 +26,8 @@ import QueryBuilder from './QueryBuilder';
 import QueryBuilderWithIndexPatterns from './QueryBuilderWithIndexPatterns';
 import Table from './Table';
 import Share from '../components/Share';
+import { useGlobalState, N9E_ES_FIELD_VALUES_TOPN_CACHE_KEY } from './globalState';
+import Settings from './components/Settings';
 
 import './style.less';
 
@@ -171,6 +173,7 @@ export default function index(props: IProps) {
   const [mode, setMode] = useState<IMode>(getDefaultMode(query, isOpenSearch, esIndexMode));
   const [allowHideSystemIndices, setAllowHideSystemIndices] = useState<boolean>(false);
   const requestId = useMemo(() => _.uniqueId('requestId_'), []);
+  const [topn, setTopn] = useGlobalState('topn');
 
   const fetchSeries = (
     values,
@@ -618,6 +621,13 @@ export default function index(props: IProps) {
                   <div>
                     <Space>
                       <FullscreenButton />
+                      <Settings
+                        topn={topn}
+                        setTopn={(val) => {
+                          window.localStorage.setItem(N9E_ES_FIELD_VALUES_TOPN_CACHE_KEY, String(val));
+                          setTopn(val);
+                        }}
+                      />
                       <Spin spinning={loading} size='small' />
                     </Space>
                   </div>
