@@ -110,6 +110,7 @@ const en_US = {
     delete: 'Are you sure to delete?',
     clone: 'Are you sure to clone?',
     save: 'Are you sure to save?',
+    close_without_saving: 'Settings not saved, are you sure you want to close?',
   },
   success: {
     submit: 'Submitted successfully',

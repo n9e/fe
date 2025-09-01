@@ -17,7 +17,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Drawer, Button, Form, Input, Row, Col, Table, Select, Switch, message } from 'antd';
+import { Drawer, Button, Form, Input, Row, Col, Table, Select, Switch, Modal, message } from 'antd';
 import { useDebounceFn } from 'ahooks';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { getFullIndices, getFullFields } from '@/pages/explorer/Elasticsearch/services';
@@ -113,7 +113,38 @@ function FormModal(props: Props & ModalWrapProps) {
   }, [visible]);
 
   return (
-    <Drawer width={1000} destroyOnClose maskClosable={false} title={t(`${mode}_title`)} visible={visible} onClose={destroy}>
+    <Drawer
+      width={1000}
+      destroyOnClose
+      title={t(`${mode}_title`)}
+      visible={visible}
+      onClose={() => {
+        const values = form.getFieldsValue();
+        let changed = false;
+        if (mode === 'edit') {
+          _.forEach(Object.keys(values), (key) => {
+            if (!_.isEqual(values[key], initialValues[key])) {
+              changed = true;
+              return false;
+            }
+          });
+        } else if (mode === 'create') {
+          if (!_.isEmpty(_.omitBy(values, (v) => v === undefined || v === ''))) {
+            changed = true;
+          }
+        }
+        if (changed) {
+          Modal.confirm({
+            title: t('common:confirm.close_without_saving'),
+            onOk() {
+              destroy();
+            },
+          });
+        } else {
+          destroy();
+        }
+      }}
+    >
       <Row gutter={32}>
         <Col span={12}>
           <Form
@@ -216,7 +247,7 @@ function FormModal(props: Props & ModalWrapProps) {
 
             <Form.Item>
               <Button type='primary' htmlType='submit'>
-                {t('common:btn.create')}
+                {mode === 'create' ? t('common:btn.create') : t('common:btn.edit')}
               </Button>
             </Form.Item>
           </Form>

@@ -109,6 +109,7 @@ const zh_HK = {
     delete: '確認刪除嗎？',
     clone: '確認克隆嗎？',
     save: '確認儲存嗎？',
+    close_without_saving: '設置未保存，是否確認關閉？',
   },
   success: {
     submit: '提交成功',

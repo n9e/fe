@@ -7,6 +7,7 @@ import type { CustomIconComponentProps } from '@ant-design/icons/lib/components/
 import { getFieldLabel, dslBuilder, ajustFieldParamValue } from '../../Elasticsearch/utils';
 import { getESVersion, getFieldValues, typeMap } from '../../Elasticsearch/services';
 import { Field as FieldType, Filter } from '../services';
+import { useGlobalState } from '../globalState';
 
 interface Props {
   item: string;
@@ -52,9 +53,10 @@ export default function Field(props: Props) {
   const { t } = useTranslation('explorer');
   const { item, record, type, fieldConfig, params, onSelect, onRemove, filters, onValueFilter } = props;
   const { from, timesRef, datasourceValue, limit } = params;
-  const [top5Visible, setTop5Visible] = useState<boolean>(false);
-  const [top5Data, setTop5Data] = useState<any[]>([]);
-  const [top5Loading, setTop5Loading] = useState<boolean>(false);
+  const [topn] = useGlobalState('topn');
+  const [topnVisible, setTopnVisible] = useState<boolean>(false);
+  const [topnData, setTopnData] = useState<any[]>([]);
+  const [topnLoading, setTopnLoading] = useState<boolean>(false);
   const fieldLabel = getFieldLabel(item, fieldConfig);
   const form = Form.useFormInstance();
 
@@ -66,15 +68,19 @@ export default function Field(props: Props) {
         width: 240,
         height: 240,
       }}
-      visible={top5Visible}
+      visible={topnVisible}
       title={fieldLabel}
       content={
         <div className='n9e-es-discover-field-values-topn'>
-          <strong>{t('log.fieldValues_topn')}</strong>
-          <Spin spinning={top5Loading}>
+          <strong>
+            {t('log.field_values_topn.title', {
+              n: topn,
+            })}
+          </strong>
+          <Spin spinning={topnLoading}>
             <div className='n9e-es-discover-field-values-topn-list'>
-              {_.isEmpty(top5Data) && t('log.fieldValues_topnNoData')}
-              {_.map(top5Data, (item) => {
+              {_.isEmpty(topnData) && t('log.fieldValues_topnNoData')}
+              {_.map(topnData, (item) => {
                 const percent = _.floor(item.value * 100, 2);
                 return (
                   <div key={item.label} className='n9e-es-discover-field-values-topn-item'>
@@ -97,7 +103,7 @@ export default function Field(props: Props) {
                                 value: item.label,
                                 operator: 'is',
                               });
-                              setTop5Visible(false);
+                              setTopnVisible(false);
                             }
                           }}
                         />
@@ -109,7 +115,7 @@ export default function Field(props: Props) {
                                 value: item.label,
                                 operator: 'is not',
                               });
-                              setTop5Visible(false);
+                              setTopnVisible(false);
                             }
                           }}
                         />
@@ -123,9 +129,9 @@ export default function Field(props: Props) {
         </div>
       }
       onVisibleChange={(visible) => {
-        setTop5Visible(visible);
+        setTopnVisible(visible);
         if (visible) {
-          setTop5Loading(true);
+          setTopnLoading(true);
           const values = form.getFieldsValue();
           try {
             getESVersion(datasourceValue).then((version) => {
@@ -145,20 +151,21 @@ export default function Field(props: Props) {
                   fields: [ajustFieldParamValue(record, version)],
                 }),
                 ajustFieldParamValue(record, version),
+                topn,
               )
                 .then((res) => {
-                  setTop5Data(res);
+                  setTopnData(res);
                 })
                 .finally(() => {
-                  setTop5Loading(false);
+                  setTopnLoading(false);
                 });
             });
           } catch (e) {
             console.error(e);
-            setTop5Loading(false);
+            setTopnLoading(false);
           }
         } else {
-          setTop5Data([]);
+          setTopnData([]);
         }
       }}
     >

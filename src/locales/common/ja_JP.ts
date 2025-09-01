@@ -110,6 +110,7 @@ const ja_JP = {
     delete: '削除しますか？',
     clone: 'クローンしますか？',
     save: '保存しますか？',
+    close_without_saving: '設定未保存、閉じてもよろしいですか？',
   },
   success: {
     submit: '提出成功',

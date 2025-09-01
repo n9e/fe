@@ -64,6 +64,12 @@ const ru_RU = {
       not: 'Исключить из этого поиска',
       exists: 'Фильтровать документы, содержащие это поле',
     },
+    field_values_topn: {
+      label: 'Топ {{n}} значений',
+      settings: {
+        title: 'Настройки Топ N значений',
+      },
+    },
   },
   historicalRecords: {
     button: 'История запросов',

@@ -64,6 +64,12 @@ const zh_HK = {
       not: '從本次檢索中排除',
       exists: '過濾存在該欄位的文檔',
     },
+    field_values_topn: {
+      label: '前 {{n}} 個值',
+      settings: {
+        title: '前 N 個值設置',
+      },
+    },
   },
   historicalRecords: {
     button: '歷史記錄',
