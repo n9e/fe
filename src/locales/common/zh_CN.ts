@@ -35,6 +35,7 @@ const zh_CN = {
     detail: '详情',
     execute: '查询',
     export: '导出',
+    export_csv: '导出（CSV）',
     import: '导入',
     save: '保存',
     ok: '确定',
@@ -127,6 +128,7 @@ const zh_CN = {
     clone: '克隆失败',
     import: '导入失败',
     create: '创建失败',
+    export: '导出失败',
   },
   time: {
     millisecond: '毫秒',

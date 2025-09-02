@@ -36,6 +36,7 @@ const en_US = {
     detail: 'Detail',
     execute: 'Execute',
     export: 'Export',
+    export_csv: 'Export (CSV)',
     import: 'Import',
     save: 'Save',
     ok: 'Ok',
@@ -128,6 +129,7 @@ const en_US = {
     clone: 'Cloning failed',
     import: 'Import failed',
     create: 'Failed to create',
+    export: 'Export failed',
   },
   time: {
     millisecond: 'Millisecond',

@@ -140,6 +140,7 @@ export default function Prometheus(props: IProps) {
         }
       }}
       extra={<HistoricalRecords localKey={LOCAL_KEY} datasourceValue={datasourceValue} />}
+      showExportButton
     />
   );
 }
