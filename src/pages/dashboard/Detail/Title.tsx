@@ -321,7 +321,7 @@ export default function Title(props: IProps) {
                 onTimezoneChange={setTimezone}
               />
 
-              {isAuthorized && dashboardSaveMode === 'manual' && (
+              {isAuthorized && (
                 <Button
                   icon={<SettingOutlined />}
                   onClick={() => {
