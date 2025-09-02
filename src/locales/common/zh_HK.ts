@@ -35,6 +35,7 @@ const zh_HK = {
     detail: '詳情',
     execute: '查詢',
     export: '匯出',
+    export_csv: '匯出（CSV）',
     import: '匯入',
     save: '儲存',
     ok: '確定',
@@ -127,6 +128,7 @@ const zh_HK = {
     clone: '克隆失敗',
     import: '匯入失敗',
     create: '創建失敗',
+    export: '匯出失敗',
   },
   time: {
     millisecond: '毫秒',

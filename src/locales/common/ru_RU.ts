@@ -36,6 +36,7 @@ const ru_RU = {
     detail: 'Подробности',
     execute: 'Запрос',
     export: 'Экспорт',
+    export_csv: 'Экспорт (CSV)',
     import: 'Импорт',
     save: 'Сохранить',
     ok: 'ОК',
@@ -128,6 +129,7 @@ const ru_RU = {
     clone: 'Ошибка клонирования',
     import: 'Ошибка импорта',
     create: 'Ошибка создания',
+    export: 'Ошибка экспорта',
   },
   time: {
     millisecond: 'Миллисекунды',
