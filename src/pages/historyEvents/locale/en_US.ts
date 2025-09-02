@@ -22,6 +22,8 @@ const en_US = {
   export: 'Export',
   export_failed: 'Export failed',
   prod: 'Type',
+  claimant: 'Claimant',
+  shield: 'Shield',
   rule_prod: {
     firemap: 'Firemap',
     northstar: 'Northstar',
