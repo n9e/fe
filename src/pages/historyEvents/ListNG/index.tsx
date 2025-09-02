@@ -1,29 +1,37 @@
 import React, { useContext, useState } from 'react';
-import { SearchOutlined } from '@ant-design/icons';
+import { SearchOutlined, MoreOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import _ from 'lodash';
 import { useAntdTable } from 'ahooks';
-import { Input, Tag, Button, Space, Table, Select, message } from 'antd';
+import { Input, Tag, Button, Space, Table, Select, Dropdown, Menu, message } from 'antd';
+import queryString from 'query-string';
+import { useHistory } from 'react-router-dom';
 
 import RefreshIcon from '@/components/RefreshIcon';
 import { CommonStateContext } from '@/App';
 import { getProdOptions } from '@/pages/alertRules/Form/components/ProdSelect';
 import DatasourceSelect from '@/components/DatasourceSelect/DatasourceSelect';
 import TimeRangePicker, { parseRange } from '@/components/TimeRangePicker';
-import { IS_ENT } from '@/utils/constant';
+import { IS_ENT, IS_PLUS } from '@/utils/constant';
+import getTextWidth from '@/utils/getTextWidth';
 import { BusinessGroupSelectWithAll } from '@/components/BusinessGroup';
 import { allCates } from '@/components/AdvancedWrap/utils';
 import EventDetailDrawer from '@/pages/alertCurEvent/pages/List/EventDetailDrawer';
 import usePagination from '@/components/usePagination';
 import { getEventById } from '@/pages/alertCurEvent/services';
+import deleteAlertEventsModal from '@/pages/alertCurEvent/utils/deleteAlertEventsModal';
 
 import exportEvents, { downloadFile } from '../exportEvents';
 import { SeverityColor } from '../../event';
 
+// @ts-ignore
+import AckBtn from 'plus:/parcels/Event/Acknowledge/AckBtn';
+
 export const CACHE_KEY = 'alert_events_range';
 
 interface Props {
+  showClaimant?: boolean;
   hideHeader?: boolean;
   hideTimeRangePicker?: boolean;
   hideExportButton?: boolean;
@@ -43,8 +51,9 @@ interface Props {
 
 const Event = (props: Props) => {
   const { t } = useTranslation('AlertHisEvents');
+  const history = useHistory();
   const { feats, datasourceList } = useContext(CommonStateContext);
-  const { hideHeader = false, hideTimeRangePicker = false, hideExportButton = false, filter, setFilter, fetchData, filterAreaRight, rowSelection } = props;
+  const { hideHeader = false, hideTimeRangePicker = false, hideExportButton = false, filter, setFilter, fetchData, filterAreaRight, rowSelection, showClaimant = false } = props;
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
   const [eventDetailDrawerData, setEventDetailDrawerData] = useState<{
     visible: boolean;
@@ -52,7 +61,7 @@ const Event = (props: Props) => {
   }>({
     visible: false,
   });
-  const columns = [
+  let columns = [
     {
       title: t('event_name'),
       dataIndex: 'rule_name',
@@ -125,7 +134,7 @@ const Event = (props: Props) => {
     {
       title: t('first_trigger_time'),
       dataIndex: 'first_trigger_time',
-      width: 120,
+      fixed: 'right' as const,
       render(value) {
         return moment((value ? value : 0) * 1000).format('YYYY-MM-DD HH:mm:ss');
       },
@@ -133,12 +142,106 @@ const Event = (props: Props) => {
     {
       title: t('last_eval_time'),
       dataIndex: 'last_eval_time',
-      width: 120,
+      fixed: 'right' as const,
       render(value) {
         return moment((value ? value : 0) * 1000).format('YYYY-MM-DD HH:mm:ss');
       },
     },
   ];
+  if (showClaimant) {
+    columns = _.concat(columns, [
+      {
+        title: t('claimant'),
+        dataIndex: 'claimant',
+        fixed: 'right',
+        render: (value, record) => {
+          return (
+            <div
+              style={{
+                minWidth: getTextWidth(t('claimant')),
+              }}
+            >
+              {record.status === 1 ? value : t('status_0')}
+            </div>
+          );
+        },
+      },
+      {
+        title: t('common:table.operations'),
+        fixed: 'right' as const,
+        render(record) {
+          return (
+            <div
+              style={{
+                minWidth: getTextWidth(t('common:table.operations')),
+              }}
+            >
+              <Dropdown
+                overlay={
+                  <Menu>
+                    {IS_PLUS && (
+                      <Menu.Item>
+                        <AckBtn
+                          data={record}
+                          onOk={() => {
+                            setRefreshFlag(_.uniqueId('refresh_'));
+                          }}
+                        />
+                      </Menu.Item>
+                    )}
+                    {!_.includes(['firemap', 'northstar'], record?.rule_prod) && (
+                      <Menu.Item>
+                        <Button
+                          style={{ padding: 0 }}
+                          size='small'
+                          type='link'
+                          onClick={() => {
+                            history.push({
+                              pathname: '/alert-mutes/add',
+                              search: queryString.stringify({
+                                busiGroup: record.group_id,
+                                prod: record.rule_prod,
+                                cate: record.cate,
+                                datasource_ids: [record.datasource_id],
+                                tags: record.tags,
+                              }),
+                            });
+                          }}
+                        >
+                          {t('shield')}
+                        </Button>
+                      </Menu.Item>
+                    )}
+                    <Menu.Item>
+                      <Button
+                        style={{ padding: 0 }}
+                        size='small'
+                        type='link'
+                        danger
+                        onClick={() =>
+                          deleteAlertEventsModal(
+                            [record.id],
+                            () => {
+                              setRefreshFlag(_.uniqueId('refresh_'));
+                            },
+                            t,
+                          )
+                        }
+                      >
+                        {t('common:btn.delete')}
+                      </Button>
+                    </Menu.Item>
+                  </Menu>
+                }
+              >
+                <Button type='link' icon={<MoreOutlined />} />
+              </Dropdown>
+            </div>
+          );
+        },
+      },
+    ] as any[]);
+  }
   const [exportBtnLoadding, setExportBtnLoadding] = useState(false);
   const pagination = usePagination({ PAGESIZE_KEY: 'alert_his_events_table_pagesize' });
 

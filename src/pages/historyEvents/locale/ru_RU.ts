@@ -22,6 +22,8 @@ const ru_RU = {
   export: 'Экспорт',
   export_failed: 'Ошибка экспорта',
   prod: 'Тип мониторинга',
+  claimant: 'Класификатор',
+  shield: 'Щит',
   rule_prod: {
     firemap: 'Firemap',
     northstar: 'Northstar',
