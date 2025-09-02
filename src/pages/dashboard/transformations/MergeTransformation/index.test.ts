@@ -47,11 +47,64 @@ describe('MergeTransformation', () => {
             {
               name: 'time',
               type: 'time',
+              values: [1633072800000],
+              state: {},
+            },
+            {
+              name: 'value#A',
+              type: 'number',
+              values: [10],
+              state: {},
+            },
+          ],
+        },
+        {
+          refId: 'B',
+          fields: [
+            {
+              name: 'time',
+              type: 'time',
+              values: [1633072800000],
+              state: {},
+            },
+            {
+              name: 'value#B',
+              type: 'number',
+              values: [30],
+              state: {},
+            },
+          ],
+        },
+      ];
+
+      const transformation = new MergeTransformation();
+      const result = transformation.apply(input) as TableData[];
+
+      expect(result.length).toBe(1);
+      expect(result[0].fields.length).toBe(3);
+
+      const timeField = result[0].fields.find((f) => f.name === 'time');
+      const valueFieldA = result[0].fields.find((f) => f.name === 'value#A');
+      const valueFieldB = result[0].fields.find((f) => f.name === 'value#B');
+
+      expect(timeField?.values).toEqual([1633072800000]);
+      expect(valueFieldA?.values).toEqual([10]);
+      expect(valueFieldB?.values).toEqual([30]);
+    });
+
+    it('should merge rows with same common field values and keep separate rows for different values', () => {
+      const input: TableData[] = [
+        {
+          refId: 'A',
+          fields: [
+            {
+              name: 'time',
+              type: 'time',
               values: [1633072800000, 1633076400000],
               state: {},
             },
             {
-              name: 'value',
+              name: 'value#A',
               type: 'number',
               values: [10, 20],
               state: {},
@@ -64,11 +117,11 @@ describe('MergeTransformation', () => {
             {
               name: 'time',
               type: 'time',
-              values: [1633080000000, 1633083600000],
+              values: [1633072800000, 1633080000000],
               state: {},
             },
             {
-              name: 'value',
+              name: 'value#B',
               type: 'number',
               values: [30, 40],
               state: {},
@@ -81,13 +134,20 @@ describe('MergeTransformation', () => {
       const result = transformation.apply(input) as TableData[];
 
       expect(result.length).toBe(1);
-      expect(result[0].fields.length).toBe(2);
+      expect(result[0].fields.length).toBe(3);
 
       const timeField = result[0].fields.find((f) => f.name === 'time');
-      const valueField = result[0].fields.find((f) => f.name === 'value');
+      const valueFieldA = result[0].fields.find((f) => f.name === 'value#A');
+      const valueFieldB = result[0].fields.find((f) => f.name === 'value#B');
 
-      expect(timeField?.values).toEqual([1633072800000, 1633076400000, 1633080000000, 1633083600000]);
-      expect(valueField?.values).toEqual([10, 20, 30, 40]);
+      // 应该有3行：
+      // 第一行：time=1633072800000, value#A=10, value#B=30 (合并)
+      // 第二行：time=1633076400000, value#A=20, value#B=null
+      // 第三行：time=1633080000000, value#A=null, value#B=40
+      expect(timeField?.values.length).toBe(3);
+      expect(timeField?.values).toEqual([1633072800000, 1633076400000, 1633080000000]);
+      expect(valueFieldA?.values).toEqual([10, 20, null]);
+      expect(valueFieldB?.values).toEqual([30, null, 40]);
     });
   });
 
