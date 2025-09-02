@@ -1,6 +1,6 @@
 .fill-grid.rdg {
   /* 覆盖内置变量 */
-  /* --rdg-color: var(--fc-text-2); */
+  --rdg-color: var(--fc-text-2);
   --rdg-border-color: var(--fc-border-base);
   --rdg-summary-border-color: #aaa;
   --rdg-background-color: var(--fc-fill-2);
