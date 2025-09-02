@@ -12,7 +12,7 @@ import { NAME_SPACE } from '../../constants';
 import { logQuery } from '../../services';
 import RawList, { OriginSettings } from './RawList';
 import RawTable from './RawTable';
-import { getFieldsFromSQLData } from '../utils';
+import { getFieldsFromSQLData, setLocalstorageOptions } from '../utils';
 
 interface IProps {
   options: any;
@@ -38,6 +38,7 @@ function Raw(props: IProps) {
       ...newOptions,
     };
     setOptions(mergedOptions);
+    setLocalstorageOptions(mergedOptions);
   };
   const handleValueFilter = (params) => {
     const values = form.getFieldsValue();
