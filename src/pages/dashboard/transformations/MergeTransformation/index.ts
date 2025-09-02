@@ -45,37 +45,68 @@ export default class MergeTransformation implements Transformation {
       return [{ refId: 'merged', fields: [] }];
     }
 
-    // 收集所有表格的字段名，保持顺序
+    // 收集所有表格的字段名
     const allFieldNamesSet = new Set<string>();
     tables.forEach((table) => {
       table.fields.forEach((field) => allFieldNamesSet.add(field.name));
     });
     const allFieldNames = Array.from(allFieldNamesSet);
 
-    // 为每个字段创建合并后的字段定义
-    const mergedFields = allFieldNames.map((fieldName) => {
-      // 找到第一个包含此字段的表格，用其类型和状态作为基础
-      const sourceField = tables.flatMap((table) => table.fields).find((field) => field.name === fieldName);
+    // 找出所有表都存在的共同字段（用于合并条件）
+    const commonFields = allFieldNames.filter((fieldName) => tables.every((table) => table.fields.some((field) => field.name === fieldName)));
 
-      // 合并所有表格中此字段的值
-      const mergedValues: (string | number | null)[] = [];
-      tables.forEach((table) => {
-        const field = table.fields.find((f) => f.name === fieldName);
-        if (field) {
-          mergedValues.push(...field.values);
-        } else {
-          // 如果某个表格没有此字段，用 null 填充
-          const maxLength = Math.max(...table.fields.map((f) => f.values.length));
-          for (let i = 0; i < maxLength; i++) {
-            mergedValues.push(null);
+    // 创建行数据映射
+    const allRows: Array<{ tableIndex: number; rowIndex: number; data: Record<string, any> }> = [];
+
+    tables.forEach((table, tableIndex) => {
+      const maxRowCount = Math.max(...table.fields.map((f) => f.values.length));
+
+      for (let rowIndex = 0; rowIndex < maxRowCount; rowIndex++) {
+        const rowData: Record<string, any> = {};
+        table.fields.forEach((field) => {
+          rowData[field.name] = field.values[rowIndex] ?? null;
+        });
+
+        allRows.push({ tableIndex, rowIndex, data: rowData });
+      }
+    });
+
+    // 按共同字段分组合并
+    const mergedRowsMap = new Map<string, Record<string, any>>();
+
+    allRows.forEach((row) => {
+      // 创建共同字段的键
+      const commonKey = commonFields.map((fieldName) => `${fieldName}:${row.data[fieldName]}`).join('|');
+
+      if (mergedRowsMap.has(commonKey)) {
+        // 如果已存在相同的共同字段组合，合并其他字段的数据
+        const existingRow = mergedRowsMap.get(commonKey)!;
+        allFieldNames.forEach((fieldName) => {
+          if (!commonFields.includes(fieldName) && row.data[fieldName] !== null && row.data[fieldName] !== undefined) {
+            existingRow[fieldName] = row.data[fieldName];
           }
-        }
-      });
+        });
+      } else {
+        // 创建新行，复制所有字段
+        const newRow: Record<string, any> = {};
+        allFieldNames.forEach((fieldName) => {
+          newRow[fieldName] = row.data[fieldName];
+        });
+        mergedRowsMap.set(commonKey, newRow);
+      }
+    });
+
+    const mergedRows = Array.from(mergedRowsMap.values());
+
+    // 转换回字段格式
+    const mergedFields = allFieldNames.map((fieldName) => {
+      const sourceField = tables.flatMap((table) => table.fields).find((field) => field.name === fieldName);
+      const values = mergedRows.map((row) => row[fieldName] ?? null);
 
       return {
         name: fieldName,
         type: sourceField?.type || 'string',
-        values: mergedValues,
+        values,
         state: sourceField?.state || {},
       };
     });
