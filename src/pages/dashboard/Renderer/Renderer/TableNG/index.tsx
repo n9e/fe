@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useContext } from 'react';
 import { AllCommunityModule, ModuleRegistry, themeBalham, CellClickedEvent, DomLayoutType } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 import { AG_GRID_LOCALE_CN, AG_GRID_LOCALE_HK, AG_GRID_LOCALE_EN, AG_GRID_LOCALE_JP } from '@ag-grid-community/locale';
@@ -6,7 +6,8 @@ import _ from 'lodash';
 import { Select } from 'antd';
 import { useTranslation } from 'react-i18next';
 
-import { FONT_FAMILY } from '@/utils/constant';
+import { CommonStateContext } from '@/App';
+import getFontFamily from '@/utils/getFontFamily';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { useGlobalState } from '@/pages/dashboard/globalState';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
@@ -61,6 +62,7 @@ interface Props {
 
 function index(props: Props) {
   const { t, i18n } = useTranslation('dashboard');
+  const { siteInfo } = useContext(CommonStateContext);
   const {
     themeMode,
     time,
@@ -194,7 +196,7 @@ function index(props: Props) {
           minWidth: 100,
           sortable: true, // 启用排序功能
           cellStyle: {
-            fontFamily: FONT_FAMILY,
+            fontFamily: getFontFamily(siteInfo?.font_family),
             // 开启换行后，设置单元格文本的行高
             ...(cellOptions.wrapText ? { display: 'flex', alignItems: 'center', whiteSpace: 'normal', lineHeight: '1.5' } : {}),
           },
@@ -208,6 +210,9 @@ function index(props: Props) {
           wrapText: cellOptions.wrapText, // 用于单元格换行
           suppressSizeToFit: cellOptions.wrapText, // 用于单元格换行
           autoHeight: cellOptions.wrapText, // 用于单元格换行
+          headerStyle: {
+            fontFamily: getFontFamily(siteInfo?.font_family),
+          },
         }}
         onGridReady={(params) => {
           // 列的默认排序
