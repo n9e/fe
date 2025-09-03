@@ -84,7 +84,11 @@ const SideMenu = (props: SideMenuProps) => {
     ) {
       return true;
     }
-    if (location.pathname.indexOf('/dashboard') === 0 || location.pathname.indexOf('/embedded-dashboards') === 0) {
+    if (
+      location.pathname.indexOf('/dashboard') === 0 ||
+      location.pathname.indexOf('/embedded-dashboards') === 0 ||
+      location.pathname.indexOf('/components/dashboard/detail') === 0
+    ) {
       const query = querystring.parse(location.search);
       if (query?.viewMode === 'fullscreen') {
         return true;

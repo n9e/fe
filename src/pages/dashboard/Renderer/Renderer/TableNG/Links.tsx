@@ -16,7 +16,7 @@ interface Props {
   time: IRawTimeRange;
 }
 
-export function onCellClicked(
+export function cellClickCallback(
   cellEvent: any,
   {
     links,

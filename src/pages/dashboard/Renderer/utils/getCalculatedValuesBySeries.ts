@@ -30,6 +30,7 @@ export const getSerieTextObj = (
   thresholds?: IThresholds,
   valueRange?: [number, number],
   callValueFormatter = true,
+  rangeMode: 'lcro' | 'lcrc' = 'lcrc', // lcro: 左闭右开； lcrc: 左闭右闭
 ) => {
   const { decimals, dateFormat } = standardOptions || {};
   const unit = standardOptions?.unit || standardOptions?.util; // TODO: 兼容之前写错的 util
@@ -53,6 +54,9 @@ export const getSerieTextObj = (
         return toNumberValue === match?.special;
       } else if (type === 'range') {
         if (_.isNumber(match?.from) && _.isNumber(match?.to)) {
+          if (rangeMode === 'lcro') {
+            return toNumberValue >= match?.from && toNumberValue < match?.to;
+          }
           return toNumberValue >= match?.from && toNumberValue <= match?.to;
         } else if (_.isNumber(match?.from)) {
           return toNumberValue >= match?.from;
