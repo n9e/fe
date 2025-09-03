@@ -304,6 +304,7 @@ export default function index(props: IProps) {
   // 设置历史记录方法
   const setHistory = () => {
     const queryValues = form.getFieldValue(['query']);
+    queryValues.mode = queryValues.mode || mode; // TODO 解决只启用 index 或是 index pattern 模式下 mode 值为空的问题
     if ((queryValues.index && queryValues.date_field) || queryValues.indexPattern) {
       setLocalQueryHistory(`${CACHE_KEY_MAP[queryValues.mode]}-${datasourceValue}`, _.omit(queryValues, 'range'));
     }
