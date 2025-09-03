@@ -66,7 +66,7 @@ export default function Field(props: Props) {
       trigger={['click']}
       overlayInnerStyle={{
         width: 240,
-        height: 240,
+        minHeight: 240,
       }}
       visible={topnVisible}
       title={fieldLabel}
