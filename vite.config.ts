@@ -18,7 +18,7 @@ import { defineConfig, loadEnv } from 'vite';
 import { md } from './plugins/md';
 import plusResolve from './plugins/plusResolve';
 import prefixPlugin from './plugins/vite-plugin-prefix';
-import getFontFamily from './src/utils/getFontFamily';
+import { getFontFamilyByEnv } from './src/utils/getFontFamily';
 import react from '@vitejs/plugin-react';
 import svgr from 'vite-plugin-svgr';
 import path from 'path';
@@ -130,7 +130,7 @@ export default defineConfig(({ mode }) => {
             'menu-item-font-size': '14px',
             'radio-button-checked-bg': '#EAE6F3',
             'form-item-margin-bottom': '18px',
-            'font-family': getFontFamily(env.VITE_IS_ENT === 'true'),
+            'font-family': getFontFamilyByEnv(env.VITE_IS_ENT === 'true'),
             'text-color': '#262626',
             'table-row-hover-bg': '#EAE8F2',
             'table-header-bg': '#f0f0f0',
