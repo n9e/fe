@@ -304,7 +304,7 @@ export default function index(props: IProps) {
   // 设置历史记录方法
   const setHistory = () => {
     const queryValues = form.getFieldValue(['query']);
-    if (queryValues.index && queryValues.date_field) {
+    if ((queryValues.index && queryValues.date_field) || queryValues.indexPattern) {
       setLocalQueryHistory(`${CACHE_KEY_MAP[queryValues.mode]}-${datasourceValue}`, _.omit(queryValues, 'range'));
     }
   };
