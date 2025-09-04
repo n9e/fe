@@ -69,7 +69,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
   const history = useHistory();
   const location = useLocation();
   const query = querystring.parse(location.search);
-  const { profile, siteInfo } = useContext(CommonStateContext);
+  const { profile, siteInfo, i18nList } = useContext(CommonStateContext);
   const embed = localStorage.getItem('embed') === '1' && window.self !== window.top;
   const [themeVisible, setThemeVisible] = useState(false);
   const [currentMenu, setCurrentMenu] = useState<MenuMatchResult | null>(null);
@@ -221,9 +221,13 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                         }}
                         selectable
                       >
-                        {Object.keys(i18nMap).map((el) => {
-                          return <Menu.Item key={el}>{i18nMap[el]}</Menu.Item>;
-                        })}
+                        {Object.keys(i18nMap)
+                          .filter((el) => {
+                            return i18nList ? i18nList.includes(el) : true;
+                          })
+                          .map((el) => {
+                            return <Menu.Item key={el}>{i18nMap[el]}</Menu.Item>;
+                          })}
                       </Menu>
                     }
                   >

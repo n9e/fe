@@ -50,7 +50,7 @@ interface IPageLayoutProps {
   docFn?: Function;
 }
 
-const i18nMap = {
+export const i18nMap = {
   zh_CN: '简体',
   zh_HK: '繁體',
   en_US: 'En',
