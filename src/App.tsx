@@ -123,6 +123,7 @@ export interface ICommonState {
   screenTemplates?: string[];
   tablePaginationPosition?: string; // 表格分页位置
   installTs: number; // 安装时间戳
+  i18nList?: string[];
 }
 
 export const basePrefix = import.meta.env.VITE_PREFIX || '';
