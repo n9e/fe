@@ -38,6 +38,7 @@ import RouterPrompt from '@/components/RouterPrompt';
 import { adjustURL } from '@/pages/embeddedDashboards/utils';
 
 import VariableConfig, { IVariable } from '../VariableConfig';
+import Variables from '../Variables';
 import { replaceExpressionVars, getOptionsList } from '../VariableConfig/constant';
 import { ILink, IDashboardConfig } from '../types';
 import Panels from '../Panels';
@@ -145,6 +146,7 @@ export default function DetailV2(props: IProps) {
         }
         setDashboardMeta({
           ...(dashboardMeta || {}),
+          group_id: res.group_id,
           graphTooltip: configs.graphTooltip,
           graphZoom: configs.graphZoom,
         });
@@ -278,7 +280,6 @@ export default function DetailV2(props: IProps) {
       obj[item.name] = _.isArray(item.value) ? item.value : [item.value];
     });
     const parsedRange = parseRange(range);
-    // console.log('obj', obj);
     setParamsAiAction({
       page: 'dashboards',
       dashboard: {
@@ -388,6 +389,7 @@ export default function DetailV2(props: IProps) {
                   </div>
                 </div>
               )}
+              {dashboard.configs?.mode !== 'iframe' && <Variables editable={editable} queryParams={query} value={variableConfig} onChange={() => {}} />}
             </div>
           </Affix>
           {dashboard.configs?.mode !== 'iframe' ? (
