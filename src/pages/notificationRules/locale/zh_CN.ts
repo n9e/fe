@@ -76,9 +76,7 @@ const zh_CN = {
       label_tip: '可以限制仅在勾选的星期与时间段内触发升级，不配置表示不做限制',
     },
     labels_filter: {
-      label_tip: '仅对满足这些标签条件的告警事件执行{升级通知 or 聚合通知}。用于缩小影响范围，不配置表示不做限制。支持下拉选择已有标签键（推荐），也可手动输入',
-      label_placeholder: '输入或者选择用于匹配的标签键，如 app / cluster / alertname',
-      value_placeholder: '输入要匹配的值，如 payment / prod',
+      label_tip: '仅对满足这些标签条件的告警事件执行升级通知。用于缩小影响范围，不配置表示不做限制。支持下拉选择已有标签键（推荐），也可手动输入',
     },
     attributes_filter: {
       label_tip: '仅对同时匹配这些属性的告警启用升级；不配置表示不做限制。多个条件为且关系',
@@ -111,6 +109,9 @@ const zh_CN = {
       severity: '告警等级',
     },
     enable_tip: '开启后，符合规则的告警会按维度合并为一条通知',
+    labels_filter: {
+      label_tip: '仅对满足这些标签条件的告警事件执行聚合通知。用于缩小影响范围，不配置表示不做限制。支持下拉选择已有标签键（推荐），也可手动输入',
+    },
     attributes_filter: {
       label_tip: '只让匹配这些标签筛选条件的告警参与聚合，未匹配的告警不受本规则影响<br />多个条件为且关系，和下面的适用属性筛选条件也是且关系',
     },
@@ -124,9 +125,12 @@ const zh_CN = {
     },
   },
   statistics: {
-    total_notify_events: '最近 {{days}} 天通知事件总数',
-    reduced_notify_events: '最近 {{days}} 天减少通知事件数',
+    total_notify_events: '最近 {{days}} 天发送通知次数',
+    total_notify_events_tip: '统计实功发送的通知次数；被<b>收敛、抑制、屏蔽</b>的事件不计入',
+    escalation_events: '最近 {{days}} 天事件被升级数量',
+    escalation_events_tip: '满足升级规则并被提升优先级的事件数；数量偏多通常意味着处理周期较长，需优化<b>响应SLA/升级阈值/告警压降策略</b>',
     noise_reduction_ratio: '最近 {{days}} 天降噪比',
+    noise_reduction_ratio_tip: '降噪比 = <b>(1 − 实际发送通知次数 ÷ 原始告警事件数) × 100%</b>；数值越接近 <b>100%</b>，<b>降噪效果</b>越好',
   },
   tabs: {
     events: '事件列表',

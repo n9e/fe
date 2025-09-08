@@ -73,8 +73,13 @@ const en_US = {
   },
   statistics: {
     total_notify_events: 'Total notification events in the last {{days}} days',
-    reduced_notify_events: 'Reduced notification events in the last {{days}} days',
+    total_notify_events_tip: 'Statistics of the actual number of notifications sent; events that are <b>converged, suppressed, or blocked</b> are not counted',
+    escalation_events: 'Escalation events in the last {{days}} days',
+    escalation_events_tip:
+      'Number of events that meet the escalation rules and are promoted in priority; a high number usually means a longer processing cycle, and <b>response SLA/escalation threshold/alert noise reduction strategy</b> need to be optimized',
     noise_reduction_ratio: 'Noise reduction ratio in the last {{days}} days',
+    noise_reduction_ratio_tip:
+      'Noise reduction ratio = <b>(1 − actual number of notifications sent ÷ original number of alert events) × 100%</b>; the closer the value is to <b>100%</b>, the better the <b>noise reduction effect</b>',
   },
   tabs: {
     events: 'Event list',

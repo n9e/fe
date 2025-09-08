@@ -45,8 +45,8 @@ export interface EscalationItem extends RuleConfig {
 export interface NotifyStatistics {
   total_notify_events: number;
   total_notify_events_change: number;
-  reduced_notify_events: number;
-  reduced_notify_events_change: number;
+  escalation_events: number;
+  escalation_events_change: number;
   noise_reduction_ratio: number;
   noise_reduction_ratio_change: number;
 }
