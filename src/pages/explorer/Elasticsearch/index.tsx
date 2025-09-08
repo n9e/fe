@@ -32,9 +32,9 @@ import './style.less';
 // @ts-ignore
 import DrilldownBtn from 'plus:/pages/LogExploreLinkSetting/components/DrilldownBtn';
 // @ts-ignore
-import DownloadModal from 'plus:/datasource/elasticsearch/components/LogDownload/DownloadModal';
+import DownloadModal from 'plus:/components/LogDownload/DownloadModal/index';
 // @ts-ignore
-import ExportModal from 'plus:/datasource/elasticsearch/components/LogDownload/ExportModal';
+import ExportModal from 'plus:/components/LogDownload/ExportModal/index';
 
 interface IProps {
   headerExtra: HTMLDivElement | null;

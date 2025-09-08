@@ -14,6 +14,7 @@ const ja_JP = {
     },
     time_field: '時間フィールド',
     time_field_msg: '時間フィールドを入力してください',
+    time_field_msg_csv: 'csv形式は時間フィールドを入力してください',
     query_tip: 'SQL例：最近5分間のログ行数をクエリするには、SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)を使用します',
     query_placeholder: 'SELECT count(*) as count FROM db_name.table_name WHERE ts >= now() - 5m',
     execute: 'クエリ',

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Spin, Empty, Space, Radio, Form } from 'antd';
 import _ from 'lodash';
 import moment from 'moment';
@@ -13,6 +13,10 @@ import { logQuery } from '../../services';
 import RawList, { OriginSettings } from './RawList';
 import RawTable from './RawTable';
 import { getFieldsFromSQLData } from '../utils';
+import { CommonStateContext } from '@/App';
+
+// @ts-ignore
+import DownloadModal from 'plus:/components/LogDownload/DownloadModal';
 
 interface IProps {
   options: any;
@@ -24,9 +28,11 @@ interface IProps {
 function Raw(props: IProps) {
   const { t } = useTranslation(NAME_SPACE);
   const { refreshFlag, setRefreshFlag, setExecuteLoading } = props;
+  const { isPlus } = useContext(CommonStateContext);
   const form = Form.useFormInstance();
   const rangeRef = useRef<any>();
   const [logs, setLogs] = useState<{ [index: string]: string }[]>([]);
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
   const [options, setOptions] = useState(props.options);
   const [logRequestParams, setLogRequestParams] = useState<any>({});
@@ -84,6 +90,7 @@ function Raw(props: IProps) {
             };
           });
           setLogs(newLogs);
+          setTotal(res.total);
           const columnsKeys = getFieldsFromSQLData(res.list || []);
           setFields(columnsKeys);
         })
@@ -169,6 +176,7 @@ function Raw(props: IProps) {
                   <FullscreenButton />
                   <Spin spinning={loading} size='small' />
                 </Space>
+                <Space>{isPlus && <DownloadModal queryData={{ ...form.getFieldsValue(), total, logs }} />}</Space>
               </div>
               <div className='n9e-antd-table-height-full'>
                 {options.logMode === 'origin' && (
