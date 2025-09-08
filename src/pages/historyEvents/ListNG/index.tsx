@@ -161,7 +161,7 @@ const Event = (props: Props) => {
                 minWidth: getTextWidth(t('claimant')),
               }}
             >
-              {record.status === 1 ? value : t('status_0')}
+              {record.status === 1 ? value : t('alert-cur-events:status_0')}
             </div>
           );
         },
@@ -443,11 +443,22 @@ const Event = (props: Props) => {
       />
       <EventDetailDrawer
         showDeleteBtn={false}
+        showAckBtn
         visible={eventDetailDrawerData.visible}
         data={eventDetailDrawerData.data}
         onClose={() => setEventDetailDrawerData({ visible: false })}
         onDeleteSuccess={() => {
           setRefreshFlag(_.uniqueId('refresh_'));
+        }}
+        onRefresh={() => {
+          if (eventDetailDrawerData.data.id) {
+            getEventById(eventDetailDrawerData.data.id).then((res) => {
+              setEventDetailDrawerData({
+                visible: true,
+                data: res.dat,
+              });
+            });
+          }
         }}
       />
     </>

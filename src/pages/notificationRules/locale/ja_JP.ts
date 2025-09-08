@@ -73,8 +73,13 @@ const ja_JP = {
   },
   statistics: {
     total_notify_events: '過去 {{days}} 日間の通知イベントの総数',
-    reduced_notify_events: '過去 {{days}} 日間の削減された通知イベント数',
+    total_notify_events_tip: '実際に送信された通知の回数を集計します。<b>収束、抑制、ブロック</b>されたイベントはカウントされません',
+    escalation_events: '過去 {{days}} 日間のエスカレーションイベント数',
+    escalation_events_tip:
+      'エスカレーションルールを満たし、優先度が昇格されたイベントの数。数が多いほど、処理サイクルが長くなることを意味し、<b>応答SLA/エスカレーションしきい値/アラートノイズ削減戦略</b>を最適化する必要があります',
     noise_reduction_ratio: '過去 {{days}} 日間のノイズ削減率',
+    noise_reduction_ratio_tip:
+      'ノイズ削減率 = <b>(1 − 実際に送信された通知の数 ÷ 元のアラートイベントの数) × 100%</b>。値が<b>100%</b>に近いほど、<b>ノイズ削減効果</b>が高くなります',
   },
   tabs: {
     events: 'イベントリスト',

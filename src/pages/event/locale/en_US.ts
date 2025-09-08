@@ -89,6 +89,7 @@ const en_US = {
       detail: 'Detail',
       sub_id: 'Rule ID',
       notify_rule_id: 'Notification rule ID',
+      alert_aggr_events_link: 'Aggregated events',
     },
     task_tpls: {
       label: 'Self-healing template',

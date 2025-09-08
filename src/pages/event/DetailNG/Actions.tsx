@@ -9,16 +9,21 @@ import { Link } from 'react-router-dom';
 import { deleteAlertEventsModal } from '../index';
 import SharingLinkModal from './SharingLinkModal';
 
+// @ts-ignore
+import { AckBtnDefault } from 'plus:/parcels/Event/Acknowledge/AckBtn';
+
 interface Options {
   eventDetail?: any;
   showDeleteBtn?: boolean;
   showSharingLink?: boolean;
+  showAckBtn?: boolean;
   onDeleteSuccess?: () => void;
+  onRefresh?: () => void;
 }
 
 export default function getActions(options: Options) {
   const { t } = useTranslation('AlertCurEvents');
-  const { eventDetail, showDeleteBtn, showSharingLink = true, onDeleteSuccess } = options;
+  const { eventDetail, showDeleteBtn, showSharingLink = true, showAckBtn, onDeleteSuccess, onRefresh } = options;
   const [sharingLinkModalVisible, setSharingLinkModalVisible] = useState(false);
 
   if (!eventDetail) {
@@ -43,6 +48,14 @@ export default function getActions(options: Options) {
           >
             <Button type='primary'>{t('shield')}</Button>
           </Link>
+          {showAckBtn && (
+            <AckBtnDefault
+              data={eventDetail}
+              onOk={() => {
+                onRefresh?.();
+              }}
+            />
+          )}
           {showDeleteBtn && (
             <Button
               danger

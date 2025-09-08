@@ -10,15 +10,17 @@ import { NS } from '../../constants';
 
 interface Props {
   showDeleteBtn?: boolean;
+  showAckBtn?: boolean;
   visible: boolean;
   data: any;
   onClose: () => void;
   onDeleteSuccess: () => void;
+  onRefresh?: () => void;
 }
 
 export default function EventDetailDrawer(props: Props) {
   const { t } = useTranslation(NS);
-  const { showDeleteBtn = true, visible, onClose, data, onDeleteSuccess } = props;
+  const { showDeleteBtn = true, showAckBtn, visible, onClose, data, onDeleteSuccess, onRefresh } = props;
 
   return (
     <Drawer
@@ -32,10 +34,12 @@ export default function EventDetailDrawer(props: Props) {
       footer={getActions({
         eventDetail: data,
         showDeleteBtn,
+        showAckBtn,
         onDeleteSuccess: () => {
           onClose();
           onDeleteSuccess();
         },
+        onRefresh,
       })}
     >
       {data && <DetailNG data={data} showGraph />}

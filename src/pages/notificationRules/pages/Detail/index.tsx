@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { useParams, Link } from 'react-router-dom';
 import { Row, Col, Select, Card, Space, Tag, Tooltip, Button } from 'antd';
-import { TeamOutlined } from '@ant-design/icons';
+import { InfoCircleOutlined, TeamOutlined } from '@ant-design/icons';
 
 import PageLayout from '@/components/pageLayout';
 import { getTeamInfoList } from '@/services/manage';
@@ -113,7 +113,12 @@ export default function Detail() {
             <Row gutter={16}>
               <Col span={8}>
                 <div className='w-full h-[88px] rounded n9e-border-base n9e-fill-color-2 px-4 py-2'>
-                  <div className='flex items-center gap-1'>{t('statistics.total_notify_events', { days })}</div>
+                  <div className='flex items-center gap-2'>
+                    {t('statistics.total_notify_events', { days })}
+                    <Tooltip overlayClassName='ant-tooltip-max-width-400' title={<Trans ns={NS} i18nKey='statistics.total_notify_events_tip' components={{ b: <strong /> }} />}>
+                      <InfoCircleOutlined />
+                    </Tooltip>
+                  </div>
                   <div className='my-2 flex flex-wrap items-end'>
                     <div className='mr-2 text-l4 text-title'>{notifyStatistics?.total_notify_events}</div>
                     {notifyStatistics?.total_notify_events_change && (
@@ -132,26 +137,12 @@ export default function Detail() {
               </Col>
               <Col span={8}>
                 <div className='w-full h-[88px] rounded n9e-border-base n9e-fill-color-2 px-4 py-2'>
-                  <div className='flex items-center gap-1'>{t('statistics.reduced_notify_events', { days })}</div>
-                  <div className='my-2 flex flex-wrap items-end'>
-                    <div className='mr-2 text-l4 text-title'>{notifyStatistics?.reduced_notify_events}</div>
-                    {notifyStatistics?.reduced_notify_events_change && (
-                      <div
-                        className='flex cursor-default items-center'
-                        style={{
-                          color: notifyStatistics?.reduced_notify_events_change > 0 ? 'var(--fc-fill-success)' : 'var(--fc-fill-error)',
-                        }}
-                      >
-                        {notifyStatistics?.reduced_notify_events_change > 0 ? <UpIcon className='mr-0.5 h-3.5 w-3.5 ' /> : <DownIcon className='mr-0.5 h-3.5 w-3.5' />}
-                        {notifyStatistics?.reduced_notify_events_change}
-                      </div>
-                    )}
+                  <div className='flex items-center gap-2'>
+                    {t('statistics.noise_reduction_ratio', { days })}
+                    <Tooltip overlayClassName='ant-tooltip-max-width-400' title={<Trans ns={NS} i18nKey='statistics.noise_reduction_ratio_tip' components={{ b: <strong /> }} />}>
+                      <InfoCircleOutlined />
+                    </Tooltip>
                   </div>
-                </div>
-              </Col>
-              <Col span={8}>
-                <div className='w-full h-[88px] rounded n9e-border-base n9e-fill-color-2 px-4 py-2'>
-                  <div className='flex items-center gap-1'>{t('statistics.noise_reduction_ratio', { days })}</div>
                   <div className='my-2 flex flex-wrap items-end'>
                     <div className='mr-2 text-l4 text-title'>{notifyStatistics?.noise_reduction_ratio} %</div>
                     {notifyStatistics?.noise_reduction_ratio_change && (
@@ -163,6 +154,30 @@ export default function Detail() {
                       >
                         {notifyStatistics?.noise_reduction_ratio_change > 0 ? <UpIcon className='mr-0.5 h-3.5 w-3.5 ' /> : <DownIcon className='mr-0.5 h-3.5 w-3.5' />}
                         {notifyStatistics?.noise_reduction_ratio_change} %
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </Col>
+              <Col span={8}>
+                <div className='w-full h-[88px] rounded n9e-border-base n9e-fill-color-2 px-4 py-2'>
+                  <div className='flex items-center gap-2'>
+                    {t('statistics.escalation_events', { days })}
+                    <Tooltip overlayClassName='ant-tooltip-max-width-400' title={<Trans ns={NS} i18nKey='statistics.escalation_events_tip' components={{ b: <strong /> }} />}>
+                      <InfoCircleOutlined />
+                    </Tooltip>
+                  </div>
+                  <div className='my-2 flex flex-wrap items-end'>
+                    <div className='mr-2 text-l4 text-title'>{notifyStatistics?.escalation_events}</div>
+                    {notifyStatistics?.escalation_events_change && (
+                      <div
+                        className='flex cursor-default items-center'
+                        style={{
+                          color: notifyStatistics?.escalation_events_change > 0 ? 'var(--fc-fill-success)' : 'var(--fc-fill-error)',
+                        }}
+                      >
+                        {notifyStatistics?.escalation_events_change > 0 ? <UpIcon className='mr-0.5 h-3.5 w-3.5 ' /> : <DownIcon className='mr-0.5 h-3.5 w-3.5' />}
+                        {notifyStatistics?.escalation_events_change}
                       </div>
                     )}
                   </div>

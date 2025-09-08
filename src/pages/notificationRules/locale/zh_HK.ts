@@ -68,9 +68,12 @@ const zh_HK = {
     duration_2: '，仍處於未恢復/未認領狀態時，使用本配置發送通知。',
   },
   statistics: {
-    total_notify_events: '最近 {{days}} 天通知事件總數',
-    reduced_notify_events: '最近 {{days}} 天減少通知事件數',
+    total_notify_events: '最近 {{days}} 天發送通知次數',
+    total_notify_events_tip: '統計實功發送的通知次數；被<b>收斂、抑制、屏蔽</b>的事件不計入',
+    escalation_events: '最近 {{days}} 天事件被升級數量',
+    escalation_events_tip: '滿足升級規則並被提升優先級的事件數；數量偏多通常意味著處理週期較長，需優化<b>響應SLA/升級閾值/告警壓降策略</b>',
     noise_reduction_ratio: '最近 {{days}} 天降噪比',
+    noise_reduction_ratio_tip: '降噪比 = <b>(1 − 實際發送通知次數 ÷ 原始告警事件數) × 100%</b>；數值越接近 <b>100%</b>，<b>降噪效果</b>越好',
   },
   tabs: {
     events: '事件列表',
