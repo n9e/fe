@@ -1,10 +1,9 @@
 import moment from 'moment';
 import _ from 'lodash';
 
-import { getLabelNames, getMetricSeries, getMetricSeriesV2, getLabelValues, getMetric, getQueryResult, getESVariableResult } from '@/services/dashboardV2';
+import { getLabelNames, getMetricSeries, getMetricSeriesV2, getLabelValues, getMetric, getQueryResult } from '@/services/dashboardV2';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { Props } from '@/pages/dashboard/Variables/datasource';
-import { replaceExpressionVars } from '@/pages/dashboard/VariableConfig/constant';
 
 export default async function variableDatasource(
   props: Props<{

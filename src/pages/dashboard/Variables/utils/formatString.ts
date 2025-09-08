@@ -10,7 +10,7 @@ import { template } from 'lodash';
  * @param data 变量数据
  * @returns 处理后的字符串
  */
-export function interpolateString(str: string, data: Record<string, any>): string {
+export function formatString(str: string, data: Record<string, any>): string {
   if (!str || typeof str !== 'string') {
     return str;
   }
@@ -49,10 +49,10 @@ export function interpolateString(str: string, data: Record<string, any>): strin
   }
 }
 
-export function interpolateDatasource(str: string, data: Record<string, any>): number | undefined {
-  const result = interpolateString(str, data);
+export function formatDatasource(str: string, data: Record<string, any>): number | undefined {
+  const result = formatString(str, data);
   if (!result) {
-    console.log('数据源插值处理器解析失败');
+    console.error('数据源插值处理器解析失败');
     return;
   }
   if (isNaN(Number(result))) {

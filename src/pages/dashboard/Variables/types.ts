@@ -18,7 +18,7 @@ export interface IVariable<QueryType = any> {
     // v5.14.3 新增 datasource 储存数据源类型和名称
     // v6 必须有 datasource 字段
     cate: string;
-    value?: number; // v6 之后改为用 datasourceId
+    value?: number | string; // v6 之后改为用 datasourceId
   };
   config?: {
     // @deprecated 目前只有 ES 用到，后面改用标准的 query
@@ -26,7 +26,8 @@ export interface IVariable<QueryType = any> {
     index: string; // elasticsearch 源的索引配置
     date_field: string; // elasticsearch 源的时间字段配置
   };
-  value?: string | string[] | number; // 变量的值, 只有 datasource 的值是 number 类型
+  value?: number | string | string[] | number; // 变量的值, 只有 datasource 的值是 number 类型
   hide?: boolean; // v6 新增，用于隐藏变量
   query?: QueryType; // v8 新增，用于规范各类数据的查询条件
+  ready?: boolean; // 异步查询数据是否已准备好，每次发起查询前置为 false，查询完成后置为 true
 }

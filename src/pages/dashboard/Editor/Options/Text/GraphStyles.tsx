@@ -18,12 +18,16 @@ import React from 'react';
 import { Form, Row, Col, Select, InputNumber, Mentions } from 'antd';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
+
+import { useGlobalState } from '@/pages/dashboard/globalState';
+
 import { Panel } from '../../Components/Collapse';
 import ColorPicker from '../../../Components/ColorPicker';
 
-export default function GraphStyles({ variableConfigWithOptions }) {
+export default function GraphStyles() {
   const { t } = useTranslation('dashboard');
   const namePrefix = ['custom'];
+  const [variablesWithOptions] = useGlobalState('variablesWithOptions');
 
   return (
     <Panel header={t('panel.custom.title')}>
@@ -81,7 +85,7 @@ export default function GraphStyles({ variableConfigWithOptions }) {
         name={[...namePrefix, 'content']}
       >
         <Mentions prefix='$' autoSize={{ minRows: 3 }} placeholder={t('panel.custom.text.content_placeholder')}>
-          {_.map(variableConfigWithOptions, (item) => {
+          {_.map(variablesWithOptions, (item) => {
             return (
               <Mentions.Option key={item.name} value={item.name}>
                 {item.name}

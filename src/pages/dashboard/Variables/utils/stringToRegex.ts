@@ -6,13 +6,13 @@ export function stringStartsAsRegEx(str: string): boolean {
   return str[0] === '/';
 }
 
-export default function stringToRegex(str: string): RegExp | false {
+export default function stringToRegex(str: string): RegExp | null {
   if (!stringStartsAsRegEx(str)) {
     let regex;
     try {
       regex = new RegExp(`^${str}$`);
     } catch (e) {
-      return false;
+      return null;
     }
     return regex;
   }
@@ -23,9 +23,9 @@ export default function stringToRegex(str: string): RegExp | false {
     try {
       return new RegExp(match[1], match[2]);
     } catch (e) {
-      return false;
+      return null;
     }
   } else {
-    return false;
+    return null;
   }
 }

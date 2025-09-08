@@ -25,7 +25,7 @@ export default function initializeVariablesValue(
     let variableValue = queryParams[variableName];
     // 如果没有固定 URL 参数值，则从 localStorage 读取缓存值
     if (queryParams.__variable_value_fixed === undefined) {
-      if (!variableValue) {
+      if (variableValue === undefined) {
         const cachedValue = localStorage.getItem(`dashboard_v6_${dashboardId}_${variableName}`);
         if (cachedValue) {
           try {

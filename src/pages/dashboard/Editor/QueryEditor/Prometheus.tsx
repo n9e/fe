@@ -4,19 +4,24 @@ import { DeleteOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation, Trans } from 'react-i18next';
+
+import { alphabet } from '@/utils/constant';
 import TimeRangePicker, { isMathString } from '@/components/TimeRangePicker';
 import Resolution from '@/components/Resolution';
 import PromQLInputNG, { interpolateString } from '@/components/PromQLInputNG';
 import { getRealStep } from '@/pages/dashboard/Renderer/datasource/prometheus';
 import HideButton from '@/pages/dashboard/Components/HideButton';
-import { alphabet } from '@/utils/constant';
+import { useGlobalState } from '@/pages/dashboard/globalState';
+
 import Collapse, { Panel } from '../Components/Collapse';
 import ExpressionPanel from '../Components/ExpressionPanel';
 import AddQueryButtons from '../Components/AddQueryButtons';
 
-export default function Prometheus({ panelWidth, variableConfig, time, datasourceValue }) {
+export default function Prometheus({ panelWidth, datasourceValue }) {
   const { t } = useTranslation('dashboard');
-  const varNams = _.map(variableConfig, (item) => {
+  const [variablesWithOptions] = useGlobalState('variablesWithOptions');
+  const [range] = useGlobalState('range');
+  const varNams = _.map(variablesWithOptions, (item) => {
     return `$${item.name}`;
   });
   const chartForm = Form.useFormInstance();
@@ -40,7 +45,7 @@ export default function Prometheus({ panelWidth, variableConfig, time, datasourc
                       <Form.Item noStyle shouldUpdate>
                         {({ getFieldValue }) => {
                           const target = getFieldValue(['targets', field.name]);
-                          const step = getRealStep(time, target);
+                          const step = getRealStep(range, target);
                           const name = target?.refId || alphabet[index];
                           return (
                             <Space>
@@ -101,7 +106,7 @@ export default function Prometheus({ panelWidth, variableConfig, time, datasourc
                           interpolateString={(query) => {
                             return interpolateString({
                               query,
-                              range: time,
+                              range: range,
                               minStep: targets?.[field.name]?.step,
                             });
                           }}

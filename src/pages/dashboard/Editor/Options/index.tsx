@@ -29,17 +29,17 @@ import Iframe from './Iframe';
 import Heatmap from './Heatmap';
 import BarChart from './BarChart';
 
-export default function index({ type, targets, chartForm, variableConfigWithOptions }) {
+export default function index({ type, targets }) {
   const OptionsCptMap = {
     timeseries: <Timeseries targets={targets} />,
     stat: <Stat targets={targets} />,
-    table: <Table targets={targets} chartForm={chartForm} variableConfigWithOptions={variableConfigWithOptions} />,
-    tableNG: <TableNG targets={targets} chartForm={chartForm} variableConfigWithOptions={variableConfigWithOptions} />,
+    table: <Table targets={targets} />,
+    tableNG: <TableNG targets={targets} />,
     pie: <Pie />,
     hexbin: <Hexbin />,
     barGauge: <BarGauge />,
-    text: <Text variableConfigWithOptions={variableConfigWithOptions} />,
-    iframe: <Iframe variableConfigWithOptions={variableConfigWithOptions} />,
+    text: <Text />,
+    iframe: <Iframe />,
     gauge: <Gauge />,
     heatmap: <Heatmap />,
     barchart: <BarChart />,

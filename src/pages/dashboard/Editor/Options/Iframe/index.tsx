@@ -17,10 +17,10 @@
 import React from 'react';
 import GraphStyles from './GraphStyles';
 
-export default function Iframe({ variableConfigWithOptions }) {
+export default function Iframe() {
   return (
     <>
-      <GraphStyles variableConfigWithOptions={variableConfigWithOptions} />
+      <GraphStyles />
     </>
   );
 }

@@ -12,12 +12,11 @@ import { IVariable } from './types';
 import variableDatasourcePro from 'plus:/parcels/Dashboard/variableDatasource';
 
 export interface Props<QueryType = any> {
-  dashboardId: string;
   datasourceCate: string;
   datasourceValue: number;
   datasourceList: any[];
   query: QueryType;
-  variables: IVariable[];
+  variablesWithOptions: IVariable[];
 }
 
 export default async function datasource(props: Props) {

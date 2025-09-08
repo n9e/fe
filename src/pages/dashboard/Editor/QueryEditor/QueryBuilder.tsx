@@ -16,16 +16,13 @@ interface Props {
   panelWidth?: number;
   cate: string;
   datasourceValue: number;
-  variables: IVariable[];
-  dashboardId: string;
-  time: any;
 }
 
 export default function QueryBuilder(props: Props) {
-  const { panelWidth, cate, datasourceValue, variables, dashboardId, time } = props;
+  const { panelWidth, cate, datasourceValue } = props;
 
   if (cate === DatasourceCateEnum.prometheus) {
-    return <Prometheus panelWidth={panelWidth} variableConfig={variables} time={time} datasourceValue={datasourceValue} />;
+    return <Prometheus panelWidth={panelWidth} datasourceValue={datasourceValue} />;
   }
   if (cate === DatasourceCateEnum.elasticsearch) {
     return <Elasticsearch datasourceValue={datasourceValue} />;
@@ -37,5 +34,5 @@ export default function QueryBuilder(props: Props) {
     return <CK datasourceValue={datasourceValue} />;
   }
 
-  return <PlusQueryBuilder cate={cate} datasourceValue={datasourceValue} variables={variables} dashboardId={dashboardId} />;
+  return <PlusQueryBuilder cate={cate} datasourceValue={datasourceValue} />;
 }

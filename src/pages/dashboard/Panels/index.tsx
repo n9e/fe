@@ -45,7 +45,7 @@ import EditorModal from './EditorModal';
 import { ROW_HEIGHT } from '../Detail/utils';
 import { IDashboardConfig } from '../types';
 import { useGlobalState } from '../globalState';
-import ajustInitialValues from '../Renderer/utils/ajustInitialValues';
+import adjustInitialValues from '../Renderer/utils/adjustInitialValues';
 import Panel from './Panel';
 import './style.less';
 
@@ -60,15 +60,14 @@ interface IProps {
   setRange: (range: IRawTimeRange) => void;
   timezone: string;
   setTimezone: (timezone: string) => void;
-  variableConfig: any;
-  variableConfigWithOptions: any;
   panels: any[];
   isPreview: boolean;
   setPanels: React.Dispatch<React.SetStateAction<any[]>>;
   onShareClick: (panel: any) => void;
   onUpdated: (res: any) => void;
-  setVariableConfigRefreshFlag: (flag: string) => void;
   setAnnotationsRefreshFlag: (flag: string) => void;
+  editModalVariablecontainerRef: React.RefObject<HTMLDivElement>;
+  setEditModalVariablecontainerReady: (ready: boolean) => void;
 }
 
 const ReactGridLayout = WidthProvider(RGL);
@@ -77,23 +76,7 @@ function index(props: IProps) {
   const { t } = useTranslation('dashboard');
   const { profile, darkMode, dashboardSaveMode, perms, groupedDatasourceList } = useContext(CommonStateContext);
   const themeMode = darkMode ? 'dark' : 'light';
-  const {
-    editable,
-    dashboard,
-    setDashboard,
-    annotations,
-    setAllowedLeave,
-    range,
-    timezone,
-    setTimezone,
-    variableConfig,
-    variableConfigWithOptions,
-    panels,
-    isPreview,
-    setPanels,
-    onShareClick,
-    onUpdated,
-  } = props;
+  const { editable, dashboard, setDashboard, annotations, setAllowedLeave, range, timezone, setTimezone, panels, isPreview, setPanels, onShareClick, onUpdated } = props;
   const roles = _.get(profile, 'roles', []);
   const isAuthorized = _.includes(perms, '/dashboards/put') && !isPreview;
   const layoutInitialized = useRef(false);
@@ -207,7 +190,6 @@ function index(props: IProps) {
                       timezone={timezone}
                       setTimezone={setTimezone}
                       values={item}
-                      variableConfig={variableConfigWithOptions}
                       annotations={_.filter(annotations, (annotation) => annotation.panel_id === item.id)}
                       onCloneClick={() => {
                         setPanels((panels) => {
@@ -314,7 +296,7 @@ function index(props: IProps) {
                       mode: 'add',
                       visible: true,
                       id: item.id,
-                      initialValues: ajustInitialValues('timeseries', groupedDatasourceList, panels, variableConfigWithOptions)?.initialValues,
+                      initialValues: adjustInitialValues('timeseries', groupedDatasourceList, panels, variableConfigWithOptions)?.initialValues,
                     });
                   }}
                   onEditClick={(newPanel) => {
@@ -361,7 +343,7 @@ function index(props: IProps) {
       <EditorModal
         ref={editorRef}
         dashboardId={props.dashboardId}
-        variableConfig={variableConfig}
+        // variableConfig={variableConfig}
         range={range}
         timezone={timezone}
         setTimezone={setTimezone}
@@ -370,7 +352,8 @@ function index(props: IProps) {
         setPanels={setPanels}
         updateDashboardConfigs={updateDashboardConfigs}
         onUpdated={onUpdated}
-        setVariableConfigRefreshFlag={props.setVariableConfigRefreshFlag}
+        editModalVariablecontainerRef={props.editModalVariablecontainerRef}
+        setEditModalVariablecontainerReady={props.setEditModalVariablecontainerReady}
       />
     </div>
   );

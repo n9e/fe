@@ -74,8 +74,8 @@ function joinValues(
 export default function adjustData(
   variables: IVariable[],
   options: {
-    isEscapeJsonString?: boolean;
-    isPlaceholderQuoted?: boolean;
+    isEscapeJsonString?: boolean; // only for ES
+    isPlaceholderQuoted?: boolean; // only for ES
     datasourceList: {
       identifier?: string;
       id: number;

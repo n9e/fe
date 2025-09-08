@@ -11,12 +11,13 @@ import { IS_PLUS } from '@/utils/constant';
 
 import DatasourceSelectExtra from './DatasourceSelectExtra';
 
-export default function index({ dashboardId, chartForm, variableConfig }) {
+export default function index({ datasourceValue, variablesWithOptions }) {
   const { t } = useTranslation('dashboard');
   const { datasourceCateOptions, datasourceList } = useContext(CommonStateContext);
-  const datasourceVars = _.filter(variableConfig, (item) => {
+  const datasourceVars = _.filter(variablesWithOptions, (item) => {
     return _.includes(['datasource', 'datasourceIdentifier'], item.type);
   });
+  const chartForm = Form.useFormInstance();
 
   return (
     <>
@@ -82,7 +83,7 @@ export default function index({ dashboardId, chartForm, variableConfig }) {
             />
           </Form.Item>
         </InputGroupWithFormItem>
-        <DatasourceSelectExtra dashboardId={dashboardId} variableConfig={variableConfig} />
+        <DatasourceSelectExtra datasourceValue={datasourceValue} />
       </Space>
     </>
   );
