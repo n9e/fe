@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { createPortal } from 'react-dom';
 import _ from 'lodash';
 import { useGetState } from 'ahooks';
@@ -12,6 +12,9 @@ import Graph from './Graph';
 import Table from './Table';
 import { NAME_SPACE } from '../constants';
 import './style.less';
+import { CommonStateContext } from '@/App';
+// @ts-ignore
+import ExportModal from 'plus:/components/LogDownload/ExportModal/index';
 
 interface IProps {
   datasourceValue: number;
@@ -21,6 +24,8 @@ interface IProps {
 export default function Prometheus(props: IProps) {
   const { t } = useTranslation(NAME_SPACE);
   const { datasourceValue, headerExtra } = props;
+  const { isPlus } = useContext(CommonStateContext);
+
   const form = Form.useFormInstance();
   const [mode, setMode, getMode] = useGetState<string>('table');
   const [refreshFlag, setRefreshFlag] = useState<string>();
@@ -38,6 +43,7 @@ export default function Prometheus(props: IProps) {
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <div />
             <Space>
+              {/* {isPlus && <ExportModal datasourceValue={datasourceValue} />} */}
               <Share />
             </Space>
           </div>,

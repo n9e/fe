@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { createPortal } from 'react-dom';
 import _ from 'lodash';
 import { useGetState } from 'ahooks';
@@ -17,6 +17,10 @@ import { NAME_SPACE } from '../constants';
 import Content from './Content';
 import './style.less';
 
+// @ts-ignore
+import ExportModal from 'plus:/components/LogDownload/ExportModal';
+import { CommonStateContext } from '@/App';
+
 interface IProps {
   datasourceCate: DatasourceCateEnum;
   datasourceValue: number;
@@ -30,8 +34,9 @@ interface IProps {
   };
 }
 
-const HeaderExtra = ({ mode, setMode, submode, setSubmode, disabled }) => {
+const HeaderExtra = ({ mode, setMode, submode, setSubmode, disabled, datasourceValue }) => {
   const { t } = useTranslation(NAME_SPACE);
+  const { isPlus } = useContext(CommonStateContext);
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
       <Space>
@@ -61,6 +66,7 @@ const HeaderExtra = ({ mode, setMode, submode, setSubmode, disabled }) => {
         )}
       </Space>
       <Space>
+        {isPlus && <ExportModal datasourceValue={datasourceValue} />}
         <Share tooltip={t('explorer:share_tip_2')} />
       </Space>
     </div>
@@ -125,6 +131,7 @@ export default function Prometheus(props: IProps) {
             submode={submode}
             setSubmode={setSubmode}
             disabled={disabled}
+            datasourceValue={datasourceValue}
           />,
           headerExtra,
         )}
