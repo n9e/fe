@@ -48,14 +48,6 @@ export default function getActions(options: Options) {
           >
             <Button type='primary'>{t('shield')}</Button>
           </Link>
-          {showAckBtn && (
-            <AckBtnDefault
-              data={eventDetail}
-              onOk={() => {
-                onRefresh?.();
-              }}
-            />
-          )}
           {showDeleteBtn && (
             <Button
               danger
@@ -75,6 +67,14 @@ export default function getActions(options: Options) {
             >
               {t('common:btn.delete')}
             </Button>
+          )}
+          {showAckBtn && (
+            <AckBtnDefault
+              data={eventDetail}
+              onOk={() => {
+                onRefresh?.();
+              }}
+            />
           )}
           {showSharingLink && (
             <Button
@@ -99,17 +99,40 @@ export default function getActions(options: Options) {
       </div>,
     ];
   }
-  if (eventDetail?.rule_prod === 'firemap') {
+  if (_.includes(['firemap', 'northstar'], eventDetail?.rule_prod)) {
     return [
       <div className='action-btns'>
-        <Button
-          type='primary'
-          onClick={() => {
-            window.open(eventDetail.rule_config.detail_url + '&mute=1', '_blank');
-          }}
-        >
-          {t('shield')}
-        </Button>
+        <Space>
+          {eventDetail?.rule_prod === 'firemap' && (
+            <Button
+              type='primary'
+              onClick={() => {
+                window.open(eventDetail.rule_config.detail_url + '&mute=1', '_blank');
+              }}
+            >
+              {t('shield')}
+            </Button>
+          )}
+          {showSharingLink && (
+            <Button
+              icon={<ShareAltOutlined />}
+              onClick={() => {
+                setSharingLinkModalVisible(true);
+              }}
+            >
+              {t('sharing_link.title')}
+            </Button>
+          )}
+        </Space>
+        {eventDetail && showSharingLink && (
+          <SharingLinkModal
+            eventId={eventDetail.id}
+            visible={sharingLinkModalVisible}
+            onClose={() => {
+              setSharingLinkModalVisible(false);
+            }}
+          />
+        )}
       </div>,
     ];
   }

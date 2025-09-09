@@ -335,6 +335,7 @@ export default function AlertTable(props: IProps) {
         }}
       />
       <EventDetailDrawer
+        showAckBtn
         visible={eventDetailDrawerData.visible}
         data={eventDetailDrawerData.data}
         onClose={() => setEventDetailDrawerData({ visible: false })}
