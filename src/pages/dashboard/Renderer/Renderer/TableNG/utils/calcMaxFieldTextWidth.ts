@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import { getFontStr } from '@/pages/dashboard/Renderer/Renderer/Hexbin/utils';
+import { getFontStr } from '@/utils/getTextWidth';
 
 import { TextObject } from '../CellRenderer/types';
 
