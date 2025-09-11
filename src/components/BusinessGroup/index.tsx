@@ -6,7 +6,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import { Button, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { LeftOutlined, RightOutlined, SearchOutlined, PlusSquareOutlined } from '@ant-design/icons';
+import { LeftOutlined, RightOutlined, SearchOutlined, PlusSquareOutlined, EditOutlined } from '@ant-design/icons';
 
 import { CommonStateContext } from '@/App';
 import { ActionType } from '@/store/manageInterface';
@@ -85,7 +85,7 @@ const BUSINESS_GROUP_SEARCH_KEY = 'businessGroupSearchValue';
 
 export default function index(props: IProps) {
   const { t } = useTranslation('BusinessGroup');
-  const { businessGroup, businessGroupOnChange } = useContext(CommonStateContext);
+  const { businessGroup, businessGroupOnChange, darkMode } = useContext(CommonStateContext);
   const location = useLocation();
   const query = queryString.parse(location.search);
   const history = useHistory();
@@ -180,8 +180,7 @@ export default function index(props: IProps) {
                 const itemKey = _.toString(item.id);
                 return (
                   <div
-                    className={classNames({
-                      'n9e-metric-views-list-content-item': true,
+                    className={classNames('n9e-list-item relative px-[8px] py-[6px] cursor-pointer break-all group', {
                       active: showSelected ? itemKey === businessGroup.key : false,
                     })}
                     key={itemKey}
@@ -199,6 +198,15 @@ export default function index(props: IProps) {
                     }}
                   >
                     <span className='name'>{item.name}</span>
+                    <EditOutlined
+                      className={classNames('opacity-0 absolute right-0 top-1/2 -translate-y-1/2 cursor-pointer z-10 hover:opacity-100 group-hover:opacity-100 p-2 rounded')}
+                      style={{ backgroundColor: itemKey === businessGroup.key ? (darkMode ? '#27292e' : '#f0eef7') : darkMode ? '#2f3137' : '#F7F7F7' }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEditBusiId(itemKey);
+                        setEditBusiDrawerVisible(true);
+                      }}
+                    />
                   </div>
                 );
               })}
