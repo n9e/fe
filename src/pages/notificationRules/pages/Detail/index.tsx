@@ -129,7 +129,7 @@ export default function Detail() {
                         }}
                       >
                         {notifyStatistics?.total_notify_events_change > 0 ? <UpIcon className='mr-0.5 h-3.5 w-3.5 ' /> : <DownIcon className='mr-0.5 h-3.5 w-3.5' />}
-                        {notifyStatistics?.total_notify_events_change}
+                        {Math.abs(notifyStatistics?.total_notify_events_change)}
                       </div>
                     )}
                   </div>
@@ -153,7 +153,7 @@ export default function Detail() {
                         }}
                       >
                         {notifyStatistics?.noise_reduction_ratio_change > 0 ? <UpIcon className='mr-0.5 h-3.5 w-3.5 ' /> : <DownIcon className='mr-0.5 h-3.5 w-3.5' />}
-                        {notifyStatistics?.noise_reduction_ratio_change} %
+                        {Math.abs(notifyStatistics?.noise_reduction_ratio_change)} %
                       </div>
                     )}
                   </div>
@@ -173,11 +173,11 @@ export default function Detail() {
                       <div
                         className='flex cursor-default items-center'
                         style={{
-                          color: notifyStatistics?.escalation_events_change > 0 ? 'var(--fc-fill-success)' : 'var(--fc-fill-error)',
+                          color: notifyStatistics?.escalation_events_change > 0 ? 'var(--fc-fill-error)' : 'var(--fc-fill-success)',
                         }}
                       >
                         {notifyStatistics?.escalation_events_change > 0 ? <UpIcon className='mr-0.5 h-3.5 w-3.5 ' /> : <DownIcon className='mr-0.5 h-3.5 w-3.5' />}
-                        {notifyStatistics?.escalation_events_change}
+                        {Math.abs(notifyStatistics?.escalation_events_change)}
                       </div>
                     )}
                   </div>
