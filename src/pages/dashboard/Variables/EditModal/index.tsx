@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Modal, Table, Space, Button } from 'antd';
 import { ArrowDownOutlined, ArrowUpOutlined, CopyOutlined, DeleteOutlined } from '@ant-design/icons';
 import { arrayMoveImmutable } from 'array-move';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
+
+import { useGlobalState } from '@/pages/dashboard/globalState';
 
 import { IVariable } from '../types';
 import EditItem from './EditItem';
@@ -11,18 +13,16 @@ import EditItem from './EditItem';
 interface IProps {
   visible: boolean;
   setVisible: (visible: boolean) => void;
-  value?: IVariable[];
-  onChange: (v?: IVariable[]) => void;
   editMode?: number; // 0: 变量名、类型、数据源类型、数据源值无法修改
 }
 
 export default function EditModal(props: IProps) {
   const { t } = useTranslation('dashboard');
-  const { visible, setVisible, onChange, value, editMode } = props;
-  const datasourceVars = _.filter(value, (item) => {
+  const { visible, setVisible, editMode } = props;
+  const [variablesWithOptions, setVariablesWithOptions] = useGlobalState('variablesWithOptions');
+  const datasourceVars = _.filter(variablesWithOptions, (item) => {
     return _.includes(['datasource', 'datasourceIdentifier'], item.type);
   });
-  const [data, setData] = useState<IVariable[]>(value || []);
   const [record, setRecord] = useState<IVariable>({
     name: '',
     type: 'query',
@@ -34,12 +34,6 @@ export default function EditModal(props: IProps) {
   });
   const [recordIndex, setRecordIndex] = useState<number>(-1);
   const [mode, setMode] = useState<'list' | 'add' | 'edit'>('list');
-
-  useEffect(() => {
-    if (visible) {
-      setData(value || []);
-    }
-  }, [visible, JSON.stringify(value)]);
 
   return (
     <Modal
@@ -62,7 +56,7 @@ export default function EditModal(props: IProps) {
             return `${record.type}${record.name}${record.definition}`;
           }}
           size='small'
-          dataSource={data}
+          dataSource={variablesWithOptions}
           tableLayout='fixed'
           columns={[
             {
@@ -121,11 +115,11 @@ export default function EditModal(props: IProps) {
                             type='link'
                             size='small'
                             onClick={() => {
-                              const newData = arrayMoveImmutable(data, idx, idx + 1);
-                              setData(newData);
-                              onChange(newData);
+                              setVariablesWithOptions((prev) => {
+                                return arrayMoveImmutable(prev, idx, idx + 1);
+                              });
                             }}
-                            disabled={idx === data.length - 1}
+                            disabled={idx === variablesWithOptions.length - 1}
                           >
                             <ArrowDownOutlined />
                           </Button>
@@ -133,9 +127,9 @@ export default function EditModal(props: IProps) {
                             type='link'
                             size='small'
                             onClick={() => {
-                              const newData = arrayMoveImmutable(data, idx, idx - 1);
-                              setData(newData);
-                              onChange(newData);
+                              setVariablesWithOptions((prev) => {
+                                return arrayMoveImmutable(prev, idx, idx - 1);
+                              });
                             }}
                             disabled={idx === 0}
                           >
@@ -145,15 +139,15 @@ export default function EditModal(props: IProps) {
                             type='link'
                             size='small'
                             onClick={() => {
-                              const newData = [
-                                ...data,
-                                {
-                                  ...record,
-                                  name: 'copy_of_' + record.name,
-                                },
-                              ];
-                              setData(newData);
-                              onChange(newData);
+                              setVariablesWithOptions((prev) => {
+                                return [
+                                  ...prev,
+                                  {
+                                    ...record,
+                                    name: 'copy_of_' + record.name,
+                                  },
+                                ];
+                              });
                             }}
                           >
                             <CopyOutlined />
@@ -162,10 +156,11 @@ export default function EditModal(props: IProps) {
                             type='link'
                             size='small'
                             onClick={() => {
-                              const newData = _.cloneDeep(data);
-                              newData.splice(idx, 1);
-                              setData(newData);
-                              onChange(newData);
+                              setVariablesWithOptions((prev) => {
+                                const newData = _.cloneDeep(prev);
+                                newData.splice(idx, 1);
+                                return newData;
+                              });
                             }}
                           >
                             <DeleteOutlined />
@@ -186,7 +181,7 @@ export default function EditModal(props: IProps) {
                 type='primary'
                 onClick={() => {
                   setMode('add');
-                  setRecordIndex(data.length);
+                  setRecordIndex(variablesWithOptions.length);
                   setRecord({
                     name: '',
                     type: 'query',
@@ -208,35 +203,33 @@ export default function EditModal(props: IProps) {
           index={recordIndex}
           datasourceVars={datasourceVars}
           data={record}
-          vars={data}
+          vars={variablesWithOptions}
           editMode={editMode}
           onOk={(val) => {
-            let newData = data;
-            if (mode === 'add') {
-              newData = [...data, val];
-            } else if (mode === 'edit') {
-              newData = _.map(data, (item, i) => {
-                if (i === recordIndex) {
-                  return val;
-                }
-                return item;
-              });
-              // TODO 2023-01-25 如果修改了数据源变量的默认值，更新该变量的已选值
-              if (val.type === 'datasource' && val.defaultValue) {
-                const preDefaultValue = _.find(data, { name: val.name })?.defaultValue;
-                if (preDefaultValue !== val.defaultValue) {
-                  // setVaraiableSelected({
-                  //   name: val.name,
-                  //   value: val.defaultValue,
-                  //   id,
-                  //   urlAttach: true,
-                  //   vars: newData,
-                  // });
+            setVariablesWithOptions((prev) => {
+              let newData = _.cloneDeep(prev);
+              if (mode === 'add') {
+                newData = [...newData, val];
+              } else if (mode === 'edit') {
+                newData = _.map(newData, (item, i) => {
+                  if (i === recordIndex) {
+                    return val;
+                  }
+                  return item;
+                });
+                // TODO 2023-01-25 如果修改了数据源变量的默认值，更新该变量的已选值
+                if (val.type === 'datasource' && val.defaultValue) {
+                  const finded = _.find(newData, { name: val.name });
+                  if (finded) {
+                    const preDefaultValue = finded?.defaultValue;
+                    if (preDefaultValue !== val.defaultValue) {
+                      finded.value = val.defaultValue;
+                    }
+                  }
                 }
               }
-            }
-            setData(newData);
-            onChange(newData);
+              return newData;
+            });
             setMode('list');
             setRecordIndex(-1);
           }}

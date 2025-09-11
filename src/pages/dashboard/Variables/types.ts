@@ -8,10 +8,10 @@ export interface IVariable<QueryType = any> {
   multi?: boolean;
   allOption?: boolean;
   allValue?: string;
-  options?: {
-    label: string;
-    value: string;
-  }[];
+  // options?: {
+  //   label: string;
+  //   value: string;
+  // }[];
   type: 'query' | 'textbox' | 'custom' | 'constant' | 'datasource' | 'datasourceIdentifier' | 'hostIdent';
   defaultValue?: string | number; // textbox 和 datasource 的默认值
   datasource: {
@@ -29,5 +29,5 @@ export interface IVariable<QueryType = any> {
   value?: number | string | string[] | number; // 变量的值, 只有 datasource 的值是 number 类型
   hide?: boolean; // v6 新增，用于隐藏变量
   query?: QueryType; // v8 新增，用于规范各类数据的查询条件
-  ready?: boolean; // 异步查询数据是否已准备好，每次发起查询前置为 false，查询完成后置为 true
+  // ready?: boolean; // 异步查询数据是否已准备好，每次发起查询前置为 false，查询完成后置为 true
 }

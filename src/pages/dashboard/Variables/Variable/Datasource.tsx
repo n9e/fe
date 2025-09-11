@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import { Select } from 'antd';
 import _ from 'lodash';
 
@@ -12,7 +12,8 @@ import { Props } from './types';
 export default function Datasource(props: Props) {
   const { groupedDatasourceList } = useContext(CommonStateContext);
   const { item, formatedReg, variableValueFixed, onChange, value, setValue } = props;
-  const { name, label, options } = item;
+  const { name, label } = item;
+  const [options, setOptions] = useState<{ label: string; value: string }[]>([]);
   const latestItemRef = React.useRef<IVariable>(item);
 
   useEffect(() => {
@@ -32,13 +33,13 @@ export default function Datasource(props: Props) {
     });
 
     onChange({
-      options: itemOptions,
       value: getValueByOptions({
         variableValueFixed,
         variable: itemClone,
         itemOptions,
       }),
     });
+    setOptions(itemOptions);
   }, [JSON.stringify(item.definition), formatedReg]);
 
   return (

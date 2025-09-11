@@ -38,14 +38,14 @@ interface Props {
 export default function index(props: Props) {
   const { t } = useTranslation('dashboard');
   const { queryParams, value, onChange, editable, editModalVariablecontainerRef } = props;
-  const { groupedDatasourceList, datasourceList } = useContext(CommonStateContext);
-  const [dashboardMeta] = useGlobalState('dashboardMeta');
+  // const { groupedDatasourceList, datasourceList } = useContext(CommonStateContext);
+  // const [dashboardMeta] = useGlobalState('dashboardMeta');
   const [variablesWithOptions, setVariablesWithOptions] = useGlobalState('variablesWithOptions');
-  const [range] = useGlobalState('range');
-  const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refreshFlag_'));
+  // const [range] = useGlobalState('range');
+  // const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refreshFlag_'));
   // const [initializedValue, setInitializedValue] = useState<IVariable[]>([]);
   const [editing, setEditing] = useState<boolean>(false);
-  const latestVariablesWithOptionsRef = React.useRef<IVariable[]>(variablesWithOptions);
+  // const latestVariablesWithOptionsRef = React.useRef<IVariable[]>(variablesWithOptions);
 
   // useEffect(() => {
   //   latestVariablesWithOptionsRef.current = variablesWithOptions;
@@ -236,50 +236,24 @@ export default function index(props: Props) {
     return null;
   };
 
-  console.log('variablesWithOptions', variablesWithOptions);
-
   return (
     <div className='n9e-dashboard-variables-container'>
-      <Main
-        variableValueFixed={queryParams.__variable_value_fixed}
-        loading={false}
-        data={variablesWithOptions}
-        onChange={(newData, shouldRefetch) => {
-          console.log(newData, shouldRefetch);
-          setVariablesWithOptions(newData);
-          if (shouldRefetch) {
-            setRefreshFlag(_.uniqueId('refreshFlag_'));
-          }
-        }}
-        renderBtns={renderBtns}
-      />
+      <Main variableValueFixed={queryParams.__variable_value_fixed} loading={false} renderBtns={renderBtns} />
       {/** 用 createPortal 复制渲染变量 */}
       {editModalVariablecontainerRef.current &&
-        createPortal(
-          <Main
-            variableValueFixed={queryParams.__variable_value_fixed}
-            loading={false}
-            data={variablesWithOptions}
-            onChange={(newData, shouldRefetch) => {
-              setVariablesWithOptions(newData);
-              if (shouldRefetch) {
-                setRefreshFlag(_.uniqueId('refreshFlag_'));
-              }
-            }}
-          />,
-          editModalVariablecontainerRef.current,
-        )}
+        createPortal(<Main variableValueFixed={queryParams.__variable_value_fixed} loading={false} />, editModalVariablecontainerRef.current)}
       <EditModal
         visible={editing}
         setVisible={setEditing}
-        value={variablesWithOptions}
-        onChange={(newVariables: IVariable[]) => {
-          const normalizedValue = _.map(newVariables, (item) => {
-            return _.omit(item, ['options', 'value']);
-          });
-          onChange?.(normalizedValue);
-          setRefreshFlag(_.uniqueId('refreshFlag_'));
-        }}
+        // value={variablesWithOptions}
+        // onChange={(newVariables: IVariable[]) => {
+        //   console.log('newVariables', newVariables);
+        //   const normalizedValue = _.map(newVariables, (item) => {
+        //     return _.omit(item, ['options', 'value']);
+        //   }) as any[];
+        //   onChange?.(normalizedValue);
+        //   // setRefreshFlag(_.uniqueId('refreshFlag_'));
+        // }}
       />
     </div>
   );

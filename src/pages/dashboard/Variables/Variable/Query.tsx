@@ -10,25 +10,28 @@ import { IVariable } from '../types';
 import { formatString, formatDatasource } from '../utils/formatString';
 import filterOptionsByReg from '../utils/filterOptionsByReg';
 import getValueByOptions from '../utils/getValueByOptions';
+import getVariableDependencies from '../utils/getVariableDependencies';
 import datasource from '../datasource';
 import { Props } from './types';
-import { read } from 'fs';
 
 export default function Query(props: Props) {
   const { datasourceList } = useContext(CommonStateContext);
   const [range] = useGlobalState('range');
+  const [variablesWithOptions] = useGlobalState('variablesWithOptions');
   const { item, onChange, data, formatedReg, variableValueFixed, value, setValue, preVariable } = props;
-  const { name, label, multi, allOption, options } = item;
+  const { name, label, multi, allOption } = item;
   const latestItemRef = React.useRef<IVariable>(item);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [searchValue, setSearchValue] = useState('');
+  const [options, setOptions] = useState<{ label: string; value: string }[]>([]);
+  const variableDependencies = getVariableDependencies(item, variablesWithOptions);
 
   useEffect(() => {
     latestItemRef.current = item;
   });
 
   useEffect(() => {
-    if (!preVariable?.ready) return;
+    if (variableDependencies.length > 0 && _.some(variableDependencies, (dep) => dep.value === undefined || dep.value === null || dep.value === '')) return;
     if (!item.datasource) {
       const errMsg = 'Variable ' + name + ' datasource not found';
       console.error(errMsg);
@@ -46,10 +49,6 @@ export default function Query(props: Props) {
     const formatedDefinition = formatString(item.definition, data);
     const formatedQuery = item.query?.query ? formatString(item.query.query, data) : undefined;
 
-    onChange({
-      ready: false,
-    });
-
     datasource({
       datasourceCate,
       datasourceValue,
@@ -66,22 +65,27 @@ export default function Query(props: Props) {
         const itemOptions = _.sortBy(filterOptionsByReg(_.map(options, _.toString), formatedReg), 'value');
 
         onChange({
-          options: itemOptions,
+          // options: itemOptions,
           value: getValueByOptions({
             variableValueFixed,
             variable: itemClone,
             itemOptions,
           }),
-          ready: true,
         });
+        setOptions(itemOptions);
       })
       .catch((error) => {
         console.error('Error fetching item options:', error);
-        onChange({
-          ready: true,
-        });
       });
-  }, [preVariable?.ready, formatedReg, JSON.stringify(item.datasource), JSON.stringify(range), JSON.stringify(item.definition), JSON.stringify(item.query)]);
+  }, [
+    JSON.stringify(variableDependencies),
+    // preVariable?.ready,
+    formatedReg,
+    JSON.stringify(item.datasource),
+    JSON.stringify(range),
+    JSON.stringify(item.definition),
+    JSON.stringify(item.query),
+  ]);
 
   return (
     <div>
