@@ -173,7 +173,6 @@ export default function DetailV2(props: IProps) {
           const normalizedVariables = initializeVariablesValue(currentVariables, query, {
             dashboardId: _.toNumber(dashboardMeta.dashboardId),
           });
-          console.log('normalizedVariables', normalizedVariables);
           setVariablesWithOptions(normalizedVariables);
           setDashboardLinks(configs.links);
           if (cbk) {
@@ -197,11 +196,13 @@ export default function DetailV2(props: IProps) {
       if (isAuthorized) {
         setAllowedLeave(false);
       }
-      setDashboardMeta({
-        ...(dashboardMeta || {}),
-        graphTooltip: configs.graphTooltip,
-        graphZoom: configs.graphZoom,
-      });
+      if (configs.graphTooltip || configs.graphZoom) {
+        setDashboardMeta({
+          ...(dashboardMeta || {}),
+          graphTooltip: configs.graphTooltip,
+          graphZoom: configs.graphZoom,
+        });
+      }
       setDashboard({
         ...dashboard,
         name: updateData.name,
@@ -217,11 +218,12 @@ export default function DetailV2(props: IProps) {
     }
   };
   const handleVariableChange = (newValue) => {
+    console.log('handleVariableChange newValue', newValue);
     const dashboardConfigs: any = dashboard.configs;
     dashboardConfigs.var = newValue;
     // TODO: 手动模式需要在这里更新变量配置，自动模式会在获取大盘配置时更新
     if (dashboardSaveMode === 'manual') {
-      setVariablesWithOptions(newValue);
+      // setVariablesWithOptions(newValue);
     }
     // 触发 dashboard configs 的更新
     handleUpdateDashboardConfigs(dashboard.id, {
@@ -366,14 +368,7 @@ export default function DetailV2(props: IProps) {
                 </div>
               )}
               {dashboard.configs?.mode !== 'iframe' && !_.isEmpty(variablesWithOptions) && (
-                <Variables
-                  editable={editable && isAuthorized}
-                  queryParams={query}
-                  // value={variables}
-                  onChange={handleVariableChange}
-                  editModalVariablecontainerRef={editModalVariablecontainerRef}
-                  editModalVariablecontainerReady={editModalVariablecontainerReady}
-                />
+                <Variables editable={editable && isAuthorized} queryParams={query} onChange={handleVariableChange} editModalVariablecontainerRef={editModalVariablecontainerRef} />
               )}
             </div>
           </Affix>
@@ -466,7 +461,6 @@ export default function DetailV2(props: IProps) {
             visible,
           });
         }}
-        // variableConfig={variableConfig}
         id={editorData.id}
         dashboardId={id}
         time={range}

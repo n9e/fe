@@ -12,8 +12,7 @@ import { Props } from './types';
 export default function Datasource(props: Props) {
   const { groupedDatasourceList } = useContext(CommonStateContext);
   const { item, formatedReg, variableValueFixed, onChange, value, setValue } = props;
-  const { name, label } = item;
-  const [options, setOptions] = useState<{ label: string; value: string }[]>([]);
+  const { name, label, options } = item;
   const latestItemRef = React.useRef<IVariable>(item);
 
   useEffect(() => {
@@ -33,13 +32,13 @@ export default function Datasource(props: Props) {
     });
 
     onChange({
+      options: itemOptions,
       value: getValueByOptions({
         variableValueFixed,
         variable: itemClone,
         itemOptions,
       }),
     });
-    setOptions(itemOptions);
   }, [JSON.stringify(item.definition), formatedReg]);
 
   return (

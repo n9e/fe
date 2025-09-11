@@ -3,12 +3,13 @@ import { Form, Input, Row, Col, Select, Switch, Button, Space, Alert } from 'ant
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
 
+import { CommonStateContext } from '@/App';
 import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
 import { DatasourceSelectV3 } from '@/components/DatasourceSelect';
-import { CommonStateContext } from '@/App';
+import { useGlobalState } from '@/pages/dashboard/globalState';
 
-import { useGlobalState } from '../../globalState';
 import { IVariable } from '../types';
+import { typeOptions } from '../constant';
 import stringToRegex from '../utils/stringToRegex';
 import Querybuilder from './Querybuilder';
 
@@ -21,37 +22,6 @@ interface IProps {
   onOk: (val: IVariable) => void;
   onCancel: () => void;
 }
-
-const typeOptions = [
-  {
-    label: 'Query',
-    value: 'query',
-  },
-  {
-    label: 'Custom',
-    value: 'custom',
-  },
-  {
-    label: 'Text box',
-    value: 'textbox',
-  },
-  {
-    label: 'Constant',
-    value: 'constant',
-  },
-  {
-    label: 'Datasource',
-    value: 'datasource',
-  },
-  {
-    label: 'Datasource identifier',
-    value: 'datasourceIdentifier',
-  },
-  {
-    label: 'Host ident',
-    value: 'hostIdent',
-  },
-];
 
 function EditItem(props: IProps) {
   const { t } = useTranslation('dashboard');

@@ -19,12 +19,13 @@ export default function Query(props: Props) {
   const [range] = useGlobalState('range');
   const [variablesWithOptions] = useGlobalState('variablesWithOptions');
   const { item, onChange, data, formatedReg, variableValueFixed, value, setValue, preVariable } = props;
-  const { name, label, multi, allOption } = item;
+  const { name, label, multi, allOption, options } = item;
   const latestItemRef = React.useRef<IVariable>(item);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [searchValue, setSearchValue] = useState('');
-  const [options, setOptions] = useState<{ label: string; value: string }[]>([]);
   const variableDependencies = getVariableDependencies(item, variablesWithOptions);
+  const formatedDefinition = formatString(item.definition, data);
+  const formatedQuery = item.query?.query ? formatString(item.query.query, data) : undefined;
 
   useEffect(() => {
     latestItemRef.current = item;
@@ -46,8 +47,6 @@ export default function Query(props: Props) {
       message.error(errMsg);
       return;
     }
-    const formatedDefinition = formatString(item.definition, data);
-    const formatedQuery = item.query?.query ? formatString(item.query.query, data) : undefined;
 
     datasource({
       datasourceCate,
@@ -65,14 +64,13 @@ export default function Query(props: Props) {
         const itemOptions = _.sortBy(filterOptionsByReg(_.map(options, _.toString), formatedReg), 'value');
 
         onChange({
-          // options: itemOptions,
+          options: itemOptions,
           value: getValueByOptions({
             variableValueFixed,
             variable: itemClone,
             itemOptions,
           }),
         });
-        setOptions(itemOptions);
       })
       .catch((error) => {
         console.error('Error fetching item options:', error);
@@ -83,8 +81,8 @@ export default function Query(props: Props) {
     formatedReg,
     JSON.stringify(item.datasource),
     JSON.stringify(range),
-    JSON.stringify(item.definition),
-    JSON.stringify(item.query),
+    formatedDefinition,
+    formatedQuery,
   ]);
 
   return (

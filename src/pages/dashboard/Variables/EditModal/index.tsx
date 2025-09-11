@@ -14,11 +14,12 @@ interface IProps {
   visible: boolean;
   setVisible: (visible: boolean) => void;
   editMode?: number; // 0: 变量名、类型、数据源类型、数据源值无法修改
+  onChange: (newVariables: IVariable[]) => void;
 }
 
 export default function EditModal(props: IProps) {
   const { t } = useTranslation('dashboard');
-  const { visible, setVisible, editMode } = props;
+  const { visible, setVisible, editMode, onChange } = props;
   const [variablesWithOptions, setVariablesWithOptions] = useGlobalState('variablesWithOptions');
   const datasourceVars = _.filter(variablesWithOptions, (item) => {
     return _.includes(['datasource', 'datasourceIdentifier'], item.type);
@@ -116,7 +117,9 @@ export default function EditModal(props: IProps) {
                             size='small'
                             onClick={() => {
                               setVariablesWithOptions((prev) => {
-                                return arrayMoveImmutable(prev, idx, idx + 1);
+                                const newData = arrayMoveImmutable(prev, idx, idx + 1);
+                                onChange(newData);
+                                return newData;
                               });
                             }}
                             disabled={idx === variablesWithOptions.length - 1}
@@ -128,7 +131,9 @@ export default function EditModal(props: IProps) {
                             size='small'
                             onClick={() => {
                               setVariablesWithOptions((prev) => {
-                                return arrayMoveImmutable(prev, idx, idx - 1);
+                                const newData = arrayMoveImmutable(prev, idx, idx - 1);
+                                onChange(newData);
+                                return newData;
                               });
                             }}
                             disabled={idx === 0}
@@ -140,13 +145,15 @@ export default function EditModal(props: IProps) {
                             size='small'
                             onClick={() => {
                               setVariablesWithOptions((prev) => {
-                                return [
+                                const newData = [
                                   ...prev,
                                   {
                                     ...record,
                                     name: 'copy_of_' + record.name,
                                   },
                                 ];
+                                onChange(newData);
+                                return newData;
                               });
                             }}
                           >
@@ -159,6 +166,7 @@ export default function EditModal(props: IProps) {
                               setVariablesWithOptions((prev) => {
                                 const newData = _.cloneDeep(prev);
                                 newData.splice(idx, 1);
+                                onChange(newData);
                                 return newData;
                               });
                             }}
@@ -228,6 +236,7 @@ export default function EditModal(props: IProps) {
                   }
                 }
               }
+              onChange(newData);
               return newData;
             });
             setMode('list');
