@@ -106,6 +106,7 @@ export function getColumnsFromFields(
                 }
                 return formatedValue;
               }}
+              onActionClick={onActionClick}
             />
           );
         },
@@ -125,7 +126,7 @@ export function getColumnsFromFields(
       key: dateField,
       width: 200,
       render: (fields, record) => {
-        return <RenderValue fieldKey={dateField} fieldValue={fields[dateField]} fieldConfig={fieldConfig} rawValue={record.json} range={range} />;
+        return <RenderValue fieldKey={dateField} fieldValue={fields[dateField]} fieldConfig={fieldConfig} rawValue={record.json} range={range} onActionClick={onActionClick} />;
       },
       defaultSortOrder: 'descend',
       sorter: {
