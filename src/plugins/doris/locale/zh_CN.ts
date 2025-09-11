@@ -14,6 +14,7 @@ const zh_CN = {
 
     time_field: '时间字段',
     time_field_msg: '请输入时间字段',
+    time_field_msg_csv: 'csv格式必须输入时间字段',
     query_tip: 'SQL样例：查询最近5分钟的日志行数 SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)',
     query_placeholder: 'SELECT count(*) as count FROM db_name.table_name WHERE ts >= now() - 5m',
     execute: '查询',
