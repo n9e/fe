@@ -659,7 +659,7 @@ export default function index(props: IProps) {
                         setFilters([...(currentFilters || []), { key, operator, value: '' }]);
                       }
                     } else {
-                      if (value) {
+                      if (value !== undefined && value !== null) {
                         // key + value 作为唯一标识，存在则更新，不存在则新增
                         if (!_.find(currentFilters, { key, value })) {
                           setFilters([...(currentFilters || []), { key, value, operator }]);
