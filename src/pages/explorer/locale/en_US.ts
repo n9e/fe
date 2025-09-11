@@ -64,6 +64,12 @@ const en_US = {
       not: 'Filter out value',
       exists: 'Filter for field persent',
     },
+    field_values_topn: {
+      label: 'Top {{n}} values',
+      settings: {
+        title: 'Top N values settings',
+      },
+    },
   },
   historicalRecords: {
     button: 'Historical records',

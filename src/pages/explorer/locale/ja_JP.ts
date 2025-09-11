@@ -64,6 +64,12 @@ const ja_JP = {
       not: 'この検索から除外',
       exists: 'フィールドが存在するドキュメントをフィルタリング',
     },
+    field_values_topn: {
+      label: 'トップ {{n}} の値',
+      settings: {
+        title: 'トップ N の値設定',
+      },
+    },
   },
   historicalRecords: {
     button: '歴史レコード',

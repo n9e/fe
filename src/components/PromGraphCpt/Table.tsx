@@ -18,10 +18,14 @@ import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import moment from 'moment';
 import _ from 'lodash';
-import { Input, DatePicker, List, Space } from 'antd';
+import { Input, DatePicker, List, Space, Button, message } from 'antd';
+import { useTranslation } from 'react-i18next';
+import { json2csv } from 'json-2-csv';
+
 import UnitPicker from '@/pages/dashboard/Components/UnitPicker';
 import valueFormatter from '@/pages/dashboard/Renderer/utils/valueFormatter';
 import { instantInterpolateString } from '@/components/PromQLInputNG';
+import { downloadFile } from '@/pages/alertRules/List/utils';
 
 import { getPromData } from './services';
 import { QueryStats } from './components/QueryStatsView';
@@ -41,6 +45,7 @@ interface IProps {
   defaultUnit?: string;
   showUnitPicker?: boolean; // 是否显示单位选择器
   controlsPortalDomNode?: HTMLDivElement | null; // 用于渲染控件的容器节点
+  showExportButton?: boolean; // 是否显示导出按钮
 }
 type ResultType = 'matrix' | 'vector' | 'scalar' | 'string' | 'streams';
 
@@ -110,6 +115,7 @@ function getListItemValue(resultType, record, unit) {
 }
 
 export default function Table(props: IProps) {
+  const { t } = useTranslation();
   const {
     url,
     datasourceValue,
@@ -125,6 +131,7 @@ export default function Table(props: IProps) {
     defaultUnit,
     showUnitPicker = true,
     controlsPortalDomNode,
+    showExportButton = false,
   } = props;
   const [data, setData] = useState<{
     resultType: ResultType;
@@ -161,6 +168,23 @@ export default function Table(props: IProps) {
               }}
             />
           </Input.Group>
+        )}
+        {showExportButton && (
+          <Button
+            disabled={_.isEmpty(data.result)}
+            onClick={() => {
+              json2csv(data.result, (err, csv) => {
+                if (err) {
+                  message.error(t('common:error.export'));
+                  console.warn('导出 prometheus 即时查询 Table 数据失败', err);
+                } else {
+                  downloadFile(csv, `prometheus_explorer_table_${moment().format('YYYY-MM-DD_HH-mm-ss')}.csv`);
+                }
+              });
+            }}
+          >
+            {t('common:btn.export_csv')}
+          </Button>
         )}
       </Space>
     </div>
