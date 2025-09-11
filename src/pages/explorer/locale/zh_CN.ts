@@ -64,6 +64,12 @@ const zh_CN = {
       not: '从本次检索中排除',
       exists: '过滤存在该字段的文档',
     },
+    field_values_topn: {
+      title: '前 {{n}} 个值',
+      settings: {
+        title: '前 N 个值设置',
+      },
+    },
   },
   historicalRecords: {
     button: '历史记录',

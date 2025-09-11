@@ -19,6 +19,7 @@ export default function getFormattedRowData(
     cellOptions: CellOptions;
     options: IOptions;
     overrides: IOverride[];
+    rangeMode?: 'lcro' | 'lcrc';
   },
 ) {
   const { options, overrides, cellOptions } = panelParams;
@@ -37,7 +38,7 @@ export default function getFormattedRowData(
 
       let valueDomain: [number, number] = [0, 100];
 
-      if (_.isNumber(currentOptions.standardOptions.min) && _.isNumber(currentOptions.standardOptions.max)) {
+      if (_.isNumber(currentOptions.standardOptions?.min) && _.isNumber(currentOptions.standardOptions?.max)) {
         valueDomain = [currentOptions.standardOptions.min, currentOptions.standardOptions.max];
       } else if (currentCellOptions.type === 'gauge') {
         const fieldObj = _.find(tableData.fields, (item) => item.state.displayName === field || item.name === field);

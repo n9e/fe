@@ -36,6 +36,7 @@ const ja_JP = {
     detail: '詳細',
     execute: 'クエリ',
     export: 'エクスポート',
+    export_csv: 'エクスポート（CSV）',
     import: 'インポート',
     save: '保存',
     ok: '確定',
@@ -110,6 +111,7 @@ const ja_JP = {
     delete: '削除しますか？',
     clone: 'クローンしますか？',
     save: '保存しますか？',
+    close_without_saving: '設定未保存、閉じてもよろしいですか？',
   },
   success: {
     submit: '提出成功',
@@ -127,6 +129,7 @@ const ja_JP = {
     clone: 'クローン失敗',
     import: 'インポート失敗',
     create: '作成失敗',
+    export: 'エクスポート失敗',
   },
   time: {
     millisecond: 'ミリ秒',

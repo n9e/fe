@@ -157,7 +157,7 @@ export default function Prometheus({ panelWidth, variableConfig, time, datasourc
                           />
                         </Form.Item>
                       </Col>
-                      <Col flex='120px'>
+                      <Col flex='130px'>
                         <Form.Item label='Max data points' tooltip={t('query.prometheus.maxDataPoints.tip')} {...field} name={[field.name, 'maxDataPoints']}>
                           <InputNumber style={{ width: '100%' }} placeholder={panelWidth ?? 240} min={1} />
                         </Form.Item>

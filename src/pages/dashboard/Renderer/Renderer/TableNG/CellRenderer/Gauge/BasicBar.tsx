@@ -18,8 +18,15 @@ interface Props {
 export default function BasicBar(props: Props) {
   const { maxFieldTextWidth, item, valueMode, themeMode, minValue, maxValue } = props;
   const color = item.color;
+  let backgroundColor = 'unset';
   const bgRef = useRef(null);
   const textRef = useRef(null);
+
+  try {
+    backgroundColor = Color(color).alpha(0.2).rgb().string();
+  } catch (e) {
+    console.warn('Invalid color:', color);
+  }
 
   return (
     <div className='renderer-table-ng-bar-gauge'>
@@ -37,7 +44,7 @@ export default function BasicBar(props: Props) {
             style={{
               color: themeMode === 'dark' ? '#fff' : '#20222E',
               borderRight: `2px solid ${color}`,
-              backgroundColor: Color(color).alpha(0.2).rgb().string(),
+              backgroundColor,
               width: (item.stat !== undefined ? calculatePercentage(item.stat, minValue, maxValue) : 0) + '%',
             }}
           ></div>

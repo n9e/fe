@@ -11,6 +11,16 @@
   //   border-bottom: 0 none;
   // }
 
+  // 关闭 ag-grid 的默认最小高度限制，让表格能够自动撑开高度
+  .ag-layout-auto-height,
+  .ag-layout-print {
+
+    .ag-center-cols-container,
+    .ag-center-cols-viewport {
+      min-height: 30px !important;
+    }
+  }
+
   .ag-cell-wrapper {
     width: 100%;
   }
