@@ -78,8 +78,8 @@ export default function HostIdent(props: Props) {
               <Tooltip
                 title={
                   <div>
-                    {omittedValues.map((item) => {
-                      return <div key={item.key}>{item.value}</div>;
+                    {omittedValues.map((item, index) => {
+                      return <div key={item.key + _.toString(index)}>{item.value}</div>;
                     })}
                   </div>
                 }

@@ -24,6 +24,9 @@ export default function Query(props: Props) {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const variableDependencies = getVariableDependencies(item, variablesWithOptions);
+  if (item.name === 'ident') {
+    console.log('variableDependencies', variableDependencies, item, variablesWithOptions);
+  }
   const formatedDefinition = formatString(item.definition, data);
   const formatedQuery = item.query?.query ? formatString(item.query.query, data) : undefined;
 
@@ -177,8 +180,8 @@ export default function Query(props: Props) {
               <Tooltip
                 title={
                   <div>
-                    {omittedValues.map((item) => {
-                      return <div key={item.key}>{item.value}</div>;
+                    {omittedValues.map((item, index) => {
+                      return <div key={item.key + _.toString(index)}>{item.value}</div>;
                     })}
                   </div>
                 }
