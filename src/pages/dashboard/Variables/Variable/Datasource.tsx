@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { Select } from 'antd';
 import _ from 'lodash';
 
@@ -7,6 +7,7 @@ import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 
 import { IVariable } from '../types';
 import getValueByOptions from '../utils/getValueByOptions';
+import stringToRegex from '../utils/stringToRegex';
 import { Props } from './types';
 
 export default function Datasource(props: Props) {
@@ -22,9 +23,10 @@ export default function Datasource(props: Props) {
   useEffect(() => {
     const itemClone = _.cloneDeep(latestItemRef.current);
     let datasourceList = item.definition ? (groupedDatasourceList[item.definition] as any) : [];
-    if (formatedReg) {
+    const regex = stringToRegex(formatedReg);
+    if (regex) {
       datasourceList = _.filter(datasourceList, (option) => {
-        return formatedReg.test(option.name);
+        return regex.test(option.name);
       });
     }
     const itemOptions = _.map(datasourceList, (ds) => {

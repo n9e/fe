@@ -44,27 +44,26 @@ export default function Main(props: Props) {
 
                 const val = update.value;
 
-                if (val !== undefined) {
-                  // localStorage 本地保存
-                  if (dashboardMeta.dashboardId) {
-                    localStorage.setItem(`dashboard_v6_${dashboardMeta.dashboardId}_${item.name}`, typeof val === 'string' ? val : JSON.stringify(val));
-                  }
-
-                  // replace url 参数
-                  const newQueryParams = location.search ? queryString.parse(location.search) : {};
-                  const dataToQueryParams = _.reduce(
-                    _.filter(newData, (item) => item.type !== 'constant' && item.value !== undefined && item.value !== null && item.value !== ''),
-                    (result, dataItem) => {
-                      result[dataItem.name] = dataItem.value;
-                      return result;
-                    },
-                    {},
-                  );
-                  history.replace({
-                    pathname: location.pathname,
-                    search: queryString.stringify(_.assign(newQueryParams, dataToQueryParams)),
-                  });
+                // localStorage 本地保存
+                if (dashboardMeta.dashboardId) {
+                  localStorage.setItem(`dashboard_v6_${dashboardMeta.dashboardId}_${item.name}`, typeof val === 'string' ? val : JSON.stringify(val));
                 }
+
+                // replace url 参数
+                let newQueryParams = location.search ? queryString.parse(location.search) : {};
+                newQueryParams = _.omit(newQueryParams, _.map(newData, 'name')); // 先移除之前的变量参数
+                const dataToQueryParams = _.reduce(
+                  _.filter(newData, (item) => item.type !== 'constant' && item.value !== undefined && item.value !== null && item.value !== ''),
+                  (result, dataItem) => {
+                    result[dataItem.name] = dataItem.value;
+                    return result;
+                  },
+                  {},
+                );
+                history.replace({
+                  pathname: location.pathname,
+                  search: queryString.stringify(_.assign(newQueryParams, dataToQueryParams)),
+                });
 
                 return newData;
               });

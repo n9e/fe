@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { useGlobalState } from '@/pages/dashboard/globalState';
 
 import { IVariable } from '../types';
-import EditItem from './EditItem';
+import Variable from './Variable';
 
 interface IProps {
   visible: boolean;
@@ -207,11 +207,11 @@ export default function EditModal(props: IProps) {
           }}
         />
       ) : (
-        <EditItem
+        <Variable
           index={recordIndex}
           datasourceVars={datasourceVars}
           data={record}
-          vars={variablesWithOptions}
+          variablesWithOptions={variablesWithOptions}
           editMode={editMode}
           onOk={(val) => {
             setVariablesWithOptions((prev) => {

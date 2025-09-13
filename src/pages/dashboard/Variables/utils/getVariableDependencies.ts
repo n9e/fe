@@ -3,7 +3,6 @@ import _ from 'lodash';
 import { IVariable } from '../types';
 
 export default function getVariableDependencies(variable: IVariable, variables: IVariable[]) {
-  const variableIndex = _.findIndex(variables, (v) => v.name === variable.name);
   const dependencies: { name: string; value: number | string | string[] }[] = [];
 
   // 获取需要检查依赖的字符串内容
@@ -25,7 +24,7 @@ export default function getVariableDependencies(variable: IVariable, variables: 
   }
 
   // 遍历当前变量前面的所有变量，检查是否被依赖
-  for (let i = 0; i < variableIndex; i++) {
+  for (let i = 0; i < variables.length; i++) {
     const prevVariable = variables[i];
     const regex = new RegExp(`\\$${prevVariable.name}\\b|\\$\\{${prevVariable.name}\\}|\\[\\[${prevVariable.name}\\]\\]`, 'g');
 

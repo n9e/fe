@@ -36,7 +36,7 @@ export default function index(props: Props) {
     isPlaceholderQuoted: isPlaceholderQuoted(item.definition, item.name),
     isEscapeJsonString: true,
   });
-  const formatedReg = item.regex ? stringToRegex(formatString(item.regex, data)) : null;
+  const formatedReg = item.regex ? formatString(item.regex, data) : '';
 
   const [value, setValue] = useState<IVariable['value']>(propValue);
 
@@ -54,17 +54,12 @@ export default function index(props: Props) {
     setValue(curValue);
   }, [JSON.stringify(propValue)]);
 
-  // 查找前一个变量
-  const index = _.findIndex(variablesWithOptions, { name: item.name });
-  const preVariable = index > 0 ? variablesWithOptions[index - 1] : null;
-
   const subProps = {
     ...props,
     data,
     formatedReg,
     value,
     setValue,
-    preVariable,
   };
 
   // 兼容旧数据，constant 的 hide 默认为 true

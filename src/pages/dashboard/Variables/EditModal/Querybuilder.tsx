@@ -14,16 +14,16 @@ import { replaceDatasourceVariables } from '../utils/replaceTemplateVariables';
 import VariableQuerybuilderPro from 'plus:/parcels/Dashboard/VariableQuerybuilder';
 
 interface Props {
-  variables: IVariable[];
+  variablesWithOptions: IVariable[];
 }
 
 export default function Querybuilder(props: Props) {
   const { datasourceList } = useContext(CommonStateContext);
-  const { variables } = props;
+  const { variablesWithOptions } = props;
   const datasourceCate = Form.useWatch(['datasource', 'cate']);
   const datasourceValue = Form.useWatch(['datasource', 'value']);
   const currentdatasourceValue = replaceDatasourceVariables(datasourceValue, {
-    variables,
+    variables: variablesWithOptions,
     datasourceList,
   });
   const subProps = {

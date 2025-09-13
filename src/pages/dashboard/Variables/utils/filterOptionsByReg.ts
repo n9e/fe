@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 import stringToRegex from './stringToRegex';
 
-export default function filterOptionsByReg(options: string[], reg) {
+export default function filterOptionsByReg(options: string[], reg?: string) {
   const regex = stringToRegex(reg);
 
   if (reg && regex) {

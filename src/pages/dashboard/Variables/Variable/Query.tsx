@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Select, Tooltip, message } from 'antd';
+import { Select, Space, Tooltip } from 'antd';
+import { WarningOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 
 import { CommonStateContext } from '@/App';
@@ -10,44 +11,36 @@ import { IVariable } from '../types';
 import { formatString, formatDatasource } from '../utils/formatString';
 import filterOptionsByReg from '../utils/filterOptionsByReg';
 import getValueByOptions from '../utils/getValueByOptions';
-import getVariableDependencies from '../utils/getVariableDependencies';
 import datasource from '../datasource';
 import { Props } from './types';
 
 export default function Query(props: Props) {
   const { datasourceList } = useContext(CommonStateContext);
   const [range] = useGlobalState('range');
-  const [variablesWithOptions] = useGlobalState('variablesWithOptions');
-  const { item, onChange, data, formatedReg, variableValueFixed, value, setValue, preVariable } = props;
+  const { item, onChange, data, formatedReg, variableValueFixed, value, setValue } = props;
   const { name, label, multi, allOption, options } = item;
   const latestItemRef = React.useRef<IVariable>(item);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [searchValue, setSearchValue] = useState('');
-  const variableDependencies = getVariableDependencies(item, variablesWithOptions);
-  if (item.name === 'ident') {
-    console.log('variableDependencies', variableDependencies, item, variablesWithOptions);
-  }
   const formatedDefinition = formatString(item.definition, data);
   const formatedQuery = item.query?.query ? formatString(item.query.query, data) : undefined;
+  const datasourceCate = item.datasource.cate;
+  const datasourceValue = formatDatasource(item.datasource.value as any, data);
+  const [errorMsg, setErrorMsg] = useState<string>('');
 
   useEffect(() => {
     latestItemRef.current = item;
   });
 
   useEffect(() => {
-    if (variableDependencies.length > 0 && _.some(variableDependencies, (dep) => dep.value === undefined || dep.value === null || dep.value === '')) return;
     if (!item.datasource) {
       const errMsg = 'Variable ' + name + ' datasource not found';
-      console.error(errMsg);
-      message.error(errMsg);
+      setErrorMsg(errMsg);
       return;
     }
-    const datasourceCate = item.datasource.cate;
-    const datasourceValue = formatDatasource(item.datasource.value as any, data);
     if (!datasourceValue) {
       const errMsg = 'Variable ' + name + ' datasource not found';
-      console.error(errMsg);
-      message.error(errMsg);
+      setErrorMsg(errMsg);
       return;
     }
 
@@ -66,6 +59,7 @@ export default function Query(props: Props) {
         const itemClone = _.cloneDeep(latestItemRef.current);
         const itemOptions = _.sortBy(filterOptionsByReg(_.map(options, _.toString), formatedReg), 'value');
 
+        setErrorMsg('');
         onChange({
           options: itemOptions,
           value: getValueByOptions({
@@ -76,21 +70,28 @@ export default function Query(props: Props) {
         });
       })
       .catch((error) => {
-        console.error('Error fetching item options:', error);
+        setErrorMsg(error.message || 'Error fetching variable options');
+        onChange({
+          options: [],
+          value: undefined,
+        });
       });
-  }, [
-    JSON.stringify(variableDependencies),
-    // preVariable?.ready,
-    formatedReg,
-    JSON.stringify(item.datasource),
-    JSON.stringify(range),
-    formatedDefinition,
-    formatedQuery,
-  ]);
+  }, [datasourceCate, datasourceValue, JSON.stringify(range), formatedDefinition, formatedQuery, formatedReg]);
 
   return (
     <div>
-      <InputGroupWithFormItem label={label || name}>
+      <InputGroupWithFormItem
+        label={
+          <Space>
+            {errorMsg ? (
+              <Tooltip title={errorMsg}>
+                <WarningOutlined style={{ color: '#f06' }} />
+              </Tooltip>
+            ) : null}
+            {label || name}
+          </Space>
+        }
+      >
         <Select
           allowClear
           mode={multi ? 'multiple' : undefined}

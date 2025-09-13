@@ -6,7 +6,8 @@ export function stringStartsAsRegEx(str: string): boolean {
   return str[0] === '/';
 }
 
-export default function stringToRegex(str: string): RegExp | null {
+export default function stringToRegex(str?: string): RegExp | null {
+  if (!str) return null;
   if (!stringStartsAsRegEx(str)) {
     let regex;
     try {

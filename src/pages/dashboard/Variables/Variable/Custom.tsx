@@ -10,7 +10,7 @@ import getValueByOptions from '../utils/getValueByOptions';
 import { Props } from './types';
 
 export default function Custom(props: Props) {
-  const { item, onChange, formatedReg, variableValueFixed, value, setValue } = props;
+  const { item, onChange, variableValueFixed, value, setValue } = props;
   const { name, label, multi, allOption, options } = item;
   const latestItemRef = React.useRef<IVariable>(item);
   const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -23,7 +23,7 @@ export default function Custom(props: Props) {
   useEffect(() => {
     const itemClone = _.cloneDeep(latestItemRef.current);
     const options = _.map(_.compact(_.split(itemClone.definition, ',')), _.trim);
-    const itemOptions = _.sortBy(filterOptionsByReg(options, formatedReg), 'value');
+    const itemOptions = _.sortBy(filterOptionsByReg(options), 'value');
 
     onChange({
       options: itemOptions,
@@ -33,7 +33,7 @@ export default function Custom(props: Props) {
         itemOptions,
       }),
     });
-  }, [JSON.stringify(item.definition), formatedReg]);
+  }, [JSON.stringify(item.definition)]);
 
   return (
     <div>

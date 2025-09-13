@@ -7,6 +7,7 @@ import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 
 import { IVariable } from '../types';
 import getValueByOptions from '../utils/getValueByOptions';
+import stringToRegex from '../utils/stringToRegex';
 import { Props } from './types';
 
 export default function DatasourceIdentifier(props: Props) {
@@ -26,9 +27,10 @@ export default function DatasourceIdentifier(props: Props) {
           return item.identifier;
         })
       : [];
-    if (formatedReg) {
+    const regex = stringToRegex(formatedReg);
+    if (regex) {
       datasourceList = _.filter(datasourceList, (option) => {
-        return formatedReg.test(option.identifier);
+        return regex.test(option.identifier);
       });
     }
     const itemOptions = _.map(datasourceList, (ds) => {
