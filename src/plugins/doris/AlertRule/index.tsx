@@ -21,7 +21,7 @@ import { PlusCircleOutlined, CloseCircleOutlined, QuestionCircleOutlined } from 
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
-import { alphabet } from '@/utils/constant';
+import { alphabet, IS_PLUS } from '@/utils/constant';
 import { CommonStateContext } from '@/App';
 import Inhibit from '@/pages/alertRules/Form/components/Inhibit';
 import Triggers from '@/pages/alertRules/Form/components/Triggers';
@@ -122,7 +122,7 @@ export default function index(props: { datasourceCate: string; datasourceValue: 
                         </InputGroupWithFormItem>
                       </Col>
                     </Row>
-                    <AdvancedSettings prefixField={field} prefixName={[field.name]} disabled={disabled} showUnit />
+                    <AdvancedSettings prefixField={field} prefixName={[field.name]} disabled={disabled} showUnit={IS_PLUS} />
                     <CloseCircleOutlined className='alert-rule-trigger-remove' onClick={() => remove(field.name)} />
                     <Form.Item shouldUpdate noStyle>
                       {({ getFieldValue }) => {

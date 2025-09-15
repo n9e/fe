@@ -20,6 +20,7 @@ import { Form, Row, Col, Card, Space, Input } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
+import { IS_PLUS } from '@/utils/constant';
 import Severity from '@/pages/alertRules/Form/components/Severity';
 import Inhibit from '@/pages/alertRules/Form/components/Inhibit';
 import AdvancedSettings from '@/pages/alertRules/Form/Rule/Rule/Metric/Prometheus/components/AdvancedSettings';
@@ -69,7 +70,7 @@ export default function index(props: { datasourceCate: string; datasourceValue: 
                 <div className='mb2'>
                   <Severity field={field} />
                 </div>
-                <AdvancedSettings field={field} />
+                {IS_PLUS && <AdvancedSettings field={field} />}
                 <MinusCircleOutlined className='alert-rule-trigger-remove' onClick={() => remove(field.name)} />
               </div>
             ))}

@@ -3,12 +3,16 @@ import { Form, Space, Input, Row, Col, Card, InputNumber, Select, Tooltip } from
 import { PlusCircleOutlined, CloseCircleOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
+
+import { IS_PLUS } from '@/utils/constant';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import AdvancedSettings from '@/plugins/TDengine/components/AdvancedSettings';
 import QueryName, { generateQueryName } from '@/components/QueryName';
-import GraphPreview from './GraphPreview';
+
 import SqlTemplates from '../../components/SqlTemplates';
 import { MetaModal } from '../../components/Meta';
+import GraphPreview from './GraphPreview';
+
 import './style.less';
 
 interface IProps {
@@ -137,7 +141,7 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
                       </div>
                     </Col>
                   </Row>
-                  <AdvancedSettings mode='graph' prefixField={field} prefixName={[field.name]} disabled={disabled} showUnit expanded />
+                  <AdvancedSettings mode='graph' prefixField={field} prefixName={[field.name]} disabled={disabled} showUnit={IS_PLUS} expanded />
                   {fields.length > 1 && (
                     <CloseCircleOutlined
                       style={{ position: 'absolute', right: -4, top: -4 }}
