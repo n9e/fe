@@ -8,7 +8,7 @@ import { CommonStateContext } from '@/App';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import QueryName, { generateQueryName } from '@/components/QueryName';
 import LogQL from '@/components/LogQL';
-import { DatasourceCateEnum } from '@/utils/constant';
+import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
 import DocumentDrawer from '@/components/DocumentDrawer';
 
 import AdvancedSettings from '../../components/AdvancedSettings';
@@ -101,7 +101,7 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
                       </div>
                     </Col>
                   </Row>
-                  <AdvancedSettings mode='graph' prefixField={field} prefixName={[field.name]} disabled={disabled} expanded showUnit />
+                  <AdvancedSettings mode='graph' prefixField={field} prefixName={[field.name]} disabled={disabled} expanded showUnit={IS_PLUS} />
                   <Form.Item shouldUpdate noStyle>
                     {({ getFieldValue }) => {
                       const cate = getFieldValue('cate');
