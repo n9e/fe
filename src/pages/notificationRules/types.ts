@@ -29,6 +29,24 @@ export interface RuleItem {
   name: string;
   description: string;
   enable: boolean;
-  user_group_ids: string[];
+  user_group_ids: number[];
   notify_configs: RuleConfig[];
+  extra_config?: {
+    escalations: EscalationItem[];
+  };
+}
+
+export interface EscalationItem extends RuleConfig {
+  interval: number;
+  duration: number;
+  duration_unit: string;
+}
+
+export interface NotifyStatistics {
+  total_notify_events: number;
+  total_notify_events_change: number;
+  escalation_events: number;
+  escalation_events_change: number;
+  noise_reduction_ratio: number;
+  noise_reduction_ratio_change: number;
 }

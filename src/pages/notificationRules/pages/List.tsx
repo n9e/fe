@@ -109,7 +109,7 @@ export default function List() {
                 return (
                   <Link
                     to={{
-                      pathname: `/${NS}/edit/${record.id}`,
+                      pathname: `/${NS}/detail/${record.id}`,
                     }}
                   >
                     {val}
@@ -185,10 +185,18 @@ export default function List() {
             },
             {
               title: t('common:table.operations'),
-              width: 100,
+              width: 160,
               render: (record) => {
                 return (
                   <Space>
+                    <Link
+                      className='table-operator-area-normal'
+                      to={{
+                        pathname: `/${NS}/edit/${record.id}`,
+                      }}
+                    >
+                      {t('common:btn.edit')}
+                    </Link>
                     <Link
                       className='table-operator-area-normal'
                       to={{

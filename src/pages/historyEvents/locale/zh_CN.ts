@@ -22,6 +22,8 @@ const zh_CN = {
   export: '导出',
   export_failed: '导出失败',
   prod: '监控类型',
+  claimant: '认领人',
+  shield: '屏蔽',
   rule_prod: {
     firemap: '灭火图',
     northstar: '北极星',

@@ -13,17 +13,19 @@ import { PERM } from '@/pages/notificationChannels/constants';
 import { NS } from '../../constants';
 
 interface Props {
+  prefixNamePath?: (string | number)[];
   field: FormListFieldData;
   onChange?: (value: any, item?: ChannelItem) => void;
 }
 
 export default function ChannelSelect(props: Props) {
   const { t } = useTranslation(NS);
-  const { field, onChange } = props;
+  const { prefixNamePath = [], field, onChange } = props;
+  const restField = _.omit(field, ['key', 'name']);
   const [options, setOptions] = useState<{ label: string; value: number; enable: Boolean; item: ChannelItem }[]>([]);
   const [loading, setLoading] = useState(false);
   const form = Form.useFormInstance();
-  const channel_id = Form.useWatch(['notify_configs', field.name, 'channel_id']);
+  const channel_id = Form.useWatch([...prefixNamePath, field.name, 'channel_id']);
   const isAuthorized = useIsAuthorized([PERM]);
   const fetchData = () => {
     setLoading(true);
@@ -59,7 +61,7 @@ export default function ChannelSelect(props: Props) {
 
   return (
     <Form.Item
-      {...field}
+      {...restField}
       label={
         <Space size={4}>
           {t('notification_configuration.channel')}
@@ -111,15 +113,11 @@ export default function ChannelSelect(props: Props) {
         optionLabelProp='optionLabel'
         optionFilterProp='originLabel'
         onChange={() => {
-          // 修改 channel_id 时，清空 template_id
-          form.setFieldsValue({
-            notify_configs: _.map(form.getFieldValue('notify_configs'), (item, index: number) => {
-              if (index === field.name) {
-                return _.omit(item, ['template_id', 'params']);
-              }
-              return item;
-            }),
-          });
+          // 修改 channel_id 时，清空 template_id 和 params
+          const valuesClone = _.cloneDeep(form.getFieldsValue());
+          _.set(valuesClone, [...prefixNamePath, field.name, 'template_id'], undefined);
+          _.set(valuesClone, [...prefixNamePath, field.name, 'params'], undefined);
+          form.setFieldsValue(valuesClone);
         }}
       />
     </Form.Item>

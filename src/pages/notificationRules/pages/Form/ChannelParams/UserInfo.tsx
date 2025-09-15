@@ -10,17 +10,16 @@ import { SIZE } from '@/utils/constant';
 import { NS } from '../../../constants';
 
 interface Props {
+  prefixNamePath?: (string | number)[];
   field: FormListFieldData;
 }
 
 export default function UserInfo(props: Props) {
   const { t } = useTranslation(NS);
-  const { field } = props;
+  const { prefixNamePath = [], field } = props;
   const [userOptions, setUserOptions] = useState<any[]>();
   const [teamOptions, setTeamOptions] = useState<any[]>();
   const form = Form.useFormInstance();
-  const user_ids = Form.useWatch(['notify_configs', field.name, 'params', 'user_ids']);
-  const user_group_ids = Form.useWatch(['notify_configs', field.name, 'params', 'user_group_ids']);
 
   useEffect(() => {
     getUserInfoList({ limit: 5000 })
@@ -56,22 +55,7 @@ export default function UserInfo(props: Props) {
   return (
     <Row gutter={SIZE}>
       <Col span={12}>
-        <Form.Item
-          {..._.omit(field, ['key'])}
-          label={t('notification_configuration.user_info.user_ids')}
-          name={[field.name, 'params', 'user_ids']}
-          // rules={[
-          //   {
-          //     validator: (_rule, value) => {
-          //       // 如果 user_ids 和 user_group_ids 都为空，则报错
-          //       if (_.isEmpty(value) && _.isEmpty(user_group_ids)) {
-          //         return Promise.reject(new Error(t('notification_configuration.user_info.error')));
-          //       }
-          //       return Promise.resolve();
-          //     },
-          //   },
-          // ]}
-        >
+        <Form.Item {..._.omit(field, ['key'])} label={t('notification_configuration.user_info.user_ids')} name={[field.name, 'params', 'user_ids']}>
           <Select
             options={userOptions}
             showSearch
@@ -79,28 +63,13 @@ export default function UserInfo(props: Props) {
             mode='multiple'
             onChange={() => {
               // 校验 user_ids 和 user_group_ids
-              form.validateFields([['notify_configs', field.name, 'params', 'user_group_ids']]);
+              form.validateFields([[...prefixNamePath, field.name, 'params', 'user_group_ids']]);
             }}
           />
         </Form.Item>
       </Col>
       <Col span={12}>
-        <Form.Item
-          {..._.omit(field, ['key'])}
-          label={t('notification_configuration.user_info.user_group_ids')}
-          name={[field.name, 'params', 'user_group_ids']}
-          // rules={[
-          //   {
-          //     validator: (_rule, value) => {
-          //       // 如果 user_ids 和 user_group_ids 都为空，则报错
-          //       if (_.isEmpty(value) && _.isEmpty(user_ids)) {
-          //         return Promise.reject(new Error(t('notification_configuration.user_info.error')));
-          //       }
-          //       return Promise.resolve();
-          //     },
-          //   },
-          // ]}
-        >
+        <Form.Item {..._.omit(field, ['key'])} label={t('notification_configuration.user_info.user_group_ids')} name={[field.name, 'params', 'user_group_ids']}>
           <Select
             options={teamOptions}
             showSearch
@@ -108,7 +77,7 @@ export default function UserInfo(props: Props) {
             mode='multiple'
             onChange={() => {
               // 校验 user_ids 和 user_group_ids
-              form.validateFields([['notify_configs', field.name, 'params', 'user_ids']]);
+              form.validateFields([[...prefixNamePath, field.name, 'params', 'user_ids']]);
             }}
           />
         </Form.Item>

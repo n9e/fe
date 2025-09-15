@@ -22,6 +22,8 @@ const ja_JP = {
   export: 'エクスポート',
   export_failed: 'エクスポートに失敗しました',
   prod: '監視タイプ',
+  claimant: '認領人',
+  shield: 'シールド',
   rule_prod: {
     firemap: '消火図',
     northstar: '北極星',

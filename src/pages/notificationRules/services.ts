@@ -1,8 +1,8 @@
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
-import { RuleItem } from './types';
+import { RuleItem, NotifyStatistics } from './types';
 
-export type { RuleItem };
+export type { RuleItem, NotifyStatistics };
 
 export function getItems(): Promise<RuleItem[]> {
   return request('/api/n9e/notify-rules', {
@@ -68,5 +68,55 @@ export function getCustomParamsValues(notify_channel_id: number) {
     params: { notify_channel_id },
   }).then((res) => {
     return res.dat ?? [];
+  });
+}
+
+export function getNotifyStatistics(id: number, days: number): Promise<NotifyStatistics> {
+  return request(`/api/n9e-plus/notify/${id}/statistics`, {
+    method: RequestMethod.Get,
+    params: { days },
+  }).then((res) => {
+    return res.dat;
+  });
+}
+
+export function getNotifyEvents(
+  id: number,
+  params: {
+    stime: number;
+    etime: number;
+    limit: number;
+    p: number;
+  },
+) {
+  return request(`/api/n9e-plus/notify/${id}/alert-cur-events`, {
+    method: RequestMethod.Get,
+    params,
+  }).then((res) => {
+    return res.dat;
+  });
+}
+
+export function getNotifyAlertRules(id: number) {
+  return request(`/api/n9e-plus/notify/${id}/alert-rules`, {
+    method: RequestMethod.Get,
+  }).then((res) => {
+    return res.dat;
+  });
+}
+
+export function getNotifySubAlertRules(id: number) {
+  return request(`/api/n9e-plus/notify/${id}/sub-alert-rules`, {
+    method: RequestMethod.Get,
+  }).then((res) => {
+    return res.dat;
+  });
+}
+
+export function getEventTags() {
+  return request('/api/n9e-plus/event-tagkeys', {
+    method: RequestMethod.Get,
+  }).then((res) => {
+    return res.dat;
   });
 }

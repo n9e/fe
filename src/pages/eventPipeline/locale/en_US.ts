@@ -112,5 +112,49 @@ The summary should be concise and help O&M staff quickly understand the alert si
     content_tooltip: 'Write a script to process events, events will be passed to the script as a JSON object, the script must output a JSON object to stdout',
     content_placeholder: 'Please enter the script content',
   },
+  inhibit: {
+    help: 'Event inhibition processor. When an alert is sent, it prevents notifications for another alert event, reducing notifications. Common scenario: When there is an active P1 level fault in the same alert rule, ignore P2 and P3 level alert notifications. For more information, refer to <a>help documentation</a>',
+    tip1: 'When <b>new alert</b> meets the following conditions',
+    tip2: 'and',
+    tip3: 'seconds there are <b>active alerts</b> that meet the following conditions',
+    tip4: 'and <b>new alert</b> and <b>active alert</b> have the following same items',
+    tip5: 'When all the above conditions are met, the current alert will be suppressed and no further notifications will be sent',
+    duration_required: 'Inhibition duration cannot be empty',
+    duration_max: 'Inhibition duration cannot exceed 600 seconds',
+    match_label_keys: 'Labels',
+    match_label_keys_required: 'Labels cannot be empty',
+    match_attribute_keys: 'Attributes',
+    match_attribute_keys_required: 'Attributes cannot be empty',
+    keys_at_least_one_required: 'At least one label or attribute is required',
+    preview:
+      'Rule preview: When "<b>New alert: {{newAlertLabelsAttrs}}</b>" and there exists "<b>Active alert: {{activeAlertLabelsAttrs}}</b>" within the past "<b>{{duration}} seconds</b>", and both are the same in "<b>{{matchLabelsAttrs}}</b>", suppress notifications for the new alert.',
+    labels_filter: {
+      label: 'Labels',
+      label_tip:
+        'Only suppress alert events that meet these label matching conditions, used to narrow the impact scope. Not configured means no restrictions. Supports dropdown selection of existing label keys (recommended) or manual input',
+      label_placeholder: 'Enter or select label keys for matching, such as app / cluster / alertname',
+    },
+    labels_filter_value_placeholder: 'Manually enter or select label values for matching',
+    attributes_filter: {
+      label: 'Attributes',
+      label_tip: 'Limit the suppression scope by event attributes: only alerts that simultaneously match these attributes will be suppressed; leave empty to apply to all alerts',
+    },
+    active_event_labels_filter: {
+      label: 'Labels',
+      label_tip: `**Used to limit the scope of active alerts**
+- Not configured: means not using labels for filtering
+- Configured: can select existing label keys from the dropdown list (recommended), or manually enter label keys. Only when active alerts simultaneously meet these label conditions will they enter the filtering scope.
+
+Example: Fill in service=mon, which means only when an event contains the label service=mon will it participate in the subsequent inhibition logic.`,
+    },
+    active_event_attributes_filter: {
+      label: 'Attributes',
+      label_tip: `**Used to limit the scope of active alerts**
+- Not configured: means not using attributes for filtering
+- Configured: only when active alerts simultaneously meet these attribute conditions will they be filtered out.
+
+Example: Fill in Business Group==DefaultBusiGroup, which means only when the "Business Group" attribute of the active event is DefaultBusiGroup will it be filtered out for subsequent event inhibition processes`,
+    },
+  },
 };
 export default en_US;

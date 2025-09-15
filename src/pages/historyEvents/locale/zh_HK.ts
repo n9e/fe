@@ -22,6 +22,8 @@ const zh_HK = {
   export: '匯出',
   export_failed: '匯出失敗',
   prod: '監控類型',
+  claimant: '認領人',
+  shield: '屏蔽',
   rule_prod: {
     firemap: '滅火圖',
     northstar: '北極星',

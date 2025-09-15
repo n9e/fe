@@ -46,6 +46,7 @@ const EventDetailPage = () => {
         <Affix offsetBottom={0}>
           <Card size='small' className='affix-bottom-shadow'>
             {getActions({
+              showAckBtn: true,
               eventDetail: eventDetail,
               showSharingLink: false,
             })}
