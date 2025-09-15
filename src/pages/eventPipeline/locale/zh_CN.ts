@@ -130,5 +130,48 @@ const zh_CN = {
     content_tooltip: '编写用于处理事件的脚本代码，告警事件会以 stdin 方式传入脚本，脚本需要将 event 作为 json 对象输出到 stdout',
     content_placeholder: '请输入脚本内容',
   },
+  inhibit: {
+    help: '事件抑制处理器，当一个告警发送时，避免通知另一个告警事件，减少通知。常见场景如：同一条告警规则存在 P1 级别的活跃故障时，忽略 P2 和 P3 级别的告警通知。更多介绍参考 <a>帮助文档</a>',
+    tip1: '当 <b>新的告警</b> 满足以下条件',
+    tip2: '且',
+    tip3: '秒内有满足以下条件的 <b>活跃告警</b>',
+    tip4: '且 <b>新的告警</b> 与 <b>活跃告警</b> 存在以下相同项',
+    tip5: '满足以上全部条件时，当前告警将被抑制，且不再进行通知',
+    duration_required: '抑制时长不能为空',
+    duration_max: '抑制时长不能超过 600 秒',
+    match_label_keys: '标签',
+    match_label_keys_required: '标签不能为空',
+    match_attribute_keys: '属性',
+    match_attribute_keys_required: '属性不能为空',
+    keys_at_least_one_required: '至少需要一个标签或属性',
+    preview:
+      '规则预览：当「<b>新告警：{{newAlertLabelsAttrs}}</b>」且在过去「<b>{{duration}} 秒</b>」内存在「<b>活跃告警：{{activeAlertLabelsAttrs}}</b>」，并且两者在「<b>{{matchLabelsAttrs}}</b>」相同时，抑制新告警的通知。',
+    labels_filter: {
+      label: '标签',
+      label_tip: '仅对满足这些标签匹配条件的告警事件进行抑制，用于缩小影响范围，不配置表示不做限制。支持下拉选择已有标签键（推荐），也可手动输入',
+      label_placeholder: '输入或者选择用于匹配的标签键，如 app / cluster / alertname',
+    },
+    labels_filter_value_placeholder: '手动输入或者选择用于匹配的标签值',
+    attributes_filter: {
+      label: '属性',
+      label_tip: '按事件属性限定抑制范围：只有同时匹配这些属性的告警会被抑制；留空则对所有告警生效',
+    },
+    active_event_labels_filter: {
+      label: '标签',
+      label_tip: `**用于限定活跃告警的范围**
+- 不配置：表示不使用标签进行过滤
+- 配置：可以从下拉列表选择已有标签键（推荐），也可以手动输入标签键，只有当活跃告警同时满足这些标签条件时，才会进入筛选范围。
+
+示例：填写 service=mon，表示仅当事件包含标签 service=mon 时，才会参与后续的抑制逻辑。`,
+    },
+    active_event_attributes_filter: {
+      label: '属性',
+      label_tip: `**用于限定活跃告警的范围**
+- 不配置：表示不使用属性进行过滤
+- 配置：只有当活跃告警同时满足这些属性条件时，才会被筛选出来。
+
+示例：填写 业务组==DefaultBusiGroup，表示仅当活跃事件的"业务组"属性为 DefaultBusiGroup 时，才会被筛选出来，用作后续的事件抑制流程`,
+    },
+  },
 };
 export default zh_CN;

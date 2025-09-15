@@ -6,6 +6,7 @@ import _ from 'lodash';
 import { getCustomParamsValues } from '@/pages/notificationRules/services';
 
 interface Props {
+  prefixNamePath?: (string | number)[];
   field: FormListFieldData;
   customParams: {
     key: string;
@@ -14,9 +15,9 @@ interface Props {
 }
 
 export default function Custom(props: Props) {
-  const { field, customParams } = props;
+  const { prefixNamePath = [], field, customParams } = props;
   const form = Form.useFormInstance();
-  const channel_id = Form.useWatch(['notify_configs', field.name, 'channel_id']);
+  const channel_id = Form.useWatch([...prefixNamePath, field.name, 'channel_id']);
   const [paramsData, setParamsData] = React.useState<
     {
       __id__: string;
@@ -60,7 +61,7 @@ export default function Custom(props: Props) {
                         onClick={() => {
                           const newValues = _.cloneDeep(form.getFieldsValue());
                           _.map(paramsDataItem.data, (paramItem) => {
-                            _.set(newValues, ['notify_configs', field.name, 'params', paramItem.name], paramItem.value);
+                            _.set(newValues, [...prefixNamePath, field.name, 'params', paramItem.name], paramItem.value);
                           });
                           form.setFieldsValue(newValues);
                         }}

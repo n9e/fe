@@ -99,13 +99,15 @@ export default function index(props: Props) {
             display: filter_enable ? 'block' : 'none',
           }}
         >
-          <KVTags
-            disabled={disabled}
-            name={['label_filters']}
-            keyLabel={t('label_filters')}
-            keyLabelTootip={<Trans ns={NS} i18nKey={`${NS}:label_filters_tip`} components={{ br: <br /> }} />}
-            funcName='op'
-          />
+          <div className='mb-2'>
+            <KVTags
+              disabled={disabled}
+              name={['label_filters']}
+              keyLabel={t('label_filters')}
+              keyLabelTootip={<Trans ns={NS} i18nKey={`${NS}:label_filters_tip`} components={{ br: <br /> }} />}
+              funcName='op'
+            />
+          </div>
           <Attributes disabled={disabled} name={['attribute_filters']} />
         </div>
       </Card>

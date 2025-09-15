@@ -133,10 +133,15 @@ const ja_JP = {
   },
   time: {
     millisecond: 'ミリ秒',
+    ms: 'ミリ秒',
     second: '秒',
+    s: '秒',
     minute: '分',
+    m: '分',
     hour: '時間',
+    h: '時間',
     day: '日',
+    d: '日',
     weekdays: ['日曜日', '月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日'],
   },
   severity: {
@@ -159,7 +164,10 @@ const ja_JP = {
   public: '公開',
   private: '非公開',
   advanced_settings: '詳細設定',
+  enabled: '有効',
+  enabling: '有効化中',
   disabled: '無効',
+  disabling: '無効化中',
   select_event: 'アラートイベントを選択',
 
   tpl: '自己修復スクリプト',
@@ -228,7 +236,9 @@ const ja_JP = {
   'task.tip.content': 'もしロールが管理者なら、どのマシンでもスクリプトを実行できます。それ以外は、管理権限のあるビジネスグループのマシンでのみスクリプトを実行できます',
   'task.allOptionLabel': '全スクリプト',
 
+  'last.1.days': '最近 1 日',
   'last.7.days': '最近 7 日',
+  'last.14.days': '最近 14 日',
   'last.15.days': '最近 15 日',
   'last.30.days': '最近 30 日',
   'last.60.days': '最近 60 日',

@@ -132,10 +132,15 @@ const zh_HK = {
   },
   time: {
     millisecond: '毫秒',
+    ms: '毫秒',
     second: '秒',
+    s: '秒',
     minute: '分鐘',
+    m: '分鐘',
     hour: '小時',
+    h: '小時',
     day: '天',
+    d: '天',
     weekdays: ['週日', '週一', '週二', '週三', '週四', '週五', '週六'],
   },
   severity: {
@@ -158,7 +163,10 @@ const zh_HK = {
   public: '公開',
   private: '私有',
   advanced_settings: '高級設定',
+  enabled: '啟用',
+  enabling: '啟用中',
   disabled: '禁用',
+  disabling: '禁用中',
   select_event: '選擇告警事件',
 
   tpl: '自愈腳本',
@@ -227,7 +235,9 @@ const zh_HK = {
   'task.tip.content': '如果你的角色是管理員，則可以在任意機器執行腳本；否則，只能對有管理權限的業務組下的機器執行腳本',
   'task.allOptionLabel': '全部任務',
 
+  'last.1.days': '最近 1 天',
   'last.7.days': '最近 7 天',
+  'last.14.days': '最近 14 天',
   'last.15.days': '最近 15 天',
   'last.30.days': '最近 30 天',
   'last.60.days': '最近 60 天',
