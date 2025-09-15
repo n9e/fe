@@ -19,11 +19,12 @@
  * 新版查询条件和告警条件表单
  */
 import React, { useContext } from 'react';
-import { Form, Row, Col, Card, Space } from 'antd';
+import { Form, Card, Space } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
+import { IS_PLUS } from '@/utils/constant';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import Triggers from '@/pages/alertRules/Form/components/Triggers';
 import { FormStateContext } from '@/pages/alertRules/Form';
@@ -87,8 +88,12 @@ export default function PrometheusV2(props: Props) {
                       </InputGroupWithFormItem>
                     </div>
                   </div>
-                  <AdvancedSettings field={field} />
-                  <div className='mt2'>
+                  {IS_PLUS && (
+                    <div className='mb-4'>
+                      <AdvancedSettings field={field} />
+                    </div>
+                  )}
+                  <div>
                     <GraphPreview form={form} fieldName={field.name} promqlFieldName='query' />
                   </div>
                   <MinusCircleOutlined className='alert-rule-trigger-remove' onClick={() => remove(field.name)} />
