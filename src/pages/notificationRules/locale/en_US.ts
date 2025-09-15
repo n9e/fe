@@ -62,14 +62,75 @@ const en_US = {
     enable: 'Enable',
   },
   escalations: {
-    title: 'Escalation configuration',
-    item_title: 'Notification escalation',
-    item_add_btn: 'Add notification escalation',
-    interval: 'Detection interval',
+    title: 'Escalation Configuration',
+    title_tip:
+      'When alerts exceed the set duration and have not recovered, the system will escalate notifications to specified channels according to the conditions below to avoid long-term lack of follow-up. For detailed configuration, refer to <a>documentation</a>',
+    item_title: 'Notification Escalation',
+    item_add_btn: 'Add Notification Escalation',
+    interval: 'Detection Interval',
     interval_required: 'Detection interval is required',
     duration_required: 'Duration is required',
-    duration_1: 'Abnormal event has exceeded',
-    duration_2: 'If it is still in the unrecovered/unclaimed state, use this configuration to send notifications.',
+    duration_1: 'When abnormal events have exceeded',
+    duration_2: 'and are still in',
+    duration_3: 'status, use this configuration to send notifications.',
+    event_status_options: {
+      0: 'Not recovered',
+      1: 'Not recovered and unclaimed',
+    },
+    time_ranges: {
+      label_tip: 'Can limit escalation to only trigger during selected days of the week and time periods. Not configured means no restriction',
+    },
+    labels_filter: {
+      label_tip:
+        'Only execute escalation notifications for alert events that meet these label conditions. Used to narrow the impact scope. Not configured means no restriction. Supports dropdown selection of existing label keys (recommended) or manual input',
+    },
+    attributes_filter: {
+      label_tip: 'Only enable escalation for alerts that simultaneously match these attributes; not configured means no restriction. Multiple conditions are in AND relationship',
+    },
+  },
+  notify_aggr_configs: {
+    title: 'Aggregation Configuration',
+    enable: 'Enable Aggregation',
+    group_enable: 'Fine-grained Aggregation',
+    group_title: 'Fine-grained Aggregation',
+    group_add_btn: 'Add Fine-grained Aggregation',
+    group_tip1: 'Meeting the following conditions',
+    group_tip2: 'Aggregate into one group for notification according to the following dimensions',
+    group_label_keys: 'Labels',
+    group_label_keys_required: 'Labels cannot be empty',
+    group_attribute_keys: 'Attributes',
+    group_attribute_keys_required: 'Attributes cannot be empty',
+    group_keys_at_least_one_required: 'At least one of labels and attributes must be filled',
+    group_duration_1: 'After receiving an alert, alerts from the same group received within',
+    group_duration_2: 'seconds will be aggregated and sent together',
+    group_duration_required: 'Aggregation duration cannot be empty',
+    default_title: 'Default Dimensions',
+    default_tip: 'If the above filtering conditions are not met, <b>aggregate into one group for notification according to the following dimensions</b>',
+    default_duration_tip: 'Please note that too large aggregation time intervals will cause alert delivery delays',
+    default_duration_tip2: 'Maximum aggregation interval cannot exceed 3600 seconds',
+    attribute_keys_map: {
+      datasource_id: 'Data Source',
+      group_id: 'Business Group',
+      rule_id: 'Alert Rule',
+      severity: 'Alert Level',
+    },
+    enable_tip: 'After enabling, alerts that match the rules will be merged by dimension into one notification',
+    labels_filter: {
+      label_tip:
+        'Only execute aggregation notifications for alert events that meet these label conditions. Used to narrow the impact scope. Not configured means no restriction. Supports dropdown selection of existing label keys (recommended) or manual input',
+    },
+    attributes_filter: {
+      label_tip:
+        'Only let alerts matching these label filtering conditions participate in aggregation, unmatched alerts are not affected by this rule<br />Multiple conditions are in AND relationship, and also in AND relationship with the applicable attribute filtering conditions below',
+    },
+    label_keys: {
+      tip: 'If configured as ident, events with the same ident will be merged into one group and send one notification message, commonly used for SMS/IM noise reduction',
+      placeholder: 'For example: ident, app. Supports dropdown selection of existing label keys (recommended) or manual input',
+    },
+    attribute_keys: {
+      tip: 'If configured as Business Group, events with the same Business Group will be merged into one group and send one notification message',
+      placeholder: 'For example: Business Group',
+    },
   },
   statistics: {
     total_notify_events: 'Total notification events in the last {{days}} days',
