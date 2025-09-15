@@ -54,7 +54,7 @@ interface Props {
 const Event = (props: Props) => {
   const { t } = useTranslation('AlertHisEvents');
   const history = useHistory();
-  const { feats, datasourceList } = useContext(CommonStateContext);
+  const { feats, datasourceList, profile } = useContext(CommonStateContext);
   const {
     hideHeader = false,
     hideTimeRangePicker = false,
@@ -433,7 +433,7 @@ const Event = (props: Props) => {
                 {t('export')}
               </Button>
             )}
-            {!hideDeleteEventsButton && (
+            {!hideDeleteEventsButton && profile.admin && (
               <Button
                 onClick={() => {
                   setDeleteEventsModalVisible(true);
