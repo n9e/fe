@@ -33,5 +33,17 @@ const en_US = {
     anomaly: 'Anomaly',
     loki: 'Loki',
   },
+  delete_events: {
+    title: 'Event Cleanup',
+    alert_message: 'Once deleted, it cannot be recovered. Please proceed with caution!',
+    severities: 'Severities',
+    timestamp: 'Time',
+    timestamp_options: {
+      1: 'Before 1 month',
+      3: 'Before 3 months',
+      6: 'Before 6 months',
+      12: 'Before 1 year',
+    },
+  },
 };
 export default en_US;
