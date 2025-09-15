@@ -14,3 +14,10 @@ export function getEventsByIds(ids: string) {
     method: RequestMethod.Get,
   });
 }
+
+export function deleteEvents(data: { severities: number[]; timestamp: number }) {
+  return request('/api/n9e/alert-his-events', {
+    method: RequestMethod.Delete,
+    data,
+  });
+}

@@ -27,6 +27,8 @@ export default function Events(props: Props) {
     <ListNG
       filter={filter}
       setFilter={setFilter}
+      hideExportButton
+      hideDeleteEventsButton
       fetchData={({ current, pageSize }, filterObj) => {
         const parsedRange = parseRange(filterObj.range);
         return getNotifyEvents(id, {
