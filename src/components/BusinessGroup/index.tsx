@@ -190,7 +190,7 @@ export default function index(props: IProps) {
                       history.push({
                         pathname: location.pathname,
                         search: queryString.stringify({
-                          ...query,
+                          ..._.omit(query, ['preset-filter']),
                           ids: itemKey,
                           isLeaf: true,
                         }),
@@ -224,7 +224,7 @@ export default function index(props: IProps) {
                     history.push({
                       pathname: location.pathname,
                       search: queryString.stringify({
-                        ...query,
+                        ..._.omit(query, ['preset-filter']),
                         ids: getCleanBusinessGroupIds(itemKey),
                         isLeaf: !_.startsWith(itemKey, 'group,'),
                       }),
