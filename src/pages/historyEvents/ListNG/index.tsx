@@ -24,6 +24,7 @@ import deleteAlertEventsModal from '@/pages/alertCurEvent/utils/deleteAlertEvent
 
 import exportEvents, { downloadFile } from '../exportEvents';
 import { SeverityColor } from '../../event';
+import DeleteEventsModal from './DeleteEventsModal';
 
 // @ts-ignore
 import AckBtn from 'plus:/parcels/Event/Acknowledge/AckBtn';
@@ -35,6 +36,7 @@ interface Props {
   hideHeader?: boolean;
   hideTimeRangePicker?: boolean;
   hideExportButton?: boolean;
+  hideDeleteEventsButton?: boolean;
   filter: any;
   setFilter: (newFilter: any) => void;
   fetchData: (
@@ -53,7 +55,18 @@ const Event = (props: Props) => {
   const { t } = useTranslation('AlertHisEvents');
   const history = useHistory();
   const { feats, datasourceList } = useContext(CommonStateContext);
-  const { hideHeader = false, hideTimeRangePicker = false, hideExportButton = false, filter, setFilter, fetchData, filterAreaRight, rowSelection, showClaimant = false } = props;
+  const {
+    hideHeader = false,
+    hideTimeRangePicker = false,
+    hideExportButton = false,
+    hideDeleteEventsButton = false,
+    filter,
+    setFilter,
+    fetchData,
+    filterAreaRight,
+    rowSelection,
+    showClaimant = false,
+  } = props;
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
   const [eventDetailDrawerData, setEventDetailDrawerData] = useState<{
     visible: boolean;
@@ -243,6 +256,7 @@ const Event = (props: Props) => {
     ] as any[]);
   }
   const [exportBtnLoadding, setExportBtnLoadding] = useState(false);
+  const [deleteEventsModalVisible, setDeleteEventsModalVisible] = useState(false);
   const pagination = usePagination({ PAGESIZE_KEY: 'alert_his_events_table_pagesize' });
 
   let prodOptions = getProdOptions(feats);
@@ -419,6 +433,15 @@ const Event = (props: Props) => {
                 {t('export')}
               </Button>
             )}
+            {!hideDeleteEventsButton && (
+              <Button
+                onClick={() => {
+                  setDeleteEventsModalVisible(true);
+                }}
+              >
+                {t('delete_events.title')}
+              </Button>
+            )}
           </Space>
           {filterAreaRight}
         </div>
@@ -459,6 +482,16 @@ const Event = (props: Props) => {
               });
             });
           }
+        }}
+      />
+      <DeleteEventsModal
+        visible={deleteEventsModalVisible}
+        onOk={() => {
+          setDeleteEventsModalVisible(false);
+          setRefreshFlag(_.uniqueId('refresh_'));
+        }}
+        onCancel={() => {
+          setDeleteEventsModalVisible(false);
         }}
       />
     </>

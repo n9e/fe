@@ -33,6 +33,18 @@ const ja_JP = {
     anomaly: '異常',
     loki: 'Loki',
   },
+  delete_events: {
+    title: 'イベントクリーンアップ',
+    alert_message: '一旦削除すると元に戻せません。慎重に操作してください！',
+    severities: '重大度フィルター',
+    timestamp: 'イベントフィルター',
+    timestamp_options: {
+      '1': '1ヶ月前',
+      '3': '3ヶ月前',
+      '6': '6ヶ月前',
+      '12': '1年前',
+    },
+  },
 };
 
 export default ja_JP;
