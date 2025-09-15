@@ -36,8 +36,8 @@ const en_US = {
   delete_events: {
     title: 'Event Cleanup',
     alert_message: 'Once deleted, it cannot be recovered. Please proceed with caution!',
-    severities: 'Severity filter',
-    timestamp: 'Event filter',
+    severities: 'Severities',
+    timestamp: 'Time',
     timestamp_options: {
       1: 'Before 1 month',
       3: 'Before 3 months',

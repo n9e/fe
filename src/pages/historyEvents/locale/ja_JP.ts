@@ -37,7 +37,7 @@ const ja_JP = {
     title: 'イベントクリーンアップ',
     alert_message: '一旦削除すると元に戻せません。慎重に操作してください！',
     severities: '重大度フィルター',
-    timestamp: 'イベントフィルター',
+    timestamp: '時間フィルター',
     timestamp_options: {
       '1': '1ヶ月前',
       '3': '3ヶ月前',

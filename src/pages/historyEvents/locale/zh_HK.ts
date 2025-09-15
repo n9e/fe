@@ -37,7 +37,7 @@ const zh_HK = {
     title: '事件清理',
     alert_message: '一旦刪除將無法找回，請謹慎操作！',
     severities: '等級篩選',
-    timestamp: '事件篩選',
+    timestamp: '時間篩選',
     timestamp_options: {
       '1': '1 個月之前',
       '3': '3 個月之前',
