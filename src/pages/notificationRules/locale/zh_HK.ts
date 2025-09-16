@@ -59,7 +59,7 @@ const zh_HK = {
   },
   escalations: {
     title: '升級配置',
-    title_tip: '當告警超過設定時長且未恢復時，系統將按下方條件把通知升級到指定渠道，避免長期無人跟進，詳細配置參考 <a>說明文檔</a>',
+    title_tip: '當告警超過設定時長且未恢復時，系統將按下方條件把通知升級到指定渠道，避免長期無人跟進，詳細配置參考 <a>使用文檔</a>',
     item_title: '通知升級',
     item_add_btn: '添加通知升級',
     interval: '檢測週期',
@@ -68,6 +68,13 @@ const zh_HK = {
     duration_1: '異常事件已超過',
     duration_2: '，仍處於',
     duration_3: '狀態時，使用本配置發送通知。',
+    repeating_notification: '循環通知設置',
+    repeating_notification_tip: '如果此開關關閉，相同事件的告警，升級通知只會通知 1 次',
+    repeating_notification_1: '每隔',
+    repeating_notification_2: '分鐘通知 1 次，最多循環通知',
+    repeating_notification_3: '次',
+    notification_interval_required: '通知間隔不能為空',
+    notification_max_times_required: '最多循環通知次數不能為空',
     event_status_options: {
       0: '未恢復',
       1: '未恢復且未認領',
@@ -108,7 +115,7 @@ const zh_HK = {
       rule_id: '告警規則',
       severity: '告警等級',
     },
-    enable_tip: '開啟後，符合規則的告警會按維度合併為一條通知',
+    enable_tip: '開啟後，符合規則的告警會按維度合併為一條通知 <a>使用文檔</a>',
     labels_filter: {
       label_tip: '僅對滿足這些標籤條件的告警事件執行聚合通知。用於縮小影響範圍，不配置表示不做限制。支持下拉選擇已有標籤鍵（推薦），也可手動輸入',
     },

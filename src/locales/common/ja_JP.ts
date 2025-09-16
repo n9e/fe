@@ -17,6 +17,7 @@ const ja_JP = {
   required: '必須項目',
   unit: '単位',
   page_help: '使用説明',
+  document_title: 'ドキュメント',
   and: 'および',
   yes: 'はい',
   no: 'いいえ',

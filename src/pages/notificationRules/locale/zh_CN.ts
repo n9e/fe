@@ -59,7 +59,7 @@ const zh_CN = {
   },
   escalations: {
     title: '升级配置',
-    title_tip: '当告警超过设定时长且未恢复时，系统将按下方条件把通知升级到指定渠道，避免长期无人跟进，详细配置参考 <a>说明文档</a>',
+    title_tip: '当告警超过设定时长且未恢复时，系统将按下方条件把通知升级到指定渠道，避免长期无人跟进，详细配置参考 <a>使用文档</a>',
     item_title: '通知升级',
     item_add_btn: '添加通知升级',
     interval: '检测周期',
@@ -68,6 +68,13 @@ const zh_CN = {
     duration_1: '异常事件已超过',
     duration_2: '，仍处于',
     duration_3: '状态时，使用本配置发送通知。',
+    repeating_notification: '循环通知设置',
+    repeating_notification_tip: '如果此开关关闭，相同事件的告警，升级通知只会通知 1 次',
+    repeating_notification_1: '每隔',
+    repeating_notification_2: '分钟通知 1 次，最多循环通知',
+    repeating_notification_3: '次',
+    notification_interval_required: '通知间隔不能为空',
+    notification_max_times_required: '最多循环通知次数不能为空',
     event_status_options: {
       0: '未恢复',
       1: '未恢复且未认领',
@@ -108,7 +115,7 @@ const zh_CN = {
       rule_id: '告警规则',
       severity: '告警等级',
     },
-    enable_tip: '开启后，符合规则的告警会按维度合并为一条通知',
+    enable_tip: '开启后，符合规则的告警会按维度合并为一条通知 <a>使用文档</a>',
     labels_filter: {
       label_tip: '仅对满足这些标签条件的告警事件执行聚合通知。用于缩小影响范围，不配置表示不做限制。支持下拉选择已有标签键（推荐），也可手动输入',
     },

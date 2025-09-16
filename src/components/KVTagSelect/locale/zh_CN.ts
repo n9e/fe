@@ -24,6 +24,7 @@ const zh_CN = {
     value: {
       label: '标签值',
       placeholder: '手动输入或者从下拉列表选择用于匹配的标签值',
+      placeholder2: '填写正则表达式，灵活匹配属性值',
       msg: '标签值不能为空',
     },
     add: '新增标签',
