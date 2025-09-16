@@ -113,7 +113,7 @@ The summary should be concise and help O&M staff quickly understand the alert si
     content_placeholder: 'Please enter the script content',
   },
   inhibit: {
-    help: 'Event inhibition processor. When an alert is sent, it prevents notifications for another alert event, reducing notifications. Common scenario: When there is an active P1 level fault in the same alert rule, ignore P2 and P3 level alert notifications. For more information, refer to <a>help documentation</a>',
+    help: 'Event inhibition processor. When an alert is sent, it prevents notifications for another alert event, reducing notifications. Common scenario: When there is an active P1 level fault in the same alert rule, ignore P2 and P3 level alert notifications. For more information, refer to <a>documentation</a>',
     tip1: 'When <b>new alert</b> meets the following conditions',
     tip2: 'and',
     tip3: 'seconds there are <b>active alerts</b> that meet the following conditions',

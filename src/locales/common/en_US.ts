@@ -17,6 +17,7 @@ const en_US = {
   required: 'Required',
   unit: 'Unit',
   page_help: 'Help',
+  document_title: 'Documentation',
   and: 'And',
   yes: 'Yes',
   no: 'No',
