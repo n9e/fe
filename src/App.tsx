@@ -124,6 +124,7 @@ export interface ICommonState {
   tablePaginationPosition?: string; // 表格分页位置
   installTs: number; // 安装时间戳
   i18nList?: string[];
+  rangePickerShowSecond?: boolean; // 时间范围选择器是否显示秒选择
 }
 
 export const basePrefix = import.meta.env.VITE_PREFIX || '';
