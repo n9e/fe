@@ -116,8 +116,8 @@ const en_US = {
     default_duration_tip: 'Please note that too large aggregation time intervals will cause alert delivery delays',
     default_duration_tip2: 'Maximum aggregation interval cannot exceed 3600 seconds',
     attribute_keys_map: {
-      datasource_id: 'Data Source',
-      group_id: 'Business Group',
+      cluster: 'Data Source',
+      group_name: 'Business Group',
       rule_id: 'Alert Rule',
       severity: 'Alert Level',
     },
