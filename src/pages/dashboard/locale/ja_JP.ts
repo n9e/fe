@@ -40,7 +40,7 @@ const ja_JP = {
   exit_full_screen: '全画面を退出',
   copyPanelTip: 'グラフがコピーされました。"グラフを追加"をクリックして貼り付けてください。',
   batch: {
-    import: 'ダッシュボードをインポート',
+    import: '夜鶯ダッシュボード JSON をインポート',
     label: 'ダッシュボード JSON',
     import_grafana: 'Grafanaダッシュボードをインポート',
     import_grafana_tip:
