@@ -181,7 +181,7 @@ const TagItem = (props: Props) => {
                   return { value };
                 }}
               >
-                <Select mode='multiple' style={{ width: '100%' }} options={selectOptions} />
+                <Select mode='multiple' showSearch optionFilterProp='label' options={selectOptions} />
               </Form.Item>
             )}
             {_.includes(['==', '!='], func) && (
