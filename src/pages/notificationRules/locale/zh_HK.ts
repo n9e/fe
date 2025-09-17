@@ -110,8 +110,8 @@ const zh_HK = {
     default_duration_tip: '請注意，聚合時間間隔太大會導致告警延遲發送',
     default_duration_tip2: '聚合最大間隔不能超過 3600 秒',
     attribute_keys_map: {
-      datasource_id: '數據源',
-      group_id: '業務組',
+      cluster: '數據源',
+      group_name: '業務組',
       rule_id: '告警規則',
       severity: '告警等級',
     },

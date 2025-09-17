@@ -144,6 +144,8 @@ const zh_CN = {
     match_attribute_keys: '属性',
     match_attribute_keys_required: '属性不能为空',
     keys_at_least_one_required: '至少需要一个标签或属性',
+    labels_conflict: '标签 {{label}} 的值不同，无法进行抑制',
+    attributes_conflict: '属性 {{attribute}} 的值不同，无法进行抑制',
     preview:
       '规则预览：当「<b>新告警：{{newAlertLabelsAttrs}}</b>」且在过去「<b>{{duration}} 秒</b>」内存在「<b>活跃告警：{{activeAlertLabelsAttrs}}</b>」，并且两者在「<b>{{matchLabelsAttrs}}</b>」相同时，抑制新告警的通知。',
     labels_filter: {

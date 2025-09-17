@@ -116,8 +116,8 @@ const ja_JP = {
     default_duration_tip: '注意：集約時間間隔が大きすぎるとアラートの送信遅延を引き起こします',
     default_duration_tip2: '集約最大間隔は3600秒を超えることはできません',
     attribute_keys_map: {
-      datasource_id: 'データソース',
-      group_id: 'ビジネスグループ',
+      cluster: 'データソース',
+      group_name: 'ビジネスグループ',
       rule_id: 'アラートルール',
       severity: 'アラートレベル',
     },
