@@ -6,6 +6,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
 
+import { IS_PLUS } from '@/utils/constant';
 import PageLayout from '@/components/pageLayout';
 import { getSimplifiedItems as getNotificationChannels } from '@/pages/notificationChannels/services';
 import { getTeamInfoList } from '@/services/manage';
@@ -109,7 +110,7 @@ export default function List() {
                 return (
                   <Link
                     to={{
-                      pathname: `/${NS}/detail/${record.id}`,
+                      pathname: IS_PLUS ? `/${NS}/detail/${record.id}` : `/${NS}/edit/${record.id}`,
                     }}
                   >
                     {val}
