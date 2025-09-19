@@ -12,15 +12,13 @@ const en_US = {
       raw: 'Raw',
       metric: 'Metric',
     },
-    time_field: 'Time field',
-    time_field_msg: 'Please enter the time field',
-    time_field_msg_csv: 'csv format must enter time field',
     query_tip:
       'SQL example: To query the number of log entries in the last 5 minutes, use SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)',
     query_placeholder: 'SELECT count(*) as count FROM db_name.table_name WHERE ts >= now() - 5m',
     execute: 'Execute',
     database: 'Database',
-    database_placeholder: 'Default can be left empty',
+    table: 'Table',
+    date_field: 'Date Field',
     query: 'Query',
     query_required: 'Query is required',
     advancedSettings: {
@@ -70,6 +68,7 @@ const en_US = {
     fieldValues_topnNoData: 'No data',
     stats: {
       numberOfUniqueValues: 'Number of unique values',
+      unique_count: 'Number of unique values',
       min: 'Min',
       max: 'Max',
       sum: 'Sum',
