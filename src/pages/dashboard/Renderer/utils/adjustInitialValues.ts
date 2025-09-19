@@ -2,10 +2,11 @@ import { v4 as uuidv4 } from 'uuid';
 import _ from 'lodash';
 
 import { DatasourceCateEnum } from '@/utils/constant';
+import { IVariable } from '@/pages/dashboard/Variables/types';
 
 import { defaultCustomValuesMap, defaultOptionsValuesMap } from '../../Editor/config';
 import { sortPanelsByGridLayout } from '../../Panels/utils';
-import { IVariable } from '../../VariableConfig';
+
 import getDefaultTargets from '../../utils/getDefaultTargets';
 
 const getDefaultDatasourceValue = (datasourceCate, variableConfig, groupedDatasourceList) => {
@@ -17,7 +18,7 @@ const getDefaultDatasourceValue = (datasourceCate, variableConfig, groupedDataso
   return groupedDatasourceList[datasourceCate]?.[0]?.id;
 };
 
-const ajustInitialValues = (type: string, groupedDatasourceList: any, panels: any[], variableConfig?: IVariable[]) => {
+const adjustInitialValues = (type: string, groupedDatasourceList: any, panels: any[], variables?: IVariable[]) => {
   const sortedPanels = sortPanelsByGridLayout(panels);
   const lastPanel = _.last(sortedPanels);
   let datasourceCate = 'prometheus';
@@ -26,7 +27,7 @@ const ajustInitialValues = (type: string, groupedDatasourceList: any, panels: an
       datasourceCate = lastPanel.datasourceCate;
     }
   } else {
-    const datasourceVar = _.find(variableConfig, { type: 'datasource' });
+    const datasourceVar = _.find(variables, { type: 'datasource' });
     if (datasourceVar) {
       datasourceCate = datasourceVar.definition;
     }
@@ -39,7 +40,7 @@ const ajustInitialValues = (type: string, groupedDatasourceList: any, panels: an
       name: 'Panel Title',
       type,
       datasourceCate,
-      datasourceValue: getDefaultDatasourceValue(datasourceCate, variableConfig, groupedDatasourceList),
+      datasourceValue: getDefaultDatasourceValue(datasourceCate, variables, groupedDatasourceList),
       targets: getDefaultTargets(datasourceCate as DatasourceCateEnum),
       custom: defaultCustomValuesMap[type],
       options: defaultOptionsValuesMap[type],
@@ -47,4 +48,4 @@ const ajustInitialValues = (type: string, groupedDatasourceList: any, panels: an
   };
 };
 
-export default ajustInitialValues;
+export default adjustInitialValues;

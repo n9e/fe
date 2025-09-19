@@ -20,10 +20,10 @@ import StandardOptions from '../../Fields/StandardOptions';
 import ValueMappings from '../../Fields/ValueMappings';
 import Overrides from '../../Fields/Overrides';
 
-export default function Table({ targets, chartForm, variableConfigWithOptions }) {
+export default function Table({ targets }) {
   return (
     <>
-      <GraphStyles chartForm={chartForm} variableConfigWithOptions={variableConfigWithOptions} />
+      <GraphStyles />
       <ValueMappings />
       <StandardOptions />
       <Overrides targets={targets} />
