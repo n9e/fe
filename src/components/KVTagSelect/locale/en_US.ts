@@ -24,6 +24,7 @@ const en_US = {
     value: {
       label: 'Tag Value',
       placeholder: 'Enter or select a tag value for matching',
+      placeholder2: 'Enter a regular expression to flexibly match attribute values',
       msg: 'Tag value is required',
     },
     add: 'Add Tag',

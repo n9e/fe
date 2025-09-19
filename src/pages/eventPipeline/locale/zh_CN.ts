@@ -131,7 +131,7 @@ const zh_CN = {
     content_placeholder: '请输入脚本内容',
   },
   inhibit: {
-    help: '事件抑制处理器，当一个告警发送时，避免通知另一个告警事件，减少通知。常见场景如：同一条告警规则存在 P1 级别的活跃故障时，忽略 P2 和 P3 级别的告警通知。更多介绍参考 <a>帮助文档</a>',
+    help: '事件抑制处理器，当一个告警发送时，避免通知另一个告警事件，减少通知。常见场景如：同一条告警规则存在 P1 级别的活跃故障时，忽略 P2 和 P3 级别的告警通知。更多介绍参考 <a>使用文档</a>',
     tip1: '当 <b>新的告警</b> 满足以下条件',
     tip2: '且',
     tip3: '秒内有满足以下条件的 <b>活跃告警</b>',
@@ -144,6 +144,8 @@ const zh_CN = {
     match_attribute_keys: '属性',
     match_attribute_keys_required: '属性不能为空',
     keys_at_least_one_required: '至少需要一个标签或属性',
+    labels_conflict: '标签 {{label}} 的值不同，无法进行抑制',
+    attributes_conflict: '属性 {{attribute}} 的值不同，无法进行抑制',
     preview:
       '规则预览：当「<b>新告警：{{newAlertLabelsAttrs}}</b>」且在过去「<b>{{duration}} 秒</b>」内存在「<b>活跃告警：{{activeAlertLabelsAttrs}}</b>」，并且两者在「<b>{{matchLabelsAttrs}}</b>」相同时，抑制新告警的通知。',
     labels_filter: {

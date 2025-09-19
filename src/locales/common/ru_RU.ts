@@ -17,6 +17,7 @@ const ru_RU = {
   required: 'Обязательно',
   unit: 'Единица',
   page_help: 'Инструкция',
+  document_title: 'Документация',
   and: 'И',
   yes: 'Да',
   no: 'Нет',

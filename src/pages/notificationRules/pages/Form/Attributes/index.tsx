@@ -4,6 +4,8 @@ import { PlusCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
+import Markdown from '@/components/Markdown';
+
 import { NS } from '../../../constants';
 import TagItem from './TagItem';
 
@@ -15,6 +17,7 @@ interface Props {
   keyLabel?: React.ReactNode;
   keyLabelTootip?: React.ReactNode;
   keyLabelTootipPlacement?: 'top' | 'left' | 'right' | 'bottom';
+  keyOptions?: string[];
 }
 
 export default function index(props: Props) {
@@ -27,6 +30,7 @@ export default function index(props: Props) {
     keyLabel = t(`${NS}:notification_configuration.attributes`),
     keyLabelTootip = t(`${NS}:notification_configuration.attributes_tip`),
     keyLabelTootipPlacement,
+    keyOptions,
   } = props;
   const restField = _.omit(field, ['key', 'name']);
   const form = Form.useFormInstance();
@@ -88,14 +92,31 @@ export default function index(props: Props) {
                     )}
                   </Space>
                 </Col>
-                {fields.length ? <Col span={4}>{t('tag.func.label')}</Col> : null}
+                {fields.length ? (
+                  <Col span={4}>
+                    <Space align='baseline' size={4}>
+                      {t('tag.func.label')}
+                      <Tooltip
+                        className='n9e-ant-from-item-tooltip'
+                        title={
+                          <div className='pt-2 px-1'>
+                            <Markdown content={t('tag.func.label_tip')} darkMode />
+                          </div>
+                        }
+                        overlayClassName='ant-tooltip-max-width-400'
+                      >
+                        <QuestionCircleOutlined />
+                      </Tooltip>
+                    </Space>
+                  </Col>
+                ) : null}
                 {fields.length ? <Col span={12}>{t(`${NS}:notification_configuration.attributes_value`)}</Col> : null}
               </Row>
             </Col>
             <Col flex='none'>{!disabled && <div className='w-[12px]' />}</Col>
           </Row>
           {fields.map((field) => (
-            <TagItem key={field.key} disabled={disabled} fullName={[...fullName, ...name]} field={field} remove={remove} />
+            <TagItem key={field.key} disabled={disabled} fullName={[...fullName, ...name]} field={field} remove={remove} keyOptions={keyOptions} />
           ))}
           <Form.ErrorList errors={errors} />
         </>

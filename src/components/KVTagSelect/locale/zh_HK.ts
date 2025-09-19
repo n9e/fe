@@ -24,6 +24,7 @@ const zh_HK = {
     value: {
       label: '標籤值',
       placeholder: '手動輸入或者從下拉列表選擇用於匹配的標籤值',
+      placeholder2: '填寫正則表達式，靈活匹配屬性值',
       msg: '標籤值不能為空',
     },
     add: '新增標籤',

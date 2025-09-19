@@ -17,6 +17,7 @@ const zh_CN = {
   required: '必填项',
   unit: '单位',
   page_help: '使用说明',
+  document_title: '使用文档',
   and: '且',
   yes: '是',
   no: '否',

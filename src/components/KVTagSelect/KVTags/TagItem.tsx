@@ -111,7 +111,6 @@ const TagItem = (props: Props) => {
               >
                 <Select
                   mode='tags'
-                  open={false}
                   style={{ width: '100%' }}
                   placeholder={t('tag.value.placeholder')}
                   tokenSeparators={[' ']}

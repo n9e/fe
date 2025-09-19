@@ -73,6 +73,13 @@ const en_US = {
     duration_1: 'When abnormal events have exceeded',
     duration_2: 'and are still in',
     duration_3: 'status, use this configuration to send notifications.',
+    repeating_notification: 'Repeating Notification Settings',
+    repeating_notification_tip: 'If this switch is off, the escalation notification for the same event will only notify once',
+    repeating_notification_1: 'Every',
+    repeating_notification_2: 'minutes, up to',
+    repeating_notification_3: 'times',
+    notification_interval_required: 'Notification interval is required',
+    notification_max_times_required: 'Maximum number of repeating notifications is required',
     event_status_options: {
       0: 'Not recovered',
       1: 'Not recovered and unclaimed',
@@ -109,12 +116,12 @@ const en_US = {
     default_duration_tip: 'Please note that too large aggregation time intervals will cause alert delivery delays',
     default_duration_tip2: 'Maximum aggregation interval cannot exceed 3600 seconds',
     attribute_keys_map: {
-      datasource_id: 'Data Source',
-      group_id: 'Business Group',
+      cluster: 'Data Source',
+      group_name: 'Business Group',
       rule_id: 'Alert Rule',
       severity: 'Alert Level',
     },
-    enable_tip: 'After enabling, alerts that match the rules will be merged by dimension into one notification',
+    enable_tip: 'After enabling, alerts that match the rules will be merged by dimension into one notification <a>documentation</a>',
     labels_filter: {
       label_tip:
         'Only execute aggregation notifications for alert events that meet these label conditions. Used to narrow the impact scope. Not configured means no restriction. Supports dropdown selection of existing label keys (recommended) or manual input',

@@ -14,13 +14,14 @@ interface Props {
   fullName?: string | (string | number)[];
   field: any;
   remove: Function;
+  keyOptions?: string[];
 }
 
 const TagItem = (props: Props) => {
   const { t } = useTranslation('KVTagSelect');
   const { busiGroups, datasourceList } = useContext(CommonStateContext);
   const [alertRules] = useGlobalState('alertRules');
-  const { disabled, fullName = [], field, remove } = props;
+  const { disabled, fullName = [], field, remove, keyOptions } = props;
   const form = Form.useFormInstance();
   const key = Form.useWatch([...fullName, field.name, 'key']);
   const func = Form.useWatch([...fullName, field.name, 'func']);
@@ -102,28 +103,36 @@ const TagItem = (props: Props) => {
               <div className='w-full min-w-0'>
                 <Form.Item name={[field.name, 'key']} rules={[{ required: true, message: t('tag.key.msg') }]}>
                   <Select
-                    options={[
-                      {
-                        label: t(`${NS}:notification_configuration.attributes_options.group_name`),
-                        value: 'group_name',
+                    options={_.filter(
+                      [
+                        {
+                          label: t(`${NS}:notification_configuration.attributes_options.group_name`),
+                          value: 'group_name',
+                        },
+                        {
+                          label: t(`${NS}:notification_configuration.attributes_options.cluster`),
+                          value: 'cluster',
+                        },
+                        {
+                          label: t(`${NS}:notification_configuration.attributes_options.is_recovered`),
+                          value: 'is_recovered',
+                        },
+                        {
+                          label: t(`${NS}:notification_configuration.attributes_options.rule_id`),
+                          value: 'rule_id',
+                        },
+                        {
+                          label: t(`${NS}:notification_configuration.attributes_options.severity`),
+                          value: 'severity',
+                        },
+                      ],
+                      (item) => {
+                        if (keyOptions) {
+                          return _.includes(keyOptions, item.value);
+                        }
+                        return true;
                       },
-                      {
-                        label: t(`${NS}:notification_configuration.attributes_options.cluster`),
-                        value: 'cluster',
-                      },
-                      {
-                        label: t(`${NS}:notification_configuration.attributes_options.is_recovered`),
-                        value: 'is_recovered',
-                      },
-                      {
-                        label: t(`${NS}:notification_configuration.attributes_options.rule_id`),
-                        value: 'rule_id',
-                      },
-                      {
-                        label: t(`${NS}:notification_configuration.attributes_options.severity`),
-                        value: 'severity',
-                      },
-                    ]}
+                    )}
                     onChange={() => {
                       const newValues = _.cloneDeep(form.getFieldsValue());
                       _.set(newValues, [...fullName, field.name, 'func'], '==');
@@ -172,7 +181,7 @@ const TagItem = (props: Props) => {
                   return { value };
                 }}
               >
-                <Select mode='multiple' style={{ width: '100%' }} options={selectOptions} />
+                <Select mode='multiple' showSearch optionFilterProp='label' options={selectOptions} />
               </Form.Item>
             )}
             {_.includes(['==', '!='], func) && (
