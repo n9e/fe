@@ -18,7 +18,7 @@ import { getDorisHistogram } from '../../services';
 import DownloadModal from 'plus:/components/LogDownload/DownloadModal';
 
 const id = 'doris-histogram';
-const format = 'YYYY-MM-DD HH:mm:ss.SSS';
+const format = 'YYYY-MM-DD HH:mm:ss';
 
 function Main({
   width,
