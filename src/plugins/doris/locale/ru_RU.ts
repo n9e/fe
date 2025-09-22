@@ -17,8 +17,11 @@ const ru_RU = {
     query_placeholder: 'SELECT count(*) as count FROM db_name.table_name WHERE ts >= now() - 5m',
     execute: 'Запрос',
     database: 'База данных',
+    database_msg: 'Пожалуйста, выберите базу данных',
     table: 'Таблица',
-    date_field: 'Дата поле',
+    table_msg: 'Пожалуйста, выберите таблицу',
+    time_field: 'Дата поле',
+    time_field_msg: 'Пожалуйста, выберите дата поле',
     query: 'Запрос',
     query_required: 'Запрос является обязательным',
     advancedSettings: {

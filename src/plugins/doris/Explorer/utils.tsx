@@ -49,7 +49,7 @@ export const filteredFields = (fields: string[], organizeFields: string[]) => {
   });
 };
 
-export function getColumnsFromFields(selectedFields: string[], dateField?: string, options?: any, onValueFilter?: any) {
+export function getColumnsFromFields(selectedFields: string[], time_field?: string, options?: any, onValueFilter?: any) {
   const columns: any[] = _.map(selectedFields, (item) => {
     return {
       title: item,
@@ -66,10 +66,10 @@ export function getColumnsFromFields(selectedFields: string[], dateField?: strin
       },
     };
   });
-  if (dateField && options?.time === 'true') {
+  if (time_field && options?.time === 'true') {
     columns.unshift({
       title: i18next.t(`${NAME_SPACE}:logs.settings.time`),
-      dataIndex: dateField,
+      dataIndex: time_field,
       width: 200,
       render: (text) => {
         return moment(text).format('MM-DD HH:mm:ss.SSS');

@@ -16,8 +16,11 @@ const ja_JP = {
     query_placeholder: 'SELECT count(*) as count FROM db_name.table_name WHERE ts >= now() - 5m',
     execute: 'クエリ',
     database: 'データベース',
+    database_msg: 'データベースを選択してください',
     table: 'テーブル',
-    date_field: '日付フィールド',
+    table_msg: 'テーブルを選択してください',
+    time_field: '日付フィールド',
+    time_field_msg: '日付フィールドを選択してください',
     query: 'クエリ',
     query_required: 'クエリは必須です',
     advancedSettings: {

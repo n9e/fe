@@ -150,14 +150,18 @@ export default function FieldsItem(props: Props) {
             setTopNLoading(true);
             try {
               const range = parseRange(queryValues.range);
+              let funcs = ['unique_count', 'max', 'min', 'avg', 'sum', 'top5'];
+              if (TYPE_MAP[record.type] !== 'number') {
+                funcs = ['unique_count', 'top5'];
+              }
               const requestParams = {
                 cate: DatasourceCateEnum.doris,
                 datasource_id: datasourceValue,
-                query: _.map(['max', 'min', 'avg', 'sum', 'unique_count', 'top5'], (func) => {
+                query: _.map(funcs, (func) => {
                   return {
                     database: queryValues.database,
                     table: queryValues.table,
-                    time_field: queryValues.date_field,
+                    time_field: queryValues.time_field,
                     query: queryValues.query,
                     from: moment(range.start).unix(),
                     to: moment(range.end).unix(),
@@ -196,7 +200,6 @@ export default function FieldsItem(props: Props) {
                 },
               );
               setTopNData(top5Result || []);
-              console.log('statsResult', statsResult);
               setStats(statsResult);
             } catch (error) {
               setTopNData([]);

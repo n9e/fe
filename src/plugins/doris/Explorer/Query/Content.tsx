@@ -1,25 +1,23 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form } from 'antd';
 import moment from 'moment';
 import _ from 'lodash';
-import { useRequest } from 'ahooks';
+import { useRequest, useGetState } from 'ahooks';
 import { Empty, Space, Radio, Spin, Pagination } from 'antd';
 import { useTranslation } from 'react-i18next';
 
-import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
-import { parseRange } from '@/components/TimeRangePicker';
+import { DatasourceCateEnum } from '@/utils/constant';
 import flatten from '@/pages/explorer/Elasticsearch/flatten';
 import FullscreenButton from '@/pages/explorer/components/FullscreenButton';
+import normalizeLogStructures from '@/pages/explorer/utils/normalizeLogStructures';
 
+import { getGlobalState } from '../../globalState';
 import { getDorisLogsQuery, Field } from '../../services';
 import { NAME_SPACE } from '../../constants';
 import { getLocalstorageOptions, setLocalstorageOptions } from '../utils';
 import OriginSettings from '../components/OriginSettings';
 import RawList from '../components/RawList';
 import RawTable from '../components/RawTable';
-
-// @ts-ignore
-import DownloadModal from 'plus:/components/LogDownload/DownloadModal';
 
 interface Props {
   fields: Field[];
@@ -32,8 +30,9 @@ export default function index(props: Props) {
   const refreshFlag = Form.useWatch('refreshFlag');
   const datasourceValue = Form.useWatch(['datasourceValue']);
   const queryValues = Form.useWatch(['query']);
+  const [queryRefreshFlag, setQueryRefreshFlag] = useState<string>();
   const [options, setOptions] = useState(getLocalstorageOptions());
-  const [serviceParams, setServiceParams] = useState({
+  const [serviceParams, setServiceParams, getServiceParams] = useGetState({
     current: 1,
     pageSize: 10,
     reverse: true,
@@ -69,10 +68,12 @@ export default function index(props: Props) {
   };
 
   const service = () => {
-    if (refreshFlag && datasourceValue && queryValues?.database && queryValues?.table) {
-      const parsedRange = parseRange(queryValues.range);
-      const from = moment(parsedRange.start).unix();
-      const to = moment(parsedRange.end).unix();
+    const queryValues = form.getFieldValue('query');
+    if (datasourceValue && queryValues?.database && queryValues?.table && queryValues?.time_field) {
+      const explorerParsedRange = getGlobalState('explorerParsedRange');
+      const explorerSnapRange = getGlobalState('explorerSnapRange');
+      const from = explorerSnapRange.start ?? moment(explorerParsedRange.start).unix();
+      const to = explorerSnapRange.end ?? moment(explorerParsedRange.end).unix();
       return getDorisLogsQuery({
         cate: DatasourceCateEnum.doris,
         datasource_id: datasourceValue,
@@ -80,7 +81,7 @@ export default function index(props: Props) {
           {
             database: queryValues.database,
             table: queryValues.table,
-            time_field: queryValues.date_field,
+            time_field: queryValues.time_field,
             query: queryValues.query,
             from,
             to,
@@ -92,9 +93,10 @@ export default function index(props: Props) {
       })
         .then((res) => {
           const newLogs = _.map(res.list, (item) => {
+            const normalizedItem = normalizeLogStructures(item);
             return {
-              ...(flatten(item) || {}),
-              ___raw___: item,
+              ...(flatten(normalizedItem) || {}),
+              ___raw___: normalizedItem,
               ___id___: _.uniqueId('log_id_'),
             };
           });
@@ -123,8 +125,22 @@ export default function index(props: Props) {
     },
     any
   >(service, {
-    refreshDeps: [refreshFlag, JSON.stringify(serviceParams)],
+    refreshDeps: [queryRefreshFlag, JSON.stringify(serviceParams)],
   });
+
+  useEffect(() => {
+    if (refreshFlag) {
+      const currentServiceParams = getServiceParams();
+      if (currentServiceParams.current !== 1) {
+        setServiceParams((prev) => ({
+          ...prev,
+          current: 1,
+        }));
+      } else {
+        setQueryRefreshFlag(_.uniqueId('queryRefreshFlag_'));
+      }
+    }
+  }, [refreshFlag]);
 
   return (
     <>
@@ -176,13 +192,12 @@ export default function index(props: Props) {
                       return t('common:table.total', { total });
                     }}
                   />
-                  {IS_PLUS && <DownloadModal queryData={{ ...form.getFieldsValue(), total: data?.total ?? 0, logs: data?.list ?? [] }} />}
                 </Space>
               </div>
               <div className='n9e-antd-table-height-full'>
-                {queryValues?.date_field && options.logMode === 'origin' && (
+                {queryValues?.time_field && options.logMode === 'origin' && (
                   <RawList
-                    dateField={queryValues.date_field}
+                    time_field={queryValues.time_field}
                     data={data?.list ?? []}
                     options={options}
                     onValueFilter={handleValueFilter}
@@ -194,8 +209,8 @@ export default function index(props: Props) {
                     }}
                   />
                 )}
-                {queryValues?.date_field && options.logMode === 'table' && (
-                  <RawTable dateField={queryValues.date_field} data={data?.list ?? []} options={options} onValueFilter={handleValueFilter} />
+                {queryValues?.time_field && options.logMode === 'table' && (
+                  <RawTable time_field={queryValues.time_field} data={data?.list ?? []} options={options} onValueFilter={handleValueFilter} />
                 )}
               </div>
             </FullscreenButton.Provider>

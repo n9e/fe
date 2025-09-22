@@ -15,8 +15,11 @@ const zh_HK = {
     query_placeholder: 'SELECT count(*) as count FROM db_name.table_name WHERE ts >= now() - 5m',
     execute: '查詢',
     database: '數據庫',
+    database_msg: '請選擇數據庫',
     table: '数据表',
-    date_field: '日期字段',
+    table_msg: '請選擇數據表',
+    time_field: '日期字段',
+    time_field_msg: '請選擇日期字段',
     query: '查詢條件',
     query_required: '查詢條件不能為空',
     advancedSettings: {

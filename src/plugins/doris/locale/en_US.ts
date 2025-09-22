@@ -17,8 +17,11 @@ const en_US = {
     query_placeholder: 'SELECT count(*) as count FROM db_name.table_name WHERE ts >= now() - 5m',
     execute: 'Execute',
     database: 'Database',
+    database_msg: 'Please select database',
     table: 'Table',
-    date_field: 'Date Field',
+    table_msg: 'Please select table',
+    time_field: 'Date Field',
+    time_field_msg: 'Please select date field',
     query: 'Query',
     query_required: 'Query is required',
     advancedSettings: {

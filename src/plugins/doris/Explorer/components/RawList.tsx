@@ -11,7 +11,7 @@ import { filteredFields } from '../utils';
 import LogView from './LogView';
 
 interface Props {
-  dateField?: string;
+  time_field?: string;
   data: {
     [index: string]: string;
   }[];
@@ -200,7 +200,7 @@ function RenderSubJSON({
 
 export default function RawList(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { dateField, data, options, onValueFilter, onReverseChange } = props;
+  const { time_field, data, options, onValueFilter, onReverseChange } = props;
   const columns: any[] = [
     {
       title: t('logs.title'),
@@ -253,11 +253,11 @@ export default function RawList(props: Props) {
     },
   ];
 
-  if (dateField && options.time === 'true') {
+  if (time_field && options.time === 'true') {
     columns.unshift({
       title: t('logs.settings.time'),
       width: 140,
-      dataIndex: dateField,
+      dataIndex: time_field,
       key: 'time',
       render: (val) => {
         return moment(val).format('MM-DD HH:mm:ss.SSS');

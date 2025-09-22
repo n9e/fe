@@ -19,8 +19,11 @@ const zh_CN = {
     query_placeholder: 'SELECT count(*) as count FROM db_name.table_name WHERE ts >= now() - 5m',
     execute: '查询',
     database: '数据库',
+    database_msg: '请选择数据库',
     table: '数据表',
-    date_field: '日期字段',
+    table_msg: '请选择数据表',
+    time_field: '日期字段',
+    time_field_msg: '请选择日期字段',
     query: '查询条件',
     query_required: '查询条件不能为空',
     advancedSettings: {
