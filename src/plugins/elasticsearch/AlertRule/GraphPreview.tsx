@@ -140,6 +140,7 @@ export default function GraphPreview(props: IProps) {
         content={
           <div style={{ width: 700 }}>
             <Table
+              scroll={{ x: '700px' }}
               size='small'
               pagination={false}
               dataSource={series}

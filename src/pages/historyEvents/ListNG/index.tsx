@@ -37,6 +37,7 @@ interface Props {
   hideTimeRangePicker?: boolean;
   hideExportButton?: boolean;
   hideDeleteEventsButton?: boolean;
+  hideDeleteEventButton?: boolean;
   filter: any;
   setFilter: (newFilter: any) => void;
   fetchData: (
@@ -60,6 +61,7 @@ const Event = (props: Props) => {
     hideTimeRangePicker = false,
     hideExportButton = false,
     hideDeleteEventsButton = false,
+    hideDeleteEventButton = false,
     filter,
     setFilter,
     fetchData,
@@ -225,25 +227,27 @@ const Event = (props: Props) => {
                         </Button>
                       </Menu.Item>
                     )}
-                    <Menu.Item>
-                      <Button
-                        style={{ padding: 0 }}
-                        size='small'
-                        type='link'
-                        danger
-                        onClick={() =>
-                          deleteAlertEventsModal(
-                            [record.id],
-                            () => {
-                              setRefreshFlag(_.uniqueId('refresh_'));
-                            },
-                            t,
-                          )
-                        }
-                      >
-                        {t('common:btn.delete')}
-                      </Button>
-                    </Menu.Item>
+                    {!hideDeleteEventButton && (
+                      <Menu.Item>
+                        <Button
+                          style={{ padding: 0 }}
+                          size='small'
+                          type='link'
+                          danger
+                          onClick={() =>
+                            deleteAlertEventsModal(
+                              [record.id],
+                              () => {
+                                setRefreshFlag(_.uniqueId('refresh_'));
+                              },
+                              t,
+                            )
+                          }
+                        >
+                          {t('common:btn.delete')}
+                        </Button>
+                      </Menu.Item>
+                    )}
                   </Menu>
                 }
               >
